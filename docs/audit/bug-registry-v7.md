@@ -161,24 +161,35 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   `clearQueryCaches()` as defense-in-depth.
 
 ### V7-B14: `advanceDaysFast` has no basho-end breakpoint — day counter overshoots 15
-- **Files:** `src/engine/tick/tickDaily.ts:299-340` (`advanceDaysFast`),
-  `tickDaily.ts:439-463` (`daysUntilPhaseTransition`),
-  `src/engine/world.ts:75-114` (`advanceBashoDay` — increments `day` uncapped)
-- **Severity:** Low (cosmetic overshoot; basho-end is intentionally interactive)
+- **Files:** `src/engine/tick/tickDaily.ts` (`advanceOneDay` pre-check,
+  `advanceDaysFast` loop break, `daysUntilPhaseTransition`),
+  `src/engine/loop/shouldHaltAdvance.ts`,
+  `src/engine/world.ts` (`advanceBashoDay` — increments `day` uncapped)
+- **Severity:** Medium (calendar/bout-day desync + cosmetic overshoot;
+  basho-end is intentionally interactive)
 - **Observed:** `TICK_MULTIPLE_DAYS` during `active_basho` advanced the world to
-  `currentBasho.day = 33` in a live e2e run. `daysUntilPhaseTransition` models
-  interim/post-basho counters but not the basho day-15 boundary, so
-  `advanceDaysFast` can batch past senshuraku; `advanceBashoDay` then keeps
-  incrementing `day` (schedule creation is correctly gated at `nextDay <= 15`).
-- **Context:** Basho termination is deliberately interactive — `endBasho` is only
-  invoked from `bashoSlice` (the player's "End Basho" button) and
-  `AutoSimService`; the tick pipeline does not auto-conclude tournaments. The
-  overshoot is therefore benign but untidy: `day > 15` worlds display "Day 33/15".
-- **Disposition:** DOCUMENTED — design quirk, not introduced by v7. A correct fix
-  would add a `daysUntilPhaseTransition` term for `16 - currentBasho.day` so the
-  last basho day runs through the full pipeline and halts cleanly for the
-  End Basho affordance. Left for a future round to avoid changing sim behavior
-  in this consolidation.
+  `currentBasho.day = 33` in a live e2e run. `daysUntilPhaseTransition` modeled
+  interim/post-basho counters but neither the basho day boundary nor the actual
+  per-phase transition thresholds, so `advanceDaysFast` could batch past
+  senshuraku; `advanceBashoDay` then kept incrementing `day`.
+- **Root causes fixed:**
+  1. `shouldHaltAdvance` now returns true when `active_basho && day > 15` —
+     the worker's multi-day loop and `advanceWithGates` stop and hand control
+     to the player's "End Basho" action.
+  2. `advanceOneDay` returns the world unchanged at basho day > 15
+     (pre-preflight check; the day is not consumed). Sequential and batched
+     advances now agree at the boundary.
+  3. `advanceDaysFast` breaks unconditionally past senshuraku for
+     non-autonomous worlds (autonomous/headless runs keep prior semantics).
+  4. `daysUntilPhaseTransition` returns 1 during `active_basho` (each basho
+     day needs `phase01_basho_bouts`) and now computes the true
+     counter-minus-threshold distance for interim (≤14), banzuke_reveal (≤7),
+     pre_basho (≤0) and post_basho (≤0) transitions — previously batch mode
+     could overshoot any of these boundaries relative to sequential ticks.
+- **Tests:** `halt.test.ts` (+4 cases), `advanceDaysFast.test.ts` (+2: no
+  overshoot past 16, per-day pipeline during basho); equivalence tests in
+  `advanceCalendarDays.test.ts` confirm batch ≡ sequential at the boundary.
+- **Status:** FIXED.
 
 ### V7-B15: golden-path e2e could not drive the real game loop
 - **File:** `e2e/golden-path.e2e.test.ts`

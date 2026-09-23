@@ -44,6 +44,9 @@ describe("P3.6: advanceWithGates", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
+      // Keep the world out of the next basho — the advance would otherwise
+      // legitimately halt at senshuraku for the interactive End Basho gate.
+      _interimDaysRemaining: 60,
       calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 

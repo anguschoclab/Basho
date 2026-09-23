@@ -13,6 +13,15 @@ import type { WorldState } from "../types/world";
  */
 export function shouldHaltAdvance(world: WorldState): boolean {
   if (world.pendingCrisis) return true;
+
+  // Basho termination is interactive — "End Basho" in the UI calls `endBasho`
+  // and no pipeline phase transitions out of `active_basho`. A multi-day
+  // advance must stop at senshuraku instead of incrementing the day counter
+  // into post-tournament limbo (observed live: day 33/15).
+  if (world.cyclePhase === "active_basho" && (world.currentBasho?.day ?? 0) > 15) {
+    return true;
+  }
+
   const decisions = world.pendingDecisions ?? [];
   return decisions.some((d) => d.required);
 }

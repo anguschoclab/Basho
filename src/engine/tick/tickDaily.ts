@@ -22,7 +22,12 @@ import {
   POST_BASHO_DAYS,
   INTERIM_DAYS,
 } from "../../constants/engine/npcStrategy";
-import { DAYS_IN_MONTH, DEFAULT_MAX_DAY, MAX_MONTH } from "../../constants/engine/calendarExtended";
+import {
+  DAYS_IN_MONTH,
+  DEFAULT_MAX_DAY,
+  MAX_MONTH,
+  INTERIM_WARNING_THRESHOLD,
+} from "../../constants/engine/calendarExtended";
 import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import { warn } from "../utils/Logger";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
@@ -100,6 +105,20 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   if (opts?.autonomous && !world._autonomousSim) {
     world = { ...world, _autonomousSim: true };
   }
+
+  // V7-B14: Tournament end is a hard lifecycle boundary — basho termination
+  // happens through the interactive "End Basho" action, not the pipeline.
+  // Return the world unchanged so a tick past senshuraku consumes no day.
+  // (This runs before preflight, unlike the pending-decision halt below,
+  // because no promotion step is needed and the day must not be consumed.)
+  if (
+    !world._autonomousSim &&
+    world.cyclePhase === "active_basho" &&
+    (world.currentBasho?.day ?? 0) > 15
+  ) {
+    return world;
+  }
+
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
 
@@ -336,6 +355,17 @@ export function advanceDaysFast(
     daysRemaining--;
     opts?.onProgress?.(daysAdvanced, currentWorld);
 
+    // Tournament end is a hard boundary for interactive worlds — basho
+    // termination happens through the "End Basho" UI action, not the tick
+    // pipeline, so never spin past senshuraku. Autonomous runs (headless
+    // playthroughs, tuning sims) keep their existing semantics.
+    if (
+      !currentWorld._autonomousSim &&
+      currentWorld.cyclePhase === "active_basho" &&
+      (currentWorld.currentBasho?.day ?? 0) > 15
+    )
+      break;
+
     if (opts?.haltOnPendingDecision && shouldHaltAdvance(currentWorld)) break;
   }
 
@@ -437,14 +467,35 @@ function daysUntilYearBoundary(world: WorldState): number {
  * Returns a large number if no transition is possible within the advance window.
  */
 function daysUntilPhaseTransition(world: WorldState): number {
+  // Every tournament day is a pipeline boundary — `phase01_basho_bouts`
+  // resolves that day's bouts and advances `currentBasho.day`. Batching past
+  // a basho day desyncs the calendar from the bout schedule and can overrun
+  // senshuraku before the interactive "End Basho" gate engages.
+  if (world.cyclePhase === "active_basho") return 1;
+
   let minDays = MAX_DAYS_ADVANCE;
 
+  // Transition thresholds per phase00_preflight.checkPhaseTransition:
+  //   interim        → banzuke_reveal at _interimDaysRemaining <= 14
+  //   banzuke_reveal → pre_basho      at _interimDaysRemaining <= 7
+  //   pre_basho      → active_basho   at _interimDaysRemaining <= 0
+  //   post_basho     → interim        at _postBashoDays <= 0
+  // The transition check reads the pre-decrement counter, so the boundary
+  // tick is (counter - threshold + 1) days out.
   const interim = world._interimDaysRemaining;
   if (interim != null) {
-    if (interim > 0) {
-      minDays = Math.min(minDays, interim);
-    }
-  } else if (world.cyclePhase === "interim" || world.cyclePhase === "banzuke_reveal") {
+    const threshold =
+      world.cyclePhase === "interim"
+        ? INTERIM_WARNING_THRESHOLD
+        : world.cyclePhase === "banzuke_reveal"
+          ? 7
+          : 0;
+    minDays = Math.min(minDays, Math.max(1, interim - threshold + 1));
+  } else if (
+    world.cyclePhase === "interim" ||
+    world.cyclePhase === "banzuke_reveal" ||
+    world.cyclePhase === "pre_basho"
+  ) {
     // When _interimDaysRemaining is null/undefined, preflight uses (val ?? 0)
     // which triggers transitions immediately. Must run full pipeline on day 1.
     minDays = 1;
@@ -452,9 +503,7 @@ function daysUntilPhaseTransition(world: WorldState): number {
 
   const postBasho = world._postBashoDays;
   if (postBasho != null) {
-    if (postBasho > 0) {
-      minDays = Math.min(minDays, postBasho);
-    }
+    minDays = Math.min(minDays, Math.max(1, postBasho + 1));
   } else if (world.cyclePhase === "post_basho") {
     minDays = 1;
   }

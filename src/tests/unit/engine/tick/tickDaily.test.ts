@@ -145,7 +145,12 @@ describe("tickDaily", () => {
     });
 
     it("clamps days to at most 365", () => {
-      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      const world = makeMockWorld({
+        dayIndexGlobal: 0,
+        // Keep the world out of the next basho — a 365-day advance would
+        // otherwise legitimately halt at senshuraku (V7-B14).
+        _interimDaysRemaining: 400,
+      });
       const nextWorld = advanceDays(world, 400);
       expect(nextWorld.dayIndexGlobal).toBe(365);
     });
@@ -165,7 +170,12 @@ describe("tickDaily", () => {
     });
 
     it("clamps days to at most 365", () => {
-      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      const world = makeMockWorld({
+        dayIndexGlobal: 0,
+        // Keep the world out of the next basho — a 365-day advance would
+        // otherwise legitimately halt at senshuraku (V7-B14).
+        _interimDaysRemaining: 400,
+      });
       const nextWorld = advanceDaysFast(world, 400);
       expect(nextWorld.dayIndexGlobal).toBe(365);
     });
