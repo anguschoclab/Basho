@@ -658,12 +658,11 @@ export function generateBoutNarrative(
   const eastH2h = east.h2h[west.id];
   if (eastH2h && Math.abs(eastH2h.streak) >= H2H_STREAK_THRESHOLD) {
     const isEastStreak = eastH2h.streak > 0;
-    const streakRikishi = isEastStreak ? east : west;
-    const streakOpponent = isEastStreak ? west : east;
+    const path = isEastStreak ? "pre_bout.h2h_winning_streak" : "pre_bout.h2h_losing_streak";
     push(
-      BardEngine.resolve(preBoutRng, "pre_bout.h2h_streak", {
-        P1: streakRikishi.shikona,
-        P2: streakOpponent.shikona,
+      BardEngine.resolve(preBoutRng, path, {
+        P1: east.shikona,
+        P2: west.shikona,
         STREAK: Math.abs(eastH2h.streak).toString(),
         eastRikishiId: east.id,
         westRikishiId: west.id,

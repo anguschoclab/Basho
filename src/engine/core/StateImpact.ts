@@ -199,6 +199,7 @@ export interface StateImpact {
       | "matchmakingOverride"
       | "playerKnowledge"
       | "boutTactics"
+      | "encouragementLog"
     >
   >;
 

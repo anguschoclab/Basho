@@ -117,10 +117,17 @@
       "From match 5, %SHIKONA% couldn't get his legs moving. Today is a chance to shake the freeze."
     ]
   },
-  "h2h_streak": [
+  "h2h_winning_streak": [
     "%P1% has won the last %STREAK% straight against %P2%. Can the streak continue today?",
     "A %STREAK%-bout winning streak for %P1% over %P2% — history favors one man today.",
-    "%P2% looks to finally break through, having lost %STREAK% in a row to %P1%."
+    "%P1% carries serious momentum into this matchup, having taken the last %STREAK% bouts against %P2%.",
+    "The psychological advantage lies with %P1%, who enters with a %STREAK%-bout win streak over %P2%."
+  ],
+  "h2h_losing_streak": [
+    "%P1% looks to finally break through, having lost %STREAK% in a row to %P2%.",
+    "A difficult history for %P1% against %P2%, carrying a %STREAK%-bout losing streak into the ring.",
+    "Desperation sets in for %P1%, who has fallen to %P2% in their last %STREAK% meetings.",
+    "Can %P1% stop the bleeding? %P2% has won their last %STREAK% encounters."
   ],
   "injury": {
     "generic": [

@@ -76,10 +76,15 @@ function rosterRecommendations(world: WorldState, heyaId: Id): AIRecommendation[
   const heya = getHeya(world, heyaId);
   if (!heya) return [];
   const rikishiIds = [...new Set(heya.rikishiIds ?? [])];
-  const active = rikishiIds.filter((id) => {
+  let active = 0;
+  let injuredCount = 0;
+  for (const id of rikishiIds) {
     const r = getRikishi(world, id);
-    return r && !r.isRetired;
-  }).length;
+    if (r && !r.isRetired) {
+      active++;
+      if (r.injured) injuredCount++;
+    }
+  }
   const recs: AIRecommendation[] = [];
   if (active < ROSTER_LOW_THRESHOLD) {
     recs.push(
@@ -94,10 +99,6 @@ function rosterRecommendations(world: WorldState, heyaId: Id): AIRecommendation[
       )
     );
   }
-  const injuredCount = rikishiIds.filter((id) => {
-    const r = getRikishi(world, id);
-    return r && r.injured;
-  }).length;
   if (injuredCount > active / 3 && active > 0) {
     recs.push(
       rec(

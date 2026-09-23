@@ -125,6 +125,8 @@ export function phase06_narrative(world: WorldState): StateImpact {
             rikishiId: rikishi?.id,
             heya: heya?.name,
             heyaId: world.playerHeyaId,
+            SHIKONA: rikishi?.shikona,
+            HEYA: heya?.name,
           };
           const rng = rngForWorld(
             world,

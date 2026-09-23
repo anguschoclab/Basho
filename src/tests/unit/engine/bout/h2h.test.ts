@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll } from "vitest";
 import { updateH2H, generateH2HCommentary, getH2HReport } from "@/engine/h2h";
+import { BardEngine } from "@/engine/bard/BardEngine";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { MatchResultLog } from "@/engine/types/records";
 import type { BoutResult } from "@/engine/types/basho";
@@ -478,6 +479,10 @@ describe("updateH2H", () => {
 // ---------------------------------------------------------------------------
 
 describe("generateH2HCommentary", () => {
+  beforeAll(async () => {
+    await BardEngine.ensureDomains(["h2h", "pre_bout"]);
+  });
+
   it("returns a non-empty string for first meeting", () => {
     const a = MockFactory.createRikishi({ id: "a", h2h: {} });
     const b = MockFactory.createRikishi({ id: "b", h2h: {} });
@@ -486,6 +491,7 @@ describe("generateH2HCommentary", () => {
 
     expect(typeof text).toBe("string");
     expect(text.length).toBeGreaterThan(0);
+    expect(text).not.toContain("leads the series");
   });
 
   it("returns a non-empty string for established rivalry", () => {
@@ -524,5 +530,86 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b" });
 
     expect(generateH2HCommentary(a, b)).toBe(generateH2HCommentary(a, b));
+  });
+
+  it("handles lopsided domination (P1 > P2)", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 4, losses: 0, streak: 4, lastMatch: null },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toBe("History is heavily on Alpha's side today with a commanding 4-0 record.");
+  });
+
+  it("handles lopsided domination (P2 > P1)", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 0, losses: 4, streak: -4, lastMatch: null },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toBe("Beta has absolutely dominated this matchup, leading the series 4-0.");
+  });
+
+  it("handles deadlock", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 3, losses: 2, streak: 1, lastMatch: null },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toBe("This is as close as it gets—a 3-2 career split between them.");
+  });
+
+  it("falls back to generic text", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 3, losses: 1, streak: 1, lastMatch: null }, // 75% WR is NOT > 75%, diff 2 is NOT <= 1, streak is < 3
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toBe("Alpha leads the series 3 to 1.");
+  });
+
+  it("handles recent match fallback if lastMatch is present", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: {
+          wins: 3,
+          losses: 1,
+          streak: 1,
+          lastMatch: {
+            winnerId: "a",
+            kimarite: "yorikiri",
+            bashoId: "2025-01",
+            day: 14,
+            year: 2025,
+          },
+        },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toBe("Last time they met on Day 14, Alpha won decisively by yorikiri.");
   });
 });

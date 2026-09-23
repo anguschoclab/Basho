@@ -156,9 +156,17 @@ const PLAN_CATALOG: PlanTemplate[] = [
     dynamicConstraints: (ctx) => {
       // Focus the plan on the heya's hottest inter-heya rivalry.
       const pairs = ctx.world.rivalriesState?.heyaRivalryPairs ?? {};
-      const top = Object.values(pairs)
-        .filter((p) => p.heyaAId === ctx.heyaId || p.heyaBId === ctx.heyaId)
-        .sort((a, b) => b.heat - a.heat)[0];
+      // ⚡ Bolt: Single pass manual loop replaces .filter().sort()[0] for performance
+      let top: { heyaAId: string; heyaBId: string; heat: number } | undefined;
+      let maxHeat = -1;
+      for (const p of Object.values(pairs)) {
+        if (p.heyaAId === ctx.heyaId || p.heyaBId === ctx.heyaId) {
+          if (p.heat > maxHeat) {
+            maxHeat = p.heat;
+            top = p;
+          }
+        }
+      }
       const rival = top
         ? top.heyaAId === ctx.heyaId
           ? top.heyaBId
@@ -343,12 +351,16 @@ export function createPlan(ctx: AIContext): AIPlan | undefined {
 
   const statusQuo = PLAN_CATALOG[PLAN_CATALOG.length - 1];
   const chosen = best && best.score > 10 ? best.template : statusQuo;
-  const runnerUpScore = Math.max(
-    0,
-    ...PLAN_CATALOG.filter((p) => p.planId !== chosen.planId).map((p) =>
-      p.score(ctx, perception, league)
-    )
-  );
+  // ⚡ Bolt: Single pass manual loop replaces Math.max(...array.filter().map()) for performance
+  let runnerUpScore = 0;
+  for (const p of PLAN_CATALOG) {
+    if (p.planId !== chosen.planId) {
+      const s = p.score(ctx, perception, league);
+      if (s > runnerUpScore) {
+        runnerUpScore = s;
+      }
+    }
+  }
 
   const reasoning = [
     `Selected ${chosen.planId} (score ${best?.score ?? 0}, runner-up ${runnerUpScore}).`,

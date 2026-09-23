@@ -125,8 +125,15 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
   const bashoName = world.currentBasho?.bashoName ?? "off-season";
   for (const [, heya] of world.heyas) {
     const roster = getHeyaRoster(world, heya.id);
-    const injured = roster.filter((r) => r.injured && !r.isRetired);
-    const active = roster.filter((r) => !r.injured && !r.isRetired);
+    // ⚡ Bolt: Single pass loop over roster replaces two array.filter() passes for performance
+    const injured = [];
+    const active = [];
+    for (const r of roster) {
+      if (!r.isRetired) {
+        if (r.injured) injured.push(r);
+        else active.push(r);
+      }
+    }
     if (injured.length === 0 || active.length === 0) continue;
 
     // Limit to 1 encouragement per injured rikishi per week

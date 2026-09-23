@@ -57,7 +57,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
           </CardContent>
         </Card>
 
-        <Card className="bg-warning/5 border-warning/20" aria-hidden="true">
+        <Card className="bg-warning/5 border-warning/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
               <HardHat className="h-3 w-3 text-warning" /> Under Construction
@@ -71,7 +71,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
           </CardContent>
         </Card>
 
-        <Card className="bg-success/5 border-success/20" aria-hidden="true">
+        <Card className="bg-success/5 border-success/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
               <DollarSign className="h-3 w-3 text-success" /> Maintenance Wall
@@ -130,13 +130,13 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
                 {/* Construction Progress */}
                 {isBuilding && (
                   <div
-                    className="space-y-2 p-3 bg-warning/10 rounded-lg border border-warning/20" aria-hidden="true"
+                    className="space-y-2 p-3 bg-warning/10 rounded-lg border border-warning/20"
                   >
                     <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-warning">
                       <span>Construction Underway</span>
                       <span>ETA: {project.completionYear}</span>
                     </div>
-                    <Progress value={45} className="h-1.5 bg-warning/20" aria-hidden="true" />
+                    <Progress value={45} className="h-1.5 bg-warning/20" />
                   </div>
                 )}
 

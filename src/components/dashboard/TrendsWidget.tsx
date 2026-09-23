@@ -6,6 +6,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "@tanstack/react-router";
 import { formatMetaTrends } from "@/presenters/uiDigest";
+import type { EraTone } from "@/presenters/eraTone";
+import { ERA_TONE_LABELS, ERA_TONE_COLORS } from "@/presenters/eraTone";
 
 export function TrendsWidget() {
   const { state } = useGame();
@@ -23,6 +25,10 @@ export function TrendsWidget() {
   if (!world) return null;
 
   const data = formatMetaTrends(world);
+  const currentTone: EraTone = (world.meta?.tone as EraTone) ?? "classic";
+  const label = ERA_TONE_LABELS[currentTone] ?? currentTone;
+  const color = ERA_TONE_COLORS[currentTone] ?? "hsl(var(--primary))";
+
   if (data.length === 0) {
     return (
       <BaseWidget title="JSA Meta Trends" icon={Globe}>
@@ -40,10 +46,19 @@ export function TrendsWidget() {
     <BaseWidget title="JSA Meta Trends" icon={Globe} headerAction={headerAction}>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-primary/10 border border-primary/20">
-            <TrendingUp className="h-3 w-3 text-primary" />
-            <span className="text-[10px] font-bold text-primary uppercase">
-              Meta Bias: Oshi-Strong
+          <div
+            className="flex items-center gap-1.5 px-2 py-1 rounded"
+            style={{
+              background: `${color}18`,
+              border: `1px solid ${color}35`,
+            }}
+          >
+            <TrendingUp className="h-3 w-3" style={{ color: color }} />
+            <span
+              className="text-[10px] font-bold uppercase"
+              style={{ color: color }}
+            >
+              Meta Bias: {label}
             </span>
           </div>
           <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">

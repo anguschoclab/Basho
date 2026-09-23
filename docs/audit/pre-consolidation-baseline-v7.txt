@@ -1,0 +1,35 @@
+Pre-Consolidation Baseline — v7
+================================
+Date: 2026-09-23
+Baseline commit: fab60af8858927ceef31d5fbeb0695ad989be657 (main, clean tree)
+Environment: Windows, bun 1.4.2, node 26.1.0, git 2.54.0
+
+Gate Results (pre-merge)
+------------------------
+type-check     : PASS (0 errors) — NOTE: `bun run type-check` fails on Windows
+                 (bun cannot exec node_modules/@typescript/native/bin/tsc shebang
+                 script; no .cmd shim). Run via `node node_modules/@typescript/
+                 native/bin/tsc --build --force` — exits 0. -> V7-B07 candidate.
+lint:strict    : PASS (eslint . --max-warnings 0 — 0 errors, 0 warnings)
+engine-reviewer: PASS (0 violations: seeded RNG, no dead calls, correct
+                 signatures, proper BardEngine tokens, no mutable leaks)
+purity-lint    : PASS (0 phase purity violations)
+audit-orphans  : PASS (207 entries — 206 P3 unreferenced exports +
+                 1 P2 unused component: RequireWorld.tsx [retained intentionally])
+build          : PASS (vite/rolldown, 41.9s; chunk-size warnings only)
+bench          : S1=23.4ms p50 / S2=1422.3ms p50 / S3=6275ms p50 /
+                 S4_25yr=103781.8ms p50 (10 runs, 9125 days)
+                 25yr determinism hash: 51f5ebc91144d65a
+                 -> equivalence-pure perf merges must reproduce this hash exactly
+test           : IN PROGRESS (serial suite, fileParallelism: false) —
+                 see appended final counts below
+
+Environment/tooling notes
+-------------------------
+- `bun run test` invokes vitest run --no-cache (correct runner).
+- audit-orphans.ts regenerates tracked .windsurf/audit/baseline-orphans.json +
+  orphan-tracker.csv as a side effect (restored post-run).
+- orphan-audit.test.ts writes __audit_coll_<ts>__ fixture dirs into
+  src/engine/systems/ mid-run (cleaned in finally; leaks only on kill).
+- package-lock.json is present in repo root despite bun being packageManager
+  (v5 deleted a stale one; it has returned — V7 hygiene candidate).

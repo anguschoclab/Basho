@@ -17,6 +17,7 @@ import { KeshoBadge } from "@/components/kesho/KeshoBadge";
 import { RankBadge } from "./RankBadge";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0,
@@ -262,18 +263,12 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
         ))}
 
         {rikishiList.length === 0 && (
-          <div className="col-span-full py-32 text-center bg-muted/20 border-2 border-dashed rounded-lg space-y-4">
-            <div className="h-12 w-12 bg-muted rounded-full mx-auto flex items-center justify-center">
-              <Zap className="h-6 w-6 text-muted-foreground opacity-30" />
-            </div>
-            <div className="space-y-1">
-              <p className="font-display font-black uppercase tracking-tighter text-xl">
-                Dohyo Empty
-              </p>
-              <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                Your stable records show no active rikishi under Association tenure.
-              </p>
-            </div>
+          <div className="col-span-full py-32 bg-muted/20 border-2 border-dashed rounded-lg">
+            <EmptyState
+              icon={Zap}
+              title="Dohyo Empty"
+              description="Your stable records show no active rikishi under Association tenure."
+            />
           </div>
         )}
       </div>

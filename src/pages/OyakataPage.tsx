@@ -273,8 +273,16 @@ export default function OyakataPage() {
                   return (
                     <Card
                       key={o.id}
-                      className={`cursor-pointer transition-colors ${isSelected ? "ring-2 ring-primary" : "hover:bg-muted/50"}`}
+                      className={`cursor-pointer transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background ${isSelected ? "ring-2 ring-primary" : "hover:bg-muted/50"}`}
                       onClick={() => setSelectedOyakata(o)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedOyakata(o);
+                        }
+                      }}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
