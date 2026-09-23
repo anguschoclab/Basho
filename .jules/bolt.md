@@ -1,0 +1,3 @@
+## 2026-09-23 - Redundant Set Allocations for Rikishi IDs
+**Learning:** `heya.rikishiIds` is already inherently a list of unique strings. Applying `[...new Set(heya.rikishiIds)]` or `new Set(heya.rikishiIds).size` repeatedly inside hot-path game loop files (like `StrategicPlanner.ts`, `weekly.ts`, and `ticks.ts`) causes substantial garbage collection pressure and CPU overhead from iterating over, creating, and spreading the Set structures on every tick for every AI evaluation.
+**Action:** Always iterate or evaluate `.length` directly on `heya.rikishiIds` instead of attempting to deduplicate it via `Set`.
