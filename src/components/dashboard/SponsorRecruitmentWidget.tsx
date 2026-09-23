@@ -164,7 +164,7 @@ export function SponsorRecruitmentWidget() {
           {availableSponsors.length === 0 ? (
             <EmptyState icon={Building2} title="No sponsors available for recruitment" compact />
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 pr-3">
               {availableSponsors.map((sponsor) => {
                 const cost = RECRUITMENT_COSTS[sponsor.tier] || 0;
                 const canAfford = heya.funds >= cost;
