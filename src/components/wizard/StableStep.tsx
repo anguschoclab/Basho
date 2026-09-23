@@ -67,7 +67,7 @@ export function StableStep({
                       {heya.name}
                     </div>
                     <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-                      {heya.location || "Tokyo"} • {heya.rikishiIds?.length || 0} Professional
+                      {heya.location || "Tokyo"} • {new Set(heya.rikishiIds ?? []).size} Professional
                       Wrestlers
                     </div>
                   </div>

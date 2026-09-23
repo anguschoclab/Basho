@@ -6,12 +6,12 @@ Sumo Manager Pro ships as both a **web PWA** (`bun run dev`) and a **native desk
 
 ## Prerequisites
 
-| Tool                          | Minimum Version | Notes                                                               |
-| ----------------------------- | --------------- | ------------------------------------------------------------------- |
-| [Bun](https://bun.sh)         | 1.3+            | Package manager and script runner                                   |
-| [Node.js](https://nodejs.org) | 18+             | Required by Electron internals                                      |
+| Tool                          | Minimum Version | Notes                                                                       |
+| ----------------------------- | --------------- | --------------------------------------------------------------------------- |
+| [Bun](https://bun.sh)         | 1.3+            | Package manager and script runner                                           |
+| [Node.js](https://nodejs.org) | 18+             | Required by Electron internals                                              |
 | macOS                         | 13 Ventura+     | For Mac builds and `.icns` icon generation (Electron 44+ requires macOS 13) |
-| Windows                       | 10+             | For Windows builds (or cross-compile from Mac via Wine — see below) |
+| Windows                       | 10+             | For Windows builds (or cross-compile from Mac via Wine — see below)         |
 
 ---
 
@@ -129,6 +129,7 @@ The game simulation engine runs in a Web Worker (`src/engine/worker/engine.worke
 - `nodeIntegration: false` — renderer cannot access Node.js
 - `sandbox: true` — renderer process is sandboxed
 - External links open in the OS browser via `shell.openExternal()`
+- Content-Security-Policy without `'unsafe-inline'` — enforced via HTTP header in dev (`onHeadersReceived`) and injected into `file://` HTML responses in production (`protocol.handle`, header + `<meta>`). Runtime `<style>` injectors are allowed via a per-session nonce (`window.__webpack_nonce__` / `<meta property="csp-nonce">`) and a `sha256` hash for sonner's injected stylesheet.
 
 ---
 

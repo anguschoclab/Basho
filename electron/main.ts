@@ -7,10 +7,12 @@ import {
   Menu,
   Tray,
   nativeImage,
+  net,
+  protocol,
   session,
 } from "electron";
 import path, { join } from "path";
-import { randomBytes } from "crypto";
+import { randomBytes, createHash } from "crypto";
 import { is } from "@electron-toolkit/utils";
 import { promises as fs } from "fs";
 import { validatePath as validatePathImpl } from "../src/utils/validatePath";
@@ -37,6 +39,52 @@ async function initStore() {
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
+
+/**
+ * sonner injects its stylesheet as an inline <style> at module load and has no
+ * nonce support, so the strict style-src policy must whitelist that exact block
+ * by hash. The injected CSS lives in the installed package, so we read it from
+ * node_modules at startup (in packaged builds this resolves inside the asar).
+ * If it can't be read the source is simply omitted — sonner stays styled via
+ * the bundled styles.css import in src/main.tsx.
+ */
+async function sonnerStyleHashes(): Promise<string> {
+  try {
+    const dist = await fs.readFile(
+      join(app.getAppPath(), "node_modules/sonner/dist/index.mjs"),
+      "utf-8"
+    );
+    return [...dist.matchAll(/__insertCSS\("((?:[^"\\]|\\.)*)"\)/g)]
+      .map(
+        (m) =>
+          ` 'sha256-${createHash("sha256")
+            .update(JSON.parse(`"${m[1]}"`))
+            .digest("base64")}'`
+      )
+      .join("");
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Build the Content-Security-Policy for the renderer. The same policy applies
+ * in dev (HTTP response header via onHeadersReceived) and production (injected
+ * into file:// HTML responses via protocol.handle) — the only difference is
+ * that dev needs ws: in connect-src for the Vite HMR websocket.
+ */
+function buildCsp(cspNonce: string, styleHashes: string, dev: boolean): string {
+  return [
+    "default-src 'self'",
+    "script-src 'self'",
+    `style-src 'self' 'nonce-${cspNonce}'${styleHashes} https://fonts.googleapis.com`,
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data:",
+    `connect-src 'self'${dev ? " ws:" : ""}`,
+    "object-src 'none'",
+    "base-uri 'none'",
+  ].join("; ");
+}
 
 async function createWindow(): Promise<void> {
   await initStore();
@@ -582,24 +630,48 @@ app.whenReady().then(async () => {
   });
 
   // Per-session CSP nonce for the style-src directive. Runtime-injected <style>
-  // tags (e.g. react-remove-scroll used by Radix dialogs) stamp this nonce via
-  // window.__webpack_nonce__, which the preload exposes as __CSP_NONCE__. The
-  // env var must be set before BrowserWindow creation so the sandboxed
-  // renderer process inherits it.
+  // tags stamp this nonce: react-remove-scroll (Radix dialogs) reads it via
+  // window.__webpack_nonce__ (the renderer copies it from __CSP_NONCE__), and
+  // the Vite dev server reads it from <meta property="csp-nonce">, which the
+  // preload injects. The env var must be set before BrowserWindow creation so
+  // the sandboxed renderer process inherits it.
   const cspNonce = randomBytes(16).toString("base64");
   process.env.__CSP_NONCE__ = cspNonce;
+  const styleSrcHashes = await sonnerStyleHashes();
+  const isHttpRenderer = is.dev && !!process.env["ELECTRON_RENDERER_URL"];
+  const csp = buildCsp(cspNonce, styleSrcHashes, isHttpRenderer);
 
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        "Content-Security-Policy": [
-          `default-src 'self'; script-src 'self'; style-src 'self' 'nonce-${cspNonce}'; img-src 'self' data:; connect-src 'self' ws:;`,
-        ],
+        "Content-Security-Policy": [csp],
         "X-Content-Type-Options": ["nosniff"],
       },
     });
   });
+
+  // onHeadersReceived never fires for file:// loads, so production documents
+  // would otherwise have no CSP at all. Patch the file protocol handler to
+  // stamp the policy on HTML responses — both as a response header and as a
+  // <meta> tag (the documented mechanism for file:// documents).
+  if (!isHttpRenderer) {
+    protocol.handle("file", async (request) => {
+      const response = await net.fetch(request, { bypassCustomProtocolHandlers: true });
+      if (!new URL(request.url).pathname.endsWith(".html")) return response;
+
+      const headers = new Headers(response.headers);
+      headers.set("Content-Security-Policy", csp);
+      headers.set("X-Content-Type-Options", "nosniff");
+      const meta = `<meta http-equiv="Content-Security-Policy" content="${csp}">`;
+      const html = (await response.text()).replace(/<head(\s[^>]*)?>/, `<head$1>${meta}`);
+      return new Response(html, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+      });
+    });
+  }
 
   try {
     await createWindow();

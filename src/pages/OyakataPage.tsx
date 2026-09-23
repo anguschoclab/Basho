@@ -75,7 +75,7 @@ export default function OyakataPage() {
   const heya = getHeya(world, selectedOyakata.heyaId);
   const mentorshipPairs: Array<{ mentor: Rikishi; mentees: Rikishi[] }> = [];
   if (heya?.rikishiIds) {
-    for (const id of heya.rikishiIds) {
+    for (const id of [...new Set(heya.rikishiIds)]) {
       const r = getRikishi(world, id);
       if (r) {
         const mentees = menteesOf(world, r);

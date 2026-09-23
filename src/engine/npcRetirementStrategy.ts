@@ -54,7 +54,7 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
   },
   action: (ctx) => {
     const builder = createImpactBuilder("ret_force_stagnant");
-    const candidates = (ctx.heya.rikishiIds ?? [])
+    const candidates = [...new Set(ctx.heya.rikishiIds ?? [])]
       .map((id) => getRikishi(ctx.world, id))
       .filter(
         (r): r is Rikishi =>

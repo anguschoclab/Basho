@@ -47,7 +47,7 @@ export function projectStableSummary(world: WorldState, heyaId: string): StableS
 
   return {
     heyaName: heya.name,
-    rosterSize: heya.rikishiIds?.length ?? 0,
+    rosterSize: new Set(heya.rikishiIds ?? []).size,
     sekitoriCount,
     injuredCount,
     activeStaffCount,

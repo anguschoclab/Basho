@@ -57,7 +57,7 @@ export default function TrainingPage() {
 
   const rikishiList = useMemo<Rikishi[]>(() => {
     if (!world || !heya) return [];
-    return (heya.rikishiIds ?? [])
+    return [...new Set(heya.rikishiIds ?? [])]
       .map((id) => getRikishi(world, id))
       .filter((r): r is Rikishi => r !== undefined)
       .sort((a, b) => {

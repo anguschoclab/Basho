@@ -352,7 +352,7 @@ export function promoteIntake(
   builder.addRikishi(newRikishi);
 
   // Add to heya roster
-  const currentRoster = heya.rikishiIds ?? [];
+  const currentRoster = [...new Set(heya.rikishiIds ?? [])];
   builder.updateHeya(heyaId, {
     rikishiIds: [...currentRoster, newRikishiId],
   } as Partial<Heya>);

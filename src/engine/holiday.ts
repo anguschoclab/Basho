@@ -218,7 +218,7 @@ function checkGate(
       return null;
     },
     rosterOverForeignLimit: (world, heya) => {
-      const foreignCount = (heya.rikishiIds ?? []).filter((rid: string) => {
+      const foreignCount = [...new Set(heya.rikishiIds ?? [])].filter((rid: string) => {
         const r = getRikishi(world, rid);
         return r && r.nationality !== "japanese";
       }).length;

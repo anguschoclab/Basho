@@ -254,7 +254,7 @@ export function applyDecisionEffect(
   if (!heya) return;
 
   if (decisionType === "pre_basho_readiness") {
-    for (const id of heya.rikishiIds ?? []) {
+    for (const id of [...new Set(heya.rikishiIds ?? [])]) {
       const r = world.rikishi.get(id);
       if (!r) continue;
       if (optionId === "rest" && ((r.fatigue ?? 0) > 60 || r.injured)) {

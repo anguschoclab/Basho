@@ -34,7 +34,7 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
     const results: Array<SnapshotEntry> = [];
     const map = new Map<string, SnapshotEntry>();
     for (const heya of world.heyas.values()) {
-      if ((heya.rikishiIds?.length ?? 0) === 0) continue;
+      if (new Set(heya.rikishiIds ?? []).size === 0) continue;
       const snap = buildPerceptionSnapshot(world, heya.id);
       const entry = { ...snap, isPlayer: heya.id === playerHeyaId };
       results.push(entry);

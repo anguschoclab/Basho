@@ -108,6 +108,14 @@
 - **Fix:** `headless-playthrough.test.ts` now `await BardEngine.loadDomains()` in `beforeAll`, mirroring app bootstrap.
 - **Status:** FIXED (this branch)
 
+### V5-B15: Systemic duplicate `heya.rikishiIds` double-counting across roster consumers
+- **Files:** `src/engine/queries.ts` (`getHeyaRosterIds`/`getHeyaRoster`), `src/engine/utils/entityAccess.ts` (`getHeyaRikishi`), `src/engine/persistence/SerializationService.ts` (`sanitizeHeya`), `src/engine/systems/economy/TravelAllowanceService.ts`, `src/engine/systems/economy/FinanceCalculator.ts`, `src/engine/systems/economy/sponsorshipQueries.ts`, `src/presenters/projections/eventProjections.ts`, `src/engine/advisor/AdvisorService.ts`, `src/engine/selectors.ts`, `src/presenters/selectors.ts`, plus ~20 lower-severity NPC AI/overflow/projection/holiday consumers.
+- **Severity:** High — duplicate IDs in `heya.rikishiIds` inflated salaries, overhead, subsidies, allowances, prestige, recruitment-balance multipliers, roster-size checks, and UI-reported counts across the engine. The same malformed data produced asymmetric (wrong) accounting in every consumer that trusted the array's uniqueness.
+- **Root Cause:** `heya.rikishiIds: Id[]` had no uniqueness invariant. Saves bypassed the only deduping mutation path (`ImpactResolver`), and `sanitizeHeya` only normalized `funds` — not roster uniqueness. Commit `fb3beee4` (2026-08-08) added a point-fix in `salaries.ts` (`[...new Set(heya.rikishiIds ?? [])]`) masking the symptom at one of ~30+ consumption sites, but the remaining consumers and the canonical roster query helpers still trusted duplicate IDs.
+- **Fix:** (1) Dedupe at the two roster-query chokepoints — `getHeyaRosterIds` and `getHeyaRikishi` — protecting all 71+ callers of `getHeyaRoster` and every caller of `getHeyaRikishi`. (2) Enforce uniqueness on load via `sanitizeHeya`. (3) Dedupe the 6 money-critical direct-iteration sites (travel allowance, JSA subsidy, prestige, press-conference wins/losses, advisor roster counts, merger candidates). (4) Dedupe all lower-severity `.length`/iteration consumers in NPC AI, overflow, recruitment, holiday, banzuke, projections, and UI hooks. Prior commit `fb3beee4` is now correctly understood as a partial mitigation, not the complete fix.
+- **Verification:** 12 new regression tests across 10 test files (queries, competitiveBalance, entityAccess, travelAllowance, FinanceCalculator, koenkaiPrestige, eventProjections, AdvisorService, selectors, SerializationService) — all confirmed RED before source changes, all GREEN after. Full suite passes with no regressions.
+- **Status:** FIXED (this branch)
+
 ## PR-Level Findings (rolled into verdict table)
 
 | PR | Finding | Disposition |

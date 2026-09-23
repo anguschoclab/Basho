@@ -18,12 +18,23 @@ const mockApp = {
   on: vi.fn(),
   whenReady: vi.fn().mockResolvedValue(undefined),
   getPath: vi.fn().mockReturnValue("/tmp"),
+  getAppPath: vi.fn().mockReturnValue(process.cwd()),
   getName: vi.fn().mockReturnValue("test-app"),
   getVersion: vi.fn().mockReturnValue("0.0.0"),
   quit: vi.fn(),
 };
 
 const onHeadersReceived = vi.fn();
+// The file:// protocol handler is registered once during module init, but
+// beforeEach's clearAllMocks wipes mock.calls — capture the handler through
+// the mock implementation instead, which survives clearing.
+let fileProtocolHandler: ((req: { url: string }) => Promise<Response>) | undefined;
+const protocolHandle = vi
+  .fn()
+  .mockImplementation((scheme: string, handler: (req: { url: string }) => Promise<Response>) => {
+    if (scheme === "file") fileProtocolHandler = handler;
+  });
+const netFetch = vi.fn();
 
 const mockWindow = {
   on: vi.fn(),
@@ -58,6 +69,8 @@ vi.mock("electron", () => ({
     },
   },
   shell: { openExternal: vi.fn().mockResolvedValue(undefined) },
+  net: { fetch: netFetch },
+  protocol: { handle: protocolHandle },
   ipcMain: {
     handle: vi.fn(),
     on: vi.fn(),
@@ -274,7 +287,42 @@ describe("Content-Security-Policy", () => {
     expect(csp).toContain("style-src 'self' 'nonce-");
     // The nonce embedded in the CSP must match what the preload will expose.
     expect(csp).toContain(`'nonce-${process.env.__CSP_NONCE__}'`);
+    // sonner injects a fixed stylesheet via <style> at module load; the CSP must
+    // whitelist that block by hash so toast styling survives strict style-src.
+    expect(csp).toMatch(/'sha256-[A-Za-z0-9+/=]+'/);
 
     delete process.env.__CSP_NONCE__;
+  });
+
+  it("stamps the CSP on file:// HTML responses (production path)", async () => {
+    netFetch.mockResolvedValue(
+      new Response("<html><head></head><body></body></html>", {
+        headers: { "Content-Type": "text/html" },
+      })
+    );
+    await import("../../../../electron/main");
+    await vi.waitFor(() => expect(fileProtocolHandler).toBeDefined());
+
+    const response = await fileProtocolHandler!({ url: "file:///app/renderer/index.html" });
+
+    const cspHeader = response.headers.get("Content-Security-Policy");
+    expect(cspHeader).not.toBeNull();
+    expect(cspHeader).not.toContain("unsafe-inline");
+    const body = await response.text();
+    expect(body).toContain('http-equiv="Content-Security-Policy"');
+    expect(body).toContain("nonce-");
+  });
+
+  it("file:// handler passes non-HTML responses through untouched", async () => {
+    const assetResponse = new Response("body{}", {
+      headers: { "Content-Type": "text/javascript" },
+    });
+    netFetch.mockResolvedValue(assetResponse);
+    await import("../../../../electron/main");
+    await vi.waitFor(() => expect(fileProtocolHandler).toBeDefined());
+
+    const response = await fileProtocolHandler!({ url: "file:///app/renderer/assets/index.js" });
+    expect(response).toBe(assetResponse);
+    expect(response.headers.get("Content-Security-Policy")).toBeNull();
   });
 });

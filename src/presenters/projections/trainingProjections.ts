@@ -121,7 +121,7 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
   const heya = world.heyas.get(heyaId);
   if (!heya) return { seniors: [], hasSeniors: false };
 
-  const roster = (heya.rikishiIds ?? [])
+  const roster = [...new Set(heya.rikishiIds ?? [])]
     .map((id) => world.rikishi.get(id))
     .filter((r): r is Rikishi => r !== undefined);
 

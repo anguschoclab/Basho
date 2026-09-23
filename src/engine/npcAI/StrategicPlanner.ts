@@ -51,7 +51,7 @@ function kadobanRikishiIds(ctx: AIContext): string[] {
   const heya = getHeya(ctx.world, ctx.heyaId);
   if (!heya) return [];
   const out: string[] = [];
-  for (const id of heya.rikishiIds ?? []) {
+  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
     const r = ctx.world.rikishi.get(id);
     if (r?.rank === "ozeki" && ctx.world.ozekiKadoban?.[id]?.isKadoban) out.push(id);
   }
