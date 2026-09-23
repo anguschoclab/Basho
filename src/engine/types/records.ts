@@ -12,6 +12,13 @@ export interface H2HRecord {
     day: number;
     year: number;
   } | null;
+  /**
+   * Current streak against this opponent.
+   * - Positive integers (> 0): Active winning streak.
+   * - Negative integers (< 0): Active losing streak.
+   * - 0: No active streak (e.g., initial state).
+   * Note: A streak breaks directly from positive to -1 or negative to 1.
+   */
   streak: number;
 }
 
