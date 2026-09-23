@@ -82,7 +82,10 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Root Cause:** `vitest.config.ts` actual thresholds are lines 70 / branches 75 /
   functions 65 / statements 70.
 - **Fix:** Correct CLAUDE.md (folds into Phase 8 metrics update).
-- **Status:** CONFIRMED — fix scheduled
+- **Status:** FIXED — CLAUDE.md now documents the real thresholds
+  (lines 70 / branches 75 / functions 65 / statements 70). Stale gotcha #2
+  (`as any` in `descriptorBands.ts`) also removed — the casts no longer exist
+  after the barrel refactor; only test-fixture casts remain.
 
 ### V7-B07: `bun run type-check` broken on Windows
 - **File:** `package.json:15` (`node_modules/@typescript/native/bin/tsc --build --force`)

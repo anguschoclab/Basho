@@ -138,12 +138,12 @@ Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/fina
 
 ## Known Issues & Gotchas
 1. **`economics.ts`** — `processHeyaFinances()` and `tickWeekEconomics()` are dead (replaced by FinanceCalculator). Don't call them.
-2. **`as any` in `descriptorBands.ts`** — `|| ("Average" as any)` and `|| ("Fresh" as any)` — unjustified, should be typed.
-3. **BardEngine token mismatches** — some archive.json governance templates may use `%HEYA_NAME%` but code passes `heya` context key. Audit before adding new templates.
-4. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
-5. **`FogOfWarService.ts`** imports BardEngine from `"../../narrative/BardEngine"` (not `"../narrative/BardEngine"` — systems/narrative is different from engine/narrative).
-6. **`rivalriesProjections`** — reads `world.rivalriesState.heyaRivalryPairs` (structured `Record<string, RivalryPairState>`). Do NOT confuse with the old flat `world.heyaRivalryPairs` field which was removed.
-7. **`engine/index.ts` barrel removed** — import directly from subsystem files (e.g. `@/engine/systems/recruitment/ScoutingService`).
+2. **BardEngine token mismatches** — some archive.json governance templates may use `%HEYA_NAME%` but code passes `heya` context key. Audit before adding new templates.
+3. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
+4. **`FogOfWarService.ts`** imports BardEngine from `"../../narrative/BardEngine"` (not `"../narrative/BardEngine"` — systems/narrative is different from engine/narrative).
+5. **`rivalriesProjections`** — reads `world.rivalriesState.heyaRivalryPairs` (structured `Record<string, RivalryPairState>`). Do NOT confuse with the old flat `world.heyaRivalryPairs` field which was removed.
+6. **`engine/index.ts` barrel removed** — import directly from subsystem files (e.g. `@/engine/systems/recruitment/ScoutingService`).
+7. **Basho termination is interactive** — the tick pipeline never calls `endBasho`; the player clicks "End Basho" (`bashoSlice`). Multi-day advance halts at `day > 15` (`shouldHaltAdvance`).
 
 ## Refactoring Plan Status
 Plan file: `.claude/plans/encapsulated-herding-origami.md`
