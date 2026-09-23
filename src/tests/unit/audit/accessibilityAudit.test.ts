@@ -42,13 +42,19 @@ describe("L4.6: accessibility & UX debt", () => {
       const content = readFileSync(file, "utf-8");
       const lines = content.split("\n");
       lines.forEach((line, i) => {
-        if (
-          /className=.*bg-(red|green|yellow|blue|destructive|success|warning)/.test(line) &&
-          !line.includes("text-") &&
-          !line.includes("aria-label") &&
-          !line.includes("aria-hidden") &&
-          !line.includes("children")
-        ) {
+        if (!/className=.*bg-(red|green|yellow|blue|destructive|success|warning)/.test(line)) {
+          return;
+        }
+        // Multi-line JSX: the className-bearing line is often just the opening
+        // tag of a container whose text/aria children live on following lines.
+        // Scan the element's block (this line through ~8 following lines) for
+        // evidence the element is not a color-only indicator: a text color
+        // class, an aria attribute, or literal/expression children.
+        const block = lines.slice(i, i + 8).join("\n");
+        const hasEvidence =
+          /text-|aria-label|aria-hidden|children|role=/.test(block) ||
+          />\s*[A-Za-z{][^<]*</.test(block);
+        if (!hasEvidence) {
           violations.push(`${file}:${i + 1}: ${line.trim()}`);
         }
       });

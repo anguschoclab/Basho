@@ -136,7 +136,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
                       <span>Construction Underway</span>
                       <span>ETA: {project.completionYear}</span>
                     </div>
-                    <Progress value={45} className="h-1.5 bg-warning/20" />
+                    <Progress value={45} className="h-1.5 bg-warning/20" aria-label="Construction progress" />
                   </div>
                 )}
 

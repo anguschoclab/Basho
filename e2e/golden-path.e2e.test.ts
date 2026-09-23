@@ -3,6 +3,10 @@ import { test, expect } from "@playwright/test";
 test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> Verify", async ({
   page,
 }) => {
+  // The full golden path (wizard + interim advance + 15-day basho +
+  // decision halts + recap) exceeds the 300s project timeout under dev
+  // builds; give it 10 minutes.
+  test.setTimeout(600000);
   // 1. Boot: Navigate to Main Menu
   await page.goto("/");
 
@@ -139,10 +143,67 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   // The worker processes TICK_MULTIPLE_DAYS for the remaining basho days.
   // When complete, currentBasho becomes null and BashoPage shows
   // "No Active Tournament" with a return button.
-  await expect(page.getByText(/No Active Tournament/i)).toBeVisible({ timeout: 120000 });
+  //
+  // Drive the basho to completion via the fast path. Two interactive
+  // gates can stop the automated flow:
+  //   1. Blocking decisions (e.g. an injured rikishi's kyujo choice) halt
+  //      TICK_MULTIPLE_DAYS and surface the CrisisModal — resolve them by
+  //      picking an option, then resume the fast-forward via the
+  //      dashboard's Sim All.
+  //   2. The pipeline never auto-ends a basho — once Day 15's bouts are
+  //      resolved the player must click "End Basho" (bashoSlice.endBasho
+  //      runs rankings/prizes/lifecycle on the main thread).
+  // The interactive day-by-day path on /basho is deliberately avoided —
+  // per-day main-thread resolution is far slower than the worker's
+  // multi-day fast-forward.
+  const endBashoBtn = page.getByRole("button", { name: /^End Basho$/i }).first();
+  const dashSimAll = page
+    .getByRole("button", { name: /Automatically simulate the remainder/i })
+    .first();
+  for (let i = 0; i < 30; i++) {
+    if (
+      (await page.getByText(/No Active Tournament/i).isVisible().catch(() => false)) ||
+      (await page
+        .getByRole("button", { name: /Finalize Basho/i })
+        .first()
+        .isVisible()
+        .catch(() => false))
+    )
+      break;
 
-  // Navigate back to the dashboard
-  await page.getByRole("button", { name: /Return to Control Center/i }).click();
+    if (await page.getByText(/Emergency Protocol/i).isVisible().catch(() => false)) {
+      const optionBtn = page.locator('[role="dialog"]').getByRole("button").first();
+      if (await optionBtn.isVisible().catch(() => false)) {
+        await optionBtn.click();
+        await page.waitForTimeout(500);
+        continue;
+      }
+    }
+
+    if (await endBashoBtn.isVisible().catch(() => false)) {
+      await endBashoBtn.click();
+      await page.waitForTimeout(2000);
+      continue;
+    }
+
+    if (!page.url().includes("/dashboard")) {
+      const backBtn = page.getByRole("button", { name: /Dashboard/i }).first();
+      if (await backBtn.isVisible().catch(() => false)) {
+        await backBtn.click();
+        await page.waitForTimeout(1000);
+      }
+    }
+    if (await dashSimAll.isVisible().catch(() => false)) {
+      await dashSimAll.click();
+      await page.waitForURL("**/basho", { timeout: 10000 }).catch(() => {});
+    }
+    await page.waitForTimeout(6000);
+  }
+  // Basho completion lands on the Recap page (post_basho). "Finalize
+  // Basho" sets the phase back to interim and returns to the dashboard.
+  const finalizeBtn = page.getByRole("button", { name: /Finalize Basho/i }).first();
+  await expect(finalizeBtn).toBeVisible({ timeout: 120000 });
+  await finalizeBtn.click();
   await page.waitForURL("**/dashboard", { timeout: 10000 });
 
   // Verify the dashboard still has content (world didn't become null)

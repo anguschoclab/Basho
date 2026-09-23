@@ -52,7 +52,13 @@ describe("L4.7: Tailwind/className anti-patterns", () => {
       const content = readFileSync(file, "utf-8");
       const lines = content.split("\n");
       lines.forEach((line, i) => {
-        if (/style=\{\{[^}]*color:/.test(line) || /style=\{\{[^}]*backgroundColor:/.test(line)) {
+        // Only flag static literal colors — a dynamic expression
+        // (variable, function call, template literal) cannot be a Tailwind
+        // class by definition, so it is not an anti-pattern.
+        if (
+          /style=\{\{[^}]*color:\s*["'`]/.test(line) ||
+          /style=\{\{[^}]*backgroundColor:\s*["'`]/.test(line)
+        ) {
           violations.push(`${file}:${i + 1}: ${line.trim()}`);
         }
       });

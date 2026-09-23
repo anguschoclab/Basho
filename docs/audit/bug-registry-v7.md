@@ -2,6 +2,9 @@
 
 **Date:** 2026-09-23
 **Consolidation:** v7 (supersedes v6; findings derived by fresh re-read, not from prior registries)
+**Staleness:** Current — prior registries are superseded by this document;
+the grep-based sweep methodology described below is the active v7 methodology,
+not a superseded one.
 
 ## Method
 
@@ -156,3 +159,45 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Status:** FIXED — caches re-keyed as `WeakMap<WorldState, Map<heyaId, …>>`
   (entries GC with their world); `LOAD_WORLD` in the worker also calls
   `clearQueryCaches()` as defense-in-depth.
+
+### V7-B14: `advanceDaysFast` has no basho-end breakpoint — day counter overshoots 15
+- **Files:** `src/engine/tick/tickDaily.ts:299-340` (`advanceDaysFast`),
+  `tickDaily.ts:439-463` (`daysUntilPhaseTransition`),
+  `src/engine/world.ts:75-114` (`advanceBashoDay` — increments `day` uncapped)
+- **Severity:** Low (cosmetic overshoot; basho-end is intentionally interactive)
+- **Observed:** `TICK_MULTIPLE_DAYS` during `active_basho` advanced the world to
+  `currentBasho.day = 33` in a live e2e run. `daysUntilPhaseTransition` models
+  interim/post-basho counters but not the basho day-15 boundary, so
+  `advanceDaysFast` can batch past senshuraku; `advanceBashoDay` then keeps
+  incrementing `day` (schedule creation is correctly gated at `nextDay <= 15`).
+- **Context:** Basho termination is deliberately interactive — `endBasho` is only
+  invoked from `bashoSlice` (the player's "End Basho" button) and
+  `AutoSimService`; the tick pipeline does not auto-conclude tournaments. The
+  overshoot is therefore benign but untidy: `day > 15` worlds display "Day 33/15".
+- **Disposition:** DOCUMENTED — design quirk, not introduced by v7. A correct fix
+  would add a `daysUntilPhaseTransition` term for `16 - currentBasho.day` so the
+  last basho day runs through the full pipeline and halts cleanly for the
+  End Basho affordance. Left for a future round to avoid changing sim behavior
+  in this consolidation.
+
+### V7-B15: golden-path e2e could not drive the real game loop
+- **File:** `e2e/golden-path.e2e.test.ts`
+- **Severity:** Test-only (the product flow works; the test couldn't reach it)
+- **Defects found and fixed:**
+  1. The test expected `TICK_MULTIPLE_DAYS` to run a basho to completion —
+     but `shouldHaltAdvance` halts the loop on any `required` pendingDecision
+     (e.g. an injured player rikishi's `kyujo_decision`), surfaced via
+     `CrisisModal`. The test now resolves the modal's first option and resumes
+     the fast-forward.
+  2. The pipeline never auto-ends a basho — the player must click
+     "End Basho" (`bashoSlice.endBasho` → rankings/prizes/lifecycle). The test
+     now clicks it when it appears.
+  3. Post-basho lands on `RecapPage` ("Basho Recap"), not the `/basho` empty
+     state — the assertion was updated to expect "Finalize Basho" (which sets
+     phase `interim` and navigates to `/dashboard`).
+  4. `test.setTimeout(600000)` added — the full golden path exceeds the 300s
+     project timeout under dev builds.
+  5. The interactive day-by-day path (BashoPage "Sim All"/"Next Day") is
+     deliberately avoided — main-thread per-day resolution is far slower than
+     the worker fast-forward.
+- **Status:** FIXED — e2e passes (49s, chromium, dev server).

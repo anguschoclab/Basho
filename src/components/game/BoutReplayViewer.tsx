@@ -78,6 +78,7 @@ export function BoutReplayViewer({
             <span className="text-muted-foreground text-xs">{westRikishi.rankLabel}</span>
             <span className="font-semibold">{westRikishi.shikona}</span>
             <span
+              aria-hidden="true"
               className="inline-block w-2.5 h-2.5 rounded-full bg-destructive"
             />
           </div>

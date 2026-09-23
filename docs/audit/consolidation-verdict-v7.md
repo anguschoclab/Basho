@@ -3,7 +3,7 @@
 **Date:** 2026-09-23
 **Baseline:** `fab60af8858927ceef31d5fbeb0695ad989be657`
 **Scope:** Fresh repository-wide re-read + adjudication of all 35 open PRs (#961–#995)
-**Companion artifacts:** `bug-registry-v7.md` (B01–B13), `v7-pr-inventory.json`,
+**Companion artifacts:** `bug-registry-v7.md` (B01–B15), `v7-pr-inventory.json`,
 `pre-consolidation-baseline-v7.txt`
 
 ---
