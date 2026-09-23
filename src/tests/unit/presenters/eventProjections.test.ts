@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { projectBashoResults } from "@/presenters/projections/eventProjections";
-import { makeMockWorld, mockRikishi } from "../engine/utils";
+import { projectBashoResults, projectPressConferenceData } from "@/presenters/projections/eventProjections";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "../engine/utils";
 import type { BashoResult, MatchSchedule, BoutResult } from "@/engine/types/basho";
 
 vi.mock("@/presenters/rikishi", () => ({
@@ -285,5 +285,27 @@ describe("projectBashoResults", () => {
     const result = projectBashoResults(world, basho);
 
     expect(result.isPlayerChampion).toBe(true);
+  });
+});
+
+describe("projectPressConferenceData — duplicate rikishiIds (target behavior: deduped)", () => {
+  it("does not double-count wins/losses when player heya has duplicate rikishiIds", () => {
+    const r1 = mockRikishi("r1", {
+      heyaId: "h1",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const heya = makeMockHeya("h1", { rikishiIds: ["r1", "r1"] });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      heyas: new Map([["h1", heya]]),
+      playerHeyaId: "h1",
+    });
+
+    const result = projectPressConferenceData(world);
+    expect(result).not.toBeNull();
+    // Deduped: 5 wins, 3 losses (not 10/6).
+    expect(result!.rosterStats.totalWins).toBe(5);
+    expect(result!.rosterStats.totalLosses).toBe(3);
   });
 });

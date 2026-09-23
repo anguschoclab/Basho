@@ -18,21 +18,69 @@ const mockApp = {
   on: vi.fn(),
   whenReady: vi.fn().mockResolvedValue(undefined),
   getPath: vi.fn().mockReturnValue("/tmp"),
+  getName: vi.fn().mockReturnValue("test-app"),
+  getVersion: vi.fn().mockReturnValue("0.0.0"),
+  quit: vi.fn(),
 };
+
+const onHeadersReceived = vi.fn();
+
+const mockWindow = {
+  on: vi.fn(),
+  setPosition: vi.fn(),
+  setSize: vi.fn(),
+  loadFile: vi.fn(),
+  loadURL: vi.fn(),
+  getBounds: vi.fn().mockReturnValue({ x: 0, y: 0, width: 1280, height: 800 }),
+  show: vi.fn(),
+  hide: vi.fn(),
+  focus: vi.fn(),
+  isVisible: vi.fn().mockReturnValue(true),
+  isFullScreen: vi.fn().mockReturnValue(false),
+  webContents: { send: vi.fn() },
+};
+
+const MockBrowserWindow = vi.fn().mockImplementation(function () {
+  return mockWindow;
+}) as unknown as {
+  new (): typeof mockWindow;
+  getAllWindows: () => unknown[];
+};
+MockBrowserWindow.getAllWindows = vi.fn().mockReturnValue([]);
 
 vi.mock("electron", () => ({
   app: mockApp,
-  BrowserWindow: vi.fn(),
-  session: { defaultSession: { setPermissionRequestHandler: vi.fn() } },
+  BrowserWindow: MockBrowserWindow,
+  session: {
+    defaultSession: {
+      setPermissionRequestHandler: vi.fn(),
+      webRequest: { onHeadersReceived },
+    },
+  },
   shell: { openExternal: vi.fn().mockResolvedValue(undefined) },
   ipcMain: {
     handle: vi.fn(),
     on: vi.fn(),
   },
-  dialog: { showMessageBox: vi.fn() },
+  dialog: {
+    showMessageBox: vi.fn(),
+    showErrorBox: vi.fn(),
+    showSaveDialog: vi.fn().mockResolvedValue({ canceled: true }),
+    showOpenDialog: vi.fn().mockResolvedValue({ canceled: true, filePaths: [] }),
+  },
   Menu: { buildFromTemplate: vi.fn(), setApplicationMenu: vi.fn() },
-  Tray: vi.fn(),
-  nativeImage: { createFromPath: vi.fn() },
+  Tray: vi.fn().mockImplementation(function () {
+    return {
+      setToolTip: vi.fn(),
+      setContextMenu: vi.fn(),
+      on: vi.fn(),
+      destroy: vi.fn(),
+    };
+  }),
+  nativeImage: {
+    createFromPath: vi.fn().mockReturnValue({ isEmpty: () => true }),
+    createEmpty: vi.fn().mockReturnValue({}),
+  },
 }));
 
 vi.mock("@electron-toolkit/utils", () => ({
@@ -40,13 +88,13 @@ vi.mock("@electron-toolkit/utils", () => ({
 }));
 
 vi.mock("electron-store", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    get: vi.fn(),
-    set: vi.fn(),
-    delete: vi.fn(),
-    clear: vi.fn(),
-    store: {},
-  })),
+  default: class MockStore {
+    get = vi.fn();
+    set = vi.fn();
+    delete = vi.fn();
+    clear = vi.fn();
+    store = {};
+  },
 }));
 
 vi.mock("../../../src/utils/validatePath", () => ({
@@ -200,5 +248,33 @@ describe("Electron main security handlers", () => {
 
     webviewHandler(mockEvent);
     expect(mockEvent.preventDefault).toHaveBeenCalled();
+  });
+});
+
+describe("Content-Security-Policy", () => {
+  it("omits 'unsafe-inline' and uses a nonce for style-src", async () => {
+    onHeadersReceived.mockClear();
+    await import("../../../../electron/main");
+    // The whenReady().then(...) callback registers onHeadersReceived async.
+    await vi.waitFor(() => expect(onHeadersReceived).toHaveBeenCalled());
+
+    const handler = onHeadersReceived.mock.calls[0][0] as (
+      details: { responseHeaders: Record<string, string[]> },
+      callback: (res: { responseHeaders: Record<string, string[]> }) => void
+    ) => void;
+
+    let captured: Record<string, string[]> | undefined;
+    handler({ responseHeaders: {} }, (res) => {
+      captured = res.responseHeaders;
+    });
+
+    const csp = captured?.["Content-Security-Policy"]?.[0];
+    expect(csp).toBeDefined();
+    expect(csp).not.toContain("unsafe-inline");
+    expect(csp).toContain("style-src 'self' 'nonce-");
+    // The nonce embedded in the CSP must match what the preload will expose.
+    expect(csp).toContain(`'nonce-${process.env.__CSP_NONCE__}'`);
+
+    delete process.env.__CSP_NONCE__;
   });
 });

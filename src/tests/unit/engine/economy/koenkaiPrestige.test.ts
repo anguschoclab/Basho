@@ -93,6 +93,17 @@ describe("computeHeyaPrestigeScore", () => {
     const world = makeMockWorld({ heyas: new Map([["h1", heya]]) });
     expect(computeHeyaPrestigeScore(heya, world)).toBe(0);
   });
+
+  it("scores prestige once per rikishi when ID is duplicated", () => {
+    const r = mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" });
+    const heya = makeMockHeya("h1", { rikishiIds: ["r1", "r1"] });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r]]),
+      heyas: new Map([["h1", heya]]),
+    });
+    // yokozuna = 40 points, counted once (not 80).
+    expect(computeHeyaPrestigeScore(heya, world)).toBe(40);
+  });
 });
 
 describe("targetKoenkaiBandFromPrestige", () => {

@@ -70,7 +70,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
 
   // JSA per-wrestler subsidy (primary stable income from JSA) — keyed by rank
   let monthlyJsaSubsidy = 0;
-  for (const rId of heya.rikishiIds ?? []) {
+  for (const rId of [...new Set(heya.rikishiIds ?? [])]) {
     const r = getRikishi(world, rId);
     if (!r) continue;
     const subsidy =

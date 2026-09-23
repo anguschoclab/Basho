@@ -34,7 +34,7 @@ export function projectStableSummary(world: WorldState, heyaId: string): StableS
 
   let sekitoriCount = 0;
   let injuredCount = 0;
-  for (const id of heya.rikishiIds ?? []) {
+  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
     const r = world.rikishi.get(id);
     if (!r) continue;
     if (isSekitoriDivision(r.division)) sekitoriCount++;

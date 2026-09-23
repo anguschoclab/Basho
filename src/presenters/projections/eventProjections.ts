@@ -125,7 +125,7 @@ export function projectPressConferenceData(world: WorldState) {
 
   let totalWins = 0;
   let totalLosses = 0;
-  for (const id of playerHeya.rikishiIds ?? []) {
+  for (const id of [...new Set(playerHeya.rikishiIds ?? [])]) {
     const r = world.rikishi.get(id);
     totalWins += r?.currentBashoWins ?? 0;
     totalLosses += r?.currentBashoLosses ?? 0;

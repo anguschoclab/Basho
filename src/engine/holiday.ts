@@ -136,7 +136,7 @@ function checkGate(
     ) => HolidayGateTriggered | null
   > = {
     topRikishiInjury: (world, heya, _playerHeyaId, _startDay) => {
-      for (const rid of heya.rikishiIds ?? []) {
+      for (const rid of [...new Set(heya.rikishiIds ?? [])]) {
         const r = getRikishi(world, rid);
         if (!r) continue;
         const tier = getRankTier(r.rank);
@@ -194,7 +194,7 @@ function checkGate(
       return null;
     },
     promotionRun: (world, heya) => {
-      for (const rid of heya.rikishiIds ?? []) {
+      for (const rid of [...new Set(heya.rikishiIds ?? [])]) {
         const r = getRikishi(world, rid);
         if (!r) continue;
         if ((r.currentBashoWins ?? 0) >= 12 && getRankTier(r.rank) <= 4) {

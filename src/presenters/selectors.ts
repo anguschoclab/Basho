@@ -192,7 +192,7 @@ export const selectMergerCandidates = createSelector((world: WorldState): Heya[]
 
   for (const h of world.heyas.values()) {
     if (h.id === world.playerHeyaId) continue;
-    const rosterSize = h.rikishiIds?.length ?? 0;
+    const rosterSize = new Set(h.rikishiIds ?? []).size;
     if (h.funds < 0 && rosterSize <= 3) {
       results.push(h);
     }

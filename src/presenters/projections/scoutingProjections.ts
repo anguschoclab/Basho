@@ -32,7 +32,7 @@ export function projectScoutingSummary(world: WorldState): ScoutingSummary {
   let weakCount = 0;
 
   for (const heya of EntityCollection.getHeyas(world)) {
-    if ((heya.rikishiIds?.length ?? 0) === 0) continue;
+    if (new Set(heya.rikishiIds ?? []).size === 0) continue;
     const snap = buildPerceptionSnapshot(world, heya.id);
     snaps.push({
       heyaId: heya.id,

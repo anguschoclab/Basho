@@ -131,7 +131,7 @@ export function distributeKoenkaiToSekitori(world: WorldState): StateImpact {
 
     // Count sekitori in this heya
     let sekitoriCount = 0;
-    for (const rId of heya.rikishiIds ?? []) {
+    for (const rId of [...new Set(heya.rikishiIds ?? [])]) {
       const r = getRikishi(world, rId);
       if (r && !r.isRetired && isSekitoriDivision(r.division)) {
         sekitoriCount++;
@@ -143,7 +143,7 @@ export function distributeKoenkaiToSekitori(world: WorldState): StateImpact {
     // Split evenly among sekitori
     const perSekitori = sekitoriPortion / sekitoriCount;
 
-    for (const rId of heya.rikishiIds || []) {
+    for (const rId of [...new Set(heya.rikishiIds || [])]) {
       const r = getRikishi(world, rId);
       if (!r || r.isRetired) continue;
       if (r.division !== "makuuchi" && r.division !== "juryo") continue;

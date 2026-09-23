@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { getHeyaRoster, clearQueryCaches } from "@/engine/queries";
+import { getHeyaRoster, getHeyaRosterIds, clearQueryCaches } from "@/engine/queries";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -75,5 +75,32 @@ describe("getHeyaRoster", () => {
     expect(fromQueries).toHaveLength(2);
     const fromEntity = EntityCollection.getHeyaRoster(world, "h1");
     expect(fromEntity).toHaveLength(1);
+  });
+});
+
+describe("getHeyaRoster — duplicate rikishiIds (target behavior: deduped)", () => {
+  beforeEach(() => clearQueryCaches());
+
+  it("returns each rikishi once when heya.rikishiIds contains duplicates", () => {
+    const heyas = new Map([["h1", { id: "h1", rikishiIds: ["r1", "r1", "r2"] }]]);
+    const rikishi = new Map([
+      ["r1", { id: "r1", heyaId: "h1", isRetired: false } as unknown as Rikishi],
+      ["r2", { id: "r2", heyaId: "h1", isRetired: false } as unknown as Rikishi],
+    ]);
+    const world = makeWorld(heyas, rikishi);
+    const roster = getHeyaRoster(world, "h1");
+    expect(roster).toHaveLength(2);
+    const ids = roster.map((r) => r.id);
+    expect(ids).toContain("r1");
+    expect(ids).toContain("r2");
+    // No duplicate references
+    expect(roster.filter((r) => r.id === "r1")).toHaveLength(1);
+  });
+
+  it("getHeyaRosterIds dedupes duplicate IDs", () => {
+    const heyas = new Map([["h1", { id: "h1", rikishiIds: ["r1", "r1", "r2", "r2", "r2"] }]]);
+    const world = makeWorld(heyas, new Map());
+    const ids = getHeyaRosterIds(world, "h1");
+    expect(ids).toEqual(["r1", "r2"]);
   });
 });

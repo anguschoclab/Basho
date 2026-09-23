@@ -23,7 +23,7 @@ export function useKenshoData() {
     let projectedSum = 0;
 
     if (heya && heya.rikishiIds) {
-      for (const id of heya.rikishiIds) {
+      for (const id of [...new Set(heya.rikishiIds)]) {
         const rikishi = world?.rikishi.get(id);
         if (rikishi) {
           rikishiArray.push(rikishi);

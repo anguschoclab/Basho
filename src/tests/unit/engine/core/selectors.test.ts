@@ -209,5 +209,18 @@ describe("selectors", () => {
       expect(result).toHaveLength(2);
       expect(result.map((h) => h.id).sort()).toEqual(["h3", "h4"]);
     });
+
+    it("uses deduped roster size when rikishiIds contains duplicates", () => {
+      // A heya in debt with 4 raw IDs but only 2 unique → deduped size 2 ≤ 3 → candidate.
+      // Without dedup: 4 > 3 → NOT a candidate (false negative).
+      const h1 = makeMockHeya("h1", { funds: -500, rikishiIds: ["r1", "r1", "r2", "r2"] });
+      const world = makeMockWorld({
+        heyas: new Map([["h1", h1]]),
+      });
+
+      const result = selectMergerCandidates(world);
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe("h1");
+    });
   });
 });

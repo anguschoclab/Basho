@@ -232,7 +232,7 @@ function maybeAssignNPCMentors(
   builder: ReturnType<typeof createImpactBuilder>
 ): void {
   const members: import("../../types/rikishi").Rikishi[] = [];
-  for (const id of heya.rikishiIds ?? []) {
+  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
     const r = getRikishi(world, id);
     if (r) members.push(r);
   }
@@ -302,7 +302,7 @@ function maybeAssignNPCSparringPairs(
   builder: ReturnType<typeof createImpactBuilder>
 ): void {
   const members: Rikishi[] = [];
-  for (const id of heya.rikishiIds ?? []) {
+  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
     const r = getRikishi(world, id);
     if (r) members.push(r);
   }

@@ -98,7 +98,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     const potentialMentors: string[] = [];
     const juniorsWithoutMentors: Rikishi[] = [];
 
-    for (const id of heya.rikishiIds ?? []) {
+    for (const id of [...new Set(heya.rikishiIds ?? [])]) {
       const r = getRikishi(world, id);
       if (r) {
         if (isSekitoriDivision(r.division) || r.stats.experience > 50) {

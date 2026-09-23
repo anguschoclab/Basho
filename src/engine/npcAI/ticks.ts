@@ -152,7 +152,7 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
 
     // Check for stalled weight journeys due to low funds
     if (heya.funds < WEIGHT_JOURNEY_STALL_THRESHOLD) {
-      for (const rikishiId of heya.rikishiIds ?? []) {
+      for (const rikishiId of [...new Set(heya.rikishiIds ?? [])]) {
         const r = getRikishi(world, rikishiId);
         if (r?.weightJourney?.stalled === true) {
           builder.logEvent(

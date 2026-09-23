@@ -17,7 +17,7 @@ export function phase01_daily_economy(world: WorldState): StateImpact {
 
   // Only process heyas that have rikishi to deduct food costs
   for (const [id, heya] of world.heyas) {
-    const rikishiCount = heya.rikishiIds?.length ?? 0;
+    const rikishiCount = new Set(heya.rikishiIds ?? []).size;
     if (rikishiCount === 0) continue; // Skip heyas with no rikishi
 
     const welfare = WelfareService.ensureHeyaWelfareState(heya);

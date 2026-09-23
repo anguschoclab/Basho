@@ -171,7 +171,7 @@ export function makeNPCWeeklyDecision(
       reasoning: ["[Recruitment Agent] No vacancies - skipping recruitment"],
       confidence: 0,
     };
-    const rosterSize = heya?.rikishiIds?.length || 0;
+    const rosterSize = new Set(heya?.rikishiIds ?? []).size || 0;
     const vacancies = Math.max(0, MAX_ROSTER_SIZE - rosterSize);
     if (vacancies > 0 && world.talentPool) {
       const candidateIds = Object.keys(world.talentPool.candidates);
@@ -345,7 +345,7 @@ function applyPromotionAwareness(
   const pushSet = new Set(decision.individualPushes);
   const developSet = new Set(decision.individualDevelops);
 
-  for (const rikishiId of heya.rikishiIds ?? []) {
+  for (const rikishiId of [...new Set(heya.rikishiIds ?? [])]) {
     const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
@@ -433,7 +433,7 @@ function applyInjuryRiskReduction(
   let highRiskCount = 0;
   const protectIds: Id[] = [];
 
-  for (const rikishiId of heya.rikishiIds ?? []) {
+  for (const rikishiId of [...new Set(heya.rikishiIds ?? [])]) {
     const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
@@ -447,7 +447,7 @@ function applyInjuryRiskReduction(
     }
   }
 
-  const rosterSize = (heya.rikishiIds ?? []).length;
+  const rosterSize = new Set(heya.rikishiIds ?? []).size;
   if (rosterSize > 0 && highRiskCount / rosterSize > HIGH_RISK_RATIO_THRESHOLD) {
     const intensity = decision.trainingIntensity;
     if (intensity === "punishing") {

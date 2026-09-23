@@ -1,0 +1,17 @@
+@keyframes sway {
+  0%,
+  100% {
+    transform: translateX(0px);
+  }
+  25% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+}
+
+.animate-sway {
+  animation: sway 2s ease-in-out infinite;
+  transform-origin: top center;
+}

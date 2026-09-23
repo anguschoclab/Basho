@@ -37,7 +37,7 @@ export function projectHeyaRosterWithAge(
   if (!heya) return [];
 
   const result: Array<{ rikishi: UIRikishi; age: number }> = [];
-  for (const id of heya.rikishiIds ?? []) {
+  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
     const r = world.rikishi.get(id);
     if (!r) continue;
     result.push({

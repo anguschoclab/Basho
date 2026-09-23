@@ -324,3 +324,29 @@ describe("FinanceCalculator — solvency clamping", () => {
     expect(result.expenses).toBe(result.totalBurn);
   });
 });
+
+// ── Duplicate rikishiIds (target behavior: deduped) ────────────────────────
+
+describe("FinanceCalculator — duplicate rikishiIds", () => {
+  it("counts JSA subsidy once per rikishi when ID is duplicated", () => {
+    const r1 = mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" });
+    const heya = makeMockHeya("h1", {
+      funds: 50_000_000,
+      koenkaiBand: "none",
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
+      staffIds: [],
+      rikishiIds: ["r1", "r1"], // same ID listed twice
+    });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      heyas: new Map([["h1", heya]]),
+    });
+    const result = calculateHeyaWeeklyFinances(heya, world);
+
+    // JSA subsidy should be counted once (yokozuna only), not twice.
+    const monthlyJsa = JSA_PER_WRESTLER_SUBSIDY_MONTHLY.yokozuna;
+    const weeklyJsa = monthlyJsa / 4;
+    const otherIncome = JSA_STABLE_WEEKLY_GRANT + OYAKATA_SALARY_MONTHLY / 4;
+    expect(result.revenue).toBeCloseTo(weeklyJsa + otherIncome, 0);
+  });
+});

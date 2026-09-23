@@ -3,6 +3,7 @@ import { SerializationService } from "@/engine/persistence/SerializationService"
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import * as Logger from "@/engine/utils/Logger";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
 
 // Helper: create a minimal valid Rikishi for sanitizeRikishi
 function makeRikishi(overrides: Partial<Rikishi> = {}): Rikishi {
@@ -193,5 +194,35 @@ describe("SerializationService.deserializeWorld — invalid rank integration", (
     // Should not throw when accessing RANK_HIERARCHY
     expect(RANK_HIERARCHY[loadedR!.rank]).toBeDefined();
     expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("SerializationService.sanitizeHeya — duplicate rikishiIds (target behavior: deduped)", () => {
+  it("deduplicates rikishiIds", () => {
+    const heya = {
+      id: "h1",
+      name: "Test Heya",
+      funds: 1_000_000,
+      rikishiIds: ["r1", "r1", "r2", "r2", "r2"],
+    } as unknown as Heya;
+    SerializationService.sanitizeHeya(heya);
+    expect(heya.rikishiIds).toEqual(["r1", "r2"]);
+  });
+
+  it("leaves undefined rikishiIds undefined", () => {
+    const heya = { id: "h1", name: "Test", funds: 0 } as unknown as Heya;
+    SerializationService.sanitizeHeya(heya);
+    expect(heya.rikishiIds).toBeUndefined();
+  });
+
+  it("leaves an already-unique roster unchanged", () => {
+    const heya = {
+      id: "h1",
+      name: "Test",
+      funds: 0,
+      rikishiIds: ["r1", "r2", "r3"],
+    } as unknown as Heya;
+    SerializationService.sanitizeHeya(heya);
+    expect(heya.rikishiIds).toEqual(["r1", "r2", "r3"]);
   });
 });

@@ -63,7 +63,7 @@ const PRESTIGE_CAP = 100;
  */
 export function computeHeyaPrestigeScore(heya: Heya, world: WorldState): number {
   let score = 0;
-  for (const rId of heya.rikishiIds ?? []) {
+  for (const rId of [...new Set(heya.rikishiIds ?? [])]) {
     const r = getRikishi(world, rId);
     if (!r) continue;
     score += PRESTIGE_WEIGHTS[r.rank] || 0;
@@ -173,7 +173,7 @@ export function selectBenefactor(
  */
 export function computeStarPower(heya: Heya, world: WorldState): number {
   let starPower = 0;
-  for (const rId of heya.rikishiIds ?? []) {
+  for (const rId of [...new Set(heya.rikishiIds ?? [])]) {
     const r = getRikishi(world, rId);
     if (!r) continue;
     if (r.rank === "yokozuna") starPower += 30;

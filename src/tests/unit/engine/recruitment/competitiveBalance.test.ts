@@ -93,3 +93,61 @@ describe("recruitmentBalanceMultipliers — batch", () => {
     expect(result.get("tiny")!).toBeLessThanOrEqual(1.8);
   });
 });
+
+describe("recruitmentBalanceMultiplier — duplicate rikishiIds (target behavior: deduped)", () => {
+  beforeEach(() => clearQueryCaches());
+
+  it("counts sekitori once per rikishi when ID is duplicated", () => {
+    // A heya with ["s1", "s1"] has 1 unique sekitori, same as a heya with ["s1"].
+    // Both should get the same multiplier relative to the same league.
+    const heyas = new Map();
+    const rikishi = new Map();
+    const dupR = mockRikishi("dup-s1", {
+      heyaId: "dup",
+      division: "makuuchi",
+      rank: "maegashira",
+    });
+    rikishi.set(dupR.id, dupR);
+    heyas.set("dup", makeMockHeya("dup", { rikishiIds: ["dup-s1", "dup-s1"] }));
+
+    const singleR = mockRikishi("single-s1", {
+      heyaId: "single",
+      division: "makuuchi",
+      rank: "maegashira",
+    });
+    rikishi.set(singleR.id, singleR);
+    heyas.set("single", makeMockHeya("single", { rikishiIds: ["single-s1"] }));
+
+    const world = makeMockWorld({ heyas, rikishi });
+
+    const dupMult = recruitmentBalanceMultiplier(world, "dup");
+    const singleMult = recruitmentBalanceMultiplier(world, "single");
+    // Both have 1 unique sekitori; mean = (1+1)/2 = 1; both are average → ~1.0
+    expect(dupMult).toBeCloseTo(singleMult, 5);
+    expect(dupMult).toBeCloseTo(1, 1);
+  });
+
+  it("does not inflate the league mean with duplicated IDs", () => {
+    // heya "dup" lists 1 sekitori twice; heya "weak" has 0.
+    // If dups were counted, mean would be (2+0)/2 = 1 → dup above mean (handicapped).
+    // Deduped: mean = (1+0)/2 = 0.5 → dup above mean, weak below mean.
+    // The key assertion: dup's sekitori count must be 1, not 2.
+    const heyas = new Map();
+    const rikishi = new Map();
+    const dupR = mockRikishi("dup-s1", {
+      heyaId: "dup",
+      division: "makuuchi",
+      rank: "maegashira",
+    });
+    rikishi.set(dupR.id, dupR);
+    heyas.set("dup", makeMockHeya("dup", { rikishiIds: ["dup-s1", "dup-s1"] }));
+    heyas.set("weak", makeMockHeya("weak", { rikishiIds: [] }));
+
+    const world = makeMockWorld({ heyas, rikishi });
+    const dupMult = recruitmentBalanceMultiplier(world, "dup");
+    const weakMult = recruitmentBalanceMultiplier(world, "weak");
+    // dup has 1 sekitori (deduped), weak has 0. dup > mean → handicapped (< 1).
+    expect(dupMult).toBeLessThan(1);
+    expect(weakMult).toBeGreaterThan(1);
+  });
+});

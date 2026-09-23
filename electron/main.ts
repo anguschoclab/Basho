@@ -10,6 +10,7 @@ import {
   session,
 } from "electron";
 import path, { join } from "path";
+import { randomBytes } from "crypto";
 import { is } from "@electron-toolkit/utils";
 import { promises as fs } from "fs";
 import { validatePath as validatePathImpl } from "../src/utils/validatePath";
@@ -580,12 +581,20 @@ app.whenReady().then(async () => {
     callback(false);
   });
 
+  // Per-session CSP nonce for the style-src directive. Runtime-injected <style>
+  // tags (e.g. react-remove-scroll used by Radix dialogs) stamp this nonce via
+  // window.__webpack_nonce__, which the preload exposes as __CSP_NONCE__. The
+  // env var must be set before BrowserWindow creation so the sandboxed
+  // renderer process inherits it.
+  const cspNonce = randomBytes(16).toString("base64");
+  process.env.__CSP_NONCE__ = cspNonce;
+
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
         "Content-Security-Policy": [
-          "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws:;",
+          `default-src 'self'; script-src 'self'; style-src 'self' 'nonce-${cspNonce}'; img-src 'self' data:; connect-src 'self' ws:;`,
         ],
         "X-Content-Type-Options": ["nosniff"],
       },

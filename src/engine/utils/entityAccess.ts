@@ -70,7 +70,7 @@ export function getHeyaRikishi(world: WorldState, heyaId: Id): Rikishi[] {
   const heya = world.heyas.get(heyaId);
   if (!heya) return [];
 
-  return (heya.rikishiIds || [])
+  return [...new Set(heya.rikishiIds || [])]
     .map((id) => world.rikishi.get(id))
     .filter((r): r is Rikishi => r !== undefined);
 }

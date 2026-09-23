@@ -2,6 +2,8 @@
 
 interface Window {
   __ELECTRON__?: boolean;
+  __CSP_NONCE__?: string;
+  __webpack_nonce__?: string;
   electronCustom?: {
     storage: {
       get: (key: string) => unknown;

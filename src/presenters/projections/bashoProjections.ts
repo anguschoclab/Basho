@@ -28,7 +28,7 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
   const playerHeya = getPlayerHeya(world);
   const playerRikishiIds = new Set<string>();
   if (playerHeya && playerHeya.rikishiIds) {
-    playerHeya.rikishiIds.forEach((id) => playerRikishiIds.add(id));
+    [...new Set(playerHeya.rikishiIds)].forEach((id) => playerRikishiIds.add(id));
   }
 
   const day = basho.day;

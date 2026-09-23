@@ -280,6 +280,23 @@ describe("getHeyaRikishi", () => {
     expect(result[0]).toBe(r1);
     expect(result[1]).toBe(r3);
   });
+
+  it("returns each rikishi once when heya.rikishiIds contains duplicates", () => {
+    const r1 = mockRikishi("r1");
+    const r2 = mockRikishi("r2");
+    const h1 = makeMockHeya("h1", { rikishiIds: ["r1", "r1", "r2", "r2", "r2"] });
+    const world = makeMockWorld({
+      heyas: new Map([["h1", h1]]),
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+    });
+    const result = getHeyaRikishi(world, "h1");
+    expect(result).toHaveLength(2);
+    expect(result.filter((r) => r.id === "r1")).toHaveLength(1);
+    expect(result.filter((r) => r.id === "r2")).toHaveLength(1);
+  });
 });
 
 // ── getActiveRikishi ───────────────────────────────────────────────────────

@@ -40,7 +40,7 @@ const BUY_MYOSEKI_RULE: StrategyRule = {
     if (!ctx.world.myosekiMarket) return false;
     if (!TraitChecks.isAmbitious(AMBITIOUS_TRAIT_THRESHOLD)(ctx.oyakata)) return false;
 
-    const monthlyBurn = (ctx.heya.rikishiIds?.length ?? 0) * MONTHLY_BURN_PER_RIKISHI;
+    const monthlyBurn = new Set(ctx.heya.rikishiIds ?? []).size * MONTHLY_BURN_PER_RIKISHI;
     const runway = ctx.heya.funds / (monthlyBurn || 1);
     const minRunway = TraitChecks.isRiskTaker(RISK_TAKER_TRAIT_THRESHOLD)(ctx.oyakata)
       ? RUNWAY_MONTHS_RISK_TAKER_STRATEGY
@@ -86,7 +86,7 @@ const PRESERVE_FUNDS_FOR_WEIGHT_JOURNEY_RULE: StrategyRule = {
   id: "fin_preserve_weight_journey",
   condition: (ctx) => {
     if (ctx.heya.funds >= WEIGHT_JOURNEY_STALL_THRESHOLD * 2) return false;
-    for (const rikishiId of ctx.heya.rikishiIds ?? []) {
+    for (const rikishiId of [...new Set(ctx.heya.rikishiIds ?? [])]) {
       const r = getRikishi(ctx.world, rikishiId);
       if (r?.weightJourney?.stalled === true) return true;
     }

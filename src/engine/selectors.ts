@@ -126,7 +126,7 @@ export function selectMergerCandidates(world: WorldState): Heya[] {
   const result: Heya[] = [];
   for (const h of world.heyas.values()) {
     const isInDebt = h.funds < 0;
-    const hasSmallRoster = (h.rikishiIds?.length ?? 0) <= 3;
+    const hasSmallRoster = new Set(h.rikishiIds ?? []).size <= 3;
     if (isInDebt && hasSmallRoster) result.push(h);
   }
   return result;

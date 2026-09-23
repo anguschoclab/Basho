@@ -78,7 +78,7 @@ export function useRosterData() {
     let injuries = 0;
     let totalFatigue = 0;
 
-    for (const id of heya.rikishiIds ?? []) {
+    for (const id of [...new Set(heya.rikishiIds ?? [])]) {
       const r = world.rikishi.get(id);
       if (r) {
         const entry = projectRosterEntry(r, world);

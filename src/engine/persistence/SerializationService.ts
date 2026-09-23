@@ -351,5 +351,8 @@ export const SerializationService = {
 
   sanitizeHeya(h: Heya): void {
     if (typeof h.funds !== "number") h.funds = 0;
+    if (Array.isArray(h.rikishiIds)) {
+      h.rikishiIds = [...new Set(h.rikishiIds)];
+    }
   },
 };

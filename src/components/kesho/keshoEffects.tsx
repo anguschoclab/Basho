@@ -5,6 +5,7 @@
  */
 
 import React from "react";
+import "./kesho-effects.css";
 
 /**
  * Render embroidery effect based on style
@@ -118,19 +119,6 @@ export function renderFringe(density: number, color: string): React.ReactNode {
           </g>
         );
       })}
-      <style>
-        {`
-          @keyframes sway {
-            0%, 100% { transform: translateX(0px); }
-            25% { transform: translateX(3px); }
-            75% { transform: translateX(-3px); }
-          }
-          .animate-sway {
-            animation: sway 2s ease-in-out infinite;
-            transform-origin: top center;
-          }
-        `}
-      </style>
     </g>
   );
 }

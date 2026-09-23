@@ -70,7 +70,7 @@ export function projectMergerWarnings(world: WorldState) {
 
   for (const h of EntityCollection.getHeyas(world)) {
     const isInDebt = h.funds < 0;
-    const rosterSize = h.rikishiIds?.length ?? 0;
+    const rosterSize = new Set(h.rikishiIds ?? []).size;
 
     // Financial merger warning: debt + small roster
     if (isInDebt && rosterSize <= 3) {

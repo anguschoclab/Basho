@@ -120,7 +120,7 @@ export function getOyakataForHeya(world: WorldState, heyaId: Id): Oyakata | unde
  */
 export function getHeyaRosterIds(world: WorldState, heyaId: Id): Id[] {
   const heya = world.heyas.get(heyaId);
-  return heya?.rikishiIds ?? [];
+  return [...new Set(heya?.rikishiIds ?? [])];
 }
 
 // Memoization cache for roster queries (cleared when week changes)

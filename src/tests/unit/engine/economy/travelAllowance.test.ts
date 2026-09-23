@@ -321,3 +321,59 @@ describe("deductTsukebitoCosts", () => {
     expect(updated.rikishi.get("r1")!.economics!.cash).toBe(500_000);
   });
 });
+
+// ── duplicate rikishiIds (target behavior: deduped) ────────────────────────
+
+describe("distributeKoenkaiToSekitori — duplicate rikishiIds", () => {
+  it("credits travel allowance once per sekitori even if ID is duplicated", () => {
+    const r1 = mockRikishi("r1", {
+      heyaId: "h1",
+      division: "makuuchi",
+      rank: "maegashira",
+      economics: { cash: 0, retirementFund: 0, totalEarnings: 0, popularity: 50 } as any,
+    });
+    const heya = makeMockHeya("h1", {
+      koenkaiBand: "moderate",
+      rikishiIds: ["r1", "r1"], // same ID listed twice
+    });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      heyas: new Map([["h1", heya]]),
+    });
+
+    const impact = distributeKoenkaiToSekitori(world);
+    const updated = resolveImpacts(world, [impact]);
+
+    // With 1 unique sekitori, the full sekitori portion goes to r1 once.
+    const expectedPerSekitori =
+      (KOENKAI_INCOME_MODERATE * KOENKAI_INCOME_SPLIT.sekitoriPortion) / 1;
+    const cashGain = updated.rikishi.get("r1")!.economics?.cash ?? 0;
+    expect(cashGain).toBeCloseTo(expectedPerSekitori, 0);
+  });
+});
+
+describe("payTravelAllowance — duplicate rikishiIds", () => {
+  it("pays travel allowance once per sekitori even if ID is duplicated", () => {
+    const r1 = mockRikishi("r1", {
+      heyaId: "h1",
+      division: "makuuchi",
+      rank: "yokozuna",
+      economics: { cash: 0, retirementFund: 0, totalEarnings: 0, popularity: 50 } as any,
+    });
+    const heya = makeMockHeya("h1", { rikishiIds: ["r1", "r1"] });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      heyas: new Map([["h1", heya]]),
+    });
+
+    const impact = payTravelAllowance(world);
+    const updated = resolveImpacts(world, [impact]);
+
+    // Should be paid exactly once, not twice.
+    const yearly = TRAVEL_ALLOWANCE_YEARLY.yokozuna;
+    const monthly = yearly / MONTHLY_DIVISOR;
+    const econ = updated.rikishi.get("r1")!.economics!;
+    expect(econ.cash).toBeCloseTo(monthly * TRAVEL_ALLOWANCE_CASH_SPLIT, 0);
+    expect(econ.totalEarnings).toBeCloseTo(monthly, 0);
+  });
+});

@@ -53,7 +53,7 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
   let injuredCount = 0;
   let fatigueSum = 0;
 
-  for (const id of heya.rikishiIds ?? []) {
+  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
     const r = world.rikishi.get(id);
     if (!r) continue;
     const fatigue = r.fatigue ?? 0;

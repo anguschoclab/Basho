@@ -85,3 +85,69 @@ describe("AdvisorService.getPlayerDigest — return shape", () => {
     expect(digest).toBeUndefined();
   });
 });
+
+describe("AdvisorService.generateRecommendations — duplicate rikishiIds (target behavior: deduped)", () => {
+  it("counts active roster once per rikishi when ID is duplicated (no false undermanned)", () => {
+    // ROSTER_LOW_THRESHOLD = 10. Create 11 unique active rikishi but list one ID twice
+    // so the raw count would be 12 — still above threshold either way.
+    // To make the test meaningful, use exactly 11 unique IDs but duplicate one to get 12 raw.
+    // Actually, to prove dedup: use 9 unique active + duplicate one → 10 raw but 9 unique.
+    // 9 unique < 10 threshold → undermanned. 10 raw >= 10 → not undermanned (false negative).
+    const rikishiMap = new Map();
+    const ids: string[] = [];
+    for (let i = 0; i < 9; i++) {
+      const id = `r-${i}`;
+      const r = MockFactory.createRikishi(id, { heyaId: "h1", isRetired: false });
+      rikishiMap.set(id, r);
+      ids.push(id);
+    }
+    // Duplicate r-0 so raw length = 10 but unique = 9 (< threshold 10).
+    ids.push("r-0");
+
+    const heya = MockFactory.createHeya("h1", { rikishiIds: ids });
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+      rikishi: rikishiMap,
+      playerHeyaId: "h1",
+    });
+
+    const recs = generateRecommendations(world, "h1");
+    const undermanned = recs.find((r) => r.id === "roster-undermanned");
+    // With dedup: 9 unique active < 10 → undermanned should fire.
+    // Without dedup: 10 raw >= 10 → would NOT fire (false negative).
+    expect(undermanned).toBeDefined();
+  });
+
+  it("counts injured roster once per rikishi when ID is duplicated", () => {
+    // 5 non-injured active + 2 injured (unique) + 1 duplicate of an injured ID.
+    // Without dedup: active=8, injured=3 → 3 > 8/3≈2.67 → injury-wave fires (FALSE).
+    // With dedup: active=7, injured=2 → 2 > 7/3≈2.33 → does NOT fire (correct).
+    const rikishiMap = new Map();
+    const ids: string[] = [];
+    for (let i = 0; i < 5; i++) {
+      const id = `active-${i}`;
+      const r = MockFactory.createRikishi(id, { heyaId: "h1", isRetired: false, injured: false });
+      rikishiMap.set(id, r);
+      ids.push(id);
+    }
+    for (let i = 0; i < 2; i++) {
+      const id = `injured-${i}`;
+      const r = MockFactory.createRikishi(id, { heyaId: "h1", isRetired: false, injured: true });
+      rikishiMap.set(id, r);
+      ids.push(id);
+    }
+    ids.push("injured-0"); // duplicate an injured ID
+
+    const heya = MockFactory.createHeya("h1", { rikishiIds: ids });
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+      rikishi: rikishiMap,
+      playerHeyaId: "h1",
+    });
+
+    const recs = generateRecommendations(world, "h1");
+    const injuryWave = recs.find((r) => r.id === "health-injury-wave");
+    // With dedup: 2 unique injured, 7 unique active. 2 > 7/3≈2.33 → false → no alarm.
+    expect(injuryWave).toBeUndefined();
+  });
+});

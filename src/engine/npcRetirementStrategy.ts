@@ -22,14 +22,14 @@ const NATURAL_RETIREMENT_RULE: StrategyRule = {
   id: "ret_natural",
   condition: (ctx) => {
     // Check if ANY rikishi in heya wants to retire naturally
-    return (ctx.heya.rikishiIds ?? []).some((id) => {
+    return [...new Set(ctx.heya.rikishiIds ?? [])].some((id) => {
       const r = getRikishi(ctx.world, id);
       return r && checkRetirement(r, ctx.world.year, ctx.world.seed);
     });
   },
   action: (ctx) => {
     const builder = createImpactBuilder("ret_natural");
-    for (const id of ctx.heya.rikishiIds ?? []) {
+    for (const id of [...new Set(ctx.heya.rikishiIds ?? [])]) {
       const r = getRikishi(ctx.world, id);
       if (!r) continue;
       const reason = checkRetirement(r, ctx.world.year, ctx.world.seed);
@@ -50,7 +50,7 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
   condition: (ctx) => {
     if (!TraitChecks.isAmbitious(70)(ctx.oyakata)) return false;
     // Only force retire if heya is full and we have high ambition
-    return (ctx.heya.rikishiIds?.length ?? 0) >= 15;
+    return new Set(ctx.heya.rikishiIds ?? []).size >= 15;
   },
   action: (ctx) => {
     const builder = createImpactBuilder("ret_force_stagnant");

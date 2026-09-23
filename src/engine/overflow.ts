@@ -22,12 +22,13 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
   const builder = createImpactBuilder("enforceHardCapRosterOverflow");
 
   for (const heya of EntityCollection.getHeyas(world)) {
-    if (!heya.rikishiIds || heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
+    const uniqueIds = [...new Set(heya.rikishiIds ?? [])];
+    if (uniqueIds.length <= HARD_CAP_ROSTER_SIZE) continue;
 
-    const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;
+    const overflowCount = uniqueIds.length - HARD_CAP_ROSTER_SIZE;
 
     const scoredCandidates = [];
-    for (const rId of heya.rikishiIds) {
+    for (const rId of uniqueIds) {
       const r = getRikishi(world, rId);
       if (!r) continue;
 

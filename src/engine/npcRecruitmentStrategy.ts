@@ -40,7 +40,7 @@ interface RecruitmentStrategy {
  * Calculates a sustainable max bid based on yearly runway.
  */
 function calculateRunwayAwareMaxBid(heya: Heya, oyakata: Oyakata, baseMultiplier: number): number {
-  const monthlyBurn = (heya.rikishiIds?.length ?? 0) * MONTHLY_BURN_PER_RIKISHI;
+  const monthlyBurn = new Set(heya.rikishiIds ?? []).size * MONTHLY_BURN_PER_RIKISHI;
   const yearlyBurn = monthlyBurn * MONTHS_PER_YEAR;
   const surplus = Math.max(0, heya.funds - yearlyBurn);
 
@@ -70,7 +70,7 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     if (oyakata.traits.tradition > RECRUITMENT_TRADITION_THRESHOLD_SIZE)
       targetSize += RECRUITMENT_TRADITIONALIST_SIZE_BONUS;
 
-    const currentSize = heya.rikishiIds?.length ?? 0;
+    const currentSize = new Set(heya.rikishiIds ?? []).size;
     const count = Math.max(0, targetSize - currentSize);
 
     return { impact: builder.build(), count };
