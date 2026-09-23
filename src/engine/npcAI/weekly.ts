@@ -345,7 +345,7 @@ function applyPromotionAwareness(
   const pushSet = new Set(decision.individualPushes);
   const developSet = new Set(decision.individualDevelops);
 
-  for (const rikishiId of [...new Set(heya.rikishiIds ?? [])]) {
+  for (const rikishiId of heya.rikishiIds ?? []) {
     const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
@@ -433,7 +433,7 @@ function applyInjuryRiskReduction(
   let highRiskCount = 0;
   const protectIds: Id[] = [];
 
-  for (const rikishiId of [...new Set(heya.rikishiIds ?? [])]) {
+  for (const rikishiId of heya.rikishiIds ?? []) {
     const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
@@ -447,7 +447,8 @@ function applyInjuryRiskReduction(
     }
   }
 
-  const rosterSize = new Set(heya.rikishiIds ?? []).size;
+  // ⚡ Bolt: Use .length directly on the array to avoid O(N) allocation overhead of new Set()
+  const rosterSize = (heya.rikishiIds ?? []).length;
   if (rosterSize > 0 && highRiskCount / rosterSize > HIGH_RISK_RATIO_THRESHOLD) {
     const intensity = decision.trainingIntensity;
     if (intensity === "punishing") {
