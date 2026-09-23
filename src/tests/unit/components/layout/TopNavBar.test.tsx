@@ -59,6 +59,18 @@ vi.mock("@/components/ui/tooltip-wrap", () => ({
   ),
 }));
 
+// Radix Dialog Root is a context provider — it mounts children unconditionally.
+// Mock it to preserve the tested contract: children render only when `open`,
+// backdrop clicks call onOpenChange(false), content clicks are swallowed.
+vi.mock("@/components/ui/dialog", () => ({
+  Dialog: ({ open, onOpenChange, children }: any) =>
+    open ? (
+      <div className="fixed inset-0" onClick={() => onOpenChange?.(false)}>
+        <div onClick={(e: any) => e.stopPropagation()}>{children}</div>
+      </div>
+    ) : null,
+}));
+
 vi.mock("@/components/layout/HolidayDialog", () => ({
   HolidayDialog: ({ onConfirm, onCancel }: any) => (
     <div data-testid="holiday-dialog-mock">

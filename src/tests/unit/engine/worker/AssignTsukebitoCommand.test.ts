@@ -1,7 +1,8 @@
 /**
- * AssignTsukebitoCommand.test.ts — tests SET_TSUKEBITO/CLEAR_TSUKEBITO/REMOVE_TSUKEBITO worker commands.
+ * AssignTsukebitoCommand.test.ts — tests SET_TSUKEBITO/REMOVE_TSUKEBITO worker commands.
  * Plan Feature 10 Test-First Protocol item 4.
- * Note: Plan specified ASSIGN_TSUKEBITO/CLEAR_TSUKEBITO; implementation uses SET_TSUKEBITO/CLEAR_TSUKEBITO/REMOVE_TSUKEBITO.
+ * Note: CLEAR_TSUKEBITO (clear-all) was removed in v7 consolidation (V7-B03) —
+ * dead command surface with no UI dispatch.
  */
 import { describe, it, expect } from "vitest";
 import { setTsukebito, clearTsukebito } from "@/engine/systems/training/TsukebitoService";
@@ -18,15 +19,6 @@ describe("Tsukebito worker commands", () => {
     expect(cmd.type).toBe("SET_TSUKEBITO");
     expect(cmd.seniorId).toBe("r1");
     expect(cmd.tsukebitoIds).toEqual(["r2", "r3"]);
-  });
-
-  it("CLEAR_TSUKEBITO command type is defined", () => {
-    const cmd = {
-      type: "CLEAR_TSUKEBITO" as const,
-      seniorId: "r1",
-    };
-    expect(cmd.type).toBe("CLEAR_TSUKEBITO");
-    expect(cmd.seniorId).toBe("r1");
   });
 
   it("REMOVE_TSUKEBITO command type is defined", () => {

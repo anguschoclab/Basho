@@ -27,6 +27,8 @@ interface GameStoreState {
   pendingTick: boolean;
   /** Whether the engine is currently busy with a simulation. */
   isSimulating: boolean;
+  /** Whether a running multi-day simulation is paused. */
+  simPaused: boolean;
   /** Current simulation progress details. */
   progress: { message: string; current: number; total: number } | null;
   /** Error message if a simulation fails. */
@@ -73,6 +75,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   worldVersion: 0,
   pendingTick: false,
   isSimulating: false,
+  simPaused: false,
   progress: null,
   error: null,
   showTour: false,
@@ -99,6 +102,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
             digest: data.digest,
             digestRevision: data.digestRevision ?? get().digestRevision + 1,
             isSimulating: false,
+            simPaused: false,
             progress: null,
             pendingTick: false,
           });
@@ -137,7 +141,11 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     // Previously only tick commands were blocked, but non-tick commands
     // (OFFER_CONTRACT, BUY_MYOSEKI, etc.) could interleave with async
     // TICK_MULTIPLE_DAYS loops via the worker's await yield point.
-    if (pendingTick) {
+    // Exception: PAUSE_SIM/RESUME_SIM MUST pass through — they are the
+    // mechanism by which a running multi-day loop is interrupted, and the
+    // worker reads simPaused only at the loop top between day ticks.
+    const isPauseControl = command.type === "PAUSE_SIM" || command.type === "RESUME_SIM";
+    if (pendingTick && !isPauseControl) {
       warn(`Command "${command.type}" dropped - tick in progress`, "Store");
       return;
     }
@@ -151,6 +159,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       set({ isSimulating: true, error: null, pendingTick: true });
     } else if (command.type === "TICK_DAY") {
       set({ pendingTick: true });
+    } else if (command.type === "PAUSE_SIM") {
+      set({ simPaused: true });
+    } else if (command.type === "RESUME_SIM") {
+      set({ simPaused: false });
     } else if (command.type === "GO_ON_HOLIDAY") {
       // GO_ON_HOLIDAY advances the sim on the worker thread; serialize it so
       // repeated clicks can't interleave with the holiday advance loop.

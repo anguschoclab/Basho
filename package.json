@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "type-check": "node_modules/@typescript/native/bin/tsc --build --force",
+    "type-check": "node node_modules/@typescript/native/bin/tsc --build --force",
     "build:dev": "vite build --mode development",
     "lint": "eslint . || true",
     "lint:strict": "eslint . --max-warnings 0",

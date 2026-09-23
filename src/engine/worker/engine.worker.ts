@@ -56,7 +56,7 @@ import {
   finishExhibition as svcFinishExhibition,
   completeTutorial as svcCompleteTutorial,
 } from "../systems/tutorial/TutorialService";
-import { updateHeyaInWorld } from "../queries";
+import { updateHeyaInWorld, clearQueryCaches } from "../queries";
 import { retireRikishiImpact, logEventImpact } from "../core/ImpactBuilder";
 import { spendPoliticalCapital } from "../systems/governance/ScandalService";
 import { recruitSponsor } from "../systems/economy/sponsorshipMutations";
@@ -146,6 +146,8 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
       emitDigest();
     },
     LOAD_WORLD: (cmd) => {
+      // V7-B13: drop any per-week memoized query state from the previous world.
+      clearQueryCaches();
       currentWorld = migrateWorldState(cmd.world);
       emitDigest();
     },
@@ -620,20 +622,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         syncAndDigest();
       }
     },
-    CLEAR_TSUKEBITO: (cmd) => {
-      if (currentWorld) {
-        // Clear all tsukebito from this senior
-        const senior = currentWorld.rikishi.get(cmd.seniorId);
-        const currentIds = senior?.tsukebitoIds ?? [];
-        let world = currentWorld;
-        for (const juniorId of currentIds) {
-          const impact = clearTsukebito(world, cmd.seniorId, juniorId);
-          world = resolveImpacts(world, [impact]);
-        }
-        currentWorld = world;
-        syncAndDigest();
-      }
-    },
+
     REMOVE_TSUKEBITO: (cmd) => {
       if (currentWorld) {
         // Remove a single junior from this senior's tsukebito list.
@@ -795,9 +784,6 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     RESUME_SIM: () => {
       simPaused = false;
       self.postMessage({ type: "PROGRESS", message: "Simulation resumed", current: 0, total: 0 });
-    },
-    GET_DIGEST: () => {
-      emitDigest();
     },
   };
 

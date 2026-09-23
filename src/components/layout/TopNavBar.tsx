@@ -7,7 +7,8 @@ import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { Sun, Moon, ChevronRight, Settings } from "lucide-react";
+import { Sun, Moon, ChevronRight, Settings, Pause, Play } from "lucide-react";
+import { useGameStore } from "@/store/gameStore";
 import { formatYen } from "@/utils/engineUtils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { getPlayerHeya } from "@/presenters/engineAccess";
@@ -38,6 +39,9 @@ export function TopNavBar() {
   const navigate = useNavigate();
   const world = state.world;
   const [showHolidayDialog, setShowHolidayDialog] = useState(false);
+  const isSimulating = useGameStore((s) => s.isSimulating);
+  const simPaused = useGameStore((s) => s.simPaused);
+  const sendCommand = useGameStore((s) => s.sendCommand);
 
   const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
   const inBasho = world?.cyclePhase === "active_basho";
@@ -225,6 +229,27 @@ export function TopNavBar() {
           >
             <Settings className="h-3.5 w-3.5" />
           </Button>
+
+          {/* Pause/resume control — only while a multi-day sim is running */}
+          {isSimulating && (
+            <TooltipWrap
+              content={simPaused ? "Resume simulation" : "Pause simulation"}
+              side="left"
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label={simPaused ? "Resume simulation" : "Pause simulation"}
+                aria-pressed={simPaused}
+                onClick={() =>
+                  sendCommand({ type: simPaused ? "RESUME_SIM" : "PAUSE_SIM" })
+                }
+              >
+                {simPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+              </Button>
+            </TooltipWrap>
+          )}
 
           {/* Thin separator before the Continue button */}
           <div className="w-px h-5 mx-1" style={{ background: "hsl(var(--border))" }} />

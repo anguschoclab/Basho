@@ -193,7 +193,8 @@ describe("v7 pin — #976 aria-hidden removed from live content", () => {
 
 // ---------------------------------------------------------------------------
 // V7-B01: PREPAY_LOAN must be reachable — DebtSection renders a prepay control
-// per active loan that dispatches the worker command.
+// per active loan that invokes the onPrepay callback with the loan id (wired by
+// EconomyPage to sendCommand({ type: "PREPAY_LOAN", ... })).
 // ---------------------------------------------------------------------------
 describe("v7 pin — V7-B01 PREPAY_LOAN reachable", () => {
   it("DebtSection exposes a prepay control per active loan", async () => {
@@ -209,7 +210,10 @@ describe("v7 pin — V7-B01 PREPAY_LOAN reachable", () => {
       principal: 1000,
       monthlyPayment: 100,
     };
-    render(<DebtSection activeLoans={[loan] as never} />);
-    expect(screen.getByRole("button", { name: /prepay/i })).toBeTruthy();
+    const onPrepay = vi.fn();
+    render(<DebtSection activeLoans={[loan] as never} onPrepay={onPrepay} />);
+    const btn = screen.getByRole("button", { name: /prepay/i });
+    fireEvent.click(btn);
+    expect(onPrepay).toHaveBeenCalledWith("l1");
   });
 });

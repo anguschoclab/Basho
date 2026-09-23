@@ -127,7 +127,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 - **Runner:** `bun run test` (Vitest, jsdom environment). Do NOT use `bun test` — that invokes Bun's native test runner, which doesn't understand vitest's jsdom environment or setup files.
 - **Mock factory:** `src/engine/__tests__/utils.ts` → `mockRikishi(id, overrides?)`
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
-- **Coverage thresholds:** lines 60%, branches 50% (v8 provider)
+- **Coverage thresholds:** lines 70%, branches 75%, functions 65%, statements 70% (v8 provider)
 - **Current status (v5 consolidation, Sep 2026):** ~830 test files, ~7,400 tests, all passing. `bun run type-check` clean. `bun run build` succeeds.
 - **Command-path note:** engine mutations go through the worker via `sendCommand`. The interactive basho path (`SIMULATE_BOUT` etc.) still resolves on the main thread for match animation, but tactics live on `world.boutTactics` and every world-mutating slice case bumps `state.uiWorldRevision`, which GameContext syncs back to the worker via `LOAD_WORLD`. Never reintroduce a world write that skips this sync.
 

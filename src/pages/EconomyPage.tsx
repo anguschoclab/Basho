@@ -208,6 +208,9 @@ export default function EconomyPage() {
           activeLoans={
             (playerHeya as typeof playerHeya & { activeLoans?: DebtLoan[] }).activeLoans ?? []
           }
+          onPrepay={(loanId) =>
+            sendCommand({ type: "PREPAY_LOAN", heyaId: playerHeya.id, loanId })
+          }
         />
 
         {/* Grid: Koenkai & Sekitori */}

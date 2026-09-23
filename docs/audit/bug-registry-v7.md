@@ -23,7 +23,9 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Fix:** Wire a "Prepay" affordance per active loan in
   `src/components/economy/DebtSection.tsx` dispatching
   `sendCommand({ type: "PREPAY_LOAN", heyaId, loanId })`, guarded by funds check.
-- **Status:** CONFIRMED — fix scheduled (Wave 5 + Phase 5)
+- **Status:** FIXED — `DebtSection` takes `onPrepay(loanId)` and renders a per-loan
+  "Prepay remaining balance" button; `EconomyPage` wires it to
+  `sendCommand({ type: "PREPAY_LOAN", heyaId: playerHeya.id, loanId })`.
 
 ### V7-B02: `PAUSE_SIM` / `RESUME_SIM` dead — auto-sim cannot be paused
 - **Files:** `src/engine/worker/engine.worker.ts:121,171,219,791-798`,
@@ -35,7 +37,11 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Fix:** Expose pause/resume control where `TICK_MULTIPLE_DAYS`/`AUTO_SIM_DAYS`
   is triggered (`GameContext.tsx:152-159` / `gameStore.ts:150`), or remove the
   commands. Decision: wire minimal pause/resume in the sim progress affordance.
-- **Status:** CONFIRMED — fix scheduled (Phase 5)
+- **Status:** FIXED — two-layer fix: (1) `sendCommand`'s `pendingTick` guard now
+  exempts `PAUSE_SIM`/`RESUME_SIM` (they were dead by construction — the guard
+  dropped the only commands able to interrupt a running loop); (2) `TopNavBar`
+  renders a pause/resume toggle while `isSimulating`, backed by a new
+  `simPaused` flag in `gameStore` cleared on `TICK_COMPLETED`.
 
 ### V7-B03: `CLEAR_TSUKEBITO` dead command (redundant with `REMOVE_TSUKEBITO`)
 - **Files:** `src/engine/worker/types.ts:104`, `src/engine/worker/engine.worker.ts:623`
@@ -45,7 +51,8 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Fix:** Remove `CLEAR_TSUKEBITO` type + handler (zero-compat consolidation
   permits API removal), OR wire a clear-all button. Decision at fix time; default:
   delete dead surface.
-- **Status:** CONFIRMED — disposition: REMOVE (documented)
+- **Status:** REMOVED — command type + handler deleted (`REMOVE_TSUKEBITO`
+  covers the per-junior path; no clear-all affordance exists or is planned).
 
 ### V7-B04: `GET_DIGEST` dead command
 - **Files:** `src/engine/worker/types.ts:38`, `src/engine/worker/engine.worker.ts:799`
@@ -53,7 +60,8 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Root Cause:** Every mutating handler already calls `syncAndDigest()`; nothing
   ever needs a standalone digest pull.
 - **Fix:** Remove type + handler (same rationale as V7-B03).
-- **Status:** CONFIRMED — disposition: REMOVE (documented)
+- **Status:** REMOVED — command type + handler deleted; every mutating handler
+  already calls `syncAndDigest()`/`emitDigest()`.
 
 ### V7-B05: Generated artifacts tracked in repo root
 - **Files:** `simulation-results.json`, `test-list.txt`, `test-results.json`
@@ -61,7 +69,9 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Severity:** Low (hygiene; churn + confusion risk)
 - **Fix:** `git rm --cached` all three; add `test-list.txt` + `test-results.json`
   to `.gitignore`.
-- **Status:** CONFIRMED — fix scheduled (Phase 5)
+- **Status:** FIXED — `git rm --cached` on all three; `test-list.txt` and
+  `test-results.json` added to `.gitignore` (`simulation-results.json` was
+  already ignored but tracked).
 
 ### V7-B06: `CLAUDE.md` documents stale coverage thresholds
 - **File:** `.claude/CLAUDE.md` ("lines 60%, branches 50%")
@@ -78,15 +88,16 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   shim); binary works via `node node_modules/@typescript/native/bin/tsc`.
 - **Fix:** Change script to `node node_modules/@typescript/native/bin/tsc --build
   --force` — portable across shells/OSes.
-- **Status:** CONFIRMED — fix scheduled (Phase 5)
+- **Status:** FIXED — script now `node node_modules/@typescript/native/bin/tsc
+  --build --force`, portable across shells/OSes.
 
 ### V7-B08: 32 `console.*` calls in production code bypass Logger
-- **Files:** 14+ incl. `boutResolver.ts`, `StateImpact.ts`, `BashoManager.ts`,
-  `tickDaily.ts`, `TrainingService.ts`, `RivalryService.ts`
-- **Severity:** Low (log hygiene; noise in production console)
-- **Fix:** Route through `src/engine/utils/Logger.ts` (`warn`/`log`) or remove
-  debug leftovers; codemod per file, keeping worker-context logs intentional.
-- **Status:** CONFIRMED — fix scheduled (Phase 5, low priority)
+- **Severity:** None — **DISPROVED on inspection.** All 32 textual matches are
+  inside JSDoc/block-comment examples (e.g. `* console.log(...)`); a
+  comment-stripped scan finds zero executable `console.*` calls in
+  `src/engine`. The audit test (`noConsoleInEngine.test.ts`) was corrected to
+  strip comments before scanning so it now guards real calls only.
+- **Status:** DISPROVED (recorded to prevent future mis-triage)
 
 ### V7-B09: orphan-audit test writes fixtures into `src/engine/systems/`
 - **File:** `src/tests/unit/audit/orphan-audit.test.ts:237` (and sibling at ~NsProbe)
@@ -97,7 +108,8 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   Observed live during baseline run (dir existed mid-run, cleaned on completion).
 - **Fix:** Add an `afterAll` sweep removing any `__audit_*` remnants under
   `src/engine/systems/` (belt-and-suspenders alongside finally).
-- **Status:** CONFIRMED — fix scheduled (Phase 5, low priority)
+- **Status:** FIXED — top-level `afterAll` at `orphan-audit.test.ts:23` sweeps
+  all `__audit_*` dirs after the suite.
 
 ### V7-B10: `phase06_narrative` context relies on implicit lowercase token fallback
 - **File:** `src/engine/tick/phases/phase06_narrative.ts:125` (ctx keys `shikona`,
@@ -140,5 +152,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Fix:** Re-key caches per world (`WeakMap<WorldState, Map<heyaId, {week, roster}>>`)
   or include `world.id` in the key; also clear on `LOAD_WORLD` in the worker.
 - **Reproducer:** `src/tests/unit/engine/v7Equivalence.test.ts` —
-  "a second world at the same week does not inherit the first world's roster" (RED).
-- **Status:** CONFIRMED — fix scheduled (Phase 5)
+  "a second world at the same week does not inherit the first world's roster" (RED→GREEN).
+- **Status:** FIXED — caches re-keyed as `WeakMap<WorldState, Map<heyaId, …>>`
+  (entries GC with their world); `LOAD_WORLD` in the worker also calls
+  `clearQueryCaches()` as defense-in-depth.

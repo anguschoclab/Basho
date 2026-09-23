@@ -7,8 +7,9 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Banknote } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
+import { Button } from "@/components/ui/button";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
@@ -27,6 +28,8 @@ interface Loan {
 
 interface DebtSectionProps {
   activeLoans: Loan[];
+  /** Called with the loan id when the player requests early repayment. */
+  onPrepay?: (loanId: string) => void;
 }
 
 const LOAN_SORT_OPTIONS: SortOption[] = [
@@ -38,7 +41,7 @@ const LOAN_SORT_OPTIONS: SortOption[] = [
   { key: "providerName", label: "Provider" },
 ];
 
-export function DebtSection({ activeLoans }: DebtSectionProps) {
+export function DebtSection({ activeLoans, onPrepay }: DebtSectionProps) {
   const [sortKey, setSortKey] = useState<string>("remainingBalance");
   const [sortOrder, setSortOrder] = useState<SortDirection>("desc");
 
@@ -158,6 +161,18 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
                     </div>
                   )}
                 </div>
+              )}
+
+              {onPrepay && loan.remainingBalance > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-[11px] font-bold uppercase tracking-wider border-success/30 text-success hover:bg-success/10"
+                  onClick={() => onPrepay(loan.id)}
+                >
+                  <Banknote className="h-3.5 w-3.5 mr-1.5" />
+                  Prepay remaining balance ({formatYen(loan.remainingBalance)})
+                </Button>
               )}
 
               {loan.stringsAttached && loan.stringsAttached.length > 0 && (

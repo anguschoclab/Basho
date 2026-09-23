@@ -246,30 +246,6 @@ describe("engine.worker", () => {
     });
   });
 
-  it("should handle GET_DIGEST command", async () => {
-    // First load a world
-    const world = MockFactory.createWorld({ seed: "digest-seed" });
-    await triggerMessage({
-      type: "LOAD_WORLD",
-      world,
-    });
-    vi.clearAllMocks();
-
-    await triggerMessage({
-      type: "GET_DIGEST",
-    });
-
-    expect(mockPostMessage).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "TICK_COMPLETED",
-        digest: {
-          mockDigest: true,
-          worldSeed: "digest-seed",
-        } as unknown as UIDigest,
-      })
-    );
-  });
-
   it("should handle invalid commands by logging a warning", async () => {
     const consoleWarnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 

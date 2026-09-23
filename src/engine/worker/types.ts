@@ -35,7 +35,6 @@ export type EngineCommand =
   | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
   | { type: "PAUSE_SIM" }
   | { type: "RESUME_SIM" }
-  | { type: "GET_DIGEST" }
   | { type: "RESOLVE_LOOP_DECISION"; decisionId: string; optionId: string }
   | { type: "WITHDRAW_RIKISHI"; rikishiId: string }
   | { type: "TREAT_INJURY"; rikishiId: string; weeks: number }
@@ -99,10 +98,6 @@ export type EngineCommand =
       type: "SET_TSUKEBITO";
       seniorId: string;
       tsukebitoIds: string[];
-    }
-  | {
-      type: "CLEAR_TSUKEBITO";
-      seniorId: string;
     }
   | {
       type: "REMOVE_TSUKEBITO";

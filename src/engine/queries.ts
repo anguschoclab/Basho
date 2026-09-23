@@ -123,17 +123,20 @@ export function getHeyaRosterIds(world: WorldState, heyaId: Id): Id[] {
   return [...new Set(heya?.rikishiIds ?? [])];
 }
 
-// Memoization cache for roster queries (cleared when week changes)
-const rosterCache = new Map<string, { week: number; roster: Rikishi[] }>();
-const styleBiasCache = new Map<string, { week: number; bias: StyleBias }>();
+// Memoization caches for roster queries (cleared when week changes).
+// Keyed per-WorldState via WeakMap so that a second world in the same
+// process (new game load, parallel sims, tests) can never inherit another
+// world's roster — see V7-B13. Entries are GC'd with their world.
+let rosterCache = new WeakMap<WorldState, Map<string, { week: number; roster: Rikishi[] }>>();
+let styleBiasCache = new WeakMap<WorldState, Map<string, { week: number; bias: StyleBias }>>();
 
 /**
  * Clear memoization caches for roster and style bias queries.
  * Should be called at the start of each new week to ensure cache invalidation.
  */
 export function clearQueryCaches(): void {
-  rosterCache.clear();
-  styleBiasCache.clear();
+  rosterCache = new WeakMap();
+  styleBiasCache = new WeakMap();
 }
 
 /**
@@ -143,8 +146,9 @@ export function clearQueryCaches(): void {
  */
 export function getHeyaRoster(world: WorldState, heyaId: Id): Rikishi[] {
   const cacheKey = `${heyaId}`;
-  const cached = rosterCache.get(cacheKey);
   const currentWeek = world.week ?? 0;
+  let worldCache = rosterCache.get(world);
+  const cached = worldCache?.get(cacheKey);
 
   if (cached && cached.week === currentWeek) {
     return cached.roster;
@@ -157,7 +161,11 @@ export function getHeyaRoster(world: WorldState, heyaId: Id): Rikishi[] {
     if (r) roster.push(r);
   }
 
-  rosterCache.set(cacheKey, { week: currentWeek, roster });
+  if (!worldCache) {
+    worldCache = new Map();
+    rosterCache.set(world, worldCache);
+  }
+  worldCache.set(cacheKey, { week: currentWeek, roster });
   return roster;
 }
 
@@ -180,8 +188,9 @@ export function getSekitoriInHeya(world: WorldState, heyaId: Id): number {
  */
 export function getHeyaStyleBias(world: WorldState, heyaId: Id): StyleBias {
   const cacheKey = `${heyaId}`;
-  const cached = styleBiasCache.get(cacheKey);
   const currentWeek = world.week ?? 0;
+  let worldCache = styleBiasCache.get(world);
+  const cached = worldCache?.get(cacheKey);
 
   if (cached && cached.week === currentWeek) {
     return cached.bias;
@@ -196,7 +205,11 @@ export function getHeyaStyleBias(world: WorldState, heyaId: Id): StyleBias {
   }
   const bias: StyleBias = oshi === yotsu ? "neutral" : oshi > yotsu ? "oshi" : "yotsu";
 
-  styleBiasCache.set(cacheKey, { week: currentWeek, bias });
+  if (!worldCache) {
+    worldCache = new Map();
+    styleBiasCache.set(world, worldCache);
+  }
+  worldCache.set(cacheKey, { week: currentWeek, bias });
   return bias;
 }
 
