@@ -145,7 +145,13 @@ export function DebtSection({ activeLoans, onPrepay }: DebtSectionProps) {
                   </div>
                   <div className="w-full h-2 bg-muted/40 rounded-full overflow-hidden">
                     <div
-                      aria-hidden="true"
+                      role="progressbar"
+                      aria-label={`Payoff progress for ${loan.providerName} loan`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.round(
+                        Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100),
+                      )}
                       className="h-full bg-success rounded-full transition-all duration-500"
                       style={{
                         width: `${Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100)}%`,

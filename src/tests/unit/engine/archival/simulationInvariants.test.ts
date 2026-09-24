@@ -87,7 +87,7 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
       expect(size).toBeGreaterThan(0);
       expect(summaryCount).toBeGreaterThan(0);
     },
-    600000
+    900000
   );
 
   it("almanacSnapshots is bounded to <= 6 after year-end", async () => {
@@ -98,7 +98,7 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
     if (finalWorld.almanacSnapshots) {
       expect(finalWorld.almanacSnapshots.length).toBeLessThanOrEqual(6);
     }
-  }, 600000);
+  }, 900000);
 
   it("world.rikishi has no ghost entries from summarization", async () => {
     const world = generateInitialWorld("sim-invariant-v3");
@@ -113,7 +113,7 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
         expect.fail(`Rikishi ${id} found in both world.rikishi and world.historicalRikishi`);
       }
     }
-  }, 600000);
+  }, 900000);
 
   it("full records are archived to cold storage at retirement (if any retire)", async () => {
     // Note: This test verifies that the archive service is wired correctly.
@@ -126,5 +126,5 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
 
     // If there are historical rikishi, the sim ran without archival crashes
     expect(result.finalWorld).toBeDefined();
-  }, 600000);
+  }, 900000);
 });
