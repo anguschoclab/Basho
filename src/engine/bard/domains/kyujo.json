@@ -20,7 +20,12 @@
   "return_from_kyujo": [
     "%SHIKONA% returns to the dohyo after missing %BASHOS_MISSED% basho(s) — welcome back.",
     "Back in action — %SHIKONA% has recovered and returns from a %BASHOS_MISSED%-basho absence.",
-    "%SHIKONA% is back on the dohyo after %BASHOS_MISSED% tournament(s) away."
+    "%SHIKONA% is back on the dohyo after %BASHOS_MISSED% tournament(s) away.",
+    "The crowd warmly welcomes %SHIKONA% back to the dohyo following a %BASHOS_MISSED%-basho absence.",
+    "Making a much-anticipated return, %SHIKONA% steps onto the clay after sitting out %BASHOS_MISSED% tournament(s).",
+    "It's been a long road to recovery, but %SHIKONA% finally returns after missing %BASHOS_MISSED% basho(s).",
+    "A welcome sight for fans: %SHIKONA% resumes competition after a %BASHOS_MISSED%-basho hiatus.",
+    "Finally cleared to compete, %SHIKONA% makes his return following a layoff of %BASHOS_MISSED% tournament(s)."
   ],
   "oversleeping": [
     "%SHIKONA% overslept and missed his bout — a fusensho loss that stunned the arena.",
