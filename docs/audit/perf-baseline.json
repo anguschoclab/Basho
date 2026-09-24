@@ -1,29 +1,37 @@
 {
-  "timestamp": "2026-08-09T05:46:16.524Z",
+  "timestamp": "2026-09-24T23:45:26.034Z",
   "results": [
     {
       "scenario": "S1_single_day",
-      "p50_ms": 4.6,
-      "p99_ms": 5.1,
-      "mean_ms": 4.4,
-      "runs": 10,
+      "p50_ms": 13.8,
+      "p99_ms": 20.5,
+      "mean_ms": 14.5,
+      "runs": 50,
       "total_days": 1
     },
     {
       "scenario": "S2_weekly",
-      "p50_ms": 276.2,
-      "p99_ms": 294.2,
-      "mean_ms": 274,
-      "runs": 10,
+      "p50_ms": 894.6,
+      "p99_ms": 1068.4,
+      "mean_ms": 910,
+      "runs": 50,
       "total_days": 7
     },
     {
       "scenario": "S3_year",
-      "p50_ms": 3277.4,
-      "p99_ms": 3410.5,
-      "mean_ms": 3291.7,
-      "runs": 5,
+      "p50_ms": 4074.7,
+      "p99_ms": 5455.4,
+      "mean_ms": 4142.6,
+      "runs": 50,
       "total_days": 365
+    },
+    {
+      "scenario": "S4_25yr",
+      "p50_ms": 4146.9,
+      "p99_ms": 5414.6,
+      "mean_ms": 4279.7,
+      "runs": 10,
+      "total_days": 9125
     }
   ]
 }
