@@ -18,6 +18,7 @@ import {
   Landmark,
   type LucideIcon,
 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -132,8 +133,9 @@ export function IdentityStep({
           {/* Backstory grid */}
           <div className="space-y-4">
             <Label className="pro-header">Professional History &amp; Background</Label>
-            <div className="grid gap-4 md:grid-cols-2 max-h-[520px] overflow-y-auto pr-1">
-              {OYAKATA_BACKSTORIES.map((bs) => {
+            <ScrollArea className="max-h-[520px]">
+              <div className="grid gap-4 md:grid-cols-2 pr-4 pb-1">
+                {OYAKATA_BACKSTORIES.map((bs) => {
                 const Icon = BACKSTORY_ICONS[bs.iconName] ?? CircleUser;
                 const isSelected = background === bs.id;
                 return (
@@ -209,7 +211,8 @@ export function IdentityStep({
                   </div>
                 );
               })}
-            </div>
+              </div>
+            </ScrollArea>
           </div>
         </div>
       </div>
