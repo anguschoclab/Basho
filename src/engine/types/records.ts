@@ -12,6 +12,12 @@ export interface H2HRecord {
     day: number;
     year: number;
   } | null;
+  /**
+   * Signed integer representing active streak directionality.
+   * Positive = active winning streak for this rikishi.
+   * Negative = active losing streak for this rikishi.
+   * On streak break, resets directly to 1 or -1 (never 0).
+   */
   streak: number;
 }
 
