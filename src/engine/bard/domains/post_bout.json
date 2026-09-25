@@ -8,7 +8,12 @@
     "A masterful display from %WINNER%, dispatching %LOSER% with %KIMARITE%.",
     "%WINNER% leaves no room for error, finishing %LOSER% off swiftly.",
     "The technique is undeniable. %WINNER% secures the win via %KIMARITE%.",
-    "Total dominance on the dohyo today as %WINNER% handles %LOSER%."
+    "Total dominance on the dohyo today as %WINNER% handles %LOSER%.",
+    "A clinical finish by %WINNER%, wrapping things up with %KIMARITE%.",
+    "%LOSER% is sent down to the clay; %WINNER% takes the win by %KIMARITE%.",
+    "Brilliant execution of %KIMARITE% gives %WINNER% the hard-fought victory.",
+    "An explosive %KIMARITE% from %WINNER% leaves %LOSER% reeling.",
+    "%WINNER% overpowers %LOSER%, sealing the match with %KIMARITE%."
   ],
   "records": {
     "winner_improves": [
