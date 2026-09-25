@@ -10,6 +10,7 @@ import type { GameState } from "./gameTypes";
 
 // Module-level state to track autosave progress and prevent overlaps
 let saveInProgress = false;
+let pendingWorld: WorldState | null = null;
 let doneTimeoutId: ReturnType<typeof setTimeout> | null = null;
 let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -17,8 +18,15 @@ let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;
 export function autosaveWithSignal(world: WorldState): boolean {
   if (!getAutosaveEnabled()) return false;
 
-  // Debounce: if a save is already in progress, skip this one
-  if (saveInProgress) return false;
+  // Debounce: if a save is already in progress, don't drop the new world —
+  // stash it so the trailing flush below persists the latest state once
+  // the lock clears. Dropping it silently would leave the autosave
+  // permanently stale when this update is the last one of a burst
+  // (e.g. the post-basho publish at END_BASHO).
+  if (saveInProgress) {
+    pendingWorld = world;
+    return false;
+  }
 
   saveInProgress = true;
   signalAutosave("saving");
@@ -37,6 +45,11 @@ export function autosaveWithSignal(world: WorldState): boolean {
   idleTimeoutId = setTimeout(() => {
     signalAutosave("idle");
     saveInProgress = false;
+    if (pendingWorld) {
+      const flushed = pendingWorld;
+      pendingWorld = null;
+      autosaveWithSignal(flushed);
+    }
   }, 2000);
 
   return ok;
