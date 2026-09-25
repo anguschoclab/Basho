@@ -4,10 +4,10 @@ description: Runs the Bard Engine orchestrator for narrative content generation
 disable-model-invocation: true
 ---
 
-Run the Bard Engine orchestrator to generate dynamic narrative templates:
+Run the Bard Engine orchestrator to generate dynamic narrative templates (from the repository root):
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun scripts/bard-orchestrator.ts
+bun scripts/bard-orchestrator.ts
 ```
 
 This generates narrative templates for event domains (basho, recruiting, economy, medical, governance, rivalry, lifecycle, welfare, awards, training, management, facility, narrative) and expands archive.json.
@@ -16,5 +16,5 @@ This generates narrative templates for event domains (basho, recruiting, economy
 
 ```bash
 export GEMINI_API_KEY=your-api-key-here
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun scripts/bard-orchestrator.ts
+bun scripts/bard-orchestrator.ts
 ```

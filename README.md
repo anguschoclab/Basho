@@ -1,4 +1,4 @@
-# Sumo Wrestling Manager Simulation
+# Basho — Sumo Wrestling Manager Simulation
 
 A deep, deterministic sumo wrestling management simulation game. Take on the role of an _Oyakata_ (stablemaster), manage your _heya_ (stable), scout and train _rikishi_ (wrestlers), and guide them up the prestigious _banzuke_ (rankings) to reach the pinnacle of the sport: Yokozuna.
 

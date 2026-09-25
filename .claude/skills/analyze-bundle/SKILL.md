@@ -4,10 +4,10 @@ description: Analyzes bundle size and composition
 disable-model-invocation: true
 ---
 
-Analyze bundle size and composition to identify optimization opportunities:
+Analyze bundle size and composition to identify optimization opportunities (from the repository root):
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun run analyze
+bun run analyze
 ```
 
 This visualizes bundle composition to identify large dependencies and optimization opportunities for performance.

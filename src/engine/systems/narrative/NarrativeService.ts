@@ -1,7 +1,7 @@
 /**
  * src/engine/systems/narrative/NarrativeService.ts
  * ================================================
- * Data-driven Narrative Service for Sumo Manager Pro.
+ * Data-driven Narrative Service for Basho.
  *
  * Responsibilities:
  * - Map numeric values to narrative bands (stat, fatigue, momentum, etc.)

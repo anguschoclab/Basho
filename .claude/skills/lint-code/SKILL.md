@@ -4,10 +4,10 @@ description: Runs ESLint to check code quality and style
 disable-model-invocation: true
 ---
 
-Run ESLint to enforce code standards and catch potential bugs:
+Run ESLint to enforce code standards and catch potential bugs (from the repository root):
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun run lint
+bun run lint
 ```
 
 This checks code quality and maintains consistency across the codebase.

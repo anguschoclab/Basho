@@ -45,7 +45,7 @@ jobs:
         if: success()
         run: |
           git config --global user.name "BardEngine-Bot"
-          git config --global user.email "bard-bot@sumo-manager.pro"
+          git config --global user.email "bard-bot@basho.app"
           git add src/engine/narrative/archive.json
           git commit -m "Auto-generated narrative expansion [skip ci]" || echo "No changes to commit"
           git push

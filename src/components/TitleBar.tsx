@@ -6,7 +6,7 @@ interface TitleBarProps {
   title?: string;
 }
 
-export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
+export function TitleBar({ title = "Basho" }: TitleBarProps) {
   const [isMaximized, setIsMaximized] = useState(false);
 
   useEffect(() => {

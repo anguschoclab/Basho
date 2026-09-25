@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-A comprehensive consolidation review of the `sumo-manager-pro` repository was conducted across 9 phases. All open PRs were evaluated and merged, all stashes were evaluated and disposed, type errors were fixed, flaky audit tests were resolved, accessibility violations were corrected, and the repository was cleaned up.
+A comprehensive consolidation review of the `Basho` repository was conducted across 9 phases. All open PRs were evaluated and merged, all stashes were evaluated and disposed, type errors were fixed, flaky audit tests were resolved, accessibility violations were corrected, and the repository was cleaned up.
 
 **Final status:**
 - Type-check: **0 errors**

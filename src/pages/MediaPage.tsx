@@ -241,7 +241,7 @@ export default function MediaPage() {
   return (
     <AppLayout pageTitle="Media & Press" subNavTabs={ASSOCIATION_TABS} activeSubTab="media">
 
-        <title>Media & Press — Sumo Manager</title>
+        <title>Media & Press — Basho</title>
 
       <div className="space-y-6">
         <PageHeader

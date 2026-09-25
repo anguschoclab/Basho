@@ -25,7 +25,7 @@ export default function YouthAcademyPage() {
   if (!world) {
     return (
       <AppLayout pageTitle="Youth Academy">
-        <title>Youth Academy — Sumo Manager Pro</title>
+        <title>Youth Academy — Basho</title>
         <p className="text-muted-foreground text-sm p-4">No game loaded.</p>
       </AppLayout>
     );
@@ -35,7 +35,7 @@ export default function YouthAcademyPage() {
   if (!playerHeya) {
     return (
       <AppLayout pageTitle="Youth Academy">
-        <title>Youth Academy — Sumo Manager Pro</title>
+        <title>Youth Academy — Basho</title>
         <p className="text-muted-foreground text-sm p-4">No stable found.</p>
       </AppLayout>
     );
@@ -46,7 +46,7 @@ export default function YouthAcademyPage() {
 
   return (
     <AppLayout pageTitle="Youth Academy">
-      <title>Youth Academy — Sumo Manager Pro</title>
+      <title>Youth Academy — Basho</title>
 
       <div className="space-y-4 p-4 max-w-2xl" data-testid="youth-academy-page">
         <YouthAcademyPanel

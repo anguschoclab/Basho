@@ -4,10 +4,10 @@ description: Runs TypeScript type checking without emitting files
 disable-model-invocation: true
 ---
 
-Run TypeScript type checking to catch type errors early:
+Run TypeScript type checking to catch type errors early (from the repository root):
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun run type-check
+bun run type-check
 ```
 
 This validates type safety without full compilation, useful for quick validation before commits.

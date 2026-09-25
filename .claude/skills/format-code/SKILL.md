@@ -4,10 +4,10 @@ description: Runs Prettier to format code consistently
 disable-model-invocation: true
 ---
 
-Run Prettier to format code consistently across the codebase:
+Run Prettier to format code consistently across the codebase (from the repository root):
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun run format
+bun run format
 ```
 
 This maintains consistent code formatting for TypeScript, JavaScript, JSON, CSS, and Markdown files.

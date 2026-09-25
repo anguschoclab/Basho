@@ -210,7 +210,7 @@ function createTray(): void {
     },
   ]);
 
-  tray.setToolTip("Sumo Manager Pro");
+  tray.setToolTip("Basho");
   tray.setContextMenu(contextMenu);
 
   // Show window on tray icon click
@@ -254,7 +254,7 @@ function createMenu(): void {
         },
         { type: "separator" },
         {
-          label: process.platform === "darwin" ? "Quit Sumo Manager Pro" : "Exit",
+          label: process.platform === "darwin" ? "Quit Basho" : "Exit",
           accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
           click: () => {
             app.quit();

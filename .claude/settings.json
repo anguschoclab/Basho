@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"C:/Users/amauricia/onedrive - ubisoft/documents/github/sumo-manager-pro\" && bunx tsc --noEmit --incremental 2>&1 | tail -20"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && bunx tsc --noEmit --incremental 2>&1 | tail -20"
           }
         ]
       }

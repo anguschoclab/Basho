@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Turn the read-only injury dashboard into real decisions — let the player withdraw an injured wrestler from the tournament (kyūjō) and pay for accelerated treatment — so wrestler health (core to the sumo-manager fantasy) has player agency.
+**Goal:** Turn the read-only injury dashboard into real decisions — let the player withdraw an injured wrestler from the tournament (kyūjō) and pay for accelerated treatment — so wrestler health (core to the Basho fantasy) has player agency.
 
 **Architecture:** Two new worker commands (`WITHDRAW_RIKISHI`, `TREAT_INJURY`) backed by two small engine functions that mutate `Rikishi`/`Heya` via `ImpactBuilder`. Add action buttons to the existing `InjuryRecoveryPanel`. No changes to the injury-rolling/recovery tick logic.
 

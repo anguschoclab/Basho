@@ -47,7 +47,7 @@ export default function GlossaryPage() {
   return (
     <AppLayout pageTitle="Glossary">
 
-        <title>Glossary — Sumo Manager Pro</title>
+        <title>Glossary — Basho</title>
 
 
       <div className="space-y-6">

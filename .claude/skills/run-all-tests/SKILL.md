@@ -4,10 +4,10 @@ description: Runs the complete test suite (unit tests)
 disable-model-invocation: true
 ---
 
-Run the complete test suite to verify codebase integrity:
+Run the complete test suite to verify codebase integrity (from the repository root):
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bunx vitest run
+bunx vitest run
 ```
 
 This executes all unit tests (471+ tests) to ensure codebase integrity. This is the standard test command used throughout the codebase.

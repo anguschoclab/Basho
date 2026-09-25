@@ -1,7 +1,7 @@
 /**
  * src/engine/core/RNGRegistry.ts
  * ==============================
- * Unified RNG provider for Sumo Manager Pro.
+ * Unified RNG provider for Basho.
  *
  * Centralizes all seeded randomness to ensure:
  * 1. Cross-system determinism (same seed = same simulation).

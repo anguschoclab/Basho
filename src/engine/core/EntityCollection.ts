@@ -1,7 +1,7 @@
 /**
  * src/engine/core/EntityCollection.ts
  * ===================================
- * Unified entity provider for Sumo Manager Pro.
+ * Unified entity provider for Basho.
  *
  * Provides centralized, pre-filtered, and sorted access to WorldState entities.
  * USE THIS instead of manual iteration (e.g., Array.from(world.rikishi.values()))

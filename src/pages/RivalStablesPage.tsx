@@ -24,7 +24,7 @@ export default function RivalStablesPage() {
   if (!world) {
     return (
       <AppLayout pageTitle="Rival Stables">
-        <title>Rival Stables — Sumo Manager Pro</title>
+        <title>Rival Stables — Basho</title>
         <p className="text-muted-foreground text-sm p-4">No game loaded.</p>
       </AppLayout>
     );
@@ -39,7 +39,7 @@ export default function RivalStablesPage() {
 
   return (
     <AppLayout pageTitle="Rival Stables">
-      <title>Rival Stables — Sumo Manager Pro</title>
+      <title>Rival Stables — Basho</title>
 
       <div className="space-y-4 p-4" data-testid="rival-stables-page">
         <div className="flex items-center gap-2">

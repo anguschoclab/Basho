@@ -1,8 +1,8 @@
-# Agent Architecture Plan for Sumo Manager Pro
+# Agent Architecture Plan for Basho
 
 ## Executive Summary
 
-This document outlines a comprehensive agent architecture for the Sumo Manager Pro codebase. Based on exhaustive codebase analysis, I've identified key decision points where specialized agents can enhance NPC AI behavior, simulation realism, and system maintainability.
+This document outlines a comprehensive agent architecture for the Basho codebase. Based on exhaustive codebase analysis, I've identified key decision points where specialized agents can enhance NPC AI behavior, simulation realism, and system maintainability.
 
 ## Current Architecture Analysis
 

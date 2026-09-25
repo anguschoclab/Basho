@@ -1,7 +1,7 @@
 /**
  * src/engine/types/crises.ts
  *
- * Defines the Interactive Crisis System imported from Studio-Boss.
+ * Defines the Interactive Crisis System.
  * Crises represent ongoing narrative threats that require a player's
  * interactive choice to resolve, rather than passive logging.
  */

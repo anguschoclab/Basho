@@ -1,4 +1,4 @@
-# Sumo Manager Pro — UI/UX Design Bible
+# Basho — UI/UX Design Bible
 
 **Version 1.0 · Kokugikan Noir Design System**
 
@@ -8,7 +8,7 @@
 
 ### 1.1 Concept: Kokugikan Noir
 
-The visual identity of Sumo Manager Pro is rooted in a single conceptual space: **the Kokugikan arena at night**. The crowd is silent, the dohyo is spotlit, the ceremony is about to begin. Everything outside the ring is darkness. Everything inside it is gold.
+The visual identity of Basho is rooted in a single conceptual space: **the Kokugikan arena at night**. The crowd is silent, the dohyo is spotlit, the ceremony is about to begin. Everything outside the ring is darkness. Everything inside it is gold.
 
 This concept drives every design decision:
 

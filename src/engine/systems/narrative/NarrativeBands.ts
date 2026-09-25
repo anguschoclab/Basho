@@ -1,7 +1,7 @@
 /**
  * src/engine/systems/narrative/NarrativeBands.ts
  * ==============================================
- * Declarative band definitions for Sumo Manager Pro.
+ * Declarative band definitions for Basho.
  *
  * Defines the [min, max) ranges for qualitative descriptors.
  * Used by the Hysteresis Engine to translate raw numbers into labels.

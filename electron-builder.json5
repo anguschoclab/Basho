@@ -1,6 +1,6 @@
 {
-  appId: "com.sumo-manager-pro.app",
-  productName: "Sumo Manager Pro",
+  appId: "com.basho.app",
+  productName: "Basho",
   copyright: "Copyright © 2026",
   directories: {
     buildResources: "resources",

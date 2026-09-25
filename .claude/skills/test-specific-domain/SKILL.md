@@ -4,10 +4,10 @@ description: Runs tests for a specific engine domain (banzuke, matchmaking, life
 disable-model-invocation: true
 ---
 
-Run tests for a specific engine domain without running the full test suite:
+Run tests for a specific engine domain without running the full test suite (from the repository root):
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bunx vitest run src/engine/__tests__/{domain}/*.test.ts
+bunx vitest run src/engine/__tests__/{domain}/*.test.ts
 ```
 
 Replace `{domain}` with the specific domain you want to test. Examples:

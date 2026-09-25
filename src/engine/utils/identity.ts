@@ -2,7 +2,7 @@ import type { Rikishi } from "../types/rikishi";
 
 /**
  * Canon check for 'foreign' status (used in naturalization and roster caps).
- * In Sumo Manager Pro, "Foreign" is defined as any rikishi whose nationality
+ * In Basho, "Foreign" is defined as any rikishi whose nationality
  * is NOT Japan, regardless of origin.
  */
 export function isForeign(rikishi: { nationality?: string }): boolean {

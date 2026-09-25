@@ -69,7 +69,7 @@ export function MainMenuFooter({
           Reach the Summit — 頂点を目指せ
         </p>
         <p className="text-[9px] font-mono text-muted-foreground/30 uppercase tracking-widest">
-          © {COPYRIGHT_YEAR} Sumo Manager Pro · Institutional Grade Simulation
+          © {COPYRIGHT_YEAR} Basho · Institutional Grade Simulation
         </p>
       </div>
     </footer>

@@ -1,4 +1,4 @@
-# Sumo Manager Pro — Player's Manual
+# Basho — Player's Manual
 
 > You are the Oyakata. You run the stable. You build the dynasty.
 
@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-1. [What Is Sumo Manager Pro?](#1-what-is-sumo-manager-pro)
+1. [What Is Basho?](#1-what-is-basho)
 2. [Getting Started](#2-getting-started)
 3. [The Game Interface](#3-the-game-interface)
 4. [The Sumo Calendar](#4-the-sumo-calendar)
@@ -31,9 +31,9 @@
 
 ---
 
-## 1. What Is Sumo Manager Pro?
+## 1. What Is Basho?
 
-Sumo Manager Pro is a deep management simulation set in the world of professional sumo wrestling. You play as an **Oyakata** — the master of a sumo stable (Heya) — responsible for every aspect of running your organisation: recruiting young wrestlers, training them to elite level, managing finances, navigating the political landscape of the Japan Sumo Association, and ultimately competing in six grand tournaments (Basho) per year.
+Basho is a deep management simulation set in the world of professional sumo wrestling. You play as an **Oyakata** — the master of a sumo stable (Heya) — responsible for every aspect of running your organisation: recruiting young wrestlers, training them to elite level, managing finances, navigating the political landscape of the Japan Sumo Association, and ultimately competing in six grand tournaments (Basho) per year.
 
 The game simulates a living sumo world with dozens of other stables, each run by AI opponents with their own personalities, ambitions, and strategies. Wrestlers are born, develop, peak, age, and retire. Dynasties rise and fall. Your goal is to build a **legendary Heya** — one that stamps its name on the history books.
 
@@ -977,4 +977,4 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 
 ---
 
-_Sumo Manager Pro — build your heya, forge your dynasty._
+_Basho — build your heya, forge your dynasty._

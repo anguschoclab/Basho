@@ -3,7 +3,7 @@ When running shell commands or passing file paths, **always wrap paths in double
 
 ---
 
-# Sumo Manager Pro — Codebase Reference
+# Basho — Codebase Reference
 
 ## Stack
 - **Vite + React 19 + TypeScript** (NOT Next.js — never add "use client")

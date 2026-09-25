@@ -1,7 +1,7 @@
 /**
  * src/engine/systems/recruitment/FogOfWarService.ts
  * =================================================
- * Pure fog of war calculation logic for Sumo Manager Pro.
+ * Pure fog of war calculation logic for Basho.
  *
  * Contains deterministic algorithms for:
  * 1. Scouting Level

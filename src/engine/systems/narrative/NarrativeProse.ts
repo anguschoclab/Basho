@@ -1,7 +1,7 @@
 /**
  * src/engine/systems/narrative/NarrativeProse.ts
  * ==============================================
- * Data-driven labels and flavor text for Sumo Manager Pro.
+ * Data-driven labels and flavor text for Basho.
  *
  * Wired to the Bard Engine for centralized, randomized narrative generation.
  * All functions require a SeededRNG to ensure simulation determinism.

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "studio-boss",
+      "name": "basho",
       "dependencies": {
         "@radix-ui/react-alert-dialog": "^1.1.23",
         "@radix-ui/react-collapsible": "^1.1.20",

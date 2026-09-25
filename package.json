@@ -1,6 +1,6 @@
 {
-  "name": "studio-boss",
-  "productName": "Studio Boss",
+  "name": "basho",
+  "productName": "Basho",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -36,9 +36,9 @@
     "electron:pack": "vite build && electron-builder --dir"
   },
   "build": {
-    "appId": "com.studioboss.app",
-    "productName": "Studio Boss",
-    "copyright": "Copyright © 2025 Studio Boss",
+    "appId": "com.basho.app",
+    "productName": "Basho",
+    "copyright": "Copyright © 2026",
     "mac": {
       "category": "public.app-category.games",
       "target": [

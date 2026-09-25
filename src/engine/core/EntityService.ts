@@ -1,7 +1,7 @@
 /**
  * src/engine/core/EntityService.ts
  * ================================
- * Centralized State Management for Sumo Manager Pro.
+ * Centralized State Management for Basho.
  *
  * Provides generic, type-safe helpers for:
  * 1. State Hydration (ensuring a sub-state exists)

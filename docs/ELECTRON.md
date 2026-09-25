@@ -1,6 +1,6 @@
-# Sumo Manager Pro — Desktop App (Electron)
+# Basho — Desktop App (Electron)
 
-Sumo Manager Pro ships as both a **web PWA** (`bun run dev`) and a **native desktop app** via Electron. This document covers everything needed to run, build, and package the desktop version.
+Basho ships as both a **web PWA** (`bun run dev`) and a **native desktop app** via Electron. This document covers everything needed to run, build, and package the desktop version.
 
 ---
 
@@ -94,17 +94,17 @@ After `bun run electron:build:mac`:
 
 ```
 dist-electron/
-├── Sumo Manager Pro-0.0.0.dmg          ← Mac installer (x64)
-├── Sumo Manager Pro-0.0.0-arm64.dmg    ← Mac installer (Apple Silicon)
-├── Sumo Manager Pro-0.0.0-mac.zip      ← Mac zip (x64)
-└── Sumo Manager Pro-0.0.0-arm64-mac.zip
+├── Basho-0.0.0.dmg          ← Mac installer (x64)
+├── Basho-0.0.0-arm64.dmg    ← Mac installer (Apple Silicon)
+├── Basho-0.0.0-mac.zip      ← Mac zip (x64)
+└── Basho-0.0.0-arm64-mac.zip
 ```
 
 After `bun run electron:build:win`:
 
 ```
 dist-electron/
-└── Sumo Manager Pro Setup 0.0.0.exe    ← Windows NSIS installer (x64)
+└── Basho Setup 0.0.0.exe    ← Windows NSIS installer (x64)
 ```
 
 ---

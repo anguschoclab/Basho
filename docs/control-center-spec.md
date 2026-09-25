@@ -2,7 +2,7 @@
 
 **Companion to `design-bible.md` · Kokugikan Noir v1.0**
 
-The Control Center is the canonical page template for Sumo Manager Pro. Every primary page (Roster, Basho, Finances, Banzuke, Federation, Press, Rivals…) is a variation on its anatomy. This document captures what the Control Center _is_, and how to port its patterns to the rest of the game.
+The Control Center is the canonical page template for Basho. Every primary page (Roster, Basho, Finances, Banzuke, Federation, Press, Rivals…) is a variation on its anatomy. This document captures what the Control Center _is_, and how to port its patterns to the rest of the game.
 
 ---
 

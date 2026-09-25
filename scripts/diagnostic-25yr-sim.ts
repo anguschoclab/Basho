@@ -148,7 +148,7 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 console.log(`\n${"═".repeat(70)}`);
-console.log(`  Sumo Manager Pro — 25-Year NPC Headless Diagnostic`);
+console.log(`  Basho — 25-Year NPC Headless Diagnostic`);
 console.log(`  Seed: ${SEED}  |  Target: ${YEARS} years (${YEARS * 6} basho)`);
 console.log(`${"═".repeat(70)}\n`);
 

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The **Bard Engine v2.2** is a centralized, data-driven narrative synthesis system for _Sumo Manager Pro_. Its primary mission is to decouple game-state simulation from linguistic presentation, allowing for complex, context-aware storytelling that remains perfectly deterministic.
+The **Bard Engine v2.2** is a centralized, data-driven narrative synthesis system for _Basho_. Its primary mission is to decouple game-state simulation from linguistic presentation, allowing for complex, context-aware storytelling that remains perfectly deterministic.
 
 ## System Architecture
 
