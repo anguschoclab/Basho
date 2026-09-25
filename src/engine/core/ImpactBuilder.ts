@@ -367,6 +367,8 @@ export class ImpactBuilder {
       | "gyojiPool"
       | "shimpanPool"
       | "boutTactics"
+      | "currentBanzuke"
+      | "historyIndex"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {

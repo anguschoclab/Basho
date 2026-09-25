@@ -29,24 +29,19 @@ export function BanzukeReveal({
   const [entries, setEntries] = useState<RevealEntry[]>([]);
 
   useEffect(() => {
-    // Use provided entries or fall back to mock data
-    if (entriesProp && entriesProp.length > 0) {
-      setEntries(entriesProp);
-    } else {
-      // Mocking entries for demonstration based on digest/world hist
-      // In real use, this would compare state.world with state.prevWorld
-      const mockEntries: RevealEntry[] = [
-        { id: "1", shikona: "Hakuho", oldRank: "Yokozuna", newRank: "Yokozuna", change: "none" },
-        { id: "2", shikona: "Terunofuji", oldRank: "Ozeki", newRank: "Yokozuna", change: "up" },
-        { id: "3", shikona: "Asanoyama", oldRank: "Ozeki", newRank: "Maegashira", change: "down" },
-      ];
-      setEntries(mockEntries);
+    const list = entriesProp ?? [];
+    setEntries(list);
+
+    if (list.length === 0) {
+      // No real rank changes to reveal — complete rather than fabricate.
+      const timer = setTimeout(onComplete, 500);
+      return () => clearTimeout(timer);
     }
 
     // Initial delay
     const timer = setTimeout(() => setCurrentIndex(0), 1000);
     return () => clearTimeout(timer);
-  }, [entriesProp]);
+  }, [entriesProp, onComplete]);
 
   useEffect(() => {
     if (currentIndex >= 0 && currentIndex < entries.length) {

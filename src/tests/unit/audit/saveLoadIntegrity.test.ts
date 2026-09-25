@@ -168,6 +168,67 @@ describe("L4.9: save/load integrity — field parity", () => {
     expect(loaded.sparringPairs).toBeInstanceOf(Map);
     expect(loaded.sparringPairs?.get("heya-0")).toEqual({ pairs: [] });
   });
+
+  it("round-trips currentBanzuke and historyIndex (banzuke snapshot persistence)", () => {
+    const world = makeMockWorld();
+    world.currentBanzuke = {
+      year: 2025,
+      bashoNumber: 2,
+      divisions: {
+        makuuchi: {
+          division: "makuuchi",
+          slots: [{ rank: "yokozuna", side: "east" }],
+          assignments: [
+            { rikishiId: "r1", position: { rank: "yokozuna", side: "east" } },
+          ],
+        },
+        juryo: { division: "juryo", slots: [], assignments: [] },
+        makushita: { division: "makushita", slots: [], assignments: [] },
+        sandanme: { division: "sandanme", slots: [], assignments: [] },
+        jonidan: { division: "jonidan", slots: [], assignments: [] },
+        jonokuchi: { division: "jonokuchi", slots: [], assignments: [] },
+      },
+    };
+    world.historyIndex = {
+      version: "1.0.0",
+      bashoKeys: ["2025-1"],
+      basho: {
+        "2025-1": {
+          bashoKey: "2025-1",
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          yusho: "r1",
+          junYusho: [],
+          hasBanzukeSnapshot: true,
+          sortKey: "202501",
+        },
+      },
+      banzukeByBasho: { "2025-1": world.currentBanzuke },
+      rikishi: {
+        r1: [
+          {
+            bashoKey: "2025-1",
+            year: 2025,
+            bashoNumber: 1,
+            bashoName: "hatsu",
+            rikishiId: "r1",
+            yusho: true,
+            wins: 14,
+            losses: 1,
+          },
+        ],
+      },
+      lastSeenBashoForRikishi: { r1: "2025-1" },
+    };
+
+    const loaded = SerializationService.deserializeWorld(
+      JSON.parse(JSON.stringify(SerializationService.serializeWorld(world)))
+    );
+
+    expect(loaded.currentBanzuke).toEqual(world.currentBanzuke);
+    expect(loaded.historyIndex).toEqual(world.historyIndex);
+  });
 });
 
 describe("L4.9: save/load integrity — unbounded growth", () => {

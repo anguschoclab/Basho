@@ -3,7 +3,9 @@ import type { BashoState } from "../types/basho";
 import { toRankPosition } from "../types/index";
 import type { BashoPerformance, BanzukeEntry } from "../banzuke";
 import type { MovementEvent } from "../types/banzuke";
-import { getNextBasho } from "../calendar";
+import { getNextBasho, getBashoNumber } from "../calendar";
+import { buildBanzukeSnapshot } from "./banzukeSnapshot";
+import { createEmptyHistoryIndex, indexBashoResult, makeBashoKey } from "../historyIndex";
 import { enterInterim } from "../tick/tickDaily";
 import { updateBanzuke, generateKeshoForPromotions } from "../banzuke";
 import { createImpactBuilder } from "../core/ImpactBuilder";
@@ -77,14 +79,14 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   for (const [id, stats_any] of standingEntries) {
     const stats = stats_any as { wins: number; losses: number; absences: number };
     const history = world.history[world.history.length - 1];
-    const isYusho = history.yusho === id;
-    const isJunYusho = history.junYusho.includes(id);
+    const isYusho = history?.yusho === id;
+    const isJunYusho = history?.junYusho?.includes(id) ?? false;
     const rikishi = getRikishi(world, id);
 
     let prizePoints = 0;
-    if (history.ginoSho === id) prizePoints += 1;
-    if (history.shukunsho === id) prizePoints += 1;
-    if (history.kantosho === id) prizePoints += 1;
+    if (history?.ginoSho === id) prizePoints += 1;
+    if (history?.shukunsho === id) prizePoints += 1;
+    if (history?.kantosho === id) prizePoints += 1;
 
     // Yokozuna promotion logic based on real sumo criteria
     // Standard: 2 consecutive yusho OR 1 yusho + 1 jun-yusho (13+ wins both)
@@ -244,9 +246,9 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         isYusho,
         isJunYusho,
         specialPrizes: {
-          shukunsho: history.shukunsho === id,
-          kantosho: history.kantosho === id,
-          ginosho: history.ginoSho === id,
+          shukunsho: history?.shukunsho === id,
+          kantosho: history?.kantosho === id,
+          ginosho: history?.ginoSho === id,
         },
         weight: rikishi.weight,
         momentum: rikishi.momentum,
@@ -653,6 +655,51 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   }
 
   const next = getNextBasho(lastBasho.bashoName);
+
+  // ── Banzuke snapshot persistence ─────────────────────────────────────────
+  // Freeze the banzuke this publish produced (world.currentBanzuke +
+  // history[last].nextBanzuke) and register it in the history index keyed by
+  // the producing basho — the convention indexBashoResult and RecapPage's
+  // previous-basho lookup already use. The snapshot's own year/bashoNumber
+  // describe the basho the banzuke applies to (the upcoming one), so the
+  // fought-on snapshot for the completed basho is self-healed under the
+  // previous basho's key when absent (inaugural basho / legacy worlds).
+  const completedBashoNumber = lastBasho.bashoNumber;
+  const completedKey = makeBashoKey(lastBasho.year, completedBashoNumber);
+  const prevYear = completedBashoNumber === 1 ? lastBasho.year - 1 : lastBasho.year;
+  const prevBashoNumber = (
+    completedBashoNumber === 1 ? 6 : completedBashoNumber - 1
+  ) as 1 | 2 | 3 | 4 | 5 | 6;
+  const prevKey = makeBashoKey(prevYear, prevBashoNumber);
+
+  const nextYear = next === "hatsu" ? lastBasho.year + 1 : lastBasho.year;
+  const newSnapshot = buildBanzukeSnapshot(
+    result.newBanzuke,
+    nextYear,
+    getBashoNumber(next)
+  );
+  const foughtOnSnapshot = buildBanzukeSnapshot(
+    currentBanzukeList,
+    lastBasho.year,
+    completedBashoNumber
+  );
+
+  builder.updateWorldField("currentBanzuke", newSnapshot);
+
+  const idx = structuredClone(world.historyIndex ?? createEmptyHistoryIndex());
+  const lastResult = world.history[world.history.length - 1];
+  if (lastResult) {
+    const patchedResult = { ...lastResult, nextBanzuke: newSnapshot };
+    builder.updateWorldField("history", [...world.history.slice(0, -1), patchedResult]);
+    // indexBashoResult mutates the index object in place (basho summary,
+    // nextBanzuke registration, per-rikishi entries) — point it at the clone.
+    indexBashoResult({ ...world, historyIndex: idx }, patchedResult);
+  }
+  idx.banzukeByBasho[prevKey] ??= foughtOnSnapshot;
+  idx.banzukeByBasho[completedKey] = newSnapshot;
+  const bashoSummary = idx.basho[completedKey];
+  if (bashoSummary) bashoSummary.hasBanzukeSnapshot = true;
+  builder.updateWorldField("historyIndex", idx);
 
   builder.updateWorldField("currentBashoName", next);
   builder.updateWorldField("currentBasho", undefined);
