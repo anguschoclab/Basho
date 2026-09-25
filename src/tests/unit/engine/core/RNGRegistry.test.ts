@@ -10,6 +10,10 @@ describe("RNGRegistry", () => {
     },
   } as unknown as WorldState;
 
+  const mockWorldNoCalendar: WorldState = {
+    seed: "test-seed"
+  } as unknown as WorldState;
+
   const mockWorldDefaultSeed: WorldState = {
     calendar: {
       currentWeek: 4,
@@ -44,11 +48,21 @@ describe("RNGRegistry", () => {
       const rng = RNGRegistry.getTrainingRNG(mockWorld);
       expect(rng).toHaveProperty("next");
     });
+
+    it("should handle missing calendar gracefully", () => {
+      const rng = RNGRegistry.getTrainingRNG(mockWorldNoCalendar);
+      expect(rng).toHaveProperty("next");
+    });
   });
 
   describe("getScoutingRNG", () => {
     it("should generate a seeded RNG for scouting", () => {
       const rng = RNGRegistry.getScoutingRNG(mockWorld);
+      expect(rng).toHaveProperty("next");
+    });
+
+    it("should handle missing calendar gracefully", () => {
+      const rng = RNGRegistry.getScoutingRNG(mockWorldNoCalendar);
       expect(rng).toHaveProperty("next");
     });
   });
