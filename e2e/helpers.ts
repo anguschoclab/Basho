@@ -68,16 +68,23 @@ export async function waitForAutosaveWorld(
 
 /**
  * Main Menu → Manual Seed → enter `seed` → Sync Seed.
- * createWorld() regenerates the whole world (async, worker); wait for the
- * stable selection cards to reappear before continuing.
+ *
+ * createWorld() is fire-and-forget: it only sends START_WORLD to the
+ * worker, and the previous world's stable cards stay rendered until the
+ * worker emits WORLD_UPDATED. Waiting for "a stable card" is therefore a
+ * race — the visible card may belong to the boot world (random timestamp
+ * seed) and carry a heyaId that doesn't exist in the seeded world.
+ * Instead, wait for the seeded world to reach UI state, proven by its
+ * autosave (the GameContext effect autosaves every world update, and
+ * serializeWorld stamps `seed` first).
  */
 export async function setWorldSeed(page: Page, seed: string): Promise<void> {
   await page.getByRole("button", { name: /Manual Seed/i }).click();
   await page.getByPlaceholder(/Enter specific world seed/i).fill(seed);
   await page.getByRole("button", { name: /Sync Seed/i }).click();
-  // World regenerates — stable cards vanish then re-render.
+  await waitForAutosaveWorld(page, `(w) => w.seed === ${JSON.stringify(seed)}`, 180_000);
   await expect(page.locator(".space-y-6 .grid .cursor-pointer").first()).toBeVisible({
-    timeout: 120_000,
+    timeout: 60_000,
   });
 }
 
@@ -190,6 +197,46 @@ export async function advanceToBasho(page: Page): Promise<void> {
     }
   }
   await expect(simAllBtn).toBeVisible({ timeout: 10_000 });
+}
+
+/** Dismiss queued retirement ceremonies (IntaiCeremony dialog) if present. */
+export async function dismissRetirementCeremonies(page: Page): Promise<void> {
+  for (let i = 0; i < 10; i++) {
+    const ackBtn = page.getByRole("button", { name: /Acknowledge Retirement/i }).first();
+    if (await ackBtn.isVisible().catch(() => false)) {
+      await ackBtn.click();
+      await page.waitForTimeout(500);
+    } else {
+      break;
+    }
+  }
+}
+
+/**
+ * From the Recap page: clear ceremony overlays, click "Finalize Basho",
+ * and wait for the dashboard.
+ */
+export async function finalizeRecap(page: Page): Promise<void> {
+  await dismissRetirementCeremonies(page);
+  await resolveCrisisIfPresent(page);
+  await page.getByRole("button", { name: /Finalize Basho/i }).first().click();
+  await page.waitForURL("**/dashboard", { timeout: 10_000 });
+}
+
+/** Advance the interim simulation by `days` via the calendar Day button. */
+export async function advanceDays(page: Page, days: number): Promise<void> {
+  const dayBtn = page
+    .getByRole("button", { name: /Advance the simulation by one day/i })
+    .first();
+  const continueBtn = page.getByRole("button", { name: /Continue|Start Basho/i }).first();
+  for (let i = 0; i < days; i++) {
+    if (await dayBtn.isVisible().catch(() => false)) {
+      await dayBtn.click();
+    } else if (await continueBtn.isVisible().catch(() => false)) {
+      await continueBtn.click();
+    }
+    await page.waitForTimeout(800);
+  }
 }
 
 /** Resolve a blocking crisis/decision modal if one is currently displayed. Returns true if one was handled. */
