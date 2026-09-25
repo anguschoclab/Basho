@@ -12,6 +12,12 @@ export interface H2HRecord {
     day: number;
     year: number;
   } | null;
+  /**
+   * The current consecutive match streak for the perspective rikishi against this opponent.
+   * Uses its sign to encode directionality: positive for active winning streaks,
+   * negative for active losing streaks. Resets directly to 1 or -1 on a streak break,
+   * strictly avoiding 0. This invariant drives narrative logic (e.g. `generateH2HCommentary`).
+   */
   streak: number;
 }
 
