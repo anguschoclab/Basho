@@ -305,11 +305,11 @@ async function tryClick(
  * Returns true if a dialog was handled.
  */
 export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
-  // Radix aria-hides the rest of the app (and any covered dialogs) while a
-  // modal is open, so getByRole can't see inside. Use CSS locators and
-  // resolve dialogs topmost-last; each handled dialog returns true so the
-  // caller loops until none remain.
-  const dialogs = page.locator('[role="dialog"][data-state="open"]:not([aria-hidden="true"])');
+  // Radix aria-hides covered layers — but the topmost dialog can also be
+  // flagged aria-hidden transiently, so do NOT filter it out. Use CSS
+  // locators (getByRole skips aria-hidden subtrees) and resolve dialogs
+  // topmost-last; each handled dialog returns true so the caller loops.
+  const dialogs = page.locator('[role="dialog"][data-state="open"]');
   const count = await dialogs.count().catch(() => 0);
   if (count === 0) return false;
 

@@ -21,7 +21,6 @@ import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeyaCount, getRikishi, getOyakata } from "@/presenters/worldAccess";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
-import { CrisisModal } from "@/components/game/CrisisModal";
 import { SuccessionModal } from "@/components/stable/SuccessionModal";
 
 import { PageHeader, StatCard, ListCard, ProgressRow } from "@/components/layout/control-center";
@@ -549,8 +548,6 @@ export default function Dashboard() {
           />
         );
       })()}
-
-      <CrisisModal />
     </AppLayout>
   );
 }
