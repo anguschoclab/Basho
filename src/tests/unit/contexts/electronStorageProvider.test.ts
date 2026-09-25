@@ -251,7 +251,16 @@ describe("ElectronStorageProvider", () => {
     it("delegates setItem to localStorage.setItem", () => {
       provider.setItem("test-key", "test-value");
 
-      expect(localStorageMock.getItem("test-key")).toBe("test-value");
+      // Values are LZ-compressed to fit the localStorage quota; the
+      // contract is a lossless round-trip through the provider.
+      expect(provider.getItem("test-key")).toBe("test-value");
+      expect(localStorageMock.getItem("test-key")).toMatch(/^lz16:/);
+    });
+
+    it("reads legacy uncompressed values unchanged", () => {
+      localStorageMock.setItem("test-key", "plain-json-value");
+
+      expect(provider.getItem("test-key")).toBe("plain-json-value");
     });
 
     it("delegates removeItem to localStorage.removeItem", () => {
