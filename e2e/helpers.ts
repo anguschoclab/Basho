@@ -153,30 +153,40 @@ export async function advanceToBasho(page: Page): Promise<void> {
   const simAllBtn = page
     .getByRole("button", { name: /Automatically simulate the remainder/i })
     .first();
-  for (let i = 0; i < 60; i++) {
+  const weekBtn = page
+    .getByRole("button", { name: /Progress simulation by one full week/i })
+    .first();
+  const continueBtn = page.getByRole("button", { name: /Continue|Start Basho/i }).first();
+  const dayBtn = page
+    .getByRole("button", { name: /Advance the simulation by one day/i })
+    .first();
+
+  // Wait for the dashboard's advance controls to mount — the dashboard
+  // lazy-renders after the wizard navigation and an early poll sees none
+  // of them, which would break the loop on its first iteration.
+  await expect(
+    simAllBtn.or(weekBtn).or(continueBtn).or(dayBtn).first()
+  ).toBeVisible({ timeout: 30_000 });
+
+  for (let i = 0; i < 120; i++) {
     if (await simAllBtn.isVisible().catch(() => false)) return;
 
-    const weekBtn = page
-      .getByRole("button", { name: /Progress simulation by one full week/i })
-      .first();
-    const continueBtn = page.getByRole("button", { name: /Continue|Start Basho/i }).first();
+    // A blocking decision can halt the interim advance — resolve it so
+    // the next tick can proceed.
+    if (await resolveCrisisIfPresent(page)) continue;
 
     if (await weekBtn.isVisible().catch(() => false)) {
       await weekBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(700);
     } else if (await continueBtn.isVisible().catch(() => false)) {
       await continueBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(700);
+    } else if (await dayBtn.isVisible().catch(() => false)) {
+      await dayBtn.click();
+      await page.waitForTimeout(700);
     } else {
-      const dayBtn = page
-        .getByRole("button", { name: /Advance the simulation by one day/i })
-        .first();
-      if (await dayBtn.isVisible().catch(() => false)) {
-        await dayBtn.click();
-        await page.waitForTimeout(500);
-      } else {
-        break;
-      }
+      // Controls briefly unmount during world sync — keep polling.
+      await page.waitForTimeout(1000);
     }
   }
   await expect(simAllBtn).toBeVisible({ timeout: 10_000 });
