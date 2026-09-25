@@ -206,11 +206,14 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
       type: "loop_decision",
       title: first.description,
       description: first.description,
+      // No impactGenerator on stored options — functions can't survive
+      // structuredClone (worker sync) or JSON saves. Loop decisions are
+      // resolved by resolveLoopDecision via applyDecisionEffect, which
+      // looks the decision up in pendingDecisions by id.
       options: first.options.map((o) => ({
         id: o.id,
         label: o.label,
         description: o.impact,
-        impactGenerator: () => createImpactBuilder("loopDecision").build(),
       })),
     });
   }

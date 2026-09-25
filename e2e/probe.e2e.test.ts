@@ -51,12 +51,35 @@ test("probe: worker messages around Week advance", async ({ page }) => {
   const dump = async (label: string) => {
     const events = await page.evaluate(() => (window as any).__workerEvents);
     const w = await readAutosaveWorld(page);
+    const calText = await page
+      .getByText(/Week \d+|Day \d+/i)
+      .first()
+      .innerText()
+      .catch(() => "?");
+    const dialogOpen = await page
+      .locator('[role="dialog"][data-state="open"]')
+      .first()
+      .isVisible()
+      .catch(() => false);
+    const dialogText = dialogOpen
+      ? await page
+          .locator('[role="dialog"][data-state="open"]')
+          .first()
+          .innerText()
+          .catch(() => "?")
+      : null;
     console.log(
       label,
       JSON.stringify({
+        url: page.url().replace(/.*localhost:\d+/, ""),
+        calText,
         day: w?.dayIndexGlobal,
         week: w?.week,
         phase: w?.cyclePhase,
+        bashoDay: w?.currentBasho?.day,
+        pendingCrisis: w?.pendingCrisis ? { id: w.pendingCrisis.id, type: w.pendingCrisis.type } : null,
+        reqDecisions: (w?.pendingDecisions ?? []).filter((d: any) => d.required).length,
+        dialog: dialogText ? dialogText.slice(0, 120) : null,
         eventsTail: (events ?? []).slice(-8),
       })
     );
@@ -75,5 +98,15 @@ test("probe: worker messages around Week advance", async ({ page }) => {
   for (let i = 0; i < 6; i++) {
     await page.waitForTimeout(5000);
     await dump(`T+${(i + 1) * 5}s:`);
+    // resolve any crisis modal and click again
+    const dialog = page.locator('[role="dialog"][data-state="open"]').first();
+    if (await dialog.isVisible().catch(() => false)) {
+      const btn = dialog.getByRole("button").first();
+      await btn.click().catch(() => {});
+      console.log("resolved dialog");
+    }
+    if (await weekBtn.isVisible().catch(() => false)) {
+      await weekBtn.click().catch(() => console.log("week click blocked"));
+    }
   }
 });

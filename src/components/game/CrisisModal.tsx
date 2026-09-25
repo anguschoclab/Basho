@@ -90,11 +90,19 @@ export function CrisisModal() {
     }
   }, [crisis]);
 
-  if (!crisis || !isOpen) return null;
+  const isWorldBacked = crisis?.type === "loop_decision" || crisis?.type === "pending_crisis";
+  // World-backed crises derive open state from the world's pendingCrisis —
+  // it cannot be dismissed without resolving (ESC/outside-click would
+  // softlock a halted sim, since nothing re-triggers the modal while the
+  // world is unchanged). Welfare/digest crises remain dismissible.
+  const open = isWorldBacked ? !!crisis : isOpen;
+
+  if (!crisis || !open) return null;
 
   const handleResolve = (choiceId: string, choiceLabel?: string) => {
     if (!crisis.id) return;
-    if (crisis.type === "loop_decision" || crisis.type === "pending_crisis") {
+    const isWorldBacked = crisis.type === "loop_decision" || crisis.type === "pending_crisis";
+    if (isWorldBacked) {
       // pendingCrisis may be a loop_decision; check the world state
       const isLoop = world?.pendingCrisis?.type === "loop_decision";
       if (isLoop) {
@@ -111,18 +119,23 @@ export function CrisisModal() {
           choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
         });
       }
-    } else {
-      sendCommand({
-        type: "RESOLVE_CRISIS",
-        crisisId: crisis.id,
-        choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
-      });
+      // Do NOT close optimistically: the world clears pendingCrisis on a
+      // successful resolve, which closes the modal via `crisis` → null.
+      // If the command was dropped (tick in progress) or failed, the
+      // modal must stay open — otherwise a halted sim softlocks with no
+      // way to re-attempt the resolution.
+      return;
     }
+    sendCommand({
+      type: "RESOLVE_CRISIS",
+      crisisId: crisis.id,
+      choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
+    });
     setIsOpen(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={open} onOpenChange={isWorldBacked ? () => {} : setIsOpen}>
       <DialogContent className="max-w-md border-destructive/50">
         <DialogHeader>
           <div className="flex items-center gap-2 text-destructive mb-2">

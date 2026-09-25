@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import LZString from "lz-string";
 
 /**
  * Shared Playwright helpers for full-stack lifecycle E2E specs.
@@ -16,20 +17,32 @@ import { expect, type Page } from "@playwright/test";
 
 export const AUTOSAVE_KEY = "basho_save_autosave";
 
+/**
+ * The web storage fallback LZ-compresses save values (`lz16:` prefix in
+ * electronStorageProvider). localStorage reads therefore need to decode
+ * before JSON.parse. Decompression can't run inside page.evaluate, so the
+ * raw string is pulled out and decoded on the Node side.
+ */
+export async function readAutosaveSave(page: Page): Promise<any> {
+  const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
+  if (!raw) return null;
+  const json = raw.startsWith("lz16:")
+    ? LZString.decompressFromUTF16(raw.slice(5))
+    : raw;
+  if (!json) return null;
+  try {
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type SerializedWorld = any;
 
 /** Read the autosave's serialized world, or null if absent/unparseable. */
 export async function readAutosaveWorld(page: Page): Promise<SerializedWorld | null> {
-  return page.evaluate((key) => {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw)?.world ?? null;
-    } catch {
-      return null;
-    }
-  }, AUTOSAVE_KEY);
+  return (await readAutosaveSave(page))?.world ?? null;
 }
 
 /**
@@ -45,25 +58,29 @@ export async function waitForAutosaveWorld(
   predicateSrc: string,
   timeout = 120_000
 ): Promise<SerializedWorld> {
-  await page.waitForFunction(
-    ({ key, src }) => {
-      const raw = localStorage.getItem(key);
-      if (!raw) return false;
+  // Node-side polling — the stored value is LZ-compressed in the web
+  // fallback, so it can't be parsed inside page.evaluate.
+  const pred = new Function("world", `return (${predicateSrc})(world)`) as (
+    w: SerializedWorld
+  ) => unknown;
+  const deadline = Date.now() + timeout;
+  let lastWorld: SerializedWorld | null = null;
+  while (Date.now() < deadline) {
+    lastWorld = await readAutosaveWorld(page).catch(() => null);
+    if (lastWorld) {
       try {
-        const world = JSON.parse(raw)?.world;
-        if (!world) return false;
-        const pred = new Function("world", `return (${src})(world)`) as (w: unknown) => unknown;
-        return !!pred(world);
+        if (pred(lastWorld)) return lastWorld;
       } catch {
-        return false;
+        /* predicate threw — keep polling */
       }
-    },
-    { key: AUTOSAVE_KEY, src: predicateSrc },
-    { timeout }
+    }
+    await page.waitForTimeout(500);
+  }
+  throw new Error(
+    `waitForAutosaveWorld timed out after ${timeout}ms (last world: ${
+      lastWorld ? `seed=${lastWorld.seed} day=${lastWorld.dayIndexGlobal} phase=${lastWorld.cyclePhase}` : "none"
+    })`
   );
-  const world = await readAutosaveWorld(page);
-  if (!world) throw new Error("Autosave world missing after predicate matched");
-  return world;
 }
 
 /**
@@ -183,17 +200,40 @@ export async function advanceToBasho(page: Page): Promise<void> {
     if (await resolveCrisisIfPresent(page)) continue;
 
     if (await weekBtn.isVisible().catch(() => false)) {
-      await weekBtn.click();
+      if (!(await tryClick(weekBtn))) await resolveCrisisIfPresent(page);
       await page.waitForTimeout(700);
     } else if (await continueBtn.isVisible().catch(() => false)) {
-      await continueBtn.click();
+      if (!(await tryClick(continueBtn))) await resolveCrisisIfPresent(page);
       await page.waitForTimeout(700);
     } else if (await dayBtn.isVisible().catch(() => false)) {
-      await dayBtn.click();
+      if (!(await tryClick(dayBtn))) await resolveCrisisIfPresent(page);
       await page.waitForTimeout(700);
     } else {
       // Controls briefly unmount during world sync — keep polling.
       await page.waitForTimeout(1000);
+    }
+
+    if (i % 15 === 14) {
+      const w = await readAutosaveWorld(page).catch(() => null);
+      const cal = await page
+        .getByText(/Week \d+|Day \d+|Tournament/i)
+        .first()
+        .innerText()
+        .catch(() => "?");
+      const dlgInfo = await page
+        .evaluate(() =>
+          [...document.querySelectorAll('[role="dialog"]')].map((d) => ({
+            state: d.getAttribute("data-state"),
+            hidden: d.getAttribute("aria-hidden"),
+            text: (d.textContent ?? "").slice(0, 90),
+          }))
+        )
+        .catch(() => [] as any[]);
+      console.log(
+        `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} cal="${cal}" ` +
+          `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
+          `dialogs=${JSON.stringify(dlgInfo)}`
+      );
     }
   }
   await expect(simAllBtn).toBeVisible({ timeout: 10_000 });
@@ -217,9 +257,12 @@ export async function dismissRetirementCeremonies(page: Page): Promise<void> {
  * and wait for the dashboard.
  */
 export async function finalizeRecap(page: Page): Promise<void> {
-  await dismissRetirementCeremonies(page);
-  await resolveCrisisIfPresent(page);
-  await page.getByRole("button", { name: /Finalize Basho/i }).first().click();
+  const finalizeBtn = page.getByRole("button", { name: /Finalize Basho/i }).first();
+  for (let i = 0; i < 10; i++) {
+    await dismissRetirementCeremonies(page);
+    await resolveCrisisIfPresent(page);
+    if (await tryClick(finalizeBtn)) break;
+  }
   await page.waitForURL("**/dashboard", { timeout: 10_000 });
 }
 
@@ -231,22 +274,58 @@ export async function advanceDays(page: Page, days: number): Promise<void> {
   const continueBtn = page.getByRole("button", { name: /Continue|Start Basho/i }).first();
   for (let i = 0; i < days; i++) {
     if (await dayBtn.isVisible().catch(() => false)) {
-      await dayBtn.click();
+      if (!(await tryClick(dayBtn))) await resolveCrisisIfPresent(page);
     } else if (await continueBtn.isVisible().catch(() => false)) {
-      await continueBtn.click();
+      if (!(await tryClick(continueBtn))) await resolveCrisisIfPresent(page);
     }
     await page.waitForTimeout(800);
   }
 }
 
-/** Resolve a blocking crisis/decision modal if one is currently displayed. Returns true if one was handled. */
-export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
-  if (!(await page.getByText(/Emergency Protocol/i).isVisible().catch(() => false))) {
+/**
+ * Click with a bounded actionability timeout. Returns false instead of
+ * hanging when a modal overlay intercepts pointer events — the caller
+ * then resolves the blocking dialog and retries.
+ */
+async function tryClick(
+  loc: ReturnType<Page["getByRole"]> | ReturnType<Page["locator"]>
+): Promise<boolean> {
+  try {
+    await loc.click({ timeout: 2_500 });
+    return true;
+  } catch {
     return false;
   }
-  const optionBtn = page.locator('[role="dialog"]').getByRole("button").first();
-  if (await optionBtn.isVisible().catch(() => false)) {
-    await optionBtn.click();
+}
+
+/**
+ * Resolve a blocking modal if one is currently displayed. Covers the
+ * CrisisModal ("Emergency Protocol" header) and any other open dialog
+ * that intercepts pointer events — clicking its first action button.
+ * Returns true if a dialog was handled.
+ */
+export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
+  // Radix aria-hides the rest of the app (and any covered dialogs) while a
+  // modal is open, so getByRole can't see inside. Use CSS locators and
+  // resolve dialogs topmost-last; each handled dialog returns true so the
+  // caller loops until none remain.
+  const dialogs = page.locator('[role="dialog"][data-state="open"]:not([aria-hidden="true"])');
+  const count = await dialogs.count().catch(() => 0);
+  if (count === 0) return false;
+
+  // Topmost dialog is last in DOM order.
+  const dialog = dialogs.last();
+  const preferred = dialog
+    .locator("button")
+    .filter({
+      hasText:
+        /acknowledge|dismiss|continue|close|skip|got it|understood|ignore|decline|withdraw|resolve|finalize|later/i,
+    })
+    .first();
+  const target = (await preferred.isVisible().catch(() => false))
+    ? preferred
+    : dialog.locator("button").first();
+  if (await tryClick(target)) {
     await page.waitForTimeout(500);
     return true;
   }
@@ -269,7 +348,12 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
     .getByRole("button", { name: /Automatically simulate the remainder/i })
     .first();
   await expect(simAllBtn).toBeVisible({ timeout: 10_000 });
-  await simAllBtn.click();
+  // A crisis modal can open between the visibility check and the click —
+  // clear it before clicking Sim All.
+  if (!(await tryClick(simAllBtn))) {
+    await resolveCrisisIfPresent(page);
+    await tryClick(simAllBtn);
+  }
   await page.waitForURL("**/basho", { timeout: 10_000 });
 
   const endBashoBtn = page.getByRole("button", { name: /^End Basho$/i }).first();
@@ -286,7 +370,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
     if (await resolveCrisisIfPresent(page)) continue;
 
     if (await endBashoBtn.isVisible().catch(() => false)) {
-      await endBashoBtn.click();
+      if (!(await tryClick(endBashoBtn))) await resolveCrisisIfPresent(page);
       await page.waitForTimeout(2000);
       continue;
     }
@@ -302,8 +386,11 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
       .getByRole("button", { name: /Automatically simulate the remainder/i })
       .first();
     if (await dashSimAll.isVisible().catch(() => false)) {
-      await dashSimAll.click();
-      await page.waitForURL("**/basho", { timeout: 10_000 }).catch(() => {});
+      if (await tryClick(dashSimAll)) {
+        await page.waitForURL("**/basho", { timeout: 10_000 }).catch(() => {});
+      } else {
+        await resolveCrisisIfPresent(page);
+      }
     }
     await page.waitForTimeout(6000);
   }

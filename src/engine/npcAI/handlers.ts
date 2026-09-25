@@ -13,6 +13,7 @@ import {
 
 import type { PerceptionSnapshot } from "../perception";
 import type { ActiveCrisis } from "../types/crises";
+import { storedCrisisOptionEffect } from "../bard/dramaGenerator";
 import { handleMediaEventForHeya } from "../systems/media/MediaEventService";
 import { isCrisisPlayerRelevant } from "./eventSurfacing";
 
@@ -31,8 +32,11 @@ export function resolveNPCCrisis(
   builder.merge(impact);
 
   const option = crisis.options.find((o) => o.id === choiceId) ?? crisis.options[0];
-  if (option) {
-    builder.merge(option.impactGenerator(world, heyaId));
+  const effect = option
+    ? (option.impactGenerator ?? storedCrisisOptionEffect(crisis, option.id))
+    : undefined;
+  if (effect) {
+    builder.merge(effect(world, heyaId));
   }
   builder.updateHeya(heyaId, { activeCrisis: undefined });
   return builder.build();

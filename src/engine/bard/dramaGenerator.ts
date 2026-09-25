@@ -202,6 +202,72 @@ export function checkBashoDayDrama(world: WorldState): StateImpact {
   return builder.build();
 }
 
+/**
+ * Option effect resolvers for crises stored on `heya.activeCrisis`.
+ * Stored crises are sanitized (no functions — they must survive
+ * structuredClone and JSON saves), so resolution looks the effect up
+ * here by option id. Keyed by crisis `type` then option id.
+ */
+const STORED_CRISIS_OPTION_EFFECTS: Record<
+  string,
+  Record<string, (world: WorldState, heyaId?: string) => StateImpact>
+> = {
+  financial_insolvency: {
+    seek_pardon: (_world: WorldState, targetHeyaId?: string) => {
+      const b = createImpactBuilder("crisis_seek_pardon");
+      const h = targetHeyaId ? _world.heyas.get(targetHeyaId) : undefined;
+      if (h && targetHeyaId) {
+        b.updateHeya(targetHeyaId, {
+          reputation: Math.max(0, (h.reputation ?? 50) - 15),
+          politicalCapital: Math.max(0, (h.politicalCapital ?? 50) - 10),
+        });
+      }
+      b.logEvent("GOVERNANCE_RULING", "narrative", {
+        incident: "crisis_resolved",
+        choice: "seek_pardon",
+        prestigeCost: 15,
+        resolutionSuccess: true,
+        narrativeText:
+          "The JSA grants a temporary reprieve, but the stable's reputation suffers greatly.",
+      });
+      return b.build();
+    },
+    emergency_loan: (_world: WorldState, targetHeyaId?: string) => {
+      const b = createImpactBuilder("crisis_emergency_loan");
+      const h = targetHeyaId ? _world.heyas.get(targetHeyaId) : undefined;
+      if (h && targetHeyaId) {
+        b.updateHeya(targetHeyaId, {
+          funds: (h.funds ?? 0) + 10_000_000,
+          scandalScore: (h.scandalScore ?? 0) + 10,
+          reputation: Math.max(0, (h.reputation ?? 50) - 5),
+        });
+      }
+      b.logEvent("GOVERNANCE_RULING", "narrative", {
+        incident: "crisis_resolved",
+        choice: "emergency_loan",
+        resolutionSuccess: true,
+        narrativeText: "You secure the funds, but the stable's future is heavily mortgaged.",
+      });
+      return b.build();
+    },
+  },
+};
+
+/**
+ * Resolve the effect generator for an option of a crisis that was stored
+ * in world state (functions are stripped before storing). Returns the
+ * option's own generator when present (live registry objects), else the
+ * stored-crisis lookup by type + option id.
+ */
+export function storedCrisisOptionEffect(
+  crisis: ActiveCrisis,
+  optionId: string
+): ((world: WorldState, heyaId?: string) => StateImpact) | undefined {
+  const own = crisis.options.find((o) => o.id === optionId)?.impactGenerator;
+  if (own) return own;
+  return crisis.type ? STORED_CRISIS_OPTION_EFFECTS[crisis.type]?.[optionId] : undefined;
+}
+
 export function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): StateImpact {
   const builder = createImpactBuilder("triggerCrisis");
   const rng = rngForWorld(world, "narrative", `crisis_${heyaId}_${world.week}`);
@@ -209,6 +275,10 @@ export function triggerCrisis(world: WorldState, heyaId: string, type: CrisisTyp
   let crisis: ActiveCrisis | undefined;
 
   if (type === "financial_insolvency") {
+    // Options are stored sans `impactGenerator` — the crisis lands on
+    // `heya.activeCrisis` inside world state and must survive
+    // structuredClone (worker sync) + JSON persistence. Effects are
+    // re-resolved via STORED_CRISIS_OPTION_EFFECTS by option id.
     crisis = {
       id: rng.uuid("CRISIS"),
       type: "financial_insolvency",
@@ -222,48 +292,11 @@ export function triggerCrisis(world: WorldState, heyaId: string, type: CrisisTyp
           id: "seek_pardon",
           label: "Plead with JSA",
           description: "Beg the JSA for a grace period. High risk of prestige loss and sanctions.",
-          impactGenerator: (_world: WorldState, targetHeyaId?: string) => {
-            const b = createImpactBuilder("crisis_seek_pardon");
-            const h = targetHeyaId ? _world.heyas.get(targetHeyaId) : undefined;
-            if (h && targetHeyaId) {
-              b.updateHeya(targetHeyaId, {
-                reputation: Math.max(0, (h.reputation ?? 50) - 15),
-                politicalCapital: Math.max(0, (h.politicalCapital ?? 50) - 10),
-              });
-            }
-            b.logEvent("GOVERNANCE_RULING", "narrative", {
-              incident: "crisis_resolved",
-              choice: "seek_pardon",
-              prestigeCost: 15,
-              resolutionSuccess: true,
-              narrativeText:
-                "The JSA grants a temporary reprieve, but the stable's reputation suffers greatly.",
-            });
-            return b.build();
-          },
         },
         {
           id: "emergency_loan",
           label: "Take Predatory Loan",
           description: "Borrow ¥10,000,000 from loan sharks at exorbitant interest rates.",
-          impactGenerator: (_world: WorldState, targetHeyaId?: string) => {
-            const b = createImpactBuilder("crisis_emergency_loan");
-            const h = targetHeyaId ? _world.heyas.get(targetHeyaId) : undefined;
-            if (h && targetHeyaId) {
-              b.updateHeya(targetHeyaId, {
-                funds: (h.funds ?? 0) + 10_000_000,
-                scandalScore: (h.scandalScore ?? 0) + 10,
-                reputation: Math.max(0, (h.reputation ?? 50) - 5),
-              });
-            }
-            b.logEvent("GOVERNANCE_RULING", "narrative", {
-              incident: "crisis_resolved",
-              choice: "emergency_loan",
-              resolutionSuccess: true,
-              narrativeText: "You secure the funds, but the stable's future is heavily mortgaged.",
-            });
-            return b.build();
-          },
         },
       ],
     };

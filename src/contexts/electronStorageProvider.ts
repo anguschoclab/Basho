@@ -9,8 +9,28 @@
 import { type IStorageProvider, setStorageProvider } from "@/engine/storageProvider";
 import { error } from "@/engine/utils/Logger";
 import { isValidStorageKey } from "@/utils/storageKeyValidation";
+import LZString from "lz-string";
 
 const KEYS_RELOAD_DEBOUNCE_MS = 100;
+
+/**
+ * Marker prefix for LZ-compressed values in the localStorage fallback.
+ * A serialized save world can exceed Chromium's ~5MB localStorage quota
+ * (observed: ~5.4MB after a basho day tick — bout pbp/narrative data).
+ * Electron's electron-store has no quota and stores raw JSON; the web
+ * fallback transparently compresses on write and decompresses on read.
+ * Values without the prefix are returned as-is (legacy uncompressed saves).
+ */
+const LZ_PREFIX = "lz16:";
+
+function encodeStored(value: string): string {
+  return LZ_PREFIX + LZString.compressToUTF16(value);
+}
+
+function decodeStored(value: string): string {
+  if (!value.startsWith(LZ_PREFIX)) return value;
+  return LZString.decompressFromUTF16(value.slice(LZ_PREFIX.length)) ?? value;
+}
 
 /**
  * ElectronStorageProvider — wraps electron-store behind IStorageProvider.
@@ -38,10 +58,15 @@ export class ElectronStorageProvider implements IStorageProvider {
         error("Failed to load keys from electron-store", "ElectronStorage", e)
       );
     } else {
-      // Fallback to localStorage for web builds
+      // Fallback to localStorage for web builds — values are LZ-compressed
+      // to stay under the localStorage quota (see LZ_PREFIX above).
       this.storage = {
-        get: (key: string) => localStorage.getItem(key),
-        set: (key: string, value: unknown) => localStorage.setItem(key, value as string),
+        get: (key: string) => {
+          const raw = localStorage.getItem(key);
+          return raw === null ? null : decodeStored(raw);
+        },
+        set: (key: string, value: unknown) =>
+          localStorage.setItem(key, encodeStored(value as string)),
         delete: (key: string) => localStorage.removeItem(key),
         clear: () => localStorage.clear(),
         keys: () => {

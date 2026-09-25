@@ -17,7 +17,14 @@ export interface CrisisOption {
   id: string;
   label: string;
   description?: string;
-  impactGenerator: (
+  /**
+   * Live resolver for the option's engine effect. Present on registry
+   * crises; intentionally absent on crises stored in world state
+   * (`world.pendingCrisis`, `heya.activeCrisis`) — functions cannot
+   * survive structuredClone/JSON persistence, so stored crises carry
+   * only serializable fields and resolvers re-derive the effect.
+   */
+  impactGenerator?: (
     world: import("./world").WorldState,
     heyaId?: import("./common").Id
   ) => import("../core/StateImpact").StateImpact;

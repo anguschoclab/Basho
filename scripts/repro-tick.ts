@@ -1,5 +1,5 @@
 import { generateInitialWorld } from "../src/engine/systems/generation/WorldFactory";
-import { advanceDaysFastOrchestrator, tickOrchestrator } from "../src/engine/tick/tickOrchestrator";
+import { advanceDaysFastOrchestrator } from "../src/engine/tick/tickOrchestrator";
 import { shouldHaltAdvance } from "../src/engine/loop/shouldHaltAdvance";
 
 const seed = "e2e-basho-lifecycle-v1";
@@ -31,3 +31,18 @@ try {
   console.timeEnd("advance7");
   console.error("THREW:", e);
 }
+
+// measure serialized size
+import { SerializationService } from "../src/engine/persistence/SerializationService";
+const world2 = advanceDaysFastOrchestrator(world, 7);
+const ser = JSON.stringify(SerializationService.serializeWorld(world2));
+console.log("serialized world bytes:", ser.length);
+const wrapped = JSON.stringify({ world: JSON.parse(ser) });
+console.log("wrapped bytes:", wrapped.length);
+
+const obj = SerializationService.serializeWorld(world2) as unknown as Record<string, unknown>;
+const sizes = Object.entries(obj)
+  .map(([k, v]) => [k, JSON.stringify(v)?.length ?? 0] as const)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 15);
+console.log("field sizes:", sizes);

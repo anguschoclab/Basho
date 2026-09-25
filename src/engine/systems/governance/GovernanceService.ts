@@ -23,13 +23,18 @@ export function resolveCrisis(world: WorldState, crisisId: string, choiceId: str
   if (crisis && crisis.id === crisisId) {
     const option = crisis.options.find((o) => o.id === choiceId);
     if (option) {
-      // Execute the specific impact generator for this choice
-      const impact = option.impactGenerator(world, playerHeyaId);
+      // Execute the specific impact generator for this choice. Stored
+      // (serialized) crises carry no generator — registry crises resolve
+      // through the registry lookup above and always have one.
+      const impact = option.impactGenerator?.(world, playerHeyaId);
+      if (impact) builder.merge(impact);
 
-      // Clear the pending crisis from the world state
+      // Clear the pending crisis from the world state. This must be part
+      // of the returned impact — returning the option's impact directly
+      // would drop the clear and leave the halt/modal active forever.
       builder.updateWorldField("pendingCrisis", undefined);
 
-      return impact;
+      return builder.build();
     }
   }
 

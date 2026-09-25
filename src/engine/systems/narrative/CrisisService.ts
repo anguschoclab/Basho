@@ -45,8 +45,14 @@ export const CrisisService = {
       { importance: "major" }
     );
 
-    // For now, we'll store the pending event in the world state
-    builder.updateWorldField("pendingCrisis", event);
+    // Store only serializable fields — the registry options carry
+    // `impactGenerator` functions which cannot survive structuredClone
+    // (worker WORLD_UPDATED postMessage) or JSON save/load. Resolution
+    // re-derives the generator from the registry by crisis id.
+    builder.updateWorldField("pendingCrisis", {
+      ...event,
+      options: event.options.map(({ id, label, description }) => ({ id, label, description })),
+    });
 
     return builder.build();
   },
