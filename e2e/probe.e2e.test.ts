@@ -1,35 +1,79 @@
 import { test, expect } from "@playwright/test";
+import {
+  createNewGame,
+  dismissOnboardingTour,
+  setWorldSeed,
+  waitForAutosaveWorld,
+  readAutosaveWorld,
+} from "./helpers";
 
-test("probe: autosave debug after seed sync", async ({ page }) => {
-  test.setTimeout(120_000);
+test("probe: worker messages around Week advance", async ({ page }) => {
+  test.setTimeout(300_000);
+
+  await page.addInitScript(() => {
+    // Wrap Worker to expose instances + sniff outbound messages.
+    const OrigWorker = window.Worker;
+    (window as any).__workerEvents = [] as any[];
+    // @ts-ignore
+    window.Worker = class extends OrigWorker {
+      constructor(url: any, opts: any) {
+        super(url, opts);
+        this.addEventListener("message", (e: MessageEvent) => {
+          const d = e.data ?? {};
+          if (d.type !== "PROGRESS") {
+            (window as any).__workerEvents.push({
+              t: d.type,
+              msg: typeof d.message === "string" ? d.message.slice(0, 300) : "",
+              v: d.version,
+            });
+          }
+        });
+        this.addEventListener("error", (e: ErrorEvent) => {
+          (window as any).__workerEvents.push({ t: "WORKER_ERROR", msg: String(e.message) });
+        });
+      }
+    };
+  });
 
   page.on("console", (msg) => {
-    const t = msg.text();
-    if (t.includes("AUTOSAVE-DEBUG") || msg.type() === "error") {
-      console.log(`PAGE [${msg.type()}] ${t.slice(0, 300)}`);
+    if (msg.type() === "error" || msg.text().includes("dropped")) {
+      console.log(`PAGE [${msg.type()}] ${msg.text().slice(0, 250)}`);
     }
   });
-  page.on("pageerror", (err) => console.log(`[pageerror] ${String(err).slice(0, 300)}`));
+  page.on("pageerror", (err) => console.log(`PAGEERROR: ${String(err).slice(0, 300)}`));
 
   await page.goto("/");
   await expect(page.locator("h1").first()).toContainText(/Basho/i, { timeout: 60_000 });
-  await page.waitForTimeout(3000);
+  await setWorldSeed(page, "e2e-basho-lifecycle-v1");
+  await createNewGame(page);
+  await dismissOnboardingTour(page);
 
-  await page.getByRole("button", { name: /Manual Seed/i }).click();
-  await page.getByPlaceholder(/Enter specific world seed/i).fill("e2e-probe-seed");
-  await page.getByRole("button", { name: /Sync Seed/i }).click();
+  const dump = async (label: string) => {
+    const events = await page.evaluate(() => (window as any).__workerEvents);
+    const w = await readAutosaveWorld(page);
+    console.log(
+      label,
+      JSON.stringify({
+        day: w?.dayIndexGlobal,
+        week: w?.week,
+        phase: w?.cyclePhase,
+        eventsTail: (events ?? []).slice(-8),
+      })
+    );
+    await page.evaluate(() => ((window as any).__workerEvents.length = 0));
+  };
 
-  for (let i = 0; i < 8; i++) {
-    await page.waitForTimeout(4000);
-    const seed = await page.evaluate(() => {
-      const raw = localStorage.getItem("basho_save_autosave");
-      try {
-        return raw ? JSON.parse(raw)?.world?.seed : null;
-      } catch {
-        return "PARSE_ERR";
-      }
-    });
-    console.log(`t+${(i + 1) * 4}s saveSeed=${seed}`);
-    if (seed === "e2e-probe-seed") break;
+  await waitForAutosaveWorld(page, "(w) => !!w.playerHeyaId", 60_000).catch(() => {});
+  await dump("AFTER WIZARD:");
+
+  const weekBtn = page
+    .getByRole("button", { name: /Progress simulation by one full week/i })
+    .first();
+  await expect(weekBtn).toBeVisible({ timeout: 30_000 });
+  await weekBtn.click();
+
+  for (let i = 0; i < 6; i++) {
+    await page.waitForTimeout(5000);
+    await dump(`T+${(i + 1) * 5}s:`);
   }
 });
