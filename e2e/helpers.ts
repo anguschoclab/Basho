@@ -184,16 +184,32 @@ export async function advanceToBasho(page: Page): Promise<void> {
   const dayBtn = page
     .getByRole("button", { name: /Advance the simulation by one day/i })
     .first();
+  const endBashoBtn = page.getByRole("button", { name: /^End Basho$/i }).first();
 
   // Wait for the dashboard's advance controls to mount — the dashboard
   // lazy-renders after the wizard navigation and an early poll sees none
-  // of them, which would break the loop on its first iteration.
+  // of them, which would break the loop on its first iteration. A seed
+  // can also land the world mid-basho (e.g. past Day 15 waiting for the
+  // interactive End Basho) before this is ever called.
   await expect(
-    simAllBtn.or(weekBtn).or(continueBtn).or(dayBtn).first()
+    simAllBtn.or(weekBtn).or(continueBtn).or(dayBtn).or(endBashoBtn).first()
   ).toBeVisible({ timeout: 30_000 });
 
   for (let i = 0; i < 120; i++) {
     if (await simAllBtn.isVisible().catch(() => false)) return;
+    // Already inside an active basho — let driveBashoToRecap take over.
+    // A Week click can fast-forward straight into active_basho while the
+    // URL stays on /dashboard, so detect the phase via autosave too.
+    if (
+      page.url().includes("/basho") ||
+      (await endBashoBtn.isVisible().catch(() => false))
+    ) {
+      return;
+    }
+    if (i % 5 === 4) {
+      const w = await readAutosaveWorld(page).catch(() => null);
+      if (w?.cyclePhase === "active_basho" || w?.currentBasho) return;
+    }
 
     // A blocking decision can halt the interim advance — resolve it so
     // the next tick can proceed.
@@ -313,18 +329,25 @@ export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
   const count = await dialogs.count().catch(() => 0);
   if (count === 0) return false;
 
-  // Topmost dialog is last in DOM order.
+  // Topmost dialog is last in DOM order. Prefer a substantive action
+  // button — a world-backed CrisisModal ignores its Close control while a
+  // decision is pending, so clicking Close spins forever without
+  // resolving anything. Close is only the fallback for dialogs whose only
+  // action is dismissal.
   const dialog = dialogs.last();
-  const preferred = dialog
-    .locator("button")
-    .filter({
-      hasText:
-        /acknowledge|dismiss|continue|close|skip|got it|understood|ignore|decline|withdraw|resolve|finalize|later/i,
-    })
-    .first();
-  const target = (await preferred.isVisible().catch(() => false))
-    ? preferred
-    : dialog.locator("button").first();
+  const buttons = dialog.locator("button");
+  const n = await buttons.count().catch(() => 0);
+  let target = null;
+  for (let k = 0; k < n; k++) {
+    const b = buttons.nth(k);
+    const text = ((await b.innerText().catch(() => "")) ?? "").trim();
+    const ariaLabel = (await b.getAttribute("aria-label").catch(() => "")) ?? "";
+    if (/^(close|x|×)$/i.test(text) || /^(close|x|×)$/i.test(ariaLabel)) continue;
+    if (!text && !ariaLabel) continue;
+    target = b;
+    break;
+  }
+  target ??= buttons.first();
   if (await tryClick(target)) {
     await page.waitForTimeout(500);
     return true;
@@ -347,19 +370,54 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
   const simAllBtn = page
     .getByRole("button", { name: /Automatically simulate the remainder/i })
     .first();
-  await expect(simAllBtn).toBeVisible({ timeout: 10_000 });
-  // A crisis modal can open between the visibility check and the click —
-  // clear it before clicking Sim All.
-  if (!(await tryClick(simAllBtn))) {
+  // The world can already be inside an active basho (e.g. the previous
+  // fast-forward ran straight through to Day 15+). Only click Sim All
+  // when it's actually offered; otherwise skip to the drive loop.
+  if (
+    !page.url().includes("/basho") &&
+    (await simAllBtn.isVisible().catch(() => false))
+  ) {
+    // A crisis modal can open between the visibility check and the click —
+    // clear it before clicking Sim All.
+    if (!(await tryClick(simAllBtn))) {
+      await resolveCrisisIfPresent(page);
+      await tryClick(simAllBtn);
+    }
+    // Sim All normally navigates to /basho, but if the world was already
+    // mid-basho the app may stay on the dashboard — the drive loop below
+    // handles either case.
+    await page.waitForURL("**/basho", { timeout: 10_000 }).catch(() => {});
+  } else if (!page.url().includes("/basho")) {
+    // Neither on /basho nor showing Sim All. A modal may be covering the
+    // controls — or the world is already inside an active basho that the
+    // dashboard can't advance (a Week fast-forward can land mid-basho).
+    // Resolve any modal, then navigate to the basho page.
     await resolveCrisisIfPresent(page);
-    await tryClick(simAllBtn);
+    if (await tryClick(simAllBtn)) {
+      await page.waitForURL("**/basho", { timeout: 10_000 });
+    } else {
+      // World is mid-basho on the dashboard — navigate via the TopNavBar
+      // "Day N" pill (its onClick routes to /basho during active_basho),
+      // falling back to the sidebar link by href. NEVER page.goto() here:
+      // a full reload discards the worker world and restores only via the
+      // Main Menu's user-triggered autosave load — i.e., never in a test.
+      const dayPill = page.getByRole("button", { name: /^Day \d+/ }).first();
+      const bashoNavLink = page.locator('a[href="/basho"]').first();
+      if (await dayPill.isVisible().catch(() => false)) {
+        await tryClick(dayPill);
+      } else if (await bashoNavLink.isVisible().catch(() => false)) {
+        await tryClick(bashoNavLink);
+      }
+      await page.waitForURL("**/basho", { timeout: 10_000 }).catch(() => {});
+    }
   }
-  await page.waitForURL("**/basho", { timeout: 10_000 });
 
   const endBashoBtn = page.getByRole("button", { name: /^End Basho$/i }).first();
   const finalizeBtn = page.getByRole("button", { name: /Finalize Basho/i }).first();
+  const simDayBouts = page.getByRole("button", { name: /^Sim All$/ }).first();
+  const nextDayBtn = page.getByRole("button", { name: /^Next Day$/i }).first();
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 60; i++) {
     if (
       (await page.getByText(/No Active Tournament/i).isVisible().catch(() => false)) ||
       (await finalizeBtn.isVisible().catch(() => false))
@@ -370,7 +428,55 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
     if (await resolveCrisisIfPresent(page)) continue;
 
     if (await endBashoBtn.isVisible().catch(() => false)) {
+      // Clicking opens a confirm AlertDialog; the next iteration (or the
+      // crisis resolver, which prefers substantive buttons) confirms it.
       if (!(await tryClick(endBashoBtn))) await resolveCrisisIfPresent(page);
+      await page.waitForTimeout(2000);
+      continue;
+    }
+
+    // On the basho page, drive the interactive path: Next Day (once the
+    // day's bouts are done), else Sim All to simulate today's bouts.
+    // IMPORTANT: disabled buttons are still "visible" — check isEnabled,
+    // and check Next Day first or the loop spins forever on the disabled
+    // Sim All once a day's bouts complete.
+    if (page.url().includes("/basho")) {
+      if (
+        (await nextDayBtn.isVisible().catch(() => false)) &&
+        (await nextDayBtn.isEnabled().catch(() => false))
+      ) {
+        if (!(await tryClick(nextDayBtn))) await resolveCrisisIfPresent(page);
+        await page.waitForTimeout(1500);
+        continue;
+      }
+      if (
+        (await simDayBouts.isVisible().catch(() => false)) &&
+        (await simDayBouts.isEnabled().catch(() => false))
+      ) {
+        if (!(await tryClick(simDayBouts))) await resolveCrisisIfPresent(page);
+        await page.waitForTimeout(1500);
+        continue;
+      }
+      if (i % 5 === 4) {
+        const w = await readAutosaveWorld(page).catch(() => null);
+        const dlgInfo = await page
+          .evaluate(() =>
+            [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map((d) => ({
+              state: d.getAttribute("data-state"),
+              text: (d.textContent ?? "").slice(0, 80),
+            }))
+          )
+          .catch(() => [] as any[]);
+        const buttons = await page
+          .locator("main button:visible")
+          .allInnerTexts()
+          .catch(() => [] as string[]);
+        console.log(
+          `[driveBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
+            `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + (w.currentBasho.day ?? w.currentBasho.currentDay) + " matches" + (w.currentBasho.matches?.length ?? "?") : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
+            `dialogs=${JSON.stringify(dlgInfo)} buttons=${JSON.stringify(buttons.slice(0, 12))}`
+        );
+      }
       await page.waitForTimeout(2000);
       continue;
     }
