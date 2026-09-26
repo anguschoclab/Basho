@@ -23,7 +23,7 @@ export const AUTOSAVE_KEY = "basho_save_autosave";
  * before JSON.parse. Decompression can't run inside page.evaluate, so the
  * raw string is pulled out and decoded on the Node side.
  */
-export async function readAutosaveSave(page: Page): Promise<any> {
+export async function readAutosaveSave(page: Page): Promise<unknown> {
   const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
   if (!raw) return null;
   const json = raw.startsWith("lz16:")
@@ -244,7 +244,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
             text: (d.textContent ?? "").slice(0, 90),
           }))
         )
-        .catch(() => [] as any[]);
+        .catch(() => [] as Array<{ state: string | null; hidden: string | null; text: string }>);
       console.log(
         `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} cal="${cal}" ` +
           `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
@@ -466,7 +466,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
               text: (d.textContent ?? "").slice(0, 80),
             }))
           )
-          .catch(() => [] as any[]);
+          .catch(() => [] as Array<{ state: string | null; hidden: string | null; text: string }>);
         const buttons = await page
           .locator("main button:visible")
           .allInnerTexts()
