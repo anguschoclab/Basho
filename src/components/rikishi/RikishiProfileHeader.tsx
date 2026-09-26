@@ -338,6 +338,14 @@ export function RikishiProfileHeader({
                   tooltip: "Total top-division championship victories",
                 },
                 {
+                  label: "Special Prizes",
+                  value: (rikishi.specialPrizes?.shukunSho ?? 0) + (rikishi.specialPrizes?.kantoSho ?? 0) + (rikishi.specialPrizes?.ginoSho ?? 0),
+                  sub: "Sanshō",
+                  color: "text-blue-400",
+                  condition: ((rikishi.specialPrizes?.shukunSho ?? 0) + (rikishi.specialPrizes?.kantoSho ?? 0) + (rikishi.specialPrizes?.ginoSho ?? 0)) > 0,
+                  tooltip: "Total special prizes awarded for outstanding performance, fighting spirit, and technique",
+                },
+                {
                   label: "Kinboshi",
                   value: rikishi.achievements?.kinboshiEarned ?? 0,
                   sub: "Gold Stars",
