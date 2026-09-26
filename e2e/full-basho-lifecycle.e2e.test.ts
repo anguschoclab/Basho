@@ -31,9 +31,9 @@ import {
 
 const WORLD_SEED = "e2e-basho-lifecycle-v1";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-function awardLogFor(awardLog: any[] | undefined, year: number, bashoName: string): any[] {
+
+function awardLogFor(awardLog: { year: number; bashoName: string }[] | undefined, year: number, bashoName: string): { year: number; bashoName: string }[] {
   return (awardLog ?? []).filter((e) => e.year === year && e.bashoName === bashoName);
 }
 
@@ -78,7 +78,7 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   }
 
   const last = world.history[world.history.length - 1];
-  const rikishiById: Record<string, any> = world.rikishi ?? {};
+  const rikishiById: Record<string, { shikona: string; combatProfile?: { archetype: string } }> = world.rikishi ?? {};
   const bashoKey = `${last.year}-${last.bashoNumber}`;
 
   // ── 5. Awards: engine output is fully recorded ────────────────────────
@@ -152,13 +152,13 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   const foughtOn = world.historyIndex?.banzukeByBasho?.[prevKey];
   const foughtOnPos = new Map<string, string>();
   if (foughtOn?.divisions) {
-    for (const div of Object.values(foughtOn.divisions) as any[]) {
+    for (const div of Object.values(foughtOn.divisions) as { assignments: { rikishiId: string; position: { rank: string; side: string; rankNumber?: number } }[] }[]) {
       for (const a of div.assignments ?? []) {
         foughtOnPos.set(a.rikishiId, `${a.position.rank}:${a.position.side}:${a.position.rankNumber ?? 0}`);
       }
     }
   }
-  for (const [division, div] of Object.entries(current.divisions) as [string, any][]) {
+  for (const [division, div] of Object.entries(current.divisions) as [string, { assignments: { rikishiId: string }[] }][]) {
     expect(div.assignments.length, `${division} has assignments`).toBeGreaterThan(0);
     for (const a of div.assignments) {
       assignmentCount++;
@@ -183,7 +183,7 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   // Only reachable if we didn't take the finalize recovery path above.
   const onRecap = page.url().includes("/recap");
   if (onRecap) {
-    const shikonaSet = new Set(Object.values(rikishiById).map((r: any) => r.shikona));
+    const shikonaSet = new Set(Object.values(rikishiById).map((r) => r.shikona));
     await page.getByRole("button", { name: /Banzuke Reveal/i }).click();
     const overlay = page
       .locator("div.fixed.inset-0")

@@ -41,7 +41,7 @@ import {
 const WORLD_SEED = "e2e-year-of-bashos-v1";
 const BASHO_COUNT = 6;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0,
@@ -61,10 +61,10 @@ function rankOrdinal(pos: { rank: string; rankNumber?: number }): number {
   return (RANK_ORDER[pos.rank] ?? 99) * 1000 + (pos.rankNumber ?? 0);
 }
 
-function snapshotPositions(snapshot: any): Map<string, number> {
+function snapshotPositions(snapshot: { divisions?: Record<string, { assignments?: { rikishiId: string; position: { rank: string; rankNumber?: number } }[] }> } | undefined): Map<string, number> {
   const out = new Map<string, number>();
   if (!snapshot?.divisions) return out;
-  for (const div of Object.values(snapshot.divisions) as any[]) {
+  for (const div of Object.values(snapshot.divisions ?? {})) {
     for (const a of div.assignments ?? []) {
       out.set(a.rikishiId, rankOrdinal(a.position));
     }
@@ -72,9 +72,9 @@ function snapshotPositions(snapshot: any): Map<string, number> {
   return out;
 }
 
-function liveRanks(world: any): Map<string, number> {
+function liveRanks(world: { rikishi?: Record<string, { rank: string; rankNumber?: number }> }): Map<string, number> {
   const out = new Map<string, number>();
-  for (const [id, r] of Object.entries(world.rikishi ?? {}) as [string, any][]) {
+  for (const [id, r] of Object.entries(world.rikishi ?? {})) {
     out.set(id, rankOrdinal({ rank: r.rank, rankNumber: r.rankNumber }));
   }
   return out;
@@ -123,7 +123,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   // first published snapshot.
   let prevPositions = liveRanks(startWorld);
   const baselineYokozunaIds = Object.entries(startWorld.rikishi ?? {})
-    .filter(([, r]: [string, any]) => r.rank === "yokozuna")
+    .filter(([, r]: [string, { rank: string }]) => r.rank === "yokozuna")
     .map(([id]) => id);
   const everYokozuna = new Set<string>(baselineYokozunaIds);
   console.log(
@@ -171,7 +171,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     }
 
     const last = world.history[i];
-    const rikishiById: Record<string, any> = world.rikishi ?? {};
+    const rikishiById: Record<string, { rank: string; rankNumber?: number; shikona?: string; combatProfile?: { archetype: string } }> = world.rikishi ?? {};
     const bashoKey = `${last.year}-${last.bashoNumber}`;
 
     // ── Per-basho invariants ──────────────────────────────────────────
@@ -181,10 +181,10 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     expect(last.prizes?.yushoAmount, "yusho prize money recorded").toBeGreaterThan(0);
 
     const log = (world.awardLog ?? []).filter(
-      (e: any) => e.year === last.year && e.bashoName === last.bashoName
+      (e: { year: number; bashoName: string; type: string; winnerId: string }) => e.year === last.year && e.bashoName === last.bashoName
     );
     const hasLogEntry = (type: string, winnerId: string) =>
-      log.some((e: any) => e.type === type && e.winnerId === winnerId);
+      log.some((e: { type: string; winnerId: string }) => e.type === type && e.winnerId === winnerId);
     expect(hasLogEntry("yusho", last.yusho), "awardLog records yusho").toBe(true);
 
     const awardWinners: { type: string; id: string; archetype: string }[] = [
@@ -215,7 +215,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
       }
     }
     if (last.boutOfTheBasho) {
-      const botb = log.find((e: any) => e.type === "boutOfTheBasho");
+      const botb = log.find((e: { type: string; winnerId: string }) => e.type === "boutOfTheBasho");
       expect(botb, `awardLog records boutOfTheBasho (basho ${i + 1})`).toBeTruthy();
       expect(rikishiById[botb.winnerId], "boutOfTheBasho winner exists").toBeTruthy();
     }
@@ -256,7 +256,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
 
     // ── Yokozuna discipline ───────────────────────────────────────────
     const yokozunaIds = Object.entries(rikishiById)
-      .filter(([, r]: [string, any]) => r.rank === "yokozuna")
+      .filter(([, r]: [string, { rank: string }]) => r.rank === "yokozuna")
       .map(([id]) => id);
     // Yokozuna are never demoted — they retire instead. Anyone ever seen at
     // yokozuna who is still on the active roster must still be yokozuna.
@@ -348,7 +348,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
       await expect(entryNames.first()).toBeVisible({ timeout: 15_000 });
       await page.waitForTimeout(2000);
       const shown = (await entryNames.allTextContents()).map((t) => t.trim()).filter(Boolean);
-      const shikonaSet = new Set(Object.values(rikishiById).map((r: any) => r.shikona));
+      const shikonaSet = new Set(Object.values(rikishiById).map((r) => r.shikona));
       for (const name of shown) {
         expect(shikonaSet.has(name), `revealed "${name}" is a real rikishi`).toBe(true);
       }
@@ -384,10 +384,10 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   const history = newYearWorld.history ?? [];
   expect(history.length, "six basho completed").toBeGreaterThanOrEqual(BASHO_COUNT);
   const firstSix = history.slice(0, BASHO_COUNT);
-  expect(firstSix.map((b: any) => b.bashoNumber)).toEqual([1, 2, 3, 4, 5, 6]);
+  expect(firstSix.map((b: { bashoNumber: number }) => b.bashoNumber)).toEqual([1, 2, 3, 4, 5, 6]);
   expect(firstSix[0].year).toBe(startWorld.year);
   expect(
-    new Set(firstSix.map((b: any) => b.bashoName)).size,
+    new Set(firstSix.map((b: { bashoName: string }) => b.bashoName)).size,
     "six distinct basho names in order"
   ).toBe(BASHO_COUNT);
 
@@ -435,7 +435,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   // Yokozuna year summary (tracked regardless of whether promotions fired).
   const kinboshiTotal = reports.reduce((s, r) => s + r.kinboshiBouts, 0);
   const yokozunaNow = Object.values(newYearWorld.rikishi ?? {}).filter(
-    (r: any) => r.rank === "yokozuna"
+    (r: { rank: string }) => r.rank === "yokozuna"
   ).length;
   console.log(
     `[year] yokozuna: start=${baselineYokozunaIds.length} end=${yokozunaNow} ` +
