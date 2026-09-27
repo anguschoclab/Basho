@@ -23,6 +23,7 @@ export const AUTOSAVE_KEY = "basho_save_autosave";
  * before JSON.parse. Decompression can't run inside page.evaluate, so the
  * raw string is pulled out and decoded on the Node side.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function readAutosaveSave(page: Page): Promise<any> {
   const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
   if (!raw) return null;
@@ -37,7 +38,7 @@ export async function readAutosaveSave(page: Page): Promise<any> {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SerializedWorld = any;
 
 /** Read the autosave's serialized world, or null if absent/unparseable. */
@@ -244,6 +245,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
             text: (d.textContent ?? "").slice(0, 90),
           }))
         )
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch(() => [] as any[]);
       console.log(
         `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} cal="${cal}" ` +
@@ -466,6 +468,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
               text: (d.textContent ?? "").slice(0, 80),
             }))
           )
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .catch(() => [] as any[]);
         const buttons = await page
           .locator("main button:visible")
