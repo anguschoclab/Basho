@@ -13,6 +13,7 @@ import { TooltipWrap } from "../ui/tooltip-wrap";
 import { RikishiName } from "@/components/ClickableName";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type {
   PreBashoAssessment as PreBashoAssessmentType,
   WorldState,
@@ -159,9 +160,11 @@ export function PreBashoAssessment() {
           )}
 
           {/* Rikishi Assessments */}
-          <div className="space-y-2 max-h-60 overflow-y-auto">
-            <AssessmentList assessment={assessment} world={world} />
-          </div>
+          <ScrollArea className="max-h-60">
+            <div className="space-y-2 pr-4">
+              <AssessmentList assessment={assessment} world={world} />
+            </div>
+          </ScrollArea>
         </div>
       )}
     </BaseWidget>
