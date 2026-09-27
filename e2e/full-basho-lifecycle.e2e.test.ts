@@ -31,9 +31,7 @@ import {
 
 const WORLD_SEED = "e2e-basho-lifecycle-v1";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-function awardLogFor(awardLog: any[] | undefined, year: number, bashoName: string): any[] {
+function awardLogFor(awardLog: { year: number; bashoName: string; [key: string]: unknown }[] | undefined, year: number, bashoName: string): { year: number; bashoName: string; [key: string]: unknown }[] {
   return (awardLog ?? []).filter((e) => e.year === year && e.bashoName === bashoName);
 }
 
