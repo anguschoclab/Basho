@@ -408,11 +408,15 @@
     ],
     "defensive": [
       "%HEYA_NAME% teaches patience — %SHIKONA% waits for the mistake, then punishes it.",
-      "The counter-wrestling philosophy of %HEYA_NAME% is reflected in %SHIKONA%'s measured approach."
+      "The counter-wrestling philosophy of %HEYA_NAME% is reflected in %SHIKONA%'s measured approach.",
+      "A wall of defense: %SHIKONA% relies on %HEYA_NAME%'s strategy of outlasting the opponent.",
+      "%SHIKONA% brings %HEYA_NAME%'s signature resilience to the dohyo today."
     ],
     "hybrid": [
       "%HEYA_NAME% trains all-rounders, and %SHIKONA% reflects that balanced approach.",
-      "From %HEYA_NAME%'s versatile dojo comes %SHIKONA%, equally comfortable pushing or grappling."
+      "From %HEYA_NAME%'s versatile dojo comes %SHIKONA%, equally comfortable pushing or grappling.",
+      "%SHIKONA% embodies the multi-faceted attack cultivated at %HEYA_NAME%.",
+      "Prepared for anything — %SHIKONA% shows the true hybrid style of %HEYA_NAME%."
     ],
     "speedster": [
       "%HEYA_NAME% values speed above all — %SHIKONA%'s quick feet are the product of that philosophy.",
@@ -422,11 +426,15 @@
     ],
     "trickster": [
       "%HEYA_NAME% embraces the unconventional — %SHIKONA% brings trickery and feints to the dohyo.",
-      "From %HEYA_NAME%'s creative tradition comes %SHIKONA%, a wrestler of surprises."
+      "From %HEYA_NAME%'s creative tradition comes %SHIKONA%, a wrestler of surprises.",
+      "Expect the unexpected when %SHIKONA% from %HEYA_NAME% steps up to the tachiai.",
+      "%HEYA_NAME%'s unorthodox methods are on full display with %SHIKONA%."
     ],
     "giant": [
       "%HEYA_NAME% has produced giants before, and %SHIKONA% carries that imposing tradition forward.",
-      "The power-first philosophy of %HEYA_NAME% is embodied in %SHIKONA%'s massive frame."
+      "The power-first philosophy of %HEYA_NAME% is embodied in %SHIKONA%'s massive frame.",
+      "An absolute behemoth from %HEYA_NAME%, %SHIKONA% looks to overpower the opposition.",
+      "%SHIKONA% is a true heavyweight, showcasing the raw strength of %HEYA_NAME%."
     ]
   },
   "archetype_evolution": [
