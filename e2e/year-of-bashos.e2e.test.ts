@@ -41,7 +41,7 @@ import {
 const WORLD_SEED = "e2e-year-of-bashos-v1";
 const BASHO_COUNT = 6;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0,

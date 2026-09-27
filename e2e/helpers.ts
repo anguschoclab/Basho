@@ -23,6 +23,7 @@ export const AUTOSAVE_KEY = "basho_save_autosave";
  * before JSON.parse. Decompression can't run inside page.evaluate, so the
  * raw string is pulled out and decoded on the Node side.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function readAutosaveSave(page: Page): Promise<any> {
   const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
   if (!raw) return null;

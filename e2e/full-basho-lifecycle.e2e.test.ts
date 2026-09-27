@@ -31,10 +31,10 @@ import {
 
 const WORLD_SEED = "e2e-basho-lifecycle-v1";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-function awardLogFor(awardLog: any[] | undefined, year: number, bashoName: string): any[] {
-  return (awardLog ?? []).filter((e) => e.year === year && e.bashoName === bashoName);
+
+function awardLogFor(awardLog: unknown[] | undefined, year: number, bashoName: string): unknown[] {
+  return (awardLog ?? []).filter((e: any) => e.year === year && e.bashoName === bashoName);
 }
 
 test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke publication -> recap -> dashboard", async ({
@@ -152,7 +152,7 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   const foughtOn = world.historyIndex?.banzukeByBasho?.[prevKey];
   const foughtOnPos = new Map<string, string>();
   if (foughtOn?.divisions) {
-    for (const div of Object.values(foughtOn.divisions) as any[]) {
+    for (const div of Object.values(foughtOn.divisions) as unknown[]) {
       for (const a of div.assignments ?? []) {
         foughtOnPos.set(a.rikishiId, `${a.position.rank}:${a.position.side}:${a.position.rankNumber ?? 0}`);
       }
