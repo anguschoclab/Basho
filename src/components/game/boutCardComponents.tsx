@@ -7,7 +7,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { TrendingUp, AlertTriangle, Users } from "lucide-react";
+import { TrendingUp, AlertTriangle, Users, Trophy } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RikishiName } from "@/components/ClickableName";
 import type { MatchRowData, HEAT_CONFIG } from "./boutCardTypes.tsx";
@@ -102,6 +102,17 @@ export function BoutTags({
           >
             {heatConfig[heatBand].icon}
             {heatConfig[heatBand].label}
+          </Badge>
+        </TooltipWrap>
+      )}
+
+      {match.result?.isKinboshi && (
+        <TooltipWrap
+          content={<p className="text-xs max-w-[200px]">A Maegashira defeated a Yokozuna.</p>}
+          side="bottom"
+        >
+          <Badge variant="outline" className="text-[10px] border-gold text-gold bg-gold/10 gap-1">
+            <Trophy className="h-3 w-3 text-gold" /> Kinboshi
           </Badge>
         </TooltipWrap>
       )}
