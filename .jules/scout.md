@@ -1,0 +1,1 @@
+## 2024-05-24 - [H2H Tactical Clash Determinism] **Gap:** `resolveTacticalClash` logic was untested. **Learning:** Asymmetric 4-tactic logic where NEKODAMASHI counters two options but is neutral to others requires explicit mapping. **Pattern:** Isolate `resolveTacticalClash` inputs to check each branch combination explicitly.
