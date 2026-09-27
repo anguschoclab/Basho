@@ -47,6 +47,9 @@ export interface PipelinePhaseMetadata {
   /**
    * Indicates if phase is read-only.
    * When true, the runner passes an empty touches array to skip snapshotting.
+   * CONTRACT: Pure phases have zero rollback protection. If a phase marked pure
+   * mutates state in-place before throwing an error, the pipeline cannot recover
+   * and the corruption will persist.
    */
   pure?: boolean;
 }
