@@ -325,24 +325,28 @@ export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
   // flagged aria-hidden transiently, so do NOT filter it out. Use CSS
   // locators (getByRole skips aria-hidden subtrees) and resolve dialogs
   // topmost-last; each handled dialog returns true so the caller loops.
-  const dialogs = page.locator('[role="dialog"][data-state="open"]');
+  // Radix AlertDialog (e.g. the End Basho confirmation) uses
+  // role="alertdialog" — include it or the confirm deadlocks the loop.
+  const dialogs = page.locator(
+    '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]'
+  );
   const count = await dialogs.count().catch(() => 0);
   if (count === 0) return false;
 
-  // Topmost dialog is last in DOM order. Prefer a substantive action
-  // button — a world-backed CrisisModal ignores its Close control while a
-  // decision is pending, so clicking Close spins forever without
-  // resolving anything. Close is only the fallback for dialogs whose only
-  // action is dismissal.
+  // Topmost dialog is last in DOM order. Choose the LAST substantive
+  // button: Radix AlertDialogs render [Cancel][Action] so the action is
+  // last, and a world-backed CrisisModal ignores its Close control while a
+  // decision is pending (any option resolves it). Pure-close controls are
+  // only a fallback for dialogs whose sole action is dismissal.
   const dialog = dialogs.last();
   const buttons = dialog.locator("button");
   const n = await buttons.count().catch(() => 0);
   let target = null;
-  for (let k = 0; k < n; k++) {
+  for (let k = n - 1; k >= 0; k--) {
     const b = buttons.nth(k);
     const text = ((await b.innerText().catch(() => "")) ?? "").trim();
     const ariaLabel = (await b.getAttribute("aria-label").catch(() => "")) ?? "";
-    if (/^(close|x|×)$/i.test(text) || /^(close|x|×)$/i.test(ariaLabel)) continue;
+    if (/^(close|x|×|cancel)$/i.test(text) || /^(close|x|×|cancel)$/i.test(ariaLabel)) continue;
     if (!text && !ariaLabel) continue;
     target = b;
     break;
@@ -412,12 +416,26 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
     }
   }
 
-  const endBashoBtn = page.getByRole("button", { name: /^End Basho$/i }).first();
   const finalizeBtn = page.getByRole("button", { name: /Finalize Basho/i }).first();
-  const simDayBouts = page.getByRole("button", { name: /^Sim All$/ }).first();
-  const nextDayBtn = page.getByRole("button", { name: /^Next Day$/i }).first();
 
   for (let i = 0; i < 60; i++) {
+    if (i % 5 === 4) {
+      const w = await readAutosaveWorld(page).catch(() => null);
+      const dlgInfo = await page
+        .evaluate(() =>
+          [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map((d) => ({
+            state: d.getAttribute("data-state"),
+            text: (d.textContent ?? "").slice(0, 80),
+            btns: [...d.querySelectorAll("button")].map((b) => (b.textContent ?? "").trim()).slice(0, 6),
+          }))
+        )
+        .catch(() => [] as any[]);
+      console.log(
+        `[driveBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
+          `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + (w.currentBasho.day ?? w.currentBasho.currentDay) + " matches" + (w.currentBasho.matches?.length ?? "?") : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
+          `dialogs=${JSON.stringify(dlgInfo)}`
+      );
+    }
     if (
       (await page.getByText(/No Active Tournament/i).isVisible().catch(() => false)) ||
       (await finalizeBtn.isVisible().catch(() => false))
@@ -427,55 +445,80 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
 
     if (await resolveCrisisIfPresent(page)) continue;
 
-    if (await endBashoBtn.isVisible().catch(() => false)) {
-      // Clicking opens a confirm AlertDialog; the next iteration (or the
-      // crisis resolver, which prefers substantive buttons) confirms it.
-      if (!(await tryClick(endBashoBtn))) await resolveCrisisIfPresent(page);
-      await page.waitForTimeout(2000);
-      continue;
-    }
-
-    // On the basho page, drive the interactive path: Next Day (once the
-    // day's bouts are done), else Sim All to simulate today's bouts.
-    // IMPORTANT: disabled buttons are still "visible" — check isEnabled,
-    // and check Next Day first or the loop spins forever on the disabled
-    // Sim All once a day's bouts complete.
+    // On the basho page, drive via DOM-level clicks. Stale aria-hidden
+    // layers (Radix hideOthers leaks when a dialog unmounts mid-nav) make
+    // getByRole locators report "invisible" while the element is rendered,
+    // and non-dialog overlays can fail Playwright's hit-test. el.click()
+    // fires the React handler regardless — acceptable for a sim driver.
     if (page.url().includes("/basho")) {
-      if (
-        (await nextDayBtn.isVisible().catch(() => false)) &&
-        (await nextDayBtn.isEnabled().catch(() => false))
-      ) {
-        if (!(await tryClick(nextDayBtn))) await resolveCrisisIfPresent(page);
+      const action = await page
+        .evaluate(() => {
+          // "Next Day"/"End Basho" — rendered once today's bouts are done.
+          const advance = document.querySelector(
+            "#advance-basho-btn"
+          ) as HTMLButtonElement | null;
+          if (advance && !advance.disabled) {
+            const label = (advance.textContent ?? "").trim();
+            advance.click();
+            return `advance:${label}`;
+          }
+          // "Sim All" — simulate the remainder of today's bouts.
+          for (const b of document.querySelectorAll("button")) {
+            if ((b.textContent ?? "").trim() === "Sim All" && !b.disabled) {
+              b.click();
+              return "sim-all";
+            }
+          }
+          return null;
+        })
+        .catch(() => null);
+
+      if (action === "sim-all") {
         await page.waitForTimeout(1500);
         continue;
       }
-      if (
-        (await simDayBouts.isVisible().catch(() => false)) &&
-        (await simDayBouts.isEnabled().catch(() => false))
-      ) {
-        if (!(await tryClick(simDayBouts))) await resolveCrisisIfPresent(page);
-        await page.waitForTimeout(1500);
+      if (action?.startsWith("advance:")) {
+        await page.waitForTimeout(800);
+        // "End Basho" opens a Radix AlertDialog — confirm via DOM click on
+        // the last non-cancel button.
+        const confirm = await page
+          .evaluate(() => {
+            const dlg = document.querySelector(
+              '[role="alertdialog"][data-state="open"], [role="dialog"][data-state="open"]'
+            );
+            if (!dlg) return "no-dialog";
+            const btns = [...dlg.querySelectorAll("button")];
+            const btn = btns
+              .filter(
+                (b) => !/^(close|cancel|x|×)$/i.test((b.textContent ?? "").trim())
+              )
+              .pop();
+            if (!btn) return "no-action";
+            (btn as HTMLElement).click();
+            return `confirmed:"${(btn.textContent ?? "").trim()}"`;
+          })
+          .catch(() => "err");
+        console.log(`[driveBasho] iter ${i + 1}: ${action} → ${confirm}`);
+        await page.waitForTimeout(2000);
         continue;
       }
+
       if (i % 5 === 4) {
-        const w = await readAutosaveWorld(page).catch(() => null);
-        const dlgInfo = await page
-          .evaluate(() =>
-            [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map((d) => ({
-              state: d.getAttribute("data-state"),
-              text: (d.textContent ?? "").slice(0, 80),
-            }))
-          )
-          .catch(() => [] as any[]);
-        const buttons = await page
-          .locator("main button:visible")
-          .allInnerTexts()
-          .catch(() => [] as string[]);
-        console.log(
-          `[driveBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
-            `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + (w.currentBasho.day ?? w.currentBasho.currentDay) + " matches" + (w.currentBasho.matches?.length ?? "?") : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
-            `dialogs=${JSON.stringify(dlgInfo)} buttons=${JSON.stringify(buttons.slice(0, 12))}`
-        );
+        const ctl = await page
+          .evaluate(() => {
+            const btn = document.querySelector("#advance-basho-btn") as HTMLElement | null;
+            return {
+              advanceBtn: btn
+                ? {
+                    text: btn.textContent?.trim(),
+                    disabled: (btn as HTMLButtonElement).disabled,
+                    ariaHidden: btn.closest('[aria-hidden="true"]') != null,
+                  }
+                : null,
+            };
+          })
+          .catch(() => null);
+        console.log(`[driveBasho] no actionable control — bashoCtl=${JSON.stringify(ctl)}`);
       }
       await page.waitForTimeout(2000);
       continue;
