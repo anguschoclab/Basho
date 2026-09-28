@@ -42,5 +42,6 @@ export function toCareerDataDTO(r: Rikishi, world: WorldState): RikishiCareerDat
     consecutiveKachiKoshi: r.consecutiveKachiKoshi ?? 0,
     weightJourney: r.weightJourney,
     oversleptBasho: r.oversleptBasho ?? null,
+    wasDemotedFromOzeki: r.wasDemotedFromOzeki ?? false,
   };
 }

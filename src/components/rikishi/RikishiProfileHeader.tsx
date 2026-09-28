@@ -283,6 +283,21 @@ export function RikishiProfileHeader({
                     </div>
                   </div>
                 )}
+                {rikishi.wasDemotedFromOzeki && rikishi.rank === "sekiwake" && (
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+                      <span className="text-gold flex items-center gap-1">
+                        <span role="img" aria-label="Ozeki Reclaim">
+                          ⭐
+                        </span>{" "}
+                        Ozeki Reclaim Watch
+                      </span>
+                      <span className="opacity-70">
+                        Needs 10+ Wins This Basho
+                      </span>
+                    </div>
+                  </div>
+                )}
                 {(rikishi.rank === "sekiwake" || rikishi.rank === "komusubi") &&
                   (rikishi.sekiwakeThreeBashoWins ?? 0) > 0 && (
                     <div className="pt-2">

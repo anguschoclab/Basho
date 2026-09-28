@@ -207,6 +207,7 @@ export interface RikishiCareerDataDTO {
     phases: string[];
   };
   oversleptBasho?: { bashoName: string; day: number; year: number } | null;
+  wasDemotedFromOzeki?: boolean;
 }
 
 /** Lineage (mentor/mentee relationships) */
@@ -321,4 +322,5 @@ export interface UIRosterEntry {
     phases: string[];
   };
   oversleptBasho?: { bashoName: string; day: number; year: number } | null;
+  wasDemotedFromOzeki?: boolean;
 }
