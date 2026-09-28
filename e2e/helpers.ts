@@ -23,7 +23,7 @@ export const AUTOSAVE_KEY = "basho_save_autosave";
  * before JSON.parse. Decompression can't run inside page.evaluate, so the
  * raw string is pulled out and decoded on the Node side.
  */
-export async function readAutosaveSave(page: Page): Promise<any> {
+export async function readAutosaveSave(page: Page): Promise<{ world?: SerializedWorld } | null> {
   const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
   if (!raw) return null;
   const json = raw.startsWith("lz16:")
@@ -37,8 +37,7 @@ export async function readAutosaveSave(page: Page): Promise<any> {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type SerializedWorld = any;
+export type SerializedWorld = { year: number; bashoName?: string; cyclePhase?: string; pendingCrisis?: { id?: string; type?: string }; currentBasho?: { day?: number; currentDay?: number; matches?: unknown[] }; dayIndexGlobal?: number; week?: number; [key: string]: unknown };
 
 /** Read the autosave's serialized world, or null if absent/unparseable. */
 export async function readAutosaveWorld(page: Page): Promise<SerializedWorld | null> {
@@ -244,7 +243,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
             text: (d.textContent ?? "").slice(0, 90),
           }))
         )
-        .catch(() => [] as any[]);
+        .catch(() => []);
       console.log(
         `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} cal="${cal}" ` +
           `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
@@ -429,7 +428,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
             btns: [...d.querySelectorAll("button")].map((b) => (b.textContent ?? "").trim()).slice(0, 6),
           }))
         )
-        .catch(() => [] as any[]);
+        .catch(() => []);
       console.log(
         `[driveBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
           `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + (w.currentBasho.day ?? w.currentBasho.currentDay) + " matches" + (w.currentBasho.matches?.length ?? "?") : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
