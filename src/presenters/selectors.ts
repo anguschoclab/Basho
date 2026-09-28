@@ -206,7 +206,7 @@ export interface StandingEntry {
   losses: number;
 }
 
-export function selectMakuuchiStandings(world: WorldState): StandingEntry[] {
+export const selectMakuuchiStandings = createSelector((world: WorldState): StandingEntry[] => {
   if (!world.currentBasho?.standings) return [];
   const standings = world.currentBasho.standings;
   const results: StandingEntry[] = [];
@@ -220,7 +220,7 @@ export function selectMakuuchiStandings(world: WorldState): StandingEntry[] {
     }
   }
   return sortStandings(results);
-}
+});
 
 // ─── Write-only state field selectors ─────────────────────────────────────────
 // These surface previously write-only fields to the UI layer.

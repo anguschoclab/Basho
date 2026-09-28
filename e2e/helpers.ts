@@ -23,7 +23,9 @@ export const AUTOSAVE_KEY = "basho_save_autosave";
  * before JSON.parse. Decompression can't run inside page.evaluate, so the
  * raw string is pulled out and decoded on the Node side.
  */
-export async function readAutosaveSave(page: Page): Promise<any> {
+import type { SerializedWorldState } from "../src/engine/types/world";
+
+export async function readAutosaveSave(page: Page): Promise<SerializedWorldState | null> {
   const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
   if (!raw) return null;
   const json = raw.startsWith("lz16:")
