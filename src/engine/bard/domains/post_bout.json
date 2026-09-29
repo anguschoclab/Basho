@@ -53,7 +53,12 @@
     "loss_streak": [
       "%LOSER% loses for the %STREAK%th straight day.",
       "%STREAK% straight losses now for %LOSER%. A difficult stretch.",
-      "The losing streak reaches %STREAK% for %LOSER%."
+      "The losing streak reaches %STREAK% for %LOSER%.",
+      "Another agonizing defeat for %LOSER%, pushing the skid to %STREAK% matches.",
+      "The slump continues for %LOSER% as the losing streak hits %STREAK% straight.",
+      "Nothing seems to be working for %LOSER% right now — that's %STREAK% consecutive losses.",
+      "%LOSER% just can't find a way to win. The dismal run extends to %STREAK% defeats.",
+      "The darkness deepens for %LOSER% with a %STREAK%th straight loss."
     ],
     "first_win": [
       "%WINNER% picks up his first win of the basho!",
