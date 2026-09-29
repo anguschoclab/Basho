@@ -46,6 +46,108 @@ export async function readAutosaveWorld(page: Page): Promise<SerializedWorld | n
 }
 
 /**
+ * Lightweight metadata read from the live in-memory world
+ * (window.__BASHO_WORLD__, exposed by GameContext). Only plain fields —
+ * no serialization — so it's safe to poll every few hundred ms even with
+ * a multi-MB world. Use for loop diagnostics and phase/day checks.
+ */
+export async function readLiveWorldMeta(page: Page): Promise<any | null> {
+  return page
+    .evaluate(() => {
+      const w = (window as any).__BASHO_WORLD__;
+      if (!w) return null;
+      return {
+        seed: w.seed,
+        dayIndexGlobal: w.dayIndexGlobal,
+        cyclePhase: w.cyclePhase,
+        week: w.week,
+        year: w.year,
+        calendar: w.calendar ? { month: w.calendar.month, currentDay: w.calendar.currentDay, currentWeek: w.calendar.currentWeek } : null,
+        playerHeyaId: w.playerHeyaId,
+        pendingCrisis: w.pendingCrisis ? { id: w.pendingCrisis.id ?? w.pendingCrisis.type } : null,
+        currentBasho: w.currentBasho
+          ? { day: w.currentBasho.day ?? w.currentBasho.currentDay, matchCount: w.currentBasho.matches?.length ?? 0 }
+          : null,
+        historyLength: w.history?.length ?? 0,
+        awardLogLength: w.awardLog?.length ?? 0,
+        rikishiCount: w.rikishi instanceof Map ? w.rikishi.size : Object.keys(w.rikishi ?? {}).length,
+        banzukeIndexLength: Object.keys(w.historyIndex?.banzukeByBasho ?? {}).length,
+        yokozunaVacancyStreak: w.yokozunaVacancyStreak ?? 0,
+      };
+    })
+    .catch(() => null);
+}
+
+/**
+ * Read the full live world from the in-memory handle, converting Maps to
+ * Records in-page so the result matches SerializationService output.
+ * Costs a multi-MB JSON.stringify on the page's main thread — call only
+ * at checkpoints (a few times per basho), never inside tight poll loops.
+ * Falls back to the autosave when the debug handle is absent.
+ */
+export async function readWorldSnapshot(page: Page): Promise<SerializedWorld | null> {
+  const json = await page
+    .evaluate(() => {
+      const w = (window as any).__BASHO_WORLD__;
+      if (!w) return null;
+      return JSON.stringify(w, (_k, v) => {
+        if (v instanceof Map) return Object.fromEntries(v);
+        if (v instanceof Set) return [...v];
+        return v;
+      });
+    })
+    .catch(() => null);
+  if (json) {
+    try {
+      return JSON.parse(json);
+    } catch {
+      /* fall through to autosave */
+    }
+  }
+  return readAutosaveWorld(page);
+}
+
+/**
+ * Poll the LIVE world until `predicateSrc` (a `(world) => ...` expression)
+ * is truthy, then return a full serialized-shaped snapshot. Predicates
+ * evaluate in-page against the object (no per-poll serialization), so
+ * this neither depends on localStorage quota nor pays an MB-scale parse
+ * every 500ms the way the autosave poller did.
+ */
+export async function waitForWorld(
+  page: Page,
+  predicateSrc: string,
+  timeout = 120_000
+): Promise<SerializedWorld> {
+  const deadline = Date.now() + timeout;
+  let lastMeta: any = null;
+  while (Date.now() < deadline) {
+    const hit = await page
+      .evaluate((src) => {
+        const w = (window as any).__BASHO_WORLD__;
+        if (!w) return false;
+        try {
+          return !!(new Function("world", `return (${src})(world)`) as any)(w);
+        } catch {
+          return false;
+        }
+      }, predicateSrc)
+      .catch(() => false);
+    if (hit) {
+      const snap = await readWorldSnapshot(page);
+      if (snap) return snap;
+    }
+    lastMeta = await readLiveWorldMeta(page);
+    await page.waitForTimeout(500);
+  }
+  throw new Error(
+    `waitForWorld timed out after ${timeout}ms (last world: ${
+      lastMeta ? `seed=${lastMeta.seed} day=${lastMeta.dayIndexGlobal} phase=${lastMeta.cyclePhase}` : "none"
+    })`
+  );
+}
+
+/**
  * Poll the autosave until `predicateSrc` (a JS expression body evaluated in
  * the page as `(world) => ...` source) returns truthy, then return the world.
  *
@@ -99,7 +201,7 @@ export async function setWorldSeed(page: Page, seed: string): Promise<void> {
   await page.getByRole("button", { name: /Manual Seed/i }).click();
   await page.getByPlaceholder(/Enter specific world seed/i).fill(seed);
   await page.getByRole("button", { name: /Sync Seed/i }).click();
-  await waitForAutosaveWorld(page, `(w) => w.seed === ${JSON.stringify(seed)}`, 180_000);
+  await waitForWorld(page, `(w) => w.seed === ${JSON.stringify(seed)}`, 180_000);
   await expect(page.locator(".space-y-6 .grid .cursor-pointer").first()).toBeVisible({
     timeout: 60_000,
   });
@@ -207,7 +309,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
       return;
     }
     if (i % 5 === 4) {
-      const w = await readAutosaveWorld(page).catch(() => null);
+      const w = await readLiveWorldMeta(page);
       if (w?.cyclePhase === "active_basho" || w?.currentBasho) return;
     }
 
@@ -230,7 +332,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
     }
 
     if (i % 15 === 14) {
-      const w = await readAutosaveWorld(page).catch(() => null);
+      const w = await readLiveWorldMeta(page);
       const cal = await page
         .getByText(/Week \d+|Day \d+|Tournament/i)
         .first()
@@ -247,7 +349,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
         .catch(() => [] as any[]);
       console.log(
         `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} cal="${cal}" ` +
-          `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
+          `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + w.pendingCrisis.id : ""}` : "none"} ` +
           `dialogs=${JSON.stringify(dlgInfo)}`
       );
     }
@@ -491,7 +593,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
 
   for (let i = 0; i < 60; i++) {
     if (i % 5 === 4) {
-      const w = await readAutosaveWorld(page).catch(() => null);
+      const w = await readLiveWorldMeta(page);
       const dlgInfo = await page
         .evaluate(() =>
           [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map((d) => ({
@@ -503,7 +605,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
         .catch(() => [] as any[]);
       console.log(
         `[driveBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
-          `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + (w.currentBasho.day ?? w.currentBasho.currentDay) + " matches" + (w.currentBasho.matches?.length ?? "?") : ""}${w.pendingCrisis ? " crisis:" + (w.pendingCrisis.id ?? w.pendingCrisis.type) : ""}` : "none"} ` +
+          `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day + " matches" + w.currentBasho.matchCount : ""}${w.pendingCrisis ? " crisis:" + w.pendingCrisis.id : ""}` : "none"} ` +
           `dialogs=${JSON.stringify(dlgInfo)}`
       );
     }

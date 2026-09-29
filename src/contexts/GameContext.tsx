@@ -88,6 +88,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   }, [state.world]);
 
+  // Expose the live world for E2E/debug inspection. Zero-cost (a reference,
+  // not a copy) and lets tests poll world state without depending on
+  // localStorage quota or save timing.
+  useEffect(() => {
+    (window as { __BASHO_WORLD__?: unknown }).__BASHO_WORLD__ = state.world;
+  }, [state.world]);
+
   // V5-B09: the interactive basho path (SIMULATE_BOUT / SIMULATE_ALL_BOUTS /
   // SET_BOUT_TACTIC / END_BASHO) still resolves on the main thread for
   // synchronous match animation. Those slice cases bump state.uiWorldRevision;

@@ -6,9 +6,10 @@ import {
   dismissOnboardingTour,
   driveBashoToRecap,
   finalizeRecap,
-  readAutosaveWorld,
+  readLiveWorldMeta,
+  readWorldSnapshot,
   setWorldSeed,
-  waitForAutosaveWorld,
+  waitForWorld,
 } from "./helpers";
 
 /**
@@ -18,7 +19,9 @@ import {
  * (6 honbasho: hatsu → kyushu) through the real UI + worker path, then
  * advances across the year boundary into January.
  *
- * Verified against the persisted autosave:
+ * Verified against the live world (window.__BASHO_WORLD__, same object the
+ * autosave serializes — avoids the ~5MB localStorage quota ceiling a
+ * year-old world exceeds):
  *   - Calendar: dayIndexGlobal strictly increases, calendar.currentDay /
  *     calendar.month cycle through real ranges, every month of the year is
  *     observed, and world.year ticks 2026 → 2027. (world.week only
@@ -80,6 +83,26 @@ function liveRanks(world: any): Map<string, number> {
   return out;
 }
 
+/** rank label per rikishi on a published banzuke snapshot. */
+function snapshotRankLabels(snapshot: any): Map<string, string> {
+  const out = new Map<string, string>();
+  if (!snapshot?.divisions) return out;
+  for (const div of Object.values(snapshot.divisions) as any[]) {
+    for (const a of div.assignments ?? []) {
+      out.set(a.rikishiId, a.position?.rank);
+    }
+  }
+  return out;
+}
+
+function liveRankLabels(world: any): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const [id, r] of Object.entries(world.rikishi ?? {}) as [string, any][]) {
+    out.set(id, r.rank);
+  }
+  return out;
+}
+
 interface BashoReport {
   year: number;
   bashoNumber: number;
@@ -129,7 +152,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   await createNewGame(page);
   await dismissOnboardingTour(page);
 
-  const startWorld = await waitForAutosaveWorld(
+  const startWorld = await waitForWorld(
     page,
     `(w) => w.seed === ${JSON.stringify(WORLD_SEED)} && w.playerHeyaId`,
     60_000
@@ -138,6 +161,10 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   // Baseline rank positions at world gen — the "previous banzuke" for the
   // first published snapshot.
   let prevPositions = liveRanks(startWorld);
+  // Rank labels on the banzuke each basho was fought on — needed for
+  // kinboshi checks (a winner may be promoted by the banzuke published
+  // after the bout, so live rank ≠ bout-time rank).
+  let prevRankLabels = liveRankLabels(startWorld);
   const baselineYokozunaIds = Object.entries(startWorld.rikishi ?? {})
     .filter(([, r]: [string, any]) => r.rank === "yokozuna")
     .map(([id]) => id);
@@ -154,7 +181,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   // A full year crosses all 12 months, but per-basho checkpoints only land
   // ~6 times — sample the autosave continuously so fast months aren't missed.
   const sampler = setInterval(async () => {
-    const w = await readAutosaveWorld(page).catch(() => null);
+    const w = await readLiveWorldMeta(page);
     if (w?.calendar?.month) monthsSeen.add(w.calendar.month);
   }, 2_000);
   let prevDayIndex = startWorld.dayIndexGlobal ?? 0;
@@ -179,11 +206,11 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
         w.history[${i}].year + "-" + w.history[${i}].bashoNumber]`;
     let world;
     try {
-      world = await waitForAutosaveWorld(page, postBashoPredicate, 90_000);
+      world = await waitForWorld(page, postBashoPredicate, 90_000);
     } catch {
       await finalizeRecap(page);
       await advanceDays(page, 1);
-      world = await waitForAutosaveWorld(page, postBashoPredicate, 90_000);
+      world = await waitForWorld(page, postBashoPredicate, 90_000);
     }
 
     const last = world.history[i];
@@ -268,7 +295,11 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     const departures = [...prevPositions.keys()].filter((id) => !curPositions.has(id)).length;
     expect(promotions, `basho ${i + 1}: promotions occurred`).toBeGreaterThan(0);
     expect(demotions, `basho ${i + 1}: demotions occurred`).toBeGreaterThan(0);
+    // Capture the fought-on labels before advancing — kinboshi checks below
+    // compare against the ranks held during the basho, not post-publish.
+    const foughtRankLabels = prevRankLabels;
     prevPositions = curPositions;
+    prevRankLabels = snapshotRankLabels(current);
 
     // ── Yokozuna discipline ───────────────────────────────────────────
     const yokozunaIds = Object.entries(rikishiById)
@@ -296,21 +327,24 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
         ).toBeGreaterThan(0);
       }
     }
-    // Kinboshi key bouts: winner below sanyaku, loser is yokozuna.
+    // Kinboshi key bouts: winner below sanyaku, loser is yokozuna —
+    // judged at the ranks the basho was fought on (either may have moved
+    // or retired in the banzuke just published).
     let kinboshiBouts = 0;
     for (const kb of last.keyBouts ?? []) {
       if (kb.label !== "kinboshi") continue;
       kinboshiBouts++;
-      const loserId =
-        kb.bout?.winnerRikishiId === kb.eastRikishiId ? kb.westRikishiId : kb.eastRikishiId;
+      const loserId = kb.bout?.loserRikishiId;
       const winnerId = kb.bout?.winnerRikishiId;
+      const loserRank = foughtRankLabels.get(loserId) ?? rikishiById[loserId]?.rank;
+      const winnerRank = foughtRankLabels.get(winnerId) ?? rikishiById[winnerId]?.rank;
       expect(
-        rikishiById[loserId]?.rank === "yokozuna",
-        `kinboshi loser ${loserId} holds yokozuna rank`
+        loserRank === "yokozuna",
+        `kinboshi loser ${loserId} was yokozuna at bout time (got ${loserRank})`
       ).toBe(true);
       expect(
-        winnerId && RANK_ORDER[rikishiById[winnerId]?.rank] > RANK_ORDER.komusubi,
-        `kinboshi winner ${winnerId} is below sanyaku`
+        winnerId && RANK_ORDER[winnerRank] > RANK_ORDER.komusubi,
+        `kinboshi winner ${winnerId} was below sanyaku at bout time (got ${winnerRank})`
       ).toBe(true);
     }
 
@@ -385,7 +419,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   if (await simAllBtn.isVisible().catch(() => false)) {
     await simAllBtn.click({ timeout: 5_000 }).catch(() => {});
   }
-  const newYearWorld = await waitForAutosaveWorld(
+  const newYearWorld = await waitForWorld(
     page,
     `(w) => w.year >= ${startWorld.year + 1} || (w.currentBasho && w.currentBasho.year >= ${
       startWorld.year + 1

@@ -137,7 +137,38 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
 
   events.log.push(ev);
   events.dedupe[versionedDedupeKey] = true;
+
+  // Bound the live log. Noise events (training deltas, narrative flavor,
+  // per-bout records) accumulate ~10k/basho and were never pruned — the
+  // serialized world grew ~12MB per basho, which OOMs the renderer's
+  // save/sync paths within a year. Durable classes stay regardless of age
+  // (long-range checks like hasHadKanrekiCeremony, gomenfuda counts, and
+  // retirement ceremonies scan them); the rest roll off past the cap.
+  const liveLen = events.log.length;
+  if (liveLen > MAX_LIVE_EVENT_LOG + EVENT_LOG_TRIM_SLACK) {
+    const cutoff = liveLen - MAX_LIVE_EVENT_LOG;
+    events.log = events.log.filter(
+      (e, i) => i >= cutoff || isDurableEvent(e)
+    );
+  }
   return ev;
+}
+
+/** Max unprotected entries retained in the live event log. */
+export const MAX_LIVE_EVENT_LOG = 10_000;
+/** Overshoot allowed before a trim pass runs (amortizes the O(n) filter). */
+export const EVENT_LOG_TRIM_SLACK = 2_000;
+
+/** Events with durable semantics — kept regardless of the rolling cap. */
+export function isDurableEvent(e: Pick<EngineEvent, "category" | "importance">): boolean {
+  return (
+    e.importance === "headline" ||
+    e.category === "career" ||
+    e.category === "basho" ||
+    e.category === "milestone" ||
+    e.category === "discipline" ||
+    e.category === "promotion"
+  );
 }
 
 /**

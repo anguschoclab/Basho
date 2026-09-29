@@ -5,6 +5,9 @@ import {
   queryEvents,
   EventBus,
   tickWeekEvents,
+  MAX_LIVE_EVENT_LOG,
+  EVENT_LOG_TRIM_SLACK,
+  isDurableEvent,
 } from "@/engine/events";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { EngineEventType, EventsState } from "@/engine/types/events";
@@ -420,6 +423,70 @@ describe("events.test.ts - Helpers & Cleanup", () => {
 
       // Check dedupe cleanup
       expect(events.dedupe["2020|1|TRAINING_MILESTONE|world|||Old"]).toBeUndefined();
+    });
+  });
+
+  describe("rolling event log cap", () => {
+    it("classifies durable events", () => {
+      expect(isDurableEvent({ category: "training", importance: "minor" })).toBe(false);
+      expect(isDurableEvent({ category: "narrative", importance: "notable" })).toBe(false);
+      expect(isDurableEvent({ category: "match", importance: "notable" })).toBe(false);
+      expect(isDurableEvent({ category: "career", importance: "minor" })).toBe(true);
+      expect(isDurableEvent({ category: "basho", importance: "minor" })).toBe(true);
+      expect(isDurableEvent({ category: "milestone", importance: "minor" })).toBe(true);
+      expect(isDurableEvent({ category: "discipline", importance: "minor" })).toBe(true);
+      expect(isDurableEvent({ category: "promotion", importance: "minor" })).toBe(true);
+      expect(isDurableEvent({ category: "economy", importance: "headline" })).toBe(true);
+    });
+
+    it("bounds unprotected events while retaining durable classes", () => {
+      const world = MockFactory.createWorld();
+      ensureEventsState(world);
+      const events = world.events;
+
+      // Durable events seeded first — must survive regardless of position.
+      events.log.push(
+        {
+          id: "durable-career",
+          type: "LIFECYCLE_EVENT" as EngineEventType,
+          category: "career",
+          importance: "minor",
+          year: 2026, week: 1, month: 1, phase: "weekly", scope: "world",
+          title: "career", summary: "s", data: {}, tags: [], truthLevel: "public",
+        },
+        {
+          id: "durable-headline",
+          type: "FINANCIAL_ALERT" as EngineEventType,
+          category: "economy",
+          importance: "headline",
+          year: 2026, week: 1, month: 1, phase: "weekly", scope: "world",
+          title: "headline", summary: "s", data: {}, tags: [], truthLevel: "public",
+        },
+      );
+
+      const noiseCount = MAX_LIVE_EVENT_LOG + EVENT_LOG_TRIM_SLACK + 10;
+      for (let i = 0; i < noiseCount; i++) {
+        logEngineEvent(world, {
+          type: "TRAINING_STAT_DELTA" as EngineEventType,
+          category: "training",
+          title: `noise-${i}`,
+          summary: "n",
+          data: {},
+        });
+      }
+
+      // Cap bound holds: durable (2) + unprotected capped at
+      // MAX_LIVE_EVENT_LOG after each trim, plus up to SLACK accumulation
+      // before the next trim fires.
+      expect(events.log.length).toBeLessThanOrEqual(
+        MAX_LIVE_EVENT_LOG + EVENT_LOG_TRIM_SLACK + 2
+      );
+      // Durable events survived despite being the oldest entries.
+      expect(events.log.some((e) => e.id === "durable-career")).toBe(true);
+      expect(events.log.some((e) => e.id === "durable-headline")).toBe(true);
+      // Newest noise retained; oldest noise dropped.
+      expect(events.log.some((e) => e.title === `noise-${noiseCount - 1}`)).toBe(true);
+      expect(events.log.some((e) => e.title === "noise-0")).toBe(false);
     });
   });
 

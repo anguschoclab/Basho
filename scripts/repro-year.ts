@@ -11,6 +11,7 @@ import { advanceDaysFast } from "../src/engine/tick/tickDaily";
 import { endBasho, publishBanzukeUpdate } from "../src/engine/world";
 import { resolveImpacts } from "../src/engine/core/ImpactResolver";
 import { BardEngine } from "../src/engine/bard/BardEngine";
+import { SerializationService } from "../src/engine/persistence/SerializationService";
 
 const SEED = "e2e-year-of-bashos-v1";
 
@@ -52,8 +53,10 @@ async function main() {
       world = w;
       const last = world.history[world.history.length - 1];
       const y = last ? world.rikishi.get(last.yusho)?.shikona ?? last?.yusho : "?";
+      const jsonMB = (JSON.stringify(SerializationService.serializeWorld(world)).length / 1048576).toFixed(1);
       console.log(
         `basho ${b + 1} ended: yusho=${y} phase=${world.cyclePhase} ` +
+          `events=${world.events?.log?.length} json=${jsonMB}MB ` +
           `banzukeKeys=${Object.keys(world.historyIndex?.banzukeByBasho ?? {}).length}`
       );
     } catch (e) {
