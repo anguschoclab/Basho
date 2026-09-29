@@ -12,6 +12,13 @@ export interface H2HRecord {
     day: number;
     year: number;
   } | null;
+  /**
+   * Signed integer tracking active match streak.
+   * Positive = active winning streak against opponent.
+   * Negative = active losing streak against opponent.
+   * Note: Resets directly to 1 or -1 on streak break; never 0.
+   * Drives narrative evaluation mapping to 'winning_streak'/'losing_streak'.
+   */
   streak: number;
 }
 
