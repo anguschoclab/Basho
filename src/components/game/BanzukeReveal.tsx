@@ -10,13 +10,9 @@ import { Badge } from "../ui/badge";
 import { ArrowUp, ArrowDown, Minus, Star, ArrowRight } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 
-interface RevealEntry {
-  id: string;
-  shikona: string;
-  oldRank: string;
-  newRank: string;
-  change: "up" | "down" | "none" | "new" | "division_change";
-}
+import type { BanzukeRevealEntry } from "@/presenters/projections/recapBanzukeRevealProjections";
+
+type RevealEntry = BanzukeRevealEntry;
 
 export function BanzukeReveal({
   onComplete,

@@ -23,7 +23,78 @@ export const AUTOSAVE_KEY = "basho_save_autosave";
  * before JSON.parse. Decompression can't run inside page.evaluate, so the
  * raw string is pulled out and decoded on the Node side.
  */
-export async function readAutosaveSave(page: Page): Promise<any> {
+/**
+ * Loose structural shape of the serialized world produced by
+ * SerializationService (Maps/Sets already flattened to plain objects).
+ * The index signature keeps arbitrary field access legal; the declared
+ * fields document what the specs assert on.
+ */
+export interface SerializedWorld {
+  seed: string;
+  dayIndexGlobal: number;
+  week: number;
+  year: number;
+  cyclePhase: string;
+  calendar?: { month?: number; currentDay?: number; currentWeek?: number } & Record<string, unknown>;
+  playerHeyaId?: string;
+  pendingCrisis?: { id?: string; type?: string } | null;
+  currentBasho?:
+    | ({ day?: number; currentDay?: number; bashoName?: string; year?: number; matches?: unknown[] } & Record<string, unknown>)
+    | null;
+  currentBanzuke?: Record<string, unknown> | null;
+  history?: Array<Record<string, unknown>>;
+  awardLog?: Array<Record<string, unknown>>;
+  historyIndex?: { banzukeByBasho?: Record<string, Record<string, unknown>> } & Record<string, unknown>;
+  rikishi?: Record<string, Record<string, unknown>>;
+  events?: { log?: Array<Record<string, unknown>> };
+  yokozunaVacancyStreak?: number;
+  meta?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+/** Autosave envelope — `{ world, savedAt, ... }` as written by SaveSlotService. */
+export interface SerializedSave {
+  world?: SerializedWorld;
+  [key: string]: unknown;
+}
+
+/** Cheap metadata projection of the live world — see readLiveWorldMeta. */
+export interface LiveWorldMeta {
+  seed: string;
+  dayIndexGlobal: number;
+  cyclePhase: string;
+  week: number;
+  year: number;
+  calendar: { month?: number; currentDay?: number; currentWeek?: number } | null;
+  playerHeyaId?: string;
+  pendingCrisis: { id?: string } | null;
+  currentBasho: { day?: number; matchCount: number } | null;
+  historyLength: number;
+  awardLogLength: number;
+  rikishiCount: number;
+  banzukeIndexLength: number;
+  yokozunaVacancyStreak: number;
+}
+
+/** Live in-page world handle shape (Maps still live — unlike SerializedWorld). */
+interface LiveWorldHandle {
+  seed?: string;
+  dayIndexGlobal?: number;
+  cyclePhase?: string;
+  week?: number;
+  year?: number;
+  calendar?: { month?: number; currentDay?: number; currentWeek?: number };
+  playerHeyaId?: string;
+  pendingCrisis?: { id?: string; type?: string } | null;
+  currentBasho?: { day?: number; currentDay?: number; matches?: unknown[] } | null;
+  history?: unknown[];
+  awardLog?: unknown[];
+  rikishi?: Map<string, unknown> | Record<string, unknown>;
+  historyIndex?: { banzukeByBasho?: Record<string, unknown> };
+  yokozunaVacancyStreak?: number;
+}
+
+export async function readAutosaveSave(page: Page): Promise<SerializedSave | null> {
   const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
   if (!raw) return null;
   const json = raw.startsWith("lz16:")
@@ -31,14 +102,11 @@ export async function readAutosaveSave(page: Page): Promise<any> {
     : raw;
   if (!json) return null;
   try {
-    return JSON.parse(json);
+    return JSON.parse(json) as SerializedSave;
   } catch {
     return null;
   }
 }
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type SerializedWorld = any;
 
 /** Read the autosave's serialized world, or null if absent/unparseable. */
 export async function readAutosaveWorld(page: Page): Promise<SerializedWorld | null> {
@@ -51,10 +119,10 @@ export async function readAutosaveWorld(page: Page): Promise<SerializedWorld | n
  * no serialization — so it's safe to poll every few hundred ms even with
  * a multi-MB world. Use for loop diagnostics and phase/day checks.
  */
-export async function readLiveWorldMeta(page: Page): Promise<any | null> {
+export async function readLiveWorldMeta(page: Page): Promise<LiveWorldMeta | null> {
   return page
     .evaluate(() => {
-      const w = (window as any).__BASHO_WORLD__;
+      const w = (window as unknown as { __BASHO_WORLD__?: LiveWorldHandle }).__BASHO_WORLD__;
       if (!w) return null;
       return {
         seed: w.seed,
@@ -88,7 +156,7 @@ export async function readLiveWorldMeta(page: Page): Promise<any | null> {
 export async function readWorldSnapshot(page: Page): Promise<SerializedWorld | null> {
   const json = await page
     .evaluate(() => {
-      const w = (window as any).__BASHO_WORLD__;
+      const w = (window as unknown as { __BASHO_WORLD__?: LiveWorldHandle }).__BASHO_WORLD__;
       if (!w) return null;
       return JSON.stringify(w, (_k, v) => {
         if (v instanceof Map) return Object.fromEntries(v);
@@ -120,14 +188,14 @@ export async function waitForWorld(
   timeout = 120_000
 ): Promise<SerializedWorld> {
   const deadline = Date.now() + timeout;
-  let lastMeta: any = null;
+  let lastMeta: LiveWorldMeta | null = null;
   while (Date.now() < deadline) {
     const hit = await page
       .evaluate((src) => {
-        const w = (window as any).__BASHO_WORLD__;
+        const w = (window as unknown as { __BASHO_WORLD__?: LiveWorldHandle }).__BASHO_WORLD__;
         if (!w) return false;
         try {
-          return !!(new Function("world", `return (${src})(world)`) as any)(w);
+          return !!(new Function("world", `return (${src})(world)`) as (world: LiveWorldHandle) => unknown)(w);
         } catch {
           return false;
         }
@@ -346,7 +414,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
             text: (d.textContent ?? "").slice(0, 90),
           }))
         )
-        .catch(() => [] as any[]);
+        .catch((): { state: string | null; hidden: string | null; text: string }[] => []);
       console.log(
         `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} cal="${cal}" ` +
           `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + w.pendingCrisis.id : ""}` : "none"} ` +
@@ -602,7 +670,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
             btns: [...d.querySelectorAll("button")].map((b) => (b.textContent ?? "").trim()).slice(0, 6),
           }))
         )
-        .catch(() => [] as any[]);
+        .catch((): { state: string | null; text: string; btns: string[] }[] => []);
       console.log(
         `[driveBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
           `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day + " matches" + w.currentBasho.matchCount : ""}${w.pendingCrisis ? " crisis:" + w.pendingCrisis.id : ""}` : "none"} ` +

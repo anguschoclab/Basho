@@ -20,11 +20,11 @@ async function main() {
     world = w;
 
     // breakdown of the serialized save (what the autosave writes)
-    const save = SerializationService.serializeWorld(world) as any;
-    const w2 = save.world ?? save;
+    const save = SerializationService.serializeWorld(world) as unknown as Record<string, unknown>;
+    const w2 = (save.world ?? save) as Record<string, unknown>;
     const parts: [string, number][] = [];
     for (const k of Object.keys(w2)) {
-      try { parts.push([k, JSON.stringify(w2[k]).length]); } catch {}
+      try { parts.push([k, JSON.stringify(w2[k]).length]); } catch { parts.push([k, -1]); }
     }
     parts.sort((a, b) => b[1] - a[1]);
     console.log(`=== after basho ${b + 1}: top serialized fields (MB) ===`);

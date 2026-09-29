@@ -234,11 +234,9 @@ export function tickWeekEvents(world: WorldState): number {
   for (const ev of eventsState.log) {
     const evTotalWeeks = ev.year * 52 + ev.week;
     const ageWeeks = currentTotalWeeks - evTotalWeeks;
-    const isHeadline = ev.importance === "headline";
-    const isCareerOrBasho = ev.category === "career" || ev.category === "basho";
     const isRecent = ageWeeks <= MAX_AGE_WEEKS;
 
-    if (isRecent || isHeadline || isCareerOrBasho) {
+    if (isRecent || isDurableEvent(ev)) {
       newLog.push(ev);
     } else {
       trimmedCount++;

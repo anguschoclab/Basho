@@ -28,16 +28,14 @@ import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import { selectTopKihakuPerformers } from "@/presenters/projections/recapKihakuProjections";
 import { selectKachiNokoriLeaders } from "@/presenters/projections/recapKachiNokoriProjections";
 import { selectExhibitionResults } from "@/presenters/projections/recapExhibitionProjections";
-import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/presenters/engineAccess";
-import { makeBashoKey } from "@/presenters/engineAccess";
 import { EntityCollection } from "@/presenters/engineAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
+import { buildBanzukeRevealEntries } from "@/presenters/projections/recapBanzukeRevealProjections";
 import {
   getHeya,
   getRikishi,
   getRikishiAnywhere,
   getHistory,
-  getRikishiMap,
 } from "@/presenters/worldAccess";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/presenters/uiDigest";
@@ -196,53 +194,10 @@ export default function RecapPage() {
   }, [world, lastBasho]);
 
   // Generate banzuke comparison data using real banzuke comparison
-  const banzukeEntries = useMemo(() => {
-    if (!world || !lastBasho) return [];
-
-    const currentBanzuke = world.currentBanzuke;
-    const historyIndex = world.historyIndex;
-
-    if (!currentBanzuke || !historyIndex) return [];
-
-    // Get previous basho key
-    const prevYear = lastBasho.bashoNumber === 1 ? lastBasho.year - 1 : lastBasho.year;
-    const prevBashoNum = lastBasho.bashoNumber === 1 ? 6 : lastBasho.bashoNumber - 1;
-    const prevBashoKey = makeBashoKey(prevYear, prevBashoNum);
-
-    const previousSnapshot = historyIndex.banzukeByBasho[prevBashoKey];
-
-    // Get changes using comparison function
-    const rikishiMap = getRikishiMap(world);
-    const changes = compareBanzuke(currentBanzuke, previousSnapshot || null, rikishiMap);
-
-    // Transform to reveal entries
-    return changes
-      .slice(0, 20)
-      .map((change) => {
-        const rikishi = rikishiMap.get(change.rikishiId);
-        if (!rikishi) return null;
-
-        let displayChange: "up" | "down" | "none" | "new" | "division_change" = change.change;
-
-        // Detect division changes
-        if (change.oldPosition && change.newPosition) {
-          const oldDivision = RANK_HIERARCHY[change.oldPosition.rank].division;
-          const newDivision = RANK_HIERARCHY[change.newPosition.rank].division;
-          if (oldDivision !== newDivision) {
-            displayChange = "division_change";
-          }
-        }
-
-        return {
-          id: change.rikishiId,
-          shikona: rikishi.shikona,
-          oldRank: change.oldPosition ? formatRankPosition(change.oldPosition) : "New Entry",
-          newRank: formatRankPosition(change.newPosition),
-          change: displayChange,
-        };
-      })
-      .filter((e): e is NonNullable<typeof e> => e !== null);
-  }, [world, lastBasho]);
+  const banzukeEntries = useMemo(
+    () => buildBanzukeRevealEntries(world, lastBasho),
+    [world, lastBasho]
+  );
 
   const handleBanzukeRevealComplete = () => {
     setShowBanzukeReveal(false);

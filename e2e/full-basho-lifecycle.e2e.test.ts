@@ -7,7 +7,7 @@ import {
   driveBashoToRecap,
   finalizeRecap,
   setWorldSeed,
-  waitForAutosaveWorld,
+  waitForWorld,
 } from "./helpers";
 
 /**
@@ -30,8 +30,6 @@ import {
  */
 
 const WORLD_SEED = "e2e-basho-lifecycle-v1";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 function awardLogFor(awardLog: any[] | undefined, year: number, bashoName: string): any[] {
   return (awardLog ?? []).filter((e) => e.year === year && e.bashoName === bashoName);
@@ -70,11 +68,11 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
     !!w.historyIndex`;
   let world;
   try {
-    world = await waitForAutosaveWorld(page, postBashoPredicate, 90_000);
+    world = await waitForWorld(page, postBashoPredicate, 90_000);
   } catch {
     await finalizeRecap(page);
     await advanceDays(page, 1);
-    world = await waitForAutosaveWorld(page, postBashoPredicate, 90_000);
+    world = await waitForWorld(page, postBashoPredicate, 90_000);
   }
 
   const last = world.history[world.history.length - 1];
@@ -212,7 +210,7 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   await expect(page.locator("h1").first()).toBeVisible({ timeout: 10_000 });
 
   // Game remains usable: interim continues, autosave reflects post-basho world.
-  const finalWorld = await waitForAutosaveWorld(
+  const finalWorld = await waitForWorld(
     page,
     `(w) => Array.isArray(w.history) && w.history.length >= 1 && !w.currentBasho`,
     30_000

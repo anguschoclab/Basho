@@ -255,6 +255,9 @@ export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService
         }
       }
     } catch (e) {
+      // A missing season directory is a normal cache miss, not an error.
+      if ((e instanceof Error || e instanceof DOMException) && e.name === "NotFoundError")
+        return ids;
       error(
         `Error listing bouts for season ${season}: ${e instanceof Error ? e.message : String(e)}`,
         "OPFS"

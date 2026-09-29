@@ -10,7 +10,8 @@ async function main() {
   let world = generateInitialWorld(SEED);
   world = { ...world, playerHeyaId: world.heyas.keys().next().value };
   // pick one active makuuchi rikishi
-  const target = [...world.rikishi.values()].find(r => r.division === "makuuchi")!;
+  const target = [...world.rikishi.values()].find(r => r.division === "makuuchi");
+  if (!target) throw new Error("no makuuchi rikishi in generated world");
   for (let b = 0; b < 4; b++) {
     let g = 0;
     while (world.cyclePhase !== "active_basho" && g++ < 60) world = advanceDaysFast(world, 7, { autonomous: true });
@@ -19,7 +20,8 @@ async function main() {
     let w = endBasho(world);
     w = resolveImpacts(w, [publishBanzukeUpdate(w)]);
     world = w;
-    const r = world.rikishi.get(target.id)!;
+    const r = world.rikishi.get(target.id);
+    if (!r) throw new Error(`target rikishi ${target.id} missing from world`);
     const fields: [string, number][] = Object.entries(r).map(([k, v]) => {
       try { return [k, JSON.stringify(v).length] as [string, number]; } catch { return [k, 0] as [string, number]; }
     }).sort((a, b) => b[1] - a[1]);

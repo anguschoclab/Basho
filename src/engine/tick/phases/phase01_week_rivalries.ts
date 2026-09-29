@@ -22,6 +22,7 @@ import {
   RIVALRY_DECAY_RATES,
   RIVALRY_PRUNING,
 } from "../../../constants/engine/time";
+import { isDurableEvent } from "../../events";
 import {
   MAX_RIVALRY_HEAT,
   MAX_RIVALRY_CLOSENESS,
@@ -110,7 +111,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
 
     for (let i = 0; i < firstRecentIndex; i++) {
       const ev = log[i];
-      if (ev.importance !== "headline" && ev.category !== "career" && ev.category !== "basho") {
+      if (!isDurableEvent(ev)) {
         needsTrim = true;
         firstIndexToRemove = i;
         break;
@@ -131,7 +132,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
       // Filter the remaining stale events
       for (let i = firstIndexToRemove + 1; i < firstRecentIndex; i++) {
         const ev = log[i];
-        if (ev.importance === "headline" || ev.category === "career" || ev.category === "basho") {
+        if (isDurableEvent(ev)) {
           newLog.push(ev);
         }
       }
