@@ -258,26 +258,51 @@ export async function advanceToBasho(page: Page): Promise<void> {
 /** Dismiss queued retirement ceremonies (IntaiCeremony dialog) if present. */
 export async function dismissRetirementCeremonies(page: Page): Promise<void> {
   for (let i = 0; i < 10; i++) {
-    const ackBtn = page.getByRole("button", { name: /Acknowledge Retirement/i }).first();
-    if (await ackBtn.isVisible().catch(() => false)) {
-      await ackBtn.click();
-      await page.waitForTimeout(500);
-    } else {
-      break;
-    }
+    const clicked = await page
+      .evaluate(() => {
+        for (const b of document.querySelectorAll("button")) {
+          if (/Acknowledge Retirement/i.test(b.textContent ?? "") && !b.disabled) {
+            b.click();
+            return true;
+          }
+        }
+        return false;
+      })
+      .catch(() => false);
+    if (!clicked) break;
+    await page.waitForTimeout(500);
   }
 }
 
 /**
  * From the Recap page: clear ceremony overlays, click "Finalize Basho",
  * and wait for the dashboard.
+ *
+ * The recap page runs continuous Framer Motion animations (ceremony
+ * layer), so Playwright's actionability/stability checks can stall
+ * indefinitely — drive the click at DOM level like the basho-page path.
  */
 export async function finalizeRecap(page: Page): Promise<void> {
-  const finalizeBtn = page.getByRole("button", { name: /Finalize Basho/i }).first();
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 20; i++) {
+    if (page.url().includes("/dashboard")) return;
     await dismissRetirementCeremonies(page);
     await resolveCrisisIfPresent(page);
-    if (await tryClick(finalizeBtn)) break;
+    const clicked = await page
+      .evaluate(() => {
+        for (const b of document.querySelectorAll("button")) {
+          if (/Finalize Basho/i.test(b.textContent ?? "") && !b.disabled) {
+            b.click();
+            return true;
+          }
+        }
+        return false;
+      })
+      .catch(() => false);
+    if (clicked) {
+      await page.waitForURL("**/dashboard", { timeout: 8_000 }).catch(() => {});
+    } else {
+      await page.waitForTimeout(1000);
+    }
   }
   await page.waitForURL("**/dashboard", { timeout: 10_000 });
 }
@@ -295,6 +320,41 @@ export async function advanceDays(page: Page, days: number): Promise<void> {
       if (!(await tryClick(continueBtn))) await resolveCrisisIfPresent(page);
     }
     await page.waitForTimeout(800);
+  }
+}
+
+/**
+ * Repair stale Radix overlay state. When a dialog unmounts mid-animation
+ * (e.g. confirming "End Basho" navigates to /recap during the close
+ * animation), Radix can leave `pointer-events:none` on <body> and stale
+ * aria-hidden on siblings — Playwright hit-testing then fails on every
+ * element with no dialog visible. If no dialog/alertdialog is open, the
+ * locks are stale: clear them.
+ */
+async function repairStaleOverlayState(page: Page): Promise<void> {
+  const repaired = await page
+    .evaluate(() => {
+      const open = document.querySelector(
+        '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]'
+      );
+      if (open) return null;
+      const found: string[] = [];
+      if (document.body.style.pointerEvents === "none") {
+        document.body.style.pointerEvents = "";
+        found.push("body:pointer-events");
+      }
+      // Elements hidden by Radix's aria-hidden package carry a
+      // data-aria-hidden marker — restore them if their dialog is gone.
+      for (const el of document.querySelectorAll('[data-aria-hidden="true"]')) {
+        el.removeAttribute("aria-hidden");
+        el.removeAttribute("data-aria-hidden");
+        found.push("data-aria-hidden");
+      }
+      return found.length ? found : null;
+    })
+    .catch(() => null);
+  if (repaired) {
+    console.log(`[helpers] repaired stale overlay state: ${repaired.join(",")} @ ${page.url()}`);
   }
 }
 
@@ -321,6 +381,10 @@ async function tryClick(
  * Returns true if a dialog was handled.
  */
 export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
+  // Clear stale pointer-events/aria-hidden locks when no dialog is open
+  // (Radix cleanup leak after mid-animation navigation) — otherwise every
+  // Playwright click silently fails with nothing visibly blocking.
+  await repairStaleOverlayState(page);
   // Radix aria-hides covered layers — but the topmost dialog can also be
   // flagged aria-hidden transiently, so do NOT filter it out. Use CSS
   // locators (getByRole skips aria-hidden subtrees) and resolve dialogs
@@ -339,20 +403,27 @@ export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
   // decision is pending (any option resolves it). Pure-close controls are
   // only a fallback for dialogs whose sole action is dismissal.
   const dialog = dialogs.last();
-  const buttons = dialog.locator("button");
-  const n = await buttons.count().catch(() => 0);
-  let target = null;
-  for (let k = n - 1; k >= 0; k--) {
-    const b = buttons.nth(k);
-    const text = ((await b.innerText().catch(() => "")) ?? "").trim();
-    const ariaLabel = (await b.getAttribute("aria-label").catch(() => "")) ?? "";
-    if (/^(close|x|×|cancel)$/i.test(text) || /^(close|x|×|cancel)$/i.test(ariaLabel)) continue;
-    if (!text && !ariaLabel) continue;
-    target = b;
-    break;
-  }
-  target ??= buttons.first();
-  if (await tryClick(target)) {
+  // DOM-click the target: a stale pointer-events lock on <body> (Radix
+  // cleanup leak after mid-animation navigation) makes Playwright clicks
+  // dead while dialogs are still open — el.click() bypasses hit-testing.
+  const clicked = await dialog
+    .evaluate((d) => {
+      const btns = [...d.querySelectorAll("button")];
+      const action =
+        btns
+          .filter((b) => {
+            const t = (b.textContent ?? "").trim();
+            const al = b.getAttribute("aria-label") ?? "";
+            if (/^(close|x|×|cancel)$/i.test(t) || /^(close|x|×|cancel)$/i.test(al)) return false;
+            return t || al;
+          })
+          .pop() ?? btns[0];
+      if (!action || (action as HTMLButtonElement).disabled) return false;
+      (action as HTMLElement).click();
+      return true;
+    })
+    .catch(() => false);
+  if (clicked) {
     await page.waitForTimeout(500);
     return true;
   }

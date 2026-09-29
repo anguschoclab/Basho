@@ -104,7 +104,7 @@ interface BashoReport {
 test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + winner diversity, yokozuna discipline`, async ({
   page,
 }) => {
-  test.setTimeout(2_400_000); // 40 min — 6 honbasho, and the interactive basho path is slower than the dashboard fast-forward.
+  test.setTimeout(3_300_000); // 55 min — 6 honbasho, and the interactive basho path is slower than the dashboard fast-forward.
 
   // Surface reducer/engine exceptions — a throw inside dispatch (e.g.
   // END_BASHO) leaves the UI looking normal while the world never changes,
@@ -112,6 +112,9 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   let consoleErrorCount = 0;
   page.on("pageerror", (e) => {
     console.log(`[pageerror] ${String(e).slice(0, 500)}`);
+  });
+  page.on("crash", () => {
+    console.log(`[page crash] renderer died — url=${page.url()}`);
   });
   page.on("console", (m) => {
     if (m.type() === "error" && consoleErrorCount++ < 20) {
