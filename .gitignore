@@ -56,8 +56,14 @@ simulation-results.json
 
 
 # ─── Package manager caches and redundant lock files ───────────────────────────
+# bun.lock is the canonical lockfile (packageManager: bun). Ignore artifacts from
+# other package managers so a stray `npm install` / `yarn` / `pnpm install` can't
+# sneak a second lockfile into the repo.
 bun_cache/
 package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
 
 # ─── Scratch / dev files ───────────────────────────────────────────────────────
 scratch/

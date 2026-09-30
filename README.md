@@ -49,6 +49,10 @@ Ensure you have [Bun](https://bun.sh/) installed, as it is the primary runtime, 
    bun install
    ```
 
+   `bun.lock` is the canonical lockfile. `npm install` / `yarn` / `pnpm install`
+   are blocked by a `preinstall` guard — a second lockfile would silently
+   diverge from what CI and other developers (macOS and Windows) install.
+
 ### Running the Application
 
 Start the Vite development server:

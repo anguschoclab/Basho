@@ -1,0 +1,25 @@
+# Normalize line endings so macOS and Windows checkouts produce identical
+# files regardless of each machine's core.autocrlf setting.
+* text=auto
+
+# The canonical lockfile must be byte-identical on every platform — a CRLF
+# checkout on Windows would show up as lockfile churn on macOS.
+bun.lock text eol=lf
+
+# Shell scripts and CI YAML fail or churn under CRLF.
+*.sh   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Windows batch files genuinely need CRLF to run in cmd.exe.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaries — never normalize.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.ico  binary
+*.icns binary
+*.woff binary
+*.woff2 binary

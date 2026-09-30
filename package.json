@@ -10,6 +10,7 @@
     "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
   },
   "scripts": {
+    "preinstall": "node ./scripts/check-package-manager.mjs",
     "dev": "vite",
     "build": "vite build",
     "type-check": "node node_modules/@typescript/native/bin/tsc --build --force",
