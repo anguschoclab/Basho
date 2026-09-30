@@ -27,15 +27,16 @@ interface PlanTemplate {
 function hasYushoLeaderInHeya(ctx: AIContext, league: LeaguePerception): boolean {
   const heya = getHeya(ctx.world, ctx.heyaId);
   if (!heya) return false;
-  const rikishiIds = new Set(heya.rikishiIds ?? []);
-  return league.yushoRace.leaders.some((l) => rikishiIds.has(l.rikishiId));
+  // ⚡ Bolt: Iterate over array directly with .includes to avoid O(N) allocation overhead of new Set()
+  const rikishiIds = heya.rikishiIds ?? [];
+  return league.yushoRace.leaders.some((l) => rikishiIds.includes(l.rikishiId));
 }
 
 function involvedInRivalryCluster(ctx: AIContext, league: LeaguePerception): boolean {
   const heya = getHeya(ctx.world, ctx.heyaId);
   if (!heya) return false;
-  const ids = new Set(heya.rikishiIds ?? []);
-  return league.rivalryClusters.some((c) => ids.has(c.keyRikishiId));
+  const ids = heya.rikishiIds ?? [];
+  return league.rivalryClusters.some((c) => ids.includes(c.keyRikishiId));
 }
 
 function hasStrongRoster(perception: PerceptionSnapshot): boolean {
@@ -51,7 +52,7 @@ function kadobanRikishiIds(ctx: AIContext): string[] {
   const heya = getHeya(ctx.world, ctx.heyaId);
   if (!heya) return [];
   const out: string[] = [];
-  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
+  for (const id of heya.rikishiIds ?? []) {
     const r = ctx.world.rikishi.get(id);
     if (r?.rank === "ozeki" && ctx.world.ozekiKadoban?.[id]?.isKadoban) out.push(id);
   }
@@ -63,8 +64,8 @@ function reigningChampionIds(ctx: AIContext): string[] {
   const heya = getHeya(ctx.world, ctx.heyaId);
   const last = ctx.world.history[ctx.world.history.length - 1];
   if (!heya || !last?.yusho) return [];
-  const ids = new Set(heya.rikishiIds ?? []);
-  return ids.has(last.yusho) ? [last.yusho] : [];
+  const ids = heya.rikishiIds ?? [];
+  return ids.includes(last.yusho) ? [last.yusho] : [];
 }
 
 const PLAN_CATALOG: PlanTemplate[] = [
