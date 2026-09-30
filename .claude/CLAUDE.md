@@ -22,7 +22,7 @@ src/
 │   ├── bout/        Bout simulation (boutPhysics, kimariteStrategy, kimariteEvaluator)
 │   ├── banzuke/     Rank promotion logic
 │   ├── governance/  GovernanceService, governanceReview
-│   ├── narrative/   BardEngine + archive.json templates
+│   ├── bard/        BardEngine + domains/*.json templates
 │   ├── matchmaking/ Swiss pairing algorithm
 │   ├── core/        EntityCollection, SimulationRunner, RNGRegistry
 │   └── rng.ts       SeededRNG, rngFromSeed(), rngForWorld()
@@ -110,9 +110,9 @@ queryEvents(world, { category: "health", limit: 50 });
 ```
 
 ## BardEngine Narrative
-- Templates live in `src/engine/narrative/archive.json` (domain.subdomain.type hierarchy)
+- Templates live in `src/engine/bard/domains/*.json` (25 domain files; domain.subdomain.type hierarchy — e.g. `kyujo.json` holds `kyujo.*` paths). No `archive.json` exists.
 - `BardEngine.resolve(rng, "path.to.template", { heya, severity, amount })` → `{ text, id, path }`
-- Token format in templates: `%HEYA%`, `%AMOUNT%`, `%INTENSITY_LABEL%` (NOT `%HEYA_NAME%`)
+- Token format in templates: `%HEYA%`, `%AMOUNT%`, `%INTENSITY_LABEL%`, `%HEYA_NAME%`, `%SHIKONA%` — a token is valid wherever that context key is actually supplied; missing keys warn and render `[MISSING: KEY]`
 - **generateGovernanceHeadline** takes a **named-args object**: `{ world, heyaId, templatePath, severity }` — NOT positional args
 
 ## generateGovernanceHeadline — Correct Call Signature
@@ -138,9 +138,9 @@ Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/fina
 
 ## Known Issues & Gotchas
 1. **`economics.ts`** — `processHeyaFinances()` and `tickWeekEconomics()` are dead (replaced by FinanceCalculator). Don't call them.
-2. **BardEngine token mismatches** — some archive.json governance templates may use `%HEYA_NAME%` but code passes `heya` context key. Audit before adding new templates.
+2. **BardEngine token mismatches** — a `%TOKEN%` is only valid where its context key is supplied by the production `resolve()` call site. `src/tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production path with real context keys — run it when adding templates.
 3. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
-4. **`FogOfWarService.ts`** imports BardEngine from `"../../narrative/BardEngine"` (not `"../narrative/BardEngine"` — systems/narrative is different from engine/narrative).
+4. **`FogOfWarService.ts`** lives at `src/engine/systems/recruitment/` and imports BardEngine from `"../../bard/BardEngine"`. There is no `src/engine/narrative/` directory — `systems/narrative/` holds crisis/rivalry/press services, the template engine is `engine/bard/`.
 5. **`rivalriesProjections`** — reads `world.rivalriesState.heyaRivalryPairs` (structured `Record<string, RivalryPairState>`). Do NOT confuse with the old flat `world.heyaRivalryPairs` field which was removed.
 6. **`engine/index.ts` barrel removed** — import directly from subsystem files (e.g. `@/engine/systems/recruitment/ScoutingService`).
 7. **Basho termination is interactive** — the tick pipeline never calls `endBasho`; the player clicks "End Basho" (`bashoSlice`). Multi-day advance halts at `day > 15` (`shouldHaltAdvance`).
