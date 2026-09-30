@@ -2,7 +2,7 @@
   "venues": {
     "Tokyo": {
       "entrance": [
-        "Day %DAY% at the Ryogoku Kokugikan — the capital awaits.",
+        "Day %DAY% at the Ryogoku Kokugikan \u2014 the capital awaits.",
         "The Tokyo crowd fills the Kokugikan for Day %DAY% of the tournament.",
         "Day %DAY% begins under the suspended roof of the Ryogoku Kokugikan.",
         "Anticipation builds in Tokyo as Day %DAY% gets underway."
@@ -11,43 +11,54 @@
         "The sun sets over the Sumida River as the fans depart.",
         "The Kokugikan empties into the bustling Tokyo night.",
         "Another day of sumo concludes in the capital.",
-        "The crowds disperse from Ryogoku as the evening begins."
+        "The crowds disperse from Ryogoku as the evening begins.",
+        "The excitement of the day fades into the Tokyo evening.",
+        "As the final bout concludes, the Kokugikan prepares for tomorrow."
       ]
     },
     "Osaka": {
       "entrance": [
-        "Day %DAY% at the Edion Arena Osaka — the spring basho is underway.",
+        "Day %DAY% at the Edion Arena Osaka \u2014 the spring basho is underway.",
         "The Osaka crowd fills the seats for Day %DAY% of the Haru Basho.",
         "Springtime in Osaka! Day %DAY% begins at the Edion Arena.",
         "A packed house in Osaka for Day %DAY% of the tournament."
       ],
       "closing": [
         "The Osaka crowd files out into the spring evening.",
-        "Edion Arena falls quiet as another day of sumo concludes."
+        "Edion Arena falls quiet as another day of sumo concludes.",
+        "The sun dips below the Osaka skyline as the fans head home.",
+        "The spring breeze greets the exiting crowd outside the Edion Arena.",
+        "Another thrilling day of the Haru Basho comes to a close."
       ]
     },
     "Nagoya": {
       "entrance": [
-        "Day %DAY% at the Aichi Prefectural Gymnasium — the Nagoya Basho begins.",
+        "Day %DAY% at the Aichi Prefectural Gymnasium \u2014 the Nagoya Basho begins.",
         "The Nagoya faithful gather for Day %DAY% of the July tournament.",
         "Summer heat in Nagoya! Day %DAY% kicks off at the Dolphins Arena.",
         "Aichi Prefectural Gymnasium roars to life for Day %DAY%."
       ],
       "closing": [
         "The Nagoya crowd departs into the humid summer night.",
-        "Another day ends at the Dolphins Arena in Nagoya."
+        "Another day ends at the Dolphins Arena in Nagoya.",
+        "The intense summer heat waits outside as the Nagoya fans exit.",
+        "Dolphins Arena empties out as the July sun sets over the city.",
+        "The echoes of the final bout fade away in the humid Nagoya evening."
       ]
     },
     "Fukuoka": {
       "entrance": [
-        "Day %DAY% at the Fukuoka Kokusai Center — the Kyushu Basho is here.",
+        "Day %DAY% at the Fukuoka Kokusai Center \u2014 the Kyushu Basho is here.",
         "The Fukuoka crowd settles in for Day %DAY% of the November tournament.",
         "Autumn in Kyushu! Day %DAY% begins at the Kokusai Center.",
         "A warm welcome in Fukuoka for Day %DAY% of the basho."
       ],
       "closing": [
         "The Fukuoka crowd disperses into the cool November evening.",
-        "Kokusai Center goes dark as Day %DAY% concludes in Kyushu."
+        "Kokusai Center goes dark as another day concludes in Kyushu.",
+        "The crisp autumn air of Kyushu greets the departing fans.",
+        "Another day of the Kyushu Basho enters the history books.",
+        "Fans stream out of the Kokusai Center, buzzing from the day's action."
       ]
     }
   },
