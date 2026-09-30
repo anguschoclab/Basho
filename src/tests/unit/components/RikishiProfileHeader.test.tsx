@@ -416,4 +416,67 @@ describe("RikishiProfileHeader", () => {
     );
     expect(screen.queryByText("Retirement Pressure")).toBeNull();
   });
+
+  it("renders Special Prizes stat when total sansho > 0", () => {
+    const rikishi = makeUIRikishi({
+      specialPrizes: { shukunSho: 2, kantoSho: 1, ginoSho: 0 },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("Special Prizes")).toBeTruthy();
+    expect(screen.getByText("3")).toBeTruthy();
+  });
+
+  it("hides Special Prizes stat when all sansho counts are zero", () => {
+    const rikishi = makeUIRikishi({
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Special Prizes")).toBeNull();
+  });
+
+  it("renders Ozeki Reclaim Watch for demoted ozeki now at sekiwake", () => {
+    const rikishi = makeUIRikishi({
+      rank: "sekiwake" as any,
+      wasDemotedFromOzeki: true,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText(/Ozeki Reclaim Watch/i)).toBeTruthy();
+  });
+
+  it("hides Ozeki Reclaim Watch when rikishi was not demoted from ozeki", () => {
+    const rikishi = makeUIRikishi({
+      rank: "sekiwake" as any,
+      wasDemotedFromOzeki: false,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Ozeki Reclaim Watch/i)).toBeNull();
+  });
 });
