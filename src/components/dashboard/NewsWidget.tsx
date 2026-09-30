@@ -146,7 +146,7 @@ export function NewsWidget() {
             compact
           />
         ) : (
-          <div className="space-y-0.5 pr-2">
+          <div className="space-y-0.5 pr-3">
             {(() => {
               const limit = recentEvents.length;
               const nodes = new Array(limit);

@@ -55,7 +55,7 @@ export function KenshoManagementWidget() {
             <EmptyState icon={Coins} title="No kensho awards in recent bouts" compact />
           ) : (
             <ScrollArea className="h-[200px]">
-              <div className="space-y-2">
+              <div className="space-y-2 pr-3">
                 {recentBoutsWithKensho.map((bout) => (
                   <div
                     key={bout.boutId}
@@ -91,7 +91,7 @@ export function KenshoManagementWidget() {
         <div>
           <h4 className="text-sm font-medium mb-3">Rikishi Breakdown</h4>
           <ScrollArea className="h-[200px]">
-            <div className="space-y-2">
+            <div className="space-y-2 pr-3">
               {playerRikishi.map((rikishi) => {
                 const economics = rikishi.economics;
                 const kenshoEarnings = (economics?.careerKenshoWon || 0) * 70000;

@@ -232,19 +232,14 @@ export function TopNavBar() {
 
           {/* Pause/resume control — only while a multi-day sim is running */}
           {isSimulating && (
-            <TooltipWrap
-              content={simPaused ? "Resume simulation" : "Pause simulation"}
-              side="left"
-            >
+            <TooltipWrap content={simPaused ? "Resume simulation" : "Pause simulation"} side="left">
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
                 aria-label={simPaused ? "Resume simulation" : "Pause simulation"}
                 aria-pressed={simPaused}
-                onClick={() =>
-                  sendCommand({ type: simPaused ? "RESUME_SIM" : "PAUSE_SIM" })
-                }
+                onClick={() => sendCommand({ type: simPaused ? "RESUME_SIM" : "PAUSE_SIM" })}
               >
                 {simPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
               </Button>
@@ -270,6 +265,15 @@ export function TopNavBar() {
             >
               <Button asChild variant="ghost" className="p-0 h-auto hover:bg-transparent">
                 <button
+                  aria-label={
+                    inBasho
+                      ? "Advance to next day of tournament"
+                      : cyclePhase === "banzuke_reveal"
+                        ? "Review the new banzuke rankings"
+                        : cyclePhase === "pre_basho"
+                          ? "Start the tournament preparations"
+                          : "Advance the simulation one day"
+                  }
                   onClick={() => {
                     if (cyclePhase === "active_basho") navigate({ to: "/basho" });
                     else if (cyclePhase === "banzuke_reveal") navigate({ to: "/recap" });

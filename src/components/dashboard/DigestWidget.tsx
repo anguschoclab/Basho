@@ -194,7 +194,7 @@ export function DigestWidget({ digest: digestProp, fullPage = false }: DigestWid
         />
       ) : (
         <ScrollArea className={scrollHeight}>
-          <div className="space-y-3">
+          <div className="space-y-3 pr-3">
             {(() => {
               const limit = Math.min(maxSections, digest.sections.length);
               const nodes = new Array(limit);
