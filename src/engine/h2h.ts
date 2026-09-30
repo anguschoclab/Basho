@@ -28,7 +28,21 @@ import {
 
 /**
  * Updates the Head-to-Head records for two rikishi after a bout.
- * Returns StateImpact describing the H2H updates instead of mutating state directly.
+ *
+ * @param winner - The winning Rikishi.
+ * @param loser - The losing Rikishi.
+ * @param result - The bout result including the kimarite.
+ * @param bashoId - The ID of the current basho.
+ * @param year - The year of the current basho.
+ * @param day - The day number of the current basho.
+ *
+ * @returns StateImpact describing the H2H updates for the reducer.
+ *
+ * WARNING: This function currently performs in-place mutations on the deeply
+ * nested `h2h` record maps of the provided Rikishi objects, violating the
+ * immutable pipeline contract. If a pipeline phase throws an error after this
+ * is called, the mutations will persist because `createShallowSnapshot` does
+ * not deeply clone entities.
  */
 export function updateH2H(
   winner: Rikishi,
@@ -90,8 +104,7 @@ export function updateH2H(
 }
 
 /**
- * Create empty h2 h.
- *  * @returns The result.
+ * Creates an empty H2HRecord with a zeroed streak (no recorded bouts).
  */
 function createEmptyH2H(): H2HRecord {
   return {
