@@ -100,5 +100,6 @@ export function projectRosterEntry(
     yearsToNaturalization: yearsUntilNaturalization(r, world?.year ?? DEFAULT_START_YEAR),
     weightJourney: r.weightJourney,
     oversleptBasho: r.oversleptBasho ?? null,
+    wasDemotedFromOzeki: r.wasDemotedFromOzeki ?? false,
   };
 }
