@@ -569,6 +569,17 @@ export async function resolveCrisisIfPresent(page: Page): Promise<boolean> {
   const count = await dialogs.count().catch(() => 0);
   if (count === 0) return false;
 
+  // Viewer overlays (BoutNarrativeModal, replay viewer) also carry
+  // role="dialog", and their last substantive button is "Replay" —
+  // clicking it restarts the animation instead of dismissing, which
+  // wedges the drive loop (observed: frozen at bashoDay12, 60+ iters).
+  // Escape is safe here: a world-backed CrisisModal no-ops its
+  // onOpenChange while a decision is pending, so Escape only dismisses
+  // pure viewers.
+  await page.keyboard.press("Escape").catch(() => {});
+  await page.waitForTimeout(300);
+  if ((await dialogs.count().catch(() => 0)) === 0) return true;
+
   // Topmost dialog is last in DOM order. Choose the LAST substantive
   // button: Radix AlertDialogs render [Cancel][Action] so the action is
   // last, and a world-backed CrisisModal ignores its Close control while a

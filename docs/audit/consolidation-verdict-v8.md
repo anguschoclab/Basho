@@ -1,0 +1,185 @@
+# Consolidation Verdict — v8
+
+**Date:** 2026-10-01
+**Branch:** `consolidation/repo-review`
+**Baseline (remote main at review start):** `f9e027b5` — prior consolidation
+commits were already on `main` (pushed directly by an earlier session).
+**Scope:** 39 PRs (#996–#1034), exhaustive re-read of the repository by parallel
+reader partitions with primary-agent verification of every accepted finding.
+**Companion artifacts:** `src/tests/unit/engine/tick/staleBaseMerge.audit.test.ts`
+(8 load-bearing regression pins), `templateTokenIntegrity.test.ts`
+(41 seed-swept bard resolutions).
+
+---
+
+## 1. Method
+
+- **Phase 0 — Baseline measurement.** Full suite on the pre-change tree:
+  853 test files / 7,707 tests / 0 failures / ~52 min. This empirically proved
+  the `perf-gate` CI job could not run the suite inside its 10-min timeout.
+- **Phase 1 — Exhaustive re-read.** 13 reader partitions over source, tests,
+  e2e, electron, configs, and CI. Every accepted finding was re-verified
+  personally at the cited lines; roughly a third of raw audit claims were
+  disproved as stale (identifiers absent) or wrong.
+- **Phase 2 — PR triage.** All 37 open PR diffs reviewed three-dot against
+  merge-base; overlap clusters adjudicated best-of-breed rather than merged
+  blindly.
+- **Phase 3 — Test-first integration.** Characterization pins and audit repro
+  tests landed red before implementations; PR-provided tests verified green.
+- **Phase 4 — Verified fixes.** Engine correctness, state immutability,
+  stale-snapshot composition, worker synchronization, UI contract fixes.
+- **Phase 5 — Validation.** See §5.
+
+## 2. PR Verdicts (39 in scope; 37 open at triage time)
+
+| Verdict | Count | PRs |
+|---------|-------|-----|
+| APPLIED (best-of-breed port) | 29 | #996–#1001, #1003, #1005, #1007–#1009, #1011–#1029 excl. dupes below; #1031–#1034 |
+| DISPROVED (strictly weaker duplicate) | 5 | #1002, #1004, #1006, #1010, #1021 |
+| ALREADY CLOSED | 2 | #1027, #1030 (dependabot-superseded) |
+
+### Overlap clusters — resolutions
+
+- **`H2HRecord.streak` doc (4-way race — #996, #1002, #1006, #1021):**
+  #996 selected — the only variant matching `createEmptyH2H`/`updateH2H`
+  semantics (0 = no recorded bouts; breaks reset directly to ±1). The other
+  three described incorrect or incomplete signedness. Commit `903b2235`.
+- **`updateH2H` mutation JSDoc (#1018):** APPLIED — verified the doc claim was
+  false; the real mutation was subsequently fixed (see §3).
+- **PreBashoAssessment ScrollArea (3-way race — #1004, #1010, #1013):**
+  #1013 selected — preserves original `max-h-60` semantics (`#1004` changed to
+  fixed `h-60`) and adds `pr-4` scrollbar clearance. Commit `27741120`.
+- **Dashboard scroll padding / IdentityStep / a11y (#999, #1000, #1016):**
+  all applied — disjoint surfaces. Commit `daa849e6`.
+- **Bard template waves (#1001, #1003, #1008, #1011, #1020, #1022, #1034):**
+  all applied additively in `de6c6729` + `fa4d1fd6`, gated by a new
+  template-token integrity test that resolves every touched path through
+  `BardEngine` with production context keys across 80 seeds. **Caveat found
+  during verification:** `world.venues.*.closing` (#1020) has no resolver call
+  site — dead content, harmless to keep, noted here.
+- **Scout test ports (#998, #1005, #1014):** applied in `c1f5ccd2`.
+- **Curator headers (#1009 sanshō totals, #1017 ozeki demotion reclaim,
+  #1012 kinboshi bout tag):** applied — real engine data, honest labels.
+- **Bolt perf (#997 Set allocations, #1019 memoized standings):** applied.
+- **Mason e2e typing (#1007):** applied via direct merge (trivial conflicts);
+  bout-time rank-label assertions for kinboshi included.
+- **Dependabot (#1023–#1026, #1028, #1029, #1031, #1032):** consolidated into a
+  single lockfile refresh `effa980a` — `@typescript-eslint` plugin+parser bumped
+  as a matched pair (peer dep), vite 8.3.0→8.3.1, plus 8 transitive refreshes.
+- **#1033 ScrollArea / #1034 post-bout replay:** verified + applied in `fa4d1fd6`.
+
+## 3. Verified Bug Registry (V8)
+
+Severity-ordered. Every "CONFIRMED" entry was reproduced or read at the cited
+lines before fixing; "DISPROVED" entries were checked and found absent/stale.
+
+| ID | Finding | Verdict |
+|----|---------|---------|
+| B01 | `world.week`/`calendar.currentWeek` never advanced — every week-keyed mechanism (~12: crisis rolls, decay, weekly phases' gate content) was frozen at week 1 | **CONFIRMED → FIXED** (`c2631fb2`). Weekly gate fires via `_daysSinceLastWeeklyTick`; `advanceCalendarDay` never incremented `currentWeek`. A live 12%-per-week crisis roll then surfaced in a mock-world test — the fix is why `simulationInvariants`-adjacent tests needed `autonomous: true`. |
+| B02 | `decision.impact` from `makeNPCWeeklyDecision` never merged — the entire NPC agent-execution layer (exhibitions, kyujo withdrawals, cooldown writes) was dead in production | **CONFIRMED → FIXED** (`c2631fb2`), with care around oyakata `memory` last-wins ordering. |
+| B03 | Stale-base snapshot composition: independent subsystems computed absolute snapshots off the same input world; `mergeImpacts` last-wins discarded predecessors. Worst case: **JSA salary credit discarded every month** for any rikishi with a same-week tsukebito/koenkai/mochikyukin write | **CONFIRMED → FIXED** (`1f7acdd7`). New `sequenceImpacts(world, producers)` resolves each producer against progressively-resolved state; applied to phase05 monthly boundary, training, welfare, candidate-pool, SimulationRunner, and the NPC myoseki purchase loop. `deepMerge` was explicitly rejected — stale scalar fields like `funds` would still clobber. |
+| B04 | NPC `purchaseMyoseki` never debited `funds` — free elder shares; and the purchase loop evaluated all buyers against the same stale market snapshot (two NPCs could buy the same stock) | **CONFIRMED → FIXED.** Buyer debited by transaction price; loop sequenced. |
+| B05 | `ensure*` hydration helpers mutated input worlds (talent pool, candidate pool, welfare, training, rivalries); `WorldFactory` discarded the returned impacts for initial rivalries + talent pool, so generated worlds lacked them | **CONFIRMED → FIXED.** All hydrators pure; WorldFactory explicitly resolves `tickWeekTalentPool` + `seedInitialRivalries` impacts and assigns `candidatePool`; `_populationTarget` recomputed after player-heya selection. |
+| B06 | Welfare transitions mutated `state.investigation.progress` on a shallow copy and dropped generated headlines when pressure changes existed (last-wins on `mediaState`) | **CONFIRMED → FIXED** — investigation cloned; headlines collected into a sink and composed once. |
+| B07 | Health phase: new injuries didn't write `injuryStatus`; recovery decremented shallow-copied status in place and left `currentInjury`/stale aliases set; partial recovery persisted only via live-reference mutation in dead `tickWeekRecovery` | **CONFIRMED → FIXED.** Producers write `injuryStatus`; recovery deep-copies and clears all aliases; `tickWeekRecovery` cloned + always persists (kept as allowlisted utility; duplicates phase01_week_health logic). |
+| B08 | Bout metrics shallow copies shared nested `kimariteUsed` maps; H2H updates mutated existing nested records; achievements/economics counters mutated in place | **CONFIRMED → FIXED** — clone-once before write throughout `boutResultApplier`, `h2h`, metrics. |
+| B09 | Rivalry logic ran before `isYushoRace`/`isTitleStakes` were assigned and ran a second time in the bout-result applier | **CONFIRMED → FIXED** — flags assigned first; duplicate pass removed. |
+| B10 | `generateH2HCommentary` mutated `r1.h2h` when undefined | **CONFIRMED → FIXED.** |
+| B11 | `mergers.ts` generated a governance headline then discarded the returned impact | **CONFIRMED → FIXED.** |
+| B12 | `updateWorld` (reducer `UPDATE_WORLD`) never bumped `uiWorldRevision` — **every UI-originated world write was dead**, silently reverted by the worker's next `WORLD_UPDATED` | **CONFIRMED → FIXED** (`efed2897`). Kyujo withdrawal → `WITHDRAW_RIKISHI`; training profile → `SET_TRAINING_STATE`; save/load + settings toggles → `LOAD_WORLD`. |
+| B13 | `START_WORLD` dropped `oyakataConfig` — player oyakata creation settings never reached the engine | **CONFIRMED → FIXED.** Command type + context + worker handler threaded; `applyOyakataCreationConfig` applied after generation. |
+| B14 | `RETIRE_RIKISHI` had no ownership check — any caller could retire any rikishi | **CONFIRMED → FIXED.** Worker validates `target.heyaId === playerHeyaId`. |
+| B15 | `APPLY_PRESS_CONFERENCE` discarded `morale` and `mediaHeat` deltas the modal advertised | **CONFIRMED → FIXED.** Command carries all three; worker writes `welfareState.morale` and `mediaState.mediaHeat[heyaId]`. |
+| B16 | Event-age math: `year*52 + week` double-counted `ev.week` (already monotonic `currentWeek`) — events aged ~2× fast | **CONFIRMED → FIXED.** Both trim sites use monotonic week directly (`MAX_AGE_WEEKS = 52`). |
+| B17 | BardEngine resolution LRU was module-global — `rng.int` draw counts depended on resolve history, breaking seed-determinism across resolutions | **CONFIRMED → FIXED.** Cache namespaced by `SeededRNG.seed`. |
+| B18 | `dramaGenerator` constant-label RNG streams collided (same stream for different calls); player-blocking crisis rolls fired in autonomous sims | **CONFIRMED → FIXED.** Varying labels; `_autonomousSim` guard (matching `evaluatePendingDecisions`). |
+| B19 | NarrativeProse: `momentum`/`prizes`/`traits` bands didn't exist; `scandal`/`archetypes` key mismatches; `getStatProse` had no fallback | **CONFIRMED → FIXED.** |
+| B20 | mediaState whole-field clobber paths — governance headline vs scandal impacts, post-basho boundary, first-bout initialization | **CONFIRMED → FIXED** via sequencing + single-composition in welfare phase. |
+| B21 | `phase_pre_basho_schedule` fully vestigial — nobody read `_preGeneratedSchedules`; real scheduling is lazy via `ensureDaySchedule` | **CONFIRMED → REMOVED** (phase, export, pipeline entry, test, dead serialized fields). |
+| B22 | Writable-field allowlists diverged — `updateWorldField` (~57 fields), `StateImpact.worldFields` (~44), `updateWorldFieldImpact` (~48) each declared different unions | **CONFIRMED → FIXED** (`ada9a1f1`) — unified into shared `WritableWorldFields`. |
+| B23 | `phase01_basho_bouts` passthrough missing `globalKimariteStats`/`shimpanPool`/`gyojiPool` written by the bout path | **CONFIRMED → FIXED.** |
+| B24 | UI-honesty cluster: sponsor `endsAtTick` treated as ticks (halved remaining-weeks display; 4-week "expiring soon" vs real 8-week window); koenkai income fabricated at 5–8× undercount; `r.injury` alias reads hid bout-sustained injuries; GlobalCup feed filtered on a never-emitted type; StaffPage showed a fabricated ¥150k/member cost and a nonexistent 12-staff cap; Almanac stamped the current date on un-dated achievements; finance sparkline presented backcast estimates as recorded history; BanzukePage "Media Day" block was unreachable (no `press_conference` tag ever produced) | **CONFIRMED → FIXED** (`f9e027b5`, `efed2897`). |
+| B25 | `perf-gate` CI job could not finish the suite in 10 min (measured ~52 min baseline) | **CONFIRMED → FIXED** — unit tests split into a separate job (`e80c49d8`). |
+| B26 | electron-vite emitted `main.cjs`/`preload.cjs` (lib-mode format suffix) but package.json/config referenced `main.js`; divergent `build` block in electron.vite.config shadowed `electron-builder.json5`; `tsx` invoked but not a dep | **CONFIRMED → FIXED** (`06c88330`). Real `electron-vite build` run to verify emitted entry points. |
+| B27 | `audit-orphans.ts` path classification broken on Windows (`join()` backslashes vs forward-slash regexes) | **CONFIRMED → FIXED.** |
+| B28 | Dead wrappers: `tickWeekRivalries`, `tickWeekEvents` (production trimming lives in `phase01_week_rivalries`), `upsertRivalry` | **CONFIRMED → REMOVED** (`3fa0011d`). |
+| B30 | In-transit world clobber: `workerWorld` is set synchronously on `WORLD_UPDATED` while `state.world` lands later inside `startTransition`. Mount effects keyed on `state.world === null` could fire in that gap — MainMenu/NewGameWizard auto-`createWorld` minting a fresh random-seed world, or Dashboard `loadFromAutosave` restoring a stale save over the real world racing in from the worker (observed in e2e: a day-0 `world-<random>` world replacing the post-wizard world, then the sim never advancing) | **CONFIRMED → FIXED** (`28bea4f8`). All three effects now bail when `workerWorld` exists. |
+| B31 | `effa980a` dependabot consolidation claimed lockfile refreshes for `@babel/core` 8.0.6, `prettier` 3.9.9, `electron` 44.4.5, `eslint` 10.11.0, `@playwright/test` 1.63.0, `framer-motion` 13.4.4, `eslint-plugin-react-refresh` 0.5.7, `@rolldown/plugin-babel` 0.2.4 — the lockfile still pinned every old version; only `@typescript-eslint` and vite actually moved | **CONFIRMED → FIXED** (`88aad321`) — real `bun update` applied all targets (electron 44.5.1, framer-motion 13.5.0, latest-in-range superseding PR pins). |
+| E1 | e2e helper wedge: `resolveCrisisIfPresent` clicks the LAST substantive button of any open `role="dialog"` — for the BoutNarrativeModal replay viewer that's "Replay", which restarts the animation rather than dismissing (observed: world frozen at bashoDay12 for 60+ iters while the loop replayed a bout) | **CONFIRMED → FIXED** — helper presses Escape first (safe: a world-backed `CrisisModal` no-ops `onOpenChange` while a decision is pending, so Escape dismisses only pure viewers), falls back to the action button only if a dialog survives. |
+| B29 | Ichimon display casing; `IdentityStep`/route/chart-key defects; dead submit button; fabricated "NEVER"/6-day readout; `showLabel` prop referenced nonexistent `brand.primaryMark` field; "Balanced Development" subtitle ignored real focus bias; `YokozunaTrajectory` labeled "yushos in last 2 basho" as `consecutiveYushos` | **CONFIRMED → FIXED** (`f9e027b5`) — `consecutiveYushos` now computed as a real streak from history. |
+| D01 | "Unseeded `Math.random()` in engine" | **DISPROVED** — zero matches in `src/engine/`. |
+| D02 | "Rivalries phase clones stale state" | **DISPROVED** — `phase01_week_rivalries` is pure (fresh `nextPairs`, spread merges). |
+| D03 | "Bid-policy handoff broken" | **DISPROVED** — `npcBidPolicies` read at bid site; `shouldBid`/`maxBid` honored. |
+| D04 | "`primeBonus` field on KeshoMochi", "`FINANCIAL_RANKINGS`", "`agenda.selectedTemplates`", "`deriveOnsenEffects`", "`processWeekPlayerKeshoMochi`", "`resolveStaffBudget`", "`salaryClawback`" | **DISPROVED** — none of these identifiers exist; stale-audit artifacts. |
+| D05 | "welfare `riskIndicators` invisible to governanceReview in same pipeline" | **DISPROVED** — `pipelineRunner` resolves each phase into `currentWorld` sequentially; later phases see earlier writes. |
+| D06 | "deep-merge of nested entity partials loses sub-fields" | **DISPROVED** — call sites already spread nested state; shallow per-field merge is the documented contract. The real bug was B03's absolute-snapshot class. |
+
+## 4. Integration Notes
+
+- Consolidation work lived on `consolidation/repo-review`; everything is now on
+  remote `main`. Tail commits landed this session: `28bea4f8` (in-transit world
+  clobber guard), `cb36c785` (e2e stall diagnostics + 2h soak cap),
+  `88aad321` (real dependabot consolidation — corrects `effa980a`'s
+  overstated lockfile claim). The remote `consolidation/repo-review` branch
+  was deleted after merge; local copy retains the history.
+- All engine tests updated for intentional contract changes:
+  `trainingState` is a `Map` (fixtures were POJOs behind `as any`), event aging
+  uses monotonic weeks, `sequenceImpacts` changes `resolveImpacts` call counts,
+  sponsor renewal fixtures reflect real source shape, NPC focus slots preserve
+  unmanaged entries, `collectedHeadlines` param added to welfare transitions.
+- `applyBoutToPairState` internals and the full ~50-path `boutNarrative` token
+  sweep were sampled, not exhaustively diffed — residual risk noted.
+
+## 5. Validation Gate
+
+| Gate | Result |
+|------|--------|
+| `node node_modules/@typescript/native/bin/tsc --build --force` | PASS — 0 errors |
+| `bun run build` (vite 8.3.1) | PASS — 18.7s, same chunk-size warnings as baseline |
+| `bun run lint:strict` (`eslint --max-warnings 0`) | PASS — 0 problems |
+| Targeted suites (pages + presenters + worker, 87 files) | PASS — 651/651 |
+| Audit repro pins (`staleBaseMerge.audit.test.ts`) | PASS — 8/8 |
+| Full suite (`bun run test`) | PASS — 864 files / 7,798 tests. The only 4 failures were in `economy-surface` (call-form regex after the sequencing refactor) and `useFinancesData` (stale fixture vs honest backcast marking) — both fixed in `4bbd7957` and re-verified 31/31 standalone |
+| Worker write-path + determinism | PASS — `writePaths` 8/8; `rngDeterminism` 10/10 + `bout/determinism` 1/1 |
+| Standalone Playwright tick repro | PASS — week click advances day 0→7, week 1→2 (`interim`→`active_basho`) |
+| Playwright e2e (`bun run test:e2e`) | PASS — 3/3 specs green: `golden-path`, `full-basho-lifecycle`, `year-of-bashos` (7.0 min, 6 honbasho: 3 distinct yusho winners, +3151/−2999 banzuke movement, 6 kinboshi, calendar rollover to day 373). The earlier stalls traced to two real defects: the B30 in-transit world clobber and the BoutNarrativeModal "Replay" wedge in the dialog resolver (E1). The 55-min cap was also undersized vs the ~14 min/basho interactive pace — raised to 2 h |
+
+## 6. Remote Lifecycle
+
+Done. All work is on remote `main` (head `88aad321` at writing; prior tail
+commits were already pushed). Of the 37 PRs open at triage:
+
+- **32 closed as APPLIED/superseded** — verdict comments posted on each citing
+  the port commit where recorded (`c1f5ccd2` scout tests, `fa4d1fd6` #1033/#1034,
+  `88aad321` dependabot batch) or this document for cluster adjudication.
+- **5 closed as DISPROVED duplicates** — #1002, #1004, #1006, #1010, #1021,
+  each comment naming the winning PR (#996 / #1013) and the defect.
+- **#1027, #1030** were already closed (dependabot-superseded) before triage.
+
+All 29 PR head branches plus the merged `consolidation/repo-review` were
+deleted on the remote; `git ls-remote --heads origin` shows only `main`.
+
+## 7. Remaining Risks / Open Items
+
+- `tickWeekRecovery` (`RecoveryService`) is a kept-but-dead duplicate of
+  `phase01_week_health` recovery logic — fixed for correctness (clone + persist
+  partial recovery) but candidates for removal if the allowlist is revisited.
+- Crisis `impactGenerator`s are hollow stubs — option choices have almost no
+  mechanical effect (completeness gap, not a correctness bug).
+- `events.ts` dedupe-hit early return may still misbehave for dead callers —
+  harmless while nothing calls it.
+- `boutNarrative` token sweep was sampled; the template-integrity test covers
+  only paths touched by consolidated PRs.
+- NPC myoseki purchases now debit correctly; observe whether purchase cadence
+  needs tuning now that funds actually decrease.
+- Required `pendingDecisions` never auto-resolve (`applyExpiredQueueDefaults`
+  only handles expired non-required items) — they halt `shouldHaltAdvance` and
+  promote to `pendingCrisis` one at a time. The ActionQueueWidget's
+  "auto-resolve on next tick" copy overstates this; the only non-dialog UI is
+  the widget's own option buttons. Post-basho windows can mint a batch
+  (kyujo, sponsor, contract items), making interim advance a modal-per-decision
+  grind — a UX friction note more than a bug, but worth a batch-resolution or
+  delegation-policy affordance.
+- `BashoPage` `autoShowPlayerBout` is declared and rendered but never set to a
+  bout — dead auto-open path (only the `selectedBout` click path opens the
+  modal). Candidate for removal or wiring.
