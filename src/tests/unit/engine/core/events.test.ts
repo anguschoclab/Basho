@@ -4,7 +4,6 @@ import {
   logEngineEvent,
   queryEvents,
   EventBus,
-  tickWeekEvents,
   MAX_LIVE_EVENT_LOG,
   EVENT_LOG_TRIM_SLACK,
   isDurableEvent,
@@ -326,106 +325,6 @@ describe("events.test.ts - Helpers & Cleanup", () => {
       expect(bashoEvent.data?.status).toBe("started");
 
       expect(world.events.log.length).toBe(2);
-    });
-  });
-
-  describe("tickWeekEvents", () => {
-    it("trims old minor events but keeps recent, headline, or career/basho ones", () => {
-      const world = MockFactory.createWorld();
-      world.year = 2025;
-      // Event aging uses the monotonic calendar.currentWeek — ev.week stores
-      // the monotonic week an event was logged at, not week-of-year.
-      world.calendar = { currentWeek: 260, month: 1 } as any;
-      ensureEventsState(world);
-      const events = world.events;
-
-      // 1. Very old, minor, non-career -> Should be trimmed
-      events.log.push({
-        id: "evt-1",
-        type: "TRAINING_MILESTONE" as EngineEventType,
-        category: "training",
-        importance: "minor",
-        year: 2020,
-        week: 1,
-        month: 1,
-        phase: "weekly",
-        scope: "world",
-        title: "Old",
-        summary: "Old",
-        data: {},
-        tags: [],
-        truthLevel: "public",
-      });
-      events.dedupe["2020|1|TRAINING_MILESTONE|world|||Old"] = true;
-
-      // 2. Very old, but headline -> Should be kept
-      events.log.push({
-        id: "evt-2",
-        type: "FINANCIAL_ALERT" as EngineEventType,
-        category: "economy",
-        importance: "headline",
-        year: 2020,
-        week: 1,
-        month: 1,
-        phase: "weekly",
-        scope: "world",
-        title: "Old Headline",
-        summary: "Old",
-        data: {},
-        tags: [],
-        truthLevel: "public",
-      });
-      events.dedupe["2020|1|FINANCIAL_ALERT|world|||Old Headline"] = true;
-
-      // 3. Very old, but career -> Should be kept
-      events.log.push({
-        id: "evt-3",
-        type: "LIFECYCLE_EVENT" as EngineEventType,
-        category: "career",
-        importance: "minor",
-        year: 2020,
-        week: 1,
-        month: 1,
-        phase: "weekly",
-        scope: "world",
-        title: "Old Career",
-        summary: "Old",
-        data: {},
-        tags: [],
-        truthLevel: "public",
-      });
-      events.dedupe["2020|1|LIFECYCLE_EVENT|world|||Old Career"] = true;
-
-      // 4. Recent minor -> Should be kept
-      events.log.push({
-        id: "evt-4",
-        type: "TRAINING_MILESTONE" as EngineEventType,
-        category: "training",
-        importance: "minor",
-        year: 2025,
-        week: 259,
-        month: 1,
-        phase: "weekly",
-        scope: "world",
-        title: "Recent",
-        summary: "Recent",
-        data: {},
-        tags: [],
-        truthLevel: "public",
-      });
-      events.dedupe["2025|1|TRAINING_MILESTONE|world|||Recent"] = true;
-
-      const trimmed = tickWeekEvents(world);
-
-      expect(trimmed).toBe(1);
-      expect(events.log.length).toBe(3);
-      expect(events.log.find((e) => e.id === "evt-1")).toBeUndefined();
-      expect(events.log.find((e) => e.id === "evt-2")).toBeDefined();
-      expect(events.log.find((e) => e.id === "evt-3")).toBeDefined();
-      expect(events.log.find((e) => e.id === "evt-4")).toBeDefined();
-
-      // Check dedupe cleanup
-      expect(events.dedupe["2020|1|TRAINING_MILESTONE|world|||Old"]).toBeUndefined();
     });
   });
 

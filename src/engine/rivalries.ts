@@ -44,12 +44,7 @@ export function getRivalry(state: RivalriesState, aId: Id, bId: Id): RivalryPair
   return state.pairs[key];
 }
 
-/**
- * Insert or update a rivalry pair (Legacy standalone).
- */
-export function upsertRivalry(state: RivalriesState, pair: RivalryPairState): void {
-  state.pairs[pair.key] = pair;
-}
+
 
 /**
  * Handle bout resolution for rivalries (Legacy wrapper).
@@ -65,12 +60,7 @@ export function onBoutResolvedRivalries(
   });
 }
 
-/**
- * Weekly tick for rivalries (Legacy wrapper).
- */
-export function tickWeekRivalries(world: WorldState): StateImpact {
-  return RivalryService.applyWeeklyDecay(world);
-}
+
 
 // Re-export type definitions for backward compatibility
 export type {
