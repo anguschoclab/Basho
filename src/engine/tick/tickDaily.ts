@@ -396,8 +396,12 @@ function batchAdvanceCalendar(world: WorldState, days: number): WorldState {
   let currentDay = world.calendar?.currentDay ?? 1;
   let month = world.calendar?.month ?? 1;
   let year = world.year ?? DEFAULT_START_YEAR;
-  let currentWeek = world.calendar?.currentWeek ?? 1;
+  const currentWeek = world.calendar?.currentWeek ?? 1;
 
+  // NOTE: currentWeek intentionally untouched — the batch path is capped
+  // before the weekly gate (safeBatch ≤ daysToWeekly − 1), so no week
+  // boundary is ever crossed here. Week increments happen in
+  // phase00_preflight's advanceCalendarDay on gate days.
   for (let i = 0; i < days; i++) {
     currentDay += 1;
     const maxDay = DAYS_IN_MONTH[(month - 1) % MAX_MONTH] || DEFAULT_MAX_DAY;
@@ -407,7 +411,6 @@ function batchAdvanceCalendar(world: WorldState, days: number): WorldState {
       if (month > MAX_MONTH) {
         month = 1;
         year += 1;
-        currentWeek += 1;
       }
     }
   }

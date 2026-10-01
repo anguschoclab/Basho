@@ -52,6 +52,10 @@ describe("P3.6: advanceWithGates", () => {
 
     const result = advanceWithGates(world, {
       maxDays: 30,
+      // Autonomous suppresses interactive gates (pendingCrisis / required
+      // decisions) — the weekly crisis roll is live now that world.week
+      // advances, so an interactive world can legitimately halt.
+      autonomous: true,
       haltOnPendingDecision: true,
       isTargetReached: (w) => w.pendingCrisis !== undefined,
     });

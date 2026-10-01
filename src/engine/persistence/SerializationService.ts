@@ -165,7 +165,6 @@ export const SerializationService = {
       _recruitmentWindow: world._recruitmentWindow,
       _postBashoMeta: world._postBashoMeta,
       _preBashoAssessment: world._preBashoAssessment,
-      _preGeneratedSchedules: world._preGeneratedSchedules,
       isInitialSeed: world.isInitialSeed,
     };
   },
@@ -291,7 +290,6 @@ export const SerializationService = {
       _recruitmentWindow: s._recruitmentWindow,
       _postBashoMeta: s._postBashoMeta,
       _preBashoAssessment: s._preBashoAssessment,
-      _preGeneratedSchedules: s._preGeneratedSchedules,
       isInitialSeed: s.isInitialSeed,
     };
 

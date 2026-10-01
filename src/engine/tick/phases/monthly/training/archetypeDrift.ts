@@ -37,7 +37,9 @@ export function processArchetypeDrift(
         { rikishiId: id, importance: "notable" }
       );
       if (nextR.combatProfile) {
-        nextR.combatProfile.archetype = newArchetype;
+        // Clone the nested object — nextR is a shallow copy, so combatProfile
+        // still aliases the live world.rikishi entry's profile.
+        nextR.combatProfile = { ...nextR.combatProfile, archetype: newArchetype };
       }
     }
     nextR.archetypeEvidence = {

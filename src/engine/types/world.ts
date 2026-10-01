@@ -109,11 +109,6 @@ export interface TransientContext {
    *  consumed on the next weekly tick. */
   pendingYearBoundary?: boolean;
   lastReport?: Record<string, unknown>;
-  preGeneratedSchedules?: {
-    day1: string[];
-    day2: string[];
-    announcedAtWeek: number;
-  };
   dailyInjuryRiskOverrides?: Record<string, number>;
 }
 
@@ -338,12 +333,6 @@ export interface WorldState {
     currentWeek: number;
     month?: number;
     currentDay?: number;
-  };
-
-  _preGeneratedSchedules?: {
-    day1: string[];
-    day2: string[];
-    announcedAtWeek: number;
   };
 
   _preBashoAssessment?: PreBashoAssessment;

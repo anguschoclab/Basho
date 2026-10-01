@@ -61,8 +61,8 @@ describe("makeNPCWeeklyDecision — agent context integrity", () => {
     const { world } = setupWorld();
     world.talentPool = {
       candidates: {
-        weak: { id: "weak", talentSeed: 30, availabilityState: "available" },
-        strong: { id: "strong", talentSeed: 95, availabilityState: "available" },
+        weak: { candidateId: "weak", talentSeed: 30, availabilityState: "available" },
+        strong: { candidateId: "strong", talentSeed: 95, availabilityState: "available" },
       },
       pools: {},
     } as any;
@@ -78,7 +78,7 @@ describe("makeNPCWeeklyDecision — agent context integrity", () => {
     heya.rikishiIds = ["oz"];
     const plan: AIPlan = {
       heyaId: "h1",
-      archetype: "hardliner",
+      archetype: "tyrant",
       planId: "discipline",
       goals: [],
       constraints: [{ domain: "training", type: "max_intensity", value: "conservative" }],

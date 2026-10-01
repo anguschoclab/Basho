@@ -23,6 +23,9 @@ export const CrisisService = {
    */
   checkForWeeklyCrisis(world: WorldState): StateImpact {
     const builder = createImpactBuilder("checkForWeeklyCrisis");
+    // pendingCrisis is an interactive player gate — suppress during autonomous
+    // sims, matching evaluatePendingDecisions' _autonomousSim guard.
+    if (world._autonomousSim) return builder.build();
     const rng = RNGRegistry.getSystemRNG(world, "narrative", `crisis_roll_${world.week}`);
 
     if (rng.next() > this.TRIGGER_PROBABILITY) return builder.build();

@@ -4,7 +4,7 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
 import { mockRikishi, makeMockHeya } from "../../utils";
-import type { BashoResult } from "@/engine/types/basho";
+import type { BashoResult, BoutResult } from "@/engine/types/basho";
 
 function makeOyakata(overrides: Partial<Oyakata> = {}): Oyakata {
   return {
@@ -107,9 +107,22 @@ describe("phase06_narrative — narrative agent surfacing", () => {
     expect(awardEvent).toBeDefined();
   });
 
-  it("kinboshi (shukunsho) in last basho → event logged", () => {
+  it("kinboshi keyBout in last basho → event logged", () => {
     const world = makeWorld({
-      history: [makeBashoResult({ yusho: "r-other", shukunsho: "r1" })],
+      history: [
+        makeBashoResult({
+          yusho: "r-other",
+          keyBouts: [
+            {
+              label: "kinboshi",
+              bout: { winnerRikishiId: "r1" } as BoutResult,
+              day: 8,
+              eastRikishiId: "r1",
+              westRikishiId: "r-other",
+            },
+          ],
+        }),
+      ],
       cyclePhase: "post_basho",
     });
     const impact = phase06_narrative(world);

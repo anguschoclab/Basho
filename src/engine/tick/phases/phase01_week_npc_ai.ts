@@ -162,6 +162,26 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       const decision = makeNPCWeeklyDecision(world, heya.id, currentPlan);
       applyNPCDecisionPure(world, builder, decision);
 
+      // The decision carries the agent-execution layer (myoseki purchases,
+      // facility upgrades, scandal/favor actions, rivalry posture, academy/
+      // staff investment, narrative events, npcBidPolicies, exhibition and
+      // kyujo handling). Without this merge everything executeAgentDecisions
+      // computed is silently discarded each week.
+      builder.merge(decision.impact);
+
+      // executeAgentDecisions stamps lastExecutedAt onto the pre-consolidation
+      // memory snapshot. Fold the cooldown stamps into nextOya.memory so the
+      // final updateOyakata below doesn't overwrite them.
+      const execOyaUpdate = decision.impact.entities?.oyakataUpdates?.get(nextOya.id) as
+        | { memory?: { lastExecutedAt?: Record<string, number> } }
+        | undefined;
+      if (execOyaUpdate?.memory?.lastExecutedAt) {
+        nextOya.memory = {
+          ...(nextOya.memory ?? getMemory(nextOya, world.week)),
+          lastExecutedAt: execOyaUpdate.memory.lastExecutedAt,
+        };
+      }
+
       if (currentPlan) {
         nextOya.memory = recordDecision(
           nextOya.memory ?? getMemory(nextOya, world.week),

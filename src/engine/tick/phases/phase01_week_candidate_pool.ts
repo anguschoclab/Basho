@@ -15,6 +15,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
 import {
   simulateNPCInterest,
   tickWeekCandidatePool,
@@ -22,8 +23,11 @@ import {
 } from "../../systems/generation/CandidatePoolService";
 
 export function phase01_week_candidate_pool(world: WorldState): StateImpact {
-  // Ensure the pool exists, then simulate NPC interest + run weekly maintenance
+  const builder = createImpactBuilder("phase01_week_candidate_pool");
+  // Ensure the pool exists, then simulate NPC interest + run weekly maintenance.
+  // Both return StateImpacts — merge them or the NPC-interest writes evaporate.
   ensureCandidatePoolState(world);
-  simulateNPCInterest(world);
-  return tickWeekCandidatePool(world);
+  builder.merge(simulateNPCInterest(world));
+  builder.merge(tickWeekCandidatePool(world));
+  return builder.build();
 }

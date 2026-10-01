@@ -19,6 +19,7 @@ import {
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
 } from "../../../constants/engine/calendarExtended";
+import { WEEKLY_TICK_THRESHOLD } from "../../../constants/engine/npcStrategy";
 import {
   evaluatePendingDecisions,
   applyExpiredQueueDefaults,
@@ -94,6 +95,14 @@ function advanceCalendarDay(world: WorldState): {
 
   let monthBoundary = false;
   let yearBoundary = false;
+
+  // The weekly gate fires when the tick counter reaches WEEKLY_TICK_THRESHOLD;
+  // the counter resets after the pipeline (tickDaily), so preflight still sees
+  // the previous day's value. A new week starts on the gate day.
+  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? 0) + 1;
+  if (daysSinceTick >= WEEKLY_TICK_THRESHOLD) {
+    cal.currentWeek += 1;
+  }
 
   cal.currentDay = cal.currentDay + 1;
   const maxDay = DAYS_IN_MONTH[(cal.month - 1) % MAX_MONTH] || DEFAULT_MAX_DAY;

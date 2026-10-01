@@ -486,7 +486,14 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     RETIRE_RIKISHI: (cmd) => {
       if (currentWorld) {
-        const impact = retireRikishiImpact(cmd.rikishiId, cmd.reason);
+        // 4-arg form: (id, year, reason, source) — the 2-arg overload treats
+        // arg2 as the impact source and defaults year to DEFAULT_START_YEAR.
+        const impact = retireRikishiImpact(
+          cmd.rikishiId,
+          currentWorld.year,
+          cmd.reason,
+          "RETIRE_RIKISHI"
+        );
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }
@@ -540,7 +547,8 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
             const heyaRikishi = [...w.activeRikishiIds]
               .map((id) => w.rikishi.get(id))
               .filter((r): r is NonNullable<typeof r> => r !== undefined && r.heyaId === heyaId && !r.isRetired)
-              .sort((a, b) => (b.rankNumber ?? 99) - (a.rankNumber ?? 99));
+              // rankNumber 1 is the TOP of the banzuke — ascending picks strongest
+              .sort((a, b) => (a.rankNumber ?? 99) - (b.rankNumber ?? 99));
             return heyaRikishi[0]?.id ?? "";
           })();
           if (!rikishiId) return;

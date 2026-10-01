@@ -6,7 +6,7 @@
  * Execution order is strict per TDD §4:
  *   1. Economy     — income / upkeep → updates heya.funds
  *   2. Context     — derives ActiveModifiers from facility/ichimon/morale/penalty
- *   3. Pre-basho   — schedule generation and health assessment
+ *   3. Pre-basho   — health assessment (day-1 torikumi is generated lazily)
  *   4. Progression — applies training gains (consumes ActiveModifiers)
  *   5. Health      — recovery, healing, injury rolls (consumes recoveryMultiplier)
  *   6. Welfare     — welfare compliance checks
@@ -23,7 +23,6 @@ import * as phases from "../phases";
 export const offSeasonPipeline: PipelinePhase[] = [
   phases.phase01_week_economy, // Weekly finances: income, salaries, facility upkeep
   phases.phase02_context, // Derive ActiveModifiers (facility, nutrition, degeiko, recovery, morale, penalty)
-  phases.phase_pre_basho_schedule, // Generate Day 1-2 schedules 2 days before basho
   phases.phase_pre_basho_assessment, // Pre-basho health assessment and withdrawal recommendations
   phases.phase01_week_training,
   phases.phase01_week_health,

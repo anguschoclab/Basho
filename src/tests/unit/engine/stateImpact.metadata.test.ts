@@ -36,7 +36,6 @@ import { phase06_narrative } from "@/engine/tick/phases/phase06_narrative";
 import { phase06_yearly_boundary } from "@/engine/tick/phases/phase06_yearly_boundary";
 import { phase_global_cup_advance } from "@/engine/tick/phases/phase_global_cup";
 import { phase_pre_basho_assessment } from "@/engine/tick/phases/phase_pre_basho_assessment";
-import { phase_pre_basho_schedule } from "@/engine/tick/phases/phase_pre_basho_schedule";
 
 // Minimal valid WorldState mock for phase invocation.
 // Phases that need more fields will access them via optional chaining or guards.
@@ -138,7 +137,6 @@ const stateImpactPhases: Array<{
   { name: "phase06_yearly_boundary", fn: phase06_yearly_boundary },
   { name: "phase_global_cup_advance", fn: phase_global_cup_advance },
   { name: "phase_pre_basho_assessment", fn: phase_pre_basho_assessment },
-  { name: "phase_pre_basho_schedule", fn: phase_pre_basho_schedule },
 ];
 
 describe("StateImpact metadata invariant", () => {

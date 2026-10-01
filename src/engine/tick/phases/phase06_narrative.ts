@@ -162,7 +162,12 @@ function deriveRecentAchievements(world: WorldState): string[] {
     const roster = getHeyaRoster(world, world.playerHeyaId);
     const rosterIds = new Set(roster.map((r) => r.id));
     if (lastBasho.yusho && rosterIds.has(lastBasho.yusho)) achievements.push("yusho");
-    if (lastBasho.shukunsho && rosterIds.has(lastBasho.shukunsho)) achievements.push("kinboshi");
+    // kinboshi = a maegashira defeating a yokozuna — surfaced via keyBouts
+    // labeled "kinboshi", NOT the shukunsho (fighting-spirit prize).
+    const kinboshiWinner = lastBasho.keyBouts
+      ?.filter((k) => k.label === "kinboshi")
+      .some((k) => rosterIds.has(k.bout.winnerRikishiId));
+    if (kinboshiWinner) achievements.push("kinboshi");
   }
   const recentEvents = (world.events?.log ?? []).slice(-20);
   if (recentEvents.some((e) => e.type === "RETIREMENT_ANNOUNCED")) achievements.push("retirement");

@@ -11,6 +11,7 @@ import type { Heya } from "../types/heya";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { getManagerPersona } from "../systems/NPCPersonaService";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { MONTHLY_BURN_PER_RIKISHI } from "../../constants/engine/economy";
 import {
   TOP_RIKISHI_COUNT,
   MAX_ROSTER_SIZE,
@@ -47,7 +48,7 @@ import {
 
 import type { AgentDecisions, NPCWeeklyDecision } from "./types";
 import type { AIPlan } from "../ai/types";
-import { applyPlanConstraints } from "./TacticalCoordinator";
+import { applyPlanConstraints, coordinateDecision } from "./TacticalCoordinator";
 import { executeAgentDecisions } from "./execution";
 
 export function makeNPCWeeklyDecision(
@@ -116,12 +117,16 @@ export function makeNPCWeeklyDecision(
   let agentDecisions: AgentDecisions | undefined;
 
   if (oyakata) {
+    // Roster-derived monthly burn — same convention as NPCFinanceCalculator /
+    // npcRecruitmentStrategy (MONTHLY_BURN_PER_RIKISHI per roster member).
+    const monthlyBurn =
+      new Set(heya?.rikishiIds ?? []).size * MONTHLY_BURN_PER_RIKISHI;
     const financeCtx: FinanceAgentContext = {
       oyakata,
       world,
       runwayBand: perception.runwayBand,
       funds: heya?.funds || 0,
-      monthlyBurn: 0,
+      monthlyBurn,
     };
     const financeResult = spawnFinanceAgent(financeCtx);
     reasoning.push(...financeResult.reasoning);
@@ -132,7 +137,7 @@ export function makeNPCWeeklyDecision(
       world,
       scandalScore: heya?.scandalScore || 0,
       politicalCapital: heya?.politicalCapital || 0,
-      governanceStatus: heya?.welfareState?.complianceState || "good",
+      governanceStatus: heya?.governanceStatus ?? "good_standing",
     };
     const governanceResult = spawnGovernanceAgent(governanceCtx);
     reasoning.push(...governanceResult.reasoning);
@@ -145,10 +150,12 @@ export function makeNPCWeeklyDecision(
     const rivalryResult = spawnRivalryAgent(rivalryCtx);
     reasoning.push(...rivalryResult.reasoning);
 
+    // The narrative agent speaks for THIS stable — sample the heya's own
+    // sekitori, not the global roster (a stable must not headline rivals).
     const topRikishi: Rikishi[] = [];
-    for (const rikishiId of world.activeRikishiIds) {
+    for (const rikishiId of heya?.rikishiIds ?? []) {
       const r = getRikishi(world, rikishiId);
-      if (!r) continue;
+      if (!r || r.isRetired) continue;
       if (isSekitoriDivision(r.division)) {
         topRikishi.push(r);
         if (topRikishi.length >= TOP_RIKISHI_COUNT) break;
@@ -174,8 +181,17 @@ export function makeNPCWeeklyDecision(
     const rosterSize = new Set(heya?.rikishiIds ?? []).size || 0;
     const vacancies = Math.max(0, MAX_ROSTER_SIZE - rosterSize);
     if (vacancies > 0 && world.talentPool) {
-      const candidateIds = Object.keys(world.talentPool.candidates);
-      if (candidateIds.length > 0) {
+      // Evaluate the strongest available candidate, not an arbitrary key.
+      // Track the record key — RecruitmentAgent resolves candidates[candidateId].
+      const [bestCandidateId] = Object.entries(world.talentPool.candidates)
+        .filter(([, c]) => c.availabilityState === "available")
+        .sort(([, a], [, b]) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0))[0] ?? [];
+      if (bestCandidateId) {
+        // Rival pressure: the hottest heya-rivalry pair this stable sits in.
+        const rivalHeyaId = Object.values(world.rivalriesState?.heyaRivalryPairs ?? {})
+          .filter((p) => p.heyaAId === heyaId || p.heyaBId === heyaId)
+          .sort((a, b) => b.heat - a.heat)
+          .map((p) => (p.heyaAId === heyaId ? p.heyaBId : p.heyaAId))[0];
         const recruitmentCtx: RecruitmentAgentContext = {
           oyakata,
           world,
@@ -183,7 +199,8 @@ export function makeNPCWeeklyDecision(
           runwayBand: perception.runwayBand,
           funds: heya?.funds || 0,
           rosterSize,
-          candidateId: candidateIds[0],
+          candidateId: bestCandidateId,
+          rivalHeyaId,
         };
         recruitmentResult = spawnRecruitmentAgent(recruitmentCtx);
         reasoning.push(...recruitmentResult.reasoning);
@@ -330,6 +347,12 @@ export function makeNPCWeeklyDecision(
 
   applyPromotionAwareness(world, heyaId, decision);
   applyInjuryRiskReduction(world, heyaId, decision);
+
+  // The post-passes above can raise intensity (e.g., Ozeki yokozuna-run push)
+  // past the plan's max_intensity cap — re-clamp so plan constraints hold.
+  if (plan) {
+    coordinateDecision(plan, decision, perception);
+  }
 
   return decision;
 }

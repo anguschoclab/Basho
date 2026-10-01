@@ -157,7 +157,6 @@ export interface SerializedWorldState {
   _recruitmentWindow?: WorldState["_recruitmentWindow"];
   _postBashoMeta?: WorldState["_postBashoMeta"];
   _preBashoAssessment?: WorldState["_preBashoAssessment"];
-  _preGeneratedSchedules?: WorldState["_preGeneratedSchedules"];
   isInitialSeed?: boolean;
 }
 

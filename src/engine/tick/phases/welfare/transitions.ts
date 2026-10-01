@@ -43,15 +43,20 @@ import {
 function applyGovernanceHeadlineAndPressure(
   world: WorldState,
   heyaId: string,
+  builder: ImpactBuilder,
   mediaPressureChanges: Record<string, number>,
   pressureAmount: number
 ): void {
-  generateGovernanceHeadline({
-    world,
-    heyaId,
-    templatePath: "institutional.governance.welfare_headline",
-    severity: "national",
-  });
+  // The headline returns a StateImpact — it must be merged or the generated
+  // headline evaporates (welfare headlines never surfaced previously).
+  builder.merge(
+    generateGovernanceHeadline({
+      world,
+      heyaId,
+      templatePath: "institutional.governance.welfare_headline",
+      severity: "national",
+    })
+  );
   mediaPressureChanges[heyaId] = (mediaPressureChanges[heyaId] ?? 0) + pressureAmount;
 }
 
@@ -86,7 +91,7 @@ export function handleCompliantTransition(
       { heyaId: heya.id, importance: "notable" }
     );
 
-    applyGovernanceHeadlineAndPressure(world, heya.id, mediaPressureChanges, MEDIA_PRESSURE_WATCH);
+    applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_WATCH);
   }
 }
 
@@ -129,6 +134,7 @@ export function handleWatchTransition(
     applyGovernanceHeadlineAndPressure(
       world,
       heya.id,
+      builder,
       mediaPressureChanges,
       MEDIA_PRESSURE_INVESTIGATION
     );
@@ -214,7 +220,7 @@ export function transitionToSanctioned(
     note: "Mandatory welfare remediation",
   };
 
-  heya.funds = (heya.funds ?? 0) - fineYen;
+  builder.updateHeya(heya.id, { funds: (heya.funds ?? 0) - fineYen });
 
   builder.logEvent(
     "WELFARE_COMPLIANCE",
@@ -228,7 +234,7 @@ export function transitionToSanctioned(
     { heyaId: heya.id, importance: "notable" }
   );
 
-  applyGovernanceHeadlineAndPressure(world, heya.id, mediaPressureChanges, MEDIA_PRESSURE_SANCTION);
+  applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_SANCTION);
 }
 
 export function handleSanctionedTransition(
@@ -239,7 +245,12 @@ export function handleSanctionedTransition(
   builder: ImpactBuilder
 ): void {
   if (state.sanctions?.recruitmentFreezeWeeks && state.sanctions.recruitmentFreezeWeeks > 0) {
-    state.sanctions.recruitmentFreezeWeeks--;
+    // Clone the nested object — `state` is the phase's shallow copy, so
+    // state.sanctions still aliases the live heya.welfareState.sanctions.
+    state.sanctions = {
+      ...state.sanctions,
+      recruitmentFreezeWeeks: state.sanctions.recruitmentFreezeWeeks - 1,
+    };
   }
   const freezeDone =
     !state.sanctions?.recruitmentFreezeWeeks || state.sanctions.recruitmentFreezeWeeks <= 0;
