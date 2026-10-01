@@ -134,7 +134,7 @@ export default function StaffPage() {
     sendCommand({ type: "HIRE_STAFF", heyaId: heya.id, role: selectedRole });
     setIsRecruitOpen(false);
     toast.success(`Hired new ${ROLE_LABELS[selectedRole]}`);
-  }, [heya, selectedRole, staffList.length, sendCommand, world]);
+  }, [heya, selectedRole, sendCommand, world]);
 
   const handleFire = useCallback(
     (staffId: string) => {
