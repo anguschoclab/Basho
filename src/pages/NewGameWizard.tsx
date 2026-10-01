@@ -9,6 +9,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/store/gameStore";
 import { makeDeterministicSeed } from "@/utils/engineUtils";
 import { generateToshiyoriName } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
@@ -29,11 +30,15 @@ export default function NewGameWizard() {
   const { heyaId: preselectedHeyaId } = useSearch({ from: "/new-game" });
   const { createWorld, state, quickSave } = useGame();
 
+  const workerWorld = useGameStore((s) => s.workerWorld);
+
   useEffect(() => {
-    if (!state.world) {
+    // Skip auto-create while a world is in transit (workerWorld is set
+    // synchronously on WORLD_UPDATED, before the reducer commit).
+    if (!state.world && !workerWorld) {
       createWorld(makeDeterministicSeed("world"));
     }
-  }, [state.world, createWorld]);
+  }, [state.world, workerWorld, createWorld]);
 
   const [step, setStep] = useState(1);
   const [oyakataName, setOyakataName] = useState("");

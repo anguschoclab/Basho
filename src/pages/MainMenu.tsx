@@ -10,6 +10,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/store/gameStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,16 +56,22 @@ export default function MainMenu() {
   const seedRef = useRef(seed);
   seedRef.current = seed;
 
+  const workerWorld = useGameStore((s) => s.workerWorld);
+
   // Sync world seed
   useEffect(() => {
-    if (!state?.world) {
+    // workerWorld is set synchronously on WORLD_UPDATED, ahead of the
+    // startTransition that lands it in state.world — if it exists, a world
+    // is already in transit and auto-creating would post a competing
+    // START_WORLD whose result can clobber the real one.
+    if (!state?.world && !workerWorld) {
       const worldSeed = makeDeterministicSeed("world");
       setSeed(worldSeed);
       if (typeof createWorld === "function") createWorld(worldSeed);
     } else if (state.world?.seed && seedRef.current !== state.world.seed) {
       setSeed(state.world.seed);
     }
-  }, [state?.world, createWorld]);
+  }, [state?.world, workerWorld, createWorld]);
 
   const stables = useMemo(() => {
     if (!state?.world) return [];

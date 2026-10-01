@@ -78,13 +78,20 @@ export default function Dashboard() {
       navigate({ to: "/recap" });
   }, [state.phase, navigate]);
 
+  const workerWorld = useGameStore((s) => s.workerWorld);
+
   useEffect(() => {
-    if (!isLoaded && hasAutosave()) {
+    // workerWorld leads state.world (it's set synchronously on WORLD_UPDATED,
+    // before the transition that lands it in the reducer). If it exists, a
+    // world update is in transit — restoring the autosave here would clobber
+    // both the reducer and the worker's authoritative copy with stale state.
+    if (isLoaded || workerWorld) return;
+    if (hasAutosave()) {
       loadFromAutosave();
-    } else if (!isLoaded && !hasAutosave()) {
+    } else {
       navigate({ to: "/main-menu", replace: true });
     }
-  }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
+  }, [isLoaded, workerWorld, hasAutosave, loadFromAutosave, navigate]);
 
   // Additional check: if world is loaded but empty, try to load autosave
   useEffect(() => {
