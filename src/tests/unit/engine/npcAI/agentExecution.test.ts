@@ -458,7 +458,12 @@ describe("executeAgentDecisions — recruitment policy handoff", () => {
 
 describe("executeAgentDecisions — narrative", () => {
   it("shouldTriggerEvent produces a BardEngine-rendered event for the heya", () => {
-    const { world } = makeWorld();
+    const rEast = MockFactory.createRikishi("r-east", { heyaId: "heya-a" });
+    const { world: baseWorld } = makeWorld();
+    const world = MockFactory.createWorld({
+      ...baseWorld,
+      rikishi: new Map([["r-east", rEast]]),
+    });
     const impact = executeAgentDecisions(
       world,
       "heya-a",
@@ -467,6 +472,7 @@ describe("executeAgentDecisions — narrative", () => {
           shouldTriggerEvent: true,
           eventType: "media_spotlight",
           narrativeTone: "neutral",
+          rikishiId: "r-east",
         },
       }),
       world.oyakata.get("oya-a")!
