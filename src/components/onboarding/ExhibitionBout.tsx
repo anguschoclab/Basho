@@ -17,6 +17,7 @@ import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { MentorOverlay, type MentorStep } from "./MentorOverlay";
 import { PbpLineText } from "@/components/game/PbpLineText";
 import { KimariteTag } from "@/components/ui/KimariteTag";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 const MENTOR_SEQUENCE: MentorStep[] = ["stamina", "grip", "momentum", "basho_record"];
@@ -186,24 +187,26 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
       </div>
 
       {/* PbP log */}
-      <div className="bg-muted/30 rounded-lg border border-border/40 p-4 min-h-[220px] space-y-2 overflow-y-auto max-h-[280px] custom-scrollbar">
-        {logLines.slice(0, revealedCount).map((line, i) => (
-          <div
-            key={i}
-            className={cn(
-              "text-sm leading-relaxed animate-in fade-in slide-in-from-left-3 duration-400",
-              i === revealedCount - 1 ? "text-foreground font-medium" : "text-muted-foreground"
-            )}
-          >
-            <PbpLineText text={typeof line === "string" ? line : line.text} />
-          </div>
-        ))}
-        {revealedCount === 0 && (
-          <p className="text-sm text-muted-foreground italic">
-            Press "Next" to watch the bout unfold...
-          </p>
-        )}
-      </div>
+      <ScrollArea className="bg-muted/30 rounded-lg border border-border/40 min-h-[220px] max-h-[280px]">
+        <div className="p-4 pr-6 space-y-2">
+          {logLines.slice(0, revealedCount).map((line, i) => (
+            <div
+              key={i}
+              className={cn(
+                "text-sm leading-relaxed animate-in fade-in slide-in-from-left-3 duration-400",
+                i === revealedCount - 1 ? "text-foreground font-medium" : "text-muted-foreground"
+              )}
+            >
+              <PbpLineText text={typeof line === "string" ? line : line.text} />
+            </div>
+          ))}
+          {revealedCount === 0 && (
+            <p className="text-sm text-muted-foreground italic">
+              Press "Next" to watch the bout unfold...
+            </p>
+          )}
+        </div>
+      </ScrollArea>
 
       {/* Result banner — shown once fully revealed */}
       {isFullyRevealed && (

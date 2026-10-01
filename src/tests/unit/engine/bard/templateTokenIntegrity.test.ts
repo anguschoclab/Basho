@@ -42,6 +42,10 @@ const TOUCHED_PATHS: { path: string; context: Record<string, string> }[] = [
   { path: "world.venues.Osaka.closing", context: { DAY: "5" } },
   { path: "world.venues.Nagoya.closing", context: { DAY: "5" } },
   { path: "world.venues.Fukuoka.closing", context: { DAY: "5" } },
+  // PR #1034 — boutNarrative.ts replay block supplies {WINNER, LOSER, KIMARITE}
+  { path: "post_bout.replay.size_overcame", context: { WINNER: "Hoshoryu", LOSER: "Testoyama", KIMARITE: "yorikiri" } },
+  { path: "post_bout.replay.quick_finish", context: { WINNER: "Hoshoryu", LOSER: "Testoyama", KIMARITE: "oshidashi" } },
+  { path: "post_bout.replay.control", context: { WINNER: "Hoshoryu", LOSER: "Testoyama", KIMARITE: "yorikiri" } },
 ];
 
 const SEEDS = 80;

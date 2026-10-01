@@ -365,7 +365,10 @@
     ],
     "size_overcame": [
       "Just overpowered. Too big, too strong — %WINNER% used every kilogram to advantage.",
-      "The size difference was telling. %WINNER% simply outmuscled %LOSER%."
+      "The size difference was telling. %WINNER% simply outmuscled %LOSER%.",
+      "%LOSER% fought valiantly, but the sheer mass of %WINNER% was too much to handle.",
+      "Physics dictates this one — %WINNER% imposes his will and weight on %LOSER%.",
+      "A mountain to climb for %LOSER%, and %WINNER% proves an immovable object."
     ],
     "reversal": [
       "What a reversal move by %WINNER%! Look at that hip shift.",
@@ -373,11 +376,17 @@
     ],
     "quick_finish": [
       "This happened oh so quickly — blink and you missed it.",
-      "A flash finish. %WINNER% ended it before %LOSER% could react."
+      "A flash finish. %WINNER% ended it before %LOSER% could react.",
+      "No time wasted — %WINNER% explodes off the mark and finishes this immediately.",
+      "Over before it began. %LOSER% was caught completely off guard.",
+      "A blistering fast encounter! %WINNER% gets the job done in seconds."
     ],
     "control": [
       "%WINNER% was in total control from start to finish.",
-      "A masterclass from %WINNER% — never threatened, always in command."
+      "A masterclass from %WINNER% — never threatened, always in command.",
+      "%LOSER% had absolutely no answers for the relentless pressure of %WINNER%.",
+      "Clinical and composed. %WINNER% dictates the entire pace of the bout.",
+      "One-way traffic on the dohyo today as %WINNER% dominates every exchange."
     ],
     "stamina_issue": [
       "%LOSER% looks like he's bothered with stamina issues in this replay. The energy just wasn't there.",
