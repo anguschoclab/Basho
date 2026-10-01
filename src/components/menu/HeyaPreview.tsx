@@ -48,7 +48,7 @@ export function HeyaPreview({
 
   const config = STATURE_CONFIG[heya.statureBand];
 
-  const roster = rosterWithAge.sort((a, b) => sortRikishiByRank(a.rikishi, b.rikishi));
+  const roster = [...rosterWithAge].sort((a, b) => sortRikishiByRank(a.rikishi, b.rikishi));
 
   return (
     <Dialog open={!!heya} onOpenChange={(open) => !open && onClose()}>
@@ -166,7 +166,7 @@ export function HeyaPreview({
                             </div>
                             <div className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-widest flex items-center gap-1">
                               <MapPin className="h-2 w-2" /> {r.rikishi.origin || "Japan"} • {r.age}{" "}
-                              Cycles <span className="opacity-40">({r.rikishi.ageDescriptor})</span>
+                              yrs <span className="opacity-40">({r.rikishi.ageDescriptor})</span>
                             </div>
                           </div>
                         </div>

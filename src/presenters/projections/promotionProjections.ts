@@ -107,6 +107,12 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
       if (h.junYusho) junYushos++;
     }
 
+    // Real consecutive yusho streak — walk history backwards from the latest
+    // basho until a non-yusho result. (Previously this was the 2-basho count,
+    // which overstated the streak on the 6-tournament trajectory track.)
+    let consecutiveYushos = 0;
+    for (let i = len - 1; i >= 0 && history[i].yusho; i--) consecutiveYushos++;
+
     const isStrong = yushos >= 2 || (yushos >= 1 && junYushos >= 1);
 
     const heat = world.mediaState?.mediaHeat?.[r.id] ?? 0;
@@ -125,7 +131,7 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
         rikishi: projectRikishi(r, world),
         recentYushos: yushos,
         recentJunYushos: junYushos,
-        consecutiveYushos: yushos,
+        consecutiveYushos,
         isStrong,
         politicalPressure: heat,
         supportLevel,

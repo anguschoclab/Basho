@@ -3,6 +3,7 @@
  */
 
 import { BACKSTORY_STARTING_FUNDS } from "../engine/economic";
+import type { IchimonName } from "@/engine/types/economy";
 
 export interface OyakataBackstory {
   id: string;
@@ -144,37 +145,40 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
 ];
 
 export const ICHIMON_FACTIONS: Array<{
-  id: string;
+  // id IS the engine's IchimonName — heya.ichimon comparisons are
+  // case-sensitive (TrainingMath, banzuke politics), so these must stay
+  // capitalized exactly as in src/engine/types/economy.ts.
+  id: IchimonName;
   name: string;
   ja: string;
   description: string;
 }> = [
   {
-    id: "dewanoumi",
+    id: "Dewanoumi",
     name: "Dewanoumi",
     ja: "出羽海",
     description: "The largest and most traditional faction with deep political roots.",
   },
   {
-    id: "nishonoseki",
+    id: "Nishonoseki",
     name: "Nishonoseki",
     ja: "二所ノ関",
     description: "A powerful, modern faction known for wealth and influence.",
   },
   {
-    id: "takasago",
+    id: "Takasago",
     name: "Takasago",
     ja: "高砂",
     description: "Fierce independence and a storied history of elite champions.",
   },
   {
-    id: "tokitsukaze",
+    id: "Tokitsukaze",
     name: "Tokitsukaze",
     ja: "時津風",
     description: "A balanced bloc focused on fundamental training excellence.",
   },
   {
-    id: "isegahama",
+    id: "Isegahama",
     name: "Isegahama",
     ja: "伊勢ヶ濱",
     description: "Currently dominant in the Makuuchi division with top-tier talent.",

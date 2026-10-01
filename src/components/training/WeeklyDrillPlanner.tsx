@@ -380,24 +380,13 @@ export function WeeklyDrillPlanner({
             </span>{" "}
             to recover mental stability and reduce burnout risk.
           </p>
-          <div className="pt-2 flex flex-wrap gap-4">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-[11px] px-10 h-12 shadow-xl hover:shadow-primary/40 transition-all">
-              SUBMIT TRAINING PLAN
-            </Button>
-            <div className="flex items-center gap-4 border-l border-primary/10 pl-4">
-              <div className="flex flex-col">
-                <span className="text-[8px] font-black text-muted-foreground uppercase opacity-50">
-                  Last submitted
-                </span>
-                <span className="text-[10px] font-black text-primary uppercase">NEVER</span>
-              </div>
-              <Badge
-                variant="outline"
-                className="border-dashed border-primary/30 text-[9px] font-black"
-              >
-                6-DAY CYCLE
-              </Badge>
-            </div>
+          <div className="pt-2">
+            <Badge
+              variant="outline"
+              className="border-dashed border-primary/30 text-[9px] font-black"
+            >
+              SAVED AUTOMATICALLY — APPLIES WEEKLY
+            </Badge>
           </div>
         </div>
       </div>

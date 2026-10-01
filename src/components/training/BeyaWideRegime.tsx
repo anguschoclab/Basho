@@ -117,7 +117,13 @@ export function BeyaWideRegime({
                     {getFocusLabel(focus)}
                   </div>
                   <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60">
-                    Balanced Development
+                    {(() => {
+                      // Subtitle reflects the focus's actual strongest bias.
+                      const [attr, mult] = Object.entries(FOCUS_BIAS_MATRIX[focus]).sort(
+                        ([, a], [, b]) => b - a
+                      )[0];
+                      return mult > 1 ? `+${Math.round((mult - 1) * 100)}% ${attr}` : "Balanced";
+                    })()}
                   </p>
                   {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
                 </button>

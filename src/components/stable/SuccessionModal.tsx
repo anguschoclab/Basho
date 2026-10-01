@@ -74,9 +74,20 @@ export function SuccessionModal({
               {candidates.map((c) => (
                 <div
                   key={c.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Select successor ${c.shikona}`}
+                  aria-pressed={selectedId === c.id}
                   onClick={() => setSelectedId(c.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelectedId(c.id);
+                    }
+                  }}
                   className={cn(
                     "flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer group",
+                    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                     selectedId === c.id
                       ? "bg-gold/10 border-gold shadow-lg"
                       : "bg-muted/40 border-border hover:border-border/60"

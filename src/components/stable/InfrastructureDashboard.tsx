@@ -78,8 +78,17 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-display font-black text-success uppercase">
-              Stable <span className="text-sm font-normal text-muted-foreground">Tier 1</span>
+            <div className="text-3xl font-display font-black text-success">
+              {formatYen(
+                Object.entries(infra).reduce(
+                  (sum, [id, s]) =>
+                    s?.status === "active"
+                      ? sum + (FACILITY_REGISTRY[id as FacilityId]?.maintenanceCost ?? 0)
+                      : sum,
+                  0
+                )
+              )}{" "}
+              <span className="text-sm font-normal text-muted-foreground">/ month</span>
             </div>
           </CardContent>
         </Card>

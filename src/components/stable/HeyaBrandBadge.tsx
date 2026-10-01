@@ -12,7 +12,6 @@ import { renderCrestMotif } from "./crestMotifs";
 interface HeyaBrandBadgeProps {
   brand: HeyaBrandIdentity;
   size?: "xs" | "sm" | "md" | "lg";
-  showLabel?: boolean;
   className?: string;
 }
 
@@ -22,7 +21,6 @@ interface HeyaBrandBadgeProps {
 export function HeyaBrandBadge({
   brand,
   size = "md",
-  showLabel = false,
   className,
 }: HeyaBrandBadgeProps) {
   const sizeClasses = {
@@ -30,13 +28,6 @@ export function HeyaBrandBadge({
     sm: "w-8 h-8",
     md: "w-12 h-12",
     lg: "w-16 h-16",
-  };
-
-  const textSize = {
-    xs: "text-[8px]",
-    sm: "text-[10px]",
-    md: "text-[12px]",
-    lg: "text-[14px]",
   };
 
   const getShapeClass = (style: string) => {
@@ -114,9 +105,6 @@ export function HeyaBrandBadge({
         )}
       </div>
 
-      {showLabel && (
-        <span className={cn("font-bold text-primary", textSize[size])}>{brand.heyaId}</span>
-      )}
     </div>
   );
 }

@@ -21,6 +21,7 @@ import { FactionStep } from "@/components/wizard/FactionStep";
 import { StableStep } from "@/components/wizard/StableStep";
 import { LoadingState } from "@/components/wizard/LoadingState";
 import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/constants/ui/wizard";
+import type { IchimonName } from "@/engine/types/economy";
 import { EntityCollection } from "@/presenters/engineAccess";
 
 export default function NewGameWizard() {
@@ -37,7 +38,7 @@ export default function NewGameWizard() {
   const [step, setStep] = useState(1);
   const [oyakataName, setOyakataName] = useState("");
   const [background, setBackground] = useState(OYAKATA_BACKSTORIES[0].id);
-  const [ichimon, setIchimon] = useState(ICHIMON_FACTIONS[0].id);
+  const [ichimon, setIchimon] = useState<IchimonName>(ICHIMON_FACTIONS[0].id);
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(preselectedHeyaId ?? null);
 
   const world = state.world;
@@ -68,7 +69,7 @@ export default function NewGameWizard() {
     const config = {
       name: oyakataName.trim(),
       backstoryId: background,
-      ichimon: (ichimon || undefined) as import("@/engine/types/economy").IchimonName | undefined,
+      ichimon,
     };
     createWorld(world.seed, selectedHeyaId, config);
     setStep(4);

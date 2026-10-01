@@ -8,18 +8,19 @@ import { Building2, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ICHIMON_FACTIONS } from "../../constants/ui/wizard";
+import type { IchimonName } from "@/engine/types/economy";
 
 const ICHIMON_MECHANICS: Record<string, { bonus: string; politics: string }> = {
-  dewanoumi: { bonus: "+5% Power training", politics: "High (300)" },
-  nishonoseki: { bonus: "+5% Speed training", politics: "Medium (250)" },
-  takasago: { bonus: "+10% Mental training", politics: "Standard (100)" },
-  tokitsukaze: { bonus: "+10% Stamina training", politics: "Standard (100)" },
-  isegahama: { bonus: "+5% Technique & Balance training", politics: "Standard (100)" },
+  Dewanoumi: { bonus: "+5% Power training", politics: "High (300)" },
+  Nishonoseki: { bonus: "+5% Speed training", politics: "Medium (250)" },
+  Takasago: { bonus: "+10% Mental training", politics: "Standard (100)" },
+  Tokitsukaze: { bonus: "+10% Stamina training", politics: "Standard (100)" },
+  Isegahama: { bonus: "+5% Technique & Balance training", politics: "Standard (100)" },
 };
 
 interface FactionStepProps {
-  ichimon: string;
-  onIchimonChange: (ichimon: string) => void;
+  ichimon: IchimonName | "";
+  onIchimonChange: (ichimon: IchimonName) => void;
   onNext: () => void;
   onPrev: () => void;
 }

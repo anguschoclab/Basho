@@ -145,7 +145,7 @@ export function TrainingAnalytics({
                   <Tooltip {...commonTooltipProps} />
                   <Legend verticalAlign="top" height={36} iconType="circle" />
                   <Bar
-                    dataKey="power"
+                    dataKey="strength"
                     fill="hsl(var(--primary))"
                     name="Power"
                     radius={[4, 4, 0, 0]}

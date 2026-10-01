@@ -22,7 +22,7 @@ vi.mock("@/components/ui/button", () => ({
 
 describe("FactionStep", () => {
   const defaultProps = {
-    ichimon: "",
+    ichimon: "" as "" | import("@/engine/types/economy").IchimonName,
     onIchimonChange: vi.fn(),
     onNext: vi.fn(),
     onPrev: vi.fn(),
@@ -77,7 +77,7 @@ describe("FactionStep", () => {
   it("clicking a card calls onIchimonChange with faction id", () => {
     render(<FactionStep {...defaultProps} />);
     fireEvent.click(screen.getByText("Dewanoumi"));
-    expect(defaultProps.onIchimonChange).toHaveBeenCalledWith("dewanoumi");
+    expect(defaultProps.onIchimonChange).toHaveBeenCalledWith("Dewanoumi");
   });
 
   it("Next button calls onNext", () => {

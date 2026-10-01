@@ -48,13 +48,24 @@ export function StableStep({
             {stables.map((heya: Heya) => (
               <div
                 key={heya.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Select ${heya.name}`}
+                aria-pressed={selectedHeyaId === heya.id}
                 className={cn(
                   "dossier-paper p-5 rounded-lg cursor-pointer transition-all relative overflow-hidden group",
+                  "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                   selectedHeyaId === heya.id
                     ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl"
                     : "opacity-80 hover:opacity-100"
                 )}
                 onClick={() => onHeyaSelect(heya.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onHeyaSelect(heya.id);
+                  }
+                }}
               >
                 {selectedHeyaId === heya.id && (
                   <div className="absolute top-0 right-0 bg-primary text-white p-2 rounded-bl-xl shadow-lg z-10">

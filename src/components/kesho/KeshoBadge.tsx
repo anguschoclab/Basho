@@ -35,7 +35,7 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
   return (
     <div
       className={cn(
-        "relative rounded-xs overflow-hidden shadow-md cursor-pointer hover:shadow-lg transition-shadow",
+        "relative rounded-xs overflow-hidden shadow-md",
         sizeClasses[size],
         className
       )}

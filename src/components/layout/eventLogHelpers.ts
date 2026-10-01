@@ -69,7 +69,7 @@ export function getEventRoute(e: EngineEvent): string | null {
       return `/rikishi/${e.rikishiId}`;
     }
   }
-  if (cat === "scouting") return "/talent-pool";
+  if (cat === "scouting") return "/jsa/talent";
 
   // Economy/sponsor → economy page
   if (cat === "economy" || cat === "sponsor") return "/economy";
