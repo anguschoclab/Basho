@@ -444,6 +444,10 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/utils/collectionOperations.ts:countBy": "Utility function retained for future wiring",
   "src/engine/systems/recruitment/YouthAcademyService.ts:getQualityBonus":
     "Public helper exercised directly by youthAcademy.test.ts",
+  "src/engine/systems/welfare/WelfareService.ts:createHeyaWelfareState":
+    "Retained for future wiring",
+  "src/engine/core/EntityService.ts:EntityService":
+    "Retained for future wiring",
 };
 
 /**
