@@ -71,7 +71,10 @@ describe("useFinancesData", () => {
     expect(result.current.history[7].name).toBe("Now");
     expect(result.current.history[8].projected).toBe(true);
     expect(result.current.history[9].projected).toBe(true);
-    expect(result.current.history[0].projected).toBe(false);
+    // Retro points are backcast from current net (no ledger stores past
+    // balances) — only "Now" is a recorded value.
+    expect(result.current.history[0].projected).toBe(true);
+    expect(result.current.history[7].projected).toBe(false);
   });
 
   it("headerAction has label and navigates to /office/finances", () => {

@@ -208,10 +208,10 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   // the monthly JSA salary credit and the heya monthly burn were silently
   // dropped). Sequencing composes them correctly.
   const producers: Array<(w: WorldState) => StateImpact | null | undefined> = [
-    tickMonthlyNPC,
-    payTravelAllowance,
-    deductTsukebitoCosts,
-    distributeKoenkaiToSekitori,
+    (w) => tickMonthlyNPC(w),
+    (w) => payTravelAllowance(w),
+    (w) => deductTsukebitoCosts(w),
+    (w) => distributeKoenkaiToSekitori(w),
   ];
   if (jungyoParticipants && jungyoEvent) {
     const participants = jungyoParticipants;
