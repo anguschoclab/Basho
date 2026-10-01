@@ -73,6 +73,75 @@ export function getNextTimestamp(): number {
 }
 
 /**
+ * The set of top-level WorldState fields writable via `worldFields` impacts.
+ * Single source of truth — used by both `StateImpact.worldFields` and
+ * `ImpactBuilder.updateWorldField`. (Previously the builder accepted ~57
+ * fields while this interface only declared ~44 — fields like `awardLog`,
+ * `staff`, `rikishi`, `currentBanzuke`, `settings`, `yokozunaVacancyStreak`
+ * wrote into `worldFields` the type didn't admit.)
+ */
+export type WritableWorldFields = Pick<
+  WorldState,
+  | "year"
+  | "week"
+  | "dayIndexGlobal"
+  | "cyclePhase"
+  | "_postBashoMeta"
+  | "_recruitmentWindow"
+  | "closedHeyas"
+  | "currentBasho"
+  | "currentBashoName"
+  | "ozekiKadoban"
+  | "_interimDaysRemaining"
+  | "_postBashoDays"
+  | "calendar"
+  | "history"
+  | "awardLog"
+  | "almanacSnapshots"
+  | "mediaState"
+  | "ftue"
+  | "rivalriesState"
+  | "_preBashoAssessment"
+  | "sponsorPool"
+  | "myosekiMarket"
+  | "_daysSinceLastWeeklyTick"
+  | "governanceLog"
+  | "pendingExhibitions"
+  | "bloodlineRegistry"
+  | "npcScoutingPriorities"
+  | "npcBidPolicies"
+  | "talentPool"
+  | "candidatePool"
+  | "sparringPairs"
+  | "records"
+  | "hallOfFame"
+  | "staff"
+  | "rikishi"
+  | "oyakata"
+  | "heyas"
+  | "transientContext"
+  | "settings"
+  | "playerKnowledge"
+  | "globalCup"
+  | "chronicle"
+  | "globalKimariteStats"
+  | "meta"
+  | "pendingCrisis"
+  | "pendingDecisions"
+  | "yokozunaVacancyStreak"
+  | "events"
+  | "lineage"
+  | "encouragementLog"
+  | "matchmakingOverride"
+  | "tutorialState"
+  | "gyojiPool"
+  | "shimpanPool"
+  | "boutTactics"
+  | "currentBanzuke"
+  | "historyIndex"
+>;
+
+/**
  * A partial state patch describing changes to apply.
  * Simulation passes return StateImpact objects instead of mutating state directly.
  *
@@ -156,52 +225,7 @@ export interface StateImpact {
    * Top-level world field updates.
    * Used for scalar fields on WorldState that don't fit entity/collection patterns.
    */
-  worldFields?: Partial<
-    Pick<
-      WorldState,
-      | "year"
-      | "week"
-      | "dayIndexGlobal"
-      | "cyclePhase"
-      | "_postBashoMeta"
-      | "_recruitmentWindow"
-      | "closedHeyas"
-      | "currentBasho"
-      | "currentBashoName"
-      | "ozekiKadoban"
-      | "_interimDaysRemaining"
-      | "_postBashoDays"
-      | "calendar"
-      | "history"
-      | "almanacSnapshots"
-      | "mediaState"
-      | "ftue"
-      | "rivalriesState"
-      | "_preBashoAssessment"
-      | "sponsorPool"
-      | "myosekiMarket"
-      | "_daysSinceLastWeeklyTick"
-      | "governanceLog"
-      | "pendingExhibitions"
-      | "bloodlineRegistry"
-      | "npcScoutingPriorities"
-      | "npcBidPolicies"
-      | "talentPool"
-      | "candidatePool"
-      | "sparringPairs"
-      | "globalCup"
-      | "chronicle"
-      | "transientContext"
-      | "events"
-      | "pendingDecisions"
-      | "pendingCrisis"
-      | "lineage"
-      | "matchmakingOverride"
-      | "playerKnowledge"
-      | "boutTactics"
-      | "encouragementLog"
-    >
-  >;
+  worldFields?: Partial<WritableWorldFields>;
 
   /**
    * Array append operations for world arrays.

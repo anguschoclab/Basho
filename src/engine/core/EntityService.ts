@@ -25,10 +25,8 @@ export const EntityService = {
    * It bypasses TypeScript assignment checks via generic casts. Do not assume deep
    * structural type safety when using this to attach missing nested state.
    *
-   * ⚠️ CONTRACT / WARNING - FALSY VALUE OVERWRITE:
-   * This function uses a loose falsy check (`!parent[key]`). If the property exists but
-   * is initialized to a valid falsy value (like `0`, `false`, or `""`), it will be incorrectly
-   * overwritten by the factory function. Only use this for object/map hydration.
+   * Hydration is keyed on `undefined`/`null` only — a present falsy value
+   * (`0`, `false`, `""`) is preserved, not overwritten by the factory.
    *
    * @param {Parent} parent - The object containing the state (e.g., WorldState or Heya).
    * @param {Key} key - The property key for the state.
@@ -49,7 +47,7 @@ export const EntityService = {
     key: Key,
     factory: () => NonNullable<Parent[Key]>
   ): NonNullable<Parent[Key]> {
-    if (!parent[key]) {
+    if (parent[key] === undefined || parent[key] === null) {
       Object.assign(parent, { [key]: factory() });
     }
     return parent[key] as NonNullable<Parent[Key]>;
@@ -97,7 +95,7 @@ export const EntityService = {
     factory: () => T
   ): T {
     // Use the hardcoded allowlist to determine if the root should be a Map or a POJO
-    if (!world[rootKey]) {
+    if (world[rootKey] === undefined || world[rootKey] === null) {
       const isMapField = [
         "rikishi",
         "historicalRikishi",
@@ -121,7 +119,7 @@ export const EntityService = {
       return mapRoot.get(id) as T;
     } else {
       const record = root as Record<string, T>;
-      if (!record[id]) {
+      if (record[id] === undefined || record[id] === null) {
         record[id] = factory();
       }
       return record[id];

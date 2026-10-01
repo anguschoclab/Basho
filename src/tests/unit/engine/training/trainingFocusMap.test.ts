@@ -35,22 +35,26 @@ function makeTrainingState(
   intensity: string,
   recovery: string,
   focusSlots: IndividualFocus[] = []
-): Record<string, HeyaTrainingState> {
-  return {
-    [heyaId]: {
+): Map<string, HeyaTrainingState> {
+  // world.trainingState is an IdMapRuntime — a real Map, not a POJO.
+  return new Map([
+    [
       heyaId,
-      activeProfile: {
-        id: "default",
-        name: "Default",
-        intensity,
-        recovery,
-        volume: "normal",
-        focus: "neutral",
-      } as any,
-      focusSlots,
-      weeklyHistory: [],
-    } as unknown as HeyaTrainingState,
-  };
+      {
+        heyaId,
+        activeProfile: {
+          id: "default",
+          name: "Default",
+          intensity,
+          recovery,
+          volume: "normal",
+          focus: "neutral",
+        } as any,
+        focusSlots,
+        weeklyHistory: [],
+      } as unknown as HeyaTrainingState,
+    ],
+  ]);
 }
 
 describe("TrainingService focusSlots resolution", () => {
@@ -77,10 +81,10 @@ describe("TrainingService focusSlots resolution", () => {
         ["h1", { id: "h1", name: "H1", rikishiIds: ["r1", "r2"] } as any],
         ["h2", { id: "h2", name: "H2", rikishiIds: ["r3"] } as any],
       ]),
-      trainingState: {
+      trainingState: new Map([
         ...makeTrainingState("h1", "balanced", "normal", h1FocusSlots),
         ...makeTrainingState("h2", "balanced", "normal", h2FocusSlots),
-      } as any,
+      ]),
     });
 
     const impact = TrainingService.applyWeeklyTraining(world);
@@ -107,7 +111,7 @@ describe("TrainingService focusSlots resolution", () => {
       heyas: new Map([["h1", { id: "h1", name: "H1", rikishiIds: ["r1", "r2"] } as any]]),
       trainingState: makeTrainingState("h1", "balanced", "normal", [
         { rikishiId: "r1", focusType: "develop" } as IndividualFocus,
-      ]) as any,
+      ]),
     });
 
     const impact = TrainingService.applyWeeklyTraining(world);
@@ -129,7 +133,7 @@ describe("TrainingService focusSlots resolution", () => {
     const world = makeMinimalWorld({
       rikishi: new Map([["r1", r1]]),
       heyas: new Map([["h1", { id: "h1", name: "H1", rikishiIds: ["r1"] } as any]]),
-      trainingState: makeTrainingState("h1", "balanced", "normal", focusSlots) as any,
+      trainingState: makeTrainingState("h1", "balanced", "normal", focusSlots),
     });
 
     const impact = TrainingService.applyWeeklyTraining(world);
@@ -154,7 +158,7 @@ describe("TrainingService focusSlots resolution", () => {
     const world = makeMinimalWorld({
       rikishi,
       heyas: new Map([["h1", { id: "h1", name: "H1", rikishiIds: ids } as any]]),
-      trainingState: makeTrainingState("h1", "balanced", "normal", focusSlots) as any,
+      trainingState: makeTrainingState("h1", "balanced", "normal", focusSlots),
     });
 
     const impact = TrainingService.applyWeeklyTraining(world);

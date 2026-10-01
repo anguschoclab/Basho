@@ -21,7 +21,7 @@ import type { HeyaTrainingState } from "../types/training";
 import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
 import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Staff } from "../types/staff";
-import type { StateImpact } from "./StateImpact";
+import type { StateImpact, WritableWorldFields } from "./StateImpact";
 import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
 import { deepMerge, setNestedField } from "../utils/objectMerge";
 
@@ -308,69 +308,13 @@ export class ImpactBuilder {
 
   /**
    * Update a top-level world field.
+   * The writable set is shared with StateImpact.worldFields — see
+   * WritableWorldFields in StateImpact.ts.
    */
-  updateWorldField<
-    K extends keyof Pick<
-      WorldState,
-      | "year"
-      | "week"
-      | "dayIndexGlobal"
-      | "cyclePhase"
-      | "_postBashoMeta"
-      | "_recruitmentWindow"
-      | "closedHeyas"
-      | "currentBasho"
-      | "currentBashoName"
-      | "ozekiKadoban"
-      | "_interimDaysRemaining"
-      | "_postBashoDays"
-      | "calendar"
-      | "history"
-      | "awardLog"
-      | "almanacSnapshots"
-      | "mediaState"
-      | "ftue"
-      | "rivalriesState"
-      | "_preBashoAssessment"
-      | "sponsorPool"
-      | "myosekiMarket"
-      | "_daysSinceLastWeeklyTick"
-      | "governanceLog"
-      | "pendingExhibitions"
-      | "bloodlineRegistry"
-      | "npcScoutingPriorities"
-      | "npcBidPolicies"
-      | "talentPool"
-      | "candidatePool"
-      | "sparringPairs"
-      | "records"
-      | "hallOfFame"
-      | "staff"
-      | "rikishi"
-      | "oyakata"
-      | "heyas"
-      | "transientContext"
-      | "settings"
-      | "playerKnowledge"
-      | "globalCup"
-      | "chronicle"
-      | "globalKimariteStats"
-      | "meta"
-      | "pendingCrisis"
-      | "pendingDecisions"
-      | "yokozunaVacancyStreak"
-      | "events"
-      | "lineage"
-      | "encouragementLog"
-      | "matchmakingOverride"
-      | "tutorialState"
-      | "gyojiPool"
-      | "shimpanPool"
-      | "boutTactics"
-      | "currentBanzuke"
-      | "historyIndex"
-    >,
-  >(field: K, value: WorldState[K]): ImpactBuilder {
+  updateWorldField<K extends keyof WritableWorldFields>(
+    field: K,
+    value: WorldState[K]
+  ): ImpactBuilder {
     if (!this.impact.worldFields) {
       this.impact.worldFields = {};
     }
@@ -652,55 +596,10 @@ export function logEventImpact(
 /**
  * Convenience function to create a world field update impact.
  */
-export function updateWorldFieldImpact<
-  K extends keyof Pick<
-    WorldState,
-    | "year"
-    | "week"
-    | "dayIndexGlobal"
-    | "cyclePhase"
-    | "_postBashoMeta"
-    | "_recruitmentWindow"
-    | "closedHeyas"
-    | "currentBasho"
-    | "currentBashoName"
-    | "ozekiKadoban"
-    | "_interimDaysRemaining"
-    | "_postBashoDays"
-    | "calendar"
-    | "history"
-    | "almanacSnapshots"
-    | "mediaState"
-    | "ftue"
-    | "rivalriesState"
-    | "sponsorPool"
-    | "myosekiMarket"
-    | "_daysSinceLastWeeklyTick"
-    | "governanceLog"
-    | "pendingExhibitions"
-    | "bloodlineRegistry"
-    | "npcScoutingPriorities"
-      | "npcBidPolicies"
-    | "talentPool"
-    | "candidatePool"
-    | "records"
-    | "hallOfFame"
-    | "staff"
-    | "rikishi"
-    | "oyakata"
-    | "heyas"
-    | "transientContext"
-    | "settings"
-    | "globalCup"
-    | "chronicle"
-    | "globalKimariteStats"
-    | "meta"
-    | "yokozunaVacancyStreak"
-    | "lineage"
-    | "encouragementLog"
-    | "matchmakingOverride"
-    | "tutorialState"
-  >,
->(field: K, value: WorldState[K], source: string): StateImpact {
+export function updateWorldFieldImpact<K extends keyof WritableWorldFields>(
+  field: K,
+  value: WorldState[K],
+  source: string
+): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();
 }

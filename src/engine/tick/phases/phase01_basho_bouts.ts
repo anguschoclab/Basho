@@ -120,6 +120,11 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     "rivalriesState",
     "transientContext",
     "playerKnowledge",
+    // Written by resolveBout / applyBoutResult into currentWorld; would be
+    // dropped without re-export (kimarite era stats, official pool updates).
+    "globalKimariteStats",
+    "shimpanPool",
+    "gyojiPool",
   ] as const;
   for (const field of PASSTHROUGH_FIELDS) {
     if (currentWorld[field] !== world[field]) {
