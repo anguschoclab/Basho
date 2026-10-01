@@ -18,7 +18,7 @@ import type { Rikishi } from "../../types/rikishi";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { mergeImpacts } from "../../core/ImpactResolver";
+import { mergeImpacts, resolveImpacts, sequenceImpacts } from "../../core/ImpactResolver";
 import { isBashoMonth } from "../../calendar";
 import {
   payTravelAllowance,
@@ -29,6 +29,7 @@ import { tickMonthlyNPC } from "../../npcAI";
 import { payMochikyukinBonuses } from "../../systems/economy/MochikyukinService";
 import { getKachiNokoriForRikishi } from "../../systems/economy/KachiNokoriService";
 import { renewSponsorContract } from "../../systems/economy/SponsorContractService";
+import type { Sponsor } from "../../types/sponsors";
 import { processHeyaEconomics, processLoanRepayments } from "./monthly/economics";
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "./monthly/facilities";
 import { processArchetypeDrift } from "./monthly/training";
@@ -104,7 +105,12 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
       if (!r) continue;
       const nextR = { ...r };
       if (processArchetypeDrift(world, nextR, id, builder)) {
-        builder.updateRikishi(id, nextR);
+        // Write only the fields drift touches — a whole-entity write carries a
+        // stale `economics` snapshot that reverts the salary credit above.
+        builder.updateRikishi(id, {
+          combatProfile: nextR.combatProfile,
+          archetypeEvidence: nextR.archetypeEvidence,
+        });
       }
     }
   }
@@ -116,55 +122,36 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     score: world.year ?? DEFAULT_START_YEAR,
   });
 
-  // NPC Monthly Strategy: finance decisions, sponsor recruitment, governance,
-  // retirement evaluation, vacancy assessment.
-  const npcMonthlyImpact = tickMonthlyNPC(world);
-
-  // Pay travel/jungyo allowance to sekitori
-  const travelImpact = payTravelAllowance(world);
-
-  // Deduct tsukebito costs from sekitori
-  const tsukebitoImpact = deductTsukebitoCosts(world);
-
-  // Distribute kōenkai income portion to sekitori
-  const koenkaiDistributionImpact = distributeKoenkaiToSekitori(world);
-
-  // Exhibition basho (jungyo) — simulate on non-honbasho months
+  // Exhibition basho (jungyo) — participant roster is input-derived (roster
+  // membership does not change mid-phase); the simulation itself runs on the
+  // progressively-resolved world below so stipend writes compose.
   const currentMonth = world.calendar?.month ?? 1;
   const exhibitionSchedule = getExhibitionBashoSchedule(world.year ?? DEFAULT_START_YEAR);
   const jungyoEvent = exhibitionSchedule.find((e) => e.month === currentMonth);
-  const exhibitionImpacts: StateImpact[] = [];
+  let jungyoParticipants: Rikishi[] | null = null;
   if (jungyoEvent && !isBashoMonth(currentMonth)) {
-    const sekitoriParticipants: Rikishi[] = [];
+    const participants: Rikishi[] = [];
     for (const id of world.activeRikishiIds ?? []) {
       const r = getRikishi(world, id);
       if (!r) continue;
       if (!isSekitoriDivision(r.division) || r.isRetired) continue;
       const heya = world.heyas.get(r.heyaId);
       if (heya?.jungyoOptOut) continue;
-      sekitoriParticipants.push(r);
+      participants.push(r);
     }
-    if (sekitoriParticipants.length > 0) {
-      const exhibitionImpact = simulateExhibitionBasho(
-        world,
-        jungyoEvent.name,
-        sekitoriParticipants
-      );
-      exhibitionImpacts.push(exhibitionImpact);
+    if (participants.length > 0) {
+      jungyoParticipants = participants;
       // Log the exhibition tour event
       builder.logEvent("BASHO_STATUS", "basho", {
         status: "exhibition_tour",
-        description: `The ${jungyoEvent.displayName} begins — ${sekitoriParticipants.length} sekitori participate in the regional tour.`,
+        description: `The ${jungyoEvent.displayName} begins — ${participants.length} sekitori participate in the regional tour.`,
         bashoName: jungyoEvent.name,
         month: currentMonth,
         location: jungyoEvent.location,
-        participantCount: sekitoriParticipants.length,
+        participantCount: participants.length,
       });
     }
   }
-
-  // Pay mochikyukin bonuses to sekitori (every 2 months)
-  const mochikyukinPayoutImpact = payMochikyukinBonuses(world, world.calendar?.month ?? 1);
 
   // Surface kachi-nokori (surplus wins) for sekitori after mochikyukin payout
   if (isBashoMonth(world.calendar?.month ?? 1)) {
@@ -187,8 +174,14 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     }
   }
 
-  // Auto-renew sponsor contracts expiring within window for high-loyalty sponsors
-  const sponsorRenewalImpacts: StateImpact[] = [];
+  // Collect sponsor renewals (params are input-derived; each renewal is
+  // sequenced below so sponsorPool snapshot writes compose).
+  const renewals: Array<{
+    relId: string;
+    sponsorId: string;
+    sponsor: Sponsor;
+    relIndex: number;
+  }> = [];
   if (world.sponsorPool) {
     const currentWeek = world.week ?? 0;
     for (const sponsor of world.sponsorPool.sponsors.values()) {
@@ -200,25 +193,40 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
           rel.endsAtTick - currentWeek <= SPONSOR_RENEWAL_WINDOW_WEEKS &&
           rel.endsAtTick > currentWeek
         ) {
-          sponsorRenewalImpacts.push(
-            renewSponsorContract(world, rel.relId, sponsor.sponsorId, {
-              sponsor,
-              relIndex: i,
-            })
-          );
+          renewals.push({ relId: rel.relId, sponsorId: sponsor.sponsorId, sponsor, relIndex: i });
         }
       }
     }
   }
 
-  return mergeImpacts([
-    builder.build(),
-    npcMonthlyImpact,
-    travelImpact,
-    tsukebitoImpact,
-    koenkaiDistributionImpact,
-    mochikyukinPayoutImpact,
-    ...exhibitionImpacts,
-    ...sponsorRenewalImpacts,
-  ]);
+  const baseImpact = builder.build();
+
+  // Snapshot-writing services must be computed against a progressively
+  // resolved world — each writes complete objects (economics/funds/
+  // myosekiMarket/sponsorPool) derived from its input. A flat merge would
+  // let the last writer's stale snapshot discard earlier deltas (this is how
+  // the monthly JSA salary credit and the heya monthly burn were silently
+  // dropped). Sequencing composes them correctly.
+  const producers: Array<(w: WorldState) => StateImpact | null | undefined> = [
+    tickMonthlyNPC,
+    payTravelAllowance,
+    deductTsukebitoCosts,
+    distributeKoenkaiToSekitori,
+  ];
+  if (jungyoParticipants && jungyoEvent) {
+    const participants = jungyoParticipants;
+    producers.push((w) => simulateExhibitionBasho(w, jungyoEvent.name, participants));
+  }
+  producers.push((w) => payMochikyukinBonuses(w, currentMonth));
+  for (const rn of renewals) {
+    producers.push((w) =>
+      renewSponsorContract(w, rn.relId, rn.sponsorId, {
+        sponsor: rn.sponsor,
+        relIndex: rn.relIndex,
+      })
+    );
+  }
+
+  const sequenced = sequenceImpacts(resolveImpacts(world, [baseImpact]), producers);
+  return mergeImpacts([baseImpact, ...sequenced.impacts]);
 }

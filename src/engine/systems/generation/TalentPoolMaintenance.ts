@@ -80,7 +80,13 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   const perPoolFloor = gap > 0 ? Math.ceil(gap / 3) : 0;
 
   for (const pt of ["high_school", "university", "foreign"] as const) {
-    const pool = { ...nextPools[pt] };
+    // Clone the ID arrays too — a shallow pool copy still aliases them, so
+    // shift()/push() would mutate the input world's pool arrays in place.
+    const pool = {
+      ...nextPools[pt],
+      candidatesHidden: [...(nextPools[pt].candidatesHidden ?? [])],
+      candidatesVisible: [...(nextPools[pt].candidatesVisible ?? [])],
+    };
     if (pool.candidatesHidden.length > 0) {
       const baseline = rng.int(20, 30);
       const count = Math.max(baseline, perPoolFloor);

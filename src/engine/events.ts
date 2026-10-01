@@ -222,18 +222,17 @@ export function tickWeekEvents(world: WorldState): number {
   const eventsState = ensureEventsState(world);
   if (!eventsState.log.length) return 0;
 
-  const currentYear = world.year ?? DEFAULT_START_YEAR;
+  // Monotonic-week aging — ev.week stores calendar.currentWeek (never resets),
+  // so subtract directly; year*52+week double-counted.
   const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
   const MAX_AGE_WEEKS = 52;
-  const currentTotalWeeks = currentYear * 52 + currentWeek;
 
   let trimmedCount = 0;
   const newLog: EngineEvent[] = [];
   const prefixesToDelete = new Set<string>();
 
   for (const ev of eventsState.log) {
-    const evTotalWeeks = ev.year * 52 + ev.week;
-    const ageWeeks = currentTotalWeeks - evTotalWeeks;
+    const ageWeeks = currentWeek - ev.week;
     const isRecent = ageWeeks <= MAX_AGE_WEEKS;
 
     if (isRecent || isDurableEvent(ev)) {

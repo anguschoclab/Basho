@@ -20,9 +20,8 @@ import { buildCombatProfile } from "../../archetype";
 /**
  * Ensures the talent pool state is initialized.
  */
-export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
-  if (!world.talentPool) {
-    world.talentPool = { // @world-builder
+function createDefaultTalentPoolState(world: WorldState): TalentPoolWorldState {
+  return { // @world-builder
       version: "1.0.0",
       lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
       candidates: {},
@@ -65,8 +64,14 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
         },
       },
     };
-  }
-  return world.talentPool;
+}
+
+/**
+ * Pure accessor — returns the talent pool or a fresh default WITHOUT
+ * assigning it to the input world. Callers persist via updateWorldField.
+ */
+export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
+  return world.talentPool ?? createDefaultTalentPoolState(world);
 }
 
 /**

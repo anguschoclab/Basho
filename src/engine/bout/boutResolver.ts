@@ -409,6 +409,21 @@ export function resolveBout(
   // 4. Update Rivalry State
   let rivalryImpact = createImpactBuilder("rivalry").build();
   if (world) {
+    // Title-stakes flags must be set BEFORE onBoutResolved — the rivalry
+    // service reads them to pick heat-gain constants and the title_stakes
+    // trigger. Previously they were only assigned in the kensho block below.
+    const yushoContention = isYushoContention(east, west, basho);
+    const playoff = isPlayoffScenario(east, west, basho);
+    const importance = determineBoutImportance(
+      east.rank,
+      west.rank,
+      bout.day,
+      yushoContention,
+      playoff
+    );
+    result.isYushoRace = yushoContention;
+    result.isTitleStakes = playoff || yushoContention;
+
     rivalryImpact = RivalryService.onBoutResolved(world, {
       result,
       day: bout.day,
@@ -423,23 +438,6 @@ export function resolveBout(
 
     // 5. Kensho (Prize Banners)
     const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${result.boutId}`);
-
-    // Check for yusho contention and playoff scenarios
-    const yushoContention = isYushoContention(east, west, basho);
-    const playoff = isPlayoffScenario(east, west, basho);
-
-    // Determine importance for banner count
-    const importance = determineBoutImportance(
-      east.rank,
-      west.rank,
-      bout.day,
-      yushoContention,
-      playoff
-    );
-
-    // Set bout result flags for narrative and UI
-    result.isYushoRace = yushoContention;
-    result.isTitleStakes = playoff || yushoContention;
 
     if (world.sponsorPool) {
       // Base banner count: random based on importance

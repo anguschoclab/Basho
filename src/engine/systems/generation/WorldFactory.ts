@@ -29,6 +29,7 @@ import { TARGET_ROSTER_SIZE } from "../../../constants/engine/recruitmentExtende
 import { getBashoNumber } from "../../calendar";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { RivalryService } from "../narrative/RivalryService";
+import { resolveImpacts } from "../../core/ImpactResolver";
 import { resetImpactTimestampCounter } from "../../core/StateImpact";
 import { createStables } from "./HeyaFactory";
 import { createRosters } from "./RosterFactory";
@@ -75,7 +76,7 @@ export function generateInitialWorld(seed: string): WorldState {
   // 2. Initial Roster Generation
   const rikishiMap = createRosters(worldRng, heyaMap, oyakataMap);
 
-  const world: WorldState = {
+  let world: WorldState = {
     id: worldRng.uuid("WD"),
     seed,
     year: DEFAULT_START_YEAR,
@@ -138,11 +139,14 @@ export function generateInitialWorld(seed: string): WorldState {
     }
   }
 
-  // Initialize and populate talent pools
-  talentpool.tickWeekTalentPool(world);
+  // Initialize and populate talent pools — ensureTalentPoolState is pure, so
+  // assign the hydrated shell explicitly, then resolve the first weekly tick's
+  // impact (previously discarded, so the initial pool was never applied).
+  world.talentPool = talentpool.ensureTalentPoolState(world);
+  world = resolveImpacts(world, [talentpool.tickWeekTalentPool(world)]);
 
   // Initialize candidate pool (NPC watchlist)
-  ensureCandidatePoolState(world);
+  world.candidatePool = ensureCandidatePoolState(world);
 
   // Capture equilibrium active population target for the replacement-rate controller.
   // The initial roster is intentionally small (~440); recruitment fills stables to
@@ -156,7 +160,9 @@ export function generateInitialWorld(seed: string): WorldState {
   world._populationTarget = targetPop; // @world-builder
 
   // Seed initial rivalries for narrative depth (P0-C1)
-  RivalryService.seedInitialRivalries(world);
+  // The returned impact must be resolved into the world — ensureRivalriesState
+  // is a pure accessor, so a discarded impact leaves the seeds unapplied.
+  world = resolveImpacts(world, [RivalryService.seedInitialRivalries(world)]);
 
   return world;
 }

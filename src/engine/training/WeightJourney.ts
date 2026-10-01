@@ -79,7 +79,10 @@ export function applyWeightJourneyTick(
         phases: ["bulking"],
       },
     });
-    // Fall through to process the first tick with the new journey
+    // The first tick applies on the NEXT weekly phase — rikishi.weightJourney
+    // here still reads the input entity (the write above lives in the
+    // not-yet-applied impact), so falling through is impossible.
+    return builder.build();
   }
 
   const journey = rikishi.weightJourney;

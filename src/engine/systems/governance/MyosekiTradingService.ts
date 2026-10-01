@@ -245,6 +245,10 @@ export function purchaseMyoseki(
     history: [tx, ...market.history],
   });
 
+  // Debit the buyer — previously NPC purchases transferred the stock but left
+  // funds untouched (free elder shares).
+  builder.updateHeya(buyerId, { funds: buyerFunds - price });
+
   return builder.build();
 }
 

@@ -34,7 +34,11 @@ export function processFacilitiesMaintenance(
       recovery: Math.max(MIN_FACILITY_LEVEL, heya.facilities.recovery - FACILITY_DECAY_AMOUNT),
       nutrition: Math.max(MIN_FACILITY_LEVEL, heya.facilities.nutrition - FACILITY_DECAY_AMOUNT),
     };
-    heyaUpdates.facilitiesBand = computeFacilitiesBand(heya);
+    // Band must reflect the decayed facilities, not the pre-decay entity.
+    heyaUpdates.facilitiesBand = computeFacilitiesBand({
+      ...heya,
+      facilities: heyaUpdates.facilities,
+    });
     builder.logEvent(
       "FACILITY_DEGRADED",
       "facility",

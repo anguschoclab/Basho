@@ -12,7 +12,7 @@
 import type { WorldState } from "../../types/world";
 import type { GovernanceStatus } from "../../types/economy";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { mergeImpacts } from "../../core/ImpactResolver";
+import { mergeImpacts, resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
 import { YokozunaService } from "../../systems/governance/YokozunaService";
@@ -180,16 +180,26 @@ export function phase01_week_governance(world: WorldState): StateImpact {
   const market = world.myosekiMarket;
   const myosekiImpacts: StateImpact[] = [];
   if (market && market.stocks) {
-    const rng = rngForWorld(world, "myoseki", "governance-trade");
-    for (const [heyaId, heya] of world.heyas) {
+    const rng = rngForWorld(world, "myoseki", `governance-trade_${world.year ?? 0}_${world.week ?? 0}`);
+    // Sequence purchases against progressively-resolved state: each impact's
+    // absolute myosekiMarket/funds snapshot is computed off the latest world,
+    // so (a) findAvailableStock excludes stocks already sold this week and
+    // (b) buyer debits compose correctly under last-write-wins merge.
+    let w = world;
+    for (const heyaId of world.heyas.keys()) {
       if (heyaId === world.playerHeyaId) continue;
       // ~2% chance per NPC heya per week to attempt a purchase
       if (rng.next() > 0.02) continue;
-      const available = findAvailableStock(market);
+      const heya = w.heyas.get(heyaId);
+      const m = w.myosekiMarket;
+      if (!heya || !m?.stocks) continue;
+      const available = findAvailableStock(m);
       if (!available) continue;
       const price = available.askingPrice ?? 0;
       if (heya.funds >= price && price > 0) {
-        myosekiImpacts.push(purchaseMyoseki(world, market, available.id, heyaId, heya.funds));
+        const impact = purchaseMyoseki(w, m, available.id, heyaId, heya.funds);
+        myosekiImpacts.push(impact);
+        w = resolveImpacts(w, [impact]);
       }
     }
   }

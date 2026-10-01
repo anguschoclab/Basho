@@ -144,20 +144,16 @@ describe("phase01_week_rivalries", () => {
   describe("Event Log Trimming", () => {
     it("trims old standard events but keeps important ones", () => {
       const world = MockFactory.createWorld();
-      const currentYear = 2025;
-      const currentWeek = 10;
-      const currentTotalWeeks = currentYear * WEEKS_PER_YEAR + currentWeek;
+      // Event aging uses the monotonic calendar.currentWeek — ev.week stores
+      // the monotonic week an event was logged at, not week-of-year.
+      const currentWeek = 200;
+      const staleYear = 2024;
+      const staleWeek = currentWeek - MAX_EVENT_AGE_WEEKS - 5;
+      const recentYear = 2025;
+      const recentWeek = currentWeek - 1;
 
-      world.year = currentYear;
+      world.year = 2025;
       world.calendar = { month: 1, currentWeek: currentWeek } as any;
-
-      const staleTotalWeeks = currentTotalWeeks - MAX_EVENT_AGE_WEEKS - 5;
-      const staleYear = Math.floor(staleTotalWeeks / WEEKS_PER_YEAR);
-      const staleWeek = staleTotalWeeks % WEEKS_PER_YEAR;
-
-      const recentTotalWeeks = currentTotalWeeks - 1;
-      const recentYear = Math.floor(recentTotalWeeks / WEEKS_PER_YEAR);
-      const recentWeek = recentTotalWeeks % WEEKS_PER_YEAR;
 
       const oldUnimportantEvent: EngineEvent = {
         id: "old1",

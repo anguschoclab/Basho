@@ -33,7 +33,7 @@ export interface DramaEvent {
  */
 export function processDramaTick(world: WorldState): StateImpact {
   const builder = createImpactBuilder("processDramaTick");
-  const rng = rngForWorld(world, "narrative", "drama");
+  const rng = rngForWorld(world, "narrative", `drama_${world.dayIndexGlobal ?? 0}`);
 
   // Basho-day-specific drama (oversleeping, etc.)
   const bashoDayImpact = checkBashoDayDrama(world);
@@ -53,7 +53,7 @@ export function processDramaTick(world: WorldState): StateImpact {
 
 function generateRandomDrama(world: WorldState): StateImpact {
   const builder = createImpactBuilder("generateRandomDrama");
-  const rng = rngForWorld(world, "narrative", "drama_random");
+  const rng = rngForWorld(world, "narrative", `drama_random_${world.dayIndexGlobal ?? 0}`);
   const eventType = rng.int(0, 2);
 
   if (eventType === 0) {
@@ -133,9 +133,13 @@ export function checkTriggeredDrama(world: WorldState): StateImpact {
         { heyaId: heya.id }
       );
       if (heya.isPlayerOwned) {
-        // This triggers a CrisisModal in the UI by attaching an ActiveCrisis to the heya
-        const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
-        crisisImpacts.push(crisisImpact);
+        // Skip while a crisis is already open — otherwise the daily tick
+        // re-fires CrisisModal and resets generatedAtWeek every day until the
+        // weekly governance review flags riskIndicators.financial.
+        if (!heya.activeCrisis) {
+          const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
+          crisisImpacts.push(crisisImpact);
+        }
       } else if (!heya.activeCrisis && !npcCrisisTriggered) {
         // NPC heyas get the same crisis object, resolved autonomously by the
         // weekly NPC AI phase via the CrisisAgent. Bounded: at most one NPC
@@ -164,7 +168,7 @@ export function checkBashoDayDrama(world: WorldState): StateImpact {
   const basho = world.currentBasho;
   if (!basho) return builder.build();
 
-  const rng = rngForWorld(world, "narrative", "oversleeping");
+  const rng = rngForWorld(world, "narrative", `oversleeping_${world.dayIndexGlobal ?? 0}`);
 
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);

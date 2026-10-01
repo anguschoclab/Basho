@@ -32,7 +32,7 @@ describe("welfare transitions — impact purity", () => {
     const builder = createImpactBuilder("test");
     const pressure: Record<string, number> = {};
 
-    transitionToSanctioned(world, heya, state, builder, pressure);
+    transitionToSanctioned(world, heya, state, builder, pressure, []);
 
     expect(heya.funds).toBe(20_000_000); // input untouched
     const update = builder.build().entities?.heyaUpdates?.get("h1") as

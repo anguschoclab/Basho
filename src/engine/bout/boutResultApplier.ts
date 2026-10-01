@@ -86,6 +86,10 @@ export function applyBoutResult(
 
   // 1.6. Track bout metrics for enriched BashoPerformance (7.1)
   const boutMetrics = { ...(basho.boutMetrics ?? {}) };
+  // Clone-on-write: the shallow copy still aliases each rikishi's metric
+  // record, so nested kimariteUsed/boutDurations/opponentTiers writes must
+  // first detach the record from the input world.
+  const clonedMetrics = new Set<string>();
   const ensureMetrics = (id: string) => {
     if (!boutMetrics[id]) {
       boutMetrics[id] = {
@@ -96,6 +100,15 @@ export function applyBoutResult(
         comebackWins: 0,
         opponentTiers: [],
       };
+      clonedMetrics.add(id);
+    } else if (!clonedMetrics.has(id)) {
+      boutMetrics[id] = {
+        ...boutMetrics[id],
+        kimariteUsed: { ...boutMetrics[id].kimariteUsed },
+        boutDurations: [...boutMetrics[id].boutDurations],
+        opponentTiers: [...boutMetrics[id].opponentTiers],
+      };
+      clonedMetrics.add(id);
     }
     return boutMetrics[id];
   };
@@ -203,8 +216,11 @@ export function applyBoutResult(
   // For now, we'll update the basho via world field update
 
   // 2. Track Achievement Counters
-  let winnerAchievements = winner.stats.achievements;
-  let winnerEconomics = winner.economics;
+  // Clone — the raw references alias the input rikishi's nested objects.
+  let winnerAchievements = winner.stats.achievements
+    ? { ...winner.stats.achievements }
+    : undefined;
+  let winnerEconomics = winner.economics ? { ...winner.economics } : undefined;
 
   if (result.awardFact) {
     if (!winnerAchievements) {
@@ -298,6 +314,11 @@ export function applyBoutResult(
 
   // 5. Update Media (generates headlines, heat, etc.)
   const mediaState = world.mediaState ?? createDefaultMediaState();
+  // Hydrate mediaState BEFORE merging the bout update — otherwise the
+  // pristine default last-write-wins over the bout's headlines/heat.
+  if (!world.mediaState) {
+    builder.updateWorldField("mediaState", mediaState);
+  }
   builder.merge(
     updateMediaFromBout({
       state: mediaState,
@@ -309,9 +330,6 @@ export function applyBoutResult(
       rivalries: world.rivalriesState,
     })
   );
-  if (!world.mediaState) {
-    builder.updateWorldField("mediaState", mediaState);
-  }
 
   // 6. Emit Canonical Event (Bard Engine v2.1)
   const intensity = calculateMatchIntensity(match, result);

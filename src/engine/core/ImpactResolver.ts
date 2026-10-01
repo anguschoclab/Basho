@@ -617,3 +617,32 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
 
   return merged;
 }
+
+/**
+ * Sequentially compute StateImpacts against a progressively-resolved world.
+ *
+ * mergeImpacts composes entity/world-field updates with last-wins semantics.
+ * When several producers each write a COMPLETE snapshot derived from the same
+ * base world (e.g. `economics`, `funds`, `stats`, `candidatePool`,
+ * `mediaState`), a flat merge silently discards all but the last writer's
+ * deltas — the JSA-salary-credit bug. Computing each producer on the world
+ * resolved with its predecessors makes every absolute value already contain
+ * the earlier writes, so the merged result composes correctly (including
+ * append-style fields like `encouragementLog` and `mediaState.headlines`).
+ *
+ * Producers run in array order; each may return null/undefined to skip.
+ */
+export function sequenceImpacts(
+  world: WorldState,
+  producers: Array<(w: WorldState) => StateImpact | null | undefined>
+): { impacts: StateImpact[]; world: WorldState } {
+  const impacts: StateImpact[] = [];
+  let current = world;
+  for (const produce of producers) {
+    const impact = produce(current);
+    if (!impact) continue;
+    impacts.push(impact);
+    current = resolveImpacts(current, [impact]);
+  }
+  return { impacts, world: current };
+}

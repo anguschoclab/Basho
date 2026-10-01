@@ -91,6 +91,10 @@ beforeEach(() => {
   vi.spyOn(ImpactResolver, "resolveImpacts").mockImplementation(
     (world: WorldState, _impacts: StateImpact[]) => ({ ...world })
   );
+  // Call-through spy — sequenceImpacts internally calls the module-local
+  // resolveImpacts binding (not the export), so its per-stage resolutions
+  // never register on the resolveImpacts spy.
+  vi.spyOn(ImpactResolver, "sequenceImpacts");
 });
 
 afterEach(() => {
@@ -147,9 +151,13 @@ describe("runPostBashoResolution", () => {
     expect((runAIMetaDrift as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
 
-  it("calls resolveImpacts twice: once for main batch, once for recruitment", () => {
+  it("sequences the main batch progressively, then resolves recruitment last", () => {
     runPostBashoResolution(makeWorld());
-    expect((ImpactResolver.resolveImpacts as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(2);
+    // Each post-basho stage resolves via sequenceImpacts (module-internal
+    // resolveImpacts calls don't hit the spy); only the final recruitment
+    // batch resolve registers here.
+    expect((ImpactResolver.sequenceImpacts as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
+    expect((ImpactResolver.resolveImpacts as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
 
   it("calls openRecruitmentWindow after main resolveImpacts", () => {

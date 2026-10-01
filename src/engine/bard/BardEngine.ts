@@ -59,8 +59,13 @@ let domainsData: DomainMap | null = null;
 const domainCache = new Map<string, unknown>();
 const domainPromises = new Map<string, Promise<void>>();
 
-let lruCache: string[] = [];
+// Anti-repetition lanes keyed by RNG seed: a module-global cache made resolve
+// consume extra rng draws depending on unrelated prior resolutions, breaking
+// replay determinism across worlds/runs. Per-seed lanes keep the same
+// call-order → same cache → same draw pattern for a given seed.
+const lruBySeed = new Map<string, string[]>();
 const MAX_CACHE_SIZE = 50;
+const MAX_LANES = 256;
 
 const ALL_DOMAIN_NAMES = [
   "combat",
@@ -121,10 +126,19 @@ const percentFormatter = new Intl.NumberFormat("en-US", {
 /**
  * Update the LRU cache with the newest used template.
  */
-function updateCache(template: string) {
-  lruCache.push(template);
-  if (lruCache.length > MAX_CACHE_SIZE) {
-    lruCache.shift();
+function updateCache(seed: string, template: string) {
+  let lane = lruBySeed.get(seed);
+  if (!lane) {
+    if (lruBySeed.size >= MAX_LANES) {
+      const oldest = lruBySeed.keys().next().value;
+      if (oldest !== undefined) lruBySeed.delete(oldest);
+    }
+    lane = [];
+    lruBySeed.set(seed, lane);
+  }
+  lane.push(template);
+  if (lane.length > MAX_CACHE_SIZE) {
+    lane.shift();
   }
 }
 
@@ -413,10 +427,15 @@ export const BardEngine = {
       idx = rng.int(0, options.length - 1);
       template = options[idx];
       attempts++;
-    } while (lruCache.includes(template) && attempts < 3 && options.length > 1 && !isTest);
+    } while (
+      (lruBySeed.get(rng.seed)?.includes(template) ?? false) &&
+      attempts < 3 &&
+      options.length > 1 &&
+      !isTest
+    );
 
     if (!isTest) {
-      updateCache(template);
+      updateCache(rng.seed, template);
     }
 
     const templateId = `${path}_i${intensity}_${idx}`;
@@ -462,6 +481,6 @@ export const BardEngine = {
    * Reset the LRU cache. Used in test cleanup to prevent state pollution.
    */
   resetCache(): void {
-    lruCache = [];
+    lruBySeed.clear();
   },
 };

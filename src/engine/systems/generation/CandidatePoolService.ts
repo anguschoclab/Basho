@@ -31,9 +31,8 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 
 // ── Pool Initialization ───────────────────────────────────────────────────
 
-export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldState {
-  if (!world.candidatePool) {
-    world.candidatePool = { // @world-builder
+function createDefaultCandidatePoolState(world: WorldState): TalentPoolWorldState {
+  return { // @world-builder
       version: "1.0.0",
       lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
       candidates: {},
@@ -76,8 +75,14 @@ export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldStat
         },
       },
     };
-  }
-  return world.candidatePool;
+}
+
+/**
+ * Pure accessor — returns the candidate pool or a fresh default WITHOUT
+ * assigning it to the input world. Callers persist via updateWorldField.
+ */
+export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldState {
+  return world.candidatePool ?? createDefaultCandidatePoolState(world);
 }
 
 // ── NPC Interest Simulation ───────────────────────────────────────────────

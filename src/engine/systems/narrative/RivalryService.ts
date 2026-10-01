@@ -16,7 +16,6 @@ import type { Id } from "../../types/common";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { EntityCollection } from "../../core/EntityCollection";
 import { RNGRegistry } from "../../core/RNGRegistry";
-import { EntityService } from "../../core/EntityService";
 import type { Rikishi } from "../../types/rikishi";
 import { clamp } from "../../utils/math";
 import {
@@ -100,14 +99,8 @@ export const RivalryService = {
    * @returns {RivalriesState} The existing or newly created rivalries state.
    */
   ensureRivalriesState(world: WorldState): RivalriesState {
-    return EntityService.ensureState(
-      world,
-      "rivalriesState",
-      (): RivalriesState => ({
-        version: "1.0.0",
-        pairs: {},
-      })
-    );
+    // Pure hydration — returns default without mutating the input world.
+    return world.rivalriesState ?? { version: "1.0.0", pairs: {} };
   },
 
   /**

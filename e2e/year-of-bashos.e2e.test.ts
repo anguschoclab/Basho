@@ -212,7 +212,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     }
 
     const last = world.history[i];
-    const rikishiById: Record<string, { rank: string; rankNumber?: number; shikona?: string; combatProfile?: { archetype: string } }> = world.rikishi ?? {};
+    const rikishiById = world.rikishi ?? {};
     const bashoKey = `${last.year}-${last.bashoNumber}`;
 
     // ── Per-basho invariants ──────────────────────────────────────────
@@ -258,7 +258,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     if (last.boutOfTheBasho) {
       const botb = log.find((e: { type: string; winnerId: string }) => e.type === "boutOfTheBasho");
       expect(botb, `awardLog records boutOfTheBasho (basho ${i + 1})`).toBeTruthy();
-      expect(rikishiById[botb.winnerId], "boutOfTheBasho winner exists").toBeTruthy();
+      expect(botb && rikishiById[botb.winnerId], "boutOfTheBasho winner exists").toBeTruthy();
     }
 
     // ── Banzuke publication ───────────────────────────────────────────
@@ -273,7 +273,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     expect(indexed?.[bashoKey]?.divisions, `index has snapshot for ${bashoKey}`).toBeTruthy();
 
     // Movement vs the positions the world fought this basho on.
-    const curPositions = snapshotPositions(current);
+    const curPositions = snapshotPositions(current ?? undefined);
     let promotions = 0;
     let demotions = 0;
     let unchanged = 0;
@@ -443,7 +443,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
   expect(monthsSeen.size, "all 12 calendar months passed").toBe(12);
   expect(
     newYearWorld.year >= startWorld.year + 1 ||
-      newYearWorld.currentBasho?.year >= startWorld.year + 1,
+      (newYearWorld.currentBasho?.year ?? 0) >= startWorld.year + 1,
     "year ticked over"
   ).toBe(true);
   expect(newYearWorld.calendar?.month, "month is in range").toBeGreaterThanOrEqual(1);

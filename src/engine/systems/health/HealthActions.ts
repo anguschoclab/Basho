@@ -11,8 +11,10 @@ export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpa
   if (!r) return builder.build();
   builder.updateRikishi(rikishiId, { isKyujo: true, kyujoReason: "injury" });
 
-  // Gap 10: Check if this withdrawal stems from an in-bout injury (weekOccurred matches current basho week)
-  const currentWeek = world.currentBasho?.day ?? world.week ?? 0;
+  // In-bout injury: currentInjury.weekOccurred records the global week the
+  // injury happened — compare to world.week, not currentBasho.day (a 1–15
+  // tournament day can never equal a week counter).
+  const currentWeek = world.week ?? 0;
   const injuryWeek = r.currentInjury?.weekOccurred;
   const isInBoutInjury = injuryWeek !== undefined && injuryWeek === currentWeek;
 

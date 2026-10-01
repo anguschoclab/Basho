@@ -118,19 +118,21 @@ export function executeMerger(
     { heyaId: target.id, importance: "headline" }
   );
 
-  // generateGovernanceHeadline still called directly - will migrate in Phase 5
-  generateGovernanceHeadline({
-    world,
-    heyaId: target.id,
-    templatePath: "institutional.merger.approved",
-    severity: "main_event",
-  });
+  builder.merge(
+    generateGovernanceHeadline({
+      world,
+      heyaId: target.id,
+      templatePath: "institutional.merger.approved",
+      severity: "main_event",
+    })
+  );
 
   // 5. Remove source stable
   builder.deleteHeya(source.id);
 
   // Clean up references in world history/almanac if necessary
-  const closedHeyas = world.closedHeyas || new Map<Id, ClosedHeyaRecord>();
+  // Clone before .set — reusing the live map would mutate the input world.
+  const closedHeyas = new Map<Id, ClosedHeyaRecord>(world.closedHeyas ?? []);
   const record: ClosedHeyaRecord = {
     ...source,
     closedAtYear: world.year,

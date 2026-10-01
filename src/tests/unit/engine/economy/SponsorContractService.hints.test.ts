@@ -157,8 +157,9 @@ describe("renewSponsorContract — dead code removal", () => {
 describe("phase05_monthly_boundary — hints integration", () => {
   it("passes sponsor hints to renewSponsorContract", () => {
     const phase = readFile("engine/tick/phases/phase05_monthly_boundary.ts");
-    // The indexed loop must pass { sponsor, relIndex: i } hints
+    // Renewal calls must pass sponsor + relIndex hints (sequenced via the
+    // collected renewals list — rn.sponsor / rn.relIndex).
     expect(phase).toContain("relIndex");
-    expect(phase).toMatch(/\{\s*sponsor,\s*relIndex:\s*i,?\s*\}/);
+    expect(phase).toMatch(/\{\s*sponsor:\s*rn\.sponsor,\s*relIndex:\s*rn\.relIndex,?\s*\}/);
   });
 });

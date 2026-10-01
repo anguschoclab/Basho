@@ -56,7 +56,7 @@ export interface RecordEntry {
   rikishiId: string;
   shikona: string;
   value: number;
-  achievedDate: { year: number; month: number };
+  achievedDate?: { year: number; month: number };
 }
 
 /** Defines the structure for chronicle record entry. */

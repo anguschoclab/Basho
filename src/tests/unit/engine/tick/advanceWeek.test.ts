@@ -44,9 +44,9 @@ function makeTrainingState(
   intensity: string,
   recovery: string,
   focusSlots: IndividualFocus[] = []
-): Record<string, HeyaTrainingState> {
-  return {
-    [heyaId]: {
+): Map<string, HeyaTrainingState> {
+  return new Map([
+    [heyaId, {
       heyaId,
       activeProfile: {
         id: "default",
@@ -60,7 +60,8 @@ function makeTrainingState(
       focusSlots,
       weeklyHistory: [],
     } as unknown as HeyaTrainingState,
-  };
+    ],
+  ]);
 }
 
 // ---------------------------------------------------------------------------

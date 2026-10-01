@@ -59,7 +59,7 @@ export function updateH2H(
   const loserH2h = loser.h2h || {};
 
   // Update Winner's record against Loser
-  const winnerRecord = winnerH2h[loser.id] || createEmptyH2H();
+  const winnerRecord = { ...(winnerH2h[loser.id] || createEmptyH2H()) };
   winnerRecord.wins++;
   winnerRecord.streak = winnerRecord.streak > 0 ? winnerRecord.streak + 1 : 1;
   winnerRecord.lastMatch = {
@@ -71,7 +71,7 @@ export function updateH2H(
   };
 
   // Update Loser's record against Winner
-  const loserRecord = loserH2h[winner.id] || createEmptyH2H();
+  const loserRecord = { ...(loserH2h[winner.id] || createEmptyH2H()) };
   loserRecord.losses++;
   loserRecord.streak = loserRecord.streak < 0 ? loserRecord.streak - 1 : -1;
   loserRecord.lastMatch = {
@@ -122,10 +122,11 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   const recordSeed = `${r1.id}::${r2.id}::${r1.h2h?.[r2.id]?.wins ?? 0}::${r1.h2h?.[r2.id]?.losses ?? 0}`;
   const rng = rngFromSeed("h2h", "h2h", recordSeed);
 
-  // Guard clause if h2h is undefined
-  if (!r1.h2h) r1.h2h = {};
+  // Pure read — never hydrate h2h on the caller's rikishi (this runs inside
+  // presenter/projection paths where the arg aliases live world state).
+  const h2hMap = r1.h2h ?? {};
 
-  const record = r1.h2h[r2.id];
+  const record = h2hMap[r2.id];
 
   // Case 0: First meeting
   if (!record || (record.wins === 0 && record.losses === 0)) {

@@ -60,8 +60,10 @@ function updateLeaderboard(
     // Update existing item in place
     const item = list[existingIndex];
     item.value = value;
-    item.achievedDate.year = year;
-    item.achievedDate.month = month;
+    if (item.achievedDate) {
+      item.achievedDate.year = year;
+      item.achievedDate.month = month;
+    }
 
     // Bubble up avoiding object swap allocation overhead
     let curr = existingIndex;

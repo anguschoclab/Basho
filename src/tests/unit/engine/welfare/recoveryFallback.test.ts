@@ -42,7 +42,8 @@ describe("welfare recovery fallback — falsy zero handling", () => {
       [],
       builder,
       mediaPressureChanges,
-      0
+      0,
+      []
     );
 
     // recovery=0: progressGain = clamp(round(4 + 0/30), 2, 12) = 4
@@ -69,7 +70,8 @@ describe("welfare recovery fallback — falsy zero handling", () => {
       [],
       builder,
       mediaPressureChanges,
-      0
+      0,
+      []
     );
 
     // recovery=50: progressGain = clamp(round(4 + 50/30), 2, 12) = clamp(6, 2, 12) = 6
@@ -95,7 +97,8 @@ describe("welfare recovery fallback — falsy zero handling", () => {
       [],
       builder,
       mediaPressureChanges,
-      0
+      0,
+      []
     );
 
     // facilities undefined → recovery ?? 50 → same as recovery=50 → progress=6
@@ -122,7 +125,8 @@ describe("welfare recovery fallback — falsy zero handling", () => {
       [],
       builder,
       mediaPressureChanges,
-      0
+      0,
+      []
     );
 
     // recovery=300: progressGain = clamp(round(4 + 300/30), 2, 12) = clamp(14, 2, 12) = 12

@@ -303,11 +303,11 @@ export function assignSparringPair(
     establishedWeek: currentWeek,
   };
 
-  // Update sparring state
-  const updatedSparringState: SparringState = currentSparringState || {
-    heyaId,
-    pairs: {},
-  };
+  // Update sparring state — clone the existing state (and its pairs map):
+  // reusing it would mutate the live world.sparringPairs entry in place.
+  const updatedSparringState: SparringState = currentSparringState
+    ? { ...currentSparringState, pairs: { ...currentSparringState.pairs } }
+    : { heyaId, pairs: {} };
 
   updatedSparringState.pairs[pairKey] = newPair;
 

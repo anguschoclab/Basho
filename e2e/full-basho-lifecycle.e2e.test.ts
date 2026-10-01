@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import type { AwardLogEntry } from "../src/engine/types/basho";
 import {
   advanceDays,
   advanceToBasho,
@@ -31,7 +32,7 @@ import {
 
 const WORLD_SEED = "e2e-basho-lifecycle-v1";
 
-function awardLogFor(awardLog: { year: number; bashoName: string }[] | undefined, year: number, bashoName: string): { year: number; bashoName: string }[] {
+function awardLogFor(awardLog: AwardLogEntry[] | undefined, year: number, bashoName: string): AwardLogEntry[] {
   return (awardLog ?? []).filter((e) => e.year === year && e.bashoName === bashoName);
 }
 
@@ -76,7 +77,7 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   }
 
   const last = world.history[world.history.length - 1];
-  const rikishiById: Record<string, { shikona: string; combatProfile?: { archetype: string } }> = world.rikishi ?? {};
+  const rikishiById = world.rikishi ?? {};
   const bashoKey = `${last.year}-${last.bashoNumber}`;
 
   // ── 5. Awards: engine output is fully recorded ────────────────────────
@@ -116,7 +117,7 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   if (last.boutOfTheBasho) {
     const botb = log.find((e) => e.type === "boutOfTheBasho");
     expect(botb, "awardLog records bout of the basho").toBeTruthy();
-    expect(botb.winnerId && rikishiById[botb.winnerId]).toBeTruthy();
+    expect(botb && rikishiById[botb.winnerId]).toBeTruthy();
   }
   if (last.keyBouts?.length) {
     for (const kb of last.keyBouts) {
@@ -156,7 +157,7 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
       }
     }
   }
-  for (const [division, div] of Object.entries(current.divisions) as [string, { assignments: { rikishiId: string }[] }][]) {
+  for (const [division, div] of Object.entries(current!.divisions)) {
     expect(div.assignments.length, `${division} has assignments`).toBeGreaterThan(0);
     for (const a of div.assignments) {
       assignmentCount++;

@@ -44,7 +44,11 @@ export function phase01_week_health(world: WorldState): StateImpact {
     const rikishi = getRikishi(world, id);
     if (!rikishi) continue;
 
-    const r = { ...rikishi };
+    const r: RikishiWithFatigue = { ...rikishi };
+    // tickRikishiRecovery mutates injuryStatus.weeksRemaining in place —
+    // clone the nested object so partial-tick writes don't leak into the
+    // input world.
+    if (r.injuryStatus) r.injuryStatus = { ...r.injuryStatus };
     let changed = false;
 
     if (r.injured) {
@@ -75,6 +79,9 @@ function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder):
   const recovered = tickRikishiRecovery(r, effectiveRecoveryMult);
 
   if (recovered) {
+    // Clear the stale injury record — tickRikishiRecovery resets flags but
+    // does not touch currentInjury.
+    r.currentInjury = undefined;
     builder.logEvent(
       "LIFECYCLE_EVENT",
       "injury",
@@ -111,6 +118,17 @@ function processInjuryRoll(
       weeksOut: result.weeksOut,
       weekOccurred: world.week ?? 0,
     };
+    // Welfare's serious-injury gates read injuryStatus.severity — without this
+    // write every phase-rolled injury was invisible to compliance pressure.
+    r.injuryStatus = {
+      type: result.type,
+      isInjured: true,
+      severity: result.severity,
+      location: result.area,
+      weeksRemaining: result.weeksOut,
+      weeksToHeal: result.weeksOut,
+    };
+    r.injury = r.injuryStatus;
 
     builder.logEvent(
       "LIFECYCLE_EVENT",

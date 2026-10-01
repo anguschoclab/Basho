@@ -12,7 +12,9 @@
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import type { WelfareState } from "../../types/economy";
+import type { MediaHeadline } from "../../types/media";
 import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
+import { resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import {
   calculateWeeklyWelfareDelta,
@@ -53,8 +55,11 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_welfare");
   const week = world.calendar?.currentWeek ?? 0;
 
-  // Collect media pressure changes to apply after loop
+  // Collect media pressure changes and generated headlines to apply after
+  // the loop in a single composed mediaState write (per-headline merges carry
+  // stale input snapshots and would drop all but the last).
   const mediaPressureChanges: Record<string, number> = {};
+  const collectedHeadlines: MediaHeadline[] = [];
 
   for (const [id, heya] of world.heyas) {
     const heyaUpdates: Partial<Heya> = {};
@@ -89,7 +94,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     nextState.morale = clamp(morale, 0, MAX_MORALE);
 
     // 2. Transition Logic (Inlined/Refactored for purity)
-    orchestrateTransitionsPure(world, heya, nextState, reasons, builder, mediaPressureChanges);
+    orchestrateTransitionsPure(world, heya, nextState, reasons, builder, mediaPressureChanges, collectedHeadlines);
 
     // 3. Risk indicator Update
     heyaUpdates.riskIndicators = {
@@ -121,10 +126,16 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     builder.updateHeya(id, heyaUpdates);
   }
 
-  // Injured encouragement: injured rikishi encourage active stablemates
+  // Injured encouragement: injured rikishi encourage active stablemates.
+  // Each provideEncouragement impact carries complete snapshots
+  // (encouragementLog, recipient motivation) derived from its input world —
+  // sequence them so later encouragements build on earlier ones instead of
+  // being silently dropped by last-wins merge.
   const bashoName = world.currentBasho?.bashoName ?? "off-season";
+  let encWorld = world;
+  const encImpacts: StateImpact[] = [];
   for (const [, heya] of world.heyas) {
-    const roster = getHeyaRoster(world, heya.id);
+    const roster = getHeyaRoster(encWorld, heya.id);
     // ⚡ Bolt: Single pass loop over roster replaces two array.filter() passes for performance
     const injured = [];
     const active = [];
@@ -140,31 +151,35 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     for (const from of injured) {
       for (const to of active) {
         if (!canEncourage(from, to)) continue;
-        const encImpact = provideEncouragement(world, from, to, bashoName);
-        builder.merge(encImpact);
+        const encImpact = provideEncouragement(encWorld, from, to, bashoName);
+        encImpacts.push(encImpact);
+        encWorld = resolveImpacts(encWorld, [encImpact]);
         break; // 1 encouragement per injured rikishi per week
       }
     }
   }
+  for (const encImpact of encImpacts) builder.merge(encImpact);
 
-  // Apply media pressure changes
-  if (Object.keys(mediaPressureChanges).length > 0) {
-    const nextMediaState = world.mediaState
-      ? {
-          ...world.mediaState,
-          heyaPressure: { ...world.mediaState.heyaPressure } as Record<string, number>,
-        }
-      : undefined;
-    if (nextMediaState) {
+  // Compose mediaState once: collected headlines + accumulated pressure
+  // deltas on the input base. A pressure-only write would drop the headlines
+  // merged by the transition handlers above (they carry input-world
+  // snapshots), so they must be composed here.
+  if (collectedHeadlines.length > 0 || Object.keys(mediaPressureChanges).length > 0) {
+    const base = world.mediaState;
+    if (base) {
+      const heyaPressure = { ...(base.heyaPressure ?? {}) } as Record<string, number>;
       for (const heyaId in mediaPressureChanges) {
         if (!Object.prototype.hasOwnProperty.call(mediaPressureChanges, heyaId)) continue;
-        const delta = mediaPressureChanges[heyaId];
-        nextMediaState.heyaPressure[heyaId] = Math.min(
+        heyaPressure[heyaId] = Math.min(
           MAX_MEDIA_PRESSURE,
-          (nextMediaState.heyaPressure[heyaId] ?? 0) + delta
+          (heyaPressure[heyaId] ?? 0) + mediaPressureChanges[heyaId]
         );
       }
-      builder.updateWorldField("mediaState", nextMediaState);
+      builder.updateWorldField("mediaState", {
+        ...base,
+        headlines: [...(base.headlines ?? []), ...collectedHeadlines],
+        heyaPressure,
+      });
     }
   }
 
@@ -177,7 +192,8 @@ function orchestrateTransitionsPure(
   state: WelfareState,
   reasons: string[],
   builder: ImpactBuilder,
-  mediaPressureChanges: Record<string, number>
+  mediaPressureChanges: Record<string, number>,
+  collectedHeadlines: MediaHeadline[]
 ): void {
   const { seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
   const hasNegligence = negligenceCount > 0;
@@ -193,12 +209,13 @@ function orchestrateTransitionsPure(
         builder,
         mediaPressureChanges,
         hasNegligence,
-        seriousCount
+        seriousCount,
+        collectedHeadlines
       );
       break;
 
     case "watch":
-      handleWatchTransition(world, heya, state, reasons, builder, mediaPressureChanges, week);
+      handleWatchTransition(world, heya, state, reasons, builder, mediaPressureChanges, week, collectedHeadlines);
       break;
 
     case "investigation":
@@ -209,7 +226,8 @@ function orchestrateTransitionsPure(
         reasons,
         builder,
         mediaPressureChanges,
-        seriousCount
+        seriousCount,
+        collectedHeadlines
       );
       break;
 

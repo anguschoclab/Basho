@@ -210,6 +210,17 @@ export function tickWeekInjury(world: WorldState): StateImpact {
         injuryWeeksRemaining: result.weeksOut,
       });
 
+      // Welfare compliance reads injuryStatus.severity for serious-injury
+      // counts — producers must write it alongside currentInjury.
+      builder.updateRikishiNestedField(rikishi.id, "injuryStatus", {
+        type: result.type,
+        isInjured: true,
+        severity: result.severity,
+        location: result.area,
+        weeksRemaining: result.weeksOut,
+        weeksToHeal: result.weeksOut,
+      });
+
       builder.updateRikishiNestedField(rikishi.id, "currentInjury", {
         id: seededRng.uuid("IJ"),
         severity: result.severity,
@@ -272,15 +283,27 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
     const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
     const recoveryMultiplier = world.transientContext?.activeModifiers?.recoveryMultiplier ?? 1.0;
     const effectiveRecoveryMult = staffBonuses.medical * recoveryMultiplier;
-    const recovered = tickRikishiRecovery(rikishi, effectiveRecoveryMult);
+    // tickRikishiRecovery mutates its argument — operate on a clone so the
+    // input world is untouched, then persist ALL post-tick fields (including
+    // partial-recovery weeksRemaining, which previously survived only via the
+    // leaked mutation).
+    const working: Rikishi = {
+      ...rikishi,
+      injuryStatus: rikishi.injuryStatus ? { ...rikishi.injuryStatus } : rikishi.injuryStatus,
+    };
+    const recovered = tickRikishiRecovery(working, effectiveRecoveryMult);
+
+    builder.updateRikishi(rikishi.id, {
+      injured: working.injured,
+      injuryWeeksRemaining: working.injuryWeeksRemaining,
+      injuryStatus: working.injuryStatus,
+      injury: working.injury,
+      isKyujo: working.isKyujo,
+      kyujoReason: working.kyujoReason,
+      recentlyReturnedFromInjury: working.recentlyReturnedFromInjury,
+    });
 
     if (recovered) {
-      builder.updateRikishi(rikishi.id, {
-        injured: false,
-        injuryWeeksRemaining: 0,
-        recentlyReturnedFromInjury: true,
-      });
-
       builder.updateRikishiNestedField(rikishi.id, "currentInjury", undefined);
 
       builder.logEvent(
@@ -367,6 +390,15 @@ export function onBoutResolvedInjury(
       injuryWeeksRemaining,
     });
 
+    builder.updateRikishiNestedField(loser.id, "injuryStatus", {
+      type: "inflammation",
+      isInjured: true,
+      severity: "minor",
+      location: "other",
+      weeksRemaining: injuryWeeksRemaining,
+      weeksToHeal: injuryWeeksRemaining,
+    });
+
     builder.updateRikishiNestedField(loser.id, "currentInjury", {
       id: rngSeed.uuid("IJ"),
       severity: "minor",
@@ -412,6 +444,15 @@ export function onBoutResolvedInjury(
       builder.updateRikishi(winner.id, {
         injured: true,
         injuryWeeksRemaining: winnerWeeksRemaining,
+      });
+
+      builder.updateRikishiNestedField(winner.id, "injuryStatus", {
+        type: "inflammation",
+        isInjured: true,
+        severity: "minor",
+        location: "other",
+        weeksRemaining: winnerWeeksRemaining,
+        weeksToHeal: winnerWeeksRemaining,
       });
 
       builder.updateRikishiNestedField(winner.id, "currentInjury", {

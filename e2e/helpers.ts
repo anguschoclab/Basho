@@ -1,5 +1,8 @@
 import { expect, type Page } from "@playwright/test";
 import LZString from "lz-string";
+import type { AwardLogEntry, BashoResult } from "../src/engine/types/basho";
+import type { BanzukeSnapshot } from "../src/engine/types/banzuke";
+import type { Rikishi } from "../src/engine/types/rikishi";
 
 /**
  * Shared Playwright helpers for full-stack lifecycle E2E specs.
@@ -41,11 +44,12 @@ export interface SerializedWorld {
   currentBasho?:
     | ({ day?: number; currentDay?: number; bashoName?: string; year?: number; matches?: unknown[] } & Record<string, unknown>)
     | null;
-  currentBanzuke?: Record<string, unknown> | null;
-  history?: Array<Record<string, unknown>>;
-  awardLog?: Array<Record<string, unknown>>;
-  historyIndex?: { banzukeByBasho?: Record<string, Record<string, unknown>> } & Record<string, unknown>;
-  rikishi?: Record<string, Record<string, unknown>>;
+  currentBanzuke?: BanzukeSnapshot | null;
+  history: BashoResult[];
+  awardLog?: AwardLogEntry[];
+  historyIndex?: { banzukeByBasho?: Record<string, BanzukeSnapshot> } & Record<string, unknown>;
+  rikishi?: Record<string, Rikishi>;
+  historicalRikishi?: Record<string, unknown>;
   events?: { log?: Array<Record<string, unknown>> };
   yokozunaVacancyStreak?: number;
   meta?: Record<string, unknown>;
@@ -60,11 +64,11 @@ export interface SerializedSave {
 
 /** Cheap metadata projection of the live world — see readLiveWorldMeta. */
 export interface LiveWorldMeta {
-  seed: string;
-  dayIndexGlobal: number;
-  cyclePhase: string;
-  week: number;
-  year: number;
+  seed?: string;
+  dayIndexGlobal?: number;
+  cyclePhase?: string;
+  week?: number;
+  year?: number;
   calendar: { month?: number; currentDay?: number; currentWeek?: number } | null;
   playerHeyaId?: string;
   pendingCrisis: { id?: string } | null;

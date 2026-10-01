@@ -33,7 +33,9 @@ export function tickRikishiRecovery(rikishi: Rikishi, recoveryMult: number = 1.0
   if (rikishi.injuryWeeksRemaining <= 0) {
     rikishi.injured = false;
     rikishi.injuryStatus = { type: "none", severity: "none", weeksRemaining: 0 };
-    rikishi.injury = rikishi.injuryStatus;
+    // Clear the legacy alias — a truthy "none" object is read as injured by
+    // projections that use `!!r.injury` / `r.injury != null`.
+    rikishi.injury = undefined;
     rikishi.isKyujo = false;
     rikishi.kyujoReason = undefined;
     rikishi.recentlyReturnedFromInjury = true;

@@ -206,7 +206,7 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
   if (!world.myosekiMarket) return builder.build();
 
   const market = world.myosekiMarket;
-  const rng = rngForWorld(world, "myoseki", "tick");
+  const rng = rngForWorld(world, "myoseki", `tick_${world.year ?? 0}_${world.week ?? 0}`);
 
   // Only run major logic during specific phases to save CPU? No, run weekly.
   // Build map of oyakataId to heya for faster lookup
@@ -283,7 +283,11 @@ function getMyosekiTransaction(
   toId: string,
   amount: number
 ): MyosekiTransaction {
-  const rng = rngForWorld(world, "market", "tx");
+  const rng = rngForWorld(
+    world,
+    "market",
+    `tx_${myosekiId}_${type}_${fromId}_${toId}_${world.year ?? 0}_${world.week ?? 0}_${amount}`
+  );
   return {
     id: rng.uuid("MT"),
     date: `${world.year}-W${world.week}`,

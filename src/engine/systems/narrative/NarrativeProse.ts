@@ -41,7 +41,11 @@ const STAT_ALIAS: Record<string, string> = {
 export function getStatProse(rng: SeededRNG, attribute: string, band: StatBand): string {
   const key = attribute.toLowerCase();
   const path = STAT_ALIAS[key] ?? key;
-  return BardEngine.resolve(rng, `rikishi.stats.${path}.${band}`).text;
+  const { text } = BardEngine.resolve(rng, `rikishi.stats.${path}.${band}`);
+  // rikishi.stats only ships power/speed/balance/technique — scouting asks for
+  // aggression, experience, *-potential, *-ceiling, which resolve to "" and
+  // rendered as blank labels. Fall back to the generic band label.
+  return text || getStatLabel(rng, band);
 }
 
 // === Fatigue Labels ===
@@ -79,8 +83,21 @@ export function getRivalryHeatLabel(rng: SeededRNG, band: RivalryHeatBand): stri
 }
 
 // === Scandal Labels ===
+// ScandalBand (clean|whispers|scrutiny|scandal|crisis) vs system.json keys
+// (none|whispers|notable|severe|critical) — map or every non-"whispers" band
+// resolves to "".
+const SCANDAL_BAND_KEY: Record<ScandalBand, string> = {
+  clean: "none",
+  whispers: "whispers",
+  scrutiny: "notable",
+  scandal: "severe",
+  crisis: "critical",
+};
 export function getScandalLabel(rng: SeededRNG, band: ScandalBand): string {
-  return BardEngine.resolve(rng, `system.descriptors.bands.scandal.${band}`).text;
+  return BardEngine.resolve(
+    rng,
+    `system.descriptors.bands.scandal.${SCANDAL_BAND_KEY[band] ?? band}`
+  ).text;
 }
 
 // === Prize Labels ===
@@ -94,12 +111,21 @@ export function getTraitLabel(rng: SeededRNG, band: TraitBand): string {
 }
 
 // === Archetype Info ===
+// CombatArchetype ids are lowercase; the domain keys are display names.
+const ARCHETYPE_KEY: Record<string, string> = {
+  defensive: "Defensive_Stalwart",
+  speedster: "Explosive_Blitzer",
+  trickster: "Acrobatic_Trickster",
+  giant: "Immovable_Mountain",
+  hybrid: "All_Rounder",
+};
 export function getArchetypeInfo(
   rng: SeededRNG,
   archetype: CombatArchetype
 ): { label: string; description: string } {
-  const label = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.label`).text;
-  const description = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.description`).text;
+  const key = ARCHETYPE_KEY[archetype] ?? "All_Rounder";
+  const label = BardEngine.resolve(rng, `rikishi.archetypes.${key}.label`).text;
+  const description = BardEngine.resolve(rng, `rikishi.archetypes.${key}.description`).text;
 
   return { label, description };
 }

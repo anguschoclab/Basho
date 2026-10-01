@@ -40,11 +40,14 @@ describe("applyNPCDecision", () => {
   it("removes managed ids from existing focus slots but keeps others", () => {
     const world = makeMockWorld();
     world.trainingState = new Map();
-    const state = TrainingService.ensureHeyaTrainingState(world, "h1");
-    state.focusSlots = [
-      { rikishiId: "r1", focusType: "develop" },
-      { rikishiId: "r_keep", focusType: "push" },
-    ];
+    // ensureHeyaTrainingState is pure — write the seeded state into the Map.
+    world.trainingState.set("h1", {
+      ...TrainingService.ensureHeyaTrainingState(world, "h1"),
+      focusSlots: [
+        { rikishiId: "r1", focusType: "develop" },
+        { rikishiId: "r_keep", focusType: "push" },
+      ],
+    });
 
     const decision: NPCWeeklyDecision = {
       heyaId: "h1",

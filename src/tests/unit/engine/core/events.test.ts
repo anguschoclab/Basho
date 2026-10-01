@@ -333,6 +333,9 @@ describe("events.test.ts - Helpers & Cleanup", () => {
     it("trims old minor events but keeps recent, headline, or career/basho ones", () => {
       const world = MockFactory.createWorld();
       world.year = 2025;
+      // Event aging uses the monotonic calendar.currentWeek — ev.week stores
+      // the monotonic week an event was logged at, not week-of-year.
+      world.calendar = { currentWeek: 260, month: 1 } as any;
       ensureEventsState(world);
       const events = world.events;
 
@@ -400,7 +403,7 @@ describe("events.test.ts - Helpers & Cleanup", () => {
         category: "training",
         importance: "minor",
         year: 2025,
-        week: 1,
+        week: 259,
         month: 1,
         phase: "weekly",
         scope: "world",

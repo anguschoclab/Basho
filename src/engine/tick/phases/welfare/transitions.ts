@@ -10,6 +10,7 @@ import type { Heya } from "../../../types/heya";
 import type { WelfareState, ComplianceState } from "../../../types/economy";
 import type { ImpactBuilder } from "../../../core/ImpactBuilder";
 import { generateGovernanceHeadline } from "../../../systems/media/MediaService";
+import type { MediaHeadline } from "../../../types/media";
 import { clamp } from "../../../utils/math";
 import {
   WATCH_THRESHOLD_WITH_NEGLECT,
@@ -45,18 +46,26 @@ function applyGovernanceHeadlineAndPressure(
   heyaId: string,
   builder: ImpactBuilder,
   mediaPressureChanges: Record<string, number>,
-  pressureAmount: number
+  pressureAmount: number,
+  collectedHeadlines: MediaHeadline[]
 ): void {
-  // The headline returns a StateImpact — it must be merged or the generated
-  // headline evaporates (welfare headlines never surfaced previously).
-  builder.merge(
-    generateGovernanceHeadline({
-      world,
-      heyaId,
-      templatePath: "institutional.governance.welfare_headline",
-      severity: "national",
-    })
-  );
+  // The headline returns a StateImpact — merge it for the logged event, and
+  // also collect the appended MediaHeadline: each impact's mediaState is a
+  // complete snapshot of the INPUT world's headlines, so a later
+  // updateWorldField("mediaState", …) — or a second headline's merge — would
+  // silently drop it. The phase composes all collected headlines + pressure
+  // deltas into one final mediaState write.
+  const impact = generateGovernanceHeadline({
+    world,
+    heyaId,
+    templatePath: "institutional.governance.welfare_headline",
+    severity: "national",
+  });
+  const headlines = impact.worldFields?.mediaState?.headlines;
+  if (headlines && headlines.length > 0) {
+    collectedHeadlines.push(headlines[headlines.length - 1]);
+  }
+  builder.merge(impact);
   mediaPressureChanges[heyaId] = (mediaPressureChanges[heyaId] ?? 0) + pressureAmount;
 }
 
@@ -68,7 +77,8 @@ export function handleCompliantTransition(
   builder: ImpactBuilder,
   mediaPressureChanges: Record<string, number>,
   hasNegligence: boolean,
-  seriousCount: number
+  seriousCount: number,
+  collectedHeadlines: MediaHeadline[]
 ): void {
   const watchThreshold = hasNegligence
     ? WATCH_THRESHOLD_WITH_NEGLECT
@@ -91,7 +101,7 @@ export function handleCompliantTransition(
       { heyaId: heya.id, importance: "notable" }
     );
 
-    applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_WATCH);
+    applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_WATCH, collectedHeadlines);
   }
 }
 
@@ -102,7 +112,8 @@ export function handleWatchTransition(
   reasons: string[],
   builder: ImpactBuilder,
   mediaPressureChanges: Record<string, number>,
-  week: number
+  week: number,
+  collectedHeadlines: MediaHeadline[]
 ): void {
   if (
     state.welfareRisk >= INVESTIGATION_RISK_THRESHOLD &&
@@ -136,7 +147,8 @@ export function handleWatchTransition(
       heya.id,
       builder,
       mediaPressureChanges,
-      MEDIA_PRESSURE_INVESTIGATION
+      MEDIA_PRESSURE_INVESTIGATION,
+      collectedHeadlines
     );
   } else if (
     state.welfareRisk <= CLEAR_RISK_THRESHOLD &&
@@ -163,7 +175,8 @@ export function handleInvestigationTransition(
   _reasons: string[],
   builder: ImpactBuilder,
   mediaPressureChanges: Record<string, number>,
-  seriousCount: number
+  seriousCount: number,
+  collectedHeadlines: MediaHeadline[]
 ): void {
   if (!state.investigation) {
     state.investigation = {
@@ -178,13 +191,19 @@ export function handleInvestigationTransition(
     PROGRESS_GAIN_MIN,
     PROGRESS_GAIN_MAX
   );
-  state.investigation.progress = clamp((state.investigation.progress ?? 0) + progressGain, 0, 100);
+  // Clone the nested object — `state` is the phase's shallow copy, so
+  // state.investigation still aliases the live heya.welfareState.investigation
+  // (same hazard handled for `sanctions` below).
+  state.investigation = {
+    ...state.investigation,
+    progress: clamp((state.investigation.progress ?? 0) + progressGain, 0, 100),
+  };
 
   if (
     state.welfareRisk >= SANCTION_RISK_THRESHOLD ||
     (seriousCount >= SANCTION_SERIOUS_COUNT && state.welfareRisk >= SANCTION_RISK_WITH_SERIOUS)
   ) {
-    transitionToSanctioned(world, heya, state, builder, mediaPressureChanges);
+    transitionToSanctioned(world, heya, state, builder, mediaPressureChanges, collectedHeadlines);
   } else if (
     state.investigation.progress >= INVESTIGATION_COMPLETE_PROGRESS &&
     state.welfareRisk <= INVESTIGATION_CLOSE_RISK_THRESHOLD
@@ -209,7 +228,8 @@ export function transitionToSanctioned(
   heya: Heya,
   state: WelfareState,
   builder: ImpactBuilder,
-  mediaPressureChanges: Record<string, number>
+  mediaPressureChanges: Record<string, number>,
+  collectedHeadlines: MediaHeadline[]
 ): void {
   setComplianceStatePure(state, "sanctioned");
   const fineYen = SANCTION_FINE_YEN;
@@ -234,7 +254,7 @@ export function transitionToSanctioned(
     { heyaId: heya.id, importance: "notable" }
   );
 
-  applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_SANCTION);
+  applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_SANCTION, collectedHeadlines);
 }
 
 export function handleSanctionedTransition(

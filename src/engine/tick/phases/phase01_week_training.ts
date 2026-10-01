@@ -23,7 +23,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
-import { mergeImpacts } from "../../core/ImpactResolver";
+import { mergeImpacts, resolveImpacts, sequenceImpacts } from "../../core/ImpactResolver";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { TrainingService } from "../../systems/training/TrainingService";
 import { BloodlineService } from "../../systems/legacy/BloodlineService";
@@ -64,14 +64,20 @@ import { getRikishi } from "../../queries";
  * ```
  */
 export function phase01_week_training(world: WorldState): StateImpact {
-  const trainingImpact = TrainingService.applyWeeklyTraining(world);
-  const heritageImpact = BloodlineService.applyHeritageBonus(world);
-  const mentorshipImpact = applyMentorshipBonuses(world);
-  const sparringImpact = applyWeeklySparring(world);
+  // Sequence subsystem computations against a progressively-resolved world:
+  // each writes complete `stats`/`fatigue` snapshots derived from its input,
+  // so a flat merge would let the last writer's stale values discard earlier
+  // gains (e.g. a mentored rikishi losing the whole week's training stats).
+  const { impacts: groupImpacts, world: w0 } = sequenceImpacts(world, [
+    (w) => TrainingService.applyWeeklyTraining(w),
+    (w) => BloodlineService.applyHeritageBonus(w),
+    (w) => applyMentorshipBonuses(w),
+    (w) => applyWeeklySparring(w),
+  ]);
 
-  // Tsukebito / ototodeshi system
+  // Tsukebito / ototodeshi system (computed on the post-sparring world)
   const tsukebitoImpacts: StateImpact[] = [];
-  const activeRikishi = EntityCollection.getActiveRikishi(world);
+  const activeRikishi = EntityCollection.getActiveRikishi(w0);
   const rikishiByHeya = new Map<string, typeof activeRikishi>();
   for (const r of activeRikishi) {
     const list = rikishiByHeya.get(r.heyaId) ?? [];
@@ -86,13 +92,13 @@ export function phase01_week_training(world: WorldState): StateImpact {
       if (r.tsukebitoIds && r.tsukebitoIds.length > 0) {
         const tsukebitoRikishi = [];
         for (const id of r.tsukebitoIds) {
-          const rikishi = getRikishi(world, id);
+          const rikishi = getRikishi(w0, id);
           if (rikishi) tsukebitoRikishi.push(rikishi);
         }
         if (tsukebitoRikishi.length > 0) {
           tsukebitoImpacts.push(
             applyWeeklyTsukebitoBenefits(
-              world,
+              w0,
               { seniorId: r.id, tsukebitoIds: r.tsukebitoIds },
               r,
               tsukebitoRikishi
@@ -106,13 +112,13 @@ export function phase01_week_training(world: WorldState): StateImpact {
     if (r.tsukebitoIds && r.tsukebitoIds.length > 0) {
       const tsukebitoRikishi = [];
       for (const id of r.tsukebitoIds) {
-        const rikishi = getRikishi(world, id);
+        const rikishi = getRikishi(w0, id);
         if (rikishi) tsukebitoRikishi.push(rikishi);
       }
       if (tsukebitoRikishi.length > 0) {
         tsukebitoImpacts.push(
           applyWeeklyTsukebitoBenefits(
-            world,
+            w0,
             { seniorId: r.id, tsukebitoIds: r.tsukebitoIds },
             r,
             tsukebitoRikishi
@@ -122,7 +128,7 @@ export function phase01_week_training(world: WorldState): StateImpact {
       }
     }
     const heyaMates = rikishiByHeya.get(r.heyaId) ?? [];
-    const assignment = assignTsukebito(world, r, heyaMates);
+    const assignment = assignTsukebito(w0, r, heyaMates);
     if (assignment.tsukebitoIds.length === 0) continue;
     // Persist the assignment on the senior rikishi
     tsukebitoImpacts.push(
@@ -134,28 +140,25 @@ export function phase01_week_training(world: WorldState): StateImpact {
     );
     const tsukebitoRikishi = [];
     for (const id of assignment.tsukebitoIds) {
-      const rikishi = getRikishi(world, id);
+      const rikishi = getRikishi(w0, id);
       if (rikishi) tsukebitoRikishi.push(rikishi);
     }
-    tsukebitoImpacts.push(applyWeeklyTsukebitoBenefits(world, assignment, r, tsukebitoRikishi));
+    tsukebitoImpacts.push(applyWeeklyTsukebitoBenefits(w0, assignment, r, tsukebitoRikishi));
   }
   for (const [heyaId, heyaRikishi] of rikishiByHeya) {
-    tsukebitoImpacts.push(applyWeeklyOtotodeshiEffects(world, heyaId, heyaRikishi));
+    tsukebitoImpacts.push(applyWeeklyOtotodeshiEffects(w0, heyaId, heyaRikishi));
   }
 
-  // Weight journey tick — process all active rikishi
+  // Weight journey tick — process all active rikishi on the world after
+  // tsukebito effects so its stats snapshot composes with theirs.
+  const wAfterTsukebito = tsukebitoImpacts.length
+    ? resolveImpacts(w0, tsukebitoImpacts)
+    : w0;
   const weightJourneyImpacts: StateImpact[] = [];
-  for (const rikishi of activeRikishi) {
-    const heya = EntityCollection.getHeya(world, rikishi.heyaId);
-    weightJourneyImpacts.push(applyWeightJourneyTick(rikishi, heya, world));
+  for (const rikishi of EntityCollection.getActiveRikishi(wAfterTsukebito)) {
+    const heya = EntityCollection.getHeya(wAfterTsukebito, rikishi.heyaId);
+    weightJourneyImpacts.push(applyWeightJourneyTick(rikishi, heya, wAfterTsukebito));
   }
 
-  return mergeImpacts([
-    trainingImpact,
-    heritageImpact,
-    mentorshipImpact,
-    sparringImpact,
-    ...tsukebitoImpacts,
-    ...weightJourneyImpacts,
-  ]);
+  return mergeImpacts([...groupImpacts, ...tsukebitoImpacts, ...weightJourneyImpacts]);
 }

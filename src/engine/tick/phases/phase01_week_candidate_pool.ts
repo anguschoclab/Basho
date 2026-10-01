@@ -16,6 +16,7 @@
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { resolveImpacts } from "../../core/ImpactResolver";
 import {
   simulateNPCInterest,
   tickWeekCandidatePool,
@@ -26,8 +27,14 @@ export function phase01_week_candidate_pool(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_candidate_pool");
   // Ensure the pool exists, then simulate NPC interest + run weekly maintenance.
   // Both return StateImpacts — merge them or the NPC-interest writes evaporate.
+  // Sequencing matters: tickWeekCandidatePool writes a complete candidatePool
+  // snapshot derived from its input world. If it ran on the pre-interest world
+  // and merged last, it would erase every suitor simulateNPCInterest added.
   ensureCandidatePoolState(world);
-  builder.merge(simulateNPCInterest(world));
-  builder.merge(tickWeekCandidatePool(world));
+  const interestImpact = simulateNPCInterest(world);
+  const withInterest = resolveImpacts(world, [interestImpact]);
+  const tickImpact = tickWeekCandidatePool(withInterest);
+  builder.merge(interestImpact);
+  builder.merge(tickImpact);
   return builder.build();
 }

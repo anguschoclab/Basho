@@ -16,7 +16,6 @@ import type { Id } from "../../types/common";
 import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
 import type { Rikishi, RikishiStats } from "../../types/rikishi";
 import { EntityCollection } from "../../core/EntityCollection";
-import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { STAT_GROUP } from "../../../constants/engine/development";
 import type { StateImpact } from "../../core/StateImpact";
@@ -82,9 +81,9 @@ export function createDefaultTrainingState(heyaId: Id): HeyaTrainingState {
  * ```
  */
 export function ensureHeyaTrainingState(world: WorldState, heyaId: Id): HeyaTrainingState {
-  const state = EntityService.ensureNestedState(world, "trainingState" as const, heyaId, () =>
-    createDefaultTrainingState(heyaId)
-  );
+  // Pure hydration — never writes into world.trainingState; a missing entry
+  // resolves to the same default on every read, so persistence is moot.
+  const state = world.trainingState?.get(heyaId) ?? createDefaultTrainingState(heyaId);
   // Backfill any missing fields. Nested-field updates (e.g. a loop decision writing
   // `activeProfile.intensity`) can persist a PARTIAL trainingState onto a heya that had
   // none, leaving `activeProfile` without `focus`/`styleBias`/`recovery` — which then

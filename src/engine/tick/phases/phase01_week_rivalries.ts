@@ -16,7 +16,6 @@ import { type RivalryPairState } from "../../../constants/engine/rivalry";
 import { deriveTone } from "../../systems/narrative/RivalryHeatService";
 import { clamp } from "../../utils/math";
 import {
-  WEEKS_PER_YEAR,
   MAX_EVENT_AGE_WEEKS,
   RIVALRY_DECAY_THRESHOLDS,
   RIVALRY_DECAY_RATES,
@@ -28,7 +27,6 @@ import {
   MAX_RIVALRY_CLOSENESS,
   MAX_RIVALRY_SPITE,
 } from "../../../constants/engine/bout";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 
 export function phase01_week_rivalries(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_rivalries");
@@ -80,11 +78,11 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
   // 2. Event Log Trimming
   if (world.events) {
     const eventsState = { ...world.events };
-    const currentYear = world.year ?? DEFAULT_START_YEAR;
+    // ev.week already stores the monotonic calendar.currentWeek — the old
+    // `year * 52 + week` formula mixed calendar year with a never-resetting
+    // week counter and double-counted, trimming events ~2x too early.
     const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
-    const currentTotalWeeks = currentYear * WEEKS_PER_YEAR + currentWeek;
-
-    const targetWeeks = currentTotalWeeks - MAX_EVENT_AGE_WEEKS;
+    const targetWeeks = currentWeek - MAX_EVENT_AGE_WEEKS;
     const log = eventsState.log;
 
     // Find first recent event
@@ -95,7 +93,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
     while (left <= right) {
       const mid = (left + right) >> 1;
       const ev = log[mid];
-      const evTotalWeeks = ev.year * WEEKS_PER_YEAR + ev.week;
+      const evTotalWeeks = ev.week;
 
       if (evTotalWeeks >= targetWeeks) {
         firstRecentIndex = mid;

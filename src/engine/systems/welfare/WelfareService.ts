@@ -9,7 +9,6 @@
 
 import type { Heya } from "../../types/heya";
 import type { WelfareState } from "../../types/economy";
-import { EntityService } from "../../core/EntityService";
 import { DEFAULT_WELFARE_RISK } from "../../../constants/engine/welfareTransitions";
 import { DEFAULT_MORALE } from "../../../constants/engine/welfare";
 
@@ -20,19 +19,24 @@ import { DEFAULT_MORALE } from "../../../constants/engine/welfare";
  * @param heya - The heya to check/initialize
  * @returns The current or new WelfareState
  */
+export function createHeyaWelfareState(): WelfareState {
+  return {
+    welfareRisk: DEFAULT_WELFARE_RISK,
+    complianceState: "compliant",
+    weeksInState: 0,
+    lastReviewedWeek: 0,
+    activeDiet: "maintenance",
+    morale: DEFAULT_MORALE,
+  };
+}
+
+/**
+ * Pure accessor — returns the heya's welfare state or a fresh default WITHOUT
+ * assigning it to the input entity. Callers that need the state persisted must
+ * write it via updateHeya (the weekly phase does through heyaUpdates).
+ */
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
-  return EntityService.ensureState(
-    heya,
-    "welfareState",
-    (): WelfareState => ({
-      welfareRisk: DEFAULT_WELFARE_RISK,
-      complianceState: "compliant",
-      weeksInState: 0,
-      lastReviewedWeek: 0,
-      activeDiet: "maintenance",
-      morale: DEFAULT_MORALE,
-    })
-  );
+  return heya.welfareState ?? createHeyaWelfareState();
 }
 
 export const WelfareService = {

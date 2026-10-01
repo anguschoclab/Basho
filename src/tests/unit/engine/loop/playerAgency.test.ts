@@ -82,9 +82,14 @@ describe("Player Agency Integration", () => {
       };
 
       // Scenario 1: Low Intensity
+      // ensureHeyaTrainingState is pure — persist the profile into the
+      // world's trainingState Map explicitly.
       const worldLow = { ...world };
-      const heyaStateLow = ensureHeyaTrainingState(worldLow, east.heyaId);
-      heyaStateLow.activeProfile = lowIntensityProfile;
+      worldLow.trainingState = new Map(worldLow.trainingState ?? []);
+      worldLow.trainingState.set(east.heyaId, {
+        ...ensureHeyaTrainingState(worldLow, east.heyaId),
+        activeProfile: lowIntensityProfile,
+      });
 
       const impactLow = phase01_week_training(worldLow);
       const worldLowAfter = resolveImpacts(worldLow, [impactLow]);
@@ -92,8 +97,11 @@ describe("Player Agency Integration", () => {
 
       // Scenario 2: High Intensity
       const worldHigh = { ...world };
-      const heyaStateHigh = ensureHeyaTrainingState(worldHigh, east.heyaId);
-      heyaStateHigh.activeProfile = highIntensityProfile;
+      worldHigh.trainingState = new Map(worldHigh.trainingState ?? []);
+      worldHigh.trainingState.set(east.heyaId, {
+        ...ensureHeyaTrainingState(worldHigh, east.heyaId),
+        activeProfile: highIntensityProfile,
+      });
 
       const impactHigh = phase01_week_training(worldHigh);
       const worldHighAfter = resolveImpacts(worldHigh, [impactHigh]);
