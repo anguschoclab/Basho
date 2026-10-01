@@ -98,8 +98,28 @@ describe("worker write path — player actions survive the next tick", () => {
       type: "APPLY_PRESS_CONFERENCE",
       heyaId: "heya-p",
       reputationDelta: 12,
+      moraleDelta: 0,
+      mediaHeatDelta: 0,
     });
     expect(w.heyas.get("heya-p")?.reputation).toBe(62);
+  });
+
+  it("APPLY_PRESS_CONFERENCE persists morale and mediaHeat deltas", async () => {
+    const w = await runThenTick(
+      {
+        type: "APPLY_PRESS_CONFERENCE",
+        heyaId: "heya-p",
+        reputationDelta: 0,
+        moraleDelta: 7,
+        mediaHeatDelta: 15,
+      },
+      (world) => {
+        world.mediaState = { mediaHeat: { "heya-p": 5 } } as never;
+      }
+    );
+    // Fixture heya has no welfareState.morale → base 50 + 7
+    expect(w.heyas.get("heya-p")?.welfareState?.morale).toBe(57);
+    expect(w.mediaState?.mediaHeat?.["heya-p"]).toBe(20);
   });
 
   it("APPLY_PRESS_CONFERENCE clamps reputation to 0..100", async () => {
@@ -107,6 +127,8 @@ describe("worker write path — player actions survive the next tick", () => {
       type: "APPLY_PRESS_CONFERENCE",
       heyaId: "heya-p",
       reputationDelta: 999,
+      moraleDelta: 0,
+      mediaHeatDelta: 0,
     });
     expect(w.heyas.get("heya-p")?.reputation).toBe(100);
   });

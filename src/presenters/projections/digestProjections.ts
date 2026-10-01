@@ -76,13 +76,19 @@ export function labelForWorld(world: WorldState): string {
  */
 export function buildInjurySection(world: WorldState): DigestSection | null {
   const injuryItems: DigestItem[] = selectInjuredRikishi(world).map((r) => {
-    const injury = r.injury;
+    // r.injury is only maintained by the weekly roll path — bout-sustained
+    // injuries live on injuryStatus/currentInjury.
+    const injury = r.injuryStatus ?? r.injury ?? r.currentInjury;
     return {
       id: `injury::${r.id}`,
       kind: "injury",
       title: `${r.shikona ?? r.name ?? r.id} injured`,
       detail: injury
-        ? `${injury.severity ?? "unknown"} — ${injury.weeksRemaining ?? 0}w remaining`
+        ? `${injury.severity ?? "unknown"} — ${
+            "weeksRemaining" in injury
+              ? (injury.weeksRemaining ?? 0)
+              : (r.injuryWeeksRemaining ?? 0)
+          }w remaining`
         : "Unknown injury",
       rikishiId: r.id,
     };

@@ -25,9 +25,12 @@ export function useFinancesData() {
   const history = useMemo(() => {
     const base = heya?.funds ?? 0;
     const net = (finances?.revenue ?? 0) - (finances?.expenses ?? 0);
+    // No ledger records past balances — only the current value is real.
+    // Prior weeks are backcast from the current net, so mark them projected
+    // rather than presenting synthetic history as recorded fact.
     const points = [];
     for (let i = 7; i >= 1; i--) {
-      points.push({ name: `W-${i}`, value: Math.max(0, base - net * i), projected: false });
+      points.push({ name: `W-${i}`, value: Math.max(0, base - net * i), projected: true });
     }
     points.push({ name: "Now", value: base, projected: false });
     points.push({ name: "W+1", value: Math.max(0, base + net), projected: true });

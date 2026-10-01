@@ -3,7 +3,12 @@ import type { UIDigest } from "../../presenters/uiDigest";
 
 /** UI -> Worker Commands */
 export type EngineCommand =
-  | { type: "START_WORLD"; seed: string; playerHeyaId?: string }
+  | {
+      type: "START_WORLD";
+      seed: string;
+      playerHeyaId?: string;
+      oyakataConfig?: import("../types/oyakata").OyakataCreationConfig;
+    }
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "TICK_DAY" }
   | { type: "TICK_MULTIPLE_DAYS"; days: number }
@@ -64,7 +69,13 @@ export type EngineCommand =
       step: import("../types/tutorial").TutorialStep;
     }
   | { type: "COMPLETE_TUTORIAL" }
-  | { type: "APPLY_PRESS_CONFERENCE"; heyaId: string; reputationDelta: number }
+  | {
+      type: "APPLY_PRESS_CONFERENCE";
+      heyaId: string;
+      reputationDelta: number;
+      moraleDelta: number;
+      mediaHeatDelta: number;
+    }
   | { type: "SET_HEYA_DIET"; heyaId: string; diet: import("../types/economy").DietRegimen }
   | { type: "RETIRE_RIKISHI"; rikishiId: string; reason: string }
   | { type: "SPEND_POLITICAL_CAPITAL"; heyaId: string; amount: number }

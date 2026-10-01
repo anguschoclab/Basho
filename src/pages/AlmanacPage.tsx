@@ -58,9 +58,11 @@ function LeaderboardWidget({
                   <Badge variant="outline" className="font-mono text-xs tabular-nums">
                     {entry.value}
                   </Badge>
-                  <div className="text-[10px] text-muted-foreground font-mono">
-                    {entry.achievedDate.year}.{entry.achievedDate.month}
-                  </div>
+                  {entry.achievedDate && (
+                    <div className="text-[10px] text-muted-foreground font-mono">
+                      {entry.achievedDate.year}.{entry.achievedDate.month}
+                    </div>
+                  )}
                 </div>
               </Link>
             ))
@@ -100,7 +102,7 @@ export default function AlmanacPage() {
         shikona: string;
         value: number;
         details: string;
-        achievedDate: { year: number; month: number };
+        achievedDate?: { year: number; month: number };
       }>
     > = [];
     for (const r of getAllRikishi(world)) {
@@ -112,7 +114,8 @@ export default function AlmanacPage() {
           shikona: r.shikona,
           value,
           details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
-          achievedDate: { year: world.year, month: Math.ceil((world.week ?? 1) / 2) },
+          // No record stores when a kinboshi was earned — omit rather than
+          // fabricate the current date.
         });
       }
     }

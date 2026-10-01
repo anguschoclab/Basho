@@ -62,6 +62,8 @@ import { spendPoliticalCapital } from "../systems/governance/ScandalService";
 import { recruitSponsor } from "../systems/economy/sponsorshipMutations";
 import { setScoutingInvestment } from "../scoutingStore";
 import { rngForWorld } from "../rng";
+import { TARGET_ROSTER_SIZE } from "../../constants/engine/recruitmentExtended";
+import { applyOyakataCreationConfig } from "../systems/generation/applyOyakataConfig";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -73,9 +75,35 @@ import { rngForWorld } from "../rng";
  * @param {string} [opts.playerConfig.heyaId] - Optional starting heya ID for the player.
  * @returns {WorldState} The newly generated world state.
  */
-function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } }) {
-  const world = generateInitialWorld(opts.seed);
-  if (opts.playerConfig?.heyaId) world.playerHeyaId = opts.playerConfig.heyaId; // @world-builder
+function generateWorld(opts: {
+  seed: string;
+  playerConfig?: {
+    heyaId?: string;
+    oyakataConfig?: import("../types/oyakata").OyakataCreationConfig;
+  };
+}) {
+  let world = generateInitialWorld(opts.seed);
+  if (
+    opts.playerConfig?.heyaId &&
+    opts.playerConfig.heyaId !== world.playerHeyaId
+  ) {
+    world.playerHeyaId = opts.playerConfig.heyaId; // @world-builder
+    // WorldFactory computed _populationTarget against its placeholder
+    // playerHeyaId (first generated heya) — recompute so the player's actual
+    // stable is the excluded one and the NPC capacity total is right.
+    let targetPop = 0;
+    for (const h of world.heyas.values()) {
+      if (h.id !== world.playerHeyaId) targetPop += TARGET_ROSTER_SIZE;
+    }
+    world._populationTarget = targetPop;
+  }
+  if (opts.playerConfig?.oyakataConfig && world.playerHeyaId) {
+    world = applyOyakataCreationConfig(
+      world,
+      world.playerHeyaId,
+      opts.playerConfig.oyakataConfig
+    );
+  }
   return world;
 }
 
@@ -137,7 +165,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     START_WORLD: (cmd) => {
       currentWorld = generateWorld({
         seed: cmd.seed,
-        playerConfig: { heyaId: cmd.playerHeyaId },
+        playerConfig: { heyaId: cmd.playerHeyaId, oyakataConfig: cmd.oyakataConfig },
       });
       // B4.1.1: Sync world back to main thread so the reducer can load it.
       // This makes the worker the single source of truth — the main thread
@@ -464,7 +492,36 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           0,
           Math.min(100, (heya.reputation ?? 50) + cmd.reputationDelta)
         );
-        currentWorld = updateHeyaInWorld(currentWorld, cmd.heyaId, { reputation });
+        const morale = Math.max(
+          0,
+          Math.min(100, (heya.welfareState?.morale ?? 50) + cmd.moraleDelta)
+        );
+        const welfareState = heya.welfareState
+          ? { ...heya.welfareState, morale }
+          : {
+              welfareRisk: 0,
+              activeDiet: "maintenance" as const,
+              complianceState: "compliant" as const,
+              weeksInState: 0,
+              morale,
+            };
+        currentWorld = updateHeyaInWorld(currentWorld, cmd.heyaId, {
+          reputation,
+          welfareState,
+        });
+        const prevHeat = currentWorld.mediaState?.mediaHeat?.[cmd.heyaId] ?? 0;
+        if (currentWorld.mediaState) {
+          currentWorld = {
+            ...currentWorld,
+            mediaState: {
+              ...currentWorld.mediaState,
+              mediaHeat: {
+                ...(currentWorld.mediaState.mediaHeat ?? {}),
+                [cmd.heyaId]: Math.max(0, prevHeat + cmd.mediaHeatDelta),
+              },
+            },
+          };
+        }
         syncAndDigest();
       }
     },
@@ -486,6 +543,10 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     RETIRE_RIKISHI: (cmd) => {
       if (currentWorld) {
+        // Ownership gate — the UI renders the button only for the player's
+        // stable, but commands can arrive from any caller.
+        const target = currentWorld.rikishi.get(cmd.rikishiId);
+        if (!target || target.heyaId !== currentWorld.playerHeyaId) return;
         // 4-arg form: (id, year, reason, source) — the 2-arg overload treats
         // arg2 as the impact source and defaults year to DEFAULT_START_YEAR.
         const impact = retireRikishiImpact(

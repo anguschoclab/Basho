@@ -155,7 +155,7 @@ export default function RecapPage() {
     setShowPressConference(false);
     // Apply effects through the worker so the change survives the next tick.
     if (world?.playerHeyaId) {
-      applyPressConference(world.playerHeyaId, effects.reputation);
+      applyPressConference(world.playerHeyaId, effects);
     }
   };
 

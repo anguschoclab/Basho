@@ -67,7 +67,10 @@ export interface GameContextValue {
   isBookmarked: (entityType: string, entityId: string) => boolean;
   runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   recruitSponsor: (sponsorId: string) => void;
-  applyPressConference: (heyaId: string, reputationDelta: number) => void;
+  applyPressConference: (
+    heyaId: string,
+    effects: { reputation: number; morale: number; mediaHeat: number }
+  ) => void;
   setHeyaDiet: (heyaId: string, diet: import("@/engine/types/economy").DietRegimen) => void;
   retireRikishi: (rikishiId: string, reason: string) => void;
   spendPoliticalCapital: (heyaId: string, amount: number) => void;

@@ -116,7 +116,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     (
       seed: string,
       playerHeyaId?: string,
-      _oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
+      oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
     ) => {
       // B4.1.1: Worker is the single source of truth.
       // Only send START_WORLD to the worker — the worker generates the world
@@ -124,7 +124,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // (wired above) to dispatch updateWorld into the reducer.
       // This eliminates the redundant main-thread world generation that caused
       // divergence risk between reducer and worker state.
-      sendCommand({ type: "START_WORLD", seed, playerHeyaId });
+      // oyakataConfig carries the wizard's name/backstory/ichimon choices —
+      // the worker applies them via applyOyakataCreationConfig.
+      sendCommand({ type: "START_WORLD", seed, playerHeyaId, oyakataConfig });
     },
     [sendCommand]
   );
@@ -193,8 +195,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
 
   const applyPressConferenceAction = useCallback(
-    (heyaId: string, reputationDelta: number) => {
-      sendCommand({ type: "APPLY_PRESS_CONFERENCE", heyaId, reputationDelta });
+    (
+      heyaId: string,
+      effects: { reputation: number; morale: number; mediaHeat: number }
+    ) => {
+      sendCommand({
+        type: "APPLY_PRESS_CONFERENCE",
+        heyaId,
+        reputationDelta: effects.reputation,
+        moraleDelta: effects.morale,
+        mediaHeatDelta: effects.mediaHeat,
+      });
     },
     [sendCommand]
   );

@@ -7,6 +7,8 @@
 
 import type { WorldState } from "../../engine/types/world";
 import { SPONSOR_TIER_INCOME } from "../../engine/systems/economy/SponsorshipService";
+import { KOENKAI_MONTHLY_INCOME } from "../../engine/systems/economy/sponsorshipQueries";
+import { SPONSOR_RENEWAL_WINDOW_WEEKS } from "../../constants/engine/time";
 import { getPlayerHeya } from "../../engine/queries";
 
 interface SponsorData {
@@ -126,8 +128,10 @@ function buildSponsorData(
   },
   world: WorldState
 ): SponsorData {
-  const weeksRemaining = Math.max(0, Math.floor(((rel.endsAtTick ?? 0) - (world.week ?? 0)) / 4));
-  const isExpiringSoon = weeksRemaining <= 4;
+  // endsAtTick is a monotonic WEEK counter (SponsorContractService sets
+  // week + 52), not a tick — no /4. The engine's renewal window is 8 weeks.
+  const weeksRemaining = Math.max(0, (rel.endsAtTick ?? 0) - (world.week ?? 0));
+  const isExpiringSoon = weeksRemaining <= SPONSOR_RENEWAL_WINDOW_WEEKS;
   const monthlyIncome = SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] ?? 0;
 
   return {
@@ -150,16 +154,9 @@ function buildSponsorData(
 
 function calculateKoenkaiIncome(heya: { koenkaiBand?: string }): number {
   if (!heya.koenkaiBand) return 0;
-  const bandMultiplier = {
-    none: 0,
-    weak: 0.5,
-    moderate: 1,
-    strong: 2,
-    powerful: 4,
-  };
-  return Math.floor(
-    200000 * (bandMultiplier[heya.koenkaiBand as keyof typeof bandMultiplier] ?? 0)
-  );
+  // Engine-authoritative table (0 / 500k / 1.5M / 3.5M / 7M per band) — the
+  // old 200k×{0,.5,1,2,4} multiplier understated income 5-8x.
+  return KOENKAI_MONTHLY_INCOME[heya.koenkaiBand as keyof typeof KOENKAI_MONTHLY_INCOME] ?? 0;
 }
 
 /**

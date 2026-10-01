@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/store/gameStore";
 import type {
   TrainingIntensity,
   TrainingFocus,
@@ -19,7 +20,8 @@ import {
 } from "@/constants/ui/trainingWidget";
 
 export function useTrainingProfile() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const navigate = useNavigate();
   const world = state.world;
   const [expanded, setExpanded] = useState(false);
@@ -86,6 +88,10 @@ export function useTrainingProfile() {
   const updateProfile = React.useCallback(
     (patch: Partial<TrainingProfile>) => {
       if (!world?.playerHeyaId) return;
+      // ensureHeyaTrainingState is pure — it returns a detached default when
+      // no entry exists. Build the next state immutably and route it through
+      // the worker's SET_TRAINING_STATE command so the change reaches the
+      // authoritative world (updateWorld writes never sync to the worker).
       const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
       if (patch.intensity) {
         const chosenIdx = INTENSITY_RANK.indexOf(patch.intensity);
@@ -93,10 +99,16 @@ export function useTrainingProfile() {
           patch = { ...patch, intensity: INTENSITY_RANK[maxIntensityIdx] };
         }
       }
-      ts.activeProfile = { ...ts.activeProfile, ...patch };
-      updateWorld({ ...world });
+      sendCommand({
+        type: "SET_TRAINING_STATE",
+        heyaId: world.playerHeyaId,
+        trainingState: {
+          ...ts,
+          activeProfile: { ...ts.activeProfile, ...patch },
+        },
+      });
     },
-    [world, maxIntensityIdx, updateWorld, INTENSITY_RANK]
+    [world, maxIntensityIdx, sendCommand, INTENSITY_RANK]
   );
 
   const handleIntensityChange = React.useCallback(

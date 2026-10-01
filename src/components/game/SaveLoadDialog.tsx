@@ -1,6 +1,7 @@
 // SaveLoadDialog.tsx — In-game save/load dialog with slot management
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/store/gameStore";
 import { useToast } from "@/hooks/use-toast";
 import type { SaveSlotInfo } from "@/presenters/engineAccess";
 import {
@@ -41,6 +42,7 @@ interface SaveLoadDialogProps {
  */
 export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
   const { state, saveToSlot, loadFromSlot, getSaveSlots, updateWorld } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"save" | "load">("save");
@@ -176,6 +178,10 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       const world = await importSave(file);
       if (world) {
         updateWorld(world);
+        // Mirror loadFromSlot: push the imported world into the worker too —
+        // updateWorld alone never syncs, so the next tick's WORLD_UPDATED
+        // would silently revert the import while autosave persisted it.
+        sendCommand({ type: "LOAD_WORLD", world });
         toast({
           title: "Save Imported",
           description: "World loaded from file.",

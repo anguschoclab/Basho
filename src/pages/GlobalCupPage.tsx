@@ -162,7 +162,7 @@ export default function GlobalCupPage() {
         {/* Event Feed */}
         <div>
           <h2 className="text-lg font-display font-bold mb-4">Tournament Events</h2>
-          <EventFeed filterTypes={["GLOBAL_CUP"]} maxEvents={5} />
+          <EventFeed filterTypes={["GLOBAL_CUP_START", "GLOBAL_CUP_FINALE"]} maxEvents={5} />
         </div>
 
         {/* Bracket */}

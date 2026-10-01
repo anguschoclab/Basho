@@ -58,7 +58,7 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
     if (!r) continue;
     const fatigue = r.fatigue ?? 0;
     const fatigueBand = toFatigueBand(fatigue);
-    const isInjured = !!r.injury;
+    const isInjured = !!r.injured;
     const injuryRisk = toInjuryRisk(fatigue, isInjured);
 
     rosterStatuses.push({

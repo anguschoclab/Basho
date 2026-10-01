@@ -10,11 +10,9 @@ import { ArrowUp, ArrowDown, Minus, ArrowUpRight, Search, X } from "lucide-react
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { projectBanzukeUIDigest, projectPressConferenceData } from "@/presenters/uiDigest";
+import { projectBanzukeUIDigest } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { PressConference } from "@/components/game/PressConference";
 import { PageHeader } from "@/components/layout/control-center";
 import { BanzukePyramid } from "@/components/charts/BanzukePyramid";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
@@ -45,25 +43,12 @@ const banzukeAccessor: Record<string, (r: UIRankRow) => string | number | undefi
 
 /** banzuke page. */
 export default function BanzukePage() {
-  const { state, applyPressConference } = useGame();
+  const { state } = useGame();
   const world = state.world;
   const [showChanges, setShowChanges] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showPressConference, setShowPressConference] = useState(false);
   const [sortKey, setSortKey] = useState<string>("rank");
   const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
-
-  // Check if Media Day is active (D1)
-  const isMediaDay = useMemo(() => {
-    if (!world || world.cyclePhase !== "pre_basho") return false;
-    // Look for the press conference event in recent logs
-    return world.events?.log?.some((e) => e.tags?.includes("press_conference")) ?? false;
-  }, [world]);
-
-  const pressData = useMemo(() => {
-    if (!world || !isMediaDay) return null;
-    return projectPressConferenceData(world);
-  }, [world, isMediaDay]);
 
   const banzukeDigest = useMemo(() => {
     if (!world) return null;
@@ -131,55 +116,11 @@ export default function BanzukePage() {
 
   if (!world || !banzukeDigest) return null;
 
-  const handlePressConferenceClose = (effects: {
-    reputation: number;
-    morale: number;
-    mediaHeat: number;
-  }) => {
-    setShowPressConference(false);
-    // Apply effects through the worker so the change survives the next tick.
-    if (world.playerHeyaId) {
-      applyPressConference(world.playerHeyaId, effects.reputation);
-    }
-  };
-
   const { kadobanMap, heyaNameMap, hasPrevBasho } = banzukeDigest;
 
   return (
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
       <title>Official Banzuke — Rankings | Basho</title>
-
-      {/* Media Day Trigger (D1) */}
-      {isMediaDay && !showPressConference && (
-        <div className="mb-6 bg-gradient-to-r from-gold/10 to-west/10 border border-gold/30 rounded p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="space-y-1 text-center md:text-left">
-            <h2 className="text-xl font-display font-bold uppercase tracking-tight flex items-center gap-3 sumi-e-ink">
-              <span className="h-2 w-2 rounded-xs bg-gold animate-pulse" />
-              Media Day
-            </h2>
-            <p className="text-sm text-muted-foreground font-body">
-              The press has arrived. Address the journalists' questions before the basho starts.
-            </p>
-          </div>
-          <Button
-            onClick={() => setShowPressConference(true)}
-            size="lg"
-            variant="primary-gradient"
-            className="gap-2"
-          >
-            Begin Press Conference
-          </Button>
-        </div>
-      )}
-
-      {showPressConference && (
-        <PressConference
-          phase="pre_basho"
-          pressData={pressData}
-          open={showPressConference}
-          onClose={handlePressConferenceClose}
-        />
-      )}
 
       <div className="space-y-4 animate-fade-in">
         {/* Header */}

@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Settings, Keyboard, Palette, Save, Info, Dumbbell } from "lucide-react";
 import { SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
 import { useGame } from "../contexts/useGame";
+import { useGameStore } from "../store/gameStore";
 import { useState } from "react";
 import { getAutosaveEnabled, setAutosaveEnabled } from "./settingsHelpers";
 
@@ -16,6 +17,7 @@ import { getAutosaveEnabled, setAutosaveEnabled } from "./settingsHelpers";
 export default function SettingsPage() {
   const { setTheme, resolvedTheme } = useTheme();
   const { state, updateWorld } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const [autosaveOn, setAutosaveOn] = useState(getAutosaveEnabled);
 
   const handleAutosaveToggle = (checked: boolean) => {
@@ -156,13 +158,18 @@ export default function SettingsPage() {
                 checked={!!state.world?.settings?.enableStyleDrift}
                 onCheckedChange={(checked) => {
                   if (state.world) {
-                    updateWorld({
+                    const next = {
                       ...state.world,
                       settings: {
                         ...(state.world.settings || {}),
                         enableStyleDrift: checked,
                       },
-                    });
+                    };
+                    updateWorld(next);
+                    // updateWorld never reaches the worker — push the updated
+                    // world so the enableStyleDrift gate in
+                    // phase01_week_world_circuit sees the new value.
+                    sendCommand({ type: "LOAD_WORLD", world: next });
                   }
                 }}
               />

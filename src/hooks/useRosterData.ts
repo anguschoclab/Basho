@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/store/gameStore";
 import { projectRosterEntry, type UIRosterEntry, projectRikishi } from "@/presenters/uiModels";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import { toFatigueBand } from "@/engine/descriptorBands";
@@ -9,7 +10,8 @@ import { getPlayerHeya } from "@/engine/queries";
 export type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 
 export function useRosterData() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
@@ -28,25 +30,14 @@ export function useRosterData() {
       if (!world) return;
 
       const rikishi = world.rikishi.get(rikishiId);
+      // Route through the worker command — a main-thread updateWorld write
+      // never reaches the worker's authoritative world and skips the
+      // gomenfuda bookkeeping the WITHDRAW_RIKISHI handler performs.
       if (rikishi && rikishi.injured) {
-        const updatedWorld = {
-          ...world,
-          rikishi: new Map(world.rikishi).set(rikishiId, {
-            ...rikishi,
-            isKyujo: true,
-            kyujoReason: "injury" as const,
-            medicalCertificate: {
-              injury: rikishi.injuryStatus?.type || "unknown",
-              severity: rikishi.injuryStatus?.severity || "moderate",
-              treatmentWeeks: rikishi.injuryWeeksRemaining,
-              submittedDate: world.calendar?.currentWeek ?? world.week ?? 0,
-            },
-          }),
-        };
-        updateWorld(updatedWorld);
+        sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId });
       }
     },
-    [world, updateWorld]
+    [world, sendCommand]
   );
 
   const toggleSelection = React.useCallback((id: string) => {

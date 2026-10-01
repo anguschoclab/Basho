@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { STABLE_TABS } from "@/constants/ui/navigation";
+import { STAFF_UPKEEP_PER_MEMBER } from "@/constants/engine/economic";
 import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -130,11 +131,6 @@ export default function StaffPage() {
   const handleHire = useCallback(() => {
     if (!world || !heya) return;
 
-    if (staffList.length >= 12) {
-      toast.error("Staff capacity reached (12/12). Fire someone first.");
-      return;
-    }
-
     sendCommand({ type: "HIRE_STAFF", heyaId: heya.id, role: selectedRole });
     setIsRecruitOpen(false);
     toast.success(`Hired new ${ROLE_LABELS[selectedRole]}`);
@@ -174,15 +170,15 @@ export default function StaffPage() {
                 Monthly Cost
               </div>
               <div className="text-lg font-bold leading-none">
-                ¥{(staffList.length * 150000).toLocaleString()}
+                ¥{Math.round(staffList.length * STAFF_UPKEEP_PER_MEMBER * (52 / 12)).toLocaleString()}
               </div>
             </div>
             <div className="h-10 w-px bg-border/50 mx-2" />
             <div className="text-right">
               <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">
-                Staff Capacity
+                Staff
               </div>
-              <div className="text-lg font-bold leading-none">{staffList.length} / 12</div>
+              <div className="text-lg font-bold leading-none">{staffList.length}</div>
             </div>
           </div>
           <SortMenu
