@@ -37,15 +37,19 @@ jobs:
           GEMINI_MODEL_FALLBACK: "gemini-2.5-flash"
         run: bun run scripts/bard-orchestrator.ts
 
-      - name: Validate Archive
+      - name: Validate Bard Content
         run: |
-          if ! jq . src/engine/narrative/archive.json > /dev/null; then echo "Invalid archive.json"; exit 1; fi
+          # bard-orchestrator writes src/engine/bard/registry.json + domains/*.json
+          if ! jq . src/engine/bard/registry.json > /dev/null; then echo "Invalid registry.json"; exit 1; fi
+          for f in src/engine/bard/domains/*.json; do
+            if ! jq . "$f" > /dev/null; then echo "Invalid domain file: $f"; exit 1; fi
+          done
 
       - name: Commit and Push Changes
         if: success()
         run: |
           git config --global user.name "BardEngine-Bot"
           git config --global user.email "bard-bot@basho.app"
-          git add src/engine/narrative/archive.json
+          git add src/engine/bard/registry.json
           git commit -m "Auto-generated narrative expansion [skip ci]" || echo "No changes to commit"
           git push

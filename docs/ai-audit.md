@@ -23,13 +23,13 @@ baking the AI cost in silently.
 
 | Decision point | File | Status | Notes |
 |---|---|---|---|
-| Weekly NPC strategic loop | `tick/phases/phase01_week_npc_ai.ts` | wired | persona → perception → plan → workers/agents → constraints → `applyNPCDecisionPure` |
+| Weekly NPC strategic loop | `tick/phases/phase01_week_npc_ai.ts` | wired | persona → perception → plan → workers/agents → constraints → `applyNPCDecisionPure` + `decision.impact` merge (impact merge was missing pre-consolidation — agent execution was silently dropped) |
 | Monthly finance strategy | `npcAI/ticks.ts` `tickMonthlyNPC` | wired | `evaluateFinanceStrategy` → real `buyMyoseki` |
 | Perception | `engine/perception.ts`, `npcAI/LeaguePerception.ts` | wired | banded, non-cheating (A7.1) |
 | Player surfacing | `advisor/AdvisorService.ts`, `presenters/npcAgentProjections.ts` | wired | IntelligencePanel, NPCAgentFeed |
 | NarrativeAgent for **player** heya | `tick/phases/phase06_narrative.ts:103-149` | wired | eventType → `narrativeEventMap` → `BardEngine.resolve` → `logEvent`. Reference pattern for NPC narrative. |
-| `BoutAI.chooseTactic` / `chooseTacticForCPU` | `bout/BoutAI.ts` | orphaned | `h2h.determineCPUTactic` has zero engine callers; physics consumes only `playerTactic`/`cpuTacticOverride`; NPC-vs-NPC has no tactics |
-| `OpponentModel.observeBoutResult` + `MemoryStore.recordOpponentModel` | `npcAI/OpponentModel.ts`, `npcAI/MemoryStore.ts` | orphaned | `opponentModels` map never populated or consumed |
+| `BoutAI.chooseTactic` / `chooseTacticForCPU` | `bout/BoutAI.ts` | wired | `boutResolver` resolves per-side `eastTactic`/`westTactic` for all bouts — including NPC-vs-NPC — into `result.tactics`; opponent models feed `chooseTactic` via `boutResolver.ts` |
+| `OpponentModel.observeBoutResult` + `MemoryStore.recordOpponentModel` | `npcAI/OpponentModel.ts`, `npcAI/MemoryStore.ts` | wired | populated by `onBoutResolvedOpponentModels` (`boutResultApplier.ts`); consumed by `boutResolver` + `AdvisorService` |
 | `handleNPCCrisis` / `handleNPCMediaEvent` | `npcAI/handlers.ts` | orphaned | no callers; NPCs never resolve crises |
 | `MemoryStore.archiveActivePlan` | `npcAI/MemoryStore.ts` | orphaned | plans only archive as `"abandoned"`; `scoreWithMemory` never sees success/partial |
 | `TacticalCoordinator.coordinateDecision` | `npcAI/TacticalCoordinator.ts` | orphaned | test-only |
@@ -39,7 +39,7 @@ baking the AI cost in silently.
 | `heya.activeCrisis` for NPCs | `types/heya.ts:79`, `bard/dramaGenerator.ts` | player-only | `triggerCrisis` guards on `isPlayerOwned`; nothing resolves NPC `activeCrisis`. Reuse this field — do not add parallel state |
 | Crisis `impactGenerator`s | `types/crises.ts` | log-only + wrong signature | take `(world)` — no `heyaId`; consequences need real implementation |
 | `npcMediaStrategy` archetype tables | `npcMediaStrategy.ts` | wired but primitive | real effects via `handleMediaEvent` (global heat ±5, writes `"Player chose"` onto rulings). `MediaAgent` (richer) is orphaned and emits unhandled `"deflect"` |
-| `computeTacticAftermath` | `bout/boutTacticAftermath.ts` | defective | drops `cpuUpdate` for NPC-vs-NPC (`cpuRikishiId` undefined without `playerSide`) — must be refactored per-side |
+| `computeTacticAftermath` | `bout/boutTacticAftermath.ts` | wired | per-side `eastUpdate`/`westUpdate` applied unconditionally in `boutResolver` — covers NPC-vs-NPC (earlier `cpuUpdate` concern is stale) |
 | `upsertRivalry` | `systems/rivalry/RivalryService.ts` | hazard | mutates `state.pairs` in place — clone before `updateWorldField` |
 | `fillVacanciesForNPCWithBidding` call sites | `phase01_week_recruitment.ts:88`, `ticks.ts:199` | duplicated | bid-policy handoff must cover both sites |
 | `NPCStrategyService.seededRng` fallback | `NPCStrategyService.ts` | weak | fixed `"npc_strategy"` stream shared across callers/weeks — always pass world-scoped rng |

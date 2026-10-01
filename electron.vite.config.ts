@@ -21,7 +21,9 @@ export default defineConfig({
       lib: {
         entry: fileURLToPath(new URL("electron/preload.ts", import.meta.url)),
         fileName: () => "index.js",
-        formats: ["es"],
+        // Sandboxed preload scripts must be CJS — ESM (.mjs) requires
+        // sandbox: false, which we intentionally keep enabled.
+        formats: ["cjs"],
       },
     },
   },

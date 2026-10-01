@@ -4,7 +4,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "main": "electron/main.cjs",
+  "main": "out/main/main.cjs",
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": "eslint --fix",
     "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
@@ -29,63 +29,13 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "simulate": "bun src/engine/simulation/run.ts",
-    "electron:dev": "vite build && electron .",
-    "electron:build": "vite build && electron-builder --mac",
-    "electron:build:win": "vite build && electron-builder --win",
-    "electron:build:all": "vite build && electron-builder -mwl",
-    "electron:build:dir": "vite build && electron-builder --mac --dir",
-    "electron:pack": "vite build && electron-builder --dir"
-  },
-  "build": {
-    "appId": "com.basho.app",
-    "productName": "Basho",
-    "copyright": "Copyright © 2026",
-    "mac": {
-      "category": "public.app-category.games",
-      "target": [
-        {
-          "target": "dir",
-          "arch": [
-            "arm64"
-          ]
-        },
-        {
-          "target": "dmg",
-          "arch": [
-            "arm64"
-          ]
-        }
-      ],
-      "icon": "public/pwa-512x512.png",
-      "darkModeSupport": true,
-      "identity": null
-    },
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "dir",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "public/pwa-512x512.png"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/**/*"
-    ],
-    "directories": {
-      "buildResources": "public",
-      "output": "release"
-    },
-    "asar": true
+    "electron:dev": "electron-vite dev",
+    "electron:preview": "electron-vite preview",
+    "electron:build": "electron-vite build && electron-builder --mac",
+    "electron:build:win": "electron-vite build && electron-builder --win",
+    "electron:build:all": "electron-vite build && electron-builder -mwl",
+    "electron:build:dir": "electron-vite build && electron-builder --mac --dir",
+    "electron:pack": "electron-vite build && electron-builder --dir"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.23",

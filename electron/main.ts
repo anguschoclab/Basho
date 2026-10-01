@@ -98,7 +98,9 @@ async function createWindow(): Promise<void> {
     frame: false, // Frameless window for custom title bar
     titleBarStyle: "hidden", // Hide default title bar
     webPreferences: {
-      preload: join(__dirname, "../preload/preload.mjs"),
+      // electron-vite lib mode emits the CJS preload as
+      // out/preload/preload.cjs — sandboxed preload scripts cannot be ESM.
+      preload: join(__dirname, "../preload/preload.cjs"),
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,

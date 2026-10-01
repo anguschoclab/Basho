@@ -68,11 +68,13 @@ function nextId(): string {
 // ─── File collection ─────────────────────────────────────────────────────────
 
 function isTestFile(filePath: string): boolean {
-  return TEST_PATTERNS.some((p) => filePath.includes(p));
+  // Normalize separators — collectFiles() produces backslashes on Windows.
+  const p = filePath.replace(/\\/g, "/");
+  return TEST_PATTERNS.some((pat) => p.includes(pat));
 }
 
 function isScriptFile(filePath: string): boolean {
-  return filePath.includes("/scripts/");
+  return filePath.replace(/\\/g, "/").includes("/scripts/");
 }
 
 function collectFiles(dir: string, files: string[] = []): string[] {
