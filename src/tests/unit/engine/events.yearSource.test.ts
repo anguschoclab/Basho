@@ -17,7 +17,7 @@ describe("events year source of truth", () => {
       data: {},
     });
 
-    expect(event.year).toBe(2026);
+    expect(event?.year).toBe(2026);
   });
 
   it("logEngineEvent falls back to world.year when calendar.year is absent", () => {
@@ -34,6 +34,6 @@ describe("events year source of truth", () => {
       data: {},
     });
 
-    expect(event.year).toBe(2026);
+    expect(event?.year).toBe(2026);
   });
 });

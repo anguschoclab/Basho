@@ -20,7 +20,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { CrisisService } from "../../systems/narrative/CrisisService";
-import { getHeya, getRikishi, getHeyaRoster, getOyakataForHeya } from "../../queries";
+import { getHeya, getRikishi, getRikishiAnywhere, getHeyaRoster, getOyakataForHeya } from "../../queries";
 import { spawnNarrativeAgent } from "../../agents/NarrativeAgent";
 import { narrativeEventMap } from "../../bard/narrativeEventMap";
 import { BardEngine } from "../../bard/BardEngine";
@@ -28,6 +28,14 @@ import { rngForWorld } from "../../rng";
 import type { NarrativeContext } from "../../types/events";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
+
+/** Maps agent event types to the achievement whose subject rikishi they celebrate. */
+const SUBJECT_BY_EVENT_TYPE: Record<string, string> = {
+  championship_celebration: "yusho",
+  underdog_victory: "kinboshi",
+  retirement_ceremony: "retirement",
+  yokozuna_promotion: "yokozuna_promotion",
+};
 
 export function phase06_narrative(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_narrative");
@@ -106,7 +114,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
       const topRikishi = getHeyaRoster(world, world.playerHeyaId)
         .filter((r) => isSekitoriDivision(r.division))
         .slice(0, 3);
-      const recentAchievements = deriveRecentAchievements(world);
+      const { list: recentAchievements, subjects } = deriveRecentAchievements(world);
       const narrativeResult = spawnNarrativeAgent({
         oyakata,
         topRikishi,
@@ -116,17 +124,23 @@ export function phase06_narrative(world: WorldState): StateImpact {
       if (narrativeResult.shouldTriggerEvent && narrativeResult.eventType) {
         const mapEntry = narrativeEventMap[narrativeResult.eventType];
         if (mapEntry) {
-          const rikishi = narrativeResult.rikishiId
-            ? getRikishi(world, narrativeResult.rikishiId)
-            : undefined;
+          // Prefer the agent's roster pick; otherwise recover the real subject
+          // from the achievement's source data (yusho winner, kinboshi bout,
+          // retirement/deliberation event). Every mapped template requires
+          // %SHIKONA% (+ %HEYA%) — without a subject the event would render
+          // [MISSING: SHIKONA], so skip rather than emit a broken headline.
+          const subjectId =
+            narrativeResult.rikishiId ?? subjects[SUBJECT_BY_EVENT_TYPE[narrativeResult.eventType]];
+          const subject = subjectId ? getRikishiAnywhere(world, subjectId) : undefined;
           const heya = getHeya(world, world.playerHeyaId);
+          if (!subject || !heya) return builder.build();
           const ctx: NarrativeContext = {
-            shikona: rikishi?.shikona,
-            rikishiId: rikishi?.id,
-            heya: heya?.name,
+            shikona: subject.shikona,
+            rikishiId: subject.id,
+            heya: heya.name,
             heyaId: world.playerHeyaId,
-            SHIKONA: rikishi?.shikona,
-            HEYA: heya?.name,
+            SHIKONA: subject.shikona,
+            HEYA: heya.name,
           };
           const rng = rngForWorld(
             world,
@@ -155,23 +169,50 @@ export function phase06_narrative(world: WorldState): StateImpact {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function deriveRecentAchievements(world: WorldState): string[] {
-  const achievements: string[] = [];
+function deriveRecentAchievements(world: WorldState): {
+  list: string[];
+  subjects: Record<string, string>;
+} {
+  const list: string[] = [];
+  const subjects: Record<string, string> = {};
   const lastBasho = world.history[world.history.length - 1];
   if (lastBasho && world.playerHeyaId) {
     const roster = getHeyaRoster(world, world.playerHeyaId);
     const rosterIds = new Set(roster.map((r) => r.id));
-    if (lastBasho.yusho && rosterIds.has(lastBasho.yusho)) achievements.push("yusho");
+    if (lastBasho.yusho && rosterIds.has(lastBasho.yusho)) {
+      list.push("yusho");
+      subjects.yusho = lastBasho.yusho;
+    }
     // kinboshi = a maegashira defeating a yokozuna — surfaced via keyBouts
     // labeled "kinboshi", NOT the shukunsho (fighting-spirit prize).
     const kinboshiWinner = lastBasho.keyBouts
       ?.filter((k) => k.label === "kinboshi")
-      .some((k) => rosterIds.has(k.bout.winnerRikishiId));
-    if (kinboshiWinner) achievements.push("kinboshi");
+      .find((k) => rosterIds.has(k.bout.winnerRikishiId));
+    if (kinboshiWinner) {
+      list.push("kinboshi");
+      subjects.kinboshi = kinboshiWinner.bout.winnerRikishiId;
+    }
   }
   const recentEvents = (world.events?.log ?? []).slice(-20);
-  if (recentEvents.some((e) => e.type === "RETIREMENT_ANNOUNCED")) achievements.push("retirement");
-  if (recentEvents.some((e) => e.type === "PROMOTION_DELIBERATION"))
-    achievements.push("yokozuna_promotion");
-  return achievements;
+  const retirementEvent = [...recentEvents]
+    .reverse()
+    .find((e) => e.type === "RETIREMENT_ANNOUNCED");
+  if (retirementEvent) {
+    list.push("retirement");
+    const rid =
+      (retirementEvent.data?.rikishiId as string | undefined) ??
+      (retirementEvent.rikishiId as string | undefined);
+    if (rid) subjects.retirement = rid;
+  }
+  const deliberationEvent = [...recentEvents]
+    .reverse()
+    .find((e) => e.type === "PROMOTION_DELIBERATION");
+  if (deliberationEvent) {
+    list.push("yokozuna_promotion");
+    const rid =
+      (deliberationEvent.data?.rikishiId as string | undefined) ??
+      (deliberationEvent.rikishiId as string | undefined);
+    if (rid) subjects.yokozuna_promotion = rid;
+  }
+  return { list, subjects };
 }

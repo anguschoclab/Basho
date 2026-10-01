@@ -50,6 +50,9 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
   reasoning.push(`[Narrative Agent] Basho phase: ${currentBashoPhase}`);
 
   // Achievement-based narrative triggers
+  // NOTE: shouldTriggerEvent signals "surface a narrative" — the actual subject
+  // is resolved by the caller (phase06) from the achievement's source data when
+  // no in-scope rikishi match is found here.
   if (recentAchievements.includes("yusho") && currentBashoPhase === "post_basho") {
     shouldTriggerEvent = true;
     eventType = "championship_celebration";

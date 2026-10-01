@@ -14,6 +14,55 @@ import { createRngForEvent } from "./eventHelpers";
 import { logEngineEvent } from "./events";
 import { getHeya } from "./queries";
 
+/**
+ * Enriches a caller-supplied NarrativeContext with entity names resolved from
+ * the world: heya/heyaname/oyakata from heyaId, and shikona/winner/loser/east/
+ * west names from the corresponding rikishi ids. Guarantees that templates
+ * referencing %HEYANAME%, %SHIKONA%, %WINNER%, etc. resolve instead of
+ * emitting [MISSING:] markers whenever the caller only supplied ids.
+ */
+function enrichEventContext(world: WorldState, ctx: NarrativeContext): NarrativeContext {
+  const out: NarrativeContext = { ...ctx };
+
+  const heyaId = (out.heyaId ?? out.stableId) as Id | undefined;
+  if (heyaId) {
+    const heya = getHeya(world, heyaId);
+    if (heya) {
+      out.heya ??= heya.name;
+      out.heyaId = heyaId;
+      out.stableId ??= heyaId;
+      const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : null;
+      if (oyakata) {
+        out.oyakata ??= oyakata.name || oyakata.shikona;
+        out.oyakataId ??= heya.oyakataId;
+      }
+    }
+  }
+  // %HEYANAME% mirrors %HEYA% when only the plain name was supplied.
+  out.heyaname ??= out.heya;
+  if (out.heya === undefined && typeof out.heyaname === "string") out.heya = out.heyaname;
+
+  const rikishiName = (id: unknown): string | undefined =>
+    typeof id === "string" ? world.rikishi.get(id)?.shikona : undefined;
+  const fill = (nameKey: string, ...idKeys: string[]) => {
+    if (out[nameKey] !== undefined) return;
+    for (const k of idKeys) {
+      const name = rikishiName(out[k]);
+      if (name) {
+        out[nameKey] = name;
+        return;
+      }
+    }
+  };
+  fill("shikona", "rikishiId");
+  fill("winner", "winnerRikishiId", "winnerId");
+  fill("loser", "loserRikishiId", "loserId");
+  fill("east", "eastRikishiId");
+  fill("west", "westRikishiId");
+
+  return out;
+}
+
 export const EventBus = {
   /**
    * Creates a medical report event for a rikishi.
@@ -23,6 +72,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   medicalReportBase: (world: WorldState, ctx: NarrativeContext, importance: EventImportance) => {
+    ctx = enrichEventContext(world, ctx);
     const rng = createRngForEvent(world, `medical-${ctx.rikishiId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.medical.title", ctx);
     const summaryRes = BardEngine.resolve(rng, "events.medical.summary", ctx);
@@ -55,17 +105,7 @@ export const EventBus = {
     ctx: NarrativeContext,
     importance: EventImportance = "major"
   ) => {
-    const heya = getHeya(world, heyaId);
-    const oyakata = heya?.oyakataId ? world.oyakata.get(heya.oyakataId) : null;
-    const enrichedCtx: NarrativeContext = {
-      heya: heya?.name,
-      heyaname: heya?.name,
-      heyaId,
-      stableId: heyaId,
-      oyakata: oyakata?.name || oyakata?.shikona || "The Master",
-      oyakataId: heya?.oyakataId,
-      ...ctx,
-    };
+    const enrichedCtx = enrichEventContext(world, { heyaId, ...ctx });
     const rng = createRngForEvent(world, `gov-${heyaId}-${ctx.incident}`);
     const titleRes = BardEngine.resolve(rng, "events.governance.title", enrichedCtx);
     const summaryRes = BardEngine.resolve(rng, "events.governance.summary", enrichedCtx);
@@ -90,6 +130,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   trainingUpdate: (world: WorldState, ctx: NarrativeContext) => {
+    ctx = enrichEventContext(world, ctx);
     const rng = createRngForEvent(world, `training-${ctx.rikishiId}`);
     const titleRes = BardEngine.resolve(rng, "events.training.title", ctx);
     const summaryRes = BardEngine.resolve(rng, "events.training.summary", ctx);
@@ -116,6 +157,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   financialAlert: (world: WorldState, heyaId: Id, ctx: NarrativeContext) => {
+    ctx = enrichEventContext(world, { heyaId, ...ctx });
     const rng = createRngForEvent(world, `finance-${heyaId}-${ctx.incident}`);
     const titleRes = BardEngine.resolve(rng, "events.economy.title", ctx);
     const summaryRes = BardEngine.resolve(rng, "events.economy.summary", ctx);
@@ -140,6 +182,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   awardConferred: (world: WorldState, ctx: NarrativeContext) => {
+    ctx = enrichEventContext(world, ctx);
     const rng = createRngForEvent(world, `award-${ctx.rikishiId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.awards.title", ctx);
     const summaryRes = BardEngine.resolve(rng, "events.awards.summary", ctx);
@@ -166,6 +209,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   lifecycleEvent: (world: WorldState, ctx: NarrativeContext) => {
+    ctx = enrichEventContext(world, ctx);
     const rng = createRngForEvent(world, `lifecycle-${ctx.rikishiId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.lifecycle.title", ctx);
     const summaryRes = BardEngine.resolve(rng, "events.lifecycle.summary", ctx);
@@ -191,6 +235,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   bashoStatus: (world: WorldState, ctx: NarrativeContext) => {
+    ctx = enrichEventContext(world, ctx);
     const rng = rngFromSeed(`basho-status-${ctx.status}-${ctx.day}`, "narrative", "event");
     const titleRes = BardEngine.resolve(rng, "events.basho.status_title", ctx);
     const summaryRes = BardEngine.resolve(rng, "events.basho.status_summary", ctx);
@@ -219,6 +264,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   welfareCompliance: (world: WorldState, heyaId: Id, ctx: NarrativeContext) => {
+    ctx = enrichEventContext(world, { heyaId, ...ctx });
     const rng = createRngForEvent(world, `welfare-${heyaId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.welfare.title", ctx);
     const summaryRes = BardEngine.resolve(rng, "events.welfare.summary", ctx);
@@ -248,16 +294,13 @@ export const EventBus = {
       "narrative",
       "event"
     );
-    const titleRes = BardEngine.resolve(rng, "events.basho.bout_title", {
-      ...data,
+    data = {
+      ...enrichEventContext(world, data),
       winnerId: data.winnerRikishiId,
       loserId: data.loserRikishiId,
-    });
-    const summaryRes = BardEngine.resolve(rng, "events.basho.bout_summary", {
-      ...data,
-      winnerId: data.winnerRikishiId,
-      loserId: data.loserRikishiId,
-    });
+    };
+    const titleRes = BardEngine.resolve(rng, "events.basho.bout_title", data);
+    const summaryRes = BardEngine.resolve(rng, "events.basho.bout_summary", data);
 
     return logEngineEvent(world, {
       type: "BOUT_RESOLVED",
@@ -267,11 +310,7 @@ export const EventBus = {
       scope: "world",
       title: titleRes.text,
       summary: summaryRes.text,
-      data: {
-        ...data,
-        winnerId: data.winnerRikishiId,
-        loserId: data.loserRikishiId,
-      },
+      data,
       tags: ["basho", "bout", "pbp"],
     });
   },
@@ -283,6 +322,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   recruitDiscovered: (world: WorldState, data: NarrativeContext) => {
+    data = enrichEventContext(world, data);
     const rng = createRngForEvent(world, `recruit-${data.rikishiId}`);
     const res = BardEngine.resolve(rng, "events.recruiting.scouting_reports", data);
     const titleRes = BardEngine.resolve(rng, "events.recruiting.title", data);
@@ -307,6 +347,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   monthlyFinanceReport: (world: WorldState, data: NarrativeContext) => {
+    data = enrichEventContext(world, data);
     const rng = createRngForEvent(world, `finance-tick-${data.heya}`);
     const res = BardEngine.resolve(rng, "events.economy.market_shifts", data);
     const titleRes = BardEngine.resolve(rng, "events.economy.title", data);
@@ -334,7 +375,7 @@ export const EventBus = {
   rivalryHeatSpike: (world: WorldState, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `rivalry-heat-${data.winner}-${data.loser}`);
     const enrichedData = {
-      ...data,
+      ...enrichEventContext(world, data),
       winnerId: data.winnerId || data.winnerRikishiId,
       loserId: data.loserId || data.loserRikishiId,
     };
@@ -361,6 +402,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   oyakataMoodShift: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
+    data = enrichEventContext(world, { heyaId, ...data });
     const rng = createRngForEvent(world, `mood-${heyaId}`);
     const titleRes = BardEngine.resolve(rng, "events.narrative.mood_shift_title", data);
     const summaryRes = BardEngine.resolve(rng, "events.narrative.mood_shift_summary", data);
@@ -392,6 +434,7 @@ export const EventBus = {
     data: NarrativeContext,
     importance: EventImportance = "minor"
   ) => {
+    data = enrichEventContext(world, { heyaId, ...data });
     const rng = createRngForEvent(world, `mgmt-${heyaId}`);
     const titleRes = BardEngine.resolve(rng, "events.management.decision_title", data);
     const summaryRes = BardEngine.resolve(rng, "events.management.decision_summary", data);
@@ -417,6 +460,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   strategyShift: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
+    data = enrichEventContext(world, { heyaId, ...data });
     const rng = createRngForEvent(world, `strategy-${heyaId}`);
     const titleRes = BardEngine.resolve(rng, "events.narrative.strategy_shift_title", data);
     const summaryRes = BardEngine.resolve(rng, "events.narrative.strategy_shift_summary", data);
@@ -448,6 +492,7 @@ export const EventBus = {
     data: NarrativeContext,
     type: "UPGRADED" | "DEGRADED"
   ) => {
+    data = enrichEventContext(world, { heyaId, ...data });
     const rng = rngFromSeed(`facility-${heyaId}-${type}`, "narrative", "event");
     const path = type === "UPGRADED" ? "events.facility.upgraded" : "events.facility.degraded";
     const titleRes = BardEngine.resolve(rng, `${path}_title`, data);
@@ -474,6 +519,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   rosterEvent: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
+    data = enrichEventContext(world, { heyaId, ...data });
     const rng = rngFromSeed(`roster-${heyaId}-${data.rikishiId}`, "narrative", "event");
     const titleRes = BardEngine.resolve(rng, "events.management.roster_overflow_title", data);
     const summaryRes = BardEngine.resolve(rng, "events.management.roster_overflow_summary", data);
@@ -500,6 +546,7 @@ export const EventBus = {
    * @returns The logged engine event
    */
   prestigeEvent: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
+    data = enrichEventContext(world, { heyaId, ...data });
     const rng = createRngForEvent(world, `prestige-${heyaId}`);
     const titleRes = BardEngine.resolve(rng, "events.narrative.prestige_title", data);
     const summaryRes = BardEngine.resolve(rng, "events.narrative.prestige_summary", data);
@@ -529,6 +576,7 @@ export const EventBus = {
     data: NarrativeContext,
     type: "naturalization" | "merger"
   ) => {
+    data = enrichEventContext(world, data);
     const rng = rngFromSeed(
       `lifecycle-${type}-${data.rikishiId || data.heyaId}`,
       "narrative",
@@ -565,6 +613,7 @@ export const EventBus = {
     data: NarrativeContext,
     type: "loan" | "market"
   ) => {
+    data = enrichEventContext(world, { heyaId, ...data });
     const rng = rngFromSeed(`finance-${type}-${heyaId}`, "narrative", "event");
     const titleRes = BardEngine.resolve(rng, `events.economy.${type}_title`, data);
     const summaryRes = BardEngine.resolve(rng, `events.economy.${type}_summary`, data);

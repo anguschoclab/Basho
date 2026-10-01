@@ -80,7 +80,10 @@ interface LogEngineEventParams {
  *
  * This function also relies on `world.dayIndexGlobal` to scope deduplication.
  */
-export function logEngineEvent(world: WorldState, params: LogEngineEventParams): EngineEvent {
+export function logEngineEvent(
+  world: WorldState,
+  params: LogEngineEventParams
+): EngineEvent | undefined {
   const events = ensureEventsState(world);
 
   const year = world.year ?? DEFAULT_START_YEAR;
@@ -106,8 +109,17 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
 
   const versionedDedupeKey = `${baseDedupeKey}@${dayIndex}`;
 
-  if (events.dedupe[versionedDedupeKey]) {
-    return events.log[events.log.length - 1] as EngineEvent;
+  // On a dedupe hit return the ORIGINAL event (not the tail of the log —
+  // `log[len-1]` silently returned an unrelated event once anything else
+  // logged in between). Same-day hits sit near the end of the log, so scan
+  // backward. If the original rolled off the live cap the hit yields nothing.
+  const dedupedId = events.dedupe[versionedDedupeKey];
+  if (dedupedId) {
+    for (let i = events.log.length - 1; i >= 0; i--) {
+      const e = events.log[i];
+      if (e.id === dedupedId) return e;
+    }
+    return undefined;
   }
 
   const idRngLabel = `${baseDedupeKey}::${events.log.length}`;
@@ -136,7 +148,7 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
   };
 
   events.log.push(ev);
-  events.dedupe[versionedDedupeKey] = true;
+  events.dedupe[versionedDedupeKey] = ev.id;
 
   // Bound the live log. Noise events (training deltas, narrative flavor,
   // per-bout records) accumulate ~10k/basho and were never pruned — the

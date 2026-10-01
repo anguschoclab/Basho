@@ -54,11 +54,11 @@ describe("events.test.ts - Core Bus", () => {
         data: {},
       });
 
-      expect(event.id).toBeDefined();
-      expect(event.id.startsWith("EV-")).toBe(true);
-      expect(event.type).toBe("GOVERNANCE_RULING");
-      expect(event.year).toBe(world.year);
-      expect(event.week).toBe(world.week);
+      expect(event?.id).toBeDefined();
+      expect(event?.id.startsWith("EV-")).toBe(true);
+      expect(event?.type).toBe("GOVERNANCE_RULING");
+      expect(event?.year).toBe(world.year);
+      expect(event?.week).toBe(world.week);
 
       expect(world.events.log.length).toBe(1);
       expect(world.events.log[0]).toBe(event);
@@ -291,8 +291,8 @@ describe("events.test.ts - Core Bus", () => {
       const matched = queryEvents(world, { heyaId: "h1", rikishiId: "r1" });
       expect(matched.length).toBe(2);
       // Descending time: e2 (week 6) before e1 (week 5)
-      expect(matched[0].id).toBe(e2.id);
-      expect(matched[1].id).toBe(e1.id);
+      expect(matched[0].id).toBe(e2?.id);
+      expect(matched[1].id).toBe(e1?.id);
     });
   });
 });
@@ -313,16 +313,16 @@ describe("events.test.ts - Helpers & Cleanup", () => {
         },
         "headline"
       );
-      expect(injuryEvent.category).toBe("injury");
-      expect(injuryEvent.importance).toBe("headline");
+      expect(injuryEvent?.category).toBe("injury");
+      expect(injuryEvent?.importance).toBe("headline");
 
       const bashoEvent = EventBus.bashoStatus(world, {
         status: "started",
         day: 1,
         reason: "hatsu",
       });
-      expect(bashoEvent.type).toBe("BASHO_STATUS");
-      expect(bashoEvent.data?.status).toBe("started");
+      expect(bashoEvent?.type).toBe("BASHO_STATUS");
+      expect(bashoEvent?.data?.status).toBe("started");
 
       expect(world.events.log.length).toBe(2);
     });

@@ -125,7 +125,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 
 ## Test Setup
 - **Runner:** `bun run test` (Vitest, jsdom environment). Do NOT use `bun test` — that invokes Bun's native test runner, which doesn't understand vitest's jsdom environment or setup files.
-- **Mock factory:** `src/engine/__tests__/utils.ts` → `mockRikishi(id, overrides?)`
+- **Mock factory:** `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)`
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 70%, branches 75%, functions 65%, statements 70% (v8 provider)
 - **Current status (v5 consolidation, Sep 2026):** ~830 test files, ~7,400 tests, all passing. `bun run type-check` clean. `bun run build` succeeds.

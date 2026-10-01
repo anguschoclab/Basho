@@ -255,10 +255,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Utility function retained for future wiring",
   "src/engine/systems/health/InjuryService.ts:calculateWeeklyInjuryChance":
     "Utility function retained for future wiring",
-  "src/engine/systems/health/InjuryService.ts:tickWeekInjury":
-    "Utility function retained for future wiring",
-  "src/engine/systems/health/InjuryService.ts:tickWeekRecovery":
-    "Utility function retained for future wiring",
   "src/engine/systems/health/InjuryService.ts:clearInjury":
     "Utility function retained for future wiring",
   "src/engine/systems/health/InjuryService.ts:toInjuryEvent":

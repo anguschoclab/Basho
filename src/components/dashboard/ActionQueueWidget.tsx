@@ -110,6 +110,18 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
     return SEVERITY_CONFIG[worst];
   }, [visibleItems]);
 
+  const blockingCount = useMemo(
+    () => visibleItems.filter(({ item }) => item.kind === "resolve" && item.required).length,
+    [visibleItems]
+  );
+
+  const resolveItemIndexes = useMemo(
+    () => visibleItems.filter(({ item }) => item.kind === "resolve").map(({ index }) => index),
+    [visibleItems]
+  );
+
+  const expandAll = () => setExpanded(new Set(resolveItemIndexes));
+
   if (visibleItems.length === 0) {
     return (
       <BaseWidget title="Action Queue" icon={Inbox} className="border border-border/40">
@@ -124,9 +136,27 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
       icon={Inbox}
       className={`border ${config?.border ?? "border-border/40"}`}
       headerContent={
-        <Badge variant="outline" className={config?.badge ?? ""}>
-          {visibleItems.length}
-        </Badge>
+        <div className="flex items-center gap-2">
+          {blockingCount > 0 && (
+            <Badge variant="outline" className="border-destructive/30 text-destructive">
+              {blockingCount} blocking
+            </Badge>
+          )}
+          {resolveItemIndexes.length > 1 && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2 text-[10px]"
+              onClick={expandAll}
+              aria-label="Expand all decisions"
+            >
+              Expand all
+            </Button>
+          )}
+          <Badge variant="outline" className={config?.badge ?? ""}>
+            {visibleItems.length}
+          </Badge>
+        </div>
       }
     >
       <div className="space-y-2">
@@ -164,6 +194,11 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
               >
                 <div className="shrink-0">{sev.icon}</div>
                 <span className={`text-xs font-semibold flex-1 ${sev.text}`}>{item.title}</span>
+                {item.required && (
+                  <Badge variant="outline" className="border-destructive/30 text-destructive text-[9px] px-1 py-0">
+                    Required
+                  </Badge>
+                )}
                 <ChevronRight
                   className={`h-3.5 w-3.5 transition-transform ${isExpanded ? "rotate-90" : ""} ${sev.text}`}
                 />
@@ -187,7 +222,11 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
                   </div>
                   <div className="flex items-center gap-1 text-[9px] text-muted-foreground/60">
                     <Clock className="h-3 w-3" />
-                    <span>Will auto-resolve on next tick if not chosen</span>
+                    <span>
+                      {item.required
+                        ? "Blocks time advance — you must choose an option"
+                        : "Auto-resolves after its deadline if not chosen"}
+                    </span>
                   </div>
                 </div>
               )}

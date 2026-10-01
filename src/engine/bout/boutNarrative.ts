@@ -1469,6 +1469,8 @@ export function generateBoutNarrative(
           eastRikishiId: east.id,
           westRikishiId: west.id,
           intensity,
+          name: attacker.shikona,
+          nameId: attacker.id,
         });
         push(clinchRes.text, "clinch");
       }
@@ -1574,12 +1576,15 @@ export function generateBoutNarrative(
       const stance = (entry.data?.stance as Stance) ?? "no-grip";
       const path =
         stance === "belt-dominant" ? "combat.phases.clinch.belt" : "combat.phases.clinch.oshi";
+      const aggressor = entry.data?.attackerSide === "west" ? west : east;
       const res = BardEngine.resolve(rng, path, {
         east: east.shikona,
         west: west.shikona,
         eastRikishiId: east.id,
         westRikishiId: west.id,
         intensity,
+        name: aggressor.shikona,
+        nameId: aggressor.id,
       });
       push(res.text, "clinch");
     }

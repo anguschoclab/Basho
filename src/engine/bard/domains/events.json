@@ -37,6 +37,27 @@
       "%HEYANAME% is operating at a ¥%AMOUNT% deficit this month. Reserve funds are depleting.",
       "Financial pressure mounts: %HEYANAME% loses ¥%AMOUNT% after upkeep and salaries.",
       "Stability warning: %HEYANAME% spend exceeds income by ¥%AMOUNT%."
+    ],
+    "title": ["Financial Report", "Monthly Ledger Update", "Accounts Settled"],
+    "summary": [
+      "%HEYANAME% posted its financial report for the period.",
+      "The books were reconciled at %HEYANAME% — the ledger is up to date.",
+      "A routine financial accounting was completed at %HEYANAME%."
+    ],
+    "market_shifts": [
+      "Sponsor interest shifted around %HEYANAME% this month.",
+      "The market moved quietly — %HEYANAME% adjusted its books accordingly.",
+      "Economic currents shifted; %HEYANAME% reports the month's balance."
+    ],
+    "loan_title": ["Loan Activity", "Credit Transaction"],
+    "loan_summary": [
+      "%HEYANAME% processed a loan transaction.",
+      "A loan movement was recorded on %HEYANAME%'s books."
+    ],
+    "market_title": ["Market Activity", "Market Movement"],
+    "market_summary": [
+      "%HEYANAME% recorded market activity this month.",
+      "Market dealings were settled at %HEYANAME%."
     ]
   },
   "lifecycle": {
@@ -76,8 +97,63 @@
     ]
   },
   "welfare": {
+    "title": ["Welfare Update", "Compliance Notice"],
+    "summary": [
+      "%HEYANAME%'s welfare compliance status was updated: %STATUS%.",
+      "A welfare review at %HEYANAME% concluded — status: %STATUS%."
+    ],
     "alert_title": ["Welfare Alert"],
     "alert_summary": ["%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"]
+  },
+  "medical": {
+    "title": ["Medical Report", "Health Update", "Medical Assessment"],
+    "summary": [
+      "%SHIKONA%'s condition was reviewed — status: %STATUS%.",
+      "Medical staff issued an update on %SHIKONA%: %STATUS%.",
+      "The heya received a medical report for %SHIKONA% — %STATUS%."
+    ]
+  },
+  "awards": {
+    "title": ["Award Conferred", "%SHIKONA% Honored", "Formal Recognition"],
+    "summary": [
+      "%SHIKONA% received formal recognition for recent achievements.",
+      "The association conferred an award on %SHIKONA%.",
+      "Honors were bestowed on %SHIKONA% in a brief ceremony."
+    ]
+  },
+  "recruiting": {
+    "title": ["New Recruit Signed", "Scouting Success", "Prospect Joins a Stable"],
+    "scouting_reports": [
+      "Scouts report a promising new recruit: %SHIKONA% joins %HEYANAME%.",
+      "%SHIKONA% has been discovered and signed by %HEYANAME%.",
+      "A new prospect, %SHIKONA%, enters the pipeline at %HEYANAME%."
+    ]
+  },
+  "management": {
+    "decision_title": ["Stable Decision", "Management Call", "Directive Issued"],
+    "decision_summary": [
+      "%HEYANAME% leadership set a new directive for the stable.",
+      "The oyakata at %HEYANAME% made a management decision.",
+      "%HEYANAME%'s leadership settled on a course of action."
+    ],
+    "roster_overflow_title": ["Roster Adjustment", "Roster Overflow", "Roster Trimmed"],
+    "roster_overflow_summary": [
+      "%HEYANAME% released %SHIKONA% to bring the roster within limits.",
+      "%SHIKONA% departs %HEYANAME% amid roster overflow.",
+      "Roster pressure forced %HEYANAME% to part ways with %SHIKONA%."
+    ]
+  },
+  "facility": {
+    "upgraded_title": ["Facility Upgraded", "Grounds Improved"],
+    "upgraded_summary": [
+      "%HEYANAME% completed an upgrade to its facilities.",
+      "Improvements were finished at %HEYANAME% — the stable's grounds are better for it."
+    ],
+    "degraded_title": ["Facility Degraded", "Grounds Deteriorating"],
+    "degraded_summary": [
+      "%HEYANAME%'s facilities have degraded through neglect.",
+      "Upkeep lapsed at %HEYANAME% — the training grounds are wearing down."
+    ]
   },
   "basho": {
     "day_title": [
@@ -465,6 +541,24 @@
       "A setback for %SHIKONA%, slipping from %FROM% down to %TO%.",
       "The new rankings show %SHIKONA% falling to %TO% from %FROM%.",
       "%SHIKONA% pays the price for a make-koshi, demoted from %FROM% to %TO%."
+    ],
+    "mood_shift_title": ["Oyakata Mood Shift", "Change in Temperament"],
+    "mood_shift_summary": [
+      "The oyakata's mood at %HEYANAME% has shifted noticeably.",
+      "A change in temperament is perceptible at %HEYANAME%.",
+      "Those close to %HEYANAME% report its master is in a different frame of mind."
+    ],
+    "strategy_shift_title": ["Strategy Shift", "New Direction"],
+    "strategy_shift_summary": [
+      "%HEYANAME% has adjusted its approach to training and competition.",
+      "A tactical reorientation is underway at %HEYANAME%.",
+      "%HEYANAME% is quietly changing course under its leadership."
+    ],
+    "prestige_title": ["Prestige Update", "Standing Shift"],
+    "prestige_summary": [
+      "%HEYANAME%'s standing in the sumo world has shifted.",
+      "A milestone for %HEYANAME% — its prestige is evolving.",
+      "Observers note a change in how %HEYANAME% is regarded."
     ]
   }
 }

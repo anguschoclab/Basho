@@ -23,6 +23,8 @@ export type ActionItem =
       severity: ActionSeverity;
       title: string;
       decisionId: string;
+      /** Blocking decisions halt multi-day advance and never auto-resolve. */
+      required: boolean;
       options: { id: string; label: string; impact: string }[];
       icon?: string;
     };
@@ -142,6 +144,7 @@ export function buildActionQueue(
         severity: decision.required ? "critical" : "warning",
         title: decision.description,
         decisionId: decision.id,
+        required: decision.required,
         options: decision.options.map((o) => ({
           id: o.id,
           label: o.label,

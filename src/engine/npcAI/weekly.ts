@@ -210,6 +210,7 @@ export function makeNPCWeeklyDecision(
     agentDecisions = {
       finance: {
         shouldBuyMyoseki: financeResult.shouldBuyMyoseki,
+        myosekiId: financeResult.myosekiId,
         shouldInvestInFacilities: financeResult.shouldInvestInFacilities,
         shouldBuildReserves: financeResult.shouldBuildReserves,
         riskLevel: financeResult.riskLevel,

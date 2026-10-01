@@ -91,6 +91,27 @@
         "notable": "Under Review",
         "severe": "On Probation",
         "critical": "Critical Scrutiny"
+      },
+      "momentum": {
+        "on_fire": "On Fire",
+        "rising": "Rising",
+        "steady": "Steady",
+        "struggling": "Struggling",
+        "in_crisis": "In Crisis"
+      },
+      "prizes": {
+        "nominal": "Nominal",
+        "modest": "Modest",
+        "notable": "Notable",
+        "prestigious": "Prestigious",
+        "grand": "Grand"
+      },
+      "traits": {
+        "negligible": "Negligible",
+        "minor": "Minor",
+        "moderate": "Moderate",
+        "strong": "Strong",
+        "dominant": "Dominant"
       }
     }
   }

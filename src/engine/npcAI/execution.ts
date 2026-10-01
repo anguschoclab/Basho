@@ -15,7 +15,7 @@ import type { Oyakata } from "../types/oyakata";
 import type { StateImpact } from "../core/StateImpact";
 import type { AgentDecisions } from "./types";
 import { createImpactBuilder } from "../core/ImpactBuilder";
-import { getHeya } from "../queries";
+import { getHeya, getRikishiAnywhere } from "../queries";
 import { buyMyoseki } from "../myosekiMarket";
 import { hireStaff } from "../staff";
 import type { StaffRole } from "../types/staff";
@@ -116,7 +116,10 @@ export function executeAgentDecisions(
           canSpend(s.askingPrice)
       )
       .sort((a, b) => (a.askingPrice ?? 0) - (b.askingPrice ?? 0));
-    const target = stocks[0];
+    // Honor the agent's prioritized pick when it is still available and
+    // affordable; otherwise fall back to the cheapest eligible stock.
+    const target =
+      stocks.find((s) => s.id === decisions.finance.myosekiId) ?? stocks[0];
     if (target) {
       builder.merge(buyMyoseki(world, oyakata.id, heyaId, target.id));
       executedDomains.push("myoseki");
@@ -272,20 +275,25 @@ export function executeAgentDecisions(
     !onCooldown(oyakata.memory, "narrative", week)
   ) {
     const mapEntry = narrativeEventMap[decisions.narrative.eventType];
-    if (mapEntry) {
+    // Every mapped template requires %SHIKONA% — without a resolved rikishi
+    // the event would render [MISSING: SHIKONA]; skip rather than emit a
+    // broken headline.
+    const subject = decisions.narrative.rikishiId
+      ? getRikishiAnywhere(world, decisions.narrative.rikishiId)
+      : undefined;
+    if (mapEntry && subject) {
       const rng = rngForWorld(
         world,
         "narrative",
         `npc-event-${decisions.narrative.eventType}-${heyaId}-${week}`
       );
-      const rikishi = decisions.narrative.rikishiId
-        ? world.rikishi.get(decisions.narrative.rikishiId)
-        : undefined;
       const ctx = {
         heya: heya.name,
         heyaId,
-        shikona: rikishi?.shikona,
-        rikishiId: rikishi?.id,
+        shikona: subject.shikona,
+        rikishiId: subject.id,
+        SHIKONA: subject.shikona,
+        HEYA: heya.name,
       };
       const titleRes = BardEngine.resolve(rng, mapEntry.titlePath, ctx);
       const summaryRes = BardEngine.resolve(rng, mapEntry.summaryPath, ctx);

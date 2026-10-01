@@ -111,6 +111,84 @@ describe("executeAgentDecisions — finance", () => {
     expect(resolved.heyas.get("heya-a")!.funds).toBe(1);
   });
 
+  it("honors the agent's prioritized myosekiId over the cheapest available stock", () => {
+    const { world } = makeWorld({
+      myosekiMarket: {
+        stocks: {
+          "stock-cheap": {
+            id: "stock-cheap",
+            name: "Cheap-share",
+            status: "available",
+            askingPrice: 1_000_000,
+          },
+          "stock-elite": {
+            id: "stock-elite",
+            name: "Elite-share",
+            status: "available",
+            askingPrice: 50_000_000,
+          },
+        },
+        transactions: [],
+      } as never,
+    });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      makeDecisions({
+        finance: {
+          shouldBuyMyoseki: true,
+          myosekiId: "stock-elite",
+          shouldInvestInFacilities: false,
+          shouldBuildReserves: false,
+          riskLevel: "moderate",
+        },
+      }),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    expect(resolved.myosekiMarket?.stocks["stock-elite"].status).toBe("held");
+    expect(resolved.myosekiMarket?.stocks["stock-cheap"].status).toBe("available");
+    expect(resolved.heyas.get("heya-a")!.funds).toBe(999_999_999 - 50_000_000);
+  });
+
+  it("falls back to cheapest available stock when the prioritized pick is unavailable", () => {
+    const { world } = makeWorld({
+      myosekiMarket: {
+        stocks: {
+          "stock-cheap": {
+            id: "stock-cheap",
+            name: "Cheap-share",
+            status: "available",
+            askingPrice: 1_000_000,
+          },
+          "stock-sold": {
+            id: "stock-sold",
+            name: "Sold-share",
+            status: "held",
+            askingPrice: 50_000_000,
+          },
+        },
+        transactions: [],
+      } as never,
+    });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      makeDecisions({
+        finance: {
+          shouldBuyMyoseki: true,
+          myosekiId: "stock-sold",
+          shouldInvestInFacilities: false,
+          shouldBuildReserves: false,
+          riskLevel: "moderate",
+        },
+      }),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    expect(resolved.myosekiMarket?.stocks["stock-cheap"].status).toBe("held");
+  });
+
   it("shouldInvestInFacilities → a facility level increases at a funds cost", () => {
     const { world } = makeWorld({
       heyaOverrides: { facilities: { training: 1, recovery: 1, nutrition: 1 } },

@@ -6,6 +6,7 @@ import type { StateImpact } from "../core/StateImpact";
 export interface AgentDecisions {
   finance: {
     shouldBuyMyoseki: boolean;
+    myosekiId?: string;
     shouldInvestInFacilities: boolean;
     shouldBuildReserves: boolean;
     riskLevel: "conservative" | "moderate" | "aggressive";

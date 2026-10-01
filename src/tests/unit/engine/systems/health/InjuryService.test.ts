@@ -2,8 +2,6 @@ import { describe, it, expect, vi } from "vitest";
 import {
   calculateWeeklyInjuryChance,
   rollWeeklyInjury,
-  tickWeekInjury,
-  tickWeekRecovery,
   onBoutResolvedInjury,
   clearInjury,
   toInjuryEvent,
@@ -95,62 +93,8 @@ describe("InjuryService", () => {
     });
   });
 
-  describe("tickWeekInjury", () => {
-    it("skips retired and already injured rikishi", () => {
-      const world = makeMockWorld();
-      world.rikishi.set("r1", mockRikishi("r1", { isRetired: true }));
-      world.rikishi.set("r2", mockRikishi("r2", { injured: true }));
-
-      const impact = tickWeekInjury(world);
-      expect(impact.entities?.rikishiUpdates?.size).toBeUndefined();
-    });
-
-    it("applies injury to active rikishi if rolled", () => {
-      const world = makeMockWorld();
-      world.rikishi.set("r1", mockRikishi("r1", { fatigue: 100 }));
-
-      // Force an injury
-      vi.spyOn(RNGRegistry, "getSystemRNG").mockReturnValue({
-        next: vi
-          .fn()
-          .mockReturnValueOnce(0.0001) // chance
-          .mockReturnValueOnce(0.8) // moderate
-          .mockReturnValueOnce(0.5)
-          .mockReturnValueOnce(0.5)
-          .mockReturnValueOnce(0.5),
-        uuid: () => "IJ-123",
-      } as unknown as SeededRNG);
-
-      const impact = tickWeekInjury(world);
-      const updates = impact.entities?.rikishiUpdates?.get("r1");
-      expect(updates).toBeDefined();
-      expect(updates?.injured).toBe(true);
-      expect(updates?.injuryWeeksRemaining).toBeGreaterThan(0);
-
-      vi.restoreAllMocks();
-    });
-  });
-
-  describe("tickWeekRecovery", () => {
-    it("skips retired and uninjured rikishi", () => {
-      const world = makeMockWorld();
-      world.rikishi.set("r1", mockRikishi("r1", { injured: false }));
-
-      const impact = tickWeekRecovery(world);
-      expect(impact.entities?.rikishiUpdates?.size).toBeUndefined();
-    });
-
-    it("processes recovery for injured rikishi", () => {
-      const world = makeMockWorld();
-      world.rikishi.set("r1", mockRikishi("r1", { injured: true, injuryWeeksRemaining: 1 }));
-
-      const impact = tickWeekRecovery(world);
-      const updates = impact.entities?.rikishiUpdates?.get("r1");
-      expect(updates).toBeDefined();
-      expect(updates?.injured).toBe(false);
-      expect(updates?.injuryWeeksRemaining).toBe(0);
-    });
-  });
+  // tickWeekInjury / tickWeekRecovery removed — dead world-level duplicates;
+  // phase01_week_health drives rollWeeklyInjury + tickRikishiRecovery directly.
 
   describe("onBoutResolvedInjury", () => {
     it("returns empty impact if no result", () => {

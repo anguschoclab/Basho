@@ -140,7 +140,8 @@ describe("phase06_narrative — narrative agent surfacing", () => {
           {
             type: "RETIREMENT_ANNOUNCED",
             category: "career",
-            data: {},
+            data: { rikishiId: "r2" },
+            rikishiId: "r2",
             week: 5,
           },
         ],

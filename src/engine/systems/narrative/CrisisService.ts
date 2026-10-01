@@ -6,11 +6,98 @@
  */
 
 import { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { getHeya } from "../../queries";
+import { clamp } from "../../utils/math";
 
 import { ActiveCrisis } from "../../types/crises";
+
+/**
+ * Bounded ±delta on a 0–100 scale — welfareRisk, scandalScore, reputation,
+ * morale, condition, and heyaPressure all share it.
+ */
+const clampStat = (v: number) => clamp(Math.round(v), 0, 100);
+
+/** Apply heya-scalar deltas (reputation / funds / scandal / political capital / welfare). */
+function applyHeyaDelta(
+  b: ImpactBuilder,
+  world: WorldState,
+  heyaId: string,
+  d: {
+    reputation?: number;
+    funds?: number;
+    scandalScore?: number;
+    politicalCapital?: number;
+    welfareRisk?: number;
+    morale?: number;
+  }
+): void {
+  const heya = getHeya(world, heyaId);
+  if (!heya) return;
+  const ws = heya.welfareState;
+  b.updateHeya(heyaId, {
+    reputation: d.reputation !== undefined ? clampStat((heya.reputation ?? 50) + d.reputation) : heya.reputation,
+    funds: d.funds !== undefined ? Math.round((heya.funds ?? 0) + d.funds) : heya.funds,
+    scandalScore:
+      d.scandalScore !== undefined ? clampStat((heya.scandalScore ?? 0) + d.scandalScore) : heya.scandalScore,
+    politicalCapital:
+      d.politicalCapital !== undefined
+        ? clampStat((heya.politicalCapital ?? 50) + d.politicalCapital)
+        : heya.politicalCapital,
+    welfareState:
+      ws && (d.welfareRisk !== undefined || d.morale !== undefined)
+        ? {
+            ...ws,
+            welfareRisk: clampStat((ws.welfareRisk ?? 0) + (d.welfareRisk ?? 0)),
+            morale: clampStat((ws.morale ?? 50) + (d.morale ?? 0)),
+          }
+        : ws,
+  });
+}
+
+/** Apply the same fatigue delta to every active rikishi of `heyaId`. */
+function applyRosterFatigue(
+  b: ImpactBuilder,
+  world: WorldState,
+  heyaId: string,
+  delta: number
+): void {
+  for (const rid of world.activeRikishiIds) {
+    const r = world.rikishi.get(rid);
+    if (!r || r.heyaId !== heyaId || r.isRetired) continue;
+    b.updateRikishi(rid, { fatigue: Math.max(0, (r.fatigue ?? 0) + delta) });
+  }
+}
+
+/** Delta `heyaPressure[heyaId]` on world.mediaState (heya-level press pressure). */
+function applyHeyaPressure(
+  b: ImpactBuilder,
+  world: WorldState,
+  heyaId: string,
+  delta: number
+): void {
+  const ms = world.mediaState;
+  if (!ms) return;
+  b.updateWorldField("mediaState", {
+    ...ms,
+    heyaPressure: {
+      ...ms.heyaPressure,
+      [heyaId]: clampStat((ms.heyaPressure?.[heyaId] ?? 0) + delta),
+    },
+  });
+}
+
+/** Pick one active rikishi of `heyaId` deterministically (crisis resolution RNG). */
+function pickRikishi(world: WorldState, heyaId: string, label: string): string | undefined {
+  const roster = [...world.activeRikishiIds].filter(
+    (rid) => world.rikishi.get(rid)?.heyaId === heyaId && !world.rikishi.get(rid)?.isRetired
+  );
+  if (roster.length === 0) return undefined;
+  const rng = RNGRegistry.getSystemRNG(world, "narrative", `crisis_pick_${label}_${world.week}`);
+  return roster[rng.int(0, roster.length - 1)];
+}
 
 export const CrisisService = {
   /**
@@ -77,18 +164,37 @@ export const CrisisService = {
           {
             id: "quarantine",
             label: "Quarantine & Rest",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("stomach_flu_quarantine");
-              // Penalty to training for everyone, but prevents spread
+              if (!heyaId) return b.build();
+              // Rest week: fatigue bleeds off, welfare pressure eases.
+              applyRosterFatigue(b, w, heyaId, -10);
+              applyHeyaDelta(b, w, heyaId, { welfareRisk: -5, morale: 2 });
               return b.build();
             },
           },
           {
             id: "push_through",
             label: "Push Through",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("stomach_flu_push");
-              // Risk of severe injury or performance drop
+              if (!heyaId) return b.build();
+              // Train sick: whole roster fatigues, one rikishi goes down.
+              applyRosterFatigue(b, w, heyaId, 15);
+              applyHeyaDelta(b, w, heyaId, { welfareRisk: 8 });
+              const victim = pickRikishi(w, heyaId, "stomach_flu_push");
+              const r = victim ? w.rikishi.get(victim) : undefined;
+              if (victim && r && !r.injured) {
+                b.updateRikishi(victim, { injured: true, injuryWeeksRemaining: 1 });
+                b.updateRikishiNestedField(victim, "injuryStatus", {
+                  type: "illness",
+                  isInjured: true,
+                  severity: "minor",
+                  location: "internal",
+                  weeksRemaining: 1,
+                  weeksToHeal: 1,
+                });
+              }
               return b.build();
             },
           },
@@ -103,8 +209,19 @@ export const CrisisService = {
           {
             id: "accept",
             label: "Accept the Challenge",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("dojo_duel_accept");
+              if (!heyaId) return b.build();
+              // Extra sparring sharpens the champion but costs condition.
+              const duelist = pickRikishi(w, heyaId, "dojo_duel");
+              const r = duelist ? w.rikishi.get(duelist) : undefined;
+              if (duelist && r) {
+                b.updateRikishi(duelist, {
+                  fatigue: Math.max(0, (r.fatigue ?? 0) + 8),
+                  condition: clampStat((r.condition ?? 50) - 5),
+                });
+              }
+              applyHeyaDelta(b, w, heyaId, { reputation: 3 });
               b.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { newMood: "furious" });
               return b.build();
             },
@@ -112,8 +229,11 @@ export const CrisisService = {
           {
             id: "decline",
             label: "Ignore the Distraction",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("dojo_duel_decline");
+              if (!heyaId) return b.build();
+              // Ducking the challenge reads as weakness.
+              applyHeyaDelta(b, w, heyaId, { reputation: -4, morale: -3 });
               return b.build();
             },
           },
@@ -128,8 +248,12 @@ export const CrisisService = {
           {
             id: "suspend",
             label: "Issue Suspension",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("scandal_suspend");
+              if (!heyaId) return b.build();
+              // Visible discipline reassures the JSA but sours the room.
+              applyHeyaDelta(b, w, heyaId, { reputation: 4, welfareRisk: -5, morale: -3 });
+              applyHeyaPressure(b, w, heyaId, -4);
               b.logEvent("GOVERNANCE_RULING", "discipline", { status: "suspended" });
               return b.build();
             },
@@ -137,8 +261,12 @@ export const CrisisService = {
           {
             id: "defend",
             label: "Publicly Defend",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("scandal_defend");
+              if (!heyaId) return b.build();
+              // Loyalty inside the walls, scandal outside them.
+              applyHeyaDelta(b, w, heyaId, { reputation: -3, scandalScore: 8, morale: 5 });
+              applyHeyaPressure(b, w, heyaId, 10);
               b.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { newMood: "stubborn" });
               return b.build();
             },
@@ -154,16 +282,24 @@ export const CrisisService = {
           {
             id: "renegotiate",
             label: "Renegotiate Terms",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("sponsor_renegotiate");
+              if (!heyaId) return b.build();
+              // Buy goodwill: a concession payment keeps the sponsor aboard.
+              applyHeyaDelta(b, w, heyaId, { funds: -200_000, reputation: 2 });
+              applyHeyaPressure(b, w, heyaId, -3);
               return b.build();
             },
           },
           {
             id: "call_bluff",
             label: "Call Their Bluff",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("sponsor_bluff");
+              if (!heyaId) return b.build();
+              // The sponsor walks — lost disbursement plus bad press.
+              applyHeyaDelta(b, w, heyaId, { funds: -400_000, reputation: -3, scandalScore: 3 });
+              applyHeyaPressure(b, w, heyaId, 5);
               return b.build();
             },
           },
@@ -178,16 +314,36 @@ export const CrisisService = {
           {
             id: "halt_training",
             label: "Halt Training",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("training_halt");
+              if (!heyaId) return b.build();
+              // A lost week of conditioning, but the roster settles.
+              applyRosterFatigue(b, w, heyaId, -8);
+              applyHeyaDelta(b, w, heyaId, { welfareRisk: -4, morale: 3 });
               return b.build();
             },
           },
           {
             id: "continue",
             label: "Continue with Caution",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("training_continue");
+              if (!heyaId) return b.build();
+              // Pressing on costs a rikishi — minor injury, 1 week out.
+              applyHeyaDelta(b, w, heyaId, { welfareRisk: 8 });
+              const victim = pickRikishi(w, heyaId, "training_continue");
+              const r = victim ? w.rikishi.get(victim) : undefined;
+              if (victim && r && !r.injured) {
+                b.updateRikishi(victim, { injured: true, injuryWeeksRemaining: 1 });
+                b.updateRikishiNestedField(victim, "injuryStatus", {
+                  type: "sprain",
+                  isInjured: true,
+                  severity: "minor",
+                  location: "ankle",
+                  weeksRemaining: 1,
+                  weeksToHeal: 1,
+                });
+              }
               return b.build();
             },
           },
@@ -202,16 +358,24 @@ export const CrisisService = {
           {
             id: "exclusive",
             label: "Offer Exclusive Interview",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("media_exclusive");
+              if (!heyaId) return b.build();
+              // Controlled narrative defuses the story but spends capital.
+              applyHeyaDelta(b, w, heyaId, { reputation: 3, politicalCapital: -3 });
+              applyHeyaPressure(b, w, heyaId, -6);
               return b.build();
             },
           },
           {
             id: "no_comment",
             label: "No Comment",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("media_no_comment");
+              if (!heyaId) return b.build();
+              // Silence lets the story run free.
+              applyHeyaDelta(b, w, heyaId, { reputation: -5, scandalScore: 5 });
+              applyHeyaPressure(b, w, heyaId, 12);
               return b.build();
             },
           },
@@ -226,16 +390,32 @@ export const CrisisService = {
           {
             id: "cooperate",
             label: "Full Cooperation",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("audit_cooperate");
+              if (!heyaId) return b.build();
+              // Open books: compliance risk eases, political goodwill earned,
+              // at a modest administrative cost.
+              applyHeyaDelta(b, w, heyaId, {
+                welfareRisk: -8,
+                politicalCapital: 6,
+                funds: -100_000,
+              });
               return b.build();
             },
           },
           {
             id: "stonewall",
             label: "Stonewall",
-            impactGenerator: (_world: WorldState) => {
+            impactGenerator: (w: WorldState, heyaId?: string) => {
               const b = createImpactBuilder("audit_stonewall");
+              if (!heyaId) return b.build();
+              // Refusing an audit reads as guilt.
+              applyHeyaDelta(b, w, heyaId, {
+                welfareRisk: 15,
+                politicalCapital: -8,
+                scandalScore: 8,
+              });
+              applyHeyaPressure(b, w, heyaId, 8);
               return b.build();
             },
           },
