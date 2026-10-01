@@ -78,6 +78,7 @@ export interface LiveWorldMeta {
   rikishiCount: number;
   banzukeIndexLength: number;
   yokozunaVacancyStreak: number;
+  requiredDecisionCount: number;
 }
 
 /** Live in-page world handle shape (Maps still live — unlike SerializedWorld). */
@@ -96,6 +97,7 @@ interface LiveWorldHandle {
   rikishi?: Map<string, unknown> | Record<string, unknown>;
   historyIndex?: { banzukeByBasho?: Record<string, unknown> };
   yokozunaVacancyStreak?: number;
+  pendingDecisions?: Array<{ id?: string; required?: boolean }>;
 }
 
 export async function readAutosaveSave(page: Page): Promise<SerializedSave | null> {
@@ -145,6 +147,7 @@ export async function readLiveWorldMeta(page: Page): Promise<LiveWorldMeta | nul
         rikishiCount: w.rikishi instanceof Map ? w.rikishi.size : Object.keys(w.rikishi ?? {}).length,
         banzukeIndexLength: Object.keys(w.historyIndex?.banzukeByBasho ?? {}).length,
         yokozunaVacancyStreak: w.yokozunaVacancyStreak ?? 0,
+        requiredDecisionCount: (w.pendingDecisions ?? []).filter((d) => d.required).length,
       };
     })
     .catch(() => null);
@@ -403,16 +406,11 @@ export async function advanceToBasho(page: Page): Promise<void> {
       await page.waitForTimeout(1000);
     }
 
-    if (i % 15 === 14) {
+    if (i % 5 === 4) {
       const w = await readLiveWorldMeta(page);
-      const cal = await page
-        .getByText(/Week \d+|Day \d+|Tournament/i)
-        .first()
-        .innerText()
-        .catch(() => "?");
       const dlgInfo = await page
         .evaluate(() =>
-          [...document.querySelectorAll('[role="dialog"]')].map((d) => ({
+          [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map((d) => ({
             state: d.getAttribute("data-state"),
             hidden: d.getAttribute("aria-hidden"),
             text: (d.textContent ?? "").slice(0, 90),
@@ -420,8 +418,8 @@ export async function advanceToBasho(page: Page): Promise<void> {
         )
         .catch((): { state: string | null; hidden: string | null; text: string }[] => []);
       console.log(
-        `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} cal="${cal}" ` +
-          `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + w.pendingCrisis.id : ""}` : "none"} ` +
+        `[advanceToBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
+          `world=${w ? `day${w.dayIndexGlobal} wk${w.week} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day : ""}${w.pendingCrisis ? " crisis:" + w.pendingCrisis.id : ""} reqDecisions=${w.requiredDecisionCount}` : "none"} ` +
           `dialogs=${JSON.stringify(dlgInfo)}`
       );
     }

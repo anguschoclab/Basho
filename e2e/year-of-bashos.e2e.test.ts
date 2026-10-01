@@ -125,7 +125,7 @@ interface BashoReport {
 test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + winner diversity, yokozuna discipline`, async ({
   page,
 }) => {
-  test.setTimeout(3_300_000); // 55 min — 6 honbasho, and the interactive basho path is slower than the dashboard fast-forward.
+  test.setTimeout(7_200_000); // 2 h — 6 honbasho at ~14 min each (interactive basho path is far slower than dashboard fast-forward); the prior 55-min cap timed out mid-basho-3 even on a healthy run.
 
   // Surface reducer/engine exceptions — a throw inside dispatch (e.g.
   // END_BASHO) leaves the UI looking normal while the world never changes,
