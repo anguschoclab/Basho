@@ -44,9 +44,11 @@ function makeWorld(opts: WorldOpts = {}): { world: WorldState; oyakataId: string
     funds: 999_999_999,
     ...opts.heyaOverrides,
   });
+  const rikishi = MockFactory.createRikishi("rik-1", { heyaId: "heya-a", shikona: "Testyama" });
   const world = MockFactory.createWorld({
     heyas: new Map([["heya-a", heya]]),
     oyakata: new Map([["oya-a", oyakata]]),
+    rikishi: new Map([["rik-1", rikishi]]),
     myosekiMarket: opts.myosekiMarket,
     rivalriesState: opts.rivalriesState,
   });
@@ -467,6 +469,7 @@ describe("executeAgentDecisions — narrative", () => {
           shouldTriggerEvent: true,
           eventType: "media_spotlight",
           narrativeTone: "neutral",
+          rikishiId: "rik-1",
         },
       }),
       world.oyakata.get("oya-a")!
