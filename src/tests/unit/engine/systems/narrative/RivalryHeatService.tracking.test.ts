@@ -30,7 +30,6 @@ describe("RivalryHeatService — lastKimarite and lastWinnerId tracking", () => 
     const next = applyBoutToPairState(pair, {
       rng,
       isWinForA: true,
-      isLossForA: false,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.5,
@@ -51,7 +50,6 @@ describe("RivalryHeatService — lastKimarite and lastWinnerId tracking", () => 
     const next = applyBoutToPairState(pair, {
       rng,
       isWinForA: true,
-      isLossForA: false,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.5,
@@ -72,7 +70,6 @@ describe("RivalryHeatService — lastKimarite and lastWinnerId tracking", () => 
     const next = applyBoutToPairState(pair, {
       rng,
       isWinForA: false,
-      isLossForA: true,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.5,
@@ -95,7 +92,6 @@ describe("RivalryHeatService — lastKimarite and lastWinnerId tracking", () => 
     const first = applyBoutToPairState(pair, {
       rng: rng1,
       isWinForA: true,
-      isLossForA: false,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.5,
@@ -112,7 +108,6 @@ describe("RivalryHeatService — lastKimarite and lastWinnerId tracking", () => 
     const second = applyBoutToPairState(first, {
       rng: rng2,
       isWinForA: false,
-      isLossForA: true,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.6,
@@ -134,7 +129,6 @@ describe("RivalryHeatService — lastKimarite and lastWinnerId tracking", () => 
     const next = applyBoutToPairState(pair, {
       rng,
       isWinForA: true,
-      isLossForA: false,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.5,
@@ -154,7 +148,6 @@ describe("RivalryHeatService — lastKimarite and lastWinnerId tracking", () => 
     const next = applyBoutToPairState(pair, {
       rng,
       isWinForA: true,
-      isLossForA: false,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.5,

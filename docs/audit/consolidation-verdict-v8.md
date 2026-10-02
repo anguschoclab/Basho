@@ -107,6 +107,7 @@ lines before fixing; "DISPROVED" entries were checked and found absent/stale.
 | B31 | `effa980a` dependabot consolidation claimed lockfile refreshes for `@babel/core` 8.0.6, `prettier` 3.9.9, `electron` 44.4.5, `eslint` 10.11.0, `@playwright/test` 1.63.0, `framer-motion` 13.4.4, `eslint-plugin-react-refresh` 0.5.7, `@rolldown/plugin-babel` 0.2.4 — the lockfile still pinned every old version; only `@typescript-eslint` and vite actually moved | **CONFIRMED → FIXED** (`88aad321`) — real `bun update` applied all targets (electron 44.5.1, framer-motion 13.5.0, latest-in-range superseding PR pins). |
 | B32 | Cold-boot/deep-link world loss: a full reload on a world-gated route (e.g. `/basho` mid-basho) rendered a permanently blank page — ~30 game routes return `null` on `!world` with no guard, only Dashboard self-restored the autosave, and `RequireWorld` was an unused orphan while `useRequireWorld` covered just 5 pages. The autosave itself survived intact in IndexedDB (the IDB read-through provider writes `localStorage` only pre-hydration). Reproduced live via Playwright: reload at `/basho` → `world=NONE`, blank `<body>`, URL never redirected | **CONFIRMED → FIXED.** `useRequireWorld` now (a) waits while `workerWorld` is in transit (B30-safe), (b) restores the autosave in place via `loadFromAutosave`, and (c) redirects to `/main-menu` only when nothing restoreable exists. `withWorldGuard` wraps every world-gated route at the router level — exempt: `/`, `/main-menu`, `/new-game` (world in creation), `/settings` (world-optional), `/glossary` (static), 404. `RequireWorld` is no longer an orphan. Regression spec `e2e/reload-restore.e2e.test.ts` covers both paths (restore-in-place + redirect) |
 | E1 | e2e helper wedge: `resolveCrisisIfPresent` clicks the LAST substantive button of any open `role="dialog"` — for the BoutNarrativeModal replay viewer that's "Replay", which restarts the animation rather than dismissing (observed: world frozen at bashoDay12 for 60+ iters while the loop replayed a bout) | **CONFIRMED → FIXED** — helper presses Escape first (safe: a world-backed `CrisisModal` no-ops `onOpenChange` while a decision is pending, so Escape dismisses only pure viewers), falls back to the action button only if a dialog survives. |
+| B33 | `RivalryService` internals (exhaustive `applyBoutToPairState` review): (a) `applyWeeklyDecay` wrote `{version, pairs}` via `updateWorldField` — a whole-field replace that **wiped `heyaRivalryPairs` every weekly decay**, silently destroying all stable-level rivalries; (b) `sameHeya` was snapshotted at pair creation but mergers reassign `rikishi.heyaId`, so a post-merger same-stable pair could never reach the same-heya `respect` tone; (c) decay derived `tone` from the pre-decay pair — every tone lagged one tick; (d) `isLossForA` was a dead param (always `!isWinForA`) declared and passed but never read | **CONFIRMED → FIXED.** Decay write preserves `heyaRivalryPairs`; `onBoutResolved` refreshes `sameHeya` from live rikishi records; tone derives from the decayed pair; `isLossForA` removed from the contract and all call sites. 3 regression tests added |
 | B29 | Ichimon display casing; `IdentityStep`/route/chart-key defects; dead submit button; fabricated "NEVER"/6-day readout; `showLabel` prop referenced nonexistent `brand.primaryMark` field; "Balanced Development" subtitle ignored real focus bias; `YokozunaTrajectory` labeled "yushos in last 2 basho" as `consecutiveYushos` | **CONFIRMED → FIXED** (`f9e027b5`) — `consecutiveYushos` now computed as a real streak from history. |
 | D01 | "Unseeded `Math.random()` in engine" | **DISPROVED** — zero matches in `src/engine/`. |
 | D02 | "Rivalries phase clones stale state" | **DISPROVED** — `phase01_week_rivalries` is pure (fresh `nextPairs`, spread merges). |
@@ -132,8 +133,9 @@ lines before fixing; "DISPROVED" entries were checked and found absent/stale.
   uses monotonic weeks, `sequenceImpacts` changes `resolveImpacts` call counts,
   sponsor renewal fixtures reflect real source shape, NPC focus slots preserve
   unmanaged entries, `collectedHeadlines` param added to welfare transitions.
-- `applyBoutToPairState` internals and the full ~50-path `boutNarrative` token
-  sweep were sampled, not exhaustively diffed — residual risk noted.
+- `applyBoutToPairState`/`RivalryService` internals are now exhaustively
+  reviewed (B33 — 3 real defects found and fixed); the ~50-path `boutNarrative`
+  token sweep is exhaustive via AST (§7).
 
 ## 5. Validation Gate
 
@@ -147,7 +149,7 @@ lines before fixing; "DISPROVED" entries were checked and found absent/stale.
 | Full suite (`bun run test`) | PASS — 864 files / 8,349 tests. Two earlier gate failures resolved: `economy-surface`/`useFinancesData` (fixed in `4bbd7957`), and a stale `unreferenced-exports` baseline (regenerated clean; `tickWeekInjury`/`tickWeekRecovery` removed, `createHeyaWelfareState` unexported, `EntityService` classified). Post-fix focused reruns green: orphan-audit 5/5, archival sim + narrative/NPC files 37/37 with **zero** `[MISSING:]` warnings. Post-B32 rerun: 860 files / 8,330 tests — 4 failures, all resolved: 3 test-assertion fallout from the route guard (`HistoryPage` mock missing `hasAutosave`/`loadFromAutosave`; `routes-lazy` + `chunk-lazy-loads` asserting root `=== Suspense` instead of `RequireWorld`→`Suspense`) fixed and re-verified green, and `simulationInvariants` hitting its 900s cap under parallel contention — passed solo in ~4 min. 4 pool-worker startup timeouts were the same contention; all 4 files pass solo |
 | Worker write-path + determinism | PASS — `writePaths` 8/8; `rngDeterminism` 10/10 + `bout/determinism` 1/1 |
 | Standalone Playwright tick repro | PASS — week click advances day 0→7, week 1→2 (`interim`→`active_basho`) |
-| Playwright e2e (`bun run test:e2e`) | PASS — 5/5 specs green (10.8 min): `golden-path`, `full-basho-lifecycle`, `year-of-bashos` (7.9 min, 6 honbasho: 4 distinct yusho winners, +3165/−2992 banzuke movement, 6 kinboshi, calendar rollover to day 381), and new `reload-restore` (B32 regression: reload at `/basho` restores same-seed world; no-save `/basho` redirects to `/main-menu`). Earlier stalls traced to the B30 in-transit world clobber and the BoutNarrativeModal "Replay" wedge (E1). Non-blocking residual: `IndexedDB write failed` console errors late in the year-long soak (in-session IDB cache still serves reads; a reload after the failure point would redirect to `/main-menu` rather than restore) |
+| Playwright e2e (`bun run test:e2e`) | PASS — 5/5 specs green (10.8 min): `golden-path`, `full-basho-lifecycle`, `year-of-bashos` (7.9 min, 6 honbasho: 4 distinct yusho winners, +3165/−2992 banzuke movement, 6 kinboshi, calendar rollover to day 381), and new `reload-restore` (B32 regression: reload at `/basho` restores same-seed world; no-save `/basho` redirects to `/main-menu`). Earlier stalls traced to the B30 in-transit world clobber and the BoutNarrativeModal "Replay" wedge (E1). `IndexedDB write failed` console errors late in the year-long soak are now **mitigated**: the provider logs the DOMException name/message and falls back to a compressed `localStorage` copy (`fallbackPersist`), so a post-failure reload still restores (see §7) |
 
 ## 6. Remote Lifecycle
 
@@ -227,7 +229,31 @@ All previously listed open items are now **resolved** (post-`5be22bce` work —
   all classified). The mid-suite regen had self-contaminated on `__audit_coll_*`
   fixtures; also unexported `createHeyaWelfareState` (same-file-only use) and
   classified `EntityService` as the public hydrator facade.
+- `RivalryService` internals — **REVIEWED EXHAUSTIVELY (B33).** Found and
+  fixed: `heyaRivalryPairs` wiped by every weekly decay write, `sameHeya`
+  snapshot never refreshed after mergers, `tone` derived from pre-decay values.
+  Dead `isLossForA` param removed. Regression coverage in
+  `RivalryService.test.ts` (17/17).
+- IndexedDB write-failure residual — **MITIGATED.** `ElectronStorageProvider.webSet`
+  now logs the DOMException name/message on `idbPut` failure and persists a
+  compressed copy to `localStorage` (`fallbackPersist`) — small enough to fit
+  the ~5MB quota where the raw ~30MB save could not. The hydrate sweep already
+  migrates localStorage keys back into IDB on next boot, so a reload after an
+  IDB quota failure restores the save instead of redirecting to `/main-menu`.
+  Pre-hydration localStorage writes are now quota-guarded too. Unit tests mock
+  a fake `indexedDB` and drive the real `idbPut` rejection path.
+- Dead `processHeyaFinances`/`tickWeekEconomics` — **ALREADY REMOVED** (stale
+  CLAUDE.md gotcha corrected). `engine-reviewer.ts` + its self-test remain as
+  intentional canaries against reintroduction.
+- Test-side `as any` (~1,775 casts / 336 files) — **ASSESSED, no action.** Zero
+  casts exist in production code and `tseslint.configs.strict` already errors on
+  `no-explicit-any` outside tests; the `*.test.*` override is a deliberate
+  fixture-mock exemption (`{power: 85} as any` partial-fixture idiom). A
+  wholesale sweep would be churn with real corruption risk for no signal; the
+  production-side ban is already enforced by lint.
 
 **Residual:** `BashoPage` bout-replay modal can still open during interactive
 advance (legitimate UI); `pendingDecisions` required-item grind is a UX note,
-not a defect.
+not a defect. If `localStorage` quota also fails after an IDB write error, the
+save exists only in the in-memory cache for that session — no further
+persistence tier exists; this is the documented last-resort floor.

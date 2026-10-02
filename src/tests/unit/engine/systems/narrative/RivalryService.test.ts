@@ -134,6 +134,27 @@ describe("RivalryService.onBoutResolved", () => {
     const hKey = RivalryService.makeRivalryKey("h1", "h2");
     expect(state.heyaRivalryPairs![hKey]).toBeDefined();
   });
+
+  it("refreshes sameHeya when a merger has moved rikishi into the same stable", () => {
+    const world = makeWorld("r1", "r2");
+    // Pair created while in different stables
+    const created = RivalryService.createFreshPair("r1", "r2", world);
+    expect(created.sameHeya).toBe(false);
+    const key = RivalryService.makeRivalryKey("r1", "r2");
+    world.rivalriesState = {
+      version: "1.0.0",
+      pairs: { [key]: created },
+    } as any;
+    // Merger moved r2 into r1's stable
+    world.rikishi.get("r2")!.heyaId = "h1";
+
+    const impact = RivalryService.onBoutResolved(world, {
+      result: makeBoutResult("r1", "r2"),
+      day: 1,
+    });
+    const updated = resolveImpacts(world, [impact]);
+    expect(updated.rivalriesState!.pairs[key].sameHeya).toBe(true);
+  });
 });
 
 describe("RivalryService.applyWeeklyDecay", () => {
@@ -161,6 +182,58 @@ describe("RivalryService.applyWeeklyDecay", () => {
       const afterHeat = decayed.rivalriesState!.pairs[pairKeys[0]].heat;
       expect(afterHeat).toBeLessThanOrEqual(beforeHeat);
     }
+  });
+
+  it("preserves heyaRivalryPairs across decay", () => {
+    const world = makeWorld("r1", "r2");
+    // Build a stable-level rivalry via a resolved bout
+    const boutImpact = RivalryService.onBoutResolved(world, {
+      result: makeBoutResult("r1", "r2"),
+      day: 1,
+    });
+    const withBout = resolveImpacts(world, [boutImpact]);
+    expect(
+      Object.keys(withBout.rivalriesState!.heyaRivalryPairs ?? {}).length
+    ).toBeGreaterThan(0);
+
+    const decayImpact = RivalryService.applyWeeklyDecay(withBout);
+    const decayed = resolveImpacts(withBout, [decayImpact]);
+    expect(
+      Object.keys(decayed.rivalriesState!.heyaRivalryPairs ?? {}).length
+    ).toBeGreaterThan(0);
+  });
+
+  it("derives tone from decayed values, not the pre-decay pair", () => {
+    const world = makeWorld("r1", "r2");
+    // A public_hype pair: meetings >= 4, heat >= 35, spite < 35.
+    // One decay tick (rate 1.5 long-gap) drops heat 36 → 34.5, below the
+    // threshold — the tone must reflect the decayed state on this tick.
+    const key = RivalryService.makeRivalryKey("r1", "r2");
+    world.rivalriesState = {
+      version: "1.0.0",
+      pairs: {
+        [key]: {
+          key,
+          aId: "r1",
+          bId: "r2",
+          heat: 36,
+          meetings: 10,
+          lastMetWeek: 0,
+          aWins: 5,
+          bWins: 5,
+          closeness: 0,
+          spite: 0,
+          tone: "public_hype",
+          triggers: {},
+          sameHeya: false,
+        },
+      },
+    } as any;
+    world.calendar = { currentWeek: 40 } as any;
+
+    const decayed = resolveImpacts(world, [RivalryService.applyWeeklyDecay(world)]);
+    const pair = decayed.rivalriesState!.pairs[key];
+    expect(pair.tone).toBe("respect");
   });
 });
 

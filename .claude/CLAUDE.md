@@ -137,7 +137,7 @@ Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/fina
 **Vendor chunks:** `vite.config.ts` defines manual chunks for `vendor-react`, `vendor-recharts`, `vendor-framer`, `vendor-lucide`.
 
 ## Known Issues & Gotchas
-1. **`economics.ts`** — `processHeyaFinances()` and `tickWeekEconomics()` are dead (replaced by FinanceCalculator). Don't call them.
+1. **`economics.ts`** — `processHeyaFinances()`/`tickWeekEconomics()` were removed (replaced by FinanceCalculator + `tick/phases/monthly/economics/`); `scripts/engine-reviewer.ts` flags any reintroduced call site.
 2. **BardEngine token mismatches** — a `%TOKEN%` is only valid where its context key is supplied by the production `resolve()` call site. `src/tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production path with real context keys — run it when adding templates.
 3. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
 4. **`FogOfWarService.ts`** lives at `src/engine/systems/recruitment/` and imports BardEngine from `"../../bard/BardEngine"`. There is no `src/engine/narrative/` directory — `systems/narrative/` holds crisis/rivalry/press services, the template engine is `engine/bard/`.
