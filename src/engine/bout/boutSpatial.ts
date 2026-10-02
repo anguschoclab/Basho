@@ -14,6 +14,12 @@ import type {
 } from "../types/combat-spatial";
 import { stat } from "./boutUtils";
 import {
+  classifyPushFallKimarite,
+  classifyBeltFallKimariteV2,
+  classifyBeltExitKimarite,
+  classifyPushExitKimarite,
+} from "./terminalKimarite";
+import {
   MASS_BASE_OFFSET,
   MASS_WEIGHT_MULTIPLIER,
   DEFAULT_WEIGHT_STAT,
@@ -26,10 +32,7 @@ import {
   EDGE_DISTANCE_AT_TOE,
   ARM_REACH_DEEP_THRESHOLD,
   MOMENTUM_THRESHOLD_OSHITAOSHI,
-  TORQUE_THRESHOLD_HIGH,
-  TORQUE_THRESHOLD_MODERATE,
   VELOCITY_EDGE_EXIT_THRESHOLD,
-  TSUKIDASHI_PROBABILITY_THRESHOLD,
   TAWARA_BOUNCE_RESISTANCE_HEEL,
   UTCHARI_ESCAPE_ANGLE_THRESHOLD,
   UTCHARI_MIN_TICKS_IN_CRISIS,
@@ -97,46 +100,38 @@ export function deriveGripClass(left: HandGrip | null, right: HandGrip | null): 
 export function classifyFallKimarite(
   push: PushBattleState,
   _st: EngineStateV2,
-  fallenSide: Side
+  fallenSide: Side,
+  rng: SeededRNG
 ): KimariteId {
+  // Push-side collapse → contextual weighted draw over the pulldown family.
+  // Loser overcommitting (high own momentum at the fall) biases toward the
+  // momentum-capture techniques (hatakikomi, hikiotoshi, tsukiotoshi).
   const momentum = fallenSide === "east" ? push.eastMomentum : push.westMomentum;
-  if (momentum > MOMENTUM_THRESHOLD_OSHITAOSHI) return "oshitaoshi";
-  return "tsukitaoshi";
+  return classifyPushFallKimarite(rng, {
+    loserOvercommitted: momentum > MOMENTUM_THRESHOLD_OSHITAOSHI,
+  });
 }
 
 export function classifyBeltFallKimarite(
   belt: BeltBattleState,
-  _st: EngineStateV2,
-  fallenSide: Side
+  st: EngineStateV2,
+  fallenSide: Side,
+  rng: SeededRNG
 ): KimariteId {
   const winnerSide = fallenSide === "east" ? "west" : "east";
-  const winnerTorque = winnerSide === "east" ? belt.torqueEast : belt.torqueWest;
   const winnerGrip = fallenSide === "east" ? belt.westGripClass : belt.eastGripClass;
+  const winnerBody = winnerSide === "east" ? st.east : st.west;
 
-  if (winnerTorque > TORQUE_THRESHOLD_HIGH) {
-    // High-torque throw: uwate (outside arm over) or shitate (inside arm under)
-    return winnerGrip === "uwate" || winnerGrip === "morozashi" ? "uwatenage" : "shitatenage";
-  }
+  // Winner desperation: also falling, or driven to the tawara — unlocks the
+  // sorite unicorns (winner sacrifices posture to throw) and reversals.
+  // Winner desperation: falling, near-falling, or driven to the tawara —
+  // unlocks the sorite unicorns (winner sacrifices posture to throw) and
+  // the reversal tail (utchari, yobimodoshi, ushiromotare).
+  const winnerDesperate =
+    Math.abs(winnerBody.cogOffset) > winnerBody.footSpread / 3 ||
+    Math.abs(winnerBody.leadingFootX) >= TOE_POSITION_EDGE_THRESHOLD * TAWARA_RADIUS;
 
-  // E2: kotenage (arm-lock throw) when winner has shitate grip and moderate torque
-  if (
-    winnerGrip === "shitate" &&
-    winnerTorque > TORQUE_THRESHOLD_MODERATE &&
-    winnerTorque <= TORQUE_THRESHOLD_HIGH
-  ) {
-    return "kotenage";
-  }
-
-  // E2: sukuinage (underarm throw) when winner has uwate grip and moderate torque
-  if (
-    winnerGrip === "uwate" &&
-    winnerTorque > TORQUE_THRESHOLD_MODERATE &&
-    winnerTorque <= TORQUE_THRESHOLD_HIGH
-  ) {
-    return "sukuinage";
-  }
-
-  return "yoritaoshi";
+  return classifyBeltFallKimariteV2(rng, winnerGrip, winnerDesperate);
 }
 
 export function classifyEdgeExitKimarite(
@@ -159,7 +154,8 @@ export function classifyEdgeExitKimarite(
     return "utchari";
   }
 
-  // 1.75D: okuridashi when defender has lateral momentum (off-axis overrun)
+  // okuridashi: defender beat the attacker to the edge — rear-position
+  // pressure plus the defender still moving outward under their own drive.
   if (
     Math.abs(crisis.opponentPressureZ) > OKURIDASHI_PRESSURE_Z_THRESHOLD &&
     Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD
@@ -167,22 +163,13 @@ export function classifyEdgeExitKimarite(
     return "okuridashi";
   }
 
-  // 1.75D: okuritaoshi when belt-driven with lateral component
+  // okuritaoshi: belt-driven exit with the attacker carrying lateral angle.
   if (fromBelt && Math.abs(crisis.opponentPressureZ) > OKURITAOSHI_PRESSURE_Z_THRESHOLD) {
     return "okuritaoshi";
   }
 
-  // E1: okuridashi when defender has positive momentum while exiting (overruns edge)
-  if (Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD) {
-    return "okuridashi";
-  }
-
-  if (fromBelt) {
-    // Belt-driven edge exit: walk-out (yorikiri) or throw-down (yoritaoshi)
-    return crisis.ticksInCrisis > 4 ? "yoritaoshi" : "yorikiri";
-  }
-
-  // Push-driven edge exit: clean push-out or thrust variant
-  if (crisis.ticksInCrisis <= 2) return "oshidashi";
-  return rng.next() < TSUKIDASHI_PROBABILITY_THRESHOLD ? "tsukidashi" : "oshidashi";
+  // Remaining exits → weighted draw over the contextually-plausible endings
+  // (yorikiri-dominant for belt exits, oshidashi/tsukidashi for push exits),
+  // weights proportional to real-world makuuchi shares.
+  return fromBelt ? classifyBeltExitKimarite(rng) : classifyPushExitKimarite(rng);
 }

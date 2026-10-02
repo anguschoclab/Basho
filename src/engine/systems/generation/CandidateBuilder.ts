@@ -22,6 +22,7 @@ import {
 } from "./CandidateStats";
 import { generateSyntheticCareer, type DivisionRecords } from "./CandidateCareer";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { MOCHIKYUKIN_INITIAL_POINTS } from "../../../constants/engine/economic";
 import { applyPersonaAssignment } from "./PersonaAssignment";
 import { assignPreSumoBackground, applyBackgroundStatModifiers } from "./PreSumoBackground";
 import { assignQuirk } from "./QuirkAssignment";
@@ -260,7 +261,8 @@ export function generateFullRikishi(args: {
       kinboshiConceded: 0,
       ginboshiConceded: 0,
       specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
-      mochikyukinPoints: 0,
+      // JSA opens every debutant's mochikyukin account at the symbolic ¥3.
+      mochikyukinPoints: MOCHIKYUKIN_INITIAL_POINTS,
     },
   };
 
@@ -340,7 +342,8 @@ export function convertCandidateToRikishi(args: {
       kinboshiConceded: 0,
       ginboshiConceded: 0,
       specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
-      mochikyukinPoints: 0,
+      // JSA opens every debutant's mochikyukin account at the symbolic ¥3.
+      mochikyukinPoints: MOCHIKYUKIN_INITIAL_POINTS,
     },
   };
 

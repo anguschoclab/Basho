@@ -106,6 +106,14 @@ export function BoutResultDisplay({
               <Zap className="h-3 w-3" /> UPSET!
             </Badge>
           )}
+          {result.isKinboshi && (
+            <Badge
+              variant="outline"
+              className="mb-3 animate-scale-in gap-1 border-gold text-gold"
+            >
+              <Trophy className="h-3 w-3" /> KINBOSHI — 金星
+            </Badge>
+          )}
 
           {/* Winner/Loser avatars */}
           <div className="flex items-center justify-center gap-6 mb-3">
@@ -151,6 +159,11 @@ export function BoutResultDisplay({
               {loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Unknown"}
             </span>
           </p>
+          {(result.kenshoEnvelopes ?? 0) > 0 && (
+            <p className="mt-2 text-xs font-medium text-gold">
+              {result.kenshoEnvelopes} kenshō envelopes collected
+            </p>
+          )}
         </div>
 
         {/* Kimarite card */}

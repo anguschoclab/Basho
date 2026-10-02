@@ -24,6 +24,11 @@
     "The YDC notes with displeasure that %SHIKONA% withdrew on the final day — a day of great significance.",
     "'For a Yokozuna to absent himself on senshuraku is regrettable,' the chairman states of %SHIKONA%."
   ],
+  "kinboshi_criticism": [
+    "The council notes that %SHIKONA% conceded %COUNT% kinboshi to rank-and-file rikishi — the Yokozuna standard was not upheld.",
+    "'A Yokozuna must not be a source of gold stars for the maegashira ranks,' the chairman says of %SHIKONA%'s %COUNT% conceded kinboshi.",
+    "The YDC criticizes %SHIKONA% for surrendering %COUNT% kinboshi, calling it beneath the dignity of the rank."
+  ],
   "private_cynicism": [
     "Privately, the chairman confides that he feels further warnings to %SHIKONA% may be pointless.",
     "Behind closed doors, the chairman expresses doubt that %SHIKONA% will respond to further pressure.",

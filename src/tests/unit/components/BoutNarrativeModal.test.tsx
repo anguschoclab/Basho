@@ -291,6 +291,46 @@ describe("BoutNarrativeModal", () => {
     expect(screen.getByText("Opening text")).toBeTruthy();
   });
 
+  it("shows a KINBOSHI gold-star badge when the result is a kinboshi", () => {
+    const result = {
+      ...mockResult([makeLine("finish", "Upset!")]),
+      isKinboshi: true,
+      awardFact: "kinboshi" as const,
+      awards: [
+        { type: "kinboshi" as const, winnerId: "r-1", loserId: "r-2", day: 1, boutId: "b-1" },
+      ],
+    };
+    renderWithProvider(
+      <BoutNarrativeModal
+        open
+        onOpenChange={vi.fn()}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
+        result={result}
+        bashoName={bashoName}
+        day={1}
+      />
+    );
+    expect(screen.getByText(/KINBOSHI/i)).toBeTruthy();
+  });
+
+  it("shows the kensho envelope stack count when envelopes were sponsored", () => {
+    const result = { ...mockResult([]), kenshoEnvelopes: 45 };
+    renderWithProvider(
+      <BoutNarrativeModal
+        open
+        onOpenChange={vi.fn()}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
+        result={result}
+        bashoName={bashoName}
+        day={1}
+      />
+    );
+    expect(screen.getByText(/45/)).toBeTruthy();
+    expect(screen.getByText(/envelope/i)).toBeTruthy();
+  });
+
   it("wraps tachiai phase chip label in GlossaryTip", () => {
     const lines = [makeLine("tachiai", "The charge begins!")];
     renderWithProvider(

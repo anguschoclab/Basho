@@ -14,6 +14,7 @@ import {
   LATERAL_ANGULAR_DRIFT_SCALE,
   BELT_BATTLE_VELOCITY_SCALE,
   COG_OFFSET_PER_FORCE,
+  BELT_COG_OFFSET_SCALE,
   NARRATIVE_TICK_CADENCE,
   BOUT_FATIGUE_MULTIPLIER,
   CLOCK_MULTIPLIER,
@@ -168,11 +169,12 @@ export function tickBeltBattle(
   const residualTorqueWest =
     Math.max(0, belt.torqueEast - belt.torqueWest) * TORQUE_DISPLACEMENT_MULTIPLIER;
 
-  // Apply residual torque to CoG — only the losing side destabilises
+  // Apply residual torque to CoG — only the losing side destabilises.
+  // Belt grapples collapse more slowly than push exchanges (BELT_COG_OFFSET_SCALE).
   if (torqueAdvantage > 0) {
-    st.west.cogOffset += Math.abs(torqueAdvantage) * COG_OFFSET_PER_FORCE;
+    st.west.cogOffset += Math.abs(torqueAdvantage) * COG_OFFSET_PER_FORCE * BELT_COG_OFFSET_SCALE;
   } else if (torqueAdvantage < 0) {
-    st.east.cogOffset += Math.abs(torqueAdvantage) * COG_OFFSET_PER_FORCE;
+    st.east.cogOffset += Math.abs(torqueAdvantage) * COG_OFFSET_PER_FORCE * BELT_COG_OFFSET_SCALE;
   }
 
   // Positional displacement from residual torque
@@ -204,9 +206,11 @@ export function tickBeltBattle(
   st.west.z = push.westLateral;
   st.east.leadingFootX = push.eastLeadFoot;
   st.west.leadingFootX = push.westLeadFoot;
+  // Loser's outward velocity sign matches the direction they are pushed:
+  // east retreats toward +x, west toward −x.
   st.east.velocityX =
     torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * BELT_BATTLE_VELOCITY_SCALE : 0;
-  st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * BELT_BATTLE_VELOCITY_SCALE : 0;
+  st.west.velocityX = torqueAdvantage > 0 ? -torqueAdvantage * BELT_BATTLE_VELOCITY_SCALE : 0;
   st.east.velocityZ = push.eastLateralMomentum;
   st.west.velocityZ = push.westLateralMomentum;
 
@@ -259,10 +263,10 @@ export function tickBeltBattle(
 
   // Body fall check
   if (isBodyFalling(st.east)) {
-    return { winner: "west", kimarite: classifyBeltFallKimarite(belt, st, "east") };
+    return { winner: "west", kimarite: classifyBeltFallKimarite(belt, st, "east", rng) };
   }
   if (isBodyFalling(st.west)) {
-    return { winner: "east", kimarite: classifyBeltFallKimarite(belt, st, "west") };
+    return { winner: "east", kimarite: classifyBeltFallKimarite(belt, st, "west", rng) };
   }
 
   // Edge crisis — the LOSING side (less torque) goes into crisis

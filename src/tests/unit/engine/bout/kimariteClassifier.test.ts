@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { evaluateKimariteAttempt } from "@/engine/bout/kimariteClassifier";
 import { mockRikishi } from "../utils";
 import type {
@@ -8,7 +8,13 @@ import type {
   PhysicalBody,
 } from "@/engine/types/combat-spatial";
 
-const mockRng: any = { next: () => 0.5 };
+// First next() call is the mid-fight attempt gate (rate 0.15) — return a
+// passing roll, then 0.5 for the weighted selection roll as before.
+let rngCall = 0;
+const mockRng: any = { next: () => (rngCall++ === 0 ? 0.05 : 0.5) };
+beforeEach(() => {
+  rngCall = 0;
+});
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -354,7 +360,13 @@ describe("evaluateKimariteAttempt — push battle", () => {
     // tsukidashi requires noBelt && power >= 65 && atEdge(l)
     const east = mockRikishi("r1", { power: 70 });
     const west = mockRikishi("r2");
-    const st = makeEngineState({ velocityX: -5 }, { leadingFootX: -3.8 }); // west near edge
+    // Isolate tsukidashi under real-share weighting:
+    //   - east leadingFootX = 3.6 excludes oshidashi (winner lead < 3.5)
+    //   - west velocityX > 0 excludes okuridashi (needs loser momentum ≤ 0)
+    const st = makeEngineState(
+      { velocityX: -5, leadingFootX: 3.6 },
+      { leadingFootX: -3.8, velocityX: 1 }
+    ); // west near edge
     const push = makePushState({
       contestLine: 3.0,
       eastMomentum: 20,

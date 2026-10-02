@@ -19,7 +19,8 @@ export function toEconomicsDTO(r: Rikishi): RikishiEconomicsDTO {
     salaryBreakdown: getSalaryBreakdown(
       RANK_HIERARCHY[(r.rank || "jonokuchi") as Rank]?.salary ?? 0,
       r.division || "jonokuchi",
-      r.stats?.achievements?.kinboshiEarned ?? 0
+      r.stats?.achievements?.mochikyukinPoints ?? 0,
+      r.rank
     ),
     totalEarnings: e?.totalEarnings ?? 0,
     cash: e?.cash ?? 0,

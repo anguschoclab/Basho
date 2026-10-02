@@ -431,4 +431,76 @@ describe("YokozunaService — YDC Accountability", () => {
       (cynicismEvent!.data as any).publicStatement
     );
   });
+
+  it("escalates to kinboshi_criticism when a kachi-koshi Yokozuna concedes 2+ kinboshi", () => {
+    const yokozuna = mockRikishi("ykin", {
+      rank: "yokozuna",
+      division: "makuuchi",
+      shikona: "Paper Tiger",
+      currentBashoWins: 9,
+      currentBashoLosses: 6,
+      consecutiveMakeKoshi: 0,
+      kihakuIsenScore: 60,
+      heyaId: "heya-1",
+    });
+
+    const kinResult = (day: number, winnerId: string) =>
+      ({
+        boutId: `kb-${day}`,
+        winner: "east",
+        winnerRikishiId: winnerId,
+        loserRikishiId: "ykin",
+        kimarite: "yorikiri",
+        isKinboshi: true,
+        log: [],
+        kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
+        upset: true,
+        day,
+      }) as never;
+
+    const world = makeMockWorld({
+      rikishi: new Map([["ykin", yokozuna]]),
+      year: 2026,
+      currentBashoName: "nagoya",
+      currentBasho: {
+        bashoName: "nagoya",
+        matches: [
+          { boutId: "kb-3", day: 3, eastRikishiId: "m-a", westRikishiId: "ykin", result: kinResult(3, "m-a") },
+          { boutId: "kb-4", day: 4, eastRikishiId: "m-b", westRikishiId: "ykin", result: kinResult(4, "m-b") },
+        ],
+      } as never,
+    });
+
+    const impact = YokozunaService.processYDCCouncil(world);
+    const event = impact.events?.find((e) => (e.data as any).status === "kinboshi_criticism");
+    expect(event).toBeDefined();
+    expect(event?.type).toBe("GOVERNANCE_RULING");
+    const refs = (event!.data as any).references as string[];
+    expect(refs.some((r) => /kinboshi/i.test(r))).toBe(true);
+  });
+
+  it("does NOT fire kinboshi_criticism for a clean kachi-koshi (no conceded stars)", () => {
+    const yokozuna = mockRikishi("yclean", {
+      rank: "yokozuna",
+      division: "makuuchi",
+      shikona: "Dominant Yoko",
+      currentBashoWins: 12,
+      currentBashoLosses: 3,
+      consecutiveMakeKoshi: 0,
+      kihakuIsenScore: 60,
+      heyaId: "heya-1",
+    });
+    const world = makeMockWorld({
+      rikishi: new Map([["yclean", yokozuna]]),
+      year: 2026,
+      currentBashoName: "hatsu",
+      currentBasho: { bashoName: "hatsu", matches: [] } as never,
+    });
+    const impact = YokozunaService.processYDCCouncil(world);
+    const event = impact.events?.find((e) => (e.data as any).status === "kinboshi_criticism");
+    expect(event).toBeUndefined();
+  });
 });

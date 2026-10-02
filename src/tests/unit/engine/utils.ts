@@ -85,6 +85,7 @@ export function mockRikishi(
         ginboshiEarned: 0,
         kinboshiConceded: 0,
         ginboshiConceded: 0,
+        mochikyukinPoints: 0,
         specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
       },
       ...statsOverride,

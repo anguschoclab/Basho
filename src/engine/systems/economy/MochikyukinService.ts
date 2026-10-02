@@ -93,7 +93,7 @@ export function accumulateMochikyukinPoints(
   if (pointsEarned > 0) {
     const updatedAchievements = {
       ...achievements,
-      mochikyukinPoints: achievements.mochikyukinPoints + pointsEarned,
+      mochikyukinPoints: (achievements.mochikyukinPoints ?? 0) + pointsEarned,
     };
 
     builder.updateRikishi(rikishiId, {

@@ -379,10 +379,14 @@ export function RikishiProfileHeader({
                 {
                   label: "Bonus Points",
                   value: rikishi.achievements?.mochikyukinPoints ?? 0,
-                  sub: "Mochikyukin",
+                  sub:
+                    (rikishi.salaryBreakdown?.kinboshiBonus ?? 0) > 0
+                      ? `Mochikyukin — ¥${rikishi.salaryBreakdown.kinboshiBonus.toLocaleString("ja-JP")} per basho`
+                      : "Mochikyukin",
                   color: "text-success",
                   condition: (rikishi.achievements?.mochikyukinPoints ?? 0) > 0,
-                  tooltip: "Cumulative bonus points determining bi-monthly JSA payout",
+                  tooltip:
+                    "Career bonus account (mochikyukin): +10 pts per kinboshi, +0.5 per win over 8, +30 yusho. Pays ¥4,000/pt each basho while sekitori.",
                 },
                 {
                   label: "Upset Losses",

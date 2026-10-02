@@ -177,12 +177,56 @@ export const YokozunaService = {
         "ydc"
       );
 
+      // Count kinboshi conceded this basho from the real match records — a
+      // yokozuna who hands out gold stars draws direct council criticism.
+      const kinboshiConceded = (world.currentBasho?.matches ?? []).filter(
+        (m) =>
+          m.result?.isKinboshi === true &&
+          (m.result.loserRikishiId === rikishi.id ||
+            m.result.awards?.some((a) => a.type === "kinboshi" && a.loserId === rikishi.id))
+      ).length;
+
       // Build references array — specific items the YDC statement references
       const references: string[] = [];
       if (isKachiKoshi && kihakuScore >= 75) references.push("Kihaku Isen");
       if (absentFinalDay) references.push("absence on final day");
       if (isMakeKoshi) references.push("make-koshi record");
       if (consecutiveMK >= 2) references.push("promotion pledge");
+      if (kinboshiConceded > 0) {
+        references.push(
+          `${kinboshiConceded} kinboshi conceded to maegashira`
+        );
+      }
+
+      // Kinboshi criticism: conceding 2+ gold stars in a single basho is a
+      // dignity failure regardless of the win-loss record.
+      if (kinboshiConceded >= 2) {
+        const kinLine = BardEngine.resolve(ydcRng, "ydc_accountability.kinboshi_criticism", {
+          SHIKONA: rikishi.shikona,
+          rikishiId: rikishi.id,
+          CHAIRMAN: chairmanName,
+          COUNT: String(kinboshiConceded),
+        });
+        if (kinLine.text) {
+          builder.logEvent(
+            "GOVERNANCE_RULING",
+            "discipline",
+            {
+              rikishiId: rikishi.id,
+              shikona: rikishi.shikona,
+              status: "kinboshi_criticism",
+              incident: "YDC Kinboshi Criticism",
+              statement: kinLine.text,
+              kinboshiConceded,
+              chairmanName,
+              references,
+              publicStatement: kinLine.text,
+              privateSentiment: "displeasure",
+            },
+            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
+          );
+        }
+      }
 
       // Praise for high fighting spirit and kachi-koshi
       if (isKachiKoshi && kihakuScore >= 75) {

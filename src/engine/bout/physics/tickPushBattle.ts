@@ -23,7 +23,12 @@ import {
   BOUT_FATIGUE_MULTIPLIER,
   CLOCK_MULTIPLIER,
   COUNTER_FORCE_REDUCTION,
+  CLINCH_CONVERSION_BASE,
+  CLINCH_FORCE_DIFF_MAX,
+  CLINCH_BELT_PREF_SCALE,
+  DEFAULT_BELT_BIAS,
 } from "../../../constants/engine/physics";
+import { initBeltBattle } from "../boutGrip";
 import { EDGE_THRESHOLD } from "../../types/combat-spatial";
 import type { EngineStateV2 } from "../../types/combat-spatial";
 import { isBodyFalling, classifyFallKimarite } from "../boutSpatial";
@@ -142,11 +147,12 @@ export function tickPushBattle(
   const forceFalloff = isGlancing ? OFF_AXIS_FORCE_FALLOFF : 1.0;
 
   if (jitteredForceDiff > 0) {
-    // East dominant — west retreats toward west's tawara
+    // East dominant — east advances toward −x (west's tawara), west retreats
+    // the same direction. Both carry the shared push velocity.
     push.westLeadFoot -= displacement * forceFalloff;
     st.west.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
-    st.east.velocityX = jitteredForceDiff * DOMINANT_VELOCITY_SCALE;
-    st.west.velocityX = 0;
+    st.east.velocityX = -jitteredForceDiff * DOMINANT_VELOCITY_SCALE;
+    st.west.velocityX = -jitteredForceDiff * DOMINANT_VELOCITY_SCALE;
     // Defender (west) may attempt a discrete lateral slip — likelier the faster
     // it is. Stochastic (seeded) so even a sustained duel flickers between square
     // pushing and glancing rather than saturating off-axis.
@@ -154,11 +160,11 @@ export function tickPushBattle(
       push.westLateralMomentum += LATERAL_SLIP_IMPULSE;
     }
   } else if (jitteredForceDiff < 0) {
-    // West dominant — east retreats toward east's tawara
+    // West dominant — west advances toward +x (east's tawara), east retreats.
     push.eastLeadFoot += displacement * forceFalloff;
     st.east.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.west.velocityX = Math.abs(jitteredForceDiff) * DOMINANT_VELOCITY_SCALE;
-    st.east.velocityX = 0;
+    st.east.velocityX = Math.abs(jitteredForceDiff) * DOMINANT_VELOCITY_SCALE;
     if (rng.next() < (stat(east, "speed") / 100) * LATERAL_SLIP_CHANCE * (1 + eastLateralBonus)) {
       push.eastLateralMomentum += LATERAL_SLIP_IMPULSE;
     }
@@ -236,10 +242,30 @@ export function tickPushBattle(
 
   // Falling check (extreme CoG offset)
   if (isBodyFalling(st.east)) {
-    return { winner: "west", kimarite: classifyFallKimarite(push, st, "east") };
+    return { winner: "west", kimarite: classifyFallKimarite(push, st, "east", rng) };
   }
   if (isBodyFalling(st.west)) {
-    return { winner: "east", kimarite: classifyFallKimarite(push, st, "west") };
+    return { winner: "east", kimarite: classifyFallKimarite(push, st, "west", rng) };
+  }
+
+  // Clinch conversion: an evenly-matched pushing exchange can settle into a
+  // belt grapple mid-fight — real bouts frequently clinch after the initial
+  // exchange stalls. Rate scales with both rikishi's belt preference.
+  const beltPrefSum =
+    (east.combatProfile?.familyPreferences?.belt ?? DEFAULT_BELT_BIAS) +
+    (west.combatProfile?.familyPreferences?.belt ?? DEFAULT_BELT_BIAS);
+  if (
+    Math.abs(push.eastForce - push.westForce) < CLINCH_FORCE_DIFF_MAX &&
+    rng.next() < CLINCH_CONVERSION_BASE + beltPrefSum * CLINCH_BELT_PREF_SCALE
+  ) {
+    const belt = initBeltBattle(rng, east, west, st.tachiaiWinner ?? "east");
+    st.phase = { tag: "belt_battle", state: belt, push };
+    boutLog.push({
+      phase: "engagement",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: { event: "clinch_to_belt" },
+    });
+    return undefined;
   }
 
   // Boundary check

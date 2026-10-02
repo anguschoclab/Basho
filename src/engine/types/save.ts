@@ -41,6 +41,8 @@ export interface SerializedBashoState {
   day: number;
   matches: MatchSchedule[];
   standings: StandingsTable;
+  /** Per-basho kinboshi tally (rikishiId → stars earned); survives save/load. */
+  kinboshiThisBasho?: Record<Id, number>;
 }
 
 /** Defines the structure for serialized world state. */

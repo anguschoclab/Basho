@@ -43,7 +43,7 @@ export function resolvePlayoffs(
       }
       const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-${eastId}-${westId}`;
       const { result } = resolveBout(
-        { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId },
+        { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId, isPlayoff: true },
         east,
         west,
         basho,

@@ -17,7 +17,9 @@ import type { SpatialBoutContext, EngineStateV2 } from "./types/combat-spatial";
  *   sori     — desperation: winner near edge with low balance, loser overcommitting
  *   hineri   — loser overcommitting forward, winner redirects
  *   tokushu  — highly situational (flanking, arm bar, lift)
- *   hi_waza  — self-inflicted (winner's offensiveOutput === 0 on final tick)
+ *   hi_waza  — self-inflicted endings; not selected here — classified
+ *              post-resolution from the loser's terminal body state
+ *              (see engine/bout/hiwaza.ts)
  *   kinjite  — foul (not selected by evaluator; pre-processed separately)
  */
 
@@ -60,7 +62,6 @@ const overCommitting = (ctx: SpatialBoutContext, side: "east" | "west") =>
 const balance = (ctx: SpatialBoutContext, side: "east" | "west") =>
   Math.max(0, 100 - Math.abs(side === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) * 200);
 const desperation = (ctx: SpatialBoutContext, side: "east" | "west") => balance(ctx, side) < 20;
-const offensiveOutput = (_st: EngineStateV2) => 1; // Always 1 in selection engine unless modified
 
 // --- 1.75D Lateral & Angular Predicates ---
 
@@ -113,7 +114,12 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     condition: (_w, _l, ctx, st, wSide, lSide) =>
       hasBelt(ctx, wSide) &&
       atEdge(ctx, lSide) &&
-      forwardMomentum(ctx, wSide) > 0 &&
+      // Winner driving: linear momentum in push exchanges, torque advantage
+      // in belt battles (belt winners have velocityX 0 — only the loser is
+      // pushed backward).
+      (forwardMomentum(ctx, wSide) > 0 ||
+        (st.phase.tag === "belt_battle" &&
+          getTorque(st, wSide) > getTorque(st, lSide))) &&
       balance(ctx, lSide) > 0 &&
       (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined ||
         Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 4.0) &&
@@ -128,11 +134,10 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "押し出し",
     category: "kihon",
     weight: 85,
-    appliesTo: ["push_battle", "edge_crisis"],
+    appliesTo: ["push_battle"],
     difficulty: 1,
-    condition: (w, _l, ctx, _st, wSide, lSide) =>
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
       noBelt(ctx, wSide) &&
-      isPusher(w) &&
       atEdge(ctx, lSide) &&
       forwardMomentum(ctx, wSide) > 0 &&
       balance(ctx, lSide) > 0 &&
@@ -183,6 +188,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       noBelt(ctx, wSide) &&
       w.stats.power >= 65 &&
       atEdge(ctx, lSide) &&
+      forwardMomentum(ctx, wSide) > 0 &&
       balance(ctx, lSide) > 0 &&
       (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined ||
         Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 3.8),
@@ -227,8 +233,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 80,
     difficulty: 4,
-    condition: (_w, _l, ctx, st, _wSide, lSide) =>
-      overCommitting(ctx, lSide) && offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      overCommitting(ctx, lSide) && noBelt(ctx, wSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "hikiotoshi",
@@ -354,8 +360,12 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "割り出し",
     category: "tokushu",
     weight: 18,
-    condition: (w, _l, ctx, _st, _wSide, lSide) =>
-      isPusher(w) && atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && w.stats.power >= 60,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      isPusher(w) &&
+      atEdge(ctx, lSide) &&
+      forwardMomentum(ctx, wSide) > 0 &&
+      balance(ctx, lSide) > 0 &&
+      w.stats.power >= 60,
   },
   {
     id: "okurinage",
@@ -1047,72 +1057,9 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       hasBelt(ctx, lSide) &&
       edgeDistance(ctx, lSide) <= 5,
   },
-
-  // =========================================================================
-  // HI_WAZA — Non-Winning Results (5)
-  // Trigger when the loser's outcome is self-inflicted (no offensive action
-  // from the winner on the final tick).
-  // =========================================================================
-
-  {
-    id: "isamiashi",
-    name: "Isamiashi",
-    japaneseName: "勇み足",
-    category: "hi_waza",
-    weight: 3,
-    difficulty: 1,
-    // Both fighters near edge simultaneously — winner also steps out but loser touches first
-    condition: (_w, _l, ctx, st, _wSide, lSide) =>
-      offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0 && edgeDistance(ctx, lSide) <= 3,
-  },
-  {
-    id: "koshikudake",
-    name: "Koshikudake",
-    japaneseName: "腰砕け",
-    category: "hi_waza",
-    weight: 3,
-    difficulty: 1,
-    // Loser's hips collapse without direct attack
-    condition: (_w, l, ctx, st, _wSide, lSide) =>
-      offensiveOutput(st) === 0 &&
-      balance(ctx, lSide) <= 0 &&
-      l.stats.stamina < 0.1 &&
-      st.phase.tag === "edge_crisis",
-  },
-  {
-    id: "tsukite",
-    name: "Tsukite",
-    japaneseName: "つき手",
-    category: "hi_waza",
-    weight: 2,
-    difficulty: 2,
-    // Loser touches down with hand, no direct attack
-    condition: (_w, _l, ctx, st, _wSide, lSide) =>
-      offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0,
-  },
-  {
-    id: "tsukihiza",
-    name: "Tsukihiza",
-    japaneseName: "つきひざ",
-    category: "hi_waza",
-    weight: 2,
-    difficulty: 2,
-    // Loser touches down with knee
-    condition: (_w, l, ctx, st, _wSide, lSide) =>
-      offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0 && l.stats.stamina < 0.2,
-  },
-  {
-    id: "fumidashi",
-    name: "Fumidashi",
-    japaneseName: "踏み出し",
-    category: "hi_waza",
-    weight: 2,
-    difficulty: 2,
-    // Loser steps out under their own momentum
-    condition: (_w, _l, ctx, st, _wSide, lSide) =>
-      offensiveOutput(st) === 0 &&
-      balance(ctx, lSide) > 0 &&
-      edgeDistance(ctx, lSide) <= 2 &&
-      overCommitting(ctx, lSide),
-  },
 ];
+// NOTE: hi_waza (isamiashi, koshikudake, tsukite, tsukihiza, fumidashi) are not
+// mid-fight strategies — they are non-technique endings where the loser defeats
+// themselves. They are classified post-resolution from the loser's terminal
+// body state in `engine/bout/hiwaza.ts`, which `resolveBoutPhysicsImpl` invokes
+// after the phase loop.

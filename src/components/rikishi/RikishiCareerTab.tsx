@@ -43,6 +43,7 @@ import {
 } from "recharts";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
+import { HoshitoriChart } from "@/components/game/HoshitoriChart";
 
 const RANK_LABELS: Record<number, string> = {
   1: "Yokozuna",
@@ -405,6 +406,7 @@ export function RikishiCareerTab({
                   <th className="pb-4 px-6 text-center">Association Rank</th>
                   <th className="pb-4 px-6 text-center">Final Record</th>
                   <th className="pb-4 px-6 text-center">Accolades</th>
+                  <th className="pb-4 px-6 text-center">Hoshitori</th>
                   <th className="pb-4 px-6 text-right">Cumulative ¥</th>
                   <th className="pb-4 pl-6 text-right">Physicality</th>
                 </tr>
@@ -476,6 +478,21 @@ export function RikishiCareerTab({
                               </span>
                             )}
                         </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        {snap.dayResults && snap.dayResults.length > 0 ? (
+                          <div className="flex justify-center">
+                            <HoshitoriChart
+                              rikishiId=""
+                              dayResults={snap.dayResults}
+                              className="[&>div]:h-4 [&>div]:w-4 [&>div]:text-[8px] [&>div]:gap-0"
+                            />
+                          </div>
+                        ) : (
+                          <span className="block text-center text-muted-foreground text-[10px] font-black opacity-30 tracking-widest">
+                            —
+                          </span>
+                        )}
                       </td>
                       <td className="py-4 px-6 text-right tabular-nums">
                         <div className="text-xs font-black">

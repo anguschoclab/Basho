@@ -54,33 +54,32 @@ function makeResult(kimarite: string = "yorikiri"): BoutResult {
 }
 
 describe("boutAchievements", () => {
-  describe("detectKinboshi", () => {
+  describe("detectKinboshi — pure award detection", () => {
     it("awards kinboshi when maegashira beats yokozuna", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("y1", "yokozuna");
       const result = makeResult();
-      const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
-        result,
-        winner,
-        loser
-      );
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
       expect(kinboshiDelta).toBe(true);
-      expect(winnerAchievements.kinboshiEarned).toBe(1);
-      expect(loserAchievements.kinboshiConceded).toBe(1);
+      expect(awards).toEqual([
+        expect.objectContaining({
+          type: "kinboshi",
+          winnerId: "m1",
+          loserId: "y1",
+          boutId: "test-bout",
+        }),
+      ]);
     });
 
-    it("awards ginboshi when maegashara beats ozeki", () => {
+    it("awards ginboshi when maegashira beats ozeki", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("o1", "ozeki");
       const result = makeResult();
-      const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
-        result,
-        winner,
-        loser
-      );
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
       expect(kinboshiDelta).toBe(false);
-      expect(winnerAchievements.ginboshiEarned).toBe(1);
-      expect(loserAchievements.ginboshiConceded).toBe(1);
+      expect(awards).toEqual([
+        expect.objectContaining({ type: "ginboshi", winnerId: "m1", loserId: "o1" }),
+      ]);
       expect(result.awardFact).toBe("ginboshi");
     });
 
@@ -88,56 +87,81 @@ describe("boutAchievements", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("y1", "yokozuna");
       const result = makeResult("fusensho");
-      const { kinboshiDelta } = detectKinboshi(result, winner, loser);
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
       expect(kinboshiDelta).toBe(false);
+      expect(awards).toHaveLength(0);
     });
 
     it("does not award ginboshi on fusensho", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("o1", "ozeki");
       const result = makeResult("fusensho");
-      const { kinboshiDelta } = detectKinboshi(result, winner, loser);
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
       expect(kinboshiDelta).toBe(false);
+      expect(awards).toHaveLength(0);
       expect(result.awardFact).toBeUndefined();
     });
 
     it("does not award for non-maegashira winner vs yokozuna", () => {
-      const winner = makeRikishi("s1", "sekiwake");
-      const loser = makeRikishi("y1", "yokozuna");
-      const result = makeResult();
-      const { kinboshiDelta } = detectKinboshi(result, winner, loser);
-      expect(kinboshiDelta).toBe(false);
+      for (const rank of ["sekiwake", "komusubi", "ozeki"]) {
+        const winner = makeRikishi("s1", rank);
+        const loser = makeRikishi("y1", "yokozuna");
+        const result = makeResult();
+        const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
+        expect(kinboshiDelta).toBe(false);
+        expect(awards.filter((a) => a.type === "kinboshi")).toHaveLength(0);
+      }
     });
 
     it("does not award for maegashira vs sekiwake", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("s1", "sekiwake");
       const result = makeResult();
-      const { kinboshiDelta } = detectKinboshi(result, winner, loser);
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
       expect(kinboshiDelta).toBe(false);
+      expect(awards).toHaveLength(0);
     });
 
-    it("creates default achievements when missing", () => {
+    it("awards kinboshi on hansoku (JSA: disqualification wins count — only fusensho is excluded)", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("y1", "yokozuna");
-      (winner.stats as { achievements?: RikishiAchievements }).achievements = undefined;
-      (loser.stats as { achievements?: RikishiAchievements }).achievements = undefined;
-      const result = makeResult();
-      const { winnerAchievements, loserAchievements } = detectKinboshi(result, winner, loser);
-      expect(winnerAchievements.kinboshiEarned).toBe(1);
-      expect(loserAchievements.kinboshiConceded).toBe(1);
+      const result = makeResult("hansoku");
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
+      expect(kinboshiDelta).toBe(true);
+      expect(awards[0]?.type).toBe("kinboshi");
     });
 
-    it("increments existing achievements", () => {
-      const existing = makeAchievements();
-      existing.kinboshiEarned = 3;
-      existing.kinboshiConceded = 2;
-      const winner = makeRikishi("m1", "maegashira", existing);
-      const loser = makeRikishi("y1", "yokozuna", existing);
+    it("suppresses kinboshi when isPlayoff is set (honbasho-only rule)", () => {
+      const winner = makeRikishi("m1", "maegashira");
+      const loser = makeRikishi("y1", "yokozuna");
       const result = makeResult();
-      const { winnerAchievements, loserAchievements } = detectKinboshi(result, winner, loser);
-      expect(winnerAchievements.kinboshiEarned).toBe(4);
-      expect(loserAchievements.kinboshiConceded).toBe(3);
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser, {
+        isPlayoff: true,
+      });
+      expect(kinboshiDelta).toBe(false);
+      expect(awards).toHaveLength(0);
+      expect(result.awardFact).toBeUndefined();
+    });
+
+    it("suppresses ginboshi when isPlayoff is set", () => {
+      const winner = makeRikishi("m1", "maegashira");
+      const loser = makeRikishi("o1", "ozeki");
+      const result = makeResult();
+      const { awards } = detectKinboshi(result, winner, loser, { isPlayoff: true });
+      expect(awards).toHaveLength(0);
+      expect(result.awardFact).toBeUndefined();
+    });
+
+    it("does NOT mutate the input rikishi's achievement objects (purity)", () => {
+      const winnerAch = makeAchievements();
+      const loserAch = makeAchievements();
+      const winner = makeRikishi("m1", "maegashira", winnerAch);
+      const loser = makeRikishi("y1", "yokozuna", loserAch);
+      const result = makeResult();
+      detectKinboshi(result, winner, loser);
+      expect(winner.stats.achievements?.kinboshiEarned).toBe(0);
+      expect(loser.stats.achievements?.kinboshiConceded).toBe(0);
+      expect(winner.stats.achievements).toBe(winnerAch);
     });
   });
 
@@ -150,7 +174,7 @@ describe("boutAchievements", () => {
       expect(kinboshiDelta).toBe(true);
     });
 
-    it("Test 4.2: detectKinboshi works when achievements are undefined (after fix, should not be needed)", () => {
+    it("Test 4.2: detectKinboshi works when achievements are undefined (pure detection needs no state)", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("y1", "yokozuna");
       (winner.stats as { achievements?: RikishiAchievements }).achievements = undefined;
@@ -168,23 +192,12 @@ describe("boutAchievements", () => {
       expect(kinboshiDelta).toBe(false);
     });
 
-    it("Test 4.4: detectKinboshi increments existing kinboshiEarned count", () => {
-      const existing = makeAchievements();
-      existing.kinboshiEarned = 2;
-      const winner = makeRikishi("m1", "maegashira", existing);
-      const loser = makeRikishi("y1", "yokozuna");
-      const result = makeResult();
-      const { kinboshiDelta, winnerAchievements } = detectKinboshi(result, winner, loser);
-      expect(kinboshiDelta).toBe(true);
-      expect(winnerAchievements.kinboshiEarned).toBe(3);
-    });
-
-    it("Test 4.5: detectKinboshi increments kinboshiConceded on loser", () => {
+    it("Test 4.4: kinboshi award carries the day from the result", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("y1", "yokozuna");
-      const result = makeResult();
-      const { loserAchievements } = detectKinboshi(result, winner, loser);
-      expect(loserAchievements.kinboshiConceded).toBe(1);
+      const result = { ...makeResult(), day: 9 } as BoutResult;
+      const { awards } = detectKinboshi(result, winner, loser);
+      expect(awards[0]?.day).toBe(9);
     });
 
     it("Test 4.6: detectKinboshi sets result.awardFact = ginboshi for ginboshi", () => {

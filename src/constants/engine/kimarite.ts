@@ -85,3 +85,11 @@ export const DEFAULT_DIFFICULTY = 5;
 
 /** Difficulty scaling factor for success probability */
 export const DIFFICULTY_SCALE = 10;
+
+/**
+ * Per-tick chance that an eligible mid-fight kimarite attempt is actually
+ * launched. Without a gate, the first broadly-eligible strategy wins the
+ * bout outright (attempts roll every tick once conditions match) and the
+ * calibrated terminal classifiers never get to distribute endings.
+ */
+export const KIMARITE_MIDFIGHT_ATTEMPT_RATE = 0.15;

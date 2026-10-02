@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { WorldState } from "@/engine/types/world";
-import { BashoName, BoutResult } from "@/engine/types/basho";
+import { AwardLogEntry, BashoName, BoutResult } from "@/engine/types/basho";
 import { Rikishi } from "@/engine/types/rikishi";
 import { MatchSchedule } from "@/engine/types/basho";
 
@@ -901,21 +901,180 @@ describe("boutResultApplier", () => {
       expect(westUpdate?.divisionRecords?.makuuchi.losses).toBe(1);
     });
 
-    it("Test 1.14: should award kinboshi achievement when awardFact is kinboshi", () => {
+    it("Test 1.14: should award kinboshi achievement when result.awards contains kinboshi", () => {
       const { world, match, result } = makeWorldForBout();
       result.awardFact = "kinboshi";
       result.isKinboshi = true;
+      result.awards = [
+        { type: "kinboshi", winnerId: "east", loserId: "west", day: 1, boutId: "test-bout" },
+      ];
       const impact = applyBoutResult(world as WorldState, match, result);
       const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      const westUpdate = impact.entities?.rikishiUpdates?.get("west");
       expect(eastUpdate?.stats?.achievements?.kinboshiEarned).toBe(1);
+      expect(westUpdate?.stats?.achievements?.kinboshiConceded).toBe(1);
     });
 
-    it("Test 1.15: should award ginboshi achievement when awardFact is ginboshi", () => {
+    it("Test 1.15: should award ginboshi achievement when result.awards contains ginboshi", () => {
       const { world, match, result } = makeWorldForBout();
       result.awardFact = "ginboshi";
+      result.awards = [
+        { type: "ginboshi", winnerId: "east", loserId: "west", day: 1, boutId: "test-bout" },
+      ];
       const impact = applyBoutResult(world as WorldState, match, result);
       const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      const westUpdate = impact.entities?.rikishiUpdates?.get("west");
       expect(eastUpdate?.stats?.achievements?.ginboshiEarned).toBe(1);
+      expect(westUpdate?.stats?.achievements?.ginboshiConceded).toBe(1);
     });
+  });
+});
+
+describe("boutResultApplier — kinboshi award side-effects", () => {
+  // Compact fixture: east maegashira beats west yokozuna, awards already
+  // stamped on the result by the resolver (detection is pure — the applier
+  // owns every world/rikishi side-effect).
+  function makeKinboshiBout() {
+    const world: Partial<WorldState> = {
+      rikishi: new Map([
+        [
+          "east",
+          {
+            id: "east",
+            shikona: "Underdog",
+            careerWins: 10,
+            careerLosses: 5,
+            division: "makuuchi",
+            rank: "maegashira",
+            side: "east",
+            divisionRecords: { makuuchi: { wins: 0, losses: 0 } },
+            stats: { achievements: undefined },
+            heyaId: "test-heya",
+          } as Rikishi,
+        ],
+        [
+          "west",
+          {
+            id: "west",
+            shikona: "Grand Champion",
+            careerWins: 200,
+            careerLosses: 40,
+            division: "makuuchi",
+            rank: "yokozuna",
+            side: "west",
+            divisionRecords: { makuuchi: { wins: 0, losses: 0 } },
+            stats: { achievements: undefined },
+            heyaId: "test-heya",
+          } as Rikishi,
+        ],
+      ]),
+      heyas: new Map([
+        [
+          "test-heya",
+          {
+            id: "test-heya",
+            name: "Test Heya",
+            rikishiIds: ["east", "west"],
+          } as unknown as import("@/engine/types/heya").Heya,
+        ],
+      ]),
+      calendar: { currentWeek: 1, month: 1, currentDay: 1 },
+      currentBasho: {
+        id: "test-basho",
+        year: 2025,
+        day: 1,
+        bashoName: "hatsu" as BashoName,
+        bashoNumber: 1,
+        matches: [],
+        standings: new Map(),
+        isActive: true,
+      },
+      awardLog: [],
+    };
+
+    const match: MatchSchedule = {
+      boutId: "kin-bout",
+      day: 1,
+      eastRikishiId: "east",
+      westRikishiId: "west",
+    };
+
+    const result: BoutResult = {
+      boutId: "kin-bout",
+      winner: "east",
+      winnerRikishiId: "east",
+      loserRikishiId: "west",
+      kimarite: "yorikiri",
+      kimariteName: "Yorikiri",
+      stance: "migi-yotsu",
+      tachiaiWinner: "east",
+      duration: 4.0,
+      upset: true,
+      isKinboshi: true,
+      awardFact: "kinboshi",
+      awards: [
+        { type: "kinboshi", winnerId: "east", loserId: "west", day: 1, boutId: "kin-bout" },
+      ],
+      log: [],
+      kenshoEnvelopes: 30,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
+      day: 1,
+    };
+
+    return { world, match, result };
+  }
+
+  it("writes kinboshiThisBasho in the SAME currentBasho update as boutMetrics (no stale clobber)", () => {
+    const { world, match, result } = makeKinboshiBout();
+    const impact = applyBoutResult(world as WorldState, match, result);
+
+    const bashoUpdate = impact.worldFields?.currentBasho as
+      | { kinboshiThisBasho?: Record<string, number>; boutMetrics?: Record<string, unknown> }
+      | undefined;
+    expect(bashoUpdate).toBeDefined();
+    expect(bashoUpdate!.kinboshiThisBasho?.["east"]).toBe(1);
+    expect(bashoUpdate!.boutMetrics?.["east"]).toBeDefined();
+  });
+
+  it("increments winner and loser achievements exactly once each", () => {
+    const { world, match, result } = makeKinboshiBout();
+    const impact = applyBoutResult(world as WorldState, match, result);
+    const updates = impact.entities?.rikishiUpdates;
+    expect(updates?.get("east")?.stats?.achievements?.kinboshiEarned).toBe(1);
+    expect(updates?.get("west")?.stats?.achievements?.kinboshiConceded).toBe(1);
+    expect(updates?.get("east")?.economics?.kinboshiCount).toBe(1);
+  });
+
+  it("appends a kinboshi AwardLogEntry with bout provenance", () => {
+    const { world, match, result } = makeKinboshiBout();
+    const impact = applyBoutResult(world as WorldState, match, result);
+    const appends = impact.arrayAppends?.filter((a) => a.field === "awardLog") ?? [];
+    const entries = appends.flatMap((a) => a.items as AwardLogEntry[]);
+    const kin = entries.find((e) => e.type === "kinboshi");
+    expect(kin).toBeDefined();
+    expect(kin).toMatchObject({
+      winnerId: "east",
+      opponentId: "west",
+      boutId: "kin-bout",
+      day: 1,
+      bashoName: "hatsu",
+      year: 2025,
+    });
+  });
+
+  it("does NOT write kinboshiThisBasho or awardLog for a plain bout", () => {
+    const { world, match, result } = makeKinboshiBout();
+    result.awards = [];
+    result.isKinboshi = false;
+    result.awardFact = undefined;
+    const impact = applyBoutResult(world as WorldState, match, result);
+    const bashoUpdate = impact.worldFields?.currentBasho as
+      | { kinboshiThisBasho?: Record<string, number> }
+      | undefined;
+    expect(bashoUpdate?.kinboshiThisBasho ?? {}).toEqual({});
+    const appends = impact.arrayAppends?.filter((a) => a.field === "awardLog") ?? [];
+    expect(appends.flatMap((a) => a.items)).toHaveLength(0);
   });
 });

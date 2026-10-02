@@ -96,6 +96,7 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
 
   return {
     boutId: bout.id,
+    day: bout.day,
     winner: winnerSide,
     winnerRikishiId: winner.id,
     loserRikishiId: loser.id,
@@ -298,14 +299,14 @@ export function resolveBout(
   // 2. Achievement Detection (Gold & Silver Stars - v2)
   // Must run BEFORE generateBoutNarrative so awardFact is set when
   // the narrative generator checks for kinboshi/ginboshi award lines.
-  const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
-    result,
-    winner,
-    loser
-  );
+  // Detection is pure: awards are stamped on the result here, and the
+  // applier owns all counter/state side-effects exactly once.
+  const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser, {
+    isPlayoff: bout.isPlayoff,
+  });
   result.isKinboshi = !!kinboshiDelta;
-  if (kinboshiDelta) {
-    result.awardFact = "kinboshi";
+  if (awards.length > 0) {
+    result.awards = awards;
   }
 
   // 2.1. Record career highlights for the winner
@@ -368,27 +369,6 @@ export function resolveBout(
     `${result.boutId}-pbp`,
     world || ({} as WorldState)
   );
-
-  // Update achievements via StateImpact
-  builder.updateRikishi(winner.id, {
-    stats: { ...winner.stats, achievements: winnerAchievements },
-  });
-  builder.updateRikishi(loser.id, {
-    stats: { ...loser.stats, achievements: loserAchievements },
-  });
-
-  // Track kinboshi earned this basho for per-basho stipend calculation
-  if (kinboshiDelta) {
-    const currentKinboshi = basho.kinboshiThisBasho ?? {};
-    const nextKinboshi = {
-      ...currentKinboshi,
-      [winner.id]: (currentKinboshi[winner.id] ?? 0) + 1,
-    };
-    builder.updateWorldField("currentBasho", {
-      ...basho,
-      kinboshiThisBasho: nextKinboshi,
-    });
-  }
 
   // 3. Tactic aftermath (fatigue, momentum, injury multiplier) — per side.
   const { eastUpdate, westUpdate, injuryMultiplier } = computeTacticAftermath(

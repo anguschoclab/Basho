@@ -141,3 +141,56 @@ describe("BanzukePublisher — consecutiveKachiKoshi tracking (T16)", () => {
     expect(update!.consecutiveKachiKoshi).toBe(3);
   });
 });
+
+describe("BanzukePublisher — dayResults (hoshitori) capture", () => {
+  it("records per-day outcomes incl. kinboshi into the appended careerHistory entry", () => {
+    const r = mockRikishi("r-1", {
+      shikona: "Alpha",
+      rank: "maegashira",
+      rankNumber: 5,
+    });
+    const standings = new Map([["r-1", { wins: 9, losses: 6, absences: 0 }]]);
+    const world = makeWorldForPublish([r], standings);
+
+    // Give the concluded basho two resolved matches for r-1: a plain win on
+    // day 1 and a kinboshi on day 2.
+    world.currentBasho!.matches = [
+      {
+        boutId: "d1",
+        day: 1,
+        eastRikishiId: "r-1",
+        westRikishiId: "opp-1",
+        result: {
+          boutId: "d1", winner: "east", winnerRikishiId: "r-1", loserRikishiId: "opp-1",
+          kimarite: "yorikiri", isKinboshi: false, log: [], kenshoEnvelopes: 0,
+          momentumScore: 0, inBoutInjury: null, isTimeout: false, upset: false, day: 1,
+        } as never,
+      },
+      {
+        boutId: "d2",
+        day: 2,
+        eastRikishiId: "r-1",
+        westRikishiId: "yoko-1",
+        result: {
+          boutId: "d2", winner: "east", winnerRikishiId: "r-1", loserRikishiId: "yoko-1",
+          kimarite: "uwatenage", isKinboshi: true,
+          awards: [{ type: "kinboshi", winnerId: "r-1", loserId: "yoko-1", day: 2, boutId: "d2" }],
+          log: [], kenshoEnvelopes: 50, momentumScore: 0, inBoutInjury: null,
+          isTimeout: false, upset: true, day: 2,
+        } as never,
+      },
+    ] as never;
+
+    const impact = publishBanzukeUpdate(world);
+    const update = impact.entities?.rikishiUpdates?.get("r-1");
+    const history = update?.careerHistory as Array<{ dayResults?: Array<{ day: number; outcome: string; isKinboshi?: boolean }> }> | undefined;
+    const latest = history?.[history.length - 1];
+    expect(latest?.dayResults).toBeDefined();
+    const day2 = latest!.dayResults!.find((d) => d.day === 2);
+    expect(day2?.outcome).toBe("win");
+    expect(day2?.isKinboshi).toBe(true);
+    const day1 = latest!.dayResults!.find((d) => d.day === 1);
+    expect(day1?.outcome).toBe("win");
+    expect(day1?.isKinboshi).toBeFalsy();
+  });
+});

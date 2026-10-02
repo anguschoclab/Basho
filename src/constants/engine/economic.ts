@@ -60,6 +60,12 @@ export const MOCHIKYUKIN_POINTS_JUN_YUSHO = 5;
 /** Mochikyukin points earned for a zensho-yusho (perfect championship). */
 export const MOCHIKYUKIN_POINTS_ZENSHO_YUSHO = 50;
 
+/**
+ * Mochikyukin points seeded on professional debut — the JSA opens every
+ * wrestler's reserve account at a symbolic ¥3.
+ */
+export const MOCHIKYUKIN_INITIAL_POINTS = 3;
+
 /** Mochikyukin rank floors — minimum effective points for payout by rank. */
 export const MOCHIKYUKIN_RANK_FLOORS: Record<string, number> = {
   yokozuna: 150,

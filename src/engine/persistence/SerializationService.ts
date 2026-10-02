@@ -57,6 +57,7 @@ export const SerializationService = {
       day: basho.day,
       matches: basho.matches,
       standings: this.mapToObject(basho.standings),
+      ...(basho.kinboshiThisBasho ? { kinboshiThisBasho: basho.kinboshiThisBasho } : {}),
     };
   },
 
@@ -71,6 +72,7 @@ export const SerializationService = {
       day: basho.day,
       matches: basho.matches,
       standings: this.objectToMap(basho.standings),
+      ...(basho.kinboshiThisBasho ? { kinboshiThisBasho: basho.kinboshiThisBasho } : {}),
       isActive: true,
     };
   },

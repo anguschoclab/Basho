@@ -21,7 +21,7 @@ import {
   calculateDivisionStandings,
   resolveDivisionPlayoffs,
 } from "./PlayoffResolver";
-import { distributePrizes, payBashoTeate, payKinboshiStipends } from "./PrizeDistribution";
+import { distributePrizes, payBashoTeate } from "./PrizeDistribution";
 import { recordBashoHistory, checkYokozunaPromotions } from "./BashoHistory";
 import { getRikishi } from "../queries";
 import { BardEngine } from "../bard/BardEngine";
@@ -33,7 +33,7 @@ import { BASHO_CALENDAR } from "../calendar";
 import { PostBashoPressService } from "../systems/narrative/PostBashoPressService";
 
 export { resolvePlayoffs, calculateStandings, calculateDivisionStandings, resolveDivisionPlayoffs };
-export { distributePrizes, payBashoTeate, payKinboshiStipends };
+export { distributePrizes, payBashoTeate };
 export { recordBashoHistory, checkYokozunaPromotions };
 
 /**
@@ -325,8 +325,9 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   // Pay basho teate to non-sekitori rikishi
   const teateImpact = payBashoTeate(world);
 
-  // Pay kinboshi stipends (per-basho, not per-month)
-  const kinboshiImpact = payKinboshiStipends(world);
+  // Kinboshi compensation flows exclusively through mochikyukin accumulation
+  // below (+10 pts/star at ¥4,000/pt, paid every 2 months while sekitori) —
+  // the JSA model has no separate one-time stipend.
 
   // Accumulate mochikyukin points for sekitori
   const mochikyukinImpact = createImpactBuilder("mochikyukinAccumulation");
@@ -365,7 +366,6 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     builder.build(),
     historyImpact,
     teateImpact,
-    kinboshiImpact,
     mochikyukinImpact.build(),
   ]);
 }

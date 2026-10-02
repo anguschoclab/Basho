@@ -230,6 +230,34 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
     // Update rikishi with promotion tracking fields and append careerHistory
     if (rikishi) {
+      // Rebuild the rikishi's hoshitori (day-by-day star chart) from the
+      // persisted match schedule so history screens can render real results.
+      const dayResults = (lastBasho.matches ?? [])
+        .filter((m) => m.result && (m.eastRikishiId === id || m.westRikishiId === id) && m.day <= 15)
+        .sort((a, b) => a.day - b.day)
+        .flatMap((m) => {
+          const res = m.result;
+          if (!res) return [];
+          const won = res.winnerRikishiId === id;
+          const isKinboshi =
+            won && (res.awards?.some((a) => a.type === "kinboshi") || res.isKinboshi === true);
+          const isGinboshi = won && (res.awards?.some((a) => a.type === "ginboshi") ?? false);
+          return [
+            {
+              day: m.day,
+              outcome: (won
+                ? "win"
+                : res.kimarite === "fusensho"
+                  ? "absence"
+                  : "loss") as "win" | "loss" | "absence",
+              ...(isKinboshi ? { isKinboshi: true } : {}),
+              ...(isGinboshi ? { isGinboshi: true } : {}),
+              opponentId: won ? res.loserRikishiId : res.winnerRikishiId,
+              kimarite: res.kimarite,
+            },
+          ];
+        });
+
       const historyEntry = {
         id: `${lastBasho.bashoName}-${world.year}-${id}`,
         bashoId: `${lastBasho.bashoName}-${world.year}`,
@@ -252,6 +280,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         },
         weight: rikishi.weight,
         momentum: rikishi.momentum,
+        dayResults,
       };
       const updatedHistory = [...(rikishi.careerHistory || []), historyEntry];
       // Keep last 6 basha only — promotion logic only needs recent history

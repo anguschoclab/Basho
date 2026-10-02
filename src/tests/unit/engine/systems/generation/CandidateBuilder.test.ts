@@ -248,6 +248,53 @@ describe("CandidateBuilder — structural compatibility", () => {
     });
   });
 
+  describe("convertCandidateToRikishi — mochikyukin debut seed", () => {
+    it("seeds the symbolic 3-point mochikyukin balance at debut (JSA rule)", () => {
+      const rng = rngFromSeed("test", "candidate", "mochi-seed");
+      const candidate: TalentCandidate = {
+        candidateId: "cand-mochi-001",
+        personId: "person-mochi-001",
+        name: "Seed Test",
+        birthYear: 2005,
+        originRegion: "Tokyo",
+        nationality: "Japan",
+        visibilityBand: "partial",
+        reputationSeed: 90,
+        tags: [],
+        combatProfile: buildCombatProfile("oshi"),
+        availabilityState: "available",
+        competingSuitors: [],
+        archetype: "oshi",
+        style: "oshi",
+        heightPotentialCm: 180,
+        weightPotentialKg: 130,
+        talentSeed: 12345,
+        temperament: { discipline: 70, volatility: 30 },
+        potentialStats: {
+          power: 70,
+          speed: 65,
+          technique: 60,
+          balance: 55,
+          stamina: 80,
+          mental: 60,
+          adaptability: 55,
+        },
+        developmentProfile: "standard",
+        developmentSpeed: 1.0,
+        peakAgeOffset: 0,
+        ceilingFraction: 1.0,
+      } as unknown as TalentCandidate;
+
+      const r = convertCandidateToRikishi({
+        candidate,
+        rng,
+        currentYear: 2025,
+        heyaId: "heya-001",
+      });
+      expect(r.stats?.achievements?.mochikyukinPoints).toBe(3);
+    });
+  });
+
   describe("convertCandidateToRikishi", () => {
     it("return value has all required Rikishi fields", () => {
       const rng = rngFromSeed("test", "candidate", "struct-convert");

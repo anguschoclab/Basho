@@ -86,7 +86,11 @@ describe("boutResolver copies dramaticContext onto BoutResult", () => {
 
     const { result } = resolveBout(ctx, east, west, basho);
 
-    const dramaLine = result.pbpLines?.find((l) => l.tags?.includes("drama"));
+    // The dramaticContext-driven line is the opening-phase "drama" entry;
+    // replay-phase highlights also carry the tag independently.
+    const dramaLine = result.pbpLines?.find(
+      (l) => l.phase === "opening" && l.tags?.includes("drama")
+    );
     expect(dramaLine).toBeUndefined();
   });
 });
