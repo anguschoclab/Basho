@@ -38,11 +38,8 @@ import {
  *
  * @returns StateImpact describing the H2H updates for the reducer.
  *
- * WARNING: This function currently performs in-place mutations on the deeply
- * nested `h2h` record maps of the provided Rikishi objects, violating the
- * immutable pipeline contract. If a pipeline phase throws an error after this
- * is called, the mutations will persist because `createShallowSnapshot` does
- * not deeply clone entities.
+ * Note: Adheres to the immutable pipeline contract by safely cloning the `h2h`
+ * map and the specific opponent's `H2HRecord` before applying updates.
  */
 export function updateH2H(
   winner: Rikishi,
