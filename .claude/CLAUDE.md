@@ -128,7 +128,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 - **Mock factory:** `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)`
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 70%, branches 75%, functions 65%, statements 70% (v8 provider)
-- **Current status (v5 consolidation, Sep 2026):** ~830 test files, ~7,400 tests, all passing. `bun run type-check` clean. `bun run build` succeeds.
+- **Current status (v8 consolidation, Oct 2026):** 860 test files, 8,330 tests, all passing. `bun run type-check` clean. `bun run build` succeeds. E2E: 5/5 specs green.
 - **Command-path note:** engine mutations go through the worker via `sendCommand`. The interactive basho path (`SIMULATE_BOUT` etc.) still resolves on the main thread for match animation, but tactics live on `world.boutTactics` and every world-mutating slice case bumps `state.uiWorldRevision`, which GameContext syncs back to the worker via `LOAD_WORLD`. Never reintroduce a world write that skips this sync.
 
 ## Routing (routes.tsx — TanStack Router)
@@ -152,8 +152,8 @@ Plan file: `.claude/plans/encapsulated-herding-origami.md`
 |-------|-------|--------|
 | P0 (bootstrap) | EconomicConstants, FinanceCalculator, remove pbp export | ✅ Done |
 | P1 (critical) | FinanceCalculator integration, BardEngine tokens, dead code, HistoryDashboard route | ✅ Done |
-| P1 (type safety) | `as any` casts, naturalization RNG | ⏳ Pending |
-| P1 (tests) | Centralize mocks, banzuke tests, basho lifecycle tests, governance tests, coverage config | ⏳ Pending |
+| P1 (type safety) | `as any` casts, naturalization RNG | ✅ Done — zero `as any` in production code; `naturalization.ts` uses seeded `rngFromSeed` |
+| P1 (tests) | Centralize mocks, banzuke tests, basho lifecycle tests, governance tests, coverage config | ✅ Done — canonical factories in `src/tests/unit/engine/utils.ts` + `src/tests/helpers/`; coverage thresholds configured |
 | P2 (modularization) | matchmaking.ts split, kimariteStrategy split, BoutReplayViewer split, selectors, merger UI | ✅ Done |
 | Dead Code Audit | Engine modules, components, constants, context actions, CSS, barrel cleanup, lazy loading, vendor chunks | ✅ Done |
 

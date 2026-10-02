@@ -3,7 +3,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
-import type { UIRikishi } from "@/presenters/uiModels";
+import { mockUIRikishi } from "@/tests/helpers/uiTestHelpers";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -59,38 +59,6 @@ function renderWithProvider(ui: React.ReactElement) {
   return render(<TooltipProvider>{ui}</TooltipProvider>);
 }
 
-const mockRikishi = (id: string, shikona: string): UIRikishi =>
-  ({
-    id,
-    shikona,
-    rankLabel: "Yokozuna",
-    rank: "yokozuna",
-    stable: "Test",
-    stableId: "s-1",
-    prefecture: "Tokyo",
-    height: 185,
-    weight: 150,
-    age: 28,
-    wins: 10,
-    losses: 2,
-    absences: 0,
-    isPlayer: false,
-    isRetired: false,
-    injuryWeeks: 0,
-    morale: 80,
-    fatigue: 0,
-    popularity: 50,
-    momentum: 0,
-    style: "belt",
-    preferredTech: "oshi",
-    bloodline: "",
-    debutBasho: { year: 2020, month: 1 },
-    record: { totalBouts: 100, wins: 60, losses: 40, absences: 0 },
-    careerWins: 60,
-    careerLosses: 40,
-    careerAbsences: 0,
-  }) as unknown as UIRikishi;
-
 const makeLine = (phase: PbpLine["phase"], text: string): PbpLine => ({
   text,
   id: `id-${text}`,
@@ -132,8 +100,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
@@ -148,8 +116,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
@@ -164,8 +132,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult([])}
         bashoName={bashoName}
         day={1}
@@ -181,8 +149,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult([])}
         bashoName={bashoName}
         day={1}
@@ -197,8 +165,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
@@ -216,8 +184,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
@@ -235,8 +203,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
@@ -257,8 +225,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
@@ -276,8 +244,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onClose={onClose}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
       />
     );
@@ -298,8 +266,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
         autoPlay={false}
       />
@@ -315,8 +283,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
       />
     );
@@ -329,8 +297,8 @@ describe("BoutNarrativeModal", () => {
       <BoutNarrativeModal
         open
         onOpenChange={vi.fn()}
-        east={mockRikishi("r-1", "East")}
-        west={mockRikishi("r-2", "West")}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
         result={mockResult(lines)}
       />
     );

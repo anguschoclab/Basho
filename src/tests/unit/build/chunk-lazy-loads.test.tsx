@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Suspense, isValidElement } from "react";
 import { router } from "@/routes";
+import { RequireWorld } from "@/components/RequireWorld";
 
 describe("chunk lazy loads — MainMenu, NewGameWizard, Dashboard", () => {
   it("MainMenu route component is wrapped with Suspense", () => {
@@ -27,7 +28,7 @@ describe("chunk lazy loads — MainMenu, NewGameWizard, Dashboard", () => {
     expect(result.type).toBe(Suspense);
   });
 
-  it("Dashboard route component is wrapped with Suspense", () => {
+  it("Dashboard route component is wrapped with RequireWorld + Suspense", () => {
     const route = router.routesById["/dashboard"] as unknown as {
       options: { component: () => React.ReactElement };
     };
@@ -36,6 +37,11 @@ describe("chunk lazy loads — MainMenu, NewGameWizard, Dashboard", () => {
     expect(typeof comp).toBe("function");
     const result = comp();
     expect(isValidElement(result)).toBe(true);
-    expect(result.type).toBe(Suspense);
+    // Dashboard is world-gated: RequireWorld restores the autosave on cold
+    // boot and wraps the lazy Suspense boundary.
+    expect(result.type).toBe(RequireWorld);
+    const child = (result.props as { children: React.ReactElement }).children;
+    expect(isValidElement(child)).toBe(true);
+    expect(child.type).toBe(Suspense);
   });
 });
