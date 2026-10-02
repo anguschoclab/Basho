@@ -13,13 +13,9 @@ import { DEFAULT_WELFARE_RISK } from "../../../constants/engine/welfareTransitio
 import { DEFAULT_MORALE } from "../../../constants/engine/welfare";
 
 /**
- * Ensures that a heya has a valid welfare state.
- * If not present, initializes it with default values.
- *
- * @param heya - The heya to check/initialize
- * @returns The current or new WelfareState
+ * Fresh default WelfareState for a heya that has none.
  */
-export function createHeyaWelfareState(): WelfareState {
+function createHeyaWelfareState(): WelfareState {
   return {
     welfareRisk: DEFAULT_WELFARE_RISK,
     complianceState: "compliant",

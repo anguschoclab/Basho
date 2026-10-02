@@ -459,6 +459,8 @@ describe("executeAgentDecisions — recruitment policy handoff", () => {
 describe("executeAgentDecisions — narrative", () => {
   it("shouldTriggerEvent produces a BardEngine-rendered event for the heya", () => {
     const { world } = makeWorld();
+    const subject = MockFactory.createRikishi("rikishi-1", { heyaId: "heya-a" });
+    world.rikishi.set(subject.id, subject);
     const impact = executeAgentDecisions(
       world,
       "heya-a",
@@ -466,6 +468,7 @@ describe("executeAgentDecisions — narrative", () => {
         narrative: {
           shouldTriggerEvent: true,
           eventType: "media_spotlight",
+          rikishiId: subject.id,
           narrativeTone: "neutral",
         },
       }),
