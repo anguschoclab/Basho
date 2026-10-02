@@ -414,6 +414,10 @@ export function resolveBout(
       const stats = { ...(world.globalKimariteStats || {}) };
       stats[result.kimarite] = (stats[result.kimarite] || 0) + 1;
       builder.updateWorldField("globalKimariteStats", stats);
+      // All-time accumulator — same counts, but never reset by era drift.
+      const allTime = { ...(world.allTimeKimariteStats || {}) };
+      allTime[result.kimarite] = (allTime[result.kimarite] || 0) + 1;
+      builder.updateWorldField("allTimeKimariteStats", allTime);
     }
 
     // 5. Kensho (Prize Banners)

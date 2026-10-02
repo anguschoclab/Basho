@@ -129,6 +129,7 @@ export const SerializationService = {
 
       meta: world.meta,
       globalKimariteStats: world.globalKimariteStats,
+      allTimeKimariteStats: world.allTimeKimariteStats,
 
       playerKnowledge: world.playerKnowledge,
       tutorialState: world.tutorialState,
@@ -236,6 +237,7 @@ export const SerializationService = {
       // the metagame it was saved in, not revert to a fresh "classic" era.
       meta: s.meta ?? { tone: "classic" as const, drift: {} },
       globalKimariteStats: s.globalKimariteStats ?? {},
+      allTimeKimariteStats: s.allTimeKimariteStats ?? {},
       playerHeyaId: serialized.playerHeyaId,
       currentBanzuke: serialized.currentBanzuke,
       talentPool: s.talentPool,

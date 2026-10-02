@@ -42,6 +42,7 @@ const runtimeFiles = allSrcFiles.filter((f) => !isTestFile(f) && !isScriptFile(f
 const GENUINE_WRITE_ONLY_FIELDS = [
   "awardLog",
   "globalKimariteStats",
+  "allTimeKimariteStats",
   "playerKnowledge",
   "almanacSnapshots",
   "closedHeyas",

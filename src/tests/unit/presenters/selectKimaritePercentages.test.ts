@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { selectKimaritePercentages } from "@/presenters/selectors";
+import {
+  selectAllTimeKimaritePercentages,
+  selectKimariteObservedShare,
+  selectKimaritePercentages,
+} from "@/presenters/selectors";
 import { makeMockWorld } from "../engine/utils";
 import { KIMARITE_FREQUENCY_TARGETS } from "@/constants/engine/kimariteFrequencies";
 import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
@@ -65,5 +69,48 @@ describe("selectKimaritePercentages", () => {
     const world = makeMockWorld({ globalKimariteStats: { yorikiri: 3 } });
     const rows = selectKimaritePercentages(world);
     expect(rows[0].name).toBe("Yorikiri");
+  });
+});
+
+describe("selectAllTimeKimaritePercentages", () => {
+  it("returns empty array when no all-time stats exist", () => {
+    const world = makeMockWorld({ allTimeKimariteStats: {} });
+    expect(selectAllTimeKimaritePercentages(world)).toEqual([]);
+  });
+
+  it("returns empty array when the field is absent (pre-1.4.0 saves)", () => {
+    const world = makeMockWorld({ allTimeKimariteStats: undefined });
+    expect(selectAllTimeKimaritePercentages(world)).toEqual([]);
+  });
+
+  it("reads allTimeKimariteStats, not the era-scoped map", () => {
+    const world = makeMockWorld({
+      globalKimariteStats: { yorikiri: 5 },
+      allTimeKimariteStats: { yorikiri: 90, uwatenage: 10 },
+    });
+    const rows = selectAllTimeKimaritePercentages(world);
+    const yorikiri = rows.find((r) => r.kimarite === "yorikiri")!;
+    expect(yorikiri.count).toBe(90);
+    expect(yorikiri.observedPct).toBeCloseTo(90, 1);
+  });
+});
+
+describe("selectKimariteObservedShare", () => {
+  it("returns the observed share of a technique this era", () => {
+    const world = makeMockWorld({
+      globalKimariteStats: { yorikiri: 60, oshidashi: 40 },
+    });
+    expect(selectKimariteObservedShare(world, "yorikiri")).toBeCloseTo(60, 1);
+    expect(selectKimariteObservedShare(world, "oshidashi")).toBeCloseTo(40, 1);
+  });
+
+  it("returns undefined when the technique has no recorded endings", () => {
+    const world = makeMockWorld({ globalKimariteStats: { yorikiri: 10 } });
+    expect(selectKimariteObservedShare(world, "oshidashi")).toBeUndefined();
+  });
+
+  it("returns undefined when no bouts have been recorded", () => {
+    const world = makeMockWorld({ globalKimariteStats: {} });
+    expect(selectKimariteObservedShare(world, "yorikiri")).toBeUndefined();
   });
 });

@@ -264,11 +264,13 @@ export function simulateEntireBasho(
     }
   }
 
-  // 3. Update Global Kimarite Stats
+  // 3. Update Global Kimarite Stats (era + never-reset all-time accumulator)
   const globalKimariteStats = { ...(workingWorld.globalKimariteStats || {}) };
+  const allTimeKimariteStats = { ...(workingWorld.allTimeKimariteStats || {}) };
   activeBasho.matches.forEach((m) => {
     if (m.result?.kimarite) {
       globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
+      allTimeKimariteStats[m.result.kimarite] = (allTimeKimariteStats[m.result.kimarite] || 0) + 1;
     }
   });
 
@@ -287,6 +289,7 @@ export function simulateEntireBasho(
       rikishi: nextRikishiMap,
       heyas: nextHeyaMap,
       globalKimariteStats,
+      allTimeKimariteStats,
     },
   };
 }

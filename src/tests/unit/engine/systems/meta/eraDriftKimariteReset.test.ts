@@ -12,4 +12,15 @@ describe("EraDriftService kimarite reset", () => {
     const after = resolveImpacts(world, [impact]);
     expect(after.globalKimariteStats).toEqual({});
   });
+
+  it("preserves allTimeKimariteStats across the year boundary", () => {
+    const world = makeMockWorld({
+      globalKimariteStats: { oshidashi: 500, yorikiri: 300 },
+      allTimeKimariteStats: { oshidashi: 4000, yorikiri: 2400, tsutaezori: 2 },
+    });
+    const impact = processYearlyEraDrift(world);
+    const after = resolveImpacts(world, [impact]);
+    expect(after.globalKimariteStats).toEqual({});
+    expect(after.allTimeKimariteStats).toEqual({ oshidashi: 4000, yorikiri: 2400, tsutaezori: 2 });
+  });
 });

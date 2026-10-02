@@ -19,6 +19,9 @@ interface BoutResultDisplayProps {
   westRikishi: UIRikishi;
   className?: string;
   compact?: boolean;
+  /** Observed share of this kimarite this era (0–100), from world stats.
+   * Omit when unavailable — nothing is rendered in its place. */
+  kimariteObservedPct?: number;
 }
 
 /**
@@ -67,6 +70,7 @@ export function BoutResultDisplay({
   westRikishi,
   className,
   compact = false,
+  kimariteObservedPct,
 }: BoutResultDisplayProps) {
   const winner = result.winner === "east" ? eastRikishi : westRikishi;
   const loser = result.winner === "east" ? westRikishi : eastRikishi;
@@ -183,6 +187,7 @@ export function BoutResultDisplay({
           <KimariteTag
             kimariteId={kimariteId}
             kimariteName={kimariteName}
+            observedPct={kimariteObservedPct}
             className="font-display text-xl font-semibold text-foreground"
           />
           {kimariteNameJa && (

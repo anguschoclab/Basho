@@ -42,8 +42,12 @@ export const MIN_FORCE_AFTER_FATIGUE = 0.6;
 /** Minimum absolute force */
 export const MIN_ABSOLUTE_FORCE = 1;
 
-/** Momentum threshold for oshitaoshi kimarite */
-export const MOMENTUM_THRESHOLD_OSHITAOSHI = 15;
+/** Momentum threshold for a "loser overcommitted" push-fall classification.
+ * eastMomentum/westMomentum hold the rikishi's tachiai force (≈ power stat,
+ * typically 20–95) — a low threshold would flag nearly every fall as an
+ * overcommit and flood the momentum-capture techniques. 65 keeps the bias
+ * to genuinely hard-charging losers. */
+export const MOMENTUM_THRESHOLD_OSHITAOSHI = 65;
 
 /** Torque threshold for moderate throws */
 export const TORQUE_THRESHOLD_MODERATE = 10;
@@ -226,7 +230,7 @@ export const BELT_COG_OFFSET_SCALE = 0.9;
 /** Positional displacement from torque (m/N) — raised so belt endings more
  * often reach the tawara before the loser collapses (force-outs dominate
  * real belt endings). */
-export const TORQUE_DISPLACEMENT_MULTIPLIER = 0.016;
+export const TORQUE_DISPLACEMENT_MULTIPLIER = 0.018;
 
 /** Escape resistance from available force (1/N) */
 export const ESCAPE_RESISTANCE_MULTIPLIER = 0.008;

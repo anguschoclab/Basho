@@ -46,6 +46,7 @@ function arg(flag: string, fallback: string): string {
 
 const BOUTS = parseInt(arg("--bouts", "20000"), 10);
 const SEED = arg("--seed", "kimarite-measure-v1");
+const CALIBRATE = process.argv.includes("--calibrate");
 const POOL_SIZE = 220;
 
 /** Deterministic, varied population — not one canonical pair. */
@@ -212,6 +213,43 @@ function main() {
   console.log(`\nDeterminism (prefix re-run): ${deterministic ? "PASS" : "FAIL"}`);
   if (flagged.length) {
     console.log(`\nFlagged out-of-range: ${flagged.join(", ")}`);
+  }
+
+  if (CALIBRATE) {
+    // Suggest a per-technique multiplier = target/observed for every entry in
+    // the target table. Clamped to [0.2, 5] so a single run's noise cannot
+    // propose extreme swings; unreachable entries are reported separately.
+    // These are *suggestions* for the candidate/strategy weights — the script
+    // never writes files.
+    console.log("\nCALIBRATION SUGGESTIONS (suggested weight multiplier)");
+    console.log(
+      "kimarite".padEnd(22) +
+        "obs%".padStart(9) +
+        "real%".padStart(9) +
+        "  suggested ×"
+    );
+    const unreachable: string[] = [];
+    for (const [id, target] of Object.entries(KIMARITE_FREQUENCY_TARGETS)) {
+      if (id === "fusensho" || id === "hansoku") continue; // not physics paths
+      const count = counts.get(id) ?? 0;
+      if (count === 0) {
+        unreachable.push(id);
+        continue;
+      }
+      const obs = count / total;
+      const factor = Math.min(5, Math.max(0.2, target / obs));
+      console.log(
+        id.padEnd(22) +
+          pct(count, total) +
+          (target * 100).toFixed(3).padStart(9) +
+          `  ×${factor.toFixed(2)}`
+      );
+    }
+    if (unreachable.length) {
+      console.log(
+        `\nUnreachable this run (candidate path missing?): ${unreachable.join(", ")}`
+      );
+    }
   }
 }
 

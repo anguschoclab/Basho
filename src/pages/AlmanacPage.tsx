@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
-import { selectKimaritePercentages } from "@/presenters/selectors";
+import { selectAllTimeKimaritePercentages, selectKimaritePercentages } from "@/presenters/selectors";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -79,10 +79,24 @@ export default function AlmanacPage() {
   const { world } = state;
 
   const [activeTab, setActiveTab] = useState("past-bashos");
+  const [statsScope, setStatsScope] = useState<"era" | "alltime">("era");
+
+  // Real recorded-ending totals per scope — shown on the toggle so the counts
+  // behind each view are visible before switching.
+  const eraEndings = Object.values(world?.globalKimariteStats ?? {}).reduce((a, b) => a + b, 0);
+  const allTimeEndings = Object.values(world?.allTimeKimariteStats ?? {}).reduce(
+    (a, b) => a + b,
+    0
+  );
 
   const kimariteStats = useMemo(
-    () => (world ? (world.globalKimariteStats ? selectKimaritePercentages(world) : []) : []),
-    [world]
+    () =>
+      world
+        ? statsScope === "alltime"
+          ? selectAllTimeKimaritePercentages(world)
+          : selectKimaritePercentages(world)
+        : [],
+    [world, statsScope]
   );
   // Use getHistory(world).length for the count — it reflects the total number
   // of completed bashos (capped at 500), which is what the "Past Bashos" tab
@@ -319,20 +333,46 @@ export default function AlmanacPage() {
           <TabsContent value="techniques">
             <Card className="paper">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Swords className="h-5 w-5 text-primary" />
-                  Winning Techniques
-                </CardTitle>
+                <div className="flex items-center justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2">
+                    <Swords className="h-5 w-5 text-primary" />
+                    Winning Techniques
+                  </CardTitle>
+                  <div className="flex rounded-md border border-border overflow-hidden">
+                    {(["era", "alltime"] as const).map((scope) => {
+                      const endings = scope === "era" ? eraEndings : allTimeEndings;
+                      return (
+                        <button
+                          key={scope}
+                          type="button"
+                          onClick={() => setStatsScope(scope)}
+                          className={`px-3 py-1 text-xs font-medium transition-colors ${
+                            statsScope === scope
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {scope === "era" ? "This era" : "All time"} ·{" "}
+                          {endings.toLocaleString()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <CardDescription>
-                  Observed share of bout endings in this world against the real-world
-                  makuuchi reference. Observed percentages are computed from recorded
-                  results; expected values are all-time professional statistics.
+                  {statsScope === "era"
+                    ? "Observed share of bout endings this era (resets each year) against the real-world makuuchi reference."
+                    : "Observed share of bout endings across the entire save history against the real-world makuuchi reference."}{" "}
+                  Observed percentages are computed from recorded results; expected
+                  values are all-time professional statistics.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {kimariteStats.length === 0 ? (
                   <p className="text-muted-foreground text-center py-6 text-sm">
-                    No bouts have been recorded yet this era.
+                    {statsScope === "era"
+                      ? "No bouts have been recorded yet this era."
+                      : "No bouts have been recorded yet."}
                   </p>
                 ) : (
                   <div className="overflow-x-auto">

@@ -125,6 +125,7 @@ export type WritableWorldFields = Pick<
   | "globalCup"
   | "chronicle"
   | "globalKimariteStats"
+  | "allTimeKimariteStats"
   | "meta"
   | "pendingCrisis"
   | "pendingDecisions"

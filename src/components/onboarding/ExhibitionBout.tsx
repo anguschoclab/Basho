@@ -17,6 +17,7 @@ import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { MentorOverlay, type MentorStep } from "./MentorOverlay";
 import { PbpLineText } from "@/components/game/PbpLineText";
 import { KimariteTag } from "@/components/ui/KimariteTag";
+import { selectKimariteObservedShare } from "@/presenters/selectors";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -219,6 +220,7 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
               <KimariteTag
                 kimariteId={boutResult.kimarite}
                 kimariteName={boutResult.kimariteName}
+                observedPct={selectKimariteObservedShare(world, boutResult.kimarite)}
               />
             </p>
             <p className="text-xs text-muted-foreground">

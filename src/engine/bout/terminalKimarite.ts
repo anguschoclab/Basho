@@ -36,11 +36,11 @@ const w = (id: string) => KIMARITE_FREQUENCY_TARGETS[id] ?? 0.0001;
  * in the caller). A sliver of pull-down-style exits (waridashi etc.) tail out.
  */
 const PUSH_EXIT_CANDIDATES: Candidate[] = [
-  ["oshidashi", 1],
-  ["tsukidashi", 2.4],
-  ["waridashi", 1.5], // arm-split push-out — rare but plausible on any push exit
-  ["hatakikomi", 0.15], // slap-down right at the edge
-  ["hikiotoshi", 0.1],
+  ["oshidashi", 2.9],
+  ["tsukidashi", 2.6],
+  ["waridashi", 2.0], // arm-split push-out — rare but plausible on any push exit
+  ["hatakikomi", 0.22], // slap-down right at the edge
+  ["hikiotoshi", 0.18],
   ["katasukashi", 0.15],
 ];
 
@@ -50,7 +50,7 @@ const PUSH_EXIT_CANDIDATES: Candidate[] = [
  * carry-outs and rear exits tail off.
  */
 const BELT_EXIT_CANDIDATES: Candidate[] = [
-  ["yorikiri", 0.8],
+  ["yorikiri", 2.1],
   ["yoritaoshi", 0.5],
   ["okuridashi", 0.5],
   ["okuritaoshi", 1.4],
@@ -65,17 +65,17 @@ const BELT_EXIT_CANDIDATES: Candidate[] = [
  * loser fall" family. Also where the arm-pull hineri techniques live.
  */
 const PUSH_FALL_CANDIDATES: Candidate[] = [
-  ["oshitaoshi", 2.2],
-  ["tsukitaoshi", 1],
-  ["hatakikomi", 1.2],
-  ["hikiotoshi", 1.2],
-  ["tsukiotoshi", 1.6],
+  ["oshitaoshi", 5.0],
+  ["tsukitaoshi", 2.2],
+  ["hatakikomi", 2.7],
+  ["hikiotoshi", 2.8],
+  ["tsukiotoshi", 3.3],
   ["katasukashi", 1],
-  ["tottari", 2.0],
-  ["abisetaoshi", 1],
+  ["tottari", 4.0],
+  ["abisetaoshi", 1.5],
   ["sokubiotoshi", 1],
   ["kotehineri", 3.0],
-  ["amiuchi", 1],
+  ["amiuchi", 1.4],
   ["sakatottari", 1],
   ["kubiotoshi", 1],
   ["kainahineri", 0.4],
@@ -211,10 +211,10 @@ export function classifyPushFallKimarite(
 ): KimariteId {
   const extra = opts.loserOvercommitted
     ? new Map<string, number>([
-        ["hatakikomi", 1.6],
-        ["hikiotoshi", 1.6],
-        ["tsukiotoshi", 1.4],
-        ["katasukashi", 1.4],
+        ["hatakikomi", 2.5],
+        ["hikiotoshi", 2.5],
+        ["tsukiotoshi", 4.0],
+        ["katasukashi", 1.8],
       ])
     : undefined;
   return pickTerminalKimarite(rng, PUSH_FALL_CANDIDATES, extra);

@@ -29,6 +29,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "simulate": "bun src/engine/simulation/run.ts",
+    "measure:kimarite": "bun scripts/measure-kimarite-distribution.ts",
     "electron:dev": "electron-vite dev",
     "electron:preview": "electron-vite preview",
     "electron:build": "electron-vite build && electron-builder --mac",

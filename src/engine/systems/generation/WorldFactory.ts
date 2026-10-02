@@ -99,6 +99,7 @@ export function generateInitialWorld(seed: string): WorldState {
       drift: {},
     },
     globalKimariteStats: {},
+    allTimeKimariteStats: {},
     events: { version: "1.0.0", log: [], dedupe: {} },
     ftue: { isActive: true, bashoCompleted: 0, suppressedEvents: [] },
     playerHeyaId: Array.from(heyaMap.keys())[0],

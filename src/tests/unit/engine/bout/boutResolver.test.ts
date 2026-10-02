@@ -238,3 +238,65 @@ describe("resolveBout — kensho banners", () => {
     expect(kenshoBanners).toBeUndefined();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Kimarite stats accumulation (era + all-time)
+// ---------------------------------------------------------------------------
+
+describe("resolveBout — kimarite stats accumulation", () => {
+  it("increments both globalKimariteStats and allTimeKimariteStats", () => {
+    const east = mockRikishi("r-east", { injured: false });
+    const west = mockRikishi("r-west", { injured: false });
+    const basho = makeMockBasho({ year: 2025 });
+    const world = makeMockWorld({
+      globalKimariteStats: { yorikiri: 10 },
+      allTimeKimariteStats: { yorikiri: 100 },
+    });
+    const ctx = makeBoutContext();
+
+    const { result, impact } = resolveBout(ctx, east, west, basho, undefined, world);
+
+    expect(result.kimarite).not.toBe("fusensho");
+    const era = impact.worldFields?.globalKimariteStats as Record<string, number>;
+    const allTime = impact.worldFields?.allTimeKimariteStats as Record<string, number>;
+    // Whatever technique won is counted in both maps, preserving prior counts.
+    expect(era[result.kimarite]).toBe((world.globalKimariteStats[result.kimarite] ?? 0) + 1);
+    expect(allTime[result.kimarite]).toBe(
+      (world.allTimeKimariteStats?.[result.kimarite] ?? 0) + 1
+    );
+    expect(era.yorikiri).toBe(10);
+    expect(allTime.yorikiri).toBe(100);
+  });
+
+  it("initializes allTimeKimariteStats when absent (pre-1.4.0 world)", () => {
+    const east = mockRikishi("r-east", { injured: false });
+    const west = mockRikishi("r-west", { injured: false });
+    const basho = makeMockBasho({ year: 2025 });
+    const world = makeMockWorld({ globalKimariteStats: {} });
+    delete world.allTimeKimariteStats;
+    const ctx = makeBoutContext();
+
+    const { result, impact } = resolveBout(ctx, east, west, basho, undefined, world);
+
+    const allTime = impact.worldFields?.allTimeKimariteStats as Record<string, number>;
+    expect(allTime[result.kimarite]).toBe(1);
+  });
+
+  it("does not count fusensho in either map", () => {
+    const east = mockRikishi("r-east", { injured: false });
+    const west = mockRikishi("r-west", { injured: true });
+    const basho = makeMockBasho({ year: 2025 });
+    const world = makeMockWorld({
+      globalKimariteStats: {},
+      allTimeKimariteStats: { yorikiri: 5 },
+    });
+    const ctx = makeBoutContext();
+
+    const { result, impact } = resolveBout(ctx, east, west, basho, undefined, world);
+
+    expect(result.kimarite).toBe("fusensho");
+    // Fusensho returns early — no stats fields are written at all.
+    expect(impact.worldFields?.globalKimariteStats).toBeUndefined();
+    expect(impact.worldFields?.allTimeKimariteStats).toBeUndefined();
+  });
+});

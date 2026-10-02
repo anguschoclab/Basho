@@ -203,8 +203,11 @@ export interface WorldState {
     tone: "classic" | "explosive" | "technical" | "defensive";
     drift: Record<string, number>;
   };
-  /** Cumulative count of techniques used in the world (for drift calculations). */
+  /** Cumulative count of techniques used in the world (for drift calculations).
+   * Reset yearly by EraDriftService — this is the "current era" view. */
   globalKimariteStats: Record<string, number>;
+  /** All-time cumulative count of techniques — never reset by era drift. */
+  allTimeKimariteStats?: Record<string, number>;
 
   events: EventsState;
   playerKnowledge?: {

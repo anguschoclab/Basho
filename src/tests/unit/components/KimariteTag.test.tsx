@@ -80,3 +80,30 @@ describe("KimariteTag", () => {
     expect(el.className).toContain("custom-class");
   });
 });
+
+describe("KimariteTag — observedPct", () => {
+  it("shows observed share in the tooltip when provided", () => {
+    renderWithProvider(<KimariteTag kimariteId="yorikiri" observedPct={29.6} />);
+    const content = screen.getByTestId("tooltip-content");
+    expect(content.textContent).toContain("29.60%");
+    expect(content.textContent).toContain("this era");
+  });
+
+  it("renders tooltip with only observed share when description is a placeholder", () => {
+    renderWithProvider(<KimariteTag kimariteId="no-desc" kimariteName="NoDesc" observedPct={1.25} />);
+    const content = screen.getByTestId("tooltip-content");
+    expect(content.textContent).toContain("1.25%");
+    expect(content.textContent).not.toContain("NoDesc technique.");
+  });
+
+  it("renders tooltip with only observed share for an unregistered kimarite", () => {
+    renderWithProvider(<KimariteTag kimariteId="unknown" observedPct={0.5} />);
+    expect(screen.getByTestId("tooltip-content").textContent).toContain("0.50%");
+  });
+
+  it("omits the observed line when observedPct is not provided", () => {
+    renderWithProvider(<KimariteTag kimariteId="yorikiri" />);
+    const content = screen.getByTestId("tooltip-content");
+    expect(content.textContent).not.toContain("Observed");
+  });
+});
