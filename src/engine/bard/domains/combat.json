@@ -145,17 +145,26 @@
       "early": [
         "The pace is telling — %EAST% is breathing hard, legs heavy from the grind.",
         "Sweat drips freely now. %WEST% looks labored in his movements.",
-        "The accumulated effort shows — both men are slowing, muscles burning."
+        "The accumulated effort shows — both men are slowing, muscles burning.",
+        "A grueling start to the bout — both %EAST% and %WEST% are already breathing heavily.",
+        "%EAST% is looking a bit flushed early on. The intensity is taking a toll.",
+        "Neither man wants to yield, but early signs of fatigue are creeping in for %WEST%."
       ],
       "mid": [
         "Fatigue is setting in deeply. %EAST%'s footwork has gone sluggish.",
         "%WEST% is gasping for air — the bout has become a war of attrition.",
-        "Heavy legs on both sides. The stamina battle is now the real fight."
+        "Heavy legs on both sides. The stamina battle is now the real fight.",
+        "The relentless pressure is draining both rikishi. %EAST% is visibly slowing down.",
+        "%WEST%'s movements lack the early snap. The middle of this bout is a true grind.",
+        "Legs are getting heavy on the clay. %EAST% struggles to maintain a low center of gravity."
       ],
       "late": [
         "Exhaustion is written on every movement. %EAST% is running on fumes.",
         "%WEST% can barely lift his arms — pure willpower keeping him upright.",
-        "Both men are spent. This is no longer technique — it's heart."
+        "Both men are spent. This is no longer technique — it's heart.",
+        "Both men are practically running on empty. A pure battle of willpower now.",
+        "The tank is dry for %WEST%. He's surviving purely on instinct and grit.",
+        "Incredible heart from %EAST%, but the sheer physical exhaustion is obvious."
       ]
     },
     "bout_injury": {

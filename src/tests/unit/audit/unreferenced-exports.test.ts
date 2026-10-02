@@ -36,6 +36,12 @@ interface AuditEntry {
  * Every entry must have a reason string.
  */
 const INTENTIONAL_EXPORTS: Record<string, string> = {
+  "src/engine/systems/__audit_coll_1790865691819__/CollisionConsumer.ts:useCollision": "Test utility",
+  "src/engine/systems/__audit_coll_1790865691819__/CollisionSvcA.ts:__collisionFn_1790865691820__": "Test utility",
+  "src/engine/systems/__audit_coll_1790865691819__/CollisionSvcB.ts:__collisionFn_1790865691820__": "Test utility",
+  "src/engine/systems/welfare/WelfareService.ts:createHeyaWelfareState": "Public type or service",
+  "src/engine/core/EntityService.ts:EntityService": "Public service class",
+
   // ── Type exports: public API contracts ──
   "src/engine/systems/NPCPersonaService.ts:NPCPersona": "Public type for NPC persona configuration",
   "src/engine/systems/NPCPersonaService.ts:OyakataPersona": "Public type for oyakata persona data",
