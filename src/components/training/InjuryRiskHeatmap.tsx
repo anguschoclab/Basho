@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { toFatigueBand } from "@/presenters/engineAccess";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Activity } from "lucide-react";
 
 interface InjuryRiskHeatmapProps {
   rikishiList: Array<{
@@ -64,7 +66,7 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
           <CardDescription>Condition & fatigue risk scores per rikishi</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">No active rikishi to display.</p>
+          <EmptyState icon={Activity} title="No Active Wrestlers" description="There are no rikishi in your stable to evaluate for injury risk." compact />
         </CardContent>
       </Card>
     );
