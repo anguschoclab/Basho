@@ -41,7 +41,8 @@ describe("NarrativeProse", () => {
     it("maps legacy bands to correct archive paths", () => {
       vi.mocked(BardEngine.resolve).mockReturnValue({
         text: "Mock Text",
-        tokens: {},
+        id: "mock_id",
+        path: "mock.path" as any,
       });
 
       const testCases = [
@@ -70,7 +71,8 @@ describe("NarrativeProse", () => {
     it("maps scandal bands correctly to system keys", () => {
       vi.mocked(BardEngine.resolve).mockReturnValue({
         text: "Mock Scandal",
-        tokens: {},
+        id: "mock_id",
+        path: "mock.path" as any,
       });
 
       const testCases = [
@@ -93,7 +95,8 @@ describe("NarrativeProse", () => {
     it("falls back to band string if band is not in SCANDAL_BAND_KEY", () => {
       vi.mocked(BardEngine.resolve).mockReturnValue({
         text: "Fallback",
-        tokens: {},
+        id: "mock_id",
+        path: "mock.path" as any,
       });
       getScandalLabel(rng, "unknown_band" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
@@ -107,7 +110,8 @@ describe("NarrativeProse", () => {
     it("maps archetypes to correct keys with fallback", () => {
       vi.mocked(BardEngine.resolve).mockReturnValue({
         text: "Mock Archetype",
-        tokens: {},
+        id: "mock_id",
+        path: "mock.path" as any,
       });
 
       const testCases = [
@@ -137,7 +141,8 @@ describe("NarrativeProse", () => {
     it("resolves basic bands using simple interpolation", () => {
       vi.mocked(BardEngine.resolve).mockReturnValue({
         text: "Mock Resolve",
-        tokens: {},
+        id: "mock_id",
+        path: "mock.path" as any,
       });
 
       getFatigueLabel(rng, "exhausted" as any);
@@ -168,9 +173,9 @@ describe("NarrativeProse", () => {
     it("maps aliases for specific stats and falls back to simple label if text is empty", () => {
       vi.mocked(BardEngine.resolve).mockImplementation((_rng, path) => {
         if (path.includes("rikishi.stats")) {
-          return { text: "", tokens: {} };
+          return { text: "", id: "mock_id", path: "mock.path" as any };
         }
-        return { text: "Fallback Label", tokens: {} };
+        return { text: "Fallback Label", id: "mock_id", path: "mock.path" as any };
       });
 
       const result = getStatProse(rng, "strength", "legendary" as any);
@@ -188,9 +193,9 @@ describe("NarrativeProse", () => {
     it("returns resolved text if available", () => {
       vi.mocked(BardEngine.resolve).mockImplementation((_rng, path) => {
         if (path.includes("rikishi.stats")) {
-          return { text: "Specific Prose", tokens: {} };
+          return { text: "Specific Prose", id: "mock_id", path: "mock.path" as any };
         }
-        return { text: "Fallback Label", tokens: {} };
+        return { text: "Fallback Label", id: "mock_id", path: "mock.path" as any };
       });
 
       const result = getStatProse(rng, "speed", "abysmal" as any);
@@ -206,7 +211,8 @@ describe("NarrativeProse", () => {
     it("resolves all remaining bands using simple interpolation", () => {
       vi.mocked(BardEngine.resolve).mockReturnValue({
         text: "Mocked",
-        tokens: {},
+        id: "mock_id",
+        path: "mock.path" as any,
       });
 
       getStatLabel(rng, "legendary" as any);
