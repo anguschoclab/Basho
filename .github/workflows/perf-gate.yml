@@ -46,5 +46,7 @@ jobs:
         with:
           bun-version: 1.3.14
       - run: bun install
+      - name: Build to satisfy bundleBudget test
+        run: bun run build
       - name: Run unit tests
         run: npx vitest run
