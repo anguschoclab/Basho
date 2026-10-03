@@ -47,4 +47,4 @@ jobs:
           bun-version: 1.3.14
       - run: bun install
       - name: Run unit tests
-        run: npx vitest run
+        run: bun run build && npx vitest run
