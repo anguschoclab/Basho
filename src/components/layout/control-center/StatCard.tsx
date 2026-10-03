@@ -104,7 +104,14 @@ export function StatCard({
                   {p.value}%
                 </p>
               </div>
-              <div className="h-1 w-full rounded-xs bg-muted/40 overflow-hidden">
+              <div
+                className="h-1 w-full rounded-xs bg-muted/40 overflow-hidden"
+                role="progressbar"
+                aria-label={p.label}
+                aria-valuenow={Math.min(p.value, 100)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
                 <div
                   className={cn(
                     "h-full rounded-xs transition-all duration-500",
