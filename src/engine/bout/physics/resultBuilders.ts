@@ -76,6 +76,7 @@ export function buildBoutResultV2(
 
   return {
     boutId: bout.id,
+    day: bout.day,
     winner,
     winnerRikishiId: winnerRikishi.id,
     loserRikishiId: loserRikishi.id,

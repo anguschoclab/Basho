@@ -121,13 +121,36 @@ export class ElectronStorageProvider implements IStorageProvider {
   private webSet(key: string, value: string): void {
     this.idbCache.set(key, value);
     if (this.hydrated && this.idb) {
-      void this.idbPut(key, value).catch((e) =>
-        error("IndexedDB write failed", "ElectronStorage", e)
-      );
+      void this.idbPut(key, value).catch((e) => {
+        error(
+          `IndexedDB write failed (${e instanceof DOMException ? `${e.name}: ${e.message}` : String(e)})`,
+          "ElectronStorage"
+        );
+        this.fallbackPersist(key, value);
+      });
     } else {
       // Pre-hydration gap: keep writing localStorage so nothing is lost;
       // the hydrate sweep migrates it into IDB.
+      try {
+        localStorage.setItem(key, encodeStored(value));
+      } catch {
+        // Quota — the in-memory cache still holds the value.
+      }
+    }
+  }
+
+  /**
+   * Last-resort persistence when an IDB write fails (quota, abort, dead
+   * connection). The compressed copy may fit localStorage's ~5MB quota where
+   * the raw IDB payload did not; if it doesn't, the in-memory cache still
+   * serves reads for the session. On next boot the hydrate sweep migrates
+   * any surviving localStorage keys back into IDB.
+   */
+  private fallbackPersist(key: string, value: string): void {
+    try {
       localStorage.setItem(key, encodeStored(value));
+    } catch {
+      // localStorage quota exceeded too — nothing more we can persist.
     }
   }
 

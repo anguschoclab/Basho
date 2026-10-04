@@ -162,10 +162,16 @@ export const RivalryService = {
       state.pairs[key] ??
       this.createFreshPair(result.winnerRikishiId, result.loserRikishiId, world);
 
-    const next = applyBoutToPairState(existing, {
+    // sameHeya is snapshotted at pair creation but rikishi can change stables
+    // (mergers/closures) — refresh it from the live roster before applying.
+    const rA = EntityCollection.getRikishiById(world, existing.aId);
+    const rB = EntityCollection.getRikishiById(world, existing.bId);
+    const sameHeya = !!rA && !!rB && rA.heyaId === rB.heyaId;
+    const current = sameHeya === existing.sameHeya ? existing : { ...existing, sameHeya };
+
+    const next = applyBoutToPairState(current, {
       rng,
       isWinForA: result.winnerRikishiId === existing.aId,
-      isLossForA: result.loserRikishiId === existing.aId,
       isKinboshi: !!result.isKinboshi,
       isTitleStakes: !!result.isTitleStakes,
       closeness01: result.duration
@@ -189,8 +195,6 @@ export const RivalryService = {
     const thresholdCrossed = thresholds.find((t) => oldHeat <= t && newHeat > t);
 
     if (thresholdCrossed) {
-      const rA = EntityCollection.getRikishiById(world, existing.aId);
-      const rB = EntityCollection.getRikishiById(world, existing.bId);
       if (rA && rB) {
         builder.logEvent(
           "RIVALRY_HEAT_SPIKE",
@@ -280,13 +284,14 @@ export const RivalryService = {
       const weeksSince = week - pair.lastMetWeek;
       const decay = getDecayRate(weeksSince);
 
-      const updatedPair = {
+      const updatedPair: RivalryPairState = {
         ...pair,
         heat: clamp(pair.heat - decay, 0, 100),
         closeness: clamp(pair.closeness - CLOSENESS_DECAY_RATE, 0, 100),
         spite: clamp(pair.spite - SPITE_DECAY_RATE, 0, 100),
-        tone: deriveTone(pair),
       };
+      // Tone must reflect the decayed values, not the pre-decay pair.
+      updatedPair.tone = deriveTone(updatedPair);
 
       // Auto-cull
       if (
@@ -303,6 +308,9 @@ export const RivalryService = {
     builder.updateWorldField("rivalriesState", {
       version: state.version,
       pairs: finalPairs,
+      // updateWorldField replaces the whole field — preserve the
+      // stable-level rivalries accumulated by onBoutResolved.
+      heyaRivalryPairs: state.heyaRivalryPairs,
     });
 
     return builder.build();

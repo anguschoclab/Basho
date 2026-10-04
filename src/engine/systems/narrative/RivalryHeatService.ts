@@ -116,7 +116,6 @@ export function applyBoutToPairState(
   args: {
     rng: SeededRNG;
     isWinForA: boolean;
-    isLossForA: boolean;
     isKinboshi: boolean;
     isTitleStakes: boolean;
     closeness01: number;

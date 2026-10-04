@@ -45,6 +45,8 @@ describe("HistoryPage", () => {
     vi.spyOn(GameContext, "useGame").mockReturnValue({
       state: { world: null },
       getRikishi: vi.fn(),
+      hasAutosave: () => false,
+      loadFromAutosave: () => false,
     } as any);
 
     const { container } = render(<HistoryPage />);

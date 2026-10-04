@@ -103,6 +103,8 @@ interface BoutNarrativeModalProps {
   autoPlay?: boolean;
   gyojiName?: string;
   gyojiAccuracy?: number;
+  /** Observed share of this kimarite this era (0–100). Omit when no stats exist. */
+  kimariteObservedPct?: number;
 }
 
 /**
@@ -135,6 +137,7 @@ export function BoutNarrativeModal({
   autoPlay = true,
   gyojiName,
   gyojiAccuracy,
+  kimariteObservedPct,
 }: BoutNarrativeModalProps) {
   const handleClose = onClose ?? (() => onOpenChange?.(false));
   const pbpLines: PbpLine[] = useMemo(() => result.pbpLines ?? [], [result.pbpLines]);
@@ -301,6 +304,7 @@ export function BoutNarrativeModal({
               eastRikishi={east}
               westRikishi={west}
               className="border shadow-none"
+              kimariteObservedPct={kimariteObservedPct}
             />
 
             <Separator />

@@ -1,50 +1,68 @@
 /**
  * src/engine/bout/boutAchievements.ts
  * ===================================
- * Kinboshi/ginboshi achievement detection.
+ * Kinboshi/ginboshi award detection.
  * Extracted from boutResolver.ts for SRP separation.
+ *
+ * Pure detection only — this module never mutates rikishi or world state.
+ * It returns BoutAward facts describing *what happened*; the bout result
+ * applier owns every state side-effect (achievements, kinboshiThisBasho,
+ * awardLog) so each counter is written exactly once.
  */
 
-import type { Rikishi, RikishiAchievements } from "../types/rikishi";
-import type { BoutResult } from "../types/basho";
+import type { Rikishi } from "../types/rikishi";
+import type { BoutAward, BoutResult } from "../types/basho";
 
-function defaultAchievements(): RikishiAchievements {
-  return {
-    kinboshiEarned: 0,
-    ginboshiEarned: 0,
-    kinboshiConceded: 0,
-    ginboshiConceded: 0,
-    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
-    mochikyukinPoints: 0,
-  };
+export interface DetectKinboshiOptions {
+  /**
+   * True for playoff (kettei-sen) bouts. Per JSA rules a kinboshi is only
+   * earned in honbasho torikumi — playoff wins never award a gold star.
+   */
+  isPlayoff?: boolean;
 }
 
 export function detectKinboshi(
   result: BoutResult,
   winner: Rikishi,
-  loser: Rikishi
+  loser: Rikishi,
+  opts?: DetectKinboshiOptions
 ): {
-  winnerAchievements: RikishiAchievements;
-  loserAchievements: RikishiAchievements;
   kinboshiDelta: boolean;
+  awards: BoutAward[];
 } {
-  const winnerAchievements = winner.stats.achievements || defaultAchievements();
-  const loserAchievements = loser.stats.achievements || defaultAchievements();
+  const awards: BoutAward[] = [];
   let kinboshiDelta = false;
 
-  if (winner.rank === "maegashira" && loser.rank === "yokozuna" && result.kimarite !== "fusensho") {
-    winnerAchievements.kinboshiEarned++;
-    loserAchievements.kinboshiConceded++;
-    kinboshiDelta = true;
-  } else if (
-    winner.rank === "maegashira" &&
-    loser.rank === "ozeki" &&
-    result.kimarite !== "fusensho"
-  ) {
-    winnerAchievements.ginboshiEarned++;
-    loserAchievements.ginboshiConceded++;
-    result.awardFact = "ginboshi";
+  // Honbasho torikumi only — playoffs are exhibition-deciding and never award stars.
+  if (!opts?.isPlayoff) {
+    const awardBase = {
+      winnerId: winner.id,
+      loserId: loser.id,
+      day: result.day ?? 0,
+      boutId: result.boutId,
+    };
+
+    // Kinboshi: maegashira over yokozuna. Fusensho (default win) excluded;
+    // hansoku (disqualification) DOES count per JSA practice.
+    if (
+      winner.rank === "maegashira" &&
+      loser.rank === "yokozuna" &&
+      result.kimarite !== "fusensho"
+    ) {
+      kinboshiDelta = true;
+      awards.push({ type: "kinboshi", ...awardBase });
+      result.awardFact = "kinboshi";
+    } else if (
+      winner.rank === "maegashira" &&
+      loser.rank === "ozeki" &&
+      result.kimarite !== "fusensho"
+    ) {
+      // Ginboshi: informal "silver star" — recorded on the result but carries
+      // no official ledger entry or mochikyukin value.
+      awards.push({ type: "ginboshi", ...awardBase });
+      result.awardFact = "ginboshi";
+    }
   }
 
-  return { winnerAchievements, loserAchievements, kinboshiDelta };
+  return { kinboshiDelta, awards };
 }

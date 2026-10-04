@@ -236,6 +236,31 @@ describe("RikishiProfileHeader", () => {
     expect(screen.getByText("15")).toBeTruthy();
   });
 
+  it("shows the per-basho mochikyukin annuity value next to the points total", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 1,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 15,
+      },
+      salaryBreakdown: { base: 1_400_000, kinboshiBonus: 60_000, total: 1_460_000 } as any,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    // The gold star's real value — ¥60,000 per basho — must be visible, not
+    // hidden behind an unexplained "points" number.
+    expect(screen.getByText(/60,000/)).toBeTruthy();
+    expect(screen.getByText(/per basho/i)).toBeTruthy();
+  });
+
   it("hides Mochikyukin stat when mochikyukinPoints === 0", () => {
     const rikishi = makeUIRikishi({
       achievements: {

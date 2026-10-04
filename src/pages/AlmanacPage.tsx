@@ -4,15 +4,16 @@ import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
-import { selectKimariteStats } from "@/presenters/selectors";
+import { selectAllTimeKimaritePercentages, selectKimaritePercentages } from "@/presenters/selectors";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { RecordEntry } from "@/engine/types/records";
 import type { BashoResult } from "@/engine/types/basho";
-import { Medal, Star, TrendingUp, Trophy, Users, History, Award, Gavel } from "lucide-react";
+import { Medal, Star, TrendingUp, Trophy, Users, History, Award, Gavel, Swords } from "lucide-react";
 import { PageHeader } from "@/components/layout/control-center";
 import { getAllRikishi, getRikishi, getHistory } from "@/presenters/worldAccess";
+import { selectLatestKinboshiDates } from "@/presenters/projections/kinboshiLedger";
 import { projectOfficials } from "@/presenters/officialsProjections";
 import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
 
@@ -78,10 +79,24 @@ export default function AlmanacPage() {
   const { world } = state;
 
   const [activeTab, setActiveTab] = useState("past-bashos");
+  const [statsScope, setStatsScope] = useState<"era" | "alltime">("era");
+
+  // Real recorded-ending totals per scope — shown on the toggle so the counts
+  // behind each view are visible before switching.
+  const eraEndings = Object.values(world?.globalKimariteStats ?? {}).reduce((a, b) => a + b, 0);
+  const allTimeEndings = Object.values(world?.allTimeKimariteStats ?? {}).reduce(
+    (a, b) => a + b,
+    0
+  );
 
   const kimariteStats = useMemo(
-    () => (world ? (world.globalKimariteStats ? selectKimariteStats(world) : []) : []),
-    [world]
+    () =>
+      world
+        ? statsScope === "alltime"
+          ? selectAllTimeKimaritePercentages(world)
+          : selectKimaritePercentages(world)
+        : [],
+    [world, statsScope]
   );
   // Use getHistory(world).length for the count — it reflects the total number
   // of completed bashos (capped at 500), which is what the "Past Bashos" tab
@@ -105,6 +120,7 @@ export default function AlmanacPage() {
         achievedDate?: { year: number; month: number };
       }>
     > = [];
+    const kinboshiDates = selectLatestKinboshiDates(world);
     for (const r of getAllRikishi(world)) {
       const value =
         (r.stats?.achievements?.kinboshiEarned ?? 0) + (r.stats?.achievements?.ginboshiEarned ?? 0);
@@ -114,8 +130,9 @@ export default function AlmanacPage() {
           shikona: r.shikona,
           value,
           details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
-          // No record stores when a kinboshi was earned — omit rather than
-          // fabricate the current date.
+          // The awardLog kinboshi ledger records when each star was earned —
+          // show the most recent one; ginboshi earns no official record.
+          achievedDate: kinboshiDates.get(r.id),
         });
       }
     }
@@ -160,7 +177,9 @@ export default function AlmanacPage() {
             </p>
             {topKimarite.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1">
-                Top technique: {topKimarite[0].kimarite} ({topKimarite[0].count})
+                Top technique: {topKimarite[0].name} ({topKimarite[0].count} recorded,{" "}
+                {topKimarite[0].observedPct.toFixed(1)}% observed vs{" "}
+                {topKimarite[0].realWorldPct.toFixed(1)}% expected)
               </p>
             )}
           </div>
@@ -170,7 +189,7 @@ export default function AlmanacPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+          <TabsList className="grid w-full max-w-3xl grid-cols-5">
             <TabsTrigger value="past-bashos" className="flex items-center gap-2">
               <History className="h-4 w-4" />
               Past Bashos
@@ -178,6 +197,10 @@ export default function AlmanacPage() {
             <TabsTrigger value="records" className="flex items-center gap-2">
               <Trophy className="h-4 w-4" />
               Record Book
+            </TabsTrigger>
+            <TabsTrigger value="techniques" className="flex items-center gap-2">
+              <Swords className="h-4 w-4" />
+              Techniques
             </TabsTrigger>
             <TabsTrigger value="hof" className="flex items-center gap-2">
               <Award className="h-4 w-4" />
@@ -305,6 +328,99 @@ export default function AlmanacPage() {
                 />
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="techniques">
+            <Card className="paper">
+              <CardHeader>
+                <div className="flex items-center justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2">
+                    <Swords className="h-5 w-5 text-primary" />
+                    Winning Techniques
+                  </CardTitle>
+                  <div className="flex rounded-md border border-border overflow-hidden">
+                    {(["era", "alltime"] as const).map((scope) => {
+                      const endings = scope === "era" ? eraEndings : allTimeEndings;
+                      return (
+                        <button
+                          key={scope}
+                          type="button"
+                          onClick={() => setStatsScope(scope)}
+                          className={`px-3 py-1 text-xs font-medium transition-colors ${
+                            statsScope === scope
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {scope === "era" ? "This era" : "All time"} ·{" "}
+                          {endings.toLocaleString()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <CardDescription>
+                  {statsScope === "era"
+                    ? "Observed share of bout endings this era (resets each year) against the real-world makuuchi reference."
+                    : "Observed share of bout endings across the entire save history against the real-world makuuchi reference."}{" "}
+                  Observed percentages are computed from recorded results; expected
+                  values are all-time professional statistics.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {kimariteStats.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-6 text-sm">
+                    {statsScope === "era"
+                      ? "No bouts have been recorded yet this era."
+                      : "No bouts have been recorded yet."}
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                          <th className="py-2 pr-3 font-semibold">Technique</th>
+                          <th className="py-2 pr-3 font-semibold text-right">Count</th>
+                          <th className="py-2 pr-3 font-semibold text-right">Observed %</th>
+                          <th className="py-2 pr-3 font-semibold text-right">Expected %</th>
+                          <th className="py-2 font-semibold text-right">Rarity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {kimariteStats.map((row) => (
+                          <tr key={row.kimarite} className="border-b last:border-0">
+                            <td className="py-1.5 pr-3 font-display">{row.name}</td>
+                            <td className="py-1.5 pr-3 text-right font-mono tabular-nums">
+                              {row.count}
+                            </td>
+                            <td className="py-1.5 pr-3 text-right font-mono tabular-nums">
+                              {row.count > 0 ? `${row.observedPct.toFixed(2)}%` : "—"}
+                            </td>
+                            <td className="py-1.5 pr-3 text-right font-mono tabular-nums text-muted-foreground">
+                              {row.realWorldPct > 0 ? `${row.realWorldPct.toFixed(2)}%` : "—"}
+                            </td>
+                            <td className="py-1.5 text-right">
+                              <Badge
+                                variant="outline"
+                                className={
+                                  row.rarity === "legendary"
+                                    ? "border-purple-400 text-purple-400"
+                                    : row.rarity === "rare"
+                                      ? "border-west text-west"
+                                      : "text-muted-foreground"
+                                }
+                              >
+                                {row.rarity}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="hof">

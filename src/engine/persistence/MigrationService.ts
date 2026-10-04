@@ -253,6 +253,22 @@ const migrateToV1_3_0: MigrationStep = (save, ctx) => {
   return next;
 };
 
+/**
+ * 1.3.0 → 1.4.0: adds `world.allTimeKimariteStats` — the never-reset all-time
+ * kimarite counter. Optional; starts undefined and accumulates from the load
+ * point forward. Existing saves cannot backfill era stats (per-era counts were
+ * already reset), so we explicitly initialize to undefined.
+ */
+const migrateToV1_4_0: MigrationStep = (save, ctx) => {
+  const next = { ...save };
+  if (next.world && next.world.allTimeKimariteStats === undefined) {
+    next.world = { ...next.world, allTimeKimariteStats: undefined };
+  }
+  next.version = "1.4.0";
+  ctx.logs.push("migrateToV1_4_0: version bump to 1.4.0 (allTimeKimariteStats initialized)");
+  return next;
+};
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 const REQUIRED_SPONSOR_FIELDS = [
@@ -299,6 +315,7 @@ const migrations: Partial<Record<SaveVersion, MigrationStep>> = {
   "1.0.0": migrateToV1_1_0,
   "1.1.0": migrateToV1_2_0,
   "1.2.0": migrateToV1_3_0,
+  "1.3.0": migrateToV1_4_0,
 };
 
 // ── Public API ─────────────────────────────────────────────────────────────

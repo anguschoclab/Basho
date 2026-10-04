@@ -29,6 +29,7 @@ import { tickBeltBattle } from "./physics/tickBeltBattle";
 import { tickEdgeCrisis } from "./physics/edgeCrisis";
 import { buildBoutResultV2 } from "./physics/resultBuilders";
 import { tryShinitai } from "./shinitai";
+import { maybeClassifyHiwaza, HIWAZA_IDS } from "./hiwaza";
 
 const MAX_TICKS = MAX_BOUT_TICKS;
 
@@ -195,7 +196,7 @@ export function resolveBoutPhysicsImpl(
   const effectiveMeta = meta || { tone: "classic", drift: {} };
   const division = east.division || west.division || "makushita";
 
-  const { winner, kimarite, isTimeout } = runPhaseLoop(
+  const resolved = runPhaseLoop(
     rng,
     east,
     west,
@@ -205,6 +206,27 @@ export function resolveBoutPhysicsImpl(
     effectiveMeta,
     sideTactics(bout)
   );
+  const { winner, isTimeout } = resolved;
+  let { kimarite } = resolved;
+
+  // CI-05b: hiwaza reclassification — when the loser's terminal body state
+  // shows a self-inflicted ending (collapse, touch-down, own-momentum
+  // step-out), a share of contested finishes are relabeled to the correct
+  // non-technique result instead of a fabricated technique.
+  // Skip reclassification when the timeout path already produced a hi_waza
+  // reversal (isamiashi/tsukite) — don't relabel a label.
+  const hiwaza = HIWAZA_IDS.has(kimarite)
+    ? null
+    : maybeClassifyHiwaza(winner, east, west, st, rng);
+  if (hiwaza) {
+    kimarite = hiwaza;
+    boutLog.push({
+      phase: "finish",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      description: `Hiwaza: ${hiwaza}`,
+      data: { hiwaza: true, loserSelfDefeat: true },
+    });
+  }
 
   const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog, isTimeout);
 

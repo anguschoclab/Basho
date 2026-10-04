@@ -42,8 +42,12 @@ export const MIN_FORCE_AFTER_FATIGUE = 0.6;
 /** Minimum absolute force */
 export const MIN_ABSOLUTE_FORCE = 1;
 
-/** Momentum threshold for oshitaoshi kimarite */
-export const MOMENTUM_THRESHOLD_OSHITAOSHI = 15;
+/** Momentum threshold for a "loser overcommitted" push-fall classification.
+ * eastMomentum/westMomentum hold the rikishi's tachiai force (≈ power stat,
+ * typically 20–95) — a low threshold would flag nearly every fall as an
+ * overcommit and flood the momentum-capture techniques. 65 keeps the bias
+ * to genuinely hard-charging losers. */
+export const MOMENTUM_THRESHOLD_OSHITAOSHI = 65;
 
 /** Torque threshold for moderate throws */
 export const TORQUE_THRESHOLD_MODERATE = 10;
@@ -58,7 +62,7 @@ export const MASS_ADVANTAGE_MULTIPLIER = 0.05;
 export const CONTEST_LINE_JITTER_MULTIPLIER = 0.01;
 
 /** Displacement per force unit (meters per tick) */
-export const DISPLACEMENT_PER_FORCE = 0.04;
+export const DISPLACEMENT_PER_FORCE = 0.045;
 
 /** Torque to velocity conversion multiplier */
 export const TORQUE_VELOCITY_MULTIPLIER = 0.05;
@@ -118,7 +122,14 @@ export const MAX_BOUT_DURATION_SECONDS = 240;
 export const BELT_THRESHOLD_MAX = 0.7;
 
 /** Belt bias divisor */
-export const BELT_BIAS_DIVISOR = 200;
+export const BELT_BIAS_DIVISOR = 110;
+/** Per-tick base chance for an evenly-matched push battle to clinch into a
+ * belt grapple (fighters lock up mid-fight). */
+export const CLINCH_CONVERSION_BASE = 0.02;
+/** Force differential under which a clinch transition can form. */
+export const CLINCH_FORCE_DIFF_MAX = 30;
+/** Scales the combined belt-preference of both rikishi into clinch chance. */
+export const CLINCH_BELT_PREF_SCALE = 0.0006;
 
 /** Cog offset to balance conversion multiplier */
 export const COG_OFFSET_BALANCE_MULTIPLIER = 200;
@@ -210,10 +221,16 @@ export const KINBOSHI_DURATION_THRESHOLD = 15;
 // --- Bout geometry / edge (extracted from boutPhaseLoop.ts) ---
 
 /** Destabilization per force differential (m/N) */
-export const COG_OFFSET_PER_FORCE = 0.003;
+export const COG_OFFSET_PER_FORCE = 0.0028;
 
-/** Positional displacement from torque (m/N) */
-export const TORQUE_DISPLACEMENT_MULTIPLIER = 0.005;
+/** Belt grapples destabilise faster than push exchanges — a collapse in a
+ * belt battle is a throw, and throws are a large share of real belt endings. */
+export const BELT_COG_OFFSET_SCALE = 0.9;
+
+/** Positional displacement from torque (m/N) — raised so belt endings more
+ * often reach the tawara before the loser collapses (force-outs dominate
+ * real belt endings). */
+export const TORQUE_DISPLACEMENT_MULTIPLIER = 0.018;
 
 /** Escape resistance from available force (1/N) */
 export const ESCAPE_RESISTANCE_MULTIPLIER = 0.008;
@@ -228,7 +245,7 @@ export const TOE_POSITION_FORCED_OUT = 1.5;
 export const TOE_POSITION_MAX = 2.0;
 
 /** |torqueAdvantage| to trigger edge crisis from belt (N) */
-export const TORQUE_EDGE_CRISIS_THRESHOLD = 30;
+export const TORQUE_EDGE_CRISIS_THRESHOLD = 15;
 
 /** avgFoot > this = "rear" (m) */
 export const POSITION_REAR_THRESHOLD = 3.5;

@@ -11,6 +11,12 @@ import type { EngineEvent } from "../engine/types/events";
 import { queryEvents } from "../engine/events";
 import { sortStandings } from "../engine/utils/sort";
 import { getCachedPerception } from "./uiDigest";
+import { getKimarite, KIMARITE_REGISTRY } from "../engine/kimariteRegistry";
+import {
+  getKimariteTargetShare,
+  rarityFromShare,
+  type KimariteRarity,
+} from "../constants/engine/kimariteFrequencies";
 
 /**
  * Simple memoization helper for selectors that depend only on WorldState.
@@ -238,6 +244,74 @@ export const selectKimariteStats = createSelector((world: WorldState) => {
   result.sort((a, b) => b.count - a.count);
   return result;
 });
+
+export interface KimaritePercentageRow {
+  kimarite: string;
+  name: string;
+  count: number;
+  /** Observed share of all recorded bout endings (0–100). */
+  observedPct: number;
+  /** Real-world makuuchi reference share (0–100). */
+  realWorldPct: number;
+  rarity: KimariteRarity;
+}
+
+/** Shared row builder for the Almanac "Techniques" view: joins a kimarite
+ * count map with the registry (display names) and the real-world frequency
+ * table (reference share + rarity tier). Honest data only — no fabricated
+ * values. */
+function buildKimariteRows(stats: Record<string, number>): KimaritePercentageRow[] {
+  const total = Object.values(stats).reduce((a, b) => a + b, 0);
+  if (total <= 0) return [];
+  // Union of every registered kimarite plus any observed-but-unknown ids,
+  // so the Techniques table always shows the complete technique list —
+  // unobserved entries appear with count 0 and their real-world rarity.
+  const ids = new Set<string>([
+    ...KIMARITE_REGISTRY.map((k) => k.id),
+    ...Object.keys(stats),
+  ]);
+  return [...ids]
+    .map((kimarite) => {
+      const def = getKimarite(kimarite);
+      const share = getKimariteTargetShare(kimarite);
+      const count = stats[kimarite] ?? 0;
+      return {
+        kimarite,
+        name: def?.name ?? kimarite,
+        count,
+        observedPct: (count / total) * 100,
+        realWorldPct: share * 100,
+        rarity: rarityFromShare(share),
+      };
+    })
+    .sort((a, b) => b.count - a.count || b.realWorldPct - a.realWorldPct);
+}
+
+/** Techniques view for the current era (globalKimariteStats resets yearly). */
+export const selectKimaritePercentages = createSelector(
+  (world: WorldState): KimaritePercentageRow[] => buildKimariteRows(world.globalKimariteStats ?? {})
+);
+
+/** Techniques view for all-time counts (allTimeKimariteStats never resets). */
+export const selectAllTimeKimaritePercentages = createSelector(
+  (world: WorldState): KimaritePercentageRow[] => buildKimariteRows(world.allTimeKimariteStats ?? {})
+);
+
+/**
+ * Observed share (0–100) of one technique this era — for BoutResultDisplay /
+ * KimariteTag tooltips. Returns undefined when no bouts are recorded so the
+ * UI can omit the line rather than fabricate a percentage.
+ */
+export function selectKimariteObservedShare(
+  world: WorldState,
+  kimariteId: string
+): number | undefined {
+  const stats = world.globalKimariteStats ?? {};
+  const total = Object.values(stats).reduce((a, b) => a + b, 0);
+  const count = stats[kimariteId];
+  if (total <= 0 || !count) return undefined;
+  return (count / total) * 100;
+}
 
 export const selectPlayerKnowledge = createSelector((world: WorldState) => {
   return world.playerKnowledge ?? { scouting: {}, bookmarks: [] };

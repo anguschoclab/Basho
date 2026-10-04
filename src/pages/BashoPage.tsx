@@ -54,6 +54,7 @@ import type { BoutTactic } from "@/engine/types/combat";
 import type { BashoName, BoutResult } from "@/engine/types/basho";
 import type { BoutMatchUI, StandingEntry } from "@/presenters/uiDigestTypes";
 import { getRikishiMap } from "@/presenters/worldAccess";
+import { selectKimariteObservedShare } from "@/presenters/selectors";
 import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
 import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
 import { projectNakabi } from "@/presenters/nakabiProjections";
@@ -556,6 +557,7 @@ export default function BashoPage() {
           day={day}
           gyojiName={officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.name}
           gyojiAccuracy={officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.accuracy}
+          kimariteObservedPct={selectKimariteObservedShare(world, selectedBout.result.kimarite)}
         />
       )}
       {autoShowPlayerBout && !selectedBout && (
@@ -569,6 +571,7 @@ export default function BashoPage() {
           day={day}
           gyojiName={officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)?.name}
           gyojiAccuracy={officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)?.accuracy}
+          kimariteObservedPct={selectKimariteObservedShare(world, autoShowPlayerBout.result.kimarite)}
         />
       )}
       <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>

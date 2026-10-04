@@ -136,6 +136,7 @@ describe("L4.9: save/load integrity — field parity", () => {
     world._daysSinceLastWeeklyTick = 3;
     world.meta = { tone: "technical", drift: { yorikiri: 0.4 } };
     world.globalKimariteStats = { yorikiri: 12 };
+    world.allTimeKimariteStats = { yorikiri: 340, tsutaezori: 1 };
     world.playerKnowledge = { scouting: {}, bookmarks: [] };
     world.governanceLog = [];
     world.yokozunaVacancyStreak = 4;
@@ -151,6 +152,7 @@ describe("L4.9: save/load integrity — field parity", () => {
     expect(loaded._daysSinceLastWeeklyTick).toBe(3);
     expect(loaded.meta).toEqual({ tone: "technical", drift: { yorikiri: 0.4 } });
     expect(loaded.globalKimariteStats).toEqual({ yorikiri: 12 });
+    expect(loaded.allTimeKimariteStats).toEqual({ yorikiri: 340, tsutaezori: 1 });
     expect(loaded.playerKnowledge).toEqual({ scouting: {}, bookmarks: [] });
     expect(loaded.governanceLog).toEqual([]);
     expect(loaded.yokozunaVacancyStreak).toBe(4);

@@ -155,9 +155,20 @@ describe("kimariteStrategies", () => {
       expect(yorikiri?.weight).toBe(90);
     });
 
-    it("includes hi_waza strategies", () => {
+    it("hi_waza are not strategies — they are post-resolution classifications", () => {
+      // Hi_waza endings are produced by engine/bout/hiwaza.ts from the loser's
+      // terminal body state, not selected from the mid-fight strategy pool.
       const hiWaza = KIMARITE_STRATEGIES.filter((s) => s.category === "hi_waza");
-      expect(hiWaza.length).toBe(5);
+      expect(hiWaza).toEqual([]);
+      for (const id of [
+        "isamiashi",
+        "koshikudake",
+        "tsukite",
+        "tsukihiza",
+        "fumidashi",
+      ]) {
+        expect(getKimarite(id)?.jsaCategory).toBe("Hiwaza");
+      }
     });
 
     it("satisfies KimariteStrategy interface", () => {
@@ -165,6 +176,28 @@ describe("kimariteStrategies", () => {
       const _typecheck: KimariteStrategy = KIMARITE_STRATEGIES[0];
       expect(_typecheck).toBeDefined();
     });
+  });
+});
+
+describe("registry/strategy parity", () => {
+  it("every strategy id resolves through getKimarite", () => {
+    const missing = KIMARITE_STRATEGIES.filter((s) => !getKimarite(s.id)).map(
+      (s) => s.id
+    );
+    expect(missing).toEqual([]);
+  });
+
+  it("registry holds exactly 82 official techniques (excluding hiwaza + forfeits)", () => {
+    expect(getKimariteCount()).toBe(82);
+  });
+
+  it("no strategy advertises the unrunnable edge_crisis phase", () => {
+    // tickEdgeCrisis resolves via classifyEdgeExitKimarite and never evaluates
+    // the strategy pool, so appliesTo:["edge_crisis"] is dead config.
+    const dead = KIMARITE_STRATEGIES.filter((s) =>
+      s.appliesTo?.includes("edge_crisis")
+    ).map((s) => s.id);
+    expect(dead).toEqual([]);
   });
 });
 

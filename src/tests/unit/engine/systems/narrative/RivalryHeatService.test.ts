@@ -56,7 +56,6 @@ describe("RivalryHeatService.applyBoutToPairState", () => {
     const next = applyBoutToPairState(pair, {
       rng,
       isWinForA: true,
-      isLossForA: false,
       isKinboshi: false,
       isTitleStakes: false,
       closeness01: 0.5,
@@ -74,7 +73,6 @@ describe("RivalryHeatService.applyBoutToPairState", () => {
     const next = applyBoutToPairState(pair, {
       rng,
       isWinForA: false,
-      isLossForA: true,
       isKinboshi: true,
       isTitleStakes: true,
       closeness01: 0.9,

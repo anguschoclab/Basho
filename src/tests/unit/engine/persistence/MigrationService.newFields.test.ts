@@ -57,15 +57,15 @@ function makeV1_2_0Save(): SaveGame {
   } as SaveGame;
 }
 
-describe("MigrationService — new fields (1.2.0 → 1.3.0)", () => {
+describe("MigrationService — new fields (1.2.0 → latest)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("migrates 1.2.0 to 1.3.0", () => {
+  it("migrates 1.2.0 to CURRENT_SAVE_VERSION", () => {
     const save = makeV1_2_0Save();
     const result = MigrationService.migrateSave(save);
-    expect(result.save.version).toBe("1.3.0");
+    expect(result.save.version).toBe(CURRENT_SAVE_VERSION);
   });
 
   it("does not corrupt existing world data during migration", () => {
@@ -75,20 +75,20 @@ describe("MigrationService — new fields (1.2.0 → 1.3.0)", () => {
     expect(result.save.world.seed).toBe(seedBefore);
   });
 
-  it("idempotent: migrating a 1.3.0 save is a no-op", () => {
+  it("idempotent: migrating a current-version save is a no-op", () => {
     const save = makeV1_2_0Save();
     const migrated = MigrationService.migrateSave(save);
     const migratedAgain = MigrationService.migrateSave(migrated.save);
-    expect(migratedAgain.save.version).toBe("1.3.0");
+    expect(migratedAgain.save.version).toBe(CURRENT_SAVE_VERSION);
     expect(migratedAgain.context.logs).toHaveLength(0);
   });
 
-  it("CURRENT_SAVE_VERSION is 1.3.0", () => {
-    expect(CURRENT_SAVE_VERSION).toBe("1.3.0");
+  it("CURRENT_SAVE_VERSION is 1.4.0", () => {
+    expect(CURRENT_SAVE_VERSION).toBe("1.4.0");
   });
 
-  it("KNOWN_SAVE_VERSIONS includes 1.3.0", () => {
-    expect(KNOWN_SAVE_VERSIONS).toContain("1.3.0");
+  it("KNOWN_SAVE_VERSIONS includes 1.4.0", () => {
+    expect(KNOWN_SAVE_VERSIONS).toContain("1.4.0");
   });
 
   it("migration path from 1.2.0 to 1.3.0 has exactly one step", () => {
@@ -136,5 +136,32 @@ describe("MigrationService — new fields (1.2.0 → 1.3.0)", () => {
     const heya = (result.save.world as any).heyas["h1"];
     expect(heya.name).toBe("Test Heya");
     expect(heya.funds).toBe(1_000_000);
+  });
+});
+
+describe("MigrationService — allTimeKimariteStats (1.3.0 → 1.4.0)", () => {
+  it("migration path from 1.3.0 to 1.4.0 has exactly one step", () => {
+    const steps = MigrationService.getMigrationPath("1.3.0", "1.4.0");
+    expect(steps).toHaveLength(1);
+  });
+
+  it("migrates a 1.3.0 save and preserves era kimarite stats", () => {
+    const save = makeV1_2_0Save();
+    save.version = "1.3.0";
+    save.world = { ...save.world, globalKimariteStats: { yorikiri: 42, uwatenage: 9 } };
+    const result = MigrationService.migrateSave(save);
+    expect(result.save.version).toBe("1.4.0");
+    expect(result.save.world?.globalKimariteStats).toEqual({ yorikiri: 42, uwatenage: 9 });
+    // All-time stats cannot be backfilled (era stats already reset each year),
+    // so old saves start empty and accumulate forward.
+    expect(result.save.world?.allTimeKimariteStats).toBeUndefined();
+  });
+
+  it("preserves an existing allTimeKimariteStats map", () => {
+    const save = makeV1_2_0Save();
+    save.version = "1.3.0";
+    save.world = { ...save.world, allTimeKimariteStats: { yorikiri: 500 } };
+    const result = MigrationService.migrateSave(save);
+    expect(result.save.world?.allTimeKimariteStats).toEqual({ yorikiri: 500 });
   });
 });

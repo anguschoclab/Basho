@@ -3,6 +3,7 @@ import type { Division } from "../types/banzuke";
 import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../types/combat-spatial";
 import type { KimariteId } from "../types/combat";
 import { KIMARITE_STRATEGIES, getKimarite } from "../kimarite";
+import { KIMARITE_FREQUENCY_TARGETS } from "../../constants/engine/kimariteFrequencies";
 import { getTacticProfile } from "./tacticProfiles";
 import { SeededRNG } from "../rng";
 import {
@@ -29,6 +30,7 @@ import {
   PUSH_LOW_TECH_BOOST,
   DEFAULT_DIFFICULTY,
   DIFFICULTY_SCALE,
+  KIMARITE_MIDFIGHT_ATTEMPT_RATE,
 } from "../../constants/engine/kimarite";
 
 /**
@@ -50,6 +52,11 @@ export const KimariteSelectionEngine = {
     tactics?: import("./boutUtils").SideTactics
   ): KimariteAttempt | null {
     const effectiveMeta = meta ?? { tone: "classic", drift: {} };
+    // Attempt-rate gate: a technique is only launched on a minority of the
+    // ticks where its conditions hold, so physics-driven endings (boundary
+    // exits, collapses) — which are calibrated to real-world shares in the
+    // terminal classifiers — remain the dominant resolution path.
+    if (rng.next() >= KIMARITE_MIDFIGHT_ATTEMPT_RATE) return null;
     // 1. Determine attacker and defender candidates
     // In many cases both could be attackers, but classifier logic usually picks a side.
     const sides: ("east" | "west")[] = ["east", "west"];
@@ -80,10 +87,15 @@ export const KimariteSelectionEngine = {
 
       if (applicable.length === 0) continue;
 
-      // 3. Apply weights (Base * Division * Meta * Specialization)
+      // 3. Apply weights (Real-share base * Division * Meta * Specialization)
+      // Base weight is the technique's real-world makuuchi share — the raw
+      // strategy `weight` field is retained for ordering/metadata but no
+      // longer drives selection, which is what drifts the simulated
+      // distribution toward real life.
       let totalWeight = 0;
       const weighted = applicable.map((s) => {
-        let weight = s.weight;
+        let weight = (KIMARITE_FREQUENCY_TARGETS[s.id] ?? 0) * 10000;
+        if (weight <= 0) return { strategy: s, weight: 0 };
 
         // Division Biases (E2)
         if (division === "makuuchi") {

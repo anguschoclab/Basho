@@ -239,43 +239,9 @@ export function payBashoTeate(world: WorldState): StateImpact {
   return builder.build();
 }
 
-/**
- * Pay kinboshi stipends to rikishi who earned kinboshi this basho.
- * Uses per-basho kinboshi count tracked in basho.kinboshiThisBasho.
- *
- * @param {WorldState} world - The current world state.
- * @returns {StateImpact} The state impact containing the stipend payments.
- */
-export function payKinboshiStipends(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("payKinboshiStipends");
-  const basho = world.currentBasho;
-  if (!basho) return builder.build();
-
-  const kinboshiMap = basho.kinboshiThisBasho ?? {};
-
-  for (const [rikishiId, count] of Object.entries(kinboshiMap)) {
-    if (count <= 0) continue;
-    const r = getRikishi(world, rikishiId);
-    if (!r || r.isRetired) continue;
-
-    const stipend = count * SIMULATION_CONFIG.prizes.kinboshiStipend;
-    const economics = r.economics || {
-      cash: 0,
-      retirementFund: 0,
-      careerKenshoWon: 0,
-      kinboshiCount: 0,
-      totalEarnings: 0,
-      currentBashoEarnings: 0,
-      popularity: 50,
-    };
-    builder.updateRikishi(rikishiId, {
-      economics: {
-        ...economics,
-        cash: economics.cash + stipend,
-        totalEarnings: economics.totalEarnings + stipend,
-      },
-    });
-  }
-
-  return builder.build();
-}
+// NOTE: there is intentionally no `payKinboshiStipends` here. A kinboshi's
+// monetary value is realized exclusively through mochikyukin: +10 points per
+// star (accumulated at basho end via accumulateMochikyukinPoints reading
+// basho.kinboshiThisBasho) paid at ¥4,000/point every second month while the
+// rikishi remains sekitori. A separate one-time cash stipend would double-pay
+// the award and mis-model the real JSA annuity structure.

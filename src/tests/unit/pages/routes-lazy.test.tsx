@@ -175,13 +175,17 @@ describe("routes lazy loading — Suspense fallback for MainMenu, NewGameWizard,
     );
   });
 
-  it("Dashboard component renders inside a Suspense boundary", async () => {
+  it("Dashboard component renders inside a world-guarded Suspense boundary", async () => {
     const route = router.routesById["/dashboard"] as unknown as {
       options: { component: () => React.ReactElement };
     };
     const result = route.options.component();
-    expect(result.type).toBe(
-      (await import("react")).Suspense
-    );
+    // Dashboard is world-gated: RequireWorld wraps the lazy Suspense boundary
+    // so a cold boot restores the autosave instead of rendering a blank page.
+    const { RequireWorld } = await import("@/components/RequireWorld");
+    expect(result.type).toBe(RequireWorld);
+    expect(
+      (result.props as { children: React.ReactElement }).children.type
+    ).toBe((await import("react")).Suspense);
   });
 });

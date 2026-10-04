@@ -42,6 +42,13 @@ function makeEngineState(eastLeadFoot: number, westLeadFoot: number): EngineStat
   };
 }
 
+/**
+ * A zero-draw rng deterministically passes the mid-fight attempt gate
+ * (KIMARITE_MIDFIGHT_ATTEMPT_RATE) and selects the first applicable
+ * strategy in declaration order — oshidashi for this fixture.
+ */
+const gatePassingRng = () => ({ next: () => 0 }) as unknown as SeededRNG;
+
 describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
   it("adds +0.08 to successProbability when winner favors the classified technique", () => {
     // Use technique=0 so techBonus=0 → base prob=0.8, boosted=0.88 (no cap interference)
@@ -82,7 +89,7 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       push,
       null,
       st,
-      new SeededRNG("base"),
+      gatePassingRng(),
       DIVISION,
       META
     );
@@ -99,7 +106,7 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       push,
       null,
       st,
-      new SeededRNG("base"),
+      gatePassingRng(),
       DIVISION,
       META
     );
@@ -143,7 +150,7 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       push,
       null,
       st,
-      new SeededRNG("noboost"),
+      gatePassingRng(),
       DIVISION,
       META
     );
@@ -153,7 +160,7 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       push,
       null,
       st,
-      new SeededRNG("noboost"),
+      gatePassingRng(),
       DIVISION,
       META
     );
@@ -200,7 +207,7 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       push,
       null,
       st,
-      new SeededRNG("cap-test"),
+      gatePassingRng(),
       DIVISION,
       META
     );

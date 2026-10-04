@@ -175,3 +175,56 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     expect(["r1", "r2", "r3", "r4", "r5"]).toContain(result.winner);
   });
 });
+
+describe("PlayoffResolver — kinboshi exclusion (honbasho-only rule)", () => {
+  it("maegashira beating yokozuna in a playoff earns NO kinboshi and does not mutate achievements", () => {
+    // Dominant maegashira vs weak yokozuna so the upset is deterministic.
+    const m1 = makeRikishi("m1", {
+      rank: "maegashira",
+      stats: {
+        power: 99, speed: 99, technique: 99, weight: 160, stamina: 99,
+        mental: 99, adaptability: 99, balance: 99, aggression: 80, experience: 99,
+        achievements: {
+          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0,
+          ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+          mochikyukinPoints: 0,
+        },
+      },
+    });
+    const y1 = makeRikishi("y1", {
+      rank: "yokozuna",
+      stats: {
+        power: 10, speed: 10, technique: 10, weight: 100, stamina: 10,
+        mental: 10, adaptability: 10, balance: 10, aggression: 10, experience: 10,
+        achievements: {
+          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0,
+          ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+          mochikyukinPoints: 0,
+        },
+      },
+    });
+    const basho = makeBasho();
+    const world = MockFactory.createWorld({
+      rikishi: new Map([["m1", m1], ["y1", y1]]),
+      currentBasho: basho,
+      sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
+      rivalriesState: { pairs: {}, version: "1.0.0" },
+    });
+
+    const { matches } = resolvePlayoffs(world, basho, ["m1", "y1"]);
+
+    // Fixture must actually produce the maegashira upset — otherwise the
+    // kinboshi assertions below are vacuous.
+    expect(matches[0].result?.winnerRikishiId).toBe("m1");
+
+    // No kinboshi facts may be stamped and neither rikishi's live
+    // achievements object may mutate.
+    for (const m of matches) {
+      expect(m.result?.isKinboshi).toBeFalsy();
+      expect(m.result?.awardFact).toBeUndefined();
+      expect(m.result?.awards ?? []).toHaveLength(0);
+    }
+    expect(m1.stats.achievements?.kinboshiEarned ?? 0).toBe(0);
+    expect(y1.stats.achievements?.kinboshiConceded ?? 0).toBe(0);
+  });
+});

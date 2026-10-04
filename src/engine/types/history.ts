@@ -1,6 +1,16 @@
 import type { Rank, Division } from "./banzuke";
 import type { Id } from "./common";
 
+/** One cell of a rikishi's hoshitori (star chart) for a single day. */
+export interface DayResult {
+  day: number;
+  outcome: "win" | "loss" | "absence";
+  isKinboshi?: boolean;
+  isGinboshi?: boolean;
+  opponentId?: Id;
+  kimarite?: string;
+}
+
 /**
  * Immutable snapshot of a Rikishi's performance in a single basho.
  */
@@ -33,6 +43,9 @@ export interface CareerSnapshot {
 
   /** Cumulative career earnings (¥) at the moment this snapshot was taken. */
   totalEarningsAtBasho?: number;
+
+  /** Per-day hoshitori results for this basho (15 cells max; playoff days excluded). */
+  dayResults?: DayResult[];
 }
 
 /**

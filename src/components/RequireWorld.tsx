@@ -1,10 +1,12 @@
 import { type ReactNode } from "react";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
+import { PageLoader } from "@/components/PageLoader";
 
 /**
  * Wrapper component that renders children only when a world is loaded.
- * Redirects to /main-menu (or custom route) when world is null.
- * Renders null during redirect to prevent flash of empty content.
+ * Restores the autosave in place on cold boot, or redirects to /main-menu
+ * when there is nothing to restore. Renders the page loader while the
+ * world is absent so reloads never show a blank screen.
  */
 export function RequireWorld({
   children,
@@ -15,6 +17,6 @@ export function RequireWorld({
 }) {
   const hasWorld = useRequireWorld(redirectTo);
 
-  if (!hasWorld) return null;
+  if (!hasWorld) return <PageLoader />;
   return <>{children}</>;
 }

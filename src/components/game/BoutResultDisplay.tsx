@@ -19,6 +19,9 @@ interface BoutResultDisplayProps {
   westRikishi: UIRikishi;
   className?: string;
   compact?: boolean;
+  /** Observed share of this kimarite this era (0–100), from world stats.
+   * Omit when unavailable — nothing is rendered in its place. */
+  kimariteObservedPct?: number;
 }
 
 /**
@@ -67,6 +70,7 @@ export function BoutResultDisplay({
   westRikishi,
   className,
   compact = false,
+  kimariteObservedPct,
 }: BoutResultDisplayProps) {
   const winner = result.winner === "east" ? eastRikishi : westRikishi;
   const loser = result.winner === "east" ? westRikishi : eastRikishi;
@@ -104,6 +108,14 @@ export function BoutResultDisplay({
           {isUpset && (
             <Badge variant="destructive" className="mb-3 animate-scale-in gap-1">
               <Zap className="h-3 w-3" /> UPSET!
+            </Badge>
+          )}
+          {result.isKinboshi && (
+            <Badge
+              variant="outline"
+              className="mb-3 animate-scale-in gap-1 border-gold text-gold"
+            >
+              <Trophy className="h-3 w-3" /> KINBOSHI — 金星
             </Badge>
           )}
 
@@ -151,6 +163,11 @@ export function BoutResultDisplay({
               {loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Unknown"}
             </span>
           </p>
+          {(result.kenshoEnvelopes ?? 0) > 0 && (
+            <p className="mt-2 text-xs font-medium text-gold">
+              {result.kenshoEnvelopes} kenshō envelopes collected
+            </p>
+          )}
         </div>
 
         {/* Kimarite card */}
@@ -170,6 +187,7 @@ export function BoutResultDisplay({
           <KimariteTag
             kimariteId={kimariteId}
             kimariteName={kimariteName}
+            observedPct={kimariteObservedPct}
             className="font-display text-xl font-semibold text-foreground"
           />
           {kimariteNameJa && (

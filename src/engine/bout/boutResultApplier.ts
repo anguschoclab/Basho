@@ -137,9 +137,21 @@ export function applyBoutResult(
     const winnerTier = winner.rankNumber ?? 99;
     lMetrics.opponentTiers.push(winnerTier);
   }
+  // Track kinboshi earned this basho for the end-of-basho mochikyukin
+  // accumulation. Written in the SAME currentBasho update as boutMetrics so
+  // a single world-field write carries both — no stale-spread clobber.
+  const kinboshiAwards = (result.awards ?? []).filter((a) => a.type === "kinboshi");
+  const kinboshiThisBasho = kinboshiAwards.length
+    ? {
+        ...(basho.kinboshiThisBasho ?? {}),
+        [winner.id]: (basho.kinboshiThisBasho?.[winner.id] ?? 0) + kinboshiAwards.length,
+      }
+    : basho.kinboshiThisBasho;
+
   builder.updateWorldField("currentBasho", {
     ...basho,
     boutMetrics,
+    ...(kinboshiThisBasho ? { kinboshiThisBasho } : {}),
   });
 
   // Bout-duration fatigue: longer bouts add more fatigue (sekitori only, loser gets 1.5x)
@@ -216,58 +228,62 @@ export function applyBoutResult(
   // For now, we'll update the basho via world field update
 
   // 2. Track Achievement Counters
-  // Clone — the raw references alias the input rikishi's nested objects.
-  let winnerAchievements = winner.stats.achievements
-    ? { ...winner.stats.achievements }
-    : undefined;
-  let winnerEconomics = winner.economics ? { ...winner.economics } : undefined;
+  // Single writer: the resolver only detects awards (pure); this applier is
+  // the sole place achievement counters, kinboshiThisBasho, and the award
+  // ledger are written — exactly once per award fact on the result.
+  const awards = result.awards ?? [];
+  const kinboshiAwardCount = awards.filter((a) => a.type === "kinboshi").length;
+  if (awards.length > 0) {
+    const mkAchievements = () => ({
+      kinboshiEarned: 0,
+      ginboshiEarned: 0,
+      kinboshiConceded: 0,
+      ginboshiConceded: 0,
+      mochikyukinPoints: 0,
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+    });
+    const winnerAchievements = winner.stats.achievements
+      ? { ...winner.stats.achievements }
+      : mkAchievements();
+    const loserAchievements = loser.stats.achievements
+      ? { ...loser.stats.achievements }
+      : mkAchievements();
+    for (const award of awards) {
+      if (award.type === "kinboshi") {
+        winnerAchievements.kinboshiEarned++;
+        loserAchievements.kinboshiConceded++;
 
-  if (result.awardFact) {
-    if (!winnerAchievements) {
-      winnerAchievements = {
-        kinboshiEarned: 0,
-        ginboshiEarned: 0,
-        kinboshiConceded: 0,
-        ginboshiConceded: 0,
-        mochikyukinPoints: 0,
-        specialPrizes: {
-          shukunSho: 0,
-          kantoSho: 0,
-          ginoSho: 0,
-        },
-      };
-    }
-
-    if (result.awardFact === "kinboshi" && winnerAchievements) {
-      winnerAchievements.kinboshiEarned++;
-
-      // Update legacy kinboshiCount for backward compatibility
-      if (!winnerEconomics) {
-        winnerEconomics = {
-          cash: 0,
-          retirementFund: 0,
-          careerKenshoWon: 0,
-          kinboshiCount: 0,
-          totalEarnings: 0,
-          currentBashoEarnings: 0,
-          popularity: 50,
-        };
+        // Persist the gold star to the global award ledger — this is the
+        // record that powers history, the Almanac, and YDC accountability.
+        builder.appendToWorldArray("awardLog", [
+          {
+            bashoName: basho.bashoName,
+            year: world.year ?? basho.year,
+            type: "kinboshi",
+            winnerId: winner.id,
+            opponentId: loser.id,
+            boutId: result.boutId,
+            day: match.day ?? result.day,
+          },
+        ]);
+      } else if (award.type === "ginboshi") {
+        winnerAchievements.ginboshiEarned++;
+        loserAchievements.ginboshiConceded++;
       }
-      winnerEconomics.kinboshiCount = (winnerEconomics.kinboshiCount || 0) + 1;
-    } else if (result.awardFact === "ginboshi" && winnerAchievements) {
-      winnerAchievements.ginboshiEarned++;
     }
+
+    builder.updateRikishi(winner.id, {
+      stats: { ...winner.stats, achievements: winnerAchievements },
+    });
+    builder.updateRikishi(loser.id, {
+      stats: { ...loser.stats, achievements: loserAchievements },
+    });
 
     // Apply popularity boost for kinboshi/ginboshi awards
     if (result.awardFact === "kinboshi" || result.awardFact === "ginboshi") {
       builder.merge(applyAchievementImpact(world, winner, result.awardFact));
     }
   }
-
-  builder.updateRikishi(winner.id, {
-    stats: { ...winner.stats, achievements: winnerAchievements },
-    economics: winnerEconomics,
-  });
 
   // 3. Update Head-to-Head Records
   const bashoId = world.currentBasho?.id ?? "unknown";
@@ -309,6 +325,17 @@ export function applyBoutResult(
 
   builder.merge(rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));
   builder.merge(economics.onBoutResolvedEconomics(world, { match, result, east, west }));
+
+  // Legacy economics.kinboshiCount counter — written AFTER the kensho
+  // economics merge so a stale `economics` spread there can't clobber it.
+  if (kinboshiAwardCount > 0) {
+    builder.updateRikishiNestedField(
+      winner.id,
+      "economics.kinboshiCount",
+      (winner.economics?.kinboshiCount ?? 0) + kinboshiAwardCount
+    );
+  }
+
   builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));
   builder.merge(onBoutResolvedOpponentModels(world, { match, result, east, west }));
 

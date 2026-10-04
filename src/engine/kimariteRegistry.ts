@@ -1,5 +1,9 @@
 import type { TacticalFamily } from "./types/combat";
 import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
+import {
+  KIMARITE_FREQUENCY_TARGETS,
+  rarityFromShare,
+} from "../constants/engine/kimariteTargets";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 
 // --- Domain Models & Defaults ---
@@ -80,15 +84,11 @@ function defineKimarite(entry: KimariteBaseEntry): KimariteDefinition {
   const defaults = CATEGORY_DEFAULTS[entry.jsaCategory] || {};
   const baseWeight = entry.baseWeight ?? defaults.baseWeight ?? 1;
 
+  // Rarity is a real-world label: it derives from the technique's measured
+  // makuuchi share (KIMARITE_FREQUENCY_TARGETS), not from engine weights.
+  // Techniques absent from the table are effectively never recorded → legendary.
   const rarity =
-    entry.rarity ??
-    (baseWeight <= 5
-      ? "legendary"
-      : baseWeight <= 30
-        ? "rare"
-        : baseWeight <= 150
-          ? "uncommon"
-          : "common");
+    entry.rarity ?? rarityFromShare(KIMARITE_FREQUENCY_TARGETS[entry.id] ?? 0);
 
   // Auto-generate name from ID if missing
   const name =
@@ -157,6 +157,26 @@ const KIMARITE_ENRICHMENT: Record<string, { nameJa: string; description: string 
       "Backward force-down. The attacker pulls the opponent forward and down, forcing them to touch the ground.",
   },
   // Tokushuwaza
+  hatakikomi: {
+    nameJa: "叩き込み",
+    description:
+      "Slap-down. The attacker slaps the opponent's back or shoulder downward, often while sidestepping their charge.",
+  },
+  hikiotoshi: {
+    nameJa: "引き落とし",
+    description:
+      "Pull-down. The attacker pulls the opponent forward and down by their arm or shoulder as they surge forward.",
+  },
+  okuridashi: {
+    nameJa: "送り出し",
+    description:
+      "Rear push-out. From behind the opponent, the attacker pushes them out of the ring.",
+  },
+  tsuriotoshi: {
+    nameJa: "吊り落とし",
+    description:
+      "Lift-body slam. The attacker lifts the opponent by the belt and slams or drops them to the ground.",
+  },
   tsuridashi: {
     nameJa: "吊り出し",
     description:
@@ -595,7 +615,33 @@ export const KIMARITE_REGISTRY: KimariteDefinition[] = [
     requiresBeltGrip: true,
   }),
 
-  // === Tokushuwaza (Special Techniques - 19 moves) ===
+  // === Tokushuwaza (Special Techniques - 23 moves) ===
+  K({
+    id: "hatakikomi",
+    jsaCategory: "Tokushuwaza",
+    baseWeight: 350,
+    statWeights: { strength: 0.2, weight: 0.1, speed: 0.2, technique: 0.5, balance: 0.0 },
+  }),
+  K({
+    id: "hikiotoshi",
+    jsaCategory: "Tokushuwaza",
+    baseWeight: 260,
+    statWeights: { strength: 0.2, weight: 0.1, speed: 0.2, technique: 0.5, balance: 0.0 },
+  }),
+  K({
+    id: "okuridashi",
+    jsaCategory: "Tokushuwaza",
+    baseWeight: 220,
+    tacticalFamily: "push",
+  }),
+  K({
+    id: "tsuriotoshi",
+    jsaCategory: "Tokushuwaza",
+    baseWeight: 30,
+    tacticalFamily: "belt",
+    requiresBeltGrip: true,
+    requirements: { minStrengthDifferential: 25 },
+  }),
   K({
     id: "tsuridashi",
     jsaCategory: "Tokushuwaza",

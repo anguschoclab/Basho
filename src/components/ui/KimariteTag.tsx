@@ -12,6 +12,9 @@ import { cn } from "@/lib/utils";
 interface KimariteTagProps {
   kimariteId: string;
   kimariteName?: string;
+  /** Observed share of this technique this era (0–100). Omit when unknown —
+   * the tooltip line is only rendered when a real value is passed. */
+  observedPct?: number;
   className?: string;
 }
 
@@ -19,21 +22,30 @@ function isPlaceholderDescription(name: string, description: string): boolean {
   return description === `${name} technique.`;
 }
 
-export function KimariteTag({ kimariteId, kimariteName, className }: KimariteTagProps) {
+export function KimariteTag({ kimariteId, kimariteName, observedPct, className }: KimariteTagProps) {
   const def = getKimarite(kimariteId);
   const displayName = kimariteName ?? def?.name ?? kimariteId;
 
   const hasRealDescription =
     def?.description && !isPlaceholderDescription(def.name, def.description);
 
-  if (!def || !hasRealDescription) {
+  if (!hasRealDescription && observedPct === undefined) {
     return <span className={className}>{displayName}</span>;
   }
 
   const tooltipContent = (
     <div className="space-y-1">
-      <p className="font-semibold text-sm">{def.nameJa}</p>
-      <p className="text-xs text-muted-foreground">{def.description}</p>
+      {hasRealDescription && (
+        <>
+          <p className="font-semibold text-sm">{def.nameJa}</p>
+          <p className="text-xs text-muted-foreground">{def.description}</p>
+        </>
+      )}
+      {observedPct !== undefined && (
+        <p className="text-xs text-muted-foreground">
+          Observed: <span className="font-mono">{observedPct.toFixed(2)}%</span> of endings this era
+        </p>
+      )}
     </div>
   );
 

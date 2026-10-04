@@ -388,8 +388,10 @@ describe("RikishiCareerTab earnings tracker", () => {
         careerProgressionData={emptyProgressionData}
       />
     );
-    // Snapshots without earnings should show an em-dash
-    expect(screen.getByText("—")).toBeTruthy();
+    // Snapshots without earnings should show an em-dash (the Hoshitori column
+    // may render its own "—" for snapshots without dayResults, so assert at
+    // least one exists rather than exactly one).
+    expect(screen.getAllByText("—").length).toBeGreaterThanOrEqual(1);
   });
 
   it("does not render earnings chart when earningsProgressionData is empty", () => {

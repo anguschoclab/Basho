@@ -123,6 +123,7 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     // Written by resolveBout / applyBoutResult into currentWorld; would be
     // dropped without re-export (kimarite era stats, official pool updates).
     "globalKimariteStats",
+    "allTimeKimariteStats",
     "shimpanPool",
     "gyojiPool",
   ] as const;

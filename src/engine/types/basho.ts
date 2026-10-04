@@ -94,6 +94,8 @@ export interface BoutLogEntry {
 export interface BoutResult {
   /** Unique identifier for this bout. */
   boutId: string;
+  /** Day of the basho (1-15) this bout was contested on. */
+  day?: number;
   /** Winning side (east or west). */
   winner: Side;
   /** ID of the winning rikishi. */
@@ -126,6 +128,8 @@ export interface BoutResult {
   isYushoRace?: boolean;
   /** Award fact (kinboshi or ginboshi) if applicable. */
   awardFact?: "kinboshi" | "ginboshi" | null;
+  /** Awards earned by this bout's final result (kinboshi/ginboshi facts). */
+  awards?: BoutAward[];
   /** Number of kensho envelopes won. */
   kenshoEnvelopes: number;
   /** Kensho banner slots for this bout. */
@@ -251,14 +255,32 @@ export interface BashoState {
   exhibitionName?: string;
 }
 
+/**
+ * A single star award (kinboshi/ginboshi) earned by a bout's final result.
+ * Pure fact data — produced by detection, applied to state by the bout
+ * result applier. Persisted on the BoutResult so the award survives
+ * serialization, replays, and ledger derivation.
+ */
+export interface BoutAward {
+  type: "kinboshi" | "ginboshi";
+  winnerId: Id;
+  loserId: Id;
+  day: number;
+  boutId: string;
+}
+
 /** A single award entry persisted to the global award log. */
 export interface AwardLogEntry {
   bashoName: BashoName;
   year: number;
-  type: "yusho" | "junYusho" | "ginoSho" | "kantosho" | "shukunsho" | "boutOfTheBasho";
+  type: "yusho" | "junYusho" | "ginoSho" | "kantosho" | "shukunsho" | "boutOfTheBasho" | "kinboshi";
   winnerId: Id;
-  /** Bout ID for boutOfTheBasho entries; undefined for title/prize awards. */
+  /** Bout ID for boutOfTheBasho and kinboshi entries; undefined for title/prize awards. */
   boutId?: string;
+  /** Defeated opponent for kinboshi entries (the fallen yokozuna). */
+  opponentId?: Id;
+  /** Tournament day the award was earned (kinboshi entries). */
+  day?: number;
   excitementScore?: number;
 }
 

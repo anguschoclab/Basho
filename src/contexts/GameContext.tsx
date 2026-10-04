@@ -93,6 +93,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // localStorage quota or save timing.
   useEffect(() => {
     (window as { __BASHO_WORLD__?: unknown }).__BASHO_WORLD__ = state.world;
+    (window as { __BASHO_STORE__?: unknown }).__BASHO_STORE__ = useGameStore;
   }, [state.world]);
 
   // V5-B09: the interactive basho path (SIMULATE_BOUT / SIMULATE_ALL_BOUTS /

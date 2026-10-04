@@ -13,7 +13,7 @@ import { SaveSlotService } from "./engine/persistence/SaveSlotService";
 const MainMenu = lazy(() => import("./pages/MainMenu"));
 const NewGameWizard = lazy(() => import("./pages/NewGameWizard"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-import { withSuspense } from "./routes-helpers";
+import { withSuspense, withWorldGuard } from "./routes-helpers";
 
 const StablePage = lazy(() => import("./pages/StablePage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));
@@ -130,7 +130,7 @@ const newGameRoute = createRoute({
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
-  component: () => withSuspense(Dashboard),
+  component: () => withWorldGuard(Dashboard),
 });
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -140,17 +140,17 @@ const settingsRoute = createRoute({
 const recapRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/recap",
-  component: () => withSuspense(RecapPage),
+  component: () => withWorldGuard(RecapPage),
 });
 const weeklyDigestRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/digest",
-  component: () => withSuspense(WeeklyDigestPage),
+  component: () => withWorldGuard(WeeklyDigestPage),
 });
 const bookmarksRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/bookmarks",
-  component: () => withSuspense(BookmarksPage),
+  component: () => withWorldGuard(BookmarksPage),
 });
 
 // --- STABLE SECTION ---
@@ -158,37 +158,37 @@ const stableBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/s
 const stableIndexRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/",
-  component: () => withSuspense(StablePage),
+  component: () => withWorldGuard(StablePage),
 });
 const stableIdRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/stable/$id",
-  component: () => withSuspense(StablePage),
+  component: () => withWorldGuard(StablePage),
 });
 const stableRosterRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/roster",
-  component: () => withSuspense(RikishiPage),
+  component: () => withWorldGuard(RikishiPage),
 });
 const stableTrainingRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/training",
-  component: () => withSuspense(TrainingPage),
+  component: () => withWorldGuard(TrainingPage),
 });
 const stableMedicalRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/medical",
-  component: () => withSuspense(InjuryRecoveryPage),
+  component: () => withWorldGuard(InjuryRecoveryPage),
 });
 const stableStaffRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/staff",
-  component: () => withSuspense(StaffPage),
+  component: () => withWorldGuard(StaffPage),
 });
 const stableOyakataRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/oyakata",
-  component: () => withSuspense(OyakataPage),
+  component: () => withWorldGuard(OyakataPage),
 });
 const stableInfrastructureRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
@@ -212,7 +212,7 @@ const economyRedirectRoute = createRoute({
 const officeFinancesNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/finances",
-  component: () => withSuspense(EconomyPage),
+  component: () => withWorldGuard(EconomyPage),
 });
 const scoutingRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -225,7 +225,7 @@ const scoutingRedirectRoute = createRoute({
 const officeScoutingNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/scouting",
-  component: () => withSuspense(ScoutingPage),
+  component: () => withWorldGuard(ScoutingPage),
 });
 const sponsorsRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -238,12 +238,12 @@ const sponsorsRedirectRoute = createRoute({
 const officeSponsorsNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/sponsors",
-  component: () => withSuspense(SponsorManagementPage),
+  component: () => withWorldGuard(SponsorManagementPage),
 });
 const officeFacilitiesRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/facilities",
-  component: () => withSuspense(FacilitiesPage),
+  component: () => withWorldGuard(FacilitiesPage),
 });
 
 // --- ASSOCIATION (JSA) SECTION ---
@@ -259,12 +259,12 @@ const governanceRedirectRoute = createRoute({
 const jsaGovernanceNestedRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
   path: "/governance",
-  component: () => withSuspense(GovernancePage),
+  component: () => withWorldGuard(GovernancePage),
 });
 const jsaTrendsRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
   path: "/trends",
-  component: () => withSuspense(TrendsPage),
+  component: () => withWorldGuard(TrendsPage),
 });
 const talentRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -277,17 +277,17 @@ const talentRedirectRoute = createRoute({
 const jsaTalentNestedRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
   path: "/talent",
-  component: () => withSuspense(TalentPoolPage),
+  component: () => withWorldGuard(TalentPoolPage),
 });
 const jsaCandidatePoolRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
   path: "/candidates",
-  component: () => withSuspense(CandidatePoolPage),
+  component: () => withWorldGuard(CandidatePoolPage),
 });
 const jsaMyosekiRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/myoseki",
-  component: () => withSuspense(MyosekiMarketPage),
+  component: () => withWorldGuard(MyosekiMarketPage),
 });
 
 // --- TOURNAMENT SECTION (nested under /basho/*) ---
@@ -296,32 +296,32 @@ const bashoBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/ba
 const bashoIndexRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/",
-  component: () => withSuspense(BashoPage),
+  component: () => withWorldGuard(BashoPage),
 });
 const bashoScheduleRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/schedule",
-  component: () => withSuspense(SchedulePage),
+  component: () => withWorldGuard(SchedulePage),
 });
 const bashoBanzukeRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/banzuke",
-  component: () => withSuspense(BanzukePage),
+  component: () => withWorldGuard(BanzukePage),
 });
 const bashoRivalriesRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/rivalries",
-  component: () => withSuspense(RivalriesPage),
+  component: () => withWorldGuard(RivalriesPage),
 });
 const globalCupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/global-cup",
-  component: () => withSuspense(GlobalCupPage),
+  component: () => withWorldGuard(GlobalCupPage),
 });
 const worldCircuitRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/world-circuit",
-  component: () => withSuspense(RegionalHubPage),
+  component: () => withWorldGuard(RegionalHubPage),
 });
 
 // Redirect old top-level tournament routes to nested routes
@@ -363,27 +363,27 @@ const recordsIndexRoute = createRoute({
 const recordsHistoryRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/history",
-  component: () => withSuspense(HistoryPage),
+  component: () => withWorldGuard(HistoryPage),
 });
 const recordsAlmanacRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/almanac",
-  component: () => withSuspense(AlmanacPage),
+  component: () => withWorldGuard(AlmanacPage),
 });
 const recordsHallOfFameRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/hall-of-fame",
-  component: () => withSuspense(HallOfFamePage),
+  component: () => withWorldGuard(HallOfFamePage),
 });
 const recordsMuseumRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/museum",
-  component: () => withSuspense(HistoryDashboard),
+  component: () => withWorldGuard(HistoryDashboard),
 });
 const mediaRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/media",
-  component: () => withSuspense(MediaPage),
+  component: () => withWorldGuard(MediaPage),
 });
 
 // Redirect old top-level archive routes to nested routes
@@ -424,12 +424,12 @@ const museumRedirectRoute = createRoute({
 const rikishiRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rikishi",
-  component: () => withSuspense(RikishiPage),
+  component: () => withWorldGuard(RikishiPage),
 });
 const rikishiIdRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rikishi/$rikishiId",
-  component: () => withSuspense(RikishiPage),
+  component: () => withWorldGuard(RikishiPage),
 });
 
 const glossaryRoute = createRoute({
@@ -441,13 +441,13 @@ const glossaryRoute = createRoute({
 const rivalStablesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rival-stables",
-  component: () => withSuspense(RivalStablesPage),
+  component: () => withWorldGuard(RivalStablesPage),
 });
 
 const youthAcademyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/academy",
-  component: () => withSuspense(YouthAcademyPage),
+  component: () => withWorldGuard(YouthAcademyPage),
 });
 
 const notFoundRoute = createRoute({

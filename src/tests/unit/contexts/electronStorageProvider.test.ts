@@ -284,6 +284,85 @@ describe("ElectronStorageProvider", () => {
 
       expect(provider.length).toBe(2);
     });
+
+    describe("IDB write failure fallback", () => {
+      // jsdom has no indexedDB — provide just enough of the API to put the
+      // provider on the web/IDB branch, then swap in a failing database.
+      function fakeTx(fail: boolean) {
+        const tx: any = {
+          error: fail ? new DOMException("quota", "QuotaExceededError") : null,
+          oncomplete: null as (() => void) | null,
+          onerror: null as (() => void) | null,
+          onabort: null as (() => void) | null,
+          objectStore: () => ({
+            getAllKeys: () => ({ result: [] as string[] }),
+            getAll: () => ({ result: [] as string[] }),
+            put: vi.fn(),
+            delete: vi.fn(),
+            clear: vi.fn(),
+          }),
+        };
+        queueMicrotask(() => (fail ? tx.onerror?.() : tx.oncomplete?.()));
+        return tx;
+      }
+      const failingDb = { transaction: () => fakeTx(true) };
+      const healthyDb = { transaction: () => fakeTx(false) };
+
+      beforeEach(async () => {
+        Object.defineProperty(global, "indexedDB", {
+          value: {
+            open: () => {
+              const req: any = { result: healthyDb, onupgradeneeded: null, onsuccess: null, onerror: null };
+              queueMicrotask(() => req.onsuccess?.());
+              return req;
+            },
+          },
+          writable: true,
+          configurable: true,
+        });
+        localStorageMock.clear();
+        provider = new ElectronStorageProvider();
+        await provider.ready;
+        (provider as any).idb = failingDb;
+      });
+
+      it("persists a compressed localStorage copy when idbPut fails", async () => {
+        const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
+
+        provider.setItem("big-key", "big-value");
+        await vi.waitFor(() => expect(errorSpy).toHaveBeenCalled());
+
+        // In-memory cache still serves the read, and the compressed
+        // fallback survives a reload even though IDB rejected the write.
+        expect(provider.getItem("big-key")).toBe("big-value");
+        expect(localStorageMock.getItem("big-key")).toMatch(/^lz16:/);
+        expect(errorSpy).toHaveBeenCalledWith(
+          expect.stringContaining("QuotaExceededError"),
+          "ElectronStorage",
+          undefined
+        );
+      });
+
+      it("keeps serving reads when both IDB and localStorage fail", async () => {
+        vi.spyOn(localStorageMock, "setItem").mockImplementation(() => {
+          throw new DOMException("quota", "QuotaExceededError");
+        });
+        const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
+
+        expect(() => provider.setItem("big-key", "big-value")).not.toThrow();
+        await vi.waitFor(() => expect(errorSpy).toHaveBeenCalled());
+
+        expect(provider.getItem("big-key")).toBe("big-value");
+      });
+
+      afterEach(() => {
+        Object.defineProperty(global, "indexedDB", {
+          value: undefined,
+          writable: true,
+          configurable: true,
+        });
+      });
+    });
   });
 
   describe("registerElectronStorage", () => {

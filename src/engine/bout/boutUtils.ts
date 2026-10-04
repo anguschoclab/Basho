@@ -38,6 +38,11 @@ export interface BoutContext {
   eastTactic?: import("../types/combat").BoutTactic;
   /** Resolved tactic for the west rikishi (set by resolveBout or callers). */
   westTactic?: import("../types/combat").BoutTactic;
+  /**
+   * True for playoff (kettei-sen) bouts. Playoffs decide the yusho but are
+   * not honbasho torikumi — no kinboshi, kensho, or record side-effects.
+   */
+  isPlayoff?: boolean;
 }
 
 /** Resolved tactic for each side of a bout. */

@@ -3,7 +3,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { KeyBoutsSection } from "@/components/game/KeyBoutsSection";
 import type { KeyBoutMoment } from "@/presenters/projections/recapProjections";
-import type { UIRikishi } from "@/presenters/uiModels";
+import { mockUIRikishi } from "@/tests/helpers/uiTestHelpers";
 import type { BoutResult } from "@/engine/types/basho";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -51,38 +51,6 @@ vi.mock("@/components/game/BoutReplayViewer", () => ({
 vi.mock("@/components/game/BoutLog", () => ({
   BoutLog: () => React.createElement("div", { "data-testid": "bout-log-mock" }),
 }));
-
-const mockRikishi = (id: string, shikona: string): UIRikishi =>
-  ({
-    id,
-    shikona,
-    rankLabel: "Yokozuna",
-    rank: "yokozuna",
-    stable: "Test",
-    stableId: "s-1",
-    prefecture: "Tokyo",
-    height: 185,
-    weight: 150,
-    age: 28,
-    wins: 10,
-    losses: 2,
-    absences: 0,
-    isPlayer: false,
-    isRetired: false,
-    injuryWeeks: 0,
-    morale: 80,
-    fatigue: 0,
-    popularity: 50,
-    momentum: 0,
-    style: "belt",
-    preferredTech: "oshi",
-    bloodline: "",
-    debutBasho: { year: 2020, month: 1 },
-    record: { totalBouts: 100, wins: 60, losses: 40, absences: 0 },
-    careerWins: 60,
-    careerLosses: 40,
-    careerAbsences: 0,
-  }) as unknown as UIRikishi;
 
 const mockResult = (overrides: Partial<BoutResult> = {}): BoutResult =>
   ({
@@ -144,7 +112,7 @@ describe("KeyBoutsSection", () => {
       makeMoment("biggest_upset", "b2", "r3", "r4"),
       makeMoment("kinboshi", "b3", "r5", "r6"),
     ];
-    const getRikishi = (id: string) => mockRikishi(id, `Wrestler-${id}`);
+    const getRikishi = (id: string) => mockUIRikishi(id, `Wrestler-${id}`);
 
     renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
 
@@ -155,7 +123,7 @@ describe("KeyBoutsSection", () => {
 
   it("Watch Replay button opens BoutNarrativeModal", () => {
     const moments = [makeMoment("yusho_decider", "b1", "r1", "r2")];
-    const getRikishi = (id: string) => mockRikishi(id, `Wrestler-${id}`);
+    const getRikishi = (id: string) => mockUIRikishi(id, `Wrestler-${id}`);
 
     renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
 
@@ -168,7 +136,7 @@ describe("KeyBoutsSection", () => {
 
   it("modal closes via onClose", () => {
     const moments = [makeMoment("yusho_decider", "b1", "r1", "r2")];
-    const getRikishi = (id: string) => mockRikishi(id, `Wrestler-${id}`);
+    const getRikishi = (id: string) => mockUIRikishi(id, `Wrestler-${id}`);
 
     const { container } = renderWithProvider(
       <KeyBoutsSection moments={moments} getRikishi={getRikishi} />
@@ -194,7 +162,7 @@ describe("KeyBoutsSection", () => {
     ];
     const getRikishi = (id: string) => {
       if (id === "r-missing") return null;
-      return mockRikishi(id, `Wrestler-${id}`);
+      return mockUIRikishi(id, `Wrestler-${id}`);
     };
 
     renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
@@ -210,7 +178,7 @@ describe("KeyBoutsSection", () => {
       makeMoment("biggest_upset", "b2", "r3", "r4"),
       makeMoment("kinboshi", "b3", "r5", "r6"),
     ];
-    const getRikishi = (id: string) => mockRikishi(id, `Wrestler-${id}`);
+    const getRikishi = (id: string) => mockUIRikishi(id, `Wrestler-${id}`);
 
     renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
 
