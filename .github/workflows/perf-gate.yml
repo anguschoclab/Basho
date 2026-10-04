@@ -49,4 +49,4 @@ jobs:
       - name: Build application (required for bundle budget test)
         run: bun run build
       - name: Run unit tests
-        run: npx vitest run
+        run: bun run build && npx vitest run
