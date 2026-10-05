@@ -65,6 +65,11 @@ export function CalendarWidget() {
           </div>
           <div className="h-1.5 rounded-full bg-muted overflow-hidden">
             <div
+              role="progressbar"
+              aria-valuenow={bashoDay}
+              aria-valuemin={1}
+              aria-valuemax={15}
+              aria-label="Tournament day progress"
               className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
               style={{ width: `${dayProgress}%` }}
             />
