@@ -106,6 +106,11 @@ export function StatCard({
               </div>
               <div className="h-1 w-full rounded-xs bg-muted/40 overflow-hidden">
                 <div
+                  role="progressbar"
+                  aria-valuenow={p.value}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={p.label}
                   className={cn(
                     "h-full rounded-xs transition-all duration-500",
                     PROGRESS_TONE[p.tone ?? "default"]
