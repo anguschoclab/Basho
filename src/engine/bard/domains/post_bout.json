@@ -19,12 +19,20 @@
     "winner_improves": [
       "%WINNER% improves to %WINNER_WINS% and %WINNER_LOSSES%.",
       "%WINNER% moves to %WINNER_WINS%-%WINNER_LOSSES% on the tournament.",
-      "That's %WINNER_WINS% wins now for %WINNER% against %WINNER_LOSSES% losses."
+      "That's %WINNER_WINS% wins now for %WINNER% against %WINNER_LOSSES% losses.",
+      "With that win, %WINNER%'s record stands at %WINNER_WINS% and %WINNER_LOSSES%.",
+      "A vital victory that pushes %WINNER% to %WINNER_WINS%-%WINNER_LOSSES%.",
+      "%WINNER% adds another white star, improving to %WINNER_WINS%-%WINNER_LOSSES%.",
+      "The win takes %WINNER% to %WINNER_WINS% victories against %WINNER_LOSSES% defeats."
     ],
     "loser_falls": [
       "%LOSER% falls to %LOSER_WINS% and %LOSER_LOSSES%.",
       "%LOSER% drops to %LOSER_WINS%-%LOSER_LOSSES%.",
-      "A tough day for %LOSER% — now at %LOSER_WINS% wins and %LOSER_LOSSES% losses."
+      "A tough day for %LOSER% — now at %LOSER_WINS% wins and %LOSER_LOSSES% losses.",
+      "That defeat leaves %LOSER% sitting at %LOSER_WINS% and %LOSER_LOSSES%.",
+      "Another black star for %LOSER%, who slips to %LOSER_WINS%-%LOSER_LOSSES%.",
+      "%LOSER%'s record takes a hit, now down to %LOSER_WINS% wins and %LOSER_LOSSES% losses.",
+      "A setback for %LOSER%, whose tournament record is now %LOSER_WINS%-%LOSER_LOSSES%."
     ],
     "both_even": [
       "Both men are now at %WINNER_WINS% and %WINNER_LOSSES% after %DAY% days.",
