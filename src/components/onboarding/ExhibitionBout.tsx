@@ -87,7 +87,8 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
       schedule: [],
       results: [],
       name: "hatsu",
-    } as unknown as BashoState;
+      isActive: false,
+    };
 
     try {
       const resolved = resolveBout(ctx, east, west, mockBasho);
