@@ -3,14 +3,18 @@
     "common": [
       "A new bloodline has been established: %TRAIT_LABEL% — passed down from %ANCESTOR%.",
       "The %TRAIT_LABEL% trait enters the registry, honoring %ANCESTOR%.",
-      "%ANCESTOR%'s legacy is immortalized as the %TRAIT_LABEL% bloodline."
+      "%ANCESTOR%'s legacy is immortalized as the %TRAIT_LABEL% bloodline.",
+      "A historical moment for the Association: %ANCESTOR%'s %TRAIT_LABEL% lineage is officially registered.",
+      "The legendary %ANCESTOR% lives on; the %TRAIT_LABEL% trait is now a recognized dynasty."
     ]
   },
   "bout_opening": {
     "common": [
       "%RIKISHI% carries the bloodline of %ANCESTOR%.",
       "The descendant of %ANCESTOR% steps onto the dohyo.",
-      "%ANCESTOR%'s bloodline flows through %RIKISHI%."
+      "%ANCESTOR%'s bloodline flows through %RIKISHI%.",
+      "Carrying the weight of a dynasty, %RIKISHI%, descendant of %ANCESTOR%, prepares for battle.",
+      "The %ANCESTOR% legacy continues today through %RIKISHI%."
     ]
   },
   "registered": {
