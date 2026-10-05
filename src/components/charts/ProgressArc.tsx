@@ -50,6 +50,11 @@ export function ProgressArc({
         width={config.width}
         height={config.width / 2}
         viewBox={`0 0 ${config.width} ${config.width / 2}`}
+        role="progressbar"
+        aria-valuenow={value}
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-label={label || "Progress arc"}
       >
         {/* Background arc */}
         <path
