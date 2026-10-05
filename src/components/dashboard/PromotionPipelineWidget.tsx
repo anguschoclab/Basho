@@ -21,6 +21,11 @@ function ProgressBar({ value, tone }: { value: number; tone: "success" | "warnin
   return (
     <div className="w-full h-1.5 bg-muted/40 rounded-full overflow-hidden">
       <div
+        role="progressbar"
+        aria-valuenow={value}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Promotion progress"
         className={`h-full rounded-full transition-all duration-500 ${colorMap[tone]}`}
         style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
       />
