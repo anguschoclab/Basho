@@ -45,6 +45,7 @@ export default function MainMenu() {
     hasAutosave,
     getSaveSlots,
     quickSave,
+    loadWorldDirect,
   } = game;
 
   const [seed, setSeed] = useState("");
@@ -249,7 +250,7 @@ export default function MainMenu() {
               loadFromAutosave={loadFromAutosave}
               hasAutosave={hasAutosave}
               onLoadSuccess={() => navigate({ to: "/dashboard" })}
-              createWorld={createWorld}
+              loadWorldDirect={loadWorldDirect}
               hideArchiveButton
             />
           </div>

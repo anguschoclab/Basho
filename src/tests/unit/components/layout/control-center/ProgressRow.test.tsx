@@ -99,4 +99,24 @@ describe("ProgressRow", () => {
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.classList.contains("custom-class")).toBe(true);
   });
+
+  describe("accessibility (PR #1042 payload)", () => {
+    it("exposes role=progressbar with value range on the track", () => {
+      const { container } = render(<ProgressRow name="Fatigue" value={42} />);
+      const bar = screen.getByRole("progressbar");
+      expect(bar).toBeTruthy();
+      expect(bar.getAttribute("aria-valuenow")).toBe("42");
+      expect(bar.getAttribute("aria-valuemin")).toBe("0");
+      expect(bar.getAttribute("aria-valuemax")).toBe("100");
+      expect(bar.getAttribute("aria-label")).toBe("Fatigue");
+      // role lives on the track div, not the inner fill
+      expect(bar.classList.contains("overflow-hidden")).toBe(true);
+      expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1);
+    });
+
+    it("clamps aria-valuenow to 0..100", () => {
+      render(<ProgressRow name="Test" value={150} />);
+      expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("100");
+    });
+  });
 });

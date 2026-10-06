@@ -1,62 +1,16 @@
 // Game Reducer — pure state transitions using Slice Pattern
 import type { GameState, GameAction } from "./gameTypes";
-import type { WorldState } from "@/engine/types/world";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { combineReducers } from "./gameHelpers";
-import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOyakataConfig";
-
-/** Adapter matching the { seed, playerConfig? } call shape used in this reducer */
-function generateWorld(opts: {
-  seed: string;
-  playerConfig?: { heyaId?: string };
-}): ReturnType<typeof generateInitialWorld> {
-  return generateInitialWorld(opts.seed);
-}
-
-import { timeSlice } from "./timeSlice";
-import { heyaSlice } from "./heyaSlice";
 import { bashoSlice } from "./bashoSlice";
 
 /**
- * Core generic actions that don't fit cleanly into a domain slice
- * or that create the initial world.
+ * Core generic actions that don't fit cleanly into a domain slice.
+ * World creation lives exclusively in the worker (START_WORLD) — the worker
+ * is the single source of truth and main-thread generation would risk
+ * divergence (V9-B05).
  */
 function coreSlice(state: GameState, action: GameAction): GameState {
   switch (action.type) {
-    case "CREATE_WORLD": {
-      const world = generateWorld({ seed: action.seed });
-      const playerHeyaId = action.playerHeyaId || null;
-
-      let nextWorld: WorldState = { ...world, playerHeyaId: playerHeyaId || undefined };
-
-      if (playerHeyaId) {
-        const heya = world.heyas.get(playerHeyaId);
-        if (heya) {
-          const updatedHeya = { ...heya, isPlayerOwned: true };
-          nextWorld.heyas = new Map(world.heyas);
-          nextWorld.heyas.set(playerHeyaId, updatedHeya);
-        }
-
-        // Apply player's oyakata creation config if provided
-        if (action.oyakataConfig) {
-          nextWorld = applyOyakataCreationConfig(nextWorld, playerHeyaId, action.oyakataConfig);
-        }
-      }
-
-      // Cache player's oyakata ID for convenience (avoids re-deriving everywhere)
-      const playerOyakataId = playerHeyaId
-        ? (nextWorld.heyas.get(playerHeyaId)?.oyakataId ?? null)
-        : null;
-
-      return {
-        ...state,
-        world: nextWorld,
-        playerHeyaId,
-        playerOyakataId,
-        phase: playerHeyaId ? "interim" : "menu",
-      };
-    }
-
     case "SET_PHASE":
       return { ...state, phase: action.phase };
 
@@ -86,12 +40,7 @@ function coreSlice(state: GameState, action: GameAction): GameState {
   }
 }
 
-const baseReducer = combineReducers<GameState, GameAction>([
-  coreSlice,
-  timeSlice,
-  heyaSlice,
-  bashoSlice,
-]);
+const baseReducer = combineReducers<GameState, GameAction>([coreSlice, bashoSlice]);
 
 /**
  * Combined Game Reducer — pure state transitions only.

@@ -6,7 +6,6 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import { type SaveSlotInfo } from "@/engine/saveload";
 import { type HolidayConfig, type HolidayResult } from "@/engine/holiday";
-import { type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 import { getMatchesForDay } from "./gameHelpers";
 
 export type { GamePhase, GameState } from "./gameTypes";
@@ -34,9 +33,9 @@ export interface GameContextValue {
   advanceOneDay: () => void;
   issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
   goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
-  runAutoSimAction: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   saveToSlot: (slotName: string) => boolean;
   loadFromSlot: (slotName: string) => boolean;
+  loadWorldDirect: (world: WorldState) => void;
   quickSave: () => boolean;
   loadFromAutosave: () => boolean;
   hasAutosave: () => boolean;
@@ -65,7 +64,6 @@ export interface GameContextValue {
   unbookmarkEntity: (entityType: string, entityId: string) => void;
   updateBookmarkNote: (entityType: string, entityId: string, note: string) => void;
   isBookmarked: (entityType: string, entityId: string) => boolean;
-  runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   recruitSponsor: (sponsorId: string) => void;
   applyPressConference: (
     heyaId: string,

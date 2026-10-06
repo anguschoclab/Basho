@@ -24,7 +24,6 @@ import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
 import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos } from "@/engine/saveload";
 import { type HolidayConfig, type HolidayResult } from "@/engine/holiday";
-import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 import { registerElectronStorage } from "./electronStorageProvider";
 
 // Register electron-store as the engine's storage backend (falls back to localStorage for web builds)
@@ -289,16 +288,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [sendCommand]
   );
 
-  const runAutoSimAction = useCallback(
-    async (config: AutoSimConfig): Promise<AutoSimResult | null> => {
-      if (!state.world) return null;
-      const result = runAutoSim(state.world, config);
-      dispatch(actions.runAutoSim(result));
-      return result;
-    },
-    [state.world]
-  );
-
   const getRikishi = useCallback((id: string) => state.world?.rikishi.get(id), [state.world]);
   const getHeya = useCallback((id: string) => state.world?.heyas.get(id), [state.world]);
   const getCurrentDayMatches = useCallback(() => getMatchesForDay(state.world), [state.world]);
@@ -344,6 +333,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
     return false;
   }, [sendCommand]);
+
+  // V9-B01: external save import loads the deserialized world verbatim on both
+  // sides of the boundary — reducer first, then the worker's authoritative
+  // copy. No createWorld fallback: regenerating from the seed would discard
+  // the imported save's progress.
+  const loadWorldDirect = useCallback(
+    (world: WorldState) => {
+      dispatch(actions.loadWorld(world));
+      sendCommand({ type: "LOAD_WORLD", world });
+    },
+    [sendCommand]
+  );
 
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
@@ -432,6 +433,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       issueRuling,
       saveToSlot,
       loadFromSlot,
+      loadWorldDirect,
       quickSave: quickSaveAction,
       loadFromAutosave: loadFromAutosaveAction,
       hasAutosave: hasAutosaveCheck,
@@ -442,7 +444,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       getStandings,
       updateWorld,
       goOnHoliday,
-      runAutoSim: runAutoSimAction,
       tickMultipleDays,
       recruitSponsor: recruitSponsorAction,
       applyPressConference: applyPressConferenceAction,
@@ -464,7 +465,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       unbookmarkEntity: unbookmarkEntityAction,
       updateBookmarkNote: updateBookmarkNoteAction,
       isBookmarked: isBookmarkedCheck,
-      runAutoSimAction,
       investInFacility: investInFacilityAction,
     }),
     [
@@ -486,6 +486,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       issueRuling,
       saveToSlot,
       loadFromSlot,
+      loadWorldDirect,
       quickSaveAction,
       loadFromAutosaveAction,
       hasAutosaveCheck,
@@ -496,7 +497,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       getStandings,
       updateWorld,
       goOnHoliday,
-      runAutoSimAction,
       tickMultipleDays,
       recruitSponsorAction,
       applyPressConferenceAction,

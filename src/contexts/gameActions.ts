@@ -12,38 +12,6 @@
 
 import type { GameAction, GamePhase } from "./gameTypes";
 import type { WorldState } from "@/engine/types/world";
-import type { HolidayResult } from "@/engine/holiday";
-import type { AutoSimResult } from "@/engine/autoSim";
-
-/**
- * Creates a new world with the given seed.
- *
- * @param {string} seed - Random seed for world generation.
- * @param {string} [playerHeyaId] - Optional player heya ID.
- * @param {import("@/engine/types/oyakata").OyakataCreationConfig} [oyakataConfig] - Optional oyakata creation config.
- * @returns {GameAction} CREATE_WORLD action.
- */
-export const createWorld = (
-  seed: string,
-  playerHeyaId?: string,
-  oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
-): GameAction => ({
-  type: "CREATE_WORLD",
-  seed,
-  playerHeyaId,
-  oyakataConfig,
-});
-
-/**
- * Sets the player's heya.
- *
- * @param {string} heyaId - The heya ID to set as player's heya.
- * @returns {GameAction} SET_PLAYER_HEYA action.
- */
-export const setPlayerHeya = (heyaId: string): GameAction => ({
-  type: "SET_PLAYER_HEYA",
-  heyaId,
-});
 
 /**
  * Sets the current game phase.
@@ -136,28 +104,6 @@ export const endBasho = (): GameAction => ({
  */
 export const simFullBasho = (): GameAction => ({
   type: "SIM_FULL_BASHO",
-});
-
-/**
- * Runs a holiday event with the given result.
- *
- * @param {HolidayResult} result - The holiday result to apply.
- * @returns {GameAction} RUN_HOLIDAY action.
- */
-export const runHoliday = (result: HolidayResult): GameAction => ({
-  type: "RUN_HOLIDAY",
-  result,
-});
-
-/**
- * Runs an auto-simulation with the given result.
- *
- * @param {AutoSimResult} result - The auto-simulation result to apply.
- * @returns {GameAction} RUN_AUTO_SIM action.
- */
-export const runAutoSim = (result: AutoSimResult): GameAction => ({
-  type: "RUN_AUTO_SIM",
-  result,
 });
 
 /**

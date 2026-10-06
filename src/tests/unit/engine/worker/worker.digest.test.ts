@@ -57,7 +57,7 @@ await import("@/engine/worker/engine.worker");
 
 /**
  * P4.9: Worker digest emission tests.
- * Verifies that TICK_DAY, TICK_MULTIPLE_DAYS, and AUTO_SIM_DAYS emit
+ * Verifies that TICK_DAY and TICK_MULTIPLE_DAYS emit
  * the correct number of TICK_COMPLETED / WORLD_UPDATED messages.
  */
 
@@ -90,16 +90,6 @@ describe("P2.2: Worker digest emission", () => {
     mockPostMessage.mockClear();
 
     sendCommand({ type: "TICK_MULTIPLE_DAYS", days: 3 });
-
-    const tickCompleted = getMessagesOfType("TICK_COMPLETED");
-    expect(tickCompleted.length).toBe(1);
-  });
-
-  it("AUTO_SIM_DAYS emits 1 TICK_COMPLETED", () => {
-    sendCommand({ type: "START_WORLD", seed: "test-digest3", playerHeyaId: "h1" } as any);
-    mockPostMessage.mockClear();
-
-    sendCommand({ type: "AUTO_SIM_DAYS", days: 10 });
 
     const tickCompleted = getMessagesOfType("TICK_COMPLETED");
     expect(tickCompleted.length).toBe(1);

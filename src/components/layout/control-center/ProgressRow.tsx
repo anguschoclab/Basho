@@ -61,7 +61,14 @@ export function ProgressRow({
           </span>
         )}
       </div>
-      <div className="h-1 w-full rounded-xs bg-muted/40 overflow-hidden">
+      <div
+        className="h-1 w-full rounded-xs bg-muted/40 overflow-hidden"
+        role="progressbar"
+        aria-label={name}
+        aria-valuenow={clamped}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <div
           className={cn("h-full rounded-xs transition-all duration-500", BAR_TONE[tone])}
           style={{ width: `${clamped}%` }}

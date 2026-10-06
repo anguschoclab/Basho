@@ -34,12 +34,14 @@ function makeProps(overrides: Partial<any> = {}) {
   const loadFromAutosave = vi.fn();
   const hasAutosave = vi.fn(() => false);
   const onLoadSuccess = vi.fn();
+  const loadWorldDirect = vi.fn();
   return {
     getSaveSlots,
     loadFromSlot,
     loadFromAutosave,
     hasAutosave,
     onLoadSuccess,
+    loadWorldDirect,
     ...overrides,
   };
 }
@@ -152,5 +154,52 @@ describe("useSaveSlotManager", () => {
     const props = makeProps();
     const { result } = renderHook(() => useSaveSlotManager(props));
     expect(result.current.isImporting).toBe(false);
+  });
+
+  it("handleImportSave passes the imported world to loadWorldDirect — never regenerates via createWorld", async () => {
+    const { importSave } = await import("@/presenters/uiDigest");
+    const importedWorld = { seed: "seed-x", playerHeyaId: "heya-1", year: 2031 } as any;
+    vi.mocked(importSave).mockResolvedValue(importedWorld);
+
+    const loadWorldDirect = vi.fn();
+    const createWorld = vi.fn();
+    const onLoadSuccess = vi.fn();
+    const props = makeProps({ loadWorldDirect, createWorld, onLoadSuccess });
+    const { result } = renderHook(() => useSaveSlotManager(props));
+
+    const file = new File(["{}"], "save.json", { type: "application/json" });
+    const event = { target: { files: [file], value: "" } } as any;
+    await act(async () => {
+      await result.current.handleImportSave(event);
+    });
+
+    // The imported world's state must be loaded verbatim — regenerating from
+    // the seed discards all progress (V9-B01).
+    expect(loadWorldDirect).toHaveBeenCalledWith(importedWorld);
+    expect(createWorld).not.toHaveBeenCalled();
+    expect(onLoadSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it("handleImportSave never falls back to createWorld — seed regeneration discards save progress", async () => {
+    const { importSave } = await import("@/presenters/uiDigest");
+    const importedWorld = { seed: "seed-y", playerHeyaId: "h1" } as any;
+    vi.mocked(importSave).mockResolvedValue(importedWorld);
+
+    // Reproduces the buggy pre-fix MainMenu config: createWorld provided,
+    // loadWorldDirect omitted. Regenerating from seed is never a valid import.
+    const createWorld = vi.fn();
+    const onLoadSuccess = vi.fn();
+    const props = makeProps({ loadWorldDirect: undefined, createWorld, onLoadSuccess });
+    const { result } = renderHook(() => useSaveSlotManager(props));
+
+    const file = new File(["{}"], "save.json", { type: "application/json" });
+    const event = { target: { files: [file], value: "" } } as any;
+    await act(async () => {
+      await result.current.handleImportSave(event);
+    });
+
+    expect(createWorld).not.toHaveBeenCalled();
+    // No world was loaded, so the success callback must not fire either.
+    expect(onLoadSuccess).not.toHaveBeenCalled();
   });
 });

@@ -148,4 +148,24 @@ describe("StatCard", () => {
     const card = container.firstChild as HTMLElement;
     expect(card.classList.contains("custom-card")).toBe(true);
   });
+
+  describe("progress bar accessibility (PR #1042 payload)", () => {
+    const progress: ProgressItem[] = [
+      { label: "Condition", value: 55 },
+      { label: "Morale", value: 150, tone: "gold" },
+    ];
+
+    it("exposes role=progressbar with aria attributes per progress item", () => {
+      render(<StatCard eyebrow="E" title="T" stats={baseStats} progress={progress} />);
+      const bars = screen.getAllByRole("progressbar");
+      expect(bars).toHaveLength(2);
+      expect(bars[0].getAttribute("aria-label")).toBe("Condition");
+      expect(bars[0].getAttribute("aria-valuenow")).toBe("55");
+      expect(bars[0].getAttribute("aria-valuemin")).toBe("0");
+      expect(bars[0].getAttribute("aria-valuemax")).toBe("100");
+      // value clamped to 100
+      expect(bars[1].getAttribute("aria-valuenow")).toBe("100");
+      expect(bars[1].getAttribute("aria-label")).toBe("Morale");
+    });
+  });
 });

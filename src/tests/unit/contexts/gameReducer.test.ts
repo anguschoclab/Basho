@@ -6,17 +6,16 @@ import type { GameAction } from "@/contexts/gameTypes";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 
 describe("Game Reducer Purity", () => {
-  it("MUST NOT mutate the previous state object on CREATE_WORLD", () => {
+  it("MUST NOT mutate the previous state object on LOAD_WORLD", () => {
     const initialState = {
       ...initialGameState,
       world: generateInitialWorld("test-purity"),
     };
 
     const nextState = gameReducer(initialState, {
-      type: "CREATE_WORLD",
-      seed: "test-purity-new",
-      playerHeyaId: undefined,
-    } as unknown as GameAction);
+      type: "LOAD_WORLD",
+      world: generateInitialWorld("test-purity-new"),
+    } as GameAction);
 
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).not.toBe(initialState.world);
