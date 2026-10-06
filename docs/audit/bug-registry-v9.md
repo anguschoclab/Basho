@@ -2,6 +2,10 @@
 
 **Date:** 2026-10-06
 **Baseline:** `d0d585ff` (origin/main after v8 tail landed)
+**Consolidation:** v9 (supersedes v8; findings derived by fresh re-read, not from prior registries)
+**Staleness:** Current — prior registries are superseded by this document;
+the grep/command-surface sweep methodology described below is the active v9
+methodology, not a superseded one.
 **Method:** Command-surface enumeration (59 worker handlers × dispatch-site grep),
 slice world-mutation audit vs `uiWorldRevision`, determinism/purity/console/`as any`
 greps, save/load path trace, prior-verdict carry-forward. v8 (2026-10-01) had already
