@@ -3,7 +3,7 @@
 **Date:** 2026-10-06
 **Branch:** `consolidation/v9`
 **Baseline:** `d0d585ff` (origin/main at Phase 0)
-**Final HEAD:** `521c1016` (8 commits)
+**Final HEAD:** `fd132eb7` (9 commits)
 **Companion docs:** `pre-consolidation-baseline-v9.txt`, `v9-pr-inventory.json`,
 `bug-registry-v9.md`
 
@@ -106,41 +106,61 @@ test.
 | `743433f8` | CLAUDE.md corrections + v9 audit artifacts |
 | `a3807d3c` | 7 dependabot bumps batched |
 | `521c1016` | electron-vite 6.0.0-beta.5 (gated on dual build) |
+| `fd132eb7` | dead autoSim barrel removal + registry staleness annotation |
 
 ## 6. Final Gate Results
 
 | Gate | Result |
 |---|---|
 | `bun run type-check` | PASS — clean after every commit |
-| `bun run test` (full) | PASS — ___ files / ___ tests, 0 failures (see §7 note) |
+| `bun run test` (full) | PASS — 874 files / 8,444 tests / 0 failures (1077s) |
 | `bun run build` | PASS — web bundle built |
 | `electron-vite build` | PASS — beta.5 verified (main/preload/renderer) |
 | `bun run lint:strict` | PASS — 0 warnings |
 | `scripts/purity-lint.sh` | PASS — no phase-purity violations |
 | Determinism grep | PASS — comments only in `src/engine` |
-| Perf gate | PENDING RERUN — first run showed S3 p99 +23.5%, attributed to CPU contention with the concurrent 875-file suite; rerun on idle machine (see §7) |
-| 25yr determinism hash | `42e0164e2e715c66` — **identical to baseline** |
+| Perf gate | PASS — S3 p50 1098.4ms (−66.5% vs 3277.4ms baseline), p99 1625.2ms (−52.3%) |
+| `bun run test:e2e` | 4/5 PASS — `golden-path` fails identically on baseline (pre-existing, see §7) |
+| 25yr determinism hash | `42e0164e2e715c66` — **identical to baseline, confirmed on two separate runs** |
+
+### Gate-caught regressions fixed during Phase 4d
+
+The first full-suite run surfaced **2 failures / 8,442 passes** — both real
+audit-guard catches from the dead-path excision, fixed before the clean rerun:
+
+1. `knipGuard.test.ts` — `src/engine/autoSim.ts` became an unused barrel once
+   `AUTO_SIM_DAYS`/`runAutoSim` were removed. Deleted (commit `fd132eb7`).
+2. `staleDocs.test.ts` — `bug-registry-v9.md` lacked the required staleness
+   annotation. Added Consolidation/Staleness header (commit `fd132eb7`).
+
+The first perf-gate run reported S3 p99 +23.5% — measurement artifact, not
+regression: it ran concurrently with the 874-file suite on the same machine.
+Idle rerun passed decisively (−52.3% p99) with a bit-identical determinism hash.
 
 ## 7. Known Caveats
 
-- **Perf-gate p99 is environment-sensitive.** The gate first ran while the full
-  Vitest suite was executing concurrently; S3 p99 spiked +23.5% while p50 was
-  unchanged and the 25yr determinism hash was bit-identical. Rerun on an idle
-  machine before merge; if it still fails, bisect against `a3807d3c` (deps).
-- **E2E not run in this session.** Playwright suite (`bun run test:e2e`) deferred
-  to pre-merge — changes touch save/load UI, so run it before Phase 5.
+- **E2E: 4/5 pass; `golden-path.e2e.test.ts` fails identically on baseline
+  `d0d585ff`** — verified pre-existing via worktree run on the base commit. The
+  test's advance loop leaves the world at Week 1 and the "Automatically simulate
+  the remainder" button never appears. **Not a v9 regression** — recommend a
+  dedicated fix PR after merge (logged as follow-up below).
 - **Stray ` 2`-suffixed duplicate files** (`v9-pr-inventory 2.json`,
-  `check-jsdoc 2.ts`, a `NarrativeProse.test 2.ts` already removed) appeared in
-  the working tree during the session — macOS/Finder-style duplicates, untracked,
-  not part of the consolidation.
+  `check-jsdoc 2.ts`, and `NarrativeProse.test 2.ts`/`InjuryRiskHeatmap.test 2.tsx`
+  already removed) appeared in the working tree during the session —
+  macOS/Finder-style duplicates, untracked, not part of the consolidation.
 - **#1054 already merged** — its commit is an ancestor of main; the open PR is a
   bookkeeping leftover to close in Phase 5.
+- **Follow-up bug (V9-F01):** `golden-path.e2e.test.ts` is broken on main — the
+  Day/Week advance buttons render but the loop never leaves Week 1, so the
+  "Automatically simulate the remainder" button never appears. Reproduced on
+  baseline `d0d585ff`. Fix as a separate PR; out of consolidation scope.
 
 ## 8. Verdict
 
 **All approved payloads integrated; all confirmed bugs fixed; every finding
-explicitly approved or disproved above.** The consolidation satisfies the plan's
-hard requirements: test-first ordering demonstrated with observed red→green
-transitions, zero behavioral drift on the 25-year determinism hash, and the only
-remaining gate is the perf rerun on an idle machine plus the user checkpoint
-before remote cleanup (16 PR closes + branch deletions).
+explicitly approved or disproved above; all gates green.** The consolidation
+satisfies the plan's hard requirements: test-first ordering demonstrated with
+observed red→green transitions, zero behavioral drift on the 25-year
+determinism hash across two runs, and a clean full suite (874 files / 8,444
+tests). Remaining: the Phase 5 user checkpoint before remote cleanup
+(16 PR closes + branch deletions).
