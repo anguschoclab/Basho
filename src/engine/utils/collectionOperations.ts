@@ -30,7 +30,7 @@ export function mapIdsToEntities<T>(ids: Id[], entityMap: Map<Id, T>): T[] {
 
 /**
  * Map an array of Rikishi IDs to their Rikishi objects from WorldState.
- * @param world - The WorldState
+ * @param world - World state containing the rikishi map
  * @param ids - Array of Rikishi IDs
  * @returns Array of Rikishi objects
  */
@@ -40,7 +40,7 @@ export function mapIdsToRikishi(world: WorldState, ids: Id[]): Rikishi[] {
 
 /**
  * Map an array of Heya IDs to their Heya objects from WorldState.
- * @param world - The WorldState
+ * @param world - World state containing the heya map
  * @param ids - Array of Heya IDs
  * @returns Array of Heya objects
  */
@@ -50,7 +50,7 @@ export function mapIdsToHeya(world: WorldState, ids: Id[]): Heya[] {
 
 /**
  * Map an array of Oyakata IDs to their Oyakata objects from WorldState.
- * @param world - The WorldState
+ * @param world - World state containing the oyakata map
  * @param ids - Array of Oyakata IDs
  * @returns Array of Oyakata objects
  */

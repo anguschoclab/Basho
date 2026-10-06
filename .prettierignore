@@ -34,3 +34,9 @@ yarn-error.log*
 .vscode
 .idea
 .claude
+
+# Generated artifacts
+.playwright-mcp
+playwright-report
+test-results
+docs/audit/archive

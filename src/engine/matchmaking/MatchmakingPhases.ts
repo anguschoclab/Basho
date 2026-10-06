@@ -416,7 +416,7 @@ export function buildPlayoffPairs(
  * 2. Generate random scores using seeded RNG
  * 3. Sort by random score with stable tie-break
  *
- * @param {BashoState} basho - Current basho state.
+ * @param {BashoState} _basho - Current basho state (unused; exhibition pairs are purely random).
  * @param {Rikishi[]} rikishi - All rikishi to consider.
  * @param {CandidateBuildOptions} options - Build options (seed for RNG).
  * @returns {MatchPairing[]} Sorted list of exhibition pairings.
