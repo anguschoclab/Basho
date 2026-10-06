@@ -14,8 +14,6 @@
 // Game State Types & Initial State
 import type { WorldState } from "@/engine/types/world";
 import type { BoutResult } from "@/engine/types/basho";
-import type { HolidayResult } from "@/engine/holiday";
-import type { AutoSimResult } from "@/engine/autoSim";
 import type { UIDigest } from "@/presenters/uiDigest";
 
 /**
@@ -78,13 +76,6 @@ export interface GameState {
  * Union type of all possible actions that can be dispatched to the game reducer.
  */
 export type GameAction =
-  | {
-      type: "CREATE_WORLD";
-      seed: string;
-      playerHeyaId?: string;
-      oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig;
-    }
-  | { type: "SET_PLAYER_HEYA"; heyaId: string }
   | { type: "SET_PHASE"; phase: GamePhase }
   | { type: "START_BASHO" }
   | { type: "ADVANCE_DAY" }
@@ -93,8 +84,6 @@ export type GameAction =
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
   | { type: "SIM_FULL_BASHO" }
-  | { type: "RUN_HOLIDAY"; result: HolidayResult }
-  | { type: "RUN_AUTO_SIM"; result: AutoSimResult }
   | { type: "SET_BOUT_TACTIC"; boutId: string; tactic: import("@/engine/types/combat").BoutTactic }
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }

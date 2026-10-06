@@ -155,7 +155,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     }
 
     // Some commands imply simulation start
-    if (command.type === "AUTO_SIM_DAYS" || command.type === "TICK_MULTIPLE_DAYS") {
+    if (command.type === "TICK_MULTIPLE_DAYS") {
       set({ isSimulating: true, error: null, pendingTick: true });
     } else if (command.type === "TICK_DAY") {
       set({ pendingTick: true });

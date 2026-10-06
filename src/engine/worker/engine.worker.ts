@@ -234,34 +234,6 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         self.postMessage({ type: "WORLD_UPDATED", world: currentWorld, version: worldVersion });
       }
     },
-    AUTO_SIM_DAYS: async (cmd) => {
-      if (currentWorld) {
-        // Use fast orchestrator for parity with AutoSimService (skip daily micro-phases).
-        const chunk = 7;
-        for (let i = 0; i < cmd.days; i += chunk) {
-          if (simPaused) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
-            i -= chunk; // retry same chunk
-            continue;
-          }
-          const remaining = cmd.days - i;
-          const step = Math.min(chunk, remaining);
-          currentWorld = advanceDaysFastOrchestrator(currentWorld, step);
-          if (shouldHaltAdvance(currentWorld)) break;
-          if (i % (chunk * 2) === 0 || i + step >= cmd.days) {
-            self.postMessage({
-              type: "PROGRESS",
-              message: `Simulating day ${i + step} of ${cmd.days}...`,
-              current: i + step,
-              total: cmd.days,
-            });
-          }
-        }
-        emitDigest();
-        worldVersion++;
-        self.postMessage({ type: "WORLD_UPDATED", world: currentWorld, version: worldVersion });
-      }
-    },
     OFFER_CONTRACT: (cmd) => {
       if (currentWorld) {
         const result = talentpool.offerCandidate(

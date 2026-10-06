@@ -99,16 +99,4 @@ describe("P3.3: syncAndDigest helper", () => {
     expect(tickCompleted.length).toBe(1);
     expect(worldUpdated.length).toBe(1);
   });
-
-  it("AUTO_SIM_DAYS emits both TICK_COMPLETED and WORLD_UPDATED", () => {
-    sendCommand({ type: "START_WORLD", seed: "test-helper3", playerHeyaId: "h1" } as any);
-    mockPostMessage.mockClear();
-
-    sendCommand({ type: "AUTO_SIM_DAYS", days: 10 });
-
-    const tickCompleted = getMessagesOfType("TICK_COMPLETED");
-    const worldUpdated = getMessagesOfType("WORLD_UPDATED");
-    expect(tickCompleted.length).toBe(1);
-    expect(worldUpdated.length).toBe(1);
-  });
 });

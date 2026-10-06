@@ -12,7 +12,6 @@ export type EngineCommand =
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "TICK_DAY" }
   | { type: "TICK_MULTIPLE_DAYS"; days: number }
-  | { type: "AUTO_SIM_DAYS"; days: number }
   | { type: "OFFER_CONTRACT"; candidateId: string; heyaId: string }
   | { type: "SCOUT_POOL"; pool: import("../types/talent").TalentPoolType; revealCount: number }
   | { type: "SCOUT_CANDIDATE"; candidateId: string; effort: number }
