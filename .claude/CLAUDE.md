@@ -29,7 +29,7 @@ src/
 ├── pages/           React page components
 ├── components/      UI components (layout, game, dashboard)
 ├── presenters/      uiDigest.ts, selectors.ts, uiModels.ts, projections/ — engine→UI translation
-├── contexts/        GameContext + reducer slices (coreSlice, timeSlice, bashoSlice, …)
+├── contexts/        GameContext + reducer slices (coreSlice inside gameReducer.ts, bashoSlice)
 ├── routes.tsx       TanStack Router route tree
 └── App.tsx          Root with providers
 ```
@@ -72,11 +72,11 @@ src/
 ## State Management
 - **`GameContext`** (contexts/GameContext.tsx) — single React context with `useReducer`
 - **`GameState`** shape: `{ phase, world, digest, … }`
-- **Slices:** `coreSlice`, `timeSlice`, `bashoSlice`, `heyaSlice`, `financeSlice`, `rosterSlice`, `bookmarkSlice`
+- **Slices:** `coreSlice` (inside `gameReducer.ts`) and `bashoSlice` — `timeSlice`/`heyaSlice` were removed in v9 as dead paths; `financeSlice`/`rosterSlice`/`bookmarkSlice` never existed
 
 ### Command path convention
 - **Engine mutations go through the Web Worker** (`src/engine/worker/engine.worker.ts` `COMMAND_HANDLERS` + `src/engine/worker/types.ts`), dispatched from the UI via `useGameStore((s) => s.sendCommand)`.
-- **The reducer (`src/contexts/*Slice.ts`) is only for:** transient UI state (`setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`, `timeSlice`).
+- **The reducer (`src/contexts/*Slice.ts`) is only for:** transient UI state (`setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`).
 - Do NOT add new engine-mutating actions to the reducer slices — they will not be reachable from the canonical command path.
 - **`gameReducer`** combines slices + calls engine functions
 - **`issueRuling`** is exposed via `GameContext` and sends `ISSUE_RULING` command to the worker (used by GovernancePage).
@@ -125,7 +125,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 
 ## Test Setup
 - **Runner:** `bun run test` (Vitest, jsdom environment). Do NOT use `bun test` — that invokes Bun's native test runner, which doesn't understand vitest's jsdom environment or setup files.
-- **Mock factory:** `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)`
+- **Mock factories:** primary is `src/tests/helpers/utils/MockFactory.ts` (~118 consumers); `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 70%, branches 75%, functions 65%, statements 70% (v8 provider)
 - **Current status (v8 consolidation, Oct 2026):** 860 test files, 8,330 tests, all passing. `bun run type-check` clean. `bun run build` succeeds. E2E: 5/5 specs green.

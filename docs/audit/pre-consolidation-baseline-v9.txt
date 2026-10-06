@@ -1,0 +1,48 @@
+PRE-CONSOLIDATION BASELINE — v9
+Date: 2026-10-06
+Baseline commit: d0d585ff27c9116f301d58c2391c8aac480dcc17 (origin/main head)
+Prior cycle: v8 (2026-10-01) — 33 bugs fixed, all open items resolved, remote trimmed to main only.
+Current deltas since: none local; 16 open PRs on remote.
+
+== MEASURED GATES (all on clean origin/main) ==
+
+typecheck    bun run type-check (tsgo --build --force)     PASS — 0 errors
+unit tests   npx vitest run                                PASS — 875 files / 8,465 tests / 0 failures / 18m11s
+                                                        (slowest: simulationInvariants ~406s; lintStrictGate 47s)
+build        npx vite build                                PASS — 8.34s; pre-existing chunk-size warning (index 515.9kB / 163.2kB gzip)
+lint         bun run lint (eslint .)                       PASS — 0 findings (also gated in-suite: lintStrictGate 2/2)
+determinism  grep "Math.random|Date.now" src/engine        CLEAN — 2 matches, both comments
+purity       scripts/purity-lint.sh                        PASS — no phase purity violations
+perf gate    bench-pipelines + perf-gate-check             PASS — S3 p50 1259.5ms vs baseline 3277.4ms (−61.6%)
+             25yr determinism hash: 42e0164e2e715c66
+
+== OPEN PR INVENTORY (16 PRs / 16 remote branches, 1:1) ==
+
+Feature/bot PRs (Jules agents):
+  #1056 mason-exhibition-bout-basho-state-mock   +2/-1    MERGEABLE    → APPROVE
+  #1036 mason-tighten-exhibition-bout-mock       +424/-471 CONFLICTING → DISPROVE (superseded by #1056)
+  #1055 palette-statcard-a11y                    +5/-0    MERGEABLE    → DISPROVE (subset of #1042)
+  #1042 palette/a11y-progressbar                 +19/-2   MERGEABLE    → APPROVE
+  #1054 bard-narrative-variety                   +21/-8   MERGEABLE    → APPROVE
+  #1041 polish-injury-heatmap-emptystate         +6/-2    CONFLICTING  → APPROVE (component only)
+  #1040 scout-narrative-prose-coverage           +288/-0  CONFLICTING  → VERIFY-then-merge
+  #1035 bard-fatigue-enrichment                  +24/-4   CONFLICTING  → CHERRY-PICK combat.json only
+
+Dependabot PRs (batch-bump locally, close all):
+  #1052 @tanstack/react-router 1.170.25→1.170.41  MERGEABLE
+  #1050 @tanstack/react-query 5.101.4→5.104.0     MERGEABLE
+  #1049 @typescript-eslint/parser 8.70.1→8.71.0   MERGEABLE
+  #1048 @testing-library/user-event 14.6.3→14.6.7 CONFLICTING (lockfile)
+  #1047 postcss 8.5.26→8.5.28                     MERGEABLE
+  #1046 globals 17.9.0→17.12.0                    MERGEABLE
+  #1044 electron-vite 6.0.0-beta.1→6.0.0-beta.5   MERGEABLE (GATED on electron-vite build)
+  #1043 @testing-library/dom 10.4.1→10.4.2        CONFLICTING (lockfile)
+
+== REVIEW NOTES ==
+
+- PR comments: Jules-bot boilerplate only on all 16 — zero substantive human review.
+- Bot-branch trap: stale perf-gate.yml sweeps bundled in #1035/#1036/#1040/#1041.
+  Do not cherry-pick workflow hunks.
+- #1036/#1035 test hunks reference nonexistent __audit_coll_* fixtures and contain
+  a duplicate rikishiId object key (would break typecheck).
+- Bot JSON edits drop EOF newlines — restore when applying.
