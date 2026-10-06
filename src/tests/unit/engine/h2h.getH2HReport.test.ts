@@ -8,17 +8,17 @@ describe("getH2HReport", () => {
     const rA = MockFactory.createRikishi({
       id: "a1",
       history: [
-        { year: 2024, day: 15, bashoId: "basho-1", opponentId: "b1", win: true, kimarite: "yorikiri", boutId: "x" },
-        { year: 2024, day: 14, bashoId: "basho-2", opponentId: "c1", win: false, kimarite: "oshidashi", boutId: "y" },
-        { year: 2025, day: 1, bashoId: "basho-3", opponentId: "b1", win: false, kimarite: "hatakikomi", boutId: "z" }
+        { year: 2024, day: 15, bashoId: "basho-1", opponentId: "b1", win: true, kimarite: "yorikiri" },
+        { year: 2024, day: 14, bashoId: "basho-2", opponentId: "c1", win: false, kimarite: "oshidashi" },
+        { year: 2025, day: 1, bashoId: "basho-3", opponentId: "b1", win: false, kimarite: "hatakikomi" }
       ]
     });
 
     const rB = MockFactory.createRikishi({
       id: "b1",
       history: [
-        { year: 2024, day: 15, bashoId: "basho-1", opponentId: "a1", win: false, kimarite: "yorikiri", boutId: "x" },
-        { year: 2025, day: 1, bashoId: "basho-3", opponentId: "a1", win: true, kimarite: "hatakikomi", boutId: "z" }
+        { year: 2024, day: 15, bashoId: "basho-1", opponentId: "a1", win: false, kimarite: "yorikiri" },
+        { year: 2025, day: 1, bashoId: "basho-3", opponentId: "a1", win: true, kimarite: "hatakikomi" }
       ]
     });
 
@@ -49,8 +49,8 @@ describe("getH2HReport", () => {
   });
 
   it("limits recent meetings to H2H_MAX_RECENT_MEETINGS", () => {
-    const historyA = [];
-    const historyB = [];
+    const historyA: any[] = [];
+    const historyB: any[] = [];
 
     for (let i = 0; i < 10; i++) {
       historyA.push({
@@ -59,8 +59,7 @@ describe("getH2HReport", () => {
         bashoId: `basho-${i}`,
         opponentId: "b1",
         win: i % 2 === 0,
-        kimarite: "yorikiri",
-        boutId: `bout-${i}`
+        kimarite: "yorikiri"
       });
       historyB.push({
         year: 2020 + i,
@@ -68,8 +67,7 @@ describe("getH2HReport", () => {
         bashoId: `basho-${i}`,
         opponentId: "a1",
         win: i % 2 !== 0,
-        kimarite: "yorikiri",
-        boutId: `bout-${i}`
+        kimarite: "yorikiri"
       });
     }
 

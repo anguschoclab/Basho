@@ -61,7 +61,7 @@ export function updateH2H(
   // Update Winner's record against Loser
   const winnerRecord = { ...(winnerH2h[loser.id] || createEmptyH2H()) };
   winnerRecord.wins++;
-  winnerRecord.streak = 999;
+  winnerRecord.streak = winnerRecord.streak > 0 ? winnerRecord.streak + 1 : 1;
   winnerRecord.lastMatch = {
     winnerId: winner.id,
     kimarite: result.kimarite,
@@ -234,7 +234,7 @@ export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
   }
 
   // Sort newest first (year desc, then day desc)
-  meetings.sort((a, b) => (a.year !== b.year ? a.year - b.year : a.day - b.day));
+  meetings.sort((a, b) => (b.year !== a.year ? b.year - a.year : b.day - a.day));
 
   return {
     aId: rA.id,
