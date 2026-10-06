@@ -3,27 +3,42 @@
     "both_contending": [
       "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
       "Both men with winning records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
-      "Two contenders here — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% also at %WEST_WINS% and %WEST_LOSSES%."
+      "Two contenders here — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% also at %WEST_WINS% and %WEST_LOSSES%.",
+      "High stakes here today: %EAST_NAME% (%EAST_WINS%-%EAST_LOSSES%) faces off against %WEST_NAME% (%WEST_WINS%-%WEST_LOSSES%).",
+      "Both men come in with momentum. %EAST_NAME% stands at %EAST_WINS% and %EAST_LOSSES%, while %WEST_NAME% is %WEST_WINS% and %WEST_LOSSES%.",
+      "We have a battle of winning records today — %EAST_NAME% (%EAST_WINS% wins) meets %WEST_NAME% (%WEST_WINS% wins)."
     ],
     "both_struggling": [
       "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%. A tough basho for both.",
       "Both men looking for answers — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
-      "A difficult tournament for both — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%."
+      "A difficult tournament for both — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
+      "Desperation mode for both fighters. %EAST_NAME% is %EAST_WINS%-%EAST_LOSSES%, and %WEST_NAME% sits at %WEST_WINS%-%WEST_LOSSES%.",
+      "Neither man has found their rhythm this basho. %EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
+      "A vital bout for two struggling rikishi. %EAST_NAME% (%EAST_WINS%-%EAST_LOSSES%) needs a turnaround just as much as %WEST_NAME% (%WEST_WINS%-%WEST_LOSSES%)."
     ],
     "one_struggling": [
       "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%, while %WEST_NAME% sits at %WEST_WINS% and %WEST_LOSSES%.",
       "%EAST_NAME% with %EAST_WINS% wins and %EAST_LOSSES% losses. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
-      "A tale of two records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%."
+      "A tale of two records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
+      "Contrasting fortunes in this matchup: %EAST_NAME% enjoys a %EAST_WINS%-%EAST_LOSSES% record, while %WEST_NAME% is struggling at %WEST_WINS%-%WEST_LOSSES%.",
+      "%EAST_NAME% comes in confident at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% needs a win badly at %WEST_WINS% and %WEST_LOSSES%.",
+      "A chance for %WEST_NAME% (%WEST_WINS%-%WEST_LOSSES%) to turn things around against the favored %EAST_NAME% (%EAST_WINS%-%EAST_LOSSES%)."
     ],
     "both_even": [
       "%EAST_NAME% and %WEST_NAME% both at %EAST_WINS% and %EAST_LOSSES%.",
       "Identical records — both men at %EAST_WINS% and %EAST_LOSSES%.",
-      "Even Steven — %EAST_NAME% and %WEST_NAME% each with %EAST_WINS% wins and %EAST_LOSSES% losses."
+      "Even Steven — %EAST_NAME% and %WEST_NAME% each with %EAST_WINS% wins and %EAST_LOSSES% losses.",
+      "Nothing separates them on the leaderboard — %EAST_NAME% and %WEST_NAME% are deadlocked at %EAST_WINS% wins and %EAST_LOSSES% losses.",
+      "A perfectly matched pairing today. Both %EAST_NAME% and %WEST_NAME% enter at %EAST_WINS%-%EAST_LOSSES%.",
+      "With identical %EAST_WINS%-%EAST_LOSSES% records, one man will take a crucial step forward today."
     ],
     "championship_elimination": [
       "Both men at %EAST_WINS% and %EAST_LOSSES% — this is essentially a championship elimination match.",
       "%EAST_NAME% and %WEST_NAME% both at %EAST_WINS%-%EAST_LOSSES%. The yusho could hinge on this bout.",
-      "A crucial matchup — both at %EAST_WINS% and %EAST_LOSSES%. The loser falls out of contention."
+      "A crucial matchup — both at %EAST_WINS% and %EAST_LOSSES%. The loser falls out of contention.",
+      "The Emperor's Cup is practically on the line. %EAST_NAME% and %WEST_NAME%, both %EAST_WINS%-%EAST_LOSSES%, fighting for their tournament lives.",
+      "Do-or-die for the yusho. A %EAST_WINS%-%EAST_LOSSES% showdown between %EAST_NAME% and %WEST_NAME% where the loser is eliminated.",
+      "Both men sit at %EAST_WINS% wins and %EAST_LOSSES% losses. The winner stays in the championship race; the loser goes home."
     ],
     "winless": [
       "%EAST_NAME% is winless after %DAY% days. The pressure is mounting.",
