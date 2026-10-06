@@ -23,7 +23,7 @@ any implementation landed.
 | Phase 2 code review | `docs/audit/bug-registry-v9.md` — command-surface enumeration (59 handlers vs dispatch sites), slice mutation audit vs `uiWorldRevision`, determinism/purity/`as any` greps, save/load path trace, v5–v8 carry-forward |
 | Phase 3 verdicts | §3 below — every PR and every registry finding explicitly approved/disproved |
 | Phase 4 integration | Payload-level cherry-picks as fresh commits; whole-branch imports refused |
-| Phase 5/6 | Remote cleanup gated on user checkpoint; this document |
+| Phase 5/6 | Remote cleanup completed post-merge (see §8); this document |
 
 ## 2. Test-First Evidence
 
@@ -148,8 +148,8 @@ Idle rerun passed decisively (−52.3% p99) with a bit-identical determinism has
   `check-jsdoc 2.ts`, and `NarrativeProse.test 2.ts`/`InjuryRiskHeatmap.test 2.tsx`
   already removed) appeared in the working tree during the session —
   macOS/Finder-style duplicates, untracked, not part of the consolidation.
-- **#1054 already merged** — its commit is an ancestor of main; the open PR is a
-  bookkeeping leftover to close in Phase 5.
+- **#1054 already merged** — its commit was an ancestor of main; the open PR was
+  a bookkeeping leftover, closed in Phase 5.
 - **Follow-up bug (V9-F01):** `golden-path.e2e.test.ts` is broken on main — the
   Day/Week advance buttons render but the loop never leaves Week 1, so the
   "Automatically simulate the remainder" button never appears. Reproduced on
@@ -162,5 +162,13 @@ explicitly approved or disproved above; all gates green.** The consolidation
 satisfies the plan's hard requirements: test-first ordering demonstrated with
 observed red→green transitions, zero behavioral drift on the 25-year
 determinism hash across two runs, and a clean full suite (874 files / 8,444
-tests). Remaining: the Phase 5 user checkpoint before remote cleanup
-(16 PR closes + branch deletions).
+tests).
+
+**Remote lifecycle (verified via `gh`, 2026-10-06):** consolidation PR
+[#1057](https://github.com/anguschoclab/Basho/pull/1057) merged as
+`62363469` after all CI checks reported SUCCESS (typecheck, build, lint,
+CodeQL, perf gate, unit-tests). All 16 superseded PRs closed with a pointer
+to this verdict; all 16 remote branches deleted (8 bot branches via
+`git push --delete`, 8 Dependabot branches auto-deleted on PR close).
+`git ls-remote --heads` confirms only `main` remains; `gh pr list
+--state open` returns zero. Repository consolidation is complete.
