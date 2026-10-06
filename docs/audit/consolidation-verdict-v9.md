@@ -139,21 +139,24 @@ Idle rerun passed decisively (−52.3% p99) with a bit-identical determinism has
 
 ## 7. Known Caveats
 
-- **E2E: 4/5 pass; `golden-path.e2e.test.ts` fails identically on baseline
-  `d0d585ff`** — verified pre-existing via worktree run on the base commit. The
-  test's advance loop leaves the world at Week 1 and the "Automatically simulate
-  the remainder" button never appears. **Not a v9 regression** — recommend a
-  dedicated fix PR after merge (logged as follow-up below).
+- **E2E: `golden-path.e2e.test.ts` failed identically on baseline `d0d585ff`**
+  — verified pre-existing via worktree run on the base commit. **Post-merge
+  follow-up: root-caused and fixed (V9-F01).** The test's naive advance loop
+  raced worker ticks — clicks fired while `pendingTick` was set were dropped by
+  the store, so the loop exhausted before the first `WORLD_UPDATED` landed
+  ("Week 1 · Off-Season" snapshot = pre-first-tick world, not a frozen sim).
+  Rewritten to use the shared `advanceToBasho`/`driveBashoToRecap`/
+  `finalizeRecap` helpers; passing in ~22s.
 - **Stray ` 2`-suffixed duplicate files** (`v9-pr-inventory 2.json`,
   `check-jsdoc 2.ts`, and `NarrativeProse.test 2.ts`/`InjuryRiskHeatmap.test 2.tsx`
   already removed) appeared in the working tree during the session —
   macOS/Finder-style duplicates, untracked, not part of the consolidation.
 - **#1054 already merged** — its commit was an ancestor of main; the open PR was
   a bookkeeping leftover, closed in Phase 5.
-- **Follow-up bug (V9-F01):** `golden-path.e2e.test.ts` is broken on main — the
-  Day/Week advance buttons render but the loop never leaves Week 1, so the
-  "Automatically simulate the remainder" button never appears. Reproduced on
-  baseline `d0d585ff`. Fix as a separate PR; out of consolidation scope.
+- **Follow-up (V9-F01) — RESOLVED:** `golden-path.e2e.test.ts` raced worker
+  ticks (dropped commands while `pendingTick` set; no crisis/redirect handling).
+  Root cause confirmed via instrumented probe; spec rewritten onto the shared
+  helpers. See `bug-registry-v9.md` §V9-F01.
 
 ## 8. Verdict
 
