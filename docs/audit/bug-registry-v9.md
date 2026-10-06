@@ -94,7 +94,28 @@ cleared the historical registry — this registry covers only fresh deltas.
   to LOAD_WORLD for the immutability assertion.
 - **Status:** FIXED on `consolidation/v9`.
 
-## Assessed — Not Bugs
+### V9-F01: `golden-path.e2e.test.ts` races worker ticks — clicks dropped, loop exhausts before first advance lands
+
+- **Files:** `e2e/golden-path.e2e.test.ts` (rewritten), reproduced against baseline
+  `d0d585ff` — pre-existing, not a v9 regression.
+- **Severity:** Test-only (flaky E2E), but masked real app behavior on slow runs.
+- **Mechanism (root-caused via instrumented probe, 2026-10-06):** The test's
+  hand-rolled advance loop clicked the calendar **Week** button every ~500ms for
+  up to 60 iterations. `sendCommand` drops any command while `pendingTick` is set
+  (store: "Command TICK_MULTIPLE_DAYS dropped - tick in progress"), and a 7-day
+  worker tick under a dev build takes far longer than 500ms — so nearly every
+  click was discarded and the loop exhausted before the first `WORLD_UPDATED`
+  landed. The failure snapshot's "Week 1 · Off-Season" was simply the world
+  pre-first-tick, not a frozen sim. A second observed mode: the first tick lands
+  mid-`active_basho` while the page auto-sits on `/basho`, where none of the
+  loop's four locators exist. The naive loop also resolved no crisis modals and
+  used raw `.click()` with no bounded actionability timeout.
+- **Fix:** Rewrote the spec to use the shared helpers (`createNewGame`,
+  `dismissOnboardingTour`, `advanceToBasho`, `driveBashoToRecap`,
+  `finalizeRecap`) that the other lifecycle specs already use — they poll live
+  world state, handle the mid-basho `/basho` redirect, resolve crisis modals,
+  and DOM-click through stale Radix overlays. Verified passing in ~22s.
+- **Status:** FIXED (post-merge commit).
 
 - **A01: Dual mock factories.** `src/tests/helpers/utils/MockFactory.ts` (118
   consumers) vs `src/tests/unit/engine/utils.ts` (`mockRikishi`, 8 consumers).
