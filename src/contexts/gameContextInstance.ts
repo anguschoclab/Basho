@@ -37,6 +37,7 @@ export interface GameContextValue {
   runAutoSimAction: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   saveToSlot: (slotName: string) => boolean;
   loadFromSlot: (slotName: string) => boolean;
+  loadWorldDirect: (world: WorldState) => void;
   quickSave: () => boolean;
   loadFromAutosave: () => boolean;
   hasAutosave: () => boolean;

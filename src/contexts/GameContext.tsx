@@ -345,6 +345,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return false;
   }, [sendCommand]);
 
+  // V9-B01: external save import loads the deserialized world verbatim on both
+  // sides of the boundary — reducer first, then the worker's authoritative
+  // copy. No createWorld fallback: regenerating from the seed would discard
+  // the imported save's progress.
+  const loadWorldDirect = useCallback(
+    (world: WorldState) => {
+      dispatch(actions.loadWorld(world));
+      sendCommand({ type: "LOAD_WORLD", world });
+    },
+    [sendCommand]
+  );
+
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
 
@@ -432,6 +444,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       issueRuling,
       saveToSlot,
       loadFromSlot,
+      loadWorldDirect,
       quickSave: quickSaveAction,
       loadFromAutosave: loadFromAutosaveAction,
       hasAutosave: hasAutosaveCheck,
@@ -486,6 +499,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       issueRuling,
       saveToSlot,
       loadFromSlot,
+      loadWorldDirect,
       quickSaveAction,
       loadFromAutosaveAction,
       hasAutosaveCheck,

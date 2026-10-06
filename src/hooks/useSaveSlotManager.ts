@@ -1,17 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import type { SaveSlotInfo } from "@/engine/saveload";
 import type { BashoName } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
 import { toast } from "@/hooks/use-toast";
 
-interface UseSaveSlotManagerProps {
+export interface UseSaveSlotManagerProps {
   getSaveSlots: () => SaveSlotInfo[];
   loadFromSlot: (slotName: string) => boolean;
   loadFromAutosave: () => void;
   hasAutosave: () => boolean;
   onLoadSuccess: () => void;
-  loadWorldDirect?: (world: unknown) => void;
-  createWorld?: (seed: string, playerHeyaId?: string) => void;
+  /** Loads an imported world verbatim. Required — there is deliberately no
+   *  createWorld fallback: regenerating from the seed would silently discard
+   *  the imported save's progress (V9-B01). */
+  loadWorldDirect: (world: WorldState) => void;
 }
 
 export function useSaveSlotManager({
@@ -21,7 +24,6 @@ export function useSaveSlotManager({
   hasAutosave,
   onLoadSuccess,
   loadWorldDirect,
-  createWorld,
 }: UseSaveSlotManagerProps) {
   const [showLoadDialog, setShowLoadDialog] = useState(false);
   const [saveSlots, setSaveSlots] = useState<SaveSlotInfo[]>([]);
@@ -71,11 +73,7 @@ export function useSaveSlotManager({
     try {
       const importedWorld = await importSave(file);
       if (importedWorld) {
-        if (typeof loadWorldDirect === "function") {
-          loadWorldDirect(importedWorld);
-        } else if (typeof createWorld === "function") {
-          createWorld(importedWorld.seed, importedWorld.playerHeyaId);
-        }
+        loadWorldDirect(importedWorld);
         onLoadSuccess();
       }
     } catch (err) {

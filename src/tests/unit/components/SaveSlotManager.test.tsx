@@ -57,7 +57,6 @@ function makeProps(overrides: Record<string, unknown> = {}) {
     hasAutosave: vi.fn(() => false),
     onLoadSuccess: vi.fn(),
     loadWorldDirect: vi.fn(),
-    createWorld: vi.fn(),
     hideArchiveButton: false,
     ...overrides,
   };
@@ -133,7 +132,7 @@ describe("SaveSlotManager", () => {
     });
   });
 
-  it("successful import with createWorld fallback (no loadWorldDirect)", async () => {
+  it("import without loadWorldDirect fails safely — no seed-regeneration fallback (V9-B01)", async () => {
     const mockWorld = { seed: "s1", playerHeyaId: "h1" };
     mockImportSave.mockResolvedValue(mockWorld);
     const props = makeProps({ loadWorldDirect: undefined });
@@ -148,9 +147,9 @@ describe("SaveSlotManager", () => {
     fireEvent.change(input);
 
     await waitFor(() => {
-      expect(props.createWorld).toHaveBeenCalledWith("s1", "h1");
-      expect(props.onLoadSuccess).toHaveBeenCalled();
+      expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({ variant: "destructive" }));
     });
+    expect(props.onLoadSuccess).not.toHaveBeenCalled();
   });
 
   it("import failure shows toast with destructive variant", async () => {
@@ -193,7 +192,6 @@ describe("SaveSlotManager", () => {
       expect(screen.getByText("External Import")).toBeTruthy();
     });
     expect(props.loadWorldDirect).not.toHaveBeenCalled();
-    expect(props.createWorld).not.toHaveBeenCalled();
     expect(props.onLoadSuccess).not.toHaveBeenCalled();
   });
 
