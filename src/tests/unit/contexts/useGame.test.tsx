@@ -5,9 +5,7 @@ import { GameContext } from "@/contexts/gameContextInstance";
 
 describe("useGame hook", () => {
   it("throws when used outside GameProvider", () => {
-    expect(() => renderHook(() => useGame())).toThrow(
-      "useGame must be used within a GameProvider",
-    );
+    expect(() => renderHook(() => useGame())).toThrow("useGame must be used within a GameProvider");
   });
 
   it("returns context value when inside GameProvider", () => {

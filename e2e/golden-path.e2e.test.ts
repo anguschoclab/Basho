@@ -162,7 +162,10 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
     .first();
   for (let i = 0; i < 30; i++) {
     if (
-      (await page.getByText(/No Active Tournament/i).isVisible().catch(() => false)) ||
+      (await page
+        .getByText(/No Active Tournament/i)
+        .isVisible()
+        .catch(() => false)) ||
       (await page
         .getByRole("button", { name: /Finalize Basho/i })
         .first()
@@ -171,7 +174,12 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
     )
       break;
 
-    if (await page.getByText(/Emergency Protocol/i).isVisible().catch(() => false)) {
+    if (
+      await page
+        .getByText(/Emergency Protocol/i)
+        .isVisible()
+        .catch(() => false)
+    ) {
       const optionBtn = page.locator('[role="dialog"]').getByRole("button").first();
       if (await optionBtn.isVisible().catch(() => false)) {
         await optionBtn.click();

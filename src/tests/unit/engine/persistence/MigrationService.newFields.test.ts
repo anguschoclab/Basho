@@ -18,7 +18,7 @@ function makeV1_2_0Save(): SaveGame {
       week: 1,
       cyclePhase: "interim",
       heyas: {
-        "h1": {
+        h1: {
           id: "h1",
           name: "Test Heya",
           funds: 1_000_000,
@@ -27,7 +27,7 @@ function makeV1_2_0Save(): SaveGame {
       } as any,
       closedHeyas: {},
       rikishi: {
-        "r1": {
+        r1: {
           id: "r1",
           name: "Test Rikishi",
           heyaId: "h1",

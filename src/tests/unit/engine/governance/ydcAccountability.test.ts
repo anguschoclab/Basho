@@ -468,8 +468,20 @@ describe("YokozunaService — YDC Accountability", () => {
       currentBasho: {
         bashoName: "nagoya",
         matches: [
-          { boutId: "kb-3", day: 3, eastRikishiId: "m-a", westRikishiId: "ykin", result: kinResult(3, "m-a") },
-          { boutId: "kb-4", day: 4, eastRikishiId: "m-b", westRikishiId: "ykin", result: kinResult(4, "m-b") },
+          {
+            boutId: "kb-3",
+            day: 3,
+            eastRikishiId: "m-a",
+            westRikishiId: "ykin",
+            result: kinResult(3, "m-a"),
+          },
+          {
+            boutId: "kb-4",
+            day: 4,
+            eastRikishiId: "m-b",
+            westRikishiId: "ykin",
+            result: kinResult(4, "m-b"),
+          },
         ],
       } as never,
     });

@@ -237,7 +237,9 @@ describe("events.test.ts - Core Bus", () => {
 
       const typesFilter = queryEvents(world, { types: ["BOUT_RESOLVED", "MEDICAL_REPORT"] });
       expect(typesFilter.length).toBe(2);
-      expect(typesFilter.every((e) => e.type === "BOUT_RESOLVED" || e.type === "MEDICAL_REPORT")).toBe(true);
+      expect(
+        typesFilter.every((e) => e.type === "BOUT_RESOLVED" || e.type === "MEDICAL_REPORT")
+      ).toBe(true);
 
       const scopeFilter = queryEvents(world, { scope: "heya" });
       expect(scopeFilter.length).toBe(1);
@@ -353,17 +355,33 @@ describe("events.test.ts - Helpers & Cleanup", () => {
           type: "LIFECYCLE_EVENT" as EngineEventType,
           category: "career",
           importance: "minor",
-          year: 2026, week: 1, month: 1, phase: "weekly", scope: "world",
-          title: "career", summary: "s", data: {}, tags: [], truthLevel: "public",
+          year: 2026,
+          week: 1,
+          month: 1,
+          phase: "weekly",
+          scope: "world",
+          title: "career",
+          summary: "s",
+          data: {},
+          tags: [],
+          truthLevel: "public",
         },
         {
           id: "durable-headline",
           type: "FINANCIAL_ALERT" as EngineEventType,
           category: "economy",
           importance: "headline",
-          year: 2026, week: 1, month: 1, phase: "weekly", scope: "world",
-          title: "headline", summary: "s", data: {}, tags: [], truthLevel: "public",
-        },
+          year: 2026,
+          week: 1,
+          month: 1,
+          phase: "weekly",
+          scope: "world",
+          title: "headline",
+          summary: "s",
+          data: {},
+          tags: [],
+          truthLevel: "public",
+        }
       );
 
       const noiseCount = MAX_LIVE_EVENT_LOG + EVENT_LOG_TRIM_SLACK + 10;
@@ -380,9 +398,7 @@ describe("events.test.ts - Helpers & Cleanup", () => {
       // Cap bound holds: durable (2) + unprotected capped at
       // MAX_LIVE_EVENT_LOG after each trim, plus up to SLACK accumulation
       // before the next trim fires.
-      expect(events.log.length).toBeLessThanOrEqual(
-        MAX_LIVE_EVENT_LOG + EVENT_LOG_TRIM_SLACK + 2
-      );
+      expect(events.log.length).toBeLessThanOrEqual(MAX_LIVE_EVENT_LOG + EVENT_LOG_TRIM_SLACK + 2);
       // Durable events survived despite being the oldest entries.
       expect(events.log.some((e) => e.id === "durable-career")).toBe(true);
       expect(events.log.some((e) => e.id === "durable-headline")).toBe(true);

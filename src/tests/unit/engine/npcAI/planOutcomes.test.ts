@@ -57,9 +57,7 @@ function makeWorld(opts: WorldOpts = {}): WorldState {
     rikishiIds: [...rikishi.keys()],
     ...opts.heyaOverrides,
   });
-  const basho = opts.standings
-    ? MockFactory.createBasho({ standings: opts.standings })
-    : undefined;
+  const basho = opts.standings ? MockFactory.createBasho({ standings: opts.standings }) : undefined;
   return MockFactory.createWorld({
     rikishi,
     heyas: new Map([["heya-a", heya]]),
@@ -115,31 +113,19 @@ describe("evaluatePlanOutcome", () => {
 
   it("financial_consolidation → success when runway recovered to a healthy band", () => {
     const world = makeWorld({ heyaOverrides: { runwayBand: "secure" } });
-    const outcome = evaluatePlanOutcome(
-      world,
-      "heya-a",
-      makePlan("financial_consolidation")
-    );
+    const outcome = evaluatePlanOutcome(world, "heya-a", makePlan("financial_consolidation"));
     expect(outcome.outcome).toBe("success");
   });
 
   it("financial_consolidation → partial on improvement that hasn't reached healthy bands", () => {
     const world = makeWorld({ heyaOverrides: { runwayBand: "tight" } });
-    const outcome = evaluatePlanOutcome(
-      world,
-      "heya-a",
-      makePlan("financial_consolidation")
-    );
+    const outcome = evaluatePlanOutcome(world, "heya-a", makePlan("financial_consolidation"));
     expect(outcome.outcome).toBe("partial");
   });
 
   it("financial_consolidation → abandoned when runway did not improve", () => {
     const world = makeWorld({ heyaOverrides: { runwayBand: "critical" } });
-    const outcome = evaluatePlanOutcome(
-      world,
-      "heya-a",
-      makePlan("financial_consolidation")
-    );
+    const outcome = evaluatePlanOutcome(world, "heya-a", makePlan("financial_consolidation"));
     expect(outcome.outcome).toBe("abandoned");
   });
 
@@ -151,8 +137,19 @@ describe("evaluatePlanOutcome", () => {
 
   it("rebuilding → partial when only roster size grew", () => {
     const world = makeWorld({
-      rikishiRanks: ["maegashira", "maegashira", "jonokuchi", "jonokuchi", "jonokuchi",
-        "jonokuchi", "jonokuchi", "jonokuchi", "jonokuchi", "jonokuchi", "jonokuchi"],
+      rikishiRanks: [
+        "maegashira",
+        "maegashira",
+        "jonokuchi",
+        "jonokuchi",
+        "jonokuchi",
+        "jonokuchi",
+        "jonokuchi",
+        "jonokuchi",
+        "jonokuchi",
+        "jonokuchi",
+        "jonokuchi",
+      ],
     });
     const outcome = evaluatePlanOutcome(world, "heya-a", makePlan("rebuilding"));
     expect(outcome.outcome).toBe("partial");

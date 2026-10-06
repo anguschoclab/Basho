@@ -33,10 +33,7 @@ describe("projectTsukebito", () => {
   });
 
   it("identifies eligible seniors (rankNumber <= 3)", () => {
-    const rikishi = [
-      makeRikishi("s1", 1, "h1", "Yokozuna"),
-      makeRikishi("j1", 15, "h1", "Junior"),
-    ];
+    const rikishi = [makeRikishi("s1", 1, "h1", "Yokozuna"), makeRikishi("j1", 15, "h1", "Junior")];
     const result = projectTsukebito(makeWorld(rikishi), "h1");
     expect(result.eligibleSeniors).toHaveLength(1);
     expect(result.eligibleSeniors[0].shikona).toBe("Yokozuna");

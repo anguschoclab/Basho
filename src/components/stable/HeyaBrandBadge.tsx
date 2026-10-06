@@ -18,11 +18,7 @@ interface HeyaBrandBadgeProps {
 /**
  * Display a heya's brand identity as a circular crest badge
  */
-export function HeyaBrandBadge({
-  brand,
-  size = "md",
-  className,
-}: HeyaBrandBadgeProps) {
+export function HeyaBrandBadge({ brand, size = "md", className }: HeyaBrandBadgeProps) {
   const sizeClasses = {
     xs: "w-6 h-6",
     sm: "w-8 h-8",
@@ -104,7 +100,6 @@ export function HeyaBrandBadge({
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400/20 to-transparent" />
         )}
       </div>
-
     </div>
   );
 }

@@ -101,7 +101,14 @@ export function handleCompliantTransition(
       { heyaId: heya.id, importance: "notable" }
     );
 
-    applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_WATCH, collectedHeadlines);
+    applyGovernanceHeadlineAndPressure(
+      world,
+      heya.id,
+      builder,
+      mediaPressureChanges,
+      MEDIA_PRESSURE_WATCH,
+      collectedHeadlines
+    );
   }
 }
 
@@ -254,7 +261,14 @@ export function transitionToSanctioned(
     { heyaId: heya.id, importance: "notable" }
   );
 
-  applyGovernanceHeadlineAndPressure(world, heya.id, builder, mediaPressureChanges, MEDIA_PRESSURE_SANCTION, collectedHeadlines);
+  applyGovernanceHeadlineAndPressure(
+    world,
+    heya.id,
+    builder,
+    mediaPressureChanges,
+    MEDIA_PRESSURE_SANCTION,
+    collectedHeadlines
+  );
 }
 
 export function handleSanctionedTransition(

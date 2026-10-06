@@ -176,9 +176,7 @@ function bashoRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
     // Opponent-model intel: if the player's oyakata has learned this
     // opponent's tactical family, surface it as a banded scout hint.
     const oyakata = getOyakataForHeya(world, heyaId);
-    const model = oyakata?.memory
-      ? getOpponentModel(oyakata.memory, opponent.id)
-      : undefined;
+    const model = oyakata?.memory ? getOpponentModel(oyakata.memory, opponent.id) : undefined;
     const family = model ? getOpponentDominantFamily(model) : undefined;
     if (family) {
       recs.push(

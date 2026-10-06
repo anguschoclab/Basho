@@ -40,9 +40,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
   const workerWorld = useGameStore((s) => s.workerWorld);
   const playerHeyaId = workerWorld?.playerHeyaId;
   const gomenfudaProjection =
-    workerWorld && playerHeyaId
-      ? projectGomenfuda(workerWorld, playerHeyaId)
-      : null;
+    workerWorld && playerHeyaId ? projectGomenfuda(workerWorld, playerHeyaId) : null;
   const [pendingWithdrawId, setPendingWithdrawId] = useState<string | null>(null);
   const pendingRikishi = injuredRikishi.find((r) => r.id === pendingWithdrawId);
   const gomenfudaCount = gomenfudaProjection?.count ?? 0;
@@ -208,10 +206,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
           <div className="py-4 space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Gomenfuda this year:</span>
-              <span
-                className="font-mono font-bold"
-                data-testid="gomenfuda-count-display"
-              >
+              <span className="font-mono font-bold" data-testid="gomenfuda-count-display">
                 {gomenfudaCount}/{sanctionThreshold}
               </span>
             </div>
@@ -224,9 +219,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
               </div>
             )}
             {gomenfudaCount < sanctionThreshold - 1 && (
-              <p className="text-xs text-muted-foreground">
-                Sanction risk: {sanctionRiskPercent}%
-              </p>
+              <p className="text-xs text-muted-foreground">Sanction risk: {sanctionRiskPercent}%</p>
             )}
           </div>
           <DialogFooter>

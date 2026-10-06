@@ -14,7 +14,10 @@ import type { CoordinationInput } from "@/engine/npcAI/TacticalCoordinator";
  * their constraints must reach applyPlanConstraints.
  */
 
-function basePerception(heyaId: string, over: Partial<PerceptionSnapshot> = {}): PerceptionSnapshot {
+function basePerception(
+  heyaId: string,
+  over: Partial<PerceptionSnapshot> = {}
+): PerceptionSnapshot {
   return {
     heyaId,
     heyaName: "Test Beya",
@@ -207,7 +210,10 @@ describe("faction_ascension plan", () => {
 
   it("use_favors directive drives governance.shouldUsePoliticalFavor", () => {
     const world = makeMockWorld();
-    world.heyas.set("h-leader", makeMockHeya("h-leader", { ichimon: "Dewanoumi", politicalCapital: 90 }));
+    world.heyas.set(
+      "h-leader",
+      makeMockHeya("h-leader", { ichimon: "Dewanoumi", politicalCapital: 90 })
+    );
     world.heyas.set("h1", makeMockHeya("h1", { ichimon: "Dewanoumi", politicalCapital: 55 }));
     const league = buildLeaguePerception(world);
     const ctx = buildCtx({ world, heyaId: "h1", leaguePerception: league });

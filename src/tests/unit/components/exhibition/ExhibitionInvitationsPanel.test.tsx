@@ -29,7 +29,13 @@ describe("ExhibitionInvitationsPanel", () => {
 
   it("renders invitation rows when invitations exist", () => {
     const invitations = [
-      { id: "ex1", region: "Mongolia", prestige: 85, expiresAtWeek: 10, prestigeLabel: "Prestigious" },
+      {
+        id: "ex1",
+        region: "Mongolia",
+        prestige: 85,
+        expiresAtWeek: 10,
+        prestigeLabel: "Prestigious",
+      },
     ];
     render(
       <ExhibitionInvitationsPanel

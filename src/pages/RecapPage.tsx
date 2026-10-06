@@ -31,12 +31,7 @@ import { selectExhibitionResults } from "@/presenters/projections/recapExhibitio
 import { EntityCollection } from "@/presenters/engineAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { buildBanzukeRevealEntries } from "@/presenters/projections/recapBanzukeRevealProjections";
-import {
-  getHeya,
-  getRikishi,
-  getRikishiAnywhere,
-  getHistory,
-} from "@/presenters/worldAccess";
+import { getHeya, getRikishi, getRikishiAnywhere, getHistory } from "@/presenters/worldAccess";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { EngineEvent } from "@/engine/types/events";
@@ -262,9 +257,7 @@ export default function RecapPage() {
 
   return (
     <AppLayout pageTitle="Post-Basho Recap" subNavTabs={dashboardTabs} activeSubTab="recap">
-
-        <title>{bashoTitle} Recap | Basho</title>
-
+      <title>{bashoTitle} Recap | Basho</title>
 
       <div className="max-w-6xl mx-auto space-y-12 pb-24">
         {/* ═══ HERO SECTION ═══ */}
@@ -423,7 +416,9 @@ export default function RecapPage() {
                       {ex.results.slice(0, 5).map((r, i) => (
                         <div key={i} className="flex justify-between">
                           <span>{r.shikona}</span>
-                          <span className="tabular-nums">{r.wins}-{r.losses}</span>
+                          <span className="tabular-nums">
+                            {r.wins}-{r.losses}
+                          </span>
                         </div>
                       ))}
                     </div>

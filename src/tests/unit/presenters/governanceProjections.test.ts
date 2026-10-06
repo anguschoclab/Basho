@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { projectGovernanceDerived, projectGomenfuda } from "@/presenters/projections/governanceProjections";
+import {
+  projectGovernanceDerived,
+  projectGomenfuda,
+} from "@/presenters/projections/governanceProjections";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 
@@ -238,9 +241,7 @@ describe("projectGomenfuda", () => {
   });
 
   it("computes sanctionRiskPercent as count/threshold * 100", () => {
-    const world = makeWorldWithEvents([
-      gomenfudaEvent("h1", 2024, "r1"),
-    ]);
+    const world = makeWorldWithEvents([gomenfudaEvent("h1", 2024, "r1")]);
     const result = projectGomenfuda(world, "h1");
     expect(result.count).toBe(1);
     expect(result.threshold).toBe(3);

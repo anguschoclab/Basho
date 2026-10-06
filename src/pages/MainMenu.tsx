@@ -146,9 +146,7 @@ export default function MainMenu() {
 
   return (
     <>
-
-        <title>BASHO — Sumo Management Simulator</title>
-
+      <title>BASHO — Sumo Management Simulator</title>
 
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
         {/* ═══ HERO HEADER ═══ */}

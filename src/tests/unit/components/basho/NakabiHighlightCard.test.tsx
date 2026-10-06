@@ -54,7 +54,13 @@ describe("NakabiHighlightCard", () => {
         leaderLosses: 0,
         undefeatedCount: 1,
         notablePerformers: [
-          { rikishiId: "r-2", shikona: "Young Hopeful", wins: 7, losses: 1, note: "Upset specialist" },
+          {
+            rikishiId: "r-2",
+            shikona: "Young Hopeful",
+            wins: 7,
+            losses: 1,
+            note: "Upset specialist",
+          },
         ],
       },
     });

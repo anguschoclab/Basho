@@ -37,24 +37,22 @@ export function NakabiHighlightCard({ projection }: { projection: NakabiProjecti
           <span className="text-sm font-medium">
             Nakabi — {summary.bashoName} {summary.year}
           </span>
-          <Badge variant="outline" className="ml-auto text-[9px]">Day 8</Badge>
+          <Badge variant="outline" className="ml-auto text-[9px]">
+            Day 8
+          </Badge>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="p-2 rounded bg-muted/20">
             <div className="text-muted-foreground">Leader</div>
-            <div className="text-sm font-medium">
-              {summary.leaderId ? summary.leaderId : "—"}
-            </div>
+            <div className="text-sm font-medium">{summary.leaderId ? summary.leaderId : "—"}</div>
             <div className="text-xs tabular-nums text-muted-foreground">
               {summary.leaderWins}-{summary.leaderLosses}
             </div>
           </div>
           <div className="p-2 rounded bg-muted/20">
             <div className="text-muted-foreground">Undefeated</div>
-            <div className="text-sm font-medium tabular-nums">
-              {summary.undefeatedCount}
-            </div>
+            <div className="text-sm font-medium tabular-nums">{summary.undefeatedCount}</div>
           </div>
         </div>
 

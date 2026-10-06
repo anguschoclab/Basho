@@ -83,7 +83,7 @@ describe("ref-as-prop forwarding (React 19)", () => {
     const { container } = render(
       <TooltipWrap content="">
         <span data-testid="child">Hover me</span>
-      </TooltipWrap>,
+      </TooltipWrap>
     );
     expect(container.querySelector('[data-testid="child"]')).toBeDefined();
   });
@@ -94,7 +94,7 @@ describe("ref-as-prop forwarding (React 19)", () => {
         <TooltipWrap content="Tooltip text">
           <span data-testid="child">Hover me</span>
         </TooltipWrap>
-      </TooltipProvider>,
+      </TooltipProvider>
     );
     expect(container.querySelector('[data-testid="child"]')).toBeDefined();
   });

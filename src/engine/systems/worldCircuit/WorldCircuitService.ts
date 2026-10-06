@@ -204,11 +204,7 @@ export const WorldCircuitService = {
    * Build a foreign academy in a region where the heya has sufficient presence.
    * Requires presence >= ACADEMY_THRESHOLD (80). Refuses duplicates.
    */
-  buildForeignAcademy(
-    world: WorldState,
-    heyaId: string,
-    region: ExhibitionRegion
-  ): StateImpact {
+  buildForeignAcademy(world: WorldState, heyaId: string, region: ExhibitionRegion): StateImpact {
     const builder = createImpactBuilder("buildForeignAcademy");
     const heya = getHeya(world, heyaId);
     if (!heya) return builder.build();

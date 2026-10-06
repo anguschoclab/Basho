@@ -51,9 +51,7 @@ describe("makeNPCWeeklyDecision — agent context integrity", () => {
 
     const decision = makeNPCWeeklyDecision(world, "h1");
     // 10 rikishi * 150k burn = 1.5M/mo; 15M funds / 1.5M = 10.0 months.
-    expect(
-      decision.reasoning.some((r) => /Current runway: 10\.0 months/.test(r))
-    ).toBe(true);
+    expect(decision.reasoning.some((r) => /Current runway: 10\.0 months/.test(r))).toBe(true);
     expect(decision.reasoning.some((r) => /999/.test(r))).toBe(false);
   });
 
@@ -67,9 +65,9 @@ describe("makeNPCWeeklyDecision — agent context integrity", () => {
       pools: {},
     } as any;
     const decision = makeNPCWeeklyDecision(world, "h1");
-    expect(
-      decision.reasoning.some((r) => r.includes("Evaluating candidate with talent 95"))
-    ).toBe(true);
+    expect(decision.reasoning.some((r) => r.includes("Evaluating candidate with talent 95"))).toBe(
+      true
+    );
   });
 
   it("re-applies the plan max_intensity cap after promotion/injury post-passes", () => {

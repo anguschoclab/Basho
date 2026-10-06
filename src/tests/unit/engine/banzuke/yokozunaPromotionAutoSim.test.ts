@@ -28,9 +28,9 @@ describe("yokozuna promotion in AutoSim", () => {
     // (or yearlyAggregates if summarized).
     const historyLen =
       updatedOzeki && "careerHistory" in updatedOzeki
-        ? updatedOzeki.careerHistory?.length ?? 0
+        ? (updatedOzeki.careerHistory?.length ?? 0)
         : updatedOzeki && "yearlyAggregates" in updatedOzeki
-          ? updatedOzeki.yearlyAggregates?.length ?? 0
+          ? (updatedOzeki.yearlyAggregates?.length ?? 0)
           : 0;
     expect(historyLen).toBeGreaterThanOrEqual(1);
   }, 60000);

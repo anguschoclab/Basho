@@ -11,7 +11,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <div data-testid="child">Hello</div>
-      </ErrorBoundary>,
+      </ErrorBoundary>
     );
     expect(screen.getByTestId("child")).toBeDefined();
   });
@@ -21,7 +21,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowOnRender message="kaboom" />
-      </ErrorBoundary>,
+      </ErrorBoundary>
     );
     expect(screen.getByText("Something went wrong")).toBeDefined();
     expect(screen.getByText(/kaboom/)).toBeDefined();
@@ -33,7 +33,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowOnRender message="fail" />
-      </ErrorBoundary>,
+      </ErrorBoundary>
     );
     const btn = screen.getByRole("button", { name: /Reload Page/i });
     expect(btn).toBeDefined();

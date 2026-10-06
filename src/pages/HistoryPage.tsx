@@ -105,9 +105,7 @@ export default function HistoryPage() {
 
   return (
     <AppLayout pageTitle="Stable History" subNavTabs={RECORDS_TABS} activeSubTab="history">
-
-        <title>History - Basho</title>
-
+      <title>History - Basho</title>
 
       <div className="space-y-6">
         <div className="flex items-center gap-4">

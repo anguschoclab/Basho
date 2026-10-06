@@ -41,7 +41,14 @@ function makeLargeField(n: number): {
     const count = Math.max(1, Math.floor(n * weight));
     for (let i = 0; i < count && id < n; i++) {
       const rikishiId = `RK${id++}`;
-      const isNumbered = ["maegashira", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"].includes(rank);
+      const isNumbered = [
+        "maegashira",
+        "juryo",
+        "makushita",
+        "sandanme",
+        "jonidan",
+        "jonokuchi",
+      ].includes(rank);
       const rankNumber = isNumbered ? i + 1 : undefined;
       const side = i % 2 ? "west" : "east";
       banzuke.push({

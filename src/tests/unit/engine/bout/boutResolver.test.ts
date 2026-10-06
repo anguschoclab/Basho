@@ -261,9 +261,7 @@ describe("resolveBout — kimarite stats accumulation", () => {
     const allTime = impact.worldFields?.allTimeKimariteStats as Record<string, number>;
     // Whatever technique won is counted in both maps, preserving prior counts.
     expect(era[result.kimarite]).toBe((world.globalKimariteStats[result.kimarite] ?? 0) + 1);
-    expect(allTime[result.kimarite]).toBe(
-      (world.allTimeKimariteStats?.[result.kimarite] ?? 0) + 1
-    );
+    expect(allTime[result.kimarite]).toBe((world.allTimeKimariteStats?.[result.kimarite] ?? 0) + 1);
     expect(era.yorikiri).toBe(10);
     expect(allTime.yorikiri).toBe(100);
   });

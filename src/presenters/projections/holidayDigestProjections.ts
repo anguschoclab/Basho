@@ -28,7 +28,7 @@ export function selectHolidayDigest(world: WorldState): HolidayDigestDTO | null 
     if (data?.eventId === "holiday_return" || data?.status === "holiday_return") {
       const incidents = (data.incidents as Array<Record<string, unknown>>) ?? [];
       return {
-        returnEventId: event.data?.eventId as string ?? "holiday_return",
+        returnEventId: (event.data?.eventId as string) ?? "holiday_return",
         target: (data.target as string) ?? "—",
         daysAdvanced: (data.daysAdvanced as number) ?? 0,
         summary: (data.summary as string) ?? "Holiday completed.",

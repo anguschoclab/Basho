@@ -353,9 +353,10 @@ export function RikishiCareerTab({
                     width={48}
                   />
                   <Tooltip
-                    formatter={(value, name) =>
-                      [`¥${Number(value).toLocaleString("ja-JP")}`, String(name)]
-                    }
+                    formatter={(value, name) => [
+                      `¥${Number(value).toLocaleString("ja-JP")}`,
+                      String(name),
+                    ]}
                   />
                   <Legend
                     verticalAlign="top"

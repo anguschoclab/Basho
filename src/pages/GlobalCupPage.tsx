@@ -48,8 +48,7 @@ export default function GlobalCupPage() {
   if (!cup || !cup.isActive) {
     return (
       <AppLayout pageTitle="Global Cup" subNavTabs={TOURNAMENT_TABS} activeSubTab="global-cup">
-
-          <title>Global Cup | Basho</title>
+        <title>Global Cup | Basho</title>
 
         <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
           <Trophy className="h-16 w-16 text-gold/50" />
@@ -87,9 +86,7 @@ export default function GlobalCupPage() {
 
   return (
     <AppLayout pageTitle="Global Cup">
-
-        <title>Global Cup | Basho</title>
-
+      <title>Global Cup | Basho</title>
 
       <div className="space-y-8">
         {/* Hero Section */}

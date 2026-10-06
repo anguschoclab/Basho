@@ -159,9 +159,7 @@ export function logEngineEvent(
   const liveLen = events.log.length;
   if (liveLen > MAX_LIVE_EVENT_LOG + EVENT_LOG_TRIM_SLACK) {
     const cutoff = liveLen - MAX_LIVE_EVENT_LOG;
-    events.log = events.log.filter(
-      (e, i) => i >= cutoff || isDurableEvent(e)
-    );
+    events.log = events.log.filter((e, i) => i >= cutoff || isDurableEvent(e));
   }
   return ev;
 }
@@ -228,4 +226,3 @@ export function queryEvents(
     })
     .slice(0, filters.limit ?? 50);
 }
-

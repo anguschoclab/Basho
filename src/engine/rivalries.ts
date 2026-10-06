@@ -44,8 +44,6 @@ export function getRivalry(state: RivalriesState, aId: Id, bId: Id): RivalryPair
   return state.pairs[key];
 }
 
-
-
 /**
  * Handle bout resolution for rivalries (Legacy wrapper).
  * Returns StateImpact describing rivalry updates.
@@ -59,8 +57,6 @@ export function onBoutResolvedRivalries(
     day: context.match?.day,
   });
 }
-
-
 
 // Re-export type definitions for backward compatibility
 export type {

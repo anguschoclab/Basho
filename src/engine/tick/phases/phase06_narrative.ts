@@ -20,7 +20,13 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { CrisisService } from "../../systems/narrative/CrisisService";
-import { getHeya, getRikishi, getRikishiAnywhere, getHeyaRoster, getOyakataForHeya } from "../../queries";
+import {
+  getHeya,
+  getRikishi,
+  getRikishiAnywhere,
+  getHeyaRoster,
+  getOyakataForHeya,
+} from "../../queries";
 import { spawnNarrativeAgent } from "../../agents/NarrativeAgent";
 import { narrativeEventMap } from "../../bard/narrativeEventMap";
 import { BardEngine } from "../../bard/BardEngine";

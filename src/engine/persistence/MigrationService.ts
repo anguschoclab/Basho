@@ -166,12 +166,20 @@ const migrateToV1_2_0: MigrationStep = (save, ctx) => {
       if (!world.gyojiPool || !Array.isArray(world.gyojiPool)) {
         const seed = (world.seed as string) ?? "migrated-save";
         const ranks = [
-          "tate", "tate",
-          "fuku-tate", "fuku-tate",
-          "sanyaku", "sanyaku",
-          "makuuchi", "makuuchi", "makuuchi",
-          "juryo", "juryo", "juryo",
-          "makushita", "makushita",
+          "tate",
+          "tate",
+          "fuku-tate",
+          "fuku-tate",
+          "sanyaku",
+          "sanyaku",
+          "makuuchi",
+          "makuuchi",
+          "makuuchi",
+          "juryo",
+          "juryo",
+          "juryo",
+          "makushita",
+          "makushita",
         ] as const;
         world = {
           ...world,

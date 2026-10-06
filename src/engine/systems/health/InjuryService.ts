@@ -168,7 +168,6 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   return "inflammation"; // Default minor
 }
 
-
 /**
  * Post-bout injury check: applies bout-induced injuries based on result severity.
  * Returns StateImpact describing injury updates instead of mutating state directly.

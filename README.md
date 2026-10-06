@@ -45,6 +45,7 @@ Ensure you have [Bun](https://bun.sh/) installed, as it is the primary runtime, 
    ```
 
 2. Install dependencies:
+
    ```bash
    bun install
    ```
@@ -70,6 +71,7 @@ The core engine is strictly deterministic to ensure that simulations are reprodu
 **Run tests:**
 
 Tests should be executed directly via Vitest targeting specific files to avoid runner timeouts:
+
 ```bash
 npx vitest run <filepath>
 ```

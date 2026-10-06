@@ -37,11 +37,15 @@ export function AcademyWidget({ projection, currentYear }: AcademyWidgetProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Level</span>
-          <span className="font-mono font-bold">{academy.level}/{academy.maxLevel}</span>
+          <span className="font-mono font-bold">
+            {academy.level}/{academy.maxLevel}
+          </span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Prospects</span>
-          <span className="font-mono">{academy.prospectCount}/{academy.maxProspects}</span>
+          <span className="font-mono">
+            {academy.prospectCount}/{academy.maxProspects}
+          </span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Graduated</span>

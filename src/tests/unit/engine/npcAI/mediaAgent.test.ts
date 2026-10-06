@@ -93,7 +93,10 @@ describe("handleNPCMediaEvent", () => {
 describe("handleMediaEventForHeya — actor-aware media effects", () => {
   it("apologize reduces ONLY the acting heya's pressure (no global sweep)", () => {
     const world = makeWorld();
-    const resolved = applyImpact(world, handleMediaEventForHeya(world, "ev-1", "apologize", "heya-a"));
+    const resolved = applyImpact(
+      world,
+      handleMediaEventForHeya(world, "ev-1", "apologize", "heya-a")
+    );
     expect(resolved.mediaState?.heyaPressure["heya-a"]).toBe(45);
     expect(resolved.mediaState?.heyaPressure["heya-b"]).toBe(40);
     expect(resolved.mediaState?.mediaHeat["heya-b"]).toBe(20);
@@ -108,7 +111,10 @@ describe("handleMediaEventForHeya — actor-aware media effects", () => {
 
   it("deflect shifts pressure onto the hottest heya rival and costs reputation", () => {
     const world = makeWorld();
-    const resolved = applyImpact(world, handleMediaEventForHeya(world, "ev-1", "deflect", "heya-a"));
+    const resolved = applyImpact(
+      world,
+      handleMediaEventForHeya(world, "ev-1", "deflect", "heya-a")
+    );
     expect(resolved.mediaState?.heyaPressure["heya-a"]).toBe(47);
     expect(resolved.mediaState?.heyaPressure["heya-b"]).toBe(43);
     expect(resolved.heyas.get("heya-a")!.reputation).toBeLessThan(60);

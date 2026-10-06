@@ -77,17 +77,13 @@ describe("projectNPCAgentActivity", () => {
   });
 
   it("uses heya name from world.heyas when available", () => {
-    const events = [
-      { type: "NPC_MANAGER_DECISION", week: 1, data: { heyaId: "h1" } },
-    ];
+    const events = [{ type: "NPC_MANAGER_DECISION", week: 1, data: { heyaId: "h1" } }];
     const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "Real Name" }]));
     expect(result.decisions[0].heyaName).toBe("Real Name");
   });
 
   it("falls back to Unknown when heya not found", () => {
-    const events = [
-      { type: "NPC_MANAGER_DECISION", week: 1, data: { heyaId: "missing" } },
-    ];
+    const events = [{ type: "NPC_MANAGER_DECISION", week: 1, data: { heyaId: "missing" } }];
     const result = projectNPCAgentActivity(makeWorld(events, []));
     expect(result.decisions[0].heyaName).toBe("Unknown");
   });

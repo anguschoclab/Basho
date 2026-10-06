@@ -130,9 +130,7 @@ function main() {
   const prefix = runBouts(SEED, Math.min(500, BOUTS));
   const deterministic = results
     .slice(0, prefix.length)
-    .every(
-      (r, i) => r.winner === prefix[i].winner && r.kimarite === prefix[i].kimarite
-    );
+    .every((r, i) => r.winner === prefix[i].winner && r.kimarite === prefix[i].kimarite);
 
   const counts = new Map<string, number>();
   for (const r of results) counts.set(r.kimarite, (counts.get(r.kimarite) ?? 0) + 1);
@@ -222,12 +220,7 @@ function main() {
     // These are *suggestions* for the candidate/strategy weights — the script
     // never writes files.
     console.log("\nCALIBRATION SUGGESTIONS (suggested weight multiplier)");
-    console.log(
-      "kimarite".padEnd(22) +
-        "obs%".padStart(9) +
-        "real%".padStart(9) +
-        "  suggested ×"
-    );
+    console.log("kimarite".padEnd(22) + "obs%".padStart(9) + "real%".padStart(9) + "  suggested ×");
     const unreachable: string[] = [];
     for (const [id, target] of Object.entries(KIMARITE_FREQUENCY_TARGETS)) {
       if (id === "fusensho" || id === "hansoku") continue; // not physics paths
@@ -246,9 +239,7 @@ function main() {
       );
     }
     if (unreachable.length) {
-      console.log(
-        `\nUnreachable this run (candidate path missing?): ${unreachable.join(", ")}`
-      );
+      console.log(`\nUnreachable this run (candidate path missing?): ${unreachable.join(", ")}`);
     }
   }
 }

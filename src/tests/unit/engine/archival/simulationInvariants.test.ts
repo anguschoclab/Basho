@@ -56,39 +56,35 @@ const SIM_CONFIG = {
 };
 
 describe("simulation history-storage invariants (Plan Step 3.4)", () => {
-  it(
-    "historicalRikishi entries are summaries after year-end summarization",
-    async () => {
-      const world = generateInitialWorld("sim-invariant-v1");
-      const result = runAutoSim(world, SIM_CONFIG);
+  it("historicalRikishi entries are summaries after year-end summarization", async () => {
+    const world = generateInitialWorld("sim-invariant-v1");
+    const result = runAutoSim(world, SIM_CONFIG);
 
-      const finalWorld = result.finalWorld;
-      expect(finalWorld.historicalRikishi).toBeDefined();
+    const finalWorld = result.finalWorld;
+    expect(finalWorld.historicalRikishi).toBeDefined();
 
-      // In a 3-year sim with ~440 rikishi, at least some should retire and
-      // be summarized at the year boundary. If all are full, the summarization
-      // is not firing in AutoSim (the bug that was fixed by moving it to
-      // phase06_yearly_boundary).
-      const size = finalWorld.historicalRikishi.size;
-      let summaryCount = 0;
-      let fullCount = 0;
-      for (const entry of finalWorld.historicalRikishi.values()) {
-        if ((entry as RetiredRikishiSummary).isSummary === true) {
-          summaryCount++;
-          expect((entry as RetiredRikishiSummary).yearlyAggregates).toBeDefined();
-          expect("stats" in entry).toBe(false);
-        } else {
-          fullCount++;
-        }
+    // In a 3-year sim with ~440 rikishi, at least some should retire and
+    // be summarized at the year boundary. If all are full, the summarization
+    // is not firing in AutoSim (the bug that was fixed by moving it to
+    // phase06_yearly_boundary).
+    const size = finalWorld.historicalRikishi.size;
+    let summaryCount = 0;
+    let fullCount = 0;
+    for (const entry of finalWorld.historicalRikishi.values()) {
+      if ((entry as RetiredRikishiSummary).isSummary === true) {
+        summaryCount++;
+        expect((entry as RetiredRikishiSummary).yearlyAggregates).toBeDefined();
+        expect("stats" in entry).toBe(false);
+      } else {
+        fullCount++;
       }
+    }
 
-      // There must be retired rikishi in a 3-year sim, and at least some
-      // must be summaries (retired before the last year boundary).
-      expect(size).toBeGreaterThan(0);
-      expect(summaryCount).toBeGreaterThan(0);
-    },
-    900000
-  );
+    // There must be retired rikishi in a 3-year sim, and at least some
+    // must be summaries (retired before the last year boundary).
+    expect(size).toBeGreaterThan(0);
+    expect(summaryCount).toBeGreaterThan(0);
+  }, 900000);
 
   it("almanacSnapshots is bounded to <= 6 after year-end", async () => {
     const world = generateInitialWorld("sim-invariant-v2");

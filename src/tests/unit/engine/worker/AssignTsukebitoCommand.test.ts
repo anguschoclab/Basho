@@ -43,7 +43,13 @@ describe("Tsukebito worker commands", () => {
     // with the remaining IDs, but setTsukebito early-returns if the junior is
     // already present, so removal was a no-op. clearTsukebito(seniorId, juniorId)
     // must remove exactly one junior and leave the others intact.
-    const senior = mockRikishi("senior", { rank: "maegashira", rankNumber: 3, tsukebitoIds: ["j1", "j2", "j3"], tsukebitoPlayerSet: true, heyaId: "h1" });
+    const senior = mockRikishi("senior", {
+      rank: "maegashira",
+      rankNumber: 3,
+      tsukebitoIds: ["j1", "j2", "j3"],
+      tsukebitoPlayerSet: true,
+      heyaId: "h1",
+    });
     const j1 = mockRikishi("j1", { rank: "jonokuchi", rankNumber: 15, heyaId: "h1" });
     const j2 = mockRikishi("j2", { rank: "jonokuchi", rankNumber: 15, heyaId: "h1" });
     const j3 = mockRikishi("j3", { rank: "jonokuchi", rankNumber: 15, heyaId: "h1" });
@@ -64,7 +70,13 @@ describe("Tsukebito worker commands", () => {
   });
 
   it("SET_TSUKEBITO cannot remove (it only appends — proves why REMOVE_TSUKEBITO is needed)", () => {
-    const senior = mockRikishi("senior", { rank: "maegashira", rankNumber: 3, tsukebitoIds: ["j1", "j2"], tsukebitoPlayerSet: true, heyaId: "h1" });
+    const senior = mockRikishi("senior", {
+      rank: "maegashira",
+      rankNumber: 3,
+      tsukebitoIds: ["j1", "j2"],
+      tsukebitoPlayerSet: true,
+      heyaId: "h1",
+    });
     const j1 = mockRikishi("j1", { rank: "jonokuchi", rankNumber: 15, heyaId: "h1" });
     const j2 = mockRikishi("j2", { rank: "jonokuchi", rankNumber: 15, heyaId: "h1" });
     const world = {

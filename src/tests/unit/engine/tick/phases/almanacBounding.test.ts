@@ -43,8 +43,9 @@ describe("almanacSnapshots bounding", () => {
   });
 
   it("preserves most recent entries when truncating", () => {
-    const snapshots = Array.from({ length: 10 }, (_, i) =>
-      makeAlmanacSnapshot(2000 + i, 1) // each has unique year
+    const snapshots = Array.from(
+      { length: 10 },
+      (_, i) => makeAlmanacSnapshot(2000 + i, 1) // each has unique year
     );
 
     const world = makeMockWorld({ almanacSnapshots: snapshots });

@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { buildYouthAcademy, getYouthAcademy } from "@/engine/systems/recruitment/YouthAcademyService";
+import {
+  buildYouthAcademy,
+  getYouthAcademy,
+} from "@/engine/systems/recruitment/YouthAcademyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 
@@ -9,12 +12,15 @@ function makeWorld(cash = 10_000_000): WorldState {
     year: 2026,
     week: 1,
     heyas: new Map([
-      ["h1", {
-        id: "h1",
-        name: "Test Heya",
-        economics: { cash },
-        rikishiIds: [],
-      } as any],
+      [
+        "h1",
+        {
+          id: "h1",
+          name: "Test Heya",
+          economics: { cash },
+          rikishiIds: [],
+        } as any,
+      ],
     ]),
     rikishi: new Map(),
     playerHeyaId: "h1",
@@ -48,7 +54,8 @@ describe("Academy worker commands (integration)", () => {
   it("PROMOTE_INTAKE removes prospect and creates rikishi", async () => {
     const world = makeWorld();
     const w1 = resolveImpacts(world, [buildYouthAcademy(world, "h1")]);
-    const { generateYearlyIntake, promoteIntake } = await import("@/engine/systems/recruitment/YouthAcademyService");
+    const { generateYearlyIntake, promoteIntake } =
+      await import("@/engine/systems/recruitment/YouthAcademyService");
     const w2 = resolveImpacts(w1, [generateYearlyIntake(w1, "h1")]);
     const prospect = getYouthAcademy(w2.heyas.get("h1")!)!.prospects[0];
     const w3 = resolveImpacts(w2, [promoteIntake(w2, "h1", prospect.id)]);

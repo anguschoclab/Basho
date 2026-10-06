@@ -193,9 +193,7 @@ export const YokozunaService = {
       if (isMakeKoshi) references.push("make-koshi record");
       if (consecutiveMK >= 2) references.push("promotion pledge");
       if (kinboshiConceded > 0) {
-        references.push(
-          `${kinboshiConceded} kinboshi conceded to maegashira`
-        );
+        references.push(`${kinboshiConceded} kinboshi conceded to maegashira`);
       }
 
       // Kinboshi criticism: conceding 2+ gold stars in a single basho is a

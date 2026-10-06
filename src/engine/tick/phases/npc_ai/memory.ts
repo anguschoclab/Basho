@@ -57,9 +57,7 @@ export function consolidateOyakataMemoryPure(
       if (e.category !== "discipline" && e.category !== "rivalry" && e.category !== "welfare") {
         continue;
       }
-      const already = memory.observations.some(
-        (o) => o.tick === tick && o.summary === e.summary
-      );
+      const already = memory.observations.some((o) => o.tick === tick && o.summary === e.summary);
       if (already) continue;
       memory = addObservation(
         memory,

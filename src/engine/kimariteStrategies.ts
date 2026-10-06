@@ -118,8 +118,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       // in belt battles (belt winners have velocityX 0 — only the loser is
       // pushed backward).
       (forwardMomentum(ctx, wSide) > 0 ||
-        (st.phase.tag === "belt_battle" &&
-          getTorque(st, wSide) > getTorque(st, lSide))) &&
+        (st.phase.tag === "belt_battle" && getTorque(st, wSide) > getTorque(st, lSide))) &&
       balance(ctx, lSide) > 0 &&
       (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined ||
         Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 4.0) &&

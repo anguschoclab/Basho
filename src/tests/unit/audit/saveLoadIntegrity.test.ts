@@ -113,7 +113,9 @@ describe("L4.9: save/load integrity — field parity", () => {
   it("NON_PERSISTED_WORLD_FIELDS has no stale entries", () => {
     const worldFields = new Set(interfaceFields("engine/types/world.ts", "WorldState"));
     const stale = Object.keys(NON_PERSISTED_WORLD_FIELDS).filter((f) => !worldFields.has(f));
-    expect(stale, `Listed as excluded but no longer on WorldState: ${stale.join(", ")}`).toEqual([]);
+    expect(stale, `Listed as excluded but no longer on WorldState: ${stale.join(", ")}`).toEqual(
+      []
+    );
   });
 
   it("serializeWorld writes every field declared on SerializedWorldState", () => {
@@ -180,9 +182,7 @@ describe("L4.9: save/load integrity — field parity", () => {
         makuuchi: {
           division: "makuuchi",
           slots: [{ rank: "yokozuna", side: "east" }],
-          assignments: [
-            { rikishiId: "r1", position: { rank: "yokozuna", side: "east" } },
-          ],
+          assignments: [{ rikishiId: "r1", position: { rank: "yokozuna", side: "east" } }],
         },
         juryo: { division: "juryo", slots: [], assignments: [] },
         makushita: { division: "makushita", slots: [], assignments: [] },

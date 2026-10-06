@@ -27,9 +27,8 @@ export function OfficialsPanel({ projection }: { projection: OfficialsProjection
           </div>
           {topGyoji && (
             <div className="text-xs text-muted-foreground mb-3">
-              Top official: <span className="text-foreground font-medium">{topGyoji.name}</span>
-              {" "}
-              ({topGyoji.rankLabel}, {topGyoji.accuracy} accuracy)
+              Top official: <span className="text-foreground font-medium">{topGyoji.name}</span> (
+              {topGyoji.rankLabel}, {topGyoji.accuracy} accuracy)
             </div>
           )}
           <div className="text-xs text-muted-foreground mb-3">

@@ -1,11 +1,5 @@
 export type ReplayPhase =
-  | "ritual"
-  | "tachiai"
-  | "clinch"
-  | "momentum"
-  | "finish"
-  | "ceremony"
-  | "complete";
+  "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";
 
 export type BodyPhase =
   | "standing"

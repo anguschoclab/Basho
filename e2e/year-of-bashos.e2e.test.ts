@@ -62,7 +62,16 @@ function rankOrdinal(pos: { rank: string; rankNumber?: number }): number {
   return (RANK_ORDER[pos.rank] ?? 99) * 1000 + (pos.rankNumber ?? 0);
 }
 
-function snapshotPositions(snapshot: { divisions?: Record<string, { assignments?: { rikishiId: string; position: { rank: string; rankNumber?: number } }[] }> } | undefined): Map<string, number> {
+function snapshotPositions(
+  snapshot:
+    | {
+        divisions?: Record<
+          string,
+          { assignments?: { rikishiId: string; position: { rank: string; rankNumber?: number } }[] }
+        >;
+      }
+    | undefined
+): Map<string, number> {
   const out = new Map<string, number>();
   if (!snapshot?.divisions) return out;
   for (const div of Object.values(snapshot.divisions ?? {})) {
@@ -73,7 +82,9 @@ function snapshotPositions(snapshot: { divisions?: Record<string, { assignments?
   return out;
 }
 
-function liveRanks(world: { rikishi?: Record<string, { rank: string; rankNumber?: number }> }): Map<string, number> {
+function liveRanks(world: {
+  rikishi?: Record<string, { rank: string; rankNumber?: number }>;
+}): Map<string, number> {
   const out = new Map<string, number>();
   for (const [id, r] of Object.entries(world.rikishi ?? {})) {
     out.set(id, rankOrdinal({ rank: r.rank, rankNumber: r.rankNumber }));
@@ -222,14 +233,21 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     expect(last.prizes?.yushoAmount, "yusho prize money recorded").toBeGreaterThan(0);
 
     const log = (world.awardLog ?? []).filter(
-      (e: { year: number; bashoName: string; type: string; winnerId: string }) => e.year === last.year && e.bashoName === last.bashoName
+      (e: { year: number; bashoName: string; type: string; winnerId: string }) =>
+        e.year === last.year && e.bashoName === last.bashoName
     );
     const hasLogEntry = (type: string, winnerId: string) =>
-      log.some((e: { type: string; winnerId: string }) => e.type === type && e.winnerId === winnerId);
+      log.some(
+        (e: { type: string; winnerId: string }) => e.type === type && e.winnerId === winnerId
+      );
     expect(hasLogEntry("yusho", last.yusho), "awardLog records yusho").toBe(true);
 
     const awardWinners: { type: string; id: string; archetype: string }[] = [
-      { type: "yusho", id: last.yusho, archetype: yushoWinner.combatProfile?.archetype ?? "unknown" },
+      {
+        type: "yusho",
+        id: last.yusho,
+        archetype: yushoWinner.combatProfile?.archetype ?? "unknown",
+      },
     ];
     for (const jid of last.junYusho ?? []) {
       expect(hasLogEntry("junYusho", jid), `awardLog records jun-yusho ${jid}`).toBe(true);
@@ -308,10 +326,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     for (const id of everYokozuna) {
       const r = rikishiById[id];
       if (r) {
-        expect(
-          r.rank,
-          `${r.shikona} dropped below yokozuna without retiring`
-        ).toBe("yokozuna");
+        expect(r.rank, `${r.shikona} dropped below yokozuna without retiring`).toBe("yokozuna");
       }
     }
     for (const id of yokozunaIds) everYokozuna.add(id);
@@ -347,12 +362,13 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     }
 
     // ── Calendar tracking ─────────────────────────────────────────────
-    expect(
-      world.dayIndexGlobal,
-      `basho ${i + 1}: dayIndexGlobal increased`
-    ).toBeGreaterThan(prevDayIndex);
+    expect(world.dayIndexGlobal, `basho ${i + 1}: dayIndexGlobal increased`).toBeGreaterThan(
+      prevDayIndex
+    );
     prevDayIndex = world.dayIndexGlobal;
-    expect(world.week ?? 0, `basho ${i + 1}: week is non-decreasing`).toBeGreaterThanOrEqual(prevWeek);
+    expect(world.week ?? 0, `basho ${i + 1}: week is non-decreasing`).toBeGreaterThanOrEqual(
+      prevWeek
+    );
     prevWeek = world.week ?? 0;
     if (world.calendar?.month) monthsSeen.add(world.calendar.month);
 
@@ -499,4 +515,3 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
     newYearWorld.cyclePhase
   );
 });
-

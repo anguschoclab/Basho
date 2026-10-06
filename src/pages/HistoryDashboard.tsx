@@ -362,7 +362,9 @@ function CohortsTab({ world }: { world: WorldState }) {
                       <span className={p.isRetired ? "text-muted-foreground line-through" : ""}>
                         {p.shikona}
                       </span>
-                      <Badge variant="outline" className="text-[9px]">{p.rank}</Badge>
+                      <Badge variant="outline" className="text-[9px]">
+                        {p.rank}
+                      </Badge>
                     </div>
                   ))}
                 </div>

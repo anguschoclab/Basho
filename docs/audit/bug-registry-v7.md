@@ -17,6 +17,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 ## Bugs / Defects Found
 
 ### V7-B01: `PREPAY_LOAN` command path is dead — loan prepayment unreachable
+
 - **Files:** `src/engine/worker/types.ts:24`, `src/engine/worker/engine.worker.ts:737`,
   `src/engine/loans.ts:238` (`prepayLoan` — fully implemented via ImpactBuilder)
 - **Severity:** Medium (player-facing feature gap)
@@ -31,6 +32,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   `sendCommand({ type: "PREPAY_LOAN", heyaId: playerHeya.id, loanId })`.
 
 ### V7-B02: `PAUSE_SIM` / `RESUME_SIM` dead — auto-sim cannot be paused
+
 - **Files:** `src/engine/worker/engine.worker.ts:121,171,219,791-798`,
   `src/engine/worker/types.ts:36-37`
 - **Severity:** Low-Medium (built-but-unreachable UX control)
@@ -47,6 +49,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   `simPaused` flag in `gameStore` cleared on `TICK_COMPLETED`.
 
 ### V7-B03: `CLEAR_TSUKEBITO` dead command (redundant with `REMOVE_TSUKEBITO`)
+
 - **Files:** `src/engine/worker/types.ts:104`, `src/engine/worker/engine.worker.ts:623`
 - **Severity:** Low (dead code)
 - **Root Cause:** Handler clears all juniors for a senior; UI only ever dispatches
@@ -58,6 +61,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   covers the per-junior path; no clear-all affordance exists or is planned).
 
 ### V7-B04: `GET_DIGEST` dead command
+
 - **Files:** `src/engine/worker/types.ts:38`, `src/engine/worker/engine.worker.ts:799`
 - **Severity:** Low
 - **Root Cause:** Every mutating handler already calls `syncAndDigest()`; nothing
@@ -67,6 +71,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   already calls `syncAndDigest()`/`emitDigest()`.
 
 ### V7-B05: Generated artifacts tracked in repo root
+
 - **Files:** `simulation-results.json`, `test-list.txt`, `test-results.json`
   (all tracked; `simulation-results.json` is even listed in `.gitignore:38`)
 - **Severity:** Low (hygiene; churn + confusion risk)
@@ -77,6 +82,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   already ignored but tracked).
 
 ### V7-B06: `CLAUDE.md` documents stale coverage thresholds
+
 - **File:** `.claude/CLAUDE.md` ("lines 60%, branches 50%")
 - **Severity:** Low (doc truthfulness)
 - **Root Cause:** `vitest.config.ts` actual thresholds are lines 70 / branches 75 /
@@ -88,16 +94,18 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   after the barrel refactor; only test-fixture casts remain.
 
 ### V7-B07: `bun run type-check` broken on Windows
+
 - **File:** `package.json:15` (`node_modules/@typescript/native/bin/tsc --build --force`)
 - **Severity:** Medium (gate unreachable on Windows without workaround)
 - **Root Cause:** bun cannot exec the POSIX shebang bin `tsc` on Windows (no .cmd
   shim); binary works via `node node_modules/@typescript/native/bin/tsc`.
 - **Fix:** Change script to `node node_modules/@typescript/native/bin/tsc --build
-  --force` — portable across shells/OSes.
+--force` — portable across shells/OSes.
 - **Status:** FIXED — script now `node node_modules/@typescript/native/bin/tsc
-  --build --force`, portable across shells/OSes.
+--build --force`, portable across shells/OSes.
 
 ### V7-B08: 32 `console.*` calls in production code bypass Logger
+
 - **Severity:** None — **DISPROVED on inspection.** All 32 textual matches are
   inside JSDoc/block-comment examples (e.g. `* console.log(...)`); a
   comment-stripped scan finds zero executable `console.*` calls in
@@ -106,11 +114,12 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Status:** DISPROVED (recorded to prevent future mis-triage)
 
 ### V7-B09: orphan-audit test writes fixtures into `src/engine/systems/`
+
 - **File:** `src/tests/unit/audit/orphan-audit.test.ts:237` (and sibling at ~NsProbe)
 - **Severity:** Low (test-harness fragility)
 - **Root Cause:** `__audit_coll_<ts>__` / ns fixture dirs are created inside the
   source tree so the orphan scanner can see them; `finally` cleanup covers normal
-  runs, but a kill/timeout leaves residue that the *next* orphan audit would flag.
+  runs, but a kill/timeout leaves residue that the _next_ orphan audit would flag.
   Observed live during baseline run (dir existed mid-run, cleaned on completion).
 - **Fix:** Add an `afterAll` sweep removing any `__audit_*` remnants under
   `src/engine/systems/` (belt-and-suspenders alongside finally).
@@ -118,6 +127,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   all `__audit_*` dirs after the suite.
 
 ### V7-B10: `phase06_narrative` context relies on implicit lowercase token fallback
+
 - **File:** `src/engine/tick/phases/phase06_narrative.ts:125` (ctx keys `shikona`,
   `heya` lowercase; templates use `%SHIKONA%`/`%HEYA%`)
 - **Severity:** None — **DISPROVED as defect.** `BardEngine.interpolate`
@@ -128,6 +138,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   future mis-triage)
 
 ### V7-B11: `.jules/*.md` bot journals tracked on remote branches
+
 - **Severity:** Low (process)
 - **Root Cause:** `.gitignore:92` lists `.jules/` but bots committed journal files
   to their branches; gitignore does not protect merges of already-tracked files.
@@ -135,6 +146,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Status:** CONFIRMED — enforced in every wave merge
 
 ### V7-B12: `AdvisorService` roster injured-count semantics change (PR #993)
+
 - **File:** `src/engine/advisor/AdvisorService.ts` (rosterRecommendations)
 - **Severity:** Low (semantic delta inside a "pure perf" PR)
 - **Root Cause:** Original counts injured across ALL roster ids (`r && r.injured`);
@@ -145,6 +157,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Status:** CONFIRMED (deliberate semantic change — test-pinned)
 
 ### V7-B13: `getHeyaRoster`/`getHeyaStyleBias` module caches keyed by (heyaId, week) only — cross-world contamination
+
 - **File:** `src/engine/queries.ts:126-159`
 - **Severity:** Medium — confirmed live contamination: two `WorldState` objects in
   the same process sharing `heyaId` + `week` receive the first world's roster.
@@ -164,6 +177,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
   `clearQueryCaches()` as defense-in-depth.
 
 ### V7-B14: `advanceDaysFast` has no basho-end breakpoint — day counter overshoots 15
+
 - **Files:** `src/engine/tick/tickDaily.ts` (`advanceOneDay` pre-check,
   `advanceDaysFast` loop break, `daysUntilPhaseTransition`),
   `src/engine/loop/shouldHaltAdvance.ts`,
@@ -195,6 +209,7 @@ diffs (merge-base, three-dot) + targeted reads of load-bearing files
 - **Status:** FIXED.
 
 ### V7-B15: golden-path e2e could not drive the real game loop
+
 - **File:** `e2e/golden-path.e2e.test.ts`
 - **Severity:** Test-only (the product flow works; the test couldn't reach it)
 - **Defects found and fixed:**

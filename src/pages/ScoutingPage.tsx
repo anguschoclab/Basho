@@ -27,13 +27,11 @@ export default function ScoutingPage() {
 
   return (
     <AppLayout pageTitle="Scouting Network" subNavTabs={OFFICE_TABS} activeSubTab="scouting">
-
-        <title>Scouting & Recruitment — Basho</title>
-        <meta
-          name="description"
-          content="Scout opponents, evaluate prospects, and build your roster in Basho sumo management simulation."
-        />
-
+      <title>Scouting & Recruitment — Basho</title>
+      <meta
+        name="description"
+        content="Scout opponents, evaluate prospects, and build your roster in Basho sumo management simulation."
+      />
 
       <div className="space-y-6">
         <PageHeader

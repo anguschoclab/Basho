@@ -62,9 +62,7 @@ export function AcademyManagementPanel({
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="font-medium">{a.region}</span>
-                    <span className="text-muted-foreground ml-2">
-                      Built {a.builtAtYear}
-                    </span>
+                    <span className="text-muted-foreground ml-2">Built {a.builtAtYear}</span>
                   </div>
                   <Badge variant="outline" className="text-[9px]">
                     +{a.candidateQualityBonus} Quality
@@ -73,7 +71,9 @@ export function AcademyManagementPanel({
                 {onManage && (
                   <div className="flex items-center gap-1 pt-1 border-t border-border/30">
                     <TrendingUp className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-[10px] text-muted-foreground uppercase font-bold">Invest</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                      Invest
+                    </span>
                     {INVEST_PRESETS.map((amount) => (
                       <Button
                         key={amount}
@@ -141,12 +141,11 @@ export function AcademyManagementPanel({
           </div>
         )}
 
-        {projection.academies.length === 0 &&
-          projection.buildableRegions.length === 0 && (
-            <p className="text-xs text-muted-foreground text-center pt-2">
-              No foreign academies. Increase regional presence via exhibition tours.
-            </p>
-          )}
+        {projection.academies.length === 0 && projection.buildableRegions.length === 0 && (
+          <p className="text-xs text-muted-foreground text-center pt-2">
+            No foreign academies. Increase regional presence via exhibition tours.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

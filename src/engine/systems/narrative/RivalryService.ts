@@ -294,13 +294,11 @@ export const RivalryService = {
       updatedPair.tone = deriveTone(updatedPair);
 
       // Auto-cull
-      if (
-        !(
-          updatedPair.heat < RIVALRY_HEAT_MIN &&
-          updatedPair.meetings < RIVALRY_MEETINGS_MIN &&
-          weeksSince > RIVALRY_DECAY_WEEKS_LONG
-        )
-      ) {
+      if (!(
+        updatedPair.heat < RIVALRY_HEAT_MIN &&
+        updatedPair.meetings < RIVALRY_MEETINGS_MIN &&
+        weeksSince > RIVALRY_DECAY_WEEKS_LONG
+      )) {
         finalPairs[key] = updatedPair;
       }
     }

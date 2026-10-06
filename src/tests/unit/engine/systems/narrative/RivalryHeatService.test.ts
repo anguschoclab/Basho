@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { deriveTone, applyBoutToPairState, getRivalryBoutModifiers } from "@/engine/systems/narrative/RivalryHeatService";
+import {
+  deriveTone,
+  applyBoutToPairState,
+  getRivalryBoutModifiers,
+} from "@/engine/systems/narrative/RivalryHeatService";
 import { SeededRNG } from "@/engine/rng";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
 

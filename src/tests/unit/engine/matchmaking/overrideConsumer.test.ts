@@ -45,17 +45,24 @@ function buildMakuuchiWorld(withOverride: boolean): WorldState {
   };
 
   const heyas = new Map([
-    ["heya-req", MockFactory.createHeya("heya-req", { rikishiIds: ["req-0", "req-1", "req-2", "req-3"] })],
-    ["heya-riv", MockFactory.createHeya("heya-riv", { rikishiIds: ["riv-0", "riv-1", "riv-2", "riv-3"] })],
-    ["heya-neu", MockFactory.createHeya("heya-neu", { rikishiIds: ["neu-0", "neu-1", "neu-2", "neu-3"] })],
+    [
+      "heya-req",
+      MockFactory.createHeya("heya-req", { rikishiIds: ["req-0", "req-1", "req-2", "req-3"] }),
+    ],
+    [
+      "heya-riv",
+      MockFactory.createHeya("heya-riv", { rikishiIds: ["riv-0", "riv-1", "riv-2", "riv-3"] }),
+    ],
+    [
+      "heya-neu",
+      MockFactory.createHeya("heya-neu", { rikishiIds: ["neu-0", "neu-1", "neu-2", "neu-3"] }),
+    ],
   ]);
 
   const basho = MockFactory.createBasho({
     day: 1,
     matches: [],
-    standings: new Map(
-      [...rikishi.keys()].map((id) => [id, { wins: 0, losses: 0 } as never])
-    ),
+    standings: new Map([...rikishi.keys()].map((id) => [id, { wins: 0, losses: 0 } as never])),
   });
 
   return MockFactory.createWorld({
@@ -99,10 +106,7 @@ describe("matchmakingOverride consumer", () => {
       seed: "test-seed",
     });
     expect(
-      Object.prototype.hasOwnProperty.call(
-        impact.worldFields ?? {},
-        "matchmakingOverride"
-      )
+      Object.prototype.hasOwnProperty.call(impact.worldFields ?? {}, "matchmakingOverride")
     ).toBe(true);
     expect(impact.worldFields?.matchmakingOverride).toBeUndefined();
   });

@@ -43,9 +43,7 @@ vi.mock("@/presenters/projections/historyCohortProjections", () => ({
       retiredMembers: 1,
       sekitoriCount: 1,
       totalYusho: 0,
-      topProspects: [
-        { rikishiId: "r1", shikona: "TopRiki", rank: "makuuchi", isRetired: false },
-      ],
+      topProspects: [{ rikishiId: "r1", shikona: "TopRiki", rank: "makuuchi", isRetired: false }],
     },
   ],
 }));
@@ -72,7 +70,8 @@ vi.mock("@/components/ui/tabs", () => ({
       ? React.createElement("div", { "data-testid": `tab-${value}` }, children)
       : null,
   TabsList: ({ children }: any) => React.createElement("div", null, children),
-  TabsTrigger: ({ children, value }: any) => React.createElement("button", { "data-testid": `trigger-${value}` }, children),
+  TabsTrigger: ({ children, value }: any) =>
+    React.createElement("button", { "data-testid": `trigger-${value}` }, children),
 }));
 
 vi.mock("@/components/ui/SortMenu", () => ({

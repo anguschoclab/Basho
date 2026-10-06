@@ -26,13 +26,11 @@ describe("V7-B08: no direct console.* calls in src/engine", () => {
     for (const file of walk(ENGINE_DIR)) {
       if (EXEMPT.has(file)) continue;
       const src = readFileSync(file, "utf-8");
-      const hits = src
-        .split("\n")
-        .filter((l) => {
-          const t = l.trimStart();
-          if (t.startsWith("*") || t.startsWith("//")) return false;
-          return /console\.(log|warn|error|info|debug)/.test(t);
-        });
+      const hits = src.split("\n").filter((l) => {
+        const t = l.trimStart();
+        if (t.startsWith("*") || t.startsWith("//")) return false;
+        return /console\.(log|warn|error|info|debug)/.test(t);
+      });
       if (hits.length) offenders.push(`${file.replace(ENGINE_DIR, "src/engine")}: ${hits.length}`);
     }
     expect(offenders).toEqual([]);

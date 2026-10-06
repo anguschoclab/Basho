@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { phase01_week_academy } from "@/engine/tick/phases/phase01_week_academy";
-import { buildYouthAcademy, generateYearlyIntake, getYouthAcademy } from "@/engine/systems/recruitment/YouthAcademyService";
+import {
+  buildYouthAcademy,
+  generateYearlyIntake,
+  getYouthAcademy,
+} from "@/engine/systems/recruitment/YouthAcademyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 
@@ -10,12 +14,15 @@ function makeWorld(cash = 10_000_000): WorldState {
     year: 2026,
     week: 5,
     heyas: new Map([
-      ["h1", {
-        id: "h1",
-        name: "Test Heya",
-        economics: { cash },
-        rikishiIds: [],
-      } as any],
+      [
+        "h1",
+        {
+          id: "h1",
+          name: "Test Heya",
+          economics: { cash },
+          rikishiIds: [],
+        } as any,
+      ],
     ]),
     rikishi: new Map(),
     playerHeyaId: "h1",

@@ -15,11 +15,10 @@ import type { Heya } from "@/engine/types/heya";
  * player-blocking modal path is player-only.
  */
 
-function worldWithCrisisHeya(traits?: {
-  risk?: number;
-  tradition?: number;
-  ambition?: number;
-}): { world: WorldState; heya: Heya } {
+function worldWithCrisisHeya(traits?: { risk?: number; tradition?: number; ambition?: number }): {
+  world: WorldState;
+  heya: Heya;
+} {
   const oyakata = MockFactory.createOyakata("oya-a", {
     heyaId: "heya-a",
     traits: {
@@ -117,8 +116,6 @@ describe("resolveNPCCrisis", () => {
     const crisis = triggered.heyas.get("heya-a")!.activeCrisis!;
     const impact = resolveNPCCrisis(triggered, "heya-a", crisis);
     const events = impact.events ?? [];
-    expect(
-      events.some((e) => e.type === "CRISIS_RESPONSE" && e.heyaId === "heya-a")
-    ).toBe(true);
+    expect(events.some((e) => e.type === "CRISIS_RESPONSE" && e.heyaId === "heya-a")).toBe(true);
   });
 });

@@ -24,16 +24,14 @@ function kihakuLabel(score: number): string {
   return "Broken Spirit";
 }
 
-export function selectTopKihakuPerformers(
-  world: WorldState,
-  limit = 5
-): KihakuPerformerDTO[] {
+export function selectTopKihakuPerformers(world: WorldState, limit = 5): KihakuPerformerDTO[] {
   const allRikishi = getAllRikishi(world);
   const heyaMap = world.heyas;
 
   return allRikishi
-    .filter((r): r is typeof r & { kihakuIsenScore: number } =>
-      !r.isRetired && r.kihakuIsenScore !== undefined
+    .filter(
+      (r): r is typeof r & { kihakuIsenScore: number } =>
+        !r.isRetired && r.kihakuIsenScore !== undefined
     )
     .map((r) => ({
       rikishiId: r.id,

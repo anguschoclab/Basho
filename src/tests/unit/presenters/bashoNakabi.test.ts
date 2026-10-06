@@ -23,7 +23,10 @@ function makeWorld(day: number): WorldState {
   const r2 = mockRikishi("r2", { shikona: "Rikishi 2" });
   return makeMockWorld({
     currentBasho: basho,
-    rikishi: new Map([[r1.id, r1], [r2.id, r2]]),
+    rikishi: new Map([
+      [r1.id, r1],
+      [r2.id, r2],
+    ]),
   });
 }
 

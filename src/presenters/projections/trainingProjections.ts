@@ -11,7 +11,10 @@ import type { FatigueBand } from "../../engine/systems/narrative/NarrativeBands"
 import { ensureHeyaTrainingState } from "../../presenters/uiDigest";
 import { toFatigueBand } from "../../engine/descriptorBands";
 import { FATIGUE_LABELS } from "../../constants/ui/labels";
-import { isEligibleForTsukebito, isEligibleTsukebito } from "../../engine/systems/training/TsukebitoService";
+import {
+  isEligibleForTsukebito,
+  isEligibleTsukebito,
+} from "../../engine/systems/training/TsukebitoService";
 
 export interface TrainingRikishiStatus {
   id: string;

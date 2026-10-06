@@ -64,10 +64,7 @@ export function KihakuStatRow({
             {kihakuIsenScore}
           </span>
         </div>
-        <span
-          className="text-[10px] font-medium leading-none"
-          style={{ color }}
-        >
+        <span className="text-[10px] font-medium leading-none" style={{ color }}>
           {label}
         </span>
       </div>

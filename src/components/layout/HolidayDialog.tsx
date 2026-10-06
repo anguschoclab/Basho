@@ -70,7 +70,6 @@ export function HolidayDialog({
         </DialogTitle>
       </DialogHeader>
       <div className="p-4 pt-0 space-y-4">
-
         <div className="space-y-2">
           <Label className="text-xs uppercase tracking-widest text-muted-foreground">Target</Label>
           <div className="grid grid-cols-3 gap-2">

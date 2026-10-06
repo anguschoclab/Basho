@@ -1,11 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useSidebar, SidebarContext, type SidebarContextValue } from "@/components/ui/sidebar/context";
+import {
+  useSidebar,
+  SidebarContext,
+  type SidebarContextValue,
+} from "@/components/ui/sidebar/context";
 
 describe("useSidebar hook", () => {
   it("throws when used outside SidebarProvider", () => {
     expect(() => renderHook(() => useSidebar())).toThrow(
-      "useSidebar must be used within a SidebarProvider.",
+      "useSidebar must be used within a SidebarProvider."
     );
   });
 

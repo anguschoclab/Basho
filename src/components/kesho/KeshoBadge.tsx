@@ -34,11 +34,7 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
 
   return (
     <div
-      className={cn(
-        "relative rounded-xs overflow-hidden shadow-md",
-        sizeClasses[size],
-        className
-      )}
+      className={cn("relative rounded-xs overflow-hidden shadow-md", sizeClasses[size], className)}
       title={`Kesho-mawashi (${kesho.tier}): ${kesho.description}`}
       style={{
         background: `linear-gradient(135deg, ${kesho.primaryColor} 0%, ${kesho.secondaryColor} 100%)`,

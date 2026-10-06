@@ -151,9 +151,7 @@ export function phase01_week_training(world: WorldState): StateImpact {
 
   // Weight journey tick — process all active rikishi on the world after
   // tsukebito effects so its stats snapshot composes with theirs.
-  const wAfterTsukebito = tsukebitoImpacts.length
-    ? resolveImpacts(w0, tsukebitoImpacts)
-    : w0;
+  const wAfterTsukebito = tsukebitoImpacts.length ? resolveImpacts(w0, tsukebitoImpacts) : w0;
   const weightJourneyImpacts: StateImpact[] = [];
   for (const rikishi of EntityCollection.getActiveRikishi(wAfterTsukebito)) {
     const heya = EntityCollection.getHeya(wAfterTsukebito, rikishi.heyaId);

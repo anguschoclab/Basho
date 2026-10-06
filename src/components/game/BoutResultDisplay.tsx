@@ -111,10 +111,7 @@ export function BoutResultDisplay({
             </Badge>
           )}
           {result.isKinboshi && (
-            <Badge
-              variant="outline"
-              className="mb-3 animate-scale-in gap-1 border-gold text-gold"
-            >
+            <Badge variant="outline" className="mb-3 animate-scale-in gap-1 border-gold text-gold">
               <Trophy className="h-3 w-3" /> KINBOSHI — 金星
             </Badge>
           )}

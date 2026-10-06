@@ -30,7 +30,10 @@ test("reload on a world-gated route restores the autosave", async ({ page }) => 
         const req = indexedDB.open("basho-saves", 1);
         req.onsuccess = () => {
           try {
-            const g = req.result.transaction("kv", "readonly").objectStore("kv").get("basho_save_autosave");
+            const g = req.result
+              .transaction("kv", "readonly")
+              .objectStore("kv")
+              .get("basho_save_autosave");
             g.onsuccess = () => res(!!g.result);
             g.onerror = () => res(false);
           } catch {

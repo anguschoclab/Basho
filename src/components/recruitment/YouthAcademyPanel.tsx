@@ -47,12 +47,15 @@ export function YouthAcademyPanel({
             <span className="text-sm font-medium">Youth Academy</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Build a Youth Academy to develop young prospects before they enter
-            the formal banzuke. A level-1 academy can hold up to 3 prospects.
+            Build a Youth Academy to develop young prospects before they enter the formal banzuke. A
+            level-1 academy can hold up to 3 prospects.
           </p>
           <div className="flex items-center justify-between">
             <span className="text-sm tabular-nums">
-              Cost: <span className={canAfford ? "text-foreground" : "text-destructive"}>{buildCost.toLocaleString()}</span>
+              Cost:{" "}
+              <span className={canAfford ? "text-foreground" : "text-destructive"}>
+                {buildCost.toLocaleString()}
+              </span>
             </span>
             <Button
               size="sm"
@@ -99,15 +102,11 @@ export function YouthAcademyPanel({
           </div>
           <div className="p-2 rounded bg-muted/20">
             <div className="text-muted-foreground">Graduated</div>
-            <div className="text-sm font-medium tabular-nums">
-              {a.totalGraduated}
-            </div>
+            <div className="text-sm font-medium tabular-nums">{a.totalGraduated}</div>
           </div>
           <div className="p-2 rounded bg-muted/20">
             <div className="text-muted-foreground">Budget</div>
-            <div className="text-sm font-medium tabular-nums">
-              {a.budget.toLocaleString()}
-            </div>
+            <div className="text-sm font-medium tabular-nums">{a.budget.toLocaleString()}</div>
           </div>
         </div>
 
@@ -154,7 +153,9 @@ export function YouthAcademyPanel({
             </div>
           )}
           {!canHireMore && a.staff.length > 0 && (
-            <p className="text-[10px] text-muted-foreground">Staff capacity reached for this level.</p>
+            <p className="text-[10px] text-muted-foreground">
+              Staff capacity reached for this level.
+            </p>
           )}
         </div>
 
@@ -243,12 +244,8 @@ export function YouthAcademyPanel({
           <div className="flex items-center justify-between pt-2 border-t border-border/30">
             <div className="flex items-center gap-2">
               <ArrowUpCircle className="h-4 w-4 text-primary" />
-              <span className="text-xs">
-                Upgrade to Level {a.level + 1}
-              </span>
-              <span className="text-sm tabular-nums">
-                {upgradeCost.toLocaleString()}
-              </span>
+              <span className="text-xs">Upgrade to Level {a.level + 1}</span>
+              <span className="text-sm tabular-nums">{upgradeCost.toLocaleString()}</span>
             </div>
             <Button
               size="sm"

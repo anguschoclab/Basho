@@ -150,7 +150,7 @@ export function DebtSection({ activeLoans, onPrepay }: DebtSectionProps) {
                       aria-valuemin={0}
                       aria-valuemax={100}
                       aria-valuenow={Math.round(
-                        Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100),
+                        Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100)
                       )}
                       className="h-full bg-success rounded-full transition-all duration-500"
                       style={{

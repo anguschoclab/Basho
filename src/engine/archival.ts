@@ -93,13 +93,9 @@ export function runRetiredRikishiSummarization(world: WorldState): StateImpact {
 /**
  * Type guard: returns true if the entry is a RetiredRikishiSummary.
  */
-export function isRetiredRikishiSummary(
-  entry: unknown
-): entry is RetiredRikishiSummary {
+export function isRetiredRikishiSummary(entry: unknown): entry is RetiredRikishiSummary {
   return (
-    !!entry &&
-    typeof entry === "object" &&
-    (entry as { isSummary?: unknown }).isSummary === true
+    !!entry && typeof entry === "object" && (entry as { isSummary?: unknown }).isSummary === true
   );
 }
 

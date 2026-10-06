@@ -61,9 +61,7 @@ export function RivalOyakataCard({
                   <Activity className="h-3 w-3 text-muted-foreground" />
                   <span className="font-medium">{d.category}</span>
                 </div>
-                <p className="text-muted-foreground line-clamp-2">
-                  {d.decision || d.reasoning}
-                </p>
+                <p className="text-muted-foreground line-clamp-2">{d.decision || d.reasoning}</p>
               </div>
             ))}
           </div>

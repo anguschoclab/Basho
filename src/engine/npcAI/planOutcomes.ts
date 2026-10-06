@@ -156,22 +156,14 @@ export function computeStallPenalty(planId: string, memory: OyakataMemory): numb
     firstOrdinal = entry.metricOrdinal;
   }
   if (run < 4) return 0;
-  if (
-    firstOrdinal !== undefined &&
-    lastOrdinal !== undefined &&
-    lastOrdinal > firstOrdinal
-  ) {
+  if (firstOrdinal !== undefined && lastOrdinal !== undefined && lastOrdinal > firstOrdinal) {
     return 0;
   }
   return Math.min(run - 3, 4) * 4;
 }
 
 /** Classify a completed/replaced plan by comparing baseline to current state. */
-export function evaluatePlanOutcome(
-  world: WorldState,
-  heyaId: Id,
-  plan: AIPlan
-): PlanOutcome {
+export function evaluatePlanOutcome(world: WorldState, heyaId: Id, plan: AIPlan): PlanOutcome {
   const base = plan.baseline;
   if (!base) {
     return {
@@ -230,9 +222,7 @@ export function evaluatePlanOutcome(
     }
     case "kadoban_survival": {
       const stillKadoban = kadobanCount(world, ids);
-      const ozekiLeft = [...ids].some(
-        (id) => world.rikishi.get(id)?.rank === "ozeki"
-      );
+      const ozekiLeft = [...ids].some((id) => world.rikishi.get(id)?.rank === "ozeki");
       if (stillKadoban === 0 && ozekiLeft) {
         return { outcome: "success", summary: "The Ozeki cleared kadoban status." };
       }

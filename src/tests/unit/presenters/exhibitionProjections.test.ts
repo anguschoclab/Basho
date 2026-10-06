@@ -7,7 +7,10 @@ function makeWorld(pending: PendingExhibition[] = [], playerHeyaId = "h1"): Worl
     seed: "test",
     year: 2024,
     week: 5,
-    heyas: new Map([["h1", { id: "h1" } as any], ["h2", { id: "h2" } as any]]),
+    heyas: new Map([
+      ["h1", { id: "h1" } as any],
+      ["h2", { id: "h2" } as any],
+    ]),
     rikishi: new Map(),
     playerHeyaId,
     pendingExhibitions: pending,
@@ -51,20 +54,20 @@ describe("projectExhibitions", () => {
 
   it("assigns prestige label based on prestige value", () => {
     expect(
-      projectExhibitions(makeWorld([makeInvitation({ prestige: 85 })]), "h1")
-        .invitations[0].prestigeLabel
+      projectExhibitions(makeWorld([makeInvitation({ prestige: 85 })]), "h1").invitations[0]
+        .prestigeLabel
     ).toBe("Prestigious");
     expect(
-      projectExhibitions(makeWorld([makeInvitation({ prestige: 65 })]), "h1")
-        .invitations[0].prestigeLabel
+      projectExhibitions(makeWorld([makeInvitation({ prestige: 65 })]), "h1").invitations[0]
+        .prestigeLabel
     ).toBe("Notable");
     expect(
-      projectExhibitions(makeWorld([makeInvitation({ prestige: 45 })]), "h1")
-        .invitations[0].prestigeLabel
+      projectExhibitions(makeWorld([makeInvitation({ prestige: 45 })]), "h1").invitations[0]
+        .prestigeLabel
     ).toBe("Standard");
     expect(
-      projectExhibitions(makeWorld([makeInvitation({ prestige: 25 })]), "h1")
-        .invitations[0].prestigeLabel
+      projectExhibitions(makeWorld([makeInvitation({ prestige: 25 })]), "h1").invitations[0]
+        .prestigeLabel
     ).toBe("Minor");
   });
 

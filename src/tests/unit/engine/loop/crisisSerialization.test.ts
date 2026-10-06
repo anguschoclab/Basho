@@ -35,10 +35,7 @@ describe("world-stored crises are serializable", () => {
     expect(stored, "no crisis rolled across 60 weeks — check trigger probability").toBeDefined();
     expect(() => structuredClone(stored)).not.toThrow();
     for (const opt of stored!.options) {
-      expect(
-        opt.impactGenerator,
-        "stored crisis options must not carry functions"
-      ).toBeUndefined();
+      expect(opt.impactGenerator, "stored crisis options must not carry functions").toBeUndefined();
     }
   });
 

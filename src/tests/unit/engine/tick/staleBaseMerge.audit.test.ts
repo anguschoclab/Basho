@@ -9,14 +9,8 @@ import { purchaseMyoseki } from "@/engine/systems/governance/MyosekiTradingServi
 import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
 import { withdrawRikishi } from "@/engine/systems/health/HealthActions";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
-import {
-  TRAVEL_ALLOWANCE_YEARLY,
-  TSUKEBITO_COSTS_MONTHLY,
-} from "@/constants/engine/economic";
-import {
-  MONTHLY_DIVISOR,
-  TRAVEL_ALLOWANCE_CASH_SPLIT,
-} from "@/constants/engine/economyExtended";
+import { TRAVEL_ALLOWANCE_YEARLY, TSUKEBITO_COSTS_MONTHLY } from "@/constants/engine/economic";
+import { MONTHLY_DIVISOR, TRAVEL_ALLOWANCE_CASH_SPLIT } from "@/constants/engine/economyExtended";
 import type { WorldState } from "@/engine/types/world";
 import type { TalentCandidate } from "@/engine/types/talent";
 
@@ -62,8 +56,7 @@ describe("audit: stale-base snapshot merges", () => {
 
     const resolved = resolveImpacts(world, [phase05_monthly_boundary(world)]);
     const cash = resolved.rikishi.get("r1")!.economics!.cash;
-    const expected =
-      1_000_000 + salary + travelCash - tsukebitoCost;
+    const expected = 1_000_000 + salary + travelCash - tsukebitoCost;
     // Before the fix: only the last stale snapshot survives (e.g. base + 0 − tsukebitoCost).
     expect(cash).toBeCloseTo(expected, 2);
   });

@@ -4,13 +4,26 @@ import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
-import { selectAllTimeKimaritePercentages, selectKimaritePercentages } from "@/presenters/selectors";
+import {
+  selectAllTimeKimaritePercentages,
+  selectKimaritePercentages,
+} from "@/presenters/selectors";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { RecordEntry } from "@/engine/types/records";
 import type { BashoResult } from "@/engine/types/basho";
-import { Medal, Star, TrendingUp, Trophy, Users, History, Award, Gavel, Swords } from "lucide-react";
+import {
+  Medal,
+  Star,
+  TrendingUp,
+  Trophy,
+  Users,
+  History,
+  Award,
+  Gavel,
+  Swords,
+} from "lucide-react";
 import { PageHeader } from "@/components/layout/control-center";
 import { getAllRikishi, getRikishi, getHistory } from "@/presenters/worldAccess";
 import { selectLatestKinboshiDates } from "@/presenters/projections/kinboshiLedger";
@@ -159,9 +172,7 @@ export default function AlmanacPage() {
 
   return (
     <AppLayout pageTitle="Almanac" subNavTabs={RECORDS_TABS} activeSubTab="almanac">
-
-        <title>Almanac - The Memory of the World</title>
-
+      <title>Almanac - The Memory of the World</title>
 
       <div className="space-y-6">
         <PageHeader
@@ -173,7 +184,8 @@ export default function AlmanacPage() {
           <div>
             <p className="text-muted-foreground">The authoritative history of the Sumo world.</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {snapshotCount} bashos recorded · {hotSnapshotWindow} in hot window · {kimariteStats.length} kimarite recorded
+              {snapshotCount} bashos recorded · {hotSnapshotWindow} in hot window ·{" "}
+              {kimariteStats.length} kimarite recorded
             </p>
             {topKimarite.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1">
@@ -352,8 +364,7 @@ export default function AlmanacPage() {
                               : "text-muted-foreground hover:bg-muted"
                           }`}
                         >
-                          {scope === "era" ? "This era" : "All time"} ·{" "}
-                          {endings.toLocaleString()}
+                          {scope === "era" ? "This era" : "All time"} · {endings.toLocaleString()}
                         </button>
                       );
                     })}
@@ -363,8 +374,8 @@ export default function AlmanacPage() {
                   {statsScope === "era"
                     ? "Observed share of bout endings this era (resets each year) against the real-world makuuchi reference."
                     : "Observed share of bout endings across the entire save history against the real-world makuuchi reference."}{" "}
-                  Observed percentages are computed from recorded results; expected
-                  values are all-time professional statistics.
+                  Observed percentages are computed from recorded results; expected values are
+                  all-time professional statistics.
                 </CardDescription>
               </CardHeader>
               <CardContent>

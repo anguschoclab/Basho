@@ -49,11 +49,15 @@ vi.mock("@/components/ui/sidebar", () => ({
 // Content-rendering passthrough: exposes tooltip content for assertions while
 // keeping the Radix portal out of the test.
 vi.mock("@/components/ui/tooltip-wrap", () => ({
-  TooltipWrap: ({ children, content }: { children: React.ReactNode; content?: React.ReactNode }) => (
+  TooltipWrap: ({
+    children,
+    content,
+  }: {
+    children: React.ReactNode;
+    content?: React.ReactNode;
+  }) => (
     <>
-      {content != null && content !== false && (
-        <div data-testid="tooltip-content">{content}</div>
-      )}
+      {content != null && content !== false && <div data-testid="tooltip-content">{content}</div>}
       {children}
     </>
   ),
@@ -215,19 +219,16 @@ describe("TopNavBar", () => {
     ["post_basho", undefined, "Post-Basho"],
     ["interim", undefined, "Interim"],
     ["banzuke_reveal", undefined, "Banzuke"],
-  ] as const)(
-    "renders phase pill label '%s' for cyclePhase '%s'",
-    (phase, basho, expected) => {
-      mockContext({
-        world: makeWorld({
-          cyclePhase: phase,
-          ...(basho ? { currentBasho: basho as any } : {}),
-        }),
-      });
-      render(<TopNavBar />);
-      expect(screen.getAllByText(expected).length).toBeGreaterThanOrEqual(1);
-    }
-  );
+  ] as const)("renders phase pill label '%s' for cyclePhase '%s'", (phase, basho, expected) => {
+    mockContext({
+      world: makeWorld({
+        cyclePhase: phase,
+        ...(basho ? { currentBasho: basho as any } : {}),
+      }),
+    });
+    render(<TopNavBar />);
+    expect(screen.getAllByText(expected).length).toBeGreaterThanOrEqual(1);
+  });
 
   it("defaults bashoDay to 1 when currentBasho is absent during active_basho", () => {
     mockContext({ world: makeWorld({ cyclePhase: "active_basho" }) });
@@ -273,9 +274,7 @@ describe("TopNavBar", () => {
     render(<TopNavBar />);
     expect(screen.getByText("-¥1,000")).toBeTruthy();
     const fundsSpan = screen.getByText("-¥1,000");
-    expect((fundsSpan as HTMLElement).getAttribute("style")).toContain(
-      "hsl(var(--destructive))"
-    );
+    expect((fundsSpan as HTMLElement).getAttribute("style")).toContain("hsl(var(--destructive))");
   });
 
   it("does not render funds block when getPlayerHeya returns undefined", () => {
@@ -292,8 +291,8 @@ describe("TopNavBar", () => {
     render(<TopNavBar />);
     // "¥100" appears in both the funds display and the tooltip content
     const fundsSpans = screen.getAllByText("¥100");
-    const displaySpan = fundsSpans.find(
-      (el) => (el as HTMLElement).getAttribute("style")?.includes("hsl(var(--foreground))")
+    const displaySpan = fundsSpans.find((el) =>
+      (el as HTMLElement).getAttribute("style")?.includes("hsl(var(--foreground))")
     );
     expect(displaySpan).toBeTruthy();
   });
@@ -432,21 +431,16 @@ describe("TopNavBar", () => {
     ["banzuke_reveal", "Review the new banzuke rankings"],
     ["pre_basho", "Start the tournament preparations"],
     ["interim", "Advance the simulation one day"],
-  ] as const)(
-    "advance button tooltip content for %s is '%s'",
-    (phase, expectedTooltip) => {
-      mockContext({
-        world: makeWorld({
-          cyclePhase: phase,
-          ...(phase === "active_basho"
-            ? { currentBasho: { day: 1 } as any }
-            : {}),
-        }),
-      });
-      render(<TopNavBar />);
-      expect(screen.getByText(expectedTooltip)).toBeTruthy();
-    }
-  );
+  ] as const)("advance button tooltip content for %s is '%s'", (phase, expectedTooltip) => {
+    mockContext({
+      world: makeWorld({
+        cyclePhase: phase,
+        ...(phase === "active_basho" ? { currentBasho: { day: 1 } as any } : {}),
+      }),
+    });
+    render(<TopNavBar />);
+    expect(screen.getByText(expectedTooltip)).toBeTruthy();
+  });
 
   // ─ Holiday button ─
   it("renders Holiday button when world present and not in basho", () => {

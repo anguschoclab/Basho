@@ -32,7 +32,11 @@ import {
 
 const WORLD_SEED = "e2e-basho-lifecycle-v1";
 
-function awardLogFor(awardLog: AwardLogEntry[] | undefined, year: number, bashoName: string): AwardLogEntry[] {
+function awardLogFor(
+  awardLog: AwardLogEntry[] | undefined,
+  year: number,
+  bashoName: string
+): AwardLogEntry[] {
   return (awardLog ?? []).filter((e) => e.year === year && e.bashoName === bashoName);
 }
 
@@ -90,13 +94,11 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   const log = awardLogFor(world.awardLog, last.year, last.bashoName);
   const hasLogEntry = (type: string, winnerId: string, boutId?: string) =>
     log.some(
-      (e) => e.type === type && e.winnerId === winnerId && (boutId === undefined || e.boutId === boutId)
+      (e) =>
+        e.type === type && e.winnerId === winnerId && (boutId === undefined || e.boutId === boutId)
     );
 
-  expect(
-    hasLogEntry("yusho", last.yusho),
-    "awardLog records the yusho winner"
-  ).toBe(true);
+  expect(hasLogEntry("yusho", last.yusho), "awardLog records the yusho winner").toBe(true);
 
   // Conditional awards: whatever the pinned seed produced must be logged.
   for (const jid of last.junYusho ?? []) {
@@ -129,7 +131,10 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   }
   // Every award-log recipient for this basho is a real rikishi.
   for (const e of log) {
-    expect(rikishiById[e.winnerId], `award recipient ${e.winnerId} (${e.type}) exists`).toBeTruthy();
+    expect(
+      rikishiById[e.winnerId],
+      `award recipient ${e.winnerId} (${e.type}) exists`
+    ).toBeTruthy();
   }
 
   // ── 6. Banzuke publication ────────────────────────────────────────────
@@ -151,9 +156,17 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
   const foughtOn = world.historyIndex?.banzukeByBasho?.[prevKey];
   const foughtOnPos = new Map<string, string>();
   if (foughtOn?.divisions) {
-    for (const div of Object.values(foughtOn.divisions) as { assignments: { rikishiId: string; position: { rank: string; side: string; rankNumber?: number } }[] }[]) {
+    for (const div of Object.values(foughtOn.divisions) as {
+      assignments: {
+        rikishiId: string;
+        position: { rank: string; side: string; rankNumber?: number };
+      }[];
+    }[]) {
       for (const a of div.assignments ?? []) {
-        foughtOnPos.set(a.rikishiId, `${a.position.rank}:${a.position.side}:${a.position.rankNumber ?? 0}`);
+        foughtOnPos.set(
+          a.rikishiId,
+          `${a.position.rank}:${a.position.side}:${a.position.rankNumber ?? 0}`
+        );
       }
     }
   }

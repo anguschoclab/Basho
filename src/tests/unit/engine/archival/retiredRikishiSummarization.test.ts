@@ -65,7 +65,10 @@ function makeFullHistoricalRikishi(id: string, overrides: Partial<Rikishi> = {})
   });
 }
 
-function makeSummaryEntry(id: string, overrides: Partial<RetiredRikishiSummary> = {}): RetiredRikishiSummary {
+function makeSummaryEntry(
+  id: string,
+  overrides: Partial<RetiredRikishiSummary> = {}
+): RetiredRikishiSummary {
   return {
     id,
     shikona: `Wrestler-${id}`,

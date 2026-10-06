@@ -25,8 +25,22 @@ function makeRival(overrides: Partial<RivalStableDTO> = {}): RivalStableDTO {
     legacyTier: "A",
     decisionCount: 3,
     recentDecisions: [
-      { heyaId: "h1", heyaName: "Test Heya", category: "Aggressive", decision: "recruit", reasoning: "Signed a top recruit", week: 1 },
-      { heyaId: "h1", heyaName: "Test Heya", category: "Aggressive", decision: "facility", reasoning: "Invested in facilities", week: 2 },
+      {
+        heyaId: "h1",
+        heyaName: "Test Heya",
+        category: "Aggressive",
+        decision: "recruit",
+        reasoning: "Signed a top recruit",
+        week: 1,
+      },
+      {
+        heyaId: "h1",
+        heyaName: "Test Heya",
+        category: "Aggressive",
+        decision: "facility",
+        reasoning: "Invested in facilities",
+        week: 2,
+      },
     ],
     ...overrides,
   };
@@ -43,25 +57,19 @@ describe("OyakataProfileDrawer", () => {
   });
 
   it("renders heya name when open", () => {
-    render(
-      <OyakataProfileDrawer open={true} onOpenChange={vi.fn()} rival={makeRival()} />
-    );
+    render(<OyakataProfileDrawer open={true} onOpenChange={vi.fn()} rival={makeRival()} />);
     expect(screen.getByTestId("drawer-heya-name")).toBeDefined();
     expect(screen.getByTestId("drawer-heya-name").textContent).toContain("Test Heya");
   });
 
   it("renders ichimon and legacy tier badges", () => {
-    render(
-      <OyakataProfileDrawer open={true} onOpenChange={vi.fn()} rival={makeRival()} />
-    );
+    render(<OyakataProfileDrawer open={true} onOpenChange={vi.fn()} rival={makeRival()} />);
     expect(screen.getByTestId("drawer-ichimon")).toBeDefined();
     expect(screen.getByTestId("drawer-legacy-tier")).toBeDefined();
   });
 
   it("renders recent decisions", () => {
-    render(
-      <OyakataProfileDrawer open={true} onOpenChange={vi.fn()} rival={makeRival()} />
-    );
+    render(<OyakataProfileDrawer open={true} onOpenChange={vi.fn()} rival={makeRival()} />);
     expect(screen.getByTestId("drawer-decision-0")).toBeDefined();
     expect(screen.getByTestId("drawer-decision-1")).toBeDefined();
   });

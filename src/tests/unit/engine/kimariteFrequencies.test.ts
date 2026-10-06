@@ -56,11 +56,15 @@ describe("kimariteFrequencies", () => {
     });
 
     it("keeps sorite combined under 0.5% (real: ~0.02-0.05%)", () => {
-      const sorite = ["izori", "kakezori", "shumokuzori", "sototasukizori", "tasukizori", "tsutaezori"];
-      const combined = sorite.reduce(
-        (a, id) => a + (KIMARITE_FREQUENCY_TARGETS[id] ?? 0),
-        0
-      );
+      const sorite = [
+        "izori",
+        "kakezori",
+        "shumokuzori",
+        "sototasukizori",
+        "tasukizori",
+        "tsutaezori",
+      ];
+      const combined = sorite.reduce((a, id) => a + (KIMARITE_FREQUENCY_TARGETS[id] ?? 0), 0);
       expect(combined).toBeGreaterThan(0); // reachable in-game
       expect(combined).toBeLessThan(0.005);
       for (const id of sorite) {
@@ -116,9 +120,7 @@ describe("kimariteFrequencies", () => {
 
   describe("getKimariteTargetShare", () => {
     it("returns the target share for a known id", () => {
-      expect(getKimariteTargetShare("yorikiri")).toBe(
-        KIMARITE_FREQUENCY_TARGETS.yorikiri
-      );
+      expect(getKimariteTargetShare("yorikiri")).toBe(KIMARITE_FREQUENCY_TARGETS.yorikiri);
     });
 
     it("returns 0 for an unknown id", () => {

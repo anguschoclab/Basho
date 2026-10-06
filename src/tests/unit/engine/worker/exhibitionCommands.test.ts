@@ -5,7 +5,10 @@ import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import type { PendingExhibition } from "@/engine/types/world";
 import type { WorldState } from "@/engine/types/world";
 
-function makeInvitation(heyaId: string, overrides: Partial<PendingExhibition> = {}): PendingExhibition {
+function makeInvitation(
+  heyaId: string,
+  overrides: Partial<PendingExhibition> = {}
+): PendingExhibition {
   return {
     id: "ex-test-1",
     heyaId,
@@ -50,7 +53,8 @@ describe("Exhibition command — accept/decline via WorldCircuitService", () => 
 
     const events = (impact as any).events ?? [];
     const exhibitionEvent = events.find(
-      (e: any) => e.data?.incident === "exhibition_victory" || e.data?.incident === "exhibition_defeat"
+      (e: any) =>
+        e.data?.incident === "exhibition_victory" || e.data?.incident === "exhibition_defeat"
     );
     expect(exhibitionEvent).toBeDefined();
   });
@@ -62,9 +66,7 @@ describe("Exhibition command — accept/decline via WorldCircuitService", () => 
     world.pendingExhibitions = [invitation];
 
     // Simulate decline: just remove from pending
-    const remaining = (world.pendingExhibitions ?? []).filter(
-      (i) => i.id !== invitation.id
-    );
+    const remaining = (world.pendingExhibitions ?? []).filter((i) => i.id !== invitation.id);
     expect(remaining).toHaveLength(0);
   });
 
@@ -84,9 +86,7 @@ describe("Exhibition command — accept/decline via WorldCircuitService", () => 
     const updated = resolveImpacts(world, [impact]);
 
     // Remove the accepted invitation
-    const remaining = (updated.pendingExhibitions ?? []).filter(
-      (i) => i.id !== invitation.id
-    );
+    const remaining = (updated.pendingExhibitions ?? []).filter((i) => i.id !== invitation.id);
     expect(remaining).toHaveLength(1);
     expect(remaining[0].id).toBe("ex-test-2");
   });

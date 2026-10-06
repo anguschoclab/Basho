@@ -87,9 +87,7 @@ export function resolveCounterTacticBonus(
   const family = TACTIC_TO_FAMILY[tactic] ?? "push";
   const prefs = opponentProfile?.familyPreferences;
   if (!prefs) return 0;
-  const sorted = (
-    Object.entries(prefs) as [TacticalFamily, number][]
-  ).sort((a, b) => b[1] - a[1]);
+  const sorted = (Object.entries(prefs) as [TacticalFamily, number][]).sort((a, b) => b[1] - a[1]);
   const top = sorted[0]?.[0] ?? "push";
   const second = sorted[1]?.[1] ?? 0;
   // Only apply counter bonus when there's a clearly dominant family (not tied)

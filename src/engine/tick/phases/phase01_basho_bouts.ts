@@ -56,9 +56,8 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     // main-thread -> worker boundary. Forward the stored tactic for the bout
     // being resolved instead of always passing no tactic.
     const boutId = todays[0].boutId;
-    const tactic = (
-      boutId ? currentWorld.boutTactics?.[boutId] : undefined
-    ) as BoutTactic | undefined;
+    const tactic = (boutId ? currentWorld.boutTactics?.[boutId] : undefined) as
+      BoutTactic | undefined;
     const { world: nextWorld, result } = simulateBoutForToday(currentWorld, 0, tactic);
     currentWorld = nextWorld;
     if (!result) break;

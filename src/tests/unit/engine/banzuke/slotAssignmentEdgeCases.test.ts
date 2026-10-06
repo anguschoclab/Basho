@@ -28,11 +28,19 @@ function makeEntry(
   } as BanzukeEntry;
 }
 
-function perf(id: string, wins: number, losses: number, extras: Partial<BashoPerformance> = {}): BashoPerformance {
+function perf(
+  id: string,
+  wins: number,
+  losses: number,
+  extras: Partial<BashoPerformance> = {}
+): BashoPerformance {
   return { rikishiId: id, wins, losses, absences: 0, ...extras };
 }
 
-function buildWorld(entries: BanzukeEntry[], extraOverrides: Record<string, Partial<ReturnType<typeof mockRikishi>>> = {}): WorldState {
+function buildWorld(
+  entries: BanzukeEntry[],
+  extraOverrides: Record<string, Partial<ReturnType<typeof mockRikishi>>> = {}
+): WorldState {
   const world = makeMockWorld();
   for (const e of entries) {
     world.rikishi.set(
@@ -174,13 +182,13 @@ describe("slotAssignmentEdgeCases — bucket activation", () => {
     // The yokozuna slot (tier 1) should be filled by fallback (best maegashira)
     // This is expected — fallback fills it. The test verifies the candidate
     // was placed there via fallback, not primary eligibility.
-    const yokozunaSlot = result.newBanzuke.find(
-      (e) => e.position.rank === "yokozuna"
-    );
+    const yokozunaSlot = result.newBanzuke.find((e) => e.position.rank === "yokozuna");
     // With no yokozuna candidates, the slot may or may not be filled depending
     // on template. Verify that if filled, it's by a maegashira-origin rikishi.
     if (yokozunaSlot) {
-      expect(entries.find((e) => e.rikishiId === yokozunaSlot.rikishiId)?.position.rank).toBe("maegashira");
+      expect(entries.find((e) => e.rikishiId === yokozunaSlot.rikishiId)?.position.rank).toBe(
+        "maegashira"
+      );
     }
   });
 });

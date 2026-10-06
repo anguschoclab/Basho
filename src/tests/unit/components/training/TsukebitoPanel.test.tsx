@@ -68,9 +68,7 @@ describe("TsukebitoPanel", () => {
       eligibleSeniors: [
         { id: "s1", shikona: "Ozeki", rankLabel: "Ozeki", currentCount: 0, maxCount: 2 },
       ],
-      eligibleJuniors: [
-        { id: "j1", shikona: "Junior 1", rankLabel: "Sandanme", assignedTo: null },
-      ],
+      eligibleJuniors: [{ id: "j1", shikona: "Junior 1", rankLabel: "Sandanme", assignedTo: null }],
     });
     render(<TsukebitoPanel projection={proj} onSet={vi.fn()} onClear={vi.fn()} />);
     expect(screen.getByTestId("tsukebito-senior-s1")).toBeDefined();
@@ -83,9 +81,7 @@ describe("TsukebitoPanel", () => {
       eligibleSeniors: [
         { id: "s1", shikona: "Ozeki", rankLabel: "Ozeki", currentCount: 0, maxCount: 2 },
       ],
-      eligibleJuniors: [
-        { id: "j1", shikona: "Junior 1", rankLabel: "Sandanme", assignedTo: null },
-      ],
+      eligibleJuniors: [{ id: "j1", shikona: "Junior 1", rankLabel: "Sandanme", assignedTo: null }],
     });
     render(<TsukebitoPanel projection={proj} onSet={onSet} onClear={vi.fn()} />);
     fireEvent.click(screen.getByTestId("set-tsukebito-s1-j1"));
@@ -97,9 +93,7 @@ describe("TsukebitoPanel", () => {
       eligibleSeniors: [
         { id: "s1", shikona: "Ozeki", rankLabel: "Ozeki", currentCount: 2, maxCount: 2 },
       ],
-      eligibleJuniors: [
-        { id: "j1", shikona: "Junior 1", rankLabel: "Sandanme", assignedTo: null },
-      ],
+      eligibleJuniors: [{ id: "j1", shikona: "Junior 1", rankLabel: "Sandanme", assignedTo: null }],
     });
     render(<TsukebitoPanel projection={proj} onSet={vi.fn()} onClear={vi.fn()} />);
     expect(screen.getByText("At maximum capacity")).toBeDefined();

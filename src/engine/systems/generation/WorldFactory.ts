@@ -221,12 +221,20 @@ function createInitialFactions(rng: SeededRNG): Record<string, Faction> {
  */
 function generateInitialGyojiPool(seed: string): Gyoji[] {
   const ranks: Gyoji["rank"][] = [
-    "tate", "tate",
-    "fuku-tate", "fuku-tate",
-    "sanyaku", "sanyaku",
-    "makuuchi", "makuuchi", "makuuchi",
-    "juryo", "juryo", "juryo",
-    "makushita", "makushita",
+    "tate",
+    "tate",
+    "fuku-tate",
+    "fuku-tate",
+    "sanyaku",
+    "sanyaku",
+    "makuuchi",
+    "makuuchi",
+    "makuuchi",
+    "juryo",
+    "juryo",
+    "juryo",
+    "makushita",
+    "makushita",
   ];
   return ranks.map((rank, i) => generateGyoji(seed, rank, i));
 }

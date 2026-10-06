@@ -38,7 +38,10 @@ interface WorldOpts {
 }
 
 function makeWorld(opts: WorldOpts = {}): { world: WorldState; oyakataId: string } {
-  const oyakata = MockFactory.createOyakata("oya-a", { heyaId: "heya-a", ...opts.oyakataOverrides });
+  const oyakata = MockFactory.createOyakata("oya-a", {
+    heyaId: "heya-a",
+    ...opts.oyakataOverrides,
+  });
   const heya = MockFactory.createHeya("heya-a", {
     oyakataId: "oya-a",
     funds: 999_999_999,
@@ -347,36 +350,37 @@ describe("executeAgentDecisions — governance", () => {
 });
 
 describe("executeAgentDecisions — rivalry", () => {
-  const rivalries = (heat: number): WorldState["rivalriesState"] => ({
-    version: 1,
-    pairs: {
-      "r-east|r-west": {
-        key: "r-east|r-west",
-        aId: "r-east",
-        bId: "r-west",
-        heat,
-        meetings: 4,
-        lastMetWeek: 2,
-        aWins: 2,
-        bWins: 2,
-        closeness: 60,
-        spite: 30,
-        tone: "grudge",
-        triggers: {},
-        sameHeya: false,
+  const rivalries = (heat: number): WorldState["rivalriesState"] =>
+    ({
+      version: 1,
+      pairs: {
+        "r-east|r-west": {
+          key: "r-east|r-west",
+          aId: "r-east",
+          bId: "r-west",
+          heat,
+          meetings: 4,
+          lastMetWeek: 2,
+          aWins: 2,
+          bWins: 2,
+          closeness: 60,
+          spite: 30,
+          tone: "grudge",
+          triggers: {},
+          sameHeya: false,
+        },
       },
-    },
-    heyaRivalryPairs: {
-      "heya-a|heya-b": {
-        id: "heya-a|heya-b",
-        heyaAId: "heya-a",
-        heyaBId: "heya-b",
-        heat,
-        aWins: 2,
-        bWins: 2,
+      heyaRivalryPairs: {
+        "heya-a|heya-b": {
+          id: "heya-a|heya-b",
+          heyaAId: "heya-a",
+          heyaBId: "heya-b",
+          heat,
+          aWins: 2,
+          bWins: 2,
+        },
       },
-    },
-  } as never);
+    }) as never;
 
   function worldWithRikishi(heat: number): WorldState {
     const rEast = MockFactory.createRikishi("r-east", { heyaId: "heya-a" });

@@ -20,11 +20,7 @@ describe("JungyoInvitationCard", () => {
 
   it("renders invitation with region and prestige", () => {
     render(
-      <JungyoInvitationCard
-        invitation={makeInvitation()}
-        onAccept={vi.fn()}
-        onDecline={vi.fn()}
-      />
+      <JungyoInvitationCard invitation={makeInvitation()} onAccept={vi.fn()} onDecline={vi.fn()} />
     );
     expect(screen.getByTestId("jungyo-card-ex-1")).toBeDefined();
     expect(screen.getByText("Mongolia")).toBeDefined();
@@ -33,11 +29,7 @@ describe("JungyoInvitationCard", () => {
 
   it("renders accept and decline buttons", () => {
     render(
-      <JungyoInvitationCard
-        invitation={makeInvitation()}
-        onAccept={vi.fn()}
-        onDecline={vi.fn()}
-      />
+      <JungyoInvitationCard invitation={makeInvitation()} onAccept={vi.fn()} onDecline={vi.fn()} />
     );
     expect(screen.getByTestId("accept-jungyo-ex-1")).toBeDefined();
     expect(screen.getByTestId("decline-jungyo-ex-1")).toBeDefined();
@@ -46,11 +38,7 @@ describe("JungyoInvitationCard", () => {
   it("calls onAccept when accept button is clicked", () => {
     const onAccept = vi.fn();
     render(
-      <JungyoInvitationCard
-        invitation={makeInvitation()}
-        onAccept={onAccept}
-        onDecline={vi.fn()}
-      />
+      <JungyoInvitationCard invitation={makeInvitation()} onAccept={onAccept} onDecline={vi.fn()} />
     );
     fireEvent.click(screen.getByTestId("accept-jungyo-ex-1"));
     expect(onAccept).toHaveBeenCalledWith("ex-1");

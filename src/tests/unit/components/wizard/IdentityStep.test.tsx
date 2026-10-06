@@ -4,7 +4,8 @@ import { IdentityStep } from "@/components/wizard/IdentityStep";
 import { OYAKATA_BACKSTORIES } from "@/constants/ui/wizard";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const renderWithProviders = (ui: React.ReactElement) => render(<TooltipProvider>{ui}</TooltipProvider>);
+const renderWithProviders = (ui: React.ReactElement) =>
+  render(<TooltipProvider>{ui}</TooltipProvider>);
 
 describe("IdentityStep", () => {
   const defaultProps = {

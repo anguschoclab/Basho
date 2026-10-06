@@ -84,7 +84,7 @@ export function toCareerDTO(r: Rikishi): RikishiCareerDTO {
   const wins = r.currentBashoWins ?? 0;
   const losses = r.currentBashoLosses ?? 0;
   const boutsPlayed = wins + losses;
-  const kachiNokori = boutsPlayed < 8 ? Math.max(0, 8 - wins) : (wins >= 8 ? 0 : null);
+  const kachiNokori = boutsPlayed < 8 ? Math.max(0, 8 - wins) : wins >= 8 ? 0 : null;
 
   return {
     currentBashoWins: r.currentBashoWins ?? 0,

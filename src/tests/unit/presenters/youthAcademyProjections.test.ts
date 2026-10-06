@@ -20,12 +20,15 @@ function makeWorld(academy?: YouthAcademyState, cash = 100_000): WorldState {
     seed: "test",
     year: 2024,
     heyas: new Map([
-      ["h1", {
-        id: "h1",
-        name: "Test Heya",
-        economics: { cash },
-        youthAcademy: academy,
-      } as any],
+      [
+        "h1",
+        {
+          id: "h1",
+          name: "Test Heya",
+          economics: { cash },
+          youthAcademy: academy,
+        } as any,
+      ],
     ]),
     rikishi: new Map(),
     playerHeyaId: "h1",
@@ -43,7 +46,18 @@ describe("projectYouthAcademy", () => {
     const academy = makeAcademy({
       level: 2,
       prospects: [
-        { id: "p1", shikona: "Young Prospect", age: 15, region: "Japan", potential: 70, currentAbility: 25, developmentPoints: 10, enrolledAtYear: 2024, enrolledAtWeek: 1, developmentHistory: [] },
+        {
+          id: "p1",
+          shikona: "Young Prospect",
+          age: 15,
+          region: "Japan",
+          potential: 70,
+          currentAbility: 25,
+          developmentPoints: 10,
+          enrolledAtYear: 2024,
+          enrolledAtWeek: 1,
+          developmentHistory: [],
+        },
       ],
       totalGraduated: 3,
     });

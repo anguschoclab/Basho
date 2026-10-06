@@ -243,17 +243,7 @@ export function tickBeltBattle(
   }
 
   // Mid-fight kimarite attempt
-  const attempt = evaluateKimariteAttempt(
-    east,
-    west,
-    push,
-    belt,
-    st,
-    rng,
-    division,
-    meta,
-    tactics
-  );
+  const attempt = evaluateKimariteAttempt(east, west, push, belt, st, rng, division, meta, tactics);
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {

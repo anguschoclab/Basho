@@ -30,9 +30,27 @@ describe("OfficialsPanel", () => {
   it("renders gyoji rows with names", () => {
     const proj = makeProjection({
       gyoji: [
-        { id: "g1", name: "Kimura Shonosuke", rank: "tate", rankLabel: "Tate-gyoji", accuracy: 85, boutsOfficiated: 100, callsReversed: 5, reversalRate: 0.05 },
+        {
+          id: "g1",
+          name: "Kimura Shonosuke",
+          rank: "tate",
+          rankLabel: "Tate-gyoji",
+          accuracy: 85,
+          boutsOfficiated: 100,
+          callsReversed: 5,
+          reversalRate: 0.05,
+        },
       ],
-      topGyoji: { id: "g1", name: "Kimura Shonosuke", rank: "tate", rankLabel: "Tate-gyoji", accuracy: 85, boutsOfficiated: 100, callsReversed: 5, reversalRate: 0.05 },
+      topGyoji: {
+        id: "g1",
+        name: "Kimura Shonosuke",
+        rank: "tate",
+        rankLabel: "Tate-gyoji",
+        accuracy: 85,
+        boutsOfficiated: 100,
+        callsReversed: 5,
+        reversalRate: 0.05,
+      },
     });
     render(<OfficialsPanel projection={proj} />);
     expect(screen.getByTestId("gyoji-row-g1")).toBeDefined();
@@ -42,9 +60,7 @@ describe("OfficialsPanel", () => {
 
   it("renders shimpan rows with names", () => {
     const proj = makeProjection({
-      shimpan: [
-        { id: "s1", name: "Iwai", accuracy: 75, consultations: 5 },
-      ],
+      shimpan: [{ id: "s1", name: "Iwai", accuracy: 75, consultations: 5 }],
     });
     render(<OfficialsPanel projection={proj} />);
     expect(screen.getByTestId("shimpan-row-s1")).toBeDefined();
@@ -63,7 +79,16 @@ describe("OfficialsPanel", () => {
 
   it("shows top gyoji when available", () => {
     const proj = makeProjection({
-      topGyoji: { id: "g1", name: "Top Gyoji", rank: "tate", rankLabel: "Tate-gyoji", accuracy: 90, boutsOfficiated: 200, callsReversed: 3, reversalRate: 0.015 },
+      topGyoji: {
+        id: "g1",
+        name: "Top Gyoji",
+        rank: "tate",
+        rankLabel: "Tate-gyoji",
+        accuracy: 90,
+        boutsOfficiated: 200,
+        callsReversed: 3,
+        reversalRate: 0.015,
+      },
     });
     render(<OfficialsPanel projection={proj} />);
     expect(screen.getByText(/Top Gyoji/)).toBeDefined();

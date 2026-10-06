@@ -184,7 +184,9 @@ export function applyPlanConstraints(
           infra.shouldHireStaff = true;
           infra.staffRole = infra.staffRole ?? "scout";
           input.agentDecisions.infrastructure = infra;
-          reasoning.push(`[Plan Directive] Talent pipeline: investing in academy and scouting staff.`);
+          reasoning.push(
+            `[Plan Directive] Talent pipeline: investing in academy and scouting staff.`
+          );
         }
         break;
       case "use_favors":

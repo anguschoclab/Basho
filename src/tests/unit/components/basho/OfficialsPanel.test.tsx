@@ -21,13 +21,38 @@ import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
 
 const mockProjection = {
   gyoji: [
-    { id: "g1", name: "Kimura", rank: "tate" as const, rankLabel: "Tate-gyoji", accuracy: 95, boutsOfficiated: 100, callsReversed: 2, reversalRate: 0.02 },
-    { id: "g2", name: "Shikimori", rank: "fuku-tate" as const, rankLabel: "Fuku-tate-gyoji", accuracy: 88, boutsOfficiated: 80, callsReversed: 5, reversalRate: 0.06 },
+    {
+      id: "g1",
+      name: "Kimura",
+      rank: "tate" as const,
+      rankLabel: "Tate-gyoji",
+      accuracy: 95,
+      boutsOfficiated: 100,
+      callsReversed: 2,
+      reversalRate: 0.02,
+    },
+    {
+      id: "g2",
+      name: "Shikimori",
+      rank: "fuku-tate" as const,
+      rankLabel: "Fuku-tate-gyoji",
+      accuracy: 88,
+      boutsOfficiated: 80,
+      callsReversed: 5,
+      reversalRate: 0.06,
+    },
   ],
-  shimpan: [
-    { id: "s1", name: "Judge 1", accuracy: 90, consultations: 50 },
-  ],
-  topGyoji: { id: "g1", name: "Kimura", rank: "tate" as const, rankLabel: "Tate-gyoji", accuracy: 95, boutsOfficiated: 100, callsReversed: 2, reversalRate: 0.02 },
+  shimpan: [{ id: "s1", name: "Judge 1", accuracy: 90, consultations: 50 }],
+  topGyoji: {
+    id: "g1",
+    name: "Kimura",
+    rank: "tate" as const,
+    rankLabel: "Tate-gyoji",
+    accuracy: 95,
+    boutsOfficiated: 100,
+    callsReversed: 2,
+    reversalRate: 0.02,
+  },
   totalBoutsOfficiated: 180,
   totalReversals: 7,
 };

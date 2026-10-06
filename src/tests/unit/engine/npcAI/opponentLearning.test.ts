@@ -91,7 +91,12 @@ function makeWorld(opts: WorldOpts = {}): { world: WorldState; east: Rikishi; we
   });
 
   const heyas = new Map([
-    [eastHeyaId, MockFactory.createHeya(eastHeyaId, { oyakataId: eastHeyaId === "player-heya" ? "oya-player" : "oya-a" })],
+    [
+      eastHeyaId,
+      MockFactory.createHeya(eastHeyaId, {
+        oyakataId: eastHeyaId === "player-heya" ? "oya-player" : "oya-a",
+      }),
+    ],
     [westHeyaId, MockFactory.createHeya(westHeyaId, { oyakataId: "oya-b" })],
   ]);
   if (!heyas.has("player-heya")) {
@@ -145,12 +150,12 @@ describe("onBoutResolvedOpponentModels", () => {
       west,
     });
     // east won by yorikiri (belt) — heya-b's model of east gains a belt count.
-    const modelOfEast = impact.entities?.oyakataUpdates?.get("oya-b")?.memory
-      ?.opponentModels?.["east"];
+    const modelOfEast =
+      impact.entities?.oyakataUpdates?.get("oya-b")?.memory?.opponentModels?.["east"];
     expect(modelOfEast?.familyCounts.belt).toBeGreaterThanOrEqual(1);
     // west lost while resolved with YOTSU_BELT — heya-a's model of west gains a belt count.
-    const modelOfWest = impact.entities?.oyakataUpdates?.get("oya-a")?.memory
-      ?.opponentModels?.["west"];
+    const modelOfWest =
+      impact.entities?.oyakataUpdates?.get("oya-a")?.memory?.opponentModels?.["west"];
     expect(modelOfWest?.familyCounts.belt).toBeGreaterThanOrEqual(1);
   });
 
@@ -183,9 +188,7 @@ describe("onBoutResolvedOpponentModels", () => {
       east,
       west,
     });
-    const updated = impact.entities?.oyakataUpdates?.get("oya-a")?.memory?.opponentModels?.[
-      "west"
-    ];
+    const updated = impact.entities?.oyakataUpdates?.get("oya-a")?.memory?.opponentModels?.["west"];
     expect(updated?.sampleSize).toBe(6);
     expect(updated?.lastUpdated).toBe(world.week);
   });

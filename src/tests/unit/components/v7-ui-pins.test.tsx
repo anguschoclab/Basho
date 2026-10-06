@@ -38,8 +38,7 @@ import * as GameContext from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const withProviders = (ui: React.ReactElement) =>
-  render(<TooltipProvider>{ui}</TooltipProvider>);
+const withProviders = (ui: React.ReactElement) => render(<TooltipProvider>{ui}</TooltipProvider>);
 
 function mockUseGame(world: Partial<WorldState> | null) {
   vi.mocked(GameContext.useGame).mockReturnValue({

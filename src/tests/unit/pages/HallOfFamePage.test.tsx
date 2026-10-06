@@ -19,7 +19,6 @@ vi.mock("@/components/layout/control-center", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 
-
 vi.mock("@/components/ui/EmptyState", () => ({
   EmptyState: () => React.createElement("div", null, "Empty"),
 }));

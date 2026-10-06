@@ -11,7 +11,10 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { AcademyManagementPanel } from "@/components/stable/AcademyManagementPanel";
-import { projectAcademyManagement, type ExhibitionRegion } from "@/presenters/academyManagementProjections";
+import {
+  projectAcademyManagement,
+  type ExhibitionRegion,
+} from "@/presenters/academyManagementProjections";
 import { ExhibitionInvitationsPanel } from "@/components/exhibition/ExhibitionInvitationsPanel";
 import { projectExhibitions } from "@/presenters/exhibitionProjections";
 
@@ -20,12 +23,14 @@ export default function RegionalHubPage() {
   const world = state.world;
   const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
   const sendCommand = useGameStore((s) => s.sendCommand);
-  const academyProjection = world && playerHeya
-    ? projectAcademyManagement(world, playerHeya.id)
-    : { academies: [], buildableRegions: [], hasAcademies: false };
-  const exhibitionProjection = world && playerHeya
-    ? projectExhibitions(world, playerHeya.id)
-    : { invitations: [], hasInvitations: false };
+  const academyProjection =
+    world && playerHeya
+      ? projectAcademyManagement(world, playerHeya.id)
+      : { academies: [], buildableRegions: [], hasAcademies: false };
+  const exhibitionProjection =
+    world && playerHeya
+      ? projectExhibitions(world, playerHeya.id)
+      : { invitations: [], hasInvitations: false };
 
   const regionalPresence = playerHeya?.regionalPresence || {};
   // Pending exhibitions from world state are projected for ExhibitionInvitationsPanel

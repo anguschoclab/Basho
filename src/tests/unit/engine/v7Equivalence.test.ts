@@ -88,8 +88,7 @@ describe("v7 equivalence — phase01_week_welfare injured/active partition (#991
     const world = mkWorld({ heyas: new Map([["hW", heya]]), rikishi });
     const impact = phase01_week_welfare(world);
     const encLog = impact.worldFields?.encouragementLog as
-      | { from: string; to: string; basho: string }[]
-      | undefined;
+      { from: string; to: string; basho: string }[] | undefined;
     // Retired-injured rikishi must NOT encourage; "inj" encourages first active only.
     expect(encLog).toEqual([{ from: "inj", to: "act1", basho: "off-season" }]);
     const evt = (impact.events ?? []).find((e) => e.type === "NARRATIVE_CRISIS_TRIGGERED");
@@ -188,7 +187,10 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
   it("pins the full projection DTO for a fixed stable", () => {
     const heya = mkH("hT", { rikishiIds: ["sen", "jr1", "jr2"] });
     const rikishi = new Map([
-      ["sen", mkR("sen", { heyaId: "hT", rankNumber: 2, shikona: "Senior", tsukebitoIds: ["jr1"] })],
+      [
+        "sen",
+        mkR("sen", { heyaId: "hT", rankNumber: 2, shikona: "Senior", tsukebitoIds: ["jr1"] }),
+      ],
       ["jr1", mkR("jr1", { heyaId: "hT", rankNumber: 12, shikona: "JuniorOne" })],
       ["jr2", mkR("jr2", { heyaId: "hT", rankNumber: 15, shikona: "JuniorTwo" })],
     ]);

@@ -53,9 +53,7 @@ function baseCtx(overrides: Partial<TacticCtx> = {}): TacticCtx {
 }
 
 function tachiaiEntry(result: BoutResult) {
-  return result.log.find(
-    (e) => e.phase === "tachiai" && typeof e.data?.eastPower === "number"
-  );
+  return result.log.find((e) => e.phase === "tachiai" && typeof e.data?.eastPower === "number");
 }
 
 describe("tactic symmetry — per-side physics", () => {
@@ -151,9 +149,7 @@ describe("tactic symmetry — per-side physics", () => {
       west,
       makeBasho()
     ).result;
-    const henka = result.log.find(
-      (e) => e.data?.event === "henka_success"
-    );
+    const henka = result.log.find((e) => e.data?.event === "henka_success");
     expect(henka, "east HENKA tactic must reach the henka resolution path").toBeDefined();
     expect(henka?.data?.attackerSide).toBe("east");
   });
@@ -193,9 +189,7 @@ describe("tactic symmetry — per-side physics", () => {
       west,
       makeBasho()
     ).result;
-    const henka = result.log.find(
-      (e) => e.data?.event === "henka_success"
-    );
+    const henka = result.log.find((e) => e.data?.event === "henka_success");
     expect(henka, "west HENKA tactic must reach the henka resolution path").toBeDefined();
     expect(henka?.data?.attackerSide).toBe("west");
   });

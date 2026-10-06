@@ -29,8 +29,7 @@ function drawN(fn: (rng: SeededRNG) => string, seed: string, n = N): Map<string,
   return counts;
 }
 
-const share = (counts: Map<string, number>, id: string, n = N) =>
-  (counts.get(id) ?? 0) / n;
+const share = (counts: Map<string, number>, id: string, n = N) => (counts.get(id) ?? 0) / n;
 
 describe("terminalKimarite", () => {
   it("is deterministic — same seed produces the same sequence", () => {
@@ -98,7 +97,14 @@ describe("terminalKimarite", () => {
   });
 
   it("desperation unlocks the sorite tail (backward-bending throws)", () => {
-    const sorite = ["izori", "kakezori", "shumokuzori", "sototasukizori", "tasukizori", "tsutaezori"];
+    const sorite = [
+      "izori",
+      "kakezori",
+      "shumokuzori",
+      "sototasukizori",
+      "tasukizori",
+      "tsutaezori",
+    ];
     const count = (m: Map<string, number>) => sorite.reduce((s, id) => s + (m.get(id) ?? 0), 0);
     const calm = drawN((r) => classifyBeltFallKimariteV2(r, "shitate", false), "calm-s", 4000);
     const desperate = drawN((r) => classifyBeltFallKimariteV2(r, "shitate", true), "desp-s", 4000);

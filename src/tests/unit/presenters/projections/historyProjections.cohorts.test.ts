@@ -25,9 +25,33 @@ describe("selectCohortSummaries", () => {
 
   it("groups rikishi by recruitmentCohortId and returns summaries", () => {
     const world = makeWorld([
-      { id: "r1", shikona: "A", heyaId: "h1", isRetired: false, recruitmentCohortId: "2025-hatsu", rank: "makuuchi", rankNumber: 5 },
-      { id: "r2", shikona: "B", heyaId: "h1", isRetired: false, recruitmentCohortId: "2025-hatsu", rank: "juryo", rankNumber: 10 },
-      { id: "r3", shikona: "C", heyaId: "h1", isRetired: false, recruitmentCohortId: "2026-hatsu", rank: "jonokuchi", rankNumber: 50 },
+      {
+        id: "r1",
+        shikona: "A",
+        heyaId: "h1",
+        isRetired: false,
+        recruitmentCohortId: "2025-hatsu",
+        rank: "makuuchi",
+        rankNumber: 5,
+      },
+      {
+        id: "r2",
+        shikona: "B",
+        heyaId: "h1",
+        isRetired: false,
+        recruitmentCohortId: "2025-hatsu",
+        rank: "juryo",
+        rankNumber: 10,
+      },
+      {
+        id: "r3",
+        shikona: "C",
+        heyaId: "h1",
+        isRetired: false,
+        recruitmentCohortId: "2026-hatsu",
+        rank: "jonokuchi",
+        rankNumber: 50,
+      },
     ]);
     const result = selectCohortSummaries(world);
     expect(result).toHaveLength(2);
@@ -39,8 +63,26 @@ describe("selectCohortSummaries", () => {
 
   it("counts sekitori and yusho correctly", () => {
     const world = makeWorld([
-      { id: "r1", shikona: "Sekitori", heyaId: "h1", isRetired: false, recruitmentCohortId: "c1", rank: "makuuchi", rankNumber: 1, division: "makuuchi" },
-      { id: "r2", shikona: "Lower", heyaId: "h1", isRetired: false, recruitmentCohortId: "c1", rank: "jonokuchi", rankNumber: 50, division: "jonokuchi" },
+      {
+        id: "r1",
+        shikona: "Sekitori",
+        heyaId: "h1",
+        isRetired: false,
+        recruitmentCohortId: "c1",
+        rank: "makuuchi",
+        rankNumber: 1,
+        division: "makuuchi",
+      },
+      {
+        id: "r2",
+        shikona: "Lower",
+        heyaId: "h1",
+        isRetired: false,
+        recruitmentCohortId: "c1",
+        rank: "jonokuchi",
+        rankNumber: 50,
+        division: "jonokuchi",
+      },
     ]);
     const result = selectCohortSummaries(world);
     expect(result[0].sekitoriCount).toBe(1);

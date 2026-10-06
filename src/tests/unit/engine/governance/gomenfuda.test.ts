@@ -241,7 +241,11 @@ describe("recordGomenfuda year-field bug fix", () => {
     const r2 = mockRikishi("r-2", { shikona: "Rikishi 2" });
     const r3 = mockRikishi("r-3", { shikona: "Rikishi 3" });
     const world = makeMockWorld({
-      rikishi: new Map([[r1.id, r1], [r2.id, r2], [r3.id, r3]]),
+      rikishi: new Map([
+        [r1.id, r1],
+        [r2.id, r2],
+        [r3.id, r3],
+      ]),
       heyas: new Map([["heya-1", heya as any]]),
     });
 
@@ -260,7 +264,11 @@ describe("recordGomenfuda year-field bug fix", () => {
     const r2 = mockRikishi("r-2", { shikona: "Rikishi 2" });
     const r3 = mockRikishi("r-3", { shikona: "Rikishi 3" });
     const world = makeMockWorld({
-      rikishi: new Map([[r1.id, r1], [r2.id, r2], [r3.id, r3]]),
+      rikishi: new Map([
+        [r1.id, r1],
+        [r2.id, r2],
+        [r3.id, r3],
+      ]),
       heyas: new Map([["heya-1", heya as any]]),
     });
 
@@ -278,7 +286,10 @@ describe("recordGomenfuda year-field bug fix", () => {
     const r1 = mockRikishi("r-1", { shikona: "Rikishi 1" });
     const r2 = mockRikishi("r-2", { shikona: "Rikishi 2" });
     const world = makeMockWorld({
-      rikishi: new Map([[r1.id, r1], [r2.id, r2]]),
+      rikishi: new Map([
+        [r1.id, r1],
+        [r2.id, r2],
+      ]),
       heyas: new Map([["heya-1", heya as any]]),
     });
 

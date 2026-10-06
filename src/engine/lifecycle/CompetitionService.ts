@@ -362,10 +362,5 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   }
 
   // Merge impacts together
-  return mergeImpacts([
-    builder.build(),
-    historyImpact,
-    teateImpact,
-    mochikyukinImpact.build(),
-  ]);
+  return mergeImpacts([builder.build(), historyImpact, teateImpact, mochikyukinImpact.build()]);
 }

@@ -38,11 +38,20 @@ export interface SerializedWorld {
   week: number;
   year: number;
   cyclePhase: string;
-  calendar?: { month?: number; currentDay?: number; currentWeek?: number } & Record<string, unknown>;
+  calendar?: { month?: number; currentDay?: number; currentWeek?: number } & Record<
+    string,
+    unknown
+  >;
   playerHeyaId?: string;
   pendingCrisis?: { id?: string; type?: string } | null;
   currentBasho?:
-    | ({ day?: number; currentDay?: number; bashoName?: string; year?: number; matches?: unknown[] } & Record<string, unknown>)
+    | ({
+        day?: number;
+        currentDay?: number;
+        bashoName?: string;
+        year?: number;
+        matches?: unknown[];
+      } & Record<string, unknown>)
     | null;
   currentBanzuke?: BanzukeSnapshot | null;
   history: BashoResult[];
@@ -103,9 +112,7 @@ interface LiveWorldHandle {
 export async function readAutosaveSave(page: Page): Promise<SerializedSave | null> {
   const raw = await page.evaluate((key) => localStorage.getItem(key), AUTOSAVE_KEY);
   if (!raw) return null;
-  const json = raw.startsWith("lz16:")
-    ? LZString.decompressFromUTF16(raw.slice(5))
-    : raw;
+  const json = raw.startsWith("lz16:") ? LZString.decompressFromUTF16(raw.slice(5)) : raw;
   if (!json) return null;
   try {
     return JSON.parse(json) as SerializedSave;
@@ -136,15 +143,25 @@ export async function readLiveWorldMeta(page: Page): Promise<LiveWorldMeta | nul
         cyclePhase: w.cyclePhase,
         week: w.week,
         year: w.year,
-        calendar: w.calendar ? { month: w.calendar.month, currentDay: w.calendar.currentDay, currentWeek: w.calendar.currentWeek } : null,
+        calendar: w.calendar
+          ? {
+              month: w.calendar.month,
+              currentDay: w.calendar.currentDay,
+              currentWeek: w.calendar.currentWeek,
+            }
+          : null,
         playerHeyaId: w.playerHeyaId,
         pendingCrisis: w.pendingCrisis ? { id: w.pendingCrisis.id ?? w.pendingCrisis.type } : null,
         currentBasho: w.currentBasho
-          ? { day: w.currentBasho.day ?? w.currentBasho.currentDay, matchCount: w.currentBasho.matches?.length ?? 0 }
+          ? {
+              day: w.currentBasho.day ?? w.currentBasho.currentDay,
+              matchCount: w.currentBasho.matches?.length ?? 0,
+            }
           : null,
         historyLength: w.history?.length ?? 0,
         awardLogLength: w.awardLog?.length ?? 0,
-        rikishiCount: w.rikishi instanceof Map ? w.rikishi.size : Object.keys(w.rikishi ?? {}).length,
+        rikishiCount:
+          w.rikishi instanceof Map ? w.rikishi.size : Object.keys(w.rikishi ?? {}).length,
         banzukeIndexLength: Object.keys(w.historyIndex?.banzukeByBasho ?? {}).length,
         yokozunaVacancyStreak: w.yokozunaVacancyStreak ?? 0,
         requiredDecisionCount: (w.pendingDecisions ?? []).filter((d) => d.required).length,
@@ -202,7 +219,9 @@ export async function waitForWorld(
         const w = (window as unknown as { __BASHO_WORLD__?: LiveWorldHandle }).__BASHO_WORLD__;
         if (!w) return false;
         try {
-          return !!(new Function("world", `return (${src})(world)`) as (world: LiveWorldHandle) => unknown)(w);
+          return !!(
+            new Function("world", `return (${src})(world)`) as (world: LiveWorldHandle) => unknown
+          )(w);
         } catch {
           return false;
         }
@@ -217,7 +236,9 @@ export async function waitForWorld(
   }
   throw new Error(
     `waitForWorld timed out after ${timeout}ms (last world: ${
-      lastMeta ? `seed=${lastMeta.seed} day=${lastMeta.dayIndexGlobal} phase=${lastMeta.cyclePhase}` : "none"
+      lastMeta
+        ? `seed=${lastMeta.seed} day=${lastMeta.dayIndexGlobal} phase=${lastMeta.cyclePhase}`
+        : "none"
     })`
   );
 }
@@ -255,7 +276,9 @@ export async function waitForAutosaveWorld(
   }
   throw new Error(
     `waitForAutosaveWorld timed out after ${timeout}ms (last world: ${
-      lastWorld ? `seed=${lastWorld.seed} day=${lastWorld.dayIndexGlobal} phase=${lastWorld.cyclePhase}` : "none"
+      lastWorld
+        ? `seed=${lastWorld.seed} day=${lastWorld.dayIndexGlobal} phase=${lastWorld.cyclePhase}`
+        : "none"
     })`
   );
 }
@@ -358,9 +381,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
     .getByRole("button", { name: /Progress simulation by one full week/i })
     .first();
   const continueBtn = page.getByRole("button", { name: /Continue|Start Basho/i }).first();
-  const dayBtn = page
-    .getByRole("button", { name: /Advance the simulation by one day/i })
-    .first();
+  const dayBtn = page.getByRole("button", { name: /Advance the simulation by one day/i }).first();
   const endBashoBtn = page.getByRole("button", { name: /^End Basho$/i }).first();
 
   // Wait for the dashboard's advance controls to mount — the dashboard
@@ -377,10 +398,7 @@ export async function advanceToBasho(page: Page): Promise<void> {
     // Already inside an active basho — let driveBashoToRecap take over.
     // A Week click can fast-forward straight into active_basho while the
     // URL stays on /dashboard, so detect the phase via autosave too.
-    if (
-      page.url().includes("/basho") ||
-      (await endBashoBtn.isVisible().catch(() => false))
-    ) {
+    if (page.url().includes("/basho") || (await endBashoBtn.isVisible().catch(() => false))) {
       return;
     }
     if (i % 5 === 4) {
@@ -481,9 +499,7 @@ export async function finalizeRecap(page: Page): Promise<void> {
 
 /** Advance the interim simulation by `days` via the calendar Day button. */
 export async function advanceDays(page: Page, days: number): Promise<void> {
-  const dayBtn = page
-    .getByRole("button", { name: /Advance the simulation by one day/i })
-    .first();
+  const dayBtn = page.getByRole("button", { name: /Advance the simulation by one day/i }).first();
   const continueBtn = page.getByRole("button", { name: /Continue|Start Basho/i }).first();
   for (let i = 0; i < days; i++) {
     if (await dayBtn.isVisible().catch(() => false)) {
@@ -631,10 +647,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
   // The world can already be inside an active basho (e.g. the previous
   // fast-forward ran straight through to Day 15+). Only click Sim All
   // when it's actually offered; otherwise skip to the drive loop.
-  if (
-    !page.url().includes("/basho") &&
-    (await simAllBtn.isVisible().catch(() => false))
-  ) {
+  if (!page.url().includes("/basho") && (await simAllBtn.isVisible().catch(() => false))) {
     // A crisis modal can open between the visibility check and the click —
     // clear it before clicking Sim All.
     if (!(await tryClick(simAllBtn))) {
@@ -680,7 +693,9 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
           [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map((d) => ({
             state: d.getAttribute("data-state"),
             text: (d.textContent ?? "").slice(0, 80),
-            btns: [...d.querySelectorAll("button")].map((b) => (b.textContent ?? "").trim()).slice(0, 6),
+            btns: [...d.querySelectorAll("button")]
+              .map((b) => (b.textContent ?? "").trim())
+              .slice(0, 6),
           }))
         )
         .catch((): { state: string | null; text: string; btns: string[] }[] => []);
@@ -691,7 +706,10 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
       );
     }
     if (
-      (await page.getByText(/No Active Tournament/i).isVisible().catch(() => false)) ||
+      (await page
+        .getByText(/No Active Tournament/i)
+        .isVisible()
+        .catch(() => false)) ||
       (await finalizeBtn.isVisible().catch(() => false))
     ) {
       break;
@@ -708,9 +726,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
       const action = await page
         .evaluate(() => {
           // "Next Day"/"End Basho" — rendered once today's bouts are done.
-          const advance = document.querySelector(
-            "#advance-basho-btn"
-          ) as HTMLButtonElement | null;
+          const advance = document.querySelector("#advance-basho-btn") as HTMLButtonElement | null;
           if (advance && !advance.disabled) {
             const label = (advance.textContent ?? "").trim();
             advance.click();
@@ -743,9 +759,7 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
             if (!dlg) return "no-dialog";
             const btns = [...dlg.querySelectorAll("button")];
             const btn = btns
-              .filter(
-                (b) => !/^(close|cancel|x|×)$/i.test((b.textContent ?? "").trim())
-              )
+              .filter((b) => !/^(close|cancel|x|×)$/i.test((b.textContent ?? "").trim()))
               .pop();
             if (!btn) return "no-action";
             (btn as HTMLElement).click();

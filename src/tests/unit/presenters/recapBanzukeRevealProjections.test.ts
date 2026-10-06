@@ -3,11 +3,7 @@ import { buildBanzukeRevealEntries } from "@/presenters/projections/recapBanzuke
 import { makeMockWorld, mockRikishi } from "../engine/utils";
 import { createEmptyHistoryIndex } from "@/engine/historyIndex";
 import type { BashoResult } from "@/engine/types/basho";
-import type {
-  BanzukeSnapshot,
-  Division,
-  RankPosition,
-} from "@/engine/types/banzuke";
+import type { BanzukeSnapshot, Division, RankPosition } from "@/engine/types/banzuke";
 
 const ALL_DIVISIONS: Division[] = [
   "makuuchi",
@@ -35,8 +31,11 @@ function snap(
   return { year, bashoNumber, divisions };
 }
 
-const makuuchi = (rank: string, rankNumber?: number, side: "east" | "west" = "east"): RankPosition =>
-  ({ rank, rankNumber, side }) as RankPosition;
+const makuuchi = (
+  rank: string,
+  rankNumber?: number,
+  side: "east" | "west" = "east"
+): RankPosition => ({ rank, rankNumber, side }) as RankPosition;
 
 function lastBasho(year = 2026, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6 = 2): BashoResult {
   return {
@@ -69,12 +68,12 @@ describe("buildBanzukeRevealEntries", () => {
     const prev = snap(2026, 1, {
       makuuchi: [
         { id: "r1", pos: makuuchi("maegashira", 10) }, // promoted to komusubi
-        { id: "r2", pos: makuuchi("sekiwake") },       // demoted to maegashira
-        { id: "r3", pos: makuuchi("sekiwake") },       // unchanged
+        { id: "r2", pos: makuuchi("sekiwake") }, // demoted to maegashira
+        { id: "r3", pos: makuuchi("sekiwake") }, // unchanged
         // r4 absent → new entry
       ],
       juryo: [
-        { id: "r5", pos: makuuchi("juryo", 2) },       // juryo → makuuchi: division_change
+        { id: "r5", pos: makuuchi("juryo", 2) }, // juryo → makuuchi: division_change
       ],
     });
     const current = snap(2026, 2, {
@@ -92,7 +91,10 @@ describe("buildBanzukeRevealEntries", () => {
 
     const world = makeMockWorld({
       rikishi: new Map(
-        ["r1", "r2", "r3", "r4", "r5"].map((id) => [id, mockRikishi(id, { shikona: `Shiko-${id}` })])
+        ["r1", "r2", "r3", "r4", "r5"].map((id) => [
+          id,
+          mockRikishi(id, { shikona: `Shiko-${id}` }),
+        ])
       ),
       currentBanzuke: current,
       historyIndex: idx,

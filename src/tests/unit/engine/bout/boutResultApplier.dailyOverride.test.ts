@@ -111,8 +111,7 @@ describe("boutResultApplier — dailyInjuryRiskOverrides consumption", () => {
 
     const impact = applyBoutResult(world, makeMatch(), result);
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
 
     // The override for west should be consumed/cleared
     expect(tc?.dailyInjuryRiskOverrides?.["west"]).toBeUndefined();
@@ -128,8 +127,7 @@ describe("boutResultApplier — dailyInjuryRiskOverrides consumption", () => {
 
     const impact = applyBoutResult(world, makeMatch(), result);
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     expect(tc?.dailyInjuryRiskOverrides).toBeDefined();
     expect(tc?.dailyInjuryRiskOverrides?.["west"]).toBeUndefined();
   });
@@ -144,8 +142,7 @@ describe("boutResultApplier — dailyInjuryRiskOverrides consumption", () => {
 
     const impact = applyBoutResult(world, makeMatch(), result);
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     expect(tc?.dailyInjuryRiskOverrides?.["r3"]).toBe(1.5);
     expect(tc?.dailyInjuryRiskOverrides?.["west"]).toBeUndefined();
   });
@@ -157,8 +154,7 @@ describe("boutResultApplier — dailyInjuryRiskOverrides consumption", () => {
     const impact = applyBoutResult(world, makeMatch(), result);
     // Should not crash; transientContext may or may not be in the impact
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     // No override was set, so nothing to clear
     expect(tc?.dailyInjuryRiskOverrides ?? {}).toEqual({});
   });
@@ -175,8 +171,7 @@ describe("boutResultApplier — dailyInjuryRiskOverrides consumption", () => {
 
     const impact = applyBoutResult(world, makeMatch(), result);
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     // Winner's override should now be cleared from the impact
     expect(tc?.dailyInjuryRiskOverrides?.["east"]).toBeUndefined();
   });

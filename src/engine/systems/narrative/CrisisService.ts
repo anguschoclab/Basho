@@ -38,10 +38,15 @@ function applyHeyaDelta(
   if (!heya) return;
   const ws = heya.welfareState;
   b.updateHeya(heyaId, {
-    reputation: d.reputation !== undefined ? clampStat((heya.reputation ?? 50) + d.reputation) : heya.reputation,
+    reputation:
+      d.reputation !== undefined
+        ? clampStat((heya.reputation ?? 50) + d.reputation)
+        : heya.reputation,
     funds: d.funds !== undefined ? Math.round((heya.funds ?? 0) + d.funds) : heya.funds,
     scandalScore:
-      d.scandalScore !== undefined ? clampStat((heya.scandalScore ?? 0) + d.scandalScore) : heya.scandalScore,
+      d.scandalScore !== undefined
+        ? clampStat((heya.scandalScore ?? 0) + d.scandalScore)
+        : heya.scandalScore,
     politicalCapital:
       d.politicalCapital !== undefined
         ? clampStat((heya.politicalCapital ?? 50) + d.politicalCapital)

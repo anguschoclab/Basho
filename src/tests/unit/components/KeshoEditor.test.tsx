@@ -35,16 +35,12 @@ describe("KeshoEditor accessibility (PR #922)", () => {
   it("motif selector buttons have accessible names", () => {
     render(<KeshoEditor rikishi={makeRikishi()} open onClose={vi.fn()} />);
     // Post-#922: aria-label={`Select motif ${m.replace("_", " ")}`}
-    expect(
-      screen.getByRole("button", { name: /select motif rising sun/i })
-    ).toBeDefined();
+    expect(screen.getByRole("button", { name: /select motif rising sun/i })).toBeDefined();
   });
 
   it("preset palette buttons have accessible names", () => {
     render(<KeshoEditor rikishi={makeRikishi()} open onClose={vi.fn()} />);
-    expect(
-      screen.getByRole("button", { name: /select preset sovereign gold/i })
-    ).toBeDefined();
+    expect(screen.getByRole("button", { name: /select preset sovereign gold/i })).toBeDefined();
   });
 
   it("clicking a preset applies its colors via the editor", () => {

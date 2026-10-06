@@ -78,8 +78,8 @@ export function StableStep({
                       {heya.name}
                     </div>
                     <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-                      {heya.location || "Tokyo"} • {new Set(heya.rikishiIds ?? []).size} Professional
-                      Wrestlers
+                      {heya.location || "Tokyo"} • {new Set(heya.rikishiIds ?? []).size}{" "}
+                      Professional Wrestlers
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">

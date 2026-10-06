@@ -38,9 +38,7 @@ export function selectExhibitionResults(
       name: (data.name as string) ?? "Exhibition Basho",
       location: (data.location as string) ?? "—",
       stipend: (data.stipend as number) ?? 0,
-      playerParticipated: playerHeyaId
-        ? resultsArr.some((r) => r.heyaId === playerHeyaId)
-        : false,
+      playerParticipated: playerHeyaId ? resultsArr.some((r) => r.heyaId === playerHeyaId) : false,
       results: resultsArr.map((r) => ({
         rikishiId: (r.rikishiId as string) ?? "",
         shikona: (r.shikona as string) ?? "—",

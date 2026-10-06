@@ -76,9 +76,7 @@ function DecisionRow({ decision }: { decision: NPCDecisionDTO }) {
           <span className="text-[10px] text-muted-foreground ml-auto">Wk {decision.week}</span>
         )}
       </div>
-      {decision.decision && (
-        <div className="text-xs text-foreground">{decision.decision}</div>
-      )}
+      {decision.decision && <div className="text-xs text-foreground">{decision.decision}</div>}
       {decision.reasoning && (
         <div className="text-xs text-muted-foreground mt-0.5">{decision.reasoning}</div>
       )}

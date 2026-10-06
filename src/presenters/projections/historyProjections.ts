@@ -40,8 +40,7 @@ export function projectHistoryAggregate(world: WorldState, heyaId: string): Hist
     totalPrizeMoney += prize;
 
     const playerResults = (basho as unknown as Record<string, unknown>).playerResults as
-      | Array<{ wins: number; losses: number }>
-      | undefined;
+      Array<{ wins: number; losses: number }> | undefined;
 
     if (playerResults && playerResults.length > 0) {
       let totalWins = 0;

@@ -125,7 +125,12 @@ describe("Weight Journey System (B3)", () => {
     const r = mockRikishi("wj-10", {
       stats: { weight: 100, power: 90, balance: 80 } as any,
       potential: { weightKg: 130 } as any,
-      weightJourney: { targetKg: 9.5, progressKg: 12, stalled: false, phases: ["bulking", "complete"] },
+      weightJourney: {
+        targetKg: 9.5,
+        progressKg: 12,
+        stalled: false,
+        phases: ["bulking", "complete"],
+      },
       injured: false,
     } as any);
     const heya = makeHeya(100000);

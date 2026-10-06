@@ -4,7 +4,10 @@ import { makeMockWorld, mockRikishi } from "../utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-function makeSummary(id: string, overrides: Partial<RetiredRikishiSummary> = {}): RetiredRikishiSummary {
+function makeSummary(
+  id: string,
+  overrides: Partial<RetiredRikishiSummary> = {}
+): RetiredRikishiSummary {
   return {
     id,
     shikona: `Wrestler-${id}`,

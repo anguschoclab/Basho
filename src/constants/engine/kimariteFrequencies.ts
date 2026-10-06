@@ -25,8 +25,7 @@ export type { KimariteRarity } from "./kimariteTargets";
 export const KIMARITE_CATEGORY_TARGETS: Record<string, number> = (() => {
   const totals: Record<string, number> = {};
   for (const k of KIMARITE_REGISTRY) {
-    totals[k.jsaCategory] =
-      (totals[k.jsaCategory] ?? 0) + (KIMARITE_FREQUENCY_TARGETS[k.id] ?? 0);
+    totals[k.jsaCategory] = (totals[k.jsaCategory] ?? 0) + (KIMARITE_FREQUENCY_TARGETS[k.id] ?? 0);
   }
   return totals;
 })();

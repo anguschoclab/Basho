@@ -6,10 +6,7 @@
  */
 
 import type { Rikishi } from "../types/rikishi";
-import type {
-  RetiredRikishiSummary,
-  CareerYearAggregate,
-} from "../types/history";
+import type { RetiredRikishiSummary, CareerYearAggregate } from "../types/history";
 import type { Rank, Division } from "../types/banzuke";
 import { RANK_HIERARCHY } from "../types/banzuke";
 

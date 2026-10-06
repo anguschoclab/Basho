@@ -16,10 +16,7 @@ export interface KachiNokoriDTO {
   kachiNokori: number;
 }
 
-export function selectKachiNokoriLeaders(
-  world: WorldState,
-  limit = 10
-): KachiNokoriDTO[] {
+export function selectKachiNokoriLeaders(world: WorldState, limit = 10): KachiNokoriDTO[] {
   const allRikishi = getAllRikishi(world);
   const heyaMap = world.heyas;
   const results: KachiNokoriDTO[] = [];
@@ -43,7 +40,5 @@ export function selectKachiNokoriLeaders(
     });
   }
 
-  return results
-    .sort((a, b) => b.kachiNokori - a.kachiNokori)
-    .slice(0, limit);
+  return results.sort((a, b) => b.kachiNokori - a.kachiNokori).slice(0, limit);
 }

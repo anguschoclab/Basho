@@ -33,8 +33,7 @@ describe("phase01_week_npc_ai — decision impact wiring", () => {
     const { world } = setupWorld();
     const impact = phase01_week_npc_ai(world);
     const policies = impact.worldFields?.npcBidPolicies as
-      | Record<string, { shouldBid: boolean }>
-      | undefined;
+      Record<string, { shouldBid: boolean }> | undefined;
     expect(policies?.h1).toBeDefined();
   });
 
@@ -43,8 +42,7 @@ describe("phase01_week_npc_ai — decision impact wiring", () => {
     const impact = phase01_week_npc_ai(world);
     // The phase still writes the consolidated oyakata entity once.
     const oyaUpdate = impact.entities?.oyakataUpdates?.get("o1") as
-      | { memory?: { lastExecutedAt?: Record<string, number> } }
-      | undefined;
+      { memory?: { lastExecutedAt?: Record<string, number> } } | undefined;
     expect(oyaUpdate).toBeDefined();
     // If any domain executed, lastExecutedAt must survive the final write.
     if (oyaUpdate?.memory?.lastExecutedAt) {

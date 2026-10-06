@@ -8,7 +8,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 export function mockUIRikishi(
   id: string,
   shikona: string,
-  overrides: Partial<UIRikishi> = {},
+  overrides: Partial<UIRikishi> = {}
 ): UIRikishi {
   return {
     id,

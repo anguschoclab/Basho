@@ -195,7 +195,10 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
                 <div className="shrink-0">{sev.icon}</div>
                 <span className={`text-xs font-semibold flex-1 ${sev.text}`}>{item.title}</span>
                 {item.required && (
-                  <Badge variant="outline" className="border-destructive/30 text-destructive text-[9px] px-1 py-0">
+                  <Badge
+                    variant="outline"
+                    className="border-destructive/30 text-destructive text-[9px] px-1 py-0"
+                  >
                     Required
                   </Badge>
                 )}

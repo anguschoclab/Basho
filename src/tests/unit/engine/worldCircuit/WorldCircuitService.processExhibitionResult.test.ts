@@ -27,7 +27,12 @@ describe("WorldCircuitService.processExhibitionResult", () => {
       injuryRisk: 0.01,
     } as any;
 
-    const impact = WorldCircuitService.processExhibitionResult(world, heyaId ?? "", rikishiId, invitation);
+    const impact = WorldCircuitService.processExhibitionResult(
+      world,
+      heyaId ?? "",
+      rikishiId,
+      invitation
+    );
     expect(impact).toBeDefined();
     expect(impact.events).toBeDefined();
   });
@@ -35,7 +40,12 @@ describe("WorldCircuitService.processExhibitionResult", () => {
   it("returns empty impact when heya or rikishi not found", () => {
     const world = generateInitialWorld("exhibition-result-invalid-test");
     const invitation = { id: "ex1", region: "europe", prestige: 50 } as any;
-    const impact = WorldCircuitService.processExhibitionResult(world, "nonexistent", "nonexistent", invitation);
+    const impact = WorldCircuitService.processExhibitionResult(
+      world,
+      "nonexistent",
+      "nonexistent",
+      invitation
+    );
     expect(impact).toBeDefined();
   });
 });

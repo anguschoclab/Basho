@@ -130,8 +130,7 @@ vi.mock("@/components/ui/SkeletonCard", () => ({
 }));
 
 vi.mock("@/store/gameStore", () => ({
-  useGameStore: (selector: (s: unknown) => unknown) =>
-    selector({ sendCommand: vi.fn() }),
+  useGameStore: (selector: (s: unknown) => unknown) => selector({ sendCommand: vi.fn() }),
 }));
 
 import { router } from "@/routes";
@@ -170,9 +169,7 @@ describe("routes lazy loading — Suspense fallback for MainMenu, NewGameWizard,
       options: { component: () => React.ReactElement };
     };
     const result = route.options.component();
-    expect(result.type).toBe(
-      (await import("react")).Suspense
-    );
+    expect(result.type).toBe((await import("react")).Suspense);
   });
 
   it("Dashboard component renders inside a world-guarded Suspense boundary", async () => {
@@ -184,8 +181,8 @@ describe("routes lazy loading — Suspense fallback for MainMenu, NewGameWizard,
     // so a cold boot restores the autosave instead of rendering a blank page.
     const { RequireWorld } = await import("@/components/RequireWorld");
     expect(result.type).toBe(RequireWorld);
-    expect(
-      (result.props as { children: React.ReactElement }).children.type
-    ).toBe((await import("react")).Suspense);
+    expect((result.props as { children: React.ReactElement }).children.type).toBe(
+      (await import("react")).Suspense
+    );
   });
 });

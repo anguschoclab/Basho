@@ -150,7 +150,13 @@ export function observeBoutResult(
   currentWeek: number,
   tacticLabel?: string
 ): OpponentTacticModel {
-  return observe(model, opponentId, familyFromKimarite(kimarite), tacticLabel ?? kimarite, currentWeek);
+  return observe(
+    model,
+    opponentId,
+    familyFromKimarite(kimarite),
+    tacticLabel ?? kimarite,
+    currentWeek
+  );
 }
 
 /**

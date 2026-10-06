@@ -71,17 +71,37 @@ describe("applyBoutResult edge-crisis metrics (PR #939)", () => {
       heyaId: "h1",
       side: "east",
       stats: {
-        power: 60, speed: 60, technique: 60, weight: 140, stamina: 60,
-        mental: 60, adaptability: 60, balance: 60, aggression: 60, experience: 10,
+        power: 60,
+        speed: 60,
+        technique: 60,
+        weight: 140,
+        stamina: 60,
+        mental: 60,
+        adaptability: 60,
+        balance: 60,
+        aggression: 60,
+        experience: 10,
       },
     });
     const west = MockFactory.createRikishi("west", {
-      division: "makuuchi", rank: "maegashira", heyaId: "h2", side: "west",
+      division: "makuuchi",
+      rank: "maegashira",
+      heyaId: "h2",
+      side: "west",
       stats: east.stats,
     });
-    const match: MatchSchedule = { boutId: "b1", day: 1, eastRikishiId: "east", westRikishiId: "west" };
+    const match: MatchSchedule = {
+      boutId: "b1",
+      day: 1,
+      eastRikishiId: "east",
+      westRikishiId: "west",
+    };
     const basho: BashoState = {
-      id: "t", year: 2026, bashoNumber: 1, bashoName: "hatsu", day: 1,
+      id: "t",
+      year: 2026,
+      bashoNumber: 1,
+      bashoName: "hatsu",
+      day: 1,
       matches: [match],
       standings: new Map([
         ["east", { wins: 0, losses: 0 }],
@@ -90,7 +110,10 @@ describe("applyBoutResult edge-crisis metrics (PR #939)", () => {
       isActive: true,
     };
     return MockFactory.createWorld({
-      rikishi: new Map([["east", east], ["west", west]]),
+      rikishi: new Map([
+        ["east", east],
+        ["west", west],
+      ]),
       heyas: new Map([
         ["h1", MockFactory.createHeya("h1")],
         ["h2", MockFactory.createHeya("h2")],

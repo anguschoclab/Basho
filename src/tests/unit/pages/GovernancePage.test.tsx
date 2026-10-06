@@ -150,9 +150,24 @@ vi.mock("@/presenters/projections/governanceProjections", () => ({
     recentEvents: [],
   }),
   POLITICAL_FAVORS: [
-    { id: "matchmaking_avoid", label: "Matchmaking Influence", description: "Request the Shimpan to avoid a specific rival on Day 1 of the tournament.", cost: 15 },
-    { id: "advance_payout", label: "JSA Payout Advance", description: "Request an immediate advance on your stable's monthly stipend.", cost: 25 },
-    { id: "governance_pardon", label: "Governance Clemency", description: "Use faction influence to wipe a minor governance warning from your record.", cost: 40 },
+    {
+      id: "matchmaking_avoid",
+      label: "Matchmaking Influence",
+      description: "Request the Shimpan to avoid a specific rival on Day 1 of the tournament.",
+      cost: 15,
+    },
+    {
+      id: "advance_payout",
+      label: "JSA Payout Advance",
+      description: "Request an immediate advance on your stable's monthly stipend.",
+      cost: 25,
+    },
+    {
+      id: "governance_pardon",
+      label: "Governance Clemency",
+      description: "Use faction influence to wipe a minor governance warning from your record.",
+      cost: 40,
+    },
   ],
 }));
 
@@ -286,9 +301,23 @@ describe("GovernancePage — Resolved Rulings filter", () => {
         },
       },
       governanceLog: [
-        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x", playerSeverity: "harsh" },
+        {
+          id: "g1",
+          date: "2024-W01",
+          type: "fine",
+          severity: "low",
+          reason: "x",
+          playerSeverity: "harsh",
+        },
         { id: "g2", date: "2024-W02", type: "warning", severity: "low", reason: "y" },
-        { id: "g3", date: "2024-W03", type: "fine", severity: "low", reason: "z", playerSeverity: "lenient" },
+        {
+          id: "g3",
+          date: "2024-W03",
+          type: "fine",
+          severity: "low",
+          reason: "z",
+          playerSeverity: "lenient",
+        },
       ],
     });
     render(React.createElement(GovernancePage));
@@ -314,9 +343,7 @@ describe("GovernancePage — Resolved Rulings filter", () => {
           governanceStatus: "good_standing",
         },
       },
-      governanceLog: [
-        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
-      ],
+      governanceLog: [{ id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" }],
     });
     render(React.createElement(GovernancePage));
     const cards = screen.getAllByTestId("list-card");
@@ -367,9 +394,23 @@ describe("GovernancePage — Resolved Rulings filter", () => {
         // g1 first occurrence: no playerSeverity → should be EXCLUDED
         { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
         // g1 duplicate: has playerSeverity → must NOT override the first match
-        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x", playerSeverity: "harsh" },
+        {
+          id: "g1",
+          date: "2024-W01",
+          type: "fine",
+          severity: "low",
+          reason: "x",
+          playerSeverity: "harsh",
+        },
         // g2 first (and only) occurrence: has playerSeverity → should be INCLUDED
-        { id: "g2", date: "2024-W02", type: "fine", severity: "low", reason: "y", playerSeverity: "lenient" },
+        {
+          id: "g2",
+          date: "2024-W02",
+          type: "fine",
+          severity: "low",
+          reason: "y",
+          playerSeverity: "lenient",
+        },
       ],
     });
     render(React.createElement(GovernancePage));

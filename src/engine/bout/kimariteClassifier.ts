@@ -62,14 +62,5 @@ export function evaluateKimariteAttempt(
 
   // Delegate all selection logic to the registry-driven engine
   // This replaces the old hardcoded 'classifyEdgeKimarite', 'classifyBeltKimarite', etc.
-  return KimariteSelectionEngine.evaluate(
-    east,
-    west,
-    stClone,
-    ctx,
-    division,
-    meta,
-    rng,
-    tactics
-  );
+  return KimariteSelectionEngine.evaluate(east, west, stClone, ctx, division, meta, rng, tactics);
 }

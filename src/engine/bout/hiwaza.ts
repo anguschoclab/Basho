@@ -26,12 +26,7 @@ export interface HiwaRng {
   next(): number;
 }
 
-export type HiwazaId =
-  | "isamiashi"
-  | "koshikudake"
-  | "tsukite"
-  | "tsukihiza"
-  | "fumidashi";
+export type HiwazaId = "isamiashi" | "koshikudake" | "tsukite" | "tsukihiza" | "fumidashi";
 
 /** All hi_waza ids — used to avoid reclassifying an already-hiwaza result. */
 export const HIWAZA_IDS: ReadonlySet<string> = new Set<HiwazaId>([

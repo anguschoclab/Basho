@@ -192,15 +192,11 @@ describe("RivalryService.applyWeeklyDecay", () => {
       day: 1,
     });
     const withBout = resolveImpacts(world, [boutImpact]);
-    expect(
-      Object.keys(withBout.rivalriesState!.heyaRivalryPairs ?? {}).length
-    ).toBeGreaterThan(0);
+    expect(Object.keys(withBout.rivalriesState!.heyaRivalryPairs ?? {}).length).toBeGreaterThan(0);
 
     const decayImpact = RivalryService.applyWeeklyDecay(withBout);
     const decayed = resolveImpacts(withBout, [decayImpact]);
-    expect(
-      Object.keys(decayed.rivalriesState!.heyaRivalryPairs ?? {}).length
-    ).toBeGreaterThan(0);
+    expect(Object.keys(decayed.rivalriesState!.heyaRivalryPairs ?? {}).length).toBeGreaterThan(0);
   });
 
   it("derives tone from decayed values, not the pre-decay pair", () => {

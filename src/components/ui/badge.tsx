@@ -7,7 +7,12 @@ import { badgeVariants } from "./badge-variants";
 interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ref, ...props }: BadgeProps & { ref?: React.Ref<HTMLDivElement> }) {
+function Badge({
+  className,
+  variant,
+  ref,
+  ...props
+}: BadgeProps & { ref?: React.Ref<HTMLDivElement> }) {
   return <div ref={ref} className={cn(badgeVariants({ variant }), className)} {...props} />;
 }
 Badge.displayName = "Badge";

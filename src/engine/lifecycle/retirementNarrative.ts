@@ -124,9 +124,7 @@ export function generateRetirementNarrative(
   if (rikishi.careerHighlights && rikishi.careerHighlights.length > 0) {
     const highlight =
       rikishi.careerHighlights.find((h) => h.opponent) ?? rikishi.careerHighlights[0];
-    const opponent = highlight.opponent
-      ? world.rikishi.get(highlight.opponent)
-      : undefined;
+    const opponent = highlight.opponent ? world.rikishi.get(highlight.opponent) : undefined;
     const favoriteMemoryRes = BardEngine.resolve(
       rng,
       "events.narrative.retirement_favorite_memory_summary",

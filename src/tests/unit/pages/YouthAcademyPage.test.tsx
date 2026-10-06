@@ -3,7 +3,8 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 
 vi.mock("@/components/layout/AppLayout", () => ({
-  AppLayout: ({ children }: any) => React.createElement("div", { "data-testid": "app-layout" }, children),
+  AppLayout: ({ children }: any) =>
+    React.createElement("div", { "data-testid": "app-layout" }, children),
 }));
 
 vi.mock("@/components/recruitment/YouthAcademyPanel", () => ({
@@ -11,12 +12,21 @@ vi.mock("@/components/recruitment/YouthAcademyPanel", () => ({
     React.createElement(
       "div",
       { "data-testid": "youth-academy-panel" },
-      React.createElement("button", { "data-testid": "build-youth-academy", onClick: onBuild }, "Build")
+      React.createElement(
+        "button",
+        { "data-testid": "build-youth-academy", onClick: onBuild },
+        "Build"
+      )
     ),
 }));
 
 vi.mock("@/presenters/youthAcademyProjections", () => ({
-  projectYouthAcademy: () => ({ level: 0, hasAcademy: false, prospectCapacity: 0, upgradeCost: 50000 }),
+  projectYouthAcademy: () => ({
+    level: 0,
+    hasAcademy: false,
+    prospectCapacity: 0,
+    upgradeCost: 50000,
+  }),
 }));
 
 const mockUseGame = vi.fn();
@@ -46,7 +56,9 @@ describe("YouthAcademyPage", () => {
         world: {
           seed: "test",
           playerHeyaId: "player",
-          heyas: new Map([["player", { id: "player", name: "Player", economics: { cash: 100000 } }]]),
+          heyas: new Map([
+            ["player", { id: "player", name: "Player", economics: { cash: 100000 } }],
+          ]),
         },
       },
     });
@@ -61,7 +73,9 @@ describe("YouthAcademyPage", () => {
         world: {
           seed: "test",
           playerHeyaId: "player",
-          heyas: new Map([["player", { id: "player", name: "Player", economics: { cash: 100000 } }]]),
+          heyas: new Map([
+            ["player", { id: "player", name: "Player", economics: { cash: 100000 } }],
+          ]),
         },
       },
     });

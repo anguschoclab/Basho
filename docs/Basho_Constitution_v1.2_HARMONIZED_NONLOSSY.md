@@ -8863,11 +8863,13 @@ SECTION 18 — CANONICAL GUARANTEES
 ======================================================================
 ANNEX A — NUMERIC TABLES (AUTHORITATIVE)
 ======================================================================
+
 (Full archetype × family bias tables, leverage grids, risk curves inline)
 
 ======================================================================
 ANNEX B — DEPRECATED SNAPSHOTS (NON-AUTH)
 ======================================================================
+
 (For reference only)
 
 END OF MEGACANON
@@ -29559,44 +29561,48 @@ XP is capped at 1000.
 Mastery modifies FinalWeight AFTER all other multipliers.
 
 For Common moves:
+
 | MasteryTier | Mult |
-|------------|------|
-| 0 | 0.90 |
-| 1 | 0.95 |
-| 2 | 1.00 |
-| 3 | 1.05 |
-| 4 | 1.10 |
-| 5 | 1.15 |
+| ----------- | ---- |
+| 0           | 0.90 |
+| 1           | 0.95 |
+| 2           | 1.00 |
+| 3           | 1.05 |
+| 4           | 1.10 |
+| 5           | 1.15 |
 
 For Uncommon moves:
+
 | MasteryTier | Mult |
-|------------|------|
-| 0 | 0.40 |
-| 1 | 0.55 |
-| 2 | 0.70 |
-| 3 | 0.85 |
-| 4 | 1.00 |
-| 5 | 1.10 |
+| ----------- | ---- |
+| 0           | 0.40 |
+| 1           | 0.55 |
+| 2           | 0.70 |
+| 3           | 0.85 |
+| 4           | 1.00 |
+| 5           | 1.10 |
 
 For Rare moves:
+
 | MasteryTier | Mult |
-|------------|------|
-| 0 | 0.10 |
-| 1 | 0.20 |
-| 2 | 0.35 |
-| 3 | 0.55 |
-| 4 | 0.80 |
-| 5 | 1.00 |
+| ----------- | ---- |
+| 0           | 0.10 |
+| 1           | 0.20 |
+| 2           | 0.35 |
+| 3           | 0.55 |
+| 4           | 0.80 |
+| 5           | 1.00 |
 
 For Legendary moves:
+
 | MasteryTier | Mult |
-|------------|------|
-| 0 | 0.02 |
-| 1 | 0.05 |
-| 2 | 0.10 |
-| 3 | 0.20 |
-| 4 | 0.35 |
-| 5 | 0.50 |
+| ----------- | ---- |
+| 0           | 0.02 |
+| 1           | 0.05 |
+| 2           | 0.10 |
+| 3           | 0.20 |
+| 4           | 0.35 |
+| 5           | 0.50 |
 
 NOTE:
 Legendary moves remain rare even at mastery 5; the global Tier multiplier still applies.

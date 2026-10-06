@@ -215,9 +215,7 @@ export function resolveBoutPhysicsImpl(
   // non-technique result instead of a fabricated technique.
   // Skip reclassification when the timeout path already produced a hi_waza
   // reversal (isamiashi/tsukite) — don't relabel a label.
-  const hiwaza = HIWAZA_IDS.has(kimarite)
-    ? null
-    : maybeClassifyHiwaza(winner, east, west, st, rng);
+  const hiwaza = HIWAZA_IDS.has(kimarite) ? null : maybeClassifyHiwaza(winner, east, west, st, rng);
   if (hiwaza) {
     kimarite = hiwaza;
     boutLog.push({

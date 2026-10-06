@@ -216,9 +216,7 @@ export function buildLeaguePerception(world: WorldState): LeaguePerception {
  * Banded ichimon leadership: the heya with the most political capital in each
  * faction. Bands keep this within the A7.1 no-raw-values contract.
  */
-function buildIchimonLeaders(
-  world: WorldState
-): LeaguePerception["ichimonLeaders"] {
+function buildIchimonLeaders(world: WorldState): LeaguePerception["ichimonLeaders"] {
   const leaders: NonNullable<LeaguePerception["ichimonLeaders"]> = {};
   const best = new Map<string, { heyaId: string; capital: number }>();
   for (const heya of world.heyas.values()) {
@@ -232,8 +230,7 @@ function buildIchimonLeaders(
   for (const [ichimon, entry] of best) {
     leaders[ichimon] = {
       heyaId: entry.heyaId,
-      capitalBand:
-        entry.capital >= 80 ? "dominant" : entry.capital >= 50 ? "strong" : "modest",
+      capitalBand: entry.capital >= 80 ? "dominant" : entry.capital >= 50 ? "strong" : "modest",
     };
   }
   return leaders;

@@ -95,7 +95,15 @@ describe("YouthAcademyPanel", () => {
         maxProspects: 5,
         totalGraduated: 3,
         prospects: [
-          { id: "p1", shikona: "Young Hopeful", age: 15, region: "Japan", potential: 75, currentAbility: 30, developmentPoints: 10 },
+          {
+            id: "p1",
+            shikona: "Young Hopeful",
+            age: 15,
+            region: "Japan",
+            potential: 75,
+            currentAbility: 30,
+            developmentPoints: 10,
+          },
         ],
       }),
       canUpgrade: true,
@@ -298,7 +306,15 @@ describe("YouthAcademyPanel", () => {
       academy: makeAcademyDTO({
         prospectCount: 1,
         prospects: [
-          { id: "p1", shikona: "Young Hopeful", age: 15, region: "Japan", potential: 75, currentAbility: 50, developmentPoints: 100 },
+          {
+            id: "p1",
+            shikona: "Young Hopeful",
+            age: 15,
+            region: "Japan",
+            potential: 75,
+            currentAbility: 50,
+            developmentPoints: 100,
+          },
         ],
       }),
       canUpgrade: true,

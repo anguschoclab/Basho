@@ -391,13 +391,17 @@ function parseImports(filePath: string): ParsedImport[] {
   const imports: ParsedImport[] = [];
 
   // import { foo, bar } from "./path"
-  const namedImportPattern =
-    /import\s+\{([^}]+)\}\s+from\s+["']([^"']+)["']/g;
+  const namedImportPattern = /import\s+\{([^}]+)\}\s+from\s+["']([^"']+)["']/g;
   let m: RegExpExecArray | null;
   while ((m = namedImportPattern.exec(content)) !== null) {
     const symbols = m[1]
       .split(",")
-      .map((s) => s.trim().split(/\s+as\s+/)[0].trim())
+      .map((s) =>
+        s
+          .trim()
+          .split(/\s+as\s+/)[0]
+          .trim()
+      )
       .filter((s) => s && !s.startsWith("//"));
     imports.push({
       resolvedPath: resolveImportPath(m[2], filePath),
@@ -441,7 +445,12 @@ function parseImports(filePath: string): ParsedImport[] {
   while ((m = reExportPattern.exec(content)) !== null) {
     const symbols = m[1]
       .split(",")
-      .map((s) => s.trim().split(/\s+as\s+/)[0].trim())
+      .map((s) =>
+        s
+          .trim()
+          .split(/\s+as\s+/)[0]
+          .trim()
+      )
       .filter((s) => s && !s.startsWith("//"));
     imports.push({
       resolvedPath: resolveImportPath(m[2], filePath),
@@ -502,9 +511,7 @@ function findUntickedServices(): OrphanEntry[] {
     // 1. Any of its exports appear in the import map (named import by another file)
     // 2. OR it was imported via namespace import (all exports considered imported)
     const namedSymbols = importMap.get(serviceFile);
-    const hasNamedImport = namedSymbols
-      ? exports.some((exp) => namedSymbols.has(exp.name))
-      : false;
+    const hasNamedImport = namedSymbols ? exports.some((exp) => namedSymbols.has(exp.name)) : false;
     const hasNamespaceImport = namespaceImportedModules.has(serviceFile);
 
     const isImported = hasNamedImport || hasNamespaceImport;

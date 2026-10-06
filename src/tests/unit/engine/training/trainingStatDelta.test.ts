@@ -37,19 +37,21 @@ function makeTrainingState(
   focusSlots: IndividualFocus[] = []
 ): Map<string, HeyaTrainingState> {
   return new Map([
-    [heyaId, {
+    [
       heyaId,
-      activeProfile: {
-        id: "default",
-        name: "Default",
-        intensity,
-        recovery,
-        volume: "normal",
-        focus: "neutral",
-      } as any,
-      focusSlots,
-      weeklyHistory: [],
-    } as unknown as HeyaTrainingState,
+      {
+        heyaId,
+        activeProfile: {
+          id: "default",
+          name: "Default",
+          intensity,
+          recovery,
+          volume: "normal",
+          focus: "neutral",
+        } as any,
+        focusSlots,
+        weeklyHistory: [],
+      } as unknown as HeyaTrainingState,
     ],
   ]);
 }

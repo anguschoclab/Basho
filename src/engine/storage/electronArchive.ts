@@ -280,11 +280,7 @@ export class ElectronArchiveService implements ArchiveService {
       const content = JSON.stringify(rikishi, null, 2);
       await this.getElectronAPI().fs.writeFile(filePath, content);
     } catch (err) {
-      error(
-        `Failed to archive full rikishi record for ${rikishiId}`,
-        "ElectronArchive",
-        err
-      );
+      error(`Failed to archive full rikishi record for ${rikishiId}`, "ElectronArchive", err);
     }
   }
 
@@ -303,18 +299,17 @@ export class ElectronArchiveService implements ArchiveService {
         if (!parsed || typeof parsed !== "object") return null;
         const obj = parsed as Record<string, unknown>;
         if (typeof obj.id !== "string" || typeof obj.shikona !== "string") {
-          warn("retrieveFullRikishiRecord: invalid record (missing id or shikona)", "ElectronArchive");
+          warn(
+            "retrieveFullRikishiRecord: invalid record (missing id or shikona)",
+            "ElectronArchive"
+          );
           return null;
         }
         return parsed as Rikishi;
       }
       return null;
     } catch (err) {
-      error(
-        `Failed to retrieve full rikishi record for ${rikishiId}`,
-        "ElectronArchive",
-        err
-      );
+      error(`Failed to retrieve full rikishi record for ${rikishiId}`, "ElectronArchive", err);
       return null;
     }
   }

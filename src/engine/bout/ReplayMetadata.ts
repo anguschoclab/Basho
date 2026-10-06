@@ -13,13 +13,7 @@ import type { KimariteClass } from "../types/kimarite";
 import { getKimarite } from "../kimarite";
 
 export type ReplayPhase =
-  | "ritual"
-  | "tachiai"
-  | "clinch"
-  | "momentum"
-  | "finish"
-  | "ceremony"
-  | "complete";
+  "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";
 
 // ---------------------------------------------------------------------------
 // Animation family — maps the engine's KimariteClass to a smaller set of

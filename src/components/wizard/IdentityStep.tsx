@@ -136,81 +136,81 @@ export function IdentityStep({
             <ScrollArea className="max-h-[520px]">
               <div className="grid gap-4 md:grid-cols-2 pr-4 pb-1">
                 {OYAKATA_BACKSTORIES.map((bs) => {
-                const Icon = BACKSTORY_ICONS[bs.iconName] ?? CircleUser;
-                const isSelected = background === bs.id;
-                return (
-                  <div
-                    key={bs.id}
-                    className={cn(
-                      "relative dossier-paper p-5 rounded-lg cursor-pointer transition-all hover:scale-[1.01] overflow-hidden",
-                      isSelected
-                        ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl"
-                        : "opacity-70 hover:opacity-100"
-                    )}
-                    onClick={() => onBackgroundChange(bs.id)}
-                  >
-                    {/* Watermark */}
-                    <div className="absolute -top-2 -right-2 opacity-5 font-display text-3xl font-black pointer-events-none select-none">
-                      {bs.labelJa}
-                    </div>
+                  const Icon = BACKSTORY_ICONS[bs.iconName] ?? CircleUser;
+                  const isSelected = background === bs.id;
+                  return (
+                    <div
+                      key={bs.id}
+                      className={cn(
+                        "relative dossier-paper p-5 rounded-lg cursor-pointer transition-all hover:scale-[1.01] overflow-hidden",
+                        isSelected
+                          ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl"
+                          : "opacity-70 hover:opacity-100"
+                      )}
+                      onClick={() => onBackgroundChange(bs.id)}
+                    >
+                      {/* Watermark */}
+                      <div className="absolute -top-2 -right-2 opacity-5 font-display text-3xl font-black pointer-events-none select-none">
+                        {bs.labelJa}
+                      </div>
 
-                    {/* Header row */}
-                    <div className="flex items-start gap-3 mb-3">
-                      <div
-                        className={cn(
-                          "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
-                          isSelected ? "bg-primary/20" : "bg-muted/50"
-                        )}
-                      >
-                        <Icon
+                      {/* Header row */}
+                      <div className="flex items-start gap-3 mb-3">
+                        <div
                           className={cn(
-                            "w-5 h-5",
-                            isSelected ? "text-primary" : "text-muted-foreground"
+                            "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                            isSelected ? "bg-primary/20" : "bg-muted/50"
                           )}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-display font-black text-base leading-tight">
-                            {bs.label}
-                          </span>
-                          <Badge
-                            variant="outline"
+                        >
+                          <Icon
                             className={cn(
-                              "text-[9px] font-black px-1.5 py-0 h-4 border shrink-0",
-                              DIFFICULTY_CLASS[bs.difficulty]
+                              "w-5 h-5",
+                              isSelected ? "text-primary" : "text-muted-foreground"
                             )}
-                          >
-                            {bs.difficulty}
-                          </Badge>
+                          />
                         </div>
-                        <p className="text-[10px] text-muted-foreground font-medium mt-0.5">
-                          {bs.labelJa} &middot; Peak: {bs.highestRank}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-display font-black text-base leading-tight">
+                              {bs.label}
+                            </span>
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "text-[9px] font-black px-1.5 py-0 h-4 border shrink-0",
+                                DIFFICULTY_CLASS[bs.difficulty]
+                              )}
+                            >
+                              {bs.difficulty}
+                            </Badge>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                            {bs.labelJa} &middot; Peak: {bs.highestRank}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Flavor text */}
+                      <p className="text-[11px] text-muted-foreground leading-relaxed italic line-clamp-2 mb-3">
+                        {bs.flavor}
+                      </p>
+
+                      {/* Bonus chips */}
+                      <div className="flex flex-wrap gap-1 pt-2 border-t border-dashed">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] font-black px-1.5 py-0 h-4 border bg-success/10 text-success border-success/30"
+                        >
+                          ¥{formatYenToMan(bs.bonuses.funds)}
+                        </Badge>
+                        <BonusChip label="Prestige" value={bs.bonuses.prestige} />
+                        <BonusChip label="Training" value={bs.bonuses.training} />
+                        <BonusChip label="Scouting" value={bs.bonuses.scouting} />
+                        <BonusChip label="Politics" value={bs.bonuses.politics} />
                       </div>
                     </div>
-
-                    {/* Flavor text */}
-                    <p className="text-[11px] text-muted-foreground leading-relaxed italic line-clamp-2 mb-3">
-                      {bs.flavor}
-                    </p>
-
-                    {/* Bonus chips */}
-                    <div className="flex flex-wrap gap-1 pt-2 border-t border-dashed">
-                      <Badge
-                        variant="outline"
-                        className="text-[9px] font-black px-1.5 py-0 h-4 border bg-success/10 text-success border-success/30"
-                      >
-                        ¥{formatYenToMan(bs.bonuses.funds)}
-                      </Badge>
-                      <BonusChip label="Prestige" value={bs.bonuses.prestige} />
-                      <BonusChip label="Training" value={bs.bonuses.training} />
-                      <BonusChip label="Scouting" value={bs.bonuses.scouting} />
-                      <BonusChip label="Politics" value={bs.bonuses.politics} />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
               </div>
             </ScrollArea>
           </div>

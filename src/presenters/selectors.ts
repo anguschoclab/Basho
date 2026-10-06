@@ -266,10 +266,7 @@ function buildKimariteRows(stats: Record<string, number>): KimaritePercentageRow
   // Union of every registered kimarite plus any observed-but-unknown ids,
   // so the Techniques table always shows the complete technique list —
   // unobserved entries appear with count 0 and their real-world rarity.
-  const ids = new Set<string>([
-    ...KIMARITE_REGISTRY.map((k) => k.id),
-    ...Object.keys(stats),
-  ]);
+  const ids = new Set<string>([...KIMARITE_REGISTRY.map((k) => k.id), ...Object.keys(stats)]);
   return [...ids]
     .map((kimarite) => {
       const def = getKimarite(kimarite);
@@ -294,7 +291,8 @@ export const selectKimaritePercentages = createSelector(
 
 /** Techniques view for all-time counts (allTimeKimariteStats never resets). */
 export const selectAllTimeKimaritePercentages = createSelector(
-  (world: WorldState): KimaritePercentageRow[] => buildKimariteRows(world.allTimeKimariteStats ?? {})
+  (world: WorldState): KimaritePercentageRow[] =>
+    buildKimariteRows(world.allTimeKimariteStats ?? {})
 );
 
 /**

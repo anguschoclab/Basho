@@ -119,8 +119,7 @@ export function makeNPCWeeklyDecision(
   if (oyakata) {
     // Roster-derived monthly burn — same convention as NPCFinanceCalculator /
     // npcRecruitmentStrategy (MONTHLY_BURN_PER_RIKISHI per roster member).
-    const monthlyBurn =
-      new Set(heya?.rikishiIds ?? []).size * MONTHLY_BURN_PER_RIKISHI;
+    const monthlyBurn = new Set(heya?.rikishiIds ?? []).size * MONTHLY_BURN_PER_RIKISHI;
     const financeCtx: FinanceAgentContext = {
       oyakata,
       world,
@@ -183,9 +182,10 @@ export function makeNPCWeeklyDecision(
     if (vacancies > 0 && world.talentPool) {
       // Evaluate the strongest available candidate, not an arbitrary key.
       // Track the record key — RecruitmentAgent resolves candidates[candidateId].
-      const [bestCandidateId] = Object.entries(world.talentPool.candidates)
-        .filter(([, c]) => c.availabilityState === "available")
-        .sort(([, a], [, b]) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0))[0] ?? [];
+      const [bestCandidateId] =
+        Object.entries(world.talentPool.candidates)
+          .filter(([, c]) => c.availabilityState === "available")
+          .sort(([, a], [, b]) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0))[0] ?? [];
       if (bestCandidateId) {
         // Rival pressure: the hottest heya-rivalry pair this stable sits in.
         const rivalHeyaId = Object.values(world.rivalriesState?.heyaRivalryPairs ?? {})

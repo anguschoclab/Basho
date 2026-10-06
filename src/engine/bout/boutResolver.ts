@@ -200,20 +200,11 @@ export function resolveBout(
     const npcSide: Side = playerSide === "east" ? "west" : "east";
     const npcRikishi = npcSide === "east" ? east : west;
     const npcOpponent = npcSide === "east" ? west : east;
-    const explicit =
-      (npcSide === "east" ? eastTactic : westTactic) ?? bout.cpuTacticOverride;
+    const explicit = (npcSide === "east" ? eastTactic : westTactic) ?? bout.cpuTacticOverride;
     const npcTactic =
       explicit ??
       (world
-        ? chooseNpcSideTactic(
-            world,
-            basho,
-            bout,
-            npcSide,
-            npcRikishi,
-            npcOpponent,
-            rivalryHeat
-          )
+        ? chooseNpcSideTactic(world, basho, bout, npcSide, npcRikishi, npcOpponent, rivalryHeat)
         : undefined);
     if (npcSide === "east") eastTactic = npcTactic;
     else westTactic = npcTactic;
@@ -460,11 +451,7 @@ export function resolveBout(
 
   // 6. Gyoji officiation — assign a gyoji to this bout and record career stats
   if (world?.gyojiPool && world.gyojiPool.length > 0) {
-    const boutImportance = result.isTitleStakes
-      ? 90
-      : result.isYushoRace
-        ? 75
-        : 50;
+    const boutImportance = result.isTitleStakes ? 90 : result.isYushoRace ? 75 : 50;
     const gyoji = assignGyojiToBout(world.gyojiPool, result.boutId, boutImportance);
     if (gyoji) {
       result.gyojiId = gyoji.id;
@@ -476,10 +463,7 @@ export function resolveBout(
       if (result.monoii && world?.shimpanPool && world.shimpanPool.length >= 5) {
         const panel = assembleShimpanPanel(world.shimpanPool, result.boutId);
         if (panel) {
-          result.shimpanPanelIds = [
-            panel.chief.id,
-            ...panel.panelists.map((p) => p.id),
-          ];
+          result.shimpanPanelIds = [panel.chief.id, ...panel.panelists.map((p) => p.id)];
           // Use a deterministic RNG from the bout seed for mono-ii resolution
           const monoiiRng = {
             next: () => {
@@ -509,9 +493,7 @@ export function resolveBout(
       }
 
       const updatedGyoji = recordGyojiBout(gyoji, bashoNameStr, bashoYear, reversed);
-      const updatedPool = world.gyojiPool.map((g) =>
-        g.id === updatedGyoji.id ? updatedGyoji : g
-      );
+      const updatedPool = world.gyojiPool.map((g) => (g.id === updatedGyoji.id ? updatedGyoji : g));
       builder.updateWorldField("gyojiPool", updatedPool);
     }
   }
@@ -557,11 +539,7 @@ function chooseNpcSideTactic(
     buildOpponentModel(opponent, world.week ?? 0);
   const bashoDay = basho.day ?? bout.day ?? 1;
   const ctx: BoutAIContext = {
-    rng: rngFromSeed(
-      world.seed ?? "world",
-      "boutAI",
-      `${basho.id ?? "basho"}:${bout.id}:${side}`
-    ),
+    rng: rngFromSeed(world.seed ?? "world", "boutAI", `${basho.id ?? "basho"}:${bout.id}:${side}`),
     bashoDay,
     cpuRecord: { wins: record.wins ?? 0, losses: record.losses ?? 0 },
     rivalryHeat,

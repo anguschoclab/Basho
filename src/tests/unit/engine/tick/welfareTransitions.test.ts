@@ -36,8 +36,7 @@ describe("welfare transitions — impact purity", () => {
 
     expect(heya.funds).toBe(20_000_000); // input untouched
     const update = builder.build().entities?.heyaUpdates?.get("h1") as
-      | { funds?: number }
-      | undefined;
+      { funds?: number } | undefined;
     expect(update?.funds).toBeLessThan(20_000_000);
   });
 

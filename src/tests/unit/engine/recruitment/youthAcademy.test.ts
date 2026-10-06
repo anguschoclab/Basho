@@ -129,22 +129,67 @@ describe("YouthAcademyService", () => {
 
   describe("getMaxProspects", () => {
     it("returns 3 for level 1", () => {
-      expect(getMaxProspects({ level: 1, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(3);
+      expect(
+        getMaxProspects({
+          level: 1,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(3);
     });
     it("returns 5 for level 2", () => {
-      expect(getMaxProspects({ level: 2, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(5);
+      expect(
+        getMaxProspects({
+          level: 2,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(5);
     });
     it("returns 8 for level 3", () => {
-      expect(getMaxProspects({ level: 3, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(8);
+      expect(
+        getMaxProspects({
+          level: 3,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(8);
     });
   });
 
   describe("getQualityBonus", () => {
     it("returns 5 for level 1", () => {
-      expect(getQualityBonus({ level: 1, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(5);
+      expect(
+        getQualityBonus({
+          level: 1,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(5);
     });
     it("returns 15 for level 3", () => {
-      expect(getQualityBonus({ level: 3, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(15);
+      expect(
+        getQualityBonus({
+          level: 3,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(15);
     });
   });
 });

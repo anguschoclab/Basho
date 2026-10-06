@@ -6,9 +6,7 @@ function makeWorld(rikishi: any[]): WorldState {
   return {
     seed: "test",
     year: 2026,
-    heyas: new Map([
-      ["h1", { id: "h1", name: "Test Heya" }],
-    ]),
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya" }]]),
     rikishi: new Map(rikishi.map((r) => [r.id, r])),
     activeRikishiIds: rikishi.map((r) => r.id),
     playerHeyaId: "h1",

@@ -33,9 +33,7 @@ describe("GomenfudaStatusBadge", () => {
 
   it("renders SANCTION RISK when hasSanctionWarning is true", () => {
     render(
-      <GomenfudaStatusBadge
-        projection={makeProjection({ count: 3, hasSanctionWarning: true })}
-      />
+      <GomenfudaStatusBadge projection={makeProjection({ count: 3, hasSanctionWarning: true })} />
     );
     const badge = screen.getByTestId("gomenfuda-status-badge");
     expect(badge.textContent).toContain("SANCTION RISK");
@@ -43,9 +41,7 @@ describe("GomenfudaStatusBadge", () => {
 
   it("renders count 2/3 at 67% risk", () => {
     render(
-      <GomenfudaStatusBadge
-        projection={makeProjection({ count: 2, sanctionRiskPercent: 67 })}
-      />
+      <GomenfudaStatusBadge projection={makeProjection({ count: 2, sanctionRiskPercent: 67 })} />
     );
     const badge = screen.getByTestId("gomenfuda-status-badge");
     expect(badge.textContent).toContain("2/3");

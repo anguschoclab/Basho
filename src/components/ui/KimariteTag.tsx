@@ -22,7 +22,12 @@ function isPlaceholderDescription(name: string, description: string): boolean {
   return description === `${name} technique.`;
 }
 
-export function KimariteTag({ kimariteId, kimariteName, observedPct, className }: KimariteTagProps) {
+export function KimariteTag({
+  kimariteId,
+  kimariteName,
+  observedPct,
+  className,
+}: KimariteTagProps) {
   const def = getKimarite(kimariteId);
   const displayName = kimariteName ?? def?.name ?? kimariteId;
 

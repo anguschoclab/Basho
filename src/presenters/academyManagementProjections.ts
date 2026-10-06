@@ -3,7 +3,10 @@
  */
 import type { WorldState } from "../engine/types/world";
 import type { AcademyManagementProjection } from "../components/stable/AcademyManagementPanel";
-import { WorldCircuitService, type ExhibitionRegion } from "../engine/systems/worldCircuit/WorldCircuitService";
+import {
+  WorldCircuitService,
+  type ExhibitionRegion,
+} from "../engine/systems/worldCircuit/WorldCircuitService";
 
 export type { ExhibitionRegion };
 
@@ -28,8 +31,7 @@ export function projectAcademyManagement(
     const presence = heya.regionalPresence?.[region] ?? 0;
     const alreadyBuilt = academies.some((a) => a.region === region);
     const canBuild =
-      !alreadyBuilt &&
-      WorldCircuitService.getRegionVisibility(heya, region) === "academy";
+      !alreadyBuilt && WorldCircuitService.getRegionVisibility(heya, region) === "academy";
     return { region, presence, canBuild };
   }).filter((r) => r.presence > 0 || r.canBuild);
 

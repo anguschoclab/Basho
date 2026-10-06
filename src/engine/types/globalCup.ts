@@ -4,11 +4,7 @@
 
 /** Tournament phase progression */
 export type GlobalCupPhase =
-  | "registration"
-  | "quarterfinals"
-  | "semifinals"
-  | "finale"
-  | "complete";
+  "registration" | "quarterfinals" | "semifinals" | "finale" | "complete";
 
 /** Simplified bout result for Global Cup matches (not the full engine BoutResult) */
 export interface GlobalCupBoutResult {

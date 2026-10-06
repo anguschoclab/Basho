@@ -64,7 +64,11 @@ export default function TrendsPage() {
                   Shift in winning styles across the top division over time.
                 </CardDescription>
               </div>
-              <Badge variant="outline" className="border-primary/30 text-primary" data-testid="era-tone-badge">
+              <Badge
+                variant="outline"
+                className="border-primary/30 text-primary"
+                data-testid="era-tone-badge"
+              >
                 ERA: {toneLabel}
               </Badge>
             </div>
@@ -143,7 +147,10 @@ export default function TrendsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground leading-relaxed" data-testid="era-tone-description">
+              <p
+                className="text-xs text-muted-foreground leading-relaxed"
+                data-testid="era-tone-description"
+              >
                 {toneDescription}
               </p>
             </CardContent>

@@ -173,8 +173,7 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       // memory snapshot. Fold the cooldown stamps into nextOya.memory so the
       // final updateOyakata below doesn't overwrite them.
       const execOyaUpdate = decision.impact.entities?.oyakataUpdates?.get(nextOya.id) as
-        | { memory?: { lastExecutedAt?: Record<string, number> } }
-        | undefined;
+        { memory?: { lastExecutedAt?: Record<string, number> } } | undefined;
       if (execOyaUpdate?.memory?.lastExecutedAt) {
         nextOya.memory = {
           ...(nextOya.memory ?? getMemory(nextOya, world.week)),
@@ -217,13 +216,8 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
                 ? "moderate"
                 : "minor";
           builder.merge(
-            handleNPCMediaEvent(
-              world,
-              heya.id,
-              event.id,
-              event.incident ?? event.type,
-              severity
-            ).impact
+            handleNPCMediaEvent(world, heya.id, event.id, event.incident ?? event.type, severity)
+              .impact
           );
         }
       }

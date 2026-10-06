@@ -23,7 +23,13 @@ describe("kinboshiLedger projections", () => {
     });
     const ledger = selectKinboshiLedger(world);
     expect(ledger).toHaveLength(1);
-    expect(ledger[0]).toMatchObject({ winnerId: "m1", opponentId: "y1", year: 2026, month: 7, day: 2 });
+    expect(ledger[0]).toMatchObject({
+      winnerId: "m1",
+      opponentId: "y1",
+      year: 2026,
+      month: 7,
+      day: 2,
+    });
   });
 
   it("returns the latest date per winner", () => {

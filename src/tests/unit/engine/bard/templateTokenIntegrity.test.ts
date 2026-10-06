@@ -52,12 +52,7 @@ function collectLeaves(domain: string, node: unknown, parts: string[], out: Set<
 const ALL_LEAVES = new Set<string>();
 for (const file of readdirSync(DOMAINS_DIR).filter((f) => f.endsWith(".json"))) {
   const domain = basename(file, ".json");
-  collectLeaves(
-    domain,
-    JSON.parse(readFileSync(join(DOMAINS_DIR, file), "utf-8")),
-    [],
-    ALL_LEAVES
-  );
+  collectLeaves(domain, JSON.parse(readFileSync(join(DOMAINS_DIR, file), "utf-8")), [], ALL_LEAVES);
 }
 
 // ---------------------------------------------------------------------------
@@ -243,9 +238,7 @@ function paramUnionLiterals(scope: ts.Node, name: string): string[] {
     }
     // destructured param: ({ name }: { name: union })
     if (ts.isObjectBindingPattern(p.name)) {
-      const elem = p.name.elements.find(
-        (e) => ts.isIdentifier(e.name) && e.name.text === name
-      );
+      const elem = p.name.elements.find((e) => ts.isIdentifier(e.name) && e.name.text === name);
       if (elem && p.type && ts.isTypeLiteralNode(p.type)) {
         const member = p.type.members.find(
           (m) =>
@@ -285,11 +278,7 @@ function mapValueLiterals(obj: ts.ObjectLiteralExpression, memberName?: string):
   return out;
 }
 
-function identSpec(
-  name: string,
-  callNode: ts.Node,
-  seen: Set<string>
-): PathSpec | undefined {
+function identSpec(name: string, callNode: ts.Node, seen: Set<string>): PathSpec | undefined {
   if (seen.has(name)) return undefined;
   seen.add(name);
   const callStart = callNode.getStart();
@@ -405,7 +394,11 @@ function exprSpec(expr: ts.Expression, callNode: ts.Node, seen: Set<string>): Pa
   if (ts.isStringLiteral(expr) || ts.isNoSubstitutionTemplateLiteral(expr)) {
     return { literals: [expr.text], computed: [], patterns: [] };
   }
-  if (ts.isParenthesizedExpression(expr) || ts.isAsExpression(expr) || ts.isSatisfiesExpression(expr)) {
+  if (
+    ts.isParenthesizedExpression(expr) ||
+    ts.isAsExpression(expr) ||
+    ts.isSatisfiesExpression(expr)
+  ) {
     return exprSpec(expr.expression, callNode, seen);
   }
   if (
@@ -486,11 +479,11 @@ function exprSpec(expr: ts.Expression, callNode: ts.Node, seen: Set<string>): Pa
     if (lits.length) return { literals: [], computed: lits, patterns: [] };
     return undefined;
   }
-  if (ts.isBinaryExpression(expr) && expr.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken) {
-    return mergeSpec(
-      exprSpec(expr.left, callNode, seen),
-      exprSpec(expr.right, callNode, seen)
-    );
+  if (
+    ts.isBinaryExpression(expr) &&
+    expr.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken
+  ) {
+    return mergeSpec(exprSpec(expr.left, callNode, seen), exprSpec(expr.right, callNode, seen));
   }
   return undefined;
 }
@@ -604,8 +597,7 @@ function bagContextKeys(): string[] {
   for (const sf of sourceFiles) {
     forEachNode(sf, (n) => {
       if (ts.isPropertyAssignment(n) && ts.isObjectLiteralExpression(n.initializer)) {
-        const name =
-          ts.isIdentifier(n.name) || ts.isStringLiteral(n.name) ? n.name.text : "";
+        const name = ts.isIdentifier(n.name) || ts.isStringLiteral(n.name) ? n.name.text : "";
         if (name === "ctx" || name === "context" || name === "data") addObj(n.initializer);
       }
       if (
@@ -631,23 +623,108 @@ function bagContextKeys(): string[] {
  */
 const BAG_CONTEXT: Record<string, string> = Object.fromEntries(
   [
-    "shikona", "heya", "heyaname", "stable", "oyakata",
-    "winner", "loser", "east", "west", "rival",
-    "rikishiId", "heyaId", "stableId", "oyakataId",
-    "winnerId", "loserId", "winnerRikishiId", "loserRikishiId",
-    "eastRikishiId", "westRikishiId", "rivalId", "rikishiRivalId",
-    "status", "incident", "reason", "day", "week", "month", "year",
-    "amount", "score", "heat", "severity", "type", "axis", "newLevel",
-    "oldMood", "newMood", "intensity", "reasoning", "strategy",
-    "winnerName", "loserName", "kimarite", "kimariteName", "upset",
-    "isKinboshi", "dayInBasho", "basho", "bashoName", "division",
-    "rank", "title", "summary", "count", "total", "prize", "prizeName",
-    "heyaName", "oyakataName", "location", "from", "to", "name", "attr",
-    "SHIKONA", "HEYA", "HEYA_NAME", "HEYANAME", "WINNER", "LOSER", "KIMARITE",
-    "EAST", "WEST", "EAST_NAME", "WEST_NAME", "DAY", "WINS", "LOSSES", "STREAK",
-    "COUNT", "RIVAL", "P1", "P2", "OPPONENT", "OPPONENT_RANK", "MILESTONE", "AGE",
-    "STATUS", "REASON", "AREA", "SEVERITY", "RANK", "DIVISION", "AMOUNT", "WEEK",
-    "MONTH", "YEAR", "TITLE", "TYPE", "RESULT", "NAME",
+    "shikona",
+    "heya",
+    "heyaname",
+    "stable",
+    "oyakata",
+    "winner",
+    "loser",
+    "east",
+    "west",
+    "rival",
+    "rikishiId",
+    "heyaId",
+    "stableId",
+    "oyakataId",
+    "winnerId",
+    "loserId",
+    "winnerRikishiId",
+    "loserRikishiId",
+    "eastRikishiId",
+    "westRikishiId",
+    "rivalId",
+    "rikishiRivalId",
+    "status",
+    "incident",
+    "reason",
+    "day",
+    "week",
+    "month",
+    "year",
+    "amount",
+    "score",
+    "heat",
+    "severity",
+    "type",
+    "axis",
+    "newLevel",
+    "oldMood",
+    "newMood",
+    "intensity",
+    "reasoning",
+    "strategy",
+    "winnerName",
+    "loserName",
+    "kimarite",
+    "kimariteName",
+    "upset",
+    "isKinboshi",
+    "dayInBasho",
+    "basho",
+    "bashoName",
+    "division",
+    "rank",
+    "title",
+    "summary",
+    "count",
+    "total",
+    "prize",
+    "prizeName",
+    "heyaName",
+    "oyakataName",
+    "location",
+    "from",
+    "to",
+    "name",
+    "attr",
+    "SHIKONA",
+    "HEYA",
+    "HEYA_NAME",
+    "HEYANAME",
+    "WINNER",
+    "LOSER",
+    "KIMARITE",
+    "EAST",
+    "WEST",
+    "EAST_NAME",
+    "WEST_NAME",
+    "DAY",
+    "WINS",
+    "LOSSES",
+    "STREAK",
+    "COUNT",
+    "RIVAL",
+    "P1",
+    "P2",
+    "OPPONENT",
+    "OPPONENT_RANK",
+    "MILESTONE",
+    "AGE",
+    "STATUS",
+    "REASON",
+    "AREA",
+    "SEVERITY",
+    "RANK",
+    "DIVISION",
+    "AMOUNT",
+    "WEEK",
+    "MONTH",
+    "YEAR",
+    "TITLE",
+    "TYPE",
+    "RESULT",
+    "NAME",
     ...bagContextKeys(),
   ].map((k) => [k, "X"])
 );
@@ -674,8 +751,7 @@ const PATTERN_HINTS: Record<string, string[]> = {
 };
 
 function addRow(path: string, ctxKeys: string[] | null, loc: string): void {
-  const context =
-    ctxKeys === null ? BAG_CONTEXT : Object.fromEntries(ctxKeys.map((k) => [k, "X"]));
+  const context = ctxKeys === null ? BAG_CONTEXT : Object.fromEntries(ctxKeys.map((k) => [k, "X"]));
   const key = `${path}::${Object.keys(context).sort().join(",")}`;
   if (!rows.has(key)) rows.set(key, { path, context, loc });
 }

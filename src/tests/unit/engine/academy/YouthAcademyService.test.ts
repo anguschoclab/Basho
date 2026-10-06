@@ -22,12 +22,15 @@ function makeWorld(cash = 10_000_000): WorldState {
     year: 2026,
     week: 1,
     heyas: new Map([
-      ["h1", {
-        id: "h1",
-        name: "Test Heya",
-        funds: cash,
-        rikishiIds: [],
-      } as any],
+      [
+        "h1",
+        {
+          id: "h1",
+          name: "Test Heya",
+          funds: cash,
+          rikishiIds: [],
+        } as any,
+      ],
     ]),
     rikishi: new Map(),
     playerHeyaId: "h1",
@@ -245,19 +248,82 @@ describe("YouthAcademyService", () => {
 
   describe("helper functions", () => {
     it("getMaxProspects returns correct capacity per level", () => {
-      expect(getMaxProspects({ level: 1, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(3);
-      expect(getMaxProspects({ level: 3, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(8);
-      expect(getMaxProspects({ level: 5, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(16);
+      expect(
+        getMaxProspects({
+          level: 1,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(3);
+      expect(
+        getMaxProspects({
+          level: 3,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(8);
+      expect(
+        getMaxProspects({
+          level: 5,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(16);
     });
 
     it("getMaxStaff returns min(4, level)", () => {
-      expect(getMaxStaff({ level: 1, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(1);
-      expect(getMaxStaff({ level: 3, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(3);
-      expect(getMaxStaff({ level: 5, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(4);
+      expect(
+        getMaxStaff({
+          level: 1,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(1);
+      expect(
+        getMaxStaff({
+          level: 3,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(3);
+      expect(
+        getMaxStaff({
+          level: 5,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(4);
     });
 
     it("getUpgradeCost returns 0 at max level", () => {
-      expect(getUpgradeCost({ level: MAX_ACADEMY_LEVEL, prospects: [], totalGraduated: 0, budget: 0, staff: [], lastIntakeYear: 0 })).toBe(0);
+      expect(
+        getUpgradeCost({
+          level: MAX_ACADEMY_LEVEL,
+          prospects: [],
+          totalGraduated: 0,
+          budget: 0,
+          staff: [],
+          lastIntakeYear: 0,
+        })
+      ).toBe(0);
     });
   });
 });

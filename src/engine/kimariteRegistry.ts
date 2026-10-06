@@ -1,9 +1,6 @@
 import type { TacticalFamily } from "./types/combat";
 import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
-import {
-  KIMARITE_FREQUENCY_TARGETS,
-  rarityFromShare,
-} from "../constants/engine/kimariteTargets";
+import { KIMARITE_FREQUENCY_TARGETS, rarityFromShare } from "../constants/engine/kimariteTargets";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 
 // --- Domain Models & Defaults ---
@@ -87,8 +84,7 @@ function defineKimarite(entry: KimariteBaseEntry): KimariteDefinition {
   // Rarity is a real-world label: it derives from the technique's measured
   // makuuchi share (KIMARITE_FREQUENCY_TARGETS), not from engine weights.
   // Techniques absent from the table are effectively never recorded → legendary.
-  const rarity =
-    entry.rarity ?? rarityFromShare(KIMARITE_FREQUENCY_TARGETS[entry.id] ?? 0);
+  const rarity = entry.rarity ?? rarityFromShare(KIMARITE_FREQUENCY_TARGETS[entry.id] ?? 0);
 
   // Auto-generate name from ID if missing
   const name =

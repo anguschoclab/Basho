@@ -46,9 +46,7 @@ export default function GlossaryPage() {
 
   return (
     <AppLayout pageTitle="Glossary">
-
-        <title>Glossary — Basho</title>
-
+      <title>Glossary — Basho</title>
 
       <div className="space-y-6">
         <PageHeader
@@ -109,10 +107,7 @@ export default function GlossaryPage() {
         </div>
 
         {filteredTerms.length === 0 && (
-          <EmptyState
-            icon={Search}
-            title={`No terms found for "${query}"`}
-          />
+          <EmptyState icon={Search} title={`No terms found for "${query}"`} />
         )}
       </div>
     </AppLayout>

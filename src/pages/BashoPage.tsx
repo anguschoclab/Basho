@@ -366,9 +366,7 @@ export default function BashoPage() {
         <Progress value={dayProgress} className="h-1" />
 
         {/* Nakabi highlight card — shown on day 8 */}
-        {bashoDigest?.isNakabiDay && (
-          <NakabiHighlightCard projection={nakabiProjection} />
-        )}
+        {bashoDigest?.isNakabiDay && <NakabiHighlightCard projection={nakabiProjection} />}
 
         {/* Officials panel — gyoji & shimpan */}
         {officialsProjection.gyoji.length > 0 && (
@@ -555,8 +553,12 @@ export default function BashoPage() {
           result={selectedBout.result}
           bashoName={bashoName as BashoName}
           day={day}
-          gyojiName={officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.name}
-          gyojiAccuracy={officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.accuracy}
+          gyojiName={
+            officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.name
+          }
+          gyojiAccuracy={
+            officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.accuracy
+          }
           kimariteObservedPct={selectKimariteObservedShare(world, selectedBout.result.kimarite)}
         />
       )}
@@ -569,9 +571,17 @@ export default function BashoPage() {
           result={autoShowPlayerBout.result}
           bashoName={bashoName as BashoName}
           day={day}
-          gyojiName={officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)?.name}
-          gyojiAccuracy={officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)?.accuracy}
-          kimariteObservedPct={selectKimariteObservedShare(world, autoShowPlayerBout.result.kimarite)}
+          gyojiName={
+            officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)?.name
+          }
+          gyojiAccuracy={
+            officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)
+              ?.accuracy
+          }
+          kimariteObservedPct={selectKimariteObservedShare(
+            world,
+            autoShowPlayerBout.result.kimarite
+          )}
         />
       )}
       <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>

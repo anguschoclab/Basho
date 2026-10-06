@@ -1,14 +1,7 @@
 import { describe, it, expect } from "vitest";
-import {
-  classifyHiwaza,
-  maybeClassifyHiwaza,
-} from "@/engine/bout/hiwaza";
+import { classifyHiwaza, maybeClassifyHiwaza } from "@/engine/bout/hiwaza";
 import { mockRikishi } from "../utils";
-import type {
-  EngineStateV2,
-  PhysicalBody,
-  PushBattleState,
-} from "@/engine/types/combat-spatial";
+import type { EngineStateV2, PhysicalBody, PushBattleState } from "@/engine/types/combat-spatial";
 
 /**
  * Hi_waza are the five "non-technique" winning results — the loser defeats
@@ -41,10 +34,7 @@ function makeBody(overrides: Partial<PhysicalBody> = {}): PhysicalBody {
   };
 }
 
-function makeState(
-  east: Partial<PhysicalBody>,
-  west: Partial<PhysicalBody>
-): EngineStateV2 {
+function makeState(east: Partial<PhysicalBody>, west: Partial<PhysicalBody>): EngineStateV2 {
   return {
     tick: 10,
     phase: { tag: "push_battle", state: {} as PushBattleState },

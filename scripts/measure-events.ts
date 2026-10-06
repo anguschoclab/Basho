@@ -11,9 +11,11 @@ async function main() {
   world = { ...world, playerHeyaId: world.heyas.keys().next().value };
   for (let b = 0; b < 3; b++) {
     let g = 0;
-    while (world.cyclePhase !== "active_basho" && g++ < 60) world = advanceDaysFast(world, 7, { autonomous: true });
+    while (world.cyclePhase !== "active_basho" && g++ < 60)
+      world = advanceDaysFast(world, 7, { autonomous: true });
     g = 0;
-    while (world.cyclePhase === "active_basho" && (world.currentBasho?.day ?? 0) <= 15 && g++ < 10) world = advanceDaysFast(world, 7, { autonomous: true });
+    while (world.cyclePhase === "active_basho" && (world.currentBasho?.day ?? 0) <= 15 && g++ < 10)
+      world = advanceDaysFast(world, 7, { autonomous: true });
     let w = endBasho(world);
     w = resolveImpacts(w, [publishBanzukeUpdate(w)]);
     world = w;
@@ -27,6 +29,7 @@ async function main() {
   }
   const sorted = [...bytes.entries()].sort((a, b) => b[1] - a[1]);
   console.log(`total events: ${world.events.log.length}`);
-  for (const [k, n] of sorted.slice(0, 15)) console.log(`  ${k}: n=${counts.get(k)} bytes=${(n / 1048576).toFixed(1)}MB`);
+  for (const [k, n] of sorted.slice(0, 15))
+    console.log(`  ${k}: n=${counts.get(k)} bytes=${(n / 1048576).toFixed(1)}MB`);
 }
 main();

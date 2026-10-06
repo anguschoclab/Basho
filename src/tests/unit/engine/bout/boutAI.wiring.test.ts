@@ -24,9 +24,7 @@ import type { BoutTactic } from "@/engine/types/combat";
 type TacticsMap = { east?: BoutTactic; west?: BoutTactic };
 
 function tacticsOf(result: BoutResult): TacticsMap {
-  return (
-    (result as BoutResult & { tactics?: TacticsMap }).tactics ?? {}
-  );
+  return (result as BoutResult & { tactics?: TacticsMap }).tactics ?? {};
 }
 
 function makeRikishi(id: string, heyaId: string, overrides: Partial<Rikishi> = {}): Rikishi {
@@ -189,9 +187,8 @@ describe("resolveBout — per-side NPC tactics (WS1)", () => {
     });
     const { impact } = resolveBout(bout, east, west, basho, undefined, world);
     const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
-    expect(
-      eastUpdate?.fatigue,
-      "east rikishi must receive ALL_OUT fatigue cost"
-    ).toBeGreaterThan(east.fatigue ?? 0);
+    expect(eastUpdate?.fatigue, "east rikishi must receive ALL_OUT fatigue cost").toBeGreaterThan(
+      east.fatigue ?? 0
+    );
   });
 });

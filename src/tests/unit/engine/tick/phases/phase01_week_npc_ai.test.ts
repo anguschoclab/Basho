@@ -314,7 +314,12 @@ describe("phase01_week_npc_ai sparring", () => {
 
     const world = makeMockWorld({
       rikishi: new Map([
-        ["a1", a1], ["a2", a2], ["b1", b1], ["c1", c1], ["d1", d1], ["d2", d2]
+        ["a1", a1],
+        ["a2", a2],
+        ["b1", b1],
+        ["c1", c1],
+        ["d1", d1],
+        ["d2", d2],
       ]),
       heyas: new Map([["h1", heya]]),
       oyakata: new Map([["o1", oyakata]]),
@@ -322,8 +327,8 @@ describe("phase01_week_npc_ai sparring", () => {
       lineage: [],
       rivalriesState: { pairs: {}, version: "1.0.0" } as any,
       sparringPairs: new Map([
-        ["h1", { heyaId: "h1", pairs: { "d1-d2": { aId: "d1", bId: "d2" } as any } }]
-      ])
+        ["h1", { heyaId: "h1", pairs: { "d1-d2": { aId: "d1", bId: "d2" } as any } }],
+      ]),
     });
 
     const impact = phase01_week_npc_ai(world);
@@ -339,6 +344,10 @@ describe("phase01_week_npc_ai sparring", () => {
     expect(pairValues.some((p: any) => p.aId === "d1" && p.bId === "d2")).toBe(true);
 
     // b1 and c1 should not be paired
-    expect(pairValues.some((p: any) => p.aId === "b1" || p.bId === "b1" || p.aId === "c1" || p.bId === "c1")).toBe(false);
+    expect(
+      pairValues.some(
+        (p: any) => p.aId === "b1" || p.bId === "b1" || p.aId === "c1" || p.bId === "c1"
+      )
+    ).toBe(false);
   });
 });

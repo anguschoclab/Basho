@@ -32,49 +32,50 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 // ── Pool Initialization ───────────────────────────────────────────────────
 
 function createDefaultCandidatePoolState(world: WorldState): TalentPoolWorldState {
-  return { // @world-builder
-      version: "1.0.0",
-      lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
-      candidates: {},
-      pools: {
-        high_school: {
-          poolId: "high_school",
-          poolType: "high_school",
-          refreshCadence: "yearly",
-          populationCap: 50,
-          hiddenReserveCap: 50,
-          candidatesVisible: [],
-          candidatesHidden: [],
-          lastRefreshWeek: world.week ?? 0,
-          scarcityBand: "normal",
-          qualityBand: "normal",
-        },
-        university: {
-          poolId: "university",
-          poolType: "university",
-          refreshCadence: "yearly",
-          populationCap: 40,
-          hiddenReserveCap: 40,
-          candidatesVisible: [],
-          candidatesHidden: [],
-          lastRefreshWeek: world.week ?? 0,
-          scarcityBand: "normal",
-          qualityBand: "normal",
-        },
-        foreign: {
-          poolId: "foreign",
-          poolType: "foreign",
-          refreshCadence: "yearly",
-          populationCap: 30,
-          hiddenReserveCap: 30,
-          candidatesVisible: [],
-          candidatesHidden: [],
-          lastRefreshWeek: world.week ?? 0,
-          scarcityBand: "normal",
-          qualityBand: "normal",
-        },
+  return {
+    // @world-builder
+    version: "1.0.0",
+    lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
+    candidates: {},
+    pools: {
+      high_school: {
+        poolId: "high_school",
+        poolType: "high_school",
+        refreshCadence: "yearly",
+        populationCap: 50,
+        hiddenReserveCap: 50,
+        candidatesVisible: [],
+        candidatesHidden: [],
+        lastRefreshWeek: world.week ?? 0,
+        scarcityBand: "normal",
+        qualityBand: "normal",
       },
-    };
+      university: {
+        poolId: "university",
+        poolType: "university",
+        refreshCadence: "yearly",
+        populationCap: 40,
+        hiddenReserveCap: 40,
+        candidatesVisible: [],
+        candidatesHidden: [],
+        lastRefreshWeek: world.week ?? 0,
+        scarcityBand: "normal",
+        qualityBand: "normal",
+      },
+      foreign: {
+        poolId: "foreign",
+        poolType: "foreign",
+        refreshCadence: "yearly",
+        populationCap: 30,
+        hiddenReserveCap: 30,
+        candidatesVisible: [],
+        candidatesHidden: [],
+        lastRefreshWeek: world.week ?? 0,
+        scarcityBand: "normal",
+        qualityBand: "normal",
+      },
+    },
+  };
 }
 
 /**

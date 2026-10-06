@@ -36,7 +36,9 @@ export function AcademyIntakeCard({ prospect, onPromote }: AcademyIntakeCardProp
         <div>
           <div className="flex items-center justify-between text-xs mb-1">
             <span className="text-muted-foreground">Development</span>
-            <span className="font-mono">{prospect.currentAbility}/{prospect.potential}</span>
+            <span className="font-mono">
+              {prospect.currentAbility}/{prospect.potential}
+            </span>
           </div>
           <Progress value={developmentPercent} className="h-1.5" />
         </div>

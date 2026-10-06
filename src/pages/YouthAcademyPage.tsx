@@ -52,12 +52,8 @@ export default function YouthAcademyPage() {
         <YouthAcademyPanel
           projection={projection}
           cash={cash}
-          onBuild={() =>
-            sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: playerHeya.id })
-          }
-          onUpgrade={() =>
-            sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: playerHeya.id })
-          }
+          onBuild={() => sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: playerHeya.id })}
+          onUpgrade={() => sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: playerHeya.id })}
           onInvest={(amount) =>
             sendCommand({ type: "INVEST_ACADEMY", heyaId: playerHeya.id, amount })
           }

@@ -105,9 +105,7 @@ describe("phase01_basho_bouts player tactics (V5-B09)", () => {
     const impact = phase01_basho_bouts(world);
     resolveImpacts(world, [impact]);
 
-    const callWithTactic = simulateSpy.mock.calls.find(
-      (c) => c[2] === "HENKA"
-    );
+    const callWithTactic = simulateSpy.mock.calls.find((c) => c[2] === "HENKA");
     expect(
       callWithTactic,
       "phase01_basho_bouts must forward the stored tactic to simulateBoutForToday"

@@ -39,7 +39,9 @@ vi.mock("@/engine/naturalization", () => ({
 }));
 
 vi.mock("@/engine/archival", () => ({
-  runRetiredRikishiSummarization: vi.fn(() => ({ metadata: { source: "runRetiredRikishiSummarization", timestamp: 0 } })),
+  runRetiredRikishiSummarization: vi.fn(() => ({
+    metadata: { source: "runRetiredRikishiSummarization", timestamp: 0 },
+  })),
 }));
 
 vi.mock("@/engine/lifecycle/RegistryService", () => ({

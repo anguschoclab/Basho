@@ -22,11 +22,7 @@ import { isCrisisPlayerRelevant } from "./eventSurfacing";
  * option, the option's impactGenerator applies its real effects to the
  * acting heya, and `heya.activeCrisis` is cleared.
  */
-export function resolveNPCCrisis(
-  world: WorldState,
-  heyaId: Id,
-  crisis: ActiveCrisis
-): StateImpact {
+export function resolveNPCCrisis(world: WorldState, heyaId: Id, crisis: ActiveCrisis): StateImpact {
   const builder = createImpactBuilder("resolveNPCCrisis");
   const { choiceId, impact } = handleNPCCrisis(world, heyaId, crisis);
   builder.merge(impact);

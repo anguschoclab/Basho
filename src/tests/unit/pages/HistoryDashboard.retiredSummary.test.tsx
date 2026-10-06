@@ -48,9 +48,7 @@ vi.mock("@/presenters/selectors", () => ({
 // Mock Radix Tabs to always render all content (jsdom doesn't support Radix tab switching)
 vi.mock("@/components/ui/tabs", () => ({
   Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  TabsList: ({ children }: { children: React.ReactNode }) => (
-    <div role="tablist">{children}</div>
-  ),
+  TabsList: ({ children }: { children: React.ReactNode }) => <div role="tablist">{children}</div>,
   TabsTrigger: ({ value, children }: { value: string; children: React.ReactNode }) => (
     <button role="tab" data-value={value} onClick={() => {}}>
       {children}
@@ -61,7 +59,10 @@ vi.mock("@/components/ui/tabs", () => ({
   ),
 }));
 
-function makeSummary(id: string, overrides: Partial<RetiredRikishiSummary> = {}): RetiredRikishiSummary {
+function makeSummary(
+  id: string,
+  overrides: Partial<RetiredRikishiSummary> = {}
+): RetiredRikishiSummary {
   return {
     id,
     shikona: `Legend-${id}`,

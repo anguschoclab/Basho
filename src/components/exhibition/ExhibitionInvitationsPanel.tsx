@@ -9,7 +9,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Globe, Check, X } from "lucide-react";
-import type { ExhibitionProjection, ExhibitionInvitationDTO } from "@/presenters/exhibitionProjections";
+import type {
+  ExhibitionProjection,
+  ExhibitionInvitationDTO,
+} from "@/presenters/exhibitionProjections";
 
 export function ExhibitionInvitationsPanel({
   projection,
@@ -86,7 +89,10 @@ function InvitationRow({
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{invitation.region}</span>
-          <Badge variant="outline" className={`text-[9px] uppercase tracking-widest ${prestigeColor}`}>
+          <Badge
+            variant="outline"
+            className={`text-[9px] uppercase tracking-widest ${prestigeColor}`}
+          >
             {invitation.prestigeLabel}
           </Badge>
           {invitation.requiresRank && (

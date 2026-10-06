@@ -83,10 +83,7 @@ function generateWorld(opts: {
   };
 }) {
   let world = generateInitialWorld(opts.seed);
-  if (
-    opts.playerConfig?.heyaId &&
-    opts.playerConfig.heyaId !== world.playerHeyaId
-  ) {
+  if (opts.playerConfig?.heyaId && opts.playerConfig.heyaId !== world.playerHeyaId) {
     world.playerHeyaId = opts.playerConfig.heyaId; // @world-builder
     // WorldFactory computed _populationTarget against its placeholder
     // playerHeyaId (first generated heya) — recompute so the player's actual
@@ -98,11 +95,7 @@ function generateWorld(opts: {
     world._populationTarget = targetPop;
   }
   if (opts.playerConfig?.oyakataConfig && world.playerHeyaId) {
-    world = applyOyakataCreationConfig(
-      world,
-      world.playerHeyaId,
-      opts.playerConfig.oyakataConfig
-    );
+    world = applyOyakataCreationConfig(world, world.playerHeyaId, opts.playerConfig.oyakataConfig);
   }
   return world;
 }
@@ -604,14 +597,19 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         if (invitation) {
           const heyaId = invitation.heyaId;
           // Auto-select the highest-ranked active rikishi from the heya if not provided
-          const rikishiId = cmd.rikishiId || (() => {
-            const heyaRikishi = [...w.activeRikishiIds]
-              .map((id) => w.rikishi.get(id))
-              .filter((r): r is NonNullable<typeof r> => r !== undefined && r.heyaId === heyaId && !r.isRetired)
-              // rankNumber 1 is the TOP of the banzuke — ascending picks strongest
-              .sort((a, b) => (a.rankNumber ?? 99) - (b.rankNumber ?? 99));
-            return heyaRikishi[0]?.id ?? "";
-          })();
+          const rikishiId =
+            cmd.rikishiId ||
+            (() => {
+              const heyaRikishi = [...w.activeRikishiIds]
+                .map((id) => w.rikishi.get(id))
+                .filter(
+                  (r): r is NonNullable<typeof r> =>
+                    r !== undefined && r.heyaId === heyaId && !r.isRetired
+                )
+                // rankNumber 1 is the TOP of the banzuke — ascending picks strongest
+                .sort((a, b) => (a.rankNumber ?? 99) - (b.rankNumber ?? 99));
+              return heyaRikishi[0]?.id ?? "";
+            })();
           if (!rikishiId) return;
           const impact = WorldCircuitService.processExhibitionResult(
             currentWorld,
@@ -859,8 +857,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   try {
     // Explicit generic function type to assert that the handler will process the correct command.
     const handler = COMMAND_HANDLERS[command.type] as
-      | ((cmd: EngineCommand) => void | Promise<void>)
-      | undefined;
+      ((cmd: EngineCommand) => void | Promise<void>) | undefined;
     if (handler) {
       await handler(command);
     } else {

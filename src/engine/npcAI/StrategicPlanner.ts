@@ -168,11 +168,7 @@ const PLAN_CATALOG: PlanTemplate[] = [
           }
         }
       }
-      const rival = top
-        ? top.heyaAId === ctx.heyaId
-          ? top.heyaBId
-          : top.heyaAId
-        : undefined;
+      const rival = top ? (top.heyaAId === ctx.heyaId ? top.heyaBId : top.heyaAId) : undefined;
       return rival ? [{ domain: "rivalry", type: "focus_rival", value: rival }] : [];
     },
     score: (ctx, perception, league) => {
@@ -222,9 +218,7 @@ const PLAN_CATALOG: PlanTemplate[] = [
     constraints: [{ domain: "training", type: "max_intensity", value: "intensive" }],
     dynamicConstraints: (ctx) => {
       const ids = kadobanRikishiIds(ctx);
-      return ids.length > 0
-        ? [{ domain: "training", type: "protect_rikishi", value: ids }]
-        : [];
+      return ids.length > 0 ? [{ domain: "training", type: "protect_rikishi", value: ids }] : [];
     },
     score: (ctx, _perception) => {
       const kadoban = kadobanRikishiIds(ctx).length;
@@ -245,9 +239,7 @@ const PLAN_CATALOG: PlanTemplate[] = [
     constraints: [{ domain: "training", type: "max_intensity", value: "intensive" }],
     dynamicConstraints: (ctx) => {
       const ids = reigningChampionIds(ctx);
-      return ids.length > 0
-        ? [{ domain: "training", type: "protect_rikishi", value: ids }]
-        : [];
+      return ids.length > 0 ? [{ domain: "training", type: "protect_rikishi", value: ids }] : [];
     },
     score: (ctx, perception) => {
       let s = 0;

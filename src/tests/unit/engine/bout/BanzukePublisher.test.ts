@@ -161,9 +161,19 @@ describe("BanzukePublisher — dayResults (hoshitori) capture", () => {
         eastRikishiId: "r-1",
         westRikishiId: "opp-1",
         result: {
-          boutId: "d1", winner: "east", winnerRikishiId: "r-1", loserRikishiId: "opp-1",
-          kimarite: "yorikiri", isKinboshi: false, log: [], kenshoEnvelopes: 0,
-          momentumScore: 0, inBoutInjury: null, isTimeout: false, upset: false, day: 1,
+          boutId: "d1",
+          winner: "east",
+          winnerRikishiId: "r-1",
+          loserRikishiId: "opp-1",
+          kimarite: "yorikiri",
+          isKinboshi: false,
+          log: [],
+          kenshoEnvelopes: 0,
+          momentumScore: 0,
+          inBoutInjury: null,
+          isTimeout: false,
+          upset: false,
+          day: 1,
         } as never,
       },
       {
@@ -172,18 +182,29 @@ describe("BanzukePublisher — dayResults (hoshitori) capture", () => {
         eastRikishiId: "r-1",
         westRikishiId: "yoko-1",
         result: {
-          boutId: "d2", winner: "east", winnerRikishiId: "r-1", loserRikishiId: "yoko-1",
-          kimarite: "uwatenage", isKinboshi: true,
+          boutId: "d2",
+          winner: "east",
+          winnerRikishiId: "r-1",
+          loserRikishiId: "yoko-1",
+          kimarite: "uwatenage",
+          isKinboshi: true,
           awards: [{ type: "kinboshi", winnerId: "r-1", loserId: "yoko-1", day: 2, boutId: "d2" }],
-          log: [], kenshoEnvelopes: 50, momentumScore: 0, inBoutInjury: null,
-          isTimeout: false, upset: true, day: 2,
+          log: [],
+          kenshoEnvelopes: 50,
+          momentumScore: 0,
+          inBoutInjury: null,
+          isTimeout: false,
+          upset: true,
+          day: 2,
         } as never,
       },
     ] as never;
 
     const impact = publishBanzukeUpdate(world);
     const update = impact.entities?.rikishiUpdates?.get("r-1");
-    const history = update?.careerHistory as Array<{ dayResults?: Array<{ day: number; outcome: string; isKinboshi?: boolean }> }> | undefined;
+    const history = update?.careerHistory as
+      | Array<{ dayResults?: Array<{ day: number; outcome: string; isKinboshi?: boolean }> }>
+      | undefined;
     const latest = history?.[history.length - 1];
     expect(latest?.dayResults).toBeDefined();
     const day2 = latest!.dayResults!.find((d) => d.day === 2);

@@ -1,0 +1,39 @@
+{
+  "round": "v9",
+  "date": "2026-10-06",
+  "baseline": "d0d585ff27c9116f301d58c2391c8aac480dcc17",
+  "method": "Full diffs reviewed per PR (not merge-base approximations); overlap clusters adjudicated best-of-breed; payload-only cherry-picks — bot branches bundle stale perf-gate.yml sweeps that must not land. Comments reviewed: all boilerplate Jules greetings — zero substantive human review on any open PR.",
+  "clusters": {
+    "mason_exhibition_mock": [1036, 1056],
+    "palette_progressbar_a11y": [1042, 1055],
+    "bard_narrative": [1035, 1054],
+    "scout_tests": [1040],
+    "polish_emptystate": [1041],
+    "dependabot": [1043, 1044, 1046, 1047, 1048, 1049, 1050, 1052]
+  },
+  "dispositions": [
+    { "number": 1035, "branch": "bard-fatigue-enrichment-12970985415829283413", "verdict": "CHERRY-PICK", "rationale": "combat.json +9 combat.phases.fatigue variants (%EAST%/%WEST% — verify tokens at production resolve call site). REJECT the rest: perf-gate.yml hunk removes the CI build step (regression vs current main); unreferenced-exports.test.ts references nonexistent __audit_coll_* fixtures; agentExecution.test.ts hunk adds a duplicate rikishiId object key (TS1117). Restore EOF newline." },
+    { "number": 1036, "branch": "mason-tighten-exhibition-bout-mock-5297536444370528670", "verdict": "DISPROVED", "rationale": "Superseded by #1056 (identical intent, +2/-1 vs this +424/-471). Diff carries stale .windsurf/audit/* files, stale perf-gate.yml sweep, and the buggy agentExecution.test.ts hunk." },
+    { "number": 1040, "branch": "scout-narrative-prose-coverage-4481389902987189208", "verdict": "APPROVED (conditional)", "rationale": "285-line NarrativeProse band-resolution suite mocking BardEngine.resolve; all asserted exports exist on main (verified via grep of NarrativeProse.ts). MUST run green on the integration branch before landing — asserted paths may have drifted. Include .jules/scout.md (lands in .Jules/ on case-insensitive FS). Drop perf-gate.yml hunk." },
+    { "number": 1041, "branch": "polish-injury-heatmap-emptystate-3417002808349702238", "verdict": "APPROVED", "rationale": "InjuryRiskHeatmap plain <p> empty state → shared EmptyState component (props verified: icon/title/description/compact all exist on main), Activity lucide icon. Drop stale perf-gate.yml hunk." },
+    { "number": 1042, "branch": "palette/a11y-progressbar-13071156026054856893", "verdict": "APPROVED", "rationale": "role=progressbar + aria-value* on the OUTER track divs of ProgressRow and StatCard — semantically correct placement. Disjoint from merged #1053 (ProgressArc/CalendarWidget/PromotionPipelineWidget). Include .jules/palette.md." },
+    { "number": 1043, "branch": "dependabot/bun/testing-library/dom-10.4.2", "verdict": "APPROVED (batch)", "rationale": "Dependabot batch: @testing-library/dom 10.4.1→10.4.2 via bun update; CONFLICTING lockfile resolved by regen." },
+    { "number": 1044, "branch": "dependabot/bun/electron-vite-6.0.0-beta.5", "verdict": "APPROVED (gated)", "rationale": "Dependabot batch: electron-vite 6.0.0-beta.1→6.0.0-beta.5 — beta bump; only keep if npx electron-vite build passes, else revert and close." },
+    { "number": 1046, "branch": "dependabot/bun/globals-17.12.0", "verdict": "APPROVED (batch)", "rationale": "Dependabot batch: globals 17.9.0→17.12.0." },
+    { "number": 1047, "branch": "dependabot/bun/postcss-8.5.28", "verdict": "APPROVED (batch)", "rationale": "Dependabot batch: postcss 8.5.26→8.5.28." },
+    { "number": 1048, "branch": "dependabot/bun/testing-library/user-event-14.6.7", "verdict": "APPROVED (batch)", "rationale": "Dependabot batch: @testing-library/user-event 14.6.3→14.6.7; CONFLICTING lockfile resolved by regen." },
+    { "number": 1049, "branch": "dependabot/bun/typescript-eslint/parser-8.71.0", "verdict": "APPROVED (batch)", "rationale": "Dependabot batch: @typescript-eslint/parser 8.70.1→8.71.0." },
+    { "number": 1050, "branch": "dependabot/bun/tanstack/react-query-5.104.0", "verdict": "APPROVED (batch)", "rationale": "Dependabot batch: @tanstack/react-query 5.101.4→5.104.0." },
+    { "number": 1052, "branch": "dependabot/bun/tanstack/react-router-1.170.41", "verdict": "APPROVED (batch)", "rationale": "Dependabot batch: @tanstack/react-router 1.170.25→1.170.41." },
+    { "number": 1054, "branch": "bard-narrative-variety-1908510805163077154", "verdict": "APPROVED", "rationale": "Pure JSON +21/-8 across dynasty/post_basho_press/pre_bout domains. Tokens %TRAIT_LABEL%/%ANCESTOR%/%RIKISHI%/%SHIKONA% must verify against production resolve() context keys; restore EOF newlines." },
+    { "number": 1055, "branch": "palette-statcard-a11y-11891195767601435199", "verdict": "DISPROVED", "rationale": "Strict subset of #1042 (StatCard only) and worse semantics — role placed on inner fill div instead of track. Superseded." },
+    { "number": 1056, "branch": "mason-exhibition-bout-basho-state-mock-6917563626865975413", "verdict": "APPROVED", "rationale": "Clean +2/-1: adds required isActive:false (BashoState.isActive required, types/basho.ts:223), removes `as unknown as BashoState` cast. Verified field requirement on main." }
+  ],
+  "tally": {
+    "approved": 11,
+    "approved_conditional": 2,
+    "cherry_pick": 1,
+    "disproved": 2,
+    "total": 16
+  }
+}

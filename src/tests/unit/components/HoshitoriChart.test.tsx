@@ -4,7 +4,12 @@ import { render, screen } from "@testing-library/react";
 import { HoshitoriChart } from "@/components/game/HoshitoriChart";
 import type { MatchSchedule } from "@/engine/types/basho";
 
-function makeMatch(day: number, east: string, west: string, result?: Partial<MatchSchedule["result"]>): MatchSchedule {
+function makeMatch(
+  day: number,
+  east: string,
+  west: string,
+  result?: Partial<MatchSchedule["result"]>
+): MatchSchedule {
   return {
     boutId: `d${day}-${east}-${west}`,
     day,

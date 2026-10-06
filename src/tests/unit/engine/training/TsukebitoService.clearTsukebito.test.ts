@@ -3,7 +3,12 @@
  * Plan Feature 10 Test-First Protocol item 2.
  */
 import { describe, it, expect } from "vitest";
-import { setTsukebito, clearTsukebito, isEligibleForTsukebito, isEligibleTsukebito } from "@/engine/systems/training/TsukebitoService";
+import {
+  setTsukebito,
+  clearTsukebito,
+  isEligibleForTsukebito,
+  isEligibleTsukebito,
+} from "@/engine/systems/training/TsukebitoService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 

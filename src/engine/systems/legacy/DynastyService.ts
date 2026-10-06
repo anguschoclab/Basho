@@ -25,9 +25,7 @@ import type { RetiredRikishiSummary } from "../../types/history";
 
 function isSummary(entry: unknown): entry is RetiredRikishiSummary {
   return (
-    !!entry &&
-    typeof entry === "object" &&
-    (entry as { isSummary?: unknown }).isSummary === true
+    !!entry && typeof entry === "object" && (entry as { isSummary?: unknown }).isSummary === true
   );
 }
 

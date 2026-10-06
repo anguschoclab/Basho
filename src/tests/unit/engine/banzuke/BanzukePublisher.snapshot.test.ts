@@ -173,9 +173,7 @@ describe("publishBanzukeUpdate — banzuke snapshot persistence", () => {
     expect(foughtOn.bashoNumber).toBe(BASHO_NUMBER);
 
     // Fought-on snapshot must record the PRE-update ranks
-    const foughtOnM5 = foughtOn.divisions.makuuchi.assignments.find(
-      (a) => a.rikishiId === "r_m5"
-    );
+    const foughtOnM5 = foughtOn.divisions.makuuchi.assignments.find((a) => a.rikishiId === "r_m5");
     expect(foughtOnM5?.position.rank).toBe("maegashira");
     expect(foughtOnM5?.position.rankNumber).toBe(5);
   });

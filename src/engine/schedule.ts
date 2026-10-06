@@ -391,12 +391,10 @@ function applyMatchmakingAvoid(
     const a = heyaOf.get(p.eastId);
     const b = heyaOf.get(p.westId);
     return (
-      (a === requesterHeyaId && b === rivalHeyaId) ||
-      (a === rivalHeyaId && b === requesterHeyaId)
+      (a === requesterHeyaId && b === rivalHeyaId) || (a === rivalHeyaId && b === requesterHeyaId)
     );
   };
-  const sameHeya = (x: string | undefined, y: string | undefined) =>
-    x !== undefined && x === y;
+  const sameHeya = (x: string | undefined, y: string | undefined) => x !== undefined && x === y;
 
   for (let i = 0; i < out.length; i++) {
     if (!isForbidden(out[i])) continue;

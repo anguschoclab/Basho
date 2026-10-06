@@ -20,38 +20,18 @@ describe("RivalOyakataCard", () => {
   afterEach(() => cleanup());
 
   it("renders heya name", () => {
-    render(
-      <RivalOyakataCard
-        heyaId="h-1"
-        heyaName="Azumazeki"
-        decisions={[]}
-      />
-    );
+    render(<RivalOyakataCard heyaId="h-1" heyaName="Azumazeki" decisions={[]} />);
     expect(screen.getByTestId("rival-oyakata-card-h-1")).toBeDefined();
     expect(screen.getByText("Azumazeki")).toBeDefined();
   });
 
   it("renders ichimon when provided", () => {
-    render(
-      <RivalOyakataCard
-        heyaId="h-1"
-        heyaName="Test"
-        ichimon="Tatsunami"
-        decisions={[]}
-      />
-    );
+    render(<RivalOyakataCard heyaId="h-1" heyaName="Test" ichimon="Tatsunami" decisions={[]} />);
     expect(screen.getByText("Tatsunami")).toBeDefined();
   });
 
   it("renders legacy tier badge when provided", () => {
-    render(
-      <RivalOyakataCard
-        heyaId="h-1"
-        heyaName="Test"
-        legacyTier="dynasty"
-        decisions={[]}
-      />
-    );
+    render(<RivalOyakataCard heyaId="h-1" heyaName="Test" legacyTier="dynasty" decisions={[]} />);
     expect(screen.getByText("dynasty")).toBeDefined();
   });
 
@@ -60,13 +40,7 @@ describe("RivalOyakataCard", () => {
       makeDecision({ decision: "Voted yes", category: "governance" }),
       makeDecision({ decision: "Hired scout", category: "scouting" }),
     ];
-    render(
-      <RivalOyakataCard
-        heyaId="h-1"
-        heyaName="Test"
-        decisions={decisions}
-      />
-    );
+    render(<RivalOyakataCard heyaId="h-1" heyaName="Test" decisions={decisions} />);
     expect(screen.getByTestId("rival-decision-h-1-0")).toBeDefined();
     expect(screen.getByTestId("rival-decision-h-1-1")).toBeDefined();
     expect(screen.getByText("governance")).toBeDefined();
@@ -74,13 +48,7 @@ describe("RivalOyakataCard", () => {
   });
 
   it("shows no decisions message when empty", () => {
-    render(
-      <RivalOyakataCard
-        heyaId="h-1"
-        heyaName="Test"
-        decisions={[]}
-      />
-    );
+    render(<RivalOyakataCard heyaId="h-1" heyaName="Test" decisions={[]} />);
     expect(screen.getByText("No recent decisions logged.")).toBeDefined();
   });
 
@@ -88,13 +56,7 @@ describe("RivalOyakataCard", () => {
     const decisions = Array.from({ length: 5 }, (_, i) =>
       makeDecision({ decision: `Decision ${i}`, category: `cat${i}` })
     );
-    render(
-      <RivalOyakataCard
-        heyaId="h-1"
-        heyaName="Test"
-        decisions={decisions}
-      />
-    );
+    render(<RivalOyakataCard heyaId="h-1" heyaName="Test" decisions={decisions} />);
     expect(screen.getByTestId("rival-decision-h-1-0")).toBeDefined();
     expect(screen.getByTestId("rival-decision-h-1-1")).toBeDefined();
     expect(screen.getByTestId("rival-decision-h-1-2")).toBeDefined();

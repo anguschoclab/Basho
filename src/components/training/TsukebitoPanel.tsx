@@ -30,9 +30,7 @@ export function TsukebitoPanel({
         {/* Current assignments */}
         {projection.assignments.length > 0 && (
           <div className="space-y-2">
-            <span className="text-xs text-muted-foreground uppercase tracking-widest">
-              Current
-            </span>
+            <span className="text-xs text-muted-foreground uppercase tracking-widest">Current</span>
             {projection.assignments.map((a) => (
               <div
                 key={a.seniorId}
@@ -47,10 +45,7 @@ export function TsukebitoPanel({
                 </div>
                 <div className="space-y-1">
                   {a.tsukebito.map((t) => (
-                    <div
-                      key={t.id}
-                      className="flex items-center justify-between text-xs"
-                    >
+                    <div key={t.id} className="flex items-center justify-between text-xs">
                       <span>{t.shikona}</span>
                       <Button
                         size="sm"
@@ -77,9 +72,7 @@ export function TsukebitoPanel({
               Assign New
             </span>
             {projection.eligibleSeniors.map((s) => {
-              const availableJuniors = projection.eligibleJuniors.filter(
-                (j) => !j.assignedTo
-              );
+              const availableJuniors = projection.eligibleJuniors.filter((j) => !j.assignedTo);
               const canAssign = s.currentCount < s.maxCount && availableJuniors.length > 0;
               return (
                 <div

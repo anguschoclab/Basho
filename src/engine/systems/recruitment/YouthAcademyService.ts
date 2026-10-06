@@ -9,7 +9,12 @@
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import type { StateImpact } from "../../core/StateImpact";
-import type { AcademyLevel, AcademyStaff, AcademyStaffRole, YouthProspect } from "../../types/academy";
+import type {
+  AcademyLevel,
+  AcademyStaff,
+  AcademyStaffRole,
+  YouthProspect,
+} from "../../types/academy";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { getHeya } from "../../queries";
 import { rngFromSeed } from "../../rng";
@@ -48,15 +53,42 @@ const INVEST_COST_PER_POINT = 5_000;
 const STAFF_HIRE_COST = 100_000;
 
 /** Staff name pools. */
-const STAFF_FIRST_NAMES = ["Takeshi", "Hiroshi", "Kenji", "Akira", "Daisuke", "Ryo", "Yuki", "Noboru"];
-const STAFF_LAST_NAMES = ["Tanaka", "Yamamoto", "Suzuki", "Watanabe", "Sato", "Kobayashi", "Ito", "Nakamura"];
+const STAFF_FIRST_NAMES = [
+  "Takeshi",
+  "Hiroshi",
+  "Kenji",
+  "Akira",
+  "Daisuke",
+  "Ryo",
+  "Yuki",
+  "Noboru",
+];
+const STAFF_LAST_NAMES = [
+  "Tanaka",
+  "Yamamoto",
+  "Suzuki",
+  "Watanabe",
+  "Sato",
+  "Kobayashi",
+  "Ito",
+  "Nakamura",
+];
 
 /** Prospect name pools. */
 const PROSPECT_FIRST_NAMES = ["Haruto", "Sota", "Yuto", "Kaito", "Riku", "Ren", "Hinata", "Minato"];
 const PROSPECT_LAST_NAMES = ["Aoki", "Endo", "Fujita", "Goto", "Hara", "Ishida", "Kato", "Mori"];
 
 /** Regions for prospect generation. */
-const PROSPECT_REGIONS = ["Hokkaido", "Tohoku", "Kanto", "Chubu", "Kansai", "Chugoku", "Shikoku", "Kyushu"];
+const PROSPECT_REGIONS = [
+  "Hokkaido",
+  "Tohoku",
+  "Kanto",
+  "Chubu",
+  "Kansai",
+  "Chugoku",
+  "Shikoku",
+  "Kyushu",
+];
 
 /** Youth academy state stored on the heya. */
 export interface YouthAcademyState {
@@ -79,10 +111,7 @@ export function getYouthAcademy(heya: Heya): YouthAcademyState | null {
  * Build a youth academy at level 1.
  * Costs the base upgrade cost.
  */
-export function buildYouthAcademy(
-  world: WorldState,
-  heyaId: string
-): StateImpact {
+export function buildYouthAcademy(world: WorldState, heyaId: string): StateImpact {
   const builder = createImpactBuilder("buildYouthAcademy");
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
@@ -125,10 +154,7 @@ export function buildYouthAcademy(
 /**
  * Upgrade the youth academy to the next level.
  */
-export function upgradeYouthAcademy(
-  world: WorldState,
-  heyaId: string
-): StateImpact {
+export function upgradeYouthAcademy(world: WorldState, heyaId: string): StateImpact {
   const builder = createImpactBuilder("upgradeYouthAcademy");
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
@@ -169,10 +195,7 @@ export function upgradeYouthAcademy(
  * Generate yearly intake of 2-3 prospects influenced by academy level + staff quality.
  * Called by phase06_yearly_boundary on the Jan 1 year boundary.
  */
-export function generateYearlyIntake(
-  world: WorldState,
-  heyaId: string
-): StateImpact {
+export function generateYearlyIntake(world: WorldState, heyaId: string): StateImpact {
   const builder = createImpactBuilder("generateYearlyIntake");
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
@@ -247,10 +270,7 @@ export function generateYearlyIntake(
  * Called by phase01_week_academy during the weekly tick.
  * Prospects gain development points and ability based on budget, staff, and level.
  */
-export function applyWeeklyDevelopment(
-  world: WorldState,
-  heyaId: string
-): StateImpact {
+export function applyWeeklyDevelopment(world: WorldState, heyaId: string): StateImpact {
   const builder = createImpactBuilder("applyWeeklyDevelopment");
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
@@ -266,7 +286,8 @@ export function applyWeeklyDevelopment(
   const updatedProspects = academy.prospects.map((p) => {
     if (p.currentAbility >= p.potential) return p;
 
-    const growthRate = (rngFromSeed(world.seed, "academy-dev", `${p.id}-${world.week ?? 0}`).next() * 0.5 + 0.5);
+    const growthRate =
+      rngFromSeed(world.seed, "academy-dev", `${p.id}-${world.week ?? 0}`).next() * 0.5 + 0.5;
     const pointsGained = Math.floor(growthRate * staffMultiplier * levelMultiplier * budgetFactor);
     const newDevPoints = p.developmentPoints + pointsGained;
     const abilityGain = Math.floor(pointsGained / 10);
@@ -297,11 +318,7 @@ export function applyWeeklyDevelopment(
  * Promote a prospect from the academy to the heya roster.
  * This creates a new rikishi from the prospect and adds them to the heya.
  */
-export function promoteIntake(
-  world: WorldState,
-  heyaId: string,
-  prospectId: string
-): StateImpact {
+export function promoteIntake(world: WorldState, heyaId: string, prospectId: string): StateImpact {
   const builder = createImpactBuilder("promoteIntake");
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
@@ -375,11 +392,7 @@ export function promoteIntake(
 /**
  * Invest in the academy to increase the weekly development budget.
  */
-export function investInAcademy(
-  world: WorldState,
-  heyaId: string,
-  amount: number
-): StateImpact {
+export function investInAcademy(world: WorldState, heyaId: string, amount: number): StateImpact {
   const builder = createImpactBuilder("investInAcademy");
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();

@@ -102,7 +102,16 @@ describe("stats integrity (no NaN, no wipe)", () => {
     world.activeRikishiIds = new Set(["r1"]);
 
     const next = resolveImpacts(world, [applyWeeklyTraining(world)]).rikishi.get("r1")!;
-    for (const key of ["power", "speed", "technique", "balance", "stamina", "mental", "adaptability", "aggression"] as const) {
+    for (const key of [
+      "power",
+      "speed",
+      "technique",
+      "balance",
+      "stamina",
+      "mental",
+      "adaptability",
+      "aggression",
+    ] as const) {
       expect(Number.isFinite(next.stats[key]), `stats.${key} should be finite`).toBe(true);
     }
   });

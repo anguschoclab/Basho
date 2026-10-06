@@ -161,11 +161,7 @@ export function applyWeeklyOtotodeshiEffects(
  * Validates eligibility and respects the MAX_TSUKEBITO_PER_SENIOR limit.
  * Refuses if the junior is already assigned to another senior.
  */
-export function setTsukebito(
-  world: WorldState,
-  seniorId: Id,
-  juniorId: Id
-): StateImpact {
+export function setTsukebito(world: WorldState, seniorId: Id, juniorId: Id): StateImpact {
   const builder = createImpactBuilder("setTsukebito");
 
   const senior = world.rikishi.get(seniorId);
@@ -203,11 +199,7 @@ export function setTsukebito(
  * Player-controlled tsukebito removal.
  * Removes a junior rikishi from a senior's tsukebito list.
  */
-export function clearTsukebito(
-  world: WorldState,
-  seniorId: Id,
-  juniorId: Id
-): StateImpact {
+export function clearTsukebito(world: WorldState, seniorId: Id, juniorId: Id): StateImpact {
   const builder = createImpactBuilder("clearTsukebito");
 
   const senior = world.rikishi.get(seniorId);

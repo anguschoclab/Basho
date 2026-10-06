@@ -13,12 +13,18 @@ describe("phase01_week_world_circuit", () => {
       settings: { archiveMode: "standard", enableStyleDrift: true },
       heyas: new Map([
         ["h1", MockFactory.createHeya("h1")],
-        ["h2", MockFactory.createHeya("h2")]
+        ["h2", MockFactory.createHeya("h2")],
       ]),
     });
 
-    const mockImpact1 = { metadata: { source: "test" }, entities: { heyaUpdates: new Map([["h1", { styleDrift: { strength: 0.1 } }]]) } };
-    const mockImpact2 = { metadata: { source: "test" }, entities: { heyaUpdates: new Map([["h2", { styleDrift: { technique: -0.1 } }]]) } };
+    const mockImpact1 = {
+      metadata: { source: "test" },
+      entities: { heyaUpdates: new Map([["h1", { styleDrift: { strength: 0.1 } }]]) },
+    };
+    const mockImpact2 = {
+      metadata: { source: "test" },
+      entities: { heyaUpdates: new Map([["h2", { styleDrift: { technique: -0.1 } }]]) },
+    };
 
     vi.spyOn(WorldCircuitService, "applyStyleDrift")
       .mockReturnValueOnce(mockImpact1 as any)

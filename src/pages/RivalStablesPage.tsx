@@ -44,15 +44,11 @@ export default function RivalStablesPage() {
       <div className="space-y-4 p-4" data-testid="rival-stables-page">
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-semibold">
-            Rival Oyakata ({projection.rivals.length})
-          </h2>
+          <h2 className="text-lg font-semibold">Rival Oyakata ({projection.rivals.length})</h2>
         </div>
 
         {projection.rivals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No rival stables found in this world.
-          </p>
+          <p className="text-sm text-muted-foreground">No rival stables found in this world.</p>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {projection.rivals.map((rival) => (
@@ -90,7 +86,9 @@ export default function RivalStablesPage() {
 
         <OyakataProfileDrawer
           open={selectedRival !== null}
-          onOpenChange={(open) => { if (!open) setSelectedRival(null); }}
+          onOpenChange={(open) => {
+            if (!open) setSelectedRival(null);
+          }}
           rival={selectedRival}
         />
       </div>

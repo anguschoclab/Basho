@@ -21,7 +21,9 @@ async function main() {
   // emulate wizard: pick a player heya so endBasho paths see playerHeyaId
   const firstHeya = world.heyas.keys().next().value;
   world = { ...world, playerHeyaId: firstHeya };
-  console.log(`gen: seed=${world.seed} day=${world.dayIndexGlobal} phase=${world.cyclePhase} player=${firstHeya}`);
+  console.log(
+    `gen: seed=${world.seed} day=${world.dayIndexGlobal} phase=${world.cyclePhase} player=${firstHeya}`
+  );
 
   for (let b = 0; b < 8; b++) {
     // advance until the basho starts (bounded)
@@ -30,13 +32,19 @@ async function main() {
       world = advanceDaysFast(world, 7, { autonomous: true });
     }
     if (world.cyclePhase !== "active_basho") {
-      console.log(`basho ${b + 1}: never reached active_basho (phase=${world.cyclePhase} day=${world.dayIndexGlobal})`);
+      console.log(
+        `basho ${b + 1}: never reached active_basho (phase=${world.cyclePhase} day=${world.dayIndexGlobal})`
+      );
       break;
     }
 
     // run the basho to completion (day > 15 halts the fast path)
     guard = 0;
-    while (world.cyclePhase === "active_basho" && (world.currentBasho?.day ?? 0) <= 15 && guard++ < 10) {
+    while (
+      world.cyclePhase === "active_basho" &&
+      (world.currentBasho?.day ?? 0) <= 15 &&
+      guard++ < 10
+    ) {
       world = advanceDaysFast(world, 7, { autonomous: true });
     }
     const bs = world.currentBasho;
@@ -52,8 +60,10 @@ async function main() {
       w = resolveImpacts(w, [impact]);
       world = w;
       const last = world.history[world.history.length - 1];
-      const y = last ? world.rikishi.get(last.yusho)?.shikona ?? last?.yusho : "?";
-      const jsonMB = (JSON.stringify(SerializationService.serializeWorld(world)).length / 1048576).toFixed(1);
+      const y = last ? (world.rikishi.get(last.yusho)?.shikona ?? last?.yusho) : "?";
+      const jsonMB = (
+        JSON.stringify(SerializationService.serializeWorld(world)).length / 1048576
+      ).toFixed(1);
       console.log(
         `basho ${b + 1} ended: yusho=${y} phase=${world.cyclePhase} ` +
           `events=${world.events?.log?.length} json=${jsonMB}MB ` +

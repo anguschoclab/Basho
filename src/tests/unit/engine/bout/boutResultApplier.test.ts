@@ -1012,9 +1012,7 @@ describe("boutResultApplier — kinboshi award side-effects", () => {
       upset: true,
       isKinboshi: true,
       awardFact: "kinboshi",
-      awards: [
-        { type: "kinboshi", winnerId: "east", loserId: "west", day: 1, boutId: "kin-bout" },
-      ],
+      awards: [{ type: "kinboshi", winnerId: "east", loserId: "west", day: 1, boutId: "kin-bout" }],
       log: [],
       kenshoEnvelopes: 30,
       momentumScore: 0,
@@ -1071,8 +1069,7 @@ describe("boutResultApplier — kinboshi award side-effects", () => {
     result.awardFact = undefined;
     const impact = applyBoutResult(world as WorldState, match, result);
     const bashoUpdate = impact.worldFields?.currentBasho as
-      | { kinboshiThisBasho?: Record<string, number> }
-      | undefined;
+      { kinboshiThisBasho?: Record<string, number> } | undefined;
     expect(bashoUpdate?.kinboshiThisBasho ?? {}).toEqual({});
     const appends = impact.arrayAppends?.filter((a) => a.field === "awardLog") ?? [];
     expect(appends.flatMap((a) => a.items)).toHaveLength(0);

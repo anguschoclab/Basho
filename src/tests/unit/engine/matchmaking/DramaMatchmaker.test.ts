@@ -503,9 +503,7 @@ describe("DramaMatchmaker", () => {
         currentBashoLosses: 5,
         careerWins: 3,
         careerLosses: 4,
-        careerHistory: [
-          { division: "juryo" } as never,
-        ],
+        careerHistory: [{ division: "juryo" } as never],
       });
       const sanyaku = mockRikishi("sanyaku", {
         shikona: "Sanyaku",
@@ -515,9 +513,7 @@ describe("DramaMatchmaker", () => {
         currentBashoLosses: 2,
         careerWins: 100,
         careerLosses: 50,
-        careerHistory: [
-          { division: "makuuchi" } as never,
-        ],
+        careerHistory: [{ division: "makuuchi" } as never],
       });
       const standings = new Map([
         ["rookie", { wins: 5, losses: 5 }],
@@ -539,10 +535,7 @@ describe("DramaMatchmaker", () => {
         currentBashoLosses: 5,
         careerWins: 8,
         careerLosses: 7,
-        careerHistory: [
-          { division: "makuuchi" } as never,
-          { division: "juryo" } as never,
-        ],
+        careerHistory: [{ division: "makuuchi" } as never, { division: "juryo" } as never],
       });
       const sanyaku = mockRikishi("sanyaku2", {
         shikona: "Sanyaku2",
@@ -552,9 +545,7 @@ describe("DramaMatchmaker", () => {
         currentBashoLosses: 2,
         careerWins: 100,
         careerLosses: 50,
-        careerHistory: [
-          { division: "makuuchi" } as never,
-        ],
+        careerHistory: [{ division: "makuuchi" } as never],
       });
       const standings = new Map([
         ["not-rookie", { wins: 5, losses: 5 }],

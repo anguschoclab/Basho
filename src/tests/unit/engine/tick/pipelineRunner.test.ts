@@ -48,8 +48,8 @@ describe("pipelineRunner - PERF flag", () => {
         const impact = {
           metadata: {},
           entities: {
-            heyaUpdates: new Map([["h1", {} as any]])
-          }
+            heyaUpdates: new Map([["h1", {} as any]]),
+          },
         };
         return impact as any;
       });
@@ -69,10 +69,10 @@ describe("pipelineRunner - PERF flag", () => {
               impactSize: 1, // 1 heyaUpdate
             }),
             expect.objectContaining({
-               phaseName: expect.any(String),
-               impactSize: undefined
-            })
-          ])
+              phaseName: expect.any(String),
+              impactSize: undefined,
+            }),
+          ]),
         })
       );
     } finally {

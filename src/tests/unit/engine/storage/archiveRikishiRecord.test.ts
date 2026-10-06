@@ -36,19 +36,25 @@ describe("Cold-storage archive: archiveFullRikishiRecord / retrieveFullRikishiRe
 
   it("archiveFullRikishiRecord validates input is an object with id and shikona", async () => {
     // Invalid: not an object
-    await opfsArchiveService.archiveFullRikishiRecord("r-bad", "not-an-object" as unknown as Rikishi);
+    await opfsArchiveService.archiveFullRikishiRecord(
+      "r-bad",
+      "not-an-object" as unknown as Rikishi
+    );
     const retrieved = await opfsArchiveService.retrieveFullRikishiRecord("r-bad");
     expect(retrieved).toBeNull();
 
     // Invalid: missing shikona
-    await opfsArchiveService.archiveFullRikishiRecord("r-noshikona", { id: "r-noshikona" } as unknown as Rikishi);
+    await opfsArchiveService.archiveFullRikishiRecord("r-noshikona", {
+      id: "r-noshikona",
+    } as unknown as Rikishi);
     const retrieved2 = await opfsArchiveService.retrieveFullRikishiRecord("r-noshikona");
     expect(retrieved2).toBeNull();
   });
 
   it("retrieveFullRikishiRecord validates returned data has id and shikona", async () => {
     // Write corrupted data directly to mock filesystem
-    const root = (await navigator.storage.getDirectory()) as unknown as MockFileSystemDirectoryHandle;
+    const root =
+      (await navigator.storage.getDirectory()) as unknown as MockFileSystemDirectoryHandle;
     const rikishiDir = await root.getDirectoryHandle("rikishi", { create: true });
     const specificDir = await rikishiDir.getDirectoryHandle("r-corrupt", { create: true });
     const fileHandle = await specificDir.getFileHandle("full_record.json", { create: true });
@@ -64,7 +70,8 @@ describe("Cold-storage archive: archiveFullRikishiRecord / retrieveFullRikishiRe
     const rikishi = mockRikishi("r-path-test");
     await opfsArchiveService.archiveFullRikishiRecord("r-path-test", rikishi);
 
-    const root = (await navigator.storage.getDirectory()) as unknown as MockFileSystemDirectoryHandle;
+    const root =
+      (await navigator.storage.getDirectory()) as unknown as MockFileSystemDirectoryHandle;
     const rikishiDir = await root.getDirectoryHandle("rikishi");
     const specificDir = await rikishiDir.getDirectoryHandle("r-path-test");
     const fileHandle = await specificDir.getFileHandle("full_record.json");

@@ -37,9 +37,7 @@ const mockProjection: TsukebitoProjection = {
   eligibleSeniors: [
     { id: "s1", shikona: "Senior Riki", rankLabel: "Sekiwake", currentCount: 1, maxCount: 2 },
   ],
-  eligibleJuniors: [
-    { id: "j2", shikona: "Junior Two", rankLabel: "Jonokuchi", assignedTo: null },
-  ],
+  eligibleJuniors: [{ id: "j2", shikona: "Junior Two", rankLabel: "Jonokuchi", assignedTo: null }],
 };
 
 describe("TsukebitoPanel", () => {

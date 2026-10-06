@@ -233,7 +233,9 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       // Rebuild the rikishi's hoshitori (day-by-day star chart) from the
       // persisted match schedule so history screens can render real results.
       const dayResults = (lastBasho.matches ?? [])
-        .filter((m) => m.result && (m.eastRikishiId === id || m.westRikishiId === id) && m.day <= 15)
+        .filter(
+          (m) => m.result && (m.eastRikishiId === id || m.westRikishiId === id) && m.day <= 15
+        )
         .sort((a, b) => a.day - b.day)
         .flatMap((m) => {
           const res = m.result;
@@ -245,11 +247,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           return [
             {
               day: m.day,
-              outcome: (won
-                ? "win"
-                : res.kimarite === "fusensho"
-                  ? "absence"
-                  : "loss") as "win" | "loss" | "absence",
+              outcome: (won ? "win" : res.kimarite === "fusensho" ? "absence" : "loss") as
+                "win" | "loss" | "absence",
               ...(isKinboshi ? { isKinboshi: true } : {}),
               ...(isGinboshi ? { isGinboshi: true } : {}),
               opponentId: won ? res.loserRikishiId : res.winnerRikishiId,
@@ -696,17 +695,12 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const completedBashoNumber = lastBasho.bashoNumber;
   const completedKey = makeBashoKey(lastBasho.year, completedBashoNumber);
   const prevYear = completedBashoNumber === 1 ? lastBasho.year - 1 : lastBasho.year;
-  const prevBashoNumber = (
-    completedBashoNumber === 1 ? 6 : completedBashoNumber - 1
-  ) as 1 | 2 | 3 | 4 | 5 | 6;
+  const prevBashoNumber = (completedBashoNumber === 1 ? 6 : completedBashoNumber - 1) as
+    1 | 2 | 3 | 4 | 5 | 6;
   const prevKey = makeBashoKey(prevYear, prevBashoNumber);
 
   const nextYear = next === "hatsu" ? lastBasho.year + 1 : lastBasho.year;
-  const newSnapshot = buildBanzukeSnapshot(
-    result.newBanzuke,
-    nextYear,
-    getBashoNumber(next)
-  );
+  const newSnapshot = buildBanzukeSnapshot(result.newBanzuke, nextYear, getBashoNumber(next));
   const foughtOnSnapshot = buildBanzukeSnapshot(
     currentBanzukeList,
     lastBasho.year,

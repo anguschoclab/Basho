@@ -288,7 +288,17 @@ describe("MigrationService", () => {
 
     it("does not overwrite existing gyojiPool", () => {
       const save = makeMinimalSave("1.1.0");
-      const existingGyoji = [{ id: "existing-gyoji", name: "Test", rank: "tate", accuracy: 80, yearsActive: 5, boutsOfficiated: 10, callsReversed: 1 }];
+      const existingGyoji = [
+        {
+          id: "existing-gyoji",
+          name: "Test",
+          rank: "tate",
+          accuracy: 80,
+          yearsActive: 5,
+          boutsOfficiated: 10,
+          callsReversed: 1,
+        },
+      ];
       (save.world as any).gyojiPool = existingGyoji;
       const result = MigrationService.migrateSave(save);
       const world = result.save.world as any;

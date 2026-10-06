@@ -16,8 +16,24 @@ function makeCtx(): BoutContext {
 
 function makeWorldWithPools(): WorldState {
   const gyojiPool: Gyoji[] = [
-    { id: "g1", name: "Tate Gyoji", rank: "tate", accuracy: 80, yearsActive: 10, boutsOfficiated: 0, callsReversed: 0 },
-    { id: "g2", name: "Fuku Gyoji", rank: "fuku-tate", accuracy: 70, yearsActive: 5, boutsOfficiated: 0, callsReversed: 0 },
+    {
+      id: "g1",
+      name: "Tate Gyoji",
+      rank: "tate",
+      accuracy: 80,
+      yearsActive: 10,
+      boutsOfficiated: 0,
+      callsReversed: 0,
+    },
+    {
+      id: "g2",
+      name: "Fuku Gyoji",
+      rank: "fuku-tate",
+      accuracy: 70,
+      yearsActive: 5,
+      boutsOfficiated: 0,
+      callsReversed: 0,
+    },
   ];
   const shimpanPool: Shimpan[] = Array.from({ length: 10 }, (_, i) => ({
     id: `s${i}`,
@@ -57,9 +73,7 @@ describe("resolveBout — gyoji & shimpan officiation", () => {
     const worldFields = (impact as any).worldFields;
     expect(worldFields).toBeDefined();
     expect(worldFields.gyojiPool).toBeDefined();
-    const assignedGyoji = worldFields.gyojiPool.find(
-      (g: Gyoji) => g.id === result.gyojiId
-    );
+    const assignedGyoji = worldFields.gyojiPool.find((g: Gyoji) => g.id === result.gyojiId);
     expect(assignedGyoji).toBeDefined();
     expect(assignedGyoji.boutsOfficiated).toBeGreaterThanOrEqual(1);
   });

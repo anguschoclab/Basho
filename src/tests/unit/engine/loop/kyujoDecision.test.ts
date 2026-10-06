@@ -312,8 +312,7 @@ describe("kyujo_decision applyDecisionEffect", () => {
     applyDecisionEffect(world, builder, "kyujo_decision", "compete", "kyujo_r1_5");
     const impact = builder.build();
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     expect(tc?.dailyInjuryRiskOverrides?.["r1"]).toBe(2.0);
   });
 
@@ -333,8 +332,7 @@ describe("kyujo_decision applyDecisionEffect", () => {
     applyDecisionEffect(world, builder, "kyujo_decision", "compete", "kyujo_r1_5");
     const impact = builder.build();
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     expect(tc?.dailyInjuryRiskOverrides?.["r1"]).toBe(1.5);
   });
 });
@@ -422,8 +420,7 @@ describe("kyujo_decision autonomous resolution", () => {
     const upd = impact.entities?.rikishiUpdates?.get("r1");
     expect(upd?.isKyujo).toBeUndefined();
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     expect(tc?.dailyInjuryRiskOverrides?.["r1"]).toBe(1.5);
   });
 });
@@ -530,8 +527,7 @@ describe("kyujo_decision — additional edge cases", () => {
     applyDecisionEffect(world, builder, "kyujo_decision", "compete", "kyujo_r1_5");
     const impact = builder.build();
     const tc = impact.worldFields?.transientContext as
-      | { dailyInjuryRiskOverrides?: Record<string, number> }
-      | undefined;
+      { dailyInjuryRiskOverrides?: Record<string, number> } | undefined;
     expect(tc?.dailyInjuryRiskOverrides?.["r1"]).toBe(2.0);
   });
 });

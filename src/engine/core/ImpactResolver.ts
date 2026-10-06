@@ -450,9 +450,7 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
           // dedupe keys are versioned with @dayIndex — keys from prior days
           // are unreachable dead weight, so don't pay to copy them.
           const dedupe =
-            result.events.dedupeDay === result.dayIndexGlobal
-              ? { ...result.events.dedupe }
-              : {};
+            result.events.dedupeDay === result.dayIndexGlobal ? { ...result.events.dedupe } : {};
           result = {
             ...result,
             events: {
@@ -542,9 +540,8 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
         ];
         if (!histTarget) {
           histTarget = new Map();
-          (merged.entities as Record<string, Map<string, unknown>>)[
-            "historicalRikishiUpdates"
-          ] = histTarget;
+          (merged.entities as Record<string, Map<string, unknown>>)["historicalRikishiUpdates"] =
+            histTarget;
         }
         for (const [id, update] of histSource) {
           histTarget.set(id, update); // full replacement

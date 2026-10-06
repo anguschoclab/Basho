@@ -180,7 +180,11 @@ export function phase01_week_governance(world: WorldState): StateImpact {
   const market = world.myosekiMarket;
   const myosekiImpacts: StateImpact[] = [];
   if (market && market.stocks) {
-    const rng = rngForWorld(world, "myoseki", `governance-trade_${world.year ?? 0}_${world.week ?? 0}`);
+    const rng = rngForWorld(
+      world,
+      "myoseki",
+      `governance-trade_${world.year ?? 0}_${world.week ?? 0}`
+    );
     // Sequence purchases against progressively-resolved state: each impact's
     // absolute myosekiMarket/funds snapshot is computed off the latest world,
     // so (a) findAvailableStock excludes stocks already sold this week and

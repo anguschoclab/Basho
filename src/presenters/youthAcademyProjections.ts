@@ -49,10 +49,7 @@ const UPGRADE_COST: Record<number, number> = {
   5: 2_500_000,
 };
 
-export function projectYouthAcademy(
-  world: WorldState,
-  heyaId: string
-): YouthAcademyProjection {
+export function projectYouthAcademy(world: WorldState, heyaId: string): YouthAcademyProjection {
   const heya = world.heyas.get(heyaId);
   if (!heya) return { academy: null, hasAcademy: false, canUpgrade: false, upgradeCost: 0 };
 

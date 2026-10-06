@@ -14,12 +14,11 @@ export function GomenfudaStatusBadge({ projection }: { projection: GomenfudaProj
 
   if (count === 0) return null;
 
-  const color =
-    hasSanctionWarning
-      ? "hsl(var(--destructive))"
-      : sanctionRiskPercent >= 67
-        ? "hsl(var(--warning))"
-        : "hsl(var(--muted-foreground))";
+  const color = hasSanctionWarning
+    ? "hsl(var(--destructive))"
+    : sanctionRiskPercent >= 67
+      ? "hsl(var(--warning))"
+      : "hsl(var(--muted-foreground))";
 
   return (
     <div

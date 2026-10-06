@@ -4,7 +4,13 @@
  * Shows detailed information about a rival oyakata including archetype,
  * personality traits, faction, standing, and recent decisions.
  */
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import type { RivalStableDTO } from "@/presenters/rivalStablesProjections";
 
@@ -39,9 +45,7 @@ export function OyakataProfileDrawer({
                 Legacy: {rival.legacyTier}
               </Badge>
             )}
-            <Badge variant="outline">
-              Decisions: {rival.decisionCount}
-            </Badge>
+            <Badge variant="outline">Decisions: {rival.decisionCount}</Badge>
           </div>
 
           {rival.recentDecisions.length > 0 && (
@@ -63,9 +67,7 @@ export function OyakataProfileDrawer({
           )}
 
           {rival.recentDecisions.length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              No recent decisions logged.
-            </p>
+            <p className="text-xs text-muted-foreground">No recent decisions logged.</p>
           )}
         </div>
       </SheetContent>

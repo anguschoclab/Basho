@@ -25,7 +25,10 @@ import { HistoryService } from "../../systems/meta/HistoryService";
 import { runElections } from "../../systems/governance/ScandalService";
 import { DynastyService } from "../../systems/legacy/DynastyService";
 import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
-import { generateYearlyIntake, getYouthAcademy } from "../../systems/recruitment/YouthAcademyService";
+import {
+  generateYearlyIntake,
+  getYouthAcademy,
+} from "../../systems/recruitment/YouthAcademyService";
 import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
 import { TalentPoolService } from "../../systems/generation/TalentPoolService";
 import { performKanrekiCeremony, isEligibleForKanreki } from "../../governance/kanrekiCeremony";

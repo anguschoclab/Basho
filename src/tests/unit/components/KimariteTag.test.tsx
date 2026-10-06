@@ -90,7 +90,9 @@ describe("KimariteTag — observedPct", () => {
   });
 
   it("renders tooltip with only observed share when description is a placeholder", () => {
-    renderWithProvider(<KimariteTag kimariteId="no-desc" kimariteName="NoDesc" observedPct={1.25} />);
+    renderWithProvider(
+      <KimariteTag kimariteId="no-desc" kimariteName="NoDesc" observedPct={1.25} />
+    );
     const content = screen.getByTestId("tooltip-content");
     expect(content.textContent).toContain("1.25%");
     expect(content.textContent).not.toContain("NoDesc technique.");

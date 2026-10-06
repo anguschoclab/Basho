@@ -189,7 +189,14 @@ export default function Dashboard() {
   }, [world, playerHeya]);
 
   const gomenfudaProjection = useMemo(() => {
-    if (!world || !playerHeya) return { count: 0, threshold: 3, hasSanctionWarning: false, sanctionRiskPercent: 0, recentEvents: [] };
+    if (!world || !playerHeya)
+      return {
+        count: 0,
+        threshold: 3,
+        hasSanctionWarning: false,
+        sanctionRiskPercent: 0,
+        recentEvents: [],
+      };
     return projectGomenfuda(world, playerHeya.id);
   }, [world, playerHeya]);
 
@@ -351,11 +358,12 @@ export default function Dashboard() {
           <div className="space-y-4">
             <CalendarWidget />
             <BashoWidget />
-            {world && (() => {
-              const nakabiProjection = projectNakabi(world);
-              if (!nakabiProjection.isNakabiDay || !nakabiProjection.summary) return null;
-              return <NakabiHighlightCard projection={nakabiProjection} />;
-            })()}
+            {world &&
+              (() => {
+                const nakabiProjection = projectNakabi(world);
+                if (!nakabiProjection.isNakabiDay || !nakabiProjection.summary) return null;
+                return <NakabiHighlightCard projection={nakabiProjection} />;
+              })()}
           </div>
 
           {/* ── COL 3: TRAINING + TRENDS ── */}
@@ -441,10 +449,18 @@ export default function Dashboard() {
                 key={inv.id}
                 invitation={inv}
                 onAccept={(id) =>
-                  sendCommand({ type: "ACCEPT_EXHIBITION", heyaId: playerHeya?.id ?? "", invitationId: id })
+                  sendCommand({
+                    type: "ACCEPT_EXHIBITION",
+                    heyaId: playerHeya?.id ?? "",
+                    invitationId: id,
+                  })
                 }
                 onDecline={(id) =>
-                  sendCommand({ type: "DECLINE_EXHIBITION", heyaId: playerHeya?.id ?? "", invitationId: id })
+                  sendCommand({
+                    type: "DECLINE_EXHIBITION",
+                    heyaId: playerHeya?.id ?? "",
+                    invitationId: id,
+                  })
                 }
               />
             ))}

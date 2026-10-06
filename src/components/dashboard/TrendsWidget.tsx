@@ -54,10 +54,7 @@ export function TrendsWidget() {
             }}
           >
             <TrendingUp className="h-3 w-3" style={{ color: color }} />
-            <span
-              className="text-[10px] font-bold uppercase"
-              style={{ color: color }}
-            >
+            <span className="text-[10px] font-bold uppercase" style={{ color: color }}>
               Meta Bias: {label}
             </span>
           </div>

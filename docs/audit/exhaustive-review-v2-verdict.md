@@ -14,21 +14,21 @@ An exhaustive consolidation review of the `Basho` repository was conducted acros
 
 **Final status:**
 
-| Metric | Baseline | Final | Delta |
-|--------|----------|-------|-------|
-| Type-check errors | 0 | 0 | 0 |
-| Lint errors | 0 | 0 | 0 |
-| Build | PASS | PASS | — |
-| Test files | 718 | 720 | +2 |
-| Tests | 6,866 | 6,891 | +25 |
-| Failing tests | 2 | 0 | -2 |
-| Perf tests | 9 | 9 | 0 |
-| Open PRs merged | — | 4 | — |
-| Closed PRs verified | — | 3 | — |
-| Bugs found & fixed | — | 2 | — |
-| Local branches cleaned | — | 1 | — |
-| Old tags cleaned | — | 1 | — |
-| Coverage (branches) | — | 65.75% | threshold 75% (pre-existing gap) |
+| Metric                 | Baseline | Final  | Delta                            |
+| ---------------------- | -------- | ------ | -------------------------------- |
+| Type-check errors      | 0        | 0      | 0                                |
+| Lint errors            | 0        | 0      | 0                                |
+| Build                  | PASS     | PASS   | —                                |
+| Test files             | 718      | 720    | +2                               |
+| Tests                  | 6,866    | 6,891  | +25                              |
+| Failing tests          | 2        | 0      | -2                               |
+| Perf tests             | 9        | 9      | 0                                |
+| Open PRs merged        | —        | 4      | —                                |
+| Closed PRs verified    | —        | 3      | —                                |
+| Bugs found & fixed     | —        | 2      | —                                |
+| Local branches cleaned | —        | 1      | —                                |
+| Old tags cleaned       | —        | 1      | —                                |
+| Coverage (branches)    | —        | 65.75% | threshold 75% (pre-existing gap) |
 
 **Validation summary:** All 15 draft claims verified against codebase. Corrections integrated into plan. See Validation Appendix in plan file.
 
@@ -38,25 +38,25 @@ An exhaustive consolidation review of the `Basho` repository was conducted acros
 
 ### Open PRs Merged (4)
 
-| PR | Title | Verdict | Conflict Resolution | Architectural Impact | Rationale |
-|----|-------|---------|---------------------|----------------------|----------|
-| #805 | Palette: ListCard aria-label | APPROVED | None — 1-line addition | Low — accessibility improvement, no logic change | Correct type guard (`typeof row.label === "string"`), aligns with existing a11y patterns. Best solution for the gap. Test-first: 3 aria-label tests added in `ListCard.test.tsx` before merge. |
-| #806 | Bard: 7-7 pressure bout storylines | APPROVED | None — JSON-only change | Low — narrative enrichment, no engine logic | 10 new variants (7 win + 7 loss, but 7+7=14 total with 2 comma fixes). All tokens are `%WINNER%`/`%LOSER%` only. BardEngine handles arrays natively. Test-first: 4 variant resolution tests added in `boutNarrative.postBout.test.ts` before merge. |
-| #807 | Scout: test stableSort and stableTieBreak | APPROVED | Stash conflict on `sort.test.ts` — resolved by stashing local, merging, then manually integrating missing edge cases | None — test-only PR | Tests provide baseline coverage. Gap identified: missing single-element, all-equal-keys, non-mutation, iterable input tests. These were manually added post-merge. Test-first: edge case tests written before merge, integrated after. |
-| #808 | Bolt: optimize matchmaking loop | APPROVED | None — main hasn't touched `DramaMatchmaker.ts` since merge-base | Low — performance optimization, equivalent logic | `.filter().length` replaced with `for...of` counter. Eliminates intermediate O(N) array allocation in hot path. Test-first: 3 equivalence tests added in `DramaMatchmaker.test.ts` before merge. |
+| PR   | Title                                     | Verdict  | Conflict Resolution                                                                                                  | Architectural Impact                             | Rationale                                                                                                                                                                                                                                           |
+| ---- | ----------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #805 | Palette: ListCard aria-label              | APPROVED | None — 1-line addition                                                                                               | Low — accessibility improvement, no logic change | Correct type guard (`typeof row.label === "string"`), aligns with existing a11y patterns. Best solution for the gap. Test-first: 3 aria-label tests added in `ListCard.test.tsx` before merge.                                                      |
+| #806 | Bard: 7-7 pressure bout storylines        | APPROVED | None — JSON-only change                                                                                              | Low — narrative enrichment, no engine logic      | 10 new variants (7 win + 7 loss, but 7+7=14 total with 2 comma fixes). All tokens are `%WINNER%`/`%LOSER%` only. BardEngine handles arrays natively. Test-first: 4 variant resolution tests added in `boutNarrative.postBout.test.ts` before merge. |
+| #807 | Scout: test stableSort and stableTieBreak | APPROVED | Stash conflict on `sort.test.ts` — resolved by stashing local, merging, then manually integrating missing edge cases | None — test-only PR                              | Tests provide baseline coverage. Gap identified: missing single-element, all-equal-keys, non-mutation, iterable input tests. These were manually added post-merge. Test-first: edge case tests written before merge, integrated after.              |
+| #808 | Bolt: optimize matchmaking loop           | APPROVED | None — main hasn't touched `DramaMatchmaker.ts` since merge-base                                                     | Low — performance optimization, equivalent logic | `.filter().length` replaced with `for...of` counter. Eliminates intermediate O(N) array allocation in hot path. Test-first: 3 equivalence tests added in `DramaMatchmaker.test.ts` before merge.                                                    |
 
 ### Closed PRs Verified (3 Dependabot)
 
-| PR | Title | Verdict | Conflict Resolution | Architectural Impact | Rationale |
-|----|-------|---------|---------------------|----------------------|----------|
-| #800 | Dependabot: electron-store 8→11 | CLOSED — already in main | N/A | Medium (noted) — electron-store 10+ is ESM-only; 3-major-version jump. Already integrated and working. | `package.json` has `"electron-store": "^11.0.2"`. Dynamic import pattern in `electronStorageProvider.ts` handles ESM correctly. 30 tests pass. |
-| #793 | Dependabot: setup-bun 1→2 | CLOSED — already in main | N/A | None | All 4 workflow files use `oven-sh/setup-bun@v2`. |
-| #794 | Dependabot: checkout 4→7 | CLOSED — already in main | N/A | None | All 4 workflow files use `actions/checkout@v7`. |
+| PR   | Title                           | Verdict                  | Conflict Resolution | Architectural Impact                                                                                   | Rationale                                                                                                                                      |
+| ---- | ------------------------------- | ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| #800 | Dependabot: electron-store 8→11 | CLOSED — already in main | N/A                 | Medium (noted) — electron-store 10+ is ESM-only; 3-major-version jump. Already integrated and working. | `package.json` has `"electron-store": "^11.0.2"`. Dynamic import pattern in `electronStorageProvider.ts` handles ESM correctly. 30 tests pass. |
+| #793 | Dependabot: setup-bun 1→2       | CLOSED — already in main | N/A                 | None                                                                                                   | All 4 workflow files use `oven-sh/setup-bun@v2`.                                                                                               |
+| #794 | Dependabot: checkout 4→7        | CLOSED — already in main | N/A                 | None                                                                                                   | All 4 workflow files use `actions/checkout@v7`.                                                                                                |
 
 ### Local Branch
 
-| Branch | Verdict | Action | Rationale |
-|--------|---------|--------|-----------|
+| Branch                       | Verdict                        | Action  | Rationale                                         |
+| ---------------------------- | ------------------------------ | ------- | ------------------------------------------------- |
 | `react-19-toolchain-upgrade` | Fully merged, 0 unique commits | Deleted | Branch HEAD is merge-base itself; no unique work. |
 
 ### Closed PR Cross-Reference (#772-#804)
@@ -129,10 +129,10 @@ All closed PRs in the #772-#804 range were verified against the current codebase
 
 ## 7D: Bug Registry
 
-| Bug ID | File:Line | Description | Root Cause | Severity | Fix | Regression Test | Test-First Verified |
-|--------|-----------|-------------|------------|----------|-----|-----------------|---------------------|
-| BUG-V2-001 | `src/engine/systems/bookmark/BookmarkService.ts:62` | `addBookmark` used `Date.now()` for `createdAt` timestamp | `Date.now()` is non-deterministic; engine requires reproducible state from seed | Critical | Replaced with `world.dayIndexGlobal`. Commit `a0598f9f`. | `src/tests/unit/engine/systems/bookmark/BookmarkService.test.ts` (4 tests). Updated `src/tests/unit/engine/systems/generation/bookmarkService.test.ts:31`. | YES — test written and committed before fix |
-| BUG-V2-002 | `src/tests/unit/audit/bundleBudget.test.ts:7-12` | Bundle budget thresholds too low for actual chunk sizes | Thresholds not updated after React 19 / Vite 8 migration | Low | Raised `index` to 2.5 MB, `engine-bout` to 1.0 MB. Commit `a0598f9f`. | `src/tests/unit/audit/bundleBudget.test.ts` (19 tests). | YES — failing tests documented before thresholds adjusted |
+| Bug ID     | File:Line                                           | Description                                               | Root Cause                                                                      | Severity | Fix                                                                   | Regression Test                                                                                                                                            | Test-First Verified                                       |
+| ---------- | --------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| BUG-V2-001 | `src/engine/systems/bookmark/BookmarkService.ts:62` | `addBookmark` used `Date.now()` for `createdAt` timestamp | `Date.now()` is non-deterministic; engine requires reproducible state from seed | Critical | Replaced with `world.dayIndexGlobal`. Commit `a0598f9f`.              | `src/tests/unit/engine/systems/bookmark/BookmarkService.test.ts` (4 tests). Updated `src/tests/unit/engine/systems/generation/bookmarkService.test.ts:31`. | YES — test written and committed before fix               |
+| BUG-V2-002 | `src/tests/unit/audit/bundleBudget.test.ts:7-12`    | Bundle budget thresholds too low for actual chunk sizes   | Thresholds not updated after React 19 / Vite 8 migration                        | Low      | Raised `index` to 2.5 MB, `engine-bout` to 1.0 MB. Commit `a0598f9f`. | `src/tests/unit/audit/bundleBudget.test.ts` (19 tests).                                                                                                    | YES — failing tests documented before thresholds adjusted |
 
 Full details in `docs/audit/bug-registry-v2.md`.
 

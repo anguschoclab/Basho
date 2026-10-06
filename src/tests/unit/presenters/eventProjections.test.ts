@@ -1,5 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
-import { projectBashoResults, projectPressConferenceData } from "@/presenters/projections/eventProjections";
+import {
+  projectBashoResults,
+  projectPressConferenceData,
+} from "@/presenters/projections/eventProjections";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "../engine/utils";
 import type { BashoResult, MatchSchedule, BoutResult } from "@/engine/types/basho";
 

@@ -312,7 +312,12 @@ describe("ElectronStorageProvider", () => {
         Object.defineProperty(global, "indexedDB", {
           value: {
             open: () => {
-              const req: any = { result: healthyDb, onupgradeneeded: null, onsuccess: null, onerror: null };
+              const req: any = {
+                result: healthyDb,
+                onupgradeneeded: null,
+                onsuccess: null,
+                onerror: null,
+              };
               queueMicrotask(() => req.onsuccess?.());
               return req;
             },

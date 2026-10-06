@@ -11,13 +11,31 @@
     "deletions": 7,
     "updatedAt": "2026-08-25T22:29:44Z",
     "files": [
-      {"path": "src/engine/core/EntityService.ts", "additions": 9, "deletions": 5, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/core/EntityService.ts",
+        "additions": 9,
+        "deletions": 5,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -32,11 +50,19 @@
     "deletions": 25,
     "updatedAt": "2026-08-25T22:18:49Z",
     "files": [
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 13, "deletions": 25, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 13,
+        "deletions": 25,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -51,12 +77,20 @@
     "deletions": 0,
     "updatedAt": "2026-08-25T22:32:05Z",
     "files": [
-      {"path": ".jules/palette.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/components/wizard/FactionStep.tsx", "additions": 10, "deletions": 0, "changeType": "MODIFIED"}
+      { "path": ".jules/palette.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/components/wizard/FactionStep.tsx",
+        "additions": 10,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -71,16 +105,44 @@
     "deletions": 5,
     "updatedAt": "2026-08-25T23:24:19Z",
     "files": [
-      {"path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts", "additions": 0, "deletions": 2, "changeType": "DELETED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts", "additions": 0, "deletions": 1, "changeType": "DELETED"},
-      {"path": "src/tests/unit/engine/tick/phases/monthly/training/archetypeDrift.test.ts", "additions": 98, "deletions": 0, "changeType": "ADDED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts",
+        "additions": 0,
+        "deletions": 2,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts",
+        "additions": 0,
+        "deletions": 1,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/tests/unit/engine/tick/phases/monthly/training/archetypeDrift.test.ts",
+        "additions": 98,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -95,11 +157,19 @@
     "deletions": 1,
     "updatedAt": "2026-08-25T23:44:16Z",
     "files": [
-      {"path": "src/engine/bard/domains/events.json", "additions": 5, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/bard/domains/events.json",
+        "additions": 5,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -114,14 +184,32 @@
     "deletions": 4,
     "updatedAt": "2026-08-26T22:28:48Z",
     "files": [
-      {"path": ".jules/palette.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/components/game/SaveLoadDialogComponents.tsx", "additions": 24, "deletions": 2, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".jules/palette.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/components/game/SaveLoadDialogComponents.tsx",
+        "additions": 24,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -136,11 +224,14 @@
     "deletions": 0,
     "updatedAt": "2026-08-26T22:56:05Z",
     "files": [
-      {"path": "electron/main.ts", "additions": 2, "deletions": 0, "changeType": "MODIFIED"}
+      { "path": "electron/main.ts", "additions": 2, "deletions": 0, "changeType": "MODIFIED" }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -155,14 +246,37 @@
     "deletions": 29,
     "updatedAt": "2026-08-26T23:01:18Z",
     "files": [
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 5, "deletions": 27, "changeType": "MODIFIED"},
-      {"path": "src/engine/types/rikishi.ts", "additions": 31, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 5,
+        "deletions": 27,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/types/rikishi.ts",
+        "additions": 31,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -177,13 +291,31 @@
     "deletions": 14,
     "updatedAt": "2026-08-26T23:46:14Z",
     "files": [
-      {"path": "src/engine/bard/domains/ui.json", "additions": 24, "deletions": 12, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/bard/domains/ui.json",
+        "additions": 24,
+        "deletions": 12,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -198,11 +330,19 @@
     "deletions": 1,
     "updatedAt": "2026-08-27T22:49:25Z",
     "files": [
-      {"path": "src/engine/tick/pipelineRunner.ts", "additions": 5, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/tick/pipelineRunner.ts",
+        "additions": 5,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -217,29 +357,102 @@
     "deletions": 997,
     "updatedAt": "2026-08-27T23:42:50Z",
     "files": [
-      {"path": ".bun-version", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": ".github/workflows/autonomous-narrative.yml", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": ".github/workflows/lint.yml", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": ".github/workflows/perf-gate.yml", "additions": 3, "deletions": 3, "changeType": "MODIFIED"},
-      {"path": ".github/workflows/typecheck.yml", "additions": 2, "deletions": 2, "changeType": "MODIFIED"},
-      {"path": "bun.lock", "additions": 939, "deletions": 956, "changeType": "MODIFIED"},
-      {"path": "src/constants/engine/rankDisplay.ts", "additions": 2, "deletions": 2, "changeType": "MODIFIED"},
-      {"path": "src/engine/almanac/career.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/banzuke.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/lineage.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/matchmaking/MatchmakingPhases.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/queries.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts", "additions": 0, "deletions": 2, "changeType": "DELETED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts", "additions": 0, "deletions": 1, "changeType": "DELETED"},
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 7, "deletions": 20, "changeType": "MODIFIED"},
-      {"path": "src/engine/systems/narrative/RivalryService.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/types/rikishi.ts", "additions": 27, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".bun-version", "additions": 1, "deletions": 1, "changeType": "MODIFIED" },
+      {
+        "path": ".github/workflows/autonomous-narrative.yml",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".github/workflows/lint.yml",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".github/workflows/perf-gate.yml",
+        "additions": 3,
+        "deletions": 3,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": ".github/workflows/typecheck.yml",
+        "additions": 2,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      { "path": "bun.lock", "additions": 939, "deletions": 956, "changeType": "MODIFIED" },
+      {
+        "path": "src/constants/engine/rankDisplay.ts",
+        "additions": 2,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/almanac/career.ts",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      { "path": "src/engine/banzuke.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED" },
+      { "path": "src/engine/lineage.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED" },
+      {
+        "path": "src/engine/matchmaking/MatchmakingPhases.ts",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      { "path": "src/engine/queries.ts", "additions": 1, "deletions": 1, "changeType": "MODIFIED" },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts",
+        "additions": 0,
+        "deletions": 2,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts",
+        "additions": 0,
+        "deletions": 1,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 7,
+        "deletions": 20,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/systems/narrative/RivalryService.ts",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/types/rikishi.ts",
+        "additions": 27,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -254,16 +467,49 @@
     "deletions": 5,
     "updatedAt": "2026-08-27T23:50:22Z",
     "files": [
-      {"path": "src/components/rikishi/RikishiProfileHeader.tsx", "additions": 3, "deletions": 3, "changeType": "MODIFIED"},
-      {"path": "src/presenters/rikishi/transformers/lineage.ts", "additions": 1, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/presenters/rikishi/transformers/roster.ts", "additions": 1, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/presenters/rikishi/types.ts", "additions": 2, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/components/rikishi/RikishiProfileHeader.tsx",
+        "additions": 3,
+        "deletions": 3,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/presenters/rikishi/transformers/lineage.ts",
+        "additions": 1,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/presenters/rikishi/transformers/roster.ts",
+        "additions": 1,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/presenters/rikishi/types.ts",
+        "additions": 2,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -278,16 +524,44 @@
     "deletions": 6,
     "updatedAt": "2026-08-28T23:07:28Z",
     "files": [
-      {"path": ".jules/palette.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/components/menu/HeyaCard.tsx", "additions": 10, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts", "additions": 0, "deletions": 2, "changeType": "DELETED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts", "additions": 0, "deletions": 1, "changeType": "DELETED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".jules/palette.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/components/menu/HeyaCard.tsx",
+        "additions": 10,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts",
+        "additions": 0,
+        "deletions": 2,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts",
+        "additions": 0,
+        "deletions": 1,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -302,13 +576,31 @@
     "deletions": 6,
     "updatedAt": "2026-08-28T22:34:12Z",
     "files": [
-      {"path": "src/engine/core/EntityService.ts", "additions": 4, "deletions": 4, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/core/EntityService.ts",
+        "additions": 4,
+        "deletions": 4,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -323,14 +615,37 @@
     "deletions": 28,
     "updatedAt": "2026-08-28T22:48:30Z",
     "files": [
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 5, "deletions": 26, "changeType": "MODIFIED"},
-      {"path": "src/engine/types/rikishi.ts", "additions": 20, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 5,
+        "deletions": 26,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/types/rikishi.ts",
+        "additions": 20,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -345,11 +660,19 @@
     "deletions": 0,
     "updatedAt": "2026-08-28T23:21:54Z",
     "files": [
-      {"path": "src/components/rikishi/RikishiProfileHeader.tsx", "additions": 11, "deletions": 0, "changeType": "MODIFIED"}
+      {
+        "path": "src/components/rikishi/RikishiProfileHeader.tsx",
+        "additions": 11,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -364,16 +687,44 @@
     "deletions": 6,
     "updatedAt": "2026-08-28T23:47:13Z",
     "files": [
-      {"path": ".jules/scout.md", "additions": 6, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts", "additions": 0, "deletions": 2, "changeType": "DELETED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts", "additions": 0, "deletions": 1, "changeType": "DELETED"},
-      {"path": "src/tests/unit/engine/systems/worldCircuit/WorldCircuitService.test.ts", "additions": 67, "deletions": 0, "changeType": "ADDED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".jules/scout.md", "additions": 6, "deletions": 1, "changeType": "MODIFIED" },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts",
+        "additions": 0,
+        "deletions": 2,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts",
+        "additions": 0,
+        "deletions": 1,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/tests/unit/engine/systems/worldCircuit/WorldCircuitService.test.ts",
+        "additions": 67,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -388,13 +739,31 @@
     "deletions": 5,
     "updatedAt": "2026-08-29T22:54:07Z",
     "files": [
-      {"path": "src/engine/core/EntityService.ts", "additions": 7, "deletions": 2, "changeType": "MODIFIED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts", "additions": 0, "deletions": 2, "changeType": "DELETED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts", "additions": 0, "deletions": 1, "changeType": "DELETED"}
+      {
+        "path": "src/engine/core/EntityService.ts",
+        "additions": 7,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts",
+        "additions": 0,
+        "deletions": 2,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts",
+        "additions": 0,
+        "deletions": 1,
+        "changeType": "DELETED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -409,14 +778,32 @@
     "deletions": 3,
     "updatedAt": "2026-08-29T23:07:41Z",
     "files": [
-      {"path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts", "additions": 0, "deletions": 2, "changeType": "DELETED"},
-      {"path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts", "additions": 0, "deletions": 1, "changeType": "DELETED"},
-      {"path": "src/tests/unit/engine/npcAI/LeaguePerception.test.ts", "additions": 54, "deletions": 0, "changeType": "ADDED"}
+      { "path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeConsumer.ts",
+        "additions": 0,
+        "deletions": 2,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/engine/systems/__audit_ns_1787673871626__/NsProbeService.ts",
+        "additions": 0,
+        "deletions": 1,
+        "changeType": "DELETED"
+      },
+      {
+        "path": "src/tests/unit/engine/npcAI/LeaguePerception.test.ts",
+        "additions": 54,
+        "deletions": 0,
+        "changeType": "ADDED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -430,9 +817,7 @@
     "additions": 1,
     "deletions": 1,
     "updatedAt": "2026-08-30T00:24:21Z",
-    "files": [
-      {"path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
-    ],
+    "files": [{ "path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED" }],
     "reviews": [],
     "comments": []
   },
@@ -447,9 +832,7 @@
     "additions": 1,
     "deletions": 1,
     "updatedAt": "2026-08-30T00:24:35Z",
-    "files": [
-      {"path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
-    ],
+    "files": [{ "path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED" }],
     "reviews": [],
     "comments": []
   },
@@ -464,9 +847,7 @@
     "additions": 1,
     "deletions": 1,
     "updatedAt": "2026-08-30T00:25:59Z",
-    "files": [
-      {"path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
-    ],
+    "files": [{ "path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED" }],
     "reviews": [],
     "comments": []
   },
@@ -481,9 +862,7 @@
     "additions": 1,
     "deletions": 1,
     "updatedAt": "2026-08-30T00:26:40Z",
-    "files": [
-      {"path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
-    ],
+    "files": [{ "path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED" }],
     "reviews": [],
     "comments": []
   },
@@ -498,9 +877,7 @@
     "additions": 1,
     "deletions": 1,
     "updatedAt": "2026-08-30T00:26:53Z",
-    "files": [
-      {"path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
-    ],
+    "files": [{ "path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED" }],
     "reviews": [],
     "comments": []
   },
@@ -515,9 +892,7 @@
     "additions": 1,
     "deletions": 1,
     "updatedAt": "2026-08-30T00:27:06Z",
-    "files": [
-      {"path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
-    ],
+    "files": [{ "path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED" }],
     "reviews": [],
     "comments": []
   },
@@ -532,9 +907,7 @@
     "additions": 1,
     "deletions": 1,
     "updatedAt": "2026-08-30T00:27:16Z",
-    "files": [
-      {"path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
-    ],
+    "files": [{ "path": "package.json", "additions": 1, "deletions": 1, "changeType": "MODIFIED" }],
     "reviews": [],
     "comments": []
   },
@@ -550,12 +923,25 @@
     "deletions": 17,
     "updatedAt": "2026-08-30T22:30:50Z",
     "files": [
-      {"path": "src/engine/historyCache.ts", "additions": 10, "deletions": 6, "changeType": "MODIFIED"},
-      {"path": "src/engine/shikona.ts", "additions": 16, "deletions": 11, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/historyCache.ts",
+        "additions": 10,
+        "deletions": 6,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/shikona.ts",
+        "additions": 16,
+        "deletions": 11,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -570,13 +956,31 @@
     "deletions": 22,
     "updatedAt": "2026-08-30T22:22:52Z",
     "files": [
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 23, "deletions": 20, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 23,
+        "deletions": 20,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -591,12 +995,20 @@
     "deletions": 0,
     "updatedAt": "2026-08-30T22:51:06Z",
     "files": [
-      {"path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/tests/unit/engine/npcAI/opponentModel.test.ts", "additions": 115, "deletions": 0, "changeType": "ADDED"}
+      { "path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/tests/unit/engine/npcAI/opponentModel.test.ts",
+        "additions": 115,
+        "deletions": 0,
+        "changeType": "ADDED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -611,12 +1023,20 @@
     "deletions": 2,
     "updatedAt": "2026-08-31T22:29:52Z",
     "files": [
-      {"path": ".jules/bolt.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/engine/bout/boutResolver.ts", "additions": 3, "deletions": 2, "changeType": "MODIFIED"}
+      { "path": ".jules/bolt.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/engine/bout/boutResolver.ts",
+        "additions": 3,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -631,11 +1051,19 @@
     "deletions": 27,
     "updatedAt": "2026-08-31T22:51:03Z",
     "files": [
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 33, "deletions": 27, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 33,
+        "deletions": 27,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -650,14 +1078,32 @@
     "deletions": 10,
     "updatedAt": "2026-08-31T23:30:05Z",
     "files": [
-      {"path": ".jules/scribe.md", "additions": 1, "deletions": 0, "changeType": "ADDED"},
-      {"path": "src/engine/facilities.ts", "additions": 12, "deletions": 8, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".jules/scribe.md", "additions": 1, "deletions": 0, "changeType": "ADDED" },
+      {
+        "path": "src/engine/facilities.ts",
+        "additions": 12,
+        "deletions": 8,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -672,11 +1118,19 @@
     "deletions": 5,
     "updatedAt": "2026-09-01T22:23:53Z",
     "files": [
-      {"path": "src/engine/tick/pipelineRunner.ts", "additions": 12, "deletions": 5, "changeType": "MODIFIED"}
+      {
+        "path": "src/engine/tick/pipelineRunner.ts",
+        "additions": 12,
+        "deletions": 5,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -691,14 +1145,32 @@
     "deletions": 5,
     "updatedAt": "2026-09-01T22:43:17Z",
     "files": [
-      {"path": ".jules/bolt.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/engine/tick/pipelineRunner.ts", "additions": 3, "deletions": 3, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".jules/bolt.md", "additions": 3, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/engine/tick/pipelineRunner.ts",
+        "additions": 3,
+        "deletions": 3,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -713,14 +1185,32 @@
     "deletions": 17,
     "updatedAt": "2026-09-02T00:09:58Z",
     "files": [
-      {"path": "patch_script_redo.mjs", "additions": 96, "deletions": 0, "changeType": "ADDED"},
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 23, "deletions": 15, "changeType": "MODIFIED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": "patch_script_redo.mjs", "additions": 96, "deletions": 0, "changeType": "ADDED" },
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 23,
+        "deletions": 15,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -735,13 +1225,26 @@
     "deletions": 22,
     "updatedAt": "2026-09-02T23:00:24Z",
     "files": [
-      {"path": ".jules/mason.md", "additions": 4, "deletions": 0, "changeType": "ADDED"},
-      {"path": "src/engine/systems/legacy/LegacyService.ts", "additions": 9, "deletions": 22, "changeType": "MODIFIED"},
-      {"path": "src/engine/types/rikishi.ts", "additions": 29, "deletions": 0, "changeType": "MODIFIED"}
+      { "path": ".jules/mason.md", "additions": 4, "deletions": 0, "changeType": "ADDED" },
+      {
+        "path": "src/engine/systems/legacy/LegacyService.ts",
+        "additions": 9,
+        "deletions": 22,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/engine/types/rikishi.ts",
+        "additions": 29,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -756,11 +1259,14 @@
     "deletions": 0,
     "updatedAt": "2026-09-02T23:38:07Z",
     "files": [
-      {"path": ".jules/scribe.md", "additions": 4, "deletions": 0, "changeType": "ADDED"}
+      { "path": ".jules/scribe.md", "additions": 4, "deletions": 0, "changeType": "ADDED" }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   },
   {
@@ -775,14 +1281,32 @@
     "deletions": 2,
     "updatedAt": "2026-09-02T23:47:29Z",
     "files": [
-      {"path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED"},
-      {"path": "src/tests/unit/engine/loans.repayment.test.ts", "additions": 128, "deletions": 0, "changeType": "ADDED"},
-      {"path": "tsconfig.electron.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"},
-      {"path": "tsconfig.node.tsbuildinfo", "additions": 1, "deletions": 1, "changeType": "MODIFIED"}
+      { "path": ".jules/scout.md", "additions": 4, "deletions": 0, "changeType": "MODIFIED" },
+      {
+        "path": "src/tests/unit/engine/loans.repayment.test.ts",
+        "additions": 128,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "tsconfig.electron.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tsconfig.node.tsbuildinfo",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
     ],
     "reviews": [],
     "comments": [
-      {"author": "google-labs-jules", "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."}
+      {
+        "author": "google-labs-jules",
+        "body": "👋 Jules, reporting for duty! I'm here to lend a hand with this pull request..."
+      }
     ]
   }
 ]

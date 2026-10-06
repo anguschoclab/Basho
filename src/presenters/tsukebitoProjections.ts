@@ -42,10 +42,7 @@ function rankLabel(r: Rikishi): string {
   return rankObj.label ?? String(rank);
 }
 
-export function projectTsukebito(
-  world: WorldState,
-  heyaId: string
-): TsukebitoProjection {
+export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoProjection {
   const heyaRikishi = Array.from(world.rikishi.values()).filter(
     (r) => r.heyaId === heyaId && !r.isRetired
   );
@@ -66,7 +63,7 @@ export function projectTsukebito(
       seniors.push(r);
       const tsukebitoIds = r.tsukebitoIds;
       if (tsukebitoIds !== undefined && tsukebitoIds.length > 0) {
-        const tsukebito: Array<{id: string; shikona: string; rankLabel: string}> = [];
+        const tsukebito: Array<{ id: string; shikona: string; rankLabel: string }> = [];
         for (let j = 0; j < tsukebitoIds.length; j++) {
           const tId = tsukebitoIds[j];
           juniorAssignments[tId] = r.id;

@@ -14,7 +14,6 @@ vi.mock("@/components/layout/control-center", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 
-
 vi.mock("@/components/kesho/keshoComponents", () => ({
   YokozunaTsunaDisplay: () => React.createElement("div", null, "Tsuna"),
 }));

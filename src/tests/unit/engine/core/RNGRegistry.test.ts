@@ -11,7 +11,7 @@ describe("RNGRegistry", () => {
   } as unknown as WorldState;
 
   const mockWorldNoCalendar: WorldState = {
-    seed: "test-seed"
+    seed: "test-seed",
   } as unknown as WorldState;
 
   const mockWorldDefaultSeed: WorldState = {

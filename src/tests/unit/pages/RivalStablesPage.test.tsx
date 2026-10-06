@@ -3,7 +3,8 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 
 vi.mock("@/components/layout/AppLayout", () => ({
-  AppLayout: ({ children }: any) => React.createElement("div", { "data-testid": "app-layout" }, children),
+  AppLayout: ({ children }: any) =>
+    React.createElement("div", { "data-testid": "app-layout" }, children),
 }));
 
 vi.mock("@/components/ui/scroll-area", () => ({
@@ -26,8 +27,22 @@ vi.mock("@/presenters/npcAgentProjections", () => ({
 vi.mock("@/presenters/rivalStablesProjections", () => ({
   projectRivalStables: (_w: any, _d: any, _h: any) => ({
     rivals: [
-      { heyaId: "rival-1", heyaName: "Rival Heya 1", ichimon: "Tatsunami", legacyTier: "dynasty", decisionCount: 0, recentDecisions: [] },
-      { heyaId: "rival-2", heyaName: "Rival Heya 2", ichimon: undefined, legacyTier: undefined, decisionCount: 0, recentDecisions: [] },
+      {
+        heyaId: "rival-1",
+        heyaName: "Rival Heya 1",
+        ichimon: "Tatsunami",
+        legacyTier: "dynasty",
+        decisionCount: 0,
+        recentDecisions: [],
+      },
+      {
+        heyaId: "rival-2",
+        heyaName: "Rival Heya 2",
+        ichimon: undefined,
+        legacyTier: undefined,
+        decisionCount: 0,
+        recentDecisions: [],
+      },
     ],
     hasRivals: true,
   }),

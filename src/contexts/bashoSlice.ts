@@ -62,10 +62,10 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         if (idx >= 0) unplayedIndex = idx;
       }
       const target = todays[unplayedIndex];
-      const playerTactic = (
-        (target?.boutId ? state.world.boutTactics?.[target.boutId] : undefined) ??
-        (action.boutId ? state.boutTactics[action.boutId] : undefined)
-      ) as import("../engine/types/combat").BoutTactic | undefined;
+      const playerTactic = ((target?.boutId
+        ? state.world.boutTactics?.[target.boutId]
+        : undefined) ?? (action.boutId ? state.boutTactics[action.boutId] : undefined)) as
+        import("../engine/types/combat").BoutTactic | undefined;
       const { world, result } = worldEngine.simulateBoutForToday(
         state.world,
         unplayedIndex,
@@ -106,9 +106,11 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
         for (let i = 0; i < todays.length; i++) {
           const match = todays[i];
-          const playerTactic = (match?.boutId
-            ? world.boutTactics?.[match.boutId] ?? state.boutTactics[match.boutId]
-            : undefined) as import("../engine/types/combat").BoutTactic | undefined;
+          const playerTactic = (
+            match?.boutId
+              ? (world.boutTactics?.[match.boutId] ?? state.boutTactics[match.boutId])
+              : undefined
+          ) as import("../engine/types/combat").BoutTactic | undefined;
           const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
           world = result.world;
           if (result.result) lastResult = result.result;
@@ -151,9 +153,11 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
         for (let i = 0; i < todays.length; i++) {
           const match = todays[i];
-          const playerTactic = (match?.boutId
-            ? world.boutTactics?.[match.boutId] ?? state.boutTactics[match.boutId]
-            : undefined) as import("../engine/types/combat").BoutTactic | undefined;
+          const playerTactic = (
+            match?.boutId
+              ? (world.boutTactics?.[match.boutId] ?? state.boutTactics[match.boutId])
+              : undefined
+          ) as import("../engine/types/combat").BoutTactic | undefined;
           const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
           world = result.world;
         }

@@ -2,13 +2,7 @@ import type { TacticalFamily } from "./combat";
 
 /** Defines the JSA official categories for kimarite. */
 export type JsaCategory =
-  | "Kihonwaza"
-  | "Nageite"
-  | "Kakeite"
-  | "Sorite"
-  | "Hinerite"
-  | "Tokushuwaza"
-  | "Hiwaza";
+  "Kihonwaza" | "Nageite" | "Kakeite" | "Sorite" | "Hinerite" | "Tokushuwaza" | "Hiwaza";
 
 /** Defines specific positional/physical requirements for a move. */
 export interface KimariteRequirements {

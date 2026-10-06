@@ -160,13 +160,7 @@ describe("kimariteStrategies", () => {
       // terminal body state, not selected from the mid-fight strategy pool.
       const hiWaza = KIMARITE_STRATEGIES.filter((s) => s.category === "hi_waza");
       expect(hiWaza).toEqual([]);
-      for (const id of [
-        "isamiashi",
-        "koshikudake",
-        "tsukite",
-        "tsukihiza",
-        "fumidashi",
-      ]) {
+      for (const id of ["isamiashi", "koshikudake", "tsukite", "tsukihiza", "fumidashi"]) {
         expect(getKimarite(id)?.jsaCategory).toBe("Hiwaza");
       }
     });
@@ -181,9 +175,7 @@ describe("kimariteStrategies", () => {
 
 describe("registry/strategy parity", () => {
   it("every strategy id resolves through getKimarite", () => {
-    const missing = KIMARITE_STRATEGIES.filter((s) => !getKimarite(s.id)).map(
-      (s) => s.id
-    );
+    const missing = KIMARITE_STRATEGIES.filter((s) => !getKimarite(s.id)).map((s) => s.id);
     expect(missing).toEqual([]);
   });
 
@@ -194,9 +186,9 @@ describe("registry/strategy parity", () => {
   it("no strategy advertises the unrunnable edge_crisis phase", () => {
     // tickEdgeCrisis resolves via classifyEdgeExitKimarite and never evaluates
     // the strategy pool, so appliesTo:["edge_crisis"] is dead config.
-    const dead = KIMARITE_STRATEGIES.filter((s) =>
-      s.appliesTo?.includes("edge_crisis")
-    ).map((s) => s.id);
+    const dead = KIMARITE_STRATEGIES.filter((s) => s.appliesTo?.includes("edge_crisis")).map(
+      (s) => s.id
+    );
     expect(dead).toEqual([]);
   });
 });

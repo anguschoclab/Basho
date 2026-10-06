@@ -24,8 +24,14 @@ vi.mock("@/contexts/useGame", () => ({
         playerHeyaId: "h1",
         heyas: new Map([["h1", { id: "h1", name: "Test Heya" }]]),
         rikishi: new Map([
-          ["r1", { id: "r1", shikona: "Hakuho", heyaId: "h1", isRetired: false, kihakuIsenScore: 85 }],
-          ["r2", { id: "r2", shikona: "Kakuryu", heyaId: "h1", isRetired: false, kihakuIsenScore: 70 }],
+          [
+            "r1",
+            { id: "r1", shikona: "Hakuho", heyaId: "h1", isRetired: false, kihakuIsenScore: 85 },
+          ],
+          [
+            "r2",
+            { id: "r2", shikona: "Kakuryu", heyaId: "h1", isRetired: false, kihakuIsenScore: 70 },
+          ],
         ]),
         activeRikishiIds: ["r1", "r2"],
         events: { log: [] },
@@ -44,8 +50,22 @@ vi.mock("@/presenters/projections/recapProjections", () => ({
 
 vi.mock("@/presenters/projections/recapKihakuProjections", () => ({
   selectTopKihakuPerformers: () => [
-    { rikishiId: "r1", shikona: "Hakuho", heyaId: "h1", heyaName: "Test Heya", kihakuIsenScore: 85, label: "Blazing Spirit" },
-    { rikishiId: "r2", shikona: "Kakuryu", heyaId: "h1", heyaName: "Test Heya", kihakuIsenScore: 70, label: "Fierce Determination" },
+    {
+      rikishiId: "r1",
+      shikona: "Hakuho",
+      heyaId: "h1",
+      heyaName: "Test Heya",
+      kihakuIsenScore: 85,
+      label: "Blazing Spirit",
+    },
+    {
+      rikishiId: "r2",
+      shikona: "Kakuryu",
+      heyaId: "h1",
+      heyaName: "Test Heya",
+      kihakuIsenScore: 70,
+      label: "Fierce Determination",
+    },
   ],
 }));
 

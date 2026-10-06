@@ -20,7 +20,12 @@ export interface KinboshiLedgerEntry {
 }
 
 const BASHO_MONTHS: Record<string, number> = {
-  hatsu: 1, haru: 3, natsu: 5, nagoya: 7, aki: 9, kyushu: 11,
+  hatsu: 1,
+  haru: 3,
+  natsu: 5,
+  nagoya: 7,
+  aki: 9,
+  kyushu: 11,
 };
 
 function bashoMonth(name: BashoName): number {

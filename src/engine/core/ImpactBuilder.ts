@@ -439,10 +439,7 @@ export class ImpactBuilder {
             break;
           case "historicalRikishiUpdates":
             for (const [id, update] of map as Map<string, unknown>) {
-              this.updateHistoricalRikishi(
-                id,
-                update as RetiredRikishiSummary | Rikishi
-              );
+              this.updateHistoricalRikishi(id, update as RetiredRikishiSummary | Rikishi);
             }
             break;
         }
@@ -463,15 +460,17 @@ export class ImpactBuilder {
             for (const id of arr) this.removeRikishi(id as string);
             break;
           case "rikishiToHistorical":
-            this.ensureCollectionArray("rikishiToHistorical").push(
-              ...(arr as string[])
-            );
+            this.ensureCollectionArray("rikishiToHistorical").push(...(arr as string[]));
             break;
           case "rikishiFromHistorical":
             for (const id of arr) this.unretireRikishi(id as string);
             break;
           default:
-            (this.ensureCollectionArray(key as keyof NonNullable<StateImpact["collections"]>) as unknown[]).push(...(arr as unknown[]));
+            (
+              this.ensureCollectionArray(
+                key as keyof NonNullable<StateImpact["collections"]>
+              ) as unknown[]
+            ).push(...(arr as unknown[]));
         }
       }
     }

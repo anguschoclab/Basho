@@ -222,17 +222,7 @@ export function tickPushBattle(
   }
 
   // Mid-fight kimarite attempt
-  const attempt = evaluateKimariteAttempt(
-    east,
-    west,
-    push,
-    null,
-    st,
-    rng,
-    division,
-    meta,
-    tactics
-  );
+  const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng, division, meta, tactics);
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {

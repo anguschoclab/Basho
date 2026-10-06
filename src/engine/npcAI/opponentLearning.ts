@@ -64,10 +64,7 @@ function boundOpponentModels(
  * Merge opponent-model updates for every NPC heya involved in the bout.
  * Called from applyBoutResult alongside the other onBoutResolved* hooks.
  */
-export function onBoutResolvedOpponentModels(
-  world: WorldState,
-  ctx: BoutLearningCtx
-): StateImpact {
+export function onBoutResolvedOpponentModels(world: WorldState, ctx: BoutLearningCtx): StateImpact {
   const builder = createImpactBuilder("opponentLearning");
   const { result, east, west } = ctx;
 
@@ -91,8 +88,7 @@ export function onBoutResolvedOpponentModels(
     if (!oyakata) continue;
 
     const memory = getMemory(oyakata, week);
-    let model =
-      getOpponentModel(memory, observed.id) ?? buildOpponentModel(observed, week);
+    let model = getOpponentModel(memory, observed.id) ?? buildOpponentModel(observed, week);
 
     const observedWon = result.winner === observedSide;
     const resolvedTactic: BoutTactic | undefined = result.tactics?.[observedSide];
@@ -100,8 +96,7 @@ export function onBoutResolvedOpponentModels(
       model = observeBoutResult(model, observed.id, result.kimarite, week, resolvedTactic);
     } else {
       const family: TacticalFamily =
-        (resolvedTactic && TACTIC_TO_FAMILY[resolvedTactic]) ||
-        familyFromStyle(observed.style);
+        (resolvedTactic && TACTIC_TO_FAMILY[resolvedTactic]) || familyFromStyle(observed.style);
       model = observeOpponentFamily(model, observed.id, family, week, resolvedTactic);
     }
 

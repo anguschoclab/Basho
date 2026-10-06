@@ -9,11 +9,7 @@ import { renderHook } from "@testing-library/react";
 import { useEarningsProgressionData } from "@/components/rikishi/useRikishiData";
 import type { CareerSnapshot } from "@/engine/types/history";
 
-function makeSnap(
-  year: number,
-  bashoName: string,
-  totalEarningsAtBasho?: number
-): CareerSnapshot {
+function makeSnap(year: number, bashoName: string, totalEarningsAtBasho?: number): CareerSnapshot {
   return {
     id: `snap-${bashoName}-${year}`,
     bashoId: `${bashoName}-${year}`,

@@ -236,9 +236,7 @@ export function RikishiProfileHeader({
                     </div>
                     <div className="flex flex-col gap-1 text-[9px]">
                       {(rikishi.councilWarnings ?? 0) > 0 && (
-                        <div
-                          className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded"
-                        >
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
                           <span className="text-destructive/80">Council Warnings</span>
                           <span className="text-destructive font-bold">
                             {rikishi.councilWarnings} / 3
@@ -246,9 +244,7 @@ export function RikishiProfileHeader({
                         </div>
                       )}
                       {(rikishi.consecutiveMakeKoshi ?? 0) > 0 && (
-                        <div
-                          className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded"
-                        >
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
                           <span className="text-destructive/80">Consecutive Make-Koshi</span>
                           <span className="text-destructive font-bold">
                             {rikishi.consecutiveMakeKoshi}
@@ -256,9 +252,7 @@ export function RikishiProfileHeader({
                         </div>
                       )}
                       {(rikishi.consecutiveKyujo ?? 0) > 0 && (
-                        <div
-                          className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded"
-                        >
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
                           <span className="text-destructive/80">Consecutive Kyujo</span>
                           <span className="text-destructive font-bold">
                             {rikishi.consecutiveKyujo} / 3
@@ -292,9 +286,7 @@ export function RikishiProfileHeader({
                         </span>{" "}
                         Ozeki Reclaim Watch
                       </span>
-                      <span className="opacity-70">
-                        Needs 10+ Wins This Basho
-                      </span>
+                      <span className="opacity-70">Needs 10+ Wins This Basho</span>
                     </div>
                   </div>
                 )}
@@ -354,11 +346,19 @@ export function RikishiProfileHeader({
                 },
                 {
                   label: "Special Prizes",
-                  value: (rikishi.specialPrizes?.shukunSho ?? 0) + (rikishi.specialPrizes?.kantoSho ?? 0) + (rikishi.specialPrizes?.ginoSho ?? 0),
+                  value:
+                    (rikishi.specialPrizes?.shukunSho ?? 0) +
+                    (rikishi.specialPrizes?.kantoSho ?? 0) +
+                    (rikishi.specialPrizes?.ginoSho ?? 0),
                   sub: "Sanshō",
                   color: "text-blue-400",
-                  condition: ((rikishi.specialPrizes?.shukunSho ?? 0) + (rikishi.specialPrizes?.kantoSho ?? 0) + (rikishi.specialPrizes?.ginoSho ?? 0)) > 0,
-                  tooltip: "Total special prizes awarded for outstanding performance, fighting spirit, and technique",
+                  condition:
+                    (rikishi.specialPrizes?.shukunSho ?? 0) +
+                      (rikishi.specialPrizes?.kantoSho ?? 0) +
+                      (rikishi.specialPrizes?.ginoSho ?? 0) >
+                    0,
+                  tooltip:
+                    "Total special prizes awarded for outstanding performance, fighting spirit, and technique",
                 },
                 {
                   label: "Kinboshi",
@@ -405,10 +405,8 @@ export function RikishiProfileHeader({
                   sub: "To Maegashira",
                   color: "text-destructive",
                   condition:
-                    rikishi.rank === "ozeki" &&
-                    (rikishi.achievements?.ginboshiConceded ?? 0) > 0,
-                  tooltip:
-                    "Number of times defeated by a Maegashira while holding the Ozeki rank",
+                    rikishi.rank === "ozeki" && (rikishi.achievements?.ginboshiConceded ?? 0) > 0,
+                  tooltip: "Number of times defeated by a Maegashira while holding the Ozeki rank",
                 },
               ].map((stat, i) => (
                 <React.Fragment key={i}>

@@ -19,11 +19,11 @@ import { getHeya, getRikishiAnywhere } from "../queries";
 import { buyMyoseki } from "../myosekiMarket";
 import { hireStaff } from "../staff";
 import type { StaffRole } from "../types/staff";
+import { buildYouthAcademy, upgradeYouthAcademy } from "../systems/recruitment/YouthAcademyService";
 import {
-  buildYouthAcademy,
-  upgradeYouthAcademy,
-} from "../systems/recruitment/YouthAcademyService";
-import { PoliticalFavorsService, POLITICAL_FAVORS } from "../systems/governance/PoliticalFavorsService";
+  PoliticalFavorsService,
+  POLITICAL_FAVORS,
+} from "../systems/governance/PoliticalFavorsService";
 import { narrativeEventMap } from "../bard/narrativeEventMap";
 import { BardEngine } from "../bard/BardEngine";
 import { rngForWorld } from "../rng";
@@ -74,11 +74,7 @@ function currentWeek(world: WorldState): number {
   return world.calendar?.currentWeek ?? world.week ?? 0;
 }
 
-function onCooldown(
-  memory: Oyakata["memory"],
-  domain: string,
-  week: number
-): boolean {
+function onCooldown(memory: Oyakata["memory"], domain: string, week: number): boolean {
   const last = memory?.lastExecutedAt?.[domain];
   const cd = DOMAIN_COOLDOWN_WEEKS[domain] ?? 1;
   return last !== undefined && week - last < cd;
@@ -100,8 +96,7 @@ export function executeAgentDecisions(
   // Discretionary spending guard: never execute a spend that would push the
   // heya below the operating reserve or that fires while the runway band is
   // already critical/desperate.
-  const spendConstrained =
-    heya.runwayBand === "desperate" || heya.runwayBand === "critical";
+  const spendConstrained = heya.runwayBand === "desperate" || heya.runwayBand === "critical";
   const canSpend = (cost: number) =>
     !spendConstrained && heya.funds - cost >= MIN_OPERATING_RESERVE;
 
@@ -118,8 +113,7 @@ export function executeAgentDecisions(
       .sort((a, b) => (a.askingPrice ?? 0) - (b.askingPrice ?? 0));
     // Honor the agent's prioritized pick when it is still available and
     // affordable; otherwise fall back to the cheapest eligible stock.
-    const target =
-      stocks.find((s) => s.id === decisions.finance.myosekiId) ?? stocks[0];
+    const target = stocks.find((s) => s.id === decisions.finance.myosekiId) ?? stocks[0];
     if (target) {
       builder.merge(buyMyoseki(world, oyakata.id, heyaId, target.id));
       executedDomains.push("myoseki");
@@ -152,8 +146,7 @@ export function executeAgentDecisions(
     !onCooldown(oyakata.memory, "scandal", week) &&
     (heya.scandalScore ?? 0) > 0
   ) {
-    const pardonCost =
-      POLITICAL_FAVORS.find((f) => f.id === "governance_pardon")?.cost ?? Infinity;
+    const pardonCost = POLITICAL_FAVORS.find((f) => f.id === "governance_pardon")?.cost ?? Infinity;
     if ((heya.politicalCapital ?? 0) >= pardonCost) {
       builder.merge(PoliticalFavorsService.requestFavor(world, heyaId, "governance_pardon"));
     } else if (canSpend(SCANDAL_PR_COST)) {
@@ -165,10 +158,7 @@ export function executeAgentDecisions(
     executedDomains.push("scandal");
   }
 
-  if (
-    decisions.governance.shouldUsePoliticalFavor &&
-    !onCooldown(oyakata.memory, "favor", week)
-  ) {
+  if (decisions.governance.shouldUsePoliticalFavor && !onCooldown(oyakata.memory, "favor", week)) {
     // Pick the favor matching current pressure: scandal → pardon,
     // tight funds → advance, otherwise matchmaking influence.
     const favorId =
@@ -234,7 +224,11 @@ export function executeAgentDecisions(
     // Staff hires and academy work are small discretionary spends — require
     // the heya to hold the full operating reserve before committing them.
     const hasReserveForSmallSpend = !spendConstrained && heya.funds >= MIN_OPERATING_RESERVE;
-    if (infra.shouldHireStaff && !onCooldown(oyakata.memory, "staff", week) && hasReserveForSmallSpend) {
+    if (
+      infra.shouldHireStaff &&
+      !onCooldown(oyakata.memory, "staff", week) &&
+      hasReserveForSmallSpend
+    ) {
       const impact = hireStaff(world, heyaId, (infra.staffRole ?? "scout") as StaffRole);
       if ((impact.collections?.staffToAdd?.length ?? 0) > 0) {
         builder.merge(impact);

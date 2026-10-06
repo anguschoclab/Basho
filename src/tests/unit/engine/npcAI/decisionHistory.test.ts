@@ -164,8 +164,7 @@ describe("createPlan stall decay", () => {
         )
       )
     );
-    const scoreOf = (reasoning: string[]) =>
-      Number(reasoning[0].match(/score (\d+)/)?.[1] ?? 0);
+    const scoreOf = (reasoning: string[]) => Number(reasoning[0].match(/score (\d+)/)?.[1] ?? 0);
     expect(scoreOf(stalled!.reasoning)).toBeLessThan(scoreOf(fresh!.reasoning));
   });
 });

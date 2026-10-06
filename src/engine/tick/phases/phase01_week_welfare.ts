@@ -94,7 +94,15 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     nextState.morale = clamp(morale, 0, MAX_MORALE);
 
     // 2. Transition Logic (Inlined/Refactored for purity)
-    orchestrateTransitionsPure(world, heya, nextState, reasons, builder, mediaPressureChanges, collectedHeadlines);
+    orchestrateTransitionsPure(
+      world,
+      heya,
+      nextState,
+      reasons,
+      builder,
+      mediaPressureChanges,
+      collectedHeadlines
+    );
 
     // 3. Risk indicator Update
     heyaUpdates.riskIndicators = {
@@ -215,7 +223,16 @@ function orchestrateTransitionsPure(
       break;
 
     case "watch":
-      handleWatchTransition(world, heya, state, reasons, builder, mediaPressureChanges, week, collectedHeadlines);
+      handleWatchTransition(
+        world,
+        heya,
+        state,
+        reasons,
+        builder,
+        mediaPressureChanges,
+        week,
+        collectedHeadlines
+      );
       break;
 
     case "investigation":

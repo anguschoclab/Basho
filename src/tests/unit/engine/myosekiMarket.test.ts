@@ -18,7 +18,7 @@ describe("buyMyoseki", () => {
       reputation: 10,
       facilities: [],
       rikishiIds: [],
-      oyakataId: buyerId
+      oyakataId: buyerId,
     });
 
     const world = {
@@ -33,9 +33,9 @@ describe("buyMyoseki", () => {
             askingPrice: 1000,
             status: "available",
             holderId: "jsa",
-            history: []
-          }
-        }
+            history: [],
+          },
+        },
       } as unknown as MyosekiMarket,
       heyas: mockHeyaMap as unknown as IdMapRuntime<any>,
     } as unknown as WorldState;
@@ -50,30 +50,32 @@ describe("buyMyoseki", () => {
 
 describe("leaseMyoseki", () => {
   it("processes a lease transaction and sets the lease fee", () => {
-     const stockId = "myoseki_1" as Id;
-     const lesseeId = "oyakata_1" as Id;
+    const stockId = "myoseki_1" as Id;
+    const lesseeId = "oyakata_1" as Id;
 
-     const world = {
-       myosekiMarket: {
-         stocks: {
-           [stockId]: {
-             id: stockId,
-             name: "Test Name",
-             prestigeTier: "standard",
-             basePrice: 100,
-             askingPrice: 1000000,
-             status: "available",
-             holderId: "jsa",
-             history: []
-           }
-         }
-       } as unknown as MyosekiMarket
-     } as unknown as WorldState;
+    const world = {
+      myosekiMarket: {
+        stocks: {
+          [stockId]: {
+            id: stockId,
+            name: "Test Name",
+            prestigeTier: "standard",
+            basePrice: 100,
+            askingPrice: 1000000,
+            status: "available",
+            holderId: "jsa",
+            history: [],
+          },
+        },
+      } as unknown as MyosekiMarket,
+    } as unknown as WorldState;
 
-     const impact = leaseMyoseki(world, lesseeId, stockId);
+    const impact = leaseMyoseki(world, lesseeId, stockId);
 
-     expect(impact.entities?.myosekiUpdates?.get(stockId)?.status).toBe("leased");
-     expect(impact.entities?.myosekiUpdates?.get(stockId)?.holderId).toBe(lesseeId);
-     expect(impact.entities?.myosekiUpdates?.get(stockId)?.leaseFee).toBe(Math.floor(1000000 * MYOSEKI_LEASE_RATE_PERCENT));
+    expect(impact.entities?.myosekiUpdates?.get(stockId)?.status).toBe("leased");
+    expect(impact.entities?.myosekiUpdates?.get(stockId)?.holderId).toBe(lesseeId);
+    expect(impact.entities?.myosekiUpdates?.get(stockId)?.leaseFee).toBe(
+      Math.floor(1000000 * MYOSEKI_LEASE_RATE_PERCENT)
+    );
   });
 });

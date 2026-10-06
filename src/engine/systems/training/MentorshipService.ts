@@ -132,8 +132,7 @@ export const MentorshipService = {
    * ```
    */
   calculateTechniqueBleed(mentor: Rikishi, apprentice: Rikishi): number {
-    const gap =
-      finiteOr(mentor.stats?.technique, 50) - finiteOr(apprentice.stats?.technique, 50);
+    const gap = finiteOr(mentor.stats?.technique, 50) - finiteOr(apprentice.stats?.technique, 50);
 
     // No bleed if gap is too small
     if (gap < BLEED_THRESHOLD) return 0;
@@ -170,8 +169,7 @@ export const MentorshipService = {
   calculateAdaptabilityPenalty(mentor: Rikishi, apprentice: Rikishi): number {
     if (!MentorshipService.canMentor(mentor, apprentice)) return 0;
 
-    const gap =
-      finiteOr(mentor.stats?.technique, 50) - finiteOr(apprentice.stats?.technique, 50);
+    const gap = finiteOr(mentor.stats?.technique, 50) - finiteOr(apprentice.stats?.technique, 50);
     if (gap < BLEED_THRESHOLD) return 0;
 
     return -1;

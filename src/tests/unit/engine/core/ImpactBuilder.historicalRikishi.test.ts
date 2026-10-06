@@ -4,7 +4,10 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "../utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 
-function makeSummary(id: string, overrides: Partial<RetiredRikishiSummary> = {}): RetiredRikishiSummary {
+function makeSummary(
+  id: string,
+  overrides: Partial<RetiredRikishiSummary> = {}
+): RetiredRikishiSummary {
   return {
     id,
     shikona: `Wrestler-${id}`,
@@ -50,9 +53,7 @@ describe("updateHistoricalRikishi (ImpactBuilder + ImpactResolver)", () => {
     const world = makeMockWorld();
     world.historicalRikishi = new Map();
 
-    const impact = createImpactBuilder("test")
-      .updateHistoricalRikishi("r-2", summary)
-      .build();
+    const impact = createImpactBuilder("test").updateHistoricalRikishi("r-2", summary).build();
 
     const resolved = resolveImpacts(world, [impact]);
 
@@ -84,9 +85,7 @@ describe("updateHistoricalRikishi (ImpactBuilder + ImpactResolver)", () => {
     world.historicalRikishi = new Map([["r-existing", existingSummary]]);
 
     const newSummary = makeSummary("r-new", { careerWins: 200 });
-    const impact = createImpactBuilder("test")
-      .updateHistoricalRikishi("r-new", newSummary)
-      .build();
+    const impact = createImpactBuilder("test").updateHistoricalRikishi("r-new", newSummary).build();
 
     const resolved = resolveImpacts(world, [impact]);
 
