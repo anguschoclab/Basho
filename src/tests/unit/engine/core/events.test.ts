@@ -113,6 +113,35 @@ describe("events.test.ts - Core Bus", () => {
       expect(world.events.log.length).toBe(1);
       expect(event2).toBe(event1);
     });
+
+    it("returns undefined when deduped original has rolled off the log", () => {
+      const world = MockFactory.createWorld();
+      world.dayIndexGlobal = 1;
+
+      const originalEvent = logEngineEvent(world, {
+        type: "GOVERNANCE_RULING" as EngineEventType,
+        category: "career",
+        title: "Target Event",
+        summary: "First occurrence",
+        dedupeKey: "rolling-key",
+        data: {},
+      });
+
+      expect(originalEvent).toBeDefined();
+      world.events.log = [];
+
+      const duplicateEvent = logEngineEvent(world, {
+        type: "GOVERNANCE_RULING" as EngineEventType,
+        category: "career",
+        title: "Target Event",
+        summary: "Second occurrence",
+        dedupeKey: "rolling-key",
+        data: {},
+      });
+
+      expect(duplicateEvent).toBeUndefined();
+      expect(world.events.log.length).toBe(0);
+    });
   });
 
   describe("queryEvents", () => {
