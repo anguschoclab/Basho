@@ -31,6 +31,7 @@ export function calculateTopRivals(r: Rikishi, world: WorldState): UIRivalEntry[
         totalBouts: (rec as { wins: number }).wins + (rec as { losses: number }).losses,
         heat: rivalry?.heat ?? 0,
         tone: rivalry?.tone ?? "respect",
+        streak: (rec as { streak?: number }).streak ?? 0,
       };
     })
     .sort((a, b) => b.heat - a.heat || b.totalBouts - a.totalBouts)

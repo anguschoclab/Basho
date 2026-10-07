@@ -115,8 +115,19 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                       {rival.tone || "respect"}
                     </Badge>
                   </div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-tight font-bold">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-tight font-bold flex items-center gap-2">
                     Record: {rival.record} ({rival.totalBouts} bouts)
+                    {Math.abs(rival.streak) > 1 && (
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[9px] px-1 py-0 h-4 border-transparent bg-muted/20",
+                          rival.streak > 0 ? "text-green-500" : "text-red-500"
+                        )}
+                      >
+                        {rival.streak > 0 ? `W${rival.streak}` : `L${Math.abs(rival.streak)}`}
+                      </Badge>
+                    )}
                   </span>
                 </div>
                 <div className="flex flex-col items-end gap-1 w-24">
