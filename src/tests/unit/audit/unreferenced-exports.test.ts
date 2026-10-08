@@ -45,7 +45,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Public type for exhibition basho naming",
   "src/engine/systems/basho/ExhibitionBashoService.ts:ExhibitionBashoInfo":
     "Public type for exhibition basho info",
-  "src/engine/systems/basho/NakabiService.ts:NakabiSummary": "Public type for nakabi summary data",
   "src/engine/systems/economy/FinanceCalculator.ts:HeyaFinanceResult":
     "Public type for finance calculation results",
   "src/engine/systems/economy/KachiNokoriService.ts:PostBashoPayload":
@@ -70,7 +69,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Public type for political favor option",
   "src/engine/systems/governance/YokozunaService.ts:YDCCandidate":
     "Public type for YDC promotion candidate",
-  "src/engine/systems/meta/EraDriftService.ts:EraTone": "Public type for era tone values",
   "src/engine/systems/narrative/NarrativeBands.ts:FinancialBand":
     "Public type for financial narrative band",
   "src/engine/systems/narrative/PostBashoPressService.ts:PressConferenceContext":
@@ -87,8 +85,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Public type for training modifier config",
   "src/engine/systems/training/TsukebitoService.ts:TsukebitoAssignment":
     "Public type for tsukebito assignment",
-  "src/engine/systems/worldCircuit/WorldCircuitService.ts:ExhibitionRegion":
-    "Public type for exhibition region",
   "src/engine/agents/CrisisAgent.ts:CrisisAgentResult": "Public type for crisis agent result",
   "src/engine/agents/MediaAgent.ts:MediaAgentResult": "Public type for media agent result",
   "src/engine/agents/NarrativeAgent.ts:NarrativeAgentResult":
@@ -134,8 +130,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config constant for early shikona generation",
   "src/engine/systems/generation/FightingNameEarly.ts:EARLY_SHIKONA_MOTIVATION_BOOST":
     "Config constant for early shikona motivation boost",
-  "src/engine/systems/generation/SponsorGenerator.ts:REGIONS":
-    "Sponsor generation region list; used by world factory",
   "src/engine/systems/generation/SponsorGenerator.ts:INDUSTRY_TAGS":
     "Sponsor generation industry tags; used by world factory",
   "src/engine/systems/generation/SponsorGenerator.ts:INITIAL_SPONSOR_TIER_DISTRIBUTION":
@@ -177,7 +171,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/bout/BoutAI.ts:chooseBaseTactic": "Bout AI tactic selection utility",
   "src/engine/bout/boutContention.ts:getLeaderWins": "Bout contention leader wins utility",
   "src/engine/core/ImpactBuilder.ts:updateHeyaImpact": "Impact builder heya update utility",
-  "src/engine/core/ImpactBuilder.ts:logEventImpact": "Impact builder event logging utility",
   "src/engine/matchmaking/MatchmakingPhases.ts:buildPlayoffPairs":
     "Matchmaking playoff pair builder utility",
   "src/engine/matchmaking/MatchmakingPhases.ts:buildExhibitionPairs":
@@ -190,8 +183,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "NPC finance strategy getter utility",
   "src/engine/strategy/NPCGovernanceCalculator.ts:getGovernanceStrategy":
     "NPC governance strategy getter utility",
-  "src/engine/utils/collectionOperations.ts:mapIdsToOyakata":
-    "Collection utility for mapping IDs to oyakata",
   "src/engine/utils/math.ts:localClampInt": "Math utility for clamping integers",
   "src/engine/utils/random.ts:seededWeightedPick": "Random utility for seeded weighted picking",
   "src/engine/utils/string.ts:formatShikona": "String formatting utility for shikona",
@@ -211,21 +202,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Utility function retained for future wiring",
   "src/engine/systems/economy/KachiNokoriService.ts:KACHI_NOKORI_THRESHOLD":
     "Config constant retained for engine configuration",
-  "src/engine/systems/economy/KachiNokoriService.ts:getKachiNokoriForRikishi":
-    "Utility function retained for future wiring",
-  "src/engine/systems/economy/KachiNokoriService.ts:buildPostBashoPayload":
-    "Utility function retained for future wiring",
   "src/engine/systems/economy/KachiNokoriService.ts:kachiNokoriToMochikyukinPoints":
-    "Utility function retained for future wiring",
-  "src/engine/systems/officials/GyojiService.ts:generateGyoji":
-    "Utility function retained for future wiring",
-  "src/engine/systems/officials/GyojiService.ts:generateShimpan":
-    "Utility function retained for future wiring",
-  "src/engine/systems/officials/GyojiService.ts:assignGyojiToBout":
-    "Utility function retained for future wiring",
-  "src/engine/systems/officials/GyojiService.ts:assembleShimpanPanel":
-    "Utility function retained for future wiring",
-  "src/engine/systems/officials/GyojiService.ts:recordGyojiBout":
     "Utility function retained for future wiring",
   "src/engine/systems/bookmark/BookmarkService.ts:getBookmarksByType":
     "Utility function retained for future wiring",
@@ -253,8 +230,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config constant retained for engine configuration",
   "src/engine/systems/training/TsukebitoService.ts:OTOTODESHI_MENTAL_GAIN":
     "Config constant retained for engine configuration",
-  "src/engine/systems/training/TsukebitoService.ts:isEligibleTsukebito":
-    "Utility function retained for future wiring",
   "src/engine/systems/health/InjuryService.ts:calculateWeeklyInjuryChance":
     "Utility function retained for future wiring",
   "src/engine/systems/health/InjuryService.ts:clearInjury":
@@ -271,14 +246,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config constant retained for engine configuration",
   "src/engine/systems/governance/GomenfudaService.ts:CONSECUTIVE_WITHDRAWAL_MULTIPLIER":
     "Config constant retained for engine configuration",
-  "src/engine/systems/governance/GomenfudaService.ts:SANCTION_THRESHOLD":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/governance/GomenfudaService.ts:recordGomenfuda":
-    "Utility function retained for future wiring",
-  "src/engine/systems/governance/GomenfudaService.ts:countGomenfudaForHeya":
-    "Utility function retained for future wiring",
-  "src/engine/systems/governance/GomenfudaService.ts:hasSanctionWarning":
-    "Utility function retained for future wiring",
   "src/engine/systems/governance/ScandalService.ts:tickWeekGovernance":
     "Utility function retained for future wiring",
   "src/engine/systems/governance/MyosekiTradingService.ts:CANONICAL_MYOSEKI_NAMES":
@@ -290,12 +257,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/systems/governance/MyosekiTradingService.ts:listMyosekiForSale":
     "Utility function retained for future wiring",
   "src/engine/systems/governance/MyosekiTradingService.ts:returnLeasedMyoseki":
-    "Utility function retained for future wiring",
-  "src/engine/systems/governance/PoliticalFavorsService.ts:POLITICAL_FAVORS":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/generation/CohortTracking.ts:getCohortMembers":
-    "Utility function retained for future wiring",
-  "src/engine/systems/generation/CohortTracking.ts:getCohortSummary":
     "Utility function retained for future wiring",
   "src/engine/systems/generation/MaezumoService.ts:MAEZUMO_DURATION_WEEKS":
     "Config constant retained for engine configuration",
@@ -321,8 +282,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Utility function retained for future wiring",
   "src/engine/npcAI/TacticalCoordinator.ts:CoordinationInput":
     "Public type for CoordinationInput contract",
-  "src/engine/npcAI/TacticalCoordinator.ts:coordinateDecision":
-    "Utility function retained for future wiring",
   "src/engine/npcAI/OpponentModel.ts:suggestCounterTactic":
     "Utility function retained for future wiring",
   "src/engine/npcAI/MemoryStore.ts:emptyOyakataMemory":
@@ -334,14 +293,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/npcAI/planOutcomes.ts:PlanOutcome":
     "Public type for the plan-outcome classification result",
 
-  "src/engine/npcAI/contextBuilder.ts:buildAIContext":
-    "Utility function retained for future wiring",
-  "src/engine/actions/OyakataIntervention.ts:applyOyakataIntervention":
-    "Utility function retained for future wiring",
-  "src/engine/actions/InjuredEncouragement.ts:canEncourage":
-    "Utility function retained for future wiring",
-  "src/engine/actions/InjuredEncouragement.ts:provideEncouragement":
-    "Utility function retained for future wiring",
   "src/engine/advisor/AdvisorService.ts:getPlayerDigest":
     "Utility function retained for future wiring",
   "src/engine/banzuke/banzukeHelpers.ts:getRankTitleJa":
@@ -353,7 +304,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/bard/dramaGenerator.ts:triggerCrisis":
     "Internal crisis factory invoked by checkTriggeredDrama; exported for unit testing",
   "src/engine/bard/BardEngine.ts:interpolate": "Utility function retained for future wiring",
-  "src/engine/bout/BoutAI.ts:BoutAIContext": "Public type for BoutAIContext contract",
   "src/engine/bout/boutNarrative.ts:isSanyakuPromotionByRank":
     "Utility function retained for future wiring",
   "src/engine/bout/yaocho.ts:YaochoIndicators": "Public type for YaochoIndicators contract",
@@ -370,11 +320,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/bout/boutGrip.ts:computeNetTorque": "Utility function retained for future wiring",
   "src/engine/bout/ReplayMetadata.ts:getBoutAnimationFamily":
     "Utility function retained for future wiring",
-  "src/engine/bout/honbasho.ts:HONBASHO_NAMES": "Config constant retained for engine configuration",
-  "src/engine/bout/honbasho.ts:isHonbashoName": "Utility function retained for future wiring",
-  "src/engine/bout/honbasho.ts:isHonbashoState": "Utility function retained for future wiring",
-  "src/engine/bout/honbasho.ts:isHonbashoInfo": "Utility function retained for future wiring",
-  "src/engine/bout/honbasho.ts:makeExhibitionBasho": "Utility function retained for future wiring",
   "src/engine/bout/CornerAdvice.ts:CornerAdviceContext":
     "Public type for CornerAdviceContext contract",
   "src/engine/bout/boutSpatial.ts:isOutOfRing": "Utility function retained for future wiring",
@@ -393,8 +338,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config constant retained for engine configuration",
   "src/engine/governance/kanrekiCeremony.ts:KANREKI_POPULARITY_BOOST":
     "Config constant retained for engine configuration",
-  "src/engine/governance/kanrekiCeremony.ts:hasHadKanrekiCeremony":
-    "Utility function retained for future wiring",
   "src/engine/governance/yokozunaAttendants.ts:ATTENDANT_POPULARITY_BOOST":
     "Config constant retained for engine configuration",
   "src/engine/governance/yokozunaAttendants.ts:isEligibleAttendant":
@@ -419,8 +362,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config constant retained for engine configuration",
   "src/engine/training/WeightJourney.ts:shouldEnterWeightJourney":
     "Utility function retained for future wiring",
-  "src/engine/utils/jsonParser.ts:parseLLMResponse": "Utility function retained for future wiring",
-  "src/engine/utils/jsonParser.ts:safeParse": "Utility function retained for future wiring",
   "src/engine/utils/citizenshipUtils.ts:countsAsForeign":
     "Utility function retained for future wiring",
   "src/engine/utils/citizenshipUtils.ts:isAtForeignLimit":
@@ -432,22 +373,20 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/utils/entityAccess.ts:getHeyaRikishi": "Utility function retained for future wiring",
   "src/engine/utils/entityAccess.ts:getAllActiveRikishi":
     "Utility function retained for future wiring",
-  "src/engine/utils/collectionOperations.ts:mapIdsToEntities":
-    "Utility function retained for future wiring",
-  "src/engine/utils/collectionOperations.ts:mapIdsToRikishi":
-    "Utility function retained for future wiring",
-  "src/engine/utils/collectionOperations.ts:mapIdsToHeya":
-    "Utility function retained for future wiring",
-  "src/engine/utils/collectionOperations.ts:filterEntities":
-    "Utility function retained for future wiring",
-  "src/engine/utils/collectionOperations.ts:getEntitiesByIds":
-    "Utility function retained for future wiring",
-  "src/engine/utils/collectionOperations.ts:groupBy": "Utility function retained for future wiring",
-  "src/engine/utils/collectionOperations.ts:countBy": "Utility function retained for future wiring",
   "src/engine/systems/recruitment/YouthAcademyService.ts:getQualityBonus":
     "Public helper exercised directly by youthAcademy.test.ts",
-  "src/engine/core/EntityService.ts:EntityService":
-    "Public entity-state hydrator facade; exercised directly by EntityService.test.ts",
+
+  // ── Classified in Oct 2026 baseline refresh ──
+  "src/engine/bout/boutAchievements.ts:DetectKinboshiOptions":
+    "Public type for kinboshi detection options",
+  "src/engine/bout/hiwaza.ts:HiwaRng": "Public type for hiwaza RNG contract",
+  "src/engine/bout/hiwaza.ts:HiwazaId": "Public type for hiwaza identifiers",
+  "src/engine/bout/hiwaza.ts:classifyHiwaza":
+    "Internal classifier exercised directly by hiwaza.test.ts",
+  "src/engine/bout/terminalKimarite.ts:TerminalContext":
+    "Public type for terminal kimarite context",
+  "src/engine/bout/terminalKimarite.ts:pickTerminalKimarite":
+    "Internal picker exercised directly by terminalKimarite.test.ts",
 };
 
 /**
@@ -457,7 +396,43 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
  * ORPH-XXXX tracker id from baseline-orphans.json, and the baseline entry's
  * status must be "genuine". Wire or remove the symbol, then delete the entry.
  */
-const GENUINE_ORPHANS: Record<string, string> = {};
+const GENUINE_ORPHANS: Record<string, string> = {
+  // ── Dead modules: zero production importers; referenced only by their own tests ──
+  "src/engine/bout/honbasho.ts:HONBASHO_NAMES":
+    "ORPH-0133 dead module — wire honbasho helpers into basho setup or remove",
+  "src/engine/bout/honbasho.ts:isHonbashoName":
+    "ORPH-0134 dead module — wire honbasho helpers into basho setup or remove",
+  "src/engine/bout/honbasho.ts:isHonbashoState":
+    "ORPH-0135 dead module — wire honbasho helpers into basho setup or remove",
+  "src/engine/bout/honbasho.ts:isHonbashoInfo":
+    "ORPH-0136 dead module — wire honbasho helpers into basho setup or remove",
+  "src/engine/bout/honbasho.ts:makeExhibitionBasho":
+    "ORPH-0137 dead module — wire honbasho helpers into basho setup or remove",
+  "src/engine/core/EntityService.ts:EntityService":
+    "ORPH-0149 facade exercised only by EntityService.test.ts — wire into app bootstrap or remove",
+  "src/engine/npcAI/contextBuilder.ts:buildAIContext":
+    "ORPH-0098 no production callers — wire into the NPC AI pipeline or remove",
+  "src/engine/utils/collectionOperations.ts:mapIdsToEntities":
+    "ORPH-0190 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/collectionOperations.ts:mapIdsToRikishi":
+    "ORPH-0191 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/collectionOperations.ts:mapIdsToHeya":
+    "ORPH-0192 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/collectionOperations.ts:mapIdsToOyakata":
+    "ORPH-0193 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/collectionOperations.ts:filterEntities":
+    "ORPH-0194 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/collectionOperations.ts:getEntitiesByIds":
+    "ORPH-0195 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/collectionOperations.ts:groupBy":
+    "ORPH-0196 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/collectionOperations.ts:countBy":
+    "ORPH-0197 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/jsonParser.ts:parseLLMResponse":
+    "ORPH-0202 barrel-only export with no consumers — wire or remove",
+  "src/engine/utils/jsonParser.ts:safeParse":
+    "ORPH-0203 barrel-only export with no consumers — wire or remove",
+};
 
 function loadAuditEntries(): AuditEntry[] {
   if (!existsSync(AUDIT_JSON)) return [];
