@@ -265,7 +265,7 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
  * Convenience function to advance the world state by N days.
  *
  * @param {WorldState} world - The current world state.
- * @param {number} days - Number of days to advance (capped at 365).
+ * @param {number} days - Number of days to advance. **Contract:** Input is strictly capped at `MAX_DAYS_ADVANCE` (365) to prevent unbounded loops and ensure annual state boundaries (e.g., prestige decay, history aggregation) process predictably. For multi-year sims, callers must chunk advances (e.g., a while loop calling `advanceDays(world, 365)`).
  * @returns {WorldState} The updated world state after N day ticks.
  *
  * @example
@@ -295,7 +295,7 @@ export function advanceDays(world: WorldState, days: number, opts?: AdvanceOptio
  * calendar advancement, and RNG deterministically.
  *
  * @param {WorldState} world - The current world state.
- * @param {number} days - Number of days to advance (capped at 365).
+ * @param {number} days - Number of days to advance. **Contract:** Input is strictly capped at `MAX_DAYS_ADVANCE` (365) to prevent unbounded loops and ensure annual state boundaries (e.g., prestige decay, history aggregation) process predictably. For multi-year sims, callers must chunk advances (e.g., a while loop calling `advanceDaysFast(world, 365)`).
  * @returns {WorldState} The updated world state after N day ticks.
  */
 export function advanceDaysFast(
