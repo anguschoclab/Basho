@@ -13,7 +13,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { readFileSync, readdirSync, existsSync, statSync } from "fs";
 import { join } from "path";
 import { advanceDaysFast } from "@/engine/tick/tickDaily";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../engine/utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { EventCategory } from "@/engine/types/events";
 

@@ -70,11 +70,33 @@ The core engine is strictly deterministic to ensure that simulations are reprodu
 
 **Run tests:**
 
-Tests should be executed directly via Vitest targeting specific files to avoid runner timeouts:
+The unit suite is split so the default run stays fast. During development,
+prefer the fast suite or target specific files directly:
 
 ```bash
-npx vitest run <filepath>
+bun run test                   # fast unit tests (src/tests/unit/**)
+npx vitest run <filepath>      # single file
 ```
+
+Slow and long-horizon suites run adhoc — they spawn subprocesses
+(eslint/knip/madge), need a production build, or simulate full game years:
+
+```bash
+bun run test:slow              # slow gates (src/tests/slow/**); run `bun run build` first
+bun run test:perf              # perf benchmarks (src/tests/perf/**)
+bun run test:all               # fast + slow + perf
+```
+
+Browser end-to-end specs (Playwright) are also adhoc and split by duration:
+
+```bash
+bun run test:e2e:smoke         # golden-path + reload-restore (~few min)
+bun run test:e2e:soak          # full-basho-lifecycle + year-of-bashos (~10 min)
+bun run test:e2e               # all e2e specs
+```
+
+The slow and perf suites run nightly in CI (`.github/workflows/slow-tests.yml`);
+PRs gate on the fast suite, lint, and typecheck only.
 
 **Verify determinism (static analysis for RNG & mutable state violations):**
 

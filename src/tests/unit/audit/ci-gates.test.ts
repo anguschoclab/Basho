@@ -156,10 +156,17 @@ describe("CI Gate: Page files use AppLayout shell", () => {
 });
 
 describe("CI Gate: Audit test suite completeness", () => {
-  const auditDir = join(SRC, "tests", "unit", "audit");
-  if (!existsSync(auditDir)) return;
+  // Slow audit tests (subprocess gates, year-long playthroughs) live in
+  // src/tests/slow/audit and run via `bun run test:slow` — both dirs count
+  // toward completeness.
+  const auditDirs = [
+    join(SRC, "tests", "unit", "audit"),
+    join(SRC, "tests", "slow", "audit"),
+  ];
 
-  const auditFiles = readdirSync(auditDir).filter((f) => f.endsWith(".test.ts"));
+  const auditFiles = auditDirs
+    .filter((dir) => existsSync(dir))
+    .flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith(".test.ts")));
 
   it("has at least 20 audit test files", () => {
     expect(auditFiles.length).toBeGreaterThanOrEqual(20);

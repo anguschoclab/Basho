@@ -1,5 +1,13 @@
 # Test Helpers & Mock Factory Convention
 
+## Test Suite Layout
+
+- `src/tests/unit/` — fast unit tests; run by default via `bun run test` on every change and every PR.
+- `src/tests/slow/` — slow gates run adhoc via `bun run test:slow` and nightly in CI. Put a test here if it spawns a subprocess (eslint/knip/madge/tsx), requires a prior `bun run build`, or simulates months/years of game time.
+- `src/tests/perf/` — perf benchmarks; run adhoc via `bun run test:perf`.
+
+Keep `unit/` fast: a fast meta-test (`noSubprocessInUnitTests`) fails if a unit test imports `child_process`.
+
 ## Shared Helpers
 
 ### `boutTestHelpers.ts`

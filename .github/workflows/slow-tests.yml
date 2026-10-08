@@ -1,0 +1,41 @@
+name: Slow Test Suite
+
+# Adhoc gates: subprocess-driven audits (eslint/knip/madge/tsx), year-long
+# headless playthroughs, and bundle budget checks. Too slow for the PR gate —
+# runs nightly and on demand. Use "Run workflow" to verify before a release.
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # nightly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  slow-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install
+      # bundleBudget.test.ts asserts on dist/assets
+      - name: Build application
+        run: bun run build
+      - name: Run slow test suite
+        run: bun run test:slow
+
+  perf-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install
+      - name: Run perf test suite
+        run: bun run test:perf

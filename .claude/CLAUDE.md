@@ -125,6 +125,17 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 
 ## Test Setup
 - **Runner:** `bun run test` (Vitest, jsdom environment). Do NOT use `bun test` — that invokes Bun's native test runner, which doesn't understand vitest's jsdom environment or setup files.
+- **Fast-by-default philosophy:** the default `bun run test` suite must stay fast enough to run on every change. Tests that spawn subprocesses (eslint/knip/madge/tsx), require a prior `bun run build`, or simulate months/years of game time do NOT belong in `src/tests/unit/` — put them in `src/tests/slow/` instead.
+- **Test suites:**
+  | Command | Suite | When to run |
+  |---------|-------|-------------|
+  | `bun run test` | Fast unit tests (`src/tests/unit/**`) | Every change / every PR |
+  | `bun run test:slow` | Slow gates (`src/tests/slow/**` — lintStrictGate, knipGuard, circularDependency, orphan-audit, phasePurity, headless-playthrough, bundleBudget) | Adhoc / nightly CI (`slow-tests.yml`); needs `bun run build` first |
+  | `bun run test:perf` | Perf benchmarks (`src/tests/perf/**`) | Adhoc |
+  | `bun run test:all` | All three vitest suites | Pre-release verification |
+  | `bun run test:e2e:smoke` | Playwright smoke (golden-path, reload-restore) | Adhoc, ~2–4 min |
+  | `bun run test:e2e:soak` | Playwright soak (full-basho-lifecycle, year-of-bashos) | Adhoc, ~8–10 min |
+  | `bun run test:e2e` | All e2e specs | Adhoc |
 - **Mock factories:** primary is `src/tests/helpers/utils/MockFactory.ts` (~118 consumers); `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 70%, branches 75%, functions 65%, statements 70% (v8 provider)

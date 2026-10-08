@@ -19,6 +19,7 @@ export default defineConfig({
       ".claude/**",
       "**/*.e2e.test.ts",
       "src/tests/perf/**",
+      "src/tests/slow/**",
     ],
     testTimeout: 30000,
     fileParallelism: false,

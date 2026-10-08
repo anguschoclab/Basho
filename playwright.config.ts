@@ -15,7 +15,13 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "chromium",
+      name: "smoke",
+      testMatch: /(golden-path|reload-restore)\.e2e\.test\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "soak",
+      testMatch: /(full-basho-lifecycle|year-of-bashos)\.e2e\.test\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
   ],
