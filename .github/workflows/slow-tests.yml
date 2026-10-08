@@ -9,13 +9,33 @@ on:
     - cron: "0 3 * * *" # nightly
   workflow_dispatch:
 
+# Cancel superseded runs — a manual dispatch shouldn't stack up behind the
+# nightly run (the slow suite is ~3min of sims + subprocess audits).
+concurrency:
+  group: slow-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
-  slow-tests:
+  # Engine sims (no fs writers) run in parallel with the serial audit gates —
+  # keeps wall-clock near the longest sim rather than the serial sum.
+  slow-engine-sims:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install
+      - name: Run slow engine sims
+        run: bunx vitest run --config vitest.slow.config.ts src/tests/slow/engine
+
+  slow-audit-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
@@ -25,8 +45,8 @@ jobs:
       # bundleBudget.test.ts asserts on dist/assets
       - name: Build application
         run: bun run build
-      - name: Run slow test suite
-        run: bun run test:slow
+      - name: Run slow audit gates
+        run: bunx vitest run --config vitest.slow.config.ts src/tests/slow/audit
 
   perf-tests:
     runs-on: ubuntu-latest

@@ -7,17 +7,10 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { readSrcFile } from "@/tests/helpers/fsScan";
 
 const ROOT = join(__dirname, "../../../..");
-const SRC = join(ROOT, "src");
-
-function readFile(rel: string): string {
-  const abs = join(SRC, rel);
-  if (!existsSync(abs)) return "";
-  return readFileSync(abs, "utf-8");
-}
 
 const CONTENT_PAGES = [
   "pages/Dashboard.tsx",
@@ -58,7 +51,7 @@ describe("Shell contract — AppLayout usage", () => {
     const fileName = page.split("/").pop() ?? page;
 
     it(`${fileName} imports AppLayout`, () => {
-      const content = readFile(page);
+      const content = readSrcFile(page);
       if (!content) return; // skip if file doesn't exist
       expect(content).toContain("AppLayout");
     });
@@ -97,7 +90,7 @@ describe("Shell contract — PageHeader usage", () => {
     const fileName = page.split("/").pop() ?? page;
 
     it(`${fileName} renders PageHeader`, () => {
-      const content = readFile(page);
+      const content = readSrcFile(page);
       if (!content) return;
       expect(content).toContain("PageHeader");
     });
@@ -134,7 +127,7 @@ describe("Shell contract — SubNavTabs usage", () => {
     const fileName = page.split("/").pop() ?? page;
 
     it(`${fileName} uses ${tabs} for sub-navigation`, () => {
-      const content = readFile(page);
+      const content = readSrcFile(page);
       if (!content) return;
       expect(content).toContain(tabs);
     });
@@ -152,7 +145,7 @@ describe("Shell contract — EventFeed / EventLogPanel on key pages", () => {
     const fileName = page.split("/").pop() ?? page;
 
     it(`${fileName} includes EventFeed for event log continuity`, () => {
-      const content = readFile(page);
+      const content = readSrcFile(page);
       if (!content) return;
       expect(content).toContain("EventFeed");
     });

@@ -1,21 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { readdirSync, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
+import { findFiles, SRC as SRC_DIR } from "@/tests/helpers/fsScan";
 
-const SRC_DIR = join(import.meta.dirname, "../../../..", "src");
 const ENGINE_DIR = join(SRC_DIR, "engine");
 
 function findTsFiles(dir: string): string[] {
-  const results: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...findTsFiles(fullPath));
-    } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts")) {
-      results.push(fullPath);
-    }
-  }
-  return results;
+  return findFiles(dir, { exts: [".ts"], exclude: /\.test\.ts$/ });
 }
 
 describe("L4.2: performance hotspots — O(n²) loop detection", () => {

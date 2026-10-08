@@ -6,20 +6,13 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { readSrcFile } from "@/tests/helpers/fsScan";
 
 const ROOT = join(__dirname, "../../../..");
-const SRC = join(ROOT, "src");
-
-function readFile(rel: string): string {
-  const abs = join(SRC, rel);
-  if (!existsSync(abs)) return "";
-  return readFileSync(abs, "utf-8");
-}
 
 describe("routes.tsx — structural integrity", () => {
-  const routes = readFile("routes.tsx");
+  const routes = readSrcFile("routes.tsx");
 
   it("exports router", () => {
     expect(routes).toContain("export const router");
@@ -42,7 +35,7 @@ describe("routes.tsx — structural integrity", () => {
 });
 
 describe("Content routes — all page routes have components", () => {
-  const routes = readFile("routes.tsx");
+  const routes = readSrcFile("routes.tsx");
 
   // Top-level routes (path is defined directly in createRoute)
   const topLevelRoutes: Array<{ path: string; component: string }> = [
@@ -103,7 +96,7 @@ describe("Content routes — all page routes have components", () => {
 });
 
 describe("Redirect routes — all redirects point to valid targets", () => {
-  const routes = readFile("routes.tsx");
+  const routes = readSrcFile("routes.tsx");
 
   const redirects: Array<{ from: string; to: string }> = [
     { from: "/economy", to: "/office/finances" },
@@ -131,8 +124,8 @@ describe("Redirect routes — all redirects point to valid targets", () => {
 });
 
 describe("Sidebar routes — all sidebar entries match defined routes", () => {
-  const sidebar = readFile("components/layout/sidebarConfig.ts");
-  const routes = readFile("routes.tsx");
+  const sidebar = readSrcFile("components/layout/sidebarConfig.ts");
+  const routes = readSrcFile("routes.tsx");
 
   // Map sidebar URLs to component names — nested routes won't appear as
   // literal full paths in routes.tsx, so we verify the component is wired.
@@ -177,7 +170,7 @@ describe("Sidebar routes — all sidebar entries match defined routes", () => {
 });
 
 describe("Pre-game routes — intentionally not in sidebar", () => {
-  const sidebar = readFile("components/layout/sidebarConfig.ts");
+  const sidebar = readSrcFile("components/layout/sidebarConfig.ts");
 
   it("/main-menu is not in sidebar (pre-game route)", () => {
     expect(sidebar).not.toContain('"/main-menu"');

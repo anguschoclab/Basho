@@ -839,24 +839,17 @@ describe("OPFSArchiveService core functionality", () => {
       const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
       vi.spyOn(service, "getDirectoryPath").mockRejectedValue(quotaError);
 
-      const dispatchSpy = vi.fn();
-      Object.defineProperty(globalThis, "window", {
-        value: { dispatchEvent: dispatchSpy },
-        writable: true,
-        configurable: true,
-      });
+      // Spy the existing window's dispatchEvent — the window global is a
+      // non-configurable getter under vitest's vmThreads pool, so it can't
+      // be replaced outright. vi.restoreAllMocks in the global setup
+      // restores the spy after the test.
+      const dispatchSpy = vi.spyOn(window, "dispatchEvent").mockImplementation(() => true);
 
       await service.archiveBoutLog(2024, "b1", {});
 
       expect(dispatchSpy).toHaveBeenCalled();
       const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
       expect(event.type).toBe("engine:storage:quota-exceeded");
-
-      Object.defineProperty(globalThis, "window", {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
     });
   });
 });

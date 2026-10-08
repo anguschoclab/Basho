@@ -1,29 +1,23 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { execSync } from "child_process";
 import { join } from "path";
 
 const PROJECT_ROOT = join(import.meta.dirname, "../../../..");
 
+interface EslintFileResult {
+  errorCount: number;
+  suppressedMessages: Array<{ ruleId: string }>;
+}
+
 describe("L4.5: ESLint CI gate — zero errors", () => {
-  it("eslint passes with zero errors (warnings allowed)", { timeout: 300_000 }, () => {
-    let exitCode = 0;
-    let stderr = "";
-    try {
-      execSync("bunx eslint .", {
-        cwd: PROJECT_ROOT,
-        encoding: "utf-8",
-        stdio: ["pipe", "pipe", "pipe"],
-        timeout: 240_000,
-      });
-    } catch (err: unknown) {
-      exitCode = (err as { status?: number }).status ?? 1;
-      stderr = (err as { stderr?: string }).stderr ?? "";
-    }
+  // One `eslint . --format json` run answers both assertions: the process exit
+  // code / per-file errorCount covers "zero errors", and suppressedMessages
+  // covers "no eslint-disable suppressions". Previously eslint ran twice.
+  let exitCode = 0;
+  let stderr = "";
+  let results: EslintFileResult[] = [];
 
-    expect(exitCode, `ESLint exited with ${exitCode}:\n${stderr}`).toBe(0);
-  });
-
-  it("no eslint-disable suppressions remain in the codebase", { timeout: 300_000 }, () => {
+  beforeAll(() => {
     let stdout = "";
     try {
       stdout = execSync("bunx eslint . --format json", {
@@ -33,14 +27,28 @@ describe("L4.5: ESLint CI gate — zero errors", () => {
         timeout: 240_000,
       });
     } catch (err: unknown) {
+      exitCode = (err as { status?: number }).status ?? 1;
+      stderr = (err as { stderr?: string }).stderr ?? "";
       stdout = (err as { stdout?: string }).stdout ?? "";
     }
+    if (stdout.trim()) {
+      try {
+        results = JSON.parse(stdout) as EslintFileResult[];
+      } catch {
+        results = [];
+      }
+    }
+  }, 300_000);
 
-    const data = JSON.parse(stdout) as Array<{
-      suppressedMessages: Array<{ ruleId: string }>;
-    }>;
+  it("eslint passes with zero errors (warnings allowed)", () => {
+    const errorCount = results.reduce((s, r) => s + r.errorCount, 0);
+    expect(exitCode, `ESLint exited with ${exitCode}:\n${stderr}`).toBe(0);
+    expect(errorCount).toBe(0);
+  });
+
+  it("no eslint-disable suppressions remain in the codebase", () => {
     let total = 0;
-    for (const file of data) {
+    for (const file of results) {
       total += file.suppressedMessages?.length ?? 0;
     }
 

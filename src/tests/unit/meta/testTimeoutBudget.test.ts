@@ -1,26 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, existsSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
-
-const SRC_DIR = join(import.meta.dirname, "../../../..", "src");
-
-function findFiles(dir: string, exts: string[]): string[] {
-  const results: string[] = [];
-  if (!existsSync(dir)) return results;
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...findFiles(fullPath, exts));
-    } else if (exts.some((e) => entry.name.endsWith(e))) {
-      results.push(fullPath);
-    }
-  }
-  return results;
-}
+import { findFiles, SRC as SRC_DIR } from "@/tests/helpers/fsScan";
 
 describe("L2.2: test timeout budget — no excessive per-test timeouts", () => {
   it("no test sets a timeout greater than 5000ms", () => {
-    const testFiles = findFiles(join(SRC_DIR, "tests"), [".ts", ".tsx"]);
+    const testFiles = findFiles(join(SRC_DIR, "tests"));
     const violations: string[] = [];
 
     for (const file of testFiles) {
@@ -41,7 +26,7 @@ describe("L2.2: test timeout budget — no excessive per-test timeouts", () => {
   });
 
   it("no test file uses vitest.setTimeout with >30000ms", () => {
-    const testFiles = findFiles(join(SRC_DIR, "tests"), [".ts", ".tsx"]);
+    const testFiles = findFiles(join(SRC_DIR, "tests"));
     const violations: string[] = [];
 
     for (const file of testFiles) {

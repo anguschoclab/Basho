@@ -149,7 +149,7 @@ describe("scouting noise calibration", () => {
 });
 
 // This block codifies a manual investigation into a reported failure of the 12-basho
-// yokozuna-emergence test (src/tests/unit/engine/banzuke/yokozunaPromotionAutoSim.test.ts).
+// yokozuna-emergence test (src/tests/slow/engine/banzuke/yokozunaPromotionAutoSim.test.ts).
 // The failure did NOT reproduce at any of 4 isolated (handicap on/off x noise 22/32)
 // configurations, nor at the exact original failing config re-run in the full suite
 // (314/314 green) — the real cause is suite-level resource contention (that test runs a

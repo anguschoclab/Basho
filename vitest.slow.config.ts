@@ -14,8 +14,11 @@ export default defineConfig({
     setupFiles: ["./src/tests/setup/setup.ts"],
     include: ["src/tests/slow/**"],
     exclude: [...configDefaults.exclude, "e2e/**", ".claude/**", "**/*.e2e.test.ts"],
-    testTimeout: 300000,
+    // simulationInvariants runs multi-year sims (~100-150s each, worse under
+    // CI contention); 600s gives headroom above the prior 300s failures.
+    testTimeout: 600000,
     fileParallelism: false,
+    pool: "vmThreads",
     server: {
       deps: {
         inline: ["seedrandom"],

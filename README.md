@@ -85,6 +85,7 @@ Slow and long-horizon suites run adhoc — they spawn subprocesses
 bun run test:slow              # slow gates (src/tests/slow/**); run `bun run build` first
 bun run test:perf              # perf benchmarks (src/tests/perf/**)
 bun run test:all               # fast + slow + perf
+bun run test:timings -- fast   # regenerate per-file timing baseline (docs/audit/test-timings.json)
 ```
 
 Browser end-to-end specs (Playwright) are also adhoc and split by duration:

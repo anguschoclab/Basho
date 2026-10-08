@@ -1,24 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { readdirSync, readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { findFiles } from "@/tests/helpers/fsScan";
 
 const PROJECT_ROOT = join(import.meta.dirname, "../../../..");
 const DOCS_DIR = join(PROJECT_ROOT, "docs");
 const README = join(PROJECT_ROOT, "README.md");
 
-function findMdFiles(dir: string): string[] {
-  if (!existsSync(dir)) return [];
-  const results: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...findMdFiles(fullPath));
-    } else if (entry.name.endsWith(".md")) {
-      results.push(fullPath);
-    }
-  }
-  return results;
-}
 
 describe("L1.2: stale documentation audit", () => {
   it("README.md exists", () => {
@@ -30,7 +18,7 @@ describe("L1.2: stale documentation audit", () => {
   });
 
   it("no markdown files reference deleted scripts or non-existent paths", () => {
-    const mdFiles = [README, ...findMdFiles(DOCS_DIR)];
+    const mdFiles = [README, ...findFiles(DOCS_DIR, { exts: [".md"] })];
     const staleRefs: string[] = [];
 
     for (const mdFile of mdFiles) {
@@ -55,7 +43,7 @@ describe("L1.2: stale documentation audit", () => {
     const auditDocsDir = join(DOCS_DIR, "audit");
     if (!existsSync(auditDocsDir)) return;
 
-    const auditMdFiles = findMdFiles(auditDocsDir);
+    const auditMdFiles = findFiles(auditDocsDir, { exts: [".md"] });
     const missing: string[] = [];
 
     for (const mdFile of auditMdFiles) {

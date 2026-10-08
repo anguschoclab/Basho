@@ -11,9 +11,10 @@
  * actually fires in the AutoSim path (the primary mode for long sims).
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
+import type { WorldState } from "@/engine/types/world";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 
 // Mock archive services to track archival calls without touching real OPFS.
@@ -56,11 +57,19 @@ const SIM_CONFIG = {
 };
 
 describe("simulation history-storage invariants (Plan Step 3.4)", () => {
-  it("historicalRikishi entries are summaries after year-end summarization", async () => {
-    const world = generateInitialWorld("sim-invariant-v1");
-    const result = runAutoSim(world, SIM_CONFIG);
+  // One 3-year sim shared by all four assertions (previously each `it` ran
+  // its own ~2min runAutoSim — 4× cost for no additional coverage: every
+  // invariant is checked on the same finalWorld). The per-seed variety the
+  // old code had was incidental, not semantic.
+  let finalWorld: WorldState;
 
-    const finalWorld = result.finalWorld;
+  beforeAll(async () => {
+    const world = generateInitialWorld("sim-invariant");
+    const result = await runAutoSim(world, SIM_CONFIG);
+    finalWorld = result.finalWorld;
+  }, 900000);
+
+  it("historicalRikishi entries are summaries after year-end summarization", async () => {
     expect(finalWorld.historicalRikishi).toBeDefined();
 
     // In a 3-year sim with ~440 rikishi, at least some should retire and
@@ -84,23 +93,15 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
     // must be summaries (retired before the last year boundary).
     expect(size).toBeGreaterThan(0);
     expect(summaryCount).toBeGreaterThan(0);
-  }, 900000);
+  });
 
   it("almanacSnapshots is bounded to <= 6 after year-end", async () => {
-    const world = generateInitialWorld("sim-invariant-v2");
-    const result = runAutoSim(world, SIM_CONFIG);
-
-    const finalWorld = result.finalWorld;
     if (finalWorld.almanacSnapshots) {
       expect(finalWorld.almanacSnapshots.length).toBeLessThanOrEqual(6);
     }
-  }, 900000);
+  });
 
   it("world.rikishi has no ghost entries from summarization", async () => {
-    const world = generateInitialWorld("sim-invariant-v3");
-    const result = runAutoSim(world, SIM_CONFIG);
-
-    const finalWorld = result.finalWorld;
     // Every entry in world.rikishi should not be retired
     for (const [id, r] of finalWorld.rikishi) {
       expect(r.isRetired).not.toBe(true);
@@ -109,7 +110,7 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
         expect.fail(`Rikishi ${id} found in both world.rikishi and world.historicalRikishi`);
       }
     }
-  }, 900000);
+  });
 
   it("full records are archived to cold storage at retirement (if any retire)", async () => {
     // Note: This test verifies that the archive service is wired correctly.
@@ -117,10 +118,8 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
     // retiredRikishiSummarization.test.ts already verify archival calls
     // with mocked services. This test just confirms no crashes from the
     // archive integration during a real sim.
-    const world = generateInitialWorld("sim-invariant-v4");
-    const result = runAutoSim(world, SIM_CONFIG);
 
     // If there are historical rikishi, the sim ran without archival crashes
-    expect(result.finalWorld).toBeDefined();
-  }, 900000);
+    expect(finalWorld).toBeDefined();
+  });
 });

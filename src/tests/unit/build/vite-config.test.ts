@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const projectRoot = join(import.meta.dirname, "..", "..", "..");
+const projectRoot = join(import.meta.dirname, "..", "..", "..", "..");
 
 describe("Vite config loads correctly (Vite 8)", () => {
   it("vite.config.ts exists and has correct structure", () => {

@@ -380,7 +380,13 @@ describe("ElectronStorageProvider", () => {
       expect(provider).toBeInstanceOf(ElectronStorageProvider);
     });
 
-    it("does not throw when window is undefined", () => {
+    // Under vitest's vmThreads pool the window global is a non-configurable
+    // getter (the jsdom window.window self-reference) and cannot be
+    // undefined — run this case only where window is replaceable.
+    const windowIsReplaceable = Boolean(
+      Object.getOwnPropertyDescriptor(globalThis, "window")?.writable
+    );
+    it.skipIf(!windowIsReplaceable)("does not throw when window is undefined", () => {
       clearElectronMock();
       // Ensure window is truly undefined
       Object.defineProperty(global, "window", {

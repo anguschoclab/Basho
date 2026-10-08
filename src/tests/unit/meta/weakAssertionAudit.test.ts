@@ -1,20 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { readdirSync, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
+import { findFiles, SRC } from "@/tests/helpers/fsScan";
 
-const TESTS_DIR = join(import.meta.dirname, "../../..", "tests");
+const TESTS_DIR = join(SRC, "tests");
 
 function findTestFiles(dir: string): string[] {
-  const results: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...findTestFiles(fullPath));
-    } else if (entry.name.endsWith(".test.ts") || entry.name.endsWith(".test.tsx")) {
-      results.push(fullPath);
-    }
-  }
-  return results;
+  return findFiles(dir, { exts: [".test.ts", ".test.tsx"] });
 }
 
 describe("L4.10: test quality — weak assertion audit", () => {

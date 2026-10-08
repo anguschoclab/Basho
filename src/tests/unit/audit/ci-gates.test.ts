@@ -10,23 +10,14 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync, readdirSync, statSync } from "fs";
+import { readFileSync, existsSync, readdirSync } from "fs";
 import { join } from "path";
+import { collectSource, listSrcDir, readSrcFile } from "@/tests/helpers/fsScan";
 
 const ROOT = join(__dirname, "../../../..");
 const SRC = join(ROOT, "src");
 
-function readFile(rel: string): string {
-  const abs = join(SRC, rel);
-  if (!existsSync(abs)) return "";
-  return readFileSync(abs, "utf-8");
-}
 
-function listFiles(dir: string, ext: string): string[] {
-  const abs = join(SRC, dir);
-  if (!existsSync(abs)) return [];
-  return readdirSync(abs).filter((f) => f.endsWith(ext));
-}
 
 describe("CI Gate: Audit baseline files exist", () => {
   it("baseline-orphans.json exists", () => {
@@ -47,18 +38,18 @@ describe("CI Gate: Audit baseline files exist", () => {
 
 describe("CI Gate: Router export", () => {
   it("routes.tsx exports router", () => {
-    const routes = readFile("routes.tsx");
+    const routes = readSrcFile("routes.tsx");
     expect(routes).toContain("export const router");
   });
 
   it("routes.tsx defines a route tree", () => {
-    const routes = readFile("routes.tsx");
+    const routes = readSrcFile("routes.tsx");
     expect(routes).toContain("routeTree");
   });
 });
 
 describe("CI Gate: Sidebar section coverage", () => {
-  const sidebar = readFile("components/layout/sidebarConfig.ts");
+  const sidebar = readSrcFile("components/layout/sidebarConfig.ts");
 
   it("includes My Stable section", () => {
     expect(sidebar).toContain("My Stable");
@@ -82,7 +73,7 @@ describe("CI Gate: Sidebar section coverage", () => {
 });
 
 describe("CI Gate: Navigation tab constants exist", () => {
-  const nav = readFile("constants/ui/navigation.ts");
+  const nav = readSrcFile("constants/ui/navigation.ts");
 
   it("exports STABLE_TABS", () => {
     expect(nav).toContain("STABLE_TABS");
@@ -117,7 +108,7 @@ describe("CI Gate: No hardcoded colors in page files", () => {
 
   for (const file of pageFiles) {
     it(`${file} has no hardcoded hex colors`, () => {
-      const content = readFile(`pages/${file}`);
+      const content = readSrcFile(`pages/${file}`);
       const hexMatches = content.match(hexPattern);
       if (hexMatches) {
         // Allow hex in comments or string literals for display
@@ -134,18 +125,18 @@ describe("CI Gate: No hardcoded colors in page files", () => {
     });
 
     it(`${file} has no hardcoded rgb() colors`, () => {
-      const content = readFile(`pages/${file}`);
+      const content = readSrcFile(`pages/${file}`);
       expect(rgbPattern.test(content)).toBe(false);
     });
   }
 });
 
 describe("CI Gate: Page files use AppLayout shell", () => {
-  const pageFiles = listFiles("pages", ".tsx");
+  const pageFiles = listSrcDir("pages", ".tsx");
 
   for (const file of pageFiles) {
     it(`${file} imports AppLayout`, () => {
-      const content = readFile(`pages/${file}`);
+      const content = readSrcFile(`pages/${file}`);
       if (!content) return;
       // Skip NotFound, MainMenu, NewGameWizard — pre-game/shell pages
       if (file === "NotFound.tsx" || file === "MainMenu.tsx" || file === "NewGameWizard.tsx")
@@ -249,25 +240,7 @@ describe("CI Gate: Write-only state field classification", () => {
     const uiDirs = ["presenters", "pages", "components", "contexts"];
     let uiSource = "";
     for (const dir of uiDirs) {
-      const dirPath = join(SRC, dir);
-      if (!existsSync(dirPath)) continue;
-      function walk(dir: string) {
-        for (const entry of readdirSync(dir)) {
-          const full = join(dir, entry);
-          if (!existsSync(full)) continue;
-          try {
-            const stat = statSync(full);
-            if (stat.isDirectory()) {
-              walk(full);
-            } else if (entry.endsWith(".ts") || entry.endsWith(".tsx")) {
-              uiSource += readFileSync(full, "utf-8") + "\n";
-            }
-          } catch {
-            // skip
-          }
-        }
-      }
-      walk(dirPath);
+      uiSource += collectSource(join(SRC, dir));
     }
 
     const missing: string[] = [];

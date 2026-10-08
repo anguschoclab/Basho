@@ -1,25 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, statSync, existsSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join, extname } from "path";
+import { findFiles } from "@/tests/helpers/fsScan";
 
 const ROOT = join(__dirname, "../../../..");
 const SRC = join(ROOT, "src");
 
-function collectFiles(dir: string, files: string[] = []): string[] {
-  if (!existsSync(dir)) return files;
-  const entries = readdirSync(dir);
-  for (const entry of entries) {
-    const fullPath = join(dir, entry);
-    const stat = statSync(fullPath);
-    if (stat.isDirectory()) {
-      if (entry === "node_modules" || entry === ".git" || entry === "dist") continue;
-      collectFiles(fullPath, files);
-    } else if (extname(fullPath) === ".ts" || extname(fullPath) === ".tsx") {
-      files.push(fullPath);
-    }
-  }
-  return files;
-}
 
 function isTestFile(filePath: string): boolean {
   return (
@@ -31,7 +17,7 @@ function isScriptFile(filePath: string): boolean {
   return filePath.includes("/scripts/");
 }
 
-const allSrcFiles = collectFiles(SRC);
+const allSrcFiles = findFiles(SRC);
 const runtimeFiles = allSrcFiles.filter((f) => !isTestFile(f) && !isScriptFile(f));
 
 // ─── Write-only state field tests ─────────────────────────────────────────────
@@ -62,7 +48,7 @@ describe("Write-only state fields — surface to UI", () => {
       });
 
       it("is read by a presenter or selector", () => {
-        const presenterFiles = collectFiles(join(SRC, "presenters")).filter((f) => !isTestFile(f));
+        const presenterFiles = findFiles(join(SRC, "presenters")).filter((f) => !isTestFile(f));
         const selectorFiles = [
           join(SRC, "engine", "selectors.ts"),
           join(SRC, "presenters", "selectors.ts"),
@@ -90,7 +76,7 @@ describe("MyosekiTradingService — tick phase wiring", () => {
     let found = false;
     for (const dir of candidateDirs) {
       if (!existsSync(dir)) continue;
-      const files = collectFiles(dir).filter((f) => !isTestFile(f));
+      const files = findFiles(dir).filter((f) => !isTestFile(f));
       for (const f of files) {
         const content = readFileSync(f, "utf-8");
         if (content.includes("MyosekiTradingService")) {

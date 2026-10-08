@@ -6,44 +6,18 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync, readdirSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "fs";
+import { join, relative } from "path";
+import { findFiles, readSrcFile } from "@/tests/helpers/fsScan";
 
 const ROOT = join(__dirname, "../../../..");
 const SRC = join(ROOT, "src");
 
-function readFile(rel: string): string {
-  const abs = join(SRC, rel);
-  if (!existsSync(abs)) return "";
-  return readFileSync(abs, "utf-8");
-}
-
 function searchEngineForCategory(category: string): string[] {
-  const hits: string[] = [];
   const engineDir = join(SRC, "engine");
-  function walk(dir: string, relBase: string) {
-    for (const entry of readdirSync(dir)) {
-      const full = join(dir, entry);
-      const rel = `${relBase}/${entry}`;
-      if (existsSync(full) && isDir(full)) {
-        walk(full, rel);
-      } else if (entry.endsWith(".ts")) {
-        const content = readFileSync(full, "utf-8");
-        if (content.includes(`"${category}"`)) {
-          hits.push(rel);
-        }
-      }
-    }
-  }
-  function isDir(p: string): boolean {
-    try {
-      return readdirSync(p).length >= 0;
-    } catch {
-      return false;
-    }
-  }
-  walk(engineDir, "engine");
-  return hits;
+  return findFiles(engineDir, { exts: [".ts"] })
+    .filter((f) => readFileSync(f, "utf-8").includes(`"${category}"`))
+    .map((f) => relative(SRC, f).replace(/\\/g, "/"));
 }
 
 describe("ECONOMY event category", () => {
@@ -68,7 +42,7 @@ describe("HEALTH event category", () => {
 
 describe("WELFARE event category", () => {
   it("is emitted by phase01_week_welfare", () => {
-    const phase = readFile("engine/tick/phases/phase01_week_welfare.ts");
+    const phase = readSrcFile("engine/tick/phases/phase01_week_welfare.ts");
     expect(phase).toContain("WELFARE_COMPLIANCE");
   });
 });

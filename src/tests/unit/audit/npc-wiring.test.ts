@@ -7,20 +7,13 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { readSrcFile } from "@/tests/helpers/fsScan";
 
 const ROOT = join(__dirname, "../../../..");
-const SRC = join(ROOT, "src");
-
-function readFile(rel: string): string {
-  const abs = join(SRC, rel);
-  if (!existsSync(abs)) return "";
-  return readFileSync(abs, "utf-8");
-}
 
 describe("NPC agents — weekly decision wiring", () => {
-  const weekly = readFile("engine/npcAI/weekly.ts");
+  const weekly = readSrcFile("engine/npcAI/weekly.ts");
 
   it("imports spawnFinanceAgent", () => {
     expect(weekly).toContain("spawnFinanceAgent");
@@ -53,14 +46,14 @@ describe("NPC agents — weekly decision wiring", () => {
   it("emits NPC_MANAGER_DECISION events for agent results", () => {
     // WS4: execution moved to executeAgentDecisions, which owns the
     // NPC_MANAGER_DECISION emission for each executed domain.
-    const execution = readFile("engine/npcAI/execution.ts");
+    const execution = readSrcFile("engine/npcAI/execution.ts");
     expect(weekly).toContain("executeAgentDecisions");
     expect(execution).toContain("NPC_MANAGER_DECISION");
   });
 });
 
 describe("NPC AI tick phase — phase01_week_npc_ai", () => {
-  const phase = readFile("engine/tick/phases/phase01_week_npc_ai.ts");
+  const phase = readSrcFile("engine/tick/phases/phase01_week_npc_ai.ts");
 
   it("imports and calls makeNPCWeeklyDecision", () => {
     expect(phase).toContain("makeNPCWeeklyDecision");
@@ -80,7 +73,7 @@ describe("NPC AI tick phase — phase01_week_npc_ai", () => {
 });
 
 describe("Agent exports — all agents are exported from index", () => {
-  const index = readFile("engine/agents/index.ts");
+  const index = readSrcFile("engine/agents/index.ts");
 
   it("exports spawnFinanceAgent", () => {
     expect(index).toContain("FinanceAgent");
@@ -104,7 +97,7 @@ describe("Agent exports — all agents are exported from index", () => {
 });
 
 describe("NPC workers — npcAIWorkers", () => {
-  const workers = readFile("engine/npcAIWorkers.ts");
+  const workers = readSrcFile("engine/npcAIWorkers.ts");
 
   it("exports spawnTrainingWorker", () => {
     expect(workers).toContain("spawnTrainingWorker");

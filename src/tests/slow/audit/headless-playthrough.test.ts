@@ -5,15 +5,20 @@
  * - No phase throws or produces undefined critical state
  * - The simulation advances the calendar by ~1 year
  * - The event log is populated
- * - Every event category appears at least once
- * - Every wired state field is read by at least one presenter/selector
+ * - Every core event category appears at least once
+ * - Every EventCategory has an emitter in engine source (static scan)
+ *
+ * The 364-day sim runs ONCE in beforeAll and its result is shared across
+ * tests — previously each `it` re-ran the identical sim (~7× cost).
+ * The duplicate "every wired state field is read by UI" scan lives in
+ * src/tests/unit/audit/ci-gates.test.ts (UI_READ_FIELDS, a superset).
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
-import { readFileSync, readdirSync, existsSync, statSync } from "fs";
 import { join } from "path";
 import { advanceDaysFast } from "@/engine/tick/tickDaily";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
+import { collectSource, SRC } from "@/tests/helpers/fsScan";
 import type { WorldState } from "@/engine/types/world";
 import type { EventCategory } from "@/engine/types/events";
 
@@ -204,32 +209,36 @@ function buildPlaythroughWorld(): WorldState {
 }
 
 describe("Phase 5: Headless 52-week playthrough", () => {
-  // Mirror the app bootstrap (src/bootstrap.tsx): narrative domains must be
-  // loaded before synchronous resolve() calls or templates return empty text.
+  let initialRikishiCount = 0;
+  let result: WorldState | undefined;
+  let simError: unknown;
+
   beforeAll(async () => {
+    // Mirror the app bootstrap (src/bootstrap.tsx): narrative domains must be
+    // loaded before synchronous resolve() calls or templates return empty text.
     const { BardEngine } = await import("@/engine/bard/BardEngine");
     await BardEngine.loadDomains();
+
+    const world = buildPlaythroughWorld();
+    initialRikishiCount = world.rikishi.size;
+    try {
+      result = advanceDaysFast(world, 364, { autonomous: true });
+    } catch (err) {
+      simError = err;
+    }
   });
 
   it("advances 364 days without throwing", () => {
-    const world = buildPlaythroughWorld();
-    let result: WorldState | null = null;
-    expect(() => {
-      result = advanceDaysFast(world, 364, { autonomous: true });
-    }).not.toThrow();
-    expect(result).not.toBeNull();
+    expect(simError).toBeUndefined();
+    expect(result).toBeDefined();
   });
 
   it("advances the calendar by approximately 1 year", () => {
-    const world = buildPlaythroughWorld();
-    const result = advanceDaysFast(world, 364, { autonomous: true });
-    expect(result.dayIndexGlobal).toBeGreaterThanOrEqual(364);
+    expect(result!.dayIndexGlobal).toBeGreaterThanOrEqual(364);
   });
 
   it("produces a non-empty event log", () => {
-    const world = buildPlaythroughWorld();
-    const result = advanceDaysFast(world, 364, { autonomous: true });
-    const log = result.events?.log ?? [];
+    const log = result!.events?.log ?? [];
     expect(log.length).toBeGreaterThan(0);
   });
 
@@ -252,9 +261,7 @@ describe("Phase 5: Headless 52-week playthrough", () => {
       "ai_decision",
       "misc",
     ];
-    const world = buildPlaythroughWorld();
-    const result = advanceDaysFast(world, 364, { autonomous: true });
-    const log = result.events?.log ?? [];
+    const log = result!.events?.log ?? [];
     const seen = new Set(log.map((e: any) => e.category as string).filter(Boolean));
     const missing = CORE_CATEGORIES.filter((c) => !seen.has(c));
     expect(
@@ -267,25 +274,7 @@ describe("Phase 5: Headless 52-week playthrough", () => {
     // Static-analysis gate: verify that every category in the EventCategory type
     // is emitted by at least one logEvent call in the engine source.
     // This catches categories that are defined but never used.
-    const engineDir = join(__dirname, "../../../..", "src", "engine");
-    let engineSource = "";
-    function walk(dir: string) {
-      for (const entry of readdirSync(dir)) {
-        const full = join(dir, entry);
-        if (!existsSync(full)) continue;
-        try {
-          const stat = statSync(full);
-          if (stat.isDirectory()) {
-            walk(full);
-          } else if (entry.endsWith(".ts")) {
-            engineSource += readFileSync(full, "utf-8") + "\n";
-          }
-        } catch {
-          // skip
-        }
-      }
-    }
-    walk(engineDir);
+    const engineSource = collectSource(join(SRC, "engine"), { exts: [".ts"] });
 
     // For each category, check that it appears as a string literal in engine source
     // (i.e., it's used in a logEvent call or EventBus factory)
@@ -301,92 +290,22 @@ describe("Phase 5: Headless 52-week playthrough", () => {
     ).toEqual([]);
   });
 
-  it("every wired state field is read by at least one presenter or selector", () => {
-    // Verify that the key WorldState fields written by the tick pipeline
-    // are consumed by selectors, presenters, or page components.
-    // This is a static-analysis gate: we check that each field name appears
-    // in a presenter, selector, or page file outside the engine directory.
-    const ROOT = join(__dirname, "../../../..");
-    const SRC = join(ROOT, "src");
-
-    // Collect all .ts/.tsx content from presenters/, pages/, components/, contexts/
-    const uiDirs = ["presenters", "pages", "components", "contexts"];
-    let uiSource = "";
-    for (const dir of uiDirs) {
-      const dirPath = join(SRC, dir);
-      if (!existsSync(dirPath)) continue;
-      function walk(dir: string) {
-        for (const entry of readdirSync(dir)) {
-          const full = join(dir, entry);
-          if (!existsSync(full)) continue;
-          try {
-            const stat = statSync(full);
-            if (stat.isDirectory()) {
-              walk(full);
-            } else if (entry.endsWith(".ts") || entry.endsWith(".tsx")) {
-              uiSource += readFileSync(full, "utf-8") + "\n";
-            }
-          } catch {
-            // skip
-          }
-        }
-      }
-      walk(dirPath);
-    }
-
-    // Fields that are written by the tick pipeline and must be read by UI
-    const gameplayFields = [
-      "staff",
-      "sparringPairs",
-      "talentPool",
-      "chronicle",
-      "calendar",
-      "myosekiMarket",
-      "records",
-      "settings",
-      "meta",
-      "rivalriesState",
-      "globalCup",
-      "hallOfFame",
-      "sponsorPool",
-      "mediaState",
-    ];
-
-    const missing: string[] = [];
-    for (const field of gameplayFields) {
-      // Check if the field appears in UI source (as `.field` or `field:` etc.)
-      if (!uiSource.includes(`.${field}`) && !uiSource.includes(`?.${field}`)) {
-        missing.push(field);
-      }
-    }
-    expect(missing, `Gameplay state fields not read by any UI file: ${missing.join(", ")}`).toEqual(
-      []
-    );
-  });
-
   it("does not produce undefined in critical world fields after simulation", () => {
-    const world = buildPlaythroughWorld();
-    const result = advanceDaysFast(world, 364, { autonomous: true });
-    expect(result.year).toBeDefined();
-    expect(result.cyclePhase).toBeDefined();
-    expect(result.rikishi).toBeDefined();
-    expect(result.heyas).toBeDefined();
-    expect(result.events).toBeDefined();
+    expect(result!.year).toBeDefined();
+    expect(result!.cyclePhase).toBeDefined();
+    expect(result!.rikishi).toBeDefined();
+    expect(result!.heyas).toBeDefined();
+    expect(result!.events).toBeDefined();
   });
 
   it("preserves rikishi count (no rikishi lost without retirement)", () => {
-    const world = buildPlaythroughWorld();
-    const initialCount = world.rikishi.size;
-    const result = advanceDaysFast(world, 364, { autonomous: true });
     // Some rikishi may retire, but the map should not lose entries (they become historical)
-    const totalRikishi = result.rikishi.size + (result.historicalRikishi?.size ?? 0);
-    expect(totalRikishi).toBeGreaterThanOrEqual(initialCount);
+    const totalRikishi = result!.rikishi.size + (result!.historicalRikishi?.size ?? 0);
+    expect(totalRikishi).toBeGreaterThanOrEqual(initialRikishiCount);
   });
 
   it("meta state is defined after yearly boundary", () => {
-    const world = buildPlaythroughWorld();
-    const result = advanceDaysFast(world, 364, { autonomous: true });
-    expect(result.meta).toBeDefined();
-    expect(result.meta?.tone).toBeDefined();
+    expect(result!.meta).toBeDefined();
+    expect(result!.meta?.tone).toBeDefined();
   });
 });

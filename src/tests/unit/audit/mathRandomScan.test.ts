@@ -1,30 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { readdirSync, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
+import { findFiles, SRC as SRC_DIR } from "@/tests/helpers/fsScan";
 
-const SRC_DIR = join(import.meta.dirname, "../../../..", "src");
-
-function findTsFiles(dir: string, ext: string[]): string[] {
-  const results: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...findTsFiles(fullPath, ext));
-    } else if (
-      ext.some((e) => entry.name.endsWith(e)) &&
-      !entry.name.endsWith(".test.ts") &&
-      !entry.name.endsWith(".test.tsx") &&
-      !entry.name.endsWith(".d.ts")
-    ) {
-      results.push(fullPath);
-    }
-  }
-  return results;
-}
+const NON_TEST_RE = /\.test\.tsx?$|\.d\.ts$/;
 
 describe("L2.3: determinism gate — Math.random scan", () => {
   it("no Math.random() calls in engine production code (only in comments)", () => {
-    const engineFiles = findTsFiles(join(SRC_DIR, "engine"), [".ts"]);
+    const engineFiles = findFiles(join(SRC_DIR, "engine"), {
+      exts: [".ts"],
+      exclude: NON_TEST_RE,
+    });
     const violations: string[] = [];
 
     for (const file of engineFiles) {

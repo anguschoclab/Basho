@@ -130,12 +130,15 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
   | Command | Suite | When to run |
   |---------|-------|-------------|
   | `bun run test` | Fast unit tests (`src/tests/unit/**`) | Every change / every PR |
-  | `bun run test:slow` | Slow gates (`src/tests/slow/**` — lintStrictGate, knipGuard, circularDependency, orphan-audit, phasePurity, headless-playthrough, bundleBudget) | Adhoc / nightly CI (`slow-tests.yml`); needs `bun run build` first |
+  | `bun run test:slow` | Slow gates (`src/tests/slow/**` — subprocess audits: lintStrictGate, knipGuard, circularDependency, orphan-audit, phasePurity; long sims: headless-playthrough, simulationInvariants, advanceCalendarDays, yokozunaPromotionAutoSim, yokozunaPresence; build-dependent: bundleBudget) | Adhoc / nightly CI (`slow-tests.yml`); needs `bun run build` first |
   | `bun run test:perf` | Perf benchmarks (`src/tests/perf/**`) | Adhoc |
   | `bun run test:all` | All three vitest suites | Pre-release verification |
   | `bun run test:e2e:smoke` | Playwright smoke (golden-path, reload-restore) | Adhoc, ~2–4 min |
   | `bun run test:e2e:soak` | Playwright soak (full-basho-lifecycle, year-of-bashos) | Adhoc, ~8–10 min |
   | `bun run test:e2e` | All e2e specs | Adhoc |
+  | `bun run test:timings -- <suite>` | Regenerate `docs/audit/test-timings.json` baseline | After suite reorgs / perf work |
+- **Runner pool:** all vitest configs use `pool: "vmThreads"` — the jsdom environment is created once per worker (~5x faster suite-wide) while each file still gets an isolated vm context. The fast config also enables `fileParallelism` (no shared-state writers in unit/) and `fsModuleCache` (persistent transform cache — vitest always re-executes tests; it only skips re-transforming unchanged files). Caveat: under vm contexts `globalThis.window` is a non-configurable getter (the jsdom `window.window` self-reference) — tests must never `Object.defineProperty`/`delete`/`stubGlobal` the `window` global itself; set properties *on* the existing window or spy its methods instead.
+- **Meta gates** (`src/tests/unit/meta/`): `noSubprocessInUnitTests` (no `child_process`/`runAutoSim` in unit/), `testTimingsBudget` (per-file duration budget vs `test-timings.json`), `factoryDiscipline` (allowlisted local factories only), `testTimeoutBudget`, `weakAssertionAudit`.
 - **Mock factories:** primary is `src/tests/helpers/utils/MockFactory.ts` (~118 consumers); `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 70%, branches 75%, functions 65%, statements 70% (v8 provider)

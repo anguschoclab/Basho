@@ -15,6 +15,7 @@ export default defineConfig({
     include: ["src/tests/perf/**"],
     exclude: [...configDefaults.exclude, "e2e/**", ".claude/**", "**/*.e2e.test.ts"],
     testTimeout: 300000,
+    pool: "vmThreads",
     server: {
       deps: {
         inline: ["seedrandom"],

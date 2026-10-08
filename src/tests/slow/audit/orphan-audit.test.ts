@@ -19,25 +19,35 @@ const AUDIT_DIR = join(ROOT, ".windsurf", "audit");
 const BASELINE_PATH = join(AUDIT_DIR, "baseline-orphans.json");
 const TRACKER_PATH = join(AUDIT_DIR, "orphan-tracker.csv");
 const SYSTEMS_DIR = join(ROOT, "src", "engine", "systems");
-const TEMP_ORPHAN_DIR = join(SYSTEMS_DIR, "__audit_test__");
-const TEMP_ORPHAN_FILE = join(TEMP_ORPHAN_DIR, "tempOrphanProbe.ts");
 
 let uniqueCounter = 0;
 function uniqueJsonPath(): string {
   return join(AUDIT_DIR, `consistency-check-${Date.now()}-${++uniqueCounter}.json`);
 }
 
-// Top-level cleanup: remove any lingering __audit_* directories after all tests
-afterAll(() => {
+async function runAudit(): Promise<AuditReport> {
+  const tmpJson = uniqueJsonPath();
+  await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
+    cwd: ROOT,
+    timeout: 180000,
+  });
+  const raw = readFileSync(tmpJson, "utf-8");
+  unlinkSync(tmpJson);
+  return JSON.parse(raw) as AuditReport;
+}
+
+function cleanFixtures() {
   if (existsSync(SYSTEMS_DIR)) {
-    const entries = readdirSync(SYSTEMS_DIR);
-    for (const entry of entries) {
+    for (const entry of readdirSync(SYSTEMS_DIR)) {
       if (entry.startsWith("__audit_")) {
         rmSync(join(SYSTEMS_DIR, entry), { recursive: true, force: true });
       }
     }
   }
-});
+}
+
+// Top-level cleanup: remove any lingering __audit_* directories after all tests
+afterAll(cleanFixtures);
 
 interface AuditReport {
   generatedAt: string;
@@ -125,177 +135,125 @@ describe("Audit runner self-test", () => {
 });
 
 describe("Audit runner consistency — two runs produce same orphan set", () => {
-  beforeAll(() => {
-    // Clean up any lingering temp files from the injection test
-    if (existsSync(TEMP_ORPHAN_DIR)) {
-      rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
-    }
-  });
+  // Two audit runs shared by both assertions (was 4 runs).
+  let run1: { summary: AuditReport["summary"]; symbols: string[] };
+  let run2: { summary: AuditReport["summary"]; symbols: string[] };
 
-  async function runAudit(): Promise<{ summary: AuditReport["summary"]; symbols: string[] }> {
-    const tmpJson = uniqueJsonPath();
-    await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
-      cwd: ROOT,
-      timeout: 180000,
-    });
-    const raw = readFileSync(tmpJson, "utf-8");
-    const report = JSON.parse(raw) as AuditReport;
-    unlinkSync(tmpJson);
-    return {
-      summary: report.summary,
-      symbols: report.entries.map((e) => `${e.file}:${e.symbol}`).sort(),
-    };
-  }
+  const symbols = (r: AuditReport) =>
+    r.entries.map((e) => `${e.file}:${e.symbol}`).sort();
 
-  it("produces identical orphan counts across two runs", { timeout: 240000 }, async () => {
-    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
-    const run1 = await runAudit();
-    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
-    const run2 = await runAudit();
+  beforeAll(async () => {
+    cleanFixtures();
+    const a = await runAudit();
+    cleanFixtures();
+    const b = await runAudit();
+    run1 = { summary: a.summary, symbols: symbols(a) };
+    run2 = { summary: b.summary, symbols: symbols(b) };
+  }, 480000);
+
+  it("produces identical orphan counts across two runs", () => {
     expect(run1.summary.total).toBe(run2.summary.total);
     expect(run1.summary.unreferencedExports).toBe(run2.summary.unreferencedExports);
     expect(run1.summary.orphanRoutes).toBe(run2.summary.orphanRoutes);
     expect(run1.summary.writeOnlyState).toBe(run2.summary.writeOnlyState);
   });
 
-  it("produces identical orphan symbol set across two runs", { timeout: 240000 }, async () => {
-    // Clean up any temp files from concurrent test files before each run
-    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
-    const run1 = await runAudit();
-    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
-    const run2 = await runAudit();
+  it("produces identical orphan symbol set across two runs", () => {
     expect(run1.symbols).toEqual(run2.symbols);
   });
 });
 
-describe("Audit runner injection — detects a deliberately orphaned export", () => {
-  it("detects a temp file with an unreferenced export", { timeout: 240000 }, async () => {
-    // Use a unique temp directory to avoid interference with consistency tests
-    const injectDir = join(SYSTEMS_DIR, `__audit_injection_${Date.now()}__`);
-    const injectFile = join(injectDir, "tempOrphanProbe.ts");
+describe("Audit runner fixtures — injected files", () => {
+  // All three fixture scenarios are created together and checked by ONE audit
+  // run (was 3 separate runs — the audit scans the whole tree each time, and
+  // the scenarios assert disjoint symbols, so they share one scan).
+  const stamp = Date.now();
+  const injectDir = join(SYSTEMS_DIR, `__audit_injection_${stamp}__`);
+  const nsDir = join(SYSTEMS_DIR, `__audit_ns_${stamp}__`);
+  const collDir = join(SYSTEMS_DIR, `__audit_coll_${stamp}__`);
+  const probeName = `__auditProbeOrphanFn_${stamp}__`;
+  const nsProbeName = `__nsProbeFn_${stamp}__`;
+  const collisionName = `__collisionFn_${stamp}__`;
+
+  let report: AuditReport;
+
+  beforeAll(async () => {
+    cleanFixtures();
+    // Scenario 1: a file with an unreferenced export (should be detected)
     mkdirSync(injectDir, { recursive: true });
-    // Use a unique name that won't appear in any test file to avoid false "referenced" matches
-    const probeName = "__auditProbeOrphanFn_" + Date.now() + "__";
-    writeFileSync(injectFile, `export function ${probeName}(): string { return "test"; }\n`);
+    writeFileSync(
+      join(injectDir, "tempOrphanProbe.ts"),
+      `export function ${probeName}(): string { return "test"; }\n`
+    );
+    // Scenario 2: service consumed via namespace import (should NOT be unticked)
+    mkdirSync(nsDir, { recursive: true });
+    writeFileSync(
+      join(nsDir, "NsProbeService.ts"),
+      `export function ${nsProbeName}(): string { return "ns"; }\n`
+    );
+    writeFileSync(
+      join(nsDir, "NsProbeConsumer.ts"),
+      `import * as NsProbe from "./NsProbeService";\nexport function useNsProbe(): string { return NsProbe.${nsProbeName}(); }\n`
+    );
+    // Scenario 3: same-named exports, only one imported (B must still be flagged)
+    mkdirSync(collDir, { recursive: true });
+    writeFileSync(
+      join(collDir, "CollisionSvcA.ts"),
+      `export function ${collisionName}(): string { return "a"; }\n`
+    );
+    writeFileSync(
+      join(collDir, "CollisionSvcB.ts"),
+      `export function ${collisionName}(): string { return "b"; }\n`
+    );
+    writeFileSync(
+      join(collDir, "CollisionConsumer.ts"),
+      `import { ${collisionName} } from "./CollisionSvcA";\nexport function useCollision(): string { return ${collisionName}(); }\n`
+    );
 
-    try {
-      const tmpJson = uniqueJsonPath();
-      await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
-        cwd: ROOT,
-        timeout: 180000,
-      });
-      const raw = readFileSync(tmpJson, "utf-8");
-      const report = JSON.parse(raw) as AuditReport;
-      unlinkSync(tmpJson);
+    report = await runAudit();
+  }, 240000);
 
-      const found = report.entries.some(
-        (e) => e.symbol === probeName && e.orphanType === "unreferenced-export"
-      );
-      expect(found, "Audit script did not detect the injected orphaned export").toBe(true);
-    } finally {
-      rmSync(injectDir, { recursive: true, force: true });
-    }
+  afterAll(cleanFixtures);
+
+  it("detects a temp file with an unreferenced export", () => {
+    const found = report.entries.some(
+      (e) => e.symbol === probeName && e.orphanType === "unreferenced-export"
+    );
+    expect(found, "Audit script did not detect the injected orphaned export").toBe(true);
   });
 
-  it("cleans up temp files after injection test", () => {
-    // Check that no __audit_injection_* directories remain
-    if (existsSync(SYSTEMS_DIR)) {
-      const entries = readdirSync(SYSTEMS_DIR);
-      const leftover = entries.filter((e: string) => e.startsWith("__audit_injection_"));
-      expect(leftover, "Temp injection directories should be cleaned up").toEqual([]);
-    }
+  it("does not flag services imported via namespace imports as unticked", () => {
+    const found = report.entries.some(
+      (e) => e.symbol === "NsProbeService" && e.orphanType === "unticked-service"
+    );
+    expect(
+      found,
+      "Service imported via namespace import should NOT be flagged as unticked"
+    ).toBe(false);
+  });
+
+  it("flags services with same-named exports when only one is imported (no false negative)", () => {
+    const bFlagged = report.entries.some(
+      (e) => e.symbol === "CollisionSvcB" && e.orphanType === "unticked-service"
+    );
+    const aFlagged = report.entries.some(
+      (e) => e.symbol === "CollisionSvcA" && e.orphanType === "unticked-service"
+    );
+    expect(
+      bFlagged,
+      "Service B (not imported) should be flagged as unticked despite name collision"
+    ).toBe(true);
+    expect(aFlagged, "Service A (imported) should NOT be flagged as unticked").toBe(false);
   });
 });
 
-describe("Audit import-statement parsing — namespace imports and name collisions", () => {
-  it(
-    "does not flag services imported via namespace imports as unticked",
-    { timeout: 240000 },
-    async () => {
-      // Create a temp service file with an export, and a temp consumer that uses `import * as X`
-      const nsDir = join(SYSTEMS_DIR, `__audit_ns_${Date.now()}__`);
-      const svcFile = join(nsDir, "NsProbeService.ts");
-      const consumerFile = join(nsDir, "NsProbeConsumer.ts");
-      mkdirSync(nsDir, { recursive: true });
-
-      const probeName = "__nsProbeFn_" + Date.now() + "__";
-      writeFileSync(svcFile, `export function ${probeName}(): string { return "ns"; }\n`);
-      // Consumer uses namespace import — individual export names won't appear as bare words
-      writeFileSync(
-        consumerFile,
-        `import * as NsProbe from "./NsProbeService";\nexport function useNsProbe(): string { return NsProbe.${probeName}(); }\n`
+describe("Audit fixture cleanup", () => {
+  it("leaves no __audit_* directories after fixture tests", () => {
+    if (existsSync(SYSTEMS_DIR)) {
+      const leftover = readdirSync(SYSTEMS_DIR).filter((e: string) =>
+        e.startsWith("__audit_")
       );
-
-      try {
-        const tmpJson = uniqueJsonPath();
-        await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
-          cwd: ROOT,
-          timeout: 180000,
-        });
-        const raw = readFileSync(tmpJson, "utf-8");
-        const report = JSON.parse(raw) as AuditReport;
-        unlinkSync(tmpJson);
-
-        // The service should NOT be flagged as unticked because it's imported via namespace
-        const found = report.entries.some(
-          (e) => e.symbol === "NsProbeService" && e.orphanType === "unticked-service"
-        );
-        expect(
-          found,
-          "Service imported via namespace import should NOT be flagged as unticked"
-        ).toBe(false);
-      } finally {
-        rmSync(nsDir, { recursive: true, force: true });
-      }
+      expect(leftover, "Temp injection directories should be cleaned up").toEqual([]);
     }
-  );
-
-  it(
-    "flags services with same-named exports when only one is imported (no false negative)",
-    { timeout: 240000 },
-    async () => {
-      // Create two service files with the same export name, import only one
-      const collDir = join(SYSTEMS_DIR, `__audit_coll_${Date.now()}__`);
-      const svcA = join(collDir, "CollisionSvcA.ts");
-      const svcB = join(collDir, "CollisionSvcB.ts");
-      const consumer = join(collDir, "CollisionConsumer.ts");
-      mkdirSync(collDir, { recursive: true });
-
-      const sharedName = "__collisionFn_" + Date.now() + "__";
-      writeFileSync(svcA, `export function ${sharedName}(): string { return "a"; }\n`);
-      writeFileSync(svcB, `export function ${sharedName}(): string { return "b"; }\n`);
-      // Consumer imports only from svcA
-      writeFileSync(
-        consumer,
-        `import { ${sharedName} } from "./CollisionSvcA";\nexport function useCollision(): string { return ${sharedName}(); }\n`
-      );
-
-      try {
-        const tmpJson = uniqueJsonPath();
-        await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
-          cwd: ROOT,
-          timeout: 180000,
-        });
-        const raw = readFileSync(tmpJson, "utf-8");
-        const report = JSON.parse(raw) as AuditReport;
-        unlinkSync(tmpJson);
-
-        // CollisionSvcB should BE flagged as unticked (its export is not imported by anyone)
-        const bFlagged = report.entries.some(
-          (e) => e.symbol === "CollisionSvcB" && e.orphanType === "unticked-service"
-        );
-        // CollisionSvcA should NOT be flagged (it IS imported)
-        const aFlagged = report.entries.some(
-          (e) => e.symbol === "CollisionSvcA" && e.orphanType === "unticked-service"
-        );
-        expect(
-          bFlagged,
-          "Service B (not imported) should be flagged as unticked despite name collision"
-        ).toBe(true);
-        expect(aFlagged, "Service A (imported) should NOT be flagged as unticked").toBe(false);
-      } finally {
-        rmSync(collDir, { recursive: true, force: true });
-      }
-    }
-  );
+  });
 });

@@ -87,12 +87,12 @@ describe("ElectronArchiveService", () => {
       clearElectronMock();
       // No window.__ELECTRON__ set
       const freshMocks = mockElectronAPI();
-      // Override __ELECTRON__ to false
-      Object.defineProperty(global, "window", {
-        value: { __ELECTRON__: false, electronCustom: freshMocks.electronCustom },
-        writable: true,
-        configurable: true,
-      });
+      // Override __ELECTRON__ to false — set the flag on the existing window
+      // rather than replacing the global (window is a non-configurable
+      // getter under vitest's vmThreads pool).
+      const win = globalThis as unknown as Record<string, unknown>;
+      win.__ELECTRON__ = false;
+      win.electronCustom = freshMocks.electronCustom;
 
       service = new ElectronArchiveService();
 

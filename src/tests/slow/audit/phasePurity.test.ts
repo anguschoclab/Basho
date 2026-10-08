@@ -1,22 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { readdirSync } from "fs";
 import { join } from "path";
 import { Project, SyntaxKind } from "ts-morph";
+import { findFiles, SRC as SRC_DIR } from "@/tests/helpers/fsScan";
 
-const SRC_DIR = join(import.meta.dirname, "../../../..", "src");
 const PHASES_DIR = join(SRC_DIR, "engine/tick/phases");
 
 function findTsFiles(dir: string): string[] {
-  const results: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...findTsFiles(fullPath));
-    } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts")) {
-      results.push(fullPath);
-    }
-  }
-  return results;
+  return findFiles(dir, { exts: [".ts"], exclude: /\.test\.ts$/ });
 }
 
 const project = new Project({
