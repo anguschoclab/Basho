@@ -1,12 +1,14 @@
 /**
- * Phase 5c: Unreferenced exports classification test.
+ * Phase 5c: Orphan classification test.
  *
- * Verifies that unreferenced exports from the audit are either:
- * 1. Intentional public type exports (interfaces, types) used as API contracts
- * 2. Utility functions/constants retained for future use
- * 3. Genuine orphans that should be wired or removed
+ * Verifies that every entry in the orphan audit baseline (unreferenced exports,
+ * unused components, orphan routes, unticked services, write-only state) is
+ * either:
+ * 1. Intentional — public type exports (interfaces, types) used as API
+ *    contracts, or utility functions/constants retained for future use
+ * 2. A genuine orphan that should be wired or removed, tracked by ORPH-XXXX
  *
- * This test acts as a regression gate: if a new unreferenced export appears,
+ * This test acts as a regression gate: if a new orphan appears in the baseline,
  * it must be classified here before CI passes.
  */
 
@@ -450,7 +452,10 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
 
 /**
  * Symbols that are genuine orphans and should be wired or removed.
- * Listed here to track them — each should have a TODO or issue.
+ *
+ * Enforced contract (asserted below): each reason MUST cite the entry's own
+ * ORPH-XXXX tracker id from baseline-orphans.json, and the baseline entry's
+ * status must be "genuine". Wire or remove the symbol, then delete the entry.
  */
 const GENUINE_ORPHANS: Record<string, string> = {};
 
@@ -461,25 +466,25 @@ function loadAuditEntries(): AuditEntry[] {
   return data.entries || [];
 }
 
-describe("Phase 5c: Unreferenced exports classification", () => {
+describe("Phase 5c: Orphan classification", () => {
   const entries = loadAuditEntries();
-  const exportEntries = entries.filter((e) => e.orphanType === "unreferenced-export");
+  const entriesByKey = new Map(entries.map((e) => [`${e.file}:${e.symbol}`, e]));
 
   it("audit baseline exists", () => {
     expect(entries.length).toBeGreaterThanOrEqual(0);
   });
 
-  it("every unreferenced export is classified as either intentional or genuine orphan", () => {
+  it("every baseline orphan is classified as either intentional or genuine orphan", () => {
     const unclassified: string[] = [];
-    for (const entry of exportEntries) {
+    for (const entry of entries) {
       const key = `${entry.file}:${entry.symbol}`;
       if (!INTENTIONAL_EXPORTS[key] && !GENUINE_ORPHANS[key]) {
-        unclassified.push(key);
+        unclassified.push(`${key} (${entry.orphanType})`);
       }
     }
     expect(
       unclassified,
-      `Unclassified unreferenced exports (${unclassified.length}): ${unclassified.join(", ")}`
+      `Unclassified orphans (${unclassified.length}): ${unclassified.join(", ")}`
     ).toEqual([]);
   });
 
@@ -489,9 +494,40 @@ describe("Phase 5c: Unreferenced exports classification", () => {
     }
   });
 
-  it("genuine orphans list is documented", () => {
+  it("classification maps contain no stale keys (every key exists in the baseline)", () => {
+    const stale: string[] = [];
+    for (const map of [INTENTIONAL_EXPORTS, GENUINE_ORPHANS]) {
+      for (const key of Object.keys(map)) {
+        if (!entriesByKey.has(key)) stale.push(key);
+      }
+    }
+    expect(
+      stale,
+      `Stale classification keys absent from baseline (${stale.length}) — ` +
+        `remove or reclassify: ${stale.join(", ")}`
+    ).toEqual([]);
+  });
+
+  it("genuine orphans cite their ORPH-XXXX tracker id and are marked genuine", () => {
     for (const [key, reason] of Object.entries(GENUINE_ORPHANS)) {
       expect(reason.length, `Orphan ${key} must have a reason`).toBeGreaterThan(5);
+      const entry = entriesByKey.get(key);
+      expect(entry, `Orphan ${key} not present in baseline-orphans.json`).toBeDefined();
+      if (!entry) continue;
+      expect(
+        reason.includes(entry.id),
+        `Orphan ${key} reason must cite its tracker id ${entry.id}`
+      ).toBe(true);
+      expect(entry.status, `Orphan ${key} baseline status should be "genuine"`).toBe("genuine");
+    }
+  });
+
+  it("classified intentional entries are marked intentional in the baseline", () => {
+    for (const key of Object.keys(INTENTIONAL_EXPORTS)) {
+      const entry = entriesByKey.get(key);
+      if (entry) {
+        expect(entry.status, `${key} baseline status should be "intentional"`).toBe("intentional");
+      }
     }
   });
 

@@ -12,6 +12,7 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from "fs";
 import { join, relative, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
+import { mergeTrackerState, parseTrackerCsv } from "./orphanTracker";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -705,13 +706,35 @@ function main() {
   const writeOnlyState = findWriteOnlyState();
   console.log(`  Write-only state fields: ${writeOnlyState.length}`);
 
-  const allEntries = [
+  const detected = [
     ...unreferencedExports,
     ...orphanRoutes,
     ...untickedServices,
     ...unusedComponents,
     ...writeOnlyState,
   ];
+
+  // Merge with the prior tracker so ORPH-XXXX ids and triage columns
+  // (TestFile/Status/PR) survive regeneration. Matching is by file|symbol —
+  // ids are append-only and never renumbered. Prior state is read in every
+  // mode (including custom --json runs) so provisional run ids stay stable.
+  const auditDir = join(ROOT, ".windsurf", "audit");
+  const priorCsvPath = join(auditDir, "orphan-tracker.csv");
+  const priorRows = existsSync(priorCsvPath)
+    ? parseTrackerCsv(readFileSync(priorCsvPath, "utf-8"))
+    : [];
+  const merged = mergeTrackerState(detected, priorRows);
+  const allEntries: OrphanEntry[] = merged.map((m) => ({
+    id: m.id,
+    file: m.file,
+    symbol: m.symbol,
+    orphanType: m.orphanType,
+    priority: m.priority,
+    uiRoute: m.uiRoute,
+    npcConsumer: m.npcConsumer,
+    tickPhase: m.tickPhase,
+    status: m.status,
+  }));
 
   const report: AuditReport = {
     generatedAt: new Date().toISOString(),
@@ -737,7 +760,6 @@ function main() {
   }
 
   // Write JSON report
-  const auditDir = join(ROOT, ".windsurf", "audit");
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
 
   const jsonPath = customJsonPath ?? join(auditDir, "baseline-orphans.json");
@@ -753,7 +775,7 @@ function main() {
     const csvPath = join(auditDir, "orphan-tracker.csv");
     const csvHeader =
       "ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR\n";
-    const csvRows = allEntries.map((e) =>
+    const csvRows = merged.map((e) =>
       [
         e.id,
         e.file,
@@ -763,9 +785,9 @@ function main() {
         e.uiRoute,
         e.npcConsumer,
         e.tickPhase,
-        "",
+        e.testFile,
         e.status,
-        "",
+        e.pr,
       ]
         .map((v) => `"${v.replace(/"/g, '""')}"`)
         .join(",")

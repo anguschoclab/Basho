@@ -247,6 +247,44 @@ describe("Audit runner fixtures — injected files", () => {
   });
 });
 
+describe("Audit runner — tracker id stability", () => {
+  // ORPH-XXXX ids are cited from GENUINE_ORPHANS reasons in
+  // unreferenced-exports.test.ts, so they must be append-only: inserting a
+  // probe that sorts early in the file traversal must not renumber existing
+  // entries. The audit reuses ids from the prior tracker keyed on file|symbol.
+  it("keeps existing entry ids stable when a new orphan appears mid-list", { timeout: 480000 }, async () => {
+    const probeDir = join(SYSTEMS_DIR, `__audit_idprobe_${Date.now()}__`);
+    const probeName = "__idProbeOrphanFn_" + Date.now() + "__";
+    try {
+      cleanFixtures();
+      const run1 = await runAudit();
+      mkdirSync(probeDir, { recursive: true });
+      writeFileSync(
+        join(probeDir, "IdProbeService.ts"),
+        `export function ${probeName}(): string { return "x"; }\n`
+      );
+      const run2 = await runAudit();
+
+      const ids1 = new Map(run1.entries.map((e) => [`${e.file}:${e.symbol}`, e.id]));
+      const shifted: string[] = [];
+      for (const e of run2.entries) {
+        const prev = ids1.get(`${e.file}:${e.symbol}`);
+        if (prev !== undefined && prev !== e.id) shifted.push(`${e.file}:${e.symbol}`);
+      }
+      expect(
+        shifted,
+        `Entries whose ids shifted after probe insertion: ${shifted.join(", ")}`
+      ).toEqual([]);
+      expect(
+        run2.entries.some((e) => e.symbol === probeName),
+        "Injected probe should be detected with a fresh id"
+      ).toBe(true);
+    } finally {
+      cleanFixtures();
+    }
+  });
+});
+
 describe("Audit fixture cleanup", () => {
   it("leaves no __audit_* directories after fixture tests", () => {
     if (existsSync(SYSTEMS_DIR)) {
