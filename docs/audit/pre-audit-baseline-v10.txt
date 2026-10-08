@@ -1,0 +1,43 @@
+Pre-Audit Baseline — Megaplan v10
+=================================
+Date: 2026-10-08
+Branch: audit/v10 (created from main @ ffe7e08b)
+Method: every gate run and measured before any audit change.
+
+GATE RESULTS
+------------
+bun run type-check        PASS (0 errors) — node @typescript/native tsc --build --force
+bun run test              PASS — 867 files / 8,405 passed / 1 skipped / 39.47s
+bun run test:slow         PASS — 11 files / 57 tests / 201.69s
+bun run lint:strict       PASS — eslint . --max-warnings 0, no output
+bun run build             PASS — vite build, 6.96s
+npx electron-vite build   PASS — main/preload/renderer all green (~721ms renderer step)
+bash scripts/purity-lint.sh PASS — "No phase purity violations found"
+                          (note: script not executable; requires `bash` prefix — file lacks +x)
+determinism grep          PASS — `grep -rn "Math\.random\|Date\.now" src/engine` → comments only
+git stash list            empty
+git log HEAD              ffe7e08b (audit(orphans): reclassify baseline orphans candidate→intentional)
+
+DEPENDENCY AUDIT (bun audit)
+----------------------------
+53 vulnerabilities (28 high, 18 moderate, 7 low) — all observed entries are
+undici transitive advisories (cookie disclosure, TLS bypass, cache poisoning,
+DoS). Not gated anywhere; triage devDependency-vs-shipped in WS8.
+
+NOTED DURING BASELINE
+---------------------
+- yokozunaPresence.test.ts passes but reports "Basho with 0 Yokozuna on Banzuke:
+  12 (100.0%)" — zero yokozuna presence in a simulated year; corroborates the
+  pre-existing deterministic failure of yokozunaPromotionAutoSim.perf.test.ts
+  (18 basho, no promotion). Promotion reachability is a WS2 investigation item.
+- Headless playthrough logs repeated "[Recruitment] Emergency: moved all hidden
+  candidates to visible" — possible candidate-pool starvation signal for WS2.
+- @tanstack/react-query: only QueryClientProvider wrapper in App.tsx:5,18,43,58;
+  zero useQuery/useMutation call sites — dead provider (WS8 finding).
+
+PENDING (appended as completed)
+-------------------------------
+bun run test:coverage     (running; per-file table → docs/audit/coverage-v10.json)
+bun run test:perf         (pending — expected: yokozunaPromotionAutoSim known failure)
+bench-pipelines + perf-gate-check (pending)
+diagnostic-25yr-sim       (pending — record determinism hash)
