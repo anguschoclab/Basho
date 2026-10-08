@@ -11,6 +11,8 @@
 import { cn } from "@/lib/utils";
 import type { BoutLogEntry } from "@/engine/types/basho";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ScrollText } from "lucide-react";
 
 /** Defines the structure for bout log props. */
 interface BoutLogProps {
@@ -57,7 +59,7 @@ export function BoutLog({ log, className }: BoutLogProps) {
       </h4>
 
       {entries.length === 0 ? (
-        <div className="text-sm text-muted-foreground">No log entries.</div>
+        <EmptyState icon={ScrollText} title="No log entries." compact />
       ) : (
         <div className="space-y-1.5">
           {entries.map((entry, index) => {
