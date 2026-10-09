@@ -17,6 +17,7 @@ export {
   getForeignCountInHeya,
   getForeignCountsByHeya,
   countsAsForeignFromRikishi,
+  candidateConsumesForeignSlot,
 } from "./talentPoolReads";
 
 export { scoutPool, scoutCandidate, getScoutedCandidateView } from "./talentPoolScoutingOps";

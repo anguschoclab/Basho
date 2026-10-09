@@ -54,8 +54,8 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     if (!deadlineExpired) continue;
 
     const resolution = resolveCandidateSuitor(world, candidate);
+    nextCandidates[id] = resolution.candidate;
     if (resolution.signed) {
-      nextCandidates[id] = resolution.candidate;
       if (resolution.winnerHeyaUpdate) {
         builder.updateHeya(
           resolution.candidate.competingSuitors[0].heyaId,

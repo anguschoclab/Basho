@@ -7,6 +7,8 @@ import { convertCandidateToRikishi } from "./CandidateBuilder";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getHeya } from "../../queries";
 import { assessMaezumo } from "./MaezumoService";
+import { countsAsForeign } from "../../utils/citizenshipUtils";
+import { candidateConsumesForeignSlot } from "./talentPoolReads";
 
 /**
  * Internal helper for materialization that tracks state updates during a loop.
@@ -106,6 +108,16 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   let currentPools = { ...tp.pools };
   let changed = false;
 
+  // §5.4 last-line guard: regardless of which path signed a candidate, a heya
+  // can never materialize a second slot-consuming foreigner. Excess signings
+  // fall through — the candidate returns to the pool for next cycle.
+  const foreignOccupied = new Set<Id>();
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired && r.heyaId && countsAsForeign(r, world.year)) {
+      foreignOccupied.add(r.heyaId);
+    }
+  }
+
   for (const id in tp.candidates) {
     if (!Object.prototype.hasOwnProperty.call(tp.candidates, id)) continue;
     const candidate = tp.candidates[id];
@@ -114,6 +126,15 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
       const winner = candidate.competingSuitors[0];
       const heyaId = winner.heyaId;
       if (world.heyas.has(heyaId)) {
+        if (candidateConsumesForeignSlot(candidate) && foreignOccupied.has(heyaId)) {
+          currentCandidates[id] = {
+            ...candidate,
+            availabilityState: "available",
+            competingSuitors: [],
+          };
+          changed = true;
+          continue;
+        }
         const resolution = materializeCandidateToRikishiInternal(
           world,
           id,
@@ -124,6 +145,7 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
         builder.merge(resolution.impact);
         currentCandidates = resolution.nextCandidates;
         currentPools = resolution.nextPools;
+        if (candidateConsumesForeignSlot(candidate)) foreignOccupied.add(heyaId);
         changed = true;
       }
     }

@@ -6,17 +6,15 @@ import type { Oyakata } from "../../types/oyakata";
 import { TalentPoolType, TalentCandidate } from "../../types/talent";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getRecruitmentStrategy } from "../../npcRecruitmentStrategy";
-import { EntityCollection } from "../../core/EntityCollection";
 import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
 import { isRecruitmentPlayerRelevant } from "../../npcAI/eventSurfacing";
 import { getHeya } from "../../queries";
 import { recruitmentBalanceMultipliers } from "./competitiveBalance";
 import { error } from "@/engine/utils/Logger";
 import { perceivedTalentSeed } from "../recruitment/perceivedTalent";
-import { countsAsForeign } from "../../utils/citizenshipUtils";
 import { isForeign } from "../../utils/identity";
 import { candidateConsumesForeignSlot } from "./talentPoolReads";
-import { foreignSlotBidAggression } from "../../npcAI/ForeignSlotPolicy";
+import { foreignSlotBidAggression, foreignSlotOccupied } from "../../npcAI/ForeignSlotPolicy";
 import { DUAL_CITIZEN_BID_PREFERENCE } from "../../../constants/engine/recruitment";
 
 /**
@@ -48,9 +46,11 @@ export function fillVacanciesForNPC(
 
     // Citizenship-aware slot check (§5.1–5.3): naturalized/dual-citizen
     // incumbents free the slot; dual-citizen candidates are exempt anyway.
-    const hasForeigner = EntityCollection.getHeyaRoster(world, heyaId).some(
-      (r) => countsAsForeign(r, world.year)
-    );
+    // `hasForeigner` is mutable: a slot-consuming pick earlier in this SAME
+    // batch consumes the slot for the remaining vacancies.
+    // Reads rikishi-side truth (foreignSlotOccupied scans activeRikishiIds +
+    // signed-pending candidates) — heya.rikishiIds can desync after transfers.
+    let hasForeigner = foreignSlotOccupied(world, heyaId);
 
     for (let i = 0; i < vacancyCount; i++) {
       const availableCandidates: string[] = [];
@@ -87,6 +87,7 @@ export function fillVacanciesForNPC(
         const bestCandidate = candidatesWithScores[pickIdx];
         const cId = bestCandidate.cId;
         const c = bestCandidate.c;
+        if (candidateConsumesForeignSlot(c)) hasForeigner = true;
 
         const updatedCandidate = {
           ...c,
@@ -164,17 +165,9 @@ export function fillVacanciesForNPCWithBidding(
   // signed-pending foreign candidate) may not bid on slot-consuming recruits.
   const foreignOccupied = new Map<Id, boolean>();
   for (const hid of targetHeyaIds) {
-    const roster = EntityCollection.getHeyaRoster(world, hid);
-    foreignOccupied.set(
-      hid,
-      roster.some((r) => countsAsForeign(r, world.year)) ||
-        allVisibleCandidates.some(
-          (c) =>
-            c.availabilityState === "signed" &&
-            c.competingSuitors[0]?.heyaId === hid &&
-            candidateConsumesForeignSlot(c)
-        )
-    );
+    // Rikishi-side truth: scans world.rikishi (r.heyaId) plus signed-pending
+    // candidates — heya.rikishiIds can desync after merger transfers.
+    foreignOccupied.set(hid, foreignSlotOccupied(world, hid));
   }
 
   for (const heyaId of targetHeyaIds) {
@@ -213,6 +206,7 @@ export function fillVacanciesForNPCWithBidding(
     world,
     bids,
     targetHeyas,
+    foreignOccupied,
     tp,
     builder
   );
@@ -278,6 +272,7 @@ function assignWinningBids(
   world: WorldState,
   bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }>,
   targetHeyas: Record<string, number>,
+  foreignOccupied: Map<Id, boolean>,
   tp: NonNullable<WorldState["talentPool"]>,
   builder: ReturnType<typeof createImpactBuilder>
 ): { nextCandidates: Record<string, TalentCandidate>; nextPools: typeof tp.pools } {
@@ -298,6 +293,11 @@ function assignWinningBids(
 
     const candidate = currentCandidates[bid.candidateId];
     if (!candidate) continue;
+
+    // §5.4 batch enforcement: a slot-consuming foreigner won earlier in this
+    // same resolution consumes the heya's slot — later foreign wins are void.
+    const consumesSlot = candidateConsumesForeignSlot(candidate);
+    if (consumesSlot && foreignOccupied.get(bid.heyaId)) continue;
 
     currentCandidates[bid.candidateId] = {
       ...candidate,
@@ -348,6 +348,7 @@ function assignWinningBids(
 
     assignedCandidates.add(bid.candidateId);
     assignedHeyaSlots.set(bid.heyaId, heyaSlotsUsed + 1);
+    if (consumesSlot) foreignOccupied.set(bid.heyaId, true);
   }
 
   return { nextCandidates: currentCandidates, nextPools: currentPools };

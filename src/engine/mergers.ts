@@ -157,6 +157,10 @@ function transferRosterAcrossMerger(
     )
     .sort((a, b) => (b.prestige ?? 0) - (a.prestige ?? 0) || stableTieBreak(a.id, b.id));
 
+  // updateRikishi(heyaId) does not resync heya.rikishiIds — accumulate
+  // incoming ids per destination and write them back explicitly, or roster
+  // reads (getHeyaRoster) would miss the transferred rikishi forever.
+  const destRosterAdds = new Map<Id, Id[]>();
   const transferredRikishiIds: Id[] = [];
   for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
     const rikishi = getRikishi(world, rId);
@@ -192,6 +196,9 @@ function transferRosterAcrossMerger(
     if (consumesSlot) foreignOccupied.add(destId);
     const destHeya = destId === target.id ? target : getHeya(world, destId);
     builder.updateRikishi(rId, { heyaId: destId });
+    const bucket = destRosterAdds.get(destId) ?? [];
+    bucket.push(rId);
+    destRosterAdds.set(destId, bucket);
     transferredRikishiIds.push(rId);
 
     builder.logEvent(
@@ -206,6 +213,14 @@ function transferRosterAcrossMerger(
       },
       { rikishiId: rId, heyaId: destId, importance: "notable" }
     );
+  }
+
+  for (const [destId, addedIds] of destRosterAdds) {
+    const dest = destId === target.id ? target : getHeya(world, destId);
+    if (!dest) continue;
+    builder.updateHeya(destId, {
+      rikishiIds: [...new Set([...(dest.rikishiIds ?? []), ...addedIds])],
+    });
   }
   return transferredRikishiIds;
 }

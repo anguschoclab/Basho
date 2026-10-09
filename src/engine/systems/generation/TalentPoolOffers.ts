@@ -7,8 +7,7 @@ import { TalentCandidate } from "../../types/talent";
 import { rngFromSeed } from "../../rng";
 import { BardEngine } from "../../bard/BardEngine";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
-import { getForeignCountInHeya } from "./TalentPoolScouting";
-import { isForeign } from "../../utils/identity";
+import { getForeignCountInHeya, candidateConsumesForeignSlot } from "./TalentPoolScouting";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../../constants/engine/recruitment";
 import { getHeya } from "../../queries";
 import { EventBus } from "../../events";
@@ -31,8 +30,9 @@ export function offerCandidate(
 
   const rng = rngFromSeed(`offer-validate-${candidateId}-${heyaId}`, "narrative", "scouting");
 
-  // 1. Validation: Foreigner limit
-  if (isForeign(candidate)) {
+  // 1. Validation: Foreigner limit — §5.3/5.4: only slot-consuming candidates
+  // are gated; dual citizens are exempt and may always be recruited.
+  if (candidateConsumesForeignSlot(candidate)) {
     const foreignCount = getForeignCountInHeya(world, heyaId);
     if (foreignCount >= FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
       return {
@@ -104,7 +104,22 @@ export function resolveCandidateSuitor(
     low: 1,
   };
 
-  const sortedSuitors = [...candidate.competingSuitors].sort(
+  // §5.4: a slot-consuming candidate can only be won by a suitor whose heya
+  // has a free foreign slot — ineligible suitors are dropped before ranking.
+  const consumesSlot = candidateConsumesForeignSlot(candidate);
+  const eligibleSuitors = candidate.competingSuitors.filter(
+    (s) => !consumesSlot || getForeignCountInHeya(world, s.heyaId) < FOREIGN_RIKISHI_LIMIT_PER_HEYA
+  );
+  // No suitor can legally sign — the talks collapse and the candidate goes
+  // back on the market rather than re-resolving the same deadline weekly.
+  if (!eligibleSuitors.length) {
+    return {
+      signed: false,
+      candidate: { ...candidate, availabilityState: "available", competingSuitors: [] },
+    };
+  }
+
+  const sortedSuitors = [...eligibleSuitors].sort(
     (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0)
   );
 

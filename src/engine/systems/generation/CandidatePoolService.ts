@@ -28,6 +28,10 @@ import type {
   SuitorOfferType,
 } from "../../types/talent";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import {
+  candidateConsumesForeignSlot,
+  foreignSlotOccupied,
+} from "../../npcAI/ForeignSlotPolicy";
 
 // ── Pool Initialization ───────────────────────────────────────────────────
 
@@ -277,7 +281,10 @@ export function tickWeekCandidatePool(world: WorldState): StateImpact {
     );
     if (!hasExpiredDeadline) continue;
 
-    // Resolve: pick the suitor with the highest interest band
+    // Resolve: pick the suitor with the highest interest band.
+    // Foreign-slot invariant (§5.1): a slot-consuming candidate may only be
+    // signed by a suitor whose heya has a free slot — ineligible suitors are
+    // dropped from the resolution rather than signed and rejected later.
     const interestOrder: Record<SuitorInterestBand, number> = {
       all_in: 4,
       high: 3,
@@ -285,19 +292,33 @@ export function tickWeekCandidatePool(world: WorldState): StateImpact {
       low: 1,
     };
 
-    let bestSuitor = candidate.competingSuitors[0];
-    for (const suitor of candidate.competingSuitors) {
-      if (interestOrder[suitor.interestBand] > interestOrder[bestSuitor.interestBand]) {
-        bestSuitor = suitor;
-      }
-    }
+    const consumesSlot = candidateConsumesForeignSlot(candidate);
+    const eligibleSuitors = candidate.competingSuitors.filter(
+      (s) => !consumesSlot || !foreignSlotOccupied(world, s.heyaId)
+    );
 
-    // Mark as signed by the winning suitor
-    nextCandidates[id] = {
-      ...candidate,
-      availabilityState: "signed",
-      competingSuitors: [bestSuitor],
-    };
+    if (eligibleSuitors.length > 0) {
+      let bestSuitor = eligibleSuitors[0];
+      for (const suitor of eligibleSuitors) {
+        if (interestOrder[suitor.interestBand] > interestOrder[bestSuitor.interestBand]) {
+          bestSuitor = suitor;
+        }
+      }
+
+      // Mark as signed by the winning suitor
+      nextCandidates[id] = {
+        ...candidate,
+        availabilityState: "signed",
+        competingSuitors: [bestSuitor],
+      };
+    } else {
+      // No suitor can legally sign — the talks collapse.
+      nextCandidates[id] = {
+        ...candidate,
+        availabilityState: "available",
+        competingSuitors: [],
+      };
+    }
   }
 
   // 2. Remove candidates that are no longer available in the main talent pool

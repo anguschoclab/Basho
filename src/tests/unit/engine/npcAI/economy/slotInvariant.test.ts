@@ -143,6 +143,35 @@ describe("fillVacanciesForNPCWithBidding — slot invariant", () => {
     const impact = fillVacanciesForNPCWithBidding(world, { [HEYA]: 1 });
     expect(signedRikishiIds(world, impact).has(foreignCand.personId)).toBe(true);
   });
+
+  it("same-batch leak: a slot-free heya cannot win MULTIPLE foreign recruits in one bidding round", () => {
+    // 25-yr diagnostic: HY-…:5 — bid-time occupancy is computed once, so a
+    // stable with an open slot could legally win every foreign candidate it
+    // bid on. The resolution loop must track slot consumption per heya.
+    const world = makeMockWorld({ week: 1, year: 2030 });
+    seedHeyaAndOyakata(world, []);
+    world.talentPool = MockFactory.createTalentPool();
+    for (let i = 0; i < 3; i++) {
+      addCandidate(
+        world,
+        "foreign",
+        MockFactory.createCandidate(`fc-batch${i}`, {
+          candidateId: `fc-batch${i}`,
+          nationality: "Georgia",
+          originRegion: "Georgia",
+          talentSeed: 95,
+          availabilityState: "available",
+        })
+      );
+    }
+
+    const impact = fillVacanciesForNPCWithBidding(world, { [HEYA]: 3 });
+    const resolved = resolveImpacts(world, [impact]);
+    const foreignSigned = [...resolved.rikishi.values()].filter(
+      (r) => r.heyaId === HEYA && countsAsForeign(r, resolved.year)
+    );
+    expect(foreignSigned.length).toBeLessThanOrEqual(FOREIGN_RIKISHI_LIMIT_PER_HEYA);
+  });
 });
 
 describe("worldgen + merger — slot invariant beyond recruitment", () => {
@@ -219,6 +248,103 @@ describe("worldgen + merger — slot invariant beyond recruitment", () => {
     const foreignS = resolved.rikishi.get("r-foreign-s")!;
     expect(foreignS.heyaId === "h-free" || foreignS.isRetired).toBe(true);
     expect(resolved.rikishi.get("r-native-s")!.heyaId).toBe("h-target");
+
+    // Roster integrity: heya.rikishiIds must reflect every heyaId transfer —
+    // a desynced rikishi is invisible to getHeyaRoster-based occupancy checks.
+    const targetRoster = resolved.heyas.get("h-target")!.rikishiIds ?? [];
+    expect(targetRoster).toContain("r-native-s");
+    expect(targetRoster).toContain("r-foreign-t");
+    if (foreignS.heyaId === "h-free") {
+      expect(resolved.heyas.get("h-free")!.rikishiIds).toContain("r-foreign-s");
+    }
+  });
+});
+
+describe("offer path — slot semantics", () => {
+  it("offerCandidate never blocks a dual-citizen candidate even with the slot occupied (§5.3)", async () => {
+    const { offerCandidate } = await import(
+      "@/engine/systems/generation/TalentPoolOffers"
+    );
+    const world = worldWithOccupiedForeignSlot();
+    const dual = MockFactory.createCandidate("dc-offer", {
+      candidateId: "dc-offer",
+      nationality: "Mongolia",
+      originRegion: "Mongolia",
+      dualCitizen: true,
+      availabilityState: "available",
+    });
+    addCandidate(world, "foreign", dual);
+
+    const res = offerCandidate(world, "dc-offer", HEYA, "standard", "high");
+    expect(res.ok).toBe(true);
+  });
+
+  it("suitor resolution never signs a slot-consuming foreigner to an occupied heya", async () => {
+    const { tickWeekCandidatePool } = await import(
+      "@/engine/systems/generation/CandidatePoolService"
+    );
+    const world = worldWithOccupiedForeignSlot();
+    const foreignCand = MockFactory.createCandidate("fc-suitors", {
+      candidateId: "fc-suitors",
+      nationality: "Georgia",
+      originRegion: "Georgia",
+      talentSeed: 95,
+      availabilityState: "in_talks",
+    });
+    foreignCand.competingSuitors = [
+      { heyaId: HEYA, offerType: "aggressive", interestBand: "all_in", deadlineWeek: 1 },
+    ];
+    // A second, free-slot heya with lower interest.
+    world.heyas.set("h-free2", makeMockHeya("h-free2", { rikishiIds: [], oyakataId: "o-f2" }));
+    foreignCand.competingSuitors.push({
+      heyaId: "h-free2",
+      offerType: "standard",
+      interestBand: "low",
+      deadlineWeek: 1,
+    });
+    // The candidate must exist in BOTH stores — tickWeekCandidatePool prunes
+    // candidatePool entries absent from the main talentPool.
+    addCandidate(world, "foreign", foreignCand);
+    world.candidatePool = MockFactory.createTalentPool();
+    world.candidatePool.candidates[foreignCand.candidateId] = foreignCand;
+
+    const impact = tickWeekCandidatePool(world);
+    const resolved = resolveImpacts(world, [impact]);
+    const cand = resolved.candidatePool?.candidates["fc-suitors"];
+    // Must not be signed to the occupied heya — either the eligible suitor
+    // wins, or the candidate stays unsigned.
+    expect(cand?.competingSuitors[0]?.heyaId).not.toBe(HEYA);
+  });
+});
+
+describe("finalizeSignedCandidates — last-line slot guard", () => {
+  it("never materializes a second slot-consuming foreigner onto one heya", async () => {
+    const { finalizeSignedCandidates } = await import(
+      "@/engine/systems/generation/TalentPoolMaterialization"
+    );
+    const world = makeMockWorld({ week: 1, year: 2030 });
+    seedHeyaAndOyakata(world, []);
+    world.talentPool = MockFactory.createTalentPool();
+    for (let i = 0; i < 2; i++) {
+      const c = MockFactory.createCandidate(`fc-final${i}`, {
+        candidateId: `fc-final${i}`,
+        nationality: "Kazakhstan",
+        originRegion: "Kazakhstan",
+        talentSeed: 90,
+        availabilityState: "signed",
+      });
+      c.competingSuitors = [
+        { heyaId: HEYA, offerType: "standard", interestBand: "high", deadlineWeek: 1 },
+      ];
+      world.talentPool!.candidates[c.candidateId] = c;
+    }
+
+    const impact = finalizeSignedCandidates(world);
+    const resolved = resolveImpacts(world, [impact]);
+    const foreignSigned = [...resolved.rikishi.values()].filter(
+      (r) => r.heyaId === HEYA && countsAsForeign(r, resolved.year)
+    );
+    expect(foreignSigned.length).toBeLessThanOrEqual(FOREIGN_RIKISHI_LIMIT_PER_HEYA);
   });
 });
 
@@ -253,5 +379,72 @@ describe("fillVacanciesForNPC — citizenship-aware slot check", () => {
       (r) => r.heyaId === HEYA && r.id !== "r-nat"
     );
     expect(signed.length).toBe(1);
+  });
+
+  it("same-batch leak: a slot-free heya cannot fill two vacancies with two foreigners in one pass", () => {
+    // hasForeigner is computed once per heya — a second vacancy in the same
+    // call must see the slot consumed by the first signing.
+    const world = makeMockWorld({ week: 1, year: 2030 });
+    seedHeyaAndOyakata(world, []);
+    world.talentPool = MockFactory.createTalentPool();
+    for (let i = 0; i < 2; i++) {
+      addCandidate(
+        world,
+        "foreign",
+        MockFactory.createCandidate(`fc-fill${i}`, {
+          candidateId: `fc-fill${i}`,
+          nationality: "Mongolia",
+          originRegion: "Mongolia",
+          talentSeed: 95,
+          availabilityState: "available",
+        })
+      );
+    }
+
+    const impact = fillVacanciesForNPC(world, { [HEYA]: 2 });
+    const resolved = resolveImpacts(world, [impact]);
+    const foreignSigned = [...resolved.rikishi.values()].filter(
+      (r) => r.heyaId === HEYA && countsAsForeign(r, resolved.year)
+    );
+    expect(foreignSigned.length).toBeLessThanOrEqual(FOREIGN_RIKISHI_LIMIT_PER_HEYA);
+  });
+
+  it("desynced roster: a foreigner whose heyaId moved without rikishiIds sync still occupies the slot", () => {
+    // updateRikishi(heyaId) does not resync heya.rikishiIds — guards must read
+    // rikishi-side truth (r.heyaId), not the roster index, or a transferred
+    // foreigner becomes invisible and a second foreigner signs on top.
+    const world = makeMockWorld({ week: 1, year: 2030 });
+    seedHeyaAndOyakata(world, []); // rikishiIds intentionally EMPTY
+    world.rikishi.set(
+      "r-foreign",
+      MockFactory.createRikishi({
+        id: "r-foreign",
+        heyaId: HEYA, // truth: rostered here
+        nationality: "Mongolia",
+        citizenshipStatus: "foreign",
+        joinedHeyaDate: "2029",
+      } as never)
+    );
+    // activeRikishiIds must reflect the desynced rikishi for the scan to see it.
+    world.activeRikishiIds = new Set(["r-foreign"]);
+    world.talentPool = MockFactory.createTalentPool();
+    addCandidate(
+      world,
+      "foreign",
+      MockFactory.createCandidate("fc-desync", {
+        candidateId: "fc-desync",
+        nationality: "Georgia",
+        originRegion: "Georgia",
+        talentSeed: 95,
+        availabilityState: "available",
+      })
+    );
+
+    const impact = fillVacanciesForNPC(world, { [HEYA]: 1 });
+    const resolved = resolveImpacts(world, [impact]);
+    const foreignSigned = [...resolved.rikishi.values()].filter(
+      (r) => r.heyaId === HEYA && countsAsForeign(r, resolved.year)
+    );
+    expect(foreignSigned.length).toBeLessThanOrEqual(FOREIGN_RIKISHI_LIMIT_PER_HEYA);
   });
 });
