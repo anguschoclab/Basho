@@ -110,8 +110,11 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const agencyRequests = world.pendingRikishiRequests ?? [];
   const resolvedRequestIds = new Set<string>();
 
+  const perceptionWrites: Record<Id, ReturnType<typeof buildPerceptionSnapshot>> = {};
+
   for (const heya of heyasToProcess) {
     const perception = buildPerceptionSnapshot(world, heya.id);
+    perceptionWrites[heya.id] = perception;
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
 
     if (oyakata) {
@@ -215,6 +218,13 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       agencyRequests.filter((q) => !resolvedRequestIds.has(q.id))
     );
   }
+
+  // Populate the declared-but-never-written perception cache so downstream
+  // reads (getCachedPerception, buildFinanciallyFragileHeyas) hit real data.
+  builder.updateWorldField("perceptionCache", {
+    ...world.perceptionCache,
+    ...perceptionWrites,
+  });
 
   builder.updateWorldField("npcScoutingPriorities", scoutingMap);
 

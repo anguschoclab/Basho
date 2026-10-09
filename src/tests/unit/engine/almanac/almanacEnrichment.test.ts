@@ -10,8 +10,11 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { RikishiCareerRecord } from "@/engine/almanac/types";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
+let __id = 0;
+const nextId = () => ++__id;
+
 function makePbpLine(text: string, opts: Partial<PbpLine> = {}): PbpLine {
-  return { text, id: `l-${Math.random()}`, ...opts };
+  return { text, id: `l-${nextId()}`, ...opts };
 }
 
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {

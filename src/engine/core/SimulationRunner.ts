@@ -32,7 +32,11 @@ import { runAlmanacNarrativeUpdate } from "../almanac/narrativeEnrichment";
  * Functions not yet migrated still mutate directly (will be migrated later).
  */
 export function runPostBashoResolution(world: WorldState): WorldState {
-  const rng = rngForWorld(world, "postBasho", "sponsorChurn");
+  const rng = rngForWorld(
+    world,
+    "postBasho",
+    `sponsorChurn_${world.year}_${world.currentBasho?.bashoName ?? world.week}`
+  );
 
   // Note: retired-rikishi summarization now happens at the year boundary in
   // phase06_yearly_boundary (tick pipeline), so it fires in BOTH the player

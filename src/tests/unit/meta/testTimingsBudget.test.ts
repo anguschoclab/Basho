@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { existsSync, readFileSync, statSync } from "fs";
+import { existsSync, readFileSync, statSync, readdirSync } from "fs";
 import { join } from "path";
 import { REPO_ROOT } from "@/tests/helpers/fsScan";
 
@@ -57,6 +57,35 @@ describe("fast suite timing budget", () => {
       `Timings baseline references moved/deleted files — regenerate: ` +
         `bun run test:timings -- fast\n` +
         gone.map((f) => `  ${f.file}`).join("\n")
+    ).toEqual([]);
+  });
+
+  it("every fast-suite test file is measured in the baseline (no permanent-green escape)", () => {
+    const report = JSON.parse(readFileSync(TIMINGS_PATH, "utf-8")) as TimingsReport;
+    const measured = new Set(
+      (report.suites?.fast?.files ?? []).map((f) => f.file)
+    );
+
+    const fastFiles: string[] = [];
+    const walk = (dir: string) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const p = join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (entry.name === "slow" || entry.name === "perf" || entry.name === "e2e") continue;
+          walk(p);
+        } else if (/\.test\.tsx?$/.test(entry.name)) {
+          fastFiles.push(p.slice(REPO_ROOT.length + 1));
+        }
+      }
+    };
+    walk(join(REPO_ROOT, "src", "tests"));
+
+    const unmeasured = fastFiles.filter((f) => !measured.has(f));
+    expect(
+      unmeasured,
+      `Fast-suite files missing from timings baseline — regenerate: ` +
+        `bun run test:timings -- fast\n` +
+        unmeasured.map((f) => `  ${f}`).join("\n")
     ).toEqual([]);
   });
 

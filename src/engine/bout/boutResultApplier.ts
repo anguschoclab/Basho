@@ -7,7 +7,7 @@
  */
 
 import type { WorldState } from "../types/world";
-import type { BoutResult, MatchSchedule } from "../types/basho";
+import type { BashoState, BoutResult, MatchSchedule } from "../types/basho";
 import type { MatchResultLog } from "../types/records";
 import type { Rikishi } from "../types/rikishi";
 import { updateH2H } from "../h2h";
@@ -19,43 +19,21 @@ import * as scoutingStore from "../scoutingStore";
 import { onBoutResolvedOpponentModels } from "../npcAI/opponentLearning";
 import { updateMediaFromBout, createDefaultMediaState } from "../systems/media/MediaService";
 import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import { createImpactBuilder, ImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { checkMentorMenteeBout } from "../systems/training/MentorshipService";
 import { getRikishi } from "../queries";
 import { BOUT_DURATION_FATIGUE_PER_TICK } from "../../constants/engine/condition";
 import { RIKISHI_BOUT_HISTORY_MAX } from "../../constants/engine/bout";
 
-/**
- * Apply the result of a single bout to the world.
- *
- * @param world - The current world state.
- * @param match - The match schedule object being updated.
- * @param result - The result of the simulated bout.
- * @returns StateImpact describing bout result application.
- */
-export function applyBoutResult(
-  world: WorldState,
-  match: MatchSchedule,
-  result: BoutResult
-): StateImpact {
-  const builder = createImpactBuilder("boutResult");
-  const basho = world.currentBasho;
-  if (!basho) {
-    return builder.build();
-  }
+// ─── 1. Standings ────────────────────────────────────────────────────────────
 
-  const east = getRikishi(world, match.eastRikishiId);
-  const west = getRikishi(world, match.westRikishiId);
-  if (!east || !west) {
-    return builder.build();
-  }
-
-  const winner = result.winner === "east" ? east : west;
-  const loser = result.winner === "east" ? west : east;
-
-  // 1. Update Standing
-  const isFusensho = result.kimarite === "fusensho";
+function computeUpdatedStandings(
+  basho: BashoState,
+  winner: Rikishi,
+  loser: Rikishi,
+  isFusensho: boolean
+): Map<string, { wins: number; losses: number; absences: number }> {
   const standings = new Map(basho.standings);
   const wRec = standings.get(winner.id) || { wins: 0, losses: 0, absences: 0 };
   const lRec = standings.get(loser.id) || { wins: 0, losses: 0, absences: 0 };
@@ -77,17 +55,19 @@ export function applyBoutResult(
       absences: lRec.absences ?? 0,
     });
   }
+  return standings;
+}
 
-  // 1.5. Update Career Records Per-Bout (Architectural Change)
-  // Increment career wins/losses immediately after each bout
-  const winnerBashoWins = (winner.currentBashoWins ?? 0) + 1;
-  const loserBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
-  const winnerStreak = (winner.currentWinStreak ?? 0) + 1;
-  const loserStreak = 0;
-  const loserLossStreak = (loser.currentLossStreak ?? 0) + 1;
-  const winnerLossStreak = 0;
+// ─── 1.5/1.6. Bout metrics + kinboshi tracking ───────────────────────────────
 
-  // 1.6. Track bout metrics for enriched BashoPerformance (7.1)
+function updateBoutMetrics(
+  basho: BashoState,
+  winner: Rikishi,
+  loser: Rikishi,
+  result: BoutResult,
+  isFusensho: boolean,
+  builder: ImpactBuilder
+): void {
   const boutMetrics = { ...(basho.boutMetrics ?? {}) };
   // Clone-on-write: the shallow copy still aliases each rikishi's metric
   // record, so nested kimariteUsed/boutDurations/opponentTiers writes must
@@ -156,7 +136,16 @@ export function applyBoutResult(
     boutMetrics,
     ...(kinboshiThisBasho ? { kinboshiThisBasho } : {}),
   });
+}
 
+// ─── Bout-duration fatigue ───────────────────────────────────────────────────
+
+function applyBoutFatigue(
+  winner: Rikishi,
+  loser: Rikishi,
+  result: BoutResult,
+  builder: ImpactBuilder
+): void {
   // Bout-duration fatigue: longer bouts add more fatigue (sekitori only, loser gets 1.5x)
   const isFusenshoBout = result.kimarite === "fusensho";
   const isSekitoriBout = winner.division === "makuuchi" || winner.division === "juryo";
@@ -175,6 +164,25 @@ export function applyBoutResult(
       });
     }
   }
+}
+
+// ─── Career records + per-bout MatchResultLog ────────────────────────────────
+
+function updateCareerRecords(
+  world: WorldState,
+  basho: BashoState,
+  match: MatchSchedule,
+  result: BoutResult,
+  winner: Rikishi,
+  loser: Rikishi,
+  builder: ImpactBuilder
+): void {
+  const winnerBashoWins = (winner.currentBashoWins ?? 0) + 1;
+  const loserBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
+  const winnerStreak = (winner.currentWinStreak ?? 0) + 1;
+  const loserStreak = 0;
+  const loserLossStreak = (loser.currentLossStreak ?? 0) + 1;
+  const winnerLossStreak = 0;
 
   // Per-bout MatchResultLog — the authoritative history[] entry that feeds
   // getH2HReport, streak labels, and favored-kimarite projections. Capped at
@@ -240,17 +248,23 @@ export function applyBoutResult(
       },
     });
   }
+}
 
-  // Note: basho.standings is not directly updatable via ImpactBuilder
-  // This will be handled by updating the basho entity directly
-  // For now, we'll update the basho via world field update
+// ─── 2. Achievement counters ─────────────────────────────────────────────────
 
-  // 2. Track Achievement Counters
+function applyAchievements(
+  world: WorldState,
+  basho: BashoState,
+  match: MatchSchedule,
+  result: BoutResult,
+  winner: Rikishi,
+  loser: Rikishi,
+  builder: ImpactBuilder
+): void {
   // Single writer: the resolver only detects awards (pure); this applier is
   // the sole place achievement counters, kinboshiThisBasho, and the award
   // ledger are written — exactly once per award fact on the result.
   const awards = result.awards ?? [];
-  const kinboshiAwardCount = awards.filter((a) => a.type === "kinboshi").length;
   if (awards.length > 0) {
     const mkAchievements = () => ({
       kinboshiEarned: 0,
@@ -302,13 +316,25 @@ export function applyBoutResult(
       builder.merge(applyAchievementImpact(world, winner, result.awardFact));
     }
   }
+}
 
-  // 3. Update Head-to-Head Records
+// ─── 3/4. H2H + secondary systems ────────────────────────────────────────────
+
+function notifySecondarySystems(
+  world: WorldState,
+  match: MatchSchedule,
+  result: BoutResult,
+  east: Rikishi,
+  west: Rikishi,
+  winner: Rikishi,
+  loser: Rikishi,
+  kinboshiAwardCount: number,
+  builder: ImpactBuilder
+): void {
   const bashoId = world.currentBasho?.id ?? "unknown";
   const year = world.year ?? 0;
   builder.merge(updateH2H(winner, loser, result, bashoId, year, match.day));
 
-  // 4. Notify Secondary Systems
   const dailyOverrides = world.transientContext?.dailyInjuryRiskOverrides;
   const loserId = result.winner === "east" ? west.id : east.id;
   const winnerId = result.winner === "east" ? east.id : west.id;
@@ -356,8 +382,17 @@ export function applyBoutResult(
 
   builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));
   builder.merge(onBoutResolvedOpponentModels(world, { match, result, east, west }));
+}
 
-  // 5. Update Media (generates headlines, heat, etc.)
+// ─── 5. Media ────────────────────────────────────────────────────────────────
+
+function mergeMediaUpdate(
+  world: WorldState,
+  match: MatchSchedule,
+  result: BoutResult,
+  east: Rikishi,
+  builder: ImpactBuilder
+): void {
   const mediaState = world.mediaState ?? createDefaultMediaState();
   // Hydrate mediaState BEFORE merging the bout update — otherwise the
   // pristine default last-write-wins over the bout's headlines/heat.
@@ -375,8 +410,19 @@ export function applyBoutResult(
       rivalries: world.rivalriesState,
     })
   );
+}
 
-  // 6. Emit Canonical Event (Bard Engine v2.1)
+// ─── 6. Canonical event ──────────────────────────────────────────────────────
+
+function emitBoutResolvedEvent(
+  match: MatchSchedule,
+  result: BoutResult,
+  east: Rikishi,
+  west: Rikishi,
+  winner: Rikishi,
+  loser: Rikishi,
+  builder: ImpactBuilder
+): void {
   const intensity = calculateMatchIntensity(match, result);
 
   const ctx: NarrativeContext = {
@@ -402,8 +448,20 @@ export function applyBoutResult(
     rikishiId: winner.id,
     importance: intensity === "high_stakes" ? "major" : "notable",
   });
+}
 
-  // 7. Check for mentor-mentee bout and seed narrative event
+// ─── 7. Mentor-mentee event ──────────────────────────────────────────────────
+
+function emitMentorMenteeEvent(
+  world: WorldState,
+  match: MatchSchedule,
+  result: BoutResult,
+  east: Rikishi,
+  west: Rikishi,
+  winner: Rikishi,
+  loser: Rikishi,
+  builder: ImpactBuilder
+): void {
   const mentorMenteeEvent = checkMentorMenteeBout(east, west);
   if (mentorMenteeEvent) {
     const mentor = getRikishi(world, mentorMenteeEvent.mentorId);
@@ -430,6 +488,64 @@ export function applyBoutResult(
       });
     }
   }
+}
+
+/**
+ * Apply the result of a single bout to the world.
+ *
+ * @param world - The current world state.
+ * @param match - The match schedule object being updated.
+ * @param result - The result of the simulated bout.
+ * @returns StateImpact describing bout result application.
+ */
+export function applyBoutResult(
+  world: WorldState,
+  match: MatchSchedule,
+  result: BoutResult
+): StateImpact {
+  const builder = createImpactBuilder("boutResult");
+  const basho = world.currentBasho;
+  if (!basho) {
+    return builder.build();
+  }
+
+  const east = getRikishi(world, match.eastRikishiId);
+  const west = getRikishi(world, match.westRikishiId);
+  if (!east || !west) {
+    return builder.build();
+  }
+
+  const winner = result.winner === "east" ? east : west;
+  const loser = result.winner === "east" ? west : east;
+
+  // 1. Update Standing
+  const isFusensho = result.kimarite === "fusensho";
+  const standings = computeUpdatedStandings(basho, winner, loser, isFusensho);
+
+  // 1.5/1.6. Bout metrics + kinboshi tracking
+  updateBoutMetrics(basho, winner, loser, result, isFusensho, builder);
+
+  // Bout-duration fatigue
+  applyBoutFatigue(winner, loser, result, builder);
+
+  // Career records + per-bout MatchResultLog
+  updateCareerRecords(world, basho, match, result, winner, loser, builder);
+
+  // 2. Achievement counters
+  applyAchievements(world, basho, match, result, winner, loser, builder);
+  const kinboshiAwardCount = (result.awards ?? []).filter((a) => a.type === "kinboshi").length;
+
+  // 3/4. H2H + secondary systems
+  notifySecondarySystems(world, match, result, east, west, winner, loser, kinboshiAwardCount, builder);
+
+  // 5. Media
+  mergeMediaUpdate(world, match, result, east, builder);
+
+  // 6. Canonical event
+  emitBoutResolvedEvent(match, result, east, west, winner, loser, builder);
+
+  // 7. Mentor-mentee event
+  emitMentorMenteeEvent(world, match, result, east, west, winner, loser, builder);
 
   // Store updated standings in metadata for the resolver to apply
   builder.addMetadata("updatedStandings", standings);

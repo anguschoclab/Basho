@@ -10,17 +10,18 @@ import type { SeededRNG } from "@/engine/rng";
 function mockRng(seed: string): SeededRNG {
   let state = 0;
   for (const c of seed) state = (state * 31 + c.charCodeAt(0)) & 0x7fffffff;
+  const next = () => {
+    state = (state * 1103515245 + 12345) & 0x7fffffff;
+    return state / 0x7fffffff;
+  };
   return {
     seed,
-    next: () => {
-      state = (state * 1103515245 + 12345) & 0x7fffffff;
-      return state / 0x7fffffff;
-    },
-    gaussian: (m: number, s: number) => m + s * (Math.random() * 2 - 1),
-    int: (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min,
-    range: (min: number, max: number) => Math.random() * (max - min) + min,
-    pick: <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)],
-    shuffle: <T>(arr: T[]) => [...arr].sort(() => Math.random() - 0.5),
+    next,
+    gaussian: (m: number, s: number) => m + s * (next() * 2 - 1),
+    int: (min: number, max: number) => Math.floor(next() * (max - min + 1)) + min,
+    range: (min: number, max: number) => next() * (max - min) + min,
+    pick: <T>(arr: T[]) => arr[Math.floor(next() * arr.length)],
+    shuffle: <T>(arr: T[]) => [...arr].sort(() => next() - 0.5),
     fork: (label: string) => mockRng(`${seed}:${label}`),
   } as any;
 }

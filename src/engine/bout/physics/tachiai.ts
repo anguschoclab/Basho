@@ -3,6 +3,7 @@ import { rngFromSeed } from "../../rng";
 import type { Rikishi } from "../../types/rikishi";
 import type { BoutLogEntry } from "../../types/basho";
 import type { Side } from "../../types/banzuke";
+import type { TacticalFamily } from "../../types/combat";
 import {
   TACHIAI_IMPACT_VELOCITY,
   TACHIAI_JITTER_MAGNITUDE,
@@ -41,48 +42,25 @@ import { getTacticProfile } from "../tacticProfiles";
 import { resolveCounterTacticBonus } from "../../types/combat";
 
 /**
- * Resolves the initial clash. May early-terminate the bout (henka) by setting
- * phase to "resolved" — callers must check for this before entering the loop.
+ * Tactic-driven tachiai power modifiers: resolved tactic modifier plus
+ * counter-tactic family bonus. Returns the additive adjustment per side.
  */
-export function resolveTachiaiV2(
-  rng: SeededRNG,
+function applyTacticModifiers(
   bout: BoutContext,
   east: Rikishi,
   west: Rikishi,
-  st: EngineStateV2,
   boutLog: BoutLogEntry[]
-): void {
-  st.phase = { tag: "tachiai", impactVelocity: TACHIAI_IMPACT_VELOCITY, contactAngle: 0 };
-
-  // Tachiai richness (1.5): derive tachiaiType from winner's archetype
-  const eastArchetype = east.combatProfile?.archetype;
-  const westArchetype = west.combatProfile?.archetype;
-  const eastSpeed = stat(east, "speed");
-  const westSpeed = stat(west, "speed");
-  const speedRating = Math.round((eastSpeed + westSpeed) / 2);
-
-  // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
-  // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
-  // Add h2h confidence bonus: (wins/total - 0.5)*8 when >= 3 prior meetings
-  let eastPower =
-    tachiaiPowerWithMatchupPenalty(east, west) +
-    h2hConfidence(east, west.id) +
-    jitter(rng, TACHIAI_JITTER_MAGNITUDE);
-  let westPower =
-    tachiaiPowerWithMatchupPenalty(west, east) +
-    h2hConfidence(west, east.id) +
-    jitter(rng, TACHIAI_JITTER_MAGNITUDE);
-
-  // Apply tactic-driven tachiai power modifier to whichever side holds a
-  // resolved tactic (player choice or NPC AI — symmetric per side).
+): { eastAdj: number; westAdj: number } {
+  let eastAdj = 0;
+  let westAdj = 0;
   for (const tacticSide of ["east", "west"] as const) {
     const tactic = sideTactic(bout, tacticSide);
     if (!tactic) continue;
     const mod = getTacticProfile(tactic).tachiaiPowerModifier;
     if (tacticSide === "east") {
-      eastPower += mod;
+      eastAdj += mod;
     } else {
-      westPower += mod;
+      westAdj += mod;
     }
 
     // Counter-tactic bonus: tactic family vs opponent's dominant family
@@ -90,8 +68,8 @@ export function resolveTachiaiV2(
     if (opponent.combatProfile) {
       const counterBonus = resolveCounterTacticBonus(tactic, opponent.combatProfile);
       if (counterBonus > 0) {
-        if (tacticSide === "east") eastPower += counterBonus;
-        else westPower += counterBonus;
+        if (tacticSide === "east") eastAdj += counterBonus;
+        else westAdj += counterBonus;
         boutLog.push({
           phase: "tachiai",
           clock: 0,
@@ -100,10 +78,22 @@ export function resolveTachiaiV2(
       }
     }
   }
+  return { eastAdj, westAdj };
+}
 
-  // NPC counter-tactic system activation (2.2): NPCs with counterFamily matching
-  // opponent's dominant family get a counter bonus. Applies to the non-player
-  // side in player bouts, and to both sides in NPC-vs-NPC bouts.
+/**
+ * NPC counter-tactic system activation (2.2): NPCs with counterFamily matching
+ * opponent's dominant family get a counter bonus. Applies to the non-player
+ * side in player bouts, and to both sides in NPC-vs-NPC bouts.
+ */
+function applyNpcCounterTactics(
+  bout: BoutContext,
+  east: Rikishi,
+  west: Rikishi,
+  boutLog: BoutLogEntry[]
+): { eastAdj: number; westAdj: number } {
+  let eastAdj = 0;
+  let westAdj = 0;
   const npcSides: Side[] = bout.playerSide
     ? [bout.playerSide === "east" ? "west" : "east"]
     : ["east", "west"];
@@ -114,14 +104,13 @@ export function resolveTachiaiV2(
     const opponentPrefs = opponent.combatProfile?.familyPreferences;
     if (npcCounterFamily && opponentPrefs) {
       const sorted = Object.entries(opponentPrefs).sort((a, b) => b[1] - a[1]);
-      const opponentDominantFamily = sorted[0]?.[0] as
-        import("../../types/combat").TacticalFamily | undefined;
+      const opponentDominantFamily = sorted[0]?.[0] as TacticalFamily | undefined;
       const second = sorted[1]?.[1] ?? 0;
       if (opponentDominantFamily && (sorted[0]?.[1] ?? 0) > second) {
         if (npcCounterFamily === opponentDominantFamily) {
           const npcCounterBonus = NPC_COUNTER_BONUS;
-          if (npcSide === "east") eastPower += npcCounterBonus;
-          else westPower += npcCounterBonus;
+          if (npcSide === "east") eastAdj += npcCounterBonus;
+          else westAdj += npcCounterBonus;
           boutLog.push({
             phase: "tachiai",
             clock: 0,
@@ -137,41 +126,27 @@ export function resolveTachiaiV2(
       }
     }
   }
+  return { eastAdj, westAdj };
+}
 
-  // Apply body type tachiai speed bonus (5.1) — archetype bonus remains narrative-only
-  const eastBodyBehavior = east.combatProfile?.bodyTypeBehavior;
-  const westBodyBehavior = west.combatProfile?.bodyTypeBehavior;
-  const eastTachiaiBonus = eastBodyBehavior?.tachiaiSpeedBonus ?? 0;
-  const westTachiaiBonus = westBodyBehavior?.tachiaiSpeedBonus ?? 0;
-  eastPower += eastTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
-  westPower += westTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
-
-  const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
-  st.tachiaiWinner = tachiaiWinner;
-
-  // Tachiai richness (1.5): derive tachiaiType and contactPoint from winner's archetype
-  const winnerArchetype = tachiaiWinner === "east" ? eastArchetype : westArchetype;
-  const tachiaiType =
-    winnerArchetype === "oshi"
-      ? "head_charge"
-      : winnerArchetype === "tsuppari"
-        ? "tsuppari"
-        : winnerArchetype === "speedster"
-          ? "harite"
-          : winnerArchetype === "trickster"
-            ? "henka"
-            : "chest_clash";
-  const contactPoint =
-    tachiaiType === "head_charge" || tachiaiType === "harite"
-      ? "face"
-      : tachiaiType === "chest_clash"
-        ? "chest"
-        : tachiaiType === "tsuppari"
-          ? "chest"
-          : "shoulder";
-
-  // Narrative: the opening clash is always worth a line. Intensity scales with
-  // how decisive the initial collision was.
+/**
+ * Logs the opening-clash tachiai entry — intensity scales with how
+ * decisive the initial collision was — then rolls the rare matta event.
+ */
+function logTachiaiClash(
+  bout: BoutContext,
+  east: Rikishi,
+  west: Rikishi,
+  tachiaiWinner: Side,
+  eastPower: number,
+  westPower: number,
+  tachiaiType: string,
+  contactPoint: string,
+  speedRating: number,
+  eastTachiaiBonus: number,
+  westTachiaiBonus: number,
+  boutLog: BoutLogEntry[]
+): void {
   const tachiaiMargin = Math.abs(eastPower - westPower);
   const tachiaiIntensity =
     tachiaiMargin > TACHIAI_MARGIN_DECISIVE
@@ -208,19 +183,24 @@ export function resolveTachiaiV2(
       data: { event: "matta" },
     });
   }
+}
 
-  // CR-02: Henka resolution — must check before phase loop
-  // NPC Henka Gap (1.6): high-technique, high-speed NPCs can attempt henka
-  // without explicit tactic override when facing a much stronger opponent
-  // HENKA may come from either side's resolved tactic (east wins ties).
+/**
+ * CR-02: Henka side resolution — explicit tactic henka (east wins ties),
+ * or NPC spontaneous henka when a high-technique NPC faces a much stronger
+ * opponent. Evaluated east-then-west for determinism.
+ */
+function resolveHenkaSide(
+  rng: SeededRNG,
+  bout: BoutContext,
+  east: Rikishi,
+  west: Rikishi,
+  boutLog: BoutLogEntry[]
+): Side | null {
   const eastHenka = sideTactic(bout, "east") === "HENKA";
   const westHenka = sideTactic(bout, "west") === "HENKA";
   let henkaSide: Side | null = eastHenka ? "east" : westHenka ? "west" : null;
 
-  // NPC spontaneous henka: when no explicit henka is set, a high-technique NPC
-  // facing a significantly stronger opponent may attempt a henka. In player
-  // bouts only the NPC side qualifies; in NPC-vs-NPC bouts both sides are
-  // eligible (evaluated east then west for determinism).
   if (henkaSide === null) {
     const candidates: Side[] = bout.playerSide
       ? [bout.playerSide === "east" ? "west" : "east"]
@@ -255,33 +235,143 @@ export function resolveTachiaiV2(
       }
     }
   }
+  return henkaSide;
+}
 
-  if (henkaSide !== null) {
-    const trickster = henkaSide === "east" ? east : west;
-    const opponent = henkaSide === "east" ? west : east;
-    // High-aggression opponents overcommit → more vulnerable to henka
-    const henkaScore =
-      stat(trickster, "technique") +
-      computeTachiaiPower(opponent, { henkaVulnerabilityMode: true }) +
-      jitter(rng, HENKA_JITTER_MAGNITUDE);
-    const defenseScore = stat(opponent, "balance") + jitter(rng, HENKA_JITTER_MAGNITUDE);
+/**
+ * Attempts a henka by `henkaSide`. On success sets the resolved phase and
+ * returns true (early bout termination).
+ */
+function attemptHenka(
+  rng: SeededRNG,
+  henkaSide: Side,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[]
+): boolean {
+  const trickster = henkaSide === "east" ? east : west;
+  const opponent = henkaSide === "east" ? west : east;
+  // High-aggression opponents overcommit → more vulnerable to henka
+  const henkaScore =
+    stat(trickster, "technique") +
+    computeTachiaiPower(opponent, { henkaVulnerabilityMode: true }) +
+    jitter(rng, HENKA_JITTER_MAGNITUDE);
+  const defenseScore = stat(opponent, "balance") + jitter(rng, HENKA_JITTER_MAGNITUDE);
 
-    if (henkaScore > defenseScore) {
-      // Spatial henka: the trickster sidesteps and the opponent's own charge
-      // carries them down. Log it so the narrative can call the trick.
-      boutLog.push({
-        phase: "tachiai",
-        clock: 0,
-        data: { event: "henka_success", attackerSide: henkaSide },
-      });
-      st.phase = {
-        tag: "resolved",
-        winner: henkaSide,
-        exitVector: { x: henkaSide === "east" ? 1 : -1, z: 0 },
-        technique: "hatakikomi",
-      };
-      return;
-    }
+  if (henkaScore > defenseScore) {
+    // Spatial henka: the trickster sidesteps and the opponent's own charge
+    // carries them down. Log it so the narrative can call the trick.
+    boutLog.push({
+      phase: "tachiai",
+      clock: 0,
+      data: { event: "henka_success", attackerSide: henkaSide },
+    });
+    st.phase = {
+      tag: "resolved",
+      winner: henkaSide,
+      exitVector: { x: henkaSide === "east" ? 1 : -1, z: 0 },
+      technique: "hatakikomi",
+    };
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Resolves the initial clash. May early-terminate the bout (henka) by setting
+ * phase to "resolved" — callers must check for this before entering the loop.
+ */
+export function resolveTachiaiV2(
+  rng: SeededRNG,
+  bout: BoutContext,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[]
+): void {
+  st.phase = { tag: "tachiai", impactVelocity: TACHIAI_IMPACT_VELOCITY, contactAngle: 0 };
+
+  // Tachiai richness (1.5): derive tachiaiType from winner's archetype
+  const eastArchetype = east.combatProfile?.archetype;
+  const westArchetype = west.combatProfile?.archetype;
+  const eastSpeed = stat(east, "speed");
+  const westSpeed = stat(west, "speed");
+  const speedRating = Math.round((eastSpeed + westSpeed) / 2);
+
+  // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
+  // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
+  // Add h2h confidence bonus: (wins/total - 0.5)*8 when >= 3 prior meetings
+  let eastPower =
+    tachiaiPowerWithMatchupPenalty(east, west) +
+    h2hConfidence(east, west.id) +
+    jitter(rng, TACHIAI_JITTER_MAGNITUDE);
+  let westPower =
+    tachiaiPowerWithMatchupPenalty(west, east) +
+    h2hConfidence(west, east.id) +
+    jitter(rng, TACHIAI_JITTER_MAGNITUDE);
+
+  // Apply tactic-driven tachiai power modifier to whichever side holds a
+  // resolved tactic (player choice or NPC AI — symmetric per side).
+  const tacticAdj = applyTacticModifiers(bout, east, west, boutLog);
+  eastPower += tacticAdj.eastAdj;
+  westPower += tacticAdj.westAdj;
+
+  const npcAdj = applyNpcCounterTactics(bout, east, west, boutLog);
+  eastPower += npcAdj.eastAdj;
+  westPower += npcAdj.westAdj;
+
+  // Apply body type tachiai speed bonus (5.1) — archetype bonus remains narrative-only
+  const eastBodyBehavior = east.combatProfile?.bodyTypeBehavior;
+  const westBodyBehavior = west.combatProfile?.bodyTypeBehavior;
+  const eastTachiaiBonus = eastBodyBehavior?.tachiaiSpeedBonus ?? 0;
+  const westTachiaiBonus = westBodyBehavior?.tachiaiSpeedBonus ?? 0;
+  eastPower += eastTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
+  westPower += westTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
+
+  const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
+  st.tachiaiWinner = tachiaiWinner;
+
+  // Tachiai richness (1.5): derive tachiaiType and contactPoint from winner's archetype
+  const winnerArchetype = tachiaiWinner === "east" ? eastArchetype : westArchetype;
+  const tachiaiType =
+    winnerArchetype === "oshi"
+      ? "head_charge"
+      : winnerArchetype === "tsuppari"
+        ? "tsuppari"
+        : winnerArchetype === "speedster"
+          ? "harite"
+          : winnerArchetype === "trickster"
+            ? "henka"
+            : "chest_clash";
+  const contactPoint =
+    tachiaiType === "head_charge" || tachiaiType === "harite"
+      ? "face"
+      : tachiaiType === "chest_clash"
+        ? "chest"
+        : tachiaiType === "tsuppari"
+          ? "chest"
+          : "shoulder";
+
+  // Narrative: the opening clash is always worth a line, plus the rare matta roll.
+  logTachiaiClash(
+    bout,
+    east,
+    west,
+    tachiaiWinner,
+    eastPower,
+    westPower,
+    tachiaiType,
+    contactPoint,
+    speedRating,
+    eastTachiaiBonus,
+    westTachiaiBonus,
+    boutLog
+  );
+
+  const henkaSide = resolveHenkaSide(rng, bout, east, west, boutLog);
+  if (henkaSide !== null && attemptHenka(rng, henkaSide, east, west, st, boutLog)) {
+    return;
   }
 
   // Decide push vs belt battle (biased by combatProfile)

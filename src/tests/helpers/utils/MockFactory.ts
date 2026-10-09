@@ -58,15 +58,27 @@ export const MockFactory = {
         active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
       },
       calendar: { currentWeek: 1 },
+      historicalRikishi: new Map(),
+      meta: { tone: "classic", drift: {}, history: [] },
+      globalKimariteStats: {},
+      settings: { archiveMode: "standard" },
+      events: { version: "1.0.0", log: [], dedupe: {} },
       mediaState: {
+        version: "1.0.0",
         heyaPressure: {},
         mediaHeat: {},
-        globalBuzz: 0,
         headlines: [],
-        pressConferenceActive: false,
+        bashoStreaks: {},
+        streakHeadlinesFired: {},
+        promoWatchFired: {},
+        retirementWatchFired: {},
+        titleRaceDayFired: {},
+        injuryWithdrawalFired: {},
+        mediaHeatHistory: {},
+        absenceAnnouncements: [],
       },
       ...overrides,
-    } as WorldState;
+    } satisfies WorldState;
   },
 
   createRikishi(

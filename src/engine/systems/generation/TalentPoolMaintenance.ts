@@ -5,6 +5,7 @@ import { ensureTalentPoolState, refreshAllPools } from "./TalentPoolStateService
 import { resolveCandidateSuitor } from "./TalentPoolOffers";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { computeReplacementGap } from "./RecruitmentController";
+import { TOTAL_ACTIVE_THRESHOLD } from "../../../constants/engine/recruitmentExtended";
 import { warn } from "@/engine/utils/Logger";
 
 /**
@@ -104,18 +105,25 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   // 4. Emergency demographic floor: dump all hidden candidates to visible so NPC recruitment can access them
   // Use active (non-retired) count — world.rikishi.size grows unbounded as retirees accumulate
   const population = world.activeRikishiIds.size;
-  const isEmergency = population < 700;
+  const isEmergency = population < TOTAL_ACTIVE_THRESHOLD;
   if (isEmergency) {
+    let moved = 0;
     for (const pt of ["high_school", "university", "foreign"] as const) {
       const pool = { ...nextPools[pt] };
+      moved += pool.candidatesHidden.length;
       pool.candidatesVisible = [...pool.candidatesVisible, ...pool.candidatesHidden];
       pool.candidatesHidden = [];
       nextPools[pt] = pool;
     }
-    warn(
-      `Emergency: moved all hidden candidates to visible. Active population: ${population}`,
-      "Recruitment"
-    );
+    // Only warn when the dump actually moved candidates — an already-drained
+    // hidden pool makes the warn pure noise (it fires every weekly tick while
+    // the population is below the floor, e.g. the entire first-year ramp-up).
+    if (moved > 0) {
+      warn(
+        `Emergency: moved ${moved} hidden candidates to visible. Active population: ${population}`,
+        "Recruitment"
+      );
+    }
   }
 
   // 5. Update world state via impact (incorporates refresh + passive discovery + emergency reveal)

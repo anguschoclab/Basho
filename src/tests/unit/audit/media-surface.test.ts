@@ -1,7 +1,8 @@
 /**
  * Phase 2b: Media surface regression tests.
  *
- * Proves that PostBashoPressService is invoked from CompetitionService
+ * Proves that PostBashoPressService is invoked from the basho-conclusion
+ * path (concludeBasho.ts, re-exported through CompetitionService)
  * and that MediaPage uses projectMediaUIDigest to surface media state.
  */
 
@@ -12,13 +13,13 @@ import { readSrcFile } from "@/tests/helpers/fsScan";
 const ROOT = join(__dirname, "../../../..");
 
 describe("PostBashoPressService — call site wiring", () => {
-  it("is imported by CompetitionService", () => {
-    const svc = readSrcFile("engine/lifecycle/CompetitionService.ts");
+  it("is imported by the basho-conclusion module", () => {
+    const svc = readSrcFile("engine/lifecycle/concludeBasho.ts");
     expect(svc).toContain("PostBashoPressService");
   });
 
-  it("generatePressConference is called by CompetitionService", () => {
-    const svc = readSrcFile("engine/lifecycle/CompetitionService.ts");
+  it("generatePressConference is called during basho conclusion", () => {
+    const svc = readSrcFile("engine/lifecycle/concludeBasho.ts");
     expect(svc).toMatch(/PostBashoPressService\.generatePressConference/);
   });
 

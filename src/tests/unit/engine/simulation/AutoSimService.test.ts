@@ -134,7 +134,13 @@ describe("checkStopCondition", () => {
 
   it("should return true for scandal when a major scandal occurs in current year", () => {
     const world = makeMockWorld({ year: 2025 }) as any;
-    world.scandals = [{ severity: "major", year: 2025 }];
+    world.events.log = [
+      {
+        year: 2025,
+        category: "discipline",
+        data: { incident: "scandal_reported", status: "major" },
+      },
+    ];
 
     const config = createMockConfig();
     const bashoResult = createMockBashoResult();
@@ -142,10 +148,15 @@ describe("checkStopCondition", () => {
     expect(checkStopCondition("scandal", bashoResult, world, config)).toBe(true);
   });
 
-  it("should return true for scandal when eventLog has scandal", () => {
+  it("should return true for scandal when event log has a critical scandal", () => {
     const world = makeMockWorld({ year: 2025 }) as any;
-    world.scandals = [];
-    world.eventLog = [{ type: "scandal" }];
+    world.events.log = [
+      {
+        year: 2025,
+        category: "discipline",
+        data: { incident: "scandal_reported", status: "critical" },
+      },
+    ];
 
     const config = createMockConfig();
     const bashoResult = createMockBashoResult();
@@ -155,11 +166,19 @@ describe("checkStopCondition", () => {
 
   it("should return false for scandal when no major scandal in current year", () => {
     const world = makeMockWorld({ year: 2025 }) as any;
-    world.scandals = [
-      { severity: "major", year: 2024 },
-      { severity: "minor", year: 2025 },
+    world.events.log = [
+      {
+        year: 2024,
+        category: "discipline",
+        data: { incident: "scandal_reported", status: "major" },
+      },
+      {
+        year: 2025,
+        category: "discipline",
+        data: { incident: "scandal_reported", status: "minor" },
+      },
+      { year: 2025, category: "media", data: {} },
     ];
-    world.eventLog = [{ type: "other_event" }];
 
     const config = createMockConfig();
     const bashoResult = createMockBashoResult();
@@ -170,8 +189,7 @@ describe("checkStopCondition", () => {
   it("should return true for retirementOfStar when a star (tier <= 4) retires", () => {
     const world = makeMockWorld() as any;
     const rikishi = mockRikishi("star-1", { rank: "sekiwake" }); // tier 3
-    world.rikishi.set(rikishi.id, rikishi);
-    world.retirements = [{ rikishiId: "star-1" }];
+    world.historicalRikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig();
     const bashoResult = createMockBashoResult();
@@ -182,8 +200,7 @@ describe("checkStopCondition", () => {
   it("should return false for retirementOfStar when a non-star retires", () => {
     const world = makeMockWorld() as any;
     const rikishi = mockRikishi("non-star-1", { rank: "juryo" }); // tier > 4
-    world.rikishi.set(rikishi.id, rikishi);
-    world.retirements = [{ rikishiId: "non-star-1" }];
+    world.historicalRikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig();
     const bashoResult = createMockBashoResult();

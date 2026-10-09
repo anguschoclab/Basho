@@ -58,7 +58,7 @@ export const LegacyService = {
     builder.updateWorldField("bloodlineRegistry", registry);
 
     // Generate dynasty narrative headline
-    const rng = rngForWorld(world, "legacy", "registerTrait");
+    const rng = rngForWorld(world, "legacy", `registerTrait_${rikishi.id}`);
     const headline = BardEngine.resolve(rng, "dynasty.headline", {
       TRAIT_LABEL: trait.label,
       ANCESTOR: trait.ancestorShikona,

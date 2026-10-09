@@ -19,51 +19,23 @@
 
 import type { BoutContext } from "../bout/boutPhysics";
 import type { Rikishi } from "../types/rikishi";
-import type { BashoState, BoutResult, BashoName } from "../types/basho";
+import type { BashoState, BoutResult } from "../types/basho";
 import type { WorldState } from "../types/world";
-import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Side } from "../types/banzuke";
 // We import the B+ spatial physics runner
 import { resolveBoutPhysics, conditionMultiplier } from "./boutPhysics";
-// We import the pure narrative translator
-import { generateBoutNarrative } from "./boutNarrative";
-import { getKimarite } from "../kimarite";
 import { RivalryService } from "../systems/narrative/RivalryService";
-import { RNGRegistry } from "../core/RNGRegistry";
-import {
-  calculateKenshoEnvelopes,
-  assignKenshoBanners,
-  determineBoutImportance,
-} from "../systems/economy/KenshoService";
 
 import { clamp } from "../utils/math";
-import { chooseTactic, type BoutAIContext } from "./BoutAI";
-import { buildOpponentModel } from "../npcAI/OpponentModel";
-import { getOpponentModel } from "../npcAI/MemoryStore";
-import { rngFromSeed } from "../rng";
 import type { BoutTactic } from "../types/combat";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
-import { isYushoContention, isPlayoffScenario } from "./boutContention";
-import { detectKinboshi } from "./boutAchievements";
-import { recordCareerHighlight, type CareerHighlight } from "./CareerHighlights";
-import { computeTacticAftermath } from "./boutTacticAftermath";
-import { tryHansoku } from "./kinjite";
-import { checkYaocho } from "./yaocho";
-import { reportScandal } from "../systems/governance/ScandalService";
+import { resolveSideTactics } from "./resolution/tactics";
+import { applyOfficiating } from "./resolution/officiating";
+import { enrichResult, applyTacticAftermath } from "./resolution/enrichment";
+import { applyStakesAndKensho } from "./resolution/stakes";
+import { applyGyojiOfficiation } from "./resolution/gyoji";
 import {
-  assignGyojiToBout,
-  recordGyojiBout,
-  assembleShimpanPanel,
-} from "../systems/officials/GyojiService";
-import { resolveMonoii } from "../types/gyoji";
-import {
-  KENSHO_BASE_COUNT_LOW,
-  KENSHO_BASE_COUNT_MID,
-  KENSHO_BASE_COUNT_HIGH,
-  KENSHO_BASE_COUNT_PEAK,
-  KENSHO_RNG_MIN,
-  KENSHO_RNG_RANGE,
   RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
   RIVALRY_SPITE_MENTAL_MULTIPLIER,
   DEFAULT_YEAR,
@@ -150,7 +122,7 @@ export function resolveBout(
   east: Rikishi,
   west: Rikishi,
   basho: BashoState,
-  playerTactic?: import("../types/combat").BoutTactic,
+  playerTactic?: BoutTactic,
   world?: WorldState
 ): { result: BoutResult; impact: StateImpact } {
   const builder = createImpactBuilder("resolveBout");
@@ -158,8 +130,6 @@ export function resolveBout(
   // 0. Fusensho — injured/retired rikishi cannot fight; opponent wins by walkover
   const fusenshoResult = tryFusensho(bout, east, west);
   if (fusenshoResult) return { result: fusenshoResult, impact: builder.build() };
-
-  const ctxWithTactic = { ...bout, playerTactic };
 
   // --- PHASE 3: RIVALRY CONNECTIVITY ---
   let eastRivalry = { heat: 0, spite: 0 };
@@ -180,60 +150,15 @@ export function resolveBout(
   const eastBout = applyRivalryToRikishi(east, eastRivalry);
   const westBout = applyRivalryToRikishi(west, westRivalry);
 
-  // Per-side tactic resolution (WS1):
-  // - Player side: caller-supplied playerTactic param wins, then bout.playerTactic.
-  // - NPC side: explicit per-side ctx field, then legacy cpuTacticOverride,
-  //   then a full BoutAI.chooseTactic fed by standings, rivalry, fatigue, and
-  //   the acting heya's learned opponent model.
-  // - NPC-vs-NPC: both sides get a resolved tactic (legacy cpuTacticOverride
-  //   maps to east for back-compat).
-  const rivalryHeat = eastRivalry.heat;
-  let eastTactic: BoutTactic | undefined = bout.eastTactic;
-  let westTactic: BoutTactic | undefined = bout.westTactic;
-  const playerSide = bout.playerSide;
-
-  if (playerSide === "east" || playerSide === "west") {
-    const resolvedPlayerTactic = playerTactic ?? bout.playerTactic;
-    if (playerSide === "east") eastTactic = resolvedPlayerTactic ?? eastTactic;
-    else westTactic = resolvedPlayerTactic ?? westTactic;
-
-    const npcSide: Side = playerSide === "east" ? "west" : "east";
-    const npcRikishi = npcSide === "east" ? east : west;
-    const npcOpponent = npcSide === "east" ? west : east;
-    const explicit = (npcSide === "east" ? eastTactic : westTactic) ?? bout.cpuTacticOverride;
-    const npcTactic =
-      explicit ??
-      (world
-        ? chooseNpcSideTactic(world, basho, bout, npcSide, npcRikishi, npcOpponent, rivalryHeat)
-        : undefined);
-    if (npcSide === "east") eastTactic = npcTactic;
-    else westTactic = npcTactic;
-  } else {
-    if (!eastTactic) {
-      eastTactic =
-        bout.cpuTacticOverride ??
-        (world
-          ? chooseNpcSideTactic(world, basho, bout, "east", east, west, rivalryHeat)
-          : undefined);
-    }
-    if (!westTactic && world) {
-      westTactic = chooseNpcSideTactic(world, basho, bout, "west", west, east, rivalryHeat);
-    }
-  }
-
-  // cpuTacticOverride keeps its legacy meaning on the ctx (non-player side;
-  // east when no playerSide) for any consumer still reading it.
-  const cpuTacticOverride = playerSide
-    ? playerSide === "east"
-      ? westTactic
-      : eastTactic
-    : eastTactic;
-  const ctxFinal: BoutContext = {
-    ...ctxWithTactic,
-    eastTactic,
-    westTactic,
-    cpuTacticOverride,
-  };
+  const { eastTactic, westTactic, ctxFinal } = resolveSideTactics(
+    bout,
+    east,
+    west,
+    basho,
+    playerTactic,
+    world,
+    eastRivalry.heat
+  );
 
   // 1. Run B+ spatial physics engine
   const meta = world?.meta;
@@ -245,313 +170,35 @@ export function resolveBout(
     meta
   );
 
-  // 1.5. Kinjite (forbidden technique) check — high-aggression/low-technique
-  // winner may be disqualified via hansoku, flipping the result.
-  // Only active for player bouts (not AutoSim observer mode) to avoid
-  // disrupting long-term deterministic simulations.
-  const hansokuSeed = `${basho.id ?? "basho"}-${bout.id}-kinjite`;
-  const enableKinjite = bout.playerSide !== undefined;
-  const { result: hansokuResult, fouledHeyaId } = enableKinjite
-    ? tryHansoku(bout, physicsResult, eastBout as Rikishi, westBout as Rikishi, basho, hansokuSeed)
-    : { result: physicsResult, fouledHeyaId: null };
-  const result = hansokuResult;
-  // Record resolved per-side tactics for observability, UI, and tests.
-  if (eastTactic || westTactic) {
-    result.tactics = { east: eastTactic, west: westTactic };
-  }
-
-  // Trigger scandal for the fouled rikishi's heya
-  if (fouledHeyaId && world) {
-    const scandalImpact = reportScandal(
-      world,
-      fouledHeyaId,
-      "major",
-      "Forbidden technique (hansoku) disqualification"
-    );
-    builder.merge(scandalImpact);
-  }
-
-  // 1.6. Yaocho (match-fixing) detection — checks for suspicious patterns
-  if (world && enableKinjite) {
-    const yaochoImpact = checkYaocho(world, result, basho, bout.day ?? 1, `${hansokuSeed}-yaocho`);
-    builder.merge(yaochoImpact);
-  }
+  // 1.5/1.6. Kinjite disqualification + scandal + yaocho detection
+  const { result } = applyOfficiating(
+    bout,
+    physicsResult,
+    eastBout as Rikishi,
+    westBout as Rikishi,
+    basho,
+    eastTactic,
+    westTactic,
+    world,
+    builder
+  );
 
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 
-  // Enrich kimariteName from registry (classifier returns id; registry has display name)
-  // ⚡ Bolt: Replace O(N) array find with O(1) Map lookup in boutResolver
-  const k = getKimarite(result.kimarite);
-  if (k) result.kimariteName = k.name;
-
-  const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
-
-  // 2. Achievement Detection (Gold & Silver Stars - v2)
-  // Must run BEFORE generateBoutNarrative so awardFact is set when
-  // the narrative generator checks for kinboshi/ginboshi award lines.
-  // Detection is pure: awards are stamped on the result here, and the
-  // applier owns all counter/state side-effects exactly once.
-  const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser, {
-    isPlayoff: bout.isPlayoff,
-  });
-  result.isKinboshi = !!kinboshiDelta;
-  if (awards.length > 0) {
-    result.awards = awards;
-  }
-
-  // 2.1. Record career highlights for the winner
-  const bashoLabel = `${basho.year ?? world?.year ?? DEFAULT_START_YEAR}-${bashoName ?? "unknown"}`;
-  const winnerHighlights: CareerHighlight[] = [];
-  const winnerWins = winner.currentBashoWins ?? 0;
-  const winnerLosses = winner.currentBashoLosses ?? 0;
-
-  // Debut win
-  if (!winner.careerHistory || winner.careerHistory.length === 0) {
-    winnerHighlights.push({
-      type: "debut_win",
-      basho: bashoLabel,
-      opponent: loser.id,
-      description: `First career win over ${loser.shikona}`,
-    });
-  }
-  // 7-7 pressure win
-  if (winnerWins === 7 && winnerLosses === 7) {
-    winnerHighlights.push({
-      type: "seven_seven_win",
-      basho: bashoLabel,
-      opponent: loser.id,
-      description: `Won 7-7 pressure bout on day ${bout.day}`,
-    });
-  }
-  // Kinboshi
-  if (kinboshiDelta) {
-    winnerHighlights.push({
-      type: "kinboshi",
-      basho: bashoLabel,
-      opponent: loser.id,
-      description: `Upset win over ${loser.shikona} (${loser.rank ?? "unknown"})`,
-    });
-  }
-  // Apply highlights to winner
-  if (winnerHighlights.length > 0) {
-    let updatedWinner = winner;
-    for (const hl of winnerHighlights) {
-      updatedWinner = recordCareerHighlight(updatedWinner, hl);
-    }
-    builder.updateRikishi(winner.id, {
-      careerHighlights: updatedWinner.careerHighlights,
-    });
-  }
-
-  // 2.5. Copy dramatic context from match schedule onto result
-  const match = basho.matches?.find((m) => m.boutId === result.boutId);
-  if (match?.dramaticContext) {
-    result.dramaticContext = match.dramaticContext;
-  }
-
-  // 2.6. Generate narrative based on data frames
-  generateBoutNarrative(
-    result,
-    east,
-    west,
-    bashoName,
-    bout.day,
-    `${result.boutId}-pbp`,
-    world || ({} as WorldState)
-  );
+  // 2. Achievements, career highlights, dramatic context, narrative
+  enrichResult(bout, result, east, west, winner, loser, basho, world, builder);
 
   // 3. Tactic aftermath (fatigue, momentum, injury multiplier) — per side.
-  const { eastUpdate, westUpdate, injuryMultiplier } = computeTacticAftermath(
-    bout,
-    result,
-    east,
-    west,
-    { east: eastTactic, west: westTactic }
-  );
-  if (Object.keys(eastUpdate).length > 0) {
-    builder.updateRikishi(east.id, eastUpdate);
-  }
-  if (Object.keys(westUpdate).length > 0) {
-    builder.updateRikishi(west.id, westUpdate);
-  }
-  result.tacticInjuryRiskMultiplier = injuryMultiplier;
+  applyTacticAftermath(bout, result, east, west, eastTactic, westTactic, builder);
 
-  // 4. Update Rivalry State
-  let rivalryImpact = createImpactBuilder("rivalry").build();
-  if (world) {
-    // Title-stakes flags must be set BEFORE onBoutResolved — the rivalry
-    // service reads them to pick heat-gain constants and the title_stakes
-    // trigger. Previously they were only assigned in the kensho block below.
-    const yushoContention = isYushoContention(east, west, basho);
-    const playoff = isPlayoffScenario(east, west, basho);
-    const importance = determineBoutImportance(
-      east.rank,
-      west.rank,
-      bout.day,
-      yushoContention,
-      playoff
-    );
-    result.isYushoRace = yushoContention;
-    result.isTitleStakes = playoff || yushoContention;
-
-    rivalryImpact = RivalryService.onBoutResolved(world, {
-      result,
-      day: bout.day,
-    });
-
-    // E4: Track global kimarite stats for Era Drift
-    if (result.kimarite && result.kimarite !== "fusensho") {
-      const stats = { ...(world.globalKimariteStats || {}) };
-      stats[result.kimarite] = (stats[result.kimarite] || 0) + 1;
-      builder.updateWorldField("globalKimariteStats", stats);
-      // All-time accumulator — same counts, but never reset by era drift.
-      const allTime = { ...(world.allTimeKimariteStats || {}) };
-      allTime[result.kimarite] = (allTime[result.kimarite] || 0) + 1;
-      builder.updateWorldField("allTimeKimariteStats", allTime);
-    }
-
-    // 5. Kensho (Prize Banners)
-    const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${result.boutId}`);
-
-    if (world.sponsorPool) {
-      // Base banner count: random based on importance
-      const baseCountMap = {
-        low: KENSHO_BASE_COUNT_LOW,
-        mid: KENSHO_BASE_COUNT_MID,
-        high: KENSHO_BASE_COUNT_HIGH,
-        peak: KENSHO_BASE_COUNT_PEAK,
-      };
-      const bannerCount = Math.floor(
-        baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE)
-      );
-
-      const banners = assignKenshoBanners(
-        result.boutId,
-        bannerCount,
-        importance,
-        world.sponsorPool,
-        kenshoRng
-      );
-      (result as BoutResult & { kenshoBanners?: unknown[] }).kenshoBanners = banners;
-
-      const awardFact = result.awardFact ?? undefined;
-      result.kenshoEnvelopes = calculateKenshoEnvelopes(
-        world,
-        winner,
-        banners,
-        awardFact,
-        kenshoRng
-      );
-    }
-  }
-
-  // Merge rivalry impact into main builder
-  builder.merge(rivalryImpact);
+  // 4/5. Title stakes, rivalry update, kimarite stats, kensho
+  applyStakesAndKensho(world, east, west, winner, result, bout, basho, builder);
 
   // 6. Gyoji officiation — assign a gyoji to this bout and record career stats
-  if (world?.gyojiPool && world.gyojiPool.length > 0) {
-    const boutImportance = result.isTitleStakes ? 90 : result.isYushoRace ? 75 : 50;
-    const gyoji = assignGyojiToBout(world.gyojiPool, result.boutId, boutImportance);
-    if (gyoji) {
-      result.gyojiId = gyoji.id;
-      const bashoNameStr = (basho.bashoName ?? basho.name ?? "unknown") as string;
-      const bashoYear = basho.year ?? world?.year ?? DEFAULT_START_YEAR;
-
-      // 6a. If mono-ii occurred, assemble a shimpan panel and resolve the outcome
-      let reversed = !!result.monoii;
-      if (result.monoii && world?.shimpanPool && world.shimpanPool.length >= 5) {
-        const panel = assembleShimpanPanel(world.shimpanPool, result.boutId);
-        if (panel) {
-          result.shimpanPanelIds = [panel.chief.id, ...panel.panelists.map((p) => p.id)];
-          // Use a deterministic RNG from the bout seed for mono-ii resolution
-          const monoiiRng = {
-            next: () => {
-              // Deterministic hash from boutId + panel chief id
-              const str = `${result.boutId}-${panel.chief.id}`;
-              let h = 0;
-              for (let i = 0; i < str.length; i++) {
-                h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-              }
-              return Math.abs(h % 1000) / 1000;
-            },
-          };
-          const outcome = resolveMonoii(gyoji, panel, monoiiRng);
-          result.monoiiOutcome = outcome;
-          reversed = outcome === "reversed";
-
-          // Increment consultation count for each shimpan on the panel
-          const panelIds = result.shimpanPanelIds ?? [];
-          const updatedShimpanPool = world.shimpanPool.map((s) => {
-            if (panelIds.includes(s.id)) {
-              return { ...s, consultations: s.consultations + 1 };
-            }
-            return s;
-          });
-          builder.updateWorldField("shimpanPool", updatedShimpanPool);
-        }
-      }
-
-      const updatedGyoji = recordGyojiBout(gyoji, bashoNameStr, bashoYear, reversed);
-      const updatedPool = world.gyojiPool.map((g) => (g.id === updatedGyoji.id ? updatedGyoji : g));
-      builder.updateWorldField("gyojiPool", updatedPool);
-    }
-  }
+  applyGyojiOfficiation(world, result, basho, builder);
 
   return { result, impact: builder.build() };
-}
-
-/**
- * Rank-pressure inference for NPC tactic selection.
- * Demotion pressure when make-koshi is confirmed/threatened late in the
- * basho; promotion pressure during a strong late-basho run.
- */
-function deriveRankPressure(
-  record: { wins: number; losses: number },
-  bashoDay: number
-): "demotion" | "promotion" | "neutral" {
-  if (bashoDay >= 12 && record.losses >= 7) return "demotion";
-  if (bashoDay >= 12 && record.wins >= 10) return "promotion";
-  return "neutral";
-}
-
-/**
- * Choose a contextual tactic for an NPC-controlled side via BoutAI.
- * Feeds chooseTactic with the side's record, rivalry heat, both rikishi's
- * fatigue, the acting heya's learned opponent model (seeded from public
- * history when absent), and rank pressure — all banded/public information.
- * RNG is seeded per bout+side so the draw stream is stable and isolated.
- */
-function chooseNpcSideTactic(
-  world: WorldState,
-  basho: BashoState,
-  bout: BoutContext,
-  side: Side,
-  rikishi: Rikishi,
-  opponent: Rikishi,
-  rivalryHeat: number
-): BoutTactic {
-  const record = basho.standings?.get(rikishi.id) ?? { wins: 0, losses: 0 };
-  const heya = rikishi.heyaId ? world.heyas?.get(rikishi.heyaId) : undefined;
-  const oyakata = heya?.oyakataId ? world.oyakata?.get(heya.oyakataId) : undefined;
-  const opponentModel =
-    (oyakata?.memory ? getOpponentModel(oyakata.memory, opponent.id) : undefined) ??
-    buildOpponentModel(opponent, world.week ?? 0);
-  const bashoDay = basho.day ?? bout.day ?? 1;
-  const ctx: BoutAIContext = {
-    rng: rngFromSeed(world.seed ?? "world", "boutAI", `${basho.id ?? "basho"}:${bout.id}:${side}`),
-    bashoDay,
-    cpuRecord: { wins: record.wins ?? 0, losses: record.losses ?? 0 },
-    rivalryHeat,
-    fatigue: rikishi.fatigue,
-    opponentFatigue: opponent.fatigue,
-    opponentModel,
-    rankPressure: deriveRankPressure(record, bashoDay),
-    heyaPosture: rikishi.heyaId
-      ? world.bashoNpcPosture?.[rikishi.heyaId]
-      : undefined,
-  };
-  return chooseTactic(rikishi, opponent, ctx);
 }
 
 /**

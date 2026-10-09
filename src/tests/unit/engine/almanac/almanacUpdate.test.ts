@@ -6,8 +6,11 @@ import type { WorldState } from "@/engine/types/world";
 import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
+let __id = 0;
+const nextId = () => ++__id;
+
 function makePbpLine(text: string, opts: Partial<PbpLine> = {}): PbpLine {
-  return { text, id: `l-${Math.random()}`, ...opts };
+  return { text, id: `l-${nextId()}`, ...opts };
 }
 
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {

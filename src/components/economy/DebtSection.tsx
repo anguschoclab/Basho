@@ -6,25 +6,11 @@
 
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Banknote } from "lucide-react";
-import { formatYen } from "@/utils/engineUtils";
-import { Button } from "@/components/ui/button";
-import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { AlertTriangle } from "lucide-react";
+import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
-
-interface Loan {
-  id: string;
-  type: string;
-  providerName: string;
-  amount: number;
-  interestRate: number;
-  dueWeek: number;
-  remainingBalance: number;
-  principal: number;
-  monthlyPayment: number;
-  stringsAttached?: string[];
-}
+import { LoanCard } from "./DebtSections";
+import { LOAN_SORT_OPTIONS, LOAN_ACCESSOR, type Loan } from "./debtMeta";
 
 interface DebtSectionProps {
   activeLoans: Loan[];
@@ -32,30 +18,13 @@ interface DebtSectionProps {
   onPrepay?: (loanId: string) => void;
 }
 
-const LOAN_SORT_OPTIONS: SortOption[] = [
-  { key: "remainingBalance", label: "Remaining" },
-  { key: "principal", label: "Principal" },
-  { key: "interestRate", label: "Interest" },
-  { key: "monthlyPayment", label: "Monthly" },
-  { key: "dueWeek", label: "Due Week" },
-  { key: "providerName", label: "Provider" },
-];
-
 export function DebtSection({ activeLoans, onPrepay }: DebtSectionProps) {
   const [sortKey, setSortKey] = useState<string>("remainingBalance");
   const [sortOrder, setSortOrder] = useState<SortDirection>("desc");
 
   const sortedLoans = useMemo(() => {
     if (!activeLoans || activeLoans.length === 0) return [];
-    const accessor: Record<string, (l: Loan) => string | number | undefined> = {
-      remainingBalance: (l) => l.remainingBalance,
-      principal: (l) => l.principal,
-      interestRate: (l) => l.interestRate,
-      monthlyPayment: (l) => l.monthlyPayment,
-      dueWeek: (l) => l.dueWeek,
-      providerName: (l) => l.providerName,
-    };
-    const fn = accessor[sortKey];
+    const fn = LOAN_ACCESSOR[sortKey];
     if (!fn) return activeLoans;
     return [...activeLoans].sort((a, b) => compareBy(a, b, fn, sortOrder));
   }, [activeLoans, sortKey, sortOrder]);
@@ -92,115 +61,7 @@ export function DebtSection({ activeLoans, onPrepay }: DebtSectionProps) {
       <CardContent className="pt-6">
         <div className="space-y-4">
           {sortedLoans.map((loan) => (
-            <div
-              key={loan.id}
-              className="p-4 rounded-lg bg-background/50 border border-destructive/10 space-y-3"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Badge variant="destructive" className="uppercase text-[10px]">
-                    {loan.type} Loan
-                  </Badge>
-                  <span className="font-bold">{loan.providerName}</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
-                    Remaining
-                  </div>
-                  <div className="text-lg font-bold">{formatYen(loan.remainingBalance)}</div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 text-center py-2 border-y border-border/30">
-                <div>
-                  <div className="text-[9px] text-muted-foreground uppercase font-bold">
-                    Principal
-                  </div>
-                  <div className="text-sm font-medium">{formatYen(loan.principal)}</div>
-                </div>
-                <div>
-                  <div className="text-[9px] text-muted-foreground uppercase font-bold">
-                    Interest
-                  </div>
-                  <div className="text-sm font-medium">{(loan.interestRate * 100).toFixed(1)}%</div>
-                </div>
-                <div>
-                  <div className="text-[9px] text-muted-foreground uppercase font-bold">
-                    Monthly
-                  </div>
-                  <div className="text-sm font-bold text-destructive">
-                    {formatYen(loan.monthlyPayment)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Payoff progress bar */}
-              {loan.principal > 0 && (
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase">
-                    <span>Payoff Progress</span>
-                    <span>
-                      {Math.round((1 - loan.remainingBalance / loan.principal) * 100)}% paid
-                    </span>
-                  </div>
-                  <div className="w-full h-2 bg-muted/40 rounded-full overflow-hidden">
-                    <div
-                      role="progressbar"
-                      aria-label={`Payoff progress for ${loan.providerName} loan`}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={Math.round(
-                        Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100)
-                      )}
-                      className="h-full bg-success rounded-full transition-all duration-500"
-                      style={{
-                        width: `${Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100)}%`,
-                      }}
-                    />
-                  </div>
-                  {loan.monthlyPayment > 0 && (
-                    <div className="text-[10px] text-muted-foreground">
-                      Est. payoff in{" "}
-                      <span className="font-bold text-foreground">
-                        {Math.ceil(loan.remainingBalance / (loan.monthlyPayment / 4.33))} weeks
-                      </span>{" "}
-                      at current monthly rate
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {onPrepay && loan.remainingBalance > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-[11px] font-bold uppercase tracking-wider border-success/30 text-success hover:bg-success/10"
-                  onClick={() => onPrepay(loan.id)}
-                >
-                  <Banknote className="h-3.5 w-3.5 mr-1.5" />
-                  Prepay remaining balance ({formatYen(loan.remainingBalance)})
-                </Button>
-              )}
-
-              {loan.stringsAttached && loan.stringsAttached.length > 0 && (
-                <div className="space-y-1.5">
-                  <div className="text-[9px] text-muted-foreground uppercase font-bold">
-                    Institutional Stipulations:
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {loan.stringsAttached.map((s: string) => (
-                      <Badge
-                        key={s}
-                        variant="outline"
-                        className="text-[9px] border-destructive/30 text-destructive bg-destructive/5 py-0"
-                      >
-                        {s.replace(/_/g, " ").toUpperCase()}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <LoanCard key={loan.id} loan={loan} onPrepay={onPrepay} />
           ))}
         </div>
       </CardContent>

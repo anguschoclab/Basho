@@ -13,7 +13,7 @@ import { SimTuningService, type TuningMetrics } from "./SimTuningService";
 import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
 import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
-import { getHeya, getRikishi } from "../queries";
+import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "../queries";
 import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 
 // === AUTO-SIM CONFIGURATION ===
@@ -307,20 +307,22 @@ export function checkStopCondition(
       hasPlayer &&
       config.playerHeyaId !== undefined &&
       getHeya(world, config.playerHeyaId)?.runwayBand === "desperate",
-    scandal: (_bashoResult, world) => {
-      const scandals = world.scandals ?? [];
-      const eventLogList = world.eventLog ?? [];
-      return (
-        scandals.some((s) => s.severity === "major" && s.year === world.year) ||
-        eventLogList.some((e) => e.type === "scandal")
-      );
-    },
+    scandal: (_bashoResult, world) =>
+      (world.events?.log ?? []).some(
+        (e) =>
+          e.year === world.year &&
+          e.category === "discipline" &&
+          e.data?.incident === "scandal_reported" &&
+          (e.data?.status === "major" || e.data?.status === "critical")
+      ),
     retirementOfStar: (_bashoResult, world) => {
-      const retirements = world.retirements ?? [];
-      return retirements.some((r) => {
-        const rikishi = getRikishi(world, r.rikishiId);
-        return rikishi && (RANK_HIERARCHY[rikishi.rank]?.tier ?? 999) <= 4;
-      });
+      // Full Rikishi entries in historicalRikishi retired this year;
+      // they are compacted to summaries at year-end.
+      for (const entry of world.historicalRikishi?.values() ?? []) {
+        if (isRetiredRikishiSummaryEntry(entry)) continue;
+        if ((RANK_HIERARCHY[entry.rank]?.tier ?? 999) <= 4) return true;
+      }
+      return false;
     },
     majorInjury: (bashoResult, world, config) => {
       const isMajorInjury = (r: Rikishi): boolean => {

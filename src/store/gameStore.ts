@@ -35,6 +35,8 @@ interface GameStoreState {
   error: string | null;
   /** User-visible notice for the most recently dropped command (mid-tick). */
   commandRejected: string | null;
+  /** Most recent per-phase tick timing trace emitted by the worker. */
+  lastPerfTrace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> | null;
   /** Whether to show the onboarding tour. */
   showTour: boolean;
   /** Reason for dismissing the tour (e.g., 'completed', 'skipped'). */
@@ -74,6 +76,125 @@ interface GameStoreState {
   checkTourTrigger: (world: WorldState) => void;
 }
 
+type StoreSet = (partial: Partial<GameStoreState>) => void;
+type StoreGet = () => GameStoreState;
+
+function initWorker(get: StoreGet, set: StoreSet) {
+  if (get().worker) return;
+
+  // Vite-native worker initialization
+  const worker = new Worker(new URL("../engine/worker/engine.worker.ts", import.meta.url), {
+    type: "module",
+  });
+
+  // A catastrophic worker failure (uncaught exception, module load error)
+  // never posts an ERROR event — without onerror, pendingTick stays true
+  // forever and every subsequent command is silently dropped.
+  const onWorkerFailure = (message: string) =>
+    set({
+      error: message,
+      isSimulating: false,
+      pendingTick: false,
+      progress: null,
+    });
+  worker.onerror = (event) => {
+    onWorkerFailure(
+      `Simulation worker crashed: ${event.message || "unknown error"}`
+    );
+  };
+  worker.onmessageerror = () => {
+    onWorkerFailure("Simulation worker returned an unreadable message");
+  };
+
+  worker.onmessage = (event: MessageEvent<EngineEvent>) => {
+    const data = event.data;
+
+    switch (data.type) {
+      case "READY":
+        break;
+      case "TICK_COMPLETED":
+        set({
+          digest: data.digest,
+          digestRevision: data.digestRevision ?? get().digestRevision + 1,
+          isSimulating: false,
+          simPaused: false,
+          progress: null,
+          pendingTick: false,
+        });
+        break;
+      case "DIGEST_UPDATED":
+        set({
+          digest: data.digest,
+          digestRevision: data.digestRevision ?? get().digestRevision + 1,
+        });
+        break;
+      case "WORLD_UPDATED":
+        set({
+          workerWorld: data.world,
+          worldVersion: data.version ?? get().worldVersion + 1,
+          pendingTick: false,
+        });
+        get().onWorldUpdated?.(data.world);
+        get().checkTourTrigger(data.world);
+        break;
+      case "PROGRESS":
+        set({ progress: { message: data.message, current: data.current, total: data.total } });
+        break;
+      case "ERROR":
+        set({ error: data.message, isSimulating: false, pendingTick: false });
+        break;
+      case "PERF_TRACE":
+        set({ lastPerfTrace: data.trace });
+        break;
+    }
+  };
+
+  set({ worker });
+}
+
+function sendCommand(get: StoreGet, set: StoreSet, command: EngineCommand): boolean {
+  const { worker, pendingTick } = get();
+
+  // B4.1.3: Reject ALL commands while a tick is in progress.
+  // Previously only tick commands were blocked, but non-tick commands
+  // (OFFER_CONTRACT, BUY_MYOSEKI, etc.) could interleave with async
+  // TICK_MULTIPLE_DAYS loops via the worker's await yield point.
+  // Exception: PAUSE_SIM/RESUME_SIM MUST pass through — they are the
+  // mechanism by which a running multi-day loop is interrupted, and the
+  // worker reads simPaused only at the loop top between day ticks.
+  const isPauseControl = command.type === "PAUSE_SIM" || command.type === "RESUME_SIM";
+  if (pendingTick && !isPauseControl) {
+    const notice = `Command "${command.type}" dropped - tick in progress`;
+    warn(notice, "Store");
+    // Surface the drop so the UI can render it — a silent console.warn is
+    // how the mid-tick LOAD_WORLD revert went unnoticed.
+    set({ commandRejected: notice });
+    return false;
+  }
+
+  if (!worker) {
+    initWorker(get, set);
+  }
+
+  // Some commands imply simulation start
+  if (command.type === "TICK_MULTIPLE_DAYS") {
+    set({ isSimulating: true, error: null, pendingTick: true });
+  } else if (command.type === "TICK_DAY") {
+    set({ pendingTick: true });
+  } else if (command.type === "PAUSE_SIM") {
+    set({ simPaused: true });
+  } else if (command.type === "RESUME_SIM") {
+    set({ simPaused: false });
+  } else if (command.type === "GO_ON_HOLIDAY") {
+    // GO_ON_HOLIDAY advances the sim on the worker thread; serialize it so
+    // repeated clicks can't interleave with the holiday advance loop.
+    set({ isSimulating: true, error: null, pendingTick: true });
+  }
+
+  get().worker?.postMessage(command);
+  return true;
+}
+
 export const useGameStore = create<GameStoreState>((set, get) => ({
   digest: null,
   digestRevision: 0,
@@ -85,123 +206,14 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   progress: null,
   error: null,
   commandRejected: null,
+  lastPerfTrace: null,
   showTour: false,
   dismissedTourReason: null,
   worker: null,
   onWorldUpdated: null,
 
-  initWorker: () => {
-    if (get().worker) return;
-
-    // Vite-native worker initialization
-    const worker = new Worker(new URL("../engine/worker/engine.worker.ts", import.meta.url), {
-      type: "module",
-    });
-
-    // A catastrophic worker failure (uncaught exception, module load error)
-    // never posts an ERROR event — without onerror, pendingTick stays true
-    // forever and every subsequent command is silently dropped.
-    const onWorkerFailure = (message: string) =>
-      set({
-        error: message,
-        isSimulating: false,
-        pendingTick: false,
-        progress: null,
-      });
-    worker.onerror = (event) => {
-      onWorkerFailure(
-        `Simulation worker crashed: ${event.message || "unknown error"}`
-      );
-    };
-    worker.onmessageerror = () => {
-      onWorkerFailure("Simulation worker returned an unreadable message");
-    };
-
-    worker.onmessage = (event: MessageEvent<EngineEvent>) => {
-      const data = event.data;
-
-      switch (data.type) {
-        case "READY":
-          break;
-        case "TICK_COMPLETED":
-          set({
-            digest: data.digest,
-            digestRevision: data.digestRevision ?? get().digestRevision + 1,
-            isSimulating: false,
-            simPaused: false,
-            progress: null,
-            pendingTick: false,
-          });
-          break;
-        case "DIGEST_UPDATED":
-          set({
-            digest: data.digest,
-            digestRevision: data.digestRevision ?? get().digestRevision + 1,
-          });
-          break;
-        case "WORLD_UPDATED":
-          set({
-            workerWorld: data.world,
-            worldVersion: data.version ?? get().worldVersion + 1,
-            pendingTick: false,
-          });
-          get().onWorldUpdated?.(data.world);
-          get().checkTourTrigger(data.world);
-          break;
-        case "PROGRESS":
-          set({ progress: { message: data.message, current: data.current, total: data.total } });
-          break;
-        case "ERROR":
-          set({ error: data.message, isSimulating: false, pendingTick: false });
-          break;
-      }
-    };
-
-    set({ worker });
-  },
-
-  sendCommand: (command: EngineCommand) => {
-    const { worker, initWorker, pendingTick } = get();
-
-    // B4.1.3: Reject ALL commands while a tick is in progress.
-    // Previously only tick commands were blocked, but non-tick commands
-    // (OFFER_CONTRACT, BUY_MYOSEKI, etc.) could interleave with async
-    // TICK_MULTIPLE_DAYS loops via the worker's await yield point.
-    // Exception: PAUSE_SIM/RESUME_SIM MUST pass through — they are the
-    // mechanism by which a running multi-day loop is interrupted, and the
-    // worker reads simPaused only at the loop top between day ticks.
-    const isPauseControl = command.type === "PAUSE_SIM" || command.type === "RESUME_SIM";
-    if (pendingTick && !isPauseControl) {
-      const notice = `Command "${command.type}" dropped - tick in progress`;
-      warn(notice, "Store");
-      // Surface the drop so the UI can render it — a silent console.warn is
-      // how the mid-tick LOAD_WORLD revert went unnoticed.
-      set({ commandRejected: notice });
-      return false;
-    }
-
-    if (!worker) {
-      initWorker();
-    }
-
-    // Some commands imply simulation start
-    if (command.type === "TICK_MULTIPLE_DAYS") {
-      set({ isSimulating: true, error: null, pendingTick: true });
-    } else if (command.type === "TICK_DAY") {
-      set({ pendingTick: true });
-    } else if (command.type === "PAUSE_SIM") {
-      set({ simPaused: true });
-    } else if (command.type === "RESUME_SIM") {
-      set({ simPaused: false });
-    } else if (command.type === "GO_ON_HOLIDAY") {
-      // GO_ON_HOLIDAY advances the sim on the worker thread; serialize it so
-      // repeated clicks can't interleave with the holiday advance loop.
-      set({ isSimulating: true, error: null, pendingTick: true });
-    }
-
-    get().worker?.postMessage(command);
-    return true;
-  },
+  initWorker: () => initWorker(get, set),
+  sendCommand: (command: EngineCommand) => sendCommand(get, set, command),
 
   setDigest: (digest) => set({ digest }),
   setSimulating: (isSimulating) => set({ isSimulating }),

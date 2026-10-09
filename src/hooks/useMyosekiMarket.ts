@@ -50,23 +50,23 @@ export function useMyosekiMarket() {
   const handleBuy = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    sendCommand({
+    if (!sendCommand({
       type: "BUY_MYOSEKI",
       myosekiId: stock.id,
       buyerId: playerHeya.oyakataId,
       buyerHeyaId: playerHeya.id,
-    });
+    })) return;
     toast.success(`Acquisition request for ${stock.name} submitted.`);
   };
 
   const handleLease = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    sendCommand({
+    if (!sendCommand({
       type: "LEASE_MYOSEKI",
       myosekiId: stock.id,
       buyerId: playerHeya.oyakataId,
-    });
+    })) return;
     toast.success(`Lease request for ${stock.name} submitted.`);
   };
 

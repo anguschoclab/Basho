@@ -130,6 +130,27 @@ describe("L4.9: save/load integrity — field parity", () => {
     ).toEqual([]);
   });
 
+  it("every serialized field is read back by deserializeWorld (read-side parity)", () => {
+    const world = makeMockWorld();
+    const serialized = SerializationService.serializeWorld(world);
+    const loaded = SerializationService.deserializeWorld(
+      JSON.parse(JSON.stringify(serialized))
+    ) as unknown as Record<string, unknown>;
+
+    // Any field serializeWorld writes but deserializeWorld never reads would
+    // silently drop to undefined on load — the read-side twin of the
+    // write-side parity check above. Only fields that actually carried a
+    // serialized value can be checked; `undefined` fields strip from JSON.
+    const serializedRecord = serialized as unknown as Record<string, unknown>;
+    const dropped = Object.keys(serializedRecord).filter(
+      (k) => serializedRecord[k] !== undefined && loaded[k] === undefined
+    );
+    expect(
+      dropped,
+      `Serialized fields dropped by deserializeWorld: ${dropped.join(", ")}`
+    ).toEqual([]);
+  });
+
   it("round-trips calendar, phase counters, era drift and player knowledge", () => {
     const world = makeMockWorld();
     world.calendar = { currentWeek: 7, month: 3, currentDay: 4 };

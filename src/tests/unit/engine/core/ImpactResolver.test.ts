@@ -8,30 +8,21 @@ import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "../utils";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("ImpactResolver", () => {
   let world: WorldState;
 
   beforeEach(() => {
-    world = {
+    world = MockFactory.createWorld({
       id: "world-1",
       seed: "test-seed",
       year: 2025,
       week: 1,
       dayIndexGlobal: 0,
       cyclePhase: "interim",
-      heyas: new Map(),
-      rikishi: new Map(),
-      historicalRikishi: new Map(),
-      activeRikishiIds: new Set(),
-      oyakata: new Map(),
-      events: { version: "1.0.0", log: [], dedupe: {} },
-      history: [],
-      ftue: {} as any,
-      calendar: { month: 1, currentWeek: 1, currentDay: 1 },
-      records: {} as any,
-      settings: { archiveMode: "standard" },
-    } as unknown as WorldState;
+      calendar: { month: 1, currentWeek: 1, currentDay: 1 } as WorldState["calendar"],
+    });
   });
 
   describe("resolveImpacts", () => {

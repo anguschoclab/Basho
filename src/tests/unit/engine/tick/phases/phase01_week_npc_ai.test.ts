@@ -293,6 +293,52 @@ describe("phase01_week_npc_ai mentorship", () => {
   });
 });
 
+describe("phase01_week_npc_ai perceptionCache", () => {
+  it("writes a perception snapshot for each processed NPC heya", () => {
+    const oyakata = MockFactory.createOyakata("o1", { heyaId: "h1" });
+    const heya = MockFactory.createHeya("h1", {
+      rikishiIds: [],
+      oyakataId: "o1",
+    });
+
+    const world = makeMockWorld({
+      rikishi: new Map(),
+      heyas: new Map([["h1", heya]]),
+      oyakata: new Map([["o1", oyakata]]),
+      playerHeyaId: "player",
+      lineage: [],
+      rivalriesState: { pairs: {}, version: "1.0.0" } as any,
+    });
+
+    const impact = phase01_week_npc_ai(world);
+    expect(impact.worldFields?.perceptionCache?.["h1"]).toBeDefined();
+  });
+
+  it("merges new snapshots over the existing cache", () => {
+    const oyakata = MockFactory.createOyakata("o1", { heyaId: "h1" });
+    const heya = MockFactory.createHeya("h1", {
+      rikishiIds: [],
+      oyakataId: "o1",
+    });
+    const stale = { heyaId: "stale-heya", computedYear: 1 } as any;
+
+    const world = makeMockWorld({
+      rikishi: new Map(),
+      heyas: new Map([["h1", heya]]),
+      oyakata: new Map([["o1", oyakata]]),
+      playerHeyaId: "player",
+      lineage: [],
+      rivalriesState: { pairs: {}, version: "1.0.0" } as any,
+      perceptionCache: { "stale-heya": stale },
+    });
+
+    const impact = phase01_week_npc_ai(world);
+    const cache = impact.worldFields?.perceptionCache;
+    expect(cache?.["stale-heya"]).toBe(stale);
+    expect(cache?.["h1"]).toBeDefined();
+  });
+});
+
 describe("phase01_week_npc_ai sparring", () => {
   it("assigns highest scoring pairs first and respects existing pairs", () => {
     // a1 and a2 will have best score due to power gap

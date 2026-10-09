@@ -7,5 +7,13 @@ disable-model-invocation: true
 Run the simulation sanity suite (from the repository root):
 
 ```bash
-bun test -- --run src/engine/__tests__/engine.worker.test.ts src/engine/__tests__/lifecycle.test.ts src/engine/__tests__/matchmaking.test.ts
+bun run test -- src/tests/unit/engine/lifecycle src/tests/unit/engine/matchmaking src/tests/unit/engine/worker
 ```
+
+Or run the whole fast unit suite:
+
+```bash
+bun run test
+```
+
+NOTE: `bun test` invokes Bun's native test runner — it does NOT run vitest. Always use `bun run test` or `bunx vitest run`.

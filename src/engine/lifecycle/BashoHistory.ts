@@ -1,13 +1,13 @@
 import { buildAlmanacSnapshot } from "../almanac";
 import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
 import { safeCall } from "../utils/safe";
-import { rngForWorld } from "../rng";
+import { rngForWorld, type SeededRNG } from "../rng";
 import { opfsArchiveService } from "../storage/opfsArchive";
 import { electronArchiveService } from "../storage/electronArchive";
 import type { WorldState } from "../types/world";
 import type { BashoState, BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
 import type { Id } from "../types/common";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import { createImpactBuilder, ImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
@@ -16,21 +16,12 @@ import { getRikishi } from "../queries";
 import { selectKeyBouts } from "../../presenters/projections/recapProjections";
 import { applyBashoTenure } from "../systems/legacy/tenure";
 
-export function recordBashoHistory(
-  world: WorldState,
-  basho: BashoState,
-  yusho: Id,
-  topCandidates: Id[],
-  playoffMatches: MatchSchedule[],
-  prizes: SpecialPrizesResult,
-  bestWins: number
-): StateImpact {
-  const builder = createImpactBuilder("recordBashoHistory");
+// ─── Prize credits ───────────────────────────────────────────────────────────
 
-  const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
-
-  // Credit yusho prize to rikishi economics (JSA model: paid directly to rikishi)
-  // Per-division yusho prizes (2027 JSA revision)
+/** Credit yusho prize to rikishi economics (JSA model: paid directly to
+ *  rikishi). Per-division yusho prizes (2027 JSA revision). Returns the
+ *  resolved yusho prize amount. */
+function creditYushoPrize(world: WorldState, yusho: Id, builder: ImpactBuilder): number {
   const yushoRikishi = getRikishi(world, yusho);
   let yushoPrize = SIMULATION_CONFIG.prizes.yusho;
   if (yushoRikishi) {
@@ -60,9 +51,11 @@ export function recordBashoHistory(
       },
     });
   }
+  return yushoPrize;
+}
 
-  // Credit jun-yusho prizes to rikishi economics
-  const junYushoIds = topCandidates.filter((id) => id !== yusho);
+/** Credit jun-yusho prizes to rikishi economics. */
+function creditJunYushoPrizes(world: WorldState, junYushoIds: Id[], builder: ImpactBuilder): void {
   for (const junYushoId of junYushoIds) {
     const junRikishi = getRikishi(world, junYushoId);
     if (junRikishi) {
@@ -89,7 +82,20 @@ export function recordBashoHistory(
       });
     }
   }
+}
 
+// ─── BashoResult construction ────────────────────────────────────────────────
+
+function buildBashoResult(
+  rng: SeededRNG,
+  world: WorldState,
+  basho: BashoState,
+  yusho: Id,
+  junYushoIds: Id[],
+  playoffMatches: MatchSchedule[],
+  prizes: SpecialPrizesResult,
+  yushoPrize: number
+): BashoResult {
   const result: BashoResult = {
     id: rng.uuid("HI"),
     year: world.year,
@@ -130,10 +136,28 @@ export function recordBashoHistory(
     }));
   }
 
-  builder.appendToWorldArray("history", [result]);
+  return result;
+}
 
-  // --- Persist award log entries ---
-  const newAwardEntries: AwardLogEntry[] = [
+// ─── Award log ───────────────────────────────────────────────────────────────
+
+function buildAwardLogEntries(
+  world: WorldState,
+  basho: BashoState,
+  yusho: Id,
+  junYushoIds: Id[],
+  prizes: SpecialPrizesResult,
+  result: BashoResult
+): AwardLogEntry[] {
+  // --- Bout of the Basho excitement was resolved in buildBashoResult; the
+  // award entry needs the same score, so re-derive it from basho.matches ---
+  let topExcitement = -1;
+  if (result.boutOfTheBasho) {
+    const bout = basho.matches.find((m) => m.boutId === result.boutOfTheBasho);
+    topExcitement = bout?.result?.excitementScore ?? -1;
+  }
+
+  return [
     { bashoName: basho.bashoName, year: world.year, type: "yusho", winnerId: yusho },
     ...junYushoIds.map((id) => ({
       bashoName: basho.bashoName,
@@ -171,21 +195,24 @@ export function recordBashoHistory(
           },
         ]
       : []),
-    ...(boutOfTheBasho
+    ...(result.boutOfTheBasho
       ? [
           {
             bashoName: basho.bashoName,
             year: world.year,
             type: "boutOfTheBasho" as const,
             winnerId: yusho,
-            boutId: boutOfTheBasho,
+            boutId: result.boutOfTheBasho,
             excitementScore: topExcitement,
           },
         ]
       : []),
   ];
-  builder.appendToWorldArray("awardLog", newAwardEntries);
+}
 
+// ─── Archival ────────────────────────────────────────────────────────────────
+
+function archiveBasho(world: WorldState, basho: BashoState, builder: ImpactBuilder): void {
   safeCall(() => {
     const snapshot = buildAlmanacSnapshot(world);
     if (snapshot) {
@@ -216,16 +243,26 @@ export function recordBashoHistory(
       historyCache.getYear(world.year);
     });
   });
+}
 
+// ─── End-of-basho events + state transitions ─────────────────────────────────
+
+function emitBashoEndEvents(
+  world: WorldState,
+  basho: BashoState,
+  yusho: Id,
+  yushoRikishi: ReturnType<typeof getRikishi>,
+  bestWins: number,
+  builder: ImpactBuilder
+): void {
   // Post-basho resolution is now called by endBasho() after applying all impacts
-  const yushoRikishiForLog = getRikishi(world, yusho);
   builder.logEvent(
     "BASHO_STATUS",
     "basho",
     {
       status: "ended",
       incident: basho.bashoName,
-      winner: yushoRikishiForLog?.shikona || "Unknown",
+      winner: yushoRikishi?.shikona || "Unknown",
       winnerId: yusho,
       rikishiId: yusho,
     },
@@ -254,7 +291,7 @@ export function recordBashoHistory(
     {
       status: "concluded_summary",
       incident: basho.bashoName,
-      shikona: yushoRikishiForLog?.shikona || "Unknown",
+      shikona: yushoRikishi?.shikona || "Unknown",
       rikishiId: yusho,
       score: bestWins,
       delta: 15 - bestWins,
@@ -264,6 +301,45 @@ export function recordBashoHistory(
 
   builder.updateWorldField("cyclePhase", "post_basho");
   builder.updateWorldField("_postBashoDays", 7);
+}
+
+export function recordBashoHistory(
+  world: WorldState,
+  basho: BashoState,
+  yusho: Id,
+  topCandidates: Id[],
+  playoffMatches: MatchSchedule[],
+  prizes: SpecialPrizesResult,
+  bestWins: number
+): StateImpact {
+  const builder = createImpactBuilder("recordBashoHistory");
+
+  const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
+
+  const yushoPrize = creditYushoPrize(world, yusho, builder);
+  const junYushoIds = topCandidates.filter((id) => id !== yusho);
+  creditJunYushoPrizes(world, junYushoIds, builder);
+
+  const result = buildBashoResult(
+    rng,
+    world,
+    basho,
+    yusho,
+    junYushoIds,
+    playoffMatches,
+    prizes,
+    yushoPrize
+  );
+
+  builder.appendToWorldArray("history", [result]);
+  builder.appendToWorldArray(
+    "awardLog",
+    buildAwardLogEntries(world, basho, yusho, junYushoIds, prizes, result)
+  );
+
+  archiveBasho(world, basho, builder);
+
+  emitBashoEndEvents(world, basho, yusho, getRikishi(world, yusho), bestWins, builder);
 
   // Phase L: Institutional Depth - Check for Yokozuna Deliberations
   checkYokozunaPromotions(world, builder);

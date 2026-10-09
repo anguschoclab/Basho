@@ -30,6 +30,7 @@ import { BardEngine } from "../bard/BardEngine";
 import { rngForWorld } from "../rng";
 import { getMemory } from "./MemoryStore";
 import { issueBailoutLoanIfNeeded } from "../loans";
+import { FACTION_BAILOUT_AMOUNT } from "../../constants/engine/economic";
 
 /** Minimum weeks between executions of the same domain for one heya. */
 const DOMAIN_COOLDOWN_WEEKS: Record<string, number> = {
@@ -368,10 +369,43 @@ export function applyCrisisRescue(
   menu: "sponsor_drive" | "bailout_loan" | "faction_appeal"
 ): void {
   if (menu === "bailout_loan") {
-    builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
+    const loanImpact = issueBailoutLoanIfNeeded(world, heya.id);
+    builder.merge(loanImpact);
+    // Dead band: the formal loan only issues below LOAN_ISSUANCE_THRESHOLD
+    // (-5M). A desperate stable in the [-5M, warn-line] band gets nothing,
+    // which is how insolvency WARNs recurred yearly with no rescue. The NPC
+    // rescue path exists precisely to catch stables before terminal debt, so
+    // cover the gap with a scaled association bridge grant.
+    const loanIssued = (loanImpact.entities?.heyaUpdates?.size ?? 0) > 0;
+    if (!loanIssued) {
+      const grant = Math.min(
+        FACTION_BAILOUT_AMOUNT,
+        Math.max(2_000_000, -heya.funds + 2_000_000)
+      );
+      builder.updateHeya(heya.id, { funds: heya.funds + grant });
+      builder.logEvent(
+        "FINANCIAL_ALERT",
+        "economy",
+        {
+          incident: "association_bridge_grant",
+          heyaId: heya.id,
+          money: grant,
+          reason: "Association bridge grant covers the operating deficit.",
+          status: heya.runwayBand,
+        },
+        { heyaId: heya.id, importance: "notable" }
+      );
+    }
     return;
   }
   if (menu === "faction_appeal") {
+    // Ichimon benefactor support — a real injection, not just a press release.
+    // Carries governance scrutiny (same terms as a supporter loan).
+    builder.updateHeya(heya.id, {
+      funds: heya.funds + FACTION_BAILOUT_AMOUNT,
+      reputation: Math.max(0, (heya.reputation ?? 50) - 10),
+      scandalScore: Math.min(100, (heya.scandalScore ?? 0) + 10),
+    });
     builder.logEvent(
       "GOVERNANCE_RULING",
       "economy",
@@ -379,6 +413,7 @@ export function applyCrisisRescue(
         incident: "faction_appeal",
         heyaId: heya.id,
         heyaname: heya.name,
+        money: FACTION_BAILOUT_AMOUNT,
         reason: "Stable appeals to its ichimon for emergency support.",
         status: heya.runwayBand,
       },

@@ -6,8 +6,11 @@ import {
 } from "@/engine/bout/boutNarrative";
 import type { BoutResult } from "@/engine/types/basho";
 
+let __id = 0;
+const nextId = () => ++__id;
+
 function makeLine(text: string, opts: Partial<PbpLine> = {}): PbpLine {
-  return { text, id: `line-${Math.random()}`, ...opts };
+  return { text, id: `line-${nextId()}`, ...opts };
 }
 
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {

@@ -1,0 +1,188 @@
+/**
+ * CalendarWidgetSections.tsx
+ *
+ * Calendar widget body sections — date display, basho day progress bar,
+ * next-basho seasonal note, and the phase-dependent action buttons.
+ */
+
+import { Button } from "@/components/ui/button";
+import { FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward } from "lucide-react";
+import type { BashoName } from "@/engine/types/basho";
+import { BASHO_CALENDAR, getSeasonalFlavor } from "@/presenters/uiDigest";
+import { BASHO_NAMES } from "@/constants/ui/calendar";
+import type { WorldState } from "@/presenters/uiDigest";
+
+/** Date display — basho name + year, week number, basho day. */
+export function CalendarDateBlock({
+  world,
+  bashoName,
+  inBasho,
+}: {
+  world: WorldState;
+  bashoName: string;
+  inBasho: boolean;
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="font-display text-2xl font-bold leading-tight">
+        {bashoName.charAt(0).toUpperCase() + bashoName.slice(1)} {world.year}
+      </div>
+      <div className="text-sm text-muted-foreground">
+        Week {world.calendar?.currentWeek ?? world.week}
+        {inBasho && world.currentBasho && (
+          <span className="ml-2 font-medium text-foreground">
+            · Day {world.currentBasho.day}
+            <span className="font-display text-xs ml-0.5">日目</span>
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Basho day progress bar (Day 1 → 千秋楽 Day 15). */
+export function BashoDayProgress({ bashoDay }: { bashoDay: number }) {
+  const dayProgress = bashoDay > 0 ? (bashoDay / 15) * 100 : 0;
+
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-[10px] text-muted-foreground">
+        <span>Day 1</span>
+        <span>千秋楽 Day 15</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+        <div
+          role="progressbar"
+          aria-valuenow={bashoDay}
+          aria-valuemin={1}
+          aria-valuemax={15}
+          aria-label="Tournament day progress"
+          className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+          style={{ width: `${dayProgress}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Next basho indicator with seasonal flavor text. */
+export function NextBashoNote({
+  world,
+  bashoName,
+}: {
+  world: WorldState;
+  bashoName: string;
+}) {
+  const info = BASHO_CALENDAR[bashoName as BashoName];
+  const season = info?.season;
+  const flavorText = season ? getSeasonalFlavor(season, world.seed) : null;
+
+  return (
+    <div className="space-y-0.5">
+      <div className="text-xs text-muted-foreground">
+        Next:{" "}
+        <span className="font-medium text-foreground">
+          {BASHO_NAMES[bashoName] || bashoName} Basho
+        </span>
+        {info?.location && <span className="ml-1 opacity-70">· {info.location}</span>}
+      </div>
+      {flavorText && (
+        <p className="text-[10px] text-muted-foreground/60 italic leading-relaxed">
+          {flavorText}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export interface CalendarActionHandlers {
+  handleAdvanceDay: () => void;
+  handleAdvanceWeek: () => void;
+  handleSimDay: () => void;
+  handleSimFullBasho: () => void;
+  navToSchedule: () => void;
+  navToBasho: () => void;
+}
+
+/** Phase-dependent action buttons — interim advance vs basho sim/nav. */
+export function CalendarActions({
+  inBasho,
+  handlers,
+}: {
+  inBasho: boolean;
+  handlers: CalendarActionHandlers;
+}) {
+  const {
+    handleAdvanceDay,
+    handleAdvanceWeek,
+    handleSimDay,
+    handleSimFullBasho,
+    navToSchedule,
+    navToBasho,
+  } = handlers;
+
+  return (
+    <div className="flex flex-wrap gap-1.5 pt-1">
+      {!inBasho ? (
+        <>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleAdvanceDay}
+            className="gap-1.5 h-7 text-xs"
+            tooltip="Advance the simulation by one day"
+          >
+            <ArrowRight className="h-3 w-3" /> Day
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleAdvanceWeek}
+            className="gap-1.5 h-7 text-xs"
+            tooltip="Progress simulation by one full week of interim training"
+          >
+            <Repeat className="h-3 w-3" /> Week
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            size="sm"
+            onClick={handleSimDay}
+            className="gap-1.5 h-7 text-xs"
+            tooltip="Simulate all bouts for the current tournament day"
+          >
+            <FastForward className="h-3 w-3" /> Sim Day
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleSimFullBasho}
+            className="gap-1.5 h-7 text-xs"
+            tooltip="Automatically simulate the remainder of the tournament"
+          >
+            <SkipForward className="h-3 w-3" /> Sim All
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={navToSchedule}
+            className="gap-1.5 h-7 text-xs"
+            tooltip="View full tournament schedule"
+          >
+            <Calendar className="h-3 w-3" /> Schedule
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={navToBasho}
+            className="gap-1.5 h-7 text-xs"
+            tooltip="View tournament leaderboard and results"
+          >
+            <ChevronRight className="h-3 w-3" /> Basho
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}

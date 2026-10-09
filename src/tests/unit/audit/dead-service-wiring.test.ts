@@ -16,19 +16,19 @@ const ROOT = join(__dirname, "../../../..");
 
 describe("GyojiService — bout resolver wiring", () => {
   it("assignGyojiToBout is imported and called by boutResolver", () => {
-    const file = readSrcFile("engine/bout/boutResolver.ts");
+    const file = readSrcFile("engine/bout/resolution/gyoji.ts");
     expect(file).toContain("assignGyojiToBout");
     expect(file).toMatch(/assignGyojiToBout\s*\(/);
   });
 
   it("recordGyojiBout is imported and called by boutResolver", () => {
-    const file = readSrcFile("engine/bout/boutResolver.ts");
+    const file = readSrcFile("engine/bout/resolution/gyoji.ts");
     expect(file).toContain("recordGyojiBout");
     expect(file).toMatch(/recordGyojiBout\s*\(/);
   });
 
   it("GyojiService is imported from the correct path", () => {
-    const file = readSrcFile("engine/bout/boutResolver.ts");
+    const file = readSrcFile("engine/bout/resolution/gyoji.ts");
     expect(file).toMatch(/from\s+["'].*GyojiService["']/);
   });
 });
@@ -52,13 +52,13 @@ describe("GomenfudaService — health phase wiring", () => {
 
 describe("KachiNokoriService — CompetitionService wiring", () => {
   it("calculateKachiNokori is imported and called by CompetitionService", () => {
-    const file = readSrcFile("engine/lifecycle/CompetitionService.ts");
+    const file = readSrcFile("engine/lifecycle/concludeBasho.ts");
     expect(file).toContain("calculateKachiNokori");
     expect(file).toMatch(/calculateKachiNokori\s*\(/);
   });
 
   it("KachiNokoriService is imported from the correct path", () => {
-    const file = readSrcFile("engine/lifecycle/CompetitionService.ts");
+    const file = readSrcFile("engine/lifecycle/concludeBasho.ts");
     expect(file).toMatch(/from\s+["'].*KachiNokoriService["']/);
   });
 });

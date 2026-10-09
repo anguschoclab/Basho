@@ -143,6 +143,7 @@ export type WritableWorldFields = Pick<
   | "bashoNpcPosture"
   | "currentBanzuke"
   | "historyIndex"
+  | "perceptionCache"
 >;
 
 /**

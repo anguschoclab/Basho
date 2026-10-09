@@ -61,7 +61,6 @@ describe("EraDriftService tactical-family grouping", () => {
       mediaState: {
         heyaPressure: {},
         mediaHeat: {},
-        globalBuzz: 0,
         headlines: [],
         pressConferenceActive: false,
       } as never,

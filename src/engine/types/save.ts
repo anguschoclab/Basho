@@ -142,13 +142,11 @@ export interface SerializedWorldState {
   // ── Institutional / governance ──────────────────────────────────────────
   governanceLog?: WorldState["governanceLog"];
   factions?: WorldState["factions"];
-  scandals?: WorldState["scandals"];
   gyojiPool?: WorldState["gyojiPool"];
   shimpanPool?: WorldState["shimpanPool"];
 
   // ── Long-horizon career state ───────────────────────────────────────────
   awardLog?: WorldState["awardLog"];
-  retirements?: WorldState["retirements"];
   bloodlineRegistry?: WorldState["bloodlineRegistry"];
   yokozunaVacancyStreak?: number;
   planetRating?: number;
@@ -167,9 +165,7 @@ export interface SerializedWorldState {
   pendingRikishiRequests?: WorldState["pendingRikishiRequests"];
   pendingExhibitions?: WorldState["pendingExhibitions"];
   matchmakingOverride?: WorldState["matchmakingOverride"];
-  activeBasho?: WorldState["activeBasho"];
   lastBoutResult?: WorldState["lastBoutResult"];
-  eventLog?: WorldState["eventLog"];
 
   // ── NPC & scheduling internals ──────────────────────────────────────────
   npcScoutingPriorities?: WorldState["npcScoutingPriorities"];

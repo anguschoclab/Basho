@@ -63,9 +63,9 @@ Run many seeds, assert direction AND magnitude (e.g. ALL_OUT win% > STANDARD > D
 
 ### 4. Run the full suite, the build, and determinism greps
 ```bash
-npx vitest run                                   # FULL suite, not just changed files (NOT `bun test -- --run`)
-npx vite build                                   # production build compiles
-npx tsc --build --force                          # type-check (root `tsc --noEmit` is a no-op here)
+bun run test                                     # FULL suite, not just changed files (NOT `bun test` — that is Bun's native runner, not vitest)
+bun run build                                    # production build compiles
+bun run type-check                               # type-check (root `tsc --noEmit` is a no-op here)
 grep -rn "Math.random\|Date.now" src/engine     # must be empty in engine code
 ```
 For any new seeded code, confirm no choice/tactic/decision value is concatenated into a seed string (grep the seed construction site).
@@ -93,7 +93,7 @@ Be brutally honest and specific. Structure:
 Quote evidence verbatim (`expected 0.48 to be greater than 0.48`, `1291/1291 pass`, `grep ... → no output`). Vague praise and vague criticism are equally useless.
 
 ## This repo's quick reference
-- Tests: `npx vitest run` (jsdom). Mock factory: `src/tests/unit/engine/utils.ts` (`mockRikishi`, `makeMockBasho`). Engine mock helpers also in `src/engine/__tests__/utils.ts`.
+- Tests: `bun run test` (vitest, jsdom). Mock factories: `src/tests/helpers/utils/MockFactory.ts` (primary) and `src/tests/unit/engine/utils.ts` (`mockRikishi`, `makeMockBasho`).
 - Canonical command path: worker (`src/engine/worker/engine.worker.ts` + `types.ts`), dispatched via `useGameStore(s => s.sendCommand)`. Reducer slices are legacy/UI-state + the synchronous bout path.
 - Mutations go through `ImpactBuilder` (`src/engine/core/ImpactBuilder.ts`) + `resolveImpacts`. RNG: `rngForWorld` / `rngFromSeed` / `RNGRegistry` (`src/engine/rng.ts`) — never `Math.random`.
 - Autonomous runs (`runAutoSim`, `runHoliday`) set `world._autonomousSim`; behavior there can diverge from interactive play — verify both modes when a change touches the tick/decision loop.

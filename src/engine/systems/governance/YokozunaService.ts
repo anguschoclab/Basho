@@ -8,11 +8,11 @@
 import { WorldState } from "../../types/world";
 import type { Rikishi } from "../../types/rikishi";
 import type { BashoPerformance } from "../../types/banzuke";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { getRikishi } from "../../queries";
 import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed } from "../../rng";
+import { rngFromSeed, type SeededRNG } from "../../rng";
 
 const YDC_CHAIRMAN_SURNAMES = [
   "Hanzawa",
@@ -55,317 +55,306 @@ export interface YDCCandidate {
   reasons: string[];
 }
 
-export const YokozunaService = {
-  /**
-   * Evaluates an Ozeki for potential Yokozuna promotion.
-   * Standard requirement: 2 consecutive Yusho.
-   * "Equivalent" requirement: 1 Yusho + 1 Jun-Yusho + High Dignity (Media/Reputation).
-   */
-  evaluateCandidate(world: WorldState, rikishi: Rikishi): YDCCandidate | null {
-    if (rikishi.rank !== "yokozuna" && rikishi.rank !== "ozeki") {
-      // Only Ozeki can be candidates, but let's check recent history
-    }
-    if (rikishi.rank !== "ozeki") return null;
+/**
+ * Evaluates an Ozeki for potential Yokozuna promotion.
+ * Standard requirement: 2 consecutive Yusho.
+ * "Equivalent" requirement: 1 Yusho + 1 Jun-Yusho + High Dignity (Media/Reputation).
+ */
+function evaluateCandidate(world: WorldState, rikishi: Rikishi): YDCCandidate | null {
+  if (rikishi.rank !== "yokozuna" && rikishi.rank !== "ozeki") {
+    // Only Ozeki can be candidates, but let's check recent history
+  }
+  if (rikishi.rank !== "ozeki") return null;
 
-    const history = world.history.slice(-2); // Last 2 basho
-    if (history.length < 2) return null;
+  const history = world.history.slice(-2); // Last 2 basho
+  if (history.length < 2) return null;
 
-    // In a real implementation, we'd look at specifically this rikishi's performance record
-    // For now, we simulate the 'equivalent' check
-    const winsLast = rikishi.currentBashoWins ?? 0;
-    const isYushoLast = winsLast >= 14; // Simplified check
+  // In a real implementation, we'd look at specifically this rikishi's performance record
+  // For now, we simulate the 'equivalent' check
+  const winsLast = rikishi.currentBashoWins ?? 0;
+  const isYushoLast = winsLast >= 14; // Simplified check
 
-    // We'll need a way to look back further, but for this Phase P logic:
-    const reputation = rikishi.economics?.popularity ?? 50;
+  // We'll need a way to look back further, but for this Phase P logic:
+  const reputation = rikishi.economics?.popularity ?? 50;
 
-    let sentiment = 0;
-    const reasons: string[] = [];
+  let sentiment = 0;
+  const reasons: string[] = [];
 
-    // Base sentiment on wins
-    sentiment += (winsLast - 8) * 5;
+  // Base sentiment on wins
+  sentiment += (winsLast - 8) * 5;
 
-    if (isYushoLast) {
-      sentiment += 40;
-      reasons.push("Recent Tournament Champion");
-    }
+  if (isYushoLast) {
+    sentiment += 40;
+    reasons.push("Recent Tournament Champion");
+  }
 
-    // Add Political/Dignity factors
-    sentiment += reputation / 4;
-    if (reputation > 80) reasons.push("High Public Dignity (Hinkaku)");
+  // Add Political/Dignity factors
+  sentiment += reputation / 4;
+  if (reputation > 80) reasons.push("High Public Dignity (Hinkaku)");
 
-    let recommendation: "promote" | "watch" | "reject" = "reject";
-    if (sentiment >= 85) recommendation = "promote";
-    else if (sentiment >= 65) recommendation = "watch";
+  let recommendation: "promote" | "watch" | "reject" = "reject";
+  if (sentiment >= 85) recommendation = "promote";
+  else if (sentiment >= 65) recommendation = "watch";
 
-    return {
+  return {
+    rikishiId: rikishi.id,
+    name: rikishi.shikona,
+    performances: [], // Should be populated from historical banzuke records
+    sentiment,
+    recommendation,
+    reasons,
+  };
+}
+
+type YdcCategory = "discipline" | "promotion";
+
+/** Resolve a YDC template and log the statement event when it has text. */
+function emitYdcStatement(
+  builder: ImpactBuilder,
+  ydcRng: SeededRNG,
+  rikishi: Rikishi,
+  chairmanName: string,
+  references: string[],
+  opts: {
+    templatePath: string;
+    category: YdcCategory;
+    status: string;
+    incident: string;
+    importance: "major" | "notable" | "minor";
+    privateSentiment: string;
+    extraData?: Record<string, unknown>;
+    extraVars?: Record<string, string>;
+  }
+): string {
+  const line = BardEngine.resolve(ydcRng, opts.templatePath, {
+    SHIKONA: rikishi.shikona,
+    rikishiId: rikishi.id,
+    CHAIRMAN: chairmanName,
+    ...opts.extraVars,
+  });
+  if (!line.text) return line.text;
+  builder.logEvent(
+    "GOVERNANCE_RULING",
+    opts.category,
+    {
       rikishiId: rikishi.id,
-      name: rikishi.shikona,
-      performances: [], // Should be populated from historical banzuke records
-      sentiment,
-      recommendation,
-      reasons,
-    };
-  },
+      shikona: rikishi.shikona,
+      status: opts.status,
+      incident: opts.incident,
+      statement: line.text,
+      chairmanName,
+      references,
+      publicStatement: line.text,
+      privateSentiment: opts.privateSentiment,
+      ...opts.extraData,
+    },
+    { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: opts.importance }
+  );
+  return line.text;
+}
 
-  /**
-   * Process the YDC Meeting during the post-basho transition.
-   */
-  processYDCCouncil(world: WorldState): StateImpact {
-    const builder = createImpactBuilder("processYDCCouncil");
+/** All YDC accountability statements for a single active yokozuna. */
+function evaluateOneYokozuna(
+  rikishi: Rikishi,
+  world: WorldState,
+  chairmanName: string,
+  builder: ImpactBuilder
+) {
+  const wins = rikishi.currentBashoWins ?? 0;
+  const losses = rikishi.currentBashoLosses ?? 0;
+  const isMakeKoshi = losses > wins;
+  const isKachiKoshi = wins > losses;
+  const absentFinalDay = rikishi.absentFinalDay === true;
+  const consecutiveMK = rikishi.consecutiveMakeKoshi ?? 0;
+  const kihakuScore = rikishi.kihakuIsenScore ?? 50;
 
-    // Find Ozeki candidates
-    for (const rikishiId of world.activeRikishiIds) {
-      const rikishi = getRikishi(world, rikishiId);
-      if (!rikishi || rikishi.rank !== "ozeki") continue;
-      const evaluation = this.evaluateCandidate(world, rikishi);
-      if (evaluation && evaluation.recommendation !== "reject") {
+  const ydcRng = rngFromSeed(
+    `ydc-${rikishi.id}-${world.year}-${world.currentBashoName ?? "hatsu"}`,
+    "narrative",
+    "ydc"
+  );
+
+  // Count kinboshi conceded this basho from the real match records — a
+  // yokozuna who hands out gold stars draws direct council criticism.
+  const kinboshiConceded = (world.currentBasho?.matches ?? []).filter(
+    (m) =>
+      m.result?.isKinboshi === true &&
+      (m.result.loserRikishiId === rikishi.id ||
+        m.result.awards?.some((a) => a.type === "kinboshi" && a.loserId === rikishi.id))
+  ).length;
+
+  // Build references array — specific items the YDC statement references
+  const references: string[] = [];
+  if (isKachiKoshi && kihakuScore >= 75) references.push("Kihaku Isen");
+  if (absentFinalDay) references.push("absence on final day");
+  if (isMakeKoshi) references.push("make-koshi record");
+  if (consecutiveMK >= 2) references.push("promotion pledge");
+  if (kinboshiConceded > 0) {
+    references.push(`${kinboshiConceded} kinboshi conceded to maegashira`);
+  }
+
+  // Kinboshi criticism: conceding 2+ gold stars in a single basho is a
+  // dignity failure regardless of the win-loss record.
+  if (kinboshiConceded >= 2) {
+    emitYdcStatement(builder, ydcRng, rikishi, chairmanName, references, {
+      templatePath: "ydc_accountability.kinboshi_criticism",
+      category: "discipline",
+      status: "kinboshi_criticism",
+      incident: "YDC Kinboshi Criticism",
+      importance: "major",
+      privateSentiment: "displeasure",
+      extraData: { kinboshiConceded },
+      extraVars: { COUNT: String(kinboshiConceded) },
+    });
+  }
+
+  // Praise for high fighting spirit and kachi-koshi
+  if (isKachiKoshi && kihakuScore >= 75) {
+    emitYdcStatement(builder, ydcRng, rikishi, chairmanName, references, {
+      templatePath: "ydc_accountability.praise",
+      category: "promotion",
+      status: "praise",
+      incident: "YDC Praise",
+      importance: "notable",
+      privateSentiment: "genuine satisfaction",
+      extraData: { score: kihakuScore },
+    });
+  }
+
+  // Absence criticism for missing final day
+  if (absentFinalDay) {
+    emitYdcStatement(builder, ydcRng, rikishi, chairmanName, references, {
+      templatePath: "ydc_accountability.absence_criticism",
+      category: "discipline",
+      status: "absence_criticism",
+      incident: "YDC Absence Criticism",
+      importance: "major",
+      privateSentiment: "displeasure",
+    });
+  }
+
+  if (isMakeKoshi) {
+    // Warning for make-koshi
+    const templatePath =
+      consecutiveMK >= 2 ? "ydc_accountability.demand_reflection" : "ydc_accountability.warning";
+    const warningText = emitYdcStatement(builder, ydcRng, rikishi, chairmanName, references, {
+      templatePath,
+      category: "discipline",
+      status: consecutiveMK >= 2 ? "demand_reflection" : "warning",
+      incident: "YDC Warning",
+      importance: "major",
+      privateSentiment: consecutiveMK >= 2 ? "frustration" : "concern",
+      extraData: { consecutiveMakeKoshi: consecutiveMK },
+    });
+
+    // Private cynicism for repeated make-koshi — divergence between public and private sentiment
+    if (consecutiveMK >= 3) {
+      const cynicismLine = BardEngine.resolve(ydcRng, "ydc_accountability.private_cynicism", {
+        SHIKONA: rikishi.shikona,
+        rikishiId: rikishi.id,
+        CHAIRMAN: chairmanName,
+      });
+      if (cynicismLine.text) {
         builder.logEvent(
           "GOVERNANCE_RULING",
-          "promotion",
+          "discipline",
           {
             rikishiId: rikishi.id,
-            status: evaluation.recommendation,
-            incident:
-              evaluation.recommendation === "promote"
-                ? `The YDC recommends ${rikishi.shikona} for promotion to Yokozuna.`
-                : `The YDC is monitoring ${rikishi.shikona} for potential promotion.`,
-            score: Math.floor(evaluation.sentiment),
+            shikona: rikishi.shikona,
+            status: "private_cynicism",
+            incident: "YDC Private Cynicism",
+            statement: cynicismLine.text,
+            consecutiveMakeKoshi: consecutiveMK,
+            chairmanName,
+            references,
+            publicStatement: warningText,
+            privateSentiment: cynicismLine.text,
           },
-          { heyaId: rikishi.heyaId, importance: "headline" }
+          { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
         );
-
-        if (evaluation.recommendation === "promote") {
-          // High-stakes promotion trigger
-          // Note: Banzuke update will handle the actual rank flip next cycle
-          builder.addMetadata("yokozuna_recommendation", rikishi.id);
-        }
       }
     }
+  } else if (isKachiKoshi && kihakuScore < 75 && kihakuScore >= 50) {
+    // Encouragement for adequate but not spectacular performance
+    emitYdcStatement(builder, ydcRng, rikishi, chairmanName, references, {
+      templatePath: "ydc_accountability.encouragement",
+      category: "promotion",
+      status: "encouragement",
+      incident: "YDC Encouragement",
+      importance: "minor",
+      privateSentiment: "cautious optimism",
+      extraData: { score: kihakuScore },
+    });
+  }
+}
 
-    // YDC Accountability: evaluate existing Yokozuna for warnings, encouragement, or retirement pressure
-    this.evaluateActiveYokozuna(world, builder);
+/**
+ * Evaluate active Yokozuna for YDC accountability statements.
+ * Generates public and private YDC statements based on:
+ * - Win/loss record (make-koshi triggers warning)
+ * - absentFinalDay (triggers absence criticism)
+ * - kihakuIsenScore (high score triggers praise)
+ * - consecutiveMakeKoshi (high count triggers private cynicism)
+ */
+function evaluateActiveYokozuna(
+  world: WorldState,
+  builder: ReturnType<typeof createImpactBuilder>
+): void {
+  const chairmanName = getChairmanName(`${world.year}-${world.currentBashoName ?? "hatsu"}`);
 
-    return builder.build();
-  },
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = getRikishi(world, rikishiId);
+    if (!rikishi || rikishi.rank !== "yokozuna") continue;
+    evaluateOneYokozuna(rikishi, world, chairmanName, builder);
+  }
+}
 
-  /**
-   * Evaluate active Yokozuna for YDC accountability statements.
-   * Generates public and private YDC statements based on:
-   * - Win/loss record (make-koshi triggers warning)
-   * - absentFinalDay (triggers absence criticism)
-   * - kihakuIsenScore (high score triggers praise)
-   * - consecutiveMakeKoshi (high count triggers private cynicism)
-   */
-  evaluateActiveYokozuna(world: WorldState, builder: ReturnType<typeof createImpactBuilder>): void {
-    const chairmanName = getChairmanName(`${world.year}-${world.currentBashoName ?? "hatsu"}`);
+/**
+ * Process the YDC Meeting during the post-basho transition.
+ */
+function processYDCCouncil(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("processYDCCouncil");
 
-    for (const rikishiId of world.activeRikishiIds) {
-      const rikishi = getRikishi(world, rikishiId);
-      if (!rikishi || rikishi.rank !== "yokozuna") continue;
-
-      const wins = rikishi.currentBashoWins ?? 0;
-      const losses = rikishi.currentBashoLosses ?? 0;
-      const isMakeKoshi = losses > wins;
-      const isKachiKoshi = wins > losses;
-      const absentFinalDay = rikishi.absentFinalDay === true;
-      const consecutiveMK = rikishi.consecutiveMakeKoshi ?? 0;
-      const kihakuScore = rikishi.kihakuIsenScore ?? 50;
-
-      const ydcRng = rngFromSeed(
-        `ydc-${rikishiId}-${world.year}-${world.currentBashoName ?? "hatsu"}`,
-        "narrative",
-        "ydc"
+  // Find Ozeki candidates
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = getRikishi(world, rikishiId);
+    if (!rikishi || rikishi.rank !== "ozeki") continue;
+    const evaluation = evaluateCandidate(world, rikishi);
+    if (evaluation && evaluation.recommendation !== "reject") {
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "promotion",
+        {
+          rikishiId: rikishi.id,
+          status: evaluation.recommendation,
+          incident:
+            evaluation.recommendation === "promote"
+              ? `The YDC recommends ${rikishi.shikona} for promotion to Yokozuna.`
+              : `The YDC is monitoring ${rikishi.shikona} for potential promotion.`,
+          score: Math.floor(evaluation.sentiment),
+        },
+        { heyaId: rikishi.heyaId, importance: "headline" }
       );
 
-      // Count kinboshi conceded this basho from the real match records — a
-      // yokozuna who hands out gold stars draws direct council criticism.
-      const kinboshiConceded = (world.currentBasho?.matches ?? []).filter(
-        (m) =>
-          m.result?.isKinboshi === true &&
-          (m.result.loserRikishiId === rikishi.id ||
-            m.result.awards?.some((a) => a.type === "kinboshi" && a.loserId === rikishi.id))
-      ).length;
-
-      // Build references array — specific items the YDC statement references
-      const references: string[] = [];
-      if (isKachiKoshi && kihakuScore >= 75) references.push("Kihaku Isen");
-      if (absentFinalDay) references.push("absence on final day");
-      if (isMakeKoshi) references.push("make-koshi record");
-      if (consecutiveMK >= 2) references.push("promotion pledge");
-      if (kinboshiConceded > 0) {
-        references.push(`${kinboshiConceded} kinboshi conceded to maegashira`);
-      }
-
-      // Kinboshi criticism: conceding 2+ gold stars in a single basho is a
-      // dignity failure regardless of the win-loss record.
-      if (kinboshiConceded >= 2) {
-        const kinLine = BardEngine.resolve(ydcRng, "ydc_accountability.kinboshi_criticism", {
-          SHIKONA: rikishi.shikona,
-          rikishiId: rikishi.id,
-          CHAIRMAN: chairmanName,
-          COUNT: String(kinboshiConceded),
-        });
-        if (kinLine.text) {
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "discipline",
-            {
-              rikishiId: rikishi.id,
-              shikona: rikishi.shikona,
-              status: "kinboshi_criticism",
-              incident: "YDC Kinboshi Criticism",
-              statement: kinLine.text,
-              kinboshiConceded,
-              chairmanName,
-              references,
-              publicStatement: kinLine.text,
-              privateSentiment: "displeasure",
-            },
-            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
-          );
-        }
-      }
-
-      // Praise for high fighting spirit and kachi-koshi
-      if (isKachiKoshi && kihakuScore >= 75) {
-        const line = BardEngine.resolve(ydcRng, "ydc_accountability.praise", {
-          SHIKONA: rikishi.shikona,
-          rikishiId: rikishi.id,
-          CHAIRMAN: chairmanName,
-        });
-        if (line.text) {
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "promotion",
-            {
-              rikishiId: rikishi.id,
-              shikona: rikishi.shikona,
-              status: "praise",
-              incident: "YDC Praise",
-              statement: line.text,
-              score: kihakuScore,
-              chairmanName,
-              references,
-              publicStatement: line.text,
-              privateSentiment: "genuine satisfaction",
-            },
-            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "notable" }
-          );
-        }
-      }
-
-      // Absence criticism for missing final day
-      if (absentFinalDay) {
-        const line = BardEngine.resolve(ydcRng, "ydc_accountability.absence_criticism", {
-          SHIKONA: rikishi.shikona,
-          rikishiId: rikishi.id,
-          CHAIRMAN: chairmanName,
-        });
-        if (line.text) {
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "discipline",
-            {
-              rikishiId: rikishi.id,
-              shikona: rikishi.shikona,
-              status: "absence_criticism",
-              incident: "YDC Absence Criticism",
-              statement: line.text,
-              chairmanName,
-              references,
-              publicStatement: line.text,
-              privateSentiment: "displeasure",
-            },
-            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
-          );
-        }
-      }
-
-      // Warning for make-koshi
-      if (isMakeKoshi) {
-        let templatePath = "ydc_accountability.warning";
-        if (consecutiveMK >= 2) {
-          templatePath = "ydc_accountability.demand_reflection";
-        }
-        const line = BardEngine.resolve(ydcRng, templatePath, {
-          SHIKONA: rikishi.shikona,
-          rikishiId: rikishi.id,
-          CHAIRMAN: chairmanName,
-        });
-        if (line.text) {
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "discipline",
-            {
-              rikishiId: rikishi.id,
-              shikona: rikishi.shikona,
-              status: consecutiveMK >= 2 ? "demand_reflection" : "warning",
-              incident: "YDC Warning",
-              statement: line.text,
-              consecutiveMakeKoshi: consecutiveMK,
-              chairmanName,
-              references,
-              publicStatement: line.text,
-              privateSentiment: consecutiveMK >= 2 ? "frustration" : "concern",
-            },
-            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
-          );
-        }
-
-        // Private cynicism for repeated make-koshi — divergence between public and private sentiment
-        if (consecutiveMK >= 3) {
-          const cynicismLine = BardEngine.resolve(ydcRng, "ydc_accountability.private_cynicism", {
-            SHIKONA: rikishi.shikona,
-            rikishiId: rikishi.id,
-            CHAIRMAN: chairmanName,
-          });
-          if (cynicismLine.text) {
-            builder.logEvent(
-              "GOVERNANCE_RULING",
-              "discipline",
-              {
-                rikishiId: rikishi.id,
-                shikona: rikishi.shikona,
-                status: "private_cynicism",
-                incident: "YDC Private Cynicism",
-                statement: cynicismLine.text,
-                consecutiveMakeKoshi: consecutiveMK,
-                chairmanName,
-                references,
-                publicStatement: line.text,
-                privateSentiment: cynicismLine.text,
-              },
-              { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
-            );
-          }
-        }
-      } else if (isKachiKoshi && kihakuScore < 75 && kihakuScore >= 50) {
-        // Encouragement for adequate but not spectacular performance
-        const line = BardEngine.resolve(ydcRng, "ydc_accountability.encouragement", {
-          SHIKONA: rikishi.shikona,
-          rikishiId: rikishi.id,
-          CHAIRMAN: chairmanName,
-        });
-        if (line.text) {
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "promotion",
-            {
-              rikishiId: rikishi.id,
-              shikona: rikishi.shikona,
-              status: "encouragement",
-              incident: "YDC Encouragement",
-              statement: line.text,
-              score: kihakuScore,
-              chairmanName,
-              references,
-              publicStatement: line.text,
-              privateSentiment: "cautious optimism",
-            },
-            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
-          );
-        }
+      if (evaluation.recommendation === "promote") {
+        // High-stakes promotion trigger
+        // Note: Banzuke update will handle the actual rank flip next cycle
+        builder.addMetadata("yokozuna_recommendation", rikishi.id);
       }
     }
-  },
+  }
+
+  // YDC Accountability: evaluate existing Yokozuna for warnings, encouragement, or retirement pressure
+  evaluateActiveYokozuna(world, builder);
+
+  return builder.build();
+}
+
+/**
+ * Namespace preserving the public YokozunaService.* surface.
+ */
+export const YokozunaService = {
+  evaluateCandidate,
+  processYDCCouncil,
+  evaluateActiveYokozuna,
 };

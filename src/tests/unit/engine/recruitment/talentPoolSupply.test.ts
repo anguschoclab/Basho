@@ -122,10 +122,13 @@ describe("tickWeekTalentPool - emergency logging", () => {
     warnSpy.mockRestore();
   });
 
-  it("warns via Logger when emergency demographic floor triggers (active < 700)", () => {
+  it("warns via Logger when emergency demographic floor triggers and moves candidates", () => {
+    // gap=0 keeps the passive reveal at its 20–30/pool baseline, leaving
+    // hidden candidates for the emergency dump to move — the warn fires only
+    // when the dump actually moved candidates.
     const world = buildWorldWithHiddenPool({
-      activeCount: 600, // below 700 threshold
-      populationTarget: 950,
+      activeCount: 600, // below TOTAL_ACTIVE_THRESHOLD (800)
+      populationTarget: 600,
       hiddenPerPool: 50,
     });
 
@@ -138,9 +141,23 @@ describe("tickWeekTalentPool - emergency logging", () => {
     );
   });
 
+  it("does not warn when the hidden pools are already drained", () => {
+    // Below-threshold population but nothing to move — the warn is gated on
+    // moved > 0, so an exhausted hidden pool must not spam the log.
+    const world = buildWorldWithHiddenPool({
+      activeCount: 600,
+      populationTarget: 600,
+      hiddenPerPool: 10, // drained entirely by the 20–30 baseline reveal
+    });
+
+    tickWeekTalentPool(world);
+
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining("Emergency"), "Recruitment");
+  });
+
   it("does not warn when population is above emergency threshold", () => {
     const world = buildWorldWithHiddenPool({
-      activeCount: 800, // above 700
+      activeCount: 800, // at TOTAL_ACTIVE_THRESHOLD — not below, so no emergency
       populationTarget: 950,
       hiddenPerPool: 50,
     });

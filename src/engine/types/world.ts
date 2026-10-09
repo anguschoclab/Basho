@@ -380,10 +380,6 @@ export interface WorldState {
 
   myosekiMarket?: MyosekiMarket;
 
-  activeBasho?: {
-    id: string;
-  };
-
   records: WorldRecords;
 
   settings: {
@@ -419,10 +415,6 @@ export interface WorldState {
   planetRating?: number;
   isInitialSeed?: boolean;
 
-  // Simulation tracking (AutoSimService)
-  scandals?: Array<{ severity: string; year: number }>;
-  retirements?: Array<{ rikishiId: string }>;
-  eventLog?: Array<{ type: string; [key: string]: unknown }>;
   matchmakingOverride?: {
     type: "avoid_rival";
     requesterId: string;

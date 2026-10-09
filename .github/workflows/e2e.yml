@@ -1,0 +1,50 @@
+name: E2E
+
+# Playwright end-to-end: smoke (golden-path + reload-restore) gates PRs and
+# pushes to main; the soak suite (full-basho-lifecycle + year-of-bashos) runs
+# nightly — it is ~8-10 min, too heavy for the PR gate.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 4 * * *" # nightly soak
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install
+      - name: Install Playwright browser
+        run: bunx playwright install --with-deps chromium
+      - name: Run e2e smoke suite
+        run: bun run test:e2e:smoke
+
+  soak:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install
+      - name: Install Playwright browser
+        run: bunx playwright install --with-deps chromium
+      - name: Run e2e soak suite
+        run: bun run test:e2e:soak

@@ -1,7 +1,8 @@
 /**
  * boundHistoryArrays.ts
  * ======================
- * Caps world.history, world.awardLog, and world.almanacSnapshots at rolling
+ * Caps world.history, world.awardLog, world.governanceLog,
+ * world.encouragementLog, and world.almanacSnapshots at rolling
  * windows to prevent unbounded growth across 25-year simulations (B2.5).
  *
  * Older almanac snapshots are already written to cold storage at basho time
@@ -30,11 +31,15 @@ export function boundHistoryArrays(world: WorldState): WorldState {
   const historyLen = world.history?.length ?? 0;
   const awardLogLen = world.awardLog?.length ?? 0;
   const almanacLen = world.almanacSnapshots?.length ?? 0;
+  const governanceLen = world.governanceLog?.length ?? 0;
+  const encouragementLen = world.encouragementLog?.length ?? 0;
 
   if (
     historyLen <= HISTORY_MAX_ENTRIES &&
     awardLogLen <= HISTORY_MAX_ENTRIES &&
-    almanacLen <= ALMANAC_SNAPSHOTS_MAX
+    almanacLen <= ALMANAC_SNAPSHOTS_MAX &&
+    governanceLen <= HISTORY_MAX_ENTRIES &&
+    encouragementLen <= HISTORY_MAX_ENTRIES
   ) {
     return world;
   }
@@ -51,6 +56,16 @@ export function boundHistoryArrays(world: WorldState): WorldState {
 
   if (almanacLen > ALMANAC_SNAPSHOTS_MAX && world.almanacSnapshots) {
     updates.almanacSnapshots = world.almanacSnapshots.slice(almanacLen - ALMANAC_SNAPSHOTS_MAX);
+  }
+
+  if (governanceLen > HISTORY_MAX_ENTRIES && world.governanceLog) {
+    updates.governanceLog = world.governanceLog.slice(governanceLen - HISTORY_MAX_ENTRIES);
+  }
+
+  if (encouragementLen > HISTORY_MAX_ENTRIES && world.encouragementLog) {
+    updates.encouragementLog = world.encouragementLog.slice(
+      encouragementLen - HISTORY_MAX_ENTRIES
+    );
   }
 
   return { ...world, ...updates };

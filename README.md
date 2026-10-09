@@ -15,7 +15,7 @@ A deep, deterministic sumo wrestling management simulation game. Take on the rol
 
 This project is a modern web application built with:
 
-- **Frontend Framework:** React 18, Vite
+- **Frontend Framework:** React 19, Vite
 - **Language:** TypeScript
 - **Styling & UI:** Tailwind CSS, shadcn/ui, Radix UI
 - **State Management & Routing:** React Query, React Router DOM
@@ -75,7 +75,7 @@ prefer the fast suite or target specific files directly:
 
 ```bash
 bun run test                   # fast unit tests (src/tests/unit/**)
-npx vitest run <filepath>      # single file
+bunx vitest run <filepath>     # single file
 ```
 
 Slow and long-horizon suites run adhoc — they spawn subprocesses

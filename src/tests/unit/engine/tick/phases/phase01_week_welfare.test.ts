@@ -30,7 +30,6 @@ describe("Phase 01: Week Welfare", () => {
       mediaState: mediaState ?? {
         heyaPressure: {},
         mediaHeat: {},
-        globalBuzz: 0,
         headlines: [],
       },
     } as unknown as WorldState;
@@ -100,7 +99,6 @@ describe("Phase 01: Week Welfare", () => {
     const world = createWorld([heya], {
       heyaPressure: { h1: MAX_MEDIA_PRESSURE - 5 },
       mediaHeat: {},
-      globalBuzz: 0,
       headlines: [],
     });
     // delta=40 → risk becomes 50, triggers watch → +15 pressure

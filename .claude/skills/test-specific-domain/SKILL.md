@@ -7,27 +7,29 @@ disable-model-invocation: true
 Run tests for a specific engine domain without running the full test suite (from the repository root):
 
 ```bash
-bunx vitest run src/engine/__tests__/{domain}/*.test.ts
+bun run test -- src/tests/unit/engine/{domain}
 ```
 
-Replace `{domain}` with the specific domain you want to test. Examples:
+Tests live under `src/tests/unit/engine/` (mirroring `src/engine/`). Examples:
 
 ```bash
 # Banzuke tests (promotion logic, ranking)
-bunx vitest run src/engine/__tests__/banzuke/*.test.ts
+bun run test -- src/tests/unit/engine/banzuke
 
 # Matchmaking tests
-bunx vitest run src/engine/__tests__/matchmaking.test.ts
+bun run test -- src/tests/unit/engine/matchmaking
 
 # Lifecycle tests (retirement, injuries)
-bunx vitest run src/engine/__tests__/lifecycle.test.ts
+bun run test -- src/tests/unit/engine/lifecycle
 
 # Bout physics tests
-bunx vitest run src/engine/__tests__/bout/*.test.ts
+bun run test -- src/tests/unit/engine/bout
 
 # Economy tests
-bunx vitest run src/engine/__tests__/economy/*.test.ts
+bun run test -- src/tests/unit/engine/economy
 
 # Governance tests
-bunx vitest run src/engine/__tests__/governance/*.test.ts
+bun run test -- src/tests/unit/engine/governance
 ```
+
+Or pass a single file: `bunx vitest run src/tests/unit/engine/banzuke/promotionLogic.test.ts`

@@ -298,6 +298,76 @@ describe("executeAgentDecisions — finance", () => {
   });
 });
 
+describe("executeAgentDecisions — crisis rescue", () => {
+  const rescueDecisions = (rescueMenu: "sponsor_drive" | "bailout_loan" | "faction_appeal") =>
+    makeDecisions({
+      finance: {
+        shouldBuyMyoseki: false,
+        shouldInvestInFacilities: false,
+        shouldBuildReserves: false,
+        shouldSeekRescue: true,
+        rescueMenu,
+        riskLevel: "conservative",
+      },
+    });
+
+  it("faction_appeal injects real ichimon bailout funds with governance scrutiny", () => {
+    const { world } = makeWorld({ heyaOverrides: { funds: 500_000, runwayBand: "desperate" } });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      rescueDecisions("faction_appeal"),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    const heya = resolved.heyas.get("heya-a")!;
+    expect(heya.funds).toBe(500_000 + 10_000_000);
+    expect(heya.scandalScore).toBe(10);
+  });
+
+  it("bailout_loan covers the dead band above the formal loan threshold", () => {
+    // funds -2M: below the insolvency warn line but above LOAN_ISSUANCE_THRESHOLD
+    // (-5M) — issueBailoutLoanIfNeeded no-ops, so the bridge grant must fire.
+    const { world } = makeWorld({ heyaOverrides: { funds: -2_000_000, runwayBand: "desperate" } });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      rescueDecisions("bailout_loan"),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    const heya = resolved.heyas.get("heya-a")!;
+    expect(heya.funds).toBe(2_000_000); // deficit covered + 2M buffer
+    expect(heya.activeLoans ?? []).toHaveLength(0); // grant, not a loan
+  });
+
+  it("bailout_loan issues a real loan when below the loan threshold", () => {
+    const { world } = makeWorld({ heyaOverrides: { funds: -6_000_000, runwayBand: "desperate" } });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      rescueDecisions("bailout_loan"),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    const heya = resolved.heyas.get("heya-a")!;
+    expect(heya.funds).toBeGreaterThan(-6_000_000);
+    expect((heya.activeLoans ?? []).length).toBe(1);
+  });
+
+  it("sponsor_drive injects koenkai-scaled stopgap funds", () => {
+    const { world } = makeWorld({ heyaOverrides: { funds: 500_000, runwayBand: "desperate" } });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      rescueDecisions("sponsor_drive"),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    expect(resolved.heyas.get("heya-a")!.funds).toBeGreaterThan(500_000);
+  });
+});
+
 describe("executeAgentDecisions — governance", () => {
   it("shouldReduceScandal → scandalScore decreases at a capital or funds cost", () => {
     const { world } = makeWorld({

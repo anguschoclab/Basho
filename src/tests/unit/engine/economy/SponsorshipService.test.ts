@@ -24,6 +24,7 @@ import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "../utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { rngFromSeed } from "@/engine/rng";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("SponsorshipService", () => {
   beforeEach(() => {
@@ -108,14 +109,14 @@ describe("SponsorshipService", () => {
       const rikishi = mockRikishi("r1", {
         economics: { popularity: 10, kenshoPerBout: 0, kenshoEarned: 0, koenkaiIds: [] },
       } as any);
-      const world = { rikishi: new Map([["r1", rikishi]]) } as any;
+      const world = MockFactory.createWorld({ rikishi: new Map([["r1", rikishi]]) });
 
-      const impact = applyAchievementImpact(world as WorldState, rikishi, "kinboshi");
+      const impact = applyAchievementImpact(world, rikishi, "kinboshi");
       const resolved = resolveImpacts(world, [impact]);
       expect(resolved.rikishi.get("r1")?.economics?.popularity).toBe(30);
 
       const impact2 = applyAchievementImpact(
-        resolved as WorldState,
+        resolved,
         resolved.rikishi.get("r1")!,
         "ginboshi"
       );
@@ -123,7 +124,7 @@ describe("SponsorshipService", () => {
       expect(resolved2.rikishi.get("r1")?.economics?.popularity).toBe(38);
 
       const impact3 = applyAchievementImpact(
-        resolved2 as WorldState,
+        resolved2,
         resolved2.rikishi.get("r1")!,
         "sansho"
       );
@@ -135,8 +136,8 @@ describe("SponsorshipService", () => {
       const rikishi = mockRikishi("r1", {
         economics: { popularity: 90, kenshoPerBout: 0, kenshoEarned: 0, koenkaiIds: [] },
       } as any);
-      const world = { rikishi: new Map([["r1", rikishi]]) } as any;
-      const impact = applyAchievementImpact(world as WorldState, rikishi, "kinboshi");
+      const world = MockFactory.createWorld({ rikishi: new Map([["r1", rikishi]]) });
+      const impact = applyAchievementImpact(world, rikishi, "kinboshi");
       const resolved = resolveImpacts(world, [impact]);
       expect(resolved.rikishi.get("r1")?.economics?.popularity).toBe(100);
     });
@@ -144,7 +145,7 @@ describe("SponsorshipService", () => {
 
   describe("computeStarPower", () => {
     it("computes star power based on rikishi ranks", () => {
-      const world = {
+      const world =  MockFactory.createWorld({
         rikishi: new Map([
           ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })], // +30
           ["r2", mockRikishi("r2", { rank: "ozeki", division: "makuuchi" })], // +20
@@ -152,7 +153,7 @@ describe("SponsorshipService", () => {
           ["r4", mockRikishi("r4", { rank: "maegashira", division: "makuuchi" })], // +5
           ["r5", mockRikishi("r5", { rank: "juryo", division: "juryo" })], // +0
         ]),
-      } as unknown as WorldState;
+      });
 
       const heya = {
         id: "heya-1",
@@ -163,14 +164,14 @@ describe("SponsorshipService", () => {
     });
 
     it("caps star power at 100", () => {
-      const world = {
+      const world =  MockFactory.createWorld({
         rikishi: new Map([
           ["r1", mockRikishi("r1", { rank: "yokozuna" })],
           ["r2", mockRikishi("r2", { rank: "yokozuna" })],
           ["r3", mockRikishi("r3", { rank: "yokozuna" })],
           ["r4", mockRikishi("r4", { rank: "yokozuna" })],
         ]),
-      } as unknown as WorldState;
+      });
 
       const heya = {
         id: "heya-1",
@@ -233,7 +234,7 @@ describe("SponsorshipService", () => {
       return { sponsors, koenkais };
     };
     it("returns empty values if no sponsors pool", () => {
-      const result = processSponsorChurn({} as WorldState);
+      const result = processSponsorChurn(MockFactory.createWorld());
       expect(result.metadata?.churned).toEqual([]);
       expect(result.metadata?.retained).toBe(0);
     });
@@ -287,12 +288,11 @@ describe("SponsorshipService", () => {
         ],
       ]);
 
-      const world = {
+      const world =  MockFactory.createWorld({
         heyas: new Map([["h1", heya]]),
         rikishi: new Map(),
         sponsorPool: { sponsors, koenkais },
-        events: [],
-      } as unknown as WorldState;
+      });
 
       const result = processSponsorChurn(world);
       const resolvedWorld = resolveImpacts(world, [result]);
@@ -325,15 +325,14 @@ describe("SponsorshipService", () => {
 
       const { sponsors, koenkais } = createSponsorsAndKoenkai(true);
 
-      const world = {
+      const world =  MockFactory.createWorld({
         heyas: new Map([["h1", heya]]),
         rikishi: new Map([
           ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })],
           ["r2", mockRikishi("r2", { rank: "maegashira", division: "makuuchi" })],
         ]),
         sponsorPool: { sponsors, koenkais },
-        events: [],
-      } as unknown as WorldState;
+      });
 
       const result = processSponsorChurn(world);
       const resolvedWorld = resolveImpacts(world, [result]);
@@ -392,7 +391,7 @@ describe("SponsorshipService", () => {
         rikishiIds: [],
       } as unknown as Heya;
 
-      const world = {
+      const world =  MockFactory.createWorld({
         heyas: new Map([["h1", heya]]),
         rikishi: new Map(),
         sponsorPool: {
@@ -400,13 +399,13 @@ describe("SponsorshipService", () => {
           koenkais: new Map([["h1", koenkai]]),
         },
         week: 1,
-      } as unknown as WorldState;
+      });
 
       return { world, heya, sponsor, koenkai };
     };
 
     it("returns empty impact when no sponsorPool", () => {
-      const world = { heyas: new Map(), rikishi: new Map() } as unknown as WorldState;
+      const world =  MockFactory.createWorld({ heyas: new Map(), rikishi: new Map() });
       const impact = recruitSponsor(world, "h1", "sp1", rng);
       expect(impact.events ?? []).toHaveLength(0);
     });
@@ -466,34 +465,34 @@ describe("SponsorshipService", () => {
 
   describe("computeHeyaPrestigeScore", () => {
     it("sums prestige weights for roster ranks", () => {
-      const world = {
+      const world =  MockFactory.createWorld({
         rikishi: new Map([
           ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })],
           ["r2", mockRikishi("r2", { rank: "maegashira", division: "makuuchi" })],
         ]),
-      } as unknown as WorldState;
+      });
       const heya = { id: "h1", rikishiIds: ["r1", "r2"] } as unknown as Heya;
       // yokozuna=40 + maegashira=8 = 48
       expect(computeHeyaPrestigeScore(heya, world)).toBe(48);
     });
 
     it("caps at 100", () => {
-      const world = {
+      const world =  MockFactory.createWorld({
         rikishi: new Map([
           ["r1", mockRikishi("r1", { rank: "yokozuna" })],
           ["r2", mockRikishi("r2", { rank: "yokozuna" })],
           ["r3", mockRikishi("r3", { rank: "yokozuna" })],
         ]),
-      } as unknown as WorldState;
+      });
       const heya = { id: "h1", rikishiIds: ["r1", "r2", "r3"] } as unknown as Heya;
       // 3*40 = 120 -> capped 100
       expect(computeHeyaPrestigeScore(heya, world)).toBe(100);
     });
 
     it("returns 0 for non-sekitori roster", () => {
-      const world = {
+      const world =  MockFactory.createWorld({
         rikishi: new Map([["r1", mockRikishi("r1", { rank: "makushita", division: "makushita" })]]),
-      } as unknown as WorldState;
+      });
       const heya = { id: "h1", rikishiIds: ["r1"] } as unknown as Heya;
       expect(computeHeyaPrestigeScore(heya, world)).toBe(0);
     });
@@ -530,12 +529,12 @@ describe("SponsorshipService", () => {
 
   describe("recalculateKoenkaiBand", () => {
     it("returns band derived from heya prestige", () => {
-      const world = {
+      const world =  MockFactory.createWorld({
         rikishi: new Map([
           ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })],
           ["r2", mockRikishi("r2", { rank: "ozeki", division: "makuuchi" })],
         ]),
-      } as unknown as WorldState;
+      });
       const heya = { id: "h1", rikishiIds: ["r1", "r2"] } as unknown as Heya;
       // prestige = 40 + 30 = 70 -> strong
       expect(recalculateKoenkaiBand(heya, world)).toBe("strong");
@@ -553,14 +552,14 @@ describe("SponsorshipService", () => {
         strengthBand: "none",
         members: [],
       } as unknown as Koenkai;
-      const world = {
+      const world =  MockFactory.createWorld({
         heyas: new Map([["h1", heya]]),
         rikishi: new Map(),
         sponsorPool: {
           sponsors: new Map(),
           koenkais: new Map([["k1", koenkai]]),
         },
-      } as unknown as WorldState;
+      });
 
       const impact = adjustKoenkaiBandToPrestige(world);
       // No events or updates when band matches
@@ -580,14 +579,14 @@ describe("SponsorshipService", () => {
         strengthBand: "strong",
         members,
       } as unknown as Koenkai;
-      const world = {
+      const world =  MockFactory.createWorld({
         heyas: new Map([["h1", heya]]),
         rikishi: new Map(),
         sponsorPool: {
           sponsors: new Map(),
           koenkais: new Map([["k1", koenkai]]),
         },
-      } as unknown as WorldState;
+      });
 
       const impact = adjustKoenkaiBandToPrestige(world);
       const resolved = resolveImpacts(world, [impact]);
@@ -657,7 +656,7 @@ describe("SponsorshipService", () => {
         members: opts.existingMembers ?? [],
       } as unknown as Koenkai;
 
-      const world = {
+      const world =  MockFactory.createWorld({
         heyas: new Map([["h1", heya]]),
         rikishi: rikishiMap,
         sponsorPool: {
@@ -665,7 +664,7 @@ describe("SponsorshipService", () => {
           koenkais: new Map([["k1", koenkai]]),
         },
         dayIndexGlobal: 100,
-      } as unknown as WorldState;
+      });
 
       return { world, heya, koenkai };
     };
