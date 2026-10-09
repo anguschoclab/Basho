@@ -53,12 +53,14 @@ export default defineConfig({
       include: [
         "src/engine/**/*.ts",
         "src/presenters/**/*.ts",
-        "src/components/**/*.ts",
-        "src/contexts/**/*.ts",
+        "src/components/**/*.{ts,tsx}",
+        "src/contexts/**/*.{ts,tsx}",
         "src/store/**/*.ts",
-        "src/hooks/**/*.ts",
+        "src/hooks/**/*.{ts,tsx}",
         "src/lib/**/*.ts",
         "src/utils/**/*.ts",
+        "src/pages/**/*.tsx",
+        "src/constants/**/*.ts",
       ],
       exclude: [
         "src/tests/**",

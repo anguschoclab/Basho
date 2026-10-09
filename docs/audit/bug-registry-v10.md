@@ -328,18 +328,25 @@ the real scan over `src/engine` — the CLAUDE.md "flags any reintroduced
 call site" claim is now true. Three real violations surfaced on first run
 (world-init writes missing `@world-builder`) — annotated.
 
-### V10-R05: 17 `genuine` orphans (orphan-audit baseline)
+### V10-R05: `genuine` orphans — TRIAGED, REMOVED
 
-Includes `honbasho.ts` dead API surface, `collectionOperations.ts` (8
-exports, zero callers), `parseLLMResponse`/`safeParse`. Triage each: delete
-or wire. (209 baseline orphans: 192 `intentional` + 17 `genuine`; ~93 of the
-"intentional" entries are unreferenced *functions*, worth a second look.)
+All 16 genuine entries resolved by deletion: `honbasho.ts` (superseded by
+`ExhibitionBashoService.isExhibitionBasho`/`isHonbasho`), `EntityService.ts`
+(superseded by `queries.ts` + `EntityCollection`), `collectionOperations.ts`
+(7 exports, zero callers), `jsonParser.ts` (`parseLLMResponse`/`safeParse` —
+LLM-era, zero call sites). Sole-subject tests removed; `utils/index.ts`
+re-exports dropped; `destr` retained (live in npcAIWorkers/storage).
+`GENUINE_ORPHANS` map + baseline-orphans.json cleared. ~93 "intentional"
+unreferenced-*function* entries remain for a second look.
 
-### V10-R06: Coverage blind spot
+### V10-R06: Coverage blind spot — FIXED
 
-`vitest.config.ts` coverage `include` measures only `*.ts` — ~237 component
-`.tsx`, ~37 page `.tsx`, and 63 constants files are unmeasured while
-thresholds gate at 70–75%.
+`coverage.include` now spans `src/**/*.{ts,tsx}` for components/contexts/
+hooks/pages plus `src/constants/**/*.ts`. Aggregate thresholds will now
+measure the real universe — a full `--coverage` run could not complete a
+report during the parallel refactor's stale surface tests; expect the
+aggregate to drop honestly below thresholds until UI coverage improves
+(the gate reporting red is the finding working as intended).
 
 ### V10-R07: WS9 drops — event categories missing from digest — FIXED (partial)
 
