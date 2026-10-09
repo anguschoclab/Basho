@@ -64,7 +64,6 @@ interface LogEngineEventParams {
   title: string;
   summary: string;
   data: NarrativeContext;
-  truthLevel?: "public" | "limited" | "private";
   tags?: string[];
   causalEventId?: Id;
   dedupeKey?: string;
@@ -143,7 +142,6 @@ export function logEngineEvent(
     title: params.title,
     summary: params.summary,
     data: params.data,
-    truthLevel: params.truthLevel ?? "public",
     tags: params.tags ?? [],
   };
 

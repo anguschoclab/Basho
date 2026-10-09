@@ -64,7 +64,7 @@ export interface GameContextValue {
   unbookmarkEntity: (entityType: string, entityId: string) => void;
   updateBookmarkNote: (entityType: string, entityId: string, note: string) => void;
   isBookmarked: (entityType: string, entityId: string) => boolean;
-  recruitSponsor: (sponsorId: string) => void;
+  recruitSponsor: (sponsorId: string) => boolean;
   applyPressConference: (
     heyaId: string,
     effects: { reputation: number; morale: number; mediaHeat: number }
@@ -75,7 +75,7 @@ export interface GameContextValue {
   setScoutingInvestment: (
     rikishiId: string,
     investment: import("@/engine/types/narrative").ScoutingInvestment
-  ) => void;
+  ) => boolean;
   setKeshoConfig: (
     rikishiId: string,
     config: Partial<import("@/engine/types/keshoMawashi").KeshoMawashi>

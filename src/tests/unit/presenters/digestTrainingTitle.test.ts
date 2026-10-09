@@ -29,7 +29,6 @@ function makeTrainingEvent(overrides: Partial<EngineEvent> = {}): EngineEvent {
     title: "Sparring focus shift",
     summary: "R1 worked on tachiai reps.",
     data: {},
-    truthLevel: "public",
     tags: [],
     ...overrides,
   } as EngineEvent;

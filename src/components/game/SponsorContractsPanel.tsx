@@ -105,7 +105,7 @@ export function SponsorContractsPanel({
 
   const handleRenegotiate = useCallback(
     (relId: string, name: string, sponsorId: string) => {
-      sendCommand({ type: "RENEW_SPONSOR", relationshipId: relId, sponsorId });
+      if (!sendCommand({ type: "RENEW_SPONSOR", relationshipId: relId, sponsorId })) return;
       toast({
         title: "Renewal request submitted",
         description: `Negotiations with ${name} have begun.`,

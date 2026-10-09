@@ -33,7 +33,6 @@ function makeEvent(
     title: `${category} event`,
     summary: `a ${category} thing happened`,
     data: {},
-    truthLevel: "public",
     tags: [],
   } as EngineEvent;
 }

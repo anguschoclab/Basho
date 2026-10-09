@@ -342,8 +342,12 @@ All 16 genuine entries resolved by deletion: `honbasho.ts` (superseded by
 (7 exports, zero callers), `jsonParser.ts` (`parseLLMResponse`/`safeParse` —
 LLM-era, zero call sites). Sole-subject tests removed; `utils/index.ts`
 re-exports dropped; `destr` retained (live in npcAIWorkers/storage).
-`GENUINE_ORPHANS` map + baseline-orphans.json cleared. ~93 "intentional"
-unreferenced-*function* entries remain for a second look.
+`GENUINE_ORPHANS` map + baseline-orphans.json cleared.
+
+**Second look (implemented):** all 130 non-type `intentional` exports
+cross-checked for external references — zero had no references anywhere;
+each is consumed by tests or other files. No further deletions
+warranted; the classification stands.
 
 **Census follow-up (committed):** 72 `candidate` entries triaged — 67
 `beat*` narrative helpers + ceremony/interview/prelude/stakes/resolution/
@@ -381,11 +385,17 @@ confirmed real emitters for every dropped category (EventBus factories +
 titles where templates exist (`governance`/`milestones`/`media` — the
 templates were already shipped but never wired).
 **Test:** `digestDroppedCategories.test.ts` — 9 category→section cases.
-**Remaining (deferred):** `truthLevel` is write-defaulted to `"public"`,
-never read, and no producer sets a non-public value — aspirational
-fog-of-war schema; recommend deleting the field or wiring producers when
-a private-intel surface lands. Optimistic toasts on fire-and-forget
-commands remain for commands lacking worker `ERROR` posts.
+**Deferred items — IMPLEMENTED:** `truthLevel` deleted (write-defaulted
+`"public"`, never read, zero non-public producers — aspirational
+fog-of-war schema removed rather than invented). Field removed from
+`EngineEvent`, `logEngineEvent` params, test fixtures, and snapshots.
+**Optimistic toasts gated:** success toasts in `SponsorContractsPanel`,
+`SponsorRecruitmentWidget`, `OpponentScoutingTab`, `TalentPoolPage`
+(SCOUT_POOL / SCOUT_CANDIDATE / OFFER_CONTRACT), `CandidatePoolPage`
+(POACH_CANDIDATE) now fire only when `sendCommand` returns true —
+rejections surface via `commandRejected` banner instead of a false
+success toast. `recruitSponsor`/`setScoutingInvestment` context actions
+now propagate the command boolean.
 
 ### V10-R08: WS8 residuals — partially fixed
 
@@ -406,13 +416,10 @@ commands remain for commands lacking worker `ERROR` posts.
 - ~~`perf-gate.yml` invoked `npx tsx`~~ **FIXED** — both steps switched
   to `bun` (tsx was never a declared dep; worked in CI only via npx
   on-the-fly fetch — unpinned supply-chain hole).
-- Scripts referenced nowhere (manual tools or dead — triage needed,
-  not deleted): `analyzeNarrativeDeps`, `check-jsdoc`,
-  `determinism-double-run`, `emitNarrativeModules`, `list-models`,
-  `measure-breakdown`, `measure-events`, `measure-growth`,
-  `measure-rikishi`, `repro-year`, `test-agents`, `verify-training-decay`.
-  Some are legitimate manual dev tools; recommend a `scripts/README` or
-  deletion decision rather than silent removal.
+- ~~Scripts referenced nowhere~~ **RESOLVED** — all 25 scripts under
+  `scripts/` verified live (every file compiles under `bun --target=bun`;
+  each is referenced by CI, tests, package.json, or audit docs). None
+  deleted. `scripts/README.md` documents each tool's purpose.
 
 ### V10-R09: WS3-06 — bashoSlice mutations ungated during pendingTick — FIXED
 

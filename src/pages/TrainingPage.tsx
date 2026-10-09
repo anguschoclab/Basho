@@ -4,170 +4,45 @@
  * Dedicated stable training management.
  * Features a "Rich Aesthetics" Dossier style with pro-management dashboards.
  * FM-style layout for beya-wide training controls and individual development plans.
+ * State/handlers live in useTrainingState; derived data in useTrainingDerived.
  */
 
-import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
-import {
-  INTENSITY_MULTIPLIERS,
-  FOCUS_BIAS_MATRIX,
-  createDefaultTrainingState,
-  RANK_HIERARCHY,
-} from "@/presenters/uiDigest";
-import type {
-  IndividualFocusType,
-  TrainingIntensity,
-  TrainingFocus,
-  RecoveryEmphasis,
-  HeyaTrainingState,
-} from "@/engine/types/training";
+import type { TrainingIntensity } from "@/engine/types/training";
 import { TrainingHeader } from "@/components/training/TrainingHeader";
-import { getRikishi } from "@/presenters/worldAccess";
 import { BeyaWideRegime } from "@/components/training/BeyaWideRegime";
 import { TrainingAnalytics } from "@/components/training/TrainingAnalytics";
 import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots";
 import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
 import { SparringPanel } from "@/components/game/SparringPanel";
-import { WeightJourneyCard } from "@/components/training/WeightJourneyCard";
-import type { DrillType, DaySchedule } from "@/engine/types/training";
-import type { Rikishi } from "@/engine/types/rikishi";
-
-import { useGameStore } from "@/store/gameStore";
+import { WeightJourneysSection } from "@/components/training/WeightJourneysSection";
 import { getPlayerHeya } from "@/presenters/engineAccess";
-import { selectEncouragementLog } from "@/presenters/selectors";
+import { useTrainingState } from "@/hooks/useTrainingState";
+import { useTrainingDerived } from "@/hooks/useTrainingDerived";
 
 export default function TrainingPage() {
   const { state, addSparringPair, removeSparringPair } = useGame();
-  const sendCommand = useGameStore((s) => s.sendCommand);
   const { world, playerHeyaId } = state;
   const heya = world ? (getPlayerHeya(world) ?? null) : null;
-  const encouragementLog = useMemo(
-    () => (world ? (world.encouragementLog ?? selectEncouragementLog(world)) : []),
-    [world]
-  );
-  const encouragementCount = encouragementLog.length;
 
-  const [trainingState, setTrainingState] = useState<HeyaTrainingState>(() => {
-    if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");
-    return world.trainingState?.get(playerHeyaId) ?? createDefaultTrainingState(playerHeyaId || "");
-  });
+  const { rikishiList, encouragementCount, trainingEffectivenessData, focusBiasData } =
+    useTrainingDerived(world, heya);
 
-  const rikishiList = useMemo<Rikishi[]>(() => {
-    if (!world || !heya) return [];
-    return [...new Set(heya.rikishiIds ?? [])]
-      .map((id) => getRikishi(world, id))
-      .filter((r): r is Rikishi => r !== undefined)
-      .sort((a, b) => {
-        const aTier = RANK_HIERARCHY[a.rank]?.tier ?? 999;
-        const bTier = RANK_HIERARCHY[b.rank]?.tier ?? 999;
-        return aTier - bTier;
-      });
-  }, [world, heya]);
-
-  const trainingEffectivenessData = useMemo(
-    () =>
-      (
-        Object.entries(INTENSITY_MULTIPLIERS) as Array<
-          [TrainingIntensity, { growth: number; fatigue: number; injuryRisk: number }]
-        >
-      ).map(([intensity, eff]) => ({
-        intensity: intensity.charAt(0).toUpperCase() + intensity.slice(1),
-        growth: Math.round(eff.growth * 100),
-        fatigue: Math.round(eff.fatigue * 100),
-        injuryRisk: Math.round(eff.injuryRisk * 100),
-      })),
-    []
-  );
-
-  const focusBiasData = useMemo(
-    () =>
-      (Object.entries(FOCUS_BIAS_MATRIX) as Array<[TrainingFocus, Record<string, number>]>).map(
-        ([focus, biases]) => ({
-          focus: focus.charAt(0).toUpperCase() + focus.slice(1),
-          strength: Math.round((biases.power ?? 1) * 100),
-          speed: Math.round((biases.speed ?? 1) * 100),
-          technique: Math.round((biases.technique ?? 1) * 100),
-          balance: Math.round((biases.balance ?? 1) * 100),
-        })
-      ),
-    []
-  );
+  const {
+    trainingState,
+    handleIntensityChange,
+    handleFocusChange,
+    handleRecoveryChange,
+    handleIndividualFocusChange,
+    handlePlanUpdate,
+    handleBulkUpdate,
+    handleMultiBulkUpdate,
+  } = useTrainingState(world, playerHeyaId);
 
   if (!world || !playerHeyaId || !heya) return null;
-
-  const handleIntensityChange = (intensity: TrainingIntensity) => {
-    setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity } };
-      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
-      return next;
-    });
-  };
-
-  const handleFocusChange = (focus: TrainingFocus) => {
-    setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus } };
-      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
-      return next;
-    });
-  };
-
-  const handleRecoveryChange = (recovery: RecoveryEmphasis) => {
-    setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery } };
-      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
-      return next;
-    });
-  };
-
-  const handleIndividualFocusChange = (
-    rikishiId: string,
-    focusType: IndividualFocusType | null
-  ) => {
-    setTrainingState((prev) => {
-      const slots = (prev.focusSlots || []).filter((s) => s.rikishiId !== rikishiId);
-      if (focusType) slots.push({ rikishiId, focusType });
-      const next = { ...prev, focusSlots: slots };
-      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
-      return next;
-    });
-  };
-
-  const handlePlanUpdate = (rikishiId: string, day: number, drillType: DrillType) => {
-    setTrainingState((prev) => {
-      const plan = { ...(prev.weeklyPlan || {}) };
-      const schedule = { ...(plan[rikishiId] || {}) };
-      schedule[day] = drillType;
-      plan[rikishiId] = schedule as DaySchedule;
-      const next = { ...prev, weeklyPlan: plan };
-      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
-      return next;
-    });
-  };
-
-  const handleBulkUpdate = (rikishiId: string, daySchedule: DaySchedule) => {
-    setTrainingState((prev) => {
-      const plan = { ...(prev.weeklyPlan || {}) };
-      plan[rikishiId] = daySchedule;
-      const next = { ...prev, weeklyPlan: plan };
-      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
-      return next;
-    });
-  };
-
-  const handleMultiBulkUpdate = (rikishiIds: string[], daySchedule: DaySchedule) => {
-    setTrainingState((prev) => {
-      const plan = { ...(prev.weeklyPlan || {}) };
-      rikishiIds.forEach((id) => {
-        plan[id] = daySchedule;
-      });
-      const next = { ...prev, weeklyPlan: plan };
-      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
-      return next;
-    });
-  };
 
   const currentIntensity = trainingState.activeProfile.intensity as TrainingIntensity;
 
@@ -212,20 +87,7 @@ export default function TrainingPage() {
           onRemovePair={(aId, bId) => removeSparringPair(playerHeyaId, aId, bId)}
         />
 
-        {rikishiList.some((r) => r.weightJourney) && (
-          <div className="space-y-4">
-            <h2 className="font-display text-xl font-bold tracking-tight uppercase">
-              Weight Journeys
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {rikishiList
-                .filter((r) => r.weightJourney)
-                .map((r) => (
-                  <WeightJourneyCard key={r.id} journey={r.weightJourney} shikona={r.shikona} />
-                ))}
-            </div>
-          </div>
-        )}
+        <WeightJourneysSection rikishiList={rikishiList} />
 
         <IndividualFocusSlots
           rikishiList={rikishiList}

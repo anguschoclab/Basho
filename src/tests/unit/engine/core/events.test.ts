@@ -364,7 +364,6 @@ describe("events.test.ts - Helpers & Cleanup", () => {
           summary: "s",
           data: {},
           tags: [],
-          truthLevel: "public",
         },
         {
           id: "durable-headline",
@@ -380,7 +379,6 @@ describe("events.test.ts - Helpers & Cleanup", () => {
           summary: "s",
           data: {},
           tags: [],
-          truthLevel: "public",
         }
       );
 

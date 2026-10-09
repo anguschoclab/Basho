@@ -32,8 +32,8 @@ function useGovernanceEconomyCommands(state: GameState) {
   const recruitSponsor = useCallback(
     (sponsorId: string) => {
       const heyaId = state.world?.playerHeyaId;
-      if (!heyaId) return;
-      sendCommand({ type: "RECRUIT_SPONSOR", heyaId, sponsorId });
+      if (!heyaId) return false;
+      return sendCommand({ type: "RECRUIT_SPONSOR", heyaId, sponsorId });
     },
     [state.world?.playerHeyaId, sendCommand]
   );
@@ -109,7 +109,7 @@ function useSocialTutorialCommands() {
 
   const setScoutingInvestment = useCallback(
     (rikishiId: string, investment: import("@/engine/types/narrative").ScoutingInvestment) => {
-      sendCommand({ type: "SET_SCOUTING_INVESTMENT", rikishiId, investment });
+      return sendCommand({ type: "SET_SCOUTING_INVESTMENT", rikishiId, investment });
     },
     [sendCommand]
   );

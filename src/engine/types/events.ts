@@ -263,8 +263,6 @@ export interface EngineEvent {
   /** Narrative context data for this event. */
   data: NarrativeContext;
 
-  /** Truth level (visibility of this information). */
-  truthLevel: "public" | "limited" | "private";
   /** Optional tags for filtering or categorization. */
   tags?: string[];
 }

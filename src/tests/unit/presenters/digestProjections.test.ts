@@ -20,7 +20,6 @@ function makeEvent(overrides: Partial<EngineEvent> & { id: string; type: string 
     title: "",
     summary: "",
     data: {},
-    truthLevel: "public",
     tags: [],
     ...rest,
   } as EngineEvent;

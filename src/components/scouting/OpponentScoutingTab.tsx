@@ -62,7 +62,7 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
     level: "none" | "light" | "standard" | "deep"
   ) => {
     if (!world) return;
-    setScoutingInvestmentAction(rikishiId, level);
+    if (!setScoutingInvestmentAction(rikishiId, level)) return;
     toast({
       title: "Scouting updated",
       description: `Investment set to ${level}.`,

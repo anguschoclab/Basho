@@ -190,7 +190,7 @@ export default function CandidatePoolPage() {
       toast({ title: "No stable selected", description: "Choose a player stable first." });
       return;
     }
-    sendCommand({ type: "POACH_CANDIDATE", candidateId, heyaId: playerHeyaId });
+    if (!sendCommand({ type: "POACH_CANDIDATE", candidateId, heyaId: playerHeyaId })) return;
     toast({
       title: "Poach attempt launched",
       description: "Your scouts are making a competing offer to the prospect.",

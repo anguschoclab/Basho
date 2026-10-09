@@ -125,7 +125,7 @@ export default function TalentPoolPage() {
   }
 
   const onReveal = () => {
-    sendCommand({ type: "SCOUT_POOL", pool: activePool, revealCount: 1 });
+    if (!sendCommand({ type: "SCOUT_POOL", pool: activePool, revealCount: 1 })) return;
     toast({
       title: "Search initiated",
       description: `Your scouts are looking for new leads in the ${poolLabel(activePool)} pool.`,
@@ -133,7 +133,7 @@ export default function TalentPoolPage() {
   };
 
   const onScout = (candidateId: string) => {
-    sendCommand({ type: "SCOUT_CANDIDATE", candidateId, effort: 1 });
+    if (!sendCommand({ type: "SCOUT_CANDIDATE", candidateId, effort: 1 })) return;
     toast({
       title: "Scouting initiated",
       description: "Your scouts are gathering intel on this prospect.",
@@ -145,7 +145,7 @@ export default function TalentPoolPage() {
       toast({ title: "No stable selected", description: "Choose a player stable first." });
       return;
     }
-    sendCommand({ type: "OFFER_CONTRACT", candidateId, heyaId: playerHeyaId });
+    if (!sendCommand({ type: "OFFER_CONTRACT", candidateId, heyaId: playerHeyaId })) return;
     toast({
       title: "Offer submitted",
       description: "The prospect will decide within a few weeks.",

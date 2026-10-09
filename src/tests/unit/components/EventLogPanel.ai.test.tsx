@@ -17,7 +17,6 @@ function makeEvent(category: EngineEvent["category"], title: string, summary: st
     week: 1,
     day: 1,
     data: { reasoning: "AI selected recruitment blitz" },
-    truthLevel: "private",
     heyaId: "h1",
   };
 }

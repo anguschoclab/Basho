@@ -141,7 +141,7 @@ export function SponsorRecruitmentWidget() {
       return;
     }
 
-    recruitSponsorAction(sponsor.sponsorId);
+    if (!recruitSponsorAction(sponsor.sponsorId)) return;
     toast({
       title: "Sponsor recruited",
       description: `${sponsor.displayName} has joined your Kōenkai.`,

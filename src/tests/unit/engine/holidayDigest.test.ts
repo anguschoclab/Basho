@@ -35,7 +35,6 @@ function makeEvent(
     title: partial.title ?? `Event ${partial.id}`,
     summary: partial.summary ?? "",
     data: partial.data ?? {},
-    truthLevel: partial.truthLevel ?? "public",
     tags: partial.tags,
     causalEventId: partial.causalEventId,
   } as EngineEvent;

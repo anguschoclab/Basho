@@ -234,7 +234,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // too old
           {
             id: "e2",
@@ -248,7 +247,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // valid
           {
             id: "e3",
@@ -262,7 +260,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // valid
           {
             id: "e4",
@@ -276,7 +273,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // future
         ],
         dedupe: {},
@@ -306,7 +302,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // media via type
           {
             id: "e2",
@@ -320,7 +315,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // economy via category
           {
             id: "e3",
@@ -334,7 +328,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // economy via category sponsor
           {
             id: "e4",
@@ -348,7 +341,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // scouting via category
           {
             id: "e5",
@@ -362,7 +354,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // training via category
           {
             id: "e6",
@@ -376,7 +367,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // career via category
           {
             id: "e7",
@@ -390,7 +380,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // rivalry via category
           {
             id: "e8",
@@ -404,7 +393,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // governance via type GOVERNANCE
           {
             id: "e9",
@@ -418,7 +406,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // governance via category discipline
           {
             id: "e10",
@@ -432,7 +419,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // welfare via category
           {
             id: "e11",
@@ -446,7 +432,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // welfare via type COMPLIANCE
           {
             id: "e12",
@@ -460,7 +445,6 @@ describe("selectRecentEvents", () => {
             title: "",
             summary: "",
             data: {},
-            truthLevel: "public",
           }, // welfare via type WELFARE
         ],
         dedupe: {},
