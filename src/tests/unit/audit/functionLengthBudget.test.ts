@@ -68,19 +68,17 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
 
 
 
-  "src/pages/StaffPage.tsx::StaffPage": { loc: 191, kind: "function" },
-  "src/components/stable/InfrastructureDashboard.tsx::InfrastructureDashboard": { loc: 187, kind: "function" },
+
   "src/engine/tick/phases/phase05_monthly_boundary.ts::phase05_monthly_boundary": { loc: 183, kind: "function" },
   "src/engine/banzuke.ts::updateBanzuke": { loc: 182, kind: "function" },
-  "src/pages/RegionalHubPage.tsx::RegionalHubPage": { loc: 181, kind: "function" },
+
   "src/engine/bout/KimariteSelectionEngine.ts::evaluate": { loc: 181, kind: "method" },
-  "src/pages/SettingsPage.tsx::SettingsPage": { loc: 180, kind: "function" },
+
   "src/pages/GlobalCupPage.tsx::GlobalCupPage": { loc: 178, kind: "function" },
   "src/engine/bout/boutGrip.ts::evolveGripGeometry": { loc: 178, kind: "function" },
   "src/components/game/WelfarePanel.tsx::WelfarePanel": { loc: 176, kind: "function" },
   "src/pages/SchedulePage.tsx::SchedulePage": { loc: 176, kind: "function" },
   "src/components/scouting/OpponentScoutingTab.tsx::OpponentScoutingTab": { loc: 174, kind: "function" },
-  "src/pages/StaffPage.tsx::StaffCard": { loc: 174, kind: "function" },
   "src/components/rikishi/RankBadge.tsx::RankBadge": { loc: 173, kind: "function" },
   "src/engine/lifecycle/rookieFactory.ts::_generateRookie": { loc: 173, kind: "function" },
   "src/engine/lifecycle/PrizeDistribution.ts::distributePrizes": { loc: 173, kind: "function" },

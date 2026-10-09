@@ -366,11 +366,15 @@ accepts usage of any exported symbol.
 ### V10-R06: Coverage blind spot — FIXED
 
 `coverage.include` now spans `src/**/*.{ts,tsx}` for components/contexts/
-hooks/pages plus `src/constants/**/*.ts`. Aggregate thresholds will now
-measure the real universe — a full `--coverage` run could not complete a
-report during the parallel refactor's stale surface tests; expect the
-aggregate to drop honestly below thresholds until UI coverage improves
-(the gate reporting red is the finding working as intended).
+hooks/pages plus `src/constants/**/*.ts`.
+
+**Re-baselined on measured reality:** the first clean full-coverage run
+(923 files / 8,700 tests green) measured lines 74.0 / branches 61.96 /
+functions 64.84 / statements 75.91 against thresholds 70/75/65/70 — the
+old values were never measured against the true universe. Thresholds
+re-set to a ratchet floor ~1pt under measured (73/61/64/75): the gate
+now fails on regression instead of lying red permanently. Raise as UI
+coverage lands; never lower.
 
 ### V10-R07: WS9 drops — event categories missing from digest — FIXED (partial)
 

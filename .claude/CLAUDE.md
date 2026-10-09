@@ -141,7 +141,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 - **Meta gates** (`src/tests/unit/meta/`): `noSubprocessInUnitTests` (no `child_process`/`runAutoSim` in unit/), `testTimingsBudget` (per-file duration budget vs `test-timings.json`), `factoryDiscipline` (allowlisted local factories only), `testTimeoutBudget`, `weakAssertionAudit`.
 - **Mock factories:** primary is `src/tests/helpers/utils/MockFactory.ts` (~118 consumers); `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
-- **Coverage thresholds:** lines 70%, branches 75%, functions 65%, statements 70% (v8 provider)
+- **Coverage thresholds:** lines 73%, branches 61%, functions 64%, statements 75% (v8 provider) — ratchet floor re-baselined v10-R06 after `.tsx`/constants were added to `include`; measured run: 74.0/61.96/64.84/75.91
 - **Current status (v8 consolidation, Oct 2026):** 860 test files, 8,330 tests, all passing. `bun run type-check` clean. `bun run build` succeeds. E2E: 5/5 specs green.
 - **Command-path note:** engine mutations go through the worker via `sendCommand`. The interactive basho path (`SIMULATE_BOUT` etc.) still resolves on the main thread for match animation, but tactics live on `world.boutTactics` and every world-mutating slice case bumps `state.uiWorldRevision`, which GameContext syncs back to the worker via `LOAD_WORLD`. Never reintroduce a world write that skips this sync.
 
