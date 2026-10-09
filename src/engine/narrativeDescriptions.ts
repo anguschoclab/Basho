@@ -7,47 +7,10 @@
  * Goal: No monoliths, 100% de-duplication.
  */
 
-import { NarrativeService } from "./systems/narrative/NarrativeService";
-import { rngFromSeed } from "./rng";
-
-const DUMMY_RNG = rngFromSeed("static-narrative", "system", "desc");
-
 // --- AUTHORITATIVE DELEGATION ---
 export * from "./systems/narrative/NarrativeBands";
 export * from "./systems/narrative/NarrativeProse";
 export * from "./systems/narrative/NarrativeService";
-
-/**
- * Public helper for describing attributes (Backward compatible).
- */
-export function describeAttribute(value: number): string {
-  const band = NarrativeService.getStatBand(value);
-  return NarrativeService.getStatLabel(DUMMY_RNG, band);
-}
-
-/**
- * Public helper for describing aggression level (Backward compatible).
- */
-export function describeAggression(value: number): string {
-  const band = NarrativeService.getStatBand(value);
-  return NarrativeService.getStatLabel(DUMMY_RNG, band);
-}
-
-/**
- * Public helper for describing experience level (Backward compatible).
- */
-export function describeExperience(value: number): string {
-  const band = NarrativeService.getStatBand(value);
-  return NarrativeService.getStatLabel(DUMMY_RNG, band);
-}
-
-/**
- * Public helper for describing fatigue (Backward compatible).
- */
-export function describeFatigue(value: number): string {
-  const band = NarrativeService.getFatigueBand(value);
-  return NarrativeService.getFatigueLabel(DUMMY_RNG, band);
-}
 
 /**
  * Describe training effect (Legacy helper).

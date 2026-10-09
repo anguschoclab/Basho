@@ -128,7 +128,7 @@ describe("v7 equivalence — StrategicPlanner createPlan (#991)", () => {
         },
       },
     });
-    const ctx = buildAIContext(world, "h1", "o1");
+    const ctx = buildAIContext(world, "h1", world.oyakata.get("o1"));
     const plan = createPlan(ctx);
     expect(plan).toBeDefined();
     expect(plan!.planId).toBe("talent_pipeline");

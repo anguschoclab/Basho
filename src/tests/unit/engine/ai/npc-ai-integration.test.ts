@@ -27,7 +27,7 @@ describe("NPC AI integration", () => {
         traits: { ambition: 50, risk: 50, tradition: 50, patience: 50, compassion: 50 },
       } as any);
 
-      const ctx = buildAIContext(world, "h1", "o1");
+      const ctx = buildAIContext(world, "h1", world.oyakata.get("o1"));
       const plan = createPlan(ctx);
       const decision = makeNPCWeeklyDecision(world, "h1", plan ?? undefined);
 

@@ -29,11 +29,25 @@ describe("buildAIContext", () => {
       traits: { ambition: 50, risk: 50, tradition: 50, patience: 50, compassion: 50 },
       mood: "calm",
     } as any);
-    const ctx = buildAIContext(world, HEYA_ID, OYAKATA_ID);
+    const ctx = buildAIContext(world, HEYA_ID, world.oyakata.get(OYAKATA_ID));
     expect(ctx.oyakata).toBeDefined();
     expect(ctx.oyakata?.id).toBe(OYAKATA_ID);
     expect(ctx.oyakata?.archetype).toBe("traditionalist");
-    expect(ctx.memory).toBeDefined();
+  });
+
+  it("mirrors oyakata.memory — consolidation happens upstream", () => {
+    const world = makeMockWorld();
+    const heya = makeMockHeya(HEYA_ID, { oyakataId: OYAKATA_ID });
+    world.heyas.set(HEYA_ID, heya);
+    world.oyakata.set(OYAKATA_ID, {
+      id: OYAKATA_ID,
+      name: "Oya",
+      archetype: "traditionalist",
+      traits: { ambition: 50, risk: 50, tradition: 50, patience: 50, compassion: 50 },
+      memory: { activePlan: undefined },
+    } as any);
+    const ctx = buildAIContext(world, HEYA_ID, world.oyakata.get(OYAKATA_ID));
+    expect(ctx.memory).toBe(world.oyakata.get(OYAKATA_ID)?.memory);
   });
 
   it("reuses a precomputed league perception when supplied", () => {

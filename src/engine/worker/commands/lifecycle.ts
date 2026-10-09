@@ -43,7 +43,7 @@ function generateWorld(opts: {
     for (const h of world.heyas.values()) {
       if (h.id !== world.playerHeyaId) targetPop += TARGET_ROSTER_SIZE;
     }
-    world._populationTarget = targetPop;
+    world._populationTarget = targetPop; // @world-builder
   }
   if (opts.playerConfig?.oyakataConfig && world.playerHeyaId) {
     world = applyOyakataCreationConfig(world, world.playerHeyaId, opts.playerConfig.oyakataConfig);

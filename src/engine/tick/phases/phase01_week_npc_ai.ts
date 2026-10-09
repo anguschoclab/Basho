@@ -21,6 +21,7 @@ import type { StateImpact } from "../../core/StateImpact";
 import { getAvailableStables } from "../../selectors";
 import { buildPerceptionSnapshot } from "../../perception";
 import { buildLeaguePerception } from "../../npcAI/LeaguePerception";
+import { buildAIContext } from "../../npcAI/contextBuilder";
 import { createPlan, shouldReplan } from "../../npcAI/StrategicPlanner";
 import { makeNPCWeeklyDecision } from "../../npcAI";
 import { enforceHardCapRosterOverflow } from "../../overflow";
@@ -121,19 +122,7 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       nextOya.managerFlags = persona.managerFlags;
       nextOya.memory = consolidateOyakataMemoryPure(world, nextOya, perception);
 
-      const aiCtx: AIContext = {
-        world,
-        heyaId: heya.id,
-        oyakata: {
-          id: nextOya.id,
-          archetype: nextOya.archetype,
-          traits: nextOya.traits,
-          mood: nextOya.mood,
-        },
-        perception,
-        leaguePerception,
-        memory: nextOya.memory,
-      };
+      const aiCtx: AIContext = buildAIContext(world, heya.id, nextOya, leaguePerception, perception);
 
       const activePlan = nextOya.memory?.activePlan;
       const needsReplan = shouldReplan(aiCtx, activePlan);

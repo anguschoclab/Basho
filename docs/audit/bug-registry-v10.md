@@ -278,25 +278,32 @@ open. **Cluster:** W-residual.
 
 Executed directly this pass: cadence gates use `_daysSinceLastWeeklyTick >=`
 thresholds (not `% 7`) — **no off-by-one**; `generateGovernanceHeadline` has
-zero positional call sites — **clean**; fixed-string RNG seeds: only
-`DUMMY_RNG` (`narrativeDescriptions`) — module-level shared RNG makes stat/
-fatigue labels call-order-dependent (cosmetic; should be per-entity seeded —
-MINOR OPEN). `h2h` record-seeded RNG varies per pair — clean.
+zero positional call sites — **clean**; `h2h` record-seeded RNG varies per
+pair — clean.
+`DUMMY_RNG` (`narrativeDescriptions`) — **RESOLVED by deletion**: the four
+shared-RNG helpers (`describeAttribute`/`describeAggression`/
+`describeExperience`/`describeFatigue`) had zero production callers —
+`uiDigest` re-exported three of them dead. Helpers + `DUMMY_RNG` + dead
+re-exports removed; `describeTrainingEffect` kept (live caller:
+`BeyaWideRegime`). The call-order-dependence hazard is gone entirely
+rather than re-seeded.
 Still open: phase-order read-before-write sweep, `cyclePhase` unreachable
 states, `bashoPipeline` vs `offSeasonPipeline` divergence, `?? N` NaN-masking
 survey, shallow-merge wipe census beyond the sites already fixed.
 
-### V10-R03: Dead provider — `react-query`
+### V10-R03: Dead provider — `react-query` — FIXED
 
-`QueryClientProvider` wraps `App.tsx` with zero `useQuery`/`useMutation`
-call sites in the repo. **Fix:** remove provider + dependency.
+`QueryClientProvider` wrapped `App.tsx` with zero `useQuery`/`useMutation`
+call sites. **Fixed:** provider + `QueryClient` removed from `App.tsx` and
+`build/smoke.test.tsx`; `@tanstack/react-query` removed from dependencies.
 
-### V10-R04: Decorative guard — `engine-reviewer.ts`
+### V10-R04: Decorative guard — `engine-reviewer.ts` — FIXED
 
-`scripts/engine-reviewer.ts` is imported only by tests scanning *synthetic*
-samples; nothing runs it over `src/engine`. CLAUDE.md's "flags any
-reintroduced call site" claim is false as a live gate. **Fix:** either wire
-it into a gate or remove + correct the doc.
+Was imported only by tests scanning synthetic samples. **Fixed:** wired as
+a live slow gate (`src/tests/slow/audit/engineReviewerGate.test.ts`) running
+the real scan over `src/engine` — the CLAUDE.md "flags any reintroduced
+call site" claim is now true. Three real violations surfaced on first run
+(world-init writes missing `@world-builder`) — annotated.
 
 ### V10-R05: 17 `genuine` orphans (orphan-audit baseline)
 
@@ -317,11 +324,15 @@ thresholds gate at 70–75%.
 (B04) but the digest drops 11 categories. Optimistic toasts on
 fire-and-forget commands remain for commands lacking worker `ERROR` posts.
 
-### V10-R08: WS8 residuals
+### V10-R08: WS8 residuals — partially fixed
 
-- `test:timings` references bare `tsx` (not a dep) — broken script.
+- ~~`test:timings` references bare `tsx`~~ **FIXED** — script now runs via
+  `bun` (native TS execution), verified runnable.
+- ~~UI→engine eslint denylist holes~~ **FIXED** — enumerated patterns
+  replaced with blanket `@/engine/*` + `@/engine/**/*` deny allowing only
+  `@/engine/types/**` and `@/engine/holiday` (all current UI imports are
+  type-only); lint clean.
 - Perf-gate job structurally over-budget (S4 25-yr sim inside a 15-min job).
-- UI→engine eslint denylist has holes (`@/engine/systems/*` deep paths).
 - Husky dead on fresh clones (no `prepare`, husky absent from devDeps);
   `lint-staged` block fully dead. Fires locally only because
   `core.hooksPath` is set on this clone.
@@ -332,10 +343,16 @@ fire-and-forget commands remain for commands lacking worker `ERROR` posts.
 Documented v5 residual; still present. Gate reducer mutations on
 `pendingTick` like the sync effect.
 
-### V10-R10: `buildAIContext` still orphaned
+### V10-R10: `buildAIContext` still orphaned — FIXED
 
-WS3-10: `coordinateDecision` IS live, `MediaAgent` IS wired (ai-audit
-residuals mostly landed); `buildAIContext` remains unreachable.
+`buildAIContext` is now the canonical context assembler:
+`phase01_week_npc_ai` calls it with the persona-hydrated oyakata and the
+precomputed perception/league views instead of an inline literal. Its
+oyakata projection now carries `grudges` (previously dropped — a real gap:
+`StrategicPlanner` reads `ctx.oyakata.grudges`). Signature takes the
+resolved `Oyakata` rather than an id so memory consolidation stays
+upstream where persona quirks are visible. ORPH-0098 removed from
+`baseline-orphans.json` + `GENUINE_ORPHANS`.
 
 ---
 

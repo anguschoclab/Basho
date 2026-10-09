@@ -1,47 +1,7 @@
 import { describe, it, expect } from "vitest";
-import {
-  describeAttribute,
-  describeAggression,
-  describeExperience,
-  describeFatigue,
-  describeTrainingEffect,
-} from "@/engine/narrativeDescriptions";
+import { describeTrainingEffect } from "@/engine/narrativeDescriptions";
 
 describe("narrativeDescriptions", () => {
-  describe("describeAttribute", () => {
-    it("returns a string descriptor for a given value", () => {
-      expect(typeof describeAttribute(95)).toBe("string");
-      expect(describeAttribute(95).length).toBeGreaterThan(0);
-    });
-
-    it("returns different descriptors for significantly different values", () => {
-      const high = describeAttribute(95);
-      const low = describeAttribute(10);
-      expect(high).not.toBe(low);
-    });
-  });
-
-  describe("describeAggression", () => {
-    it("returns a string descriptor for a given value", () => {
-      expect(typeof describeAggression(20)).toBe("string");
-      expect(describeAggression(20).length).toBeGreaterThan(0);
-    });
-  });
-
-  describe("describeExperience", () => {
-    it("returns a string descriptor for a given value", () => {
-      expect(typeof describeExperience(75)).toBe("string");
-      expect(describeExperience(75).length).toBeGreaterThan(0);
-    });
-  });
-
-  describe("describeFatigue", () => {
-    it("returns a string descriptor for a given value", () => {
-      expect(typeof describeFatigue(90)).toBe("string");
-      expect(describeFatigue(90).length).toBeGreaterThan(0);
-    });
-  });
-
   describe("describeTrainingEffect", () => {
     it("should return correct string for multiplier >= 1.5", () => {
       expect(describeTrainingEffect(1.6)).toBe("Dramatically increases");

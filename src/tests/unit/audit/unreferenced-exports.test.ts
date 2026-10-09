@@ -410,8 +410,6 @@ const GENUINE_ORPHANS: Record<string, string> = {
     "ORPH-0137 dead module — wire honbasho helpers into basho setup or remove",
   "src/engine/core/EntityService.ts:EntityService":
     "ORPH-0149 facade exercised only by EntityService.test.ts — wire into app bootstrap or remove",
-  "src/engine/npcAI/contextBuilder.ts:buildAIContext":
-    "ORPH-0098 no production callers — wire into the NPC AI pipeline or remove",
   "src/engine/utils/collectionOperations.ts:mapIdsToEntities":
     "ORPH-0190 barrel-only export with no consumers — wire or remove",
   "src/engine/utils/collectionOperations.ts:mapIdsToRikishi":

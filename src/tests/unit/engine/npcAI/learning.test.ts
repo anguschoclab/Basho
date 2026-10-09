@@ -17,7 +17,7 @@ describe("StrategicPlanner learning", () => {
     } as any;
     world.oyakata.set("o1", oyakata);
 
-    const baseCtx = buildAIContext(world, "h1", "o1");
+    const baseCtx = buildAIContext(world, "h1", world.oyakata.get("o1"));
     const firstPlan = createPlan(baseCtx)!;
 
     const memory = emptyOyakataMemory(oyakata, world.week);
@@ -29,7 +29,7 @@ describe("StrategicPlanner learning", () => {
       summary: "failed",
     }));
 
-    const ctxWithMemory = buildAIContext(world, "h1", "o1");
+    const ctxWithMemory = buildAIContext(world, "h1", world.oyakata.get("o1"));
     ctxWithMemory.memory = memory;
     const nextPlan = createPlan(ctxWithMemory)!;
 
@@ -48,7 +48,7 @@ describe("StrategicPlanner learning", () => {
     } as any;
     world.oyakata.set("o1", oyakata);
 
-    const ctx = buildAIContext(world, "h1", "o1");
+    const ctx = buildAIContext(world, "h1", world.oyakata.get("o1"));
     const plan = createPlan(ctx)!;
     expect(plan).toBeDefined();
     expect(plan.planId).toBeTruthy();

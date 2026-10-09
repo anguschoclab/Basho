@@ -3,7 +3,6 @@ import { render } from "@testing-library/react";
 import { GameProvider } from "@/contexts/GameContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
 vi.stubGlobal("Worker", class {
@@ -14,17 +13,13 @@ vi.stubGlobal("Worker", class {
   removeEventListener = vi.fn();
 });
 
-const queryClient = new QueryClient();
-
 function AllProviders({ children }: { children: ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <GameProvider>{children}</GameProvider>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="dark">
+      <TooltipProvider>
+        <GameProvider>{children}</GameProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   );
 }
 

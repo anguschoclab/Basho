@@ -16,7 +16,7 @@ describe("AI memory and decision determinism", () => {
       archetype: "traditionalist",
       traits: { ambition: 50, risk: 50, tradition: 50, patience: 50, compassion: 50 },
     } as any);
-    const ctx = buildAIContext(world, "h1", "o1");
+    const ctx = buildAIContext(world, "h1", world.oyakata.get("o1"));
     const a = createPlan(ctx);
     const b = createPlan(ctx);
     expect(a).toEqual(b);

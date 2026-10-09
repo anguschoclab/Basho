@@ -1033,17 +1033,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0098",
-      "file": "src/engine/npcAI/contextBuilder.ts",
-      "symbol": "buildAIContext",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
       "id": "ORPH-0099",
       "file": "src/engine/npcAI/opponentLearning.ts",
       "symbol": "MAX_OPPONENT_MODELS",

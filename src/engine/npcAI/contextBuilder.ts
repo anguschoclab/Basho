@@ -4,45 +4,41 @@
  * Assembles the AIContext object consumed by StrategicPlanner, TacticalCoordinator,
  * and other advanced AI modules. Keeps the construction logic in one place so
  * callers (e.g. weekly NPC AI phase) do not duplicate it.
+ *
+ * Callers pass the already persona-hydrated oyakata — memory consolidation
+ * happens upstream so quirks/flags are visible to it.
  */
 
 import type { Id } from "../types/common";
 import type { WorldState } from "../types/world";
 import type { Oyakata } from "../types/oyakata";
-import type { AIContext } from "../ai/types";
+import type { AIContext, LeaguePerception } from "../ai/types";
+import type { PerceptionSnapshot } from "../perception";
 import { buildPerceptionSnapshot } from "../perception";
 import { buildLeaguePerception } from "../npcAI/LeaguePerception";
-import { consolidateOyakataMemoryPure } from "../tick/phases/npc_ai/memory";
 
-/** Build an AI context for a single heya, optionally reusing a precomputed league view. */
+/** Build an AI context for a single heya, optionally reusing precomputed views. */
 export function buildAIContext(
   world: WorldState,
   heyaId: Id,
-  oyakataId?: Id,
-  leaguePerception?: ReturnType<typeof buildLeaguePerception>
+  oyakata?: Oyakata,
+  leaguePerception?: LeaguePerception,
+  perception?: PerceptionSnapshot
 ): AIContext {
-  const perception = buildPerceptionSnapshot(world, heyaId);
-  const league = leaguePerception ?? buildLeaguePerception(world);
-
-  const rawOyakata: Oyakata | undefined = oyakataId ? world.oyakata.get(oyakataId) : undefined;
-
-  const memory = rawOyakata
-    ? consolidateOyakataMemoryPure(world, rawOyakata, perception)
-    : undefined;
-
   return {
     world,
     heyaId,
-    oyakata: rawOyakata
+    oyakata: oyakata
       ? {
-          id: rawOyakata.id,
-          archetype: rawOyakata.archetype,
-          traits: rawOyakata.traits,
-          mood: rawOyakata.mood,
+          id: oyakata.id,
+          archetype: oyakata.archetype,
+          traits: oyakata.traits,
+          mood: oyakata.mood,
+          grudges: oyakata.grudges,
         }
       : undefined,
-    perception,
-    leaguePerception: league,
-    memory,
+    perception: perception ?? buildPerceptionSnapshot(world, heyaId),
+    leaguePerception: leaguePerception ?? buildLeaguePerception(world),
+    memory: oyakata?.memory,
   };
 }

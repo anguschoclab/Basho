@@ -143,11 +143,11 @@ export function generateInitialWorld(seed: string): WorldState {
   // Initialize and populate talent pools — ensureTalentPoolState is pure, so
   // assign the hydrated shell explicitly, then resolve the first weekly tick's
   // impact (previously discarded, so the initial pool was never applied).
-  world.talentPool = talentpool.ensureTalentPoolState(world);
+  world.talentPool = talentpool.ensureTalentPoolState(world); // @world-builder
   world = resolveImpacts(world, [talentpool.tickWeekTalentPool(world)]);
 
   // Initialize candidate pool (NPC watchlist)
-  world.candidatePool = ensureCandidatePoolState(world);
+  world.candidatePool = ensureCandidatePoolState(world); // @world-builder
 
   // Capture equilibrium active population target for the replacement-rate controller.
   // The initial roster is intentionally small (~440); recruitment fills stables to

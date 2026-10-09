@@ -125,12 +125,7 @@ export {
 // The UI layer MUST NOT import from @/engine directly.
 // ─────────────────────────────────────────
 export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
-export {
-  describeAggression,
-  describeAttribute,
-  describeExperience,
-  describeTrainingEffect,
-} from "../engine/narrativeDescriptions";
+export { describeTrainingEffect } from "../engine/narrativeDescriptions";
 export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
 export {
   createScoutedView,

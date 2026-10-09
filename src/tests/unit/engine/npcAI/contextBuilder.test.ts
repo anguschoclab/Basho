@@ -15,7 +15,7 @@ describe("buildAIContext — return shape (Step 2 regression)", () => {
       playerHeyaId: "heya-1",
     });
 
-    const ctx = buildAIContext(world, "heya-1", "oy-1");
+    const ctx = buildAIContext(world, "heya-1", oyakata);
 
     expect(ctx).toBeDefined();
     expect(ctx.world).toBe(world);
@@ -32,10 +32,10 @@ describe("buildAIContext — return shape (Step 2 regression)", () => {
     });
     expect(ctx.perception).toBeDefined();
     expect(ctx.leaguePerception).toBeDefined();
-    expect(ctx.memory).toBeDefined();
+    expect(ctx.memory).toBe(oyakata.memory);
   });
 
-  it("returns AIContext without oyakata/memory when oyakataId is omitted", () => {
+  it("returns AIContext without oyakata/memory when oyakata is omitted", () => {
     const heya = MockFactory.createHeya("heya-1");
     const world = MockFactory.createWorld({
       heyas: new Map([["heya-1", heya]]),
