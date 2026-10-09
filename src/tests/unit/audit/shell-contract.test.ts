@@ -73,7 +73,8 @@ describe("Shell contract — PageHeader usage", () => {
     "pages/HistoryPage.tsx",
     "pages/AlmanacPage.tsx",
     "pages/MediaPage.tsx",
-    "pages/HallOfFamePage.tsx",
+    // HallOfFamePage delegates PageHeader to HallHero in hof sections
+    "components/hof/HofPageSections.tsx",
     "pages/InjuryRecoveryPage.tsx",
     "pages/SponsorManagementPage.tsx",
     "pages/TrendsPage.tsx",

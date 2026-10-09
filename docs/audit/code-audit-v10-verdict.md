@@ -94,13 +94,14 @@ See `bug-registry-v10.md` — headline items:
 - **R03:** dead `react-query` provider + dependency.
 - **R04:** `engine-reviewer.ts` is decorative — self-tested, never runs
   over `src/engine`; CLAUDE.md claim disproved.
-- **R05:** 17 `genuine` orphans from orphan-audit baseline (`honbasho.ts`
-  API surface, `collectionOperations.ts`, `parseLLMResponse`); ~93 of the
-  192 `intentional` entries are unreferenced functions needing second look.
-- **R06:** coverage `include` misses ~337 production files (all `.tsx`,
-  `src/constants/**`) while thresholds gate at 70–75%.
-- **R07:** 11 event categories dropped from digest; `truthLevel` written
-  but unread.
+- ~~**R05:**~~ **FIXED** — 4 dead modules + sole-subject tests removed;
+  72 census candidates triaged (67 `beat*` helpers unexported in place);
+  unused-component scanner false-positive fixed; second-look on the 130
+  remaining `intentional` value exports found zero unreferenced.
+- ~~**R06:**~~ **FIXED** — coverage `include` spans `.tsx` + `src/constants`.
+- ~~**R07:**~~ **FIXED** — all produced event categories render in the
+  digest; `truthLevel` write-only schema field deleted outright; the six
+  optimistic-toast sites now gate on `sendCommand`'s return.
 - **R08:** `test:timings` broken (bare `tsx`); perf-gate job structurally
   over-budget; UI→engine eslint denylist holes; husky dead on fresh clones.
 - **R09:** `bashoSlice` mutations ungated during `pendingTick` (v5 carry).
@@ -115,11 +116,14 @@ See `bug-registry-v10.md` — headline items:
 
 ## Caveats
 
-- **WS1/WS2 sub-agents died at rate limit** — their residual hunts were
-  executed inline where feasible (cadence off-by-one, positional-arg
-  hazards, RNG fixed seeds: all clean except R12). Phase-order
-  read-before-write sweep, `cyclePhase` unreachable states, and `?? N`
-  NaN-masking survey remain open.
+- **WS1/WS2 sub-agents died at rate limit** — all their residual hunts
+  were subsequently executed inline: cadence off-by-one (clean),
+  positional-arg hazards (clean), RNG fixed seeds (R12 fixed by deletion),
+  phase-order read-before-write (clear — `preserveRevenueExpenses`
+  merges), `cyclePhase` reachability (all 5 phases reachable, boundary
+  clamps prevent skips), `?? N` NaN-masking (clear — all presenter
+  divisions denominator-guarded), shallow-merge wipe census (clear — all
+  nested writes complete objects).
 - **Parallel refactor landed:** the parallel session's staged work
   (EventBus extraction, npcAI splits, characterization tests,
   `BashoPage`/`GovernancePage` tab refactors) was converged with the audit

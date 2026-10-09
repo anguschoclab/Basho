@@ -66,8 +66,8 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   "src/engine/core/ImpactResolver.ts::_applyImpact": { loc: 206, kind: "function" },
   "src/engine/tick/phases/phase06_yearly_boundary.ts::phase06_yearly_boundary": { loc: 199, kind: "function" },
 
-  "src/components/menu/HeyaPreview.tsx::HeyaPreview": { loc: 193, kind: "function" },
-  "src/components/game/BoutResultDisplay.tsx::BoutResultDisplay": { loc: 191, kind: "function" },
+
+
   "src/pages/StaffPage.tsx::StaffPage": { loc: 191, kind: "function" },
   "src/components/stable/InfrastructureDashboard.tsx::InfrastructureDashboard": { loc: 187, kind: "function" },
   "src/engine/tick/phases/phase05_monthly_boundary.ts::phase05_monthly_boundary": { loc: 183, kind: "function" },
