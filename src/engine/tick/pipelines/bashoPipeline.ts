@@ -13,13 +13,17 @@
  *   3. Staff     — staff fatigue/morale still ticks during basho
  *   4. Scouting  — scouting decay still ticks during basho
  *   5. Health    — recovery for injured rikishi (no new injury rolls during basho)
- *   6. Governance — governance reviews still apply
- *   7. NPC AI    — rival stables still make strategic decisions
- *   8. Narrative — financial crisis events still fire if applicable
+ *   6. Welfare   — risk shifts + compliance transitions still apply; the
+ *                  basho weeks are exactly when injury pressure peaks, and
+ *                  freezing the lifecycle mid-tournament stalls sanctions
+ *   7. Governance — governance reviews still apply
+ *   8. NPC AI    — rival stables still make strategic decisions
+ *   9. Narrative — financial crisis events still fire if applicable
  *
  * Phases intentionally excluded:
  *   - Training: rikishi do not train during competition.
- *   - Welfare: injury rolling is handled by boutResolver per bout outcome.
+ *   - Pre-basho assessment, world circuit, academy, global cup:
+ *     off-season-only concerns.
  */
 
 import type { PipelinePhase } from "../pipelineRunner";
@@ -31,6 +35,7 @@ export const bashoPipeline: PipelinePhase[] = [
   phases.phase01_week_staff, // Staff fatigue/morale still ticks during basho
   phases.phase01_week_scouting, // Scouting decay still ticks during basho
   phases.phase01_week_health, // Recovery for injured rikishi (injury rolls skipped during basho)
+  phases.phase01_week_welfare, // Risk/compliance tick during basho too — reads health output, must follow it
   phases.phase01_week_governance,
   phases.phase01_week_rikishi_agency, // Rikishi dispositions/requests/incidents — must precede NPC resolution
   phases.phase01_week_npc_ai,
