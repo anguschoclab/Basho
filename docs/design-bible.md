@@ -1,6 +1,6 @@
 # Basho — UI/UX Design Bible
 
-**Version 1.0 · Kokugikan Noir Design System**
+Version 1.0 · Kokugikan Noir Design System
 
 ---
 
@@ -198,7 +198,7 @@ Tailwind: font-mono
 
 The game uses a persistent FM-style three-pane layout:
 
-```
+```text
 ┌─────────────┬──────────────────────────────┬────────────┐
 │             │  TopNavBar (h-12, sticky)     │            │
 │  AppSidebar │──────────────────────────────│ EventLog   │
@@ -218,7 +218,7 @@ The game uses a persistent FM-style three-pane layout:
 
 ### 4.2 Sidebar Anatomy
 
-```
+```text
 ┌─ SidebarHeader ──────────────────────┐
 │  [力] Basho Manager                  │  ← Gold lacquer box + Shippori Mincho
 │  ─────────────── (gold hairline)     │
@@ -243,7 +243,7 @@ The game uses a persistent FM-style three-pane layout:
 
 ### 4.3 Top Navigation Bar
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │ [☰] | Year 12 · Wk 3  [● Day 7 TOURNAMENT]  ¥4,200,000 │ … [☀][⚙] [──] [▶ Day 7 →]
 └─────────────────────────────────────────────────────────┘
@@ -615,4 +615,4 @@ rather than hardcoded Tailwind color classes like `text-yellow-400`.
 
 ---
 
-_Last updated: April 2026 — Kokugikan Noir v1.0_
+Last updated: April 2026 — Kokugikan Noir v1.0

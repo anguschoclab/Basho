@@ -7,7 +7,7 @@
 ## Headline measurements
 
 | Metric | Value | Notes |
-|---|---|---|
+| --- | --- | --- |
 | Production files scanned | 881 | excludes `src/tests`, `*.test.*` |
 | Functions/methods/arrows ≥150 LOC | **112** | was estimated 69 by pre-AST heuristic — methods were undercounted |
 | `const-obj`/`const-arr` ≥150 LOC | 22 | service-object monoliths + data tables |
@@ -20,7 +20,7 @@
 ## Engine domain registry
 
 | Path | Verdict(s) | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | `engine/bout/boutNarrative.ts` | REFACTOR | `generateBoutNarrative` 2623 LOC + nested arrow 427 → stage-pipeline split; largest fn in codebase |
 | `engine/bout/` (rest) | REFACTOR+DEDUPE+DELETE | `applyBoutResult` 387, `resolveBout` 355; `KimariteSelectionEngine` obj 186; DELETE `honbasho.ts`, `kachiNokori.ts` (dead + divergent dup) |
 | `engine/bout/physics/` | REFACTOR | `resolveTachiaiV2` 277, `tickBeltBattle` 241, `tickPushBattle` 231 |
@@ -56,7 +56,7 @@
 ## UI domain registry
 
 | Path | Verdict(s) | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | `pages/` (37 pages + helpers) | REFACTOR | 25 of 112 long functions live here: `GovernancePage` 700, `Dashboard` 512, `BashoPage` 456, `AlmanacPage` 375, `RecapPage` 374, `MainMenu` 362, `MyosekiMarketPage` 311, `OyakataPage` 307 → extract view-models/sub-sections; then P5 design pass |
 | `contexts/GameContext.tsx` | REFACTOR | `GameProvider` 472 → slice extraction (`bashoSlice` 162 already a seam) |
 | `components/game/boutReplay/` | REFACTOR | `useBoutReplay` 472; `boutCanvas/draw.ts` `getTargetState` 260, `drawRikishi` 259; `PHASE_LABELS` rename (dup w/ calendar) |
@@ -75,7 +75,7 @@
 ## Cross-cutting verdicts
 
 | Finding | Verdict | Action |
-|---|---|---|
+| --- | --- | --- |
 | `calculateKachiNokori` divergence | DEDUPE (canonical=Service) | Phase 1 semantic pin → Phase 3 delete `bout/kachiNokori.ts` |
 | `buildAIContext` | WIRE (confirmed) | signature `(world, heyaId, oyakataId?, leaguePerception?)` matches the hand-built `AIContext` literal at `phase01_week_npc_ai.ts:110` — canonical ctor adoption at 4 sites |
 | `simulation/` subsystem | TOOL | keep; document in service-map; refactor wave optional |
@@ -112,7 +112,7 @@
 > Canvas/SVG literals centralized in `src/constants/ui/drawingPalette.ts` (`DOHYO_COLORS`, `BOUT_FIGURE_COLORS`, `BOUT_HUD_COLORS`, `AVATAR_COLORS`, `KESHO_COLORS`, `KESHO_PRESETS`, `CHART_SERIES`, `HEAT_BANDS`, `PERCEPTION_TICKS`, `withAlpha()`).
 
 | Page | Verdict | Fix list / notes |
-|---|---|---|
+| --- | --- | --- |
 | `Dashboard.tsx` | PASS | widget text sizes→scale, palette→tokens (via `components/dashboard/*` wave) |
 | `BanzukePage.tsx` | PASS | `BashoStandingsEvolution` series → `CHART_SERIES` |
 | `BashoPage.tsx` | PASS | palette→tokens via `components/basho/*` wave |
