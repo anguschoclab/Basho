@@ -63,31 +63,33 @@ describe("PoliticalFavorsService — call site wiring", () => {
 describe("GovernancePage — UI surface", () => {
   it("uses projectGovernanceDerived projection", () => {
     const page = readSrcFile("pages/GovernancePage.tsx");
-    expect(page).toContain("projectGovernanceDerived");
+    const hook = readSrcFile("hooks/useGovernanceDerived.tsx");
+    expect(page).toContain("useGovernanceDerived");
+    expect(hook).toContain("projectGovernanceDerived");
   });
 
   it("renders scandal score and band from projection", () => {
-    const page = readSrcFile("pages/GovernancePage.tsx");
-    expect(page).toContain("scandal");
-    expect(page).toContain("SCANDAL_LABELS");
+    const hook = readSrcFile("hooks/useGovernanceDerived.tsx");
+    expect(hook).toContain("scandal");
+    expect(hook).toContain("SCANDAL_LABELS");
   });
 
   it("renders welfare state and compliance status", () => {
-    const page = readSrcFile("pages/GovernancePage.tsx");
-    expect(page).toContain("welfare");
-    expect(page).toContain("complianceState");
+    const hook = readSrcFile("hooks/useGovernanceDerived.tsx");
+    expect(hook).toContain("welfare");
+    expect(hook).toContain("complianceState");
   });
 
   it("renders governance history and pending rulings", () => {
-    const page = readSrcFile("pages/GovernancePage.tsx");
-    expect(page).toContain("governanceHistory");
-    expect(page).toContain("pendingRulings");
+    const hook = readSrcFile("hooks/useGovernanceDerived.tsx");
+    expect(hook).toContain("governanceHistory");
+    expect(hook).toContain("pendingRulings");
   });
 
   it("renders faction list with influence values", () => {
-    const page = readSrcFile("pages/GovernancePage.tsx");
-    expect(page).toContain("factionList");
-    expect(page).toContain("influence");
+    const hook = readSrcFile("hooks/useGovernanceDerived.tsx");
+    expect(hook).toContain("factionList");
+    expect(hook).toContain("influence");
   });
 });
 

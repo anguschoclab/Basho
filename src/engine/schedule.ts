@@ -201,48 +201,6 @@ export function scheduleAllDivisionsDay(args: {
 }
 
 /**
- * Generate the complete schedule for a basho (all days, all divisions).
- *
- * @param {Object} args - Scheduling arguments
- * @param {WorldState} args.world - Current world state
- * @param {BashoState} args.basho - Current basho state
- * @param {string} args.seed - Seed for deterministic pairing
- * @param {Division[]} [args.divisions] - Optional list of divisions to schedule
- * @returns {StateImpact} State impact describing all scheduled matches
- */
-export function generateFullBashoSchedule(args: {
-  world: WorldState;
-  basho: BashoState;
-  seed: string;
-  divisions?: Division[];
-}): StateImpact {
-  const builder = createImpactBuilder("generateFullBashoSchedule");
-  const divisions: Division[] =
-    args.divisions ??
-    (["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as Division[]);
-
-  const maxDays = 15;
-
-  for (let day = 1; day <= maxDays; day++) {
-    for (const div of divisions) {
-      if (!needsScheduleForDay(div, day)) continue;
-
-      const { impact } = scheduleDivisionDay({
-        world: args.world,
-        basho: args.basho,
-        division: div,
-        day,
-        seed: args.seed,
-      });
-
-      builder.merge(impact);
-    }
-  }
-
-  return builder.build();
-}
-
-/**
  * Schedule Juryo with crossover from Makushita.
  * Checks both injured and isKyujo flags for odd slots, calls up top Makushita (Ms1-Ms5).
  *

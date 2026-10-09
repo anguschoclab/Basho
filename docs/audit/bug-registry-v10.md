@@ -238,10 +238,8 @@ DISPROVED = claim did not survive production-path verification.
   `yokozunaPromotionAutoSim` perf test green (145s).
 - **Evidence:** `tournamentPlayoff.test.ts` (red→green: tied leaders,
   playoff matches present, winner ∈ tied set, deterministic).
-- **Deferred sub-finding:** pre-generated scheduling means Swiss can't
-  adapt to live standings (multiple simultaneous 15-0s are unrealistic);
-  per-day adaptive pairing is a larger simulation-fidelity change —
-  registered as V10-R11.
+- **Sub-finding resolved:** pre-generated scheduling is replaced by
+  adaptive per-day torikumi — see V10-R11 below (now FIXED).
 
 - **Status:** FIXED
 
@@ -249,13 +247,25 @@ DISPROVED = claim did not survive production-path verification.
 
 ## Confirmed — Registered, Not Yet Fixed
 
-### V10-R11: Autosim schedule is static — no adaptive pairing
+### V10-R11: Autosim schedule is static — no adaptive pairing — FIXED
 
-`simulateEntireBasho` pre-generates all 15 days in one pass. Swiss pairing
-can't react to live standings, so co-undefeated finishes are common rather
-than rare. Playoff resolution (B15) now picks the winner correctly, but
-schedule realism (leader-vs-leader late-basho torikumi) would need per-day
-re-pairing — a larger change deferred to the next consolidation.
+`simulateEntireBasho` pre-generated all 15 days in one pass, so Swiss
+pairing could never react to live standings — two 95-stat rikishi both
+finished 15-0 without meeting (empirical RED).
+
+**Fix:** the day loop now schedules adaptively, mirroring the interactive
+path (`ensureDaySchedule`): before each day, `basho.day` is set and
+`basho.standings` is rebuilt from played results (all divisions, via new
+`syncBashoStandings`), then `scheduleAllDivisionsDay` pairs against those
+records. `generateFullBashoSchedule` removed (zero remaining callers).
+
+**Evidence:** `adaptiveTorikumi.test.ts` (red→green: two boosted
+cross-heya rikishi can no longer both finish undefeated; same-seed
+schedule + winner deterministic). Census probe: 0 unbeaten finishers
+across 6 seeds in a 20-man makuuchi (leaders meet and eliminate each
+other). Perf suite including `yokozunaPromotionAutoSim` re-verified.
+
+- **Status:** FIXED
 
 ### V10-R01: `sendCommand` rejection surface incomplete
 

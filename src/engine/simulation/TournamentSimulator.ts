@@ -11,7 +11,7 @@ import type { PromotionEvent, DemotionEvent } from "../types/banzuke";
 import { simulateBout } from "../bout/boutResolver";
 import { RANK_HIERARCHY } from "../banzuke";
 import { initializeBasho } from "../systems/generation/WorldFactory";
-import { generateFullBashoSchedule, scheduleAllDivisionsDay } from "../schedule";
+import { scheduleAllDivisionsDay } from "../schedule";
 import { stableTieBreak, sortStandings } from "../utils/sort";
 import { resolveImpacts } from "../core/ImpactResolver";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
@@ -55,6 +55,25 @@ function crownYushoWinner(
 }
 
 /**
+ * Rebuild basho.standings from played results so Swiss pairing sees real
+ * records for every division (the local `standings` map only tracks
+ * sekitori for the sim result).
+ */
+function syncBashoStandings(basho: BashoState): void {
+  const table = new Map<string, { wins: number; losses: number }>();
+  for (const m of basho.matches) {
+    if (!m.result) continue;
+    const w = table.get(m.result.winnerRikishiId) ?? { wins: 0, losses: 0 };
+    w.wins++;
+    table.set(m.result.winnerRikishiId, w);
+    const l = table.get(m.result.loserRikishiId) ?? { wins: 0, losses: 0 };
+    l.losses++;
+    table.set(m.result.loserRikishiId, l);
+  }
+  basho.standings = table;
+}
+
+/**
  * High-speed Tournament Simulation.
  * Resolves an entire basho deterministically without real-time delays.
  */
@@ -91,40 +110,25 @@ export function simulateEntireBasho(
     }
   }
 
-  // Pre-generate all 15 days of schedules at once for efficiency
-  try {
-    const scheduleImpact = generateFullBashoSchedule({ world: workingWorld, basho, seed });
-    workingWorld = resolveImpacts(workingWorld, [scheduleImpact]);
-  } catch {
-    for (let day = 1; day <= 15; day++) {
-      const daySeed = `${seed}-day${day}`;
-      const { impact } = scheduleAllDivisionsDay({
-        world: workingWorld,
-        basho,
-        day,
-        seed: daySeed,
-      });
-      workingWorld = resolveImpacts(workingWorld, [impact]);
-    }
-  }
-
-  // After schedule generation, read matches from workingWorld.currentBasho (impact resolver put them there)
-  const activeBasho = workingWorld.currentBasho ?? basho;
-
-  // Pre-group matches by day for O(1) lookup instead of O(N*M) filter per day
-  const matchesByDay = new Map<number, MatchSchedule[]>();
-  for (const m of activeBasho.matches) {
-    let dayArr = matchesByDay.get(m.day);
-    if (!dayArr) {
-      dayArr = [];
-      matchesByDay.set(m.day, dayArr);
-    }
-    dayArr.push(m);
-  }
+  // Adaptive per-day torikumi (V10-R11): schedule each day against the
+  // current standings so Swiss pairing reacts to results — mirrors the
+  // interactive path (ensureDaySchedule). A fully pre-generated schedule
+  // let multiple rikishi finish undefeated without meeting.
+  let activeBasho = workingWorld.currentBasho ?? basho;
 
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    const dayMatches = (matchesByDay.get(day) ?? []).filter((m) => !m.result);
+    activeBasho.day = day;
+    syncBashoStandings(activeBasho);
+    const { impact } = scheduleAllDivisionsDay({
+      world: workingWorld,
+      basho: activeBasho,
+      day,
+      seed,
+    });
+    workingWorld = resolveImpacts(workingWorld, [impact]);
+    activeBasho = workingWorld.currentBasho ?? activeBasho;
+    const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
 
     for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
       const match = dayMatches[boutIndex];

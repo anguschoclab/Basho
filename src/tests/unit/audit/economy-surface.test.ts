@@ -188,8 +188,10 @@ describe("kanrekiCeremony — tick phase wiring", () => {
 describe("yokozunaAttendants — wiring", () => {
   it("assignYokozunaAttendants is imported and called by BanzukePublisher", () => {
     const pub = readSrcFile("engine/banzuke/BanzukePublisher.ts");
-    expect(pub).toContain("assignYokozunaAttendants");
-    expect(pub).toMatch(/assignYokozunaAttendants\s*\(/);
+    const movements = readSrcFile("engine/banzuke/publish/movements.ts");
+    expect(pub).toContain("applyMovementEvents");
+    expect(movements).toContain("assignYokozunaAttendants");
+    expect(movements).toMatch(/assignYokozunaAttendants\s*\(/);
   });
 
   it("assignYokozunaAttendants is imported and called by phase01_week_governance", () => {

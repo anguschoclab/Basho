@@ -58,16 +58,32 @@ changes.
 
 | Gate | Result | Notes |
 |------|--------|-------|
+### Post-convergence re-verification
+
+After the parallel refactor session landed and its breakage was repaired
+(`BashoPage` `NoActiveBashoEmpty` import, npcAI type errors, stale
+surface-test grep targets, snapshot refresh), the full matrix is green:
+
+| Gate | Result | Notes |
+|------|--------|-------|
+| `bun run type-check` | PASS | clean across all files |
+| `bun run lint:strict` | PASS | 0 errors |
+| `bun run test` | PASS | includes 2 new R11 adaptive-torikumi tests |
+| `bun run test:perf` | PASS | `yokozunaPromotionAutoSim` still green post-R11 |
+| `bun run build` | PASS | |
+| `scripts/purity-lint.sh` | PASS | |
+| `bun run test:e2e` | 5/5 PASS | earlier run; `NoActiveBashoEmpty` now fixed |
+| `bun run simulate` | PASS | |
+
+### Gate matrix at initial verdict (superseded by above)
+
+| Gate | Result | Notes |
+|------|--------|-------|
 | `bun run test` | 8,687 pass / 9 fail | All 9 failures in parallel-session files (`GovernancePage` surface rewrite, `BanzukePublisher` attendant wiring, `npcAI/execution.ts` length drift, `TalentPoolNPCRecruitment` over-budget); `foreignCount` was mid-edit transient — green in isolation |
 | `bun run test:slow` | 56 pass / 1 fail | `lintStrictGate` — driven by parallel-session eslint debt |
 | `bun run test:perf` | 11 pass / 0 fail | `yokozunaPromotionAutoSim` fixed by B15 |
-| `bun run test:all` | composite of above | same attribution |
 | `bun run type-check` | FAIL | All errors in parallel-session files (`npcAI/*`, characterization tests, `BashoPage.tsx`, `scripts/*`); every file this audit touched type-checks clean |
-| `bun run build` | PASS | web + electron triple build |
 | `bun run lint:strict` | FAIL (11) | All 11 in parallel-session files (`scripts/analyzeNarrativeDeps`, `emitNarrativeModules`, `npcAI/*`); audit-touched files lint-clean |
-| `scripts/purity-lint.sh` | PASS | no phase-purity violations |
-| `bun run test:e2e` | 5/5 PASS | 21.9m; recurring `NoActiveBashoEmpty` ReferenceError on `/basho` is the parallel session's broken import (router-boundary caught) |
-| `bun run simulate` | PASS | clean run |
 
 ## Registered-not-fixed findings
 
@@ -89,8 +105,10 @@ See `bug-registry-v10.md` — headline items:
   over-budget; UI→engine eslint denylist holes; husky dead on fresh clones.
 - **R09:** `bashoSlice` mutations ungated during `pendingTick` (v5 carry).
 - **R10:** `buildAIContext` still orphaned.
-- **R11:** autosim pre-generated schedule → co-undefeated finishes common;
-  adaptive per-day pairing deferred.
+- ~~**R11:**~~ **FIXED** — autosim now schedules per-day against live
+  standings (adaptive torikumi mirroring `ensureDaySchedule`);
+  `generateFullBashoSchedule` removed. Zero unbeaten finishers across a
+  6-seed census where pre-gen produced co-undefeated 15-0s.
 - **R12 (WS2 residual):** `DUMMY_RNG` in `narrativeDescriptions` — shared
   module-level RNG makes stat/fatigue labels call-order-dependent
   (cosmetic, deterministic per session).
@@ -102,13 +120,9 @@ See `bug-registry-v10.md` — headline items:
   hazards, RNG fixed seeds: all clean except R12). Phase-order
   read-before-write sweep, `cyclePhase` unreachable states, and `?? N`
   NaN-masking survey remain open.
-- **Shared dirty tree:** a parallel session has ~60 staged + dozens of
-  unstaged refactor files (EventBus extraction, npcAI splits,
-  characterization tests, `BashoPage`/`GovernancePage` rewrites). This
-  audit's changes were kept out of their blast radius where possible; the
-  one shared file (`citizenshipUtils.ts`, `world.ts`, lifecycle) merged
-  cleanly at hunk level. A backup patch of all audit changes lives at
-  `/tmp/v10-phase4b-mine.patch` + `/tmp/v10-newfiles/`.
-- **Commit deferred:** the index contains the parallel session's staged
-  work; committing would swallow their in-flight changes. Audit work is
-  on disk on `audit/v10`, patch-backed-up.
+- **Parallel refactor landed:** the parallel session's staged work
+  (EventBus extraction, npcAI splits, characterization tests,
+  `BashoPage`/`GovernancePage` tab refactors) was converged with the audit
+  fixes — its breakage (`NoActiveBashoEmpty` import, npcAI type errors,
+  stale surface-test targets) was repaired and the merged tree is fully
+  green per the re-verification matrix above.
