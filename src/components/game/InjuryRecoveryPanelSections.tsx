@@ -68,7 +68,7 @@ export function InjuredRikishiCard({
   onWithdraw,
 }: {
   info: InjuredInfo;
-  gomenfudaProjection: GomenfudaProjection;
+  gomenfudaProjection: GomenfudaProjection | null;
   onTreat: (rikishiId: string) => void;
   onWithdraw: (rikishiId: string) => void;
 }) {

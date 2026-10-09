@@ -62,7 +62,6 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   "src/engine/bout/physics/tickBeltBattle.ts::tickBeltBattle": { loc: 241, kind: "function" },
   "src/engine/bout/physics/tickPushBattle.ts::tickPushBattle": { loc: 231, kind: "function" },
   "src/engine/systems/governance/YokozunaService.ts::evaluateActiveYokozuna": { loc: 212, kind: "method" },
-  "src/components/game/InjuryRecoveryPanel.tsx::InjuryRecoveryPanel": { loc: 210, kind: "function" },
   "src/components/scouting/CompareModePanel.tsx::CompareModePanel": { loc: 209, kind: "function" },
   "src/components/stable/crestMotifs.tsx::renderCrestMotif": { loc: 208, kind: "function" },
   "src/components/game/FacilitiesManagementPanel.tsx::FacilitiesManagementPanel": { loc: 207, kind: "function" },
