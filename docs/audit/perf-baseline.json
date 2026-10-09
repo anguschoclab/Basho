@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-08-09T05:46:16.524Z",
+  "timestamp": "2026-10-08T21:49:25.215Z",
   "results": [
     {
       "scenario": "S1_single_day",
-      "p50_ms": 4.6,
-      "p99_ms": 5.1,
-      "mean_ms": 4.4,
-      "runs": 10,
+      "p50_ms": 3.8,
+      "p99_ms": 7.4,
+      "mean_ms": 4,
+      "runs": 50,
       "total_days": 1
     },
     {
       "scenario": "S2_weekly",
-      "p50_ms": 276.2,
-      "p99_ms": 294.2,
-      "mean_ms": 274,
-      "runs": 10,
+      "p50_ms": 288.7,
+      "p99_ms": 395.1,
+      "mean_ms": 297,
+      "runs": 50,
       "total_days": 7
     },
     {
       "scenario": "S3_year",
-      "p50_ms": 3277.4,
-      "p99_ms": 3410.5,
-      "mean_ms": 3291.7,
-      "runs": 5,
+      "p50_ms": 1339.1,
+      "p99_ms": 1872.4,
+      "mean_ms": 1424.9,
+      "runs": 50,
       "total_days": 365
     }
   ]

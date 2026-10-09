@@ -4,4 +4,4 @@ export type { AgentDecisions, NPCWeeklyDecision } from "./npcAI/types";
 
 export { makeNPCWeeklyDecision } from "./npcAI/weekly";
 export { handleNPCCrisis, handleNPCMediaEvent, consolidateOyakataMemory } from "./npcAI/handlers";
-export { applyNPCDecision, tickWeekNPC, tickMonthlyNPC, tickYear } from "./npcAI/ticks";
+export { tickMonthlyNPC, tickYear } from "./npcAI/ticks";

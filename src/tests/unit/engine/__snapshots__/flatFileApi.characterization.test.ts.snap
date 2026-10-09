@@ -1,0 +1,323 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`_generateRookie — golden master > across ranks/seeds/heyas 1`] = `
+[
+  {
+    "archetype": undefined,
+    "birthYear": 2003,
+    "division": "makushita",
+    "heyaId": undefined,
+    "id": "rk_2026_4819657",
+    "rank": "jonokuchi",
+    "shikona": "Shinkawa",
+    "stats": {
+      "adaptability": 53.16093635814744,
+      "aggression": 51.945169025274254,
+      "balance": 45.73368132884201,
+      "experience": 20,
+      "mental": 50.601112277753195,
+      "power": 57.115806455127256,
+      "speed": 52.75448190976782,
+      "stamina": 46.01873002667877,
+      "technique": 54.82922827021462,
+      "weight": 137.17951252605434,
+    },
+    "year": 2026,
+  },
+  {
+    "archetype": undefined,
+    "birthYear": 2003,
+    "division": "makushita",
+    "heyaId": "heya-1",
+    "id": "rk_2026_4819657",
+    "rank": "jonokuchi",
+    "shikona": "Shinkawa",
+    "stats": {
+      "adaptability": 53.16093635814744,
+      "aggression": 51.945169025274254,
+      "balance": 45.73368132884201,
+      "experience": 20,
+      "mental": 50.601112277753195,
+      "power": 57.115806455127256,
+      "speed": 52.75448190976782,
+      "stamina": 46.01873002667877,
+      "technique": 54.82922827021462,
+      "weight": 137.17951252605434,
+    },
+    "year": 2026,
+  },
+  {
+    "archetype": undefined,
+    "birthYear": 2003,
+    "division": "makushita",
+    "heyaId": undefined,
+    "id": "rk_2026_4819657",
+    "rank": "makushita",
+    "shikona": "Shinkawa",
+    "stats": {
+      "adaptability": 53.16093635814744,
+      "aggression": 51.945169025274254,
+      "balance": 45.73368132884201,
+      "experience": 20,
+      "mental": 50.601112277753195,
+      "power": 57.115806455127256,
+      "speed": 52.75448190976782,
+      "stamina": 46.01873002667877,
+      "technique": 54.82922827021462,
+      "weight": 137.17951252605434,
+    },
+    "year": 2026,
+  },
+  {
+    "archetype": undefined,
+    "birthYear": 2003,
+    "division": "makushita",
+    "heyaId": "heya-1",
+    "id": "rk_2026_4819657",
+    "rank": "makushita",
+    "shikona": "Shinkawa",
+    "stats": {
+      "adaptability": 53.16093635814744,
+      "aggression": 51.945169025274254,
+      "balance": 45.73368132884201,
+      "experience": 20,
+      "mental": 50.601112277753195,
+      "power": 57.115806455127256,
+      "speed": 52.75448190976782,
+      "stamina": 46.01873002667877,
+      "technique": 54.82922827021462,
+      "weight": 137.17951252605434,
+    },
+    "year": 2026,
+  },
+  {
+    "archetype": undefined,
+    "birthYear": 2005,
+    "division": "makushita",
+    "heyaId": undefined,
+    "id": "rk_2027_7983419",
+    "rank": "jonokuchi",
+    "shikona": "Kairyu",
+    "stats": {
+      "adaptability": 53.07409625126018,
+      "aggression": 45.72428957884872,
+      "balance": 53.150300134716005,
+      "experience": 20,
+      "mental": 49.21253758125909,
+      "power": 54.43073207813025,
+      "speed": 45.88964303417278,
+      "stamina": 47.996011183779856,
+      "technique": 57.420150115010934,
+      "weight": 132.55130517537663,
+    },
+    "year": 2027,
+  },
+  {
+    "archetype": undefined,
+    "birthYear": 2005,
+    "division": "makushita",
+    "heyaId": "heya-1",
+    "id": "rk_2027_7983419",
+    "rank": "jonokuchi",
+    "shikona": "Kairyu",
+    "stats": {
+      "adaptability": 53.07409625126018,
+      "aggression": 45.72428957884872,
+      "balance": 53.150300134716005,
+      "experience": 20,
+      "mental": 49.21253758125909,
+      "power": 54.43073207813025,
+      "speed": 45.88964303417278,
+      "stamina": 47.996011183779856,
+      "technique": 57.420150115010934,
+      "weight": 132.55130517537663,
+    },
+    "year": 2027,
+  },
+  {
+    "archetype": undefined,
+    "birthYear": 2005,
+    "division": "makushita",
+    "heyaId": undefined,
+    "id": "rk_2027_7983419",
+    "rank": "makushita",
+    "shikona": "Kairyu",
+    "stats": {
+      "adaptability": 53.07409625126018,
+      "aggression": 45.72428957884872,
+      "balance": 53.150300134716005,
+      "experience": 20,
+      "mental": 49.21253758125909,
+      "power": 54.43073207813025,
+      "speed": 45.88964303417278,
+      "stamina": 47.996011183779856,
+      "technique": 57.420150115010934,
+      "weight": 132.55130517537663,
+    },
+    "year": 2027,
+  },
+  {
+    "archetype": undefined,
+    "birthYear": 2005,
+    "division": "makushita",
+    "heyaId": "heya-1",
+    "id": "rk_2027_7983419",
+    "rank": "makushita",
+    "shikona": "Kairyu",
+    "stats": {
+      "adaptability": 53.07409625126018,
+      "aggression": 45.72428957884872,
+      "balance": 53.150300134716005,
+      "experience": 20,
+      "mental": 49.21253758125909,
+      "power": 54.43073207813025,
+      "speed": 45.88964303417278,
+      "stamina": 47.996011183779856,
+      "technique": 57.420150115010934,
+      "weight": 132.55130517537663,
+    },
+    "year": 2027,
+  },
+]
+`;
+
+exports[`banzuke.ts flat exports — golden master > compareBanzuke movement classification 1`] = `
+[
+  {
+    "change": "up",
+    "newPosition": {
+      "rank": "komusubi",
+      "rankNumber": undefined,
+      "side": "east",
+    },
+    "oldPosition": {
+      "rank": "maegashira",
+      "rankNumber": 1,
+      "side": "east",
+    },
+    "rikishiId": "r1",
+  },
+  {
+    "change": "new",
+    "newPosition": {
+      "rank": "maegashira",
+      "rankNumber": 1,
+      "side": "east",
+    },
+    "oldPosition": null,
+    "rikishiId": "r4",
+  },
+  {
+    "change": "none",
+    "newPosition": {
+      "rank": "maegashira",
+      "rankNumber": 5,
+      "side": "west",
+    },
+    "oldPosition": {
+      "rank": "maegashira",
+      "rankNumber": 2,
+      "side": "east",
+    },
+    "rikishiId": "r2",
+  },
+]
+`;
+
+exports[`banzuke.ts flat exports — golden master > compareBanzuke movement classification 2`] = `
+[
+  {
+    "change": "new",
+    "newPosition": {
+      "rank": "komusubi",
+      "rankNumber": undefined,
+      "side": "east",
+    },
+    "oldPosition": null,
+    "rikishiId": "r1",
+  },
+  {
+    "change": "new",
+    "newPosition": {
+      "rank": "maegashira",
+      "rankNumber": 5,
+      "side": "west",
+    },
+    "oldPosition": null,
+    "rikishiId": "r2",
+  },
+  {
+    "change": "new",
+    "newPosition": {
+      "rank": "maegashira",
+      "rankNumber": 1,
+      "side": "east",
+    },
+    "oldPosition": null,
+    "rikishiId": "r4",
+  },
+]
+`;
+
+exports[`banzuke.ts flat exports — golden master > computeVariableSanyakuCounts 1`] = `
+{
+  "komusubi": 3,
+  "maegashira": 32,
+  "ozeki": 2,
+  "sekiwake": 3,
+  "yokozuna": 2,
+}
+`;
+
+exports[`checkRetirement — golden master > age-27 1`] = `null`;
+
+exports[`checkRetirement — golden master > age-27 2`] = `null`;
+
+exports[`checkRetirement — golden master > age-30-decline 1`] = `null`;
+
+exports[`checkRetirement — golden master > age-30-decline 2`] = `null`;
+
+exports[`checkRetirement — golden master > age-35 1`] = `null`;
+
+exports[`checkRetirement — golden master > age-35 2`] = `null`;
+
+exports[`checkRetirement — golden master > age-40 1`] = `null`;
+
+exports[`checkRetirement — golden master > age-40 2`] = `null`;
+
+exports[`checkRetirement — golden master > intai-announced 1`] = `null`;
+
+exports[`checkRetirement — golden master > intai-announced 2`] = `null`;
+
+exports[`checkRetirement — golden master > yokozuna-33 1`] = `null`;
+
+exports[`checkRetirement — golden master > yokozuna-33 2`] = `null`;
+
+exports[`checkRetirement — golden master > young-career-injury 1`] = `"Career-Ending Injury"`;
+
+exports[`checkRetirement — golden master > young-career-injury 2`] = `"Career-Ending Injury"`;
+
+exports[`checkRetirement — golden master > young-healthy 1`] = `null`;
+
+exports[`checkRetirement — golden master > young-healthy 2`] = `null`;
+
+exports[`shikona.ts names — golden master > generateRikishiName / generateOyakataName seeded 1`] = `
+[
+  "Endomaru",
+  "Onowaka",
+  "Tamanoi",
+  "Futagoyama",
+  "Takashima",
+]
+`;
+
+exports[`shikona.ts names — golden master > generateShikona across configs 1`] = `
+[
+  "Onomaru",
+  "Hakuyama",
+  "Yusakura",
+  "Natsuho",
+  "Shonoshin",
+  "Tamatake",
+]
+`;
