@@ -57,7 +57,6 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   "src/engine/lifecycle/BashoHistory.ts::recordBashoHistory": { loc: 265, kind: "function" },
   "src/engine/matchmaking/DramaMatchmaker.ts::scoreDrama": { loc: 255, kind: "function" },
   "src/engine/simulation/SimTuningService.ts::SimTuningService": { loc: 253, kind: "const-obj" },
-  "src/components/game/KeshoEditor.tsx::KeshoEditor": { loc: 251, kind: "function" },
   "src/engine/simulation/SimTuningService.ts::calculateMetrics": { loc: 248, kind: "method" },
   "src/engine/npcAI/execution.ts::executeAgentDecisions": { loc: 251, kind: "function" },
   "src/engine/bout/physics/tickBeltBattle.ts::tickBeltBattle": { loc: 241, kind: "function" },
