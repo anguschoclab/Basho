@@ -96,7 +96,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
       </CardHeader>
 
       <CardContent className="px-0">
-        <ScrollArea className="h-[600px] w-full rounded-md border border-border/50 bg-card/30 backdrop-blur-xs">
+        <ScrollArea className="h-[600px] w-full rounded-md border border-border/50 bg-card">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 sticky top-0 z-10">
               <tr className="text-left border-b border-border/50">

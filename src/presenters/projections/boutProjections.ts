@@ -81,26 +81,26 @@ export interface RecruitmentUIDigest {
 
 export function getScoutInfo(level: number): { label: string; color: string; narrative: string } {
   if (level >= 90) {
-    return { label: "Exhaustive", color: "text-emerald-500", narrative: "Fully scouted." };
+    return { label: "Exhaustive", color: "text-success", narrative: "Fully scouted." };
   }
   if (level >= 70) {
-    return { label: "Professional", color: "text-blue-500", narrative: "Deep scouting report." };
+    return { label: "Professional", color: "text-primary", narrative: "Deep scouting report." };
   }
   if (level >= 45) {
     return {
       label: "Detailed",
-      color: "text-amber-500",
+      color: "text-gold",
       narrative: "Solid amount of observations.",
     };
   }
   if (level >= 20) {
     return {
       label: "Observation",
-      color: "text-orange-500",
+      color: "text-warning",
       narrative: "A few basic matches observed.",
     };
   }
-  return { label: "Snapshot", color: "text-gray-500", narrative: "Initial estimate only." };
+  return { label: "Snapshot", color: "text-muted-foreground", narrative: "Initial estimate only." };
 }
 
 /**

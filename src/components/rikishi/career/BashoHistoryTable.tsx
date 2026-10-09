@@ -24,7 +24,7 @@ function HistoryRow({ snap }: { snap: CareerSnapshot }) {
       <td className="py-4 px-6 text-center">
         <Badge
           variant="outline"
-          className="text-[9px] font-black uppercase tracking-widest px-2 h-5 border-2 group-hover:border-primary/30 transition-colors"
+          className="text-[10px] font-black uppercase tracking-widest px-2 h-5 border-2 group-hover:border-primary/30 transition-colors"
         >
           {snap.rank} {snap.rankNumber > 0 ? snap.rankNumber : ""}
         </Badge>
@@ -39,7 +39,7 @@ function HistoryRow({ snap }: { snap: CareerSnapshot }) {
           >
             {snap.wins}-{snap.losses}
           </div>
-          <div className="text-[8px] uppercase font-black opacity-40">
+          <div className="text-[10px] uppercase font-black opacity-40">
             {snap.wins >= 8 ? "Kachi-Koshi" : "Make-Koshi"}
           </div>
         </div>
@@ -86,7 +86,7 @@ function HistoryRow({ snap }: { snap: CareerSnapshot }) {
             <HoshitoriChart
               rikishiId=""
               dayResults={snap.dayResults}
-              className="[&>div]:h-4 [&>div]:w-4 [&>div]:text-[8px] [&>div]:gap-0"
+              className="[&>div]:h-4 [&>div]:w-4 [&>div]:text-[10px] [&>div]:gap-0"
             />
           </div>
         ) : (
@@ -111,7 +111,7 @@ function HistoryRow({ snap }: { snap: CareerSnapshot }) {
           const weightBand = NarrativeService.getWeightBand(snap.weight);
           const weightLabel = NarrativeService.getWeightLabel(rng, weightBand);
           return weightLabel ? (
-            <div className="text-[9px] text-muted-foreground/60">{weightLabel}</div>
+            <div className="text-[10px] text-muted-foreground/60">{weightLabel}</div>
           ) : null;
         })()}
       </td>
@@ -135,7 +135,7 @@ export function BashoHistoryTable({ history }: { history: CareerSnapshot[] }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left border-b-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-60">
+              <tr className="text-left border-b-2 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground opacity-60">
                 <th className="pb-4 pr-6">Official Basho</th>
                 <th className="pb-4 px-6 text-center">Association Rank</th>
                 <th className="pb-4 px-6 text-center">Final Record</th>

@@ -63,7 +63,7 @@ function SaveSlotCard({
             </span>
             <Badge
               variant="secondary"
-              className="text-[9px] font-bold uppercase tracking-widest"
+              className="text-[10px] font-bold uppercase tracking-widest"
             >
               {slot.slotName === "autosave" ? "Dynamic" : "Stable"}
             </Badge>

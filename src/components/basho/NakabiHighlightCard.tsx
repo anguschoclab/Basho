@@ -37,7 +37,7 @@ export function NakabiHighlightCard({ projection }: { projection: NakabiProjecti
           <span className="text-sm font-medium">
             Nakabi — {summary.bashoName} {summary.year}
           </span>
-          <Badge variant="outline" className="ml-auto text-[9px]">
+          <Badge variant="outline" className="ml-auto text-[10px]">
             Day 8
           </Badge>
         </div>

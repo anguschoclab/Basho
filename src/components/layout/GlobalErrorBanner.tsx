@@ -34,7 +34,7 @@ export function GlobalErrorBanner() {
         type="button"
         aria-label="Dismiss error"
         onClick={() => setError(null)}
-        className="ml-auto rounded p-1 hover:bg-white/10"
+        className="ml-auto rounded p-1 hover:bg-foreground/10"
       >
         <X className="h-4 w-4" />
       </button>

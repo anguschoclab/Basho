@@ -41,7 +41,7 @@ export function AcademyStaffList({ staff, maxStaff, onHire }: AcademyStaffListPr
           <span>{ROLE_LABELS[s.role] ?? s.role}</span>
           <div className="flex items-center gap-2">
             <span className="font-mono text-muted-foreground">{s.name}</span>
-            <Badge variant="secondary" className="text-[9px]">
+            <Badge variant="secondary" className="text-[10px]">
               Q{s.quality}
             </Badge>
           </div>

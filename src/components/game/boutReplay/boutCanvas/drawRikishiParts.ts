@@ -10,6 +10,7 @@ import type { RikishiState } from "./types";
 import type { BoutAnimationFamily } from "@/presenters/engineAccess";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { clamp } from "./math";
+import { BOUT_FIGURE_COLORS } from "@/constants/ui/drawingPalette";
 
 /** Computed limb/body offsets for one rikishi pose. */
 export interface RikishiPose {
@@ -131,7 +132,7 @@ export function drawBody(
 ) {
   const { bdy, bdx, legSpread, lLegAng, rLegAng } = pose;
 
-  ctx.fillStyle = "rgba(0,0,0,0.18)";
+  ctx.fillStyle = BOUT_FIGURE_COLORS.bodyShadow;
   ctx.beginPath();
   ctx.ellipse(bdx, S * 0.88, legSpread * 0.85, S * 0.1, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -160,7 +161,7 @@ export function drawBody(
   );
   ctx.fill();
 
-  ctx.fillStyle = "#b07050";
+  ctx.fillStyle = BOUT_FIGURE_COLORS.skinShade;
   ctx.beginPath();
   ctx.ellipse(bdx - legSpread * 0.55, bdy + S * 0.82, S * 0.22, S * 0.1, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -172,7 +173,7 @@ export function drawBody(
   ctx.beginPath();
   ctx.ellipse(bdx, bdy, S * 0.66, S * 0.6, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  ctx.fillStyle = BOUT_FIGURE_COLORS.highlightSoft;
   ctx.beginPath();
   ctx.ellipse(bdx - S * 0.12, bdy - S * 0.15, S * 0.32, S * 0.28, -0.4, 0, Math.PI * 2);
   ctx.fill();
@@ -250,12 +251,12 @@ export function drawHead(
   ctx.beginPath();
   ctx.arc(bdx, bdy - S * 0.8, S * 0.34, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "rgba(255,255,255,0.07)";
+  ctx.fillStyle = BOUT_FIGURE_COLORS.highlightFaint;
   ctx.beginPath();
   ctx.arc(bdx - S * 0.08, bdy - S * 0.88, S * 0.16, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "rgba(40,20,5,0.7)";
+  ctx.fillStyle = BOUT_FIGURE_COLORS.crease;
   ctx.beginPath();
   ctx.arc(bdx - S * 0.1, bdy - S * 0.82, S * 0.055, 0, Math.PI * 2);
   ctx.fill();
@@ -264,18 +265,18 @@ export function drawHead(
   ctx.fill();
 
   if (state.bodyPhase === "falling" || state.bodyPhase === "thrown") {
-    ctx.strokeStyle = "rgba(40,20,5,0.5)";
+    ctx.strokeStyle = BOUT_FIGURE_COLORS.creaseFaint;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.arc(bdx, bdy - S * 0.76, S * 0.1, 0, Math.PI);
     ctx.stroke();
   }
 
-  ctx.fillStyle = "#18100a";
+  ctx.fillStyle = BOUT_FIGURE_COLORS.hairDark;
   ctx.beginPath();
   ctx.ellipse(bdx, bdy - S * 1.1, S * 0.09, S * 0.17, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#2a1a0a";
+  ctx.fillStyle = BOUT_FIGURE_COLORS.hairLight;
   ctx.beginPath();
   ctx.ellipse(bdx, bdy - S * 0.96, S * 0.18, S * 0.07, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -291,13 +292,13 @@ export function drawRankLabel(
 ) {
   const { bdy, bdx } = pose;
 
-  const rankColor = isEast ? "#1d4ed8" : "#b91c1c";
+  const rankColor = isEast ? BOUT_FIGURE_COLORS.eastBadge : BOUT_FIGURE_COLORS.westBadge;
   ctx.fillStyle = rankColor;
   ctx.beginPath();
   ctx.roundRect(bdx - S * 0.72, bdy - S * 1.25, S * 1.44, S * 0.28, 3);
   ctx.fill();
-  ctx.fillStyle = "rgba(255,255,255,0.92)";
-  ctx.font = `bold ${clamp(S * 0.22, 7, 14)}px 'Segoe UI', system-ui, sans-serif`;
+  ctx.fillStyle = BOUT_FIGURE_COLORS.rankLabelText;
+  ctx.font = `bold ${clamp(S * 0.22, 7, 14)}px 'Shippori Mincho B1', serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   const label =

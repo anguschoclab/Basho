@@ -39,7 +39,7 @@ export function TsukebitoPanel({
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium">{a.seniorShikona}</span>
-                  <Badge variant="outline" className="text-[9px] uppercase tracking-widest">
+                  <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
                     {a.seniorRankLabel}
                   </Badge>
                 </div>
@@ -82,10 +82,10 @@ export function TsukebitoPanel({
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-sm font-medium">{s.shikona}</span>
-                    <Badge variant="outline" className="text-[9px] uppercase tracking-widest">
+                    <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
                       {s.rankLabel}
                     </Badge>
-                    <Badge variant="outline" className="text-[9px] ml-auto">
+                    <Badge variant="outline" className="text-[10px] ml-auto">
                       {s.currentCount}/{s.maxCount}
                     </Badge>
                   </div>

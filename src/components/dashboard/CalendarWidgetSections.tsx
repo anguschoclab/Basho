@@ -57,7 +57,7 @@ export function BashoDayProgress({ bashoDay }: { bashoDay: number }) {
           aria-valuemin={1}
           aria-valuemax={15}
           aria-label="Tournament day progress"
-          className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+          className="h-full rounded-full bg-primary transition-all duration-500"
           style={{ width: `${dayProgress}%` }}
         />
       </div>

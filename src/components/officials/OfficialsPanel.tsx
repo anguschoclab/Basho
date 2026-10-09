@@ -44,7 +44,7 @@ export function OfficialsPanel({ projection }: { projection: OfficialsProjection
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium">{g.name}</span>
-                    <Badge variant="outline" className="text-[9px] uppercase tracking-widest">
+                    <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
                       {g.rankLabel}
                     </Badge>
                   </div>

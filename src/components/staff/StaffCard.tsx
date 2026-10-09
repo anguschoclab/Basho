@@ -127,7 +127,7 @@ function VitalsBars({ staff }: { staff: Staff }) {
   return (
     <div className="grid grid-cols-2 gap-6 pt-1">
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           <span>Fatigue</span>
           <span
             className={cn(
@@ -144,7 +144,7 @@ function VitalsBars({ staff }: { staff: Staff }) {
         <Progress value={staff.fatigue} className="h-1" />
       </div>
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           <span>Scandal</span>
           <span className={cn(staff.scandalExposure > 50 ? "text-warning" : "text-foreground")}>
             {SCANDAL_LABELS[toScandalBand(staff.scandalExposure)]}

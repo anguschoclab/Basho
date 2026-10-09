@@ -59,7 +59,7 @@ function CareerTooltip({
         </div>
       )}
       {snap && (
-        <div className="opacity-60 text-[9px] pt-1">
+        <div className="opacity-60 text-[10px] pt-1">
           {(snap as { payload?: { wins?: number; losses?: number } }).payload?.wins ?? 0}W –{" "}
           {(snap as { payload?: { wins?: number; losses?: number } }).payload?.losses ?? 0}L
         </div>

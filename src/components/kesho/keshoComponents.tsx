@@ -7,6 +7,7 @@
 import React from "react";
 import type { YokozunaTsuna } from "@/engine/types/keshoMawashi";
 import { cn } from "@/lib/utils";
+import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 /**
  * Tier badge component with tier-specific styling
@@ -32,7 +33,7 @@ export function TierBadge({ tier }: { tier: string }) {
       label: "Sanyaku",
     },
     yokozuna: {
-      bg: "bg-gradient-to-br from-gold to-gold/80",
+      bg: "bg-gold",
       border: "border-gold/70",
       icon: "Y",
       label: "Yokozuna",
@@ -103,7 +104,7 @@ export function YokozunaTsunaDisplay({
           cy="50"
           r="40"
           fill="none"
-          stroke={tsuna.ropeColor === "gold_accented" ? "#FFD700" : "#FFFFFF"}
+          stroke={tsuna.ropeColor === "gold_accented" ? KESHO_COLORS.gold : KESHO_COLORS.silk}
           strokeWidth="6"
           opacity={isRetired ? 0.5 : 1}
         />
@@ -114,7 +115,7 @@ export function YokozunaTsunaDisplay({
           cy="50"
           r="40"
           fill="none"
-          stroke="#000000"
+          stroke={KESHO_COLORS.threadDark}
           strokeWidth="1"
           strokeDasharray="4 2"
           opacity={isRetired ? 0.3 : 0.6}
@@ -155,7 +156,7 @@ function renderPaperTassels(count: number, isRetired: boolean): React.ReactNode 
           {/* Paper zigzag */}
           <path
             d="M-3,0 L3,0 L3,8 L-3,8 Z M-3,10 L3,10 L3,18 L-3,18 Z"
-            fill="#FFFFFF"
+            fill={KESHO_COLORS.silk}
             opacity={isRetired ? 0.4 : 0.8}
           />
         </g>

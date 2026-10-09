@@ -67,7 +67,7 @@ export function MentorOverlay({
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="text-[9px] font-black uppercase tracking-[0.25em] text-muted-foreground mb-0.5">
+          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-0.5">
             Coach — Step {stepIndex + 1}/{totalSteps}
           </p>
           <div className="flex items-baseline gap-2">

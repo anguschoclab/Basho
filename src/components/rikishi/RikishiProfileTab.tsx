@@ -225,7 +225,7 @@ export function RikishiProfileTab({
               key: "technique",
               val: rikishi.perceivedStats.technique,
               raw: rawRikishi.stats?.technique ?? 50,
-              color: "bg-purple-500",
+              color: "bg-accent",
               icon: <Target className="h-3.5 w-3.5" />,
             },
           ].map((stat, i) => (
@@ -300,7 +300,7 @@ export function RikishiProfileTab({
                   <Badge
                     key={b}
                     variant="outline"
-                    className="text-[9px] font-bold uppercase tracking-widest"
+                    className="text-[10px] font-bold uppercase tracking-widest"
                   >
                     {b}
                   </Badge>

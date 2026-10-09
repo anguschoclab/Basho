@@ -31,7 +31,7 @@ export function HeaderBadges({
       <Badge
         variant="outline"
         className={cn(
-          "font-bold h-6 uppercase text-[9px] tracking-widest",
+          "font-bold h-6 uppercase text-[10px] tracking-widest",
           healthBadge === "Fresh" && "border-success text-success bg-success/10",
           healthBadge === "Worn" && "border-warning text-warning bg-warning/10",
           healthBadge === "Struggling" &&
@@ -46,7 +46,7 @@ export function HeaderBadges({
       {isOwned && (
         <Badge
           variant="outline"
-          className="bg-white/10 text-white border-white/20 font-bold h-6 uppercase text-[9px] tracking-widest"
+          className="bg-foreground/10 text-foreground border-foreground/20 font-bold h-6 uppercase text-[10px] tracking-widest"
         >
           Active Roster
         </Badge>
@@ -54,7 +54,7 @@ export function HeaderBadges({
       {rikishi.nationality !== "Japan" && (
         <Badge
           variant="outline"
-          className="border-gold text-gold bg-gold/10 flex items-center gap-1.5 h-6 font-bold text-[9px] tracking-widest"
+          className="border-gold text-gold bg-gold/10 flex items-center gap-1.5 h-6 font-bold text-[10px] tracking-widest"
         >
           <Globe className="h-3 w-3" /> Foreign Slot
         </Badge>
@@ -63,7 +63,7 @@ export function HeaderBadges({
         <TooltipWrap content="Kadoban: Must secure a winning record to avoid losing Ozeki status">
           <Badge
             variant="destructive"
-            className="h-6 font-bold text-[9px] tracking-widest uppercase cursor-help"
+            className="h-6 font-bold text-[10px] tracking-widest uppercase cursor-help"
           >
             Kadoban
           </Badge>
@@ -73,7 +73,7 @@ export function HeaderBadges({
         <TooltipWrap content="Yokozuna Deliberation Council Warning: Poor performance is degrading stats and risking forced retirement">
           <Badge
             variant="outline"
-            className="border-warning text-warning bg-warning/10 h-6 font-bold text-[9px] tracking-widest uppercase cursor-help"
+            className="border-warning text-warning bg-warning/10 h-6 font-bold text-[10px] tracking-widest uppercase cursor-help"
           >
             YDC Warning ({rikishi.councilWarnings})
           </Badge>
@@ -85,7 +85,7 @@ export function HeaderBadges({
         >
           <Badge
             variant="outline"
-            className="border-muted-foreground text-muted-foreground bg-muted/10 h-6 font-bold text-[9px] tracking-widest uppercase cursor-help"
+            className="border-muted-foreground text-muted-foreground bg-muted/10 h-6 font-bold text-[10px] tracking-widest uppercase cursor-help"
           >
             <Moon className="h-3 w-3" /> Overslept
           </Badge>
@@ -116,7 +116,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
               {rikishi.consecutiveStrongOzeki} / 2 Strong Basho
             </span>
           </div>
-          <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gold transition-all duration-1000 ease-out"
               style={{
@@ -136,7 +136,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
               Retirement Pressure
             </span>
           </div>
-          <div className="flex flex-col gap-1 text-[9px]">
+          <div className="flex flex-col gap-1 text-[10px]">
             {(rikishi.councilWarnings ?? 0) > 0 && (
               <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
                 <span className="text-destructive/80">Council Warnings</span>
@@ -167,13 +167,13 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
       {(rikishi.consecutiveKachiKoshi ?? 0) >= 2 && (
         <div className="pt-2">
           <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
-            <span className="text-orange-500 flex items-center gap-1">
+            <span className="text-warning flex items-center gap-1">
               <span role="img" aria-label="Hot Streak">
                 🔥
               </span>{" "}
               Kachi-Koshi Streak
             </span>
-            <span className="text-orange-500 font-black">
+            <span className="text-warning font-black">
               {rikishi.consecutiveKachiKoshi}
             </span>
           </div>
@@ -206,7 +206,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
                 {rikishi.sekiwakeThreeBashoWins} / 33 Wins (Last 3 Basho)
               </span>
             </div>
-            <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
               <div
                 className="h-full bg-silver transition-all duration-1000 ease-out"
                 style={{
@@ -269,7 +269,7 @@ export function HeaderIdentity({ rikishi }: { rikishi: UIRikishi }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] uppercase font-black tracking-[0.2em] opacity-80 pt-2">
+      <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] uppercase font-black tracking-[0.15em] opacity-80 pt-2">
         <span className="flex items-center gap-2">
           <MapPin className="h-3.5 w-3.5 text-secondary" /> {rikishi.origin}
         </span>
@@ -335,7 +335,7 @@ function buildStatEntries(rikishi: UIRikishi): StatEntry[] {
         (rikishi.specialPrizes?.kantoSho ?? 0) +
         (rikishi.specialPrizes?.ginoSho ?? 0),
       sub: "Sanshō",
-      color: "text-blue-400",
+      color: "text-primary",
       condition:
         (rikishi.specialPrizes?.shukunSho ?? 0) +
           (rikishi.specialPrizes?.kantoSho ?? 0) +
@@ -415,11 +415,11 @@ export function CareerStatsColumn({ rikishi }: { rikishi: UIRikishi }) {
                 <div className="text-[10px] uppercase font-black opacity-60 tracking-widest mb-0.5">
                   {stat.label}
                 </div>
-                <div className="text-[8px] uppercase font-bold opacity-40">{stat.sub}</div>
+                <div className="text-[10px] uppercase font-bold opacity-40">{stat.sub}</div>
               </div>
             </TooltipWrap>
           )}
-          {i < 2 && <div className="w-px h-12 bg-white/10 hidden lg:block" />}
+          {i < 2 && <div className="w-px h-12 bg-foreground/10 hidden lg:block" />}
         </React.Fragment>
       ))}
     </div>

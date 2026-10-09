@@ -5,6 +5,7 @@
  */
 
 import React from "react";
+import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 /**
  * Render the main symbol based on type
@@ -47,7 +48,7 @@ export function renderSymbol(
         textAnchor="middle"
         fontSize="48"
         fill={color}
-        style={{ filter: "drop-shadow(1px 1px 2px rgba(0,0,0,0.3))" }}
+        style={{ filter: `drop-shadow(1px 1px 2px ${KESHO_COLORS.dropShadow})` }}
       >
         {content}
       </text>

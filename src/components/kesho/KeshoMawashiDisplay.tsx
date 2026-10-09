@@ -11,6 +11,7 @@ import { renderSymbol, renderSecondarySymbol } from "./keshoSymbols";
 import { renderBorder } from "./keshoBorders";
 import { renderEmbroideryEffect, renderFringe } from "./keshoEffects";
 import { TierBadge } from "./keshoComponents";
+import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 interface KeshoMawashiDisplayProps {
   mawashi: KeshoMawashi;
@@ -111,16 +112,16 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
         {/* Definitions */}
         <defs>
           <linearGradient id="goldShimmer" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FFD700" stopOpacity="0.3" />
-            <stop offset="25%" stopColor="#FFA500" stopOpacity="0.4" />
-            <stop offset="50%" stopColor="#FFD700" stopOpacity="0.6" />
-            <stop offset="75%" stopColor="#FFA500" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#FFD700" stopOpacity="0.3" />
+            <stop offset="0%" stopColor={KESHO_COLORS.gold} stopOpacity="0.3" />
+            <stop offset="25%" stopColor={KESHO_COLORS.goldMid} stopOpacity="0.4" />
+            <stop offset="50%" stopColor={KESHO_COLORS.gold} stopOpacity="0.6" />
+            <stop offset="75%" stopColor={KESHO_COLORS.goldMid} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={KESHO_COLORS.gold} stopOpacity="0.3" />
           </linearGradient>
           <linearGradient id="goldShimmer2" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFD700" stopOpacity="0" />
-            <stop offset="50%" stopColor="#FFD700" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+            <stop offset="0%" stopColor={KESHO_COLORS.gold} stopOpacity="0" />
+            <stop offset="50%" stopColor={KESHO_COLORS.gold} stopOpacity="0.5" />
+            <stop offset="100%" stopColor={KESHO_COLORS.gold} stopOpacity="0" />
           </linearGradient>
         </defs>
       </svg>

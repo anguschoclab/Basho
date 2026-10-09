@@ -47,7 +47,7 @@ export function RivalOyakataCard({
           <Crown className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium">{heyaName}</span>
           {legacyTier && (
-            <Badge variant="outline" className="ml-auto text-[9px] capitalize">
+            <Badge variant="outline" className="ml-auto text-[10px] capitalize">
               {legacyTier}
             </Badge>
           )}

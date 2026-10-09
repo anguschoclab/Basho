@@ -13,9 +13,9 @@ import type { BoutTactic } from "@/engine/types/combat";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 function getTacticRiskIcon(profile: TacticProfile) {
-  if (profile.injuryRiskMultiplier >= 1.3) return <Flame className="h-3 w-3 text-rose-500" />;
-  if (profile.injuryRiskMultiplier <= 0.8) return <Shield className="h-3 w-3 text-emerald-500" />;
-  return <Zap className="h-3 w-3 text-amber-500" />;
+  if (profile.injuryRiskMultiplier >= 1.3) return <Flame className="h-3 w-3 text-destructive" />;
+  if (profile.injuryRiskMultiplier <= 0.8) return <Shield className="h-3 w-3 text-success" />;
+  return <Zap className="h-3 w-3 text-gold" />;
 }
 
 const TACTIC_ENTRIES = Object.values(TACTIC_PROFILES) as TacticProfile[];
@@ -150,7 +150,7 @@ export const BoutCard = React.memo(
                       {getTacticRiskIcon(t)}
                     </div>
                     <span className="text-[10px] text-muted-foreground font-normal">{t.desc}</span>
-                    <span className="text-[9px] text-muted-foreground/60 mt-0.5">
+                    <span className="text-[10px] text-muted-foreground/60 mt-0.5">
                       {t.tachiaiPowerModifier > 0 && `+${t.tachiaiPowerModifier} power `}
                       {t.tachiaiPowerModifier < 0 && `${t.tachiaiPowerModifier} power `}
                       {t.fatigueCost > 0 && `| ${t.fatigueCost} fatigue`}

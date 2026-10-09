@@ -22,7 +22,7 @@ export function ExhibitionHeader({ east, west }: { east: Rikishi; west: Rikishi 
   return (
     <>
       <div className="text-center space-y-1">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+        <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground">
           Exhibition Bout — Preseason Demonstration
         </p>
         <h2 className="text-3xl font-display font-black uppercase tracking-tight">
@@ -35,7 +35,7 @@ export function ExhibitionHeader({ east, west }: { east: Rikishi; west: Rikishi 
           <div className="text-lg font-display font-black uppercase">
             {east.shikona ?? east.name}
           </div>
-          <Badge variant="outline" className="text-[9px] uppercase tracking-wider mt-1">
+          <Badge variant="outline" className="text-[10px] uppercase tracking-wider mt-1">
             {east.rank}
           </Badge>
         </div>
@@ -46,7 +46,7 @@ export function ExhibitionHeader({ east, west }: { east: Rikishi; west: Rikishi 
           <div className="text-lg font-display font-black uppercase">
             {west.shikona ?? west.name}
           </div>
-          <Badge variant="outline" className="text-[9px] uppercase tracking-wider mt-1">
+          <Badge variant="outline" className="text-[10px] uppercase tracking-wider mt-1">
             {west.rank}
           </Badge>
         </div>

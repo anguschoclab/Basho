@@ -107,7 +107,7 @@ export function RosterCard({
       >
         <div
           className={cn(
-            "absolute top-0 right-0 p-4 opacity-5 font-display text-5xl font-black italic group-hover:opacity-10 transition-opacity",
+            "absolute top-0 right-0 p-4 opacity-5 font-display text-5xl font-black group-hover:opacity-10 transition-opacity",
             `text-primary`
           )}
         >
@@ -143,7 +143,7 @@ export function RosterCard({
               <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
                 {r.shikona}
               </div>
-              <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
                 <TooltipWrap content={`Age: ${r.ageDescriptor}`} side="top">
                   <span className="cursor-help">
                     {r.origin} • {r.age} Years
@@ -157,12 +157,12 @@ export function RosterCard({
                 <span className="opacity-20 mx-0.5">-</span>
                 <span className="opacity-40">{r.currentBashoLosses}</span>
               </div>
-              <div className="text-[8px] uppercase font-black text-muted-foreground tracking-tighter mt-1">
+              <div className="text-[10px] uppercase font-black text-muted-foreground tracking-tighter mt-1">
                 Basho Record
               </div>
               {r.kachiNokori !== null && r.kachiNokori > 0 && (
                 <div
-                  className="text-[9px] font-mono uppercase tracking-widest text-gold/80 mt-1"
+                  className="text-[10px] font-mono uppercase tracking-widest text-gold/80 mt-1"
                   data-testid={`kachi-nokori-${r.id}`}
                 >
                   {r.kachiNokori} to kachi-koshi
@@ -170,7 +170,7 @@ export function RosterCard({
               )}
               {r.kachiNokori === 0 && (
                 <div
-                  className="text-[9px] font-mono uppercase tracking-widest text-primary mt-1"
+                  className="text-[10px] font-mono uppercase tracking-widest text-primary mt-1"
                   data-testid={`kachi-koshi-${r.id}`}
                 >
                   Kachi-koshi
@@ -182,7 +182,7 @@ export function RosterCard({
           <div className="grid grid-cols-2 gap-3 pt-4 border-t border-dashed border-border/40">
             <div className="space-y-1 border-r border-dashed border-border/40 pr-3">
               <TooltipWrap content="Observed physical power and pushing force" side="top">
-                <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-muted-foreground leading-none cursor-help">
+                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none cursor-help">
                   <Zap className="h-2.5 w-2.5 text-gold" /> Power
                 </div>
               </TooltipWrap>
@@ -195,7 +195,7 @@ export function RosterCard({
                 content="Observed match pace and initial reaction speed"
                 side="top"
               >
-                <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-muted-foreground leading-none cursor-help">
+                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none cursor-help">
                   <Activity className="h-2.5 w-2.5 text-west" /> Pace
                 </div>
               </TooltipWrap>

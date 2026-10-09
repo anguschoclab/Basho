@@ -54,24 +54,24 @@ const importanceMap: Record<string, ImportanceEntry> = {
   major: {
     label: "Major",
     variant: "default",
-    className: "bg-orange-500 hover:bg-orange-600",
+    className: "bg-warning hover:bg-warning",
   },
   headline: { label: "Headline", variant: "destructive", className: "" },
 };
 
 const categoryIconMap: Record<string, React.ReactNode> = {
-  basho: <Trophy className="h-5 w-5 text-yellow-500" />,
-  match: <Swords className="h-5 w-5 text-red-500" />,
-  training: <GraduationCap className="h-5 w-5 text-blue-500" />,
-  injury: <HeartPulse className="h-5 w-5 text-red-500" />,
-  economy: <Coins className="h-5 w-5 text-green-500" />,
-  sponsor: <Coins className="h-5 w-5 text-green-500" />,
-  scouting: <Search className="h-5 w-5 text-purple-500" />,
-  rivalry: <Swords className="h-5 w-5 text-orange-500" />,
-  welfare: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
-  media: <MessageCircle className="h-5 w-5 text-zinc-400" />,
+  basho: <Trophy className="h-5 w-5 text-gold" />,
+  match: <Swords className="h-5 w-5 text-destructive" />,
+  training: <GraduationCap className="h-5 w-5 text-primary" />,
+  injury: <HeartPulse className="h-5 w-5 text-destructive" />,
+  economy: <Coins className="h-5 w-5 text-success" />,
+  sponsor: <Coins className="h-5 w-5 text-success" />,
+  scouting: <Search className="h-5 w-5 text-accent" />,
+  rivalry: <Swords className="h-5 w-5 text-warning" />,
+  welfare: <AlertTriangle className="h-5 w-5 text-gold" />,
+  media: <MessageCircle className="h-5 w-5 text-muted-foreground" />,
   milestone: <Star className="h-5 w-5 text-gold" />,
-  facility: <Wrench className="h-5 w-5 text-zinc-400" />,
+  facility: <Wrench className="h-5 w-5 text-muted-foreground" />,
 };
 
 /**
@@ -88,16 +88,16 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] overflow-hidden border-none p-0 bg-zinc-950 text-zinc-100 shadow-2xl">
+      <DialogContent className="sm:max-w-[500px] overflow-hidden border-none p-0 bg-card text-muted-foreground shadow-2xl">
         {/* Header with Category Color Bar */}
         <div
           className={cn(
             "h-1.5 w-full",
             event.importance === "headline"
-              ? "bg-red-500"
+              ? "bg-destructive"
               : event.importance === "major"
-                ? "bg-orange-500"
-                : "bg-blue-500"
+                ? "bg-warning"
+                : "bg-primary"
           )}
         />
 
@@ -110,7 +110,7 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
               >
                 {importance.label}
               </Badge>
-              <div className="flex items-center gap-2 text-zinc-400 text-sm">
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Calendar className="h-4 w-4" />
                 <span>
                   Year {event.year}, Week {event.week}
@@ -123,15 +123,15 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex gap-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
+          <div className="flex gap-4 p-4 rounded-xl bg-card/50 border border-border/50">
             <div className="shrink-0 mt-1">
-              {categoryIconMap[event.category] || <Info className="h-5 w-5 text-zinc-400" />}
+              {categoryIconMap[event.category] || <Info className="h-5 w-5 text-muted-foreground" />}
             </div>
             <div className="space-y-1">
-              <div className="text-xs uppercase font-bold text-zinc-500 tracking-widest">
+              <div className="text-xs uppercase font-bold text-muted-foreground tracking-widest">
                 {event.category}
               </div>
-              <DialogDescription className="text-zinc-300 text-base leading-relaxed">
+              <DialogDescription className="text-muted-foreground text-base leading-relaxed">
                 <MentionText text={event.summary} />
               </DialogDescription>
             </div>
@@ -141,12 +141,12 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
             <Button
               variant="outline"
               onClick={onClose}
-              className="border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+              className="border-border text-muted-foreground hover:bg-card hover:text-muted-foreground"
             >
               Close
             </Button>
             {targetRoute && (
-              <Button asChild className="bg-blue-600 hover:bg-blue-500 text-white gap-2">
+              <Button asChild className="bg-primary hover:bg-primary text-white gap-2">
                 <Link to={targetRoute} onClick={onClose}>
                   View Details
                   <ChevronRight className="h-4 w-4" />

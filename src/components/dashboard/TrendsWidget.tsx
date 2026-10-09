@@ -74,7 +74,7 @@ export function TrendsWidget() {
                   borderColor: "hsl(var(--border))",
                   fontSize: "10px",
                   borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  boxShadow: "0 4px 12px hsl(var(--foreground) / 0.1)",
                 }}
                 itemStyle={{ padding: "0px" }}
               />
@@ -106,7 +106,7 @@ export function TrendsWidget() {
           </ResponsiveContainer>
         </div>
 
-        <div className="flex items-center justify-center gap-4 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground border-t border-border/30 pt-2">
+        <div className="flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground border-t border-border/30 pt-2">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded-full bg-primary" /> Oshi-Zumo
           </div>

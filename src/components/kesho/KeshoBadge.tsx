@@ -29,7 +29,7 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
     juryo: "bg-muted-foreground",
     makuuchi: "bg-west",
     sanyaku: "bg-primary",
-    yokozuna: "bg-gradient-to-br from-gold to-gold/80",
+    yokozuna: "bg-gold",
   };
 
   return (
@@ -73,7 +73,7 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
             tierColors[kesho.tier]
           )}
         >
-          <span className="text-[8px] font-bold text-white">
+          <span className="text-[10px] font-bold text-white">
             {kesho.tier.charAt(0).toUpperCase()}
           </span>
         </div>

@@ -191,7 +191,7 @@ function YdcKihakuCard({ world }: { world: WorldState }) {
               <span className="font-medium">{c.rikishi.shikona}</span>
               <Badge
                 variant={c.supportLevel === "strong" ? "default" : "outline"}
-                className="text-[9px]"
+                className="text-[10px]"
               >
                 {c.supportLevel}
               </Badge>
@@ -202,7 +202,7 @@ function YdcKihakuCard({ world }: { world: WorldState }) {
               </span>
               {c.rikishi.kihakuIsenScore !== undefined &&
                 c.rikishi.kihakuIsenScore > 0 && (
-                  <Badge variant="secondary" className="text-[9px]">
+                  <Badge variant="secondary" className="text-[10px]">
                     Kihaku: {c.rikishi.kihakuIsenScore}
                   </Badge>
                 )}

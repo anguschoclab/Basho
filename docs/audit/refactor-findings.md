@@ -104,3 +104,52 @@
 - ~~`applyImpact` gameHelpers vs ImpactResolver~~ → RESOLVED: LAYERED — `gameHelpers.applyImpact(state: GameState)` wraps `resolveImpacts`; `ImpactResolver.applyImpact(world: WorldState)` is the engine impl → dup-gate allowlist
 - ~~Barrel adoption policy~~ → RESOLVED: **delete zero-importer barrels** — deep imports are the established repo norm; 16 dead `index.ts` files get deleted in Phase 4, not adopted
 - ~~`simulation/` refactor priority~~ → RESOLVED: TOOL — optional wave, lowest priority
+
+## Phase 5 — Design-bible conformance registry
+
+> Mechanical gate: `src/tests/unit/audit/designBible.test.ts` (0 violations, was 637 across 145 files).
+> Shell contract: every in-game page renders inside `AppLayout` (Sidebar | MainContentPane | EventLogPanel) — verified structurally; only `MainMenu`, `NewGameWizard`, `NotFound` bypass it (pre-game/error surfaces, correct per §4.1).
+> Canvas/SVG literals centralized in `src/constants/ui/drawingPalette.ts` (`DOHYO_COLORS`, `BOUT_FIGURE_COLORS`, `BOUT_HUD_COLORS`, `AVATAR_COLORS`, `KESHO_COLORS`, `KESHO_PRESETS`, `CHART_SERIES`, `HEAT_BANDS`, `PERCEPTION_TICKS`, `withAlpha()`).
+
+| Page | Verdict | Fix list / notes |
+|---|---|---|
+| `Dashboard.tsx` | PASS | widget text sizes→scale, palette→tokens (via `components/dashboard/*` wave) |
+| `BanzukePage.tsx` | PASS | `BashoStandingsEvolution` series → `CHART_SERIES` |
+| `BashoPage.tsx` | PASS | palette→tokens via `components/basho/*` wave |
+| `BookmarksPage.tsx` | PASS | clean |
+| `CandidatePoolPage.tsx` | PASS | palette→tokens |
+| `EconomyPage.tsx` | PASS | chart tooltip shadows → `hsl(var(--foreground)/0.1)` |
+| `FacilitiesPage.tsx` | PASS | palette→tokens |
+| `GlobalCupPage.tsx` | PASS | `GLOBAL_CUP_*` strings are event-type enums, not display copy |
+| `GlossaryPage.tsx` | PASS | clean |
+| `GovernancePage.tsx` | PASS | `bg-card/30 backdrop-blur` → `bg-card` |
+| `HallOfFamePage.tsx` | PASS | `CATEGORY_GRADIENT` → `CATEGORY_SURFACE` solid tints |
+| `HistoryDashboard.tsx` | PASS | palette→tokens |
+| `HistoryPage.tsx` | PASS | `from-gold/10 to-gold/5` → `bg-gold/10` |
+| `InjuryRecoveryPage.tsx` | PASS | clean |
+| `MainMenu.tsx` | PASS | shell-exempt (menu phase); palette→tokens |
+| `MediaPage.tsx` | PASS | `PressConference` backdrop-blur → opaque; banner fade → `bg-background/80` |
+| `MyosekiMarketPage.tsx` | PASS | palette→tokens |
+| `NewGameWizard.tsx` | PASS | shell-exempt; `WizardHeader` whites → foreground tokens; `UNREGISTERED` → sentence case |
+| `NotFound.tsx` | PASS | shell-exempt; clean |
+| `OyakataPage.tsx` | PASS | palette→tokens |
+| `RecapPage.tsx` | PASS | ceremony glow gradient+blur → `bg-gold/10`; `PROMOTION`/`CHAMPION` → sentence case |
+| `RegionalHubPage.tsx` | PASS | clean |
+| `RikishiPage.tsx` | PASS | `bg-white/10` → `bg-foreground/10`; italic rank watermark fixed |
+| `RivalriesPage.tsx` | PASS | clean |
+| `RivalStablesPage.tsx` | PASS | clean |
+| `SchedulePage.tsx` | PASS | palette→tokens |
+| `ScoutingPage.tsx` | PASS | `bg-background/40 backdrop-blur` → `bg-background`; `EQUAL` → `even` |
+| `SettingsPage.tsx` | PASS | clean |
+| `SponsorManagementPage.tsx` | PASS | clean |
+| `StablePage.tsx` | PASS | `from-card to-card` degenerate gradient → `bg-card`; `from-gold/20` → `bg-gold/10` |
+| `StaffPage.tsx` | PASS | clean |
+| `TalentPoolPage.tsx` | PASS | deferred from P2 (active user work); palette→tokens applied |
+| `TrainingPage.tsx` | PASS | `bg-white/10` selects → `bg-foreground/10`; analytics shadow → token |
+| `TrendsPage.tsx` | PASS | tooltip shadow → `hsl(var(--foreground)/0.1)` |
+| `WeeklyDigestPage.tsx` | PASS | clean |
+| `YouthAcademyPage.tsx` | PASS | clean |
+
+**UI-honesty sweep:** no fabricated telemetry/"LIVE SECURE" chrome found; `Math.random` in `keshoEffects` is decorative SVG sparkle (non-sim, acceptable); `keshoEditorData` hex presets are player-facing color data, not chrome. Display copy normalized: `DEMOTED→Demoted`, `KADOBAN→Kadoban`, `SEKITORI→Sekitori`, `JUNIOR→Junior`, `PROMOTION/DEMOTION`, `NATURALIZED/IN RESIDENCY`, `EQUAL→even`, `UNREGISTERED→Unregistered`, canvas `KIMARITE`/`UPSET!`/`KINBOSHI` → title case.
+
+**Scanner refinements (documented exemptions):** `rgb(var(--token))` whitelisted (token usage); `screaming-copy` skips enum comparisons/`.includes()`/`filterTypes` props (protocol values, not display copy); `italic-numerals` now requires numeral/rank/mono content within 3 lines (prose italics for quotes/descriptors are conformant per §2.3 scope).

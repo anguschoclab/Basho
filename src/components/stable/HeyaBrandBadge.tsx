@@ -97,7 +97,7 @@ export function HeyaBrandBadge({ brand, size = "md", className }: HeyaBrandBadge
 
         {/* Tradition level indicator */}
         {brand.traditionLevel >= 0.9 && (
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400/20 to-transparent" />
+          <div className="absolute inset-0 rounded-full bg-gold/10" />
         )}
       </div>
     </div>

@@ -51,7 +51,7 @@ function BonusChip({ label, value }: { label: string; value: number }) {
     <Badge
       variant="outline"
       className={cn(
-        "text-[9px] font-black px-1.5 py-0 h-4 border",
+        "text-[10px] font-black px-1.5 py-0 h-4 border",
         positive
           ? "bg-success/10 text-success border-success/30"
           : "bg-destructive/10 text-destructive border-destructive/30"
@@ -153,7 +153,7 @@ function BackstoryCard({
             <Badge
               variant="outline"
               className={cn(
-                "text-[9px] font-black px-1.5 py-0 h-4 border shrink-0",
+                "text-[10px] font-black px-1.5 py-0 h-4 border shrink-0",
                 DIFFICULTY_CLASS[bs.difficulty]
               )}
             >
@@ -175,7 +175,7 @@ function BackstoryCard({
       <div className="flex flex-wrap gap-1 pt-2 border-t border-dashed">
         <Badge
           variant="outline"
-          className="text-[9px] font-black px-1.5 py-0 h-4 border bg-success/10 text-success border-success/30"
+          className="text-[10px] font-black px-1.5 py-0 h-4 border bg-success/10 text-success border-success/30"
         >
           ¥{formatYenToMan(bs.bonuses.funds)}
         </Badge>

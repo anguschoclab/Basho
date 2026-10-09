@@ -19,17 +19,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import type { BoutResult } from "@/engine/types/basho";
 import { computeStandingsEvolution } from "./computeStandingsEvolution";
+import { CHART_SERIES } from "@/constants/ui/drawingPalette";
 
 /** Color palette cycling through primary + 7 accent colors */
 const LINE_COLORS = [
   "hsl(var(--primary))",
-  "#60a5fa",
-  "#34d399",
-  "#f472b6",
-  "#fb923c",
-  "#a78bfa",
-  "#facc15",
-  "#94a3b8",
+  CHART_SERIES[0],
+  CHART_SERIES[1],
+  CHART_SERIES[2],
+  CHART_SERIES[3],
+  CHART_SERIES[4],
+  CHART_SERIES[5],
+  CHART_SERIES[6],
 ];
 
 interface BashoStandingsEvolutionProps {

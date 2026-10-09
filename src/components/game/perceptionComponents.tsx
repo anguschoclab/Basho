@@ -340,7 +340,7 @@ export const MatchupRow = React.memo(({ m }: { m: H2HMatchupData }) => {
         <RikishiName id={m.rikishiBId} name={m.rikishiBName} className="text-xs font-medium" />
       </div>
       {m.lastKimarite && (
-        <Badge variant="outline" className="text-[9px] ml-2 shrink-0">
+        <Badge variant="outline" className="text-[10px] ml-2 shrink-0">
           {m.lastKimarite}
         </Badge>
       )}

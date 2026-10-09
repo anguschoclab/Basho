@@ -14,6 +14,7 @@ import {
   AvatarHairstyle,
   AvatarFaceDetails,
 } from "./AvatarParts";
+import { AVATAR_COLORS } from "@/constants/ui/drawingPalette";
 
 interface SumoAvatarProps {
   config?: AvatarConfig;
@@ -93,7 +94,7 @@ export const SumoAvatar = memo(function SumoAvatar({
         cy="55"
         r="40"
         fill={`url(#faceGradient-${config.seed})`}
-        stroke="#1a1a1a"
+        stroke={AVATAR_COLORS.ink}
         strokeWidth={strokeWidth}
         filter={`url(#shadow-${config.seed})`}
       />

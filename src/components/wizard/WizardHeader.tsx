@@ -20,7 +20,7 @@ export function WizardHeader({ currentStep, totalSteps = 4 }: WizardHeaderProps)
       </div>
 
       <div className="relative z-10 space-y-4">
-        <div className="h-14 w-14 bg-white/10 rounded-full mx-auto flex items-center justify-center border border-white/20 animate-in zoom-in duration-500">
+        <div className="h-14 w-14 bg-foreground/10 rounded-full mx-auto flex items-center justify-center border border-white/20 animate-in zoom-in duration-500">
           <History className="h-7 w-7 text-white" />
         </div>
         <h1 className="text-4xl font-display font-black tracking-tight text-white uppercase sumi-e-ink">
@@ -32,7 +32,7 @@ export function WizardHeader({ currentStep, totalSteps = 4 }: WizardHeaderProps)
               key={s}
               className={cn(
                 "h-1 rounded-full transition-all duration-500",
-                s === currentStep ? "w-12 bg-white" : "w-6 bg-white/20"
+                s === currentStep ? "w-12 bg-foreground" : "w-6 bg-foreground/20"
               )}
             />
           ))}

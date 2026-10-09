@@ -21,23 +21,23 @@ export const CONDITION_BAND_COLORS: Record<string, { label: string; color: strin
   peak: { label: "Peak", color: "text-success" },
   good: { label: "Good", color: "text-primary" },
   fair: { label: "Fair", color: "text-warning" },
-  worn: { label: "Worn", color: "text-orange-500" },
+  worn: { label: "Worn", color: "text-warning" },
   fragile: { label: "Fragile", color: "text-destructive" },
 
   safe: { label: "Safe", color: "text-success" },
   cautious: { label: "Cautious", color: "text-warning" },
-  elevated: { label: "Elevated", color: "text-orange-500" },
+  elevated: { label: "Elevated", color: "text-warning" },
   critical: { label: "Critical", color: "text-destructive" },
 
   cold: { label: "Cold", color: "text-muted-foreground" },
   warm: { label: "Warm", color: "text-warning" },
-  hot: { label: "Hot", color: "text-orange-500" },
+  hot: { label: "Hot", color: "text-warning" },
   blazing: { label: "Blazing", color: "text-destructive" },
 
   dominant: { label: "Dominant", color: "text-success" },
   strong: { label: "Strong", color: "text-primary" },
   competitive: { label: "Competitive", color: "text-warning" },
-  developing: { label: "Developing", color: "text-orange-500" },
+  developing: { label: "Developing", color: "text-warning" },
   weak: { label: "Weak", color: "text-destructive" },
 };
 
@@ -127,7 +127,7 @@ export const PRESTIGE_COLORS: Record<string, string> = {
 export const COMPLIANCE_COLORS: Record<string, string> = {
   compliant: "text-success",
   watch: "text-warning",
-  investigation: "text-orange-500",
+  investigation: "text-warning",
   sanctioned: "text-destructive",
 };
 

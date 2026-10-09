@@ -60,7 +60,7 @@ export function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
         <span className="text-muted-foreground mx-0.5">–</span>
         <span className={losses > wins ? "text-success" : "text-foreground"}>{losses}</span>
       </div>
-      <div className="text-[9px] text-muted-foreground uppercase tracking-widest mt-0.5">H2H</div>
+      <div className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">H2H</div>
     </div>
   );
 }

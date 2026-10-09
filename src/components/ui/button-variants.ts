@@ -8,7 +8,7 @@ export const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground border-transparent font-mono uppercase tracking-wider",
         "primary-gradient":
-          "bg-gradient-to-br from-primary to-[hsl(44,68%,40%)] text-primary-foreground border-transparent font-mono uppercase tracking-widest shadow-[0_2px_12px_hsl(var(--primary)/0.35)]",
+          "bg-primary text-primary-foreground border-transparent font-mono uppercase tracking-widest shadow-[0_2px_12px_hsl(var(--primary)/0.35)]",
         destructive:
           "bg-destructive text-destructive-foreground border-transparent font-mono uppercase tracking-wider",
         outline: "border-border bg-background hover:bg-muted/50",

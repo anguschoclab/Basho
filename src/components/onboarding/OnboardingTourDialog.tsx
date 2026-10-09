@@ -26,7 +26,7 @@ const STEPS = [
     title: "The Sacred Banzuke",
     description:
       "Every two months (6 times a year), a Grand Sumo Tournament (Basho) is held. Your rikishi's performance there determines their rank.",
-    icon: <Trophy className="h-12 w-12 text-amber-500" />,
+    icon: <Trophy className="h-12 w-12 text-gold" />,
     accent: "Rank & Prestige",
     body: "The Banzuke is more than a list—it's your legacy. Aim for the Sanyaku (top ranks) to unlock higher salaries and legendary status.",
     image: "banzuke_focus",
@@ -35,7 +35,7 @@ const STEPS = [
     title: "Rivalries & Drama",
     description:
       "Sumo isn't just about strength; it's about the stories told in the ring. High-stakes bouts create heat between rikishi and stables.",
-    icon: <Swords className="h-12 w-12 text-rose-500" />,
+    icon: <Swords className="h-12 w-12 text-destructive" />,
     accent: "Living World",
     body: "Check the Rivalries tab to see which matches are heating up. High-heat bouts draw bigger crowds and more media attention!",
     image: "rivalry_focus",
@@ -67,7 +67,7 @@ export function OnboardingTourDialog() {
 
   return (
     <Dialog open={showTour} onOpenChange={(open) => !open && handleSkip()}>
-      <DialogContent className="sm:max-w-[500px] overflow-hidden p-0 border-none bg-background/95 backdrop-blur-xl shadow-2xl">
+      <DialogContent className="sm:max-w-[500px] overflow-hidden p-0 border-none bg-background shadow-2xl">
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 w-full h-1 bg-muted">
           <div

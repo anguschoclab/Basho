@@ -25,7 +25,7 @@ export function JungyoInvitationCard({
         <div className="flex items-center gap-2">
           <Globe className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium">Exhibition Tour</span>
-          <Badge variant="outline" className="ml-auto text-[9px]">
+          <Badge variant="outline" className="ml-auto text-[10px]">
             {invitation.prestigeLabel}
           </Badge>
         </div>

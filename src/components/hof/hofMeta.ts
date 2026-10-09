@@ -1,7 +1,7 @@
 /**
  * hofMeta.ts
  *
- * Hall of Fame display constants — category icons/gradients/accents, rank
+ * Hall of Fame display constants — category icons/surface tints/accents, rank
  * kanji, sort options + accessor, and the inductee sort helper.
  */
 
@@ -16,10 +16,10 @@ export const CATEGORY_ICONS: Record<HoFCategory, React.ElementType> = {
   technician: Target,
 };
 
-export const CATEGORY_GRADIENT: Record<HoFCategory, string> = {
-  champion: "from-gold/20 to-gold/5 border-gold/30",
-  iron_man: "from-west/20 to-west/5 border-west/30",
-  technician: "from-success/20 to-success/5 border-success/30",
+export const CATEGORY_SURFACE: Record<HoFCategory, string> = {
+  champion: "bg-gold/10 border-gold/30",
+  iron_man: "bg-west/10 border-west/30",
+  technician: "bg-success/10 border-success/30",
 };
 
 export const CATEGORY_ACCENT: Record<HoFCategory, string> = {

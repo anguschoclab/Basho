@@ -46,7 +46,7 @@ export function RikishiNaturalization({ rikishi }: RikishiNaturalizationProps) {
           <h3 className="text-lg font-display font-black flex items-center gap-2 uppercase tracking-tight">
             Naturalization Timeline
           </h3>
-          <p className="text-[10px] uppercase font-black tracking-[0.2em] text-gold/70">
+          <p className="text-[10px] uppercase font-black tracking-[0.15em] text-gold/70">
             Residency Requirement: {NATURALIZATION_YEARS} Years
           </p>
         </div>
@@ -56,7 +56,7 @@ export function RikishiNaturalization({ rikishi }: RikishiNaturalizationProps) {
             isNaturalized ? "bg-success" : "bg-gold"
           )}
         >
-          {isNaturalized ? "NATURALIZED" : "IN RESIDENCY"}
+          {isNaturalized ? "Naturalized" : "In residency"}
         </Badge>
       </div>
 
@@ -73,12 +73,12 @@ export function RikishiNaturalization({ rikishi }: RikishiNaturalizationProps) {
               </span>
             </div>
             <Progress value={tenurePct} className="h-1.5 bg-gold/30" />
-            <p className="text-[9px] font-bold text-gold/60 uppercase tracking-widest italic">
+            <p className="text-[10px] font-bold text-gold/60 uppercase tracking-widest italic">
               {NATURALIZATION_YEARS} Years Target
             </p>
           </div>
         </TooltipWrap>
-        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
           Elite careers may be granted early citizenship at the association&apos;s discretion.
         </p>
       </div>

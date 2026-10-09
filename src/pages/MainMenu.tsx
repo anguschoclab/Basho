@@ -35,7 +35,7 @@ export default function MainMenu() {
         <div className="h-2 w-48 bg-muted rounded-xs overflow-hidden mb-6">
           <div className="h-full bg-primary animate-progress-flow" />
         </div>
-        <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-gold/60">
+        <p className="text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-gold/60">
           Institutional Interface Initializing...
         </p>
       </div>

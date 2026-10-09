@@ -73,7 +73,7 @@ export function KeshoMawashiGallery({ world, heyaId }: KeshoMawashiGalleryProps)
                   {rikishi.rank} {rikishi.side === "east" ? "East" : "West"}
                 </div>
               </div>
-              <Badge variant="outline" className="text-[8px] font-black uppercase h-5">
+              <Badge variant="outline" className="text-[10px] font-black uppercase h-5">
                 {rikishi.division}
               </Badge>
             </CardHeader>

@@ -28,10 +28,10 @@ import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 const INTEREST_COLORS: Record<SuitorInterestBand, string> = {
-  all_in: "bg-red-500/20 text-red-700 border-red-500/40",
-  high: "bg-orange-500/20 text-orange-700 border-orange-500/40",
-  medium: "bg-yellow-500/20 text-yellow-700 border-yellow-500/40",
-  low: "bg-blue-500/20 text-blue-700 border-blue-500/40",
+  all_in: "bg-destructive/20 text-destructive border-destructive/40",
+  high: "bg-warning/20 text-warning border-warning/40",
+  medium: "bg-gold/20 text-gold border-gold/40",
+  low: "bg-primary/20 text-primary border-primary/40",
 };
 
 const INTEREST_LABELS: Record<SuitorInterestBand, string> = {
@@ -64,14 +64,14 @@ function CandidateRow({
         <div className="flex items-center gap-2">
           <span className="font-medium truncate">{candidate.name}</span>
           {candidate.isAmateurStar && (
-            <Badge variant="default" className="text-[9px] px-1.5 py-0 h-4 shrink-0">
+            <Badge variant="default" className="text-[10px] px-1.5 py-0 h-4 shrink-0">
               Amateur Star
             </Badge>
           )}
           {candidate.isEmergentProdigy && (
             <Badge
               variant="default"
-              className="text-[9px] px-1.5 py-0 h-4 shrink-0 bg-gold/20 text-gold border-gold/40"
+              className="text-[10px] px-1.5 py-0 h-4 shrink-0 bg-gold/20 text-gold border-gold/40"
             >
               Prodigy
             </Badge>
@@ -92,7 +92,7 @@ function CandidateRow({
             <span className="text-xs text-muted-foreground">{heyaName}</span>
             <Badge
               variant="outline"
-              className={`text-[9px] px-1.5 py-0 h-4 ${INTEREST_COLORS[topSuitor.interestBand]}`}
+              className={`text-[10px] px-1.5 py-0 h-4 ${INTEREST_COLORS[topSuitor.interestBand]}`}
             >
               {INTEREST_LABELS[topSuitor.interestBand]}
             </Badge>
@@ -101,11 +101,11 @@ function CandidateRow({
         <div className="flex items-center gap-2">
           <Badge
             variant="outline"
-            className={`text-[9px] px-1.5 py-0 h-4 ${
+            className={`text-[10px] px-1.5 py-0 h-4 ${
               candidate.availabilityState === "available"
-                ? "bg-green-500/10 text-green-700 border-green-500/30"
+                ? "bg-success/10 text-success border-success/30"
                 : candidate.availabilityState === "in_talks"
-                  ? "bg-yellow-500/10 text-yellow-700 border-yellow-500/30"
+                  ? "bg-gold/10 text-gold border-gold/30"
                   : "bg-muted text-muted-foreground"
             }`}
           >
@@ -125,7 +125,7 @@ function CandidateRow({
           {alreadyPoached && (
             <Badge
               variant="outline"
-              className="text-[9px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-primary/30"
+              className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-primary/30"
             >
               Your Offer In
             </Badge>

@@ -54,7 +54,7 @@ export function CompactRankBadge({
           division === "makushita" &&
             "bg-secondary text-secondary-foreground border border-border",
           // Lower divisions - subtle
-          division === "lower" && "bg-muted text-muted-foreground text-[9px]",
+          division === "lower" && "bg-muted text-muted-foreground text-[10px]",
           className
         )}
       >

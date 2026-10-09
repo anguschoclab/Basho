@@ -183,9 +183,10 @@ Tailwind: font-mono
 
 ### 3.3 Typographic Rules
 
-- **Section labels** in the sidebar use `text-[9px] uppercase tracking-[0.2em]` in JetBrains Mono, color `hsl(var(--gold) / 0.6)`
+- **Section labels** in the sidebar use `text-[10px] uppercase tracking-[0.15em]` in JetBrains Mono, color `hsl(var(--gold) / 0.6)`
 - **Nav tab labels** use `text-[11px] uppercase tracking-wider` in JetBrains Mono
 - **Stat labels** (above numbers) use `text-[10px] uppercase tracking-widest` in JetBrains Mono, `text-muted-foreground`
+- Arbitrary pixel sizes are confined to `text-[10px]`/`text-[11px]`/`text-[12px]`; letter-spacing never exceeds `0.15em` (enforced by `designBible.test.ts`)
 - **Page titles** use Shippori Mincho B1, never uppercase
 - **All numbers in tables and stat blocks** must use `font-mono` and `tabular-nums`
 
@@ -222,7 +223,7 @@ The game uses a persistent FM-style three-pane layout:
 │  [力] Basho Manager                  │  ← Gold lacquer box + Shippori Mincho
 │  ─────────────── (gold hairline)     │
 ├─ SidebarContent ─────────────────────┤
-│  MY STABLE ──────────────────        │  ← Section label: 9px mono, gold/0.6
+│  MY STABLE ──────────────────        │  ← Section label: 10px mono, gold/0.6
 │  · Overview                          │  ← Nav item: 13px Spectral
 │  ▌ Roster       (active)             │  ← Active: gold inset-left border
 │  · Training                          │
@@ -331,7 +332,7 @@ Adds a subtle 18px dot texture grid. Use for sections needing "document" feel (p
 
 ### 5.3 Badges
 
-Badges always use JetBrains Mono at 9px with `tracking-wider`.
+Badges always use JetBrains Mono at 10px (`text-[10px]`) with `tracking-wider`.
 
 | Kind               | Background                       | Border                           | Text                      |
 | ------------------ | -------------------------------- | -------------------------------- | ------------------------- |
@@ -530,7 +531,7 @@ When in doubt about a decorative element, ask: does this reference the arena, th
 
 ### Labels and Headings
 
-- Section labels (sidebar, top nav): ALL CAPS, JetBrains Mono, 0.18–0.2em tracking
+- Section labels (sidebar, top nav): ALL CAPS, JetBrains Mono, up to 0.15em tracking
 - Page titles: Title Case, Shippori Mincho B1, never uppercase
 - Sub-navigation tabs: ALL CAPS, JetBrains Mono
 

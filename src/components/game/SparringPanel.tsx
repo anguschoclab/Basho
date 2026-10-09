@@ -93,7 +93,7 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
               </span>
               <Badge
                 variant="outline"
-                className={`font-mono text-[9px] tracking-wider ${chem.className}`}
+                className={`font-mono text-[10px] tracking-wider ${chem.className}`}
               >
                 {chem.label}
               </Badge>

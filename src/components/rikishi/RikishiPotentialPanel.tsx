@@ -132,7 +132,7 @@ function SizeRow({
           </span>
         </span>
       </div>
-      {descriptor && <div className="text-[9px] text-muted-foreground/60">{descriptor}</div>}
+      {descriptor && <div className="text-[10px] text-muted-foreground/60">{descriptor}</div>}
       <div className="relative h-2 rounded-full bg-muted overflow-hidden">
         <div className="absolute inset-y-0 left-0 bg-primary/25 w-full" />
         <div className="absolute inset-y-0 left-0 bg-primary" style={{ width: `${pct}%` }} />

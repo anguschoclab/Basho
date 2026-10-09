@@ -51,7 +51,7 @@ function TrackBox({ state }: { state: "yusho" | "jun-yusho" | "empty" }) {
         title="Yusho (Tournament Win)"
         aria-label="Yusho"
       >
-        <span className="text-[8px] font-mono font-bold text-background leading-none">Y</span>
+        <span className="text-[10px] font-mono font-bold text-background leading-none">Y</span>
       </div>
     );
   }
@@ -82,7 +82,7 @@ function SupportVerdict({ supportLevel }: { supportLevel: YokozunaCandidate["sup
   }
   if (supportLevel === "adequate") {
     return (
-      <span className="text-xs font-semibold text-yellow-400 font-display">
+      <span className="text-xs font-semibold text-gold font-display">
         Under consideration
       </span>
     );
@@ -113,7 +113,7 @@ function CandidateCard({ candidate }: { candidate: YokozunaCandidate }) {
           <span className="font-display font-bold text-base tracking-tight">{rikishi.shikona}</span>
           <Badge variant="gold">{rikishi.rankLabel}</Badge>
           {rikishi.isPlayerOwned && (
-            <Badge variant="outline" className="border-primary/40 text-primary text-[9px]">
+            <Badge variant="outline" className="border-primary/40 text-primary text-[10px]">
               Your Stable
             </Badge>
           )}
@@ -165,7 +165,7 @@ function CandidateCard({ candidate }: { candidate: YokozunaCandidate }) {
                 politicalPressure >= 75
                   ? "bg-success"
                   : politicalPressure >= 50
-                    ? "bg-yellow-400"
+                    ? "bg-gold"
                     : "bg-destructive"
               }
               className="h-1.5"

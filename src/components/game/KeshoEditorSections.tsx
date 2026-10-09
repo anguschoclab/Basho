@@ -14,6 +14,7 @@ import { KeshoMawashi, TraditionalMotif } from "@/engine/types/keshoMawashi";
 import type { AvatarConfig } from "@/engine/types/avatar";
 import { cn } from "@/lib/utils";
 import { MOTIFS, PRESET_PALETTES } from "./keshoEditorData";
+import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 /** Left pane — live avatar preview plus design-summary badges. */
 export function KeshoPreview({
@@ -27,7 +28,7 @@ export function KeshoPreview({
   const previewAvatarConfig = {
     ...rikishi.avatarConfig,
     seed: rikishi.avatarConfig?.seed ?? rikishi.id,
-    mawashiColor: config.primaryColor || "#BC002D",
+    mawashiColor: config.primaryColor || KESHO_COLORS.crimson,
   };
 
   return (
@@ -36,7 +37,7 @@ export function KeshoPreview({
 
       <div className="relative z-10 text-center space-y-4">
         {/* Large Preview */}
-        <div className="p-8 rounded-full bg-background/50 border border-primary/10 shadow-2xl backdrop-blur-xs">
+        <div className="p-8 rounded-full bg-background border border-primary/10 shadow-2xl">
           <SumoAvatar
             config={previewAvatarConfig as AvatarConfig}
             size="xl"
@@ -139,7 +140,7 @@ export function KeshoEditorControls({
                 <div className="w-1/3" style={{ backgroundColor: p.secondary }} />
                 <div className="w-4" style={{ backgroundColor: p.accent }} />
               </div>
-              <span className="text-[9px] font-bold text-center text-muted-foreground group-hover:text-foreground">
+              <span className="text-[10px] font-bold text-center text-muted-foreground group-hover:text-foreground">
                 {p.name}
               </span>
             </button>

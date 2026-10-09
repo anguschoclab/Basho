@@ -37,7 +37,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           <Button
             variant="outline"
             size="sm"
-            className="h-8 text-[9px] font-black uppercase tracking-widest gap-2"
+            className="h-8 text-[10px] font-black uppercase tracking-widest gap-2"
           >
             <PieChart className="h-3 w-3" /> Industry Breakdown
           </Button>

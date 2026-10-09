@@ -6,6 +6,7 @@
  */
 
 import type { AvatarConfig } from "@/engine/types/avatar";
+import { AVATAR_COLORS } from "@/constants/ui/drawingPalette";
 
 export type AvatarExpression = "neutral" | "determined" | "confident" | "intense";
 
@@ -54,7 +55,7 @@ export const getMouthPath = (
 
 /** Hair color with graying effect */
 export const getHairColor = (config: AvatarConfig) => {
-  if (config.hairGraying > 70) return "#e0e0e0"; // White
-  if (config.hairGraying > 40) return "#6b6b6b"; // Gray
+  if (config.hairGraying > 70) return AVATAR_COLORS.hairWhite; // White
+  if (config.hairGraying > 40) return AVATAR_COLORS.hairGray; // Gray
   return config.hairColor;
 };

@@ -66,7 +66,7 @@ export const DivisionTable = memo(function DivisionTable({
                     <div className="font-display text-muted-foreground text-xs font-medium">
                       {row.rankLabel}
                     </div>
-                    <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
+                    <div className="text-[10px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
                       {row.rankTitleJa}
                       {row.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
                     </div>

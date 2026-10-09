@@ -83,7 +83,7 @@ export function InjuredRikishiCard({
               </h4>
               <Badge
                 variant="outline"
-                className="border-west text-west bg-west/10 font-bold text-[9px] tracking-widest"
+                className="border-west text-west bg-west/10 font-bold text-[10px] tracking-widest"
               >
                 Recovering
               </Badge>

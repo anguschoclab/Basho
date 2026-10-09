@@ -96,7 +96,7 @@ export function InfrastructureOverview({
 function BonusList({ facility }: { facility: (typeof FACILITY_REGISTRY)[FacilityId] }) {
   return (
     <div className="space-y-1">
-      <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+      <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
         Impact & Efficiency
       </div>
       {Object.entries(facility.bonuses.statBuffs || {}).map(([stat, val]) => (
@@ -175,7 +175,7 @@ export function FacilityCard({
             entries, so only the recorded ETA is shown. */}
         {isBuilding && (
           <div className="space-y-2 p-3 bg-warning/10 rounded-lg border border-warning/20">
-            <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-warning">
+            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-warning">
               <span>Construction Underway</span>
               <span>
                 ETA: {project.completionBasho} {project.completionYear}
@@ -209,7 +209,7 @@ export function FacilityCard({
               </>
             )}
           </Button>
-          <p className="text-[7px] text-center mt-2 text-muted-foreground uppercase font-black tracking-widest">
+          <p className="text-[10px] text-center mt-2 text-muted-foreground uppercase font-black tracking-widest">
             Build Cost: {formatYen(Math.round(facility.baseCost * (1 + level * 0.8)))} |
             Maintenance: {formatYen(facility.maintenanceCost)}/mo
           </p>

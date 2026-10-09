@@ -25,7 +25,7 @@ export const RUNWAY_CONFIG: Record<
   comfortable: {
     label: "Comfortable",
     description: "Finances are stable. You can weather minor setbacks without concern.",
-    color: "text-green-400",
+    color: "text-success",
     progressValue: 75,
     icon: ThumbsUp,
   },
@@ -39,14 +39,14 @@ export const RUNWAY_CONFIG: Record<
   critical: {
     label: "Critical",
     description: "Pressure is mounting. Consider reducing costs or strengthening income streams.",
-    color: "text-orange-400",
+    color: "text-warning",
     progressValue: 25,
     icon: AlertOctagon,
   },
   desperate: {
     label: "Desperate",
     description: "Immediate intervention required. The heya's survival is at stake.",
-    color: "text-red-400",
+    color: "text-destructive",
     progressValue: 10,
     icon: Skull,
   },
@@ -70,7 +70,7 @@ export const KOENKAI_CONFIG: Record<
   strong: {
     label: "Strong Kōenkai",
     description: "A dedicated group of supporters contributes reliably each month.",
-    color: "text-purple-400",
+    color: "text-accent",
     monthlySupport: "High",
   },
   moderate: {
@@ -88,7 +88,7 @@ export const KOENKAI_CONFIG: Record<
   none: {
     label: "No Kōenkai",
     description: "No organized supporter group yet. You're operating without a safety net.",
-    color: "text-red-400",
+    color: "text-destructive",
     monthlySupport: "None",
   },
 };

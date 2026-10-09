@@ -47,7 +47,7 @@ export function SuccessionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] paper border-amber-600/30">
+      <DialogContent className="sm:max-w-[600px] paper border-gold/30">
         <DialogHeader className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-full bg-gold/10 text-gold">
@@ -57,7 +57,7 @@ export function SuccessionModal({
               <DialogTitle className="text-2xl font-bold font-display uppercase tracking-tight">
                 The Rite of Succession
               </DialogTitle>
-              <DialogDescription className="text-slate-400">
+              <DialogDescription className="text-muted-foreground">
                 Oyakata {oyakata.name} has reached the venerable age of 60. It is time to appoint a
                 successor to lead {heya.name} into the next era.
               </DialogDescription>
@@ -66,7 +66,7 @@ export function SuccessionModal({
         </DialogHeader>
 
         <div className="py-6">
-          <h4 className="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-4">
+          <h4 className="text-[10px] uppercase font-black text-muted-foreground tracking-widest mb-4">
             Eligible Candidates (Roster & Alumni)
           </h4>
           <ScrollArea className="h-[300px] pr-4">
@@ -99,15 +99,15 @@ export function SuccessionModal({
                     </div>
                     <div>
                       <div className="font-bold font-display text-lg">{c.shikona}</div>
-                      <div className="text-xs text-slate-500 flex items-center gap-2">
-                        <Badge variant="secondary" className="text-[9px] uppercase font-black">
+                      <div className="text-xs text-muted-foreground flex items-center gap-2">
+                        <Badge variant="secondary" className="text-[10px] uppercase font-black">
                           {c.rank}
                         </Badge>
                         <span>{c.makuuchiWins} Career Wins</span>
                         {c.heyaId !== heyaId && (
                           <Badge
                             variant="outline"
-                            className="text-[9px] uppercase border-primary/30 text-primary"
+                            className="text-[10px] uppercase border-primary/30 text-primary"
                           >
                             Alumni
                           </Badge>
@@ -124,9 +124,9 @@ export function SuccessionModal({
               ))}
 
               {candidates.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-48 text-center bg-slate-950/50 rounded-xl border border-dashed border-slate-800">
-                  <Award className="h-8 w-8 text-slate-700 mb-2" />
-                  <p className="text-xs text-slate-500 px-8">
+                <div className="flex flex-col items-center justify-center h-48 text-center bg-card/50 rounded-xl border border-dashed border-border">
+                  <Award className="h-8 w-8 text-muted-foreground mb-2" />
+                  <p className="text-xs text-muted-foreground px-8">
                     There are currently no Sekitori-ranked pupils or alumni eligible for succession.
                     You must wait for an elite student to rise.
                   </p>
@@ -136,9 +136,9 @@ export function SuccessionModal({
           </ScrollArea>
         </div>
 
-        <DialogFooter className="bg-slate-900/50 -mx-6 -mb-6 p-6 rounded-b-lg border-t border-slate-800">
+        <DialogFooter className="bg-card/50 -mx-6 -mb-6 p-6 rounded-b-lg border-t border-border">
           <div className="flex flex-col sm:flex-row gap-4 w-full items-center justify-between">
-            <p className="text-[10px] text-slate-500 max-w-[200px] leading-tight">
+            <p className="text-[10px] text-muted-foreground max-w-[200px] leading-tight">
               A successor inherits the stable's Training Philosophy, but their archetype will
               gradually influence the stable's style.
             </p>

@@ -122,7 +122,7 @@ const KadobanRow = React.memo(
               <RikishiName id={rikishiId} name={shikona} />
             </span>
             <Badge variant={isDemoted ? "destructive" : "outline"} className="text-xs">
-              {isDemoted ? "DEMOTED" : "KADOBAN"}
+              {isDemoted ? "Demoted" : "Kadoban"}
             </Badge>
             {isPlayer && <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>}
           </div>

@@ -101,7 +101,7 @@ export default function TrendsPage() {
                       borderColor: "hsl(var(--border))",
                       fontSize: "12px",
                       borderRadius: "12px",
-                      boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+                      boxShadow: "0 10px 30px hsl(var(--foreground) / 0.1)",
                     }}
                   />
                   <Legend verticalAlign="top" height={36} iconType="circle" />

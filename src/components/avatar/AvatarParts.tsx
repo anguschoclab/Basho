@@ -14,6 +14,7 @@ import {
   getHairColor,
   lightenColor,
 } from "./avatarGeometry";
+import { AVATAR_COLORS } from "@/constants/ui/drawingPalette";
 
 /** Initials fallback when no config is supplied. */
 export function AvatarFallback({
@@ -68,7 +69,7 @@ export function AvatarHairstyle({ config }: { config: AvatarConfig }) {
       <path
         d="M15,45 Q15,15 50,12 Q85,15 85,45"
         fill={getHairColor(config)}
-        stroke="#1a1a1a"
+        stroke={AVATAR_COLORS.ink}
         strokeWidth="1"
       />
 
@@ -82,7 +83,7 @@ export function AvatarHairstyle({ config }: { config: AvatarConfig }) {
             rx="14"
             ry="10"
             fill={getHairColor(config)}
-            stroke="#1a1a1a"
+            stroke={AVATAR_COLORS.ink}
             strokeWidth="1"
           />
           {/* The distinctive ginkgo split */}
@@ -94,7 +95,7 @@ export function AvatarHairstyle({ config }: { config: AvatarConfig }) {
             fill="none"
           />
           {/* Red cord (tasuki) */}
-          <rect x="46" y="22" width="8" height="4" fill="#8b0000" rx="1" />
+          <rect x="46" y="22" width="8" height="4" fill={AVATAR_COLORS.mouthAccent} rx="1" />
         </g>
       )}
 
@@ -107,11 +108,11 @@ export function AvatarHairstyle({ config }: { config: AvatarConfig }) {
             rx="10"
             ry="8"
             fill={getHairColor(config)}
-            stroke="#1a1a1a"
+            stroke={AVATAR_COLORS.ink}
             strokeWidth="1"
           />
           {/* Black cord */}
-          <rect x="47" y="20" width="6" height="3" fill="#1a1a1a" rx="1" />
+          <rect x="47" y="20" width="6" height="3" fill={AVATAR_COLORS.ink} rx="1" />
         </g>
       )}
 
@@ -124,7 +125,7 @@ export function AvatarHairstyle({ config }: { config: AvatarConfig }) {
             rx="20"
             ry="12"
             fill={getHairColor(config)}
-            stroke="#1a1a1a"
+            stroke={AVATAR_COLORS.ink}
             strokeWidth="1"
           />
         </g>
@@ -139,11 +140,11 @@ export function AvatarHairstyle({ config }: { config: AvatarConfig }) {
             rx="9"
             ry="7"
             fill={getHairColor(config)}
-            stroke="#1a1a1a"
+            stroke={AVATAR_COLORS.ink}
             strokeWidth="1"
           />
           {/* Red cord for formal */}
-          <circle cx="50" cy="24" r="3" fill="#8b0000" />
+          <circle cx="50" cy="24" r="3" fill={AVATAR_COLORS.mouthAccent} />
         </g>
       )}
     </g>
@@ -173,7 +174,7 @@ export function AvatarFaceDetails({
         rx="6"
         ry="10"
         fill={config.skinTone}
-        stroke="#1a1a1a"
+        stroke={AVATAR_COLORS.ink}
         strokeWidth="1.5"
       />
       <ellipse
@@ -182,23 +183,23 @@ export function AvatarFaceDetails({
         rx="6"
         ry="10"
         fill={config.skinTone}
-        stroke="#1a1a1a"
+        stroke={AVATAR_COLORS.ink}
         strokeWidth="1.5"
       />
 
       {/* Eyes with highlights */}
-      <g fill="#1a1a1a">
+      <g fill={AVATAR_COLORS.ink}>
         <circle cx={leftEyeX} cy={eyeY} r={eyeRadius} />
         <circle cx={rightEyeX} cy={eyeY} r={eyeRadius} />
       </g>
       {/* Eye highlights for life-like appearance */}
-      <g fill="#ffffff" opacity="0.6">
+      <g fill={AVATAR_COLORS.paper} opacity="0.6">
         <circle cx={leftEyeX - 1} cy={eyeY - 1} r={eyeRadius * 0.3} />
         <circle cx={rightEyeX - 1} cy={eyeY - 1} r={eyeRadius * 0.3} />
       </g>
 
       {/* Eyebrows */}
-      <g stroke="#1a1a1a" strokeWidth="3" fill="none" strokeLinecap="round">
+      <g stroke={AVATAR_COLORS.ink} strokeWidth="3" fill="none" strokeLinecap="round">
         <path d={getBrowPath(true, config, finalExpression)} />
         <path d={getBrowPath(false, config, finalExpression)} />
       </g>
@@ -210,14 +211,14 @@ export function AvatarFaceDetails({
         rx={config.noseType === "broad" ? 8 : config.noseType === "small" ? 4 : 6}
         ry={config.noseType === "small" ? 3 : 5}
         fill={config.skinTone}
-        stroke="#c4987a"
+        stroke={AVATAR_COLORS.skinShadow}
         strokeWidth="1"
       />
 
       {/* Mouth */}
       <path
         d={getMouthPath(config, finalExpression)}
-        stroke="#1a1a1a"
+        stroke={AVATAR_COLORS.ink}
         strokeWidth="2"
         fill="none"
         strokeLinecap="round"
@@ -225,7 +226,7 @@ export function AvatarFaceDetails({
 
       {/* Wrinkles (if veteran/elder) */}
       {config.wrinkles > 20 && (
-        <g stroke="#c4987a" strokeWidth="1" opacity={config.wrinkles / 150}>
+        <g stroke={AVATAR_COLORS.skinShadow} strokeWidth="1" opacity={config.wrinkles / 150}>
           {/* Forehead lines */}
           <path d="M30,28 Q50,32 70,28" fill="none" />
           {config.wrinkles > 40 && <path d="M32,22 Q50,26 68,22" fill="none" />}
@@ -243,7 +244,7 @@ export function AvatarFaceDetails({
           rx="25"
           ry="20"
           fill="none"
-          stroke="#c4987a"
+          stroke={AVATAR_COLORS.skinShadow}
           strokeWidth="0.5"
           opacity="0.3"
         />
@@ -255,7 +256,7 @@ export function AvatarFaceDetails({
           rx="30"
           ry="22"
           fill="none"
-          stroke="#c4987a"
+          stroke={AVATAR_COLORS.skinShadow}
           strokeWidth="0.5"
           opacity="0.3"
         />

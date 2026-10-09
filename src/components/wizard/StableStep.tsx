@@ -77,7 +77,7 @@ export function StableStep({
                     <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
                       {heya.name}
                     </div>
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">
                       {heya.location || "Tokyo"} • {new Set(heya.rikishiIds ?? []).size}{" "}
                       Professional Wrestlers
                     </div>
@@ -85,13 +85,13 @@ export function StableStep({
                   <div className="flex flex-wrap gap-2">
                     <Badge
                       variant="secondary"
-                      className="text-[8px] font-black uppercase tracking-widest h-5 bg-primary/10 border-primary/20 text-primary"
+                      className="text-[10px] font-black uppercase tracking-widest h-5 bg-primary/10 border-primary/20 text-primary"
                     >
                       {heya.statureBand}
                     </Badge>
                     <Badge
                       variant="outline"
-                      className="text-[8px] font-black uppercase tracking-widest h-5 border-2"
+                      className="text-[10px] font-black uppercase tracking-widest h-5 border-2"
                     >
                       {heya.facilitiesBand}
                     </Badge>

@@ -49,7 +49,7 @@ export function SponsorSummaryCards({ data }: { data: SponsorshipData }) {
     <div className="grid gap-6 md:grid-cols-3">
       <Card className="dossier-paper border-2 border-primary/10 bg-primary/5">
         <CardHeader className="pb-2">
-          <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+          <CardTitle className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-2">
             <Landmark className="h-3 w-3 text-primary" /> Total Monthly Funding
           </CardTitle>
         </CardHeader>
@@ -57,7 +57,7 @@ export function SponsorSummaryCards({ data }: { data: SponsorshipData }) {
           <div className="text-3xl font-display font-black text-primary">
             {formatYen(data.totalMonthlyIncome)}
           </div>
-          <p className="text-[9px] uppercase font-bold text-muted-foreground/60 mt-1">
+          <p className="text-[10px] uppercase font-bold text-muted-foreground/60 mt-1">
             Combined Koenkai + Sponsor Dues
           </p>
         </CardContent>
@@ -65,7 +65,7 @@ export function SponsorSummaryCards({ data }: { data: SponsorshipData }) {
 
       <Card className="dossier-paper border-2 border-success/10 bg-success/5">
         <CardHeader className="pb-2">
-          <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+          <CardTitle className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-2">
             <Users className="h-3 w-3 text-success" /> Supporter Association
           </CardTitle>
         </CardHeader>
@@ -73,7 +73,7 @@ export function SponsorSummaryCards({ data }: { data: SponsorshipData }) {
           <div className="text-2xl font-display font-black text-success uppercase">
             {data.power} <span className="text-[10px] font-normal">{data.koenkaiName}</span>
           </div>
-          <p className="text-[9px] uppercase font-bold text-muted-foreground/60 mt-1">
+          <p className="text-[10px] uppercase font-bold text-muted-foreground/60 mt-1">
             Provides constant {formatYen(data.koenkaiIncome)} monthly
           </p>
         </CardContent>
@@ -81,7 +81,7 @@ export function SponsorSummaryCards({ data }: { data: SponsorshipData }) {
 
       <Card className="dossier-paper border-2 border-warning/10 bg-warning/5">
         <CardHeader className="pb-2">
-          <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+          <CardTitle className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-2">
             <Award className="h-3 w-3 text-warning" /> Contract Risk
           </CardTitle>
         </CardHeader>
@@ -90,7 +90,7 @@ export function SponsorSummaryCards({ data }: { data: SponsorshipData }) {
             {data.expiringCount}{" "}
             <span className="text-sm font-normal text-muted-foreground">Expiring Soon</span>
           </div>
-          <p className="text-[9px] uppercase font-bold text-muted-foreground/60 mt-1">
+          <p className="text-[10px] uppercase font-bold text-muted-foreground/60 mt-1">
             Renewal window opens at 4 weeks remaining
           </p>
         </CardContent>
@@ -110,11 +110,11 @@ export function SponsorCard({ sponsor }: { sponsor: SponsorData }) {
               <span className="font-display font-bold text-lg uppercase truncate">
                 {sponsor.sponsorName}
               </span>
-              <Badge variant="secondary" className="text-[9px] font-black uppercase">
+              <Badge variant="secondary" className="text-[10px] font-black uppercase">
                 {sponsor.tier}
               </Badge>
             </div>
-            <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+            <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-3 w-3" /> Since Week {sponsor.since}
               </span>
@@ -131,15 +131,15 @@ export function SponsorCard({ sponsor }: { sponsor: SponsorData }) {
                 sponsor.isExpiringSoon ? "text-warning" : "text-muted-foreground"
               )}
             >
-              {sponsor.weeksRemaining} <span className="text-[9px] uppercase">Weeks</span>
+              {sponsor.weeksRemaining} <span className="text-[10px] uppercase">Weeks</span>
             </div>
-            <div className="text-[8px] uppercase font-bold opacity-40">Remaining</div>
+            <div className="text-[10px] uppercase font-bold opacity-40">Remaining</div>
           </div>
         </div>
 
         {/* Sentiment Bar */}
         <div className="px-6 pb-6 pt-0 space-y-2">
-          <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
+          <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
             <span>Satisfaction & Loyalty</span>
             <span>{sponsor.loyalty}%</span>
           </div>
@@ -159,14 +159,14 @@ export function SponsorCard({ sponsor }: { sponsor: SponsorData }) {
                 />
               ))}
             </div>
-            <span className="text-[8px] font-black uppercase opacity-40">
+            <span className="text-[10px] font-black uppercase opacity-40">
               Strength: {sponsor.power}/5
             </span>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 text-[8px] font-black uppercase tracking-widest"
+            className="h-6 text-[10px] font-black uppercase tracking-widest"
           >
             Details <ChevronRight className="h-3 w-3 ml-1" />
           </Button>
@@ -215,7 +215,7 @@ export function SponsorAppealCta() {
           </Button>
           <div className="flex items-center gap-4 border-l border-success/20 pl-4">
             <div className="flex flex-col">
-              <span className="text-[8px] font-black text-muted-foreground uppercase opacity-50">
+              <span className="text-[10px] font-black text-muted-foreground uppercase opacity-50">
                 Market Status
               </span>
               <Badge

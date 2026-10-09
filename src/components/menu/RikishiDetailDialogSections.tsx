@@ -35,7 +35,7 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
 
   return (
     <div className="bg-primary pt-6 pb-4 px-6 text-primary-foreground relative overflow-hidden shrink-0">
-      <div className="absolute top-0 right-0 p-6 opacity-10 font-display text-6xl font-black pointer-events-none uppercase italic -rotate-12 translate-x-6 -translate-y-3">
+      <div className="absolute top-0 right-0 p-6 opacity-10 font-display text-6xl font-black pointer-events-none uppercase -rotate-12 translate-x-6 -translate-y-3">
         {rikishi.rank}
       </div>
       <div className="space-y-2 relative z-10">
@@ -46,8 +46,8 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
           >
             Rikishi Dossier
           </Badge>
-          <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[9px] h-5 font-black">
-            {isSekitori ? "SEKITORI" : "JUNIOR"}
+          <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[10px] h-5 font-black">
+            {isSekitori ? "Sekitori" : "Junior"}
           </Badge>
         </div>
         <h2 className="text-3xl font-display font-black tracking-tight sumi-e-ink">
@@ -67,10 +67,10 @@ export function QuickStatsRow({ rikishi }: { rikishi: UIRikishi }) {
           <div className="text-2xl font-display font-black leading-none">
             {stat.value(rikishi)}
           </div>
-          <div className="text-[8px] uppercase font-bold text-muted-foreground mt-1">
+          <div className="text-[10px] uppercase font-bold text-muted-foreground mt-1">
             {stat.label}
           </div>
-          <div className="text-[7px] uppercase text-muted-foreground/60">{stat.sub}</div>
+          <div className="text-[10px] uppercase text-muted-foreground/60">{stat.sub}</div>
         </div>
       ))}
     </div>
@@ -89,7 +89,7 @@ export function BasicInfoGrid({
     <div className="grid grid-cols-2 gap-2">
       {RIKISHI_BASIC_INFO.map((info) => (
         <div key={info.label} className="bg-muted/30 p-2.5 rounded-lg">
-          <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
+          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
             {info.label === "Origin" && <MapPin className="h-3 w-3" />}
             {info.label === "Age" && <Calendar className="h-3 w-3" />}
             {info.label === "Height" && <Ruler className="h-3 w-3" />}
@@ -104,17 +104,17 @@ export function BasicInfoGrid({
               : `${(rikishi as UIRikishi & Record<string, unknown>)[info.key] || "--"}${info.suffix}`}
           </div>
           {info.key === "height" && rikishi.heightDescriptor && (
-            <div className="text-[8px] text-muted-foreground/60">
+            <div className="text-[10px] text-muted-foreground/60">
               {rikishi.heightDescriptor}
             </div>
           )}
           {info.key === "weight" && rikishi.weightDescriptor && (
-            <div className="text-[8px] text-muted-foreground/60">
+            <div className="text-[10px] text-muted-foreground/60">
               {rikishi.weightDescriptor}
             </div>
           )}
           {info.key === "age" && selectedEntry?.rikishi.ageDescriptor ? (
-            <div className="text-[8px] text-muted-foreground/60">
+            <div className="text-[10px] text-muted-foreground/60">
               {selectedEntry.rikishi.ageDescriptor}
             </div>
           ) : null}
@@ -128,13 +128,13 @@ export function BasicInfoGrid({
 export function RankInfoCard({ rikishi }: { rikishi: UIRikishi }) {
   return (
     <div className="bg-primary/5 border-2 border-primary/10 rounded-lg p-3">
-      <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
         <Trophy className="h-3.5 w-3.5 text-primary" /> Current Rank
       </div>
       <div className="text-2xl font-display font-black uppercase">
         {rikishi.rank} {rikishi.rankNumber > 0 ? rikishi.rankNumber : ""}
       </div>
-      <div className="text-[8px] font-bold text-muted-foreground uppercase">
+      <div className="text-[10px] font-bold text-muted-foreground uppercase">
         {rikishi.side || "East"} Division
       </div>
     </div>
@@ -151,7 +151,7 @@ export function AttributesGrid({ rikishi }: { rikishi: UIRikishi }) {
       <div className="grid grid-cols-2 gap-2">
         {RIKISHI_ATTRIBUTES.map((stat) => (
           <div key={stat.key} className="bg-muted/30 p-2.5 rounded-lg">
-            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
+            <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
               {stat.label === "Power" && <Zap className="h-3 w-3" />}
               {stat.label === "Speed" && <TrendingUp className="h-3 w-3" />}
               {stat.label === "Balance" && <Shield className="h-3 w-3" />}
@@ -198,7 +198,7 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
           {rikishi.styleName !== rikishi.archetypeName && (
             <Badge
               variant="outline"
-              className="text-[9px] font-black uppercase tracking-widest h-6"
+              className="text-[10px] font-black uppercase tracking-widest h-6"
             >
               {rikishi.styleName || "Balanced"}
             </Badge>
@@ -206,7 +206,7 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
         </div>
         <div className="grid grid-cols-2 gap-2 pt-1">
           <div className="bg-muted/40 rounded-lg p-2 space-y-0.5">
-            <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               Grip
             </p>
             <p className="text-xs font-display font-black capitalize">
@@ -216,7 +216,7 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
             </p>
           </div>
           <div className="bg-muted/40 rounded-lg p-2 space-y-0.5">
-            <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               Depth
             </p>
             <p className="text-xs font-display font-black capitalize">
@@ -227,7 +227,7 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
         {rikishi.favoredKimariteDetailed &&
           rikishi.favoredKimariteDetailed.length > 0 && (
             <div className="pt-1">
-              <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
                 Signature Techniques
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -235,7 +235,7 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
                   <Badge
                     key={i}
                     variant="outline"
-                    className="text-[8px] font-bold uppercase tracking-widest h-5"
+                    className="text-[10px] font-bold uppercase tracking-widest h-5"
                   >
                     {k.kimarite}{" "}
                     <span className="text-muted-foreground ml-1">{k.percentage}%</span>

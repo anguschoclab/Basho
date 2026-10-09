@@ -33,22 +33,22 @@ interface EventFeedProps {
 
 const importanceStyles: Record<EventImportance, string> = {
   minor: "opacity-60",
-  notable: "bg-slate-800/20",
-  major: "border-l-2 border-amber-500 pl-2 bg-amber-500/5",
-  headline: "border-l-2 border-rose-500 pl-2 bg-rose-950/20",
+  notable: "bg-card/20",
+  major: "border-l-2 border-gold pl-2 bg-gold/5",
+  headline: "border-l-2 border-destructive pl-2 bg-destructive/20",
 };
 
 const typeIcons: Record<string, React.ReactNode> = {
   GLOBAL_CUP: <Trophy className="w-4 h-4 text-gold" />,
   BASHO_STATUS: <TrendingUp className="w-4 h-4 text-primary" />,
   FINANCIAL_ALERT: <AlertTriangle className="w-4 h-4 text-destructive" />,
-  NPC_MANAGER_DECISION: <Target className="w-4 h-4 text-indigo-400" />,
-  GOVERNANCE_RULING: <ShieldAlert className="w-4 h-4 text-amber-500" />,
-  RIVALRY_HEAT_SPIKE: <Zap className="w-4 h-4 text-orange-500" />,
-  STRATEGY_SHIFT: <TrendingUp className="w-4 h-4 text-emerald-400" />,
-  DECISION_RESOLVED: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
-  DECISION_AUTO_RESOLVED: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
-  WORLD_META_EVOLUTION: <Sparkles className="w-4 h-4 text-purple-400" />,
+  NPC_MANAGER_DECISION: <Target className="w-4 h-4 text-accent" />,
+  GOVERNANCE_RULING: <ShieldAlert className="w-4 h-4 text-gold" />,
+  RIVALRY_HEAT_SPIKE: <Zap className="w-4 h-4 text-warning" />,
+  STRATEGY_SHIFT: <TrendingUp className="w-4 h-4 text-success" />,
+  DECISION_RESOLVED: <CheckCircle2 className="w-4 h-4 text-success" />,
+  DECISION_AUTO_RESOLVED: <CheckCircle2 className="w-4 h-4 text-success" />,
+  WORLD_META_EVOLUTION: <Sparkles className="w-4 h-4 text-accent" />,
   default: <Info className="w-4 h-4 text-muted-foreground" />,
 };
 
@@ -63,7 +63,7 @@ const EventFeedItem = React.memo(
 
     return (
       <div
-        className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${importanceClass}`}
+        className={`flex gap-3 p-2 rounded hover:bg-card/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${importanceClass}`}
         role="button"
         aria-label={event.title}
         tabIndex={0}
@@ -79,10 +79,10 @@ const EventFeedItem = React.memo(
         <div className="flex-1 min-w-0">
           <MentionText
             text={event.title}
-            className="text-sm font-medium text-slate-200 truncate block"
+            className="text-sm font-medium text-muted-foreground truncate block"
           />
-          <MentionText text={event.summary} className="text-xs text-slate-400 line-clamp-2" />
-          <p className="text-xs text-slate-500 mt-1">{formatEventTime(event)}</p>
+          <MentionText text={event.summary} className="text-xs text-muted-foreground line-clamp-2" />
+          <p className="text-xs text-muted-foreground mt-1">{formatEventTime(event)}</p>
         </div>
       </div>
     );

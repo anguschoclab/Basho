@@ -77,7 +77,7 @@ function DecisionRow({ decision }: { decision: NPCDecisionDTO }) {
     >
       <div className="flex items-center gap-2 mb-1">
         <span className="text-sm font-medium">{decision.heyaName}</span>
-        <Badge variant="outline" className="text-[9px] uppercase tracking-widest">
+        <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
           {categoryLabel}
         </Badge>
         {decision.week > 0 && (

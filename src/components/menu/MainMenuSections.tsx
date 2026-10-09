@@ -116,7 +116,7 @@ export function MainMenuHero({ game }: { game: ReturnType<typeof useGame> }) {
             </p>
           </div>
           <div className="text-left max-w-[240px]">
-            <p className="stat-label text-gold mb-1 tracking-[0.2em]">ASSOCIATION STATUS</p>
+            <p className="stat-label text-gold mb-1 tracking-[0.15em]">ASSOCIATION STATUS</p>
             <p className="text-xs text-muted-foreground leading-snug font-body">
               Assume the mantle of Oyakata. Architect your lineage, refine your technique, and
               dominate the Kokugikan.

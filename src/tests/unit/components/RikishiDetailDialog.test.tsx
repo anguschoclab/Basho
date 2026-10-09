@@ -50,12 +50,12 @@ describe("RikishiDetailDialog", () => {
   it("renders sekitori badge for sekitori rank", () => {
     const r = makeUIRikishi("r1", { rank: "ozeki" });
     render(<RikishiDetailDialog selectedRikishi={r} onClose={vi.fn()} rosterWithAge={[]} />);
-    expect(screen.getByText("SEKITORI")).toBeTruthy();
+    expect(screen.getByText("Sekitori")).toBeTruthy();
   });
 
   it("renders junior badge for non-sekitori rank", () => {
     const r = makeUIRikishi("r1", { rank: "makushita" });
     render(<RikishiDetailDialog selectedRikishi={r} onClose={vi.fn()} rosterWithAge={[]} />);
-    expect(screen.getByText("JUNIOR")).toBeTruthy();
+    expect(screen.getByText("Junior")).toBeTruthy();
   });
 });

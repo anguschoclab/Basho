@@ -66,7 +66,7 @@ export const RikishiCell = memo(function RikishiCell({
             side="top"
           >
             <span
-              className="text-[14px] ml-auto cursor-help"
+              className="text-sm ml-auto cursor-help"
               role="img"
               aria-label="Promotion Watch"
             >
@@ -79,14 +79,14 @@ export const RikishiCell = memo(function RikishiCell({
             content="Kadoban: Must achieve a winning record to maintain Ozeki rank"
             side="top"
           >
-            <Badge variant="destructive" className="text-[9px] ml-auto cursor-help">
+            <Badge variant="destructive" className="text-[10px] ml-auto cursor-help">
               角番
             </Badge>
           </TooltipWrap>
         )}
         {entry.rank === "yokozuna" && (
           <TooltipWrap content="Yokozuna: The grand champion rank" side="top">
-            <Badge className="text-[9px] rank-yokozuna text-primary-foreground ml-auto cursor-help">
+            <Badge className="text-[10px] rank-yokozuna text-primary-foreground ml-auto cursor-help">
               横綱
             </Badge>
           </TooltipWrap>
@@ -96,7 +96,7 @@ export const RikishiCell = memo(function RikishiCell({
             content="Kyujo: Withdrawn from the current tournament due to injury"
             side="top"
           >
-            <Badge variant="destructive" className="text-[9px] ml-auto cursor-help">
+            <Badge variant="destructive" className="text-[10px] ml-auto cursor-help">
               休場
             </Badge>
           </TooltipWrap>

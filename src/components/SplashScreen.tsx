@@ -1,14 +1,11 @@
 /**
  * SplashScreen.tsx — Branded loading screen shown while BardEngine domains load.
- * Dark background matching the app theme-color (#0f172a) from index.html.
+ * Uses the semantic background token (matches the theme-color in index.html).
  */
 
 export function SplashScreen() {
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen bg-background"
-      style={{ backgroundColor: "#0f172a" }}
-    >
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background">
       <div className="flex flex-col items-center gap-6">
         <h1 className="text-2xl font-serif font-bold tracking-wide text-foreground">Basho</h1>
         <div className="flex items-center gap-3 text-muted-foreground">

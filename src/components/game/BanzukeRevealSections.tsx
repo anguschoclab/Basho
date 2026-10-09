@@ -18,7 +18,7 @@ const CHANGE_CARD_CLASS: Record<string, string> = {
   up: "bg-gold/10 border-gold/50",
   down: "bg-destructive/10 border-destructive/50",
   new: "bg-primary/10 border-primary/50",
-  division_change: "bg-purple-500/10 border-purple-500/50",
+  division_change: "bg-accent/10 border-accent/50",
 };
 
 const CHANGE_TEXT_CLASS: Record<string, string> = {
@@ -65,7 +65,7 @@ export function RevealEntryCard({
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 15 }}
       className={`flex items-center justify-between p-4 rounded-lg border ${
-        CHANGE_CARD_CLASS[entry.change] ?? "bg-white/5 border-white/10"
+        CHANGE_CARD_CLASS[entry.change] ?? "bg-card/60 border-border"
       }`}
     >
       <div className="flex flex-col">
@@ -77,12 +77,12 @@ export function RevealEntryCard({
             <RikishiName id={entry.id} name={entry.shikona} />
           </span>
           {entry.change === "new" && (
-            <Badge className="text-[9px] font-bold uppercase tracking-widest px-2 h-5 bg-primary/80 text-white">
+            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-primary/80 text-white">
               NEW
             </Badge>
           )}
           {entry.change === "division_change" && (
-            <Badge className="text-[9px] font-bold uppercase tracking-widest px-2 h-5 bg-purple-500/80 text-white">
+            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-accent/80 text-white">
               DIV
             </Badge>
           )}

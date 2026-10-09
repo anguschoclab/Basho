@@ -112,7 +112,7 @@ export function PromotionHistory({
               )}
               <Badge
                 variant="outline"
-                className="text-[9px] font-black uppercase tracking-widest border-2"
+                className="text-[10px] font-black uppercase tracking-widest border-2"
               >
                 {p.year} {p.bashoName}
               </Badge>
@@ -124,17 +124,17 @@ export function PromotionHistory({
             </div>
             <div className="flex items-center gap-2 ml-auto">
               {p.isJump && (
-                <Badge className="text-[8px] font-black uppercase tracking-widest bg-primary/20 text-primary">
+                <Badge className="text-[10px] font-black uppercase tracking-widest bg-primary/20 text-primary">
                   Jump
                 </Badge>
               )}
               {p.isSanyaku && (
-                <Badge className="text-[8px] font-black uppercase tracking-widest bg-gold/20 text-gold">
+                <Badge className="text-[10px] font-black uppercase tracking-widest bg-gold/20 text-gold">
                   Sanyaku
                 </Badge>
               )}
               {p.isSekitori && (
-                <Badge className="text-[8px] font-black uppercase tracking-widest bg-success/20 text-success">
+                <Badge className="text-[10px] font-black uppercase tracking-widest bg-success/20 text-success">
                   Sekitori
                 </Badge>
               )}

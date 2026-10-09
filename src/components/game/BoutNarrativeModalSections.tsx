@@ -184,7 +184,7 @@ function CommentaryLine({
     >
       <Badge
         variant="outline"
-        className={`text-[9px] shrink-0 mt-0.5 font-display ${style.bg} ${style.color} border`}
+        className={`text-[10px] shrink-0 mt-0.5 font-display ${style.bg} ${style.color} border`}
       >
         {line.phase === "tachiai" ? (
           <GlossaryTip termId="tachiai">{style.label}</GlossaryTip>

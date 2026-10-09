@@ -6,6 +6,7 @@
 
 import React from "react";
 import "./kesho-effects.css";
+import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 /**
  * Render embroidery effect based on style
@@ -73,7 +74,7 @@ export function renderEmbroideryEffect(
         <defs>
           <linearGradient id="goldwork-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={color} stopOpacity={0.8 * density} />
-            <stop offset="50%" stopColor="#FFD700" stopOpacity={0.9 * density} />
+            <stop offset="50%" stopColor={KESHO_COLORS.gold} stopOpacity={0.9 * density} />
             <stop offset="100%" stopColor={color} stopOpacity={0.8 * density} />
           </linearGradient>
         </defs>

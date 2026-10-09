@@ -112,7 +112,7 @@ export function BashoHistoryCard({
         <div className="grid gap-4 md:grid-cols-2">
           {/* Yusho Winner */}
           {yushoRikishi ? (
-            <div className="p-4 rounded-lg bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20">
+            <div className="p-4 rounded-lg bg-gold/10 border border-gold/20">
               <div className="flex items-center gap-2 mb-2">
                 <Trophy className="h-5 w-5 text-gold" />
                 <span className="text-sm font-medium text-gold">優勝 Yūshō</span>
@@ -219,12 +219,12 @@ function SpecialPrizesRow({
         rikishi={shukun}
       />
       <PrizeCell
-        icon={<Star className="h-4 w-4 mx-auto mb-1 text-rose-500" />}
+        icon={<Star className="h-4 w-4 mx-auto mb-1 text-destructive" />}
         label="敢闘賞"
         rikishi={kanto}
       />
       <PrizeCell
-        icon={<Medal className="h-4 w-4 mx-auto mb-1 text-sky-500" />}
+        icon={<Medal className="h-4 w-4 mx-auto mb-1 text-primary" />}
         label="技能賞"
         rikishi={gino}
       />

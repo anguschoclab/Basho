@@ -49,7 +49,7 @@ export function MainContentPane({
             {pageTitle && (
               <div className="ml-4 hidden lg:block shrink-0">
                 <span
-                  className="text-[9px] uppercase text-[hsl(var(--muted-foreground)/0.55)]"
+                  className="text-[10px] uppercase text-[hsl(var(--muted-foreground)/0.55)]"
                   style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
                 >
                   {pageTitle}

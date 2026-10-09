@@ -24,7 +24,7 @@ export function AcademyIntakeCard({ prospect, onPromote }: AcademyIntakeCardProp
       <CardContent className="p-3 space-y-2">
         <div className="flex items-center justify-between">
           <span className="font-display text-sm font-semibold">{prospect.shikona}</span>
-          <Badge variant="outline" className="text-[9px]">
+          <Badge variant="outline" className="text-[10px]">
             Age {prospect.age}
           </Badge>
         </div>

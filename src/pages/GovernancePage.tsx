@@ -82,7 +82,7 @@ export default function GovernancePage() {
               <Scale className="h-4 w-4" />
               Rulings
               {derived.pendingRulings.length > 0 && (
-                <Badge variant="destructive" className="ml-1 h-4 px-1.5 text-[9px]">
+                <Badge variant="destructive" className="ml-1 h-4 px-1.5 text-[10px]">
                   {derived.pendingRulings.length}
                 </Badge>
               )}

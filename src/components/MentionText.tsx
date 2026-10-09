@@ -35,7 +35,7 @@ export function MentionText({ text, className }: MentionTextProps) {
         type={type}
         id={id}
         name={name}
-        className="font-semibold text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+        className="font-semibold text-primary dark:text-primary hover:text-primary dark:hover:text-primary transition-colors"
       />
     );
 

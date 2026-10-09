@@ -13,6 +13,7 @@ import { Palette, X, ShieldCheck } from "lucide-react";
 import { useGame } from "@/contexts/useGame";
 import { KeshoMawashi, TraditionalMotif } from "@/engine/types/keshoMawashi";
 import { KeshoPreview, KeshoEditorControls } from "./KeshoEditorSections";
+import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 interface KeshoEditorProps {
   rikishi: UIRikishi;
@@ -27,9 +28,9 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
   // Initialize with current config or default
   const existingConfig = world?.customKeshoConfigs?.[rikishi.id] || {};
   const [config, setConfig] = useState<Partial<KeshoMawashi>>({
-    primaryColor: rikishi.keshoMawashi?.primaryColor || "#BC002D",
-    secondaryColor: rikishi.keshoMawashi?.secondaryColor || "#FFFFFF",
-    accentColor: rikishi.keshoMawashi?.accentColor || "#FFD700",
+    primaryColor: rikishi.keshoMawashi?.primaryColor || KESHO_COLORS.crimson,
+    secondaryColor: rikishi.keshoMawashi?.secondaryColor || KESHO_COLORS.silk,
+    accentColor: rikishi.keshoMawashi?.accentColor || KESHO_COLORS.gold,
     goldThreadDensity: rikishi.keshoMawashi?.goldThreadDensity || 0.5,
     mainSymbol: rikishi.keshoMawashi?.mainSymbol || {
       type: "motif",

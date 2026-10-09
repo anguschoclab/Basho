@@ -66,7 +66,7 @@ const RosterEntryRow = React.memo(
         <Badge
           variant="outline"
           className={cn(
-            "text-[8px] font-bold uppercase tracking-widest px-1.5 h-4 shrink-0",
+            "text-[10px] font-bold uppercase tracking-widest px-1.5 h-4 shrink-0",
             healthBadge === "Fresh" && "border-success text-success bg-success/10",
             healthBadge === "Worn" && "border-warning text-warning bg-warning/10",
             healthBadge === "Struggling" && "border-warning text-warning bg-warning/10",

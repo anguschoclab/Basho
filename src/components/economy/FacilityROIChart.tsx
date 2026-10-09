@@ -110,7 +110,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         borderRadius: "12px",
         padding: "10px 14px",
         fontSize: "12px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+        boxShadow: "0 10px 30px hsl(var(--foreground) / 0.1)",
         minWidth: "180px",
       }}
     >

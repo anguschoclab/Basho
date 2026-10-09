@@ -24,7 +24,7 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
   const champion = finalMatch?.result ? world.rikishi.get(finalMatch.result.winnerRikishiId) : null;
 
   return (
-    <Card className="border-gold/30 bg-gradient-to-b from-gold/5 to-transparent">
+    <Card className="border-gold/30 bg-gold/5">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
           <Trophy className="h-5 w-5 text-gold" />

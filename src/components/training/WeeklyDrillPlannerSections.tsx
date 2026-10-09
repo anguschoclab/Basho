@@ -99,7 +99,7 @@ export function PlannerHeader({ planner }: { planner: Planner }) {
         </Button>
         <Badge
           variant="outline"
-          className="px-4 py-1.5 bg-background border-2 font-black uppercase tracking-widest text-[9px] h-11 flex items-center"
+          className="px-4 py-1.5 bg-background border-2 font-black uppercase tracking-widest text-[10px] h-11 flex items-center"
         >
           INTERIM WEEK
         </Badge>
@@ -120,7 +120,7 @@ export function BatchToolbar({ planner }: { planner: Planner }) {
         <div className="h-4 w-px bg-primary-foreground/20" />
         <span className="text-[10px] uppercase font-bold opacity-80">Assign to all:</span>
         <Select onValueChange={(v) => planner.handleBatchAssign(v as DrillType)}>
-          <SelectTrigger className="w-40 bg-white/10 border-white/20 h-8 text-[10px] font-bold uppercase">
+          <SelectTrigger className="w-40 bg-foreground/10 border-foreground/20 h-8 text-[10px] font-bold uppercase">
             <SelectValue placeholder="Select Drill..." />
           </SelectTrigger>
           <SelectContent>{DRILL_OPTIONS_BATCH}</SelectContent>
@@ -129,7 +129,7 @@ export function BatchToolbar({ planner }: { planner: Planner }) {
       <Button
         variant="ghost"
         size="sm"
-        className="text-[10px] font-black uppercase tracking-widest hover:bg-white/10"
+        className="text-[10px] font-black uppercase tracking-widest hover:bg-foreground/10"
         onClick={() => planner.setSelectedIds(new Set())}
       >
         Clear Selection
@@ -206,7 +206,7 @@ function DayCell({
           )}
         >
           <div className="shrink-0">{DRILL_ICONS[drill]}</div>
-          <span className="text-[7px] font-black uppercase tracking-tighter hidden md:block">
+          <span className="text-[10px] font-black uppercase tracking-tighter hidden md:block">
             {meta.label}
           </span>
         </SelectTrigger>
@@ -279,7 +279,7 @@ function RikishiRow({
           <div className="font-display font-black text-sm uppercase tracking-tighter truncate">
             <RikishiName id={rikishi.id} name={rikishi.shikona} />
           </div>
-          <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-muted-foreground">
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <span
               className={cn(isExhausted ? "text-destructive font-bold" : "text-success")}
             >
@@ -351,7 +351,7 @@ export function DrillGrid({
 export function RegimenFooter() {
   return (
     <div className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-8 border-2 border-primary/20 shadow-2xl bg-primary/5 relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-1 bg-primary text-[8px] font-black uppercase text-white px-3 rotate-45 translate-x-4 translate-y-2">
+      <div className="absolute top-0 right-0 p-1 bg-primary text-[10px] font-black uppercase text-white px-3 rotate-45 translate-x-4 translate-y-2">
         READY FOR TICK
       </div>
       <div className="h-16 w-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg transform -rotate-3 hover:rotate-0 transition-transform">
@@ -373,7 +373,7 @@ export function RegimenFooter() {
         <div className="pt-2">
           <Badge
             variant="outline"
-            className="border-dashed border-primary/30 text-[9px] font-black"
+            className="border-dashed border-primary/30 text-[10px] font-black"
           >
             SAVED AUTOMATICALLY — APPLIES WEEKLY
           </Badge>

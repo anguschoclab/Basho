@@ -201,7 +201,7 @@ export function RecordsTab({ world, giantSlayers }: { world: WorldState; giantSl
             title="Consecutive Yūshō"
             entries={records.allTime.consecutiveYusho}
             icon={Star}
-            colorClass="text-purple-400"
+            colorClass="text-accent"
           />
           <LeaderboardWidget
             title="Giant Slayers"
@@ -318,7 +318,7 @@ export function TechniquesTab({ derived }: { derived: Derived }) {
                         variant="outline"
                         className={
                           row.rarity === "legendary"
-                            ? "border-purple-400 text-purple-400"
+                            ? "border-accent text-accent"
                             : row.rarity === "rare"
                               ? "border-west text-west"
                               : "text-muted-foreground"

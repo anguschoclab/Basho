@@ -99,7 +99,7 @@ export function CitizenshipSection({ rikishi }: { rikishi: UIRikishi }) {
             value={((5 - rikishi.yearsToNaturalization) / 5) * 100}
             className="h-1 bg-gold/20"
           />
-          <p className="text-[8px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
+          <p className="text-[10px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
             {rikishi.yearsToNaturalization} year
             {rikishi.yearsToNaturalization !== 1 ? "s" : ""} until Japanese citizenship
             eligibility
@@ -107,7 +107,7 @@ export function CitizenshipSection({ rikishi }: { rikishi: UIRikishi }) {
         </>
       )}
       {rikishi.citizenshipStatus === "naturalized" && (
-        <p className="text-[8px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
+        <p className="text-[10px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
           This rikishi is a full Japanese citizen and no longer counts against the heya's
           foreign quota.
         </p>

@@ -64,7 +64,7 @@ export function AcademyManagementPanel({
                     <span className="font-medium">{a.region}</span>
                     <span className="text-muted-foreground ml-2">Built {a.builtAtYear}</span>
                   </div>
-                  <Badge variant="outline" className="text-[9px]">
+                  <Badge variant="outline" className="text-[10px]">
                     +{a.candidateQualityBonus} Quality
                   </Badge>
                 </div>
@@ -79,7 +79,7 @@ export function AcademyManagementPanel({
                         key={amount}
                         size="sm"
                         variant={investBudgets[a.region] === amount ? "default" : "outline"}
-                        className="h-5 px-1.5 text-[9px] tabular-nums"
+                        className="h-5 px-1.5 text-[10px] tabular-nums"
                         onClick={() =>
                           setInvestBudgets((prev) => ({ ...prev, [a.region]: amount }))
                         }
@@ -91,7 +91,7 @@ export function AcademyManagementPanel({
                     <Button
                       size="sm"
                       variant="default"
-                      className="h-5 px-2 text-[9px] ml-auto"
+                      className="h-5 px-2 text-[10px] ml-auto"
                       disabled={!investBudgets[a.region]}
                       onClick={() => {
                         const budget = investBudgets[a.region];

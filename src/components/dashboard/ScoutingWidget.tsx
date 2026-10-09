@@ -69,7 +69,7 @@ const ProspectRow = React.memo(
         )}
         <Badge
           variant={potential === "generational" || potential === "star" ? "default" : "secondary"}
-          className="text-[9px] px-1.5 py-0 h-4 shrink-0"
+          className="text-[10px] px-1.5 py-0 h-4 shrink-0"
         >
           {potentialInfo.split(" ")[0]}
         </Badge>

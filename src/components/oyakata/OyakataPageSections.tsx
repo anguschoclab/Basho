@@ -116,8 +116,8 @@ export function CareerAsRikishiCard({ oyakata }: { oyakata: Oyakata }) {
           )}
           {/* Former Yokozuna Tsuna Display */}
           {oyakata.highestRank?.toLowerCase() === "yokozuna" && (
-            <div className="space-y-2 md:col-span-2 mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center gap-2 text-sm text-yellow-800">
+            <div className="space-y-2 md:col-span-2 mt-4 p-4 bg-gold border border-gold rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gold">
                 <Award className="h-4 w-4" />
                 <span className="font-medium">Yokozuna Legacy</span>
               </div>
@@ -135,7 +135,7 @@ export function CareerAsRikishiCard({ oyakata }: { oyakata: Oyakata }) {
                   size="md"
                   variant="retired"
                 />
-                <p className="text-sm text-yellow-700 italic">
+                <p className="text-sm text-gold italic">
                   Former yokozuna ceremonial rope, displayed as a symbol of the highest
                   achievement in sumo.
                 </p>

@@ -73,7 +73,7 @@ export function HoFInductionCeremony({
           {ceremony.titleJa} — Hall of Fame Induction
         </>
       }
-      cardClassName="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-r from-muted/80 to-muted/30 border"
+      cardClassName="flex items-center gap-4 p-4 rounded-lg bg-muted/60 border"
       cardContent={
         <>
           <SumoAvatar

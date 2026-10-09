@@ -122,7 +122,7 @@ export function HeyaCard({
             {financial && (
               <Badge
                 variant="outline"
-                className="text-[9px] bg-destructive/10 text-destructive border-destructive/20 font-bold"
+                className="text-[10px] bg-destructive/10 text-destructive border-destructive/20 font-bold"
               >
                 💴 FINANCIAL RISK
               </Badge>
@@ -130,7 +130,7 @@ export function HeyaCard({
             {governance && (
               <Badge
                 variant="outline"
-                className="text-[9px] bg-gold/10 text-gold border-gold/20 font-bold"
+                className="text-[10px] bg-gold/10 text-gold border-gold/20 font-bold"
               >
                 ⚖️ GOVERNANCE
               </Badge>
@@ -138,7 +138,7 @@ export function HeyaCard({
             {rivalry && (
               <Badge
                 variant="outline"
-                className="text-[9px] bg-primary/10 text-primary border-primary/20 font-bold"
+                className="text-[10px] bg-primary/10 text-primary border-primary/20 font-bold"
               >
                 🔥 RIVALRY
               </Badge>

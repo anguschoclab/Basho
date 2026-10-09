@@ -91,7 +91,7 @@ export function StaffSection({
                 <span className="font-medium">{s.name}</span>
                 <span className="text-muted-foreground ml-2">{STAFF_LABELS[s.role]}</span>
               </div>
-              <Badge variant="outline" className="text-[9px]">
+              <Badge variant="outline" className="text-[10px]">
                 Q {s.quality}
               </Badge>
             </div>
@@ -153,10 +153,10 @@ export function ProspectsSection({
             <span className="text-muted-foreground ml-2">{p.region}</span>
           </div>
           <div className="flex items-center gap-2 tabular-nums">
-            <Badge variant="outline" className="text-[9px]">
+            <Badge variant="outline" className="text-[10px]">
               Pot {p.potential}
             </Badge>
-            <Badge variant="outline" className="text-[9px]">
+            <Badge variant="outline" className="text-[10px]">
               Ability {p.currentAbility}
             </Badge>
             <Button

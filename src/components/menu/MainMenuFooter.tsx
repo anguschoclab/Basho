@@ -57,7 +57,7 @@ export function MainMenuFooter({
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-gold transition-colors"
+          className="gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-muted-foreground hover:text-gold transition-colors"
           onClick={() => document.getElementById("archive-trigger")?.click()}
         >
           <Database className="w-3.5 h-3.5" />
@@ -65,10 +65,10 @@ export function MainMenuFooter({
         </Button>
       </div>
       <div className="text-center space-y-2">
-        <p className="text-[10px] font-display font-bold uppercase tracking-[0.4em] text-gold/30">
+        <p className="text-[10px] font-display font-bold uppercase tracking-[0.15em] text-gold/30">
           Reach the Summit — 頂点を目指せ
         </p>
-        <p className="text-[9px] font-mono text-muted-foreground/30 uppercase tracking-widest">
+        <p className="text-[10px] font-mono text-muted-foreground/30 uppercase tracking-widest">
           © {COPYRIGHT_YEAR} Basho · Institutional Grade Simulation
         </p>
       </div>

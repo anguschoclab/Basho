@@ -79,7 +79,7 @@ export function SaveSlotManager({
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="max-w-lg border-t-8 border-t-primary shadow-2xl backdrop-blur-xs bg-background/95">
+        <DialogContent className="max-w-lg border-t-8 border-t-primary shadow-2xl bg-background">
           <ArchiveDialogContent
             saveSlots={saveSlots}
             isImporting={isImporting}

@@ -30,7 +30,7 @@ const commonTooltipProps = {
     fontSize: "11px",
     fontFamily: "Spectral",
     borderRadius: "8px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+    boxShadow: "0 4px 12px hsl(var(--foreground) / 0.24)",
   },
   labelStyle: { fontWeight: 600, fontFamily: "JetBrains Mono" },
 } as const;

@@ -68,7 +68,7 @@ export function ActionResolveRow({
         {item.required && (
           <Badge
             variant="outline"
-            className="border-destructive/30 text-destructive text-[9px] px-1 py-0"
+            className="border-destructive/30 text-destructive text-[10px] px-1 py-0"
           >
             Required
           </Badge>
@@ -94,7 +94,7 @@ export function ActionResolveRow({
               </Button>
             ))}
           </div>
-          <div className="flex items-center gap-1 text-[9px] text-muted-foreground/60">
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
             <Clock className="h-3 w-3" />
             <span>
               {item.required

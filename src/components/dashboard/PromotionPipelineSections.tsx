@@ -34,14 +34,14 @@ function ProgressBar({ value, tone }: { value: number; tone: "success" | "warnin
 function MiniRankBadge({ rank }: { rank: string }) {
   const colorMap: Record<string, string> = {
     yokozuna: "text-gold border-gold/40 bg-gold/10",
-    ozeki: "text-amber-500 border-amber-500/40 bg-amber-500/10",
+    ozeki: "text-gold border-gold/40 bg-gold/10",
     sekiwake: "text-primary border-primary/40 bg-primary/10",
-    komusubi: "text-sky-400 border-sky-400/40 bg-sky-400/10",
+    komusubi: "text-primary border-primary/40 bg-primary/10",
   };
   return (
     <Badge
       variant="outline"
-      className={`text-[9px] font-bold uppercase tracking-wide shrink-0 ${colorMap[rank] ?? "text-muted-foreground border-border"}`}
+      className={`text-[10px] font-bold uppercase tracking-wide shrink-0 ${colorMap[rank] ?? "text-muted-foreground border-border"}`}
     >
       {rank}
     </Badge>
@@ -104,11 +104,11 @@ function KadobanRow({ entry }: { entry: ReturnType<typeof getKadobanDrama>[numbe
       <span className="text-xs font-semibold truncate flex-1">{rikishi.shikona}</span>
       <MiniRankBadge rank={rikishi.rank} />
       {isDemoted ? (
-        <span className="text-[9px] font-bold text-destructive uppercase tracking-wide shrink-0">
+        <span className="text-[10px] font-bold text-destructive uppercase tracking-wide shrink-0">
           Demoted
         </span>
       ) : (
-        <span className="text-[9px] font-bold text-warning uppercase tracking-wide shrink-0">
+        <span className="text-[10px] font-bold text-warning uppercase tracking-wide shrink-0">
           Kadoban
         </span>
       )}
@@ -213,7 +213,7 @@ export function PromotionWatch({
       </div>
       {yokozunaCandidates.length > 0 && (
         <div className="space-y-0.5">
-          <p className="text-[9px] font-bold text-gold uppercase tracking-wide">
+          <p className="text-[10px] font-bold text-gold uppercase tracking-wide">
             Yokozuna Contenders
           </p>
           {yokozunaCandidates.slice(0, 3).map((c) => (
@@ -224,7 +224,7 @@ export function PromotionWatch({
       {ozekiRuns.length > 0 && (
         <div className="space-y-0.5">
           {yokozunaCandidates.length > 0 && (
-            <p className="text-[9px] font-bold text-primary uppercase tracking-wide pt-1">
+            <p className="text-[10px] font-bold text-primary uppercase tracking-wide pt-1">
               Ozeki Contenders
             </p>
           )}

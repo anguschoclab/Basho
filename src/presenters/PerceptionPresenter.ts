@@ -5,6 +5,7 @@
 
 import { Rikishi } from "../engine/types/rikishi";
 import { MediaTone } from "../engine/types/media";
+import { HEAT_BANDS, PERCEPTION_TICKS } from "@/constants/ui/drawingPalette";
 
 export type HealthBadge = "Fresh" | "Worn" | "Struggling" | "Critical" | "Recovering";
 
@@ -28,10 +29,10 @@ export function getHealthBadge(rikishi: Rikishi): HealthBadge {
  * Maps heat score to UI label.
  */
 export function getMediaHeatLabel(heat: number): { label: string; color: string } {
-  if (heat >= 85) return { label: "Red Hot", color: "#ef4444" };
-  if (heat >= 60) return { label: "Rising", color: "#f59e0b" };
-  if (heat >= 30) return { label: "Notable", color: "#10b981" };
-  return { label: "Under the Radar", color: "#6b7280" };
+  if (heat >= 85) return { label: "Red Hot", color: HEAT_BANDS.redHot };
+  if (heat >= 60) return { label: "Rising", color: HEAT_BANDS.rising };
+  if (heat >= 30) return { label: "Notable", color: HEAT_BANDS.notable };
+  return { label: "Under the Radar", color: HEAT_BANDS.calm };
 }
 
 /**
@@ -40,16 +41,16 @@ export function getMediaHeatLabel(heat: number): { label: string; color: string 
 export function getMediaToneColor(tone: MediaTone): string {
   switch (tone) {
     case "praise":
-      return "#34d399"; // emerald-400
+      return PERCEPTION_TICKS.technique; // emerald-400
     case "hype":
-      return "#f472b6"; // pink-400
+      return PERCEPTION_TICKS.strength; // pink-400
     case "concern":
-      return "#fbbf24"; // amber-400
+      return PERCEPTION_TICKS.agility; // amber-400
     case "controversy":
-      return "#f87171"; // red-400
+      return PERCEPTION_TICKS.hinkaku; // red-400
     case "disrespect":
-      return "#9ca3af"; // gray-400
+      return PERCEPTION_TICKS.intelligence; // gray-400
     default:
-      return "#94a3b8"; // slate-400
+      return PERCEPTION_TICKS.default; // slate-400
   }
 }

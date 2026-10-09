@@ -14,7 +14,7 @@ import type { HoFCategory } from "@/presenters/engineAccess";
 import { HOF_CATEGORY_LABELS } from "@/presenters/uiDigest";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { CATEGORY_ICONS, CATEGORY_GRADIENT, CATEGORY_ACCENT, RANK_JA } from "./hofMeta";
+import { CATEGORY_ICONS, CATEGORY_SURFACE, CATEGORY_ACCENT, RANK_JA } from "./hofMeta";
 
 // === Portrait Avatar ===
 
@@ -47,11 +47,11 @@ export function InducteeFullCard({ inductee }: { inductee: UIHofInductee }) {
   const Icon = CATEGORY_ICONS[inductee.category as HoFCategory];
   const label = HOF_CATEGORY_LABELS[inductee.category as HoFCategory];
   const accent = CATEGORY_ACCENT[inductee.category as HoFCategory];
-  const gradient = CATEGORY_GRADIENT[inductee.category as HoFCategory];
+  const surface = CATEGORY_SURFACE[inductee.category as HoFCategory];
   const rikishi = inductee.rikishi;
 
   return (
-    <Card className={`border bg-gradient-to-br ${gradient} overflow-hidden`}>
+    <Card className={`border ${surface} overflow-hidden`}>
       <CardContent className="p-5">
         <div className="flex items-start gap-4">
           <RikishiPortrait rikishi={rikishi} category={inductee.category} />
@@ -156,7 +156,7 @@ export function InducteeFullCard({ inductee }: { inductee: UIHofInductee }) {
                       <span className="text-success">W</span>
                       <span className="text-muted-foreground">vs</span>
                       <span className="font-medium">{f.opponentName}</span>
-                      <Badge className="text-[9px]">{f.kimarite}</Badge>
+                      <Badge className="text-[10px]">{f.kimarite}</Badge>
                     </div>
                   ))}
                 </div>

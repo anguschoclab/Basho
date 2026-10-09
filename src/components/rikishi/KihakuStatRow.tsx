@@ -48,7 +48,7 @@ export function KihakuStatRow({
         <Flame className="h-4 w-4" style={{ color }} />
         <div className="flex flex-col">
           <span
-            className="text-[9px] uppercase leading-none"
+            className="text-[10px] uppercase leading-none"
             style={{
               fontFamily: "var(--font-mono)",
               letterSpacing: "0.15em",
@@ -58,7 +58,7 @@ export function KihakuStatRow({
             Kihaku
           </span>
           <span
-            className="text-[14px] font-bold leading-tight tabular-nums"
+            className="text-sm font-bold leading-tight tabular-nums"
             style={{ fontFamily: "var(--font-mono)", color }}
           >
             {kihakuIsenScore}

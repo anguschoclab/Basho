@@ -56,7 +56,7 @@ export function ContextCluster({ world }: { world: WorldState | null }) {
       <div className="flex items-center gap-2">
         <div className="flex flex-col">
           <span
-            className="text-[9px] uppercase text-[hsl(var(--muted-foreground))]"
+            className="text-[10px] uppercase text-[hsl(var(--muted-foreground))]"
             style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
           >
             Date
@@ -115,7 +115,7 @@ export function ContextCluster({ world }: { world: WorldState | null }) {
         >
           <div className="flex flex-col cursor-help">
             <span
-              className="text-[9px] uppercase text-[hsl(var(--muted-foreground))]"
+              className="text-[10px] uppercase text-[hsl(var(--muted-foreground))]"
               style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
             >
               Funds

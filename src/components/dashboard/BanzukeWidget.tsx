@@ -77,7 +77,7 @@ const BanzukeEntryRow = React.memo(
             {record}
           </span>
           {isPlayer && (
-            <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>
+            <Badge className="text-[10px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>
           )}
         </div>
       </div>

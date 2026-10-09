@@ -62,7 +62,7 @@ export function CupHero({ cup }: { cup: GlobalCupState }) {
   const phaseInfo = CUP_PHASE_LABELS[cup.phase];
 
   return (
-    <div className="relative p-8 rounded-lg bg-gradient-to-r from-gold/20 to-primary/10 border border-gold/30">
+    <div className="relative p-8 rounded-lg bg-gold/10 border border-gold/30">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <PageHeader
           eyebrow="── GLOBAL CUP ──"

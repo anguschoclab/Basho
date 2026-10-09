@@ -27,7 +27,7 @@ export function PageHeader({ eyebrow, title, lede, actions, className }: PageHea
       )}
     >
       <div className="space-y-0.5">
-        <p className="stat-label text-gold tracking-[0.2em]">{eyebrow}</p>
+        <p className="stat-label text-gold tracking-[0.15em]">{eyebrow}</p>
         <h1 className="font-display text-2xl font-bold leading-tight sumi-e-ink">{title}</h1>
         {lede && (
           <p className="text-sm text-muted-foreground font-body leading-snug mt-1">{lede}</p>

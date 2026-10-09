@@ -191,20 +191,20 @@ export const CONDITION_DESCRIPTOR_BANDS: Array<{
   id: string;
   colorCode: string;
 }> = [
-  { min: CONDITION_ZEKKOUCHOU_MIN, max: 1.01, id: "Zekkouchou", colorCode: "text-green-600" },
+  { min: CONDITION_ZEKKOUCHOU_MIN, max: 1.01, id: "Zekkouchou", colorCode: "text-success" },
   {
     min: CONDITION_BACHI_BACHI_MIN,
     max: CONDITION_ZEKKOUCHOU_MIN,
     id: "Bachi-bachi",
-    colorCode: "text-blue-500",
+    colorCode: "text-primary",
   },
   {
     min: CONDITION_IKI_GIRASHITE_MIN,
     max: CONDITION_BACHI_BACHI_MIN,
     id: "Iki-girashite",
-    colorCode: "text-yellow-500",
+    colorCode: "text-gold",
   },
-  { min: 0.0, max: CONDITION_IKI_GIRASHITE_MIN, id: "Koshi-kudake", colorCode: "text-red-500" },
+  { min: 0.0, max: CONDITION_IKI_GIRASHITE_MIN, id: "Koshi-kudake", colorCode: "text-destructive" },
 ];
 
 // --- Morale / Mental State ---
@@ -214,15 +214,15 @@ export const MORALE_DESCRIPTOR_BANDS: Array<{
   id: string;
   colorCode: string;
 }> = [
-  { min: MORALE_SHIN_GI_TAI_MIN, max: 1.01, id: "Shin-Gi-Tai", colorCode: "text-purple-600" },
+  { min: MORALE_SHIN_GI_TAI_MIN, max: 1.01, id: "Shin-Gi-Tai", colorCode: "text-accent" },
   {
     min: MORALE_KIAI_JUUBUN_MIN,
     max: MORALE_SHIN_GI_TAI_MIN,
     id: "Kiai juubun",
-    colorCode: "text-blue-500",
+    colorCode: "text-primary",
   },
-  { min: MORALE_MAYOI_MIN, max: MORALE_KIAI_JUUBUN_MIN, id: "Mayoi", colorCode: "text-yellow-500" },
-  { min: 0.0, max: MORALE_MAYOI_MIN, id: "Fugainai", colorCode: "text-red-500" },
+  { min: MORALE_MAYOI_MIN, max: MORALE_KIAI_JUUBUN_MIN, id: "Mayoi", colorCode: "text-gold" },
+  { min: 0.0, max: MORALE_MAYOI_MIN, id: "Fugainai", colorCode: "text-destructive" },
 ];
 
 // --- Hidden Potential ---
@@ -232,20 +232,20 @@ export const POTENTIAL_DESCRIPTOR_BANDS: Array<{
   id: string;
   colorCode: string;
 }> = [
-  { min: POTENTIAL_TAIKI_BANSEI_MIN, max: 101, id: "Taiki Bansei", colorCode: "text-amber-500" },
+  { min: POTENTIAL_TAIKI_BANSEI_MIN, max: 101, id: "Taiki Bansei", colorCode: "text-gold" },
   {
     min: POTENTIAL_SOSHITSU_ARI_MIN,
     max: POTENTIAL_TAIKI_BANSEI_MIN,
     id: "Soshitsu Ari",
-    colorCode: "text-blue-500",
+    colorCode: "text-primary",
   },
   {
     min: POTENTIAL_MIKAN_NO_TAIKI_MIN,
     max: POTENTIAL_SOSHITSU_ARI_MIN,
     id: "Mikan no Taiki",
-    colorCode: "text-slate-400",
+    colorCode: "text-muted-foreground",
   },
-  { min: 0, max: POTENTIAL_MIKAN_NO_TAIKI_MIN, id: "Genkai", colorCode: "text-slate-500" },
+  { min: 0, max: POTENTIAL_MIKAN_NO_TAIKI_MIN, id: "Genkai", colorCode: "text-muted-foreground" },
 ];
 
 // === Age Bands (years) ===

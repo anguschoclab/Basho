@@ -59,7 +59,7 @@ function MatchCard({
 
       {/* Result badge */}
       {isComplete && match.result && (
-        <div className="mt-1 text-[9px] text-center text-muted-foreground uppercase">
+        <div className="mt-1 text-[10px] text-center text-muted-foreground uppercase">
           {match.result.winningKimarite || "Result"}
         </div>
       )}

@@ -78,7 +78,7 @@ export function StatCard({
       <div className={cn("grid gap-3", COL_CLASS[cols])}>
         {stats.map((stat, i) => (
           <div key={i} className="space-y-0.5">
-            <p className="stat-label text-[9px]">{stat.label}</p>
+            <p className="stat-label text-[10px]">{stat.label}</p>
             <p
               className={cn(
                 "font-mono font-bold text-sm tabular-nums leading-tight",
@@ -99,7 +99,7 @@ export function StatCard({
           {progress.map((p, i) => (
             <div key={i} className="space-y-1">
               <div className="flex items-center justify-between">
-                <p className="stat-label text-[9px]">{p.label}</p>
+                <p className="stat-label text-[10px]">{p.label}</p>
                 <p className="text-[10px] font-mono text-muted-foreground tabular-nums">
                   {p.value}%
                 </p>

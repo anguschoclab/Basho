@@ -91,12 +91,12 @@ function InvitationRow({
           <span className="text-sm font-medium">{invitation.region}</span>
           <Badge
             variant="outline"
-            className={`text-[9px] uppercase tracking-widest ${prestigeColor}`}
+            className={`text-[10px] uppercase tracking-widest ${prestigeColor}`}
           >
             {invitation.prestigeLabel}
           </Badge>
           {invitation.requiresRank && (
-            <Badge variant="outline" className="text-[9px] uppercase tracking-widest">
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
               {invitation.requiresRank}+
             </Badge>
           )}

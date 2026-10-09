@@ -70,7 +70,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="bg-muted/40 rounded-lg p-3 space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                   Preferred Grip
                 </p>
                 <p className="text-sm font-display font-black capitalize">
@@ -78,7 +78,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                 </p>
               </div>
               <div className="bg-muted/40 rounded-lg p-3 space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                   Grip Depth
                 </p>
                 <p className="text-sm font-display font-black capitalize">
@@ -110,7 +110,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                     <span className="font-bold text-base">{rival.opponentShikona}</span>
                     <Badge
                       variant="outline"
-                      className="text-[9px] uppercase font-black tracking-widest"
+                      className="text-[10px] uppercase font-black tracking-widest"
                     >
                       {rival.tone || "respect"}
                     </Badge>
@@ -120,7 +120,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                   </span>
                 </div>
                 <div className="flex flex-col items-end gap-1 w-24">
-                  <div className="flex items-center justify-between w-full text-[9px] font-black uppercase tracking-tighter">
+                  <div className="flex items-center justify-between w-full text-[10px] font-black uppercase tracking-tighter">
                     <span>HEAT</span>
                     <span className={rival.heat >= 70 ? "text-west" : "text-muted-foreground"}>
                       {Math.round(rival.heat)}

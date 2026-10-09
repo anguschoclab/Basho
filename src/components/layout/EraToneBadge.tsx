@@ -24,7 +24,7 @@ export function EraToneBadge({ tone }: { tone: EraTone }) {
         }}
       >
         <span
-          className="text-[9px] uppercase leading-none"
+          className="text-[10px] uppercase leading-none"
           style={{
             fontFamily: "var(--font-mono)",
             letterSpacing: "0.15em",

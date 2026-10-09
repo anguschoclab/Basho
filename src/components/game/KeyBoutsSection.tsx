@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 const BADGE_STYLES: Record<string, string> = {
   yusho_decider: "border-gold text-gold bg-gold/10",
   biggest_upset: "border-destructive text-destructive bg-destructive/10",
-  kinboshi: "border-amber-500 text-amber-500 bg-amber-500/10",
+  kinboshi: "border-gold text-gold bg-gold/10",
 };
 
 interface KeyBoutsSectionProps {

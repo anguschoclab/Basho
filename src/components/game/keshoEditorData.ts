@@ -5,6 +5,7 @@
  */
 
 import type { TraditionalMotif } from "@/engine/types/keshoMawashi";
+import { KESHO_PRESET } from "@/constants/ui/drawingPalette";
 
 export const MOTIFS: TraditionalMotif[] = [
   "dragon",
@@ -29,9 +30,9 @@ export const MOTIFS: TraditionalMotif[] = [
 ];
 
 export const PRESET_PALETTES = [
-  { name: "Sovereign Gold", primary: "#8B0000", secondary: "#D4AF37", accent: "#FFD700" },
-  { name: "Imperial Phoenix", primary: "#FF4500", secondary: "#8B0000", accent: "#FFD700" },
-  { name: "Deep Ocean", primary: "#001F3F", secondary: "#0074D9", accent: "#FFFFFF" },
-  { name: "Silent Bamboo", primary: "#2F4F4F", secondary: "#228B22", accent: "#F5F5DC" },
-  { name: "Midnight Storm", primary: "#121212", secondary: "#4B0082", accent: "#E0E0E0" },
+  { name: "Sovereign Gold", primary: KESHO_PRESET.CRIMSON, secondary: KESHO_PRESET.ANTIQUE_GOLD, accent: KESHO_PRESET.GOLD },
+  { name: "Imperial Phoenix", primary: KESHO_PRESET.PHOENIX, secondary: KESHO_PRESET.CRIMSON, accent: KESHO_PRESET.GOLD },
+  { name: "Deep Ocean", primary: KESHO_PRESET.NAVY, secondary: KESHO_PRESET.OCEAN, accent: KESHO_PRESET.WHITE },
+  { name: "Silent Bamboo", primary: KESHO_PRESET.SLATE_GREEN, secondary: KESHO_PRESET.BAMBOO, accent: KESHO_PRESET.BEIGE },
+  { name: "Midnight Storm", primary: KESHO_PRESET.INK, secondary: KESHO_PRESET.INDIGO, accent: KESHO_PRESET.PALE_GRAY },
 ];

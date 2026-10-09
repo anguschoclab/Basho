@@ -24,10 +24,10 @@ export function ChampionSection({
 }) {
   return (
     <section className="relative group">
-      <div className="absolute -inset-1 bg-gradient-to-r from-gold/20 via-gold/10 to-gold/20 rounded-lg blur-xl opacity-50 group-hover:opacity-100 transition duration-1000" />
+      <div className="absolute -inset-1 bg-gold/10 rounded-lg group-hover:opacity-100 transition duration-1000" />
       <Card className="dossier-paper border-2 border-gold/20 relative overflow-hidden bg-gold/[0.02]">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.03] font-display text-9xl font-black italic pointer-events-none -rotate-6">
-          CHAMPION
+        <div className="absolute top-0 right-0 p-8 opacity-[0.03] font-display text-9xl font-black pointer-events-none -rotate-6">
+          Champion
         </div>
         <div className="p-8 relative z-10">
           <div className="flex items-start gap-6">
@@ -75,10 +75,10 @@ export function ChampionSection({
                 <div className="text-2xl font-display font-black text-gold">
                   {champion.rikishi.currentBashoWins}-{champion.rikishi.currentBashoLosses}
                 </div>
-                <div className="text-[8px] uppercase font-black opacity-40">Final Record</div>
+                <div className="text-[10px] uppercase font-black opacity-40">Final Record</div>
               </div>
               {isPlayerChampion && (
-                <Badge className="bg-primary text-white font-black tracking-widest text-[9px] px-4 h-8 animate-pulse shadow-xl shadow-primary/20">
+                <Badge className="bg-primary text-white font-black tracking-widest text-[10px] px-4 h-8 animate-pulse shadow-xl shadow-primary/20">
                   YOUR STABLE TRIUMPHS
                 </Badge>
               )}
@@ -87,7 +87,7 @@ export function ChampionSection({
 
           <div className="hidden lg:flex flex-col items-end opacity-20 select-none pointer-events-none">
             <div className="text-4xl font-display font-black italic">天皇賜杯</div>
-            <div className="text-xs uppercase font-black tracking-[0.5em]">Emperor's Cup</div>
+            <div className="text-xs uppercase font-black tracking-[0.15em]">Emperor's Cup</div>
           </div>
         </CardContent>
       </Card>
@@ -112,7 +112,7 @@ export function JunYushoCard({
             <CardTitle className="text-lg font-display font-black uppercase tracking-tight">
               Jun-Yūshō
             </CardTitle>
-            <p className="text-[9px] uppercase font-bold tracking-widest text-muted-foreground">
+            <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
               Tournament Runners-up
             </p>
           </div>
@@ -162,7 +162,7 @@ export function KinboshiCard({
             <CardTitle className="text-lg font-display font-black uppercase tracking-tight">
               Kinboshi (Gold Stars)
             </CardTitle>
-            <p className="text-[9px] uppercase font-bold tracking-widest text-muted-foreground">
+            <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
               Maegashira victories over Yokozuna
             </p>
           </div>

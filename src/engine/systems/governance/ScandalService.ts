@@ -144,16 +144,16 @@ export function runElections(world: WorldState): StateImpact {
  * Returns a CSS color class for a governance status band.
  */
 const STATUS_COLOR_MAP: Record<string, string> = {
-  clean: "text-green-400",
-  good_standing: "text-green-400",
-  warning: "text-yellow-400",
-  probation: "text-orange-400",
-  sanctioned: "text-red-400",
-  critical: "text-red-400",
+  clean: "text-success",
+  good_standing: "text-success",
+  warning: "text-gold",
+  probation: "text-warning",
+  sanctioned: "text-destructive",
+  critical: "text-destructive",
 };
 
 export function getStatusColor(status: string): string {
-  return STATUS_COLOR_MAP[status] || "text-gray-400";
+  return STATUS_COLOR_MAP[status] || "text-muted-foreground";
 }
 
 /**

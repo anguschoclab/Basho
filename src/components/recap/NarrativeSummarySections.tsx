@@ -99,7 +99,7 @@ export function EventCard({
         {isRetirement ? (
           <Badge
             variant="secondary"
-            className="text-[8px] font-black uppercase tracking-widest bg-destructive/10 text-destructive"
+            className="text-[10px] font-black uppercase tracking-widest bg-destructive/10 text-destructive"
           >
             INTAI
           </Badge>
@@ -107,11 +107,11 @@ export function EventCard({
           <Badge
             variant="outline"
             className={cn(
-              "text-[8px] font-black uppercase tracking-widest",
+              "text-[10px] font-black uppercase tracking-widest",
               isPromotion ? "border-success/30 text-success" : "border-gold/30 text-gold"
             )}
           >
-            {isPromotion ? "PROMOTION" : "DEMOTION"}
+            {isPromotion ? "Promotion" : "Demotion"}
           </Badge>
         )}
       </div>
@@ -142,7 +142,7 @@ export function PrestigeShiftsSection({ prestigeChanges }: { prestigeChanges: Pr
                 <div className="font-display font-black text-lg">{item.heya.name}</div>
                 <Badge
                   variant="outline"
-                  className="text-[9px] font-black uppercase tracking-widest"
+                  className="text-[10px] font-black uppercase tracking-widest"
                 >
                   {item.heya.prestigeBand}
                 </Badge>
@@ -156,7 +156,7 @@ export function PrestigeShiftsSection({ prestigeChanges }: { prestigeChanges: Pr
                   style={{ width: `${item.heya.reputation}%` }}
                 />
               </div>
-              <div className="text-[8px] uppercase font-black text-muted-foreground/60 tracking-widest leading-none">
+              <div className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest leading-none">
                 Stability Rating: {item.heya.reputation}%
               </div>
             </div>
@@ -180,7 +180,7 @@ export function MovementsSection({ groupedEvents }: { groupedEvents: GroupedNarr
               <h3 className="text-xl font-display font-black uppercase tracking-tight">
                 Movement Ledger
               </h3>
-              <p className="text-[9px] uppercase font-black tracking-widest text-muted-foreground">
+              <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
                 Promotion & Demotion Records
               </p>
             </div>
@@ -212,7 +212,7 @@ export function MovementsSection({ groupedEvents }: { groupedEvents: GroupedNarr
               <h3 className="text-xl font-display font-black uppercase tracking-tight">
                 Venerated Departures
               </h3>
-              <p className="text-[9px] uppercase font-black tracking-widest text-muted-foreground">
+              <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
                 Retirements & Career Erasings
               </p>
             </div>
@@ -264,7 +264,7 @@ export function NarrativeGovernanceSection({
                 (e: { title: string; summary: string }, i: number) => (
                   <div
                     key={i}
-                    className="flex gap-4 p-3 bg-white/50 border-2 border-primary/10 rounded-lg"
+                    className="flex gap-4 p-3 bg-card border-2 border-primary/10 rounded-lg"
                   >
                     <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                       <Info className="h-4 w-4 text-primary" />
@@ -293,7 +293,7 @@ export function NarrativeGovernanceSection({
 
         {governanceLog && governanceLog.length > 0 && (
           <div className="space-y-4">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
+            <h4 className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-2">
               <Clock className="h-3 w-3" /> Historical Timeline Drift
             </h4>
             <div className="space-y-3 pl-4 border-l-2 border-border/40">
@@ -367,7 +367,7 @@ function YdcEntry({ e }: { e: NonNullable<GroupedNarrativeEvents["ydcAccountabil
           <Badge
             variant="outline"
             className={cn(
-              "text-[8px] font-black uppercase tracking-widest",
+              "text-[10px] font-black uppercase tracking-widest",
               isPraise
                 ? "border-success/30 text-success"
                 : isWarning
@@ -378,7 +378,7 @@ function YdcEntry({ e }: { e: NonNullable<GroupedNarrativeEvents["ydcAccountabil
             {e.status.replace(/_/g, " ").toUpperCase()}
           </Badge>
           {e.chairmanName && (
-            <span className="text-[9px] text-muted-foreground italic">
+            <span className="text-[10px] text-muted-foreground italic">
               — Chairman {e.chairmanName}
             </span>
           )}
@@ -392,7 +392,7 @@ function YdcEntry({ e }: { e: NonNullable<GroupedNarrativeEvents["ydcAccountabil
               <Badge
                 key={j}
                 variant="secondary"
-                className="text-[7px] font-bold uppercase tracking-wider bg-muted/50"
+                className="text-[10px] font-bold uppercase tracking-wider bg-muted/50"
               >
                 {ref}
               </Badge>
@@ -493,14 +493,14 @@ export function WrapUpFooter({
         <div className="bg-primary/5 p-4 rounded-lg flex items-center justify-center gap-12">
           <div className="text-center">
             <div className="text-2xl font-display font-black text-primary">{year}</div>
-            <div className="text-[8px] uppercase font-black opacity-40">Association Year</div>
+            <div className="text-[10px] uppercase font-black opacity-40">Association Year</div>
           </div>
           <div className="w-px h-8 bg-primary/10" />
           <div className="text-center">
             <div className="text-2xl font-display font-black text-primary">
               {activeHeyasCount}
             </div>
-            <div className="text-[8px] uppercase font-black opacity-40">Active Stables</div>
+            <div className="text-[10px] uppercase font-black opacity-40">Active Stables</div>
           </div>
         </div>
       </div>

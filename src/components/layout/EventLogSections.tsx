@@ -80,8 +80,8 @@ function EventRow({
       aria-label={e.title}
       tabIndex={0}
       className={cn(
-        "w-full text-left p-2.5 rounded-md transition-all mb-1 cursor-pointer border border-transparent hover:border-zinc-800",
-        "hover:bg-zinc-900/50 active:bg-zinc-900 group relative",
+        "w-full text-left p-2.5 rounded-md transition-all mb-1 cursor-pointer border border-transparent hover:border-border",
+        "hover:bg-card/50 active:bg-card group relative",
         "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
         isPlayerRelevant ? "border-l-primary/50 bg-primary/5" : ""
       )}
@@ -89,7 +89,7 @@ function EventRow({
       <div className="flex items-start gap-3">
         <div
           className={cn(
-            "mt-0.5 shrink-0 p-1.5 rounded-lg bg-zinc-900",
+            "mt-0.5 shrink-0 p-1.5 rounded-lg bg-card",
             meta.color.replace("text-", "text-opacity-80 ")
           )}
         >
@@ -97,14 +97,14 @@ function EventRow({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 mb-0.5">
-            <span className="text-xs font-bold text-zinc-100 group-hover:text-white transition-colors truncate">
+            <span className="text-xs font-bold text-muted-foreground group-hover:text-white transition-colors truncate">
               <MentionText text={e.title} />
             </span>
-            <span className="text-[10px] text-zinc-500 shrink-0 font-medium">
+            <span className="text-[10px] text-muted-foreground shrink-0 font-medium">
               {formatEventTime(e)}
             </span>
           </div>
-          <p className="text-[11px] text-zinc-400 leading-relaxed line-clamp-2">
+          <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
             <MentionText text={e.summary} />
           </p>
 
@@ -114,15 +114,15 @@ function EventRow({
               <div
                 className={cn(
                   "w-1 h-1 rounded-full",
-                  e.importance === "headline" ? "bg-red-500" : "bg-orange-500"
+                  e.importance === "headline" ? "bg-destructive" : "bg-warning"
                 )}
               />
             )}
-            <span className="text-[9px] uppercase font-bold text-zinc-600 tracking-wider">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
               {meta.label}
             </span>
             {isPlayerRelevant && (
-              <span className="text-[9px] uppercase font-bold text-primary/70 tracking-wider ml-auto">
+              <span className="text-[10px] uppercase font-bold text-primary/70 tracking-wider ml-auto">
                 Stable
               </span>
             )}

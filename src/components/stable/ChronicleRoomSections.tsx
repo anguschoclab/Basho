@@ -18,9 +18,9 @@ export function EmptyChronicle() {
   return (
     <Card className="paper border-dashed opacity-70">
       <CardContent className="h-64 flex flex-col items-center justify-center text-center p-8">
-        <History className="h-12 w-12 text-slate-400 mb-4" />
+        <History className="h-12 w-12 text-muted-foreground mb-4" />
         <h3 className="text-xl font-bold font-display">The Scrolls are Empty</h3>
-        <p className="text-sm text-slate-500 max-w-xs">
+        <p className="text-sm text-muted-foreground max-w-xs">
           Your stable has only just begun its journey. Win your first Yusho or undergo your first
           succession to begin your Chronicle.
         </p>
@@ -44,10 +44,10 @@ export function ChronicleHeader({
     <div className="flex flex-col md:flex-row gap-6 items-start">
       <div
         className={cn(
-          "w-32 h-32 rounded-2xl flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 shadow-xl border-2",
+          "w-32 h-32 rounded-2xl flex items-center justify-center bg-card shadow-xl border-2",
           report.legacyTier === "legend"
-            ? "border-amber-400/50 shadow-amber-900/20"
-            : "border-slate-700"
+            ? "border-gold/50 shadow-amber-900/20"
+            : "border-border"
         )}
       >
         <TierIcon
@@ -67,22 +67,22 @@ export function ChronicleHeader({
             ERA {report.currentEra}
           </Badge>
         </div>
-        <p className="text-slate-400 max-w-2xl leading-relaxed">
+        <p className="text-muted-foreground max-w-2xl leading-relaxed">
           The Chronicle records the deeds of the {heya.name} since its founding. Currently
           recognized as an <span className="text-primary font-bold">{currentTier.label}</span>.
         </p>
 
         <div className="flex gap-4 pt-2">
-          <div className="bg-slate-900/50 border border-slate-800 rounded-lg px-4 py-2">
-            <span className="text-[10px] uppercase font-black text-slate-500 block">
+          <div className="bg-card/50 border border-border rounded-lg px-4 py-2">
+            <span className="text-[10px] uppercase font-black text-muted-foreground block">
               Total Yusho
             </span>
             <span className="text-xl font-bold font-display tabular-nums">
               {report.totalYusho}
             </span>
           </div>
-          <div className="bg-slate-900/50 border border-slate-800 rounded-lg px-4 py-2">
-            <span className="text-[10px] uppercase font-black text-slate-500 block">
+          <div className="bg-card/50 border border-border rounded-lg px-4 py-2">
+            <span className="text-[10px] uppercase font-black text-muted-foreground block">
               Training Bonus
             </span>
             <span className="text-xl font-bold font-display tabular-nums text-success">
@@ -106,22 +106,22 @@ export function EraTimeline({ eras }: { eras: DynastyRecord[] }) {
         </h3>
       </div>
 
-      <div className="space-y-4 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800">
+      <div className="space-y-4 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-card">
         {eras
           .slice()
           .reverse()
           .map((era, idx) => (
             <div key={idx} className="relative pl-10 group">
-              <div className="absolute left-[13px] top-1.5 w-2 h-2 rounded-full bg-slate-700 group-hover:bg-primary transition-colors border-2 border-background" />
-              <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 transition-all hover:bg-slate-900/60 hover:border-slate-700">
+              <div className="absolute left-[13px] top-1.5 w-2 h-2 rounded-full bg-card group-hover:bg-primary transition-colors border-2 border-background" />
+              <div className="bg-card/40 border border-border rounded-xl p-4 transition-all hover:bg-card/60 hover:border-border">
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-slate-200">The Reign of {era.oyakataName}</h4>
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <h4 className="font-bold text-muted-foreground">The Reign of {era.oyakataName}</h4>
+                  <span className="text-[10px] font-mono text-muted-foreground">
                     {era.reignFrom} – {era.reignTo || "Present"}
                   </span>
                 </div>
 
-                <div className="flex gap-4 text-[10px] text-slate-400 uppercase font-black mb-3">
+                <div className="flex gap-4 text-[10px] text-muted-foreground uppercase font-black mb-3">
                   <div className="flex items-center gap-1">
                     <Trophy className="h-3 w-3 text-gold/70" />{" "}
                     {era.achievementsInReign.yushoCount} Yusho
@@ -136,7 +136,7 @@ export function EraTimeline({ eras }: { eras: DynastyRecord[] }) {
                   </div>
                 </div>
 
-                <p className="text-sm italic text-slate-500 bg-slate-950/30 p-2 rounded-md border border-slate-900">
+                <p className="text-sm italic text-muted-foreground bg-card/30 p-2 rounded-md border border-border">
                   "{era.legacyBlurb || "A period of steady growth and institutional expansion."}
                   "
                 </p>
@@ -159,12 +159,12 @@ export function ChronicleSideColumn({ report }: { report: DynastyReport }) {
             Training DNA
           </h3>
         </div>
-        <Card className="glass shadow-xl overflow-hidden border-slate-800/50">
+        <Card className="glass shadow-xl overflow-hidden border-border/50">
           <CardContent className="p-0">
-            <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-950">
+            <div className="p-6 bg-card">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-black text-slate-500">
+                  <span className="text-[10px] uppercase font-black text-muted-foreground">
                     Emphasis
                   </span>
                   <p className="text-xl font-bold font-display capitalize">
@@ -172,7 +172,7 @@ export function ChronicleSideColumn({ report }: { report: DynastyReport }) {
                   </p>
                 </div>
                 <div className="space-y-1 text-right">
-                  <span className="text-[10px] uppercase font-black text-slate-500">
+                  <span className="text-[10px] uppercase font-black text-muted-foreground">
                     Intensity
                   </span>
                   <p className="text-xl font-bold font-display capitalize text-primary">
@@ -180,10 +180,10 @@ export function ChronicleSideColumn({ report }: { report: DynastyReport }) {
                   </p>
                 </div>
               </div>
-              <div className="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-400 flex items-center gap-2">
+              <div className="mt-4 pt-4 border-t border-border text-xs text-muted-foreground flex items-center gap-2">
                 <Badge
                   variant="secondary"
-                  className="text-[9px] uppercase font-black bg-slate-800"
+                  className="text-[10px] uppercase font-black bg-card"
                 >
                   Inherited
                 </Badge>
@@ -202,9 +202,9 @@ export function ChronicleSideColumn({ report }: { report: DynastyReport }) {
             Notable Students
           </h3>
         </div>
-        <div className="bg-slate-900/20 border border-slate-800/40 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-          <Users className="h-8 w-8 text-slate-600 mb-3" />
-          <p className="text-xs text-slate-500 max-w-[200px]">
+        <div className="bg-card/20 border border-border/40 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+          <Users className="h-8 w-8 text-muted-foreground mb-3" />
+          <p className="text-xs text-muted-foreground max-w-[200px]">
             Detailed alumni tracking for former students will be available in the next season
             update.
           </p>

@@ -26,13 +26,13 @@ export function RikishiKeshoMawashi({ rikishi }: RikishiKeshoMawashiProps) {
 
   return (
     <>
-      <div className="mb-10 p-6 bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/10 rounded-lg relative overflow-hidden">
+      <div className="mb-10 p-6 bg-primary/5 border-2 border-primary/10 rounded-lg relative overflow-hidden">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-display font-black flex items-center gap-2 uppercase tracking-tight">
               <Medal className="h-5 w-5 text-primary" /> Ceremonial Apron
             </h3>
-            <p className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground">
+            <p className="text-[10px] uppercase font-black tracking-[0.15em] text-muted-foreground">
               Kesho-Mawashi • {rikishi.keshoMawashi.tier} Tier
             </p>
           </div>
@@ -51,7 +51,7 @@ export function RikishiKeshoMawashi({ rikishi }: RikishiKeshoMawashiProps) {
             {rikishi.isYokozuna && rikishi.yokozunaTsuna && (
               <div className="flex items-center gap-3">
                 <YokozunaTsunaDisplay tsuna={rikishi.yokozunaTsuna} size="md" />
-                <span className="text-xs font-bold uppercase tracking-wider text-yellow-600">
+                <span className="text-xs font-bold uppercase tracking-wider text-gold">
                   Yokozuna Tsuna
                 </span>
               </div>

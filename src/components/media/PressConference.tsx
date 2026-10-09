@@ -47,7 +47,7 @@ export function MediaPressConference({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-md p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background p-6"
     >
       <div className="w-full max-w-4xl space-y-8">
         {/* Header: Stage & Branding */}
@@ -60,7 +60,7 @@ export function MediaPressConference({
               <h2 className="text-3xl font-display font-black tracking-tight uppercase leading-none">
                 Press Conference
               </h2>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mt-1">
                 Post-Basho Media Engagement • Tokyo, Japan
               </p>
             </div>
@@ -77,7 +77,7 @@ export function MediaPressConference({
           {/* Left: Rikishi Focus */}
           <div className="lg:col-span-4 space-y-6">
             <div className="aspect-[3/4] rounded-2xl bg-muted border border-border overflow-hidden relative group shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-background/80" />
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
                   Active Speaker
@@ -89,7 +89,7 @@ export function MediaPressConference({
             </div>
 
             <div className="space-y-3 p-4 rounded-xl bg-muted/30 border border-border/50">
-              <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+              <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                 <span>Public Impression</span>
                 <span>64%</span>
               </div>
@@ -132,7 +132,7 @@ export function MediaPressConference({
                         </p>
                         <p
                           className={cn(
-                            "text-[10px] font-black uppercase tracking-[1px] transition-opacity",
+                            "text-[10px] font-black uppercase tracking-[0.15em] transition-opacity",
                             selected === choice.id
                               ? "opacity-100"
                               : "opacity-0 group-hover:opacity-60"

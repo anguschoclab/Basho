@@ -200,7 +200,7 @@ export function PendingMediaCard({ events }: { events: NonNullable<WorldState["g
         <CardTitle className="flex items-center gap-2 text-sm">
           <MessageSquare className="h-4 w-4 text-warning" />
           Response Required
-          <Badge variant="destructive" className="ml-1 h-4 px-1.5 text-[9px]">
+          <Badge variant="destructive" className="ml-1 h-4 px-1.5 text-[10px]">
             {events.length}
           </Badge>
         </CardTitle>
@@ -380,7 +380,7 @@ export function HotRikishiCard({ digest }: { digest: MediaDigest }) {
                   </div>
                   <Badge
                     variant="outline"
-                    className="text-[9px] font-bold uppercase tracking-wider px-2 h-5"
+                    className="text-[10px] font-bold uppercase tracking-wider px-2 h-5"
                     style={{ borderColor: heatLabel.color, color: heatLabel.color }}
                   >
                     {heatLabel.label}

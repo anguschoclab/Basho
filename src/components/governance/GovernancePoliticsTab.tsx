@@ -107,7 +107,7 @@ function PoliticalFavorsList({ heya }: { heya: Heya }) {
           return (
             <Card
               key={favor.id}
-              className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-xs"
+              className="relative overflow-hidden group border-border/40 bg-card"
             >
               <CardContent className="p-3.5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -118,7 +118,7 @@ function PoliticalFavorsList({ heya }: { heya: Heya }) {
                     })()}
                   </div>
                   <div>
-                    <div className="text-[13px] font-bold text-foreground/90">
+                    <div className="text-xs font-bold text-foreground/90">
                       {favor.label}
                     </div>
                     <div className="text-[10px] text-muted-foreground/80 leading-tight">
@@ -133,7 +133,7 @@ function PoliticalFavorsList({ heya }: { heya: Heya }) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-7 px-3 text-[9px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
+                    className="h-7 px-3 text-[10px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
                     disabled={(heya.politicalCapital ?? 0) < favor.cost}
                     tooltip={
                       (heya.politicalCapital ?? 0) < favor.cost
@@ -189,14 +189,14 @@ function IchimonRankings({
         <span className="flex items-center gap-1.5 flex-wrap">
           {fac.name}
           {fac.influence === maxInfluence && (
-            <Badge variant="default" className="text-[9px] px-1.5 py-0 h-3.5">
+            <Badge variant="default" className="text-[10px] px-1.5 py-0 h-3.5">
               Chairman
             </Badge>
           )}
           {heya?.ichimon === fac.id && (
             <Badge
               variant="outline"
-              className="text-[9px] px-1.5 py-0 h-3.5 border-primary text-primary"
+              className="text-[10px] px-1.5 py-0 h-3.5 border-primary text-primary"
             >
               Yours
             </Badge>

@@ -51,7 +51,7 @@ function PayoffProgress({ loan }: { loan: LoanRow }) {
 function Stipulations({ strings }: { strings: string[] }) {
   return (
     <div className="space-y-1.5">
-      <div className="text-[9px] text-muted-foreground uppercase font-bold">
+      <div className="text-[10px] text-muted-foreground uppercase font-bold">
         Institutional Stipulations:
       </div>
       <div className="flex flex-wrap gap-1.5">
@@ -59,7 +59,7 @@ function Stipulations({ strings }: { strings: string[] }) {
           <Badge
             key={s}
             variant="outline"
-            className="text-[9px] border-destructive/30 text-destructive bg-destructive/5 py-0"
+            className="text-[10px] border-destructive/30 text-destructive bg-destructive/5 py-0"
           >
             {s.replace(/_/g, " ").toUpperCase()}
           </Badge>
@@ -96,15 +96,15 @@ export function LoanCard({
 
       <div className="grid grid-cols-3 gap-4 text-center py-2 border-y border-border/30">
         <div>
-          <div className="text-[9px] text-muted-foreground uppercase font-bold">Principal</div>
+          <div className="text-[10px] text-muted-foreground uppercase font-bold">Principal</div>
           <div className="text-sm font-medium">{formatYen(loan.principal)}</div>
         </div>
         <div>
-          <div className="text-[9px] text-muted-foreground uppercase font-bold">Interest</div>
+          <div className="text-[10px] text-muted-foreground uppercase font-bold">Interest</div>
           <div className="text-sm font-medium">{(loan.interestRate * 100).toFixed(1)}%</div>
         </div>
         <div>
-          <div className="text-[9px] text-muted-foreground uppercase font-bold">Monthly</div>
+          <div className="text-[10px] text-muted-foreground uppercase font-bold">Monthly</div>
           <div className="text-sm font-bold text-destructive">
             {formatYen(loan.monthlyPayment)}
           </div>

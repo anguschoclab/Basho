@@ -52,14 +52,14 @@ function buildFactionRows(factionList: Faction[], heya: Heya, world: WorldState)
       <span className="flex items-center gap-1.5 flex-wrap">
         {fac.name}
         {fac.influence === maxInfluence && (
-          <Badge variant="default" className="text-[9px] px-1.5 py-0 h-3.5">
+          <Badge variant="default" className="text-[10px] px-1.5 py-0 h-3.5">
             Chairman
           </Badge>
         )}
         {heya.ichimon === fac.id && (
           <Badge
             variant="outline"
-            className="text-[9px] px-1.5 py-0 h-3.5 border-primary text-primary"
+            className="text-[10px] px-1.5 py-0 h-3.5 border-primary text-primary"
           >
             Yours
           </Badge>

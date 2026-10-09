@@ -47,7 +47,7 @@ export function RikishiProfileHeader({
       <Button
         variant="ghost"
         onClick={onBack}
-        className="gap-2 h-10 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors"
+        className="gap-2 h-10 px-4 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground hover:text-primary transition-colors"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Back to stable roster
       </Button>
@@ -55,7 +55,7 @@ export function RikishiProfileHeader({
       {/* ═══ DOSSIER HEADER ═══ */}
       <div className="dossier-paper rounded-lg overflow-hidden shadow-2xl border-2 border-primary/10">
         <div className="bg-primary pt-12 pb-10 px-8 relative overflow-hidden text-primary-foreground hero-gradient border-b-4 border-primary">
-          <div className="absolute top-0 right-0 p-8 opacity-10 font-display text-9xl font-black pointer-events-none uppercase italic -rotate-12 translate-x-12 -translate-y-8">
+          <div className="absolute top-0 right-0 p-8 opacity-10 font-display text-9xl font-black pointer-events-none uppercase -rotate-12 translate-x-12 -translate-y-8">
             {rikishi.rankLabel}
           </div>
 

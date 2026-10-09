@@ -35,6 +35,10 @@ interface Rule {
   scopes: string[];
   /** skip lines matching this (comments, allowlists) */
   skip?: RegExp;
+  /** additional pattern that must appear within lookaheadSpan lines (incl. this line) */
+  lookahead?: RegExp;
+  /** how many lines ahead the lookahead may match */
+  lookaheadSpan?: number;
 }
 
 const RULES: Rule[] = [
@@ -52,7 +56,7 @@ const RULES: Rule[] = [
     bibleRef: "§1.1 colors — tokens only",
     pattern: /\brgba?\s*\(/,
     scopes: ["pages", "components", "contexts", "hooks", "presenters"],
-    skip: /^\s*(\/\/|\*)/,
+    skip: /^\s*(\/\/|\*)|rgba?\(\s*var\(--/,
   },
   {
     id: "banned-gradient",
@@ -88,7 +92,11 @@ const RULES: Rule[] = [
     id: "italic-numerals",
     severity: "P2",
     bibleRef: "§2.3 data display — numerals never italic",
-    pattern: /italic[^"']*(record|wins|losses|score|rank|count|total|avg|\d)/i,
+    // italic class on this line + numeric/rank content within 3 lines
+    pattern: /italic/,
+    lookahead:
+      /\{[^}]*\b(record|wins|losses|score|rank|rankLabel|count|total|avg|points|streak)\b[^}]*\}|font-mono/,
+    lookaheadSpan: 3,
     scopes: ["pages", "components"],
   },
   {
@@ -118,7 +126,7 @@ const RULES: Rule[] = [
     bibleRef: "§11 writing style — no SCREAMING_SNAKE display copy",
     pattern: /["'`>][A-Z][A-Z_]{3,}[A-Z]["'<`]/,
     scopes: ["pages", "components"],
-    skip: /import|from |require\(|const |className=|data-testid|key=|id=|type:|sendCommand|command|_SIM|_CMD|aria-|role=/,
+    skip: /import|from |require\(|const |className=|data-testid|key=|id=|type:|sendCommand|command|_SIM|_CMD|aria-|role=|includes\(|===|!==|filterTypes|startsWith|endsWith|\.test\(|match\(/,
   },
 ];
 
@@ -151,6 +159,12 @@ export function scanDesignViolations(): DesignViolation[] {
         const line = lines[i];
         if (!rule.pattern.test(line)) continue;
         if (rule.skip?.test(line)) continue;
+        if (rule.lookahead) {
+          const window = lines
+            .slice(i, i + (rule.lookaheadSpan ?? 1))
+            .join(" ");
+          if (!rule.lookahead.test(window)) continue;
+        }
         out.push({
           file: rel,
           line: i + 1,

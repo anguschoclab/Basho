@@ -59,7 +59,7 @@ export function SidebarBrand() {
             Basho Manager
           </span>
           <span
-            className="text-[9px] text-[hsl(var(--sidebar-foreground)/0.45)] uppercase leading-tight mt-0.5"
+            className="text-[10px] text-[hsl(var(--sidebar-foreground)/0.45)] uppercase leading-tight mt-0.5"
             style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
           >
             Pro Edition
@@ -104,7 +104,7 @@ function NavItem({
         >
           <div className="flex items-center gap-3 w-full">
             <item.icon className="h-3.5 w-3.5 shrink-0 text-[hsl(var(--sidebar-foreground)/0.4)]" />
-            <span className="group-data-[collapsible=icon]:hidden flex-1 truncate text-[13px] text-[hsl(var(--sidebar-foreground)/0.4)]">
+            <span className="group-data-[collapsible=icon]:hidden flex-1 truncate text-xs text-[hsl(var(--sidebar-foreground)/0.4)]">
               {item.title}
             </span>
             <Lock className="h-2.5 w-2.5 shrink-0 text-[hsl(var(--sidebar-foreground)/0.3)] group-data-[collapsible=icon]:hidden" />
@@ -151,12 +151,12 @@ function NavItem({
           <item.icon
             className={`h-3.5 w-3.5 shrink-0 transition-all duration-150 ${active ? "text-[hsl(var(--gold))]" : ""}`}
           />
-          <span className="group-data-[collapsible=icon]:hidden flex-1 truncate text-[13px]">
+          <span className="group-data-[collapsible=icon]:hidden flex-1 truncate text-xs">
             {item.title}
           </span>
           {item.badge && (
             <span
-              className="group-data-[collapsible=icon]:hidden shrink-0 rounded px-1.5 py-px text-[9px] font-semibold border"
+              className="group-data-[collapsible=icon]:hidden shrink-0 rounded px-1.5 py-px text-[10px] font-semibold border"
               style={{
                 fontFamily: "var(--font-mono)",
                 color: badgeColor,
@@ -190,7 +190,7 @@ export function SidebarNav({
           {/* Section label with hairline */}
           {group.label && (
             <div className="flex items-center gap-2 px-3 mb-1.5 group-data-[collapsible=icon]:hidden">
-              <span className="text-[9px] text-[hsl(var(--gold)/0.6)] font-mono uppercase tracking-[0.2em]">
+              <span className="text-[10px] text-[hsl(var(--gold)/0.6)] font-mono uppercase tracking-[0.15em]">
                 {group.label}
               </span>
               <div
@@ -282,7 +282,7 @@ export function SidebarStatusFooter({
                           : "hsl(var(--destructive))",
                 }}
               />
-              <span className="text-[9px] uppercase truncate text-[hsl(var(--sidebar-foreground)/0.45)] font-mono tracking-[0.1em]">
+              <span className="text-[10px] uppercase truncate text-[hsl(var(--sidebar-foreground)/0.45)] font-mono tracking-[0.15em]">
                 {playerHeya.runwayBand}
               </span>
             </div>
@@ -295,7 +295,7 @@ export function SidebarStatusFooter({
         <div className="mt-2.5 px-1 group-data-[collapsible=icon]:hidden">
           <div className="flex items-center justify-between mb-1.5">
             <span
-              className="text-[9px] uppercase text-[hsl(var(--gold)/0.8)]"
+              className="text-[10px] uppercase text-[hsl(var(--gold)/0.8)]"
               style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
             >
               Basho

@@ -46,7 +46,7 @@ const LeaderboardRow = React.memo(
           {wins}-{losses}
         </span>
         {isPlayer && (
-          <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>
+          <Badge className="text-[10px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>
         )}
       </div>
     );
@@ -122,7 +122,7 @@ export function BashoWidget() {
       headerAction={headerAction}
     >
       {/* Subtle shimmer accent for active tournament */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent/50 to-transparent shimmer-bar" />
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-accent/40 shimmer-bar" />
 
       {/* Quick stats with visual emphasis */}
       <div className="grid grid-cols-4 gap-2">

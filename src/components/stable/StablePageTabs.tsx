@@ -80,7 +80,7 @@ export function RosterTab({
                           <TooltipWrap content={r.injurySummary ?? "Injured"} side="top">
                             <Badge
                               variant="destructive"
-                              className="text-[9px] px-1.5 h-4 cursor-help"
+                              className="text-[10px] px-1.5 h-4 cursor-help"
                             >
                               INJURED
                             </Badge>
@@ -91,7 +91,7 @@ export function RosterTab({
                             content="High injury risk — low condition or elevated fatigue"
                             side="top"
                           >
-                            <AlertTriangle className="h-3.5 w-3.5 text-amber-500 cursor-help shrink-0" />
+                            <AlertTriangle className="h-3.5 w-3.5 text-gold cursor-help shrink-0" />
                           </TooltipWrap>
                         )}
                       </div>

@@ -16,7 +16,7 @@ export function RankChangeIndicator({ delta }: Props) {
     return (
       <Badge
         variant="outline"
-        className="text-[8px] h-4 px-1 border-primary/40 text-primary gap-0.5"
+        className="text-[10px] h-4 px-1 border-primary/40 text-primary gap-0.5"
       >
         <ArrowUpRight className="h-2.5 w-2.5" /> NEW
       </Badge>
@@ -34,7 +34,7 @@ export function RankChangeIndicator({ delta }: Props) {
     return (
       <span className="flex items-center gap-0.5 text-success">
         <Icon className="h-3 w-3" />
-        <span className="text-[9px] font-mono font-bold">+{steps}</span>
+        <span className="text-[10px] font-mono font-bold">+{steps}</span>
       </span>
     );
   } else {
@@ -42,7 +42,7 @@ export function RankChangeIndicator({ delta }: Props) {
     return (
       <span className="flex items-center gap-0.5 text-destructive">
         <Icon className="h-3 w-3" />
-        <span className="text-[9px] font-mono font-bold">−{steps}</span>
+        <span className="text-[10px] font-mono font-bold">−{steps}</span>
       </span>
     );
   }

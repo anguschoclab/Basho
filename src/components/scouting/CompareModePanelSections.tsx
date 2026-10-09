@@ -75,7 +75,7 @@ function CompareStatRow({ label, valA, valB }: { label: string; valA: number; va
               diff > 0 ? "text-success" : diff < 0 ? "text-destructive" : "text-muted-foreground"
             )}
           >
-            {diff > 0 ? `+${diff}` : diff === 0 ? "EQUAL" : diff}
+            {diff > 0 ? `+${diff}` : diff === 0 ? "even" : diff}
           </span>
         </div>
       </div>
@@ -99,7 +99,7 @@ export function CompareStats({
   const rawB = world?.rikishi.get(rikishiB.id);
 
   return (
-    <Card className="bg-background/40 backdrop-blur shadow-xl overflow-hidden border-primary/10">
+    <Card className="bg-background shadow-xl overflow-hidden border-primary/10">
       <CardContent className="p-6">
         {!rawA || !rawB ? (
           <p className="text-center text-muted-foreground">Stats unavailable</p>

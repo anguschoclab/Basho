@@ -75,17 +75,17 @@ export function IndividualFocusSlots({
                     </span>
                     <Badge
                       variant="outline"
-                      className="text-[9px] font-black uppercase tracking-widest border-2"
+                      className="text-[10px] font-black uppercase tracking-widest border-2"
                     >
                       {rikishi.rank}
                     </Badge>
                     {rikishi.injured && (
-                      <Badge className="bg-destructive text-destructive-foreground text-[8px] h-5 font-black uppercase">
+                      <Badge className="bg-destructive text-destructive-foreground text-[10px] h-5 font-black uppercase">
                         INJURED
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 text-[9px] uppercase font-black text-muted-foreground tracking-widest">
+                  <div className="flex items-center gap-4 text-[10px] uppercase font-black text-muted-foreground tracking-widest">
                     <span className="flex items-center gap-2">
                       <Activity
                         className={cn(
@@ -115,12 +115,12 @@ export function IndividualFocusSlots({
                           "flex flex-col items-center justify-center h-14 w-20 rounded-lg transition-all gap-1",
                           isActive
                             ? "bg-primary text-white shadow-lg scale-105"
-                            : "text-muted-foreground hover:bg-white/50"
+                            : "text-muted-foreground hover:bg-muted"
                         )}
                         aria-label={`${opt.label}: ${opt.description}`}
                       >
                         {opt.icon}
-                        <span className="text-[8px] font-black uppercase tracking-tighter">
+                        <span className="text-[10px] font-black uppercase tracking-tighter">
                           {opt.label}
                         </span>
                       </button>

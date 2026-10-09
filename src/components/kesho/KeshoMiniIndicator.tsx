@@ -18,17 +18,17 @@ interface KeshoMiniIndicatorProps {
  */
 export function KeshoMiniIndicator({ kesho, className }: KeshoMiniIndicatorProps) {
   const tierColors: Record<string, string> = {
-    juryo: "bg-slate-500",
-    makuuchi: "bg-blue-500",
-    sanyaku: "bg-purple-500",
-    yokozuna: "bg-yellow-500",
+    juryo: "bg-card",
+    makuuchi: "bg-primary",
+    sanyaku: "bg-accent",
+    yokozuna: "bg-gold",
   };
 
   return (
     <div
       className={cn(
         "relative w-4 h-6 rounded-xs overflow-hidden shadow-xs",
-        tierColors[kesho.tier] || "bg-gray-500",
+        tierColors[kesho.tier] || "bg-card",
         className
       )}
       title={`Kesho-mawashi (${kesho.tier}): ${kesho.description}`}

@@ -31,7 +31,7 @@ function TimelinePortrait({
       <div className="w-8 h-8 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-[11px] font-bold text-primary">
         {initial}
       </div>
-      <span className="text-[9px] text-muted-foreground max-w-[60px] truncate text-center">
+      <span className="text-[10px] text-muted-foreground max-w-[60px] truncate text-center">
         {name}
       </span>
     </div>

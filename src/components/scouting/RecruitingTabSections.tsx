@@ -129,14 +129,14 @@ export function QuotaFilterRow({ state }: { state: State }) {
         <div
           className={cn(
             "flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold",
-            state.limitReached ? "bg-rose-500/10 text-rose-500" : "bg-primary/10 text-primary"
+            state.limitReached ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
           )}
         >
           <Globe className="h-3.5 w-3.5" />
           Foreign Quota: {state.foreignUsage}/2
         </div>
         {state.limitReached && (
-          <div className="flex items-center gap-1.5 text-[10px] text-rose-500 font-medium animate-pulse">
+          <div className="flex items-center gap-1.5 text-[10px] text-destructive font-medium animate-pulse">
             <AlertCircle className="h-3 w-3" />
             Stable is at its foreign limit
           </div>

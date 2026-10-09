@@ -48,7 +48,7 @@ export function PreviewHero({ heya, config }: { heya: Heya; config: StatureConfi
           {heya.nameJa && <p className="text-lg font-display opacity-80">{heya.nameJa}</p>}
         </div>
         <div className="flex flex-col items-end text-right">
-          <div className="h-12 w-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
+          <div className="h-12 w-12 bg-foreground/10 rounded-full flex items-center justify-center border border-foreground/20">
             <Building className="h-6 w-6" />
           </div>
           <div className="mt-2 text-[10px] uppercase font-bold tracking-widest opacity-60">
@@ -80,14 +80,14 @@ export function PreviewStats({
             key={i}
             className="p-3 bg-muted/40 rounded-lg border border-border/50 group hover:border-primary/30 transition-colors"
           >
-            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-primary">
+            <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-primary">
               {i === 0 && <Trophy className="h-4 w-4" />}
               {i === 1 && <User className="h-4 w-4" />}
               {i === 2 && <Star className="h-4 w-4 text-gold" />}
               {stat.label}
             </div>
             <div className="text-xl font-display font-black">{value}</div>
-            <div className="text-[9px] uppercase font-bold text-muted-foreground/60">{sub}</div>
+            <div className="text-[10px] uppercase font-bold text-muted-foreground/60">{sub}</div>
           </div>
         );
       })}
@@ -130,12 +130,12 @@ function RosterRow({
               {r.rikishi.shikona}
             </span>
             {isSekitori && (
-              <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[9px] h-4 font-black">
+              <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[10px] h-4 font-black">
                 SEKITORI
               </Badge>
             )}
           </div>
-          <div className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-widest flex items-center gap-1">
+          <div className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-widest flex items-center gap-1">
             <MapPin className="h-2 w-2" /> {r.rikishi.origin || "Japan"} • {r.age} yrs{" "}
             <span className="opacity-40">({r.rikishi.ageDescriptor})</span>
           </div>
@@ -149,7 +149,7 @@ function RosterRow({
             {r.rikishi.rankNumber > 0 ? r.rikishi.rankNumber : ""}
           </span>
         </div>
-        <div className="text-[9px] font-bold text-muted-foreground uppercase">
+        <div className="text-[10px] font-bold text-muted-foreground uppercase">
           {r.rikishi.side || "East"} Division
         </div>
       </div>

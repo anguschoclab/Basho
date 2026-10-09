@@ -29,7 +29,7 @@ export function HallHero({
   byCategory: Record<HoFCategory, UIHofInductee[]>;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-lg border bg-gradient-to-br from-gold/10 via-background to-primary/5 p-6">
+    <div className="relative overflow-hidden rounded-lg border bg-gold/5 p-6">
       <div className="absolute top-2 right-4 text-6xl opacity-10">🏛️</div>
       <PageHeader
         eyebrow="── RECORDS ──"

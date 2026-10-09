@@ -72,7 +72,7 @@ export function BeyaWideRegime({
                     <Badge
                       variant="outline"
                       className={cn(
-                        "text-[8px] font-black tracking-[0.2em]",
+                        "text-[10px] font-black tracking-[0.15em]",
                         isActive ? "bg-primary text-white border-0" : "opacity-50"
                       )}
                     >
@@ -116,7 +116,7 @@ export function BeyaWideRegime({
                   <div className="font-display font-black text-sm uppercase mb-0.5">
                     {getFocusLabel(focus)}
                   </div>
-                  <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60">
+                  <p className="text-[10px] uppercase font-black text-muted-foreground tracking-widest opacity-60">
                     {(() => {
                       // Subtitle reflects the focus's actual strongest bias.
                       const [attr, mult] = Object.entries(FOCUS_BIAS_MATRIX[focus]).sort(
@@ -162,7 +162,7 @@ export function BeyaWideRegime({
                   <div className="font-display font-black text-sm uppercase mb-0.5">
                     {getRecoveryLabel(recovery)}
                   </div>
-                  <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60">
+                  <p className="text-[10px] uppercase font-black text-muted-foreground tracking-widest opacity-60">
                     Rest Cycle Emphasis
                   </p>
                   {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}

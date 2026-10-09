@@ -22,16 +22,16 @@ export function WizardFooter({ oyakataName, background, ichimon, world }: Wizard
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-10">
           <div>
-            <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-0.5">
               Oyakata
             </p>
             <p className="font-display font-black text-xs uppercase tracking-tighter">
-              {oyakataName || "UNREGISTERED"}
+              {oyakataName || "Unregistered"}
             </p>
           </div>
           <div className="hidden md:block w-px h-6 bg-border/40" />
           <div className="hidden md:block">
-            <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-0.5">
               Endowment
             </p>
             <p className="font-display font-black text-xs uppercase tracking-tighter text-success">
@@ -40,7 +40,7 @@ export function WizardFooter({ oyakataName, background, ichimon, world }: Wizard
           </div>
           <div className="hidden lg:block w-px h-6 bg-border/40" />
           <div className="hidden lg:block">
-            <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-0.5">
               Allegiance
             </p>
             <p className="font-display font-black text-xs uppercase tracking-tighter text-primary">
@@ -49,7 +49,7 @@ export function WizardFooter({ oyakataName, background, ichimon, world }: Wizard
           </div>
           <div className="hidden xl:block w-px h-6 bg-border/40" />
           <div className="hidden xl:block">
-            <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-0.5">
               Background
             </p>
             <p className="font-display font-black text-xs uppercase tracking-tighter text-gold">
@@ -57,7 +57,7 @@ export function WizardFooter({ oyakataName, background, ichimon, world }: Wizard
             </p>
           </div>
         </div>
-        <div className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 select-none hidden sm:block">
+        <div className="text-[10px] font-black uppercase tracking-[0.15em] opacity-30 select-none hidden sm:block">
           Association Record • Year {world.year}
         </div>
       </div>

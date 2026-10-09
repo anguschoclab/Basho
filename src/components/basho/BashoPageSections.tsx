@@ -155,7 +155,7 @@ export function JungyoResultsCard({ world }: { world: WorldState }) {
             <div key={`${e.id ?? i}`} className="flex items-center gap-2 text-xs">
               <Badge
                 variant={e.data?.incident === "exhibition_victory" ? "default" : "outline"}
-                className="text-[9px]"
+                className="text-[10px]"
               >
                 {e.data?.incident === "exhibition_victory" ? "WIN" : "LOSS"}
               </Badge>
@@ -175,13 +175,13 @@ export function GlobalCupBanner({ world, day }: { world: WorldState; day: number
   if (!world.globalCup?.isActive || day < 15) return null;
   const cup = world.globalCup;
   return (
-    <Card className="border-amber-500/30 bg-amber-950/10">
+    <Card className="border-gold/30 bg-gold/10">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Globe className="h-5 w-5 text-amber-400" />
+            <Globe className="h-5 w-5 text-gold" />
             <div>
-              <h3 className="font-display font-bold text-amber-400">
+              <h3 className="font-display font-bold text-gold">
                 Global Cup {cup.year} - {cup.phase}
               </h3>
               <p className="text-xs text-muted-foreground">
@@ -190,7 +190,7 @@ export function GlobalCupBanner({ world, day }: { world: WorldState; day: number
             </div>
           </div>
           <Link to="/global-cup">
-            <Button size="sm" variant="outline" className="border-amber-500/30 text-amber-400">
+            <Button size="sm" variant="outline" className="border-gold/30 text-gold">
               View Tournament
             </Button>
           </Link>
@@ -335,7 +335,7 @@ export function BashoStandingsSidebar({
                 {entry?.rikishi?.kihakuIsenScore !== undefined &&
                   entry?.rikishi?.kihakuIsenScore > 0 && (
                     <span
-                      className="text-[9px] font-mono text-gold/70 shrink-0"
+                      className="text-[10px] font-mono text-gold/70 shrink-0"
                       title="Kihaku (fighting spirit)"
                       data-testid={`kihaku-standings-${rid}`}
                     >

@@ -91,7 +91,7 @@ export function RivalrySections({
                   <div className="flex justify-between items-center mb-2">
                     <Badge
                       variant="outline"
-                      className="text-[9px] uppercase tracking-tighter"
+                      className="text-[10px] uppercase tracking-tighter"
                     >
                       {feud.tone.replace("_", " ")}
                     </Badge>

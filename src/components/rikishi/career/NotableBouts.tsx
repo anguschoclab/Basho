@@ -44,29 +44,29 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
               </div>
               <div className="flex items-center gap-2">
                 {b.isKinboshi && (
-                  <Badge className="text-[9px] font-black uppercase tracking-widest bg-gold/20 text-gold border border-gold/40">
+                  <Badge className="text-[10px] font-black uppercase tracking-widest bg-gold/20 text-gold border border-gold/40">
                     <Star className="h-3 w-3 mr-1" /> Kinboshi
                   </Badge>
                 )}
                 {b.isUpset && (
-                  <Badge className="text-[9px] font-black uppercase tracking-widest bg-primary/20 text-primary border border-primary/40">
+                  <Badge className="text-[10px] font-black uppercase tracking-widest bg-primary/20 text-primary border border-primary/40">
                     UPSET
                   </Badge>
                 )}
                 {b.isYushoRace && (
-                  <Badge className="text-[9px] font-black uppercase tracking-widest bg-gold/20 text-gold border border-gold/40">
+                  <Badge className="text-[10px] font-black uppercase tracking-widest bg-gold/20 text-gold border border-gold/40">
                     Yusho Race
                   </Badge>
                 )}
                 <Badge
                   variant="outline"
-                  className="text-[9px] font-black uppercase tracking-widest"
+                  className="text-[10px] font-black uppercase tracking-widest"
                 >
                   {b.kimarite}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="text-[9px] font-black uppercase tracking-widest"
+                  className="text-[10px] font-black uppercase tracking-widest"
                 >
                   {b.year} {b.bashoName} Day {b.day}
                 </Badge>
