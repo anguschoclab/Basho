@@ -150,3 +150,37 @@ describe("Shikona Generation System", () => {
     });
   });
 });
+
+describe("generateShikonaCandidate pattern weighting", () => {
+  it("honors rankRule patternBias: dominant bias selects that pattern", async () => {
+    const { generateShikonaCandidate } = await import("@/engine/shikona/generation");
+    const { SHIKONA_PREFIXES, SHIKONA_SUFFIXES } = await import("@/engine/shikona/constants");
+    const { SeededRNG } = await import("@/engine/rng");
+    const house = {
+      id: "power_mountain" as const,
+      name: "Test",
+      patternBias: {},
+      prefixCategoryBias: {},
+      suffixCategoryBias: {},
+    };
+    const rankRule = {
+      tier: "upper" as const,
+      prestigeChance: 0,
+      tripleChance: 0,
+      maxLen: 20,
+      patternBias: { "regional+ending": 1000 },
+    };
+    // mergePatternWeights clamps weights to [0.1, 100], so a dominant bias yields
+    // ~100/190 ≈ 52% for the favored pattern vs ~14% under uniform selection.
+    let hits = 0;
+    for (let i = 0; i < 500; i++) {
+      const r = new SeededRNG(`bias-${i}`);
+      const name = generateShikonaCandidate(() => r.next(), {}, 0, house, rankRule);
+      const isRegionalEnding =
+        SHIKONA_PREFIXES.regional.some((p) => name.startsWith(p)) &&
+        SHIKONA_SUFFIXES.endings.some((s) => name.endsWith(s));
+      if (isRegionalEnding) hits++;
+    }
+    expect(hits).toBeGreaterThan(200);
+  });
+});

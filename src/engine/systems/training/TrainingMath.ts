@@ -51,7 +51,7 @@ import { clamp } from "../../utils/math";
 import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/engine/development";
 
 /** Extracted training modifiers from heya/world context. */
-export interface TrainingModifiers {
+interface TrainingModifiers {
   facilityGrowthMult: number;
   nutritionMult: number;
   degeikoMult: number;

@@ -46,7 +46,7 @@ function getChairmanName(worldSeed: string): string {
   return `${given} ${surname}`;
 }
 
-export interface YDCCandidate {
+interface YDCCandidate {
   rikishiId: string;
   name: string;
   performances: BashoPerformance[];

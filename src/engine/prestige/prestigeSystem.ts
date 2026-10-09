@@ -29,9 +29,9 @@ export function bandIndex(b: PrestigeBand): number {
 }
 
 /**
- * Update stature band based on roster rank composition.
+ * Compute stature band based on roster rank composition.
  */
-export function updateStatureBand(world: WorldState, heya: Heya): void {
+export function computeStatureBand(world: WorldState, heya: Heya): Heya["statureBand"] {
   let maxRankWeight = 0;
   let rosterScore = 0;
   const RANK_WEIGHT: Record<string, number> = {
@@ -56,12 +56,12 @@ export function updateStatureBand(world: WorldState, heya: Heya): void {
 
   const avgScore = roster.length > 0 ? rosterScore / roster.length : 0;
 
-  if (maxRankWeight >= 100 && avgScore >= 40) heya.statureBand = "legendary";
-  else if (maxRankWeight >= 60 && avgScore >= 30) heya.statureBand = "powerful";
-  else if (avgScore >= 20) heya.statureBand = "established";
-  else if (avgScore >= 10) heya.statureBand = "rebuilding";
-  else if (roster.length >= 3) heya.statureBand = "fragile";
-  else heya.statureBand = "new";
+  if (maxRankWeight >= 100 && avgScore >= 40) return "legendary";
+  if (maxRankWeight >= 60 && avgScore >= 30) return "powerful";
+  if (avgScore >= 20) return "established";
+  if (avgScore >= 10) return "rebuilding";
+  if (roster.length >= 3) return "fragile";
+  return "new";
 }
 
 /**
@@ -164,40 +164,8 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
       builder.updateHeya(heya.id, { prestigeBand: newBand });
     }
 
-    // Calculate new stature band
-    let newStatureBand: typeof heya.statureBand;
-    let maxRankWeight = 0;
-    let rosterScore = 0;
-    const RANK_WEIGHT: Record<string, number> = {
-      yokozuna: 100,
-      ozeki: 80,
-      sekiwake: 60,
-      komusubi: 50,
-      maegashira: 30,
-      juryo: 15,
-      makushita: 8,
-      sandanme: 4,
-      jonidan: 2,
-      jonokuchi: 1,
-    };
-
-    for (const r of roster) {
-      const w = RANK_WEIGHT[r.rank] ?? 5;
-      rosterScore += w;
-      if (w > maxRankWeight) maxRankWeight = w;
-    }
-
-    const avgScore = roster.length > 0 ? rosterScore / roster.length : 0;
-
-    if (maxRankWeight >= 100 && avgScore >= 40) newStatureBand = "legendary";
-    else if (maxRankWeight >= 60 && avgScore >= 30) newStatureBand = "powerful";
-    else if (avgScore >= 20) newStatureBand = "established";
-    else if (avgScore >= 10) newStatureBand = "rebuilding";
-    else if (roster.length >= 3) newStatureBand = "fragile";
-    else newStatureBand = "new";
-
     // Queue heya update for statureBand
-    builder.updateHeya(heya.id, { statureBand: newStatureBand });
+    builder.updateHeya(heya.id, { statureBand: computeStatureBand(world, heya) });
 
     // Reputation drift
     const reputationDelta = shift * 5;

@@ -1,17 +1,42 @@
 import { describe, it, expect } from "vitest";
 import {
-  initializeMyosekiMarket,
   listMyosekiForSale,
   purchaseMyoseki,
-  leaseMyoseki,
+  executeMyosekiLease,
   returnLeasedMyoseki,
   findAvailableStock,
-  CANONICAL_MYOSEKI_NAMES,
-  MYOSEKI_BASE_PRICES,
 } from "@/engine/systems/governance/MyosekiTradingService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "../utils";
 import type { MyosekiMarket } from "@/engine/types/myoseki";
+
+
+/** Deterministic two-stock market fixture (JSA-owned, available). */
+function makeMarket(): MyosekiMarket {
+  return {
+    stocks: {
+      "myoseki-1": {
+        id: "myoseki-1",
+        name: "Takanohana",
+        prestigeTier: "elite",
+        ownerId: "JSA",
+        holderId: "JSA",
+        status: "available",
+        askingPrice: 500_000_000,
+      },
+      "myoseki-2": {
+        id: "myoseki-2",
+        name: "Kitanoumi",
+        prestigeTier: "respected",
+        ownerId: "JSA",
+        holderId: "JSA",
+        status: "available",
+        askingPrice: 200_000_000,
+      },
+    },
+    history: [],
+  } as MyosekiMarket;
+}
 
 function makeWorldWithMarket(market?: MyosekiMarket) {
   const world = makeMockWorld({});
@@ -21,43 +46,9 @@ function makeWorldWithMarket(market?: MyosekiMarket) {
   return world;
 }
 
-describe("Myoseki market initialization", () => {
-  it("initializes with ~105 fixed names", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
-    expect(Object.keys(market.stocks).length).toBe(CANONICAL_MYOSEKI_NAMES.length);
-    expect(CANONICAL_MYOSEKI_NAMES.length).toBeGreaterThanOrEqual(100);
-  });
-
-  it("all stocks start as available owned by JSA", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
-    for (const stock of Object.values(market.stocks)) {
-      expect(stock.status).toBe("available");
-      expect(stock.ownerId).toBe("JSA");
-      expect(stock.holderId).toBe("JSA");
-    }
-  });
-
-  it("stocks have asking prices based on prestige tier", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
-    for (const stock of Object.values(market.stocks)) {
-      expect(stock.askingPrice).toBe(MYOSEKI_BASE_PRICES[stock.prestigeTier]);
-    }
-  });
-
-  it("history starts empty", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
-    expect(market.history).toEqual([]);
-  });
-});
-
 describe("Myoseki sale listing", () => {
   it("can list a held stock for sale with asking price", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
     market.stocks[stockId].status = "held";
     market.stocks[stockId].ownerId = "oyakata-1";
@@ -69,11 +60,27 @@ describe("Myoseki sale listing", () => {
     const updatedMarket = (updated as any).myosekiMarket as MyosekiMarket;
 
     expect(updatedMarket.stocks[stockId].askingPrice).toBe(300_000_000);
+    expect(updatedMarket.stocks[stockId].status).toBe("available");
+  });
+
+  it("cannot list a leased stock for sale", () => {
+    const market = makeMarket();
+    const stockId = Object.keys(market.stocks)[0];
+    market.stocks[stockId].status = "leased";
+    market.stocks[stockId].ownerId = "oyakata-1";
+    market.stocks[stockId].holderId = "oyakata-2";
+
+    const worldWithMarket = makeWorldWithMarket(market);
+    const impact = listMyosekiForSale(worldWithMarket, market, stockId, 300_000_000);
+    const updated = resolveImpacts(worldWithMarket, [impact]);
+    const updatedMarket = (updated as any).myosekiMarket as MyosekiMarket;
+
+    expect(updatedMarket.stocks[stockId].status).toBe("leased");
+    expect(updatedMarket.stocks[stockId].askingPrice).not.toBe(300_000_000);
   });
 
   it("cannot list an available stock for sale", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
 
     const worldWithMarket = makeWorldWithMarket(market);
@@ -88,8 +95,7 @@ describe("Myoseki sale listing", () => {
 
 describe("Myoseki purchase", () => {
   it("oyakata can purchase available stock with sufficient funds", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
     const price = market.stocks[stockId].askingPrice!;
 
@@ -107,8 +113,7 @@ describe("Myoseki purchase", () => {
   });
 
   it("cannot purchase with insufficient funds", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
     const price = market.stocks[stockId].askingPrice!;
 
@@ -122,8 +127,7 @@ describe("Myoseki purchase", () => {
   });
 
   it("cannot purchase a held stock", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
     market.stocks[stockId].status = "held";
     market.stocks[stockId].ownerId = "oyakata-existing";
@@ -139,15 +143,14 @@ describe("Myoseki purchase", () => {
 
 describe("Myoseki lease", () => {
   it("lease transfers holderId without transferring ownerId", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
     market.stocks[stockId].status = "held";
     market.stocks[stockId].ownerId = "oyakata-owner";
     market.stocks[stockId].holderId = "oyakata-owner";
 
     const worldWithMarket = makeWorldWithMarket(market);
-    const impact = leaseMyoseki(worldWithMarket, market, stockId, "oyakata-lessee", 5_000_000);
+    const impact = executeMyosekiLease(worldWithMarket, market, stockId, "oyakata-lessee", 5_000_000);
     const updated = resolveImpacts(worldWithMarket, [impact]);
     const updatedMarket = (updated as any).myosekiMarket as MyosekiMarket;
 
@@ -160,8 +163,7 @@ describe("Myoseki lease", () => {
   });
 
   it("return lease reverts holderId to ownerId", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
     market.stocks[stockId].status = "leased";
     market.stocks[stockId].ownerId = "oyakata-owner";
@@ -182,16 +184,14 @@ describe("Myoseki lease", () => {
 
 describe("Merit issuance fallback", () => {
   it("findAvailableStock returns an available stock when one exists", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const available = findAvailableStock(market);
     expect(available).toBeDefined();
     expect(available!.status).toBe("available");
   });
 
   it("findAvailableStock returns undefined when no available stock", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     // Mark all as held
     for (const id of Object.keys(market.stocks)) {
       market.stocks[id].status = "held";
@@ -203,8 +203,7 @@ describe("Merit issuance fallback", () => {
 
 describe("Transaction history", () => {
   it("purchase appends to history", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
     const price = market.stocks[stockId].askingPrice!;
 
@@ -219,8 +218,7 @@ describe("Transaction history", () => {
   });
 
   it("multiple transactions accumulate in history", () => {
-    const world = makeMockWorld({});
-    const market = initializeMyosekiMarket(world);
+    const market = makeMarket();
     const stockIds = Object.keys(market.stocks).slice(0, 2);
     const price1 = market.stocks[stockIds[0]].askingPrice!;
     const price2 = market.stocks[stockIds[1]].askingPrice!;

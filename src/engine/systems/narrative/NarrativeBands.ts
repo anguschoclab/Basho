@@ -129,9 +129,6 @@ export const RIVALRY_HEAT_BANDS: BandDef<RivalryHeatBand>[] = [
   { band: "legendary", min: RIVALRY_HEAT_FIERCE_MAX, max: Infinity },
 ];
 
-// === Financial Bands (runway weeks) ===
-export type FinancialBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
-
 // === Potential Bands (0–100 talentSeed) ===
 export type PotentialBand = "generational" | "star" | "solid" | "average" | "limited" | "unknown";
 

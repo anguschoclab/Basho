@@ -20,9 +20,6 @@ import {
   MAEZUMO_RANK_MAX,
 } from "../../../constants/engine/generation";
 
-/** Duration of the maezumo stage in weeks (within a single basha cycle) */
-export const MAEZUMO_DURATION_WEEKS = 2;
-
 /**
  * Assesses a new recruit's maezumo performance and determines their
  * initial jonokuchi rankNumber. Higher-stat recruits get lower (better)

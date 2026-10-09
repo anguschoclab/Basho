@@ -1,6 +1,6 @@
 import type { EngineEventType, EventImportance } from "../types/events";
 
-export interface NarrativeEventMapEntry {
+interface NarrativeEventMapEntry {
   eventType: EngineEventType;
   titlePath: string;
   summaryPath: string;

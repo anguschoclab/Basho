@@ -180,6 +180,51 @@ export function updateBanzuke(
   previousOzekiKadoban: OzekiKadobanMap = {},
   heyaMap?: Map<string, Heya>
 ): BanzukeUpdateResult {
+  const { updatedOzekiKadoban, demotedOzeki, reclaimableOzeki } = resolveOzekiStatuses(
+    currentBanzuke,
+    perfById,
+    previousOzekiKadoban,
+    world
+  );
+
+  const sanyakuCounts = computeVariableSanyakuCounts(currentBanzuke, perfById, demotedOzeki);
+  const fullTemplate = computeDivisionTemplate(currentBanzuke, sanyakuCounts);
+
+  const scored = scoreBanzukeCandidates(
+    currentBanzuke,
+    perfById,
+    world,
+    updatedOzekiKadoban,
+    demotedOzeki,
+    reclaimableOzeki,
+    heyaMap
+  );
+
+  const assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki);
+
+  const events: MovementEvent[] = banzukeMovementEvents(
+    currentBanzuke,
+    assigned,
+    updatedOzekiKadoban,
+    previousOzekiKadoban
+  );
+  return { newBanzuke: assigned, events, updatedOzekiKadoban, sanyakuCounts };
+}
+
+/**
+ * Resolves each incumbent ozeki's kadoban status, collecting the demoted set
+ * (2+ consecutive make-koshi) and the reclaimable set (wasDemotedFromOzeki).
+ */
+function resolveOzekiStatuses(
+  currentBanzuke: BanzukeEntry[],
+  perfById: Map<string, BashoPerformance>,
+  previousOzekiKadoban: OzekiKadobanMap,
+  world: WorldState
+): {
+  updatedOzekiKadoban: OzekiKadobanMap;
+  demotedOzeki: Set<string>;
+  reclaimableOzeki: Set<string>;
+} {
   const updatedOzekiKadoban: OzekiKadobanMap = { ...previousOzekiKadoban };
   const demotedOzeki = new Set<string>();
 
@@ -203,12 +248,19 @@ export function updateBanzuke(
     if (r?.wasDemotedFromOzeki) reclaimableOzeki.add(e.rikishiId);
   }
 
-  const sanyakuCounts = computeVariableSanyakuCounts(currentBanzuke, perfById, demotedOzeki);
+  return { updatedOzekiKadoban, demotedOzeki, reclaimableOzeki };
+}
 
-  // Dynamic division capacity: scale lower divisions to the active field so no
-  // rikishi is frozen out of the banzuke. Makuuchi (42) and juryo (28) are fixed
-  // (sekitori tiers); the remaining population is distributed across makushita,
-  // sandanme, jonidan, and jonokuchi (the overflow safety net).
+/**
+ * Dynamic division capacity: scale lower divisions to the active field so no
+ * rikishi is frozen out of the banzuke. Makuuchi (42) and juryo (28) are fixed
+ * (sekitori tiers); the remaining population is distributed across makushita,
+ * sandanme, jonidan, and jonokuchi (the overflow safety net).
+ */
+function computeDivisionTemplate(
+  currentBanzuke: BanzukeEntry[],
+  sanyakuCounts: ReturnType<typeof computeVariableSanyakuCounts>
+): ReturnType<typeof buildFullSlotTemplate> {
   const fieldSize = currentBanzuke.length;
   const elite = 42 + 28; // makuuchi + juryo fixed
   const lowerPopulation = Math.max(0, fieldSize - elite);
@@ -217,7 +269,7 @@ export function updateBanzuke(
   const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.25) + HEADROOM);
   const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.4) + HEADROOM);
   const jonokuchi = Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
-  const fullTemplate = buildFullSlotTemplate(sanyakuCounts, {
+  return buildFullSlotTemplate(sanyakuCounts, {
     makuuchi: 42,
     juryo: 28,
     makushita,
@@ -225,7 +277,29 @@ export function updateBanzuke(
     jonidan,
     jonokuchi,
   });
+}
 
+type ScoredCandidate = {
+  entry: BanzukeEntry;
+  oldKey: number;
+  desiredKey: number;
+  eligibleBestTier: number;
+};
+
+/**
+ * Scores each banzuke entry by desired position (movement units + ichimon
+ * political weight) and eligible tier, then sorts by desiredKey with the
+ * H2H/SOS tiebreak hierarchy.
+ */
+function scoreBanzukeCandidates(
+  currentBanzuke: BanzukeEntry[],
+  perfById: Map<string, BashoPerformance>,
+  world: WorldState,
+  updatedOzekiKadoban: OzekiKadobanMap,
+  demotedOzeki: Set<string>,
+  reclaimableOzeki: Set<string>,
+  heyaMap?: Map<string, Heya>
+): ScoredCandidate[] {
   const rikishiToHeyaMap = new Map<string, Heya>();
   if (heyaMap) {
     for (const heya of heyaMap.values()) {
@@ -237,8 +311,7 @@ export function updateBanzuke(
     }
   }
 
-  // Assign candidates to slots
-  const scored = currentBanzuke
+  return currentBanzuke
     .map((e) => {
       const p = perfById.get(e.rikishiId);
       const move = computeMovementUnits(e, p, demotedOzeki);
@@ -278,15 +351,22 @@ export function updateBanzuke(
       // Level 3: SOS Proxy
       return resolveBanzukeTie(a as BanzukeCandidate, b as BanzukeCandidate, world, perfById);
     });
+}
 
+/**
+ * Bucketed slot assignment: `scored` is sorted by priority, so each
+ * candidate's index IS its priority key (lower index = better). Template slots
+ * are processed in non-decreasing tier order, so bucket activation is
+ * incremental — a candidate becomes eligible once slotTier reaches its
+ * eligibleBestTier and stays eligible for all subsequent slots.
+ */
+function assignBanzukeSlots(
+  scored: ScoredCandidate[],
+  fullTemplate: ReturnType<typeof buildFullSlotTemplate>,
+  demotedOzeki: Set<string>
+): BanzukeEntry[] {
   const assigned: BanzukeEntry[] = [];
 
-  // --- Bucket candidates by eligibleBestTier for O(N) slot assignment ---
-  // `scored` is already sorted by priority, so each candidate's index IS its
-  // priority key (lower index = better). Buckets inherit this sort order.
-  // Template slots are processed in non-decreasing tier order, so bucket
-  // activation is incremental — a candidate becomes eligible once slotTier
-  // reaches its eligibleBestTier and stays eligible for all subsequent slots.
   const MAX_TIER = 10;
   const buckets: { indices: number[]; ptr: number }[] = Array.from(
     { length: MAX_TIER + 1 },
@@ -347,13 +427,7 @@ export function updateBanzuke(
     }
   }
 
-  const events: MovementEvent[] = banzukeMovementEvents(
-    currentBanzuke,
-    assigned,
-    updatedOzekiKadoban,
-    previousOzekiKadoban
-  );
-  return { newBanzuke: assigned, events, updatedOzekiKadoban, sanyakuCounts };
+  return assigned;
 }
 
 /**

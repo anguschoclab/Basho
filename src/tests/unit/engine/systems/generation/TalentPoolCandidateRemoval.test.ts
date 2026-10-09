@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { tickYear } from "@/engine/systems/generation/TalentPoolStateService";
+import { tickTalentPoolYear } from "@/engine/systems/generation/TalentPoolStateService";
 import { makeMockWorld } from "../../utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
@@ -93,7 +93,7 @@ function makeTalentPool(
   };
 }
 
-describe("TalentPoolStateService — candidate removal via tickYear", () => {
+describe("TalentPoolStateService — candidate removal via tickTalentPoolYear", () => {
   let world: WorldState;
 
   beforeEach(() => {
@@ -118,7 +118,7 @@ describe("TalentPoolStateService — candidate removal via tickYear", () => {
 
     world.talentPool = tp;
 
-    const impact = tickYear(world);
+    const impact = tickTalentPoolYear(world);
     const newWorld = resolveImpacts(world, [impact]);
     const newTp = newWorld.talentPool!;
 
@@ -143,7 +143,7 @@ describe("TalentPoolStateService — candidate removal via tickYear", () => {
 
     world.talentPool = tp;
 
-    const impact = tickYear(world);
+    const impact = tickTalentPoolYear(world);
     const newWorld = resolveImpacts(world, [impact]);
     const newTp = newWorld.talentPool!;
 
@@ -168,7 +168,7 @@ describe("TalentPoolStateService — candidate removal via tickYear", () => {
 
     world.talentPool = tp;
 
-    const impact = tickYear(world);
+    const impact = tickTalentPoolYear(world);
     const newWorld = resolveImpacts(world, [impact]);
     const newTp = newWorld.talentPool!;
 
@@ -191,7 +191,7 @@ describe("TalentPoolStateService — candidate removal via tickYear", () => {
 
     world.talentPool = tp;
 
-    const impact = tickYear(world);
+    const impact = tickTalentPoolYear(world);
     const newWorld = resolveImpacts(world, [impact]);
     const newTp = newWorld.talentPool!;
 

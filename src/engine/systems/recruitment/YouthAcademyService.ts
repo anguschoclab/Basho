@@ -14,6 +14,7 @@ import type {
   AcademyStaff,
   AcademyStaffRole,
   YouthProspect,
+  YouthAcademyState,
 } from "../../types/academy";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { getHeya } from "../../queries";
@@ -91,14 +92,7 @@ const PROSPECT_REGIONS = [
 ];
 
 /** Youth academy state stored on the heya. */
-export interface YouthAcademyState {
-  level: AcademyLevel;
-  prospects: YouthProspect[];
-  totalGraduated: number;
-  budget: number;
-  staff: AcademyStaff[];
-  lastIntakeYear: number;
-}
+export type { YouthAcademyState };
 
 /**
  * Get the youth academy state for a heya, or null if not built.

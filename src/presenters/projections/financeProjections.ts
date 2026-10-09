@@ -11,8 +11,8 @@ import { calculateKoenkaiIncome } from "../../engine/systems/economy/Sponsorship
 import { getPlayerHeya } from "../../engine/queries";
 import { KOENKAI_INCOME_SPLIT } from "../../constants/engine/economic";
 import { formatYen } from "../../utils/engineUtils";
-
-export type RunwayBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
+import type { RunwayBand } from "../../engine/types/narrative";
+export type { RunwayBand };
 
 export interface FinanceSummary {
   balance: number;

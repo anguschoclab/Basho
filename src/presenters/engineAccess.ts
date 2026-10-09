@@ -12,6 +12,7 @@ export {
   buildBoutScript,
   type BoutScript,
   type BoutAnimationFamily,
+  type ReplayPhase,
 } from "../engine/bout/ReplayMetadata";
 export type { PbpLine, PbpPhase } from "../engine/bout/boutNarrative";
 export type { BoutContext } from "../engine/bout/boutPhysics";
@@ -51,6 +52,7 @@ export {
   type RivalryTrigger,
 } from "../engine/rivalries";
 export { SeededRNG, rngFromSeed, type SeededRNG as SeededRNGType } from "../engine/rng";
+export { makeDeterministicSeed } from "../engine/utils/seed";
 export { deleteSave, exportSave, importSave, type SaveSlotInfo } from "../engine/saveload";
 export { getActiveRikishi as selectActiveRikishi } from "../engine/selectors";
 export { generateToshiyoriName } from "../engine/shikona/toshiyoriNames";

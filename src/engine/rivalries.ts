@@ -13,27 +13,22 @@ import { WorldState } from "./types/world";
 import type { Id } from "./types/common";
 import type { MatchSchedule, BoutResult } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";
-import type { RivalriesState, RivalryPairState, RivalryKey } from "../constants/engine/rivalry";
+import type { RivalriesState, RivalryPairState } from "../constants/engine/rivalry";
 import type { StateImpact } from "./core/StateImpact";
+import { makeRivalryKey } from "./systems/narrative/rivalry/state";
 
 // --- AUTHORITATIVE DELEGATION ---
 export * from "../constants/engine/rivalry";
 export * from "./systems/narrative/RivalryHeatService";
 export * from "./systems/narrative/RivalryService";
 export type { RivalryHeatBand } from "./systems/narrative/NarrativeBands";
+export { makeRivalryKey };
 
 /**
  * Create a fresh empty rivalries state (Legacy standalone).
  */
 export function createDefaultRivalriesState(): RivalriesState {
   return { version: "1.0.0", pairs: {} };
-}
-
-/**
- * Canonical pair key generator (Legacy standalone).
- */
-export function makeRivalryKey(aId: Id, bId: Id): RivalryKey {
-  return RivalryService.makeRivalryKey(aId, bId);
 }
 
 /**

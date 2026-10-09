@@ -11,9 +11,9 @@ import {
 } from "../../constants/engine/generation";
 
 export type VoiceStyle = "formal" | "dramatic" | "understated";
-export type CrowdStyle = "restrained" | "responsive" | "intimate";
+type CrowdStyle = "restrained" | "responsive" | "intimate";
 
-export interface NarrativeContext {
+interface BoutNarrativeContext {
   rng: SeededRNG;
   east: Rikishi;
   west: Rikishi;
@@ -43,7 +43,7 @@ export const VENUE_PROFILES: Record<
 };
 
 /**
- * Build a rich NarrativeContext for bout narrative generation.
+ * Build a rich BoutNarrativeContext for bout narrative generation.
  * Extracts venue, voice style, and stakes metadata from the basho and rikishi.
  */
 export function buildNarrativeContext(
@@ -53,7 +53,7 @@ export function buildNarrativeContext(
   bashoName: BashoName | undefined,
   day: number,
   rng: SeededRNG
-): NarrativeContext {
+): BoutNarrativeContext {
   const bashoInfo = bashoName ? BASHO_CALENDAR[bashoName] : undefined;
   const location = bashoInfo?.location ?? "Tokyo";
   const venueProfile = VENUE_PROFILES[location] ?? VENUE_PROFILES["Tokyo"];

@@ -3,8 +3,8 @@ import type {
   StaffRole,
   StaffCareerPhase,
   CompetenceBand,
-  ReputationBand,
-  LoyaltyBand,
+  StaffReputationBand,
+  StaffLoyaltyBand,
 } from "./types/staff";
 import { type SeededRNG, rngFromSeed } from "./rng";
 import type { Id } from "./types/common";
@@ -51,10 +51,10 @@ import {
   STAFF_HIRE_COST,
   STAFF_MORALE_HIGH_MULTIPLIER,
   STAFF_MORALE_LOW_MULTIPLIER,
-  STAFF_NAME_RANDOM_RANGE,
   STAFF_MIN_AGE_FOR_YEARS_CALC,
   STAFF_BASE_BONUS_VALUE,
 } from "../constants/engine/economy";
+import { STAFF_NAME_RANDOM_RANGE } from "../constants/engine/generation";
 
 /**
  * Helper to roll a random band from a list of bands.
@@ -88,14 +88,14 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
   else if (age > STAFF_DECLINING_AGE_THRESHOLD) phase = "declining";
   else if (age > STAFF_SENIOR_AGE_THRESHOLD) phase = "senior";
 
-  const REPUTATION_BANDS: ReputationBand[] = [
+  const REPUTATION_BANDS: StaffReputationBand[] = [
     "unknown",
     "questionable",
     "respected",
     "renowned",
     "legendary",
   ];
-  const LOYALTY_BANDS: LoyaltyBand[] = ["mercenary", "wavering", "stable", "devoted", "unshakable"];
+  const LOYALTY_BANDS: StaffLoyaltyBand[] = ["mercenary", "wavering", "stable", "devoted", "unshakable"];
   const COMPETENCE_BANDS: CompetenceBand[] = [
     "feeble",
     "limited",
@@ -113,8 +113,8 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
     role,
     age,
     careerPhase: phase,
-    reputationBand: rollBand(rng, REPUTATION_BANDS) as ReputationBand,
-    loyaltyBand: rollBand(rng, LOYALTY_BANDS) as LoyaltyBand,
+    reputationBand: rollBand(rng, REPUTATION_BANDS) as StaffReputationBand,
+    loyaltyBand: rollBand(rng, LOYALTY_BANDS) as StaffLoyaltyBand,
     competenceBands: {
       primary: rollBand(rng, COMPETENCE_BANDS) as CompetenceBand,
       secondary:

@@ -24,7 +24,7 @@ export function isUnexpectedFailureReason(reason: string | undefined): boolean {
   return !!reason && !KNOWN_FAILURE_REASONS.has(reason);
 }
 
-export interface ValidationResult {
+interface ValidationResult {
   ok: boolean;
   heya?: Heya;
   def?: FacilityDefinition;

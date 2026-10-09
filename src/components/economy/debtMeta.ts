@@ -7,7 +7,7 @@
 
 import type { SortOption } from "@/components/ui/SortMenu";
 
-export interface Loan {
+export interface LoanRow {
   id: string;
   type: string;
   providerName: string;
@@ -29,7 +29,7 @@ export const LOAN_SORT_OPTIONS: SortOption[] = [
   { key: "providerName", label: "Provider" },
 ];
 
-export const LOAN_ACCESSOR: Record<string, (l: Loan) => string | number | undefined> = {
+export const LOAN_ACCESSOR: Record<string, (l: LoanRow) => string | number | undefined> = {
   remainingBalance: (l) => l.remainingBalance,
   principal: (l) => l.principal,
   interestRate: (l) => l.interestRate,

@@ -39,84 +39,6 @@ interface AuditEntry {
  */
 const INTENTIONAL_EXPORTS: Record<string, string> = {
   // ── Type exports: public API contracts ──
-    "src/engine/systems/NPCPersonaService.ts:OyakataPersona": "Public type for oyakata persona data",
-  "src/engine/systems/basho/ExhibitionBashoService.ts:ExhibitionBashoName":
-    "Public type for exhibition basho naming",
-  "src/engine/systems/basho/ExhibitionBashoService.ts:ExhibitionBashoInfo":
-    "Public type for exhibition basho info",
-  "src/engine/systems/economy/FinanceCalculator.ts:HeyaFinanceResult":
-    "Public type for finance calculation results",
-  "src/engine/systems/economy/KachiNokoriService.ts:PostBashoPayload":
-    "Public type for post-basho data payload",
-  "src/engine/systems/economy/KenshoService.ts:BoutImportanceBucket":
-    "Public type for kensho bout importance",
-  "src/engine/systems/economy/infrastructureValidation.ts:ValidationResult":
-    "Public type for infrastructure validation",
-  "src/engine/systems/generation/CandidateStats.ts:GeneratedStats":
-    "Public type for generated candidate statistics",
-  "src/engine/systems/generation/CandidateStats.ts:PotentialPackage":
-    "Public type for candidate potential packaging",
-  "src/engine/systems/generation/CohortTracking.ts:CohortSummary":
-    "Public type for cohort tracking summary",
-  "src/engine/systems/generation/PreSumoBackground.ts:PreSumoBackgroundId":
-    "Public type for pre-sumo background ID",
-  "src/engine/systems/governance/GomenfudaService.ts:GomenfudaRecord":
-    "Public type for gomenfuda record",
-  "src/engine/systems/governance/KihakuService.ts:KihakuInput":
-    "Public type for kihaku service input",
-  "src/engine/systems/governance/PoliticalFavorsService.ts:FavorOption":
-    "Public type for political favor option",
-  "src/engine/systems/governance/YokozunaService.ts:YDCCandidate":
-    "Public type for YDC promotion candidate",
-  "src/engine/systems/narrative/NarrativeBands.ts:FinancialBand":
-    "Public type for financial narrative band",
-  "src/engine/systems/narrative/PostBashoPressService.ts:PressConferenceContext":
-    "Public type for press conference context",
-  "src/engine/systems/recruitment/ScoutingService.ts:PublicRikishiInfo":
-    "Public type for public rikishi info",
-  "src/engine/systems/recruitment/ScoutingService.ts:ScoutedAttributeTruthSnapshot":
-    "Public type for scouted attribute truth",
-  "src/engine/systems/recruitment/ScoutingService.ts:ScoutedPotentialSnapshot":
-    "Public type for scouted potential snapshot",
-  "src/engine/systems/training/MentorshipService.ts:MentorMenteeBoutEvent":
-    "Public type for mentor-mentee bout event",
-  "src/engine/systems/training/TrainingMath.ts:TrainingModifiers":
-    "Public type for training modifier config",
-  "src/engine/systems/training/TsukebitoService.ts:TsukebitoAssignment":
-    "Public type for tsukebito assignment",
-  "src/engine/agents/CrisisAgent.ts:CrisisAgentResult": "Public type for crisis agent result",
-  "src/engine/agents/MediaAgent.ts:MediaAgentResult": "Public type for media agent result",
-  "src/engine/agents/NarrativeAgent.ts:NarrativeAgentResult":
-    "Public type for narrative agent result",
-  "src/engine/ai/types.ts:AIConstraintType": "Public type for AI constraint types",
-  "src/engine/ai/types.ts:AIRecommendationCategory": "Public type for AI recommendation category",
-  "src/engine/ai/types.ts:AIRecommendationPriority": "Public type for AI recommendation priority",
-  "src/engine/banzuke/banzukeMovementNarrative.ts:BanzukeMovementNarrativeLine":
-    "Public type for banzuke movement narrative",
-  "src/engine/bard/BardEngine.ts:ResolutionPath": "Public type for bard resolution path",
-    "src/engine/bard/BardEngine.ts:RegistryEntry": "Public type for bard registry entry",
-  "src/engine/bard/BardEngine.ts:BardArchive": "Public type for bard archive",
-  "src/engine/bard/dramaGenerator.ts:DramaEvent": "Public type for drama event",
-  "src/engine/bard/narrativeContext.ts:CrowdStyle": "Public type for crowd style",
-  "src/engine/bard/narrativeEventMap.ts:NarrativeEventMapEntry":
-    "Public type for narrative event map entry",
-  "src/engine/bout/CareerHighlights.ts:CareerHighlightType":
-    "Public type for career highlight type",
-    "src/engine/core/EntityCollection.ts:EntityQueryOptions": "Public type for entity query options",
-  "src/engine/core/RNGRegistry.ts:SystemRNGKey": "Public type for system RNG key",
-  "src/engine/lifecycle/retirementNarrative.ts:RetirementNarrativeLine":
-    "Public type for retirement narrative line",
-  "src/engine/matchmaking/MatchmakingPhases.ts:CandidateBuildOptions":
-    "Public type for matchmaking candidate build options",
-  "src/engine/npcAI/MemoryStore.ts:type OyakataMemory": "Public type for oyakata memory",
-  "src/engine/shikona/types.ts:PatternWeights": "Public type for shikona pattern weights",
-  "src/engine/shikona/types.ts:HouseStyleId": "Public type for shikona house style ID",
-  "src/engine/strategy/NPCStrategyService.ts:OyakataScoutingObservation":
-    "Public type for oyakata scouting observation",
-  "src/engine/strategy/NPCStrategyService.ts:OyakataPersonnelObservation":
-    "Public type for oyakata personnel observation",
-  "src/engine/utils/Logger.ts:LogLevel": "Public type for log level enum",
-  "src/engine/worker/types.ts:WorkerMessage": "Public type for worker message protocol",
 
   // ── Constants: retained for future use or external consumers ──
   "src/engine/systems/health/BodyDefinitions.ts:BODY_AREA_LABELS":
@@ -181,207 +103,144 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/utils/math.ts:localClampInt": "Math utility for clamping integers",
   "src/engine/utils/random.ts:seededWeightedPick": "Random utility for seeded weighted picking",
   "src/engine/utils/string.ts:formatShikona": "String formatting utility for shikona",
-  "src/engine/actions/OyakataIntervention.ts:InterventionResult":
-    "Public type for intervention result",
 
   // ── Newly classified after audit-orphans.ts fix ──
   "src/engine/systems/basho/ExhibitionBashoService.ts:isExhibitionBasho":
-    "Utility function retained for future wiring",
+    "Type-guard predicate paired with isHonbasho on the live ExhibitionBashoService (phase05 jungyo pipeline); pinned by exhibitionBasho.test",
   "src/engine/systems/basho/ExhibitionBashoService.ts:isHonbasho":
-    "Utility function retained for future wiring",
-  "src/engine/systems/basho/ExhibitionBashoService.ts:getNextEvent":
-    "Utility function retained for future wiring",
+    "Name predicate consumed by getExhibitionBashoSchedule and getNextEvent; pinned by exhibitionBasho.test",
   "src/engine/systems/basho/NakabiService.ts:NAKABI_DAY":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by isNakabiDay and generateNakabiSummary; exported for unit testing",
   "src/engine/systems/welfare/WelfareCalculations.ts:getSeverityWeight":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by computeInjuryPressure; exported for unit testing",
   "src/engine/systems/economy/KachiNokoriService.ts:KACHI_NOKORI_THRESHOLD":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/economy/KachiNokoriService.ts:kachiNokoriToMochikyukinPoints":
-    "Utility function retained for future wiring",
-  "src/engine/systems/bookmark/BookmarkService.ts:getBookmarksByType":
-    "Utility function retained for future wiring",
-  "src/engine/systems/bookmark/BookmarkService.ts:getAllBookmarks":
-    "Utility function retained for future wiring",
+    "Internal constant consumed by calculateKachiNokori; value pinned by kachiNokori.test",
   "src/engine/systems/training/TrainingMath.ts:getStatCeiling":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by getEffectiveCeiling; exported for unit testing",
   "src/engine/systems/training/TrainingMath.ts:diminishingReturnsMult":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by calculateGrowthWithModifiers; exported for unit testing",
   "src/engine/systems/training/TrainingMath.ts:normalizeTrainingProfile":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by calculateFatigueDelta and calculateGrowthWithModifiers; exported for unit testing",
   "src/engine/systems/training/TrainingMath.ts:calculateGrowthWithModifiers":
-    "Utility function retained for future wiring",
-  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_SENIOR_RANK_THRESHOLD":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/training/TsukebitoService.ts:MAX_TSUKEBITO_PER_SENIOR":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_TRAINING_BOOST":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_MORALE_BOOST":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_TECHNIQUE_EXPOSURE":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/training/TsukebitoService.ts:OTOTODESHI_FATIGUE_PENALTY":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/training/TsukebitoService.ts:OTOTODESHI_MENTAL_GAIN":
-    "Config constant retained for engine configuration",
+    "Internal helper invoked by calculateGains and calculateGrowthVector; exported for unit testing",
   "src/engine/systems/health/InjuryService.ts:calculateWeeklyInjuryChance":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by rollWeeklyInjury; exported for unit testing",
   "src/engine/systems/health/InjuryService.ts:clearInjury":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by onBoutResolvedInjury; exported for unit testing",
   "src/engine/systems/health/InjuryService.ts:toInjuryEvent":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by clearInjury; exported for unit testing",
   "src/engine/systems/recruitment/perceivedTalent.ts:scoutingNoiseSpread":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by perceivedTalentSeed; exported for unit testing",
   "src/engine/systems/recruitment/FogOfWarService.ts:getConfidenceFromLevel":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by getConfidenceLevel; exported for unit testing",
   "src/engine/systems/recruitment/FogOfWarService.ts:getEstimatedValue":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by resolveScoutedAttribute; exported for unit testing",
   "src/engine/systems/governance/GomenfudaService.ts:GOMENFUDA_REPUTATION_PENALTY":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by recordGomenfuda; value pinned by GomenfudaService tests",
   "src/engine/systems/governance/GomenfudaService.ts:CONSECUTIVE_WITHDRAWAL_MULTIPLIER":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/governance/ScandalService.ts:tickWeekGovernance":
-    "Utility function retained for future wiring",
-  "src/engine/systems/governance/MyosekiTradingService.ts:CANONICAL_MYOSEKI_NAMES":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/governance/MyosekiTradingService.ts:MYOSEKI_BASE_PRICES":
-    "Config constant retained for engine configuration",
-  "src/engine/systems/governance/MyosekiTradingService.ts:initializeMyosekiMarket":
-    "Utility function retained for future wiring",
-  "src/engine/systems/governance/MyosekiTradingService.ts:listMyosekiForSale":
-    "Utility function retained for future wiring",
-  "src/engine/systems/governance/MyosekiTradingService.ts:returnLeasedMyoseki":
-    "Utility function retained for future wiring",
-  "src/engine/systems/generation/MaezumoService.ts:MAEZUMO_DURATION_WEEKS":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by recordGomenfuda; value pinned by GomenfudaService tests",
+  "src/engine/systems/training/TsukebitoService.ts:isEligibleTsukebito":
+    "Internal helper invoked by assignTsukebito, isJuniorTsukebitoEligible, and setTsukebito; exported for unit testing",
   "src/engine/systems/generation/PreSumoBackground.ts:PRE_SUMO_BACKGROUNDS":
-    "Config constant retained for engine configuration",
+    "Internal table consumed by applyBackgroundStatModifiers and assignPreSumoBackground; exported for unit testing",
   "src/engine/systems/generation/applyOyakataConfig.ts:PLAYER_BACKSTORIES":
-    "Config constant retained for engine configuration",
+    "Internal table consumed by applyOyakataCreationConfig; exported for unit testing",
   "src/engine/systems/generation/competitiveBalance.ts:recruitmentBalanceMultiplier":
-    "Utility function retained for future wiring",
+    "Consumed by TalentPoolNPCRecruitment (NPC recruitment pipeline); pinned by competitiveBalance tests",
   "src/engine/systems/generation/TalentPoolMaterialization.ts:materializeCandidateToRikishi":
-    "Utility function retained for future wiring",
+    "Consumed by TalentPoolNPCRecruitment (NPC talent materialization); pinned by materialization tests",
   "src/engine/systems/generation/PersonaAssignment.ts:assignPressPersona":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by applyPersonaAssignment; exported for unit testing",
   "src/engine/systems/generation/PersonaAssignment.ts:assignPersonalityTraits":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by applyPersonaAssignment; exported for unit testing",
   "src/engine/systems/generation/PersonaAssignment.ts:rollBirthday":
-    "Utility function retained for future wiring",
-  "src/engine/systems/generation/FightingNameEarly.ts:getEarlyShikonaMotivationBoost":
-    "Utility function retained for future wiring",
-  "src/engine/systems/generation/QuirkAssignment.ts:hasPoorEyesight":
-    "Utility function retained for future wiring",
-  "src/engine/systems/generation/QuirkAssignment.ts:applyGlasses":
-    "Utility function retained for future wiring",
-  "src/engine/npcAI/TacticalCoordinator.ts:CoordinationInput":
-    "Public type for CoordinationInput contract",
-  "src/engine/npcAI/OpponentModel.ts:suggestCounterTactic":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by applyPersonaAssignment; exported for unit testing",
   "src/engine/npcAI/MemoryStore.ts:emptyOyakataMemory":
-    "Utility function retained for future wiring",
-  "src/engine/npcAI/opponentLearning.ts:BoutLearningCtx":
-    "Public type for the bout-learning hook context",
+    "Internal helper invoked by getMemory; exported for unit testing",
   "src/engine/npcAI/opponentLearning.ts:MAX_OPPONENT_MODELS":
     "Config constant for the opponent-model eviction cap",
-  "src/engine/npcAI/planOutcomes.ts:PlanOutcome":
-    "Public type for the plan-outcome classification result",
   "src/engine/npcAI/ArchetypeAdaptation.ts:MetaAdaptationState":
     "Exported for unit testing; consumed via evaluateAdaptation in production",
   "src/engine/npcAI/ArchetypeAdaptation.ts:updateMetaAdaptation":
     "Internal helper invoked by evaluateAdaptation; exported for unit testing",
   "src/engine/npcAI/execution.ts:applyCrisisRescue":
     "Internal rescue handler invoked in-module; exported for unit testing",
-
-  "src/engine/advisor/AdvisorService.ts:getPlayerDigest":
-    "Utility function retained for future wiring",
-  "src/engine/banzuke/banzukeHelpers.ts:getRankTitleJa":
-    "Utility function retained for future wiring",
   "src/engine/bard/dramaGenerator.ts:checkBashoDayDrama":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by checkTriggeredDrama; exported for unit testing",
   "src/engine/bard/dramaGenerator.ts:checkTriggeredDrama":
     "Internal drama trigger invoked by processDramaTick; exported for unit testing",
   "src/engine/bard/dramaGenerator.ts:triggerCrisis":
     "Internal crisis factory invoked by checkTriggeredDrama; exported for unit testing",
-  "src/engine/bard/BardEngine.ts:interpolate": "Utility function retained for future wiring",
-    "src/engine/bout/yaocho.ts:YaochoIndicators": "Public type for YaochoIndicators contract",
+  "src/engine/bard/BardEngine.ts:interpolate": "Internal method invoked by BardEngine template rendering; exported for unit testing",
   "src/engine/bout/yaocho.ts:evaluateYaochoIndicators":
-    "Utility function retained for future wiring",
-  "src/engine/bout/yaocho.ts:calculateYaochoChance": "Utility function retained for future wiring",
+    "Internal helper invoked by checkYaocho; exported for unit testing",
+  "src/engine/bout/yaocho.ts:calculateYaochoChance": "Internal helper invoked by checkYaocho; exported for unit testing",
   "src/engine/bout/shinitai.ts:SHINITAI_INSTABILITY_DIFF_THRESHOLD":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by tryShinitai; value pinned by shinitai tests",
   "src/engine/bout/kinjite.ts:calculateHansokuChance":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by tryHansoku; exported for unit testing",
   "src/engine/bout/boutResolver.ts:applyRivalryToRikishi":
-    "Utility function retained for future wiring",
-  "src/engine/bout/boutGrip.ts:calculateTorque": "Utility function retained for future wiring",
-  "src/engine/bout/boutGrip.ts:computeNetTorque": "Utility function retained for future wiring",
+    "Internal helper invoked by resolveBout; exported for unit testing",
+  "src/engine/bout/boutGrip.ts:calculateTorque": "Internal helper invoked by computeNetTorque; exported for unit testing",
+  "src/engine/bout/boutGrip.ts:computeNetTorque": "Internal helper invoked by evolveGripGeometry and initBeltBattle; exported for unit testing",
   "src/engine/bout/ReplayMetadata.ts:getBoutAnimationFamily":
-    "Utility function retained for future wiring",
-  "src/engine/bout/CornerAdvice.ts:CornerAdviceContext":
-    "Public type for CornerAdviceContext contract",
-  "src/engine/bout/boutSpatial.ts:isOutOfRing": "Utility function retained for future wiring",
-  "src/engine/bout/kachiNokori.ts:hasKachiKoshi": "Utility function retained for future wiring",
-  "src/engine/bout/kachiNokori.ts:isMakeKoshiConfirmed":
-    "Utility function retained for future wiring",
-  "src/engine/bout/kachiNokori.ts:calculateKachiNokoriForStandings":
-    "Utility function retained for future wiring",
-  "src/engine/bout/kachiNokori.ts:getYushoRaceLeaders":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by buildBoutScript; exported for unit testing",
   "src/engine/core/ImpactBuilder.ts:updateRikishiImpact":
-    "Utility function retained for future wiring",
+    "Impact factory sibling to the live logEventImpact/retireRikishiImpact worker-command factories; pinned by ImpactBuilder.test",
   "src/engine/core/ImpactBuilder.ts:updateWorldFieldImpact":
-    "Utility function retained for future wiring",
+    "Impact factory sibling to the live logEventImpact/retireRikishiImpact worker-command factories; pinned by ImpactBuilder.test",
   "src/engine/governance/kanrekiCeremony.ts:KANREKI_AGE":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by isEligibleForKanreki and performKanrekiCeremony; value pinned by kanreki tests",
   "src/engine/governance/kanrekiCeremony.ts:KANREKI_POPULARITY_BOOST":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by performKanrekiCeremony; value pinned by kanreki tests",
   "src/engine/governance/yokozunaAttendants.ts:ATTENDANT_POPULARITY_BOOST":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by assignYokozunaAttendants; value pinned by yokozunaAttendants tests",
   "src/engine/governance/yokozunaAttendants.ts:isEligibleAttendant":
     "Internal validation helper used by assignYokozunaAttendants (same file); audit's same-file exclusion is a false positive",
   "src/engine/matchmaking/DramaMatchmaker.ts:isMakuuchiDebut":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by checkDebutShowcase; exported for unit testing",
   "src/engine/matchmaking/DramaMatchmaker.ts:scoreDrama":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by applyDramaBudget and isMakuuchiDebut; exported for unit testing",
   "src/engine/matchmaking/MatchmakingPhases.ts:buildCandidatePairs":
-    "Utility function retained for future wiring",
-  "src/engine/prestige/prestigeSystem.ts:updateStatureBand":
-    "Utility function retained for future wiring",
-  "src/engine/shikona/helpers.ts:mergePatternWeights":
-    "Utility function retained for future wiring",
-  "src/engine/shikona/helpers.ts:choosePattern": "Utility function retained for future wiring",
-  "src/engine/shikona/helpers.ts:nationalityPool": "Utility function retained for future wiring",
-  "src/engine/shikona/constants.ts:BASE_PATTERN_WEIGHTS":
-    "Config constant retained for engine configuration",
-  "src/engine/shikona/legacy.ts:extractLegacyPrefix": "Utility function retained for future wiring",
-  "src/engine/shikona/legacy.ts:extractLegacySuffix": "Utility function retained for future wiring",
+    "Internal helper invoked by generatePairs; exported for unit testing",
+  "src/engine/shikona/legacy.ts:extractLegacyPrefix": "Internal helper invoked by generateLegacyShikona; exported for unit testing",
+  "src/engine/shikona/legacy.ts:extractLegacySuffix": "Internal helper invoked by generateLegacyShikona; exported for unit testing",
   "src/engine/training/WeightJourney.ts:WEIGHT_JOURNEY_WEEKLY_GAIN":
-    "Config constant retained for engine configuration",
+    "Internal constant consumed by applyWeightJourneyTick; value pinned by WeightJourney tests",
   "src/engine/training/WeightJourney.ts:shouldEnterWeightJourney":
-    "Utility function retained for future wiring",
-      "src/engine/utils/Logger.ts:logger": "Utility function retained for future wiring",
-  "src/engine/utils/entityAccess.ts:getHeyaOrThrow": "Utility function retained for future wiring",
-  "src/engine/utils/entityAccess.ts:getRikishiOrThrow":
-    "Utility function retained for future wiring",
-  "src/engine/utils/entityAccess.ts:getHeyaRikishi": "Utility function retained for future wiring",
-  "src/engine/utils/entityAccess.ts:getAllActiveRikishi":
-    "Utility function retained for future wiring",
+    "Internal helper invoked by applyWeightJourneyTick; exported for unit testing",
+      "src/engine/utils/Logger.ts:logger": "Shared singleton backing the live debug/info/warn/error wrappers (consumed by bootstrap, useFlowActions, BanzukePublisher); pinned by logger tests",
+
   "src/engine/systems/recruitment/YouthAcademyService.ts:getQualityBonus":
     "Public helper exercised directly by youthAcademy.test.ts",
 
   // ── Classified in Oct 2026 baseline refresh ──
-  "src/engine/bout/boutAchievements.ts:DetectKinboshiOptions":
-    "Public type for kinboshi detection options",
-  "src/engine/bout/hiwaza.ts:HiwaRng": "Public type for hiwaza RNG contract",
-  "src/engine/bout/hiwaza.ts:HiwazaId": "Public type for hiwaza identifiers",
   "src/engine/bout/hiwaza.ts:classifyHiwaza":
     "Internal classifier exercised directly by hiwaza.test.ts",
-  "src/engine/bout/terminalKimarite.ts:TerminalContext":
-    "Public type for terminal kimarite context",
   "src/engine/bout/terminalKimarite.ts:pickTerminalKimarite":
     "Internal picker exercised directly by terminalKimarite.test.ts",
+  "src/engine/systems/narrative/PostBashoPressService.ts:PressConferenceContext":
+    "Parameter type of generatePressConference; pinned by PostBashoPress tests",
+  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_SENIOR_RANK_THRESHOLD":
+    "Policy constant consumed by isEligibleForTsukebito; value pinned by TsukebitoService tests",
+  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_TRAINING_BOOST":
+    "Policy constant consumed by applyWeeklyTsukebitoBenefits; value pinned by TsukebitoService tests",
+  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_MORALE_BOOST":
+    "Policy constant consumed by applyWeeklyTsukebitoBenefits; value pinned by TsukebitoService tests",
+  "src/engine/systems/training/TsukebitoService.ts:TSUKEBITO_TECHNIQUE_EXPOSURE":
+    "Policy constant consumed by applyWeeklyTsukebitoBenefits; value pinned by TsukebitoService tests",
+  "src/engine/systems/training/TsukebitoService.ts:OTOTODESHI_FATIGUE_PENALTY":
+    "Policy constant consumed by applyWeeklyOtotodeshiEffects; value pinned by TsukebitoService tests",
+  "src/engine/systems/training/TsukebitoService.ts:OTOTODESHI_MENTAL_GAIN":
+    "Policy constant consumed by applyWeeklyOtotodeshiEffects; value pinned by TsukebitoService tests",
+  "src/engine/npcAI/TacticalCoordinator.ts:CoordinationInput":
+    "Parameter type of applyPlanConstraints; pinned by TacticalCoordinator tests",
+  "src/engine/bout/CornerAdvice.ts:CornerAdviceContext":
+    "Parameter type of buildRecommendation/getAdvice; pinned by CornerAdvice tests",
+  "src/engine/bout/yaocho.ts:YaochoIndicators":
+    "Return type of evaluateYaochoIndicators consumed by checkYaocho; pinned by yaocho tests",
+  "src/engine/prestige/prestigeSystem.ts:computeStatureBand":
+    "Internal helper invoked by runPrestigeDecay; exported for unit testing",
 };
 
 /**
@@ -397,6 +256,14 @@ const GENUINE_ORPHANS: Record<string, string> = {
   //  collectionOperations.ts, jsonParser.ts all removed; each was dead API
   //  superseded by ExhibitionBashoService / queries+EntityCollection /
   //  inline Map helpers / nothing (LLM-era parser).)
+  "src/engine/systems/basho/ExhibitionBashoService.ts:getNextEvent":
+    "ORPH-0010: next-event lookahead has no consumer — phase05 runs the current-month jungyo via getExhibitionBashoSchedule; wire when a calendar/upcoming-events surface exists",
+  "src/engine/systems/generation/QuirkAssignment.ts:applyGlasses":
+    "ORPH-0033: glasses quirk is write-only — assignQuirk can set poorEyesight but no avatar layer or mechanic reads quirks.glasses; needs an avatar glasses renderer or quirk effect to wire",
+  "src/engine/systems/generation/QuirkAssignment.ts:hasPoorEyesight":
+    "ORPH-0032: sole caller is the orphaned applyGlasses (ORPH-0033); orphaned together pending a glasses consumer",
+  "src/engine/systems/governance/MyosekiTradingService.ts:executeMyosekiLease":
+    "ORPH-0296: private-treaty lease between stock holders — no worker command or NPC initiator negotiates peer leases; market leasing via myosekiMarket.leaseMyoseki is the live path",
 };
 
 function loadAuditEntries(): AuditEntry[] {
@@ -432,6 +299,28 @@ describe("Phase 5c: Orphan classification", () => {
     for (const [key, reason] of Object.entries(INTENTIONAL_EXPORTS)) {
       expect(reason.length, `Export ${key} must have a non-empty reason`).toBeGreaterThan(10);
     }
+  });
+
+  // Phase 4: boilerplate reasons are banned — every retained export must carry
+  // a real per-symbol verdict (wire target, dev/diagnostics surface, or a
+  // concrete contract consumer), not a template string.
+  const BOILERPLATE_REASON = [
+    /retained for future wiring/i,
+    /retained for engine configuration/i,
+    /^utility function retained/i,
+    /^config constant retained/i,
+    /^public type for /i,
+  ];
+
+  it("intentional exports carry a real verdict — no boilerplate reasons", () => {
+    const boilerplate = Object.entries(INTENTIONAL_EXPORTS)
+      .filter(([, reason]) => BOILERPLATE_REASON.some((re) => re.test(reason)))
+      .map(([key, reason]) => `${key} → "${reason}"`);
+    expect(
+      boilerplate,
+      `Boilerplate reasons (${boilerplate.length}) — replace with a concrete verdict:\n` +
+        boilerplate.join("\n")
+    ).toEqual([]);
   });
 
   it("classification maps contain no stale keys (every key exists in the baseline)", () => {

@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
-  makeDeterministicSeed,
   safeShortSeed,
   formatYen,
   formatYenToMan,
@@ -9,43 +8,6 @@ import {
 } from "@/utils/engineUtils";
 
 describe("engineUtils", () => {
-  describe("makeDeterministicSeed", () => {
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
-    it("uses default prefix 'world'", () => {
-      vi.spyOn(Date, "now").mockReturnValue(1700000000000);
-      const expected = `world-${(1700000000000).toString(36)}`;
-      expect(makeDeterministicSeed()).toBe(expected);
-    });
-
-    it("uses custom prefix", () => {
-      vi.spyOn(Date, "now").mockReturnValue(1700000000000);
-      const expected = `test-${(1700000000000).toString(36)}`;
-      expect(makeDeterministicSeed("test")).toBe(expected);
-    });
-
-    it("uses empty prefix", () => {
-      vi.spyOn(Date, "now").mockReturnValue(1700000000000);
-      const expected = `-${(1700000000000).toString(36)}`;
-      expect(makeDeterministicSeed("")).toBe(expected);
-    });
-
-    it("preserves special chars in prefix", () => {
-      vi.spyOn(Date, "now").mockReturnValue(1700000000000);
-      const expected = `my.app_v2-${(1700000000000).toString(36)}`;
-      expect(makeDeterministicSeed("my.app_v2")).toBe(expected);
-    });
-
-    it("encodes timestamp as base36", () => {
-      vi.spyOn(Date, "now").mockReturnValue(1700000000000);
-      const seed = makeDeterministicSeed();
-      const tsPart = seed.split("-").slice(1).join("-");
-      expect(tsPart).toBe(Number(1700000000000).toString(36));
-    });
-  });
-
   describe("safeShortSeed", () => {
     it("returns 'unknown' for undefined", () => {
       expect(safeShortSeed(undefined)).toBe("unknown");

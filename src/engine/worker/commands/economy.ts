@@ -5,6 +5,8 @@
  */
 
 import * as myoseki from "../../myosekiMarket";
+import * as myosekiTrading from "../../systems/governance/MyosekiTradingService";
+import { MYOSEKI_BASE_ASKING_PRICE } from "../../../constants/engine/economic";
 import * as sponsorService from "../../systems/economy/SponsorContractService";
 import * as staffService from "../../staff";
 import * as loans from "../../loans";
@@ -31,6 +33,34 @@ export function economyCommands(rt: WorkerRuntime): CommandHandlerMap {
     LEASE_MYOSEKI: (cmd) => {
       if (rt.world) {
         const impact = myoseki.leaseMyoseki(rt.world, cmd.buyerId, cmd.myosekiId);
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+    LIST_MYOSEKI_FOR_SALE: (cmd) => {
+      if (rt.world?.myosekiMarket) {
+        const stock = rt.world.myosekiMarket.stocks[cmd.myosekiId];
+        if (!stock || stock.holderId !== cmd.holderId || stock.status !== "held") return;
+        const askingPrice = cmd.askingPrice ?? stock.askingPrice ?? MYOSEKI_BASE_ASKING_PRICE;
+        const impact = myosekiTrading.listMyosekiForSale(
+          rt.world,
+          rt.world.myosekiMarket,
+          cmd.myosekiId,
+          askingPrice
+        );
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+    RETURN_MYOSEKI_LEASE: (cmd) => {
+      if (rt.world?.myosekiMarket) {
+        const stock = rt.world.myosekiMarket.stocks[cmd.myosekiId];
+        if (!stock || stock.holderId !== cmd.holderId || stock.status !== "leased") return;
+        const impact = myosekiTrading.returnLeasedMyoseki(
+          rt.world,
+          rt.world.myosekiMarket,
+          cmd.myosekiId
+        );
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

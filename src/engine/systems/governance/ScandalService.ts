@@ -4,18 +4,13 @@
 
 import { WorldState } from "../../types/world";
 import { generateGovernanceHeadline } from "../media/MediaService";
-import type { GovernanceStatus, GovernanceRuling } from "../../types/economy";
+import type { GovernanceRuling } from "../../types/economy";
 import { rngForWorld, rngFromSeed } from "../../rng";
 import { BardEngine } from "../../bard/BardEngine";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { bumpTenure } from "../legacy/tenure";
 import type { StateImpact } from "../../core/StateImpact";
 import { getHeya } from "../../queries";
-import {
-  SCANDAL_SCORE_HIGH_THRESHOLD,
-  SCANDAL_SCORE_MEDIUM_THRESHOLD,
-  SCANDAL_SCORE_LOW_THRESHOLD,
-} from "../../../constants/engine/governanceExtended";
 import {
   SCANDAL_SEVERITY_MULT_LENIENT,
   SCANDAL_SEVERITY_MULT_STANDARD,
@@ -90,91 +85,6 @@ export function reportScandal(
   return builder.build();
 }
 
-/**
- * Weekly governance tick: decay scandal scores, check compliance alerts.
- * Returns StateImpact describing governance updates instead of mutating state directly.
- */
-export function tickWeekGovernance(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("tickWeekGovernance");
-
-  for (const heya of world.heyas.values()) {
-    // Natural scandal score decay — 1 point per week
-    const newScandalScore =
-      heya.scandalScore && heya.scandalScore > 0
-        ? Math.max(0, heya.scandalScore - 1)
-        : (heya.scandalScore ?? 0);
-
-    // Sync governanceStatus from scandalScore thresholds
-    const score = newScandalScore;
-    const newStatus: GovernanceStatus =
-      score >= SCANDAL_SCORE_HIGH_THRESHOLD
-        ? "sanctioned"
-        : score >= SCANDAL_SCORE_MEDIUM_THRESHOLD
-          ? "probation"
-          : score >= SCANDAL_SCORE_LOW_THRESHOLD
-            ? "warning"
-            : "good_standing";
-
-    const updates: Partial<{
-      scandalScore: number;
-      governanceStatus: GovernanceStatus;
-    }> = {};
-    if (heya.scandalScore !== newScandalScore) {
-      updates.scandalScore = newScandalScore;
-    }
-    if (heya.governanceStatus !== newStatus) {
-      updates.governanceStatus = newStatus;
-    }
-
-    if (Object.keys(updates).length > 0) {
-      builder.updateHeya(heya.id, updates);
-    }
-
-    // Alert if crossing critical threshold (player only)
-    if (newScandalScore >= 30 && heya.id === world.playerHeyaId) {
-      builder.logEvent(
-        "GOVERNANCE_RULING",
-        "discipline",
-        {
-          score: newScandalScore,
-          incident: "governance_warning",
-          reason: "Scandal threshold exceeded",
-        },
-        { heyaId: heya.id }
-      );
-    }
-
-    // Log status change event
-    if (heya.governanceStatus !== newStatus) {
-      const prevStatus = heya.governanceStatus;
-      builder.logEvent(
-        "GOVERNANCE_RULING",
-        "discipline",
-        {
-          incident: "status_changed",
-          status: newStatus,
-          reason: prevStatus,
-          score: Math.floor(score),
-        },
-        { heyaId: heya.id }
-      );
-
-      if (newStatus === "sanctioned" || newStatus === "probation") {
-        const headlineImpact = generateGovernanceHeadline({
-          world,
-          heyaId: heya.id,
-          templatePath: "institutional.governance.status_escalation",
-          severity: "national",
-        });
-
-        // Merge headline impact safely via standard API
-        builder.merge(headlineImpact);
-      }
-    }
-  }
-
-  return builder.build();
-}
 
 /**
  * Bi-annual JSA Board Elections.

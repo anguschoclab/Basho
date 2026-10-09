@@ -9,13 +9,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
 import { RikishiCard } from "@/components/game/RikishiCard";
 import { projectRikishi } from "@/presenters/rikishi";
-import { getRikishi, getHeya } from "@/presenters/worldAccess";
-
-interface BookmarkEntry {
-  entityType: string;
-  entityId: string;
-  note?: string;
-}
+import {
+  getRikishi,
+  getHeya,
+  getAllBookmarks,
+  getBookmarksByType,
+} from "@/presenters/worldAccess";
+import type { BookmarkEntry } from "@/presenters/worldAccess";
 
 function BookmarkItem({
   bookmark,
@@ -87,17 +87,16 @@ export default function BookmarksPage() {
   const { state, unbookmarkEntity, updateBookmarkNote } = useGame();
   const world = state.world;
 
-  const bookmarks = useMemo(() => world?.playerKnowledge?.bookmarks ?? [], [world]);
+  const bookmarks = useMemo(() => (world ? getAllBookmarks(world) : []), [world]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, BookmarkEntry[]>();
+    if (!world) return map;
     for (const b of bookmarks) {
-      const list = map.get(b.entityType) ?? [];
-      list.push(b);
-      map.set(b.entityType, list);
+      if (!map.has(b.entityType)) map.set(b.entityType, getBookmarksByType(world, b.entityType));
     }
     return map;
-  }, [bookmarks]);
+  }, [bookmarks, world]);
 
   const entityTypeLabel = (type: string) => {
     switch (type) {

@@ -7,6 +7,7 @@ import { Id } from "../types/common";
 import { BardEngine } from "../bard/BardEngine";
 import { SeededRNG } from "../rng";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { BASHO_FINAL_DAY } from "../../constants/engine/calendar";
 import {
   WELFARE_DISCIPLINE_ELEVATED_THRESHOLD,
   FRAGILE_RATIO_CRITICAL_THRESHOLD,
@@ -14,7 +15,6 @@ import {
   FRAGILE_RATIO_SAFE_THRESHOLD,
   RISK_APPETITE_HIGH_THRESHOLD,
   RISK_APPETITE_MODERATE_THRESHOLD,
-  BASHO_FINAL_DAY,
   KOSHI_PRECIPICE_LOSSES,
   KACHIKOSHI_PRECIPICE_WINS,
   ROSTER_SIZE_WEAK_THRESHOLD,
@@ -22,14 +22,14 @@ import {
 } from "../../constants/engine/npcStrategy";
 
 /** Observation interface for scouting decisions. */
-export interface OyakataScoutingObservation {
+interface OyakataScoutingObservation {
   runwayBand: string;
   rosterSize: number;
   rosterStrengthBand: string;
 }
 
 /** Observation interface for personnel decisions. */
-export interface OyakataPersonnelObservation {
+interface OyakataPersonnelObservation {
   rikishiPerceptions: RikishiPerception[];
 }
 

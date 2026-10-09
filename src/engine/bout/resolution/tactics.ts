@@ -69,7 +69,7 @@ function chooseNpcSideTactic(
   return chooseTactic(rikishi, opponent, ctx);
 }
 
-export interface ResolvedTactics {
+interface ResolvedTactics {
   eastTactic: BoutTactic | undefined;
   westTactic: BoutTactic | undefined;
   /** Final bout context with resolved tactics + legacy cpuTacticOverride. */

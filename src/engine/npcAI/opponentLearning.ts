@@ -32,7 +32,7 @@ import type { OpponentTacticModel } from "../ai/types";
 /** Cap on learned models per oyakata; stalest entries are evicted. */
 export const MAX_OPPONENT_MODELS = 40;
 
-export interface BoutLearningCtx {
+interface BoutLearningCtx {
   match: MatchSchedule;
   result: BoutResult;
   east: Rikishi;

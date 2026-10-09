@@ -78,7 +78,11 @@ export default function MyosekiMarketPage() {
           </TabsContent>
 
           <TabsContent value="owned" className="mt-4">
-            <OwnedSharesTab market={market} />
+            <OwnedSharesTab
+              market={market}
+              onListForSale={market.handleListForSale}
+              onEndLease={market.handleEndLease}
+            />
           </TabsContent>
 
           <TabsContent value="history" className="mt-4">

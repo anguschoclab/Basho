@@ -23,7 +23,7 @@ import type { Rikishi } from "../../types/rikishi";
 import type { BashoState, MatchSchedule } from "../../types/basho";
 import type { Id } from "../../types/common";
 
-export interface KihakuInput {
+interface KihakuInput {
   comebackWins: number;
   edgeCrisisSurvived: number;
   playoffWins: number;

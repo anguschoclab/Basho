@@ -1,5 +1,5 @@
 /**
- * PreBashoAssessment.tsx
+ * PreBashoAssessment.tsx (exports PreBashoAssessmentPanel)
  * =====================
  * Dashboard widget showing pre-basho health assessment and withdrawal recommendations.
  */
@@ -98,7 +98,7 @@ const AssessmentList = React.memo(
   }
 );
 
-export function PreBashoAssessment() {
+export function PreBashoAssessmentPanel() {
   const navigate = useNavigate();
   const { state } = useGame();
   const world = state.world;

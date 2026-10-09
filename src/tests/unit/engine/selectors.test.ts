@@ -4,9 +4,6 @@ import {
   getEligibleOpponents,
   getAvailableStables,
   getStableFinances,
-  selectRetiredRikishi,
-  selectHeyasWithCriticalWelfare,
-  selectMergerCandidates,
 } from "@/engine/selectors";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -56,40 +53,6 @@ describe("Selectors", () => {
 
       expect(opponents.length).toBe(1);
       expect(opponents[0].id).toBe("eligible");
-    });
-  });
-
-  describe("selectHeyasWithCriticalWelfare", () => {
-    it("should return heyas with welfare risk >= 55 or critical compliance", () => {
-      const world = MockFactory.createWorld();
-
-      const normal = MockFactory.createHeya("normal");
-      normal.welfareState = {
-        welfareRisk: 20,
-        complianceState: "compliant",
-      } as any;
-
-      const risky = MockFactory.createHeya("risky");
-      risky.welfareState = {
-        welfareRisk: 60,
-        complianceState: "compliant",
-      } as any;
-
-      const sanctioned = MockFactory.createHeya("sanctioned");
-      sanctioned.welfareState = {
-        welfareRisk: 10,
-        complianceState: "sanctioned",
-      } as any;
-
-      world.heyas.set("normal", normal);
-      world.heyas.set("risky", risky);
-      world.heyas.set("sanctioned", sanctioned);
-
-      const result = selectHeyasWithCriticalWelfare(world);
-
-      expect(result.length).toBe(2);
-      expect(result.map((h) => h.id)).toContain("risky");
-      expect(result.map((h) => h.id)).toContain("sanctioned");
     });
   });
 });

@@ -7,6 +7,5 @@ export * from "./types";
 export * from "./seed";
 export * from "./formatters";
 export * from "./identity";
-export * from "./entityAccess";
 export * from "./citizenshipUtils";
 export * from "./asyncPool";

@@ -19,12 +19,6 @@ import type { SeededRNG } from "../rng";
 import type { KimariteId } from "../types/combat";
 import { KIMARITE_FREQUENCY_TARGETS } from "../../constants/engine/kimariteFrequencies";
 
-export type TerminalContext =
-  | "push_exit" // boundary exit, no belt grip (oshi/tsuppari endings)
-  | "belt_exit" // boundary exit while gripped (force-outs)
-  | "push_fall" // collapse/touch-down during a pushing exchange
-  | "belt_fall"; // collapse during a belt grapple (throws, trips, twists)
-
 /** A candidate technique and a plausibility multiplier on its real share. */
 type Candidate = [KimariteId, number];
 

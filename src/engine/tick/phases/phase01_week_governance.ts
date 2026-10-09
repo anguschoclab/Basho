@@ -10,8 +10,9 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { Heya } from "../../types/heya";
 import type { GovernanceStatus } from "../../types/economy";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
 import { mergeImpacts, resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
@@ -34,6 +35,7 @@ import {
   purchaseMyoseki,
   findAvailableStock,
 } from "../../systems/governance/MyosekiTradingService";
+import { tickMyosekiMarket } from "../../myosekiMarket";
 import { assignYokozunaAttendants } from "../../governance/yokozunaAttendants";
 import { rngForWorld } from "../../rng";
 import { getRikishi } from "../../queries";
@@ -45,138 +47,174 @@ export function phase01_week_governance(world: WorldState): StateImpact {
   // 0. Council & Career Transitions (Q1 / Q3)
   // Only evaluate these in the post-basho wrap-up phase or yearly boundary
   if (world.cyclePhase === "post_basho") {
-    const ydcImpact = YokozunaService.processYDCCouncil(world);
-    builder.merge(ydcImpact);
-
-    const careerImpact = CareerService.processRetirements(world);
-    builder.merge(careerImpact);
-
-    // Recovery path: assign attendants to any yokozuna missing them
-    for (const rikishiId of world.activeRikishiIds) {
-      const r = getRikishi(world, rikishiId);
-      if (!r || r.rank !== "yokozuna") continue;
-      if (r.tachimochiId && r.tsuyuharaiId) continue;
-      builder.merge(assignYokozunaAttendants(r, world));
-    }
+    processPostBashoCouncil(builder, world);
   }
 
   for (const [id, heya] of world.heyas) {
-    const updates: Partial<typeof heya> = {};
-    let changed = false;
-
-    // 1. Natural scandal score decay — 1 point per week
-    if (heya.scandalScore && heya.scandalScore > 0) {
-      updates.scandalScore = Math.max(0, heya.scandalScore - 1);
-      changed = true;
-    }
-
-    // 2. Alert if crossing critical threshold (player only)
-    const alertScore = updates.scandalScore ?? heya.scandalScore;
-    if (
-      alertScore != null &&
-      alertScore >= SCANDAL_SCORE_ALERT_THRESHOLD &&
-      heya.id === world.playerHeyaId
-    ) {
-      builder.logEvent(
-        "GOVERNANCE_RULING",
-        "discipline",
-        {
-          score: alertScore,
-          incident: "governance_warning",
-          reason: "Scandal threshold exceeded",
-        },
-        { heyaId: heya.id, importance: "major" }
-      );
-    }
-
-    // 3. Status Transition Logic
-    const score = updates.scandalScore ?? heya.scandalScore ?? 0;
-    const newStatus: GovernanceStatus =
-      score >= SCANDAL_SCORE_HIGH_THRESHOLD
-        ? "sanctioned"
-        : score >= SCANDAL_SCORE_MEDIUM_THRESHOLD
-          ? "probation"
-          : score >= SCANDAL_SCORE_LOW_THRESHOLD
-            ? "warning"
-            : "good_standing";
-
-    if (heya.governanceStatus !== newStatus) {
-      const prevStatus = heya.governanceStatus;
-      updates.governanceStatus = newStatus;
-      changed = true;
-
-      builder.logEvent(
-        "GOVERNANCE_RULING",
-        "discipline",
-        {
-          incident: "status_changed",
-          status: newStatus,
-          reason: prevStatus,
-          score: Math.floor(score),
-        },
-        {
-          heyaId: heya.id,
-          importance:
-            newStatus === "sanctioned"
-              ? "headline"
-              : newStatus === "probation"
-                ? "major"
-                : "notable",
-        }
-      );
-
-      if (newStatus === "sanctioned" || newStatus === "probation") {
-        builder.merge(
-          generateGovernanceHeadline({
-            world,
-            heyaId: heya.id,
-            templatePath:
-              newStatus === "sanctioned"
-                ? "institutional.governance.sanction"
-                : "institutional.governance.probation",
-            severity: newStatus === "sanctioned" ? "main_event" : "national",
-          })
-        );
-      }
-    }
-
-    // 4. Bi-annual JSA Elections
-    if (isElectionWeek && heya.ichimon) {
-      if (heya.politicalCapital !== undefined) {
-        updates.politicalCapital = Math.min(
-          MAX_POLITICAL_CAPITAL,
-          (heya.politicalCapital ?? DEFAULT_POLITICAL_CAPITAL) + ELECTION_POLITICAL_CAPITAL_GAIN
-        );
-        changed = true;
-      }
-    }
-
-    if (changed) {
-      builder.updateHeya(id, updates);
-    }
+    reviewHeyaGovernance(builder, world, id, heya, isElectionWeek);
   }
 
   // Handle global election logs if needed
   if (isElectionWeek) {
-    const ichimons = new Set<string>();
-    for (const heya of world.heyas.values()) {
-      if (heya.ichimon) {
-        ichimons.add(heya.ichimon);
-      }
-    }
-
-    ichimons.forEach((ichimon) => {
-      builder.logEvent("BASHO_STATUS", "narrative", {
-        status: "phase_transition",
-        incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
-      });
-    });
+    logElectionParticipation(builder, world);
   }
 
   // Apply ongoing scandal pressure to media state (scandalScore → heyaPressure bump)
   const scandalImpact = evaluateScandals(world);
 
   // 5. NPC Myoseki Market Activity — NPC stables occasionally purchase available elder names.
+  const myosekiImpacts = processNpcMyosekiPurchases(world);
+
+  // 6. Weekly market tick — lease fee collection and asking-price drift.
+  const marketTickImpact = tickMyosekiMarket(world);
+
+  return mergeImpacts([builder.build(), scandalImpact, ...myosekiImpacts, marketTickImpact]);
+}
+
+/** YDC council, retirements, and yokozuna attendant recovery (post-basho only). */
+function processPostBashoCouncil(builder: ImpactBuilder, world: WorldState): void {
+  const ydcImpact = YokozunaService.processYDCCouncil(world);
+  builder.merge(ydcImpact);
+
+  const careerImpact = CareerService.processRetirements(world);
+  builder.merge(careerImpact);
+
+  // Recovery path: assign attendants to any yokozuna missing them
+  for (const rikishiId of world.activeRikishiIds) {
+    const r = getRikishi(world, rikishiId);
+    if (!r || r.rank !== "yokozuna") continue;
+    if (r.tachimochiId && r.tsuyuharaiId) continue;
+    builder.merge(assignYokozunaAttendants(r, world));
+  }
+}
+
+/**
+ * One heya's weekly review: scandal-score decay, player alert at the critical
+ * threshold, governance-status transition, and bi-annual election capital.
+ */
+function reviewHeyaGovernance(
+  builder: ImpactBuilder,
+  world: WorldState,
+  id: string,
+  heya: Heya,
+  isElectionWeek: boolean
+): void {
+  const updates: Partial<typeof heya> = {};
+  let changed = false;
+
+  // 1. Natural scandal score decay — 1 point per week
+  if (heya.scandalScore && heya.scandalScore > 0) {
+    updates.scandalScore = Math.max(0, heya.scandalScore - 1);
+    changed = true;
+  }
+
+  // 2. Alert if crossing critical threshold (player only)
+  const alertScore = updates.scandalScore ?? heya.scandalScore;
+  if (
+    alertScore != null &&
+    alertScore >= SCANDAL_SCORE_ALERT_THRESHOLD &&
+    heya.id === world.playerHeyaId
+  ) {
+    builder.logEvent(
+      "GOVERNANCE_RULING",
+      "discipline",
+      {
+        score: alertScore,
+        incident: "governance_warning",
+        reason: "Scandal threshold exceeded",
+      },
+      { heyaId: heya.id, importance: "major" }
+    );
+  }
+
+  // 3. Status Transition Logic
+  const score = updates.scandalScore ?? heya.scandalScore ?? 0;
+  const newStatus: GovernanceStatus =
+    score >= SCANDAL_SCORE_HIGH_THRESHOLD
+      ? "sanctioned"
+      : score >= SCANDAL_SCORE_MEDIUM_THRESHOLD
+        ? "probation"
+        : score >= SCANDAL_SCORE_LOW_THRESHOLD
+          ? "warning"
+          : "good_standing";
+
+  if (heya.governanceStatus !== newStatus) {
+    const prevStatus = heya.governanceStatus;
+    updates.governanceStatus = newStatus;
+    changed = true;
+
+    builder.logEvent(
+      "GOVERNANCE_RULING",
+      "discipline",
+      {
+        incident: "status_changed",
+        status: newStatus,
+        reason: prevStatus,
+        score: Math.floor(score),
+      },
+      {
+        heyaId: heya.id,
+        importance:
+          newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable",
+      }
+    );
+
+    if (newStatus === "sanctioned" || newStatus === "probation") {
+      builder.merge(
+        generateGovernanceHeadline({
+          world,
+          heyaId: heya.id,
+          templatePath:
+            newStatus === "sanctioned"
+              ? "institutional.governance.sanction"
+              : "institutional.governance.probation",
+          severity: newStatus === "sanctioned" ? "main_event" : "national",
+        })
+      );
+    }
+  }
+
+  // 4. Bi-annual JSA Elections
+  if (isElectionWeek && heya.ichimon) {
+    if (heya.politicalCapital !== undefined) {
+      updates.politicalCapital = Math.min(
+        MAX_POLITICAL_CAPITAL,
+        (heya.politicalCapital ?? DEFAULT_POLITICAL_CAPITAL) + ELECTION_POLITICAL_CAPITAL_GAIN
+      );
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    builder.updateHeya(id, updates);
+  }
+}
+
+/** Bi-annual election participation log per ichimon. */
+function logElectionParticipation(builder: ImpactBuilder, world: WorldState): void {
+  const ichimons = new Set<string>();
+  for (const heya of world.heyas.values()) {
+    if (heya.ichimon) {
+      ichimons.add(heya.ichimon);
+    }
+  }
+
+  ichimons.forEach((ichimon) => {
+    builder.logEvent("BASHO_STATUS", "narrative", {
+      status: "phase_transition",
+      incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
+    });
+  });
+}
+
+/**
+ * NPC myoseki purchases (~2% per NPC heya per week). Sequenced against
+ * progressively-resolved state: each impact's absolute myosekiMarket/funds
+ * snapshot is computed off the latest world, so (a) findAvailableStock
+ * excludes stocks already sold this week and (b) buyer debits compose
+ * correctly under last-write-wins merge.
+ */
+function processNpcMyosekiPurchases(world: WorldState): StateImpact[] {
   const market = world.myosekiMarket;
   const myosekiImpacts: StateImpact[] = [];
   if (market && market.stocks) {
@@ -185,10 +223,6 @@ export function phase01_week_governance(world: WorldState): StateImpact {
       "myoseki",
       `governance-trade_${world.year ?? 0}_${world.week ?? 0}`
     );
-    // Sequence purchases against progressively-resolved state: each impact's
-    // absolute myosekiMarket/funds snapshot is computed off the latest world,
-    // so (a) findAvailableStock excludes stocks already sold this week and
-    // (b) buyer debits compose correctly under last-write-wins merge.
     let w = world;
     for (const heyaId of world.heyas.keys()) {
       if (heyaId === world.playerHeyaId) continue;
@@ -207,6 +241,5 @@ export function phase01_week_governance(world: WorldState): StateImpact {
       }
     }
   }
-
-  return mergeImpacts([builder.build(), scandalImpact, ...myosekiImpacts]);
+  return myosekiImpacts;
 }

@@ -30,6 +30,7 @@ import type {
   EngineStateV2,
   PushBattleState,
   BeltBattleState,
+  EdgeCrisisState,
 } from "../../types/combat-spatial";
 import { tawaraBounceResistance, classifyEdgeExitKimarite } from "../boutSpatial";
 import { CLOCK_MULTIPLIER } from "../../../constants/engine/physics";
@@ -105,59 +106,111 @@ export function tickEdgeCrisis(
 
   // When fully past tawara, no more recovery possible
   if (crisis.tawaraToePosition >= TOE_POSITION_FORCED_OUT) {
-    const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
-    const winner: Side = crisis.side === "east" ? "west" : "east";
+    return resolveForcedOut(rng, east, west, st, crisis, boutLog);
+  }
 
-    // Injury risk during bouts (1.3): high-pressure edge exits can cause injury
-    const injuryRisk =
-      (crisis.tawaraToePosition / TOE_POSITION_MAX) *
-      (crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ)) *
-      EDGE_INJURY_RISK_MULT;
-    if (injuryRisk > EDGE_INJURY_RISK_THRESHOLD && rng.next() < injuryRisk && !st.inBoutInjury) {
-      const areas: InjuryBodyArea[] = ["knee", "ankle", "shoulder", "back", "wrist"];
-      const area = areas[Math.floor(rng.next() * areas.length)];
-      const severity: InjurySeverity =
-        injuryRisk > EDGE_INJURY_SEVERITY_MODERATE ? "moderate" : "minor";
-      const injuredId = crisis.side === "east" ? east.id : west.id;
-      st.inBoutInjury = {
+  const { didEscape, controversial } = evaluateEscape(rng, east, west, st, crisis);
+
+  // Log this crisis tick for narrative
+  boutLog.push({
+    phase: "edge_crisis",
+    clock: st.tick * CLOCK_MULTIPLIER,
+    data: {
+      side: crisis.side,
+      escaped: didEscape,
+      tawaraToePosition: crisis.tawaraToePosition,
+      escapeAngle: crisis.escapeAngle,
+      opponentPressureZ: crisis.opponentPressureZ,
+      tawaraBounceForce: bounceForce,
+      ticksInCrisis: crisis.ticksInCrisis,
+      controversial,
+    },
+  });
+
+  if (didEscape) {
+    restorePhaseAfterEscape(st, crisis, prev, boutLog);
+    return { escaped: true };
+  }
+
+  // Fighter failed to escape — classify the exit
+  const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
+  const winner: Side = crisis.side === "east" ? "west" : "east";
+  return { winner, kimarite };
+}
+
+/** Forced-out resolution: injury roll (1.3), controversial-call log (1.7). */
+function resolveForcedOut(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  crisis: EdgeCrisisState,
+  boutLog: BoutLogEntry[]
+): { winner: Side; kimarite: KimariteId } {
+  const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
+  const winner: Side = crisis.side === "east" ? "west" : "east";
+
+  // Injury risk during bouts (1.3): high-pressure edge exits can cause injury
+  const injuryRisk =
+    (crisis.tawaraToePosition / TOE_POSITION_MAX) *
+    (crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ)) *
+    EDGE_INJURY_RISK_MULT;
+  if (injuryRisk > EDGE_INJURY_RISK_THRESHOLD && rng.next() < injuryRisk && !st.inBoutInjury) {
+    const areas: InjuryBodyArea[] = ["knee", "ankle", "shoulder", "back", "wrist"];
+    const area = areas[Math.floor(rng.next() * areas.length)];
+    const severity: InjurySeverity =
+      injuryRisk > EDGE_INJURY_SEVERITY_MODERATE ? "moderate" : "minor";
+    const injuredId = crisis.side === "east" ? east.id : west.id;
+    st.inBoutInjury = {
+      rikishiId: injuredId,
+      area,
+      severity,
+      triggerEvent: "edge_crisis_forced_out",
+    };
+    boutLog.push({
+      phase: "bout_injury",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
         rikishiId: injuredId,
         area,
         severity,
         triggerEvent: "edge_crisis_forced_out",
-      };
-      boutLog.push({
-        phase: "bout_injury",
-        clock: st.tick * CLOCK_MULTIPLIER,
-        data: {
-          rikishiId: injuredId,
-          area,
-          severity,
-          triggerEvent: "edge_crisis_forced_out",
-          injuryRisk,
-        },
-      });
-    }
-
-    // Mono-ii detection (1.7): close edge calls are controversial
-    const controversial =
-      crisis.tawaraToePosition < TOE_POSITION_FORCED_OUT * EDGE_CONTROVERSIAL_TOE_MULTIPLIER;
-    boutLog.push({
-      phase: "edge_crisis",
-      clock: st.tick * CLOCK_MULTIPLIER,
-      data: {
-        side: crisis.side,
-        escaped: false,
-        tawaraToePosition: crisis.tawaraToePosition,
-        escapeAngle: crisis.escapeAngle,
-        opponentPressureZ: crisis.opponentPressureZ,
-        forced: true,
-        controversial,
+        injuryRisk,
       },
     });
-    return { winner, kimarite };
   }
 
-  // 1.75D: Physics-driven escape — angular authority projected along escapeAngle vs opponent pressure
+  // Mono-ii detection (1.7): close edge calls are controversial
+  const controversial =
+    crisis.tawaraToePosition < TOE_POSITION_FORCED_OUT * EDGE_CONTROVERSIAL_TOE_MULTIPLIER;
+  boutLog.push({
+    phase: "edge_crisis",
+    clock: st.tick * CLOCK_MULTIPLIER,
+    data: {
+      side: crisis.side,
+      escaped: false,
+      tawaraToePosition: crisis.tawaraToePosition,
+      escapeAngle: crisis.escapeAngle,
+      opponentPressureZ: crisis.opponentPressureZ,
+      forced: true,
+      controversial,
+    },
+  });
+  return { winner, kimarite };
+}
+
+/**
+ * Physics-driven escape evaluation (1.75D): angular authority projected along
+ * escapeAngle vs opponent pressure, with seeded jitter as tie-breaker and
+ * mono-ii detection for close calls (1.7).
+ */
+function evaluateEscape(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  crisis: EdgeCrisisState
+): { didEscape: boolean; controversial: boolean } {
   const defender = crisis.side === "east" ? st.east : st.west;
   const defenderRikishi = crisis.side === "east" ? east : west;
   // Archetype-specific edge escape bonus (2.1): defensive wrestlers pivot better at the tawara
@@ -180,53 +233,38 @@ export function tickEdgeCrisis(
     !didEscape &&
     Math.abs(escapeMargin) < ESCAPE_MARGIN_THRESHOLD * EDGE_CONTROVERSIAL_MARGIN_FACTOR;
 
-  // Log this crisis tick for narrative
-  boutLog.push({
-    phase: "edge_crisis",
-    clock: st.tick * CLOCK_MULTIPLIER,
-    data: {
-      side: crisis.side,
-      escaped: didEscape,
-      tawaraToePosition: crisis.tawaraToePosition,
-      escapeAngle: crisis.escapeAngle,
-      opponentPressureZ: crisis.opponentPressureZ,
-      tawaraBounceForce: bounceForce,
-      ticksInCrisis: crisis.ticksInCrisis,
-      controversial,
-    },
-  });
+  return { didEscape, controversial };
+}
 
-  if (didEscape) {
-    // Tawara drama — fighter escapes. Restore previous phase with absorbed momentum.
-    if (prev === "belt_battle" && st.phase.savedBelt && st.phase.savedPush) {
-      const restoredPush: PushBattleState = {
-        ...st.phase.savedPush,
-        eastMomentum: st.phase.savedPush.eastMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
-        westMomentum: st.phase.savedPush.westMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
-      };
-      st.phase = { tag: "belt_battle", state: st.phase.savedBelt, push: restoredPush };
-    } else if (st.phase.savedPush) {
-      const restoredPush: PushBattleState = {
-        ...st.phase.savedPush,
-        eastMomentum: st.phase.savedPush.eastMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
-        westMomentum: st.phase.savedPush.westMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
-      };
-      st.phase = { tag: "push_battle", state: restoredPush };
-    }
-
-    // High-angle pivot at edge = utchari classification on escape
-    if (crisis.escapeAngle > UTCHARI_PIVOT_THRESHOLD) {
-      boutLog.push({
-        phase: "edge_crisis",
-        data: { event: "utchari_pivot", side: crisis.side, escapeAngle: crisis.escapeAngle },
-      });
-    }
-
-    return { escaped: true };
+/** Tawara drama — restore the previous phase with absorbed momentum + utchari log. */
+function restorePhaseAfterEscape(
+  st: EngineStateV2,
+  crisis: EdgeCrisisState,
+  prev: "push_battle" | "belt_battle",
+  boutLog: BoutLogEntry[]
+): void {
+  if (st.phase.tag !== "edge_crisis") return;
+  if (prev === "belt_battle" && st.phase.savedBelt && st.phase.savedPush) {
+    const restoredPush: PushBattleState = {
+      ...st.phase.savedPush,
+      eastMomentum: st.phase.savedPush.eastMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
+      westMomentum: st.phase.savedPush.westMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
+    };
+    st.phase = { tag: "belt_battle", state: st.phase.savedBelt, push: restoredPush };
+  } else if (st.phase.savedPush) {
+    const restoredPush: PushBattleState = {
+      ...st.phase.savedPush,
+      eastMomentum: st.phase.savedPush.eastMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
+      westMomentum: st.phase.savedPush.westMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
+    };
+    st.phase = { tag: "push_battle", state: restoredPush };
   }
 
-  // Fighter failed to escape — classify the exit
-  const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
-  const winner: Side = crisis.side === "east" ? "west" : "east";
-  return { winner, kimarite };
+  // High-angle pivot at edge = utchari classification on escape
+  if (crisis.escapeAngle > UTCHARI_PIVOT_THRESHOLD) {
+    boutLog.push({
+      phase: "edge_crisis",
+      data: { event: "utchari_pivot", side: crisis.side, escapeAngle: crisis.escapeAngle },
+    });
+  }
 }

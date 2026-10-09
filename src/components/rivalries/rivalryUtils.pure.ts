@@ -7,7 +7,7 @@
 
 import type { RivalryHeatBand } from "@/presenters/engineAccess";
 
-export function getHeatBand(heat: number): RivalryHeatBand {
+export function getDisplayHeatBand(heat: number): RivalryHeatBand {
   if (heat >= 85) return "legendary";
   if (heat >= 65) return "fierce";
   if (heat >= 40) return "heated";

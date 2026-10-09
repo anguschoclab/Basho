@@ -70,6 +70,28 @@ export function useMyosekiMarket() {
     toast.success(`Lease request for ${stock.name} submitted.`);
   };
 
+  const handleListForSale = (stock: MyosekiStock) => {
+    if (!playerHeya || !playerHeya.oyakataId) return;
+
+    if (!sendCommand({
+      type: "LIST_MYOSEKI_FOR_SALE",
+      myosekiId: stock.id,
+      holderId: playerHeya.oyakataId,
+    })) return;
+    toast.success(`${stock.name} listed for sale.`);
+  };
+
+  const handleEndLease = (stock: MyosekiStock) => {
+    if (!playerHeya || !playerHeya.oyakataId) return;
+
+    if (!sendCommand({
+      type: "RETURN_MYOSEKI_LEASE",
+      myosekiId: stock.id,
+      holderId: playerHeya.oyakataId,
+    })) return;
+    toast.success(`Lease on ${stock.name} ended.`);
+  };
+
   return {
     world,
     market,
@@ -85,5 +107,7 @@ export function useMyosekiMarket() {
     playerFunds,
     handleBuy,
     handleLease,
+    handleListForSale,
+    handleEndLease,
   };
 }

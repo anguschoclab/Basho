@@ -21,7 +21,7 @@ import {
 } from "../../../constants/engine/exhibitionBasho";
 
 /** Exhibition basho type — extends the 6 honbasho with jungyo events */
-export type ExhibitionBashoName = `${string}-jungyo`;
+type ExhibitionBashoName = `${string}-jungyo`;
 
 /** Check if a basho name is an exhibition (jungyo) event */
 export function isExhibitionBasho(name: string): name is ExhibitionBashoName {
@@ -36,7 +36,7 @@ export {
 };
 
 /** Exhibition basho info */
-export interface ExhibitionBashoInfo {
+interface ExhibitionBashoInfo {
   name: ExhibitionBashoName;
   displayName: string;
   month: number;

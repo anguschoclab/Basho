@@ -23,13 +23,13 @@ export interface RikishiRequest {
   reason: string;
 }
 
-export type LoyaltyBand = "loyal" | "wavering" | "restless" | "discontent";
+export type RikishiLoyaltyBand = "loyal" | "wavering" | "restless" | "discontent";
 
 /** Derived weekly disposition — persisted on Rikishi.agency. */
 export interface RikishiAgencyState {
   satisfaction: number; // 0-100
   restlessness: number; // 0-100
-  loyaltyBand: LoyaltyBand;
+  loyaltyBand: RikishiLoyaltyBand;
   deniedCount: number;
   grantedCount: number;
   lastRequestWeek?: number;

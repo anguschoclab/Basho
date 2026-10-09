@@ -27,7 +27,7 @@ import { ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react"
 import type { Staff } from "@/engine/types/staff";
 import { toFatigueBand, toScandalBand } from "@/presenters/engineAccess";
 import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
-import { BAND_COLORS, ROLE_LABELS, staffBonusText } from "./staffMeta";
+import { STAFF_BAND_COLORS, ROLE_LABELS, staffBonusText } from "./staffMeta";
 
 /** Fire button + permanent-removal confirmation dialog. */
 function FireButton({ staff, onFire }: { staff: Staff; onFire: (id: string) => void }) {
@@ -89,7 +89,7 @@ function BandStats({ staff, primaryColor }: { staff: Staff; primaryColor: string
           <div
             className={cn(
               "text-xs font-bold leading-none",
-              BAND_COLORS[staff.reputationBand.toLowerCase()]
+              STAFF_BAND_COLORS[staff.reputationBand.toLowerCase()]
             )}
           >
             {staff.reputationBand.toUpperCase()}
@@ -105,7 +105,7 @@ function BandStats({ staff, primaryColor }: { staff: Staff; primaryColor: string
           <div
             className={cn(
               "text-xs font-bold leading-none",
-              BAND_COLORS[staff.loyaltyBand.toLowerCase()]
+              STAFF_BAND_COLORS[staff.loyaltyBand.toLowerCase()]
             )}
           >
             {staff.loyaltyBand.toUpperCase()}
@@ -158,7 +158,7 @@ function VitalsBars({ staff }: { staff: Staff }) {
 
 export function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => void }) {
   const primaryColor =
-    BAND_COLORS[staff.competenceBands.primary.toLowerCase()] || "text-muted-foreground";
+    STAFF_BAND_COLORS[staff.competenceBands.primary.toLowerCase()] || "text-muted-foreground";
 
   return (
     <Card className="paper relative overflow-hidden group">

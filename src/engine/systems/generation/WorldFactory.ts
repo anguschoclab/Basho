@@ -35,6 +35,7 @@ import { createStables } from "./HeyaFactory";
 import { createRosters } from "./RosterFactory";
 import { ensureCandidatePoolState } from "./CandidatePoolService";
 import { generateGyoji, generateShimpan } from "../officials/GyojiService";
+import { generateMyosekiMarket } from "../../myosekiMarket";
 import type { Gyoji, Shimpan } from "../../types/gyoji";
 
 // Re-export factory functions for backward compatibility
@@ -118,6 +119,8 @@ export function generateInitialWorld(seed: string): WorldState {
     // Officials: gyoji and shimpan pools for bout officiation
     gyojiPool: generateInitialGyojiPool(seed),
     shimpanPool: generateInitialShimpanPool(seed),
+    // Elder share market: JSA-held pool + per-oyakata assignments
+    myosekiMarket: generateMyosekiMarket(seed, oyakataMap),
   };
 
   // 3. Generate Heya Brand Identities (for kesho-mawashi designs)

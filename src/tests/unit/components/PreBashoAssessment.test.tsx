@@ -4,7 +4,7 @@ import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { PreBashoAssessment } from "@/components/dashboard/PreBashoAssessment";
+import { PreBashoAssessmentPanel } from "@/components/dashboard/PreBashoAssessment";
 
 vi.mock("@/contexts/useGame", () => ({
   useGame: vi.fn(),
@@ -40,7 +40,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 5,
       rikishi: new Map(),
     });
-    renderWithProvider(<PreBashoAssessment />);
+    renderWithProvider(<PreBashoAssessmentPanel />);
     expect(screen.getByText("View Roster for Withdrawals")).toBeTruthy();
   });
 
@@ -55,7 +55,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 5,
       rikishi: new Map(),
     });
-    renderWithProvider(<PreBashoAssessment />);
+    renderWithProvider(<PreBashoAssessmentPanel />);
     expect(screen.queryByText("View Roster for Withdrawals")).toBeNull();
   });
 
@@ -65,7 +65,7 @@ describe("PreBashoAssessment", () => {
       _preBashoAssessment: undefined,
       rikishi: new Map(),
     });
-    const { container } = renderWithProvider(<PreBashoAssessment />);
+    const { container } = renderWithProvider(<PreBashoAssessmentPanel />);
     expect(container.firstChild).toBeNull();
   });
 
@@ -79,7 +79,7 @@ describe("PreBashoAssessment", () => {
       },
       rikishi: new Map(),
     });
-    const { container } = renderWithProvider(<PreBashoAssessment />);
+    const { container } = renderWithProvider(<PreBashoAssessmentPanel />);
     expect(container.firstChild).toBeNull();
   });
 
@@ -101,7 +101,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 3,
       rikishi: new Map([["r1", { id: "r1", shikona: "TestRikishi" }]]),
     });
-    renderWithProvider(<PreBashoAssessment />);
+    renderWithProvider(<PreBashoAssessmentPanel />);
     expect(screen.getByText("75%")).toBeTruthy();
   });
 
@@ -116,7 +116,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 7,
       rikishi: new Map(),
     });
-    renderWithProvider(<PreBashoAssessment />);
+    renderWithProvider(<PreBashoAssessmentPanel />);
     expect(screen.getByText(/7 days left/)).toBeTruthy();
   });
 });

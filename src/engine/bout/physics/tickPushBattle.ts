@@ -30,33 +30,24 @@ import {
 } from "../../../constants/engine/physics";
 import { initBeltBattle } from "../boutGrip";
 import { EDGE_THRESHOLD } from "../../types/combat-spatial";
-import type { EngineStateV2 } from "../../types/combat-spatial";
+import type { EngineStateV2, PushBattleState } from "../../types/combat-spatial";
 import { isBodyFalling, classifyFallKimarite } from "../boutSpatial";
 import { evaluateKimariteAttempt } from "../kimariteClassifier";
 import { stat, jitter, boutFatigueIncrement, type SideTactics } from "../boutUtils";
 import { buildEdgeCrisis } from "./edgeCrisis";
 
-export function tickPushBattle(
-  rng: SeededRNG,
+/**
+ * Fatigue-adjusted forces plus in-bout counter-tactic activation (2.2):
+ * when the defender's counterFamily matches the engagement family ("push"),
+ * reduce the attacker's effective force.
+ */
+function computeAdjustedForces(
   east: Rikishi,
   west: Rikishi,
+  push: PushBattleState,
   st: EngineStateV2,
-  boutLog: BoutLogEntry[],
-  division: Division,
-  meta: { tone: string; drift: Record<string, number> },
-  tactics?: SideTactics
-): { winner?: Side; kimarite?: KimariteId } | undefined {
-  if (st.phase.tag !== "push_battle") return undefined;
-
-  const push = st.phase.state;
-
-  // --- Force-differential physics ---
-  // Per-tick jitter breaks ties; only the LOSING fighter retreats and destabilises.
-
-  // Accumulate per-tick exertion — rate governed by stamina
-  st.east.boutFatigue += boutFatigueIncrement(stat(east, "stamina"));
-  st.west.boutFatigue += boutFatigueIncrement(stat(west, "stamina"));
-
+  boutLog: BoutLogEntry[]
+): { adjustedEastForce: number; adjustedWestForce: number } {
   // Effective fatigue = pre-bout fatigue + in-bout accumulation
   const eastEffFatigue = stat(east, "fatigue") + st.east.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
   const westEffFatigue = stat(west, "fatigue") + st.west.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
@@ -74,8 +65,6 @@ export function tickPushBattle(
   let adjustedEastForce = push.eastForce * eastFatPenalty;
   let adjustedWestForce = push.westForce * westFatPenalty;
 
-  // In-bout counter-tactic activation (2.2): when defender's counterFamily matches
-  // the current engagement family ("push"), reduce attacker's effective force
   let counterActivated = false;
   let counterSide: Side | null = null;
   if (
@@ -106,46 +95,39 @@ export function tickPushBattle(
       },
     });
   }
+  return { adjustedEastForce, adjustedWestForce };
+}
 
-  // Archetype-specific bout behavior (2.1): apply pushVelocityBonus to force
-  // Body type behavior (5.1): combine with body type push/lateral bonuses
-  const eastPushBonus =
-    ((east.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) +
-      (east.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) /
-    100;
-  const westPushBonus =
-    ((west.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) +
-      (west.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) /
-    100;
-  const eastLateralBonus =
-    ((east.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) +
-      (east.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) /
-    100;
-  const westLateralBonus =
-    ((west.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) +
-      (west.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) /
-    100;
+/** Archetype/body-type push + lateral bonuses (2.1, 5.1). */
+function profileBonuses(r: Rikishi): { pushBonus: number; lateralBonus: number } {
+  return {
+    pushBonus:
+      ((r.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) +
+        (r.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) /
+      100,
+    lateralBonus:
+      ((r.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) +
+        (r.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) /
+      100,
+  };
+}
 
-  const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER;
-  const jitteredForceDiff =
-    adjustedEastForce * (1 + eastPushBonus) -
-    adjustedWestForce * (1 + westPushBonus) +
-    massAdvantageEast +
-    jitter(rng, FORCE_DIFF_JITTER_MAGNITUDE);
-  const displacement = Math.abs(jitteredForceDiff) * DISPLACEMENT_PER_FORCE;
-
-  push.contestLine += jitteredForceDiff * CONTEST_LINE_JITTER_MULTIPLIER;
-
-  // --- 1.75D Lateral integration ---
-  // The defender can slip off-axis only when the attacker OVER-COMMITS (drives
-  // with a large force differential). The slip is scaled by the defender's speed,
-  // normalized to the 0–1 stat scale so it lives on the metre-scale lateral axis.
-  // A balanced push (small force diff) produces no slip — fighters stay on the
-  // contest line and the exchange reads as straight oshi-zumo.
-  const lateralOffsetDiff = push.eastLateral - push.westLateral;
-  const isGlancing = Math.abs(lateralOffsetDiff) > ENGAGEMENT_ANGLE_GLANCING_THRESHOLD;
-  const forceFalloff = isGlancing ? OFF_AXIS_FORCE_FALLOFF : 1.0;
-
+/**
+ * Dominant-side advance: displacement, CoG destabilisation, velocity, and
+ * the defender's stochastic lateral slip.
+ */
+function integrateDominantDrive(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  push: PushBattleState,
+  st: EngineStateV2,
+  jitteredForceDiff: number,
+  displacement: number,
+  forceFalloff: number,
+  eastLateralBonus: number,
+  westLateralBonus: number
+): void {
   if (jitteredForceDiff > 0) {
     // East dominant — east advances toward −x (west's tawara), west retreats
     // the same direction. Both carry the shared push velocity.
@@ -169,7 +151,10 @@ export function tickPushBattle(
       push.eastLateralMomentum += LATERAL_SLIP_IMPULSE;
     }
   }
+}
 
+/** Integrate lateral position, clamp, decay, and sync PhysicalBody. */
+function decayLateralAndSync(st: EngineStateV2, push: PushBattleState): void {
   // Integrate lateral position
   push.eastLateral += push.eastLateralMomentum;
   push.westLateral += push.westLateralMomentum;
@@ -193,8 +178,17 @@ export function tickPushBattle(
   st.west.leadingFootX = push.westLeadFoot;
   st.east.velocityZ = push.eastLateralMomentum;
   st.west.velocityZ = push.westLateralMomentum;
+}
 
-  // Narrative cadence
+/** Narrative cadence log entry every NARRATIVE_TICK_CADENCE ticks. */
+function logPushCadence(
+  st: EngineStateV2,
+  push: PushBattleState,
+  jitteredForceDiff: number,
+  lateralOffsetDiff: number,
+  isGlancing: boolean,
+  boutLog: BoutLogEntry[]
+): void {
   if (st.tick % NARRATIVE_TICK_CADENCE === 0) {
     boutLog.push({
       phase: "engagement",
@@ -220,7 +214,20 @@ export function tickPushBattle(
       },
     });
   }
+}
 
+/** Kimarite attempt, body-fall check, clinch conversion, and edge crisis. */
+function resolvePushOutcome(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  push: PushBattleState,
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[],
+  division: Division,
+  meta: { tone: string; drift: Record<string, number> },
+  tactics?: SideTactics
+): { winner?: Side; kimarite?: KimariteId } | undefined {
   // Mid-fight kimarite attempt
   const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng, division, meta, tactics);
   if (attempt) {
@@ -266,4 +273,75 @@ export function tickPushBattle(
   }
 
   return undefined;
+}
+
+export function tickPushBattle(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[],
+  division: Division,
+  meta: { tone: string; drift: Record<string, number> },
+  tactics?: SideTactics
+): { winner?: Side; kimarite?: KimariteId } | undefined {
+  if (st.phase.tag !== "push_battle") return undefined;
+
+  const push = st.phase.state;
+
+  // --- Force-differential physics ---
+  // Per-tick jitter breaks ties; only the LOSING fighter retreats and destabilises.
+
+  // Accumulate per-tick exertion — rate governed by stamina
+  st.east.boutFatigue += boutFatigueIncrement(stat(east, "stamina"));
+  st.west.boutFatigue += boutFatigueIncrement(stat(west, "stamina"));
+
+  const { adjustedEastForce, adjustedWestForce } = computeAdjustedForces(
+    east,
+    west,
+    push,
+    st,
+    boutLog
+  );
+
+  const eastPush = profileBonuses(east);
+  const westPush = profileBonuses(west);
+
+  const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER;
+  const jitteredForceDiff =
+    adjustedEastForce * (1 + eastPush.pushBonus) -
+    adjustedWestForce * (1 + westPush.pushBonus) +
+    massAdvantageEast +
+    jitter(rng, FORCE_DIFF_JITTER_MAGNITUDE);
+  const displacement = Math.abs(jitteredForceDiff) * DISPLACEMENT_PER_FORCE;
+
+  push.contestLine += jitteredForceDiff * CONTEST_LINE_JITTER_MULTIPLIER;
+
+  // --- 1.75D Lateral integration ---
+  // The defender can slip off-axis only when the attacker OVER-COMMITS (drives
+  // with a large force differential). The slip is scaled by the defender's speed,
+  // normalized to the 0–1 stat scale so it lives on the metre-scale lateral axis.
+  // A balanced push (small force diff) produces no slip — fighters stay on the
+  // contest line and the exchange reads as straight oshi-zumo.
+  const lateralOffsetDiff = push.eastLateral - push.westLateral;
+  const isGlancing = Math.abs(lateralOffsetDiff) > ENGAGEMENT_ANGLE_GLANCING_THRESHOLD;
+  const forceFalloff = isGlancing ? OFF_AXIS_FORCE_FALLOFF : 1.0;
+
+  integrateDominantDrive(
+    rng,
+    east,
+    west,
+    push,
+    st,
+    jitteredForceDiff,
+    displacement,
+    forceFalloff,
+    eastPush.lateralBonus,
+    westPush.lateralBonus
+  );
+  decayLateralAndSync(st, push);
+
+  logPushCadence(st, push, jitteredForceDiff, lateralOffsetDiff, isGlancing, boutLog);
+
+  return resolvePushOutcome(rng, east, west, push, st, boutLog, division, meta, tactics);
 }

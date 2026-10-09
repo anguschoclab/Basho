@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Flame } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { formatRank, clamp } from "@/presenters/uiDigest";
-import { getHeatBand } from "./rivalryUtils.pure";
+import { getDisplayHeatBand } from "./rivalryUtils.pure";
 import { H2HBar, HeatGauge } from "./rivalryUtils";
 import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "../../constants/ui/rivalry";
 import type { RivalryPairState, RivalryTrigger } from "@/presenters/engineAccess";
@@ -46,7 +46,7 @@ export function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCard
   const heyaB = world.heyas.get(rikishiB.heyaId);
 
   const heat = clamp(pair.heat || 0, 0, 100);
-  const heatBand = getHeatBand(heat);
+  const heatBand = getDisplayHeatBand(heat);
   const heatConfig = HEAT_BAND_CONFIG[heatBand];
   const toneInfo = TONE_CONFIG[pair.tone || "respect"];
 

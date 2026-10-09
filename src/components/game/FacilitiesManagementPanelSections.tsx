@@ -17,7 +17,7 @@ import {
   getUpgradeCostEstimate,
 } from "@/presenters/uiDigest";
 import { formatYen } from "@/utils/engineUtils";
-import { AXIS_META, BAND_COLORS, BAND_LABELS, getLevelBand, getEffectPercent } from "./facilityMeta";
+import { AXIS_META, FACILITY_BAND_COLORS, BAND_LABELS, getLevelBand, getEffectPercent } from "./facilityMeta";
 
 /** Toast shown after an upgrade lands via WORLD_UPDATED. */
 export interface UpgradeToast {
@@ -46,7 +46,7 @@ export function FacilityOverviewCard({
             </CardTitle>
             <CardDescription>
               Overall:{" "}
-              <span className={`font-semibold ${BAND_COLORS[heya.facilitiesBand]}`}>
+              <span className={`font-semibold ${FACILITY_BAND_COLORS[heya.facilitiesBand]}`}>
                 {BAND_LABELS[heya.facilitiesBand]}
               </span>
             </CardDescription>

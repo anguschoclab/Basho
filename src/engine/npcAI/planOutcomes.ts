@@ -18,7 +18,7 @@ import type { RunwayBand } from "../types/narrative";
 import { getHeya } from "../queries";
 import { RANK_HIERARCHY } from "../types/banzuke";
 
-export interface PlanOutcome {
+interface PlanOutcome {
   outcome: "success" | "partial" | "abandoned";
   summary: string;
 }

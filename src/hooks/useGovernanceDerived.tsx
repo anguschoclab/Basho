@@ -181,5 +181,5 @@ export function useGovernanceDerived(world: WorldState | null) {
   return { heya, closedHeyas, yokozunaVacancyStreak, derived, resolvedRulingIds };
 }
 
-export type GovernanceDerived = ReturnType<typeof useGovernanceDerived>;
-export type GovernanceDerivedData = NonNullable<GovernanceDerived["derived"]>;
+export type GovernanceHookResult = ReturnType<typeof useGovernanceDerived>;
+export type GovernanceDerivedData = NonNullable<GovernanceHookResult["derived"]>;

@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   initPhysicalBody,
   isBodyFalling,
-  isOutOfRing,
   tawaraBounceResistance,
 } from "@/engine/bout/boutSpatial";
 import { mockRikishi } from "../utils";
@@ -59,18 +58,4 @@ describe("boutSpatial", () => {
     });
   });
 
-  describe("isOutOfRing", () => {
-    it("returns false when within ring", () => {
-      const rikishi = mockRikishi("r1");
-      const body = initPhysicalBody(rikishi, "east");
-      expect(isOutOfRing(body)).toBe(false);
-    });
-
-    it("returns true when beyond tawara", () => {
-      const rikishi = mockRikishi("r1");
-      const body = initPhysicalBody(rikishi, "east");
-      body.x = TAWARA_RADIUS + 0.1;
-      expect(isOutOfRing(body)).toBe(true);
-    });
-  });
 });

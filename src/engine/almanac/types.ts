@@ -84,7 +84,7 @@ export const MAX_NARRATIVE_HIGHLIGHTS = 100;
 export const MAX_PROMOTION_HISTORY = 30;
 
 /** Defines the structure for basho performance. */
-export interface BashoPerformance {
+export interface AlmanacBashoPerformance {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;
@@ -128,7 +128,7 @@ export interface RikishiCareerRecord {
   ozekiRunCount: number;
   yokozunaPromotion?: { year: number; bashoName: BashoName };
 
-  bashoHistory: BashoPerformance[];
+  bashoHistory: AlmanacBashoPerformance[];
 
   currentWinStreak: number;
   longestWinStreak: number;

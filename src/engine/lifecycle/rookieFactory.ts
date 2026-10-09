@@ -9,6 +9,7 @@ import type { Rank } from "../types/banzuke";
 import { generateShikona } from "../shikona";
 import type { WorldState } from "../types/world";
 import type { InjurySeverity } from "../systems/health/BodyDefinitions";
+import type { CombatArchetype } from "../types/combat";
 import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetypeWithBias } from "../archetype";
 import { rollAgeForRank } from "../systems/generation/CandidateStats";
 import { isCollegeRecruit } from "../utils/identity";
@@ -73,10 +74,59 @@ export function _generateRookie(
   const isElite = origin.isElite || false;
   const age = rollAgeForRank(rng, isElite ? "makushita" : targetRank);
 
+  const stats = rollRookieStats(rng, isElite, origin);
+
+  // Get oyakata's former shikona for legacy patterns if assigned to a heya
+  const legacyShikona: string | undefined = undefined;
+  // Note: generateRookie creates rikishi in scout pool, so no heya assignment yet
+  // Legacy shikona will be applied when they join a stable
+
+  const shikona = generateShikona(`${world.seed}::rookie::${rookieId}`, {
+    rng,
+    nationality: isCollegeRecruit({ origin: origin.name }) ? "Japan" : origin.name,
+    rank: targetRank,
+    legacyShikona,
+  });
+
+  const rookieHeight = ROOKIE_BASE_HEIGHT + rng.next() * ROOKIE_HEIGHT_RANGE;
+  // Body type diversity (5.1): derive from height/weight ratio
+  const bodyType = deriveRookieBodyType(rookieHeight, stats.weight);
+
+  // Origin & backstory enrichment (5.2)
+  const backstory = generateBackstory(origin.name, archetype, bodyType, rng);
+
+  const rookie = buildRookieEntity({
+    rng,
+    rookieId,
+    shikona,
+    origin,
+    isElite,
+    targetRank,
+    currentYear,
+    age,
+    stats,
+    rookieHeight,
+    bodyType,
+    backstory,
+    archetype,
+  });
+
+  applyPersonaAssignment(rookie, archetype, rng);
+
+  return rookie;
+}
+
+type RookieOrigin = (typeof ORIGINS)[number];
+
+/** Raw stat rolls plus origin modifiers (RNG order: weight → stat rolls). */
+function rollRookieStats(
+  rng: ReturnType<typeof rngFromSeed>,
+  isElite: boolean,
+  origin: RookieOrigin
+): RikishiStats {
   const baseStat = isElite ? ROOKIE_BASE_STAT_ELITE : ROOKIE_BASE_STAT_NORMAL;
   const variance = ROOKIE_STAT_VARIANCE;
 
-  // Raw Stats
   const baseWeight = ROOKIE_BASE_WEIGHT + rng.next() * ROOKIE_WEIGHT_RANGE;
   const stats: RikishiStats = {
     power: baseStat + rng.next() * variance,
@@ -100,59 +150,65 @@ export function _generateRookie(
   if (origin.mentalMod) stats.mental *= origin.mentalMod;
   if (origin.balanceMod) stats.balance *= origin.balanceMod;
 
-  // Get oyakata's former shikona for legacy patterns if assigned to a heya
-  const legacyShikona: string | undefined = undefined;
-  // Note: generateRookie creates rikishi in scout pool, so no heya assignment yet
-  // Legacy shikona will be applied when they join a stable
+  return stats;
+}
 
-  const shikona = generateShikona(`${world.seed}::rookie::${rookieId}`, {
-    rng,
-    nationality: isCollegeRecruit({ origin: origin.name }) ? "Japan" : origin.name,
-    rank: targetRank,
-    legacyShikona,
-  });
-
-  const rookieHeight = ROOKIE_BASE_HEIGHT + rng.next() * ROOKIE_HEIGHT_RANGE;
-  const rookieWeight = stats.weight;
-  // Body type diversity (5.1): derive from height/weight ratio
+/** Derives body type from the height/weight BMI ratio (5.1). */
+function deriveRookieBodyType(
+  rookieHeight: number,
+  rookieWeight: number
+): "tower" | "barrel" | "compact" | "lanky" {
   const bmi = rookieWeight / Math.pow(rookieHeight / 100, 2);
-  const bodyType: "tower" | "barrel" | "compact" | "lanky" =
-    rookieHeight >= ROOKIE_TALL_HEIGHT_THRESHOLD && bmi < ROOKIE_BMI_TOWER_THRESHOLD
-      ? "tower"
-      : rookieHeight < ROOKIE_SHORT_HEIGHT_THRESHOLD && bmi >= ROOKIE_BMI_BARREL_THRESHOLD
-        ? "barrel"
-        : rookieHeight < ROOKIE_SHORT_HEIGHT_THRESHOLD && bmi < ROOKIE_BMI_COMPACT_THRESHOLD
-          ? "compact"
-          : rookieHeight >= ROOKIE_TALL_HEIGHT_THRESHOLD && bmi >= ROOKIE_BMI_TOWER_THRESHOLD
-            ? "barrel"
-            : "lanky";
+  return rookieHeight >= ROOKIE_TALL_HEIGHT_THRESHOLD && bmi < ROOKIE_BMI_TOWER_THRESHOLD
+    ? "tower"
+    : rookieHeight < ROOKIE_SHORT_HEIGHT_THRESHOLD && bmi >= ROOKIE_BMI_BARREL_THRESHOLD
+      ? "barrel"
+      : rookieHeight < ROOKIE_SHORT_HEIGHT_THRESHOLD && bmi < ROOKIE_BMI_COMPACT_THRESHOLD
+        ? "compact"
+        : rookieHeight >= ROOKIE_TALL_HEIGHT_THRESHOLD && bmi >= ROOKIE_BMI_TOWER_THRESHOLD
+          ? "barrel"
+          : "lanky";
+}
 
-  // Origin & backstory enrichment (5.2)
-  const backstory = generateBackstory(origin.name, archetype, bodyType, rng);
-
-  const rookie: Rikishi = {
-    id: rookieId,
-    name: shikona,
-    shikona: shikona,
+/** Assembles the Rikishi entity literal (motivation/behavior rolls consume rng). */
+function buildRookieEntity(p: {
+  rng: ReturnType<typeof rngFromSeed>;
+  rookieId: string;
+  shikona: string;
+  origin: RookieOrigin;
+  isElite: boolean;
+  targetRank: Rank;
+  currentYear: number;
+  age: number;
+  stats: RikishiStats;
+  rookieHeight: number;
+  bodyType: "tower" | "barrel" | "compact" | "lanky";
+  backstory: string;
+  archetype: CombatArchetype;
+}): Rikishi {
+  return {
+    id: p.rookieId,
+    name: p.shikona,
+    shikona: p.shikona,
     heyaId: "scout_pool",
-    nationality: isCollegeRecruit({ origin: origin.name }) ? "Japan" : origin.name,
-    birthYear: currentYear - age,
-    origin: origin.name,
+    nationality: isCollegeRecruit({ origin: p.origin.name }) ? "Japan" : p.origin.name,
+    birthYear: p.currentYear - p.age,
+    origin: p.origin.name,
 
     // Rank
-    rank: isElite ? "makushita" : targetRank,
-    rankNumber: isElite ? ROOKIE_ELITE_RANK_NUMBER : ROOKIE_NORMAL_RANK_NUMBER,
-    division: isElite ? "makushita" : "jonokuchi",
+    rank: p.isElite ? "makushita" : p.targetRank,
+    rankNumber: p.isElite ? ROOKIE_ELITE_RANK_NUMBER : ROOKIE_NORMAL_RANK_NUMBER,
+    division: p.isElite ? "makushita" : "jonokuchi",
     side: "east",
 
     // Stats (canonical stats obj)
-    stats: stats,
+    stats: p.stats,
     fatigue: 0,
 
-    height: rookieHeight,
-    weight: rookieWeight,
-    bodyType,
-    backstory,
+    height: p.rookieHeight,
+    weight: p.stats.weight,
+    bodyType: p.bodyType,
+    backstory: p.backstory,
 
     momentum: ROOKIE_INITIAL_MOMENTUM,
 
@@ -163,10 +219,10 @@ export function _generateRookie(
     },
 
     // Style
-    style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
+    style: p.archetype === "oshi" ? "oshi" : p.archetype === "yotsu" ? "yotsu" : "hybrid",
     combatProfile: {
-      ...buildCombatProfile(archetype),
-      bodyTypeBehavior: BODY_TYPE_BEHAVIORS[bodyType] ?? BODY_TYPE_BEHAVIORS.lanky,
+      ...buildCombatProfile(p.archetype),
+      bodyTypeBehavior: BODY_TYPE_BEHAVIORS[p.bodyType] ?? BODY_TYPE_BEHAVIORS.lanky,
     },
 
     careerWins: 0,
@@ -204,16 +260,18 @@ export function _generateRookie(
     medicalCertificate: undefined,
 
     condition: ROOKIE_INITIAL_CONDITION,
-    motivation: ROOKIE_MOTIVATION_BASE + rng.next() * ROOKIE_MOTIVATION_RANGE,
+    motivation: ROOKIE_MOTIVATION_BASE + p.rng.next() * ROOKIE_MOTIVATION_RANGE,
     behavior: {
-      discipline: ROOKIE_DISCIPLINE_BASE + rng.int(0, ROOKIE_DISCIPLINE_RANGE),
-      mediaSavvy: ROOKIE_MEDIA_SAVVY_BASE + rng.int(0, ROOKIE_MEDIA_SAVVY_RANGE),
+      discipline: ROOKIE_DISCIPLINE_BASE + p.rng.int(0, ROOKIE_DISCIPLINE_RANGE),
+      mediaSavvy: ROOKIE_MEDIA_SAVVY_BASE + p.rng.int(0, ROOKIE_MEDIA_SAVVY_RANGE),
       stress: 0,
     },
     personalityTraits: [],
-    favoredKimarite: (buildCombatProfile(archetype).favoredKimarite ??
+    favoredKimarite: (buildCombatProfile(p.archetype).favoredKimarite ??
       []) as import("../types/rikishi").KimariteId[],
-    weakAgainstStyles: deriveWeakAgainstStyles(archetype) as import("../types/rikishi").Style[],
+    weakAgainstStyles: deriveWeakAgainstStyles(
+      p.archetype
+    ) as import("../types/rikishi").Style[],
     // Required Rikishi fields for career tracking
     consecutiveYusho: 0,
     careerHistory: [],
@@ -221,10 +279,6 @@ export function _generateRookie(
     heyaHistory: [],
     lineage: {},
   } as Rikishi;
-
-  applyPersonaAssignment(rookie, archetype, rng);
-
-  return rookie;
 }
 
 /**

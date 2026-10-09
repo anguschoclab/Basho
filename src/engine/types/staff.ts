@@ -27,9 +27,9 @@ export interface StaffCompetenceBands {
   secondary?: CompetenceBand;
 }
 
-export type ReputationBand = "unknown" | "questionable" | "respected" | "renowned" | "legendary";
+export type StaffReputationBand = "unknown" | "questionable" | "respected" | "renowned" | "legendary";
 
-export type LoyaltyBand = "mercenary" | "wavering" | "stable" | "devoted" | "unshakable";
+export type StaffLoyaltyBand = "mercenary" | "wavering" | "stable" | "devoted" | "unshakable";
 
 export interface Staff {
   id: Id;
@@ -38,8 +38,8 @@ export interface Staff {
   role: StaffRole;
   age: number;
   careerPhase: StaffCareerPhase;
-  reputationBand: ReputationBand;
-  loyaltyBand: LoyaltyBand;
+  reputationBand: StaffReputationBand;
+  loyaltyBand: StaffLoyaltyBand;
   competenceBands: StaffCompetenceBands;
   fatigue: number; // 0 to 100
   morale: number; // 0 to 100 (New)

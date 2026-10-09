@@ -6,7 +6,7 @@ import type { Ref } from "react";
 import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { PHASE_LABELS, CROWD_TEXT } from "./boutReplay/boutCanvas";
+import { REPLAY_PHASE_LABELS, CROWD_TEXT } from "./boutReplay/boutCanvas";
 import { useBoutReplay } from "./boutReplay/useBoutReplay";
 import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
 import { BoutControls } from "./boutReplay/BoutControls";
@@ -57,7 +57,7 @@ export function BoutReplayViewer({
     [seekTo]
   );
 
-  const label = PHASE_LABELS[uiPhase];
+  const label = REPLAY_PHASE_LABELS[uiPhase];
 
   return (
     <div

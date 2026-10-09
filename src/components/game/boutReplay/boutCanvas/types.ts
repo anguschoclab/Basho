@@ -1,5 +1,6 @@
-export type ReplayPhase =
-  "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";
+import type { ReplayPhase } from "@/presenters/engineAccess";
+
+export type { ReplayPhase };
 
 export type BodyPhase =
   | "standing"

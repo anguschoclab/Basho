@@ -2,7 +2,7 @@ import { determineSpecialPrizes } from "../banzuke";
 import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
 import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import { createImpactBuilder, type ImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
 import { SIMULATION_CONFIG } from "../core/SimulationConfig";
@@ -31,7 +31,6 @@ export function distributePrizes(
   const builder = createImpactBuilder("distributePrizes");
   const prizes = determineSpecialPrizes(basho.matches, world.rikishi, yusho);
 
-  const SANSHO_PRIZE_AMOUNT = SIMULATION_CONFIG.prizes.specialPrize;
   const awardTypes = {
     shukunsho: "Shukun",
     kantosho: "Kanto",
@@ -56,114 +55,163 @@ export function distributePrizes(
 
   for (const [key, type] of Object.entries(awardTypes)) {
     const rikishiId = (prizes as Record<string, string | undefined>)[key];
-    if (rikishiId) {
-      const r = getRikishi(world, rikishiId);
-      if (r) {
-        // Generate sansho ceremony narrative (Gap 4)
-        const sanshoPath =
-          type === "Shukun"
-            ? "sansho_ceremony.shukunsho"
-            : type === "Kanto"
-              ? "sansho_ceremony.kantosho"
-              : "sansho_ceremony.ginosho";
-        const sanshoRes = BardEngine.resolve(sanshoRng, sanshoPath, {
-          SHIKONA: r.shikona,
-          PRIZE_NAME:
-            type === "Shukun" ? "Shukun-sho" : type === "Kanto" ? "Kanto-sho" : "Gino-sho",
-          rikishiId: r.id,
-        });
-        if (sanshoRes.text && !sanshoRes.text.includes("[MISSING:")) {
-          sanshoNarrativeLines.push({
-            text: sanshoRes.text,
-            id: `sansho-${type}-${rikishiId}-${basho.bashoName}-${world.year}`,
-            phase: "ceremony",
-          });
-        }
-        prizeCounts[rikishiId] = (prizeCounts[rikishiId] ?? 0) + 1;
-
-        const currentAchievements = r.stats?.achievements || {
-          kinboshiEarned: 0,
-          ginboshiEarned: 0,
-          kinboshiConceded: 0,
-          ginboshiConceded: 0,
-          mochikyukinPoints: 0,
-          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
-        };
-        const currentSp = currentAchievements.specialPrizes || {
-          shukunSho: 0,
-          kantoSho: 0,
-          ginoSho: 0,
-        };
-        const updatedSp = { ...currentSp };
-        if (type === "Shukun") updatedSp.shukunSho++;
-        else if (type === "Kanto") updatedSp.kantoSho++;
-        else if (type === "Gino") updatedSp.ginoSho++;
-
-        // Apply sansho popularity boost via applyAchievementImpact
-        const tempR = { ...r, economics: r.economics ? { ...r.economics } : undefined };
-        if (tempR.economics) {
-          builder.merge(applyAchievementImpact(world, tempR, "sansho"));
-          // Update tempR.economics to reflect the popularity boost for subsequent prize money
-          tempR.economics = {
-            ...tempR.economics,
-            popularity: Math.min(100, (tempR.economics.popularity || 0) + 12),
-          };
-        }
-
-        builder.updateRikishi(rikishiId, {
-          stats: {
-            ...r.stats,
-            achievements: {
-              ...currentAchievements,
-              specialPrizes: updatedSp,
-            },
-          },
-          ...(tempR.economics && { economics: tempR.economics }),
-        });
-
-        builder.logEvent(
-          "AWARD_CONFERRED",
-          "economy",
-          {
-            money: SANSHO_PRIZE_AMOUNT,
-            status: "special_prize",
-            regimen: type as string,
-            narrative: sanshoNarrativeLines.filter((l) =>
-              l.id.includes(`sansho-${type}-${rikishiId}`)
-            ),
-          },
-          { rikishiId: r.id, heyaId: r.heyaId }
-        );
-
-        // Credit sansho prize to rikishi economics (not heya funds under JSA model)
-        // Use tempR.economics (with popularity boost) if available, otherwise fall back to r.economics
-        const economics = tempR.economics ||
-          r.economics || {
-            cash: 0,
-            retirementFund: 0,
-            careerKenshoWon: 0,
-            kinboshiCount: 0,
-            totalEarnings: 0,
-            currentBashoEarnings: 0,
-            popularity: 50,
-          };
-        // Split sansho: 50% cash, 50% retirement fund
-        const sanshoCash = SANSHO_PRIZE_AMOUNT * 0.5;
-        const sanshoRetirement = SANSHO_PRIZE_AMOUNT * 0.5;
-
-        builder.updateRikishi(r.id, {
-          economics: {
-            ...economics,
-            cash: economics.cash + sanshoCash,
-            retirementFund: economics.retirementFund + sanshoRetirement,
-            totalEarnings: economics.totalEarnings + SANSHO_PRIZE_AMOUNT,
-          },
-        });
-      }
-    }
+    if (!rikishiId) continue;
+    awardSansho(
+      builder,
+      world,
+      basho,
+      rikishiId,
+      type,
+      sanshoRng,
+      sanshoNarrativeLines,
+      prizeCounts
+    );
   }
 
-  // Multiple prizes narrative
+  appendMultiPrizeLines(world, basho, prizeCounts, sanshoRng, sanshoNarrativeLines);
+
+  // Log ceremony intro narrative as a separate event
+  if (sanshoNarrativeLines.length > 0) {
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "narrative",
+      { status: "sansho_ceremony", narrative: sanshoNarrativeLines },
+      {}
+    );
+  }
+
+  return { prizes, impact: builder.build() };
+}
+
+const SANSHO_PRIZE_AMOUNT = SIMULATION_CONFIG.prizes.specialPrize;
+
+/**
+ * Awards one sansho: ceremony narrative line, achievement counters, popularity
+ * boost, AWARD_CONFERRED event, and the 50/50 cash/retirement prize credit.
+ */
+function awardSansho(
+  builder: ImpactBuilder,
+  world: WorldState,
+  basho: BashoState,
+  rikishiId: string,
+  type: "Shukun" | "Kanto" | "Gino",
+  sanshoRng: ReturnType<typeof rngFromSeed>,
+  sanshoNarrativeLines: PbpLine[],
+  prizeCounts: Record<string, number>
+): void {
+  const r = getRikishi(world, rikishiId);
+  if (!r) return;
+
+  // Generate sansho ceremony narrative (Gap 4)
+  const sanshoPath =
+    type === "Shukun"
+      ? "sansho_ceremony.shukunsho"
+      : type === "Kanto"
+        ? "sansho_ceremony.kantosho"
+        : "sansho_ceremony.ginosho";
+  const sanshoRes = BardEngine.resolve(sanshoRng, sanshoPath, {
+    SHIKONA: r.shikona,
+    PRIZE_NAME:
+      type === "Shukun" ? "Shukun-sho" : type === "Kanto" ? "Kanto-sho" : "Gino-sho",
+    rikishiId: r.id,
+  });
+  if (sanshoRes.text && !sanshoRes.text.includes("[MISSING:")) {
+    sanshoNarrativeLines.push({
+      text: sanshoRes.text,
+      id: `sansho-${type}-${rikishiId}-${basho.bashoName}-${world.year}`,
+      phase: "ceremony",
+    });
+  }
+  prizeCounts[rikishiId] = (prizeCounts[rikishiId] ?? 0) + 1;
+
+  const currentAchievements = r.stats?.achievements || {
+    kinboshiEarned: 0,
+    ginboshiEarned: 0,
+    kinboshiConceded: 0,
+    ginboshiConceded: 0,
+    mochikyukinPoints: 0,
+    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+  };
+  const currentSp = currentAchievements.specialPrizes || {
+    shukunSho: 0,
+    kantoSho: 0,
+    ginoSho: 0,
+  };
+  const updatedSp = { ...currentSp };
+  if (type === "Shukun") updatedSp.shukunSho++;
+  else if (type === "Kanto") updatedSp.kantoSho++;
+  else if (type === "Gino") updatedSp.ginoSho++;
+
+  // Apply sansho popularity boost via applyAchievementImpact
+  const tempR = { ...r, economics: r.economics ? { ...r.economics } : undefined };
+  if (tempR.economics) {
+    builder.merge(applyAchievementImpact(world, tempR, "sansho"));
+    // Update tempR.economics to reflect the popularity boost for subsequent prize money
+    tempR.economics = {
+      ...tempR.economics,
+      popularity: Math.min(100, (tempR.economics.popularity || 0) + 12),
+    };
+  }
+
+  builder.updateRikishi(rikishiId, {
+    stats: {
+      ...r.stats,
+      achievements: {
+        ...currentAchievements,
+        specialPrizes: updatedSp,
+      },
+    },
+    ...(tempR.economics && { economics: tempR.economics }),
+  });
+
+  builder.logEvent(
+    "AWARD_CONFERRED",
+    "economy",
+    {
+      money: SANSHO_PRIZE_AMOUNT,
+      status: "special_prize",
+      regimen: type as string,
+      narrative: sanshoNarrativeLines.filter((l) =>
+        l.id.includes(`sansho-${type}-${rikishiId}`)
+      ),
+    },
+    { rikishiId: r.id, heyaId: r.heyaId }
+  );
+
+  // Credit sansho prize to rikishi economics (not heya funds under JSA model)
+  // Use tempR.economics (with popularity boost) if available, otherwise fall back to r.economics
+  const economics = tempR.economics ||
+    r.economics || {
+      cash: 0,
+      retirementFund: 0,
+      careerKenshoWon: 0,
+      kinboshiCount: 0,
+      totalEarnings: 0,
+      currentBashoEarnings: 0,
+      popularity: 50,
+    };
+  // Split sansho: 50% cash, 50% retirement fund
+  const sanshoCash = SANSHO_PRIZE_AMOUNT * 0.5;
+  const sanshoRetirement = SANSHO_PRIZE_AMOUNT * 0.5;
+
+  builder.updateRikishi(r.id, {
+    economics: {
+      ...economics,
+      cash: economics.cash + sanshoCash,
+      retirementFund: economics.retirementFund + sanshoRetirement,
+      totalEarnings: economics.totalEarnings + SANSHO_PRIZE_AMOUNT,
+    },
+  });
+}
+
+/** Appends "multiple prizes" narrative lines for rikishi with 2+ sansho. */
+function appendMultiPrizeLines(
+  world: WorldState,
+  basho: BashoState,
+  prizeCounts: Record<string, number>,
+  sanshoRng: ReturnType<typeof rngFromSeed>,
+  sanshoNarrativeLines: PbpLine[]
+): void {
   for (const [rid, count] of Object.entries(prizeCounts)) {
     if (count >= 2) {
       const r = getRikishi(world, rid);
@@ -183,18 +231,6 @@ export function distributePrizes(
       }
     }
   }
-
-  // Log ceremony intro narrative as a separate event
-  if (sanshoNarrativeLines.length > 0) {
-    builder.logEvent(
-      "LIFECYCLE_EVENT",
-      "narrative",
-      { status: "sansho_ceremony", narrative: sanshoNarrativeLines },
-      {}
-    );
-  }
-
-  return { prizes, impact: builder.build() };
 }
 
 /**

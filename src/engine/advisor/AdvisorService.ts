@@ -14,7 +14,7 @@ import { buildLeaguePerception } from "../npcAI/LeaguePerception";
 import { getAdvice } from "../bout/CornerAdvice";
 import { getRikishi, getHeya, getOyakataForHeya } from "../queries";
 import { getOpponentModel } from "../npcAI/MemoryStore";
-import { getOpponentDominantFamily } from "../npcAI/OpponentModel";
+import { getOpponentDominantFamily, suggestCounterTactic } from "../npcAI/OpponentModel";
 import { buildMetaPerception } from "../npcAI/MetaPerception";
 import { candidateConsumesForeignSlot } from "../systems/generation/talentPoolReads";
 import { isAtForeignLimit } from "../utils/citizenshipUtils";
@@ -184,6 +184,7 @@ function bashoRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
     const oyakata = getOyakataForHeya(world, heyaId);
     const model = oyakata?.memory ? getOpponentModel(oyakata.memory, opponent.id) : undefined;
     const family = model ? getOpponentDominantFamily(model) : undefined;
+    const counter = model ? suggestCounterTactic(model) : undefined;
     if (family) {
       recs.push(
         rec(
@@ -191,7 +192,7 @@ function bashoRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
           "bout",
           "medium",
           `Scout report: ${opponent.shikona}`,
-          `Your stable's notes say ${opponent.shikona} favors the ${family} family. Prepare counters in training.`,
+          `Your stable's notes say ${opponent.shikona} favors the ${family} family — counter with ${counter ?? "push"}-style work in training.`,
           "Open bout prep",
           opponent.id
         )
@@ -408,22 +409,3 @@ export function generateRecommendations(world: WorldState, playerHeyaId?: Id): A
   return recs;
 }
 
-/** Build a lightweight digest object for UI panels. */
-export function getPlayerDigest(world: WorldState, playerHeyaId?: Id) {
-  const heyaId = playerHeyaId ?? world.playerHeyaId;
-  if (!heyaId) return undefined;
-
-  const perception = buildPerceptionSnapshot(world, heyaId);
-  const league = buildLeaguePerception(world);
-
-  return {
-    heyaId,
-    runwayBand: perception.runwayBand,
-    rosterStrengthBand: perception.rosterStrengthBand,
-    moraleBand: perception.moraleBand,
-    topRecruitAvailable: league.topRecruitAvailable,
-    rivalryClusters: league.rivalryClusters.length,
-    financiallyFragileHeyas: league.financiallyFragileHeyas.length,
-    recommendations: generateRecommendations(world, heyaId),
-  };
-}

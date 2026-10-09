@@ -1,4 +1,5 @@
 import type { Id } from "./common";
+import type { KoenkaiBandType } from "./narrative";
 
 /** Type representing sponsor tier. */
 export type SponsorTier = "T0" | "T1" | "T2" | "T3" | "T4" | "T5";
@@ -60,7 +61,7 @@ export interface Sponsor {
 }
 
 /** Type representing koenkai band type. */
-export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
+export type { KoenkaiBandType };
 
 /** Defines the structure for koenkai. */
 export interface Koenkai {

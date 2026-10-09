@@ -10,8 +10,8 @@ import {
   BOUT_DURATION_DOMINATION_DIVISOR,
   HEAT_SPIKE_THRESHOLDS,
 } from "../../../../constants/engine/narrative";
+import { BASHO_FINAL_DAY } from "../../../../constants/engine/calendar";
 import {
-  BASHO_FINAL_DAY,
   RIVALRY_CLOSENESS_DEFAULT,
   RIVALRY_DOMINATION_DEFAULT,
   HEYA_HEAT_GAIN_TITLE_STAKES,

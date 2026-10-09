@@ -38,9 +38,9 @@ export type PatternId =
   | "cat+cat"
   | "triple";
 
-export type PatternWeights = Record<PatternId, number>;
+type PatternWeights = Record<PatternId, number>;
 
-export type HouseStyleId =
+type HouseStyleId =
   | "power_mountain"
   | "sea_wind"
   | "tradition_flora"

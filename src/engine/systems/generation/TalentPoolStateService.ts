@@ -263,7 +263,7 @@ function filterAgedOutCandidates(
  * - Inject a fresh cohort of prospects for the new year
  * Returns StateImpact describing yearly refresh instead of mutating directly.
  */
-export function tickYear(world: WorldState): StateImpact {
+export function tickTalentPoolYear(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickYear");
   const tp = ensureTalentPoolState(world);
   const currentYear = world.year ?? DEFAULT_START_YEAR;

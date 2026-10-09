@@ -13,7 +13,7 @@ import { POLITICAL_FAVOR_ADVANCE_PAYOUT } from "../../../constants/engine/econom
 
 export type FavorType = "matchmaking_avoid" | "advance_payout" | "governance_pardon";
 
-export interface FavorOption {
+interface FavorOption {
   id: FavorType;
   label: string;
   description: string;

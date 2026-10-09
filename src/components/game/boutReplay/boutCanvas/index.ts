@@ -1,5 +1,5 @@
 export type { ReplayPhase, BodyPhase, Vec2, RikishiState, Particle } from "./types";
-export { PHASES, PHASE_LABELS, CROWD_TEXT } from "./constants";
+export { PHASES, REPLAY_PHASE_LABELS, CROWD_TEXT } from "./constants";
 export { lerp, clamp, easeOut, easeInOut } from "./math";
 export {
   drawDohyo,

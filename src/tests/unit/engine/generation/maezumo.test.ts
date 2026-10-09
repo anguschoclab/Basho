@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { assessMaezumo, MAEZUMO_DURATION_WEEKS } from "@/engine/systems/generation/MaezumoService";
+import { assessMaezumo } from "@/engine/systems/generation/MaezumoService";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeRecruit(id: string): Rikishi {
@@ -75,10 +75,6 @@ describe("Maezumo assessment stage", () => {
     const result = assessMaezumo(recruit, "test-seed");
     expect(result.maezumoCompleted).toBe(true);
     expect(result.rankNumber).toBe(15);
-  });
-
-  it("maezumo completes within 1 basho cycle (MAEZUMO_DURATION_WEEKS <= 2)", () => {
-    expect(MAEZUMO_DURATION_WEEKS).toBeLessThanOrEqual(2);
   });
 
   it("assessment is deterministic based on seed", () => {

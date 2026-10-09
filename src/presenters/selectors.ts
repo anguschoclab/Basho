@@ -212,16 +212,16 @@ export const selectMergerCandidates = createSelector((world: WorldState): Heya[]
   return results.sort((a, b) => a.funds - b.funds); // worst debt first
 });
 
-export interface StandingEntry {
+export interface EngineStandingEntry {
   rikishi: Rikishi;
   wins: number;
   losses: number;
 }
 
-export const selectMakuuchiStandings = createSelector((world: WorldState): StandingEntry[] => {
+export const selectMakuuchiStandings = createSelector((world: WorldState): EngineStandingEntry[] => {
   if (!world.currentBasho?.standings) return [];
   const standings = world.currentBasho.standings;
-  const results: StandingEntry[] = [];
+  const results: EngineStandingEntry[] = [];
   for (const r of world.rikishi.values()) {
     if (r.division === "makuuchi") {
       results.push({

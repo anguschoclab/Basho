@@ -11,7 +11,7 @@ export const PHASES: ReplayPhase[] = [
   "complete",
 ];
 
-export const PHASE_LABELS: Record<ReplayPhase, { en: string; ja: string }> = {
+export const REPLAY_PHASE_LABELS: Record<ReplayPhase, { en: string; ja: string }> = {
   ritual: { en: "Ritual", ja: "仕切り" },
   tachiai: { en: "Tachiai", ja: "立合い" },
   clinch: { en: "Clinch", ja: "組み" },

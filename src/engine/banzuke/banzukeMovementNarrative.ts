@@ -3,7 +3,7 @@ import { rngFromSeed } from "../rng";
 import type { MovementEvent } from "../types/banzuke";
 import type { WorldState } from "../types/world";
 
-export interface BanzukeMovementNarrativeLine {
+interface BanzukeMovementNarrativeLine {
   text: string;
   rikishiId: string;
   movementKind: string;

@@ -28,13 +28,14 @@ import {
   INCIDENT_RESTLESSNESS_THRESHOLD,
   INCIDENT_STRESS_THRESHOLD,
 } from "../../constants/engine/rikishiAgency";
+import { getEarlyShikonaMotivationBoost } from "../systems/generation/FightingNameEarly";
 
 export { REQUEST_COOLDOWN_WEEKS };
 
 /** Fold visible rikishi state into a banded disposition. Pure + deterministic. */
 export function deriveDisposition(world: WorldState, r: Rikishi): RikishiAgencyState {
   const prev = r.agency;
-  const motivation = r.motivation ?? 50;
+  const motivation = (r.motivation ?? 50) + getEarlyShikonaMotivationBoost(r);
   const stress = r.behavior?.stress ?? 0;
   const momentum = r.momentum ?? 50;
   const denied = prev?.deniedCount ?? 0;

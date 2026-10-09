@@ -88,6 +88,16 @@ describe("banzukeUI", () => {
       expect(maegashiraRow?.rankTierClass).toBe(""); // default empty
     });
 
+    it("composes the canonical Japanese rank title via getRankTitleJa", () => {
+      const rows = buildBanzukeRows(mockEntries as UIRosterEntry[], "makuuchi", "");
+
+      const maegashiraRow = rows.find((r) => r.rankKey === "maegashira_15");
+      expect(maegashiraRow?.rankTitleJa).toBe("西前頭15枚目");
+
+      const yokozunaRow = rows.find((r) => r.rankKey === "yokozuna_1");
+      expect(yokozunaRow?.rankTitleJa).toBe("東横綱");
+    });
+
     it("should only return entries for the specified division", () => {
       const rows = buildBanzukeRows(mockEntries as UIRosterEntry[], "juryo", "");
       expect(rows).toHaveLength(1);

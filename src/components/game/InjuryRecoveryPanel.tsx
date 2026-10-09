@@ -9,7 +9,7 @@ import { useGameStore } from "@/store/gameStore";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
 import {
-  FacilityCard,
+  RecoveryFacilityCard,
   InjuredRikishiCard,
   WithdrawalDialog,
 } from "./InjuryRecoveryPanelSections";
@@ -41,7 +41,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
   return (
     <div className="space-y-4">
       {/* Facility Overview */}
-      <FacilityCard facilityLevel={facilityLevel} facilityLabel={facilityLabel} />
+      <RecoveryFacilityCard facilityLevel={facilityLevel} facilityLabel={facilityLabel} />
 
       {/* Injured Roster */}
       {injuredRikishi.length === 0 ? (

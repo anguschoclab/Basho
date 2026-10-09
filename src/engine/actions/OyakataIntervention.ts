@@ -18,7 +18,7 @@ import {
   INTERVENTION_DAY_MAX,
 } from "../../constants/engine/generation";
 
-export interface InterventionResult {
+interface InterventionResult {
   success: boolean;
   reason?: string;
   impact: StateImpact;

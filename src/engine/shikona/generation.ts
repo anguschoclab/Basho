@@ -6,8 +6,15 @@
 
 import { pick } from "../utils";
 import type { ShikonaGenerationConfig, HouseStyle, PatternId, RankRule } from "./types";
-import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, PRESTIGIOUS_FULL_NAMES } from "./constants";
-import { pickPrefixByCategoryBias, pickSuffixByCategoryBias, pickConnectorToken } from "./helpers";
+import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, PRESTIGIOUS_FULL_NAMES, BASE_PATTERN_WEIGHTS } from "./constants";
+import {
+  pickPrefixByCategoryBias,
+  pickSuffixByCategoryBias,
+  pickConnectorToken,
+  mergePatternWeights,
+  choosePattern,
+  nationalityPool,
+} from "./helpers";
 
 /**
  * Generates a candidate shikona (wrestler name) based on nationality, house style, and rank rules.
@@ -20,26 +27,14 @@ import { pickPrefixByCategoryBias, pickSuffixByCategoryBias, pickConnectorToken 
  * @param {RankRule} rankRule - The rank-specific rules for prestige and pattern bias.
  * @returns {string} The generated shikona candidate.
  */
-export function generateCandidate(
+export function generateShikonaCandidate(
   rng: () => number,
   config: ShikonaGenerationConfig,
   attempt: number,
   house: HouseStyle,
   rankRule: RankRule
 ): string {
-  const NATIONALITY_PREFIXES: Record<string, string[]> = {
-    Mongolia: ["Teru", "Haku", "Ichi", "Ao", "Ryu", "Dai"],
-    Georgia: ["Tochi", "Gaga", "Koto", "Koko"],
-    Bulgaria: ["Ao", "Koto", "Bara"],
-    USA: ["Musa", "Aka", "Taka", "Dai"],
-    Brazil: ["Kai", "Asa", "Sho"],
-    Egypt: ["Oo", "Sada", "Osa"],
-    Default: ["Taka", "Waka", "Asa", "Koto", "Tochi", "Haku", "Kai"],
-  };
-
-  const nat =
-    (config.nationality && NATIONALITY_PREFIXES[config.nationality]) ||
-    NATIONALITY_PREFIXES.Default;
+  const nat = nationalityPool(config);
 
   if (config.preferPrestigious) {
     if (rng() < rankRule.prestigeChance) {
@@ -52,31 +47,12 @@ export function generateCandidate(
     }
   }
 
-  const baseWeights: Record<PatternId, number> = {
-    "nat+terrain": 18,
-    "power+any": 18,
-    "nature+noble": 16,
-    "tradition+flora": 14,
-    "regional+ending": 10,
-    "cat+cat": 18,
-    triple: 6,
-  };
-
-  const patternWeights: Record<PatternId, number> = { ...baseWeights };
-  for (const key in rankRule.patternBias) {
-    const k = key as PatternId;
-    patternWeights[k] = (patternWeights[k] ?? 0) + (rankRule.patternBias[k] ?? 0);
-  }
-  for (const key in house.patternBias) {
-    const k = key as PatternId;
-    patternWeights[k] = (patternWeights[k] ?? 0) + (house.patternBias[k] ?? 0);
-  }
-
-  const items: { item: PatternId; w: number }[] = [];
-  for (const p in patternWeights) {
-    items.push({ item: p as PatternId, w: patternWeights[p as PatternId] });
-  }
-  const pattern = items[Math.floor(rng() * items.length)]?.item || "cat+cat";
+  const patternWeights = mergePatternWeights(
+    BASE_PATTERN_WEIGHTS,
+    rankRule.patternBias,
+    house.patternBias
+  );
+  const pattern = choosePattern(rng, patternWeights);
 
   const PATTERN_HANDLERS: Record<PatternId, () => string> = {
     "nat+terrain": () => {

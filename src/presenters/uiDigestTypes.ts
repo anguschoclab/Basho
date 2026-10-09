@@ -222,22 +222,6 @@ export interface ScheduleRules {
   allowForcedRepeats?: boolean;
 }
 
-// ── NPC AI Types ──────────────────────────────────────────────────────────────
-
-/** Perception snapshot for NPC decision making */
-export interface PerceptionSnapshot {
-  rikishi: Array<{
-    id: string;
-    condition: number;
-    fatigue: number;
-    injured: boolean;
-  }>;
-  heya: {
-    funds: number;
-    reputation: number;
-  };
-  week: number;
-}
 
 // ── Bout Result Extensions ───────────────────────────────────────────────────
 
@@ -254,10 +238,4 @@ export interface EnrichedBoutResult extends BoutResult {
 export interface IntaiEntry {
   rikishi: UIRikishi;
   reason: string;
-}
-
-/** Prestige change entry */
-export interface PrestigeChange {
-  heya: Heya;
-  change: string;
 }

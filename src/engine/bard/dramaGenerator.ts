@@ -17,16 +17,6 @@ import { isGovernancePlayerRelevant } from "../npcAI/eventSurfacing";
 import { getRikishi } from "../queries";
 import { OVERSLEEP_CHANCE, OVERSLEEP_MOTIVATION_PENALTY } from "../../constants/engine/generation";
 
-export interface DramaEvent {
-  id: string;
-  type: "SCANDAL" | "GRUDGE_BATTLE" | "CRISIS";
-  severity: "minor" | "major" | "critical";
-  title: string;
-  summary: string;
-  rikishiId?: string;
-  heyaId?: string;
-}
-
 /**
  * Main entry point for drama generation during a tick.
  * Returns StateImpact describing drama generation instead of mutating directly.

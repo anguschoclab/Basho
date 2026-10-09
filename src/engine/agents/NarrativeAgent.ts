@@ -16,7 +16,7 @@ export interface NarrativeAgentContext {
   currentBashoPhase: CyclePhase;
 }
 
-export interface NarrativeAgentResult {
+interface NarrativeAgentResult {
   shouldTriggerEvent: boolean;
   eventType?: string;
   eventFocus?: string;

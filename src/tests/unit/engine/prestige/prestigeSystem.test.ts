@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { bandIndex, updateStatureBand, runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
+import { bandIndex, computeStatureBand, runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "../utils";
@@ -47,13 +47,12 @@ describe("Prestige System", () => {
     });
   });
 
-  describe("updateStatureBand", () => {
+  describe("computeStatureBand", () => {
     it('sets stature to "new" for empty or small rosters (<3)', () => {
       const r1 = mockRikishi("r1", { heyaId: heya.id, rank: "jonokuchi" });
       world.rikishi.set(r1.id, r1);
       heya.rikishiIds = [r1.id];
-      updateStatureBand(world, heya);
-      expect(heya.statureBand).toBe("new");
+      expect(computeStatureBand(world, heya)).toBe("new");
     });
 
     it('sets stature to "fragile" for basic small rosters (>=3, low score)', () => {
@@ -62,8 +61,7 @@ describe("Prestige System", () => {
         world.rikishi.set(r.id, r);
         heya.rikishiIds?.push(r.id);
       }
-      updateStatureBand(world, heya);
-      expect(heya.statureBand).toBe("fragile");
+      expect(computeStatureBand(world, heya)).toBe("fragile");
     });
 
     it('sets stature to "rebuilding" for average score >= 10', () => {
@@ -72,8 +70,7 @@ describe("Prestige System", () => {
         world.rikishi.set(r.id, r);
         heya.rikishiIds?.push(r.id);
       }
-      updateStatureBand(world, heya);
-      expect(heya.statureBand).toBe("rebuilding");
+      expect(computeStatureBand(world, heya)).toBe("rebuilding");
     });
 
     it('sets stature to "established" for average score >= 20', () => {
@@ -82,8 +79,7 @@ describe("Prestige System", () => {
         world.rikishi.set(r.id, r);
         heya.rikishiIds?.push(r.id);
       }
-      updateStatureBand(world, heya);
-      expect(heya.statureBand).toBe("established");
+      expect(computeStatureBand(world, heya)).toBe("established");
     });
 
     it('sets stature to "powerful" for max weight >= 60 and average score >= 30', () => {
@@ -91,8 +87,7 @@ describe("Prestige System", () => {
       world.rikishi.set("r2", mockRikishi("r2", { heyaId: heya.id, rank: "maegashira" })); // weight 30
       heya.rikishiIds = ["r1", "r2"];
       // avg = 45
-      updateStatureBand(world, heya);
-      expect(heya.statureBand).toBe("powerful");
+      expect(computeStatureBand(world, heya)).toBe("powerful");
     });
 
     it('sets stature to "legendary" for max weight >= 100 and average score >= 40', () => {
@@ -100,8 +95,7 @@ describe("Prestige System", () => {
       world.rikishi.set("r2", mockRikishi("r2", { heyaId: heya.id, rank: "maegashira" })); // weight 30
       heya.rikishiIds = ["r1", "r2"];
       // avg = 65
-      updateStatureBand(world, heya);
-      expect(heya.statureBand).toBe("legendary");
+      expect(computeStatureBand(world, heya)).toBe("legendary");
     });
   });
 

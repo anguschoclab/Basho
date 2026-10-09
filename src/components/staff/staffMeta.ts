@@ -43,7 +43,7 @@ export const STAFF_ACCESSOR: Record<string, (s: Staff) => string | number | unde
   competence: (s) => s.competenceBands.primary,
 };
 
-export const BAND_COLORS: Record<string, string> = {
+export const STAFF_BAND_COLORS: Record<string, string> = {
   monstrous: "text-primary",
   dominant: "text-primary",
   great: "text-success",

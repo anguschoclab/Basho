@@ -32,6 +32,6 @@ export type { StatItem, ProgressItem } from "./StatCard";
 export { ListCard } from "./ListCard";
 export type { ListRow } from "./ListCard";
 export { ProgressRow } from "./ProgressRow";
-export { RankBadge } from "./RankBadge";
+export { SimpleRankBadge } from "./RankBadge";
 export { DataTable } from "./DataTable";
 export type { Column } from "./DataTable";

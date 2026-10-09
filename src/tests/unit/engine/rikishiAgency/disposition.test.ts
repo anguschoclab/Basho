@@ -71,3 +71,43 @@ describe("deriveDisposition", () => {
     expect(deriveDisposition(world, r)).toEqual(deriveDisposition(world, r));
   });
 });
+
+describe("early-shikona motivation boost", () => {
+  it("rikishi with shikonaConferredEarly in lower divisions get a motivation lift", () => {
+    const world = MockFactory.createWorld();
+    const base = {
+      motivation: 50,
+      momentum: 50,
+      fatigue: 10,
+      behavior: { discipline: 50, mediaSavvy: 50, stress: 10 },
+    };
+    const plain = rikishi({ ...base, division: "jonokuchi" });
+    const early = rikishi({
+      ...base,
+      division: "jonokuchi",
+      shikonaConferredEarly: true,
+    });
+    const dPlain = deriveDisposition(world, plain);
+    const dEarly = deriveDisposition(world, early);
+    expect(dEarly.satisfaction).toBeGreaterThan(dPlain.satisfaction);
+  });
+
+  it("upper-division rikishi get no early-shikona lift", () => {
+    const world = MockFactory.createWorld();
+    const base = {
+      motivation: 50,
+      momentum: 50,
+      fatigue: 10,
+      behavior: { discipline: 50, mediaSavvy: 50, stress: 10 },
+    };
+    const plain = rikishi({ ...base, division: "makuuchi" });
+    const early = rikishi({
+      ...base,
+      division: "makuuchi",
+      shikonaConferredEarly: true,
+    });
+    expect(deriveDisposition(world, early).satisfaction).toBe(
+      deriveDisposition(world, plain).satisfaction
+    );
+  });
+});

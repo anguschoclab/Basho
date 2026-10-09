@@ -22,11 +22,11 @@ import type { EngineStateV2, PhysicalBody } from "../types/combat-spatial";
 import type { Side } from "../types/banzuke";
 
 /** Minimal RNG surface — matches SeededRNG without importing the class. */
-export interface HiwaRng {
+interface HiwaRng {
   next(): number;
 }
 
-export type HiwazaId = "isamiashi" | "koshikudake" | "tsukite" | "tsukihiza" | "fumidashi";
+type HiwazaId = "isamiashi" | "koshikudake" | "tsukite" | "tsukihiza" | "fumidashi";
 
 /** All hi_waza ids — used to avoid reclassifying an already-hiwaza result. */
 export const HIWAZA_IDS: ReadonlySet<string> = new Set<HiwazaId>([

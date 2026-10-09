@@ -43,9 +43,11 @@ describe("junYusho ID bug — simulateEntireBasho must return rikishi IDs", () =
     if (result.junYusho.length === 0) return;
 
     // junYusho is the second entry in sorted standings — could have same wins as yusho (lost tiebreak)
-    // Find the second sorted entry's win count
-    const sortedWins = Array.from(result.standings.values())
-      .map((s) => s.wins)
+    // Scoped to the yusho division (makuuchi): jun-yūshō is the top-division runner-up,
+    // so a juryo rikishi with more wins must not skew the expectation.
+    const sortedWins = Array.from(result.standings.entries())
+      .filter(([id]) => result.finalWorld.rikishi.get(id)?.division === "makuuchi")
+      .map(([, s]) => s.wins)
       .sort((a, b) => b - a);
     const yushoWins = sortedWins[0];
     // Second-highest is the first value < yushoWins, or yushoWins if there's a tie

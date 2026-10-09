@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll, type Mock } from "vitest";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
-import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
+import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 import type { UIDigest } from "@/presenters/uiDigest";
 import { logger } from "@/engine/utils/Logger";
 
@@ -13,7 +13,7 @@ const mockPostMessage = vi.fn();
 
 // Mock the self object for Web Worker environment before importing the worker
 interface MockWorkerGlobal {
-  postMessage: (message: EngineEvent) => void;
+  postMessage: (message: WorkerEvent) => void;
   onmessage: ((event: MessageEvent<EngineCommand>) => void) | null;
   self?: any;
 }

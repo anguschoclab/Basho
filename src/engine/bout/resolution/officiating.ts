@@ -16,7 +16,7 @@ import { tryHansoku } from "../kinjite";
 import { checkYaocho } from "../yaocho";
 import { reportScandal } from "../../systems/governance/ScandalService";
 
-export interface OfficiatingOutcome {
+interface OfficiatingOutcome {
   result: BoutResult;
   /** Heya that loses a rikishi to hansoku, when a foul occurred. */
   fouledHeyaId: string | null;

@@ -20,7 +20,7 @@ import {
   FullRankBadge,
 } from "./RankBadgeVariants";
 
-export type RankTier =
+export type RankBadgeTier =
   | "yokozuna"
   | "ozeki"
   | "sekiwake"
@@ -33,7 +33,7 @@ export type RankTier =
   | "jonokuchi";
 
 interface RankBadgeProps {
-  rank: RankTier | string;
+  rank: RankBadgeTier | string;
   rankNumber?: number;
   side?: "east" | "west";
   variant?: "pill" | "compact" | "full" | "roster";

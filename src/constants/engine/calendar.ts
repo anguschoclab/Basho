@@ -34,6 +34,9 @@ export const DAYS_PER_YEAR = 365;
 export const SENSHURAKU_DAY = 14;
 export const SENSHURAKU_FINAL_DAY = 15;
 
+// Basho final day (day-of-basho index)
+export const BASHO_FINAL_DAY = 15;
+
 // Default year for calendar calculations
 export const DEFAULT_YEAR = 2026;
 

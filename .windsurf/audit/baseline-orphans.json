@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-09T10:47:47.975Z",
+  "generatedAt": "2026-10-09T15:13:55.669Z",
   "summary": {
-    "total": 188,
-    "unreferencedExports": 188,
+    "total": 108,
+    "unreferencedExports": 108,
     "orphanRoutes": 0,
     "untickedServices": 0,
     "unusedComponents": 0,
@@ -10,42 +10,9 @@
   },
   "entries": [
     {
-      "id": "ORPH-0002",
-      "file": "src/engine/systems/NPCPersonaService.ts",
-      "symbol": "OyakataPersona",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0006",
-      "file": "src/engine/systems/basho/ExhibitionBashoService.ts",
-      "symbol": "ExhibitionBashoName",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0007",
       "file": "src/engine/systems/basho/ExhibitionBashoService.ts",
       "symbol": "isExhibitionBasho",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0008",
-      "file": "src/engine/systems/basho/ExhibitionBashoService.ts",
-      "symbol": "ExhibitionBashoInfo",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -73,7 +40,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "genuine"
     },
     {
       "id": "ORPH-0011",
@@ -87,121 +54,11 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0012",
-      "file": "src/engine/systems/bookmark/BookmarkService.ts",
-      "symbol": "getBookmarksByType",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0013",
-      "file": "src/engine/systems/bookmark/BookmarkService.ts",
-      "symbol": "getAllBookmarks",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0014",
-      "file": "src/engine/systems/economy/FinanceCalculator.ts",
-      "symbol": "HeyaFinanceResult",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0015",
       "file": "src/engine/systems/economy/KachiNokoriService.ts",
       "symbol": "KACHI_NOKORI_THRESHOLD",
       "orphanType": "unreferenced-export",
       "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0016",
-      "file": "src/engine/systems/economy/KachiNokoriService.ts",
-      "symbol": "PostBashoPayload",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0017",
-      "file": "src/engine/systems/economy/KachiNokoriService.ts",
-      "symbol": "kachiNokoriToMochikyukinPoints",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0018",
-      "file": "src/engine/systems/economy/KenshoService.ts",
-      "symbol": "BoutImportanceBucket",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0019",
-      "file": "src/engine/systems/economy/infrastructureValidation.ts",
-      "symbol": "ValidationResult",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0020",
-      "file": "src/engine/systems/generation/CandidateStats.ts",
-      "symbol": "GeneratedStats",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0021",
-      "file": "src/engine/systems/generation/CandidateStats.ts",
-      "symbol": "PotentialPackage",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0022",
-      "file": "src/engine/systems/generation/CohortTracking.ts",
-      "symbol": "CohortSummary",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
@@ -222,28 +79,6 @@
       "id": "ORPH-0024",
       "file": "src/engine/systems/generation/FightingNameEarly.ts",
       "symbol": "EARLY_SHIKONA_MOTIVATION_BOOST",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0025",
-      "file": "src/engine/systems/generation/FightingNameEarly.ts",
-      "symbol": "getEarlyShikonaMotivationBoost",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0026",
-      "file": "src/engine/systems/generation/MaezumoService.ts",
-      "symbol": "MAEZUMO_DURATION_WEEKS",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -285,17 +120,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0030",
-      "file": "src/engine/systems/generation/PreSumoBackground.ts",
-      "symbol": "PreSumoBackgroundId",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0031",
       "file": "src/engine/systems/generation/PreSumoBackground.ts",
       "symbol": "PRE_SUMO_BACKGROUNDS",
@@ -315,7 +139,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "genuine"
     },
     {
       "id": "ORPH-0033",
@@ -326,7 +150,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "genuine"
     },
     {
       "id": "ORPH-0034",
@@ -483,114 +307,15 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0048",
-      "file": "src/engine/systems/governance/GomenfudaService.ts",
-      "symbol": "GomenfudaRecord",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0049",
-      "file": "src/engine/systems/governance/KihakuService.ts",
-      "symbol": "KihakuInput",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0050",
+      "id": "ORPH-0296",
       "file": "src/engine/systems/governance/MyosekiTradingService.ts",
-      "symbol": "CANONICAL_MYOSEKI_NAMES",
+      "symbol": "executeMyosekiLease",
       "orphanType": "unreferenced-export",
       "priority": "P1",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0051",
-      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
-      "symbol": "MYOSEKI_BASE_PRICES",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0052",
-      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
-      "symbol": "initializeMyosekiMarket",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0053",
-      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
-      "symbol": "listMyosekiForSale",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0054",
-      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
-      "symbol": "returnLeasedMyoseki",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0055",
-      "file": "src/engine/systems/governance/PoliticalFavorsService.ts",
-      "symbol": "FavorOption",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0056",
-      "file": "src/engine/systems/governance/ScandalService.ts",
-      "symbol": "tickWeekGovernance",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0057",
-      "file": "src/engine/systems/governance/YokozunaService.ts",
-      "symbol": "YDCCandidate",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
+      "status": "genuine"
     },
     {
       "id": "ORPH-0058",
@@ -642,17 +367,6 @@
       "symbol": "toInjuryEvent",
       "orphanType": "unreferenced-export",
       "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0063",
-      "file": "src/engine/systems/narrative/NarrativeBands.ts",
-      "symbol": "FinancialBand",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
@@ -714,39 +428,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0069",
-      "file": "src/engine/systems/recruitment/ScoutingService.ts",
-      "symbol": "PublicRikishiInfo",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0070",
-      "file": "src/engine/systems/recruitment/ScoutingService.ts",
-      "symbol": "ScoutedAttributeTruthSnapshot",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0071",
-      "file": "src/engine/systems/recruitment/ScoutingService.ts",
-      "symbol": "ScoutedPotentialSnapshot",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0072",
       "file": "src/engine/systems/recruitment/YouthAcademyService.ts",
       "symbol": "getQualityBonus",
@@ -763,28 +444,6 @@
       "symbol": "scoutingNoiseSpread",
       "orphanType": "unreferenced-export",
       "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0074",
-      "file": "src/engine/systems/training/MentorshipService.ts",
-      "symbol": "MentorMenteeBoutEvent",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0075",
-      "file": "src/engine/systems/training/TrainingMath.ts",
-      "symbol": "TrainingModifiers",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
@@ -838,17 +497,6 @@
       "id": "ORPH-0080",
       "file": "src/engine/systems/training/TsukebitoService.ts",
       "symbol": "TSUKEBITO_SENIOR_RANK_THRESHOLD",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0081",
-      "file": "src/engine/systems/training/TsukebitoService.ts",
-      "symbol": "MAX_TSUKEBITO_PER_SENIOR",
       "orphanType": "unreferenced-export",
       "priority": "P0",
       "uiRoute": "",
@@ -912,9 +560,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0087",
+      "id": "ORPH-0297",
       "file": "src/engine/systems/training/TsukebitoService.ts",
-      "symbol": "TsukebitoAssignment",
+      "symbol": "isEligibleTsukebito",
       "orphanType": "unreferenced-export",
       "priority": "P0",
       "uiRoute": "",
@@ -928,39 +576,6 @@
       "symbol": "getSeverityWeight",
       "orphanType": "unreferenced-export",
       "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0090",
-      "file": "src/engine/agents/CrisisAgent.ts",
-      "symbol": "CrisisAgentResult",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0091",
-      "file": "src/engine/agents/MediaAgent.ts",
-      "symbol": "MediaAgentResult",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0092",
-      "file": "src/engine/agents/NarrativeAgent.ts",
-      "symbol": "NarrativeAgentResult",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
@@ -1000,31 +615,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0094",
-      "file": "src/engine/npcAI/MemoryStore.ts",
-      "symbol": "type OyakataMemory",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0095",
       "file": "src/engine/npcAI/MemoryStore.ts",
       "symbol": "emptyOyakataMemory",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0096",
-      "file": "src/engine/npcAI/OpponentModel.ts",
-      "symbol": "suggestCounterTactic",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1066,28 +659,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0100",
-      "file": "src/engine/npcAI/opponentLearning.ts",
-      "symbol": "BoutLearningCtx",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0101",
-      "file": "src/engine/npcAI/planOutcomes.ts",
-      "symbol": "PlanOutcome",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0102",
       "file": "src/engine/actions/InjuredEncouragement.ts",
       "symbol": "ENCOURAGEMENT_MOTIVATION_BOOST",
@@ -1099,130 +670,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0103",
-      "file": "src/engine/actions/OyakataIntervention.ts",
-      "symbol": "InterventionResult",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0104",
-      "file": "src/engine/advisor/AdvisorService.ts",
-      "symbol": "getPlayerDigest",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0105",
-      "file": "src/engine/ai/types.ts",
-      "symbol": "AIConstraintType",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0106",
-      "file": "src/engine/ai/types.ts",
-      "symbol": "AIRecommendationCategory",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0107",
-      "file": "src/engine/ai/types.ts",
-      "symbol": "AIRecommendationPriority",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0108",
-      "file": "src/engine/banzuke/banzukeHelpers.ts",
-      "symbol": "getRankTitleJa",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0109",
-      "file": "src/engine/banzuke/banzukeMovementNarrative.ts",
-      "symbol": "BanzukeMovementNarrativeLine",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0110",
-      "file": "src/engine/bard/BardEngine.ts",
-      "symbol": "ResolutionPath",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0112",
-      "file": "src/engine/bard/BardEngine.ts",
-      "symbol": "RegistryEntry",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0113",
-      "file": "src/engine/bard/BardEngine.ts",
-      "symbol": "BardArchive",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0114",
       "file": "src/engine/bard/BardEngine.ts",
       "symbol": "interpolate",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0115",
-      "file": "src/engine/bard/dramaGenerator.ts",
-      "symbol": "DramaEvent",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1264,17 +714,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0119",
-      "file": "src/engine/bard/narrativeContext.ts",
-      "symbol": "CrowdStyle",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0120",
       "file": "src/engine/bard/narrativeContext.ts",
       "symbol": "VENUE_PROFILES",
@@ -1286,31 +725,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0121",
-      "file": "src/engine/bard/narrativeEventMap.ts",
-      "symbol": "NarrativeEventMapEntry",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0122",
       "file": "src/engine/bout/BoutAI.ts",
       "symbol": "chooseBaseTactic",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0123",
-      "file": "src/engine/bout/CareerHighlights.ts",
-      "symbol": "CareerHighlightType",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1333,17 +750,6 @@
       "id": "ORPH-0125",
       "file": "src/engine/bout/ReplayMetadata.ts",
       "symbol": "getBoutAnimationFamily",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0211",
-      "file": "src/engine/bout/boutAchievements.ts",
-      "symbol": "DetectKinboshiOptions",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1396,86 +802,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0132",
-      "file": "src/engine/bout/boutSpatial.ts",
-      "symbol": "isOutOfRing",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0213",
-      "file": "src/engine/bout/hiwaza.ts",
-      "symbol": "HiwaRng",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0214",
-      "file": "src/engine/bout/hiwaza.ts",
-      "symbol": "HiwazaId",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0212",
       "file": "src/engine/bout/hiwaza.ts",
       "symbol": "classifyHiwaza",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0139",
-      "file": "src/engine/bout/kachiNokori.ts",
-      "symbol": "hasKachiKoshi",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0140",
-      "file": "src/engine/bout/kachiNokori.ts",
-      "symbol": "isMakeKoshiConfirmed",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0141",
-      "file": "src/engine/bout/kachiNokori.ts",
-      "symbol": "calculateKachiNokoriForStandings",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0142",
-      "file": "src/engine/bout/kachiNokori.ts",
-      "symbol": "getYushoRaceLeaders",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1498,17 +827,6 @@
       "id": "ORPH-0144",
       "file": "src/engine/bout/shinitai.ts",
       "symbol": "SHINITAI_INSTABILITY_DIFF_THRESHOLD",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0216",
-      "file": "src/engine/bout/terminalKimarite.ts",
-      "symbol": "TerminalContext",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1561,17 +879,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0148",
-      "file": "src/engine/core/EntityCollection.ts",
-      "symbol": "EntityQueryOptions",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0150",
       "file": "src/engine/core/ImpactBuilder.ts",
       "symbol": "updateHeyaImpact",
@@ -1597,17 +904,6 @@
       "id": "ORPH-0152",
       "file": "src/engine/core/ImpactBuilder.ts",
       "symbol": "updateWorldFieldImpact",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0153",
-      "file": "src/engine/core/RNGRegistry.ts",
-      "symbol": "SystemRNGKey",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1660,17 +956,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0158",
-      "file": "src/engine/lifecycle/retirementNarrative.ts",
-      "symbol": "RetirementNarrativeLine",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0159",
       "file": "src/engine/matchmaking/DramaMatchmaker.ts",
       "symbol": "isMakuuchiDebut",
@@ -1696,17 +981,6 @@
       "id": "ORPH-0161",
       "file": "src/engine/matchmaking/MatchmakingPhases.ts",
       "symbol": "DEFAULT_MATCHMAKING_RULES",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0162",
-      "file": "src/engine/matchmaking/MatchmakingPhases.ts",
-      "symbol": "CandidateBuildOptions",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1748,53 +1022,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0166",
+      "id": "ORPH-0298",
       "file": "src/engine/prestige/prestigeSystem.ts",
-      "symbol": "updateStatureBand",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0167",
-      "file": "src/engine/shikona/constants.ts",
-      "symbol": "BASE_PATTERN_WEIGHTS",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0168",
-      "file": "src/engine/shikona/helpers.ts",
-      "symbol": "mergePatternWeights",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0169",
-      "file": "src/engine/shikona/helpers.ts",
-      "symbol": "choosePattern",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0170",
-      "file": "src/engine/shikona/helpers.ts",
-      "symbol": "nationalityPool",
+      "symbol": "computeStatureBand",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1847,28 +1077,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0175",
-      "file": "src/engine/shikona/types.ts",
-      "symbol": "PatternWeights",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0176",
-      "file": "src/engine/shikona/types.ts",
-      "symbol": "HouseStyleId",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0177",
       "file": "src/engine/strategy/NPCFinanceCalculator.ts",
       "symbol": "getFinanceStrategy",
@@ -1883,28 +1091,6 @@
       "id": "ORPH-0178",
       "file": "src/engine/strategy/NPCGovernanceCalculator.ts",
       "symbol": "getGovernanceStrategy",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0179",
-      "file": "src/engine/strategy/NPCStrategyService.ts",
-      "symbol": "OyakataScoutingObservation",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0180",
-      "file": "src/engine/strategy/NPCStrategyService.ts",
-      "symbol": "OyakataPersonnelObservation",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1968,64 +1154,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0186",
-      "file": "src/engine/utils/Logger.ts",
-      "symbol": "LogLevel",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0187",
       "file": "src/engine/utils/Logger.ts",
       "symbol": "logger",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0198",
-      "file": "src/engine/utils/entityAccess.ts",
-      "symbol": "getHeyaOrThrow",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0199",
-      "file": "src/engine/utils/entityAccess.ts",
-      "symbol": "getRikishiOrThrow",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0200",
-      "file": "src/engine/utils/entityAccess.ts",
-      "symbol": "getHeyaRikishi",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0201",
-      "file": "src/engine/utils/entityAccess.ts",
-      "symbol": "getAllActiveRikishi",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -2059,17 +1190,6 @@
       "id": "ORPH-0206",
       "file": "src/engine/utils/string.ts",
       "symbol": "formatShikona",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0207",
-      "file": "src/engine/worker/types.ts",
-      "symbol": "WorkerMessage",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",

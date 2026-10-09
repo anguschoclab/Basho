@@ -2,7 +2,7 @@
 // Tracks rikishi career records, heya records, and historical snapshots
 
 export type {
-  BashoPerformance,
+  AlmanacBashoPerformance,
   RikishiCareerRecord,
   HeyaRecord,
   OyakataRecord,

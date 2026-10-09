@@ -1,7 +1,7 @@
 /**
- * RankBadge.tsx
+ * RankBadge.tsx (exports SimpleRankBadge)
  * =============
- * Canonical rank badge using existing CSS rank utility classes.
+ * Simple rank badge using existing CSS rank utility classes.
  * Delegates visual weight to .rank-yokozuna, .rank-ozeki, etc.
  */
 
@@ -29,7 +29,7 @@ function getRankClass(rank: string): string {
   return "rank-makushita";
 }
 
-export function RankBadge({ rank, rankNumber, side, className }: RankBadgeProps) {
+export function SimpleRankBadge({ rank, rankNumber, side, className }: RankBadgeProps) {
   const rankClass = getRankClass(rank);
   const label =
     rankNumber && rankNumber > 0

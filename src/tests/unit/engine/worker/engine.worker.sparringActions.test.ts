@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "../utils";
-import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
+import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 import type { WorldState } from "@/engine/types/world";
 import { assignSparringPair } from "@/engine/systems/training/SparringService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -12,7 +12,7 @@ const originalOnmessage = globalThis.onmessage;
 const mockPostMessage = vi.fn();
 
 interface MockWorkerGlobal {
-  postMessage: (message: EngineEvent) => void;
+  postMessage: (message: WorkerEvent) => void;
   onmessage: ((event: MessageEvent<EngineCommand>) => void) | null;
   self?: any;
 }

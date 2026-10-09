@@ -14,7 +14,7 @@ export * from "./separator";
 export * from "./sheet";
 export * from "./sidebar";
 export * from "./skeleton";
-export { Toaster as SonnerToaster } from "./sonner";
+export { SonnerToaster } from "./sonner";
 export * from "./switch";
 export * from "./tabs";
 export * from "./toast";

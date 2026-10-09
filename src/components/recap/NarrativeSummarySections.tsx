@@ -237,7 +237,7 @@ export function MovementsSection({ groupedEvents }: { groupedEvents: GroupedNarr
 }
 
 /** Governing body deliberations + historical timeline drift. */
-export function GovernanceSection({
+export function NarrativeGovernanceSection({
   groupedEvents,
   governanceLog,
 }: {

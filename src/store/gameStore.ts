@@ -8,7 +8,7 @@
 import { create } from "zustand";
 import type { UIDigest } from "../presenters/uiDigest";
 import type { WorldState } from "../engine/types/world";
-import type { EngineCommand, EngineEvent } from "../engine/worker/types";
+import type { EngineCommand, WorkerEvent } from "../engine/worker/types";
 import { warn } from "../engine/utils/Logger";
 
 /**
@@ -106,7 +106,7 @@ function initWorker(get: StoreGet, set: StoreSet) {
     onWorkerFailure("Simulation worker returned an unreadable message");
   };
 
-  worker.onmessage = (event: MessageEvent<EngineEvent>) => {
+  worker.onmessage = (event: MessageEvent<WorkerEvent>) => {
     const data = event.data;
 
     switch (data.type) {

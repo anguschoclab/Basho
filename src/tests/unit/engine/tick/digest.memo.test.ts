@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { EngineEvent } from "@/engine/worker/types";
+import type { WorkerEvent } from "@/engine/worker/types";
 
 /**
  * P4.12: Digest Memoization Tests (for P2.5).
@@ -9,7 +9,7 @@ import type { EngineEvent } from "@/engine/worker/types";
 
 describe("P2.5: Digest memoization (revision counter)", () => {
   it("TICK_COMPLETED event includes digestRevision field", () => {
-    const event: EngineEvent = {
+    const event: WorkerEvent = {
       type: "TICK_COMPLETED",
       digest: {} as any,
       digestRevision: 1,
@@ -19,7 +19,7 @@ describe("P2.5: Digest memoization (revision counter)", () => {
   });
 
   it("DIGEST_UPDATED event includes digestRevision field", () => {
-    const event: EngineEvent = {
+    const event: WorkerEvent = {
       type: "DIGEST_UPDATED",
       digest: {} as any,
       digestRevision: 5,
@@ -29,7 +29,7 @@ describe("P2.5: Digest memoization (revision counter)", () => {
   });
 
   it("digestRevision is optional (backward compatible)", () => {
-    const event: EngineEvent = {
+    const event: WorkerEvent = {
       type: "TICK_COMPLETED",
       digest: {} as any,
     };

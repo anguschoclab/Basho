@@ -7,7 +7,7 @@
 import { describe, it, expect } from "vitest";
 import {
   STATUS_COLORS,
-  BAND_COLORS,
+  CONDITION_BAND_COLORS,
   getHeatBandColor,
   getHeatBandLabel,
 } from "@/components/ui/colorMaps";
@@ -21,16 +21,16 @@ describe("colorMaps", () => {
     });
   });
 
-  describe("BAND_COLORS", () => {
+  describe("CONDITION_BAND_COLORS", () => {
     it("should have band color mappings", () => {
-      expect(BAND_COLORS).toBeDefined();
-      expect(BAND_COLORS.peak).toBeDefined();
-      expect(BAND_COLORS.good).toBeDefined();
-      expect(BAND_COLORS.cold).toBeDefined();
-      expect(BAND_COLORS.hot).toBeDefined();
+      expect(CONDITION_BAND_COLORS).toBeDefined();
+      expect(CONDITION_BAND_COLORS.peak).toBeDefined();
+      expect(CONDITION_BAND_COLORS.good).toBeDefined();
+      expect(CONDITION_BAND_COLORS.cold).toBeDefined();
+      expect(CONDITION_BAND_COLORS.hot).toBeDefined();
       // Check the structure includes label and color
-      expect(BAND_COLORS.peak.label).toBeDefined();
-      expect(BAND_COLORS.peak.color).toBeDefined();
+      expect(CONDITION_BAND_COLORS.peak.label).toBeDefined();
+      expect(CONDITION_BAND_COLORS.peak.color).toBeDefined();
     });
   });
 

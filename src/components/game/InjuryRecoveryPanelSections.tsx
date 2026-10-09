@@ -30,7 +30,7 @@ type InjuredInfo = Digest["injuredRikishi"][number];
 type GomenfudaProjection = ReturnType<typeof projectGomenfuda>;
 
 /** Recovery facility overview card. */
-export function FacilityCard({
+export function RecoveryFacilityCard({
   facilityLevel,
   facilityLabel,
 }: {

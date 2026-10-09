@@ -1,5 +1,8 @@
 import { UIRosterEntry, rankScore } from "./rikishi";
 import { isSanyakuRank, getRankDisplayEntry } from "@/constants/engine/rankDisplay";
+import { getRankTitleJa } from "@/engine/banzuke/banzukeHelpers";
+import { RANK_HIERARCHY, toRankPosition } from "@/engine/types/banzuke";
+import type { Rank } from "@/engine/types/banzuke";
 
 export interface UIRankRow {
   rankLabel: string;
@@ -104,15 +107,9 @@ export function buildBanzukeRows(
 
     // Calculate Japanese title
     const side = (sample?.side ?? "east") as "east" | "west";
-    const rankTitleJa =
-      rank === "maegashira" ||
-      rank === "juryo" ||
-      rank === "makushita" ||
-      rank === "sandanme" ||
-      rank === "jonidan" ||
-      rank === "jonokuchi"
-        ? `${baseLabel.charAt(0)}#${rankNumber}${side === "east" ? "東" : "西"}`
-        : `${baseLabel}${side === "east" ? "東" : "西"}`;
+    const rankTitleJa = RANK_HIERARCHY[rank as Rank]
+      ? getRankTitleJa(toRankPosition({ rank: rank as Rank, side, rankNumber }))
+      : `${baseLabel}${side === "east" ? "東" : "西"}`;
 
     result.push({
       rankLabel,

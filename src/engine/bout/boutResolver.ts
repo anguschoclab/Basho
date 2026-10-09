@@ -38,14 +38,14 @@ import { applyGyojiOfficiation } from "./resolution/gyoji";
 import {
   RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
   RIVALRY_SPITE_MENTAL_MULTIPLIER,
-  DEFAULT_YEAR,
   DEFAULT_DAY,
   DEFAULT_BASHO_NUMBER,
   RIVALRY_NORMALIZATION_DIVISOR,
-  DEFAULT_STAT_VALUE,
   STAT_CLAMP_MIN,
   STAT_CLAMP_MAX,
 } from "../../constants/engine/physics";
+import { DEFAULT_YEAR } from "../../constants/engine/calendar";
+import { DEFAULT_STAT_VALUE } from "../../constants/engine/rikishi";
 
 // Phase 8 complete: kimariteClassifier.ts owns all kimarite selection.
 // kimariteEvaluator.ts has been deleted.

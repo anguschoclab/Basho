@@ -21,7 +21,7 @@ export interface AIGoal {
   deadlineWeek?: number;
 }
 
-export type AIConstraintType =
+type AIConstraintType =
   | "max_intensity"
   | "min_reserve"
   | "avoid_rival"
@@ -65,10 +65,10 @@ export interface AIPlan {
   baseline?: PlanBaseline;
 }
 
-export type AIRecommendationCategory =
+type AIRecommendationCategory =
   "training" | "recruitment" | "finance" | "bout" | "governance";
 
-export type AIRecommendationPriority = "low" | "medium" | "high" | "critical";
+type AIRecommendationPriority = "low" | "medium" | "high" | "critical";
 
 export interface AIRecommendation {
   id: string;

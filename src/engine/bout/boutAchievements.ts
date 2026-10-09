@@ -13,7 +13,7 @@
 import type { Rikishi } from "../types/rikishi";
 import type { BoutAward, BoutResult } from "../types/basho";
 
-export interface DetectKinboshiOptions {
+interface DetectKinboshiOptions {
   /**
    * True for playoff (kettei-sen) bouts. Per JSA rules a kinboshi is only
    * earned in honbasho torikumi — playoff wins never award a gold star.

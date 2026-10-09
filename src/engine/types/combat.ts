@@ -200,22 +200,6 @@ export type KimariteId =
   | "fusensho"
   | "hansoku";
 
-/** Type representing kimarite class. */
-export type KimariteClass =
-  | "force_out"
-  | "push"
-  | "thrust"
-  | "throw"
-  | "trip"
-  | "twist"
-  | "slap_pull"
-  | "lift"
-  | "rear"
-  | "evasion"
-  | "special"
-  | "result"
-  | "forfeit";
-
 /** Type representing bout tactic. */
 export type BoutTactic =
   | "STANDARD"

@@ -153,7 +153,15 @@ export function MarketListingTab({ market }: { market: Market }) {
 }
 
 /** "My Shares" tab — stocks owned or leased by the player stable. */
-export function OwnedSharesTab({ market }: { market: Market }) {
+export function OwnedSharesTab({
+  market,
+  onListForSale,
+  onEndLease,
+}: {
+  market: Market;
+  onListForSale?: (stock: MyosekiStock) => void;
+  onEndLease?: (stock: MyosekiStock) => void;
+}) {
   return (
     <Card>
       <CardHeader>
@@ -180,18 +188,42 @@ export function OwnedSharesTab({ market }: { market: Market }) {
                     Tier: {stock.prestigeTier}
                   </p>
                 </div>
-                <div className="text-right">
-                  <Badge
-                    variant={stock.status === "held" ? "default" : "secondary"}
-                    className="mb-1"
-                  >
-                    {stock.status.toUpperCase()}
-                  </Badge>
-                  {stock.status === "leased" && (
-                    <p className="text-xs text-muted-foreground">
-                      Annual Fee: ¥{(stock.leaseFee ?? 0).toLocaleString()}
-                    </p>
-                  )}
+                <div className="text-right space-y-2">
+                  <div>
+                    <Badge
+                      variant={stock.status === "held" ? "default" : "secondary"}
+                      className="mb-1"
+                    >
+                      {stock.status.toUpperCase()}
+                    </Badge>
+                    {stock.status === "leased" && (
+                      <p className="text-xs text-muted-foreground">
+                        Annual Fee: ¥{(stock.leaseFee ?? 0).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                  {stock.status === "held" &&
+                    stock.holderId === market.playerHeya?.oyakataId &&
+                    onListForSale && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onListForSale(stock)}
+                      >
+                        List for Sale
+                      </Button>
+                    )}
+                  {stock.status === "leased" &&
+                    stock.holderId === market.playerHeya?.oyakataId &&
+                    onEndLease && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onEndLease(stock)}
+                      >
+                        End Lease
+                      </Button>
+                    )}
                 </div>
               </div>
             ))}

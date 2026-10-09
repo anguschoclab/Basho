@@ -49,9 +49,3 @@ export const SIMULATION_CONFIG = {
     maxBoutChance: 0.06,
   },
 };
-
-/**
- * Historical/Calender constants
- */
-export const BASHO_MONTHS = [1, 3, 5, 7, 9, 11];
-export const BASHO_NAMES = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"] as const;

@@ -123,9 +123,6 @@ export const TRAIT_MULTIPLIER_DIVISOR = 50;
 export const ADJUST_SCORE_DEFAULT_MIN = 0;
 export const ADJUST_SCORE_DEFAULT_MAX = 100;
 
-// Basho final day
-export const BASHO_FINAL_DAY = 15;
-
 // Kachikoshi/Makekoshi precipice
 export const KOSHI_PRECIPICE_LOSSES = 7;
 export const KACHIKOSHI_PRECIPICE_WINS = 7;
@@ -179,7 +176,6 @@ export const QUIRK_COUNT_BASE = 2;
 export const WEEKLY_TICK_THRESHOLD = 7;
 export const MAX_DAYS_ADVANCE = 365;
 export const POST_BASHO_DAYS = 7;
-export const INTERIM_DAYS = 42;
 
 // NPC weekly decision constants
 export const TOP_RIKISHI_COUNT = 5;

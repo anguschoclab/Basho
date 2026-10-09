@@ -1,7 +1,7 @@
 // BoutCanvas barrel — implementation decomposed into boutCanvas/ directory.
 
 export type { ReplayPhase, BodyPhase, Vec2, RikishiState, Particle } from "./boutCanvas/types";
-export { PHASES, PHASE_LABELS, CROWD_TEXT } from "./boutCanvas/constants";
+export { PHASES, REPLAY_PHASE_LABELS, CROWD_TEXT } from "./boutCanvas/constants";
 export { lerp, clamp, easeOut, easeInOut } from "./boutCanvas/math";
 export {
   drawDohyo,

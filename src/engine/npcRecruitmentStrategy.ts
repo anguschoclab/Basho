@@ -4,9 +4,9 @@ import type { Oyakata, OyakataArchetype } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { perceivedTalentSeed } from "./systems/recruitment/perceivedTalent";
+import { MONTHS_PER_YEAR } from "../constants/engine/calendar";
 import {
   MONTHLY_BURN_PER_RIKISHI,
-  MONTHS_PER_YEAR,
   RECRUITMENT_BASE_RISK_MODIFIER,
   RECRUITMENT_AMBITION_THRESHOLD_RISK,
   RECRUITMENT_RISK_THRESHOLD_RISK,

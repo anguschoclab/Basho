@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateRecommendations, getPlayerDigest } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/advisor/AdvisorService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { AIRecommendation } from "@/engine/ai/types";
 
@@ -56,33 +56,6 @@ describe("AdvisorService.generateRecommendations — return shape (Step 2 regres
     const world = MockFactory.createWorld();
     const recs: AIRecommendation[] = generateRecommendations(world);
     expect(Array.isArray(recs)).toBe(true);
-  });
-});
-
-describe("AdvisorService.getPlayerDigest — return shape", () => {
-  it("returns a digest with expected fields", () => {
-    const heya = MockFactory.createHeya("heya-1");
-    const world = MockFactory.createWorld({
-      heyas: new Map([["heya-1", heya]]),
-      playerHeyaId: "heya-1",
-    });
-
-    const digest = getPlayerDigest(world, "heya-1");
-
-    expect(digest).toBeDefined();
-    expect(digest?.heyaId).toBe("heya-1");
-    expect(typeof digest?.runwayBand).toBe("string");
-    expect(typeof digest?.rosterStrengthBand).toBe("string");
-    expect(typeof digest?.moraleBand).toBe("string");
-    expect(typeof digest?.rivalryClusters).toBe("number");
-    expect(typeof digest?.financiallyFragileHeyas).toBe("number");
-    expect(Array.isArray(digest?.recommendations)).toBe(true);
-  });
-
-  it("returns undefined when no playerHeyaId is set", () => {
-    const world = MockFactory.createWorld({ playerHeyaId: undefined } as any);
-    const digest = getPlayerDigest(world);
-    expect(digest).toBeUndefined();
   });
 });
 

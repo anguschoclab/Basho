@@ -71,11 +71,6 @@ export function isBodyFalling(body: PhysicalBody): boolean {
   return Math.abs(body.cogOffset) > maxOffset;
 }
 
-export function isOutOfRing(body: PhysicalBody): boolean {
-  const dist = Math.sqrt(body.x * body.x + body.z * body.z);
-  return dist > TAWARA_RADIUS;
-}
-
 export function tawaraBounceResistance(toePos: number): number {
   if (toePos < 0) return 0;
   if (toePos < TOE_POSITION_EDGE_THRESHOLD) return EDGE_DISTANCE_AT_TOE;

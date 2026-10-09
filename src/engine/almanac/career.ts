@@ -3,7 +3,7 @@ import type { Rikishi } from "../types/rikishi";
 import type { BashoName } from "../types/basho";
 import type { Division, Rank } from "../types/banzuke";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import type { BashoPerformance, RikishiCareerRecord } from "./types";
+import type { AlmanacBashoPerformance, RikishiCareerRecord } from "./types";
 import {
   CAREER_BASHO_BASE,
   CAREER_BASHO_RANK_MULTIPLIER,
@@ -49,7 +49,7 @@ export function generateCareerRecord(
   const debutBashoIndex = Math.floor(rng() * 6);
   const bashoNames: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
 
-  const bashoHistory: BashoPerformance[] = [];
+  const bashoHistory: AlmanacBashoPerformance[] = [];
   let currentRank: Rank = "jonokuchi";
   let currentDivision: Division = "jonokuchi";
   let rankNumber: number | undefined = undefined;
@@ -88,7 +88,7 @@ export function generateCareerRecord(
 
     const abs = rng() < ABSENCE_CHANCE ? Math.floor(ABSENCE_MIN + rng() * ABSENCE_RANGE) : 0;
 
-    const record: BashoPerformance = {
+    const record: AlmanacBashoPerformance = {
       year,
       bashoNumber: (bashoIndex + 1) as 1 | 2 | 3 | 4 | 5 | 6,
       bashoName: bashoNames[bashoIndex],

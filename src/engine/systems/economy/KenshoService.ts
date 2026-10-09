@@ -27,7 +27,7 @@ import {
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /** Type representing bout importance bucket. */
-export type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
+type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
 
 const TIER_CAPS: Record<BoutImportanceBucket, { maxT4Plus: number; maxT3: number }> = {
   low: { maxT4Plus: KENSHO_LOW_MAX_T4_PLUS, maxT3: KENSHO_LOW_MAX_T3 },

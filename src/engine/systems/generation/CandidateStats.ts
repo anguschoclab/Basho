@@ -55,11 +55,11 @@ import {
   HEIGHT_GEN_MAX,
 } from "../../../constants/engine/generation";
 
-export interface GeneratedStats extends RikishiStats {
+interface GeneratedStats extends RikishiStats {
   height: number;
 }
 
-export interface PotentialPackage {
+interface PotentialPackage {
   stats: RikishiStats;
   heightCm: number;
   weightKg: number;

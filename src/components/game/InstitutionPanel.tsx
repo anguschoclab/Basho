@@ -12,7 +12,7 @@ import {
   WelfareSection,
   GovernanceSection,
   PersonaSection,
-  type WelfareState,
+  type WelfarePanelState,
 } from "./InstitutionPanelSections";
 
 /**
@@ -30,7 +30,7 @@ export function InstitutionPanel({
   oyakataQuirks: string[];
   oyakataTraits: OyakataTraits | null | undefined;
 }) {
-  const welfare = (heya as Heya & { welfareState?: WelfareState }).welfareState;
+  const welfare = (heya as Heya & { welfareState?: WelfarePanelState }).welfareState;
   const risk = clamp(Number(welfare?.welfareRisk ?? 10), 0, 100);
   const compliance = String(welfare?.complianceState ?? "compliant");
 

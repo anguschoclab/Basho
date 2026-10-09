@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/useGame";
@@ -41,7 +41,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const world = state.world;
   const isLoaded = !!world;
-  const [deliberationCandidateId, setDeliberationCandidateId] = useState<string | null>(null);
   const { isDismissed: successionDismissed, dismiss: dismissSuccession } = useSuccessionDismissal(
     world?.week ?? 0
   );
@@ -73,19 +72,6 @@ export default function Dashboard() {
       loadFromAutosave();
     }
   }, [isLoaded, world, hasAutosave, loadFromAutosave]);
-
-  useEffect(() => {
-    if (!world?.events?.log) return;
-    const evt = world.events.log
-      .slice()
-      .reverse()
-      .find((e) => (e as { type?: string }).type === "PROMOTION_DELIBERATION");
-    if (evt && !deliberationCandidateId) {
-      setDeliberationCandidateId(
-        (evt as { context?: { rikishiId?: string } }).context?.rikishiId ?? null
-      );
-    }
-  }, [world?.events?.log, deliberationCandidateId]);
 
   if (!isLoaded || !world) {
     return (

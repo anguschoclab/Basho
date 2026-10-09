@@ -12,7 +12,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
-import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
+import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 import type { WorldState } from "@/engine/types/world";
 
 const originalSelf = globalThis.self;
@@ -22,7 +22,7 @@ const originalOnmessage = globalThis.onmessage;
 const mockPostMessage = vi.fn();
 
 interface MockWorkerGlobal {
-  postMessage: (message: EngineEvent) => void;
+  postMessage: (message: WorkerEvent) => void;
   onmessage: ((event: MessageEvent<EngineCommand>) => void) | null;
   self?: unknown;
 }
@@ -64,7 +64,7 @@ const send = async (data: EngineCommand) => {
 /** The world the worker last synced to the main thread. */
 function lastSyncedWorld(): WorldState {
   const calls = mockPostMessage.mock.calls
-    .map((c) => c[0] as EngineEvent)
+    .map((c) => c[0] as WorkerEvent)
     .filter((e) => e.type === "WORLD_UPDATED");
   expect(calls.length, "worker never emitted WORLD_UPDATED").toBeGreaterThan(0);
   return (calls[calls.length - 1] as { world: WorldState }).world;

@@ -23,7 +23,7 @@ export const CONSECUTIVE_WITHDRAWAL_MULTIPLIER = 1.5;
 export const SANCTION_THRESHOLD = 3;
 
 /** Gomenfuda record */
-export interface GomenfudaRecord {
+interface GomenfudaRecord {
   id: Id;
   heyaId: Id;
   rikishiId: Id;

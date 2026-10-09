@@ -23,6 +23,8 @@ export type EngineCommand =
     }
   | { type: "BUY_MYOSEKI"; myosekiId: string; buyerId: string; buyerHeyaId: string }
   | { type: "LEASE_MYOSEKI"; myosekiId: string; buyerId: string }
+  | { type: "LIST_MYOSEKI_FOR_SALE"; myosekiId: string; holderId: string; askingPrice?: number }
+  | { type: "RETURN_MYOSEKI_LEASE"; myosekiId: string; holderId: string }
   | { type: "RENEW_SPONSOR"; relationshipId: string; sponsorId: string }
   | { type: "REQUEST_BAILOUT"; heyaId: string }
   | { type: "PREPAY_LOAN"; heyaId: string; loanId: string }
@@ -150,7 +152,7 @@ export type EngineCommand =
     };
 
 /** Worker -> UI Events */
-export type EngineEvent =
+export type WorkerEvent =
   | { type: "READY"; worldExists: boolean }
   | { type: "TICK_COMPLETED"; digest: UIDigest; digestRevision?: number }
   | { type: "DIGEST_UPDATED"; digest: UIDigest; digestRevision?: number }
@@ -162,6 +164,3 @@ export type EngineEvent =
       trace: Array<{ phaseName: string; durationMs: number; impactSize?: number }>;
     };
 
-export interface WorkerMessage<T = EngineCommand | EngineEvent> {
-  data: T;
-}

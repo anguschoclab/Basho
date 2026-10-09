@@ -65,9 +65,6 @@ export const RIVALRY_TENSION_HYPE_THRESHOLD = 0.1;
 /** Hype probability threshold */
 export const HYPE_PROBABILITY_THRESHOLD = 0.5;
 
-/** Streak threshold for main event */
-export const STREAK_MAIN_EVENT_THRESHOLD = 10;
-
 /** Streak impact per win */
 export const STREAK_IMPACT_PER_WIN = 4;
 
@@ -100,9 +97,6 @@ export const REPUTATION_IMPACT_RANGE = 100;
 
 /** Political capital impact range */
 export const POLITICAL_CAPITAL_IMPACT_RANGE = 100;
-
-/** Hot pair heat threshold */
-export const HOT_PAIR_HEAT_THRESHOLD = 30;
 
 /** Modest statement impact */
 export const MODEST_STATEMENT_IMPACT = { rep: 5, heat: -10 };

@@ -29,6 +29,7 @@ import {
   MOCHIKYUKIN_RANK_FLOORS,
 } from "../../../constants/engine/economic";
 import { getRikishi } from "../../queries";
+import { kachiNokoriToMochikyukinPoints } from "./KachiNokoriService";
 
 /**
  * Accumulate mochikyukin points for a rikishi based on basho results.
@@ -69,7 +70,10 @@ export function accumulateMochikyukinPoints(
 
   // Per kachi-nokori (wins above 8) — aligned to real JSA system
   if (bashoResults.kachiNokori > 0) {
-    pointsEarned += bashoResults.kachiNokori * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN;
+    pointsEarned += kachiNokoriToMochikyukinPoints(
+      bashoResults.kachiNokori,
+      MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN
+    );
   }
 
   // Yusho (championship)

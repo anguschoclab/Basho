@@ -37,56 +37,8 @@ const isObj = (m: Measurement) => m.kind === "const-obj" || m.kind === "const-ar
 const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   // boutNarrative.ts::generateBoutNarrative — split 2026-10 into bout/narrative/ beat modules
 
-
-
-
-
-
-
-
-
   "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 298, kind: "function" },
-  "src/engine/simulation/TournamentSimulator.ts::simulateEntireBasho": { loc: 273, kind: "function" },
 
-  "src/engine/npcAI/execution.ts::executeAgentDecisions": { loc: 251, kind: "function" },
-  "src/engine/bout/physics/tickBeltBattle.ts::tickBeltBattle": { loc: 241, kind: "function" },
-  "src/engine/bout/physics/tickPushBattle.ts::tickPushBattle": { loc: 231, kind: "function" },
-
-  "src/engine/simulation/AutoSimService.ts::runAutoSim": { loc: 207, kind: "function" },
-  "src/engine/core/ImpactResolver.ts::_applyImpact": { loc: 206, kind: "function" },
-  "src/engine/tick/phases/phase06_yearly_boundary.ts::phase06_yearly_boundary": { loc: 199, kind: "function" },
-
-
-
-
-  "src/engine/tick/phases/phase05_monthly_boundary.ts::phase05_monthly_boundary": { loc: 183, kind: "function" },
-  "src/engine/banzuke.ts::updateBanzuke": { loc: 182, kind: "function" },
-
-  "src/engine/bout/KimariteSelectionEngine.ts::evaluate": { loc: 181, kind: "method" },
-
-
-  "src/engine/bout/boutGrip.ts::evolveGripGeometry": { loc: 178, kind: "function" },
-
-
-
-
-  "src/engine/lifecycle/rookieFactory.ts::_generateRookie": { loc: 173, kind: "function" },
-  "src/engine/lifecycle/PrizeDistribution.ts::distributePrizes": { loc: 173, kind: "function" },
-  "src/engine/tick/phases/phase01_week_governance.ts::phase01_week_governance": { loc: 172, kind: "function" },
-
-
-
-  "src/engine/agents/CrisisAgent.ts::spawnCrisisAgent": { loc: 168, kind: "function" },
-
-  "src/contexts/bashoSlice.ts::bashoSlice": { loc: 162, kind: "function" },
-
-
-
-
-
-  "src/engine/bout/physics/edgeCrisis.ts::tickEdgeCrisis": { loc: 153, kind: "function" },
-
-  "src/engine/bout/boutGrip.ts::initBeltBattle": { loc: 151, kind: "function" },
 };
 
 /** Anonymous over-budget functions are tracked as a per-file count (line-keyed names are unstable). */

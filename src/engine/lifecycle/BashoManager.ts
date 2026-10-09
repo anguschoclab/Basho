@@ -16,26 +16,9 @@
 import { initializeBasho } from "../systems/generation/WorldFactory";
 import { ensureDaySchedule } from "../schedule";
 import type { WorldState } from "../types/world";
-import type { BashoName, BashoState } from "../types/basho";
+import type { BashoName } from "../types/basho";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
-
-/**
- * Get current basho state.
- * Returns the currently active basho or undefined if no basho is active.
- *
- * @param {WorldState} world - The world state.
- * @returns {BashoState | undefined} The current basho state.
- *
- * @example
- * ```ts
- * const basho = getCurrentBasho(world);
- * if (basho) console.log(`Day ${basho.day} of ${basho.bashoName}`);
- * ```
- */
-export function getCurrentBasho(world: WorldState): BashoState | undefined {
-  return world.currentBasho;
-}
 
 /**
  * Start basho — handles the transition from pre-basho/interim to active_basho.

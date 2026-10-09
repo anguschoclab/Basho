@@ -41,7 +41,7 @@ export function getKachiNokoriForRikishi(rikishi: Rikishi): number {
  * Post-basho UI payload including kachi-nokori.
  * This surfaces the stat for player visibility.
  */
-export interface PostBashoPayload {
+interface PostBashoPayload {
   rikishiId: string;
   shikona: string;
   wins: number;
@@ -78,3 +78,4 @@ export function buildPostBashoPayload(
 export function kachiNokoriToMochikyukinPoints(kachiNokori: number, pointsPerWin: number): number {
   return kachiNokori * pointsPerWin;
 }
+

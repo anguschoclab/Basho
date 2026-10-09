@@ -26,7 +26,7 @@ import {
   FIXED_OPERATING_OVERHEAD_WEEKLY,
 } from "../../../constants/engine/economic";
 
-export interface HeyaFinanceResult {
+interface HeyaFinanceResult {
   /** Effective weekly income after survival floor. */
   revenue: number;
   /** Effective weekly expenses after solvency clamping. */

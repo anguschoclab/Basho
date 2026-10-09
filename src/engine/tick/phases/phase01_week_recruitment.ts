@@ -15,7 +15,7 @@ import {
   INTERIM_DURATION_DAYS,
   RECRUITMENT_WINDOW_CLOSES_WEEKS,
 } from "../../../constants/engine/recruitmentExtended";
-import { DAYS_PER_WEEK } from "../../../constants/engine/time";
+import { DAYS_PER_WEEK } from "../../../constants/engine/calendar";
 import { getHeya, getRikishi } from "../../queries";
 import {
   computeReplacementGap,

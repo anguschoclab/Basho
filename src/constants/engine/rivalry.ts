@@ -192,13 +192,6 @@ export const RIVALRY_HEAT_SPICE_CHANCE = 0.25;
 // Bard engine threshold
 export const BARD_ENGINE_NORMALIZED_THRESHOLD = 0.66;
 
-// Bout duration divisors
-export const BOUT_DURATION_CLOSENESS_DIVISOR = 30;
-export const BOUT_DURATION_DOMINATION_DIVISOR = 15;
-
-// Final day
-export const BASHO_FINAL_DAY = 15;
-
 // Rivalry decay long weeks
 export const RIVALRY_DECAY_WEEKS_LONG = 30;
 

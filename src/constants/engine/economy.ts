@@ -32,9 +32,6 @@ export const RNG_MIDPOINT = 0.5;
 export const RUNWAY_MONTHS_STANDARD = 12;
 export const RUNWAY_MONTHS_RISK_TAKER = 6;
 
-// Months per year
-export const MONTHS_PER_YEAR = 12;
-
 // Staff costs
 export const STAFF_HIRE_COST = 500000;
 export const STAFF_STRONG_BONUS = 0.15;
@@ -104,6 +101,5 @@ export const STAFF_NUTRITIONIST_BONUS_MULTIPLIER = 0.3;
 export const STAFF_MIN_ADMINISTRATION_DISCOUNT = 0.7;
 
 // Staff generation constants
-export const STAFF_NAME_RANDOM_RANGE = 1000;
 export const STAFF_MIN_AGE_FOR_YEARS_CALC = 20;
 export const STAFF_BASE_BONUS_VALUE = 1.0;

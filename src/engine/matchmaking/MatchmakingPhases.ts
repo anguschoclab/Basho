@@ -81,7 +81,7 @@ export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
 };
 
 /** Defines the structure for candidate build options. */
-export interface CandidateBuildOptions {
+interface CandidateBuildOptions {
   seed: string;
   division?: Division;
   rules?: Partial<MatchmakingRules>;

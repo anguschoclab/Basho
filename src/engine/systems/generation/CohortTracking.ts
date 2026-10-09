@@ -11,7 +11,7 @@ import type { Rikishi } from "../../types/rikishi";
 /** Sekitori divisions (juryo and above) */
 const SEKITORI_DIVISIONS = new Set<string>(["juryo", "makuuchi"]);
 
-export interface CohortSummary {
+interface CohortSummary {
   cohortId: string;
   totalMembers: number;
   activeMembers: number;

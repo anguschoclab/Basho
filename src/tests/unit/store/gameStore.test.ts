@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useGameStore } from "@/store/gameStore";
-import type { EngineEvent } from "@/engine/worker/types";
+import type { WorkerEvent } from "@/engine/worker/types";
 import type { WorldState } from "@/engine/types/world";
 
 // Mock Worker constructor — returns a mock we can emit events through.
 // The store's initWorker() will call `new Worker(url, opts)`, which invokes
 // this mock, returning mockWorkerObj. The store then sets onmessage on it.
 const mockWorkerObj: {
-  onmessage: ((e: MessageEvent<EngineEvent>) => void) | null;
+  onmessage: ((e: MessageEvent<WorkerEvent>) => void) | null;
   postMessage: ReturnType<typeof vi.fn>;
   terminate: ReturnType<typeof vi.fn>;
   addEventListener: ReturnType<typeof vi.fn>;
@@ -61,8 +61,8 @@ describe("gameStore - pendingTick lifecycle", () => {
     return mockWorkerObj;
   }
 
-  function emit(worker: typeof mockWorkerObj, event: EngineEvent) {
-    worker.onmessage?.({ data: event } as MessageEvent<EngineEvent>);
+  function emit(worker: typeof mockWorkerObj, event: WorkerEvent) {
+    worker.onmessage?.({ data: event } as MessageEvent<WorkerEvent>);
   }
 
   it("TICK_DAY sets pendingTick to true", () => {

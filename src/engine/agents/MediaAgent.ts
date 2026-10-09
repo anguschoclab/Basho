@@ -18,7 +18,7 @@ export interface MediaAgentContext {
   world: WorldState;
 }
 
-export interface MediaAgentResult {
+interface MediaAgentResult {
   response: "apologize" | "deny" | "ignore" | "deflect";
   reasoning: string[];
   confidence: number;

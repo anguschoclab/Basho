@@ -9,7 +9,7 @@ exports[`_generateRookie — golden master > across ranks/seeds/heyas 1`] = `
     "heyaId": undefined,
     "id": "rk_2026_4819657",
     "rank": "jonokuchi",
-    "shikona": "Shinkawa",
+    "shikona": "Endoho",
     "stats": {
       "adaptability": 53.16093635814744,
       "aggression": 51.945169025274254,
@@ -31,7 +31,7 @@ exports[`_generateRookie — golden master > across ranks/seeds/heyas 1`] = `
     "heyaId": "heya-1",
     "id": "rk_2026_4819657",
     "rank": "jonokuchi",
-    "shikona": "Shinkawa",
+    "shikona": "Endoho",
     "stats": {
       "adaptability": 53.16093635814744,
       "aggression": 51.945169025274254,
@@ -53,7 +53,7 @@ exports[`_generateRookie — golden master > across ranks/seeds/heyas 1`] = `
     "heyaId": undefined,
     "id": "rk_2026_4819657",
     "rank": "makushita",
-    "shikona": "Shinkawa",
+    "shikona": "Endoho",
     "stats": {
       "adaptability": 53.16093635814744,
       "aggression": 51.945169025274254,
@@ -75,7 +75,7 @@ exports[`_generateRookie — golden master > across ranks/seeds/heyas 1`] = `
     "heyaId": "heya-1",
     "id": "rk_2026_4819657",
     "rank": "makushita",
-    "shikona": "Shinkawa",
+    "shikona": "Endoho",
     "stats": {
       "adaptability": 53.16093635814744,
       "aggression": 51.945169025274254,
@@ -303,8 +303,8 @@ exports[`checkRetirement — golden master > young-healthy 2`] = `null`;
 
 exports[`shikona.ts names — golden master > generateRikishiName / generateOyakataName seeded 1`] = `
 [
-  "Endomaru",
-  "Onowaka",
+  "Tochisakura",
+  "Hakuume",
   "Tamanoi",
   "Futagoyama",
   "Takashima",
@@ -313,11 +313,11 @@ exports[`shikona.ts names — golden master > generateRikishiName / generateOyak
 
 exports[`shikona.ts names — golden master > generateShikona across configs 1`] = `
 [
-  "Onomaru",
+  "Hakuhana",
   "Hakuyama",
   "Yusakura",
-  "Natsuho",
+  "Ryusora",
   "Shonoshin",
-  "Tamatake",
+  "Hanaomi",
 ]
 `;

@@ -20,7 +20,7 @@ import {
 import { type ScoutingInvestment } from "../../../constants/engine/recruitment";
 
 /** Defines the structure for public rikishi info. */
-export interface PublicRikishiInfo {
+interface PublicRikishiInfo {
   id: string;
   shikona: string;
   heyaId?: string;
@@ -36,7 +36,7 @@ export interface PublicRikishiInfo {
 }
 
 /** Defines the structure for scouted attribute truth snapshot. */
-export interface ScoutedAttributeTruthSnapshot {
+interface ScoutedAttributeTruthSnapshot {
   power: number;
   speed: number;
   balance: number;
@@ -46,7 +46,7 @@ export interface ScoutedAttributeTruthSnapshot {
 }
 
 /** Potential (PA) truth snapshot — revealed gradually via scouting. */
-export interface ScoutedPotentialSnapshot {
+interface ScoutedPotentialSnapshot {
   power: number;
   speed: number;
   balance: number;

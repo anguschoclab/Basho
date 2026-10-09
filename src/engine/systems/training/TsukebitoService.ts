@@ -39,7 +39,7 @@ export const OTOTODESHI_FATIGUE_PENALTY = 0.5;
 export const OTOTODESHI_MENTAL_GAIN = 0.05;
 
 /** Tsukebito assignment record */
-export interface TsukebitoAssignment {
+interface TsukebitoAssignment {
   seniorId: Id;
   tsukebitoIds: Id[];
 }
@@ -58,12 +58,24 @@ export function isEligibleForTsukebito(rikishi: Rikishi): boolean {
  * Check if a rikishi is eligible to be a tsukebito.
  * Must be junior (rankNumber > 10), same heya, not retired.
  */
-export function isEligibleTsukebito(rikishi: Rikishi, senior: Rikishi): boolean {
-  if (rikishi.id === senior.id) return false;
-  if (rikishi.heyaId !== senior.heyaId) return false;
+/**
+ * Check if a rikishi is a valid tsukebito junior (rankNumber > 10, active).
+ * Senior-pair checks (same heya, not self) live in isEligibleTsukebito.
+ */
+export function isJuniorTsukebitoEligible(rikishi: Rikishi): boolean {
   if (rikishi.isRetired) return false;
   const rankNum = rikishi.rankNumber ?? 99;
   return rankNum > 10;
+}
+
+/**
+ * Check if a rikishi is eligible to be a tsukebito.
+ * Must be junior (rankNumber > 10), same heya, not retired.
+ */
+export function isEligibleTsukebito(rikishi: Rikishi, senior: Rikishi): boolean {
+  if (rikishi.id === senior.id) return false;
+  if (rikishi.heyaId !== senior.heyaId) return false;
+  return isJuniorTsukebitoEligible(rikishi);
 }
 
 /**

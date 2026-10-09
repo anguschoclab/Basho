@@ -196,191 +196,12 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
 
   // Apply collection operations
   if (impact.collections) {
-    let nextHeyas: Map<string, import("../types/heya").Heya> | undefined;
-    let heyasChanged = false;
-
-    const ensureHeyas = (): Map<string, import("../types/heya").Heya> => {
-      if (!nextHeyas) nextHeyas = new Map(result.heyas);
-      return nextHeyas;
-    };
-
-    // Handle activeRikishiIds operations
-    if (impact.collections.activeRikishiIdsToAdd || impact.collections.activeRikishiIdsToRemove) {
-      const nextActiveIds = new Set(result.activeRikishiIds);
-      if (impact.collections.activeRikishiIdsToAdd) {
-        for (const id of impact.collections.activeRikishiIdsToAdd) {
-          nextActiveIds.add(id);
-        }
-      }
-      if (impact.collections.activeRikishiIdsToRemove) {
-        for (const id of impact.collections.activeRikishiIdsToRemove) {
-          nextActiveIds.delete(id);
-        }
-      }
-      result = { ...result, activeRikishiIds: nextActiveIds };
-    }
-
-    if (impact.collections.rikishiToAdd) {
-      const nextRikishi = new Map(result.rikishi);
-      for (const rikishi of impact.collections.rikishiToAdd) {
-        nextRikishi.set(rikishi.id, rikishi);
-
-        // Sync Heya Roster
-        const heya = nextHeyas?.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
-        if (heya) {
-          const ids = new Set(heya.rikishiIds || []);
-          ids.add(rikishi.id);
-          ensureHeyas().set(rikishi.heyaId, { ...heya, rikishiIds: Array.from(ids) });
-          heyasChanged = true;
-        }
-      }
-      result = { ...result, rikishi: nextRikishi };
-    }
-
-    if (impact.collections.rikishiToRemove) {
-      const nextRikishi = new Map(result.rikishi);
-      const removalsByHeya = new Map<string, Set<string>>();
-      for (const id of impact.collections.rikishiToRemove) {
-        const r = nextRikishi.get(id);
-        if (r) {
-          let bucket = removalsByHeya.get(r.heyaId);
-          if (!bucket) {
-            bucket = new Set();
-            removalsByHeya.set(r.heyaId, bucket);
-          }
-          bucket.add(id);
-          nextRikishi.delete(id);
-        }
-      }
-      for (const [heyaId, idsToRemove] of removalsByHeya) {
-        const heya = nextHeyas?.get(heyaId) || result.heyas.get(heyaId);
-        if (heya) {
-          const ids = new Set(heya.rikishiIds || []);
-          for (const id of idsToRemove) ids.delete(id);
-          ensureHeyas().set(heyaId, { ...heya, rikishiIds: Array.from(ids) });
-          heyasChanged = true;
-        }
-      }
-      result = { ...result, rikishi: nextRikishi };
-    }
-
-    if (impact.collections.rikishiToHistorical) {
-      const nextRikishi = new Map(result.rikishi);
-      const nextHistorical = new Map(result.historicalRikishi);
-      const removalsByHeya = new Map<string, Set<string>>();
-      for (const id of impact.collections.rikishiToHistorical) {
-        const rikishi = nextRikishi.get(id);
-        if (rikishi) {
-          nextRikishi.delete(id);
-          nextHistorical.set(id, rikishi);
-          let bucket = removalsByHeya.get(rikishi.heyaId);
-          if (!bucket) {
-            bucket = new Set();
-            removalsByHeya.set(rikishi.heyaId, bucket);
-          }
-          bucket.add(id);
-        }
-      }
-      for (const [heyaId, idsToRemove] of removalsByHeya) {
-        const heya = nextHeyas?.get(heyaId) || result.heyas.get(heyaId);
-        if (heya) {
-          const ids = new Set(heya.rikishiIds || []);
-          for (const id of idsToRemove) ids.delete(id);
-          ensureHeyas().set(heyaId, { ...heya, rikishiIds: Array.from(ids) });
-          heyasChanged = true;
-        }
-      }
-      result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
-    }
-
-    if (impact.collections.heyaToAdd) {
-      const nextHeyas = ensureHeyas();
-      for (const h of impact.collections.heyaToAdd) {
-        nextHeyas.set(h.id, h);
-      }
-      heyasChanged = true;
-    }
-
-    if (heyasChanged && nextHeyas) {
-      result = { ...result, heyas: nextHeyas };
-    }
-
-    if (impact.collections.rikishiFromHistorical) {
-      const nextRikishi = new Map(result.rikishi);
-      const nextHistorical = new Map(result.historicalRikishi);
-      for (const id of impact.collections.rikishiFromHistorical) {
-        const entry = nextHistorical.get(id);
-        if (entry) {
-          nextHistorical.delete(id);
-          // Only move full Rikishi back to active. Summaries are compact
-          // records that cannot be re-activated directly; re-activation would
-          // need to load the full record from cold storage first.
-          if ("stats" in entry && (entry as { isSummary?: unknown }).isSummary !== true) {
-            nextRikishi.set(id, entry);
-          }
-        }
-      }
-      result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
-    }
-
-    if (impact.collections.staffToAdd) {
-      const nextStaff = new Map(result.staff);
-      for (const s of impact.collections.staffToAdd) {
-        nextStaff.set(s.id, s);
-      }
-      result = { ...result, staff: nextStaff };
-    }
-
-    if (impact.collections.staffToRemove) {
-      const nextStaff = new Map(result.staff);
-      for (const id of impact.collections.staffToRemove) {
-        nextStaff.delete(id);
-      }
-      result = { ...result, staff: nextStaff };
-    }
-
-    if (impact.collections.oyakataToAdd) {
-      const nextOyakata = new Map(result.oyakata);
-      for (const o of impact.collections.oyakataToAdd) {
-        nextOyakata.set(o.id, o);
-      }
-      result = { ...result, oyakata: nextOyakata };
-    }
-
-    if (impact.collections.oyakataToRemove) {
-      const nextOyakata = new Map(result.oyakata);
-      for (const id of impact.collections.oyakataToRemove) {
-        nextOyakata.delete(id);
-      }
-      result = { ...result, oyakata: nextOyakata };
-    }
+    result = applyCollections(result, impact.collections);
   }
 
   // Apply entity deletions
   if (impact.deletedEntities) {
-    if (impact.deletedEntities.heyaIds && impact.deletedEntities.heyaIds.length > 0) {
-      const nextHeyas = new Map(result.heyas);
-      for (const id of impact.deletedEntities.heyaIds) {
-        nextHeyas.delete(id);
-      }
-      result = { ...result, heyas: nextHeyas };
-    }
-
-    if (impact.deletedEntities.oyakataIds && impact.deletedEntities.oyakataIds.length > 0) {
-      const nextOyakata = new Map(result.oyakata);
-      for (const id of impact.deletedEntities.oyakataIds) {
-        nextOyakata.delete(id);
-      }
-      result = { ...result, oyakata: nextOyakata };
-    }
-
-    if (impact.deletedEntities.rikishiIds && impact.deletedEntities.rikishiIds.length > 0) {
-      const nextRikishi = new Map(result.rikishi);
-      for (const id of impact.deletedEntities.rikishiIds) {
-        nextRikishi.delete(id);
-      }
-      result = { ...result, rikishi: nextRikishi };
-    }
+    result = applyDeletedEntities(result, impact.deletedEntities);
   }
 
   // Apply world field updates
@@ -393,6 +214,224 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
 
   // Apply array appends
   result = applyArrayAppends(result, impact.arrayAppends);
+
+  return result;
+}
+
+/** Lazily-accumulated heya map shared across collection operations. */
+interface HeyaSync {
+  next: Map<string, import("../types/heya").Heya> | undefined;
+  changed: boolean;
+}
+
+/** Applies all collection operations (adds/removes/migrations + roster sync). */
+function applyCollections(
+  result: WorldState,
+  collections: NonNullable<StateImpact["collections"]>
+): WorldState {
+  const sync: HeyaSync = { next: undefined, changed: false };
+  const ensureHeyas = (): Map<string, import("../types/heya").Heya> => {
+    if (!sync.next) sync.next = new Map(result.heyas);
+    return sync.next;
+  };
+
+  // Handle activeRikishiIds operations
+  if (collections.activeRikishiIdsToAdd || collections.activeRikishiIdsToRemove) {
+    const nextActiveIds = new Set(result.activeRikishiIds);
+    if (collections.activeRikishiIdsToAdd) {
+      for (const id of collections.activeRikishiIdsToAdd) {
+        nextActiveIds.add(id);
+      }
+    }
+    if (collections.activeRikishiIdsToRemove) {
+      for (const id of collections.activeRikishiIdsToRemove) {
+        nextActiveIds.delete(id);
+      }
+    }
+    result = { ...result, activeRikishiIds: nextActiveIds };
+  }
+
+  if (collections.rikishiToAdd) {
+    const nextRikishi = new Map(result.rikishi);
+    for (const rikishi of collections.rikishiToAdd) {
+      nextRikishi.set(rikishi.id, rikishi);
+
+      // Sync Heya Roster
+      const heya = sync.next?.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
+      if (heya) {
+        const ids = new Set(heya.rikishiIds || []);
+        ids.add(rikishi.id);
+        ensureHeyas().set(rikishi.heyaId, { ...heya, rikishiIds: Array.from(ids) });
+        sync.changed = true;
+      }
+    }
+    result = { ...result, rikishi: nextRikishi };
+  }
+
+  if (collections.rikishiToRemove || collections.rikishiToHistorical) {
+    result = applyRikishiRemovals(result, collections, sync, ensureHeyas);
+  }
+
+  if (collections.heyaToAdd) {
+    const nextHeyas = ensureHeyas();
+    for (const h of collections.heyaToAdd) {
+      nextHeyas.set(h.id, h);
+    }
+    sync.changed = true;
+  }
+
+  if (sync.changed && sync.next) {
+    result = { ...result, heyas: sync.next };
+  }
+
+  if (collections.rikishiFromHistorical) {
+    const nextRikishi = new Map(result.rikishi);
+    const nextHistorical = new Map(result.historicalRikishi);
+    for (const id of collections.rikishiFromHistorical) {
+      const entry = nextHistorical.get(id);
+      if (entry) {
+        nextHistorical.delete(id);
+        // Only move full Rikishi back to active. Summaries are compact
+        // records that cannot be re-activated directly; re-activation would
+        // need to load the full record from cold storage first.
+        if ("stats" in entry && (entry as { isSummary?: unknown }).isSummary !== true) {
+          nextRikishi.set(id, entry);
+        }
+      }
+    }
+    result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
+  }
+
+  if (collections.staffToAdd) {
+    const nextStaff = new Map(result.staff);
+    for (const s of collections.staffToAdd) {
+      nextStaff.set(s.id, s);
+    }
+    result = { ...result, staff: nextStaff };
+  }
+
+  if (collections.staffToRemove) {
+    const nextStaff = new Map(result.staff);
+    for (const id of collections.staffToRemove) {
+      nextStaff.delete(id);
+    }
+    result = { ...result, staff: nextStaff };
+  }
+
+  result = applyOyakataCollections(result, collections);
+
+  return result;
+}
+
+/**
+ * Rikishi removals (active roster drops + retirements to historical), sharing
+ * one rikishi map and one removals-by-heya ledger for roster sync.
+ */
+function applyRikishiRemovals(
+  result: WorldState,
+  collections: NonNullable<StateImpact["collections"]>,
+  sync: HeyaSync,
+  ensureHeyas: () => Map<string, import("../types/heya").Heya>
+): WorldState {
+  const nextRikishi = new Map(result.rikishi);
+  const nextHistorical = collections.rikishiToHistorical
+    ? new Map(result.historicalRikishi)
+    : result.historicalRikishi;
+  const removalsByHeya = new Map<string, Set<string>>();
+
+  const stageRemoval = (heyaId: string, id: string): void => {
+    let bucket = removalsByHeya.get(heyaId);
+    if (!bucket) {
+      bucket = new Set();
+      removalsByHeya.set(heyaId, bucket);
+    }
+    bucket.add(id);
+  };
+
+  if (collections.rikishiToRemove) {
+    for (const id of collections.rikishiToRemove) {
+      const r = nextRikishi.get(id);
+      if (r) {
+        stageRemoval(r.heyaId, id);
+        nextRikishi.delete(id);
+      }
+    }
+  }
+
+  if (collections.rikishiToHistorical) {
+    for (const id of collections.rikishiToHistorical) {
+      const rikishi = nextRikishi.get(id);
+      if (rikishi) {
+        nextRikishi.delete(id);
+        nextHistorical.set(id, rikishi);
+        stageRemoval(rikishi.heyaId, id);
+      }
+    }
+  }
+
+  for (const [heyaId, idsToRemove] of removalsByHeya) {
+    const heya = sync.next?.get(heyaId) || result.heyas.get(heyaId);
+    if (heya) {
+      const ids = new Set(heya.rikishiIds || []);
+      for (const id of idsToRemove) ids.delete(id);
+      ensureHeyas().set(heyaId, { ...heya, rikishiIds: Array.from(ids) });
+      sync.changed = true;
+    }
+  }
+  return { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
+}
+
+/** Applies oyakata add/remove collections. */
+function applyOyakataCollections(
+  result: WorldState,
+  collections: NonNullable<StateImpact["collections"]>
+): WorldState {
+  if (collections.oyakataToAdd) {
+    const nextOyakata = new Map(result.oyakata);
+    for (const o of collections.oyakataToAdd) {
+      nextOyakata.set(o.id, o);
+    }
+    result = { ...result, oyakata: nextOyakata };
+  }
+
+  if (collections.oyakataToRemove) {
+    const nextOyakata = new Map(result.oyakata);
+    for (const id of collections.oyakataToRemove) {
+      nextOyakata.delete(id);
+    }
+    result = { ...result, oyakata: nextOyakata };
+  }
+  return result;
+}
+
+/** Applies entity deletions (heya/oyakata/rikishi ID lists). */
+function applyDeletedEntities(
+  result: WorldState,
+  deleted: NonNullable<StateImpact["deletedEntities"]>
+): WorldState {
+  if (deleted.heyaIds && deleted.heyaIds.length > 0) {
+    const nextHeyas = new Map(result.heyas);
+    for (const id of deleted.heyaIds) {
+      nextHeyas.delete(id);
+    }
+    result = { ...result, heyas: nextHeyas };
+  }
+
+  if (deleted.oyakataIds && deleted.oyakataIds.length > 0) {
+    const nextOyakata = new Map(result.oyakata);
+    for (const id of deleted.oyakataIds) {
+      nextOyakata.delete(id);
+    }
+    result = { ...result, oyakata: nextOyakata };
+  }
+
+  if (deleted.rikishiIds && deleted.rikishiIds.length > 0) {
+    const nextRikishi = new Map(result.rikishi);
+    for (const id of deleted.rikishiIds) {
+      nextRikishi.delete(id);
+    }
+    result = { ...result, rikishi: nextRikishi };
+  }
 
   return result;
 }

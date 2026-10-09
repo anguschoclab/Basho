@@ -3,6 +3,11 @@
  */
 import type { WorldState } from "../engine/types/world";
 import type { Rikishi } from "../engine/types/rikishi";
+import {
+  isEligibleForTsukebito,
+  isJuniorTsukebitoEligible,
+  MAX_TSUKEBITO_PER_SENIOR,
+} from "../engine/systems/training/TsukebitoService";
 
 export interface TsukebitoAssignmentDTO {
   seniorId: string;
@@ -56,10 +61,9 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
   // replacing multiple .filter() and .map() chains
   for (let i = 0; i < heyaRikishi.length; i++) {
     const r = heyaRikishi[i];
-    const rankNumber = r.rankNumber ?? 99;
 
-    // Seniors: rankNumber <= 3
-    if (rankNumber <= 3) {
+    // Seniors: sekitori eligible to have tsukebito
+    if (isEligibleForTsukebito(r)) {
       seniors.push(r);
       const tsukebitoIds = r.tsukebitoIds;
       if (tsukebitoIds !== undefined && tsukebitoIds.length > 0) {
@@ -86,8 +90,8 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
         });
       }
     }
-    // Juniors: rankNumber > 10
-    else if (rankNumber > 10) {
+    // Juniors: eligible tsukebito candidates
+    else if (isJuniorTsukebitoEligible(r)) {
       juniors.push(r);
     }
   }
@@ -97,7 +101,7 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
     shikona: s.shikona,
     rankLabel: rankLabel(s),
     currentCount: (s.tsukebitoIds ?? []).length,
-    maxCount: 2,
+    maxCount: MAX_TSUKEBITO_PER_SENIOR,
   }));
 
   const eligibleJuniors = juniors.map((j) => ({

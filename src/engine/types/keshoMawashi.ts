@@ -8,6 +8,7 @@
 
 import type { Id } from "./common";
 import type { Rank, Division } from "./banzuke";
+import type { Season } from "./basho";
 
 /** Design tier based on rikishi rank - affects ornamentation level */
 export type KeshoTier = "juryo" | "makuuchi" | "sanyaku" | "yokozuna";
@@ -162,7 +163,7 @@ export type BorderStyle = "simple" | "double" | "ornate" | "rope" | "scalloped";
 export type EmbroideryStyle = "satin" | "chain" | "couching" | "goldwork";
 
 /** Seasonal information for basho-specific variations */
-export type Season = "spring" | "summer" | "autumn" | "winter";
+export type { Season };
 
 /** Seasonal color palettes */
 export const SEASONAL_PALETTES: Record<Season, string[]> = {

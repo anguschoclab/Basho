@@ -2,12 +2,6 @@
  * Welfare state transition constants.
  */
 
-/** Watch threshold with negligence */
-export const WATCH_THRESHOLD_WITH_NEGLECT = 30;
-
-/** Watch threshold without negligence */
-export const WATCH_THRESHOLD_WITHOUT_NEGLECT = 45;
-
 /** Welfare risk threshold for negligence check */
 export const WELFARE_RISK_NEGLECT_THRESHOLD = 20;
 
@@ -50,17 +44,8 @@ export const WELFARE_RISK_EXIT_THRESHOLD = 45;
 /** Weeks in state for exit */
 export const WEEKS_IN_STATE_EXIT = 4;
 
-/** Progress gain base value */
-export const PROGRESS_GAIN_BASE = 4;
-
 /** Progress gain facility recovery divisor */
 export const PROGRESS_GAIN_FACILITY_DIVISOR = 30;
-
-/** Progress gain minimum */
-export const PROGRESS_GAIN_MIN = 2;
-
-/** Progress gain maximum */
-export const PROGRESS_GAIN_MAX = 12;
 
 /** Welfare risk threshold for serious investigation */
 export const WELFARE_RISK_SERIOUS_INVESTIGATION = 85;
@@ -70,9 +55,6 @@ export const SERIOUS_COUNT_INVESTIGATION_THRESHOLD = 3;
 
 /** Welfare risk threshold for serious count */
 export const WELFARE_RISK_SERIOUS_COUNT_THRESHOLD = 70;
-
-/** Recruitment freeze duration (weeks) */
-export const RECRUITMENT_FREEZE_WEEKS = 12;
 
 /** Welfare risk threshold for critical investigation */
 export const WELFARE_RISK_CRITICAL_INVESTIGATION = 85;
@@ -137,5 +119,4 @@ export const SANCTION_PROGRESS_GAIN = 30;
 /** Compliance progress gain */
 export const COMPLIANCE_PROGRESS_GAIN = 50;
 
-/** Sanction risk threshold */
-export const SANCTION_RISK_THRESHOLD = 50;
+

@@ -10,10 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Banknote } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { Button } from "@/components/ui/button";
-import type { Loan } from "./debtMeta";
+import type { LoanRow } from "./debtMeta";
 
 /** Payoff progress bar + estimated weeks remaining. */
-function PayoffProgress({ loan }: { loan: Loan }) {
+function PayoffProgress({ loan }: { loan: LoanRow }) {
   if (loan.principal <= 0) return null;
   const pct = Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100);
 
@@ -74,7 +74,7 @@ export function LoanCard({
   loan,
   onPrepay,
 }: {
-  loan: Loan;
+  loan: LoanRow;
   onPrepay?: (loanId: string) => void;
 }) {
   return (

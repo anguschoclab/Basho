@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
-import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
+import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import { FACILITY_REGISTRY } from "@/engine/types/infrastructure";
@@ -13,7 +13,7 @@ const originalOnmessage = globalThis.onmessage;
 const mockPostMessage = vi.fn();
 
 interface MockWorkerGlobal {
-  postMessage: (message: EngineEvent) => void;
+  postMessage: (message: WorkerEvent) => void;
   onmessage: ((event: MessageEvent<EngineCommand>) => void) | null;
   self?: any;
 }

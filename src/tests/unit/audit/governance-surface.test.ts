@@ -101,3 +101,15 @@ describe("governanceProjections — state field mapping", () => {
     expect(proj).toContain("scandalBand");
   });
 });
+
+describe("myosekiMarket — tick wiring", () => {
+  it("generateMyosekiMarket is called by WorldFactory", () => {
+    const factory = readSrcFile("engine/systems/generation/WorldFactory.ts");
+    expect(factory).toContain("generateMyosekiMarket");
+  });
+
+  it("tickMyosekiMarket is imported and called by phase01_week_governance", () => {
+    const phase = readSrcFile("engine/tick/phases/phase01_week_governance.ts");
+    expect(phase).toContain("tickMyosekiMarket");
+  });
+});

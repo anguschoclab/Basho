@@ -16,7 +16,7 @@ import type { WorldState } from "../types/world";
  * Common system keys for RNG seeding.
  * These keys are used to namespace RNG calls for different simulation systems.
  */
-export type SystemRNGKey =
+type SystemRNGKey =
   | "training"
   | "scouting"
   | "rivalry"

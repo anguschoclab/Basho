@@ -27,7 +27,7 @@ import {
   SponsorRecruitmentWidget,
   GlobalCupWidget,
   TrainingWidget,
-  PreBashoAssessment,
+  PreBashoAssessmentPanel,
   RosterWidget,
   IntelligencePanel,
   AcademyWidget,
@@ -137,7 +137,7 @@ export function DashboardPhaseWidgets({
           <GlobalCupWidget />
           <TrainingWidget />
           <PromotionPipelineWidget />
-          <PreBashoAssessment />
+          <PreBashoAssessmentPanel />
         </>
       )}
       {phase === "post_basho" && (

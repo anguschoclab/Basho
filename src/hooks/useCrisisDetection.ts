@@ -13,7 +13,7 @@ import { useGame } from "@/contexts/useGame";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import type { CrisisOption } from "@/engine/types/crises";
 
-export interface ActiveCrisis {
+export interface DetectedCrisis {
   id: string;
   title: string;
   detail: string;
@@ -32,7 +32,7 @@ export function useCrisisDetection() {
   const welfareState = playerHeya?.welfareState;
 
   // Check for welfare crisis (investigation, sanctioned, high risk)
-  const welfareCrisis = useMemo<Omit<ActiveCrisis, "id"> | null>(() => {
+  const welfareCrisis = useMemo<Omit<DetectedCrisis, "id"> | null>(() => {
     if (!welfareState) return null;
 
     if (welfareState.complianceState === "sanctioned") {
@@ -58,7 +58,7 @@ export function useCrisisDetection() {
     ?.items?.find((i) => i.kind === "generic" && i.title.toLowerCase().includes("crisis"));
 
   // Combine both crisis sources
-  const crisis = useMemo<ActiveCrisis | null>(() => {
+  const crisis = useMemo<DetectedCrisis | null>(() => {
     if (world?.pendingCrisis) {
       return {
         id: world.pendingCrisis.id,

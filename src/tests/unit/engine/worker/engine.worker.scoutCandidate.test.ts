@@ -10,7 +10,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterAll, type Mock } from "vitest";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
-import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
+import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 
 const originalSelf = globalThis.self;
 const originalPostMessage = globalThis.postMessage;
@@ -18,7 +18,7 @@ const originalOnmessage = globalThis.onmessage;
 
 const mockPostMessage = vi.fn();
 const mockGlobal = globalThis as unknown as {
-  postMessage: (m: EngineEvent) => void;
+  postMessage: (m: WorkerEvent) => void;
   onmessage: ((e: MessageEvent<EngineCommand>) => void) | null;
   self?: any;
 };

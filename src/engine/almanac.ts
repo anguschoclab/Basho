@@ -2,7 +2,7 @@
 // The implementation has been decomposed into focused modules.
 
 export type {
-  BashoPerformance,
+  AlmanacBashoPerformance,
   RikishiCareerRecord,
   HeyaRecord,
   OyakataRecord,

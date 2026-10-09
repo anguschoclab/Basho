@@ -17,7 +17,7 @@ export const STATUS_COLORS: Record<string, string> = {
 };
 
 // Band color mappings
-export const BAND_COLORS: Record<string, { label: string; color: string }> = {
+export const CONDITION_BAND_COLORS: Record<string, { label: string; color: string }> = {
   peak: { label: "Peak", color: "text-success" },
   good: { label: "Good", color: "text-primary" },
   fair: { label: "Fair", color: "text-warning" },
@@ -42,7 +42,7 @@ export const BAND_COLORS: Record<string, { label: string; color: string }> = {
 };
 
 // Rivalry heat configuration (from BoutCard.tsx)
-export const HEAT_CONFIG: Record<string, { icon: string; label: string; classes: string }> = {
+export const HEAT_LEVEL_CONFIG: Record<string, { icon: string; label: string; classes: string }> = {
   inferno: {
     icon: "🔥",
     label: "Inferno Rivalry",
@@ -142,16 +142,16 @@ export const MOOD_COLORS: Record<string, string> = {
 
 // Get heat band color
 export function getHeatBandColor(heat: number): string {
-  if (heat >= 75) return HEAT_CONFIG.inferno.classes;
-  if (heat >= 50) return HEAT_CONFIG.hot.classes;
-  if (heat >= 25) return HEAT_CONFIG.warm.classes;
-  return HEAT_CONFIG.cold.classes;
+  if (heat >= 75) return HEAT_LEVEL_CONFIG.inferno.classes;
+  if (heat >= 50) return HEAT_LEVEL_CONFIG.hot.classes;
+  if (heat >= 25) return HEAT_LEVEL_CONFIG.warm.classes;
+  return HEAT_LEVEL_CONFIG.cold.classes;
 }
 
 // Get heat band label
 export function getHeatBandLabel(heat: number): string {
-  if (heat >= 75) return HEAT_CONFIG.inferno.label;
-  if (heat >= 50) return HEAT_CONFIG.hot.label;
-  if (heat >= 25) return HEAT_CONFIG.warm.label;
-  return HEAT_CONFIG.cold.label;
+  if (heat >= 75) return HEAT_LEVEL_CONFIG.inferno.label;
+  if (heat >= 50) return HEAT_LEVEL_CONFIG.hot.label;
+  if (heat >= 25) return HEAT_LEVEL_CONFIG.warm.label;
+  return HEAT_LEVEL_CONFIG.cold.label;
 }

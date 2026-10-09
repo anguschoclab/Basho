@@ -12,7 +12,7 @@
 
 import type { WorldState } from "../../types/world";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { processYearEndInduction, createEmptyHallOfFame } from "../../hallOfFame";
@@ -80,6 +80,64 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   }
 
   // 1. Hall of Fame Inductions
+  const inductees = processHallOfFameInductions(builder, world);
+
+  // 2. Talent Pool Refresh
+  if (world.talentPool) {
+    builder.merge(TalentPoolService.tickTalentPoolYear(world));
+  }
+
+  // 3. NPC Yearly Logic
+  builder.merge(npcAI.tickYear(world));
+
+  // 4. Staff Aging
+  ageStaff(builder, world);
+
+  // 5. Rikishi Avatar Aging & Physical Aging + Records (fused — B2.1)
+  ageRikishiAndUpdateRecords(builder, world);
+
+  // 6. Oyakata Avatar Aging & Tenure
+  ageOyakata(builder, world);
+
+  // Phase 5 Depth: Training Philosophy Drift
+  driftTrainingPhilosophies(builder, world);
+
+  // 7. Logging & Era Check
+  const newYear = world.year;
+  const isDecadeBoundary = newYear % 10 === 0;
+  const hofNames = inductees.map((i) => i.shikona);
+  builder.logEvent("BASHO_STATUS", "narrative", {
+    status: "meta_shift",
+    incident: isDecadeBoundary ? "decade_boundary" : "year_boundary",
+    day: newYear,
+    score: hofNames.length,
+    reason: hofNames.length > 0 ? hofNames.join("|") : "None",
+  });
+
+  // 8. Increment Authoritative Year (E4/C5)
+  const nextYear = (world.year ?? DEFAULT_START_YEAR) + 1;
+  builder.updateWorldField("year", nextYear);
+  builder.updateWorldField("calendar", {
+    ...world.calendar,
+    currentWeek: world.calendar?.currentWeek ?? 1,
+  });
+
+  // Bound history arrays to prevent unbounded growth (B2.5)
+  boundArrays(builder, world);
+
+  // Retired-rikishi summarization: convert full Rikishi in historicalRikishi to
+  // compact RetiredRikishiSummary entries at the year boundary. This fires in
+  // BOTH the player flow AND AutoSim (since both advance days through the tick
+  // pipeline). Full career detail is preserved in cold storage (archived at
+  // retirement time via CareerService / governanceReview). Idempotent — entries
+  // already marked isSummary are skipped.
+  builder.merge(runRetiredRikishiSummarization(world));
+
+  return builder.build();
+}
+
+/** Hall of Fame inductions — clones the HoF for the mutative induction pass. */
+function processHallOfFameInductions(builder: ImpactBuilder, world: WorldState) {
   const currentHoF = world.hallOfFame || createEmptyHallOfFame();
   const clonedHoF = {
     ...currentHoF,
@@ -108,112 +166,93 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
       { rikishiId: inductee.rikishiId }
     );
   }
+  return inductees;
+}
 
-  // 2. Talent Pool Refresh
-  if (world.talentPool) {
-    builder.merge(TalentPoolService.tickYear(world));
+/** Staff aging + career-phase advancement. */
+function ageStaff(builder: ImpactBuilder, world: WorldState): void {
+  if (!world.staff) return;
+  const nextStaff = new Map(world.staff);
+  for (const [id, staff] of world.staff) {
+    const s = { ...staff };
+    s.age += 1;
+    s.yearsAtBeya += 1;
+
+    if (s.careerPhase === "apprentice" && s.age >= 30) s.careerPhase = "established";
+    else if (s.careerPhase === "established" && s.age >= 45) s.careerPhase = "senior";
+    else if (s.careerPhase === "senior" && s.age >= 55) s.careerPhase = "declining";
+    else if (s.careerPhase === "declining" && s.age >= 65) s.careerPhase = "retired";
+
+    nextStaff.set(id, s);
   }
+  builder.updateWorldField("staff", nextStaff);
+}
 
-  // 3. NPC Yearly Logic
-  builder.merge(npcAI.tickYear(world));
+/** Rikishi age/avatar updates + all-time records + kanreki (fused — B2.1). */
+function ageRikishiAndUpdateRecords(builder: ImpactBuilder, world: WorldState): void {
+  if (!world.rikishi) return;
+  for (const id of world.activeRikishiIds) {
+    const r = getRikishi(world, id);
+    if (!r) continue; // Skip retired rikishi - they don't need age/avatar updates
+    const age = world.year - r.birthYear;
+    const isSekitori = isSekitoriDivision(r.division);
 
-  // 4. Staff Aging
-  if (world.staff) {
-    const nextStaff = new Map(world.staff);
-    for (const [id, staff] of world.staff) {
-      const s = { ...staff };
-      s.age += 1;
-      s.yearsAtBeya += 1;
+    // Explicitly update rikishi age property for metrics and checks
+    builder.updateRikishi(id, { age });
 
-      if (s.careerPhase === "apprentice" && s.age >= 30) s.careerPhase = "established";
-      else if (s.careerPhase === "established" && s.age >= 45) s.careerPhase = "senior";
-      else if (s.careerPhase === "senior" && s.age >= 55) s.careerPhase = "declining";
-      else if (s.careerPhase === "declining" && s.age >= 65) s.careerPhase = "retired";
-
-      nextStaff.set(id, s);
+    if (r.avatarConfig) {
+      const updated = updateAvatarForAging(r.avatarConfig, age);
+      const withHairstyle = updateHairstyleForPromotion(updated, isSekitori);
+      builder.updateRikishi(id, { avatarConfig: withHairstyle });
     }
-    builder.updateWorldField("staff", nextStaff);
-  }
 
-  // 5. Rikishi Avatar Aging & Physical Aging + Records (fused — B2.1)
-  if (world.rikishi) {
-    for (const id of world.activeRikishiIds) {
-      const r = getRikishi(world, id);
-      if (!r) continue; // Skip retired rikishi - they don't need age/avatar updates
-      const age = world.year - r.birthYear;
-      const isSekitori = isSekitoriDivision(r.division);
+    // All-Time Records (fused from separate loop — B2.1)
+    if (r.careerWins > 100 || r.rank === "yokozuna") {
+      builder.merge(HistoryService.updateAllTimeRecords(world, r));
+    }
 
-      // Explicitly update rikishi age property for metrics and checks
-      builder.updateRikishi(id, { age });
-
-      if (r.avatarConfig) {
-        const updated = updateAvatarForAging(r.avatarConfig, age);
-        const withHairstyle = updateHairstyleForPromotion(updated, isSekitori);
-        builder.updateRikishi(id, { avatarConfig: withHairstyle });
-      }
-
-      // All-Time Records (fused from separate loop — B2.1)
-      if (r.careerWins > 100 || r.rank === "yokozuna") {
-        builder.merge(HistoryService.updateAllTimeRecords(world, r));
-      }
-
-      // Kanreki ceremony — rare 60th-year dohyo-iri for yokozuna
-      if (isEligibleForKanreki(r, world)) {
-        builder.merge(performKanrekiCeremony(world, r));
-      }
+    // Kanreki ceremony — rare 60th-year dohyo-iri for yokozuna
+    if (isEligibleForKanreki(r, world)) {
+      builder.merge(performKanrekiCeremony(world, r));
     }
   }
+}
 
-  // 6. Oyakata Avatar Aging & Tenure
-  // Use updateOyakata per entity so we don't overwrite collections.oyakataToAdd
-  // from DynastyService.tickSuccessionCheck via updateWorldField.
-  if (world.oyakata) {
-    for (const [id, o] of world.oyakata) {
-      const updated: Partial<typeof o> = {
-        age: o.age + 1,
-        yearsInCharge: (o.yearsInCharge ?? 0) + 1,
-      };
+/**
+ * Oyakata avatar aging & tenure. Uses updateOyakata per entity so we don't
+ * overwrite collections.oyakataToAdd from DynastyService.tickSuccessionCheck
+ * via updateWorldField.
+ */
+function ageOyakata(builder: ImpactBuilder, world: WorldState): void {
+  if (!world.oyakata) return;
+  for (const [id, o] of world.oyakata) {
+    const updated: Partial<typeof o> = {
+      age: o.age + 1,
+      yearsInCharge: (o.yearsInCharge ?? 0) + 1,
+    };
 
-      if (o.avatarConfig) {
-        updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age ?? 0);
+    if (o.avatarConfig) {
+      updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age ?? 0);
+    }
+    builder.updateOyakata(id, updated);
+  }
+}
+
+/** Per-heya training-philosophy drift (Phase 5 depth). */
+function driftTrainingPhilosophies(builder: ImpactBuilder, world: WorldState): void {
+  if (!world.heyas) return;
+  for (const heya of world.heyas.values()) {
+    if (heya.trainingPhilosophy) {
+      const drifted = TrainingPhilosophyService.tickPhilosophyDrift(heya.trainingPhilosophy);
+      if (drifted !== heya.trainingPhilosophy) {
+        builder.updateHeya(heya.id, { trainingPhilosophy: drifted });
       }
-      builder.updateOyakata(id, updated);
     }
   }
+}
 
-  // Phase 5 Depth: Training Philosophy Drift
-  if (world.heyas) {
-    for (const heya of world.heyas.values()) {
-      if (heya.trainingPhilosophy) {
-        const drifted = TrainingPhilosophyService.tickPhilosophyDrift(heya.trainingPhilosophy);
-        if (drifted !== heya.trainingPhilosophy) {
-          builder.updateHeya(heya.id, { trainingPhilosophy: drifted });
-        }
-      }
-    }
-  }
-
-  // 7. Logging & Era Check
-  const newYear = world.year;
-  const isDecadeBoundary = newYear % 10 === 0;
-  const hofNames = inductees.map((i) => i.shikona);
-  builder.logEvent("BASHO_STATUS", "narrative", {
-    status: "meta_shift",
-    incident: isDecadeBoundary ? "decade_boundary" : "year_boundary",
-    day: newYear,
-    score: hofNames.length,
-    reason: hofNames.length > 0 ? hofNames.join("|") : "None",
-  });
-
-  // 8. Increment Authoritative Year (E4/C5)
-  const nextYear = (world.year ?? DEFAULT_START_YEAR) + 1;
-  builder.updateWorldField("year", nextYear);
-  builder.updateWorldField("calendar", {
-    ...world.calendar,
-    currentWeek: world.calendar?.currentWeek ?? 1,
-  });
-
-  // Bound history arrays to prevent unbounded growth (B2.5)
+/** Bound history arrays to prevent unbounded growth (B2.5). */
+function boundArrays(builder: ImpactBuilder, world: WorldState): void {
   const bounded = boundHistoryArrays(world);
   if (bounded.history !== world.history) {
     builder.updateWorldField("history", bounded.history);
@@ -224,14 +263,4 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   if (bounded.almanacSnapshots && bounded.almanacSnapshots !== world.almanacSnapshots) {
     builder.updateWorldField("almanacSnapshots", bounded.almanacSnapshots);
   }
-
-  // Retired-rikishi summarization: convert full Rikishi in historicalRikishi to
-  // compact RetiredRikishiSummary entries at the year boundary. This fires in
-  // BOTH the player flow AND AutoSim (since both advance days through the tick
-  // pipeline). Full career detail is preserved in cold storage (archived at
-  // retirement time via CareerService / governanceReview). Idempotent — entries
-  // already marked isSummary are skipped.
-  builder.merge(runRetiredRikishiSummarization(world));
-
-  return builder.build();
 }

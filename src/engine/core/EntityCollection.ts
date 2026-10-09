@@ -17,7 +17,7 @@ import { getHeya, getRikishi, getHeyaRoster as queryGetHeyaRoster } from "../que
 /**
  * Options for entity retrieval.
  */
-export interface EntityQueryOptions {
+interface EntityQueryOptions {
   /** If true, includes retired rikishi. Defaults to false. */
   includeRetired?: boolean;
   /** If provided, filters by heyaId. */

@@ -20,7 +20,7 @@ import {
   toTraitBand,
 } from "@/presenters/uiDigest";
 
-export type WelfareState = {
+export type WelfarePanelState = {
   welfareRisk?: number;
   complianceState?: string;
   investigation?: { progress?: number; severity?: string };
@@ -71,7 +71,7 @@ export function WelfareSection({
 }: {
   risk: number;
   compliance: string;
-  welfare: WelfareState | undefined;
+  welfare: WelfarePanelState | undefined;
 }) {
   const inv = welfare?.investigation;
   const sanc = welfare?.sanctions;

@@ -29,6 +29,7 @@ vi.mock("@/components/ui/tooltip-wrap", () => ({
 }));
 
 import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/store/gameStore";
 
 function makeStock(overrides: Partial<any> = {}): any {
   return {
@@ -276,5 +277,69 @@ describe("MyosekiMarketPage sorting", () => {
     const order = getStockNames();
     // desc name: Charlie, Bravo, Alpha
     expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
+  });
+});
+
+// ── My Shares actions ─────────────────────────────────────────
+
+describe("MyosekiMarketPage — My Shares actions", () => {
+  function mockSendCommand(send: ReturnType<typeof vi.fn>) {
+    vi.mocked(useGameStore).mockImplementation(
+      (selector: any) => selector({ sendCommand: send }) as any
+    );
+  }
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+
+  it("dispatches LIST_MYOSEKI_FOR_SALE for a held stock owned by the player", () => {
+    const send = vi.fn(() => true);
+    mockSendCommand(send);
+    const heya = { funds: 0, oyakataId: "oy-player" };
+    mockState({
+      myosekiMarket: makeMarket({
+        stock1: makeStock({
+          status: "held",
+          ownerId: "oy-player",
+          holderId: "oy-player",
+        }),
+      }),
+      heyas: new Map([["heya1", heya]]),
+      playerHeyaId: "heya1",
+      rikishi: new Map(),
+    });
+    render(<MyosekiMarketPage />);
+    fireEvent.mouseDown(screen.getByText("My Shares"));
+    fireEvent.click(screen.getByText("List for Sale"));
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "LIST_MYOSEKI_FOR_SALE", myosekiId: "stock1" })
+    );
+  });
+
+  it("dispatches RETURN_MYOSEKI_LEASE for a stock leased by the player", () => {
+    const send = vi.fn(() => true);
+    mockSendCommand(send);
+    const heya = { funds: 0, oyakataId: "oy-player" };
+    mockState({
+      myosekiMarket: makeMarket({
+        stock1: makeStock({
+          status: "leased",
+          ownerId: "oy-other",
+          holderId: "oy-player",
+          leaseFee: 5_000_000,
+        }),
+      }),
+      heyas: new Map([["heya1", heya]]),
+      playerHeyaId: "heya1",
+      rikishi: new Map(),
+    });
+    render(<MyosekiMarketPage />);
+    fireEvent.mouseDown(screen.getByText("My Shares"));
+    fireEvent.click(screen.getByText("End Lease"));
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "RETURN_MYOSEKI_LEASE", myosekiId: "stock1" })
+    );
   });
 });

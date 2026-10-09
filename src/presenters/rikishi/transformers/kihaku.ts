@@ -11,12 +11,8 @@
  */
 import type { Rikishi } from "../../../engine/types/rikishi";
 
-export interface RikishiKihakuDTO {
-  /** 0-100 fighting spirit score (50 = neutral default) */
-  kihakuIsenScore: number;
-  /** Human-readable tier label */
-  label: string;
-}
+import type { RikishiKihakuDTO } from "../types";
+export type { RikishiKihakuDTO };
 
 function kihakuLabel(score: number): string {
   if (score >= 80) return "Blazing Spirit";

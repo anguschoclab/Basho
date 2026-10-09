@@ -8,7 +8,7 @@
 import type { Rikishi } from "../types/rikishi";
 import type { Id } from "../types/common";
 
-export type CareerHighlightType =
+type CareerHighlightType =
   | "debut_win"
   | "seven_seven_win"
   | "upset_over_elite"

@@ -10,10 +10,10 @@ import { AlertTriangle } from "lucide-react";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { LoanCard } from "./DebtSections";
-import { LOAN_SORT_OPTIONS, LOAN_ACCESSOR, type Loan } from "./debtMeta";
+import { LOAN_SORT_OPTIONS, LOAN_ACCESSOR, type LoanRow } from "./debtMeta";
 
 interface DebtSectionProps {
-  activeLoans: Loan[];
+  activeLoans: LoanRow[];
   /** Called with the loan id when the player requests early repayment. */
   onPrepay?: (loanId: string) => void;
 }

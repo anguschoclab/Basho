@@ -140,5 +140,7 @@ describe("league-aware advisor recommendations", () => {
     const rec = recs.find((r) => r.id === "opponent-model-b1");
     expect(rec).toBeDefined();
     expect(rec!.detail).toContain("push");
+    // Counter-tactic suggestion names the counter family (push → belt).
+    expect(rec!.detail).toContain("belt");
   });
 });

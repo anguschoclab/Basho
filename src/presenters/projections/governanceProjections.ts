@@ -15,10 +15,11 @@ export { POLITICAL_FAVORS };
 import type { StatItem } from "@/components/layout/control-center";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "../selectors";
 import { toScandalBand } from "@/engine/descriptorBands";
+import type { ScandalBand } from "@/engine/systems/narrative/NarrativeBands";
 
-export type ScandalBand = "clean" | "whispers" | "scrutiny" | "scandal" | "crisis";
+export type { ScandalBand };
 
-export interface GovernanceSummary {
+export interface GovernancePageSummary {
   status: string;
   scandalScore: number;
   scandalBand: ScandalBand;
@@ -155,7 +156,7 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
   };
 }
 
-export function projectGovernancePage(world: WorldState, heyaId: string): GovernanceSummary | null {
+export function projectGovernancePage(world: WorldState, heyaId: string): GovernancePageSummary | null {
   const heya = world.heyas.get(heyaId);
   if (!heya) return null;
 

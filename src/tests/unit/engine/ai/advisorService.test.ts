@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, mockRikishi, makeMockHeya, makeMockBasho } from "../utils";
-import { generateRecommendations, getPlayerDigest } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/advisor/AdvisorService";
 
 const PLAYER_HEYA_ID = "player-heya";
 
@@ -76,12 +76,3 @@ describe("generateRecommendations", () => {
   });
 });
 
-describe("getPlayerDigest", () => {
-  it("summarizes the player's strategic situation", () => {
-    const world = makeMockWorld({ playerHeyaId: PLAYER_HEYA_ID });
-    const digest = getPlayerDigest(world);
-    expect(digest).toBeDefined();
-    expect(digest?.heyaId).toBe(PLAYER_HEYA_ID);
-    expect(Array.isArray(digest?.recommendations)).toBe(true);
-  });
-});

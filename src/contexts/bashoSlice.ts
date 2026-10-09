@@ -1,5 +1,7 @@
 import type { GameState, GameAction } from "./gameTypes";
 import type { BoutResult } from "../engine/types/basho";
+import type { BoutTactic } from "../engine/types/combat";
+import type { WorldState } from "../engine/types/world";
 import * as worldEngine from "../engine/world";
 import { resolveImpacts } from "../engine/core/ImpactResolver";
 
@@ -52,33 +54,8 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case "SIMULATE_BOUT": {
-      if (!state.world.currentBasho) return state;
-      const basho = state.world.currentBasho;
-      const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
-      let unplayedIndex = action.boutIndex;
-      if (action.boutId) {
-        const idx = todays.findIndex((m) => m.boutId === action.boutId);
-        if (idx >= 0) unplayedIndex = idx;
-      }
-      const target = todays[unplayedIndex];
-      const playerTactic = ((target?.boutId
-        ? state.world.boutTactics?.[target.boutId]
-        : undefined) ?? (action.boutId ? state.boutTactics[action.boutId] : undefined)) as
-        import("../engine/types/combat").BoutTactic | undefined;
-      const { world, result } = worldEngine.simulateBoutForToday(
-        state.world,
-        unplayedIndex,
-        playerTactic
-      );
-      return {
-        ...state,
-        world,
-        lastBoutResult: result ?? state.lastBoutResult,
-        currentBoutIndex: action.boutIndex + 1,
-        uiWorldRevision: bump + 1,
-      };
-    }
+    case "SIMULATE_BOUT":
+      return simulateSingleBout(state, action, bump);
 
     case "SET_BOUT_TACTIC":
       return {
@@ -99,27 +76,11 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIMULATE_ALL_BOUTS": {
       if (!state.world.currentBasho) return state;
-      let world = state.world;
-      let lastResult: BoutResult | null = state.lastBoutResult;
-      const basho = world.currentBasho;
-      if (basho) {
-        const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
-        for (let i = 0; i < todays.length; i++) {
-          const match = todays[i];
-          const playerTactic = (
-            match?.boutId
-              ? (world.boutTactics?.[match.boutId] ?? state.boutTactics[match.boutId])
-              : undefined
-          ) as import("../engine/types/combat").BoutTactic | undefined;
-          const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
-          world = result.world;
-          if (result.result) lastResult = result.result;
-        }
-      }
+      const { world, lastResult } = simulateTodaysBouts(state, state.world);
       return {
         ...state,
         world,
-        lastBoutResult: lastResult,
+        lastBoutResult: lastResult ?? state.lastBoutResult,
         phase: "day_results",
         uiWorldRevision: bump + 1,
       };
@@ -148,19 +109,8 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       let world = state.world;
       const currentDay = world.currentBasho?.day ?? 1;
       for (let d = currentDay; d <= 15; d++) {
-        const basho = world.currentBasho;
-        if (!basho) break;
-        const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
-        for (let i = 0; i < todays.length; i++) {
-          const match = todays[i];
-          const playerTactic = (
-            match?.boutId
-              ? (world.boutTactics?.[match.boutId] ?? state.boutTactics[match.boutId])
-              : undefined
-          ) as import("../engine/types/combat").BoutTactic | undefined;
-          const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
-          world = result.world;
-        }
+        if (!world.currentBasho) break;
+        world = simulateTodaysBouts(state, world).world;
         if (d < 15) world = worldEngine.advanceBashoDay(world);
       }
       return {
@@ -176,4 +126,71 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
     default:
       return state;
   }
+}
+
+/** Resolves the player tactic for a bout from world/reducer state. */
+function resolvePlayerTactic(
+  state: GameState,
+  world: WorldState,
+  boutId: string | undefined
+): BoutTactic | undefined {
+  return (
+    (boutId ? world.boutTactics?.[boutId] : undefined) ??
+    (boutId ? state.boutTactics[boutId] : undefined)
+  ) as BoutTactic | undefined;
+}
+
+function simulateSingleBout(
+  state: GameState,
+  action: Extract<GameAction, { type: "SIMULATE_BOUT" }>,
+  bump: number
+): GameState {
+  if (!state.world) return state;
+  if (!state.world.currentBasho) return state;
+  const basho = state.world.currentBasho;
+  const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
+  let unplayedIndex = action.boutIndex;
+  if (action.boutId) {
+    const idx = todays.findIndex((m) => m.boutId === action.boutId);
+    if (idx >= 0) unplayedIndex = idx;
+  }
+  const target = todays[unplayedIndex];
+  const playerTactic = ((target?.boutId
+    ? state.world.boutTactics?.[target.boutId]
+    : undefined) ?? (action.boutId ? state.boutTactics[action.boutId] : undefined)) as
+    BoutTactic | undefined;
+  const { world, result } = worldEngine.simulateBoutForToday(
+    state.world,
+    unplayedIndex,
+    playerTactic
+  );
+  return {
+    ...state,
+    world,
+    lastBoutResult: result ?? state.lastBoutResult,
+    currentBoutIndex: action.boutIndex + 1,
+    uiWorldRevision: bump + 1,
+  };
+}
+
+/**
+ * Simulates every unplayed bout of the current day, in order, carrying the
+ * player tactic for each bout. Returns the resolved world and the last result.
+ */
+function simulateTodaysBouts(
+  state: GameState,
+  startWorld: WorldState
+): { world: WorldState; lastResult: BoutResult | null } {
+  let world = startWorld;
+  let lastResult: BoutResult | null = null;
+  const basho = world.currentBasho;
+  if (!basho) return { world, lastResult };
+  const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
+  for (const match of todays) {
+    const playerTactic = resolvePlayerTactic(state, world, match?.boutId);
+    const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
+    world = result.world;
+    if (result.result) lastResult = result.result;
+  }
+  return { world, lastResult };
 }

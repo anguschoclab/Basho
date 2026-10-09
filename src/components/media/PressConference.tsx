@@ -29,7 +29,7 @@ interface PressConferenceProps {
   onClose: () => void;
 }
 
-export function PressConference({
+export function MediaPressConference({
   rikishiName,
   question,
   choices,

@@ -16,7 +16,6 @@ import type { Id } from "./types/common";
 import type { Side } from "./types/index";
 import { resolveBout } from "./bout/boutResolver";
 import { advanceOneDay, advanceDaysFast } from "./tick/tickDaily";
-import * as governance from "./systems/governance/ScandalService";
 import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
 import { applyBoutResult } from "./bout/boutResultApplier";
 import { createImpactBuilder } from "./core/ImpactBuilder";
@@ -42,7 +41,7 @@ function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
 }
 
-export const issueGovernanceRuling = governance.issueGovernanceRuling;
+export { issueGovernanceRuling } from "./systems/governance/ScandalService";
 
 /**
  * Initializes and starts a new basho (tournament).

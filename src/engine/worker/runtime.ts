@@ -7,7 +7,7 @@
  */
 
 import type { WorldState } from "../types/world";
-import type { EngineEvent } from "./types";
+import type { WorkerEvent } from "./types";
 import { buildWeeklyDigest } from "../../presenters/uiDigest";
 
 export interface WorkerRuntime {
@@ -15,7 +15,7 @@ export interface WorkerRuntime {
   worldVersion: number;
   digestRevision: number;
   simPaused: boolean;
-  post(event: EngineEvent): void;
+  post(event: WorkerEvent): void;
   emitDigest(): void;
   syncWorld(): void;
   syncAndDigest(): void;

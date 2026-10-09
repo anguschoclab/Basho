@@ -12,7 +12,7 @@ import {
   PrestigeChange,
   PrestigeShiftsSection,
   MovementsSection,
-  GovernanceSection,
+  NarrativeGovernanceSection,
   YdcSection,
   PressConferenceSection,
   WrapUpFooter,
@@ -46,7 +46,7 @@ export function NarrativeSummary({
       <MovementsSection groupedEvents={groupedEvents} />
 
       {hasGovernance && (
-        <GovernanceSection
+        <NarrativeGovernanceSection
           groupedEvents={groupedEvents}
           governanceLog={narrativeSummaryData.governanceLog}
         />

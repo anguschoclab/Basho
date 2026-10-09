@@ -103,7 +103,7 @@ function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: 
   return out;
 }
 
-export interface OyakataPersona {
+interface OyakataPersona {
   quirks: string[];
   managerFlags: NonNullable<Oyakata["managerFlags"]>;
 }

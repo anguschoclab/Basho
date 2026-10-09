@@ -3,7 +3,7 @@ import type { ShikonaGenerationConfig } from "./types";
 import { getHouseStyle } from "./helpers";
 import { getRankRule } from "./rankRules";
 import { generateLegacyShikona } from "./legacy";
-import { generateCandidate } from "./generation";
+import { generateShikonaCandidate } from "./generation";
 import { HEYA_PREFIX_PROBABILITY } from "./heyaPrefixes";
 import { pickSuffixByCategoryBias } from "./helpers";
 import { seededRandom } from "./seededRandom";
@@ -55,7 +55,7 @@ export function generateShikona(
 
       // Validation check
       if (name.length > rankRule.maxLen + 4) {
-        name = generateCandidate(rng, config, 0, house, rankRule);
+        name = generateShikonaCandidate(rng, config, 0, house, rankRule);
       }
 
       return name.charAt(0).toUpperCase() + name.slice(1);
@@ -63,12 +63,12 @@ export function generateShikona(
   }
 
   // Basic generation
-  let name = generateCandidate(rng, config, 0, house, rankRule);
+  let name = generateShikonaCandidate(rng, config, 0, house, rankRule);
 
   // Basic validation check (simplified compared to full collision detection)
   if (name.length > rankRule.maxLen + 4) {
     // Retry once if too long
-    name = generateCandidate(rng, config, 1, house, rankRule);
+    name = generateShikonaCandidate(rng, config, 1, house, rankRule);
   }
 
   return name.charAt(0).toUpperCase() + name.slice(1);

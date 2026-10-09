@@ -380,7 +380,6 @@ export const KENSHO_RNG_MIN = 0.8;
 export const KENSHO_RNG_RANGE = 0.4;
 export const RIVALRY_HEAT_AGGRESSION_MULTIPLIER = 0.15;
 export const RIVALRY_SPITE_MENTAL_MULTIPLIER = 0.2;
-export const DEFAULT_YEAR = 2026;
 export const DEFAULT_DAY = 1;
 export const DEFAULT_BASHO_NUMBER = 1;
 
@@ -457,9 +456,6 @@ export const BALANCE_CALCULATION_MULTIPLIER = 10;
 
 /** Rivalry heat/spite normalization divisor (convert 0-100 to 0-1) */
 export const RIVALRY_NORMALIZATION_DIVISOR = 100;
-
-/** Default stat value when stat is undefined */
-export const DEFAULT_STAT_VALUE = 50;
 
 /** Stat clamp minimum */
 export const STAT_CLAMP_MIN = 0;

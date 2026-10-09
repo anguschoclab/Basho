@@ -95,3 +95,56 @@ Each may be a genuine domain difference mislabeled with a generic name — check
 - The gate should flag exported value-name collisions across production files, with an explicit allowlist for LAYERED pairs and intentional same-name domain APIs.
 - Diverged scalars must be resolved *before* the constants merge wave — codemoding imports onto the wrong value would silently change behavior.
 - Scanner caveat: `export { X }` re-export sites and object-literal method exports are not counted above; the orphan-audit `fsScan` covers those paths.
+
+## Phase 3 outcome — executed (dedupe wave complete)
+
+`duplicateExportGate.test.ts` + `scripts/duplicateExports.ts` landed: TS-API
+scanner counts only true definitions (`export` decls; re-exports excluded),
+plus a constants-uniqueness check over `constants/engine/*`. Gate is GREEN:
+85 collisions → 0 (5 allowlisted layered APIs: `startBasho`, `advanceDay`,
+`simulateBout`, `endBasho`, `applyImpact`).
+
+Verdicts executed:
+
+- **Constants**: all 23 `constants/engine/*` collisions eliminated —
+  canonical homes calendar.ts / generation.ts / economy.ts / media.ts /
+  welfare.ts; divergent dead copies removed (`BOUT_DURATION_*` in
+  rivalry.ts, `SANCTION_RISK_THRESHOLD` in welfareTransitions.ts,
+  `NATURALIZATION_CAREER_WINS_THRESHOLD` duplicates kept per call-site
+  analysis — naturalization.ts consumes the generation value).
+- **calculateKachiNokori**: canonical = KachiNokoriService (pin confirmed);
+  bout/kachiNokori.ts deleted, helpers moved to the Service, tests repointed.
+- **Accessors**: entityAccess.ts deleted (dead); worldAccess.ts → re-export
+  adapters; queries.ts `getActiveRikishi` → re-export of selectors' cached impl.
+- **Renames (different domains)**: `BashoPerformance`→`AlmanacBashoPerformance`
+  (almanac/); worker `EngineEvent`→`WorkerEvent`; staff `ReputationBand`→
+  `StaffReputationBand`, `LoyaltyBand`→`StaffLoyaltyBand`; rikishiAgency
+  `LoyaltyBand`→`RikishiLoyaltyBand`; RankBadge `RankTier`→`RankBadgeTier`;
+  debtMeta `Loan`→`LoanRow`; bard `NarrativeContext`→`BoutNarrativeContext`;
+  useCrisisDetection `ActiveCrisis`→`DetectedCrisis`; InstitutionPanelSections
+  `WelfareState`→`WelfarePanelState`; governanceProjections `GovernanceSummary`→
+  `GovernancePageSummary`; selectors `StandingEntry`→`EngineStandingEntry`;
+  sonner `Toaster`→`SonnerToaster`; useGovernanceDerived `GovernanceDerived`→
+  `GovernanceHookResult`; control-center `RankBadge`→`SimpleRankBadge`;
+  media `PressConference`→`MediaPressConference`; dashboard
+  `PreBashoAssessment`→`PreBashoAssessmentPanel`.
+- **Identical-type merges** (canonical def + import/re-export):
+  `ReputationBand` (NarrativeBands), `KoenkaiBandType` (narrative.ts),
+  `RunwayBand` (narrative.ts), `ScandalBand` (NarrativeBands), `Season`
+  (basho.ts), `ReplayPhase` (ReplayMetadata via presenters/engineAccess),
+  `RikishiKihakuDTO` (presenters/rikishi/types.ts), `YouthAcademyState`
+  (types/academy.ts).
+- **Dead decls deleted**: combat.ts `KimariteClass` (different union,
+  zero consumers), uiDigestTypes `PerceptionSnapshot`/`PrestigeChange`
+  (both unreferenced), SimulationConfig `BASHO_MONTHS`/`BASHO_NAMES`,
+  `getCurrentBasho` in BashoManager, `projectTsukebito` in
+  trainingProjections, `tickYear`→`tickTalentPoolYear`,
+  `getHeatBand`→`getDisplayHeatBand` (rivalryUtils.pure),
+  `generateCandidate` (shikona)→`generateShikonaCandidate`,
+  `makeDeterministicSeed` timestamp impl removed (canonical = seed.ts).
+- **Unexported**: `OfficiatingOutcome`, `ResolvedTactics` (internal
+  resolution helper shapes — no external consumers).
+
+Trap recorded: `export *` barrels do NOT create local bindings — deleting a
+local definition whose consumers relied on the barrel re-export chain needs a
+local import + explicit re-export (see `rivalries.ts`/`makeRivalryKey`).

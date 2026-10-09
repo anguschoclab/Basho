@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
-import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
+import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 
 // Save original globals to restore after tests finish
 const originalSelf = globalThis.self;
@@ -10,7 +10,7 @@ const originalOnmessage = globalThis.onmessage;
 const mockPostMessage = vi.fn();
 
 interface MockWorkerGlobal {
-  postMessage: (message: EngineEvent) => void;
+  postMessage: (message: WorkerEvent) => void;
   onmessage: ((event: MessageEvent<EngineCommand>) => void) | null;
   self?: any;
 }

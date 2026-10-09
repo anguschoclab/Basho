@@ -5,9 +5,6 @@
 /** Diet cost for standard regimen (yen) */
 export const DIET_COST_STANDARD = 3000;
 
-/** Market drift range */
-export const MARKET_DRIFT_RANGE = 0.06;
-
 /** Sponsor jitter range */
 export const SPONSOR_JITTER_RANGE = 1.0;
 

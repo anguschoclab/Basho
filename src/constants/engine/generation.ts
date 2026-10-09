@@ -567,9 +567,6 @@ export const LEADERBOARD_MIN_LEADER_WINS = 4;
 /** Momentum score threshold above which a momentum narrative line is generated */
 export const MOMENTUM_NARRATIVE_THRESHOLD = 15;
 
-/** Total days in a basho */
-export const BASHO_DAYS = 15;
-
 /** Senshuraku (final day) of a basho */
 export const SENSURAKU_DAY = 15;
 

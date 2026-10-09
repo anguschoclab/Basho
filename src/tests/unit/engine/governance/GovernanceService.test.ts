@@ -11,7 +11,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { reportScandal, tickWeekGovernance } from "@/engine/systems/governance/ScandalService";
+import { reportScandal } from "@/engine/systems/governance/ScandalService";
+import { phase01_week_governance } from "@/engine/tick/phases/phase01_week_governance";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya } from "../utils";
 import type { WorldState } from "@/engine/types/world";
@@ -92,46 +93,46 @@ describe("reportScandal — governance log", () => {
   });
 });
 
-// ── tickWeekGovernance — decay ─────────────────────────────────────────────
+// ── phase01_week_governance — decay ─────────────────────────────────────────────
 
-describe("tickWeekGovernance — scandal score decay", () => {
+describe("phase01_week_governance — scandal score decay", () => {
   it("decays by 1 per week", () => {
     const world = makeWorld("h1", 10);
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(9);
   });
 
   it("does not decay below 0", () => {
     const world = makeWorld("h1", 0);
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(0);
   });
 
   it("handles score of 1 correctly (floors at 0)", () => {
     const world = makeWorld("h1", 1);
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(0);
   });
 });
 
-// ── tickWeekGovernance — status thresholds ─────────────────────────────────
+// ── phase01_week_governance — status thresholds ─────────────────────────────────
 // Note: decay runs BEFORE status evaluation. Tests set score so that
 // post-decay value lands on the intended threshold.
 
-describe("tickWeekGovernance — status threshold transitions", () => {
+describe("phase01_week_governance — status threshold transitions", () => {
   it("remains 'good_standing' when post-decay score is 14 (< 15)", () => {
     const world = makeWorld("h1", 15); // decays to 14
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("good_standing");
   });
 
   it("transitions to 'warning' when post-decay score is exactly 15", () => {
     const world = makeWorld("h1", 16); // decays to 15
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(15);
     expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("warning");
@@ -139,14 +140,14 @@ describe("tickWeekGovernance — status threshold transitions", () => {
 
   it("transitions to 'probation' when post-decay score is 30", () => {
     const world = makeWorld("h1", 31); // decays to 30
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("probation");
   });
 
   it("transitions to 'sanctioned' when post-decay score is 60", () => {
     const world = makeWorld("h1", 61); // decays to 60
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("sanctioned");
   });
@@ -154,7 +155,7 @@ describe("tickWeekGovernance — status threshold transitions", () => {
   it("does not change status when score remains in same band", () => {
     const world = makeWorld("h1", 5); // decays to 4, still good_standing
     world.heyas.get("h1")!.governanceStatus = "good_standing";
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("good_standing");
   });
@@ -171,7 +172,7 @@ describe("tickWeekGovernance — status threshold transitions", () => {
       makeMockHeya("h2", { scandalScore: 5, governanceStatus: "good_standing" })
     );
 
-    const impact = tickWeekGovernance(world);
+    const impact = phase01_week_governance(world);
     const updatedWorld = resolveImpacts(world, [impact]);
 
     expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("probation");

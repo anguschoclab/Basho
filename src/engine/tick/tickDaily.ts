@@ -20,7 +20,6 @@ import {
   WEEKLY_TICK_THRESHOLD,
   MAX_DAYS_ADVANCE,
   POST_BASHO_DAYS,
-  INTERIM_DAYS,
 } from "../../constants/engine/npcStrategy";
 import {
   DAYS_IN_MONTH,
@@ -28,7 +27,7 @@ import {
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
 } from "../../constants/engine/calendarExtended";
-import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
+import { DEFAULT_START_YEAR, INTERIM_DAYS } from "../../constants/engine/calendar";
 import { warn } from "../utils/Logger";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { clearQueryCaches } from "../queries";

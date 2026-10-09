@@ -182,7 +182,7 @@ export const MentorshipService = {
  * This event is fired when a mentor faces their apprentice in a basho bout,
  * seeding narrative content for the master-apprentice relationship arc.
  */
-export interface MentorMenteeBoutEvent {
+interface MentorMenteeBoutEvent {
   /** Event type identifier. */
   type: "mentor_mentee_bout";
   /** The mentor's rikishi ID. */

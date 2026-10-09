@@ -10,16 +10,6 @@ import type { Rank } from "@/engine/types/banzuke";
 import type { Side } from "@/engine/types/index";
 
 /**
- * Generates a deterministic-friendly seed string.
- * Uses Date.now() for uniqueness but follows a stable prefix pattern.
- * @param prefix - The string prefix for the seed (default: "world")
- */
-export function makeDeterministicSeed(prefix = "world"): string {
-  const timestamp = Date.now().toString(36);
-  return `${prefix}-${timestamp}`;
-}
-
-/**
  * Safely truncates a seed for display.
  * @param seed - The raw seed string
  * @param maxLength - Maximum length before ellipsis (default: 14)

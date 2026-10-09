@@ -104,6 +104,278 @@ function applyFacilityUpgrade(
   return true;
 }
 
+/** Finance: myoseki purchase honoring the agent's prioritized pick. */
+function tryMyosekiPurchase(
+  world: WorldState,
+  heyaId: Id,
+  decisions: AgentDecisions,
+  oyakata: Oyakata,
+  week: number,
+  canSpend: (cost: number) => boolean,
+  builder: ReturnType<typeof createImpactBuilder>
+): boolean {
+  if (!decisions.finance.shouldBuyMyoseki || onCooldown(oyakata.memory, "myoseki", week)) {
+    return false;
+  }
+  const stocks = Object.values(world.myosekiMarket?.stocks ?? {})
+    .filter(
+      (s) =>
+        s.status === "available" &&
+        s.askingPrice !== undefined &&
+        s.askingPrice > 0 &&
+        canSpend(s.askingPrice)
+    )
+    .sort((a, b) => (a.askingPrice ?? 0) - (b.askingPrice ?? 0));
+  // Honor the agent's prioritized pick when it is still available and
+  // affordable; otherwise fall back to the cheapest eligible stock.
+  const target = stocks.find((s) => s.id === decisions.finance.myosekiId) ?? stocks[0];
+  if (target) {
+    builder.merge(buyMyoseki(world, oyakata.id, heyaId, target.id));
+    return true;
+  }
+  return false;
+}
+
+/** Governance: scandal reduction via political pardon or PR spend. */
+function tryScandalReduction(
+  world: WorldState,
+  heyaId: Id,
+  heya: Heya,
+  decisions: AgentDecisions,
+  oyakata: Oyakata,
+  week: number,
+  canSpend: (cost: number) => boolean,
+  builder: ReturnType<typeof createImpactBuilder>
+): boolean {
+  if (
+    !decisions.governance.shouldReduceScandal ||
+    onCooldown(oyakata.memory, "scandal", week) ||
+    (heya.scandalScore ?? 0) <= 0
+  ) {
+    return false;
+  }
+  const pardonCost = POLITICAL_FAVORS.find((f) => f.id === "governance_pardon")?.cost ?? Infinity;
+  if ((heya.politicalCapital ?? 0) >= pardonCost) {
+    builder.merge(PoliticalFavorsService.requestFavor(world, heyaId, "governance_pardon"));
+  } else if (canSpend(SCANDAL_PR_COST)) {
+    builder.updateHeya(heyaId, {
+      scandalScore: Math.max(0, (heya.scandalScore ?? 0) - SCANDAL_PR_REDUCTION),
+      funds: heya.funds - SCANDAL_PR_COST,
+    });
+  }
+  return true;
+}
+
+/** Governance: political favor — pardon under scandal pressure, payout when
+ *  tight on funds, otherwise matchmaking influence. */
+function tryPoliticalFavor(
+  world: WorldState,
+  heyaId: Id,
+  heya: Heya,
+  decisions: AgentDecisions,
+  oyakata: Oyakata,
+  week: number,
+  builder: ReturnType<typeof createImpactBuilder>
+): boolean {
+  if (!decisions.governance.shouldUsePoliticalFavor || onCooldown(oyakata.memory, "favor", week)) {
+    return false;
+  }
+  const favorId =
+    (heya.scandalScore ?? 0) > 15
+      ? "governance_pardon"
+      : heya.funds < SCANDAL_PR_COST
+        ? "advance_payout"
+        : "matchmaking_avoid";
+  const impact = PoliticalFavorsService.requestFavor(world, heyaId, favorId);
+  // Only count it as executed if the favor actually went through
+  // (requestFavor returns an empty impact when capital is insufficient).
+  const didApply =
+    (impact.entities?.heyaUpdates?.size ?? 0) > 0 ||
+    Object.keys(impact.worldFields ?? {}).length > 0;
+  if (didApply) {
+    builder.merge(impact);
+    return true;
+  }
+  return false;
+}
+
+/** Rivalry: shift heat on the hottest heya rivalry involving this heya. */
+function tryRivalryShift(
+  world: WorldState,
+  heyaId: Id,
+  decisions: AgentDecisions,
+  oyakata: Oyakata,
+  week: number,
+  builder: ReturnType<typeof createImpactBuilder>
+): boolean {
+  if (
+    !(decisions.rivalry.escalateRivalry || decisions.rivalry.deescalateRivalry) ||
+    onCooldown(oyakata.memory, "rivalry", week)
+  ) {
+    return false;
+  }
+  const delta = decisions.rivalry.escalateRivalry ? RIVALRY_HEAT_DELTA : -RIVALRY_HEAT_DELTA;
+  const rivalriesState = world.rivalriesState;
+  const heyaPairs = rivalriesState?.heyaRivalryPairs;
+  if (!rivalriesState || !heyaPairs) return false;
+
+  // Hottest heya rivalry involving this heya.
+  const top = Object.values(heyaPairs)
+    .filter((p) => p.heyaAId === heyaId || p.heyaBId === heyaId)
+    .sort((a, b) => b.heat - a.heat)[0];
+  if (!top) return false;
+
+  const updated = {
+    ...heyaPairs,
+    [top.id]: { ...top, heat: Math.min(100, Math.max(0, top.heat + delta)) },
+  };
+  builder.updateWorldField("rivalriesState", {
+    version: rivalriesState.version,
+    pairs: rivalriesState.pairs,
+    heyaRivalryPairs: updated,
+  });
+  builder.logEvent(
+    "RIVAL_POSTURE",
+    "ai_rival_posture",
+    {
+      heyaId,
+      posture: delta > 0 ? "aggressive" : "conciliatory",
+      rivalHeyaId: top.heyaAId === heyaId ? top.heyaBId : top.heyaAId,
+      heat: updated[top.id].heat,
+      vendetta: delta > 0 && decisions.rivalry.vendetta === true,
+    },
+    { heyaId, importance: "minor" }
+  );
+  return true;
+}
+
+/** Infrastructure: staff hires and youth-academy build/upgrade. */
+function tryInfrastructure(
+  world: WorldState,
+  heyaId: Id,
+  heya: Heya,
+  decisions: AgentDecisions,
+  oyakata: Oyakata,
+  week: number,
+  spendConstrained: boolean,
+  executedDomains: string[],
+  builder: ReturnType<typeof createImpactBuilder>
+): void {
+  const infra = decisions.infrastructure;
+  if (!infra) return;
+
+  // Staff hires and academy work are small discretionary spends — require
+  // the heya to hold the full operating reserve before committing them.
+  const hasReserveForSmallSpend = !spendConstrained && heya.funds >= MIN_OPERATING_RESERVE;
+  if (
+    infra.shouldHireStaff &&
+    !onCooldown(oyakata.memory, "staff", week) &&
+    hasReserveForSmallSpend
+  ) {
+    const impact = hireStaff(world, heyaId, (infra.staffRole ?? "scout") as StaffRole);
+    if ((impact.collections?.staffToAdd?.length ?? 0) > 0) {
+      builder.merge(impact);
+      executedDomains.push("staff");
+    }
+  }
+
+  const wantsAcademy = infra.shouldBuildAcademy || infra.shouldUpgradeAcademy;
+  if (wantsAcademy && !onCooldown(oyakata.memory, "academy", week) && hasReserveForSmallSpend) {
+    const hasAcademy = !!heya.youthAcademy;
+    const impact = hasAcademy
+      ? upgradeYouthAcademy(world, heyaId)
+      : buildYouthAcademy(world, heyaId);
+    if ((impact.entities?.heyaUpdates?.size ?? 0) > 0) {
+      builder.merge(impact);
+      executedDomains.push("academy");
+    }
+  }
+}
+
+/** Narrative: agent-triggered public event via the Bard event map. */
+function tryNarrativeEvent(
+  world: WorldState,
+  heyaId: Id,
+  heya: Heya,
+  decisions: AgentDecisions,
+  oyakata: Oyakata,
+  week: number,
+  builder: ReturnType<typeof createImpactBuilder>
+): boolean {
+  // WS6 — sanctioned/probation heyas keep low visibility: no public-facing
+  // narrative pushes while under governance sanction (canon: sanctioned
+  // stables suppress media activity until status restores).
+  const lowVisibility =
+    heya.governanceStatus === "sanctioned" || heya.governanceStatus === "probation";
+  if (
+    !decisions.narrative.shouldTriggerEvent ||
+    !decisions.narrative.eventType ||
+    lowVisibility ||
+    onCooldown(oyakata.memory, "narrative", week)
+  ) {
+    return false;
+  }
+  const mapEntry = narrativeEventMap[decisions.narrative.eventType];
+  // Every mapped template requires %SHIKONA% — without a resolved rikishi
+  // the event would render [MISSING: SHIKONA]; skip rather than emit a
+  // broken headline.
+  const subject = decisions.narrative.rikishiId
+    ? getRikishiAnywhere(world, decisions.narrative.rikishiId)
+    : undefined;
+  if (!mapEntry || !subject) return false;
+
+  const rng = rngForWorld(
+    world,
+    "narrative",
+    `npc-event-${decisions.narrative.eventType}-${heyaId}-${week}`
+  );
+  const ctx = {
+    heya: heya.name,
+    heyaId,
+    shikona: subject.shikona,
+    rikishiId: subject.id,
+    SHIKONA: subject.shikona,
+    HEYA: heya.name,
+  };
+  const titleRes = BardEngine.resolve(rng, mapEntry.titlePath, ctx);
+  const summaryRes = BardEngine.resolve(rng, mapEntry.summaryPath, ctx);
+  builder.logEvent(
+    mapEntry.eventType,
+    "narrative",
+    { ...ctx, title: titleRes.text, summary: summaryRes.text },
+    { heyaId, importance: mapEntry.importance }
+  );
+  return true;
+}
+
+/** Persist per-domain cooldowns and emit one NPC_MANAGER_DECISION event each. */
+function persistCooldownsAndSurface(
+  oyakata: Oyakata,
+  heyaId: Id,
+  week: number,
+  executedDomains: string[],
+  builder: ReturnType<typeof createImpactBuilder>
+): void {
+  if (executedDomains.length === 0) return;
+  const memory = getMemory(oyakata, week);
+  const lastExecutedAt = { ...(memory.lastExecutedAt ?? {}) };
+  for (const d of executedDomains) lastExecutedAt[d] = week;
+  builder.updateOyakata(oyakata.id, {
+    memory: { ...memory, lastExecutedAt },
+  });
+  // One canonical decision event per executed domain — feeds the NPC agent
+  // feed and keeps the NPC_MANAGER_DECISION audit contract.
+  for (const d of executedDomains) {
+    const [category, decision] = DOMAIN_SURFACE[d] ?? ["strategy", `Acted on ${d}`];
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "ai_decision",
+      { heyaId, category, decision, domain: d, executed: true },
+      { heyaId }
+    );
+  }
+}
+
 export function executeAgentDecisions(
   world: WorldState,
   heyaId: Id,
@@ -132,23 +404,8 @@ export function executeAgentDecisions(
     executedDomains.push("rescue");
   }
 
-  if (decisions.finance.shouldBuyMyoseki && !onCooldown(oyakata.memory, "myoseki", week)) {
-    const stocks = Object.values(world.myosekiMarket?.stocks ?? {})
-      .filter(
-        (s) =>
-          s.status === "available" &&
-          s.askingPrice !== undefined &&
-          s.askingPrice > 0 &&
-          canSpend(s.askingPrice)
-      )
-      .sort((a, b) => (a.askingPrice ?? 0) - (b.askingPrice ?? 0));
-    // Honor the agent's prioritized pick when it is still available and
-    // affordable; otherwise fall back to the cheapest eligible stock.
-    const target = stocks.find((s) => s.id === decisions.finance.myosekiId) ?? stocks[0];
-    if (target) {
-      builder.merge(buyMyoseki(world, oyakata.id, heyaId, target.id));
-      executedDomains.push("myoseki");
-    }
+  if (tryMyosekiPurchase(world, heyaId, decisions, oyakata, week, canSpend, builder)) {
+    executedDomains.push("myoseki");
   }
 
   if (
@@ -160,114 +417,31 @@ export function executeAgentDecisions(
   }
 
   // ── Governance ─────────────────────────────────────────────────────────
-  if (
-    decisions.governance.shouldReduceScandal &&
-    !onCooldown(oyakata.memory, "scandal", week) &&
-    (heya.scandalScore ?? 0) > 0
-  ) {
-    const pardonCost = POLITICAL_FAVORS.find((f) => f.id === "governance_pardon")?.cost ?? Infinity;
-    if ((heya.politicalCapital ?? 0) >= pardonCost) {
-      builder.merge(PoliticalFavorsService.requestFavor(world, heyaId, "governance_pardon"));
-    } else if (canSpend(SCANDAL_PR_COST)) {
-      builder.updateHeya(heyaId, {
-        scandalScore: Math.max(0, (heya.scandalScore ?? 0) - SCANDAL_PR_REDUCTION),
-        funds: heya.funds - SCANDAL_PR_COST,
-      });
-    }
+  if (tryScandalReduction(world, heyaId, heya, decisions, oyakata, week, canSpend, builder)) {
     executedDomains.push("scandal");
   }
 
-  if (decisions.governance.shouldUsePoliticalFavor && !onCooldown(oyakata.memory, "favor", week)) {
-    // Pick the favor matching current pressure: scandal → pardon,
-    // tight funds → advance, otherwise matchmaking influence.
-    const favorId =
-      (heya.scandalScore ?? 0) > 15
-        ? "governance_pardon"
-        : heya.funds < SCANDAL_PR_COST
-          ? "advance_payout"
-          : "matchmaking_avoid";
-    const impact = PoliticalFavorsService.requestFavor(world, heyaId, favorId);
-    // Only count it as executed if the favor actually went through
-    // (requestFavor returns an empty impact when capital is insufficient).
-    const didApply =
-      (impact.entities?.heyaUpdates?.size ?? 0) > 0 ||
-      Object.keys(impact.worldFields ?? {}).length > 0;
-    if (didApply) {
-      builder.merge(impact);
-      executedDomains.push("favor");
-    }
+  if (tryPoliticalFavor(world, heyaId, heya, decisions, oyakata, week, builder)) {
+    executedDomains.push("favor");
   }
 
   // ── Rivalry ────────────────────────────────────────────────────────────
-  if (
-    (decisions.rivalry.escalateRivalry || decisions.rivalry.deescalateRivalry) &&
-    !onCooldown(oyakata.memory, "rivalry", week)
-  ) {
-    const delta = decisions.rivalry.escalateRivalry ? RIVALRY_HEAT_DELTA : -RIVALRY_HEAT_DELTA;
-    const rivalriesState = world.rivalriesState;
-    const heyaPairs = rivalriesState?.heyaRivalryPairs;
-    if (rivalriesState && heyaPairs) {
-      // Hottest heya rivalry involving this heya.
-      const top = Object.values(heyaPairs)
-        .filter((p) => p.heyaAId === heyaId || p.heyaBId === heyaId)
-        .sort((a, b) => b.heat - a.heat)[0];
-      if (top) {
-        const updated = {
-          ...heyaPairs,
-          [top.id]: { ...top, heat: Math.min(100, Math.max(0, top.heat + delta)) },
-        };
-        builder.updateWorldField("rivalriesState", {
-          version: rivalriesState.version,
-          pairs: rivalriesState.pairs,
-          heyaRivalryPairs: updated,
-        });
-        builder.logEvent(
-          "RIVAL_POSTURE",
-          "ai_rival_posture",
-          {
-            heyaId,
-            posture: delta > 0 ? "aggressive" : "conciliatory",
-            rivalHeyaId: top.heyaAId === heyaId ? top.heyaBId : top.heyaAId,
-            heat: updated[top.id].heat,
-            vendetta: delta > 0 && decisions.rivalry.vendetta === true,
-          },
-          { heyaId, importance: "minor" }
-        );
-        executedDomains.push("rivalry");
-      }
-    }
+  if (tryRivalryShift(world, heyaId, decisions, oyakata, week, builder)) {
+    executedDomains.push("rivalry");
   }
 
   // ── Infrastructure: staff + youth academy ──────────────────────────────
-  const infra = decisions.infrastructure;
-  if (infra) {
-    // Staff hires and academy work are small discretionary spends — require
-    // the heya to hold the full operating reserve before committing them.
-    const hasReserveForSmallSpend = !spendConstrained && heya.funds >= MIN_OPERATING_RESERVE;
-    if (
-      infra.shouldHireStaff &&
-      !onCooldown(oyakata.memory, "staff", week) &&
-      hasReserveForSmallSpend
-    ) {
-      const impact = hireStaff(world, heyaId, (infra.staffRole ?? "scout") as StaffRole);
-      if ((impact.collections?.staffToAdd?.length ?? 0) > 0) {
-        builder.merge(impact);
-        executedDomains.push("staff");
-      }
-    }
-
-    const wantsAcademy = infra.shouldBuildAcademy || infra.shouldUpgradeAcademy;
-    if (wantsAcademy && !onCooldown(oyakata.memory, "academy", week) && hasReserveForSmallSpend) {
-      const hasAcademy = !!heya.youthAcademy;
-      const impact = hasAcademy
-        ? upgradeYouthAcademy(world, heyaId)
-        : buildYouthAcademy(world, heyaId);
-      if ((impact.entities?.heyaUpdates?.size ?? 0) > 0) {
-        builder.merge(impact);
-        executedDomains.push("academy");
-      }
-    }
-  }
+  tryInfrastructure(
+    world,
+    heyaId,
+    heya,
+    decisions,
+    oyakata,
+    week,
+    spendConstrained,
+    executedDomains,
+    builder
+  );
 
   // ── Recruitment policy handoff ─────────────────────────────────────────
   // Standing policy consumed by fillVacanciesForNPCWithBidding at both call
@@ -283,70 +457,12 @@ export function executeAgentDecisions(
   }
 
   // ── Narrative ──────────────────────────────────────────────────────────
-  // WS6 — sanctioned/probation heyas keep low visibility: no public-facing
-  // narrative pushes while under governance sanction (canon: sanctioned
-  // stables suppress media activity until status restores).
-  const lowVisibility =
-    heya.governanceStatus === "sanctioned" || heya.governanceStatus === "probation";
-  if (
-    decisions.narrative.shouldTriggerEvent &&
-    decisions.narrative.eventType &&
-    !lowVisibility &&
-    !onCooldown(oyakata.memory, "narrative", week)
-  ) {
-    const mapEntry = narrativeEventMap[decisions.narrative.eventType];
-    // Every mapped template requires %SHIKONA% — without a resolved rikishi
-    // the event would render [MISSING: SHIKONA]; skip rather than emit a
-    // broken headline.
-    const subject = decisions.narrative.rikishiId
-      ? getRikishiAnywhere(world, decisions.narrative.rikishiId)
-      : undefined;
-    if (mapEntry && subject) {
-      const rng = rngForWorld(
-        world,
-        "narrative",
-        `npc-event-${decisions.narrative.eventType}-${heyaId}-${week}`
-      );
-      const ctx = {
-        heya: heya.name,
-        heyaId,
-        shikona: subject.shikona,
-        rikishiId: subject.id,
-        SHIKONA: subject.shikona,
-        HEYA: heya.name,
-      };
-      const titleRes = BardEngine.resolve(rng, mapEntry.titlePath, ctx);
-      const summaryRes = BardEngine.resolve(rng, mapEntry.summaryPath, ctx);
-      builder.logEvent(
-        mapEntry.eventType,
-        "narrative",
-        { ...ctx, title: titleRes.text, summary: summaryRes.text },
-        { heyaId, importance: mapEntry.importance }
-      );
-      executedDomains.push("narrative");
-    }
+  if (tryNarrativeEvent(world, heyaId, heya, decisions, oyakata, week, builder)) {
+    executedDomains.push("narrative");
   }
 
   // ── Cooldown persistence + decision surfacing ──────────────────────────
-  if (executedDomains.length > 0) {
-    const memory = getMemory(oyakata, week);
-    const lastExecutedAt = { ...(memory.lastExecutedAt ?? {}) };
-    for (const d of executedDomains) lastExecutedAt[d] = week;
-    builder.updateOyakata(oyakata.id, {
-      memory: { ...memory, lastExecutedAt },
-    });
-    // One canonical decision event per executed domain — feeds the NPC agent
-    // feed and keeps the NPC_MANAGER_DECISION audit contract.
-    for (const d of executedDomains) {
-      const [category, decision] = DOMAIN_SURFACE[d] ?? ["strategy", `Acted on ${d}`];
-      builder.logEvent(
-        "NPC_MANAGER_DECISION",
-        "ai_decision",
-        { heyaId, category, decision, domain: d, executed: true },
-        { heyaId }
-      );
-    }
-  }
+  persistCooldownsAndSurface(oyakata, heyaId, week, executedDomains, builder);
 
   return builder.build();
 }

@@ -35,7 +35,7 @@ export const AXIS_META: Record<
   },
 };
 
-export const BAND_COLORS: Record<FacilitiesBand, string> = {
+export const FACILITY_BAND_COLORS: Record<FacilitiesBand, string> = {
   world_class: "text-gold",
   excellent: "text-primary",
   adequate: "text-west",

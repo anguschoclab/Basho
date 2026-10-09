@@ -5,7 +5,7 @@ import type { WorldState } from "../types/world";
 import type { PressPersona } from "../types/media";
 import { determinePostRetirementPath, getRetirementNarrative } from "./PostRetirementPath";
 
-export interface RetirementNarrativeLine {
+interface RetirementNarrativeLine {
   text: string;
   section:
     | "ceremony"

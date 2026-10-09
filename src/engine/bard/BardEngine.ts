@@ -5,7 +5,7 @@ import type { NarrativeContext } from "../types/events";
 import { warn } from "../utils/Logger";
 import { formatCurrency as formatCurrencyEnUS } from "../utils/formatters";
 
-export type ResolutionPath = string; // e.g., 'combat.phases.tachiai'
+type ResolutionPath = string; // e.g., 'combat.phases.tachiai'
 
 export interface BardResult {
   text: string;
@@ -13,18 +13,12 @@ export interface BardResult {
   path: ResolutionPath;
 }
 
-export interface RegistryEntry {
+interface RegistryEntry {
   label: string;
   labelJa?: string;
   description?: string;
   name?: string;
   [key: string]: unknown;
-}
-
-export interface BardArchive {
-  version: string;
-  registry: Record<string, Record<string, RegistryEntry>>;
-  domains: Record<string, unknown>;
 }
 
 type DomainMap = Record<string, unknown>;

@@ -18,7 +18,6 @@ export const YUSHO_THRESHOLD_15_DAY = 13;
 export const YUSHO_THRESHOLD_7_DAY = 6;
 
 // Debut age
-export const DEBUT_AGE_BASE = 15;
 export const DEBUT_AGE_RNG_RANGE = 5;
 
 // Foreign career years
@@ -35,11 +34,9 @@ export const BOUTS_PER_BASHO_SEKITORI = 15;
 export const BOUTS_PER_BASHO_LOWER_DIVISION = 7;
 
 // Fat-tail sampling for stats
-export const FAT_TAIL_SAMPLING_CHANCE = 0.15;
 export const FAT_TAIL_STDDEV_MULTIPLIER = 2;
 
 // Naturalization thresholds
-export const NATURALIZATION_CAREER_WINS_THRESHOLD = 300;
 export const NATURALIZATION_CAREER_WINS_HIGH_THRESHOLD = 400;
 export const NATURALIZATION_CAREER_YEARS_THRESHOLD = 10;
 

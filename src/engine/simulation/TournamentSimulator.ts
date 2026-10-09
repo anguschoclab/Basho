@@ -73,6 +73,205 @@ function syncBashoStandings(basho: BashoState): void {
   basho.standings = table;
 }
 
+type StandingsMap = Map<string, { wins: number; losses: number; absences?: number }>;
+
+/**
+ * Fusen-sho / Fusen-paku (standardization point): record an absence-based
+ * default win and write a fake bout result for stats consistency.
+ */
+function applyFusensho(
+  match: MatchSchedule,
+  east: NonNullable<ReturnType<typeof getRikishi>>,
+  west: NonNullable<ReturnType<typeof getRikishi>>,
+  standings: StandingsMap
+): void {
+  const eastAbsent = east.injured || east.isKyujo || east.isRetired;
+  const winner = eastAbsent ? west : east;
+  const loser = eastAbsent ? east : west;
+
+  winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
+  loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
+
+  const winnerStanding = standings.get(winner.id);
+  const loserStanding = standings.get(loser.id);
+  if (winnerStanding) winnerStanding.wins++;
+  if (loserStanding) {
+    loserStanding.losses++;
+    loserStanding.absences = (loserStanding.absences ?? 0) + 1;
+  }
+
+  match.result = {
+    boutId: match.boutId,
+    winner: eastAbsent ? "west" : "east",
+    winnerRikishiId: winner.id,
+    loserRikishiId: loser.id,
+    kimarite: "fusensho",
+    kimariteName: "Fusenshō",
+    stance: "no-grip",
+    tachiaiWinner: eastAbsent ? "west" : "east",
+    duration: 0,
+    upset: false,
+    kenshoEnvelopes: 0,
+    log: [],
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
+  };
+}
+
+/**
+ * Simulate one day: schedule against current standings, then resolve each
+ * unplayed match. Returns the (possibly replaced) basho state.
+ */
+function simulateDay(
+  workingWorld: WorldState,
+  activeBasho: BashoState,
+  day: number,
+  seed: string,
+  standings: StandingsMap,
+  keyBouts: BoutResult[],
+  injuries: string[]
+): { world: WorldState; basho: BashoState } {
+  activeBasho.day = day;
+  syncBashoStandings(activeBasho);
+  const { impact } = scheduleAllDivisionsDay({
+    world: workingWorld,
+    basho: activeBasho,
+    day,
+    seed,
+  });
+  workingWorld = resolveImpacts(workingWorld, [impact]);
+  activeBasho = workingWorld.currentBasho ?? activeBasho;
+  const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
+
+  for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
+    const match = dayMatches[boutIndex];
+    const east = getRikishi(workingWorld, match.eastRikishiId);
+    const west = getRikishi(workingWorld, match.westRikishiId);
+
+    if (!east || !west) continue;
+
+    const eitherAbsent =
+      east.injured ||
+      west.injured ||
+      east.isKyujo ||
+      west.isKyujo ||
+      east.isRetired ||
+      west.isRetired;
+    if (eitherAbsent) {
+      applyFusensho(match, east, west, standings);
+      continue;
+    }
+
+    const boutSeed = `${seed}-d${day}-b${boutIndex}`;
+    const { result } = simulateBout(east, west, boutSeed);
+    match.result = result;
+
+    const winner = result.winner === "east" ? east : west;
+    const loser = result.winner === "east" ? west : east;
+
+    winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
+    loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
+
+    const winnerStanding = standings.get(winner.id);
+    const loserStanding = standings.get(loser.id);
+
+    if (winnerStanding) winnerStanding.wins++;
+    if (loserStanding) loserStanding.losses++;
+
+    // Track key bouts (upsets, high-rank, senshuraku)
+    const eastTier = RANK_HIERARCHY[east.rank]?.tier ?? 999;
+    const westTier = RANK_HIERARCHY[west.rank]?.tier ?? 999;
+
+    if (result.upset || day === 15 || eastTier <= 2 || westTier <= 2) {
+      keyBouts.push(result);
+    }
+
+    if (east.injured) injuries.push(east.shikona);
+    if (west.injured) injuries.push(west.shikona);
+  }
+
+  return { world: workingWorld, basho: activeBasho };
+}
+
+/**
+ * Persist basho outcomes back into a final WorldState snapshot: career
+ * records, yusho/heya honors, and global kimarite tallies.
+ */
+function persistBashoState(
+  workingWorld: WorldState,
+  activeBasho: BashoState,
+  standings: StandingsMap,
+  yushoWinnerId: string
+): {
+  rikishi: Map<string, NonNullable<ReturnType<typeof getRikishi>>>;
+  heyas: WorldState["heyas"];
+  globalKimariteStats: Record<string, number>;
+  allTimeKimariteStats: Record<string, number>;
+} {
+  const nextRikishiMap = new Map(workingWorld.rikishi);
+  const nextHeyaMap = new Map(workingWorld.heyas);
+
+  // 1. Update all rikishi who participated
+  standings.forEach((stats, id) => {
+    const r = nextRikishiMap.get(id);
+    if (r) {
+      const updated = {
+        ...r,
+        careerWins: (r.careerWins ?? 0) + stats.wins,
+        careerLosses: (r.careerLosses ?? 0) + stats.losses,
+        careerAbsences: (r.careerAbsences ?? 0) + (stats.absences ?? 0),
+        currentBashoWins: stats.wins,
+        currentBashoLosses: stats.losses,
+      };
+
+      // Update division-specific records
+      if (updated.divisionRecords?.[r.division]) {
+        updated.divisionRecords[r.division].wins += stats.wins;
+        updated.divisionRecords[r.division].losses += stats.losses;
+      }
+
+      nextRikishiMap.set(id, updated);
+    }
+  });
+
+  // 2. Update Yusho Winner and their stable
+  if (yushoWinnerId) {
+    const winner = nextRikishiMap.get(yushoWinnerId);
+    if (winner) {
+      nextRikishiMap.set(yushoWinnerId, {
+        ...winner,
+        consecutiveYusho: (winner.consecutiveYusho || 0) + 1,
+      });
+
+      const heya = nextHeyaMap.get(winner.heyaId);
+      if (heya) {
+        nextHeyaMap.set(winner.heyaId, {
+          ...heya,
+          historicalYusho: (heya.historicalYusho || 0) + 1,
+        });
+      }
+    }
+  }
+
+  // 3. Update Global Kimarite Stats (era + never-reset all-time accumulator)
+  const globalKimariteStats = { ...(workingWorld.globalKimariteStats || {}) };
+  const allTimeKimariteStats = { ...(workingWorld.allTimeKimariteStats || {}) };
+  activeBasho.matches.forEach((m) => {
+    if (m.result?.kimarite) {
+      globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
+      allTimeKimariteStats[m.result.kimarite] = (allTimeKimariteStats[m.result.kimarite] || 0) + 1;
+    }
+  });
+
+  return {
+    rikishi: nextRikishiMap,
+    heyas: nextHeyaMap,
+    globalKimariteStats,
+    allTimeKimariteStats,
+  };
+}
+
 /**
  * High-speed Tournament Simulation.
  * Resolves an entire basho deterministically without real-time delays.
@@ -95,7 +294,7 @@ export function simulateEntireBasho(
     currentBasho: basho,
   };
 
-  const standings = new Map<string, { wins: number; losses: number; absences?: number }>();
+  const standings: StandingsMap = new Map();
   const keyBouts: BoutResult[] = [];
   const injuries: string[] = [];
 
@@ -118,97 +317,17 @@ export function simulateEntireBasho(
 
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    activeBasho.day = day;
-    syncBashoStandings(activeBasho);
-    const { impact } = scheduleAllDivisionsDay({
-      world: workingWorld,
-      basho: activeBasho,
+    const out = simulateDay(
+      workingWorld,
+      activeBasho,
       day,
       seed,
-    });
-    workingWorld = resolveImpacts(workingWorld, [impact]);
-    activeBasho = workingWorld.currentBasho ?? activeBasho;
-    const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
-
-    for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
-      const match = dayMatches[boutIndex];
-      const east = getRikishi(workingWorld, match.eastRikishiId);
-      const west = getRikishi(workingWorld, match.westRikishiId);
-
-      if (!east || !west) continue;
-
-      const eitherAbsent =
-        east.injured ||
-        west.injured ||
-        east.isKyujo ||
-        west.isKyujo ||
-        east.isRetired ||
-        west.isRetired;
-      if (eitherAbsent) {
-        // Fusen-sho / Fusen-paku (standardization point)
-        const eastAbsent = east.injured || east.isKyujo || east.isRetired;
-        const winner = eastAbsent ? west : east;
-        const loser = eastAbsent ? east : west;
-
-        winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
-        loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
-
-        const winnerStanding = standings.get(winner.id);
-        const loserStanding = standings.get(loser.id);
-        if (winnerStanding) winnerStanding.wins++;
-        if (loserStanding) {
-          loserStanding.losses++;
-          loserStanding.absences = (loserStanding.absences ?? 0) + 1;
-        }
-
-        // Add fake bout result for stats consistency
-        match.result = {
-          boutId: match.boutId,
-          winner: eastAbsent ? "west" : "east",
-          winnerRikishiId: winner.id,
-          loserRikishiId: loser.id,
-          kimarite: "fusensho",
-          kimariteName: "Fusensh\u014d",
-          stance: "no-grip",
-          tachiaiWinner: eastAbsent ? "west" : "east",
-          duration: 0,
-          upset: false,
-          kenshoEnvelopes: 0,
-          log: [],
-          momentumScore: 0,
-          inBoutInjury: null,
-          isTimeout: false,
-        };
-        continue;
-      }
-
-      const boutSeed = `${seed}-d${day}-b${boutIndex}`;
-      const { result } = simulateBout(east, west, boutSeed);
-      match.result = result;
-
-      const winner = result.winner === "east" ? east : west;
-      const loser = result.winner === "east" ? west : east;
-
-      winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
-      loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
-
-      const winnerStanding = standings.get(winner.id);
-      const loserStanding = standings.get(loser.id);
-
-      if (winnerStanding) winnerStanding.wins++;
-      if (loserStanding) loserStanding.losses++;
-
-      // Track key bouts (upsets, high-rank, senshuraku)
-      const eastTier = RANK_HIERARCHY[east.rank]?.tier ?? 999;
-      const westTier = RANK_HIERARCHY[west.rank]?.tier ?? 999;
-
-      if (result.upset || day === 15 || eastTier <= 2 || westTier <= 2) {
-        keyBouts.push(result);
-      }
-
-      if (east.injured) injuries.push(east.shikona);
-      if (west.injured) injuries.push(west.shikona);
-    }
+      standings,
+      keyBouts,
+      injuries
+    );
+    workingWorld = out.world;
+    activeBasho = out.basho;
   }
 
   // Determine yusho winner with canonical tie-breaking
@@ -260,60 +379,7 @@ export function simulateEntireBasho(
   }
 
   // --- STATE PERSISTENCE ---
-  const nextRikishiMap = new Map(workingWorld.rikishi);
-  const nextHeyaMap = new Map(workingWorld.heyas);
-
-  // 1. Update all rikishi who participated
-  standings.forEach((stats, id) => {
-    const r = nextRikishiMap.get(id);
-    if (r) {
-      const updated = {
-        ...r,
-        careerWins: (r.careerWins ?? 0) + stats.wins,
-        careerLosses: (r.careerLosses ?? 0) + stats.losses,
-        careerAbsences: (r.careerAbsences ?? 0) + (stats.absences ?? 0),
-        currentBashoWins: stats.wins,
-        currentBashoLosses: stats.losses,
-      };
-
-      // Update division-specific records
-      if (updated.divisionRecords?.[r.division]) {
-        updated.divisionRecords[r.division].wins += stats.wins;
-        updated.divisionRecords[r.division].losses += stats.losses;
-      }
-
-      nextRikishiMap.set(id, updated);
-    }
-  });
-
-  // 2. Update Yusho Winner and their stable
-  if (yushoWinner.id) {
-    const winner = nextRikishiMap.get(yushoWinner.id);
-    if (winner) {
-      nextRikishiMap.set(yushoWinner.id, {
-        ...winner,
-        consecutiveYusho: (winner.consecutiveYusho || 0) + 1,
-      });
-
-      const heya = nextHeyaMap.get(winner.heyaId);
-      if (heya) {
-        nextHeyaMap.set(winner.heyaId, {
-          ...heya,
-          historicalYusho: (heya.historicalYusho || 0) + 1,
-        });
-      }
-    }
-  }
-
-  // 3. Update Global Kimarite Stats (era + never-reset all-time accumulator)
-  const globalKimariteStats = { ...(workingWorld.globalKimariteStats || {}) };
-  const allTimeKimariteStats = { ...(workingWorld.allTimeKimariteStats || {}) };
-  activeBasho.matches.forEach((m) => {
-    if (m.result?.kimarite) {
-      globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
-      allTimeKimariteStats[m.result.kimarite] = (allTimeKimariteStats[m.result.kimarite] || 0) + 1;
-    }
-  });
+  const persisted = persistBashoState(workingWorld, activeBasho, standings, yushoWinner.id);
 
   return {
     bashoName,
@@ -328,10 +394,10 @@ export function simulateEntireBasho(
     demotions,
     finalWorld: {
       ...workingWorld,
-      rikishi: nextRikishiMap,
-      heyas: nextHeyaMap,
-      globalKimariteStats,
-      allTimeKimariteStats,
+      rikishi: persisted.rikishi,
+      heyas: persisted.heyas,
+      globalKimariteStats: persisted.globalKimariteStats,
+      allTimeKimariteStats: persisted.allTimeKimariteStats,
     },
   };
 }
