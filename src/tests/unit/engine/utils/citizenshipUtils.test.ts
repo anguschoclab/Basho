@@ -102,7 +102,14 @@ describe("citizenshipUtils", () => {
   });
 
   describe("isAtForeignLimit", () => {
-    it("returns true when at limit (2)", () => {
+    it("returns true at the canonical limit (1 foreign)", () => {
+      const rikishiList = [
+        MockFactory.createRikishi({ id: "f1", nationality: "Mongolia", joinedHeyaDate: "2020" }),
+      ];
+      expect(isAtForeignLimit(rikishiList, 2024)).toBe(true);
+    });
+
+    it("returns true when over the canonical limit", () => {
       const rikishiList = [
         MockFactory.createRikishi({ id: "f1", nationality: "Mongolia", joinedHeyaDate: "2020" }),
         MockFactory.createRikishi({ id: "f2", nationality: "USA", joinedHeyaDate: "2024" }),
@@ -110,18 +117,9 @@ describe("citizenshipUtils", () => {
       expect(isAtForeignLimit(rikishiList, 2024)).toBe(true);
     });
 
-    it("returns true when over limit (>2)", () => {
+    it("returns false when no rikishi counts against the foreign slot", () => {
       const rikishiList = [
-        MockFactory.createRikishi({ id: "f1", nationality: "Mongolia", joinedHeyaDate: "2020" }),
-        MockFactory.createRikishi({ id: "f2", nationality: "USA", joinedHeyaDate: "2024" }),
-        MockFactory.createRikishi({ id: "f3", nationality: "Brazil", joinedHeyaDate: "2023" }),
-      ];
-      expect(isAtForeignLimit(rikishiList, 2024)).toBe(true);
-    });
-
-    it("returns false when under limit (<2)", () => {
-      const rikishiList = [
-        MockFactory.createRikishi({ id: "f1", nationality: "Mongolia", joinedHeyaDate: "2020" }),
+        MockFactory.createRikishi({ id: "n1", nationality: "Japan" }),
       ];
       expect(isAtForeignLimit(rikishiList, 2024)).toBe(false);
     });
@@ -134,13 +132,13 @@ describe("citizenshipUtils", () => {
       expect(isAtForeignLimit(rikishiList, 2024)).toBe(false);
     });
 
-    it("returns false with 2 naturalized + 1 foreign (only foreign counts)", () => {
+    it("returns true with 2 naturalized + 1 foreign (only foreign counts)", () => {
       const rikishiList = [
         MockFactory.createRikishi({ id: "nat1", nationality: "Mongolia", joinedHeyaDate: "2018" }),
         MockFactory.createRikishi({ id: "nat2", nationality: "USA", joinedHeyaDate: "2017" }),
         MockFactory.createRikishi({ id: "f1", nationality: "Brazil", joinedHeyaDate: "2024" }),
       ];
-      expect(isAtForeignLimit(rikishiList, 2024)).toBe(false);
+      expect(isAtForeignLimit(rikishiList, 2024)).toBe(true);
     });
   });
 });

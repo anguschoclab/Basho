@@ -1,0 +1,1789 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateBoutNarrative — golden master > 7-7 pressure both sides 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 14 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-opening-2",
+    "phase": "opening",
+    "tags": [
+      "dominant",
+    ],
+    "text": "7 Wins! [[rikishi:r-east:Wrestler-r-east]] Keeps Rolling",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A crucial matchup — both at 7 and 7. The loser falls out of contention.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "kachi_koshi",
+    ],
+    "text": "Wrestler-r-east needs 1 more win for kachi-koshi.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "make_koshi",
+    ],
+    "text": "Wrestler-r-east cannot afford another loss — one more defeat means make-koshi.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "kachi_koshi",
+    ],
+    "text": "Wrestler-r-west needs 1 more win for kachi-koshi.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "make_koshi",
+    ],
+    "text": "Wrestler-r-west cannot afford another loss — one more defeat means make-koshi.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-8",
+    "phase": "pre_bout",
+    "tags": [
+      "title_stakes",
+    ],
+    "text": "Seven wins, seven losses — for both. This bout decides who finishes with a winning record.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-9",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "The crowd appreciates this rare clash of veterans — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] refuse to fade quietly.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-10",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-11",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-west:Wrestler-r-west]] fights against time as much as his opponent.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-12",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "Day 14 — one day before senshuraku. The race is tightening.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-entrance-13",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-14",
+    "phase": "ritual",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows suit.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-15",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-tachiai-16",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-engagement-17",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-finish-18",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ceremony-19",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] lingers at the center, soaking in the roar of the crowd.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-closing-20",
+    "phase": "closing",
+    "tags": [],
+    "text": "The hall buzzes with the electricity of that encounter.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-21",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-22",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 8 and 7.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-23",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 7-8.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-24",
+    "phase": "post_bout",
+    "tags": [
+      "kachi_koshi",
+    ],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] completes the primary goal of any tournament: kachi-koshi with 8 wins.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-25",
+    "phase": "post_bout",
+    "tags": [
+      "make_koshi",
+    ],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] drops to make-koshi. The demotion talk will begin.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-26",
+    "phase": "post_bout",
+    "tags": [
+      "title_stakes",
+    ],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] vowed to win at all costs that day — and delivered when it mattered most.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-27",
+    "phase": "post_bout",
+    "tags": [
+      "title_stakes",
+    ],
+    "text": "Devastation for [[rikishi:r-west:Wrestler-r-west]] — the 7-7 bout ends in defeat and make-koshi is confirmed.",
+    "voice": "dramatic",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > different seeds produce different-but-stable output 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 3 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-2",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Identical records — both men at 3 and 1.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "A battle of legends: [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]], both well past 30, still answering the bell.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] may be past his peak at 31, but wisdom compensates for fading speed.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "Still early days at the basho — only day 3.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-entrance-7",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] steps onto the dohyo—greeted warmly.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ritual-8",
+    "phase": "ritual",
+    "tags": [],
+    "text": "They crouch at the shikiri-sen. The crowd holds its breath.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-tachiai-9",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "The fan drops. A commanding tachi from both men.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-engagement-10",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finds a rhythm — palm to chest, patiently driving forward.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-finish-11",
+    "phase": "finish",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] maintained relentless forward pressure, never letting go of [[rikishi:r-west:Wrestler-r-west]]'s mawashi, eventually forcing [[rikishi:r-west:Wrestler-r-west]] over the edge in a masterful display of yorikiri.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ceremony-12",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] returns to the center, offering the respectful bow.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-13",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "An explosive Yorikiri from [[rikishi:r-east:Wrestler-r-east]] leaves [[rikishi:r-west:Wrestler-r-west]] reeling.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-14",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] improves to 4 and 1.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-15",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] drops to 3-2.",
+    "voice": "understated",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > different seeds produce different-but-stable output 2`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 3 begins under the suspended roof of the Ryogoku Kokugikan.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "The crowd leans forward for this first-ever encounter.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-2",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Two contrasting approaches — [[rikishi:r-east:Wrestler-r-east]]'s all_rounder versus [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "The crowd appreciates this rare clash of veterans — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] refuse to fade quietly.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] may be past his peak at 31, but wisdom compensates for fading speed.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "Only day 3, but already some surprises emerging.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-entrance-8",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] steps onto the dohyo—greeted warmly.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ritual-9",
+    "phase": "ritual",
+    "tags": [],
+    "text": "The traditional purification ritual continues.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ritual-10",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-tachiai-11",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "A commanding charge at the tachi. Straight into the grind.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-engagement-12",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] moves forward with standard thrusts.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-finish-13",
+    "phase": "finish",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] maintained relentless forward pressure, never letting go of [[rikishi:r-west:Wrestler-r-west]]'s mawashi, eventually forcing [[rikishi:r-west:Wrestler-r-west]] over the edge in a masterful display of yorikiri.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ceremony-14",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] crouches at the tawara, accepting the win with quiet dignity.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-15",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "A masterful display from [[rikishi:r-east:Wrestler-r-east]], dispatching [[rikishi:r-west:Wrestler-r-west]] with Yorikiri.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-16",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] improves to 4 and 1.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-17",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] falls to 3 and 2.",
+    "voice": "understated",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > final day senshuraku 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 15 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-opening-2",
+    "phase": "opening",
+    "tags": [
+      "dominant",
+    ],
+    "text": "Red Hot: [[rikishi:r-east:Wrestler-r-east]] Notches Win Number 9",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A tale of two records — Wrestler-r-east 9-5, Wrestler-r-west 7-7.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A classic clash of styles: [[rikishi:r-east:Wrestler-r-east]]'s all_rounder against [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-8",
+    "phase": "pre_bout",
+    "tags": [
+      "senshuraku",
+      "tournament_context",
+    ],
+    "text": "The last day of the tournament. Champions are made on days like this.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-9",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "The final day. Everything that has happened before comes down to this.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-entrance-10",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-11",
+    "phase": "ritual",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows suit.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-12",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-tachiai-13",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-engagement-14",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-finish-15",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ceremony-16",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] lingers at the center, soaking in the roar of the crowd.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-closing-17",
+    "phase": "closing",
+    "tags": [],
+    "text": "The hall buzzes with the electricity of that encounter.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-18",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-19",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 10 and 5.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-20",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 7-8.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-21",
+    "phase": "post_bout",
+    "tags": [
+      "kachi_koshi",
+    ],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] completes the primary goal of any tournament: kachi-koshi with 10 wins.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-22",
+    "phase": "post_bout",
+    "tags": [
+      "make_koshi",
+    ],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] drops to make-koshi. The demotion talk will begin.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-23",
+    "phase": "post_bout",
+    "tags": [
+      "title_stakes",
+    ],
+    "text": "Devastation for [[rikishi:r-west:Wrestler-r-west]] — the 7-7 bout ends in defeat and make-koshi is confirmed.",
+    "voice": "dramatic",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > in-bout injury narrative 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 5 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-2",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A classic clash of styles: [[rikishi:r-east:Wrestler-r-east]]'s all_rounder against [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "After 5 days of action, the leaderboard is starting to take shape.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-entrance-8",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ritual-9",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-tachiai-10",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-engagement-11",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-finish-12",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ceremony-13",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] returns to the center, offering the respectful bow.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-14",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-15",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 4 and 1.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-16",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 3-2.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-17",
+    "phase": "post_bout",
+    "tags": [
+      "injury",
+    ],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] will need treatment for that knee — the bout took a physical toll.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-18",
+    "phase": "post_bout",
+    "tags": [
+      "injury",
+    ],
+    "text": "The medical staff is concerned about [[rikishi:r-west:Wrestler-r-west]]'s knee — a kyujo may be on the horizon.",
+    "voice": "understated",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > mid-basho day 8 with records 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 8 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-opening-2",
+    "phase": "opening",
+    "tags": [
+      "dominant",
+    ],
+    "text": "5 Wins! [[rikishi:r-east:Wrestler-r-east]] Keeps Rolling",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Two contenders here — Wrestler-r-east at 5 and 3, Wrestler-r-west also at 4 and 3.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A classic clash of styles: [[rikishi:r-east:Wrestler-r-east]]'s all_rounder against [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-8",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "After 8 days of action, the leaderboard is starting to take shape.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-entrance-9",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ritual-10",
+    "phase": "ritual",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows suit.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ritual-11",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-tachiai-12",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-engagement-13",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-finish-14",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ceremony-15",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] returns to the center, offering the respectful bow.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-16",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-17",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 6 and 2.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-18",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 4-4.",
+    "voice": "formal",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > minimal bout, day 1 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 1 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-2",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-west:Wrestler-r-west]] fights against time as much as his opponent.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "Day one of the basho. Fifteen days of sumo ahead.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-entrance-6",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ritual-7",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-tachiai-8",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-engagement-9",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-finish-10",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-ceremony-11",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] returns to the center, offering the respectful bow.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-12",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-13",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 4 and 1.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-14",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 3-2.",
+    "voice": "understated",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > multi-frame log coverage 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 6 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-2",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A classic clash of styles: [[rikishi:r-east:Wrestler-r-east]]'s all_rounder against [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "After 6 days of action, the leaderboard is starting to take shape.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-entrance-8",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ritual-9",
+    "phase": "ritual",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows suit.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ritual-10",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-tachiai-11",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-west:Wrestler-r-west]] drives the charge methodically.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-engagement-12",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] gets a hand inside — looking for the favored grip.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-clinch-13",
+    "phase": "clinch",
+    "tags": [],
+    "text": "Chest to chest again. Right hand inside, left hand outside.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-clinch-14",
+    "phase": "clinch",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] applies forward pressure, looking to move him back.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-momentum-15",
+    "phase": "momentum",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] shifts gears and starts driving the opponent back.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-edge_crisis-16",
+    "phase": "edge_crisis",
+    "tags": [],
+    "text": "The tawara looms behind [[rikishi:r-west:Wrestler-r-west]]—one slip and it's over!",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-finish-17",
+    "phase": "finish",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] delivered a series of powerful shoves, pushing [[rikishi:r-east:Wrestler-r-east]] directly backward and out of the dohyo for an oshidashi victory.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ceremony-18",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] returns to the center, offering the respectful bow.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-19",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] leaves no room for error, finishing [[rikishi:r-east:Wrestler-r-east]] off swiftly.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-20",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-west:Wrestler-r-west]]'s record stands at 4 and 1.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-21",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-east:Wrestler-r-east]], who slips to 3-2.",
+    "voice": "formal",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > timeout bout 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 10 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-2",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A classic clash of styles: [[rikishi:r-east:Wrestler-r-east]]'s all_rounder against [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "Only a few days left and the yusho race is heating up.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-entrance-8",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ritual-9",
+    "phase": "ritual",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows suit.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ritual-10",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-tachiai-11",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-engagement-12",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-finish-13",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-ceremony-14",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] returns to the center, offering the respectful bow.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-15",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-16",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 4 and 1.",
+    "voice": "formal",
+  },
+  {
+    "id": "gm-bout-post_bout-17",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 3-2.",
+    "voice": "formal",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > upset + kinboshi + kensho 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 9 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-2",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A classic clash of styles: [[rikishi:r-east:Wrestler-r-east]]'s all_rounder against [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "After 9 days of action, the leaderboard is starting to take shape.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-8",
+    "phase": "pre_bout",
+    "tags": [
+      "kensho",
+    ],
+    "text": "A lucrative bout for the sponsors — 20 kensho envelopes hang in the balance.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-entrance-9",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-10",
+    "phase": "ritual",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows suit.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-11",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-tachiai-12",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-engagement-13",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-finish-14",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ceremony-15",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] lingers at the center, soaking in the roar of the crowd.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-closing-16",
+    "phase": "closing",
+    "tags": [],
+    "text": "The hall buzzes with the electricity of that encounter.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-17",
+    "phase": "post_bout",
+    "tags": [
+      "upset",
+    ],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-18",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 4 and 1.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-19",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 3-2.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-20",
+    "phase": "post_bout",
+    "tags": [
+      "upset",
+    ],
+    "text": "Absolutely sensational from [[rikishi:r-east:Wrestler-r-east]], handing the yokozuna a shocking defeat.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-21",
+    "phase": "post_bout",
+    "tags": [
+      "kensho",
+    ],
+    "text": "The sponsors didn't see that coming! 20 kensho envelopes for the underdog [[rikishi:r-east:Wrestler-r-east]].",
+    "voice": "dramatic",
+  },
+]
+`;
+
+exports[`generateBoutNarrative — golden master > winning streak callout 1`] = `
+[
+  {
+    "id": "gm-bout-opening-0",
+    "phase": "opening",
+    "tags": [],
+    "text": "Day 13 at the Ryogoku Kokugikan — the capital awaits.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-opening-1",
+    "phase": "opening",
+    "tags": [
+      "rivalry",
+    ],
+    "text": "A fresh matchup today; no prior history between these two.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-opening-2",
+    "phase": "opening",
+    "tags": [
+      "dominant",
+    ],
+    "text": "History in the Making: [[rikishi:r-east:Wrestler-r-east]] Reaches 13 Wins",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-3",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A tale of two records — Wrestler-r-east 13-0, Wrestler-r-west 4-9.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-4",
+    "phase": "pre_bout",
+    "tags": [],
+    "text": "A classic clash of styles: [[rikishi:r-east:Wrestler-r-east]]'s all_rounder against [[rikishi:r-west:Wrestler-r-west]]'s all_rounder.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-5",
+    "phase": "pre_bout",
+    "tags": [
+      "veteran",
+      "age_diff",
+    ],
+    "text": "Two veterans collide — [[rikishi:r-east:Wrestler-r-east]] and [[rikishi:r-west:Wrestler-r-west]] have seen it all across decades on the dohyo.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-6",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "At 31, [[rikishi:r-east:Wrestler-r-east]] fights against time as much as his opponent.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-7",
+    "phase": "pre_bout",
+    "tags": [
+      "career_phase",
+    ],
+    "text": "The twilight years approach for [[rikishi:r-west:Wrestler-r-west]], but the fire still burns.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-pre_bout-8",
+    "phase": "pre_bout",
+    "tags": [
+      "tournament_context",
+    ],
+    "text": "Only a few days left and the yusho race is heating up.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-entrance-9",
+    "phase": "entrance",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows, expression tight.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-10",
+    "phase": "ritual",
+    "tags": [],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] follows suit.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ritual-11",
+    "phase": "ritual",
+    "tags": [],
+    "text": "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-tachiai-12",
+    "phase": "tachiai",
+    "tags": [],
+    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-engagement-13",
+    "phase": "engagement",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] finishes the defense with tsuppari.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-finish-14",
+    "phase": "finish",
+    "tags": [],
+    "text": "With a firm grip on the mawashi, [[rikishi:r-east:Wrestler-r-east]] demonstrated exceptional power and technique, steadily driving [[rikishi:r-west:Wrestler-r-west]] out of the ring for a decisive yorikiri.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-ceremony-15",
+    "phase": "ceremony",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] lingers at the center, soaking in the roar of the crowd.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-closing-16",
+    "phase": "closing",
+    "tags": [],
+    "text": "The hall buzzes with the electricity of that encounter.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-17",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] leaves no room for error, finishing [[rikishi:r-west:Wrestler-r-west]] off swiftly.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-18",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "With that win, [[rikishi:r-east:Wrestler-r-east]]'s record stands at 14 and 0.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-19",
+    "phase": "post_bout",
+    "tags": [],
+    "text": "Another black star for [[rikishi:r-west:Wrestler-r-west]], who slips to 4-10.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-20",
+    "phase": "post_bout",
+    "tags": [
+      "kachi_koshi",
+    ],
+    "text": "[[rikishi:r-east:Wrestler-r-east]] completes the primary goal of any tournament: kachi-koshi with 14 wins.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-21",
+    "phase": "post_bout",
+    "tags": [
+      "make_koshi",
+    ],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] drops to make-koshi. The demotion talk will begin.",
+    "voice": "dramatic",
+  },
+]
+`;

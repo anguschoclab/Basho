@@ -121,6 +121,16 @@ export interface RecruitmentWindow {
   phase: "post_basho" | "mid_interim";
 }
 
+/**
+ * One completed yearly meta assessment. `familyShares` is an internal signal —
+ * managers only ever see the banded MetaPerception derived from this window.
+ */
+export interface MetaHistoryEntry {
+  year: number;
+  tone: "classic" | "explosive" | "technical" | "defensive";
+  familyShares: Record<"push" | "belt" | "speed" | "trick", number>;
+}
+
 /** Defines the structure for post basho meta. */
 export interface PostBashoMeta {
   bashoNumber: number;
@@ -198,10 +208,13 @@ export interface WorldState {
   /**
    * Global Meta State (Era Drift) (E4)
    * Tracks the current style tone of the era and individual technique drift.
+   * `history` records completed yearly assessments (capped window) and is the
+   * only meta signal managers are allowed to perceive — live stats are hidden.
    */
   meta: {
     tone: "classic" | "explosive" | "technical" | "defensive";
     drift: Record<string, number>;
+    history?: MetaHistoryEntry[];
   };
   /** Cumulative count of techniques used in the world (for drift calculations).
    * Reset yearly by EraDriftService — this is the "current era" view. */

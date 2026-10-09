@@ -201,4 +201,28 @@ export interface LeaguePerception {
   ichimonLeaders?: Partial<
     Record<string, { heyaId: Id; capitalBand: "dominant" | "strong" | "modest" }>
   >;
+  /** Banded meta-drift read built from completed yearly assessments (canon §7). */
+  meta?: MetaPerception;
+}
+
+/**
+ * Manager-facing read of the era meta. Banded only — canon §7 forbids exposing
+ * raw drift factors or kimarite counts to managers.
+ */
+export interface MetaPerception {
+  /** Publicly announced era tone (narrative headline — safe to surface). */
+  eraTone: "classic" | "explosive" | "technical" | "defensive";
+  /** Style family that led the most recent completed assessment. */
+  dominantFamily: "push" | "belt" | "speed" | "trick" | "none";
+  /** How decisive the dominant family's lead is. */
+  dominanceBand: "unclear" | "emerging" | "established";
+  /** Per-family banded presence relative to the prior assessment. */
+  familyPresence: Record<
+    "push" | "belt" | "speed" | "trick",
+    "ascendant" | "present" | "waning" | "absent"
+  >;
+  /** Direction of the dominant family's share across the history window. */
+  trend: "strengthening" | "stable" | "reversing";
+  /** Banded injury pressure across the active roster (kyujo is public). */
+  injuryClimate: "low" | "normal" | "elevated";
 }

@@ -62,3 +62,27 @@ export const MOMENTUM_DECLINING_THRESHOLD = -2;
 
 // Momentum normalization offset
 export const MOMENTUM_NORMALIZATION_OFFSET = 5;
+
+// ── Meta-drift perception bands (canon §§6–8) ────────────────────────────────
+// Managers only ever see banded interpretations of completed yearly meta
+// assessments — never raw drift factors or kimarite counts.
+
+/** Share of a single tactical family that marks an era as "established". */
+export const META_DOMINANCE_ESTABLISHED_SHARE = 0.5;
+/** Share that marks a family lead as "emerging". */
+export const META_DOMINANCE_EMERGING_SHARE = 0.35;
+
+/** A family whose share grew by this much counts as "ascendant". */
+export const META_PRESENCE_ASCENDANT_DELTA = 0.05;
+/** A family whose share fell by this much counts as "waning". */
+export const META_PRESENCE_WANING_DELTA = 0.05;
+/** A family below this share is "absent" from the meta conversation. */
+export const META_PRESENCE_ABSENT_SHARE = 0.05;
+
+/** Dominant share change across the history window marking a real trend. */
+export const META_TREND_DELTA = 0.05;
+
+/** Fraction of active roster injured/kyujo → "elevated" injury climate. */
+export const META_INJURY_ELEVATED_FRACTION = 0.3;
+/** Fraction of active roster injured/kyujo → at least "normal". */
+export const META_INJURY_NORMAL_FRACTION = 0.1;
