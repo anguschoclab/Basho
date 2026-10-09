@@ -398,38 +398,10 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
  */
 const GENUINE_ORPHANS: Record<string, string> = {
   // ── Dead modules: zero production importers; referenced only by their own tests ──
-  "src/engine/bout/honbasho.ts:HONBASHO_NAMES":
-    "ORPH-0133 dead module — wire honbasho helpers into basho setup or remove",
-  "src/engine/bout/honbasho.ts:isHonbashoName":
-    "ORPH-0134 dead module — wire honbasho helpers into basho setup or remove",
-  "src/engine/bout/honbasho.ts:isHonbashoState":
-    "ORPH-0135 dead module — wire honbasho helpers into basho setup or remove",
-  "src/engine/bout/honbasho.ts:isHonbashoInfo":
-    "ORPH-0136 dead module — wire honbasho helpers into basho setup or remove",
-  "src/engine/bout/honbasho.ts:makeExhibitionBasho":
-    "ORPH-0137 dead module — wire honbasho helpers into basho setup or remove",
-  "src/engine/core/EntityService.ts:EntityService":
-    "ORPH-0149 facade exercised only by EntityService.test.ts — wire into app bootstrap or remove",
-  "src/engine/utils/collectionOperations.ts:mapIdsToEntities":
-    "ORPH-0190 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/collectionOperations.ts:mapIdsToRikishi":
-    "ORPH-0191 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/collectionOperations.ts:mapIdsToHeya":
-    "ORPH-0192 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/collectionOperations.ts:mapIdsToOyakata":
-    "ORPH-0193 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/collectionOperations.ts:filterEntities":
-    "ORPH-0194 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/collectionOperations.ts:getEntitiesByIds":
-    "ORPH-0195 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/collectionOperations.ts:groupBy":
-    "ORPH-0196 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/collectionOperations.ts:countBy":
-    "ORPH-0197 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/jsonParser.ts:parseLLMResponse":
-    "ORPH-0202 barrel-only export with no consumers — wire or remove",
-  "src/engine/utils/jsonParser.ts:safeParse":
-    "ORPH-0203 barrel-only export with no consumers — wire or remove",
+  // (R05 triage complete — honbasho.ts, EntityService.ts,
+  //  collectionOperations.ts, jsonParser.ts all removed; each was dead API
+  //  superseded by ExhibitionBashoService / queries+EntityCollection /
+  //  inline Map helpers / nothing (LLM-era parser).)
 };
 
 function loadAuditEntries(): AuditEntry[] {

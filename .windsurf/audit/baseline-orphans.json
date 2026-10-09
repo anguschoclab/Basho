@@ -1,8 +1,8 @@
 {
   "generatedAt": "2026-10-08T16:26:09.333Z",
   "summary": {
-    "total": 209,
-    "unreferencedExports": 209,
+    "total": 208,
+    "unreferencedExports": 208,
     "orphanRoutes": 0,
     "untickedServices": 0,
     "unusedComponents": 0,
@@ -1451,61 +1451,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0133",
-      "file": "src/engine/bout/honbasho.ts",
-      "symbol": "HONBASHO_NAMES",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0134",
-      "file": "src/engine/bout/honbasho.ts",
-      "symbol": "isHonbashoName",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0135",
-      "file": "src/engine/bout/honbasho.ts",
-      "symbol": "isHonbashoState",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0136",
-      "file": "src/engine/bout/honbasho.ts",
-      "symbol": "isHonbashoInfo",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0137",
-      "file": "src/engine/bout/honbasho.ts",
-      "symbol": "makeExhibitionBasho",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
       "id": "ORPH-0138",
       "file": "src/engine/bout/kachiNokori.ts",
       "symbol": "KACHI_KOSHI_WINS",
@@ -1647,17 +1592,6 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
-    },
-    {
-      "id": "ORPH-0149",
-      "file": "src/engine/core/EntityService.ts",
-      "symbol": "EntityService",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
     },
     {
       "id": "ORPH-0150",
@@ -2100,94 +2034,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0190",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "mapIdsToEntities",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0191",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "mapIdsToRikishi",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0192",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "mapIdsToHeya",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0193",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "mapIdsToOyakata",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0194",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "filterEntities",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0195",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "getEntitiesByIds",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0196",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "groupBy",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0197",
-      "file": "src/engine/utils/collectionOperations.ts",
-      "symbol": "countBy",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
       "id": "ORPH-0198",
       "file": "src/engine/utils/entityAccess.ts",
       "symbol": "getHeyaOrThrow",
@@ -2230,28 +2076,6 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
-    },
-    {
-      "id": "ORPH-0202",
-      "file": "src/engine/utils/jsonParser.ts",
-      "symbol": "parseLLMResponse",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0203",
-      "file": "src/engine/utils/jsonParser.ts",
-      "symbol": "safeParse",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
     },
     {
       "id": "ORPH-0204",

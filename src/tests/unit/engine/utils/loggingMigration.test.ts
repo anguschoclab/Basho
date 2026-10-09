@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { logger } from "@/engine/utils/Logger";
 import { safeCall } from "@/engine/utils/safe";
-import { parseLLMResponse } from "@/engine/utils/jsonParser";
 import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOyakataConfig";
 import { generateGovernanceHeadline } from "@/engine/systems/media/MediaEventService";
 import { advanceDays } from "@/engine/tick/tickDaily";
@@ -106,29 +105,6 @@ describe("logging migration to Logger", () => {
           call[0].includes("MediaService: Generated Governance Headline")
       );
       expect(mediaLogCall).toBeUndefined();
-    });
-  });
-
-  describe("jsonParser.ts", () => {
-    it("routes initial parse warning through logger.warn with context 'jsonParser'", () => {
-      // Provide input that fails initial parse but can be sanitized
-      const input = '```json\n{"key": "value"}\n```';
-      parseLLMResponse(input);
-      expect(warnSpy).toHaveBeenCalledWith(
-        "Initial parse failed, attempting sanitization...",
-        "jsonParser",
-        undefined
-      );
-    });
-
-    it("routes critical parse error through logger.error with context 'jsonParser'", () => {
-      const input = "not json at all and cannot be parsed";
-      expect(() => parseLLMResponse(input)).toThrow();
-      expect(errorSpy).toHaveBeenCalledWith(
-        "Critical Parse Failure on output",
-        "jsonParser",
-        expect.any(String)
-      );
     });
   });
 
