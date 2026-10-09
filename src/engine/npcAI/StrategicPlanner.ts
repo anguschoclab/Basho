@@ -12,6 +12,11 @@ import type { PerceptionSnapshot } from "../perception";
 import type { LeaguePerception } from "../ai/types";
 import { getHeya } from "../queries";
 import { computePlanBaseline, computeStallPenalty } from "./planOutcomes";
+import { factionPlanBonus } from "./factions";
+import {
+  LEGACY_PLAN_BONUS,
+  GRUDGE_PLAN_BONUS,
+} from "../../constants/engine/succession";
 
 interface PlanTemplate {
   planId: string;
@@ -325,6 +330,33 @@ function scoreWithMemory(template: PlanTemplate, ctx: AIContext, baseScore: numb
   return baseScore - failures * 8 - stall;
 }
 
+/**
+ * WS5 — bounded situational bonuses: the predecessor's legacy plan bias, the
+ * ichimon posture alignment, and grudge-driven appetite for rivalry plans.
+ * All bonuses require baseScore > 0 — they tilt a borderline choice, they
+ * never rescue a plan that scored nothing.
+ */
+function scoreWithSituation(template: PlanTemplate, ctx: AIContext, baseScore: number): number {
+  if (baseScore <= 0) return baseScore;
+  let s = baseScore;
+
+  const heya = ctx.world.heyas.get(ctx.heyaId);
+  const legacy = heya?.legacyModifier;
+  if (legacy && legacy.bashoRemaining > 0 && legacy.planFamilyBias === template.planId) {
+    s += LEGACY_PLAN_BONUS;
+  }
+
+  s += factionPlanBonus(ctx.world, ctx.heyaId, template.planId, baseScore);
+
+  // A grudge-holding oyakata leans toward suppressing rivals.
+  const oya = ctx.oyakata?.id ? ctx.world.oyakata.get(ctx.oyakata.id) : undefined;
+  const grudgeCount = oya?.grudges?.length ?? ctx.oyakata?.grudges?.length ?? 0;
+  if (grudgeCount > 0 && template.planId === "rivalry_suppression") {
+    s += GRUDGE_PLAN_BONUS;
+  }
+  return s;
+}
+
 /** Create a strategic plan from the current AI context. */
 export function createPlan(ctx: AIContext): AIPlan | undefined {
   const perception = ctx.perception;
@@ -336,7 +368,8 @@ export function createPlan(ctx: AIContext): AIPlan | undefined {
 
   let best: { template: PlanTemplate; score: number } | undefined;
   for (const template of PLAN_CATALOG) {
-    const score = scoreWithMemory(template, ctx, template.score(ctx, perception, league));
+    const raw = template.score(ctx, perception, league);
+    const score = scoreWithSituation(template, ctx, scoreWithMemory(template, ctx, raw));
     if (!best || score > best.score) {
       best = { template, score };
     }

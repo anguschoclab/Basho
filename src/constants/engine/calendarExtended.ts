@@ -40,3 +40,6 @@ export const MIN_DRIFT_CLAMP = 0.5;
 
 /** Maximum drift clamp value */
 export const MAX_DRIFT_CLAMP = 2.0;
+
+/** Years of completed meta assessments retained for manager perception */
+export const META_HISTORY_WINDOW = 5;

@@ -11,7 +11,7 @@
  */
 
 import type { WorldState } from "./types/world";
-import type { BashoName, BoutResult, BashoState } from "./types/basho";
+import type { BashoName, BoutResult, BashoState, MatchSchedule } from "./types/basho";
 import type { Id } from "./types/common";
 import type { Side } from "./types/index";
 import { resolveBout } from "./bout/boutResolver";
@@ -186,7 +186,7 @@ function resolveAndApplyBout(
 }
 
 type MatchScheduleLike = Pick<
-  import("./types/basho").MatchSchedule,
+  MatchSchedule,
   "boutId" | "day" | "eastRikishiId" | "westRikishiId"
 >;
 

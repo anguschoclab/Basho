@@ -81,6 +81,11 @@ export interface TalentCandidate {
   originRegion: string;
   /** Nationality. */
   nationality: string;
+  /**
+   * Canon §5.3 — rare (~5–10%) foreign-born recruit holding Japanese
+   * citizenship; never consumes the heya's foreign slot.
+   */
+  dualCitizen?: boolean;
   /** Visibility band (how much info is available). */
   visibilityBand: VisibilityBand;
   /** Reputation seed for random generation. */

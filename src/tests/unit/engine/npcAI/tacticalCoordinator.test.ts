@@ -50,6 +50,7 @@ function makeInput(): Parameters<typeof applyPlanConstraints>[1] {
     shouldBuyMyoseki: true,
     shouldInvestInFacilities: true,
     shouldBuildReserves: false,
+    shouldSeekRescue: false,
     reserveTarget: 0,
     reasoning: [],
   };

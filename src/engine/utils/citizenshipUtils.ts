@@ -10,7 +10,11 @@ export function getCitizenshipStatus(
   rikishi: Rikishi,
   currentYear: number
 ): "native" | "foreign" | "naturalized" {
-  if (rikishi.nationality === "Japan" || rikishi.nationality === "Japanese") {
+  if (
+    !rikishi.nationality ||
+    rikishi.nationality === "Japan" ||
+    rikishi.nationality === "Japanese"
+  ) {
     return "native";
   }
 

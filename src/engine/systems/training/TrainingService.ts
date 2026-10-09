@@ -83,17 +83,22 @@ export function createDefaultTrainingState(heyaId: Id): HeyaTrainingState {
 export function ensureHeyaTrainingState(world: WorldState, heyaId: Id): HeyaTrainingState {
   // Pure hydration — never writes into world.trainingState; a missing entry
   // resolves to the same default on every read, so persistence is moot.
-  const state = world.trainingState?.get(heyaId) ?? createDefaultTrainingState(heyaId);
-  // Backfill any missing fields. Nested-field updates (e.g. a loop decision writing
-  // `activeProfile.intensity`) can persist a PARTIAL trainingState onto a heya that had
-  // none, leaving `activeProfile` without `focus`/`styleBias`/`recovery` — which then
-  // crashed the training tick at INTENSITY_MULTIPLIERS[profile.intensity]. Merge over
-  // defaults so every consumer always sees a complete profile.
+  const state = world.trainingState?.get(heyaId);
+  if (!state) return createDefaultTrainingState(heyaId);
+  // Backfill any missing fields on a COPY. Nested-field updates (e.g. a loop
+  // decision writing `activeProfile.intensity`) can persist a PARTIAL
+  // trainingState onto a heya that had none, leaving `activeProfile` without
+  // `focus`/`styleBias`/`recovery` — which then crashed the training tick at
+  // INTENSITY_MULTIPLIERS[profile.intensity]. Merge over defaults so every
+  // consumer sees a complete profile — but do not mutate the stored entry:
+  // this is a read path, and the map belongs to the worker-owned world.
   const defaults = createDefaultTrainingState(heyaId);
-  state.heyaId = state.heyaId ?? heyaId;
-  state.activeProfile = { ...defaults.activeProfile, ...(state.activeProfile ?? {}) };
-  state.focusSlots = state.focusSlots ?? [];
-  return state;
+  return {
+    ...state,
+    heyaId: state.heyaId ?? heyaId,
+    activeProfile: { ...defaults.activeProfile, ...(state.activeProfile ?? {}) },
+    focusSlots: state.focusSlots ?? [],
+  };
 }
 
 /**

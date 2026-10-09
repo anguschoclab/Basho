@@ -98,6 +98,7 @@ const getTorque = (st: EngineStateV2, side: "east" | "west") => {
 
 // ─── KIMARITE_STRATEGIES ─────────────────────────────────────────────────────
 
+// refactor-budget-waiver: static data registry — intentionally large, not logic
 export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
   // =========================================================================
   // KIHONWAZA — Basic Techniques (7)

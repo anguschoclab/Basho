@@ -150,7 +150,7 @@ describe("GlobalCupService — golden master", () => {
         round: 1,
         east: participants[0],
         west: participants[1],
-      } as Parameters<typeof GlobalCupService.simulateMatch>[1];
+      } as unknown as Parameters<typeof GlobalCupService.simulateMatch>[1];
       expect(GlobalCupService.simulateMatch(world, match)).toMatchSnapshot();
     }
   });
@@ -160,7 +160,7 @@ describe("YokozunaService — golden master", () => {
   function ydcWorld(historyLength = 2) {
     return makeMockWorld({
       history: Array.from({ length: historyLength }, (_, i) => ({ bashoId: `b${i}` })),
-    } as Parameters<typeof makeMockWorld>[0]);
+    } as unknown as Parameters<typeof makeMockWorld>[0]);
   }
 
   it("evaluateCandidate across rikishi profiles", () => {

@@ -351,6 +351,8 @@ export interface BashoSimResult {
   promotions: PromotionEvent[];
   demotions: DemotionEvent[];
   finalWorld: WorldState;
+  /** Kettei-sen bouts played to break a shared top record. */
+  playoffMatches?: MatchSchedule[];
   ginoSho?: Id;
   shukunsho?: Id;
   kantosho?: Id;

@@ -41,7 +41,10 @@ describe("gameHelpers", () => {
       const result = autosaveWithSignal(mockWorld);
 
       expect(result).toBe(true);
-      expect(mockAutosave).toHaveBeenCalledWith(mockWorld);
+      expect(mockAutosave).toHaveBeenCalledWith(
+        mockWorld,
+        expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/)
+      );
     });
   });
 });

@@ -19,7 +19,7 @@ describe("SponsorContractService — tick phase wiring", () => {
   });
 
   it("is also imported by engine.worker.ts for player-initiated actions", () => {
-    const worker = readSrcFile("engine/worker/engine.worker.ts");
+    const worker = readSrcFile("engine/worker/commands/economy.ts");
     expect(worker).toContain("renewSponsorContract");
   });
 

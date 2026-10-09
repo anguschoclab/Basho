@@ -13,7 +13,8 @@ import { readSrcFile } from "@/tests/helpers/fsScan";
 const ROOT = join(__dirname, "../../../..");
 
 describe("NPC agents — weekly decision wiring", () => {
-  const weekly = readSrcFile("engine/npcAI/weekly.ts");
+  // Agent spawns + execution live in the extracted agent-layer module.
+  const weekly = readSrcFile("engine/npcAI/weekly/agents.ts");
 
   it("imports spawnFinanceAgent", () => {
     expect(weekly).toContain("spawnFinanceAgent");

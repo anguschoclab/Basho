@@ -2,6 +2,8 @@
  * Economics & Governance Types
  */
 
+import type { Id } from "./common";
+
 /** Defines the structure for rikishi economics. */
 export interface RikishiEconomics {
   cash: number;
@@ -108,4 +110,16 @@ export interface Faction {
   name: string;
   influence: number;
   oyakataLeaderId: string | null;
+}
+
+/**
+ * WS5 — a league-visible posture elected by an ichimon's leader heya.
+ * "coordinated_pressure" targets the strongest non-member heya (can be the
+ * player's); members get a bounded plan-alignment bonus toward it.
+ */
+export interface FactionPosture {
+  posture: "expansionist" | "consolidating" | "coordinated_pressure";
+  /** For coordinated_pressure: the heya being squeezed. */
+  targetHeyaId?: Id;
+  setWeek: number;
 }

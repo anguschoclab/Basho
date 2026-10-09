@@ -30,21 +30,30 @@ The earlier plan draft assumed several gaps that did not survive source inspecti
 | `applyNPCDecision` in `npcAI/ticks.ts` duplicated `applyNPCDecisionPure` (`tick/phases/npc_ai/training.ts`). | **Removed** — single canonical implementation retained. |
 | `isAtForeignLimit` hardcoded `>= 2` while canon §13.1 and enforcement both use 1. Dead but wrong — any future caller would over-limit a stable. | **Fixed** — now uses `FOREIGN_RIKISHI_LIMIT_PER_HEYA`. Stale tests rewritten; `audit/foreign-limit-consistency.test.ts` pins both the constant usage and limit-1 behavior. |
 
-## Open write-only / absent surfaces (input to WS1–WS6)
+## Open write-only / absent surfaces — WS1–WS7 resolution
 
-| Surface | Status | Owner workstream |
+All surfaces flagged below have since been wired. This table is retained as
+the closure record (what was absent at audit time → what landed).
+
+| Surface | Audit status | Resolution |
 |---|---|---|
-| `world.meta` (tone/drift) as *manager input* | Combat-consumed, never perceived by AI | WS1 |
-| `oyakata.grudges` | Write-only (dramaGenerator, RivalryService init) | WS5 |
-| Canon §3.3 tenure record | Absent | WS5 |
-| Canon §8 reaction lag + §11 counter-meta | Absent | WS1–WS2 |
-| Canon §13.2–13.3 foreign policy + sunk-cost | Absent | WS6 |
-| Rikishi decisional agency | Absent (fields exist, no decisions) | WS4 |
-| Succession triggers beyond age/designated heir | Partial (`DynastyService` owns lifecycle; missing underperformance/scandal/caretaker/legacy-decay) | WS5 |
+| `world.meta` (tone/drift) as *manager input* | Combat-consumed, never perceived by AI | **WS1** — `MetaPerception.ts` bands dominant family/trend/injury climate from `meta.history`; folded into `LeaguePerception` |
+| `oyakata.grudges` | Write-only | **WS5** — `grudgeRivalryKeys` maps grudges onto rivalry pairs; `RivalryAgent` escalates via vendetta flag |
+| Canon §3.3 tenure record | Absent | **WS5** — `oyakata.tenure` ledger written at basho end, mergers, rulings (`systems/legacy/tenure.ts`) |
+| Canon §8 reaction lag + §11 counter-meta | Absent | **WS2** — `ArchetypeAdaptation.ts`: archetype-scaled lag + confirmation gate + counter-meta/embrace postures driving recovery, scouting, bid family bias |
+| Canon §13.2–13.3 foreign policy + sunk-cost | Absent | **WS6** — `ForeignSlotPolicy.ts`: dual-citizen exemption, persona bid aggression, `foreignRetentionMultiplier` |
+| Rikishi decisional agency | Absent | **WS4** — `rikishiAgency/` requests (rest/mentor/transfer) with archetype resolution and unrest escalation |
+| Succession triggers beyond age/designated heir | Partial | **WS5** — insolvency/scandal/underperformance triggers + trustee caretaker + decaying `legacyModifier` |
+| `electFactionPostures` orphaned (found in WS7 pass) | `world.factionPostures` never written | **WS7** — weekly election in `phase01_week_npc_ai`, change-only `GOVERNANCE_RULING` events |
+| Foreign-slot cap at worldgen/mergers (found in WS7 diagnostic) | `RosterFactory`/`executeMerger` bypassed the cap | **WS6-fix** — slot-aware roster assignment + foreign dispersal on merger |
 
-## Known semantic discrepancy (deferred to WS6)
+## Semantic discrepancy — resolved in WS6
 
-`getForeignCountInHeya` (enforcement) counts raw foreign nationality on `activeRikishiIds` + signed-pending candidates. `countsAsForeign`/`getCitizenshipStatus` (policy helper) treats naturalized rikishi as exempt. These disagree for a naturalized roster member — enforcement still counts them. WS6 must decide which semantic is canonical before wiring policy on top of the helper.
+`getForeignCountInHeya` (enforcement) and `countsAsForeign` (policy) disagreed
+on naturalized rikishi. **Resolution: citizenship-aware counting is canonical**
+(§5.1 binds the slot to non-citizens). Enforcement moved onto
+`countsAsForeign`; naturalized and dual-citizen rikishi free the slot in both
+enforcement and policy paths.
 
 ## Integration constraints carried forward
 

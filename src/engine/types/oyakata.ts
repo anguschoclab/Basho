@@ -73,6 +73,20 @@ export interface Oyakata {
   successionReadiness?: SuccessionReadiness; // Lifecycle stage set by DynastyService.tickSuccessionCheck
   retirementYear?: number; // Set when succession is triggered
 
+  /** WS5 — measured record of this reign; drives §16.1 triggers and §16.3 trait inheritance. */
+  tenure?: {
+    startedYear: number;
+    bashoServed: number;
+    championships: number;
+    sekitoriProduced: number;
+    insolvencyEvents: number;
+    majorScandals: number;
+    forcedMergers: number;
+  };
+
+  /** True when this oyakata is a JSA-appointed caretaker holding the stable temporarily. */
+  isCaretaker?: boolean;
+
   managerFlags?: {
     welfareHawk?: boolean;
     disciplineHawk?: boolean;

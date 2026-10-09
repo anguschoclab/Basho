@@ -3,7 +3,6 @@ src/engine/kimariteStrategies.ts,KIMARITE_STRATEGIES,const-arr,102,1060,959,true
 src/engine/glossary/terms.ts,GLOSSARY_TERMS,const-arr,4,757,754,true
 src/components/game/boutReplay/useBoutReplay.ts,useBoutReplay,function,63,534,472,true
 src/contexts/GameContext.tsx,GameProvider,function,55,520,466,true
-src/pages/BashoPage.tsx,BashoPage,function,148,603,456,true
 src/engine/kimariteEnrichment.ts,KIMARITE_ENRICHMENT,const-obj,3,455,453,true
 src/components/rikishi/RikishiProfileHeader.tsx,RikishiProfileHeader,function,37,440,404,true
 src/engine/bout/boutResultApplier.ts,applyBoutResult,function,34,437,404,true
@@ -106,7 +105,6 @@ src/engine/agents/CrisisAgent.ts,spawnCrisisAgent,function,35,202,168,true
 src/components/economy/DebtSection.tsx,DebtSection,function,44,209,166,true
 src/pages/HistoryPage.tsx,anonymous@145,arrow,145,307,163,false
 src/contexts/bashoSlice.ts,bashoSlice,function,18,179,162,true
-src/pages/Dashboard.tsx,Dashboard,function,39,200,162,true
 src/components/dashboard/CalendarWidget.tsx,CalendarWidget,function,10,169,160,true
 src/components/game/boutReplay/useBoutReplay.ts,loop,arrow,331,490,160,false
 src/engine/systems/legacy/LegacyService.ts,LegacyService,const-obj,27,186,160,true
@@ -119,6 +117,7 @@ src/components/kesho/keshoPatterns.tsx,renderBasePattern,function,12,164,153,tru
 src/engine/bout/physics/edgeCrisis.ts,tickEdgeCrisis,function,80,232,153,true
 src/components/game/BanzukeReveal.tsx,BanzukeReveal,function,17,167,151,true
 src/engine/bout/boutGrip.ts,initBeltBattle,function,33,183,151,true
+src/pages/BashoPage.tsx,BashoPage,function,30,180,151,true
 src/store/gameStore.ts,anonymous@77,arrow,77,226,150,true
 src/engine/systems/generation/TalentPoolNPCRecruitment.ts,fillVacanciesForNPCWithBidding,function,126,274,149,true
 src/pages/TrendsPage.tsx,TrendsPage,function,30,178,149,true
@@ -139,6 +138,7 @@ src/engine/systems/narrative/postBashoPress/champion.ts,generateChampionLines,fu
 src/components/dashboard/TrainingWidget.tsx,TrainingWidget,function,101,242,142,true
 src/engine/tick/phases/phase01_week_welfare.ts,phase01_week_welfare,function,54,195,142,true
 src/engine/bard/BardEngine.ts,BardEngine,const-obj,346,486,141,true
+src/pages/Dashboard.tsx,Dashboard,function,39,179,141,true
 src/engine/lifecycle/retireeOyakataConversion.ts,processRetireeOyakataConversion,function,29,167,139,true
 src/components/game/SparringPanel.tsx,SparringPanel,function,34,171,138,true
 src/components/media/PressConference.tsx,PressConference,function,32,169,138,true
@@ -161,6 +161,7 @@ src/components/rikishi/RikishiCombatTab.tsx,RikishiCombatTab,function,25,154,130
 src/engine/archetype.ts,ARCHETYPE_DEFINITIONS,const-obj,14,143,130,false
 src/engine/bard/BardEngine.ts,interpolate,function,215,344,130,true
 src/engine/systems/legacy/BloodlineService.ts,BloodlineService,const-obj,43,172,130,true
+src/hooks/useBashoPageState.ts,useBashoPageState,function,35,164,130,true
 src/components/game/BoutPreMatchOverlay.tsx,BoutPreMatchOverlay,function,103,231,129,true
 src/engine/tick/phases/phase06_narrative.ts,phase06_narrative,function,46,174,129,true
 src/components/dashboard/FinancesWidget.tsx,FinancesWidget,function,8,135,128,true
@@ -224,7 +225,7 @@ src/components/economy/DebtSection.tsx,anonymous@94,arrow,94,204,111,false
 src/components/kesho/KeshoMawashiDisplay.tsx,KeshoMawashiDisplay,function,24,134,111,true
 src/components/layout/AppSidebar.tsx,anonymous@143,arrow,143,253,111,false
 src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts,generateKeshoForPromotions,function,22,132,111,true
-src/engine/tick/phases/phase01_basho_bouts.ts,phase01_basho_bouts,function,31,141,111,true
+src/engine/tick/phases/phase01_basho_bouts.ts,phase01_basho_bouts,function,29,139,111,true
 src/engine/core/EntityService.ts,EntityService,const-obj,19,128,110,true
 src/components/rivalries/RivalryCard.tsx,RivalryCard,function,40,148,109,true
 src/engine/matchmaking/LowerDivisionSwiss.ts,phase2,function,128,236,109,false
@@ -248,7 +249,7 @@ src/components/game/IntaiCeremony.tsx,IntaiCeremony,function,83,187,105,true
 src/components/game/RecruitSigningDialog.tsx,RecruitSigningDialog,function,72,176,105,true
 src/engine/economics.ts,onBoutResolvedEconomics,function,91,195,105,true
 src/hooks/useRosterData.ts,useRosterData,function,12,116,105,true
-src/components/dashboard/DashboardColumns.tsx,DashboardStableColumn,function,28,131,104,true
+src/components/dashboard/DashboardColumns.tsx,DashboardStableColumn,function,25,128,104,true
 src/engine/lifecycle/retirementCheck.ts,checkRetirement,function,42,145,104,true
 src/engine/systems/generation/CandidatePoolService.ts,tickWeekCandidatePool,function,258,361,104,true
 src/engine/systems/meta/EraDriftService.ts,processYearlyEraDrift,function,29,132,104,true
@@ -343,6 +344,7 @@ src/engine/bout/tacticProfiles.ts,TACTIC_PROFILES,const-obj,68,152,85,true
 src/engine/h2h.ts,generateH2HCommentary,function,121,205,85,true
 src/engine/systems/economy/GlobalCupService.ts,advanceTournament,method,178,262,85,false
 src/engine/systems/generation/RosterFactory.ts,createRosters,function,21,105,85,true
+src/components/basho/BashoPageSections.tsx,BashoModals,function,355,438,84,true
 src/engine/lifecycle/CareerService.ts,CareerService,const-obj,46,129,84,true
 src/engine/systems/meta/HistoryService.ts,HistoryService,const-obj,15,98,84,true
 src/hooks/useKenshoData.ts,useKenshoData,function,14,97,84,true
@@ -402,7 +404,7 @@ src/engine/schedule.ts,scheduleDivisionDay,function,88,162,75,true
 src/engine/systems/generation/talentPoolScoutingOps.ts,getScoutedCandidateView,function,140,214,75,true
 src/engine/worker/commands/meta.ts,metaCommands,function,111,185,75,true
 src/components/basho/NakabiHighlightCard.tsx,NakabiHighlightCard,function,12,85,74,true
-src/components/dashboard/DashboardColumns.tsx,DashboardTrainingColumn,function,146,219,74,true
+src/components/dashboard/DashboardColumns.tsx,DashboardTrainingColumn,function,143,216,74,true
 src/components/governance/GovernanceOverviewTab.tsx,GovernanceOverviewTab,function,30,103,74,true
 src/engine/bout/narrative/interview.ts,selectInterviewType,function,37,110,74,false
 src/engine/records.ts,updateLeaderboard,function,32,105,74,false
@@ -521,11 +523,11 @@ src/engine/systems/narrative/postBashoPress/prizes.ts,generatePrizeWinnerLines,f
 src/hooks/useSortState.ts,useSortState,function,14,74,61,true
 src/pages/OyakataPage.tsx,anonymous@270,arrow,270,330,61,false
 src/presenters/projections/dashboardProjections.ts,projectBanzukeUIDigest,function,75,135,61,true
+src/components/basho/BashoPageSections.tsx,ScheduleOverview,function,204,263,60,false
 src/components/dashboard/BanzukeWidget.tsx,anonymous@26,arrow,26,85,60,false
 src/components/dashboard/GlobalCupWidget.tsx,anonymous@20,arrow,20,79,60,false
 src/components/governance/OyakataProfileDrawer.tsx,OyakataProfileDrawer,function,17,76,60,true
 src/components/wizard/StableStep.tsx,anonymous@48,arrow,48,107,60,false
-src/pages/BashoPage.tsx,ScheduleOverview,function,86,145,60,false
 src/pages/HistoryDashboard.tsx,HistoryDashboard,arrow,29,88,60,true
 src/presenters/heyaUI.ts,projectHeya,function,44,103,60,true
 src/components/game/NarrativeCeremonyDialog.tsx,NarrativeCeremonyDialog,function,20,78,59,true
@@ -560,6 +562,7 @@ src/engine/systems/media/MediaEventService.ts,handleMediaEventForHeya,function,1
 src/engine/systems/recruitment/YouthAcademyService.ts,hireAcademyStaff,function,437,493,57,true
 src/engine/tick/tickDaily.ts,batchAdvanceCalendar,function,384,440,57,false
 src/presenters/projections/historyProjections.ts,projectHistoryAggregate,function,22,78,57,true
+src/components/basho/BashoPageSections.tsx,BashoStandingsSidebar,function,297,352,56,true
 src/components/dashboard/IntelligencePanel.tsx,IntelligencePanel,fn-expr,32,87,56,true
 src/components/dashboard/NewsWidget.tsx,anonymous@54,arrow,54,109,56,false
 src/components/economy/FinancialHealthOverview.tsx,FinancialHealthOverview,function,21,76,56,true
@@ -574,7 +577,7 @@ src/engine/world.ts,resolveAndApplyBout,function,131,186,56,false
 src/pages/FacilitiesPage.tsx,FacilitiesPage,function,16,71,56,true
 src/presenters/projections/cornerAdviceProjection.ts,projectCornerAdvice,function,28,83,56,true
 src/components/dashboard/AcademyWidget.tsx,AcademyWidget,function,15,69,55,true
-src/components/dashboard/DashboardStatusSections.tsx,DashboardPhaseWidgets,function,100,154,55,true
+src/components/dashboard/DashboardStatusSections.tsx,DashboardPhaseWidgets,function,106,160,55,true
 src/components/dashboard/YushoRaceWidget.tsx,YushoRaceWidget,arrow,97,151,55,true
 src/components/game/PlayoffBracket.tsx,anonymous@57,arrow,57,111,55,false
 src/engine/banzuke.ts,computeVariableSanyakuCounts,function,456,510,55,true
@@ -644,6 +647,7 @@ src/engine/systems/generation/CandidateStats.ts,generateRikishiStats,function,24
 src/engine/systems/governance/PoliticalFavorsService.ts,requestFavor,method,48,98,51,false
 src/pages/MyosekiMarketPage.tsx,anonymous@196,arrow,196,246,51,false
 src/presenters/projections/promotionProjections.ts,getYokozunaCandidates,function,93,143,51,true
+src/components/basho/BashoPageSections.tsx,BashoDayControls,function,65,114,50,true
 src/components/dashboard/DigestWidget.tsx,anonymous@49,arrow,49,98,50,false
 src/components/dashboard/ScoutingWidget.tsx,anonymous@83,arrow,83,132,50,false
 src/components/game/GlobalCupBracket.tsx,GlobalCupBracket,function,70,119,50,true
@@ -822,6 +826,7 @@ src/engine/tick/phases/phase01_daily_sponsors.ts,phase01_daily_sponsors,function
 src/engine/tick/phases/welfare/transitions.ts,handleCompliantTransition,function,72,113,42,true
 src/presenters/youthAcademyProjections.ts,projectYouthAcademy,function,52,93,42,true
 src/store/gameStore.ts,sendCommand,arrow,163,204,42,true
+src/components/basho/BashoPageSections.tsx,anonymous@220,arrow,220,260,41,false
 src/components/dashboard/BashoWidget.tsx,anonymous@13,arrow,13,53,41,false
 src/components/game/LineageTree.tsx,anonymous@44,arrow,44,84,41,false
 src/components/governance/GovernancePoliticsTab.tsx,PoliticalStanding,function,52,92,41,false
@@ -844,7 +849,6 @@ src/engine/systems/training/MentorshipService.ts,applyMentorshipBonuses,function
 src/engine/worker/commands/governance.ts,APPLY_PRESS_CONFERENCE,arrow,55,95,41,false
 src/engine/worker/commands/meta.ts,goOnHolidayCmd,function,69,109,41,false
 src/engine/worker/runtime.ts,createWorkerRuntime,function,24,64,41,true
-src/pages/BashoPage.tsx,anonymous@102,arrow,102,142,41,false
 src/components/MentionText.tsx,MentionText,function,12,51,40,true
 src/components/game/ProgressionTracker.tsx,anonymous@58,arrow,58,97,40,false
 src/components/game/boutReplay/boutCanvas/draw.ts,drawKimariteBanner,function,442,481,40,true

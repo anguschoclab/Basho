@@ -15,10 +15,16 @@ import { getAdvice } from "../bout/CornerAdvice";
 import { getRikishi, getHeya, getOyakataForHeya } from "../queries";
 import { getOpponentModel } from "../npcAI/MemoryStore";
 import { getOpponentDominantFamily } from "../npcAI/OpponentModel";
+import { buildMetaPerception } from "../npcAI/MetaPerception";
+import { candidateConsumesForeignSlot } from "../systems/generation/talentPoolReads";
+import { isAtForeignLimit } from "../utils/citizenshipUtils";
 
 const MAX_ROSTER = 30;
 
 const ROSTER_LOW_THRESHOLD = 10;
+
+/** How far back a rival plan shift remains actionable intel (weeks). */
+const RIVAL_PLAN_INTEL_WINDOW_WEEKS = 8;
 
 function rec(
   id: string,
@@ -248,6 +254,141 @@ function leagueRecommendations(world: WorldState, heyaId: Id): AIRecommendation[
   return recs;
 }
 
+/**
+ * WS7 — league intel: rival plan shifts, meta drift, succession watch,
+ * faction pressure, contested foreign recruits. Every output is banded
+ * perception or public record — no raw trait numbers, no private plans.
+ */
+function intelRecommendations(world: WorldState, heyaId: Id): AIRecommendation[] {
+  const recs: AIRecommendation[] = [];
+  const week = world.calendar?.currentWeek ?? world.week ?? 0;
+
+  // Rival plan shift — recent plan changes are actionable intelligence.
+  const log = (world.events?.log ?? []) as {
+    type: string;
+    category?: string;
+    week?: number;
+    data?: Record<string, unknown>;
+  }[];
+  const shift = [...log].reverse().find(
+    (e) =>
+      e.type === "STRATEGY_SHIFT" &&
+      e.category === "ai_plan_change" &&
+      e.data?.heyaId !== undefined &&
+      e.data.heyaId !== heyaId &&
+      week - Number(e.week ?? 0) >= 0 &&
+      week - Number(e.week ?? 0) <= RIVAL_PLAN_INTEL_WINDOW_WEEKS
+  );
+  if (shift) {
+    const shiftHeyaId = String(shift.data?.heyaId);
+    const rivalHeya = getHeya(world, shiftHeyaId);
+    recs.push(
+      rec(
+        "rival-plan-shift",
+        "rivalry",
+        "medium",
+        "Rival stable changed strategy",
+        `${rivalHeya?.name ?? "A rival stable"} committed to a new direction (${String(
+          shift.data?.planId ?? "unknown plan"
+        )}). Watch their recruitment and matchmaking.`,
+        "Open rival stables",
+        shiftHeyaId
+      )
+    );
+  }
+
+  // Meta-drift bulletin — banded era perception; the era tone is a
+  // publicly announced headline and family shares are banded, not raw.
+  const meta = buildMetaPerception(world);
+  const notable =
+    meta.dominanceBand === "established" ||
+    (meta.dominanceBand === "emerging" && meta.trend === "strengthening");
+  if (notable) {
+    recs.push(
+      rec(
+        "meta-drift-bulletin",
+        "governance",
+        meta.dominanceBand === "established" ? "medium" : "low",
+        "Era style bulletin",
+        `Observers say the ${meta.dominantFamily} family is ${meta.dominanceBand} and ${meta.trend}. Align recruitment and training — or prepare counters.`,
+        "Open scouting",
+        heyaId
+      )
+    );
+  }
+
+  // Succession watch — a rival oyakata at mandatory retirement is a public
+  // governance fact (JSA age rule), not private state.
+  for (const heya of world.heyas.values()) {
+    if (heya.id === heyaId) continue;
+    const oya = getOyakataForHeya(world, heya.id);
+    if (oya?.successionReadiness === "mandatory") {
+      recs.push(
+        rec(
+          "succession-watch",
+          "governance",
+          "medium",
+          "Rival succession imminent",
+          `${oya.name} of ${heya.name} is at mandatory retirement age — expect a leadership transition there.`,
+          "Open rival stables",
+          heya.id
+        )
+      );
+      break;
+    }
+  }
+
+  // Faction pressure — an elected coordinated-pressure posture naming the
+  // player is delivered as a governance ruling, so it is public.
+  for (const [ichimon, fp] of Object.entries(world.factionPostures ?? {})) {
+    if (fp?.posture === "coordinated_pressure" && fp.targetHeyaId === heyaId) {
+      recs.push(
+        rec(
+          "faction-pressure",
+          "governance",
+          "high",
+          "Ichimon coordinating pressure",
+          `The ${ichimon} ichimon is coordinating pressure against your stable. Expect hostile matchmaking and political friction.`,
+          "Open governance",
+          heyaId
+        )
+      );
+    }
+  }
+
+  // Contested foreign recruit — a visible standout while the player's
+  // foreign slot is open. Only surfaced when it's actually actionable.
+  const pool = world.talentPool;
+  if (pool?.candidates) {
+    const foreignStar = Object.values(pool.candidates).find(
+      (c) =>
+        c.availabilityState === "available" &&
+        (c.isEmergentProdigy || c.tags?.includes("amateur_star")) &&
+        candidateConsumesForeignSlot(c)
+    );
+    if (foreignStar) {
+      const playerRikishi = [...(world.activeRikishiIds ?? [])]
+        .map((id) => getRikishi(world, id))
+        .filter((r): r is NonNullable<typeof r> => !!r && r.heyaId === heyaId);
+      if (!isAtForeignLimit(playerRikishi, world.year)) {
+        recs.push(
+          rec(
+            "contested-foreign-recruit",
+            "recruitment",
+            "high",
+            "Foreign standout available",
+            `${foreignStar.name} is drawing rival interest and your foreign slot is open. Foreign recruits are capped at one per stable — move decisively or pass.`,
+            "Open recruitment panel",
+            foreignStar.candidateId
+          )
+        );
+      }
+    }
+  }
+
+  return recs;
+}
+
 /** Generate a prioritized list of player-facing recommendations. */
 export function generateRecommendations(world: WorldState, playerHeyaId?: Id): AIRecommendation[] {
   const heyaId = playerHeyaId ?? world.playerHeyaId;
@@ -259,6 +400,7 @@ export function generateRecommendations(world: WorldState, playerHeyaId?: Id): A
     ...rivalryRecommendations(world, heyaId),
     ...bashoRecommendations(world, heyaId),
     ...leagueRecommendations(world, heyaId),
+    ...intelRecommendations(world, heyaId),
   ];
 
   const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };

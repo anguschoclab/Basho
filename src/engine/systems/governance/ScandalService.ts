@@ -8,6 +8,7 @@ import type { GovernanceStatus, GovernanceRuling } from "../../types/economy";
 import { rngForWorld, rngFromSeed } from "../../rng";
 import { BardEngine } from "../../bard/BardEngine";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { bumpTenure } from "../legacy/tenure";
 import type { StateImpact } from "../../core/StateImpact";
 import { getHeya } from "../../queries";
 import {
@@ -40,6 +41,11 @@ export function reportScandal(
   const newScandalScore = (heya.scandalScore ?? 0) + scoreBump;
 
   builder.updateHeya(heyaId, { scandalScore: newScandalScore });
+
+  // WS5 — major/critical scandals count against the sitting oyakata (§16.1).
+  if (severity !== "minor") {
+    bumpTenure(world, builder, heyaId, { majorScandals: 1 });
+  }
 
   // Record deterministic ruling
   const rng = rngForWorld(world, "governance", `ruling_${world.dayIndexGlobal}_${heyaId}`);

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
 import { phase06_yearly_boundary } from "@/engine/tick/phases/phase06_yearly_boundary";
-import { tickWeekNPC } from "@/engine/npcAI";
+import { phase01_week_npc_ai } from "@/engine/tick/phases/phase01_week_npc_ai";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 describe("World Circuit System Integration", () => {
@@ -35,8 +35,10 @@ describe("World Circuit System Integration", () => {
     };
     world.pendingExhibitions = [invitation];
 
-    // Run NPC AI tick
-    const npcImpact = tickWeekNPC(world);
+    // Run the canonical weekly NPC phase. monthBoundary forces a full
+    // sweep so the deterministic rotation can't skip our target heya.
+    world.transientContext = { boundaries: { monthBoundary: true, yearBoundary: false } };
+    const npcImpact = phase01_week_npc_ai(world);
     world = resolveImpacts(world, [npcImpact]);
 
     // Verify presence growth

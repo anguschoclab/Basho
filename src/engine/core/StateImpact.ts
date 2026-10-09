@@ -129,6 +129,8 @@ export type WritableWorldFields = Pick<
   | "meta"
   | "pendingCrisis"
   | "pendingDecisions"
+  | "pendingRikishiRequests"
+  | "factionPostures"
   | "yokozunaVacancyStreak"
   | "events"
   | "lineage"
@@ -138,6 +140,7 @@ export type WritableWorldFields = Pick<
   | "gyojiPool"
   | "shimpanPool"
   | "boutTactics"
+  | "bashoNpcPosture"
   | "currentBanzuke"
   | "historyIndex"
 >;

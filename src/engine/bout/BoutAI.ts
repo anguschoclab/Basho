@@ -39,6 +39,8 @@ export interface BoutAIContext {
   opponentModel?: OpponentTacticModel;
   /** Pressure inferred from rank/record context. */
   rankPressure?: "demotion" | "promotion" | "neutral";
+  /** Acting stable's banded basho posture (WS3 — phase01_basho_npc_tactics). */
+  heyaPosture?: "conservative" | "standard" | "aggressive";
 }
 
 /**
@@ -148,6 +150,17 @@ export function chooseTactic(
   if (ctx.rankPressure === "promotion" && tactic === "HENKA") {
     // Promotion runs avoid the crowd-disliked henka unless desperate.
     tactic = "OSHI_THRUST";
+  }
+
+  // 6. Basho posture (WS3) — the heya's daily stance tempers tactic choice.
+  if (ctx.heyaPosture === "conservative" && INTENSITY_TACTICS.includes(tactic)) {
+    tactic = "STANDARD";
+  } else if (
+    ctx.heyaPosture === "aggressive" &&
+    tactic === "STANDARD" &&
+    !isHighFatigue(ctx.fatigue)
+  ) {
+    tactic = ctx.bashoDay !== undefined && ctx.bashoDay >= 13 ? "ALL_OUT" : "OSHI_THRUST";
   }
 
   return tactic;

@@ -34,7 +34,7 @@ describe("ElectronStorageProvider — real async IPC contract", () => {
       return Promise.resolve();
     });
     mocks.storage.delete.mockImplementation((k: string) => {
-      delete store[k];
+      Reflect.deleteProperty(store, k);
       return Promise.resolve();
     });
 
@@ -82,7 +82,7 @@ describe("ElectronStorageProvider — real async IPC contract", () => {
     const mocks = mockElectronAPI({ storageKeys: store });
     mocks.storage.get.mockImplementation((k: string) => Promise.resolve(store[k] ?? null));
     mocks.storage.delete.mockImplementation((k: string) => {
-      delete store[k];
+      Reflect.deleteProperty(store, k);
       return Promise.resolve();
     });
 

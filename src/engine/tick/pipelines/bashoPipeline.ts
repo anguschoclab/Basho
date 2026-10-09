@@ -32,6 +32,7 @@ export const bashoPipeline: PipelinePhase[] = [
   phases.phase01_week_scouting, // Scouting decay still ticks during basho
   phases.phase01_week_health, // Recovery for injured rikishi (injury rolls skipped during basho)
   phases.phase01_week_governance,
+  phases.phase01_week_rikishi_agency, // Rikishi dispositions/requests/incidents — must precede NPC resolution
   phases.phase01_week_npc_ai,
   phases.phase01_week_talent_pool, // Reveal candidates before recruitment (gap-aware supply)
   phases.phase01_week_candidate_pool, // NPC watchlist: simulate interest + maintenance

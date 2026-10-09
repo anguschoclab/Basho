@@ -146,7 +146,11 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
 
   // P1.2: Bout resolution runs daily during active_basho (not just weekly).
   // This replaces the bashoSlice mutable bout-simulation path.
+  // WS3: NPC day-of kyujo + basho posture run FIRST — withdrawals must land
+  // before today's bouts resolve (fusensho), and both must run under
+  // advanceDaysFast (this block is not behind skipDailyMicroPhases).
   if (nextWorld.cyclePhase === "active_basho") {
+    activePhases.push(phases.phase01_basho_npc_tactics);
     activePhases.push(phases.phase01_basho_bouts);
   }
 

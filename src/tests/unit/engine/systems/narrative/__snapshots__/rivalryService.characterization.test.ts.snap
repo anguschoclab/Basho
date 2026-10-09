@@ -1,0 +1,404 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RivalryService — golden master > applyWeeklyDecay — empty + populated states 1`] = `
+{
+  "empty": "{
+  "metadata": {
+    "source": "applyWeeklyDecay",
+    "timestamp": 1
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {}
+    }
+  }
+}",
+  "populated": "{
+  "metadata": {
+    "source": "applyWeeklyDecay",
+    "timestamp": 2
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 89.5,
+          "meetings": 4,
+          "lastMetWeek": 0,
+          "aWins": 0,
+          "bWins": 0,
+          "closeness": 0,
+          "spite": 0,
+          "tone": "public_hype",
+          "triggers": {},
+          "sameHeya": false
+        },
+        "other": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 9.5,
+          "meetings": 0,
+          "lastMetWeek": 0,
+          "aWins": 0,
+          "bWins": 0,
+          "closeness": 0,
+          "spite": 0,
+          "tone": "respect",
+          "triggers": {},
+          "sameHeya": false
+        }
+      }
+    }
+  }
+}",
+}
+`;
+
+exports[`RivalryService — golden master > createFreshPair — seeded fixture 1`] = `
+{
+  "aId": "r-east",
+  "aWins": 0,
+  "bId": "r-west",
+  "bWins": 0,
+  "closeness": 0,
+  "heat": 0,
+  "key": "r-east|r-west",
+  "lastMetWeek": 0,
+  "meetings": 0,
+  "sameHeya": false,
+  "spite": 0,
+  "tone": "respect",
+  "triggers": {},
+}
+`;
+
+exports[`RivalryService — golden master > ensureRivalriesState — absent and present 1`] = `
+{
+  "absent": {
+    "pairs": {},
+    "version": "1.0.0",
+  },
+  "present": {
+    "pairs": {
+      "x": {
+        "heat": 10,
+      },
+    },
+    "version": "1.0.0",
+  },
+}
+`;
+
+exports[`RivalryService — golden master > makeRivalryKey — canonical ordering 1`] = `
+[
+  "a|b",
+  "a|b",
+  "same|same",
+]
+`;
+
+exports[`RivalryService — golden master > maybeSeedSparringRivalry — gates + seeded path 1`] = `
+{
+  "missingRikishi": "{
+  "metadata": {
+    "source": "maybeSeedSparringRivalry",
+    "timestamp": 5
+  }
+}",
+  "nonFriction": "{
+  "metadata": {
+    "source": "maybeSeedSparringRivalry",
+    "timestamp": 1
+  }
+}",
+  "seededOrRngGated_12w": "{
+  "metadata": {
+    "source": "maybeSeedSparringRivalry",
+    "timestamp": 3
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 51,
+          "meetings": 0,
+          "lastMetWeek": 0,
+          "aWins": 0,
+          "bWins": 0,
+          "closeness": 0,
+          "spite": 0,
+          "tone": "grudge",
+          "triggers": {
+            "sparring": 12
+          },
+          "sameHeya": false
+        }
+      }
+    }
+  },
+  "events": [
+    {
+      "type": "SPARRING_RIVALRY_SEEDED",
+      "category": "rivalry",
+      "data": {
+        "shikona": "Eastho",
+        "rival": "Westzan",
+        "chemistry": "friction",
+        "weeksActive": 12,
+        "heat": 51,
+        "tone": "grudge"
+      },
+      "importance": "notable"
+    }
+  ]
+}",
+  "seededOrRngGated_30w": "{
+  "metadata": {
+    "source": "maybeSeedSparringRivalry",
+    "timestamp": 4
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 50,
+          "meetings": 0,
+          "lastMetWeek": 0,
+          "aWins": 0,
+          "bWins": 0,
+          "closeness": 0,
+          "spite": 0,
+          "tone": "grudge",
+          "triggers": {
+            "sparring": 30
+          },
+          "sameHeya": false
+        }
+      }
+    }
+  },
+  "events": [
+    {
+      "type": "SPARRING_RIVALRY_SEEDED",
+      "category": "rivalry",
+      "data": {
+        "shikona": "Eastho",
+        "rival": "Westzan",
+        "chemistry": "friction",
+        "weeksActive": 30,
+        "heat": 50,
+        "tone": "grudge"
+      },
+      "importance": "notable"
+    }
+  ]
+}",
+  "tooEarly": "{
+  "metadata": {
+    "source": "maybeSeedSparringRivalry",
+    "timestamp": 2
+  }
+}",
+}
+`;
+
+exports[`RivalryService — golden master > onBoutResolved — existing pair with history (kinboshi + upset variants) 1`] = `
+{
+  "kinboshi": "{
+  "metadata": {
+    "source": "onBoutResolvedRivalries",
+    "timestamp": 3
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 100,
+          "meetings": 7,
+          "lastMetWeek": 0,
+          "aWins": 1,
+          "bWins": 0,
+          "closeness": 4,
+          "spite": 1,
+          "tone": "public_hype",
+          "triggers": {
+            "repeat_matches": 3.4000000000000004,
+            "kinboshi": 8
+          },
+          "sameHeya": false,
+          "lastKimarite": "yorikiri",
+          "lastWinnerId": "r-east"
+        }
+      },
+      "heyaRivalryPairs": {}
+    }
+  }
+}",
+  "normal": "{
+  "metadata": {
+    "source": "onBoutResolvedRivalries",
+    "timestamp": 1
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 96.6,
+          "meetings": 7,
+          "lastMetWeek": 0,
+          "aWins": 1,
+          "bWins": 0,
+          "closeness": 4,
+          "spite": 1,
+          "tone": "public_hype",
+          "triggers": {
+            "repeat_matches": 3.4000000000000004
+          },
+          "sameHeya": false,
+          "lastKimarite": "yorikiri",
+          "lastWinnerId": "r-east"
+        }
+      },
+      "heyaRivalryPairs": {}
+    }
+  }
+}",
+  "upset": "{
+  "metadata": {
+    "source": "onBoutResolvedRivalries",
+    "timestamp": 2
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 100,
+          "meetings": 7,
+          "lastMetWeek": 0,
+          "aWins": 1,
+          "bWins": 0,
+          "closeness": 4,
+          "spite": 5,
+          "tone": "public_hype",
+          "triggers": {
+            "repeat_matches": 3.4000000000000004,
+            "upset": 6
+          },
+          "sameHeya": false,
+          "lastKimarite": "yorikiri",
+          "lastWinnerId": "r-east"
+        }
+      },
+      "heyaRivalryPairs": {}
+    }
+  }
+}",
+}
+`;
+
+exports[`RivalryService — golden master > onBoutResolved — new pair first bout 1`] = `
+"{
+  "metadata": {
+    "source": "onBoutResolvedRivalries",
+    "timestamp": 1
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 11.8,
+          "meetings": 1,
+          "lastMetWeek": 0,
+          "aWins": 1,
+          "bWins": 0,
+          "closeness": 4,
+          "spite": 1,
+          "tone": "respect",
+          "triggers": {
+            "repeat_matches": 2.2
+          },
+          "sameHeya": false,
+          "lastKimarite": "yorikiri",
+          "lastWinnerId": "r-east"
+        }
+      },
+      "heyaRivalryPairs": {}
+    }
+  }
+}"
+`;
+
+exports[`RivalryService — golden master > seedInitialRivalries — empty world + seeded world 1`] = `
+{
+  "empty": "{
+  "metadata": {
+    "source": "seedInitialRivalries",
+    "timestamp": 1
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {}
+    }
+  }
+}",
+  "populated": "{
+  "metadata": {
+    "source": "seedInitialRivalries",
+    "timestamp": 2
+  },
+  "worldFields": {
+    "rivalriesState": {
+      "version": "1.0.0",
+      "pairs": {
+        "r-east|r-west": {
+          "key": "r-east|r-west",
+          "aId": "r-east",
+          "bId": "r-west",
+          "heat": 31,
+          "meetings": 0,
+          "lastMetWeek": 0,
+          "aWins": 0,
+          "bWins": 0,
+          "closeness": 0,
+          "spite": 0,
+          "tone": "respect",
+          "triggers": {},
+          "sameHeya": false
+        }
+      }
+    }
+  }
+}",
+}
+`;

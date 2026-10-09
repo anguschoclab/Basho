@@ -1,0 +1,3313 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`publishBanzukeUpdate — golden master > guard: non-post_basho phase and missing basho produce empty impacts 1`] = `
+"{
+  "metadata": {
+    "source": "publishBanzukeUpdate",
+    "timestamp": 1
+  }
+}"
+`;
+
+exports[`publishBanzukeUpdate — golden master > guard: non-post_basho phase and missing basho produce empty impacts 2`] = `
+"{
+  "metadata": {
+    "source": "publishBanzukeUpdate",
+    "timestamp": 2
+  }
+}"
+`;
+
+exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho → promotion path 1`] = `
+"{
+  "metadata": {
+    "source": "publishBanzukeUpdate",
+    "timestamp": 1
+  },
+  "entities": {
+    "rikishiUpdates": {
+      "__map": [
+        [
+          "r_m10",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 0,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_m10",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "maegashira",
+                "division": "makuuchi",
+                "rankNumber": 10,
+                "side": "east",
+                "wins": 3,
+                "losses": 12,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m10",
+              "shikona": "Wrestler-r_m10",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 10,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭10E",
+                  "toRank": "makuuchi:関脇E",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "division": "makuuchi",
+            "rank": "sekiwake",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "sanyakuPromotionThisBasho": true,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_m5",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_m5",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "maegashira",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 14,
+                "losses": 1,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m5",
+              "shikona": "Wrestler-r_m5",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 5,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭5E",
+                  "toRank": "makuuchi:大関E",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "division": "makuuchi",
+            "rank": "ozeki",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "sanyakuPromotionThisBasho": true,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_ozeki",
+          {
+            "consecutiveStrongOzeki": 1,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "bashoId": "prev",
+                "isYusho": true,
+                "wins": 13,
+                "rank": "ozeki"
+              },
+              {
+                "id": "hatsu-2025-r_ozeki",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "ozeki",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 14,
+                "losses": 1,
+                "absences": 0,
+                "isYusho": true,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "dohyoIriStyle": "shiranui",
+            "almanacRecord": {
+              "rikishiId": "r_ozeki",
+              "shikona": "Wrestler-r_ozeki",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "ozeki",
+              "highestRankNumber": 5,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:大関E",
+                  "toRank": "makuuchi:横綱E",
+                  "kind": "promotion",
+                  "isJump": false,
+                  "isSanyaku": false,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "division": "makuuchi",
+            "rank": "yokozuna",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            },
+            "wasDemotedFromOzeki": true
+          }
+        ],
+        [
+          "r_sek",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 0,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_sek",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "sekiwake",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 7,
+                "losses": 8,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_sek",
+              "shikona": "Wrestler-r_sek",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "sekiwake",
+              "highestRankNumber": 5,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:関脇E",
+                  "toRank": "makuuchi:大関W",
+                  "kind": "promotion",
+                  "isJump": false,
+                  "isSanyaku": false,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "consecutiveStrongSekiwake": 0,
+            "sekiwakeThreeBashoWins": 7,
+            "division": "makuuchi",
+            "rank": "ozeki",
+            "side": "west",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_yoko",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 1,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_yoko",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "yokozuna",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 8,
+                "losses": 7,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "division": "makuuchi",
+            "rank": "yokozuna",
+            "side": "west",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_m5 has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_m5",
+        "wins": 14,
+        "losses": 1,
+        "yusho": false,
+        "from": "makuuchi:前頭5E"
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_sek has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_sek",
+        "wins": 7,
+        "losses": 8,
+        "yusho": false,
+        "from": "makuuchi:関脇E"
+      },
+      "heyaId": "heya-r_sek",
+      "rikishiId": "r_sek",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "dohyo_iri_assignment",
+        "description": "Wrestler-r_ozeki has been assigned the shiranui dohyo-iri style.",
+        "rikishiId": "r_ozeki",
+        "dohyoIriStyle": "shiranui"
+      },
+      "heyaId": "heya-r_ozeki",
+      "rikishiId": "r_ozeki",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "Progress for [[rikishi:r_ozeki:Wrestler-r_ozeki]], ascending from makuuchi大関E to makuuchi横綱E on the new banzuke.",
+        "rikishiId": "r_ozeki",
+        "from": "makuuchi:大関E",
+        "to": "makuuchi:横綱E",
+        "kind": "promotion",
+        "isJumpPromotion": false,
+        "isSanyakuPromotion": false,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_ozeki",
+      "rikishiId": "r_ozeki",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi大関E, a jump promotion that turns heads.",
+        "rikishiId": "r_m5",
+        "from": "makuuchi:前頭5E",
+        "to": "makuuchi:大関E",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "The official rankings confirm [[rikishi:r_sek:Wrestler-r_sek]]'s rise from makuuchi関脇E to makuuchi大関W.",
+        "rikishiId": "r_sek",
+        "from": "makuuchi:関脇E",
+        "to": "makuuchi:大関W",
+        "kind": "promotion",
+        "isJumpPromotion": false,
+        "isSanyakuPromotion": false,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_sek",
+      "rikishiId": "r_sek",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "[[rikishi:r_m10:Wrestler-r_m10]] leaps up the rankings — makuuchi前頭10E to makuuchi関脇E — a promotion that defies expectations.",
+        "rikishiId": "r_m10",
+        "from": "makuuchi:前頭10E",
+        "to": "makuuchi:関脇E",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "ozeki_demotion",
+        "description": "Wrestler-r_ozeki has been demoted from Ozeki.",
+        "rikishiId": "r_ozeki",
+        "from": "ozeki",
+        "to": "yokozuna"
+      },
+      "heyaId": "heya-r_ozeki",
+      "rikishiId": "r_ozeki",
+      "importance": "headline"
+    }
+  ],
+  "worldFields": {
+    "ozekiKadoban": {
+      "r_ozeki": {
+        "isKadoban": false,
+        "consecutiveMakeKoshi": 0
+      }
+    },
+    "yokozunaVacancyStreak": 0,
+    "currentBanzuke": {
+      "year": 2025,
+      "bashoNumber": 2,
+      "divisions": {
+        "makuuchi": {
+          "division": "makuuchi",
+          "slots": [
+            {
+              "rank": "yokozuna",
+              "side": "east"
+            },
+            {
+              "rank": "yokozuna",
+              "side": "west"
+            },
+            {
+              "rank": "ozeki",
+              "side": "east"
+            },
+            {
+              "rank": "ozeki",
+              "side": "west"
+            },
+            {
+              "rank": "sekiwake",
+              "side": "east"
+            }
+          ],
+          "assignments": [
+            {
+              "rikishiId": "r_ozeki",
+              "position": {
+                "rank": "yokozuna",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_yoko",
+              "position": {
+                "rank": "yokozuna",
+                "side": "west"
+              }
+            },
+            {
+              "rikishiId": "r_m5",
+              "position": {
+                "rank": "ozeki",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_sek",
+              "position": {
+                "rank": "ozeki",
+                "side": "west"
+              }
+            },
+            {
+              "rikishiId": "r_m10",
+              "position": {
+                "rank": "sekiwake",
+                "side": "east"
+              }
+            }
+          ]
+        },
+        "juryo": {
+          "division": "juryo",
+          "slots": [],
+          "assignments": []
+        },
+        "makushita": {
+          "division": "makushita",
+          "slots": [],
+          "assignments": []
+        },
+        "sandanme": {
+          "division": "sandanme",
+          "slots": [],
+          "assignments": []
+        },
+        "jonidan": {
+          "division": "jonidan",
+          "slots": [],
+          "assignments": []
+        },
+        "jonokuchi": {
+          "division": "jonokuchi",
+          "slots": [],
+          "assignments": []
+        }
+      }
+    },
+    "history": [
+      {
+        "id": "res-2025-1",
+        "year": 2025,
+        "bashoNumber": 1,
+        "bashoName": "hatsu",
+        "yusho": "r_ozeki",
+        "junYusho": [],
+        "prizes": {
+          "yushoAmount": 10000000,
+          "junYushoAmount": 0,
+          "specialPrizes": 0
+        },
+        "nextBanzuke": {
+          "year": 2025,
+          "bashoNumber": 2,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "yokozuna",
+                  "side": "west"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        }
+      }
+    ],
+    "historyIndex": {
+      "version": "1.0.0",
+      "bashoKeys": [
+        "2025-1"
+      ],
+      "basho": {
+        "2025-1": {
+          "bashoKey": "2025-1",
+          "year": 2025,
+          "bashoNumber": 1,
+          "bashoName": "hatsu",
+          "yusho": "r_ozeki",
+          "junYusho": [],
+          "hasBanzukeSnapshot": true,
+          "sortKey": "202501"
+        }
+      },
+      "banzukeByBasho": {
+        "2025-1": {
+          "year": 2025,
+          "bashoNumber": 2,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "yokozuna",
+                  "side": "west"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        },
+        "2024-6": {
+          "year": 2025,
+          "bashoNumber": 1,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                },
+                {
+                  "rank": "maegashira",
+                  "side": "east",
+                  "rankNumber": 5
+                },
+                {
+                  "rank": "maegashira",
+                  "side": "east",
+                  "rankNumber": 10
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "maegashira",
+                    "side": "east",
+                    "rankNumber": 5
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "maegashira",
+                    "side": "east",
+                    "rankNumber": 10
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        }
+      },
+      "rikishi": {
+        "r_ozeki": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "yusho": true,
+            "rikishiId": "r_ozeki",
+            "wins": 14,
+            "losses": 1
+          }
+        ],
+        "r_yoko": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_yoko",
+            "division": "makuuchi",
+            "wins": 8,
+            "losses": 7
+          }
+        ],
+        "r_sek": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_sek",
+            "division": "makuuchi",
+            "wins": 7,
+            "losses": 8
+          }
+        ],
+        "r_m5": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_m5",
+            "division": "makuuchi",
+            "wins": 14,
+            "losses": 1
+          }
+        ],
+        "r_m10": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_m10",
+            "division": "makuuchi",
+            "wins": 3,
+            "losses": 12
+          }
+        ]
+      },
+      "lastSeenBashoForRikishi": {
+        "r_ozeki": "2025-1",
+        "r_yoko": "2025-1",
+        "r_sek": "2025-1",
+        "r_m5": "2025-1",
+        "r_m10": "2025-1"
+      }
+    },
+    "currentBashoName": "haru",
+    "cyclePhase": "interim",
+    "_interimDaysRemaining": 42
+  }
+}"
+`;
+
+exports[`publishBanzukeUpdate — golden master > standard post_basho world — full impact digest 1`] = `
+"{
+  "metadata": {
+    "source": "publishBanzukeUpdate",
+    "timestamp": 1
+  },
+  "entities": {
+    "rikishiUpdates": {
+      "__map": [
+        [
+          "r_m10",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 0,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_m10",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "maegashira",
+                "division": "makuuchi",
+                "rankNumber": 10,
+                "side": "east",
+                "wins": 3,
+                "losses": 12,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m10",
+              "shikona": "Wrestler-r_m10",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 10,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭10E",
+                  "toRank": "makuuchi:関脇W",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "division": "makuuchi",
+            "rank": "sekiwake",
+            "side": "west",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "sanyakuPromotionThisBasho": true,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_m5",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_m5",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "maegashira",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 14,
+                "losses": 1,
+                "absences": 0,
+                "isYusho": true,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m5",
+              "shikona": "Wrestler-r_m5",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 5,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭5E",
+                  "toRank": "makuuchi:大関W",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "division": "makuuchi",
+            "rank": "ozeki",
+            "side": "west",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "sanyakuPromotionThisBasho": true,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_ozeki",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_ozeki",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "ozeki",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 9,
+                "losses": 6,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "division": "makuuchi",
+            "rank": "ozeki",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_sek",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 0,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_sek",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "sekiwake",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 7,
+                "losses": 8,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "consecutiveStrongSekiwake": 0,
+            "sekiwakeThreeBashoWins": 7,
+            "division": "makuuchi",
+            "rank": "sekiwake",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_yoko",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 1,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_yoko",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "yokozuna",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 8,
+                "losses": 7,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "division": "makuuchi",
+            "rank": "yokozuna",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_m5 has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_m5",
+        "wins": 14,
+        "losses": 1,
+        "yusho": true,
+        "from": "makuuchi:前頭5E"
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi大関W, a jump promotion that turns heads.",
+        "rikishiId": "r_m5",
+        "from": "makuuchi:前頭5E",
+        "to": "makuuchi:大関W",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "[[rikishi:r_m10:Wrestler-r_m10]] leaps up the rankings — makuuchi前頭10E to makuuchi関脇W — a promotion that defies expectations.",
+        "rikishiId": "r_m10",
+        "from": "makuuchi:前頭10E",
+        "to": "makuuchi:関脇W",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
+      "importance": "notable"
+    }
+  ],
+  "worldFields": {
+    "ozekiKadoban": {
+      "r_ozeki": {
+        "isKadoban": false,
+        "consecutiveMakeKoshi": 0
+      }
+    },
+    "yokozunaVacancyStreak": 0,
+    "currentBanzuke": {
+      "year": 2025,
+      "bashoNumber": 2,
+      "divisions": {
+        "makuuchi": {
+          "division": "makuuchi",
+          "slots": [
+            {
+              "rank": "yokozuna",
+              "side": "east"
+            },
+            {
+              "rank": "ozeki",
+              "side": "east"
+            },
+            {
+              "rank": "ozeki",
+              "side": "west"
+            },
+            {
+              "rank": "sekiwake",
+              "side": "east"
+            },
+            {
+              "rank": "sekiwake",
+              "side": "west"
+            }
+          ],
+          "assignments": [
+            {
+              "rikishiId": "r_yoko",
+              "position": {
+                "rank": "yokozuna",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_ozeki",
+              "position": {
+                "rank": "ozeki",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_m5",
+              "position": {
+                "rank": "ozeki",
+                "side": "west"
+              }
+            },
+            {
+              "rikishiId": "r_sek",
+              "position": {
+                "rank": "sekiwake",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_m10",
+              "position": {
+                "rank": "sekiwake",
+                "side": "west"
+              }
+            }
+          ]
+        },
+        "juryo": {
+          "division": "juryo",
+          "slots": [],
+          "assignments": []
+        },
+        "makushita": {
+          "division": "makushita",
+          "slots": [],
+          "assignments": []
+        },
+        "sandanme": {
+          "division": "sandanme",
+          "slots": [],
+          "assignments": []
+        },
+        "jonidan": {
+          "division": "jonidan",
+          "slots": [],
+          "assignments": []
+        },
+        "jonokuchi": {
+          "division": "jonokuchi",
+          "slots": [],
+          "assignments": []
+        }
+      }
+    },
+    "history": [
+      {
+        "id": "res-2025-1",
+        "year": 2025,
+        "bashoNumber": 1,
+        "bashoName": "hatsu",
+        "yusho": "r_m5",
+        "junYusho": [],
+        "prizes": {
+          "yushoAmount": 10000000,
+          "junYushoAmount": 0,
+          "specialPrizes": 0
+        },
+        "nextBanzuke": {
+          "year": 2025,
+          "bashoNumber": 2,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "west"
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "west"
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        }
+      }
+    ],
+    "historyIndex": {
+      "version": "1.0.0",
+      "bashoKeys": [
+        "2025-1"
+      ],
+      "basho": {
+        "2025-1": {
+          "bashoKey": "2025-1",
+          "year": 2025,
+          "bashoNumber": 1,
+          "bashoName": "hatsu",
+          "yusho": "r_m5",
+          "junYusho": [],
+          "hasBanzukeSnapshot": true,
+          "sortKey": "202501"
+        }
+      },
+      "banzukeByBasho": {
+        "2025-1": {
+          "year": 2025,
+          "bashoNumber": 2,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "west"
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "west"
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        },
+        "2024-6": {
+          "year": 2025,
+          "bashoNumber": 1,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                },
+                {
+                  "rank": "maegashira",
+                  "side": "east",
+                  "rankNumber": 5
+                },
+                {
+                  "rank": "maegashira",
+                  "side": "east",
+                  "rankNumber": 10
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "maegashira",
+                    "side": "east",
+                    "rankNumber": 5
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "maegashira",
+                    "side": "east",
+                    "rankNumber": 10
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        }
+      },
+      "rikishi": {
+        "r_m5": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "yusho": true,
+            "rikishiId": "r_m5",
+            "wins": 14,
+            "losses": 1
+          }
+        ],
+        "r_yoko": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_yoko",
+            "division": "makuuchi",
+            "wins": 8,
+            "losses": 7
+          }
+        ],
+        "r_ozeki": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_ozeki",
+            "division": "makuuchi",
+            "wins": 9,
+            "losses": 6
+          }
+        ],
+        "r_sek": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_sek",
+            "division": "makuuchi",
+            "wins": 7,
+            "losses": 8
+          }
+        ],
+        "r_m10": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_m10",
+            "division": "makuuchi",
+            "wins": 3,
+            "losses": 12
+          }
+        ]
+      },
+      "lastSeenBashoForRikishi": {
+        "r_m5": "2025-1",
+        "r_yoko": "2025-1",
+        "r_ozeki": "2025-1",
+        "r_sek": "2025-1",
+        "r_m10": "2025-1"
+      }
+    },
+    "currentBashoName": "haru",
+    "cyclePhase": "interim",
+    "_interimDaysRemaining": 42
+  }
+}"
+`;
+
+exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → council pressure events 1`] = `
+"{
+  "metadata": {
+    "source": "publishBanzukeUpdate",
+    "timestamp": 1
+  },
+  "entities": {
+    "rikishiUpdates": {
+      "__map": [
+        [
+          "r_m10",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 0,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_m10",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "maegashira",
+                "division": "makuuchi",
+                "rankNumber": 10,
+                "side": "east",
+                "wins": 3,
+                "losses": 12,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m10",
+              "shikona": "Wrestler-r_m10",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 10,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭10E",
+                  "toRank": "makuuchi:関脇W",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "division": "makuuchi",
+            "rank": "sekiwake",
+            "side": "west",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "sanyakuPromotionThisBasho": true,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_m5",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_m5",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "maegashira",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 14,
+                "losses": 1,
+                "absences": 0,
+                "isYusho": true,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m5",
+              "shikona": "Wrestler-r_m5",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 5,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭5E",
+                  "toRank": "makuuchi:大関W",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
+            "division": "makuuchi",
+            "rank": "ozeki",
+            "side": "west",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "sanyakuPromotionThisBasho": true,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_ozeki",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 1,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_ozeki",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "ozeki",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 9,
+                "losses": 6,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "division": "makuuchi",
+            "rank": "ozeki",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_sek",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 0,
+            "consecutiveKachiKoshi": 0,
+            "consecutiveKyujo": 0,
+            "pressureScore": 0,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_sek",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "sekiwake",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 7,
+                "losses": 8,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "consecutiveStrongSekiwake": 0,
+            "sekiwakeThreeBashoWins": 7,
+            "division": "makuuchi",
+            "rank": "sekiwake",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ],
+        [
+          "r_yoko",
+          {
+            "consecutiveStrongOzeki": 0,
+            "consecutiveMakeKoshi": 1,
+            "consecutiveKachiKoshi": 0,
+            "consecutiveKyujo": 0,
+            "pressureScore": 1,
+            "councilWarnings": 0,
+            "stats": {
+              "power": 50,
+              "speed": 50,
+              "technique": 50,
+              "balance": 50,
+              "weight": 140,
+              "stamina": 100,
+              "mental": 50,
+              "adaptability": 50,
+              "experience": 50,
+              "aggression": 50,
+              "achievements": {
+                "kinboshiEarned": 0,
+                "ginboshiEarned": 0,
+                "kinboshiConceded": 0,
+                "ginboshiConceded": 0,
+                "mochikyukinPoints": 0,
+                "specialPrizes": {
+                  "shukunSho": 0,
+                  "kantoSho": 0,
+                  "ginoSho": 0
+                }
+              }
+            },
+            "careerHistory": [
+              {
+                "id": "hatsu-2025-r_yoko",
+                "bashoId": "hatsu-2025",
+                "year": 2025,
+                "month": 1,
+                "bashoName": "hatsu",
+                "rank": "yokozuna",
+                "division": "makuuchi",
+                "rankNumber": 5,
+                "side": "east",
+                "wins": 5,
+                "losses": 10,
+                "absences": 0,
+                "isYusho": false,
+                "isJunYusho": false,
+                "specialPrizes": {
+                  "shukunsho": false,
+                  "kantosho": false,
+                  "ginosho": false
+                },
+                "weight": 140,
+                "momentum": 0,
+                "dayResults": []
+              }
+            ],
+            "absentFinalDay": false,
+            "kihakuIsenScore": 50,
+            "division": "makuuchi",
+            "rank": "yokozuna",
+            "side": "east",
+            "currentBashoWins": 0,
+            "currentBashoLosses": 0,
+            "currentWinStreak": 0,
+            "currentLossStreak": 0,
+            "isKyujo": false,
+            "economics": {
+              "cash": 0,
+              "retirementFund": 0,
+              "careerKenshoWon": 0,
+              "kinboshiCount": 0,
+              "totalEarnings": 0,
+              "currentBashoEarnings": 0,
+              "popularity": 50
+            }
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_m5 has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_m5",
+        "wins": 14,
+        "losses": 1,
+        "yusho": true,
+        "from": "makuuchi:前頭5E"
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi大関W, a jump promotion that turns heads.",
+        "rikishiId": "r_m5",
+        "from": "makuuchi:前頭5E",
+        "to": "makuuchi:大関W",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "[[rikishi:r_m10:Wrestler-r_m10]] leaps up the rankings — makuuchi前頭10E to makuuchi関脇W — a promotion that defies expectations.",
+        "rikishiId": "r_m10",
+        "from": "makuuchi:前頭10E",
+        "to": "makuuchi:関脇W",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
+      "importance": "notable"
+    }
+  ],
+  "worldFields": {
+    "ozekiKadoban": {
+      "r_ozeki": {
+        "isKadoban": false,
+        "consecutiveMakeKoshi": 0
+      }
+    },
+    "yokozunaVacancyStreak": 0,
+    "currentBanzuke": {
+      "year": 2025,
+      "bashoNumber": 2,
+      "divisions": {
+        "makuuchi": {
+          "division": "makuuchi",
+          "slots": [
+            {
+              "rank": "yokozuna",
+              "side": "east"
+            },
+            {
+              "rank": "ozeki",
+              "side": "east"
+            },
+            {
+              "rank": "ozeki",
+              "side": "west"
+            },
+            {
+              "rank": "sekiwake",
+              "side": "east"
+            },
+            {
+              "rank": "sekiwake",
+              "side": "west"
+            }
+          ],
+          "assignments": [
+            {
+              "rikishiId": "r_yoko",
+              "position": {
+                "rank": "yokozuna",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_ozeki",
+              "position": {
+                "rank": "ozeki",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_m5",
+              "position": {
+                "rank": "ozeki",
+                "side": "west"
+              }
+            },
+            {
+              "rikishiId": "r_sek",
+              "position": {
+                "rank": "sekiwake",
+                "side": "east"
+              }
+            },
+            {
+              "rikishiId": "r_m10",
+              "position": {
+                "rank": "sekiwake",
+                "side": "west"
+              }
+            }
+          ]
+        },
+        "juryo": {
+          "division": "juryo",
+          "slots": [],
+          "assignments": []
+        },
+        "makushita": {
+          "division": "makushita",
+          "slots": [],
+          "assignments": []
+        },
+        "sandanme": {
+          "division": "sandanme",
+          "slots": [],
+          "assignments": []
+        },
+        "jonidan": {
+          "division": "jonidan",
+          "slots": [],
+          "assignments": []
+        },
+        "jonokuchi": {
+          "division": "jonokuchi",
+          "slots": [],
+          "assignments": []
+        }
+      }
+    },
+    "history": [
+      {
+        "id": "res-2025-1",
+        "year": 2025,
+        "bashoNumber": 1,
+        "bashoName": "hatsu",
+        "yusho": "r_m5",
+        "junYusho": [],
+        "prizes": {
+          "yushoAmount": 10000000,
+          "junYushoAmount": 0,
+          "specialPrizes": 0
+        },
+        "nextBanzuke": {
+          "year": 2025,
+          "bashoNumber": 2,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "west"
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "west"
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        }
+      }
+    ],
+    "historyIndex": {
+      "version": "1.0.0",
+      "bashoKeys": [
+        "2025-1"
+      ],
+      "basho": {
+        "2025-1": {
+          "bashoKey": "2025-1",
+          "year": 2025,
+          "bashoNumber": 1,
+          "bashoName": "hatsu",
+          "yusho": "r_m5",
+          "junYusho": [],
+          "hasBanzukeSnapshot": true,
+          "sortKey": "202501"
+        }
+      },
+      "banzukeByBasho": {
+        "2025-1": {
+          "year": 2025,
+          "bashoNumber": 2,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "west"
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "west"
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        },
+        "2024-6": {
+          "year": 2025,
+          "bashoNumber": 1,
+          "divisions": {
+            "makuuchi": {
+              "division": "makuuchi",
+              "slots": [
+                {
+                  "rank": "yokozuna",
+                  "side": "east"
+                },
+                {
+                  "rank": "ozeki",
+                  "side": "east"
+                },
+                {
+                  "rank": "sekiwake",
+                  "side": "east"
+                },
+                {
+                  "rank": "maegashira",
+                  "side": "east",
+                  "rankNumber": 5
+                },
+                {
+                  "rank": "maegashira",
+                  "side": "east",
+                  "rankNumber": 10
+                }
+              ],
+              "assignments": [
+                {
+                  "rikishiId": "r_yoko",
+                  "position": {
+                    "rank": "yokozuna",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_ozeki",
+                  "position": {
+                    "rank": "ozeki",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
+                  }
+                },
+                {
+                  "rikishiId": "r_m5",
+                  "position": {
+                    "rank": "maegashira",
+                    "side": "east",
+                    "rankNumber": 5
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
+                    "rank": "maegashira",
+                    "side": "east",
+                    "rankNumber": 10
+                  }
+                }
+              ]
+            },
+            "juryo": {
+              "division": "juryo",
+              "slots": [],
+              "assignments": []
+            },
+            "makushita": {
+              "division": "makushita",
+              "slots": [],
+              "assignments": []
+            },
+            "sandanme": {
+              "division": "sandanme",
+              "slots": [],
+              "assignments": []
+            },
+            "jonidan": {
+              "division": "jonidan",
+              "slots": [],
+              "assignments": []
+            },
+            "jonokuchi": {
+              "division": "jonokuchi",
+              "slots": [],
+              "assignments": []
+            }
+          }
+        }
+      },
+      "rikishi": {
+        "r_m5": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "yusho": true,
+            "rikishiId": "r_m5",
+            "wins": 14,
+            "losses": 1
+          }
+        ],
+        "r_yoko": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_yoko",
+            "division": "makuuchi",
+            "wins": 5,
+            "losses": 10
+          }
+        ],
+        "r_ozeki": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_ozeki",
+            "division": "makuuchi",
+            "wins": 9,
+            "losses": 6
+          }
+        ],
+        "r_sek": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_sek",
+            "division": "makuuchi",
+            "wins": 7,
+            "losses": 8
+          }
+        ],
+        "r_m10": [
+          {
+            "bashoKey": "2025-1",
+            "year": 2025,
+            "bashoNumber": 1,
+            "bashoName": "hatsu",
+            "rikishiId": "r_m10",
+            "division": "makuuchi",
+            "wins": 3,
+            "losses": 12
+          }
+        ]
+      },
+      "lastSeenBashoForRikishi": {
+        "r_m5": "2025-1",
+        "r_yoko": "2025-1",
+        "r_ozeki": "2025-1",
+        "r_sek": "2025-1",
+        "r_m10": "2025-1"
+      }
+    },
+    "currentBashoName": "haru",
+    "cyclePhase": "interim",
+    "_interimDaysRemaining": 42
+  }
+}"
+`;

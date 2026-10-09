@@ -11,7 +11,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { fileURLToPath } from "url";
-import { join, dirname } from "path";
+import { join } from "path";
 import ts from "typescript";
 
 const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
@@ -182,24 +182,30 @@ for (const beat of BEATS) {
   const fn = `\nfunction ${beat.name}(p: PbpPipeline): void {\n${destructure}${body}\n}\n`;
 
   if (!MODULES.has(beat.mod)) MODULES.set(beat.mod, []);
-  MODULES.get(beat.mod)!.push(fn);
+  const modList = MODULES.get(beat.mod);
+  if (modList) modList.push(fn);
 
   if (!MODULE_IMPORTS.has(beat.mod)) MODULE_IMPORTS.set(beat.mod, new Set());
-  for (const e of external) MODULE_IMPORTS.get(beat.mod)!.add(e);
+  const modImports = MODULE_IMPORTS.get(beat.mod);
+  for (const e of external) modImports?.add(e);
 }
 
 mkdirSync(OUT_DIR, { recursive: true });
 for (const [mod, fns] of MODULES) {
-  const imports = MODULE_IMPORTS.get(mod)!;
+  const imports = MODULE_IMPORTS.get(mod) ?? new Set<string>();
   // group by specifier
   const bySpec = new Map<string, { names: string[]; isType: boolean }>();
   for (const name of imports) {
-    const spec = importMap.get(name)!;
+    const spec = importMap.get(name);
+    if (!spec) continue;
     // adjust relative spec for narrative/ dir depth: ./x -> ../x ; ../x -> ../../x
     const adj = spec.startsWith("./") ? `.${spec}` : spec.startsWith("../") ? `../${spec}` : spec;
     if (!bySpec.has(adj)) bySpec.set(adj, { names: [], isType: typeImports.has(name) });
-    bySpec.get(adj)!.names.push(name);
-    if (!typeImports.has(name)) bySpec.get(adj)!.isType = false;
+    const group = bySpec.get(adj);
+    if (group) {
+      group.names.push(name);
+      if (!typeImports.has(name)) group.isType = false;
+    }
   }
   const importLines = [...bySpec.entries()]
     .sort(([a], [b]) => a.localeCompare(b))

@@ -25,6 +25,10 @@ export interface FinanceAgentResult {
   facilityType?: string;
   shouldBuildReserves: boolean;
   reserveTarget: number;
+  /** WS5 — desperate stables proactively seek rescue rather than waiting for
+   *  the basho-end governance review. */
+  shouldSeekRescue: boolean;
+  rescueMenu?: "sponsor_drive" | "bailout_loan" | "faction_appeal";
   reasoning: string[];
   riskLevel: "conservative" | "moderate" | "aggressive";
 }
@@ -137,6 +141,24 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
     reasoning.push(`[Finance Agent] Maintaining ${reserveTarget.toLocaleString()} reserve target`);
   }
 
+  // WS5 — crisis rescue menu (canon §14.8): a desperate stable chooses how to
+  // beg — persona determines the path. Deterministic, no rng.
+  let shouldSeekRescue = false;
+  let rescueMenu: FinanceAgentResult["rescueMenu"];
+  if (runwayBand === "desperate" || runwayBand === "critical") {
+    shouldSeekRescue = true;
+    if (isAmbitious) {
+      rescueMenu = "sponsor_drive";
+      reasoning.push("[Finance Agent] Rescue: ambitious oyakata drives sponsor recruitment");
+    } else if (isTraditionalist) {
+      rescueMenu = "faction_appeal";
+      reasoning.push("[Finance Agent] Rescue: traditionalist appeals to ichimon benefactors");
+    } else {
+      rescueMenu = "bailout_loan";
+      reasoning.push("[Finance Agent] Rescue: requesting a bailout loan");
+    }
+  }
+
   reasoning.push(`[Finance Agent] Final strategy: ${riskLevel} risk level`);
   reasoning.push(`[Finance Agent] Current runway: ${runwayMonths.toFixed(1)} months`);
 
@@ -147,6 +169,8 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
     facilityType,
     shouldBuildReserves,
     reserveTarget,
+    shouldSeekRescue,
+    rescueMenu,
     reasoning,
     riskLevel,
   };

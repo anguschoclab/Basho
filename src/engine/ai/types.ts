@@ -12,7 +12,7 @@ import type { WorldState } from "../types/world";
 import type { PerceptionSnapshot } from "../perception";
 
 export type AIGoalDomain =
-  "rank" | "finance" | "rivalry" | "recruitment" | "reputation" | "training";
+  "rank" | "finance" | "rivalry" | "recruitment" | "reputation" | "training" | "governance";
 
 export interface AIGoal {
   domain: AIGoalDomain;
@@ -96,6 +96,7 @@ export interface AIContext {
       compassion: number;
     };
     mood?: string;
+    grudges?: Id[];
   };
   perception?: PerceptionSnapshot;
   leaguePerception?: LeaguePerception;
@@ -159,6 +160,14 @@ export interface OyakataMemory {
   opponentModels: Record<Id, OpponentTacticModel>;
   /** Last week each agent-decision domain executed (cooldowns). */
   lastExecutedAt?: Record<string, number>;
+  /** Canon §8 meta-adaptation state (reaction lag + committed posture). */
+  metaAdaptation?: {
+    observedFamily?: "push" | "belt" | "speed" | "trick";
+    sinceWeek: number;
+    confirmations: number;
+    committedPosture?: "none" | "embrace_meta" | "counter_meta";
+    committedFamily?: "push" | "belt" | "speed" | "trick";
+  };
 }
 
 /** Promotion / demotion pressure snapshot for one division. */
@@ -201,4 +210,28 @@ export interface LeaguePerception {
   ichimonLeaders?: Partial<
     Record<string, { heyaId: Id; capitalBand: "dominant" | "strong" | "modest" }>
   >;
+  /** Banded meta-drift read built from completed yearly assessments (canon §7). */
+  meta?: MetaPerception;
+}
+
+/**
+ * Manager-facing read of the era meta. Banded only — canon §7 forbids exposing
+ * raw drift factors or kimarite counts to managers.
+ */
+export interface MetaPerception {
+  /** Publicly announced era tone (narrative headline — safe to surface). */
+  eraTone: "classic" | "explosive" | "technical" | "defensive";
+  /** Style family that led the most recent completed assessment. */
+  dominantFamily: "push" | "belt" | "speed" | "trick" | "none";
+  /** How decisive the dominant family's lead is. */
+  dominanceBand: "unclear" | "emerging" | "established";
+  /** Per-family banded presence relative to the prior assessment. */
+  familyPresence: Record<
+    "push" | "belt" | "speed" | "trick",
+    "ascendant" | "present" | "waning" | "absent"
+  >;
+  /** Direction of the dominant family's share across the history window. */
+  trend: "strengthening" | "stable" | "reversing";
+  /** Banded injury pressure across the active roster (kyujo is public). */
+  injuryClimate: "low" | "normal" | "elevated";
 }

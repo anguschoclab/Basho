@@ -12,8 +12,8 @@ import { readSrcFile } from "@/tests/helpers/fsScan";
 const ROOT = join(__dirname, "../../../..");
 
 describe("RecruitmentAgent — NPC wiring", () => {
-  it("spawnRecruitmentAgent is imported and called by weekly.ts", () => {
-    const weekly = readSrcFile("engine/npcAI/weekly.ts");
+  it("spawnRecruitmentAgent is imported and called by weekly agents module", () => {
+    const weekly = readSrcFile("engine/npcAI/weekly/agents.ts");
     expect(weekly).toContain("spawnRecruitmentAgent");
     expect(weekly).toMatch(/spawnRecruitmentAgent\s*\(/);
   });

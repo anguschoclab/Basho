@@ -10,6 +10,7 @@ import { Heya } from "../../types/heya";
 import { Oyakata } from "../../types/oyakata";
 import { Rikishi } from "../../types/rikishi";
 import { generateFullRikishi } from "./CandidateBuilder";
+import { countsAsForeign } from "../../utils/citizenshipUtils";
 import { Division, Rank, Side } from "../../types/banzuke";
 import {
   YOKOZUNA_COUNT_MIN,
@@ -25,6 +26,9 @@ export function createRosters(
 ): Map<string, Rikishi> {
   const rikishiMap = new Map<string, Rikishi>();
   const heyaList = Array.from(heyaMap.values());
+  // §5.1 — at most one foreign-slot rikishi per beya at ANY time, including
+  // world generation. Track occupancy as rosters are filled.
+  const foreignOccupied = new Set<string>();
 
   const heyaByTier = heyaList.sort((a, b) => {
     const tierOrder: Record<string, number> = {
@@ -95,8 +99,24 @@ export function createRosters(
         heyaPrefix: heya.shikonaPrefix,
       });
 
-      r.heyaId = heya.id;
-      heya.rikishiIds = [...(heya.rikishiIds || []), r.id];
+      let assigned = heya;
+      if (countsAsForeign(r, DEFAULT_START_YEAR)) {
+        if (foreignOccupied.has(assigned.id)) {
+          const freeStables = eligibleStables.filter((h) => !foreignOccupied.has(h.id));
+          if (freeStables.length > 0) {
+            assigned = worldRng.pick(freeStables);
+          } else {
+            // More foreign rikishi generated than open slots: this one enters
+            // already naturalized (§5.5) — keeps nationality/history intact
+            // while freeing the slot.
+            r.citizenshipStatus = "naturalized";
+          }
+        }
+        if (countsAsForeign(r, DEFAULT_START_YEAR)) foreignOccupied.add(assigned.id);
+      }
+
+      r.heyaId = assigned.id;
+      assigned.rikishiIds = [...(assigned.rikishiIds || []), r.id];
       rikishiMap.set(r.id, r);
     }
   });

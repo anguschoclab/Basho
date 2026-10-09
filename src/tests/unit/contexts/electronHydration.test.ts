@@ -20,11 +20,11 @@ function installElectronStore(initial: Record<string, string>) {
       return Promise.resolve();
     }),
     delete: vi.fn((k: string) => {
-      delete store[k];
+      Reflect.deleteProperty(store, k);
       return Promise.resolve();
     }),
     clear: vi.fn(() => {
-      for (const k of Object.keys(store)) delete store[k];
+      for (const k of Object.keys(store)) Reflect.deleteProperty(store, k);
       return Promise.resolve();
     }),
     keys: vi.fn(() => Promise.resolve({ ...store })),

@@ -33,7 +33,7 @@ describe("ScandalService — evaluateScandals wiring", () => {
 
 describe("KihakuService — call site wiring", () => {
   it("is imported and called by BanzukePublisher", () => {
-    const pub = readSrcFile("engine/banzuke/BanzukePublisher.ts");
+    const pub = readSrcFile("engine/banzuke/publish/performance.ts");
     expect(pub).toContain("KihakuService");
     expect(pub).toMatch(/KihakuService\.calculateScore/);
     expect(pub).toMatch(/KihakuService\.extractFromBasho/);
@@ -48,7 +48,7 @@ describe("KihakuService — call site wiring", () => {
 
 describe("PoliticalFavorsService — call site wiring", () => {
   it("is imported and used by engine.worker.ts", () => {
-    const worker = readSrcFile("engine/worker/engine.worker.ts");
+    const worker = readSrcFile("engine/worker/commands/governance.ts");
     expect(worker).toContain("PoliticalFavorsService");
     expect(worker).toMatch(/PoliticalFavorsService\.requestFavor/);
   });

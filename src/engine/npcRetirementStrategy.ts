@@ -13,6 +13,7 @@ import {
   TraitChecks,
 } from "./strategy/NPCStrategyFramework";
 import { getRikishi } from "./queries";
+import { foreignRetentionMultiplier } from "./npcAI/ForeignSlotPolicy";
 
 interface RetirementStrategy {
   evaluateRetirements: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;
@@ -54,13 +55,19 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
   },
   action: (ctx) => {
     const builder = createImpactBuilder("ret_force_stagnant");
+    // §9.3 sunk-cost retention: foreign-slot rikishi get a retention bonus on
+    // the release-ordering key, so a heya clears equivalent natives first.
     const candidates = [...new Set(ctx.heya.rikishiIds ?? [])]
       .map((id) => getRikishi(ctx.world, id))
       .filter(
         (r): r is Rikishi =>
           !!r && ctx.world.year - r.birthYear > 32 && ctx.world.year - r.birthYear >= 28
       )
-      .sort((a, b) => (a.stats.power ?? 50) - (b.stats.power ?? 50));
+      .sort(
+        (a, b) =>
+          (a.stats.power ?? 50) * foreignRetentionMultiplier(a, ctx.oyakata, ctx.world.year) -
+          (b.stats.power ?? 50) * foreignRetentionMultiplier(b, ctx.oyakata, ctx.world.year)
+      );
 
     if (candidates.length > 0) {
       builder.retireRikishi(

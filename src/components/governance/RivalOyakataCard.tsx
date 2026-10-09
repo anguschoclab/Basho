@@ -15,6 +15,14 @@ export interface RivalOyakataCardProps {
   ichimon?: string;
   legacyTier?: string;
   decisions: NPCDecisionDTO[];
+  // WS7 — banded rival intel. Optional; absence means "unknown", never
+  // a fabricated placeholder.
+  scouted?: boolean;
+  archetypeLabel?: string;
+  mood?: string;
+  tenureSummary?: string;
+  factionPosture?: string;
+  planId?: string;
 }
 
 export function RivalOyakataCard({
@@ -23,6 +31,12 @@ export function RivalOyakataCard({
   ichimon,
   legacyTier,
   decisions,
+  scouted,
+  archetypeLabel,
+  mood,
+  tenureSummary,
+  factionPosture,
+  planId,
 }: RivalOyakataCardProps) {
   const recentDecisions = decisions.slice(0, 3);
 
@@ -42,6 +56,42 @@ export function RivalOyakataCard({
         {ichimon && (
           <div className="text-xs text-muted-foreground">
             Ichimon: <span className="text-foreground">{ichimon}</span>
+            {factionPosture && (
+              <span className="text-muted-foreground">
+                {" "}
+                · posture <span className="text-foreground">{factionPosture}</span>
+              </span>
+            )}
+          </div>
+        )}
+
+        {tenureSummary && (
+          <div className="text-xs text-muted-foreground">{tenureSummary}</div>
+        )}
+
+        {planId && (
+          <div className="text-xs text-muted-foreground">
+            Current direction: <span className="text-foreground">{planId}</span>
+          </div>
+        )}
+
+        {scouted === true ? (
+          <div className="text-xs text-muted-foreground">
+            {archetypeLabel && (
+              <>
+                Style: <span className="text-foreground capitalize">{archetypeLabel}</span>
+              </>
+            )}
+            {mood && (
+              <>
+                {archetypeLabel ? " · " : ""}Mood:{" "}
+                <span className="text-foreground capitalize">{mood}</span>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="text-xs text-muted-foreground italic">
+            Limited intel — scout this stable's rikishi to learn more
           </div>
         )}
 

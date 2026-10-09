@@ -5,6 +5,7 @@ export * from "./phase01_daily_drama";
 export * from "./phase01_daily_welfare";
 export * from "./phase01_daily_sponsors";
 export * from "./phase01_daily_micro";
+export * from "./phase01_basho_npc_tactics";
 export * from "./phase01_basho_bouts";
 export * from "./phase01_monthly_market";
 
@@ -14,6 +15,7 @@ export * from "./phase01_week_training";
 export * from "./phase01_week_health";
 export * from "./phase01_week_welfare";
 export * from "./phase01_week_governance";
+export * from "./phase01_week_rikishi_agency";
 export * from "./phase01_week_npc_ai";
 export * from "./phase01_week_rivalries";
 export * from "./phase01_week_world_circuit";

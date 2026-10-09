@@ -1,0 +1,311 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PostBashoPressService — golden master > generateChampionLines 1`] = `
+[
+  {
+    "id": "press-champion-r-champ-hatsu-2026-persona",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "[[rikishi:r-champ:Championmaru]] addresses the press with measured words: 'I prepared well and the results followed.'",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-persevered",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "[[rikishi:r-champ:Championmaru]] insists the injury never crossed his mind as a reason to withdraw.",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-growth",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "'I'm not just a young wrestler anymore — I'm a champion,' [[rikishi:r-champ:Championmaru]] says with quiet pride.",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-diary",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "'I started drawing my opponents in a notebook every night to visualize their tachiai,' [[rikishi:r-champ:Championmaru]] shares.",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-superstition",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "'I changed everything after that loss — even the yukata,' [[rikishi:r-champ:Championmaru]] admits with a sheepish grin.",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-parade",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "The champion's car winds through the streets as [[rikishi:r-champ:Championmaru]] waves to supporters from the parade.",
+  },
+]
+`;
+
+exports[`PostBashoPressService — golden master > generateLowerDivisionChampionLines across divisions 1`] = `
+{
+  "juryo": [
+    {
+      "id": "press-ld-champion-r-ld-hatsu-2026-first-honor",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "[[rikishi:r-ld:Lowermaru]] savors his first juryo championship — a milestone moment in his young career.",
+    },
+    {
+      "id": "press-ld-champion-r-ld-hatsu-2026-career-goal",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "'I set myself up to attack non-stop — that's what got me here,' [[rikishi:r-ld:Lowermaru]] says of his divisional win.",
+    },
+    {
+      "id": "press-ld-champion-r-ld-hatsu-2026-coach",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "[[rikishi:r-ld:Lowermaru]] thanks his amateur coach: 'Everything I have is built on what he taught me.'",
+    },
+  ],
+  "makushita": [
+    {
+      "id": "press-ld-champion-r-ld-hatsu-2026-first-honor",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "[[rikishi:r-ld:Lowermaru]] savors his first makushita championship — a milestone moment in his young career.",
+    },
+    {
+      "id": "press-ld-champion-r-ld-hatsu-2026-career-goal",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "'I set myself up to attack non-stop — that's what got me here,' [[rikishi:r-ld:Lowermaru]] says of his divisional win.",
+    },
+    {
+      "id": "press-ld-champion-r-ld-hatsu-2026-coach",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "[[rikishi:r-ld:Lowermaru]] thanks his amateur coach: 'Everything I have is built on what he taught me.'",
+    },
+  ],
+}
+`;
+
+exports[`PostBashoPressService — golden master > generateOzekiStakeLines 1`] = `
+[
+  {
+    "id": "press-ozeki-stake-r-stake-hatsu-2026-stake",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "[[rikishi:r-stake:Stakegawa]] can stake his claim for Ozeki next time with another strong performance.",
+  },
+]
+`;
+
+exports[`PostBashoPressService — golden master > generatePressConference — empty/absent ids produce empty output 1`] = `[]`;
+
+exports[`PostBashoPressService — golden master > generatePressConference — full assembly over a fixture world 1`] = `
+[
+  {
+    "id": "press-champion-r-champ-hatsu-2026-persona",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "[[rikishi:r-champ:Championmaru]] addresses the press with measured words: 'I prepared well and the results followed.'",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-persevered",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "'Pain is temporary — the Emperor's Cup is forever,' [[rikishi:r-champ:Championmaru]] declares.",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-growth",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "[[rikishi:r-champ:Championmaru]] speaks with newfound maturity: 'This title proves I can win with more than just raw energy.'",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-diary",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "[[rikishi:r-champ:Championmaru]] admits filling three notebooks this month alone: 'The thoughts had to go somewhere.'",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-superstition",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "Fans noticed [[rikishi:r-champ:Championmaru]] tapping the salt basket three times before every bout this basho — a new ritual that clearly paid off.",
+  },
+  {
+    "id": "press-champion-r-champ-hatsu-2026-parade",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "The champion's car winds through the streets as [[rikishi:r-champ:Championmaru]] waves to supporters from the parade.",
+  },
+  {
+    "id": "press-prize-r-prize-hatsu-2026-veteran",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "'I tensed up when I heard of the potential prize,' admits the veteran [[rikishi:r-prize:Prizeman]], eyes glistening.",
+  },
+  {
+    "id": "press-prize-r-prize-hatsu-2026-fought",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "[[rikishi:r-prize:Prizeman]] credits his mental approach: 'I focused on the bout, not the stakes.'",
+  },
+  {
+    "id": "press-ydc-bid-r-champ-hatsu-2026-continuation",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "The YDC acknowledges [[rikishi:r-champ:Championmaru]]'s strong tournament but reaffirms: only a championship will suffice.",
+  },
+  {
+    "id": "press-ydc-bid-r-champ-hatsu-2026-score",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "'A score greater than 12 gives extra credence to his case,' the Chief Judge remarks on [[rikishi:r-champ:Championmaru]].",
+  },
+  {
+    "id": "press-ydc-bid-r-bid-hatsu-2026-continuation",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "The YDC acknowledges [[rikishi:r-bid:Biddyama]]'s strong tournament but reaffirms: only a championship will suffice.",
+  },
+  {
+    "id": "press-ydc-bid-r-bid-hatsu-2026-score",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "'A score greater than 12 gives extra credence to his case,' the Chief Judge remarks on [[rikishi:r-bid:Biddyama]].",
+  },
+]
+`;
+
+exports[`PostBashoPressService — golden master > generatePrizeWinnerLines (young + veteran age branches) 1`] = `
+{
+  "veteran": [
+    {
+      "id": "press-prize-r-prize-v-hatsu-2026-veteran",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "'I tensed up when I heard of the potential prize,' admits the veteran [[rikishi:r-prize-v:Olderman]], eyes glistening.",
+    },
+    {
+      "id": "press-prize-r-prize-v-hatsu-2026-fought",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "[[rikishi:r-prize-v:Olderman]] credits his mental approach: 'I focused on the bout, not the stakes.'",
+    },
+  ],
+  "young": [
+    {
+      "id": "press-prize-r-prize-y-hatsu-2026-fought",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "'I fought the match and not the situation,' [[rikishi:r-prize-y:Youngmaru]] explains calmly.",
+    },
+  ],
+}
+`;
+
+exports[`PostBashoPressService — golden master > generateYokozunaBidLines across win counts 1`] = `
+{
+  "w12": [
+    {
+      "id": "press-ydc-bid-r-ozeki-hatsu-2026-continuation",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "The Chief Judge notes that [[rikishi:r-ozeki:Ozesho]]'s Yokozuna bid continues, but he will have to win the title to rise.",
+    },
+  ],
+  "w13": [
+    {
+      "id": "press-ydc-bid-r-ozeki-hatsu-2026-continuation",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "The Chief Judge notes that [[rikishi:r-ozeki:Ozesho]]'s Yokozuna bid continues, but he will have to win the title to rise.",
+    },
+    {
+      "id": "press-ydc-bid-r-ozeki-hatsu-2026-score",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "The YDC notes that [[rikishi:r-ozeki:Ozesho]]'s 13-win performance strengthens his Yokozuna candidacy considerably.",
+    },
+  ],
+  "w14": [
+    {
+      "id": "press-ydc-bid-r-ozeki-hatsu-2026-continuation",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "The Chief Judge notes that [[rikishi:r-ozeki:Ozesho]]'s Yokozuna bid continues, but he will have to win the title to rise.",
+    },
+    {
+      "id": "press-ydc-bid-r-ozeki-hatsu-2026-score",
+      "phase": "post_bout",
+      "tags": [
+        "post_basho_press",
+      ],
+      "text": "The YDC notes that [[rikishi:r-ozeki:Ozesho]]'s 13-win performance strengthens his Yokozuna candidacy considerably.",
+    },
+  ],
+}
+`;

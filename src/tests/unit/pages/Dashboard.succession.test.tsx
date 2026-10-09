@@ -76,7 +76,8 @@ vi.mock("@/presenters/projections/promotionProjections", () => ({
   getKadobanDrama: () => [],
 }));
 
-vi.mock("@/presenters/uiDigest", () => ({
+vi.mock("@/presenters/uiDigest", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/presenters/uiDigest")>()),
   projectDashboardUIDigest: () => ({ stats: { sekitoriCount: 0 } }),
 }));
 

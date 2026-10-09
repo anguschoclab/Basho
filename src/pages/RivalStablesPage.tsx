@@ -71,6 +71,12 @@ export default function RivalStablesPage() {
                   ichimon={rival.ichimon}
                   legacyTier={rival.legacyTier}
                   decisions={rival.recentDecisions}
+                  scouted={rival.scouted}
+                  archetypeLabel={rival.archetypeLabel}
+                  mood={rival.mood}
+                  tenureSummary={rival.tenureSummary}
+                  factionPosture={rival.factionPosture}
+                  planId={rival.planId}
                 />
               </div>
             ))}

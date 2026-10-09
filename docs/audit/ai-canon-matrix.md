@@ -8,29 +8,29 @@ Maps NPC Manager AI System v1.3 (Constitution SOURCE 02, §§1–20) to implemen
 | §2.2 | Determinism | Seeded `createNPCWeeklyRng`/`rngFromSeed` streams; determinism tests | ✓ |
 | §2.3 | Same rules as player | NPCs use same services/`StateImpact`; rotation exempts nothing safety-critical | ✓ |
 | §3.1 | Manager entity | `oyakata` map + archetype/traits/quirks/`managerFlags` | ✓ |
-| §3.3 | Tenure record (start date, performance ledger) | `DynastyService` tracks succession events; no per-manager tenure record | ◐ |
+| §3.3 | Tenure record (start date, performance ledger) | `oyakata.tenure` ledger (bashoServed, championships, insolvency/scandal events, forced mergers) written by `systems/legacy/tenure.ts` at basho end, mergers, and rulings | ✓ |
 | §3.4 | Perception snapshot (non-cheating interface) | `buildPerceptionSnapshot`, `buildLeaguePerception` | ✓ |
 | §4 | Canonical archetype profiles | 8 archetypes on `Oyakata`; trait-derived `targetSize` in `evaluateVacancies`; canon numeric roster ranges unmapped; `RecruitmentController` uses flat `TARGET_ROSTER_SIZE` headroom | ◐ |
 | §5 | Quirks | `quirks` + `managerFlags` via `ensurePersonaForOyakata` | ✓ |
-| §6 | Meta drift world tracking | `EraDriftService` — yearly tone + per-kimarite drift from `globalKimariteStats`; consumed by bout physics | ✓ |
-| §7 | Manager interpretation of meta (non-omniscient) | Nothing in npcAI/agents reads `world.meta` | ✗ |
-| §8 | Reaction lag & confirmation gate | Absent | ✗ |
-| §9 | Adaptation levers (non-training) | Levers exist (scouting priority, bid policies, recruitment strategy) but none meta-driven | ◐ |
-| §10 | Adaptation tables (oshi/yotsu/injury meta) | Absent | ✗ |
-| §11 | Counter-meta behavior | Absent | ✗ |
+| §6 | Meta drift world tracking | `EraDriftService` — yearly tone + per-kimarite drift; consumed by bout physics; `meta.history` ring buffer retained for perception | ✓ |
+| §7 | Manager interpretation of meta (non-omniscient) | `MetaPerception.ts` — banded dominance/trend/injury-climate folded into `LeaguePerception.meta` | ✓ |
+| §8 | Reaction lag & confirmation gate | `ArchetypeAdaptation.ts` — archetype-scaled lag weeks + consecutive-confirmation gate; state persists on `oyakata.memory.metaAdaptation` | ✓ |
+| §9 | Adaptation levers (non-training) | Meta commits drive recovery override, scouting urgency, and `npcBidPolicies.familyBias` | ✓ |
+| §10 | Adaptation tables (oshi/yotsu/injury meta) | Family-bias mapping + injury-climate recovery lever; no full per-meta table | ◐ |
+| §11 | Counter-meta behavior | `counter_meta`/`embrace_meta` postures with family-bias targets | ✓ |
 | §12.1 | Rivalry perception (no numbers) | `rivalriesState` + banded heat in perception | ✓ |
-| §12.2 | Rivalry effects on decisions | Recruitment spite premium (`temperament`), bout tactics heat | ◐ |
+| §12.2 | Rivalry effects on decisions | Spite premium, bout tactics heat, grudge-keyed escalation | ✓ |
 | §12.3 | Rivalry × meta drift | Absent | ✗ |
-| §13.1 | Foreign limit constraint | `FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1` enforced in `TalentPoolOffers`; `isAtForeignLimit` aligned (WS0) | ✓ |
-| §13.2 | Policy drivers (dual-citizen pref, facilities, runway) | Absent | ✗ |
-| §13.3 | Sunk-cost bias | Absent | ✗ |
-| §14 | Weekly decision loop | `phase01_week_npc_ai` — perception→plan→workers/agents→execution→memory | ✓ |
-| §15 | Failure modes (overreaction, stagnation, overextension) | Partial via archetype behavior; no intentional meta-overreaction (needs §8) | ◐ |
-| §16.1 | Succession triggers (underperformance, insolvency, scandal, governance) | `DynastyService`: age/designated heir only | ◐ |
-| §16.2 | Candidate sources (internal, external, caretaker) | Designated successor path only | ◐ |
-| §16.4 | Legacy modifiers (rigidity, loyalty, cultural momentum, decay) | Absent | ✗ |
-| §17 | Governance/scandal/media pressure integration | Governance + crisis agents execute via `StateImpact` | ◐ |
-| §18 | Player-facing readability (numbers hidden) | `NPCAgentFeed`, `AdvisorService` recommendations | ◐ |
+| §13.1 | Foreign limit constraint | Limit enforced in `TalentPoolOffers`, both NPC fill paths, world generation (`RosterFactory`), and merger dispersal; `isAtForeignLimit` aligned | ✓ |
+| §13.2 | Policy drivers (dual-citizen pref, facilities, runway) | `ForeignSlotPolicy.ts` — dual-citizen exemption, persona-scaled bid aggression, dual-citizen preference | ✓ |
+| §13.3 | Sunk-cost bias | `foreignRetentionMultiplier` applied in force-retire/release evaluation | ✓ |
+| §14 | Weekly decision loop | `phase01_week_npc_ai` — perception→plan→workers/agents→execution→memory; daily basho phase `phase01_basho_npc_tactics` | ✓ |
+| §15 | Failure modes (overreaction, stagnation, overextension) | Lag gating prevents overreaction; stagnation partially via plan-outcome learning; overextension unaddressed | ◐ |
+| §16.1 | Succession triggers (underperformance, insolvency, scandal, governance) | Age + designated heir + insolvency-event/scandal/underperformance triggers via tenure ledger; `consecutiveUnderperformanceBasho` computed at basho end | ✓ |
+| §16.2 | Candidate sources (internal, external, caretaker) | Internal successor + JSA trustee caretaker (damped persona, fresh clock); no external-hire market | ◐ |
+| §16.4 | Legacy modifiers (rigidity, loyalty, cultural momentum, decay) | Decaying `legacyModifier` from predecessor's plan family; loyalty/cultural-momentum partial | ◐ |
+| §17 | Governance/scandal/media pressure integration | Agents execute via `StateImpact`; sanctioned/probation heya suppress narrative + sabotage | ✓ |
+| §18 | Player-facing readability (numbers hidden) | `NPCAgentFeed` (12 categories), `RivalStablesPage` cards/drawer (scouting-gated intel), `AdvisorService` league-intel recommendations, gazette meta headlines | ✓ |
 | §19 | Logging & auditability | Structured events; deterministic replay tests | ✓ |
 | §20 | Canon one-liners | N/A — behavioral outcomes | — |
 

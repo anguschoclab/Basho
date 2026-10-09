@@ -12,11 +12,15 @@ export interface RivalryAgentContext {
   oyakata: Oyakata;
   activeRivalries: Record<string, RivalryPairState>;
   currentMood?: string;
+  /** WS5 — rivalry keys involving stables/oyakata on this oyakata's grudge list. */
+  grudgeRivalryKeys?: string[];
 }
 
 export interface RivalryAgentResult {
   escalateRivalry: boolean;
   rivalryId?: string;
+  /** WS5/WS7 — the escalation was driven by an oyakata grudge, not ambition. */
+  escalatedViaGrudge?: boolean;
   escalateStrategy: "aggressive" | "calculated" | "defensive";
   deescalateRivalry: boolean;
   deescalateRivalryId?: string;
@@ -38,6 +42,7 @@ export function spawnRivalryAgent(ctx: RivalryAgentContext): RivalryAgentResult 
   const isCompassionate = oyakata.traits.compassion > 60;
 
   let escalateRivalry = false;
+  let escalatedViaGrudge = false;
   let rivalryId: string | undefined;
   let escalateStrategy: "aggressive" | "calculated" | "defensive" = "calculated";
   let deescalateRivalry = false;
@@ -67,6 +72,22 @@ export function spawnRivalryAgent(ctx: RivalryAgentContext): RivalryAgentResult 
   reasoning.push(
     `[Rivalry Agent] High heat: ${highHeatRivalries.length}, Medium heat: ${mediumHeatRivalries.length}, Low heat: ${lowHeatRivalries.length}`
   );
+
+  // WS5 — vendetta: a grudged rivalry is escalated preferentially even by a
+  // measured oyakata; the grudge overrides ambition checks but not sanity
+  // (never escalates an already-boiling rivalry further).
+  const grudgeKeys = (ctx.grudgeRivalryKeys ?? []).filter(
+    (k) => activeRivalries[k] && activeRivalries[k].heat < 80
+  );
+  if (!escalateRivalry && grudgeKeys.length > 0) {
+    escalateRivalry = true;
+    escalatedViaGrudge = true;
+    rivalryId = grudgeKeys[0];
+    escalateStrategy = currentMood === "furious" ? "aggressive" : "calculated";
+    reasoning.push(
+      "[Rivalry Agent] Personal vendetta — escalating grudged rivalry regardless of ambition"
+    );
+  }
 
   // Escalation decision
   if (isAmbitious && mediumHeatRivalries.length > 0) {
@@ -131,6 +152,7 @@ export function spawnRivalryAgent(ctx: RivalryAgentContext): RivalryAgentResult 
   return {
     escalateRivalry,
     rivalryId,
+    escalatedViaGrudge,
     escalateStrategy,
     deescalateRivalry,
     deescalateRivalryId,

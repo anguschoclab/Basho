@@ -33,8 +33,8 @@ describe("WorldCircuitService — tick phase wiring", () => {
 });
 
 describe("NPC GlobalWorker — weekly decision wiring", () => {
-  it("spawnGlobalWorker is imported and called by weekly.ts", () => {
-    const weekly = readSrcFile("engine/npcAI/weekly.ts");
+  it("spawnGlobalWorker is imported and called by weekly workers module", () => {
+    const weekly = readSrcFile("engine/npcAI/weekly/workers.ts");
     expect(weekly).toContain("spawnGlobalWorker");
     expect(weekly).toMatch(/spawnGlobalWorker\s*\(/);
   });

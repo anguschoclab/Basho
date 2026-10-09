@@ -37,7 +37,7 @@ describe("SaveSlotService.isValidSave", () => {
   });
 
   it("returns true for valid save object with version and world", () => {
-    expect(SaveSlotService.isValidSave({ version: "1.0.0", world: { year: 2025 } })).toBe(true);
+    expect(SaveSlotService.isValidSave({ version: "1.0.0", world: { seed: "s", year: 2025, rikishi: {}, heyas: {} } })).toBe(true);
   });
 
   it("returns false for empty object", () => {
@@ -45,14 +45,14 @@ describe("SaveSlotService.isValidSave", () => {
   });
 
   it("returns false for an unknown version string", () => {
-    expect(SaveSlotService.isValidSave({ version: "0.9.0", world: { year: 2025 } })).toBe(false);
+    expect(SaveSlotService.isValidSave({ version: "0.9.0", world: { seed: "s", year: 2025, rikishi: {}, heyas: {} } })).toBe(false);
   });
 
   it("returns true for version 1.0.0", () => {
-    expect(SaveSlotService.isValidSave({ version: "1.0.0", world: { year: 2025 } })).toBe(true);
+    expect(SaveSlotService.isValidSave({ version: "1.0.0", world: { seed: "s", year: 2025, rikishi: {}, heyas: {} } })).toBe(true);
   });
 
   it("returns true for version 1.1.0", () => {
-    expect(SaveSlotService.isValidSave({ version: "1.1.0", world: { year: 2025 } })).toBe(true);
+    expect(SaveSlotService.isValidSave({ version: "1.1.0", world: { seed: "s", year: 2025, rikishi: {}, heyas: {} } })).toBe(true);
   });
 });

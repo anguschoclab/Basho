@@ -22,6 +22,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   rivalry: "Rivalry",
   ai_decision: "Decision",
   economy: "Finance",
+  // WS7 — WS1–WS6 behavior categories.
+  meta: "Meta",
+  succession: "Succession",
+  faction: "Faction",
+  vendetta: "Vendetta",
+  foreign_signing: "Foreign Signing",
+  rikishi_agency: "Rikishi Agency",
+  rescue: "Rescue",
 };
 
 export function NPCAgentFeed({ projection }: { projection: NPCAgentProjection }) {

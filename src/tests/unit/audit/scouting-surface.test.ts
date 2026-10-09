@@ -37,8 +37,8 @@ describe("FogOfWarService — reachability", () => {
 });
 
 describe("NPC ScoutingWorker — weekly decision wiring", () => {
-  it("spawnScoutingWorker is imported and called by weekly.ts", () => {
-    const weekly = readSrcFile("engine/npcAI/weekly.ts");
+  it("spawnScoutingWorker is imported and called by weekly workers module", () => {
+    const weekly = readSrcFile("engine/npcAI/weekly/workers.ts");
     expect(weekly).toContain("spawnScoutingWorker");
     expect(weekly).toMatch(/spawnScoutingWorker\s*\(/);
   });

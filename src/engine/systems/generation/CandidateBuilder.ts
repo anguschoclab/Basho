@@ -38,6 +38,7 @@ import {
   PROFILE_BOOST_LATE_BLOOMER,
   PROFILE_BOOST_JOURNEYMAN,
 } from "../../../constants/engine/generation";
+import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitment";
 
 function createBaseInfo(
   id: string,
@@ -253,6 +254,9 @@ export function generateFullRikishi(args: {
     heyaPrefixBoost,
   });
 
+  // §5.3 — a small share of foreign-born debutants hold Japanese citizenship.
+  const isDualCitizen = isForeign({ nationality }) && rng.next() < DUAL_CITIZEN_RECRUIT_SHARE;
+
   const rikishiStats: RikishiStats = {
     ...statsBase,
     achievements: {
@@ -297,6 +301,7 @@ export function generateFullRikishi(args: {
     },
     heyaHistory: [],
     lineage: {},
+    ...(isDualCitizen ? { citizenshipStatus: "dual" as const } : {}),
   } as Rikishi;
 
   applyPersonaAssignment(rikishi, archetype, rng);
@@ -368,6 +373,9 @@ export function convertCandidateToRikishi(args: {
     nationality: candidate.nationality,
     origin: candidate.originRegion,
     talentSeed: candidate.talentSeed,
+    // §5.3 — dual citizens hold Japanese citizenship: they never consume
+    // the foreign slot and are exempt from the naturalization timer.
+    ...(candidate.dualCitizen ? { citizenshipStatus: "dual" as const } : {}),
     behavior: {
       discipline: candidate.temperament.discipline,
       mediaSavvy: 50,

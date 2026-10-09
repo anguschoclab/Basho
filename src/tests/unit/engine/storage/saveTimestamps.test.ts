@@ -31,7 +31,7 @@ function createMemStorage(): IStorageProvider & { dump: Record<string, string> }
       dump[k] = v;
     },
     removeItem: (k) => {
-      delete dump[k];
+      Reflect.deleteProperty(dump, k);
     },
     key: (i) => Object.keys(dump)[i] ?? null,
     get length() {

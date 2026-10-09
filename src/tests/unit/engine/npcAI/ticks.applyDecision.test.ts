@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld } from "../utils";
-import { applyNPCDecision } from "@/engine/npcAI/ticks";
+import { applyNPCDecisionPure } from "@/engine/tick/phases/npc_ai";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { TrainingService } from "@/engine/systems/training/TrainingService";
 import type { NPCWeeklyDecision } from "@/engine/npcAI/types";
 
-describe("applyNPCDecision", () => {
+describe("applyNPCDecisionPure", () => {
   it("updates training state with the decision's profile and focus slots", () => {
     const world = makeMockWorld();
     world.trainingState = new Map();
@@ -24,8 +25,9 @@ describe("applyNPCDecision", () => {
       impact: { events: [], metadata: { resolvedBy: "test", source: "test" } },
     };
 
-    const impact = applyNPCDecision(world, decision);
-    const updatedState = impact.entities?.trainingStateUpdates?.get("h1");
+    const builder = createImpactBuilder("test");
+    applyNPCDecisionPure(world, builder, decision);
+    const updatedState = builder.build().entities?.trainingStateUpdates?.get("h1");
 
     expect(updatedState).toBeDefined();
     expect(updatedState?.activeProfile!.intensity).toBe("intensive");
@@ -63,8 +65,9 @@ describe("applyNPCDecision", () => {
       impact: { events: [], metadata: { resolvedBy: "test", source: "test" } },
     };
 
-    const impact = applyNPCDecision(world, decision);
-    const updatedState = impact.entities?.trainingStateUpdates?.get("h1");
+    const builder = createImpactBuilder("test");
+    applyNPCDecisionPure(world, builder, decision);
+    const updatedState = builder.build().entities?.trainingStateUpdates?.get("h1");
 
     expect(updatedState?.focusSlots).toContainEqual({ rikishiId: "r_keep", focusType: "push" });
     expect(updatedState?.focusSlots).toContainEqual({ rikishiId: "r1", focusType: "protect" });

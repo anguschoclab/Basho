@@ -15,6 +15,8 @@ import { runAutoSim } from "../src/engine/simulation/AutoSimService";
 import type { WorldState } from "../src/engine/types/world";
 import { writeFileSync } from "fs";
 import { join } from "path";
+import { countsAsForeign } from "../src/engine/utils/citizenshipUtils";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../src/constants/engine/recruitment";
 
 const SEED = "sim-25yr-diagnostic-v1";
 const DEFAULT_YEARS = 25;
@@ -44,6 +46,8 @@ interface YearSnapshot {
   injuredCount: number;
   retiredTotal: number;
   historicalTotal: number;
+  /** WS6 — heyas holding more than one foreign-slot rikishi (canon §5.1). */
+  foreignSlotViolations: string[];
   errors: string[];
 }
 
@@ -87,6 +91,22 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   const globalCups = chronicle?.globalCups ?? [];
   const latestCup = globalCups.at(-1);
 
+  // WS6 — foreign-slot invariant (§5.1): at most ONE slot-consuming rikishi
+  // per heya. Citizenship-aware: naturalized/dual-citizen rikishi don't count.
+  const foreignByHeya = new Map<string, number>();
+  for (const r of active) {
+    if (!r.heyaId) continue;
+    if (countsAsForeign(r, world.year)) {
+      foreignByHeya.set(r.heyaId, (foreignByHeya.get(r.heyaId) ?? 0) + 1);
+    }
+  }
+  const foreignSlotViolations: string[] = [];
+  for (const [heyaId, n] of foreignByHeya) {
+    if (n > FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
+      foreignSlotViolations.push(`${heyaId}:${n}`);
+    }
+  }
+
   return {
     year: world.year,
     rikishiTotal: allRikishi.length,
@@ -110,6 +130,7 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
         ? Array.from(world.historicalRikishi.values()).filter((r) => r.isRetired).length
         : 0) + allRikishi.filter((r) => r.isRetired).length,
     historicalTotal: world.historicalRikishi?.size ?? 0,
+    foreignSlotViolations,
     errors: [...errors],
   };
 }
@@ -130,6 +151,10 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
     issues.push(`WARN: Active rikishi critically low: ${snap.rikishiActive}`);
   if (snap.negativeHeyas > 0)
     issues.push(`WARN: ${snap.negativeHeyas} heyas insolvent: ${snap.insolventHeyas.join(", ")}`);
+  if (snap.foreignSlotViolations.length > 0)
+    issues.push(
+      `ERROR: foreign-slot limit violated: ${snap.foreignSlotViolations.join(", ")}`
+    );
   if (snap.heyaCount < 3) issues.push(`ERROR: Heya count collapsed to ${snap.heyaCount}`);
   if (snap.avgAge > 35) issues.push(`WARN: Avg rikishi age ${snap.avgAge} — roster aging out`);
   if (snap.avgAge < 18) issues.push(`WARN: Avg age ${snap.avgAge} — suspiciously young`);

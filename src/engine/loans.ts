@@ -11,6 +11,7 @@ import { LOAN_ISSUANCE_THRESHOLD, FACTION_BAILOUT_AMOUNT } from "../constants/en
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { getHeya } from "./queries";
+import { bumpTenure } from "./systems/legacy/tenure";
 
 export interface LoanTerms {
   loanType: LoanType;
@@ -145,6 +146,9 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateIm
     reputation: newReputation,
     scandalScore: newScandalScore,
   });
+
+  // WS5 — a bailout counts against the sitting oyakata's reign (§16.1).
+  bumpTenure(world, builder, heyaId, { insolvencyEvents: 1 });
 
   builder.logEvent(
     "FINANCIAL_ALERT",

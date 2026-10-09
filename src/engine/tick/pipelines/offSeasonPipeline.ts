@@ -30,6 +30,7 @@ export const offSeasonPipeline: PipelinePhase[] = [
   phases.phase01_week_staff, // Weekly staff fatigue/morale updates
   phases.phase01_week_scouting, // Weekly scouting decay
   phases.phase01_week_governance,
+  phases.phase01_week_rikishi_agency, // Rikishi dispositions/requests/incidents — must precede NPC resolution
   phases.phase01_week_npc_ai,
   phases.phase01_week_talent_pool, // Reveal candidates before recruitment
   phases.phase01_week_candidate_pool, // NPC watchlist: simulate interest + maintenance

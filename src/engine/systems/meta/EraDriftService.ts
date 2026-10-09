@@ -5,7 +5,8 @@
  * (Phase M: Era Drift & Global Meta)
  */
 
-import { WorldState } from "../../types/world";
+import { WorldState, MetaHistoryEntry } from "../../types/world";
+import type { MediaHeadline } from "../../types/media";
 import { KIMARITE_REGISTRY, getKimarite } from "../../kimarite";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
@@ -17,6 +18,7 @@ import {
   NON_DOMINANT_FAMILY_DRIFT_DECAY,
   MIN_DRIFT_CLAMP,
   MAX_DRIFT_CLAMP,
+  META_HISTORY_WINDOW,
 } from "../../../constants/engine/calendarExtended";
 
 export type EraTone = "classic" | "explosive" | "technical" | "defensive";
@@ -80,10 +82,24 @@ export function processYearlyEraDrift(world: WorldState): StateImpact {
     updatedDrift[k.id] = Math.max(MIN_DRIFT_CLAMP, Math.min(MAX_DRIFT_CLAMP, d));
   }
 
-  // 5. Update World State via Builder
+  // 5. Update World State via Builder. Record the completed yearly assessment
+  // in meta.history — the capped window managers perceive (canon §§6–7). Live
+  // stats are reset below, so perception only ever sees finished years.
+  const familyShares: MetaHistoryEntry["familyShares"] = {
+    push: familyTotals.push / totalMoves,
+    belt: familyTotals.belt / totalMoves,
+    speed: familyTotals.speed / totalMoves,
+    trick: familyTotals.trick / totalMoves,
+  };
+  const history = [
+    ...(world.meta?.history ?? []),
+    { year: world.year, tone: newTone, familyShares },
+  ].slice(-META_HISTORY_WINDOW);
+
   builder.updateWorldField("meta", {
     tone: newTone,
     drift: updatedDrift,
+    history,
   });
 
   // 6. Reset global stats for the new era/year
@@ -112,6 +128,36 @@ export function processYearlyEraDrift(world: WorldState): StateImpact {
     },
     { importance: "headline" }
   );
+
+  // WS7 — a tone change is a real media headline, flowing into the weekly
+  // gazette digest (mediaState.headlines → buildMediaDigest). Deterministic:
+  // id and title derive from year + tone, no RNG needed.
+  const previousTone = world.meta?.tone ?? "classic";
+  if (newTone !== previousTone && world.mediaState?.headlines) {
+    const eraTitles: Record<EraTone, string> = {
+      classic: "The 'Golden Belt' era takes hold",
+      explosive: "The 'Tsuppari Rush' era begins",
+      technical: "The 'Technical Renaissance' arrives",
+      defensive: "The 'Iron Wall' era descends",
+    };
+    const headline: MediaHeadline = {
+      id: `meta-era-${world.year}-${newTone}`,
+      week: world.week ?? 0,
+      tier: "national",
+      beat: "feature",
+      tone: "neutral",
+      rikishiIds: [],
+      heyaIds: [],
+      title: eraTitles[newTone],
+      subtitle: `The circuit's dominant style has shifted.`,
+      impact: 40,
+      tags: ["meta", "era", "feature"],
+    };
+    builder.updateWorldField("mediaState", {
+      ...world.mediaState,
+      headlines: [...world.mediaState.headlines, headline].slice(-250),
+    });
+  }
 
   return builder.build();
 }

@@ -217,6 +217,13 @@ export interface Rikishi {
   behavior: RikishiBehavior;
   pressPersona?: PressPersona;
 
+  /** WS4 — weekly derived agency disposition (satisfaction/restlessness/loyalty). */
+  agency?: import("../rikishiAgency/types").RikishiAgencyState;
+  /** Set when a granted seek_transfer request marks the rikishi as available for transfer. */
+  transferListed?: boolean;
+  /** Set when a retirement_consideration request was granted — lifecycle may honor it. */
+  retirementPlanned?: boolean;
+
   motivationCap?: number;
   motivationCapWeeks?: number;
 
@@ -293,7 +300,7 @@ export interface Rikishi {
 
   // Citizenship & Tenure (J1)
   joinedHeyaDate?: string; // ISO year string e.g. "2025"
-  citizenshipStatus?: "native" | "foreign" | "naturalized";
+  citizenshipStatus?: "native" | "foreign" | "naturalized" | "dual";
 
   // Body type derived from height/weight ratio — affects physics modifiers
   bodyType?: "tower" | "barrel" | "compact" | "lanky";

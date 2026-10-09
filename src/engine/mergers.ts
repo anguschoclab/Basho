@@ -7,6 +7,7 @@ import { rngForWorld } from "./rng";
 import { stableTieBreak } from "./utils/sort";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { bumpTenure } from "./systems/legacy/tenure";
 import {
   TRANSFER_RATIO_STANDARD,
   TRANSFER_RATIO_SCANDAL,
@@ -14,6 +15,7 @@ import {
   ROSTER_CAPACITY_MERGER,
   FACILITY_MERGER_RATIO,
 } from "../constants/engine/roster";
+import { countsAsForeign } from "./utils/citizenshipUtils";
 
 /**
  * Execute a stable merger.
@@ -37,28 +39,11 @@ export function executeMerger(
     return builder.build();
   }
 
-  // 1. Transfer rikishi
-  const transferredRikishiIds: Id[] = [];
-  for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
-    const rikishi = getRikishi(world, rId);
-    if (rikishi) {
-      builder.updateRikishi(rId, { heyaId: target.id });
-      transferredRikishiIds.push(rId);
+  // WS5 — the absorbed heya's oyakata records a forced merger on their tenure.
+  bumpTenure(world, builder, sourceHeyaId, { forcedMergers: 1 });
 
-      builder.logEvent(
-        "LIFECYCLE_EVENT",
-        "career",
-        {
-          rikishiId: rId,
-          heyaId: target.id,
-          shikona: rikishi.shikona || rikishi.name,
-          status: "transferred",
-          reason: target.name,
-        },
-        { rikishiId: rId, heyaId: target.id, importance: "notable" }
-      );
-    }
-  }
+  // 1. Transfer rikishi (foreign-slot-aware — §5.1 holds "at any time").
+  const transferredRikishiIds = transferRosterAcrossMerger(world, source, target, builder);
 
   // 2. Combine funds (partially, penalties apply for scandal)
   // If source had debt, it might not transfer fully, but positive funds transfer partially
@@ -145,6 +130,84 @@ export function executeMerger(
   builder.updateWorldField("closedHeyas", closedHeyas);
 
   return builder.build();
+}
+
+/**
+ * Transfer the source roster into the merger target. A slot-consuming foreign
+ * rikishi cannot stack onto a target whose slot is occupied; excess foreigners
+ * disperse to a stable with a free slot (deterministic pick: prestige then id),
+ * or retire when no beya can roster them.
+ */
+function transferRosterAcrossMerger(
+  world: WorldState,
+  source: NonNullable<ReturnType<typeof getHeya>>,
+  target: NonNullable<ReturnType<typeof getHeya>>,
+  builder: ReturnType<typeof createImpactBuilder>
+): Id[] {
+  const foreignOccupied = new Set<Id>();
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired && r.heyaId && r.heyaId !== source.id && countsAsForeign(r, world.year)) {
+      foreignOccupied.add(r.heyaId);
+    }
+  }
+  const dispersalCandidates = [...world.heyas.values()]
+    .filter(
+      // The player's stable never silently absorbs a dispersed foreigner.
+      (h) => h.id !== source.id && h.id !== target.id && h.id !== world.playerHeyaId
+    )
+    .sort((a, b) => (b.prestige ?? 0) - (a.prestige ?? 0) || stableTieBreak(a.id, b.id));
+
+  const transferredRikishiIds: Id[] = [];
+  for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
+    const rikishi = getRikishi(world, rId);
+    if (!rikishi) continue;
+
+    const consumesSlot = countsAsForeign(rikishi, world.year);
+    let destId: Id | undefined = target.id;
+    if (consumesSlot && foreignOccupied.has(target.id)) {
+      destId = dispersalCandidates.find(
+        (h) =>
+          !foreignOccupied.has(h.id) &&
+          getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_MERGER
+      )?.id;
+    }
+
+    if (!destId) {
+      // No beya can roster them — forced retirement after the closure.
+      builder.updateRikishi(rId, { isRetired: true, isKyujo: false });
+      builder.logEvent(
+        "LIFECYCLE_EVENT",
+        "career",
+        {
+          rikishiId: rId,
+          shikona: rikishi.shikona || rikishi.name,
+          status: "retired",
+          reason: `${rikishi.shikona} retires: ${source.name} folded and no stable had a free foreign slot.`,
+        },
+        { rikishiId: rId, importance: "notable" }
+      );
+      continue;
+    }
+
+    if (consumesSlot) foreignOccupied.add(destId);
+    const destHeya = destId === target.id ? target : getHeya(world, destId);
+    builder.updateRikishi(rId, { heyaId: destId });
+    transferredRikishiIds.push(rId);
+
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "career",
+      {
+        rikishiId: rId,
+        heyaId: destId,
+        shikona: rikishi.shikona || rikishi.name,
+        status: "transferred",
+        reason: destHeya?.name ?? target.name,
+      },
+      { rikishiId: rId, heyaId: destId, importance: "notable" }
+    );
+  }
+  return transferredRikishiIds;
 }
 
 /**

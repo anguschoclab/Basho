@@ -24,6 +24,7 @@ function makeRival(overrides: Partial<RivalStableDTO> = {}): RivalStableDTO {
     ichimon: "Nishonoseki",
     legacyTier: "A",
     decisionCount: 3,
+    scouted: true,
     recentDecisions: [
       {
         heyaId: "h1",

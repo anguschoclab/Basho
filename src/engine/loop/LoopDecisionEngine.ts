@@ -16,6 +16,8 @@ import type {
 import type { DietRegimen } from "../types/economy";
 import { getPlayerHeya } from "../queries";
 import { generateKyujoNarrative } from "../bout/boutNarrative";
+import { applyRequestOutcome } from "../rikishiAgency/requests";
+import type { RikishiRequestType } from "../rikishiAgency/types";
 
 export interface LoopDecision {
   id: string;
@@ -132,6 +134,22 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
   }
 
   // Decision 5: Kyujo decision (BLOCKING) — injured player rikishi scheduled today
+  pushKyujoDecisions(world, playerHeyaId, currentWeek, existing, out);
+
+  // Decision 6: Rikishi requests (QUEUE) — WS4 agency; player-heya requests
+  // surface as non-blocking decisions resolved via applyDecisionEffect.
+  pushRikishiRequestDecisions(world, playerHeyaId, currentWeek, existing, out);
+
+  return out;
+}
+
+function pushKyujoDecisions(
+  world: WorldState,
+  playerHeyaId: string | undefined,
+  currentWeek: number,
+  existing: LoopDecision[],
+  out: LoopDecision[]
+): void {
   if (world.cyclePhase === "active_basho" && world.currentBasho) {
     const bashoDay = world.currentBasho.day;
     const todayMatches = world.currentBasho.matches.filter((m) => m.day === bashoDay && !m.result);
@@ -179,9 +197,43 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
       });
     }
   }
-
-  return out;
 }
+
+function pushRikishiRequestDecisions(
+  world: WorldState,
+  playerHeyaId: string | undefined,
+  currentWeek: number,
+  existing: LoopDecision[],
+  out: LoopDecision[]
+): void {
+  for (const req of world.pendingRikishiRequests ?? []) {
+    if (req.heyaId !== playerHeyaId) continue;
+    const r = world.rikishi.get(req.rikishiId);
+    if (!r || r.isRetired) continue;
+    const decisionId = `rikreq_${req.id}`;
+    if (existing.some((d) => d.id === decisionId)) continue;
+    out.push({
+      id: decisionId,
+      type: "rikishi_request",
+      description: `${r.shikona} requests ${REQUEST_LABELS[req.type] ?? req.type} (${req.reason}).`,
+      deadlineWeek: currentWeek + 1,
+      required: false,
+      options: [
+        { id: "grant", label: "Grant Request", impact: "Address the concern; improves morale." },
+        { id: "deny", label: "Deny Request", impact: "Refuse; raises stress and restlessness." },
+      ],
+    });
+  }
+}
+
+const REQUEST_LABELS: Record<RikishiRequestType, string> = {
+  request_rest: "lighter training (exhausted)",
+  request_intensity: "harder training",
+  seek_transfer: "a transfer out of the stable",
+  retirement_consideration: "to consider retirement",
+  mentor_request: "a mentor assignment",
+  tactic_dispute: "a change in fighting approach",
+};
 
 /**
  * Evaluate world state and return any new pending decisions as a StateImpact.
@@ -350,6 +402,17 @@ export function applyDecisionEffect(
       });
     }
   }
+  if (decisionType === "rikishi_request" && decisionId) {
+    const reqId = decisionId.startsWith("rikreq_") ? decisionId.slice("rikreq_".length) : "";
+    const req = (world.pendingRikishiRequests ?? []).find((q) => q.id === reqId);
+    if (req) {
+      applyRequestOutcome(world, builder, req, optionId === "grant");
+      builder.updateWorldField(
+        "pendingRikishiRequests",
+        (world.pendingRikishiRequests ?? []).filter((q) => q.id !== reqId)
+      );
+    }
+  }
 }
 
 /** Build a human-readable consequence summary from the actual world state. */
@@ -383,6 +446,10 @@ function decisionConsequenceSummary(
       return optionId === "withdraw"
         ? "Withdrew injured wrestler (kyujo). Bout forfeited."
         : "Competed through injury — elevated injury risk accepted.";
+    case "rikishi_request":
+      return optionId === "grant"
+        ? "Granted the wrestler's request — morale improves."
+        : "Denied the wrestler's request — stress and restlessness rise.";
     default:
       return "Decision resolved.";
   }
@@ -437,6 +504,7 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     weekly_training_emphasis: "conservative",
     welfare_diet: "premium",
     kyujo_decision: "withdraw",
+    rikishi_request: "grant",
   },
   balanced: {
     pre_basho_readiness: "rest",
@@ -444,6 +512,7 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     weekly_training_emphasis: "intensive",
     welfare_diet: "maintenance",
     kyujo_decision: "withdraw",
+    rikishi_request: "grant",
   },
   aggressive: {
     pre_basho_readiness: "push",
@@ -451,6 +520,7 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     weekly_training_emphasis: "intensive",
     welfare_diet: "maintenance",
     kyujo_decision: "compete",
+    rikishi_request: "deny",
   },
 };
 
@@ -488,6 +558,8 @@ export function autonomouslyResolveDecisions(
 const QUEUE_DEFAULTS: Record<string, string> = {
   weekly_training_emphasis: "balanced",
   welfare_diet: "maintenance",
+  // An ignored rikishi request is a denial — the denial consequence applies.
+  rikishi_request: "deny",
 } as const;
 
 /**
@@ -510,6 +582,8 @@ export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
     if (!def || !heya) continue;
     if (d.type === "weekly_training_emphasis") {
       setTrainingIntensity(builder, world, heya.id, def);
+    } else if (d.type === "rikishi_request") {
+      applyDecisionEffect(world, builder, d.type, def, d.id);
     } else if (d.type === "welfare_diet") {
       builder.updateHeya(heya.id, {
         welfareState: {

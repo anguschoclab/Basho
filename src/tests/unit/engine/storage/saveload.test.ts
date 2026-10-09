@@ -189,7 +189,7 @@ describe("saveload - loadGame error paths", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it("returns null and logs error when destr throws (malformed JSON)", () => {
+  it("returns null and logs error when JSON.parse throws (malformed JSON)", () => {
     const mockStorage = createMockStorage(false, false);
     setStorageProvider(mockStorage);
 
@@ -201,8 +201,13 @@ describe("saveload - loadGame error paths", () => {
     const result = loadGame("slot_1");
 
     expect(result).toBe(null);
-    // destr handles invalid JSON gracefully, so no error is thrown
-    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    // Strict parse rejects malformed saves loudly — silent swallowing is how
+    // corrupt saves masqueraded as "no save present".
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Failed to load game",
+      "SaveLoad",
+      expect.any(Error)
+    );
 
     consoleErrorSpy.mockRestore();
   });
@@ -214,7 +219,7 @@ describe("saveload - loadGame error paths", () => {
     // Store valid save structure
     const validSave = {
       version: "1.0.0",
-      world: { seed: "test", year: 2025, week: 1 },
+      world: { seed: "test", year: 2025, week: 1, rikishi: {}, heyas: {} },
     };
     mockStorage.setItem("basho_save_slot_1", JSON.stringify(validSave));
 
@@ -360,7 +365,7 @@ describe("saveload - migration persistence", () => {
 
     const badSave = {
       version: "0.9.0",
-      world: { seed: "test", year: 2025, week: 1 },
+      world: { seed: "test", year: 2025, week: 1, rikishi: {}, heyas: {} },
     };
     mockStorage.setItem("basho_save_slot_1", JSON.stringify(badSave));
 

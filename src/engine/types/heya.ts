@@ -121,6 +121,16 @@ export interface Heya {
 
   /** Consecutive basho of underperformance (no sekitori kachi-koshi). Used for non-financial merger. */
   consecutiveUnderperformanceBasho?: number;
+
+  /**
+   * WS5 — decaying influence of the previous oyakata's strategic direction on
+   * their successor. Written by DynastyService.triggerSuccession; consumed by
+   * StrategicPlanner plan scoring; decremented once per basho.
+   */
+  legacyModifier?: {
+    planFamilyBias?: string;
+    bashoRemaining: number;
+  };
 }
 
 /** A foreign academy built in a region with sufficient presence. */

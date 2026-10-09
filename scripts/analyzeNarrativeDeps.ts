@@ -136,20 +136,22 @@ function analyze(blockText: string): { declared: Set<string>; free: Set<string> 
   visit(sf);
 
   // declared = names bound by statements at the BLOCK's top-level function body
-  const body = (sf.statements[0] as ts.FunctionDeclaration).body!;
-  for (const stmt of body.statements) {
-    if (ts.isVariableStatement(stmt)) {
-      for (const d of stmt.declarationList.declarations) {
-        const names: string[] = [];
-        const walk = (n: ts.BindingName) => {
-          if (ts.isIdentifier(n)) names.push(n.text);
-          else ts.forEachChild(n, (c) => { if (ts.isBindingElement(c)) walk(c.name); });
-        };
-        walk(d.name);
-        names.forEach((n) => declared.add(n));
+  const body = (sf.statements[0] as ts.FunctionDeclaration).body;
+  if (body) {
+    for (const stmt of body.statements) {
+      if (ts.isVariableStatement(stmt)) {
+        for (const d of stmt.declarationList.declarations) {
+          const names: string[] = [];
+          const walk = (n: ts.BindingName) => {
+            if (ts.isIdentifier(n)) names.push(n.text);
+            else ts.forEachChild(n, (c) => { if (ts.isBindingElement(c)) walk(c.name); });
+          };
+          walk(d.name);
+          names.forEach((n) => declared.add(n));
+        }
       }
+      if (ts.isFunctionDeclaration(stmt) && stmt.name) declared.add(stmt.name.text);
     }
-    if (ts.isFunctionDeclaration(stmt) && stmt.name) declared.add(stmt.name.text);
   }
 
   const free = new Set([...used].filter((u) => !bound.has(u) && !/^["'`]/.test(u)));

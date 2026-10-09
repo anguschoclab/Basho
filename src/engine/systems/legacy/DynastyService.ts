@@ -22,6 +22,12 @@ import { StateImpact } from "../../core/StateImpact";
 import { TrainingPhilosophyService } from "./TrainingPhilosophyService";
 import { getHeya, getRikishi } from "../../queries";
 import type { RetiredRikishiSummary } from "../../types/history";
+import {
+  SUCCESSION_INSOLVENCY_EVENTS,
+  SUCCESSION_MAJOR_SCANDALS,
+  SUCCESSION_UNDERPERFORMANCE_BASHO,
+  LEGACY_MODIFIER_DURATION_BASHO,
+} from "../../../constants/engine/succession";
 
 function isSummary(entry: unknown): entry is RetiredRikishiSummary {
   return (
@@ -93,6 +99,43 @@ export const DynastyService = {
           // Fallback: Generate a generic oyakata if no rikishi is eligible
           const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
           builder.merge(this.triggerSuccessionWithGeneric(world, heya.id, dummyId));
+        }
+        continue;
+      }
+
+      // WS5 — canon §16.1 non-age triggers (NPC stables only; the player's
+      // own manager is never force-replaced by an AI judgement).
+      if (heya.id !== world.playerHeyaId && !oyakata.retirementYear) {
+        const tenure = oyakata.tenure;
+        const reason =
+          (tenure?.insolvencyEvents ?? 0) >= SUCCESSION_INSOLVENCY_EVENTS
+            ? "repeated insolvency — the board lost confidence"
+            : (tenure?.majorScandals ?? 0) >= SUCCESSION_MAJOR_SCANDALS
+              ? "accumulated major scandals"
+              : (heya.consecutiveUnderperformanceBasho ?? 0) >=
+                  SUCCESSION_UNDERPERFORMANCE_BASHO
+                ? "chronic underperformance"
+                : undefined;
+
+        if (reason) {
+          const eligible = this.findEligibleSuccessors(world, heya.id);
+          builder.logEvent(
+            "GOVERNANCE_RULING",
+            "discipline",
+            {
+              incident: "forced_succession",
+              status: "warning",
+              reason: `${oyakata.name} is forced to step down: ${reason}.`,
+              heyaId: heya.id,
+            },
+            { heyaId: heya.id, importance: "major" }
+          );
+          if (eligible.length > 0) {
+            builder.merge(this.triggerSuccession(world, heya.id, eligible[0]));
+          } else {
+            const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
+            builder.merge(this.triggerSuccessionWithGeneric(world, heya.id, dummyId));
+          }
         }
       }
     }
@@ -205,8 +248,38 @@ export const DynastyService = {
     const newEra = record.era;
     const newTier = this.deriveLegacyTier(heya, newEra);
 
-    // 4. Create the new Oyakata entity
+    // 4. Create the new Oyakata entity — traits inherit from the successor's
+    // career and the predecessor's reign (canon §16.3), and the predecessor's
+    // plan family leaves a decaying legacyModifier on the heya.
     const newOyakataId = `oyakata_promoted_${successorRikishiId}`;
+    const tenure = currentOyakata.tenure;
+    const peak = computeHighestRank(successorRikishi);
+    const wasStar = peak === "yokozuna" || peak === "ozeki";
+    // A successor who never reached sekitori carries the journeyman profile.
+    const wasJourneyman = RANK_HIERARCHY[peak]?.isSekitori !== true;
+    const injuryProne =
+      (successorRikishi.consecutiveKyujo ?? 0) >= 1 ||
+      (successorRikishi.injuryWeeksRemaining ?? 0) > 0;
+    const traits = {
+      ambition: 50,
+      patience: 50,
+      risk: 50,
+      tradition: 50,
+      compassion: 50,
+    };
+    if (wasStar) {
+      traits.ambition += 15;
+      traits.risk += 5;
+    }
+    if (wasJourneyman) {
+      traits.patience += 10;
+      traits.tradition += 10;
+    }
+    if (injuryProne) traits.compassion += 10;
+    if ((tenure?.championships ?? 0) >= 3) traits.ambition += 5;
+    if ((tenure?.majorScandals ?? 0) >= 1) traits.tradition += 10;
+    if ((tenure?.insolvencyEvents ?? 0) >= 2) traits.patience += 10;
+
     const newOyakata = {
       id: newOyakataId,
       heyaId: heyaId,
@@ -217,12 +290,15 @@ export const DynastyService = {
       age: world.year - successorRikishi.birthYear,
       yearsInCharge: 0,
       archetype: "traditionalist" as OyakataArchetype,
-      traits: {
-        ambition: 50,
-        patience: 50,
-        risk: 50,
-        tradition: 50,
-        compassion: 50,
+      traits,
+      tenure: {
+        startedYear: world.year,
+        bashoServed: 0,
+        championships: 0,
+        sekitoriProduced: 0,
+        insolvencyEvents: 0,
+        majorScandals: 0,
+        forcedMergers: 0,
       },
       successionReadiness: "stable" as SuccessionReadiness,
       avatarConfig: successorRikishi.avatarConfig,
@@ -230,6 +306,12 @@ export const DynastyService = {
     };
 
     builder.addOyakata(newOyakata);
+
+    // The predecessor's active plan biases the successor's early planning.
+    const predecessorPlanId = currentOyakata.memory?.activePlan?.planId;
+    const legacyModifier = predecessorPlanId
+      ? { planFamilyBias: predecessorPlanId, bashoRemaining: LEGACY_MODIFIER_DURATION_BASHO }
+      : undefined;
 
     // 5. Retire the rikishi (only if still active) and assign the new Oyakata to the stable
     if (successorIsActive) {
@@ -240,6 +322,7 @@ export const DynastyService = {
       trainingPhilosophy: evolvedPhilosophy,
       legacyTier: newTier,
       oyakataId: newOyakataId,
+      legacyModifier,
     });
 
     builder.logEvent(
@@ -279,6 +362,17 @@ export const DynastyService = {
       yearsInCharge: 0,
       archetype: "traditionalist" as OyakataArchetype,
       traits: { ambition: 30, patience: 50, risk: 20, tradition: 80, compassion: 50 },
+      // A trustee is a caretaker: damped persona, fresh tenure clock.
+      isCaretaker: true,
+      tenure: {
+        startedYear: world.year,
+        bashoServed: 0,
+        championships: 0,
+        sekitoriProduced: 0,
+        insolvencyEvents: 0,
+        majorScandals: 0,
+        forcedMergers: 0,
+      },
       successionReadiness: "stable" as SuccessionReadiness,
     };
 

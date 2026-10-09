@@ -11,6 +11,7 @@
 
 import type { WorldState } from "../types/world";
 import type { Id } from "../types/common";
+import type { Heya } from "../types/heya";
 import type { Oyakata } from "../types/oyakata";
 import type { StateImpact } from "../core/StateImpact";
 import type { AgentDecisions } from "./types";
@@ -28,6 +29,7 @@ import { narrativeEventMap } from "../bard/narrativeEventMap";
 import { BardEngine } from "../bard/BardEngine";
 import { rngForWorld } from "../rng";
 import { getMemory } from "./MemoryStore";
+import { issueBailoutLoanIfNeeded } from "../loans";
 
 /** Minimum weeks between executions of the same domain for one heya. */
 const DOMAIN_COOLDOWN_WEEKS: Record<string, number> = {
@@ -39,6 +41,7 @@ const DOMAIN_COOLDOWN_WEEKS: Record<string, number> = {
   narrative: 4,
   staff: 8,
   academy: 12,
+  rescue: 4,
 };
 
 /** Funds cost for a PR-driven scandal reduction when political capital is short. */
@@ -68,6 +71,7 @@ const DOMAIN_SURFACE: Record<string, [string, string]> = {
   staff: ["strategy", "Hired new staff"],
   academy: ["recruitment", "Invested in the youth academy"],
   narrative: ["media", "Issued a public statement"],
+  rescue: ["economy", "Sought emergency financial rescue"],
 };
 
 function currentWeek(world: WorldState): number {
@@ -78,6 +82,25 @@ function onCooldown(memory: Oyakata["memory"], domain: string, week: number): bo
   const last = memory?.lastExecutedAt?.[domain];
   const cd = DOMAIN_COOLDOWN_WEEKS[domain] ?? 1;
   return last !== undefined && week - last < cd;
+}
+
+/** Spend-guarded facility upgrade — raises the weakest of the three tracks. */
+function applyFacilityUpgrade(
+  heya: Heya,
+  heyaId: Id,
+  canSpend: (cost: number) => boolean,
+  builder: ReturnType<typeof createImpactBuilder>
+): boolean {
+  if (!canSpend(FACILITY_UPGRADE_COST)) return false;
+  const facilities = { ...heya.facilities };
+  const keys = ["training", "recovery", "nutrition"] as const;
+  const target = keys
+    .filter((k) => facilities[k] < FACILITY_MAX_LEVEL)
+    .sort((a, b) => facilities[a] - facilities[b])[0];
+  if (!target) return false;
+  facilities[target] += 1;
+  builder.updateHeya(heyaId, { facilities, funds: heya.funds - FACILITY_UPGRADE_COST });
+  return true;
 }
 
 export function executeAgentDecisions(
@@ -101,6 +124,13 @@ export function executeAgentDecisions(
     !spendConstrained && heya.funds - cost >= MIN_OPERATING_RESERVE;
 
   // ── Finance ────────────────────────────────────────────────────────────
+  // WS5 — crisis rescue: a desperate stable proactively pursues its elected
+  // rescue path instead of waiting for the basho-end governance review.
+  if (decisions.finance.shouldSeekRescue && !onCooldown(oyakata.memory, "rescue", week)) {
+    applyCrisisRescue(world, builder, heya, decisions.finance.rescueMenu ?? "bailout_loan");
+    executedDomains.push("rescue");
+  }
+
   if (decisions.finance.shouldBuyMyoseki && !onCooldown(oyakata.memory, "myoseki", week)) {
     const stocks = Object.values(world.myosekiMarket?.stocks ?? {})
       .filter(
@@ -123,21 +153,9 @@ export function executeAgentDecisions(
   if (
     decisions.finance.shouldInvestInFacilities &&
     !onCooldown(oyakata.memory, "facilities", week) &&
-    canSpend(FACILITY_UPGRADE_COST)
+    applyFacilityUpgrade(heya, heyaId, canSpend, builder)
   ) {
-    const facilities = { ...heya.facilities };
-    const keys = ["training", "recovery", "nutrition"] as const;
-    const target = keys
-      .filter((k) => facilities[k] < FACILITY_MAX_LEVEL)
-      .sort((a, b) => facilities[a] - facilities[b])[0];
-    if (target) {
-      facilities[target] += 1;
-      builder.updateHeya(heyaId, {
-        facilities,
-        funds: heya.funds - FACILITY_UPGRADE_COST,
-      });
-      executedDomains.push("facilities");
-    }
+    executedDomains.push("facilities");
   }
 
   // ── Governance ─────────────────────────────────────────────────────────
@@ -210,6 +228,7 @@ export function executeAgentDecisions(
             posture: delta > 0 ? "aggressive" : "conciliatory",
             rivalHeyaId: top.heyaAId === heyaId ? top.heyaBId : top.heyaAId,
             heat: updated[top.id].heat,
+            vendetta: delta > 0 && decisions.rivalry.vendetta === true,
           },
           { heyaId, importance: "minor" }
         );
@@ -263,9 +282,15 @@ export function executeAgentDecisions(
   }
 
   // ── Narrative ──────────────────────────────────────────────────────────
+  // WS6 — sanctioned/probation heyas keep low visibility: no public-facing
+  // narrative pushes while under governance sanction (canon: sanctioned
+  // stables suppress media activity until status restores).
+  const lowVisibility =
+    heya.governanceStatus === "sanctioned" || heya.governanceStatus === "probation";
   if (
     decisions.narrative.shouldTriggerEvent &&
     decisions.narrative.eventType &&
+    !lowVisibility &&
     !onCooldown(oyakata.memory, "narrative", week)
   ) {
     const mapEntry = narrativeEventMap[decisions.narrative.eventType];
@@ -323,4 +348,59 @@ export function executeAgentDecisions(
   }
 
   return builder.build();
+}
+
+/**
+ * WS5 — apply a persona-chosen crisis rescue path (canon §14.8) through
+ * canonical systems only:
+ *   - bailout_loan    → issueBailoutLoanIfNeeded (real loan, real terms)
+ *   - faction_appeal  → ichimon solidarity event + request for the
+ *     basho-end benefactor path (marks the appeal; governance review
+ *     resolves the actual gift)
+ *   - sponsor_drive   → sponsor-seeking pressure: an immediate small cash
+ *     injection representing an emergency koenkai drive, plus event.
+ * All paths are deterministic; none grant free money without a trace.
+ */
+export function applyCrisisRescue(
+  world: WorldState,
+  builder: ReturnType<typeof createImpactBuilder>,
+  heya: NonNullable<ReturnType<typeof getHeya>>,
+  menu: "sponsor_drive" | "bailout_loan" | "faction_appeal"
+): void {
+  if (menu === "bailout_loan") {
+    builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
+    return;
+  }
+  if (menu === "faction_appeal") {
+    builder.logEvent(
+      "GOVERNANCE_RULING",
+      "economy",
+      {
+        incident: "faction_appeal",
+        heyaId: heya.id,
+        heyaname: heya.name,
+        reason: "Stable appeals to its ichimon for emergency support.",
+        status: heya.runwayBand,
+      },
+      { heyaId: heya.id, importance: "notable" }
+    );
+    return;
+  }
+  // sponsor_drive: emergency koenkai drive — a modest injection scaled to
+  // existing koenkai strength, never exceeding one month of operating burn.
+  const koenkaiMembers = world.sponsorPool?.koenkais.get(heya.id)?.members.length ?? 100;
+  const boost = Math.min(2_000_000, Math.max(250_000, Math.floor(koenkaiMembers * 2000)));
+  builder.updateHeya(heya.id, { funds: heya.funds + boost });
+  builder.logEvent(
+    "FINANCIAL_ALERT",
+    "economy",
+    {
+      incident: "emergency_sponsor_drive",
+      heyaId: heya.id,
+      money: boost,
+      reason: "Emergency supporter drive raises stopgap funds.",
+      status: heya.runwayBand,
+    },
+    { heyaId: heya.id, importance: "notable" }
+  );
 }

@@ -3,6 +3,7 @@ import { makeMockWorld } from "../utils";
 import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { KIMARITE_REGISTRY } from "@/engine/kimarite";
+import { buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";
 
 describe("EraDriftService tactical-family grouping", () => {
   it("correctly groups kimarite stats by tactical family and shifts tone", () => {
@@ -51,5 +52,31 @@ describe("EraDriftService tactical-family grouping", () => {
     const after = resolveImpacts(world, [impact]);
 
     expect(after.meta?.tone).toBe("classic");
+  });
+
+  it("WS7 — writes a gazette headline when the era tone changes", () => {
+    const world = makeMockWorld({
+      globalKimariteStats: { oshidashi: 100, yorikiri: 80, hatakikomi: 40 },
+      // meta.tone starts undefined → resolved tone "explosive" is a change.
+      mediaState: {
+        heyaPressure: {},
+        mediaHeat: {},
+        globalBuzz: 0,
+        headlines: [],
+        pressConferenceActive: false,
+      } as never,
+    });
+    const impact = processYearlyEraDrift(world);
+    const after = resolveImpacts(world, [impact]);
+
+    const metaHeadline = (after.mediaState?.headlines ?? []).find((h) =>
+      h.tags?.includes("meta")
+    );
+    expect(metaHeadline).toBeDefined();
+    expect(metaHeadline!.title.length).toBeGreaterThan(0);
+
+    // The headline must flow into the weekly gazette digest.
+    const digest = buildMediaDigest(after);
+    expect(digest.weeklyGazette).toContain(metaHeadline!.title);
   });
 });

@@ -5,6 +5,7 @@ import type {
   BashoSimResult,
   BanzukeUpdateHook,
   MatchSchedule,
+  BashoState,
 } from "../types/basho";
 import type { PromotionEvent, DemotionEvent } from "../types/banzuke";
 import { simulateBout } from "../bout/boutResolver";
@@ -15,6 +16,43 @@ import { stableTieBreak, sortStandings } from "../utils/sort";
 import { resolveImpacts } from "../core/ImpactResolver";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { getRikishi } from "../queries";
+import { resolvePlayoffs } from "../lifecycle/PlayoffResolver";
+
+interface StandingEntry {
+  id: string;
+  rikishi: ReturnType<typeof getRikishi>;
+  wins: number;
+  losses: number;
+}
+
+/**
+ * Crown the headline yusho winner. The yusho race is makuuchi-only
+ * (standings include juryo) — mirrors concludeBashoCompetition. A shared
+ * top record resolves via canonical kettei-sen (resolvePlayoffs), not an
+ * arbitrary stable tie-break (V10-B15).
+ */
+function crownYushoWinner(
+  world: WorldState,
+  basho: BashoState,
+  sortedStandings: StandingEntry[]
+): { yushoEntry: StandingEntry | undefined; finalStandings: StandingEntry[]; playoffMatches: MatchSchedule[] } {
+  const makuuchi = sortedStandings.filter((s) => s.rikishi?.division === "makuuchi");
+  const finalStandings = sortStandings(
+    makuuchi.length > 0 ? makuuchi : sortedStandings,
+    (a, b) => stableTieBreak(a.id, b.id)
+  );
+
+  const topWins = finalStandings[0]?.wins ?? -1;
+  const tied = finalStandings.filter((s) => s.wins === topWins).map((s) => s.id);
+  const playoffMatches: MatchSchedule[] = [];
+  let yushoEntry = finalStandings[0];
+  if (tied.length > 1) {
+    const playoff = resolvePlayoffs(world, basho, tied);
+    playoffMatches.push(...playoff.matches);
+    yushoEntry = finalStandings.find((s) => s.id === playoff.winner) ?? yushoEntry;
+  }
+  return { yushoEntry, finalStandings, playoffMatches };
+}
 
 /**
  * High-speed Tournament Simulation.
@@ -184,9 +222,8 @@ export function simulateEntireBasho(
       losses: stats.losses,
     });
   }
-  const finalStandings = sortStandings(sortedStandings, (a, b) => stableTieBreak(a.id, b.id));
+  const { yushoEntry, finalStandings, playoffMatches } = crownYushoWinner(workingWorld, activeBasho, sortedStandings);
 
-  const yushoEntry = finalStandings[0];
   const yushoWinner = {
     id: yushoEntry?.id || "",
     shikona: yushoEntry?.rikishi?.shikona || "Unknown",
@@ -281,6 +318,7 @@ export function simulateEntireBasho(
     junYusho,
     standings,
     keyBouts,
+    playoffMatches,
     injuries: Array.from(new Set(injuries)),
     promotions,
     demotions,

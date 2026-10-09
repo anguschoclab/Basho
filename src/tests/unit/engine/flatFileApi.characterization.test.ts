@@ -60,7 +60,7 @@ describe("_generateRookie — golden master", () => {
             heyaId,
             id: r.id,
             shikona: r.shikona,
-            archetype: r.archetype,
+            archetype: r.combatProfile?.archetype,
             division: r.division,
             stats: r.stats,
             birthYear: r.birthYear,

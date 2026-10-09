@@ -17,6 +17,7 @@ import type {
   RivalryCluster,
 } from "../ai/types";
 import { getRikishi } from "../queries";
+import { buildMetaPerception } from "./MetaPerception";
 
 const ACTIVE_DIVISIONS = [
   "makuuchi",
@@ -209,6 +210,7 @@ export function buildLeaguePerception(world: WorldState): LeaguePerception {
     rivalryClusters: buildRivalryClusters(world),
     topRecruitAvailable: topRecruitAvailable(world),
     ichimonLeaders: buildIchimonLeaders(world),
+    meta: buildMetaPerception(world),
   };
 }
 

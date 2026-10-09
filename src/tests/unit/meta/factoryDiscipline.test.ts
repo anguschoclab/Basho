@@ -53,6 +53,7 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/engine/bout/boutNarrative.careerHigh.test.ts",
   "unit/engine/bout/boutNarrative.consecutiveKachi.test.ts",
   "unit/engine/bout/boutNarrative.fallsOut.test.ts",
+  "unit/engine/bout/boutNarrative.golden.test.ts",
   "unit/engine/bout/boutNarrative.kensho.test.ts",
   "unit/engine/bout/boutNarrative.monoii.test.ts",
   "unit/engine/bout/boutNarrative.rivalry.test.ts",

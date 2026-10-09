@@ -10,6 +10,8 @@ export interface AgentDecisions {
     shouldInvestInFacilities: boolean;
     shouldBuildReserves: boolean;
     riskLevel: "conservative" | "moderate" | "aggressive";
+    shouldSeekRescue?: boolean;
+    rescueMenu?: "sponsor_drive" | "bailout_loan" | "faction_appeal";
   };
   governance: {
     shouldReduceScandal: boolean;
@@ -25,6 +27,8 @@ export interface AgentDecisions {
     escalateRivalry: boolean;
     deescalateRivalry: boolean;
     targetRivalForMatchmaking: string[];
+    /** Escalation was driven by a personal grudge (WS7 surfacing flag). */
+    vendetta?: boolean;
   };
   narrative: {
     shouldTriggerEvent: boolean;

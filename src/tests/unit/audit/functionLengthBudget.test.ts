@@ -37,10 +37,8 @@ const isObj = (m: Measurement) => m.kind === "const-obj" || m.kind === "const-ar
 const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   // boutNarrative.ts::generateBoutNarrative — split 2026-10 into bout/narrative/ beat modules
 
-  "src/pages/Dashboard.tsx::Dashboard": { loc: 512, kind: "function" },
   "src/contexts/GameContext.tsx::GameProvider": { loc: 472, kind: "function" },
   "src/components/game/boutReplay/useBoutReplay.ts::useBoutReplay": { loc: 472, kind: "function" },
-  "src/pages/BashoPage.tsx::BashoPage": { loc: 456, kind: "function" },
 
   "src/components/rikishi/RikishiProfileHeader.tsx::RikishiProfileHeader": { loc: 404, kind: "function" },
   "src/engine/bout/boutResultApplier.ts::applyBoutResult": { loc: 404, kind: "function" },

@@ -111,7 +111,7 @@ describe("battle ticks — golden master (belt or push per tachiai outcome)", ()
         expect(results).toMatchSnapshot();
         expect(st).toMatchSnapshot();
         expect(
-          boutLog.map((e) => e.type ?? (e as { data?: { event?: string } }).data?.event ?? e),
+          boutLog.map((e) => (e as { type?: string }).type ?? (e as { data?: { event?: string } }).data?.event ?? e),
         ).toMatchSnapshot();
       });
     }

@@ -1,0 +1,679 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`makeNPCWeeklyDecision — golden master > furious oyakata → punishing override 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "technician",
+  "trainingIntensity": "punishing",
+  "trainingFocus": "technique",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [],
+  "individualDevelops": [],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Balanced Growth cycle — maintaining steady upward trajectory.",
+    "[Focus Worker] Developing roster — building technique fundamentals",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting",
+    "[Finance Agent] Balanced financial approach",
+    "[Finance Agent] Conservative stance or no market available - skipping myoseki",
+    "[Finance Agent] Maintaining 0 reserve target",
+    "[Finance Agent] Final strategy: moderate risk level",
+    "[Finance Agent] Current runway: 999.0 months",
+    "[Governance Agent] Evaluating political situation",
+    "[Governance Agent] Scandal score: 0, Political capital: 50, Status: good_standing",
+    "[Governance Agent] Final strategy determined",
+    "[Rivalry Agent] Evaluating rivalry portfolio",
+    "[Rivalry Agent] Active rivalries: 0",
+    "[Rivalry Agent] High heat: 0, Medium heat: 0, Low heat: 0",
+    "[Rivalry Agent] Final rivalry strategy determined",
+    "[Narrative Agent] Evaluating narrative opportunities",
+    "[Narrative Agent] Top rikishi: 0, Recent achievements: 0",
+    "[Narrative Agent] Basho phase: interim",
+    "[Narrative Agent] No narrative trigger conditions met",
+    "[Lead Review] Oyakata overrides: Ignoring worker caution, imposing punishing intensity due to fury."
+  ],
+  "mood": "furious",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    },
+    "worldFields": {
+      "npcBidPolicies": {
+        "heya-1": {
+          "shouldBid": false,
+          "maxBid": 0,
+          "bidStrategy": "conservative"
+        }
+      }
+    }
+  },
+  "agentDecisions": {
+    "finance": {
+      "shouldBuyMyoseki": false,
+      "shouldInvestInFacilities": false,
+      "shouldBuildReserves": false,
+      "riskLevel": "moderate",
+      "shouldSeekRescue": false
+    },
+    "governance": {
+      "shouldReduceScandal": false,
+      "shouldUsePoliticalFavor": false,
+      "shouldSabotageRival": false
+    },
+    "recruitment": {
+      "maxBid": 0,
+      "shouldBid": false,
+      "bidStrategy": "conservative"
+    },
+    "rivalry": {
+      "escalateRivalry": false,
+      "deescalateRivalry": false,
+      "targetRivalForMatchmaking": [],
+      "vendetta": false
+    },
+    "narrative": {
+      "shouldTriggerEvent": false,
+      "narrativeTone": "neutral"
+    },
+    "infrastructure": {
+      "shouldHireStaff": false,
+      "shouldBuildAcademy": false,
+      "shouldUpgradeAcademy": false
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > heya + oyakata + empty roster → full agent layer 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "technician",
+  "trainingIntensity": "balanced",
+  "trainingFocus": "technique",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [],
+  "individualDevelops": [],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Balanced Growth cycle — maintaining steady upward trajectory.",
+    "[Focus Worker] Developing roster — building technique fundamentals",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting",
+    "[Finance Agent] Balanced financial approach",
+    "[Finance Agent] Conservative stance or no market available - skipping myoseki",
+    "[Finance Agent] Maintaining 0 reserve target",
+    "[Finance Agent] Final strategy: moderate risk level",
+    "[Finance Agent] Current runway: 999.0 months",
+    "[Governance Agent] Evaluating political situation",
+    "[Governance Agent] Scandal score: 0, Political capital: 50, Status: good_standing",
+    "[Governance Agent] Final strategy determined",
+    "[Rivalry Agent] Evaluating rivalry portfolio",
+    "[Rivalry Agent] Active rivalries: 0",
+    "[Rivalry Agent] High heat: 0, Medium heat: 0, Low heat: 0",
+    "[Rivalry Agent] Final rivalry strategy determined",
+    "[Narrative Agent] Evaluating narrative opportunities",
+    "[Narrative Agent] Top rikishi: 0, Recent achievements: 0",
+    "[Narrative Agent] Basho phase: interim",
+    "[Narrative Agent] No narrative trigger conditions met"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    },
+    "worldFields": {
+      "npcBidPolicies": {
+        "heya-1": {
+          "shouldBid": false,
+          "maxBid": 0,
+          "bidStrategy": "conservative"
+        }
+      }
+    }
+  },
+  "agentDecisions": {
+    "finance": {
+      "shouldBuyMyoseki": false,
+      "shouldInvestInFacilities": false,
+      "shouldBuildReserves": false,
+      "riskLevel": "moderate",
+      "shouldSeekRescue": false
+    },
+    "governance": {
+      "shouldReduceScandal": false,
+      "shouldUsePoliticalFavor": false,
+      "shouldSabotageRival": false
+    },
+    "recruitment": {
+      "maxBid": 0,
+      "shouldBid": false,
+      "bidStrategy": "conservative"
+    },
+    "rivalry": {
+      "escalateRivalry": false,
+      "deescalateRivalry": false,
+      "targetRivalForMatchmaking": [],
+      "vendetta": false
+    },
+    "narrative": {
+      "shouldTriggerEvent": false,
+      "narrativeTone": "neutral"
+    },
+    "infrastructure": {
+      "shouldHireStaff": false,
+      "shouldBuildAcademy": false,
+      "shouldUpgradeAcademy": false
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > heya without oyakata → workers only, no agentDecisions 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "unknown",
+  "trainingIntensity": "balanced",
+  "trainingFocus": "technique",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [],
+  "individualDevelops": [],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Standard operational cycle — maintaining balanced development.",
+    "[Focus Worker] Developing roster — building technique fundamentals",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > high-risk roster → injury-risk reduction fires 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "technician",
+  "trainingIntensity": "conservative",
+  "trainingFocus": "power",
+  "recovery": "high",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [
+    "r-hr1",
+    "r-hr2",
+    "r-hr3",
+    "r-hr4"
+  ],
+  "individualDevelops": [],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Stabilizing the roster — 4 wrestlers worn/fragile; reducing intensity to prevent injuries.",
+    "[Focus Worker] Oshi-biased stable — power focus",
+    "[Recovery Worker] Critical health situation — maximum recovery",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting",
+    "[Personnel Worker] Protecting 4 wrestler(s) due to health concerns",
+    "[Finance Agent] Balanced financial approach",
+    "[Finance Agent] Conservative stance or no market available - skipping myoseki",
+    "[Finance Agent] Maintaining 1,800,000 reserve target",
+    "[Finance Agent] Final strategy: moderate risk level",
+    "[Finance Agent] Current runway: 8.3 months",
+    "[Governance Agent] Evaluating political situation",
+    "[Governance Agent] Scandal score: 0, Political capital: 50, Status: good_standing",
+    "[Governance Agent] Final strategy determined",
+    "[Rivalry Agent] Evaluating rivalry portfolio",
+    "[Rivalry Agent] Active rivalries: 0",
+    "[Rivalry Agent] High heat: 0, Medium heat: 0, Low heat: 0",
+    "[Rivalry Agent] Final rivalry strategy determined",
+    "[Narrative Agent] Evaluating narrative opportunities",
+    "[Narrative Agent] Top rikishi: 4, Recent achievements: 0",
+    "[Narrative Agent] Basho phase: interim",
+    "[Narrative Agent] No narrative trigger conditions met"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    },
+    "worldFields": {
+      "npcBidPolicies": {
+        "heya-1": {
+          "shouldBid": false,
+          "maxBid": 0,
+          "bidStrategy": "conservative"
+        }
+      }
+    }
+  },
+  "agentDecisions": {
+    "finance": {
+      "shouldBuyMyoseki": false,
+      "shouldInvestInFacilities": false,
+      "shouldBuildReserves": false,
+      "riskLevel": "moderate",
+      "shouldSeekRescue": false
+    },
+    "governance": {
+      "shouldReduceScandal": false,
+      "shouldUsePoliticalFavor": false,
+      "shouldSabotageRival": false
+    },
+    "recruitment": {
+      "maxBid": 0,
+      "shouldBid": false,
+      "bidStrategy": "conservative"
+    },
+    "rivalry": {
+      "escalateRivalry": false,
+      "deescalateRivalry": false,
+      "targetRivalForMatchmaking": [],
+      "vendetta": false
+    },
+    "narrative": {
+      "shouldTriggerEvent": false,
+      "narrativeTone": "neutral"
+    },
+    "infrastructure": {
+      "shouldHireStaff": false,
+      "shouldBuildAcademy": false,
+      "shouldUpgradeAcademy": false
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > kadoban ozeki → protect instead of push 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "technician",
+  "trainingIntensity": "balanced",
+  "trainingFocus": "power",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [
+    "r-kad"
+  ],
+  "individualDevelops": [],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Balanced Growth cycle — maintaining steady upward trajectory.",
+    "[Focus Worker] Oshi-biased stable — power focus",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting",
+    "[Finance Agent] Balanced financial approach",
+    "[Finance Agent] Conservative stance or no market available - skipping myoseki",
+    "[Finance Agent] Maintaining 450,000 reserve target",
+    "[Finance Agent] Final strategy: moderate risk level",
+    "[Finance Agent] Current runway: 33.3 months",
+    "[Governance Agent] Evaluating political situation",
+    "[Governance Agent] Scandal score: 0, Political capital: 50, Status: good_standing",
+    "[Governance Agent] Final strategy determined",
+    "[Rivalry Agent] Evaluating rivalry portfolio",
+    "[Rivalry Agent] Active rivalries: 0",
+    "[Rivalry Agent] High heat: 0, Medium heat: 0, Low heat: 0",
+    "[Rivalry Agent] Final rivalry strategy determined",
+    "[Narrative Agent] Evaluating narrative opportunities",
+    "[Narrative Agent] Top rikishi: 1, Recent achievements: 0",
+    "[Narrative Agent] Basho phase: interim",
+    "[Narrative Agent] No narrative trigger conditions met",
+    "[PromotionAwareness] Kadoban is Kadoban — added to protect list"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    },
+    "worldFields": {
+      "npcBidPolicies": {
+        "heya-1": {
+          "shouldBid": false,
+          "maxBid": 0,
+          "bidStrategy": "conservative"
+        }
+      }
+    }
+  },
+  "agentDecisions": {
+    "finance": {
+      "shouldBuyMyoseki": false,
+      "shouldInvestInFacilities": false,
+      "shouldBuildReserves": false,
+      "riskLevel": "moderate",
+      "shouldSeekRescue": false
+    },
+    "governance": {
+      "shouldReduceScandal": false,
+      "shouldUsePoliticalFavor": false,
+      "shouldSabotageRival": false
+    },
+    "recruitment": {
+      "maxBid": 0,
+      "shouldBid": false,
+      "bidStrategy": "conservative"
+    },
+    "rivalry": {
+      "escalateRivalry": false,
+      "deescalateRivalry": false,
+      "targetRivalForMatchmaking": [],
+      "vendetta": false
+    },
+    "narrative": {
+      "shouldTriggerEvent": false,
+      "narrativeTone": "neutral"
+    },
+    "infrastructure": {
+      "shouldHireStaff": false,
+      "shouldBuildAcademy": false,
+      "shouldUpgradeAcademy": false
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > missing heya → minimal decision (no agent layer) 1`] = `
+"{
+  "heyaId": "ghost-heya",
+  "archetype": "unknown",
+  "trainingIntensity": "balanced",
+  "trainingFocus": "technique",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [],
+  "individualDevelops": [],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Standard operational cycle — maintaining balanced development.",
+    "[Focus Worker] Developing roster — building technique fundamentals",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > ozeki roster → promotion-aware pushes 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "technician",
+  "trainingIntensity": "intensive",
+  "trainingFocus": "power",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [],
+  "individualDevelops": [
+    "r-oz"
+  ],
+  "individualPushes": [
+    "r-oz"
+  ],
+  "reasoning": [
+    "[Training Worker] Balanced Growth cycle — maintaining steady upward trajectory.",
+    "[Focus Worker] Oshi-biased stable — power focus",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting",
+    "[Finance Agent] Balanced financial approach",
+    "[Finance Agent] Conservative stance or no market available - skipping myoseki",
+    "[Finance Agent] Maintaining 450,000 reserve target",
+    "[Finance Agent] Final strategy: moderate risk level",
+    "[Finance Agent] Current runway: 33.3 months",
+    "[Governance Agent] Evaluating political situation",
+    "[Governance Agent] Scandal score: 0, Political capital: 50, Status: good_standing",
+    "[Governance Agent] Final strategy determined",
+    "[Rivalry Agent] Evaluating rivalry portfolio",
+    "[Rivalry Agent] Active rivalries: 0",
+    "[Rivalry Agent] High heat: 0, Medium heat: 0, Low heat: 0",
+    "[Rivalry Agent] Final rivalry strategy determined",
+    "[Narrative Agent] Evaluating narrative opportunities",
+    "[Narrative Agent] Top rikishi: 1, Recent achievements: 0",
+    "[Narrative Agent] Basho phase: interim",
+    "[Narrative Agent] No narrative trigger conditions met",
+    "[PromotionAwareness] Ozeki in stable — raised training intensity to 'intensive' for Yokozuna run",
+    "[PromotionAwareness] Ozesho is Ozeki — added to push list for Yokozuna run"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    },
+    "worldFields": {
+      "npcBidPolicies": {
+        "heya-1": {
+          "shouldBid": false,
+          "maxBid": 0,
+          "bidStrategy": "conservative"
+        }
+      }
+    }
+  },
+  "agentDecisions": {
+    "finance": {
+      "shouldBuyMyoseki": false,
+      "shouldInvestInFacilities": false,
+      "shouldBuildReserves": false,
+      "riskLevel": "moderate",
+      "shouldSeekRescue": false
+    },
+    "governance": {
+      "shouldReduceScandal": false,
+      "shouldUsePoliticalFavor": false,
+      "shouldSabotageRival": false
+    },
+    "recruitment": {
+      "maxBid": 0,
+      "shouldBid": false,
+      "bidStrategy": "conservative"
+    },
+    "rivalry": {
+      "escalateRivalry": false,
+      "deescalateRivalry": false,
+      "targetRivalForMatchmaking": [],
+      "vendetta": false
+    },
+    "narrative": {
+      "shouldTriggerEvent": false,
+      "narrativeTone": "neutral"
+    },
+    "infrastructure": {
+      "shouldHireStaff": false,
+      "shouldBuildAcademy": false,
+      "shouldUpgradeAcademy": false
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > sekiwake + komusubi → develop list 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "technician",
+  "trainingIntensity": "balanced",
+  "trainingFocus": "power",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [],
+  "individualDevelops": [
+    "r-sek",
+    "r-kom"
+  ],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Balanced Growth cycle — maintaining steady upward trajectory.",
+    "[Focus Worker] Oshi-biased stable — power focus",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting",
+    "[Finance Agent] Balanced financial approach",
+    "[Finance Agent] Conservative stance or no market available - skipping myoseki",
+    "[Finance Agent] Maintaining 900,000 reserve target",
+    "[Finance Agent] Final strategy: moderate risk level",
+    "[Finance Agent] Current runway: 16.7 months",
+    "[Governance Agent] Evaluating political situation",
+    "[Governance Agent] Scandal score: 0, Political capital: 50, Status: good_standing",
+    "[Governance Agent] Final strategy determined",
+    "[Rivalry Agent] Evaluating rivalry portfolio",
+    "[Rivalry Agent] Active rivalries: 0",
+    "[Rivalry Agent] High heat: 0, Medium heat: 0, Low heat: 0",
+    "[Rivalry Agent] Final rivalry strategy determined",
+    "[Narrative Agent] Evaluating narrative opportunities",
+    "[Narrative Agent] Top rikishi: 2, Recent achievements: 0",
+    "[Narrative Agent] Basho phase: interim",
+    "[Narrative Agent] No narrative trigger conditions met"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    },
+    "worldFields": {
+      "npcBidPolicies": {
+        "heya-1": {
+          "shouldBid": false,
+          "maxBid": 0,
+          "bidStrategy": "conservative"
+        }
+      }
+    }
+  },
+  "agentDecisions": {
+    "finance": {
+      "shouldBuyMyoseki": false,
+      "shouldInvestInFacilities": false,
+      "shouldBuildReserves": false,
+      "riskLevel": "moderate",
+      "shouldSeekRescue": false
+    },
+    "governance": {
+      "shouldReduceScandal": false,
+      "shouldUsePoliticalFavor": false,
+      "shouldSabotageRival": false
+    },
+    "recruitment": {
+      "maxBid": 0,
+      "shouldBid": false,
+      "bidStrategy": "conservative"
+    },
+    "rivalry": {
+      "escalateRivalry": false,
+      "deescalateRivalry": false,
+      "targetRivalForMatchmaking": [],
+      "vendetta": false
+    },
+    "narrative": {
+      "shouldTriggerEvent": false,
+      "narrativeTone": "neutral"
+    },
+    "infrastructure": {
+      "shouldHireStaff": false,
+      "shouldBuildAcademy": false,
+      "shouldUpgradeAcademy": false
+    }
+  }
+}"
+`;
+
+exports[`makeNPCWeeklyDecision — golden master > yokozuna with 2+ council warnings → intensity reduced 1`] = `
+"{
+  "heyaId": "heya-1",
+  "archetype": "technician",
+  "trainingIntensity": "balanced",
+  "trainingFocus": "power",
+  "recovery": "low",
+  "scoutingPriority": "aggressive",
+  "individualProtects": [
+    "r-yoko"
+  ],
+  "individualDevelops": [],
+  "individualPushes": [],
+  "reasoning": [
+    "[Training Worker] Balanced Growth cycle — maintaining steady upward trajectory.",
+    "[Focus Worker] Oshi-biased stable — power focus",
+    "[Recovery Worker] Healthy roster — minimal recovery allocation",
+    "[Scouting Worker] Roster needs rebuilding — aggressive scouting",
+    "[Finance Agent] Balanced financial approach",
+    "[Finance Agent] Conservative stance or no market available - skipping myoseki",
+    "[Finance Agent] Maintaining 450,000 reserve target",
+    "[Finance Agent] Final strategy: moderate risk level",
+    "[Finance Agent] Current runway: 33.3 months",
+    "[Governance Agent] Evaluating political situation",
+    "[Governance Agent] Scandal score: 0, Political capital: 50, Status: good_standing",
+    "[Governance Agent] Final strategy determined",
+    "[Rivalry Agent] Evaluating rivalry portfolio",
+    "[Rivalry Agent] Active rivalries: 0",
+    "[Rivalry Agent] High heat: 0, Medium heat: 0, Low heat: 0",
+    "[Rivalry Agent] Final rivalry strategy determined",
+    "[Narrative Agent] Evaluating narrative opportunities",
+    "[Narrative Agent] Top rikishi: 1, Recent achievements: 0",
+    "[Narrative Agent] Basho phase: interim",
+    "[Narrative Agent] No narrative trigger conditions met",
+    "[PromotionAwareness] Yokoyama has 2 YDC warning(s) — added to protect list"
+  ],
+  "mood": "content",
+  "impact": {
+    "metadata": {
+      "source": "makeNPCWeeklyDecision",
+      "timestamp": 1
+    },
+    "worldFields": {
+      "npcBidPolicies": {
+        "heya-1": {
+          "shouldBid": false,
+          "maxBid": 0,
+          "bidStrategy": "conservative"
+        }
+      }
+    }
+  },
+  "agentDecisions": {
+    "finance": {
+      "shouldBuyMyoseki": false,
+      "shouldInvestInFacilities": false,
+      "shouldBuildReserves": false,
+      "riskLevel": "moderate",
+      "shouldSeekRescue": false
+    },
+    "governance": {
+      "shouldReduceScandal": false,
+      "shouldUsePoliticalFavor": false,
+      "shouldSabotageRival": false
+    },
+    "recruitment": {
+      "maxBid": 0,
+      "shouldBid": false,
+      "bidStrategy": "conservative"
+    },
+    "rivalry": {
+      "escalateRivalry": false,
+      "deescalateRivalry": false,
+      "targetRivalForMatchmaking": [],
+      "vendetta": false
+    },
+    "narrative": {
+      "shouldTriggerEvent": false,
+      "narrativeTone": "neutral"
+    },
+    "infrastructure": {
+      "shouldHireStaff": false,
+      "shouldBuildAcademy": false,
+      "shouldUpgradeAcademy": false
+    }
+  }
+}"
+`;

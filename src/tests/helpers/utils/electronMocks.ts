@@ -28,11 +28,11 @@ export function mockElectronAPI(opts?: {
       return Promise.resolve();
     }),
     delete: vi.fn((key: string) => {
-      delete backing[key];
+      Reflect.deleteProperty(backing, key);
       return Promise.resolve();
     }),
     clear: vi.fn(() => {
-      for (const k of Object.keys(backing)) delete backing[k];
+      for (const k of Object.keys(backing)) Reflect.deleteProperty(backing, k);
       return Promise.resolve();
     }),
     keys: vi.fn(() => Promise.resolve({ ...backing })),

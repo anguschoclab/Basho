@@ -7,6 +7,7 @@ import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
 import type { TalentPoolType, TalentCandidate } from "../../types/talent";
 import { isForeign } from "../../utils/identity";
+import { countsAsForeign } from "../../utils/citizenshipUtils";
 import { getHeya, getRikishi } from "../../queries";
 
 // ============================================
@@ -75,7 +76,9 @@ export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
 
   for (const rikishiId of world.activeRikishiIds) {
     const r = getRikishi(world, rikishiId);
-    if (r && isForeign(r)) {
+    // Citizenship-aware (§5.2): naturalized and dual-citizen rikishi no longer
+    // consume the slot even though their nationality stays foreign.
+    if (r && countsAsForeign(r, world.year)) {
       counts.set(r.heyaId, (counts.get(r.heyaId) ?? 0) + 1);
     }
   }
@@ -91,7 +94,7 @@ export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
           c &&
           c.availabilityState === "signed" &&
           c.competingSuitors.length > 0 &&
-          isForeign(c)
+          candidateConsumesForeignSlot(c)
         ) {
           const heyaId = c.competingSuitors[0].heyaId;
           counts.set(heyaId, (counts.get(heyaId) ?? 0) + 1);
@@ -101,6 +104,16 @@ export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
   }
 
   return counts;
+}
+
+/**
+ * A candidate consumes the foreign slot iff foreign-born AND not a dual
+ * citizen (§5.1–5.3).
+ */
+export function candidateConsumesForeignSlot(
+  candidate: Pick<TalentCandidate, "nationality" | "dualCitizen">
+): boolean {
+  return isForeign({ nationality: candidate.nationality }) && candidate.dualCitizen !== true;
 }
 
 /**

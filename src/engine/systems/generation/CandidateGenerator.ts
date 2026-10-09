@@ -50,6 +50,7 @@ import {
   AMATEUR_STAR_TAG_CHANCE,
   JAPANESE_PREFECTURES_COUNT,
 } from "../../../constants/engine/generation";
+import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitment";
 
 /**
  * Generates a single TalentCandidate for the recruitment pools.
@@ -212,6 +213,9 @@ export function generateCandidate(args: {
         ? ["amateur_star"]
         : [],
     isEmergentProdigy,
+    // §5.3 — a small share of foreign-born recruits hold Japanese citizenship.
+    dualCitizen:
+      poolType === "foreign" ? rng.next() < DUAL_CITIZEN_RECRUIT_SHARE : undefined,
 
     potentialStats: {
       power: paPkg.stats.power,

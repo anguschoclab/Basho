@@ -48,6 +48,45 @@ export function OyakataProfileDrawer({
             <Badge variant="outline">Decisions: {rival.decisionCount}</Badge>
           </div>
 
+          {/* WS7 — banded rival intel. Public record always shows; managerial
+              identity (archetype, mood) only when the stable is scouted. */}
+          <div className="space-y-1.5 text-xs" data-testid="drawer-intel">
+            {rival.tenureSummary && (
+              <div className="text-muted-foreground">{rival.tenureSummary}</div>
+            )}
+            {rival.factionPosture && (
+              <div className="text-muted-foreground">
+                Ichimon posture:{" "}
+                <span className="text-foreground">{rival.factionPosture}</span>
+              </div>
+            )}
+            {rival.planId && (
+              <div className="text-muted-foreground">
+                Current direction: <span className="text-foreground">{rival.planId}</span>
+              </div>
+            )}
+            {rival.scouted ? (
+              <div className="text-muted-foreground">
+                {rival.archetypeLabel && (
+                  <>
+                    Style:{" "}
+                    <span className="text-foreground capitalize">{rival.archetypeLabel}</span>
+                  </>
+                )}
+                {rival.mood && (
+                  <>
+                    {rival.archetypeLabel ? " · " : ""}Mood:{" "}
+                    <span className="text-foreground capitalize">{rival.mood}</span>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="text-muted-foreground italic">
+                Limited intel — scout this stable's rikishi to learn more
+              </div>
+            )}
+          </div>
+
           {rival.recentDecisions.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">

@@ -13,6 +13,11 @@ import { getHeya } from "../../queries";
 import { recruitmentBalanceMultipliers } from "./competitiveBalance";
 import { error } from "@/engine/utils/Logger";
 import { perceivedTalentSeed } from "../recruitment/perceivedTalent";
+import { countsAsForeign } from "../../utils/citizenshipUtils";
+import { isForeign } from "../../utils/identity";
+import { candidateConsumesForeignSlot } from "./talentPoolReads";
+import { foreignSlotBidAggression } from "../../npcAI/ForeignSlotPolicy";
+import { DUAL_CITIZEN_BID_PREFERENCE } from "../../../constants/engine/recruitment";
 
 /**
  * Automates recruitment for NPC stables.
@@ -41,20 +46,22 @@ export function fillVacanciesForNPC(
     const heya = getHeya(world, heyaId);
     if (!heya || vacancyCount <= 0) continue;
 
+    // Citizenship-aware slot check (§5.1–5.3): naturalized/dual-citizen
+    // incumbents free the slot; dual-citizen candidates are exempt anyway.
     const hasForeigner = EntityCollection.getHeyaRoster(world, heyaId).some(
-      (r) => r.origin === "foreign"
+      (r) => countsAsForeign(r, world.year)
     );
 
     for (let i = 0; i < vacancyCount; i++) {
       const availableCandidates: string[] = [];
       for (const pt of ["high_school", "university", "foreign"] as const) {
-        if (pt === "foreign" && hasForeigner) continue;
         const pool = currentPools[pt];
         for (const cId of pool.candidatesVisible) {
           const c = currentCandidates[cId];
-          if (c && c.availabilityState === "available") {
-            availableCandidates.push(cId);
-          }
+          if (!c || c.availabilityState !== "available") continue;
+          // Slot occupied → only dual citizens may still appear (§5.4).
+          if (hasForeigner && candidateConsumesForeignSlot(c)) continue;
+          availableCandidates.push(cId);
         }
       }
 
@@ -153,6 +160,22 @@ export function fillVacanciesForNPCWithBidding(
     rivalHeyaMap.set(hid as Id, (hid === first ? second : first) as Id | undefined);
   }
   const balanceMap = recruitmentBalanceMultipliers(world, targetHeyaIds as Id[]);
+  // §5.4: heya whose single foreign slot is already consumed (roster or a
+  // signed-pending foreign candidate) may not bid on slot-consuming recruits.
+  const foreignOccupied = new Map<Id, boolean>();
+  for (const hid of targetHeyaIds) {
+    const roster = EntityCollection.getHeyaRoster(world, hid);
+    foreignOccupied.set(
+      hid,
+      roster.some((r) => countsAsForeign(r, world.year)) ||
+        allVisibleCandidates.some(
+          (c) =>
+            c.availabilityState === "signed" &&
+            c.competingSuitors[0]?.heyaId === hid &&
+            candidateConsumesForeignSlot(c)
+        )
+    );
+  }
 
   for (const heyaId of targetHeyaIds) {
     const heya = getHeya(world, heyaId);
@@ -162,27 +185,102 @@ export function fillVacanciesForNPCWithBidding(
 
     const bidPolicy = world.npcBidPolicies?.[heyaId as Id];
     if (bidPolicy && !bidPolicy.shouldBid) continue;
-    const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     const rivalHeyaId = rivalHeyaMap.get(heyaId as Id);
     const balanceMult = balanceMap.get(heyaId as Id) ?? 1;
+    const slotOccupied = foreignOccupied.get(heyaId) ?? false;
+    const slotAggression = foreignSlotBidAggression(oyakata);
+    const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     for (const candidate of allVisibleCandidates) {
-      const rawBid = recruitmentStrat.calculateMaxBid(
+      // §5.4 hard gate: slot occupied → slot-consuming candidates are invisible.
+      // Dual citizens are exempt and may always appear.
+      if (slotOccupied && candidateConsumesForeignSlot(candidate)) continue;
+      const bidAmount = computeNpcBid(
         world,
         heya,
         oyakata,
-        candidate.candidateId,
-        rivalHeyaId
+        candidate,
+        { rivalHeyaId, balanceMult, slotAggression },
+        bidPolicy,
+        recruitmentStrat
       );
-      let bidAmount = Math.round(rawBid * balanceMult);
-      if (bidPolicy && bidPolicy.maxBid > 0) {
-        bidAmount = Math.min(bidAmount, bidPolicy.maxBid);
-      }
       bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
     }
   }
 
   bids.sort((a, b) => b.bidAmount - a.bidAmount);
 
+  const { nextCandidates, nextPools } = assignWinningBids(
+    world,
+    bids,
+    targetHeyas,
+    tp,
+    builder
+  );
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: nextCandidates,
+    pools: nextPools,
+  });
+
+  return builder.build();
+}
+
+/** Per-candidate bid: balance, family bias, §9.3 slot policy, and policy cap. */
+function computeNpcBid(
+  world: WorldState,
+  heya: NonNullable<ReturnType<typeof getHeya>>,
+  oyakata: Oyakata,
+  candidate: TalentCandidate,
+  ctx: { rivalHeyaId: Id | undefined; balanceMult: number; slotAggression: number },
+  bidPolicy: NonNullable<WorldState["npcBidPolicies"]>[Id] | undefined,
+  recruitmentStrat: ReturnType<typeof getRecruitmentStrategy>
+): number {
+  const rawBid = recruitmentStrat.calculateMaxBid(
+    world,
+    heya,
+    oyakata,
+    candidate.candidateId,
+    ctx.rivalHeyaId
+  );
+  let bidAmount = Math.round(rawBid * ctx.balanceMult);
+  // Meta-adaptation lever (WS2): bias bids toward candidates whose
+  // dominant family matches the manager's committed posture.
+  if (bidPolicy?.familyBias) {
+    const fp = candidate.combatProfile?.familyPreferences;
+    if (fp) {
+      const dominant = (Object.entries(fp) as [string, number][]).sort(
+        (a, b) => b[1] - a[1]
+      )[0];
+      if (dominant && dominant[0] === bidPolicy.familyBias.family) {
+        bidAmount = Math.round(bidAmount * (1 + bidPolicy.familyBias.weight));
+      }
+    }
+  }
+  // §9.3 slot policy: persona-weighted aggression on foreign recruits,
+  // plus a standing preference for slot-exempt dual citizens.
+  if (candidateConsumesForeignSlot(candidate)) {
+    bidAmount = Math.round(bidAmount * ctx.slotAggression);
+  } else if (candidate.dualCitizen) {
+    bidAmount = Math.round(bidAmount * (1 + DUAL_CITIZEN_BID_PREFERENCE));
+  }
+  if (bidPolicy && bidPolicy.maxBid > 0) {
+    bidAmount = Math.min(bidAmount, bidPolicy.maxBid);
+  }
+  return bidAmount;
+}
+
+/**
+ * Resolve sorted bids to signings: materialize each winner, emit the
+ * recruitment-bidding event, and respect per-heya vacancy caps.
+ */
+function assignWinningBids(
+  world: WorldState,
+  bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }>,
+  targetHeyas: Record<string, number>,
+  tp: NonNullable<WorldState["talentPool"]>,
+  builder: ReturnType<typeof createImpactBuilder>
+): { nextCandidates: Record<string, TalentCandidate>; nextPools: typeof tp.pools } {
   const assignedCandidates = new Set<Id>();
   const assignedHeyaSlots = new Map<Id, number>();
   for (const heyaId of Object.keys(targetHeyas)) {
@@ -201,7 +299,7 @@ export function fillVacanciesForNPCWithBidding(
     const candidate = currentCandidates[bid.candidateId];
     if (!candidate) continue;
 
-    const updatedCandidate = {
+    currentCandidates[bid.candidateId] = {
       ...candidate,
       availabilityState: "signed" as const,
       competingSuitors: [
@@ -213,7 +311,6 @@ export function fillVacanciesForNPCWithBidding(
         },
       ],
     };
-    currentCandidates[bid.candidateId] = updatedCandidate;
 
     try {
       const materializeImpact = materializeCandidateToRikishiInternal(
@@ -231,8 +328,6 @@ export function fillVacanciesForNPCWithBidding(
       continue;
     }
 
-    const importance = isRecruitmentPlayerRelevant(world, candidate);
-
     builder.logEvent(
       "NPC_MANAGER_DECISION",
       "narrative",
@@ -243,19 +338,17 @@ export function fillVacanciesForNPCWithBidding(
         archetype: bid.oyakata.archetype,
         strategy: "recruitment_bidding",
         candidateName: candidate.name,
+        // WS7 surfacing flags — foreign signings and dual citizens are
+        // distinct feed items per the slot-policy contract (§5.3–5.4).
+        isForeign: isForeign({ nationality: candidate.nationality }),
+        dualCitizen: candidate.dualCitizen === true,
       },
-      { heyaId: bid.heyaId, importance }
+      { heyaId: bid.heyaId, importance: isRecruitmentPlayerRelevant(world, candidate) }
     );
 
     assignedCandidates.add(bid.candidateId);
     assignedHeyaSlots.set(bid.heyaId, heyaSlotsUsed + 1);
   }
 
-  builder.updateWorldField("talentPool", {
-    ...tp,
-    candidates: currentCandidates,
-    pools: currentPools,
-  });
-
-  return builder.build();
+  return { nextCandidates: currentCandidates, nextPools: currentPools };
 }

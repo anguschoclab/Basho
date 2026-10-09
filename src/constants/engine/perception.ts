@@ -62,3 +62,60 @@ export const MOMENTUM_DECLINING_THRESHOLD = -2;
 
 // Momentum normalization offset
 export const MOMENTUM_NORMALIZATION_OFFSET = 5;
+
+// ── Meta-drift perception bands (canon §§6–8) ────────────────────────────────
+// Managers only ever see banded interpretations of completed yearly meta
+// assessments — never raw drift factors or kimarite counts.
+
+/** Share of a single tactical family that marks an era as "established". */
+export const META_DOMINANCE_ESTABLISHED_SHARE = 0.5;
+/** Share that marks a family lead as "emerging". */
+export const META_DOMINANCE_EMERGING_SHARE = 0.35;
+
+/** A family whose share grew by this much counts as "ascendant". */
+export const META_PRESENCE_ASCENDANT_DELTA = 0.05;
+/** A family whose share fell by this much counts as "waning". */
+export const META_PRESENCE_WANING_DELTA = 0.05;
+/** A family below this share is "absent" from the meta conversation. */
+export const META_PRESENCE_ABSENT_SHARE = 0.05;
+
+/** Dominant share change across the history window marking a real trend. */
+export const META_TREND_DELTA = 0.05;
+
+/** Fraction of active roster injured/kyujo → "elevated" injury climate. */
+export const META_INJURY_ELEVATED_FRACTION = 0.3;
+/** Fraction of active roster injured/kyujo → at least "normal". */
+export const META_INJURY_NORMAL_FRACTION = 0.1;
+
+// ── Archetype adaptation (canon §8–§11) ──────────────────────────────────────
+// Canon §8.1 minimum reaction delays are given in basho; ~9 weeks per basho
+// cycle. Repo archetypes map onto the canonical profiles by trait posture.
+
+/** Minimum weeks between first observing a dominant family and committing. */
+export const META_LAG_WEEKS: Record<string, number> = {
+  gambler: 9, // 1 basho — may act on short-window noise
+  scientist: 18, // 2 basho — data-driven but fast
+  tyrant: 18, // 2 basho — aggressive embrace
+  strategist: 27, // 3 basho
+  nurturer: 36, // 4 basho
+  strict: 36, // 4 basho
+  indulgent: 45, // 5 basho — stagnation failure mode
+  traditionalist: 54, // 6 basho — requires long-window confirmation
+};
+
+/** Consecutive consistent assessments required before committing (§8.2). */
+export const META_CONFIRMATIONS_REQUIRED: Record<string, number> = {
+  gambler: 0, // may act on noise
+  traditionalist: 2, // long-window confirmation
+  strict: 2,
+  default: 1,
+};
+
+/** Identity rigidity threshold enabling counter-meta posture (canon §11). */
+export const META_COUNTER_RIGIDITY_TRADITION = 60;
+
+/** Quirks that enable counter-meta posture independent of traits (§11). */
+export const META_COUNTER_QUIRKS = new Set(["Old-School Stickler", "Cold Pragmatist"]);
+
+/** Bid multiplier bonus applied when a candidate matches the family bias. */
+export const META_BID_FAMILY_BONUS = 0.3;
