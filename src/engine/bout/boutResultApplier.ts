@@ -33,7 +33,7 @@ function computeUpdatedStandings(
   winner: Rikishi,
   loser: Rikishi,
   isFusensho: boolean
-): Map<string, { wins: number; losses: number; absences: number }> {
+): Map<string, { wins: number; losses: number; absences?: number }> {
   const standings = new Map(basho.standings);
   const wRec = standings.get(winner.id) || { wins: 0, losses: 0, absences: 0 };
   const lRec = standings.get(loser.id) || { wins: 0, losses: 0, absences: 0 };

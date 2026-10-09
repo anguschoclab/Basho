@@ -189,7 +189,7 @@ function reviewNonFinancialMerger(world: WorldState, heya: Heya, builder: Impact
 /**
  * Welfare review escalation — sanctioned stables face prestige erosion.
  */
-function reviewWelfareSanctions(world: WorldState, heya: Heya, builder: ImpactBuilder): void {
+function reviewWelfareSanctions(heya: Heya, builder: ImpactBuilder): void {
   const welfareState = heya.welfareState;
   if (welfareState && welfareState.complianceState === "sanctioned") {
     builder.logEvent(
@@ -334,7 +334,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
 
     reviewFinancialInsolvency(world, heya, benefactorsByIchimon, builder);
     reviewNonFinancialMerger(world, heya, builder);
-    reviewWelfareSanctions(world, heya, builder);
+    reviewWelfareSanctions(heya, builder);
 
     // === Council scandal reaction ===
     if (scandalScore >= 40) {
