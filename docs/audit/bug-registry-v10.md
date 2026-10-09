@@ -311,8 +311,14 @@ included). Welfare risk/compliance/sanctions now tick during basho weeks,
 positioned after health (welfare gates read `injuryStatus.severity`).
 Remaining noted smell: bashoPipeline runs staff+scouting before health,
 offSeason after — both internally consistent, no proven dependency bug.
-Still open: phase-order read-before-write sweep, shallow-merge wipe
-census beyond the sites already fixed.
+Phase-order read-before-write sweep — **CLEAR**: `transientContext` is
+written by both `phase01_daily_economy` and `phase02_context`, but
+`preserveRevenueExpenses` explicitly merges the daily deltas rather than
+wiping them; no write-then-read inversion found.
+Shallow-merge wipe census — **CLEAR**: resolver merges only at top level,
+so nested-object payloads replace wholesale; all 10 nested-update call
+sites audited write complete objects (`currentBashoRecord` is exactly
+`{wins, losses}`; merger facilities rebuild constructs full objects).
 
 ### V10-R03: Dead provider — `react-query` — FIXED
 
