@@ -69,6 +69,9 @@ export const selectRecentEvents = createSelector((world: WorldState) => {
     rivalry: [] as EngineEvent[],
     governance: [] as EngineEvent[],
     welfare: [] as EngineEvent[],
+    basho: [] as EngineEvent[],
+    milestone: [] as EngineEvent[],
+    facility: [] as EngineEvent[],
   };
 
   for (const e of recentEvents) {
@@ -88,6 +91,9 @@ export const selectRecentEvents = createSelector((world: WorldState) => {
       e.type.startsWith("WELFARE")
     )
       buckets.welfare.push(e);
+    else if (e.category === "basho" || e.category === "match") buckets.basho.push(e);
+    else if (e.category === "milestone") buckets.milestone.push(e);
+    else if (e.category === "facility") buckets.facility.push(e);
   }
 
   return buckets;

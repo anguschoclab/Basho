@@ -331,11 +331,24 @@ or wire. (209 baseline orphans: 192 `intentional` + 17 `genuine`; ~93 of the
 `.tsx`, ~37 page `.tsx`, and 63 constants files are unmeasured while
 thresholds gate at 70–75%.
 
-### V10-R07: WS9 drops — 11 event categories never surface in the digest
+### V10-R07: WS9 drops — event categories missing from digest — FIXED (partial)
 
-`truthLevel` field written but unread; worker `ERROR` events now render
-(B04) but the digest drops 11 categories. Optimistic toasts on
-fire-and-forget commands remain for commands lacking worker `ERROR` posts.
+`selectRecentEvents` bucketed 8 categories but `buildEventSections`
+rendered only training/scouting/economy (+narrative, +injuries) — media,
+career, rivalry, governance, welfare were collected then discarded, and
+basho/milestone/facility/match were never bucketed. Producer census
+confirmed real emitters for every dropped category (EventBus factories +
+`builder.logEvent` call sites).
+**Fixed:** selectors gains `basho`(+match)/`milestone`/`facility` buckets;
+`buildEventSections` renders all eleven buckets with BardEngine section
+titles where templates exist (`governance`/`milestones`/`media` — the
+templates were already shipped but never wired).
+**Test:** `digestDroppedCategories.test.ts` — 9 category→section cases.
+**Remaining (deferred):** `truthLevel` is write-defaulted to `"public"`,
+never read, and no producer sets a non-public value — aspirational
+fog-of-war schema; recommend deleting the field or wiring producers when
+a private-intel surface lands. Optimistic toasts on fire-and-forget
+commands remain for commands lacking worker `ERROR` posts.
 
 ### V10-R08: WS8 residuals — partially fixed
 

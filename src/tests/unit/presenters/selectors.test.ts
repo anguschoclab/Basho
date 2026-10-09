@@ -212,6 +212,9 @@ describe("selectRecentEvents", () => {
       rivalry: [],
       governance: [],
       welfare: [],
+      basho: [],
+      milestone: [],
+      facility: [],
     });
   });
 

@@ -137,19 +137,67 @@ export function buildEventSections(world: WorldState): DigestSection[] {
   const econItems = eventBuckets.economy.map(mapEventToItem);
 
   const sectionRng = new SeededRNG((world.seed || "section") + "_" + world.week);
+  const sectionTitle = (path: string, fallback: string) => {
+    const text = BardEngine.resolve(sectionRng, path).text;
+    return text && !text.includes("[MISSING") ? text : fallback;
+  };
   if (narrativeItems.length)
     sections.push({ id: "narrative", title: "Internal Intelligence", items: narrativeItems });
+  if (eventBuckets.basho.length)
+    sections.push({ id: "basho", title: "Basho", items: eventBuckets.basho.map(mapEventToItem) });
+  if (eventBuckets.career.length)
+    sections.push({
+      id: "career",
+      title: "Career & Roster",
+      items: eventBuckets.career.map(mapEventToItem),
+    });
+  if (eventBuckets.milestone.length)
+    sections.push({
+      id: "milestone",
+      title: sectionTitle("ui.digest.sections.milestones", "Milestones"),
+      items: eventBuckets.milestone.map(mapEventToItem),
+    });
+  if (eventBuckets.rivalry.length)
+    sections.push({
+      id: "rivalry",
+      title: "Rivalries",
+      items: eventBuckets.rivalry.map(mapEventToItem),
+    });
+  if (eventBuckets.governance.length)
+    sections.push({
+      id: "governance",
+      title: sectionTitle("ui.digest.sections.governance", "Governance"),
+      items: eventBuckets.governance.map(mapEventToItem),
+    });
+  if (eventBuckets.welfare.length)
+    sections.push({
+      id: "welfare",
+      title: "Welfare & Compliance",
+      items: eventBuckets.welfare.map(mapEventToItem),
+    });
+  if (eventBuckets.media.length)
+    sections.push({
+      id: "media",
+      title: sectionTitle("ui.digest.sections.media", "Media"),
+      items: eventBuckets.media.map(mapEventToItem),
+    });
+  if (eventBuckets.facility.length)
+    sections.push({
+      id: "facility",
+      title: "Facilities",
+      items: eventBuckets.facility.map(mapEventToItem),
+    });
   if (trainingItems.length)
     sections.push({
       id: "training",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.training").text,
+      title: sectionTitle("ui.digest.sections.training", "Training"),
       items: trainingItems,
     });
   if (scoutItems.length) sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
   if (econItems.length)
     sections.push({
       id: "economy",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text,
+      title: sectionTitle("ui.digest.sections.economy", "Economy"),
       items: econItems,
     });
 
