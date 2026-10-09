@@ -267,12 +267,19 @@ other). Perf suite including `yokozunaPromotionAutoSim` re-verified.
 
 - **Status:** FIXED
 
-### V10-R01: `sendCommand` rejection surface incomplete
+### V10-R01: `sendCommand` rejection surface — VERIFIED CLOSED
 
 Worker error posts for `SCOUT_CANDIDATE`/`SCOUT_POOL` exist in the
-refactored `commands/recruitment.ts` (parallel-session extraction), but a
-symmetry audit across all 58 handlers for silent-failure paths is still
-open. **Cluster:** W-residual.
+refactored `commands/recruitment.ts`. Symmetry audit completed this pass:
+the rejection loop is closed end-to-end — `pendingTick` gate →
+`commandRejected` → `GlobalErrorBanner` toast (with return-`false` for
+callers); handler throw → worker `ERROR` → `error` state; crash →
+`onerror`/`onmessageerror` → failure state. `useWorkerSync` correctly
+defers `LOAD_WORLD` on `pendingTick`. Only async handler is
+`TICK_MULTIPLE_DAYS` — the exact one the gate covers.
+**Invariant to preserve:** non-tick command handlers must stay
+synchronous — an `await` inside one would reopen interleaving, since
+non-tick commands don't set `pendingTick`.
 
 ### V10-R02: WS1/WS2 residual hunts (agents rate-limited — partially executed)
 
@@ -287,9 +294,15 @@ shared-RNG helpers (`describeAttribute`/`describeAggression`/
 re-exports removed; `describeTrainingEffect` kept (live caller:
 `BeyaWideRegime`). The call-order-dependence hazard is gone entirely
 rather than re-seeded.
+`?? N` NaN-masking survey — **SURVEYED, CLEAR**: 866 `?? <num>` sites in
+`src/engine` default missing fields (`undefined`/`null`), not computed
+NaN; the only `??`-inside-`Math.*` sites (`bout/narrative/frames.ts`)
+protect the input. All presenter divisions are denominator-guarded
+(ternary / early-return / `Math.max(1, …)` / constant); UI `Number(v) || 0`
+catches NaN. No live masking hazard found.
 Still open: phase-order read-before-write sweep, `cyclePhase` unreachable
-states, `bashoPipeline` vs `offSeasonPipeline` divergence, `?? N` NaN-masking
-survey, shallow-merge wipe census beyond the sites already fixed.
+states, `bashoPipeline` vs `offSeasonPipeline` divergence, shallow-merge
+wipe census beyond the sites already fixed.
 
 ### V10-R03: Dead provider — `react-query` — FIXED
 
@@ -338,10 +351,21 @@ fire-and-forget commands remain for commands lacking worker `ERROR` posts.
   `core.hooksPath` is set on this clone.
 - 9 scripts referenced nowhere (vs 5 documented manual tools).
 
-### V10-R09: WS3-06 — bashoSlice mutations ungated during pendingTick
+### V10-R09: WS3-06 — bashoSlice mutations ungated during pendingTick — FIXED
 
-Documented v5 residual; still present. Gate reducer mutations on
-`pendingTick` like the sync effect.
+The deferred `LOAD_WORLD` in `useWorkerSync` did not rescue mid-tick
+bashoSlice writes: the tick's `WORLD_UPDATED` dispatches `updateWorld`,
+which replaces `state.world` outright (no `uiWorldRevision` bump), so the
+deferred sync pushes the worker's own world back — the interactive write
+was silently lost. Reachable via `endDay`→`advanceDay` (TICK_DAY) followed
+by a fast bout click, or `simulateAllBouts`' `startTransition` dispatch
+landing after `pendingTick` flips.
+**Fixed:** `useFlowActions` gates all world-mutating dispatchers
+(`startBasho`/`simulateBout`/`simulateAllBouts`/`endBasho`/`setBoutTactic`)
+through `dispatchWorldMutation`, which drops mid-tick with a
+`commandRejected` toast — same mechanism as `sendCommand`. The gate runs
+inside the `startTransition` callback so it re-checks at execution time.
+**Test:** `flowActionsPendingTick.test.tsx` — 5 drop cases + 3 pass-through.
 
 ### V10-R10: `buildAIContext` still orphaned — FIXED
 

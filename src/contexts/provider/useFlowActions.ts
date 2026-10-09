@@ -7,9 +7,10 @@
 
 import { useCallback, useMemo } from "react";
 import type { WorldState } from "@/engine/types/world";
-import type { GameState, GamePhase } from "../gameTypes";
+import type { GameState, GamePhase, GameAction } from "../gameTypes";
 import * as actions from "../gameActions";
 import { useGameStore } from "@/store/gameStore";
+import { warn } from "@/engine/utils/Logger";
 
 export function useFlowActions(
   state: GameState,
@@ -42,23 +43,48 @@ export function useFlowActions(
     [dispatch]
   );
 
-  const startBasho = useCallback(() => dispatch(actions.startBasho()), [dispatch]);
+  // World-mutating bashoSlice dispatches must not fire while pendingTick:
+  // useWorkerSync defers the LOAD_WORLD sync, and the in-flight tick's
+  // WORLD_UPDATED then replaces state.world before the deferred sync runs —
+  // the main-thread write is silently lost. Same gate as sendCommand, same
+  // user-visible notice.
+  const dispatchWorldMutation = useCallback(
+    (label: string, action: GameAction) => {
+      if (useGameStore.getState().pendingTick) {
+        const notice = `Action "${label}" dropped - tick in progress`;
+        warn(notice, "GameContext");
+        useGameStore.setState({ commandRejected: notice });
+        return;
+      }
+      dispatch(action);
+    },
+    [dispatch]
+  );
+
+  const startBasho = useCallback(
+    () => dispatchWorldMutation("START_BASHO", actions.startBasho()),
+    [dispatchWorldMutation]
+  );
   const advanceDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
   const simulateBout = useCallback(
-    (index: number, boutId?: string) => dispatch(actions.simulateBout(index, boutId)),
-    [dispatch]
+    (index: number, boutId?: string) =>
+      dispatchWorldMutation("SIMULATE_BOUT", actions.simulateBout(index, boutId)),
+    [dispatchWorldMutation]
   );
   const setBoutTactic = useCallback(
     (id: string, tactic: import("@/engine/types/combat").BoutTactic) =>
-      dispatch(actions.setBoutTactic(id, tactic)),
-    [dispatch]
+      dispatchWorldMutation("SET_BOUT_TACTIC", actions.setBoutTactic(id, tactic)),
+    [dispatchWorldMutation]
   );
   const simulateAllBouts = useCallback(
-    () => startTransition(() => dispatch(actions.simulateAllBouts())),
-    [dispatch, startTransition]
+    () => startTransition(() => dispatchWorldMutation("SIMULATE_ALL_BOUTS", actions.simulateAllBouts())),
+    [dispatchWorldMutation, startTransition]
   );
   const endDay = useCallback(() => dispatch(actions.endDay()), [dispatch]);
-  const endBasho = useCallback(() => dispatch(actions.endBasho()), [dispatch]);
+  const endBasho = useCallback(
+    () => dispatchWorldMutation("END_BASHO", actions.endBasho()),
+    [dispatchWorldMutation]
+  );
   const simFullBasho = useCallback(() => {
     // Route through the worker as TICK_MULTIPLE_DAYS with enough days to
     // finish the remaining basho days. The pipeline's phase01_basho_bouts
