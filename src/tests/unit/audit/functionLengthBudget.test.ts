@@ -77,8 +77,8 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
 
   "src/engine/bout/boutGrip.ts::evolveGripGeometry": { loc: 178, kind: "function" },
 
-  "src/pages/SchedulePage.tsx::SchedulePage": { loc: 176, kind: "function" },
-  "src/components/scouting/OpponentScoutingTab.tsx::OpponentScoutingTab": { loc: 174, kind: "function" },
+
+
   "src/components/rikishi/RankBadge.tsx::RankBadge": { loc: 173, kind: "function" },
   "src/engine/lifecycle/rookieFactory.ts::_generateRookie": { loc: 173, kind: "function" },
   "src/engine/lifecycle/PrizeDistribution.ts::distributePrizes": { loc: 173, kind: "function" },
