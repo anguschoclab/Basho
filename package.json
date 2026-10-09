@@ -5,10 +5,6 @@
   "version": "1.0.0",
   "type": "module",
   "main": "out/main/main.cjs",
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "eslint --fix",
-    "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
-  },
   "scripts": {
     "preinstall": "node ./scripts/check-package-manager.mjs",
     "dev": "vite",
@@ -41,7 +37,8 @@
     "electron:build:win": "electron-vite build && electron-builder --win",
     "electron:build:all": "electron-vite build && electron-builder -mwl",
     "electron:build:dir": "electron-vite build && electron-builder --mac --dir",
-    "electron:pack": "electron-vite build && electron-builder --dir"
+    "electron:pack": "electron-vite build && electron-builder --dir",
+    "prepare": "husky"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.23",
@@ -106,6 +103,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "17.12.0",
+    "husky": "9.1.7",
     "jsdom": "^30.0.1",
     "postcss": "8.5.28",
     "prettier": "^3.9.9",

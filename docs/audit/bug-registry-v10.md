@@ -300,9 +300,19 @@ NaN; the only `??`-inside-`Math.*` sites (`bout/narrative/frames.ts`)
 protect the input. All presenter divisions are denominator-guarded
 (ternary / early-return / `Math.max(1, …)` / constant); UI `Number(v) || 0`
 catches NaN. No live masking hazard found.
-Still open: phase-order read-before-write sweep, `cyclePhase` unreachable
-states, `bashoPipeline` vs `offSeasonPipeline` divergence, shallow-merge
-wipe census beyond the sites already fixed.
+`cyclePhase` unreachable-states sweep — **CLEAR**: all five phases have
+writers (pre→active via preflight; active→post via interactive endBasho;
+post→interim; interim→banzuke_reveal at ≤14d; reveal→pre at ≤7d); the
+multi-day clamp halts exactly on thresholds so no phase can be skipped.
+`bashoPipeline` vs `offSeasonPipeline` divergence — **FIXED (welfare)**:
+`phase01_week_welfare` was excluded on a false rationale ("injury rolls
+handled by boutResolver" — rolls live in `phase01_week_health`, which is
+included). Welfare risk/compliance/sanctions now tick during basho weeks,
+positioned after health (welfare gates read `injuryStatus.severity`).
+Remaining noted smell: bashoPipeline runs staff+scouting before health,
+offSeason after — both internally consistent, no proven dependency bug.
+Still open: phase-order read-before-write sweep, shallow-merge wipe
+census beyond the sites already fixed.
 
 ### V10-R03: Dead provider — `react-query` — FIXED
 
@@ -358,11 +368,24 @@ commands remain for commands lacking worker `ERROR` posts.
   replaced with blanket `@/engine/*` + `@/engine/**/*` deny allowing only
   `@/engine/types/**` and `@/engine/holiday` (all current UI imports are
   type-only); lint clean.
-- Perf-gate job structurally over-budget (S4 25-yr sim inside a 15-min job).
-- Husky dead on fresh clones (no `prepare`, husky absent from devDeps);
-  `lint-staged` block fully dead. Fires locally only because
-  `core.hooksPath` is set on this clone.
-- 9 scripts referenced nowhere (vs 5 documented manual tools).
+- ~~Perf-gate job structurally over-budget~~ **STALE** — perf suite moved
+  to `slow-tests.yml` (30-min job, ~4 min observed); `perf-gate.yml` runs
+  only `bench-pipelines` (S1/S2/S3 bench, seconds-to-minutes). The 25-yr
+  diagnostic sim is invoked by no workflow.
+- ~~Husky dead on fresh clones~~ **FIXED** — `husky@9.1.7` added to
+  devDeps + `"prepare": "husky"` script; fresh clones get `.husky/_`
+  shims + `core.hooksPath` on install. Dead `lint-staged` config block
+  removed (lint-staged was never installed; the hook runs `lint:commit`).
+- ~~`perf-gate.yml` invoked `npx tsx`~~ **FIXED** — both steps switched
+  to `bun` (tsx was never a declared dep; worked in CI only via npx
+  on-the-fly fetch — unpinned supply-chain hole).
+- Scripts referenced nowhere (manual tools or dead — triage needed,
+  not deleted): `analyzeNarrativeDeps`, `check-jsdoc`,
+  `determinism-double-run`, `emitNarrativeModules`, `list-models`,
+  `measure-breakdown`, `measure-events`, `measure-growth`,
+  `measure-rikishi`, `repro-year`, `test-agents`, `verify-training-decay`.
+  Some are legitimate manual dev tools; recommend a `scripts/README` or
+  deletion decision rather than silent removal.
 
 ### V10-R09: WS3-06 — bashoSlice mutations ungated during pendingTick — FIXED
 
