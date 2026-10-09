@@ -5,12 +5,7 @@
  * import footer) and the delete-confirmation alert.
  */
 
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Save, Trash2, Upload, Clock, ArrowRight, Star } from "lucide-react";
 import { formatSaveDate, type SaveSlotInfo } from "@/presenters/engineAccess";
 import type { BashoName } from "@/engine/types/basho";
@@ -61,10 +57,7 @@ function SaveSlotCard({
             <span className="font-display font-bold text-lg group-hover:text-primary transition-colors">
               {slot.playerHeyaName || "Vagrant Oyakata"}
             </span>
-            <Badge
-              variant="secondary"
-              className="text-[10px] font-bold uppercase tracking-widest"
-            >
+            <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-widest">
               {slot.slotName === "autosave" ? "Dynamic" : "Stable"}
             </Badge>
           </div>
@@ -158,9 +151,11 @@ export function ArchiveDialogContent({
       <ScrollArea className="max-h-[400px] mt-4 pr-1">
         <div className="space-y-3">
           {saveSlots.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-12 italic opacity-60">
-              No archival records detected.
-            </p>
+            <EmptyState
+              icon={Save}
+              title="No archival records detected"
+              description="Start a new career to create save data."
+            />
           ) : (
             saveSlots.map((slot) => (
               <SaveSlotCard
@@ -216,8 +211,8 @@ export function DeleteSlotDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete save?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete {confirmDelete?.replace("slot_", "Slot ")}? This
-            action cannot be undone.
+            Are you sure you want to delete {confirmDelete?.replace("slot_", "Slot ")}? This action
+            cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
