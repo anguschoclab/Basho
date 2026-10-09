@@ -48,7 +48,6 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 298, kind: "function" },
   "src/engine/simulation/TournamentSimulator.ts::simulateEntireBasho": { loc: 273, kind: "function" },
 
-  "src/engine/systems/governance/governanceReview.ts::runGovernanceReview": { loc: 264, kind: "function" },
   "src/engine/matchmaking/DramaMatchmaker.ts::scoreDrama": { loc: 255, kind: "function" },
   "src/engine/npcAI/execution.ts::executeAgentDecisions": { loc: 251, kind: "function" },
   "src/engine/bout/physics/tickBeltBattle.ts::tickBeltBattle": { loc: 241, kind: "function" },

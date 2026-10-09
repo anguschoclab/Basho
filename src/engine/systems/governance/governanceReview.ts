@@ -9,6 +9,7 @@
 import { stableSort } from "../../utils/sort";
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
+import type { ImpactBuilder } from "../../core/ImpactBuilder";
 import * as governance from "./ScandalService";
 import { generateGovernanceHeadline } from "../media/MediaService";
 import { issueBailoutLoanIfNeeded } from "../../loans";
@@ -58,6 +59,257 @@ function archiveRikishiToColdStorage(rikishi: import("../../types/rikishi").Riki
 }
 
 /**
+ * Financial insolvency check: scandal report, bailout loans,
+ * faction-solidarity gifts, and insolvency-triggered mergers.
+ */
+function reviewFinancialInsolvency(
+  world: WorldState,
+  heya: Heya,
+  benefactorsByIchimon: Map<string, Heya[]>,
+  builder: ImpactBuilder
+): void {
+  if (heya.funds < 0 && heya.runwayBand === "desperate") {
+    // Queue heya update for riskIndicators
+    builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: true } });
+
+    const scandalImpact = governance.reportScandal(
+      world,
+      heya.id,
+      "minor",
+      "Financial insolvency at basho end"
+    );
+    builder.merge(scandalImpact);
+
+    // Queue event instead of calling EventBus directly
+    builder.logEvent(
+      "GOVERNANCE_RULING",
+      "narrative",
+      {
+        incident: "financial_insolvency",
+        reason: "Stable funds below zero at basho end.",
+        money: heya.funds,
+        status: heya.runwayBand,
+      },
+      { heyaId: heya.id, importance: "headline" }
+    );
+
+    // === Loans/benefactors escalation (Constitution §4.4) ===
+    if (heya.funds < LOAN_ISSUANCE_THRESHOLD) {
+      builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
+    }
+
+    // v1.7 Faction Solidarity (Traditional Bailouts)
+    if (heya.ichimon && heya.id !== world.playerHeyaId) {
+      // Find a wealthy faction-mate to provide a gift
+      const potentialBenefactors = benefactorsByIchimon.get(heya.ichimon) || [];
+      const benefactor = potentialBenefactors.find((h) => h.id !== heya.id);
+
+      if (benefactor) {
+        const giftAmount = FACTION_BAILOUT_AMOUNT;
+        // Queue heya updates for funds transfer
+        builder.updateHeya(benefactor.id, { funds: benefactor.funds - giftAmount });
+        builder.updateHeya(heya.id, { funds: heya.funds + giftAmount });
+
+        builder.logEvent(
+          "GOVERNANCE_RULING",
+          "narrative",
+          {
+            incident: "ichimon_bailout",
+            heyaname: heya.name,
+            heya: heya.name,
+            rival: benefactor.name,
+            money: giftAmount,
+            heyaId: benefactor.id,
+          },
+          { heyaId: heya.id, importance: "major" }
+        );
+      }
+    }
+    // === Insolvency-triggered merger for NPC stables with no rescue available ===
+    // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+    if (
+      heya.funds < MERGER_THRESHOLD &&
+      heya.id !== world.playerHeyaId &&
+      world.heyas.size > HEYA_FLOOR
+    ) {
+      const targetId = findMergerTarget(world, heya.id);
+      if (targetId) {
+        builder.logEvent(
+          "GOVERNANCE_RULING",
+          "narrative",
+          {
+            incident: "insolvency_merger",
+            reason: "extreme_debt",
+            money: heya.funds,
+          },
+          { heyaId: heya.id, importance: "headline" }
+        );
+        // Queue merger impact
+        builder.merge(executeMerger(world, heya.id, targetId, "financial_insolvency"));
+      }
+    }
+  } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
+    // Queue heya update to clear financial risk indicator
+    builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: false } });
+  }
+}
+
+/**
+ * Non-financial merger: chronic underperformance + prestige collapse.
+ * Small stables with prolonged underperformance and collapsed prestige
+ * are forced to merge even if financially solvent.
+ * Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+ */
+function reviewNonFinancialMerger(world: WorldState, heya: Heya, builder: ImpactBuilder): void {
+  if (
+    heya.id !== world.playerHeyaId &&
+    world.heyas.size > HEYA_FLOOR &&
+    (heya.consecutiveUnderperformanceBasho ?? 0) >= CHRONIC_UNDERPERFORMANCE_BASHO &&
+    heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
+    getHeyaRoster(world, heya.id).length <= NON_FINANCIAL_MERGER_MAX_ROSTER &&
+    heya.funds >= MERGER_THRESHOLD
+  ) {
+    const targetId = findMergerTarget(world, heya.id);
+    if (targetId) {
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "narrative",
+        {
+          incident: "non_financial_merger",
+          reason: "chronic_underperformance",
+          prestigeBand: heya.prestigeBand,
+        },
+        { heyaId: heya.id, importance: "headline" }
+      );
+      builder.merge(executeMerger(world, heya.id, targetId, "chronic_underperformance"));
+    }
+  }
+}
+
+/**
+ * Welfare review escalation — sanctioned stables face prestige erosion.
+ */
+function reviewWelfareSanctions(world: WorldState, heya: Heya, builder: ImpactBuilder): void {
+  const welfareState = heya.welfareState;
+  if (welfareState && welfareState.complianceState === "sanctioned") {
+    builder.logEvent(
+      "WELFARE_COMPLIANCE",
+      "welfare",
+      {
+        status: "post_basho_sanction_review",
+        heyaname: heya.name,
+        risk: welfareState.welfareRisk,
+      },
+      { heyaId: heya.id }
+    );
+
+    // Sanctioned stables face additional prestige erosion
+    const currentIdx = bandIndex(heya.prestigeBand);
+    if (currentIdx > 0) {
+      const newBand = PRESTIGE_ORDER[currentIdx - 1];
+      // Queue heya update for prestigeBand
+      builder.updateHeya(heya.id, { prestigeBand: newBand });
+
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "narrative",
+        {
+          incident: "prestige_erosion",
+          status: newBand,
+          reason: "sanctions_active",
+        },
+        { heyaId: heya.id, importance: "notable" }
+      );
+    }
+  }
+}
+
+/**
+ * Merger/closure pressure for extremely small stables (roster < 3).
+ * NPC stables at roster ≤ 1 merge; player stables get a warning only.
+ */
+function reviewRosterCollapse(world: WorldState, heya: Heya, builder: ImpactBuilder): void {
+  const rosterSize = getHeyaRoster(world, heya.id).length;
+  if (rosterSize < 3) {
+    if (heya.id !== world.playerHeyaId) {
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "narrative",
+        {
+          incident: "low_roster_warning",
+          reason: "roster_critically_low",
+          score: rosterSize,
+        },
+        { heyaId: heya.id, importance: "major" }
+      );
+
+      // NEW: Generate Media Headline (Phase 3.4 SSOT)
+      builder.merge(
+        generateGovernanceHeadline({
+          world,
+          heyaId: heya.id,
+          templatePath: "institutional.governance.low_roster_headline",
+          severity: "national",
+        })
+      );
+
+      // If roster is 0 or 1, mark for eventual closure (NPC only)
+      // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+      if (rosterSize <= 1 && world.heyas.size > HEYA_FLOOR) {
+        builder.logEvent(
+          "GOVERNANCE_RULING",
+          "narrative",
+          {
+            incident: "merger_imminent",
+            reason: "recruitment_crisis",
+            score: rosterSize,
+          },
+          { heyaId: heya.id, importance: "headline" }
+        );
+
+        // Execute actual merger
+        const targetId = findMergerTarget(world, heya.id);
+        if (targetId) {
+          builder.merge(executeMerger(world, heya.id, targetId, "critically_low_roster"));
+        }
+      }
+    } else {
+      // Player stable — warn but don't force closure
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "narrative",
+        {
+          incident: "player_roster_warning",
+          reason: "player_low_roster",
+          score: rosterSize,
+        },
+        { heyaId: heya.id, importance: "major" }
+      );
+    }
+  }
+}
+
+/**
+ * Succession check — aging oyakata (63+) triggers a retirement warning.
+ */
+function reviewOyakataSuccession(world: WorldState, heya: Heya, builder: ImpactBuilder): void {
+  const oyakata = world.oyakata.get(heya.oyakataId);
+  if (oyakata && oyakata.age >= 63) {
+    builder.logEvent(
+      "GOVERNANCE_RULING",
+      "narrative",
+      {
+        shikona: oyakata.name,
+        threshold: oyakata.age,
+        incident: "oyakata_retirement_warning",
+        reason: oyakata.age >= 65 ? "mandatory_retirement" : "approaching_retirement",
+      },
+      { heyaId: heya.id, importance: oyakata.age >= 65 ? "major" : "notable" }
+    );
+  }
+}
+
+/**
  * Post-basho governance: institutional sanctions, council reactions,
  * loans/benefactors escalation, succession checks, merger/closure pressure.
  * Returns StateImpact describing governance changes instead of mutating state.
@@ -78,155 +330,11 @@ export function runGovernanceReview(world: WorldState): StateImpact {
   }
 
   for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
-    const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
-    // === Financial insolvency check ===
-    if (heya.funds < 0 && heya.runwayBand === "desperate") {
-      // Queue heya update for riskIndicators
-      builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: true } });
-
-      const scandalImpact = governance.reportScandal(
-        world,
-        heya.id,
-        "minor",
-        "Financial insolvency at basho end"
-      );
-      builder.merge(scandalImpact);
-
-      // Queue event instead of calling EventBus directly
-      builder.logEvent(
-        "GOVERNANCE_RULING",
-        "narrative",
-        {
-          incident: "financial_insolvency",
-          reason: "Stable funds below zero at basho end.",
-          money: heya.funds,
-          status: heya.runwayBand,
-        },
-        { heyaId: heya.id, importance: "headline" }
-      );
-
-      // === Loans/benefactors escalation (Constitution §4.4) ===
-      if (heya.funds < LOAN_ISSUANCE_THRESHOLD) {
-        builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
-      }
-
-      // v1.7 Faction Solidarity (Traditional Bailouts)
-      if (heya.ichimon && heya.id !== world.playerHeyaId) {
-        // Find a wealthy faction-mate to provide a gift
-        const potentialBenefactors = benefactorsByIchimon.get(heya.ichimon) || [];
-        const benefactor = potentialBenefactors.find((h) => h.id !== heya.id);
-
-        if (benefactor) {
-          const giftAmount = FACTION_BAILOUT_AMOUNT;
-          // Queue heya updates for funds transfer
-          builder.updateHeya(benefactor.id, { funds: benefactor.funds - giftAmount });
-          builder.updateHeya(heya.id, { funds: heya.funds + giftAmount });
-
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "narrative",
-            {
-              incident: "ichimon_bailout",
-              heyaname: heya.name,
-              heya: heya.name,
-              rival: benefactor.name,
-              money: giftAmount,
-              heyaId: benefactor.id,
-            },
-            { heyaId: heya.id, importance: "major" }
-          );
-        }
-      }
-      // === Insolvency-triggered merger for NPC stables with no rescue available ===
-      // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
-      if (
-        heya.funds < MERGER_THRESHOLD &&
-        heya.id !== world.playerHeyaId &&
-        world.heyas.size > HEYA_FLOOR
-      ) {
-        const targetId = findMergerTarget(world, heya.id);
-        if (targetId) {
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "narrative",
-            {
-              incident: "insolvency_merger",
-              reason: "extreme_debt",
-              money: heya.funds,
-            },
-            { heyaId: heya.id, importance: "headline" }
-          );
-          // Queue merger impact
-          builder.merge(executeMerger(world, heya.id, targetId, "financial_insolvency"));
-        }
-      }
-    } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
-      // Queue heya update to clear financial risk indicator
-      builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: false } });
-    }
-
-    // === Non-financial merger: chronic underperformance + prestige collapse ===
-    // Small stables with prolonged underperformance and collapsed prestige
-    // are forced to merge even if financially solvent.
-    // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
-    if (
-      heya.id !== world.playerHeyaId &&
-      world.heyas.size > HEYA_FLOOR &&
-      (heya.consecutiveUnderperformanceBasho ?? 0) >= CHRONIC_UNDERPERFORMANCE_BASHO &&
-      heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
-      getHeyaRoster(world, heya.id).length <= NON_FINANCIAL_MERGER_MAX_ROSTER &&
-      heya.funds >= MERGER_THRESHOLD
-    ) {
-      const targetId = findMergerTarget(world, heya.id);
-      if (targetId) {
-        builder.logEvent(
-          "GOVERNANCE_RULING",
-          "narrative",
-          {
-            incident: "non_financial_merger",
-            reason: "chronic_underperformance",
-            prestigeBand: heya.prestigeBand,
-          },
-          { heyaId: heya.id, importance: "headline" }
-        );
-        builder.merge(executeMerger(world, heya.id, targetId, "chronic_underperformance"));
-      }
-    }
-
-    // === Welfare review escalation ===
-    if (welfareState && welfareState.complianceState === "sanctioned") {
-      builder.logEvent(
-        "WELFARE_COMPLIANCE",
-        "welfare",
-        {
-          status: "post_basho_sanction_review",
-          heyaname: heya.name,
-          risk: welfareState.welfareRisk,
-        },
-        { heyaId: heya.id }
-      );
-
-      // Sanctioned stables face additional prestige erosion
-      const currentIdx = bandIndex(heya.prestigeBand);
-      if (currentIdx > 0) {
-        const newBand = PRESTIGE_ORDER[currentIdx - 1];
-        // Queue heya update for prestigeBand
-        builder.updateHeya(heya.id, { prestigeBand: newBand });
-
-        builder.logEvent(
-          "GOVERNANCE_RULING",
-          "narrative",
-          {
-            incident: "prestige_erosion",
-            status: newBand,
-            reason: "sanctions_active",
-          },
-          { heyaId: heya.id, importance: "notable" }
-        );
-      }
-    }
+    reviewFinancialInsolvency(world, heya, benefactorsByIchimon, builder);
+    reviewNonFinancialMerger(world, heya, builder);
+    reviewWelfareSanctions(world, heya, builder);
 
     // === Council scandal reaction ===
     if (scandalScore >= 40) {
@@ -241,81 +349,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
       );
     }
 
-    // === Merger/closure pressure for extremely small stables ===
-    const rosterSize = getHeyaRoster(world, heya.id).length;
-    if (rosterSize < 3) {
-      if (heya.id !== world.playerHeyaId) {
-        builder.logEvent(
-          "GOVERNANCE_RULING",
-          "narrative",
-          {
-            incident: "low_roster_warning",
-            reason: "roster_critically_low",
-            score: rosterSize,
-          },
-          { heyaId: heya.id, importance: "major" }
-        );
-
-        // NEW: Generate Media Headline (Phase 3.4 SSOT)
-        builder.merge(
-          generateGovernanceHeadline({
-            world,
-            heyaId: heya.id,
-            templatePath: "institutional.governance.low_roster_headline",
-            severity: "national",
-          })
-        );
-
-        // If roster is 0 or 1, mark for eventual closure (NPC only)
-        // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
-        if (rosterSize <= 1 && world.heyas.size > HEYA_FLOOR) {
-          builder.logEvent(
-            "GOVERNANCE_RULING",
-            "narrative",
-            {
-              incident: "merger_imminent",
-              reason: "recruitment_crisis",
-              score: rosterSize,
-            },
-            { heyaId: heya.id, importance: "headline" }
-          );
-
-          // Execute actual merger
-          const targetId = findMergerTarget(world, heya.id);
-          if (targetId) {
-            builder.merge(executeMerger(world, heya.id, targetId, "critically_low_roster"));
-          }
-        }
-      } else {
-        // Player stable — warn but don't force closure
-        builder.logEvent(
-          "GOVERNANCE_RULING",
-          "narrative",
-          {
-            incident: "player_roster_warning",
-            reason: "player_low_roster",
-            score: rosterSize,
-          },
-          { heyaId: heya.id, importance: "major" }
-        );
-      }
-    }
-
-    // === Succession check — aging oyakata ===
-    const oyakata = world.oyakata.get(heya.oyakataId);
-    if (oyakata && oyakata.age >= 63) {
-      builder.logEvent(
-        "GOVERNANCE_RULING",
-        "narrative",
-        {
-          shikona: oyakata.name,
-          threshold: oyakata.age,
-          incident: "oyakata_retirement_warning",
-          reason: oyakata.age >= 65 ? "mandatory_retirement" : "approaching_retirement",
-        },
-        { heyaId: heya.id, importance: oyakata.age >= 65 ? "major" : "notable" }
-      );
-    }
+    reviewRosterCollapse(world, heya, builder);
+    reviewOyakataSuccession(world, heya, builder);
 
     // === Post-basho scandal score decay reward for clean basho ===
     if (scandalScore > 0 && heya.governanceStatus === "good_standing") {
