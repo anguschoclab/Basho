@@ -122,6 +122,24 @@ function tickAmbient(ctx: ReplayTickCtx, delta: number, W: number, H: number): v
   }
 }
 
+/** Reset the frame clock at the start of a play session. */
+export function beginReplaySession(refs: { lastTimeRef: React.MutableRefObject<number> }): void {
+  refs.lastTimeRef.current = 0;
+}
+
+/** Schedule the next animation frame into the anim ref. */
+export function scheduleNextFrame(
+  animRef: React.MutableRefObject<number | null>,
+  loop: (timestamp: number) => void
+): void {
+  animRef.current = requestAnimationFrame(loop);
+}
+
+/** Cancel any in-flight animation frame. */
+export function cancelReplayLoop(animRef: React.MutableRefObject<number | null>): void {
+  if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+}
+
 /**
  * One simulation tick. Returns false when the replay finished this frame;
  * the caller decides whether to schedule another RAF.

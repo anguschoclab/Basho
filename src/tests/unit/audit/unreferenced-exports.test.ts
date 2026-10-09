@@ -382,14 +382,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Public type for terminal kimarite context",
   "src/engine/bout/terminalKimarite.ts:pickTerminalKimarite":
     "Internal picker exercised directly by terminalKimarite.test.ts",
-  "src/engine/npcAI/ArchetypeAdaptation.ts:MetaAdaptationState":
-    "Public type for meta-adaptation state persisted on oyakata.memory",
-  "src/engine/npcAI/ArchetypeAdaptation.ts:updateMetaAdaptation":
-    "Core adaptation updater; called internally by evaluateAdaptation and directly by archetypeAdaptation.test.ts",
-  "src/engine/npcAI/execution.ts:applyCrisisRescue":
-    "Extracted crisis-rescue helper; called inside execution.ts and directly by benefactorSeek.test.ts",
-  "src/components/rikishi/RikishiPageSections.tsx:RikishiPageSections":
-    "Imported by pages/RikishiPage.tsx; auditor misses the grouped import",
 };
 
 /**

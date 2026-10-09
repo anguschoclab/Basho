@@ -33,13 +33,13 @@ describe("RivalryService — reachability", () => {
 
 describe("RivalriesPage — UI surface", () => {
   it("reads rivalry state via projectRivalriesPage projection", () => {
-    const page = readSrcFile("pages/RivalriesPage.tsx");
-    expect(page).toContain("projectRivalriesPage");
+    const hook = readSrcFile("hooks/useRivalriesDerived.ts");
+    expect(hook).toContain("projectRivalriesPage");
   });
 
   it("renders RivalryCard components for each rivalry pair", () => {
-    const page = readSrcFile("pages/RivalriesPage.tsx");
-    expect(page).toContain("RivalryCard");
+    const sections = readSrcFile("components/rivalries/RivalriesPageSections.tsx");
+    expect(sections).toContain("RivalryCard");
   });
 
   it("renders RivalriesHeader with heat summary", () => {

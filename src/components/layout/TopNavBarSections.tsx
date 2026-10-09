@@ -1,0 +1,322 @@
+/**
+ * TopNavBarSections.tsx
+ *
+ * Sections of TopNavBar — date/phase/funds context cluster, right-hand
+ * controls, the smart-advance hero button, and the basho progress rail.
+ */
+
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useGame } from "@/contexts/useGame";
+import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
+import { Dialog } from "@/components/ui/dialog";
+import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
+import { useTheme } from "@/hooks/useTheme";
+import { Button } from "@/components/ui/button";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { Sun, Moon, ChevronRight, Settings, Pause, Play } from "lucide-react";
+import { useGameStore } from "@/store/gameStore";
+import { formatYen } from "@/utils/engineUtils";
+import { getPlayerHeya } from "@/presenters/engineAccess";
+import { EraToneBadge } from "@/components/layout/EraToneBadge";
+import { HolidayDialog } from "@/components/layout/HolidayDialog";
+import type { EraTone } from "@/presenters/eraTone";
+import type { WorldState } from "@/presenters/uiDigest";
+
+const RUNWAY_COLORS: Record<string, string> = {
+  secure: "hsl(var(--success))",
+  comfortable: "hsl(145 55% 48%)",
+  tight: "hsl(var(--warning))",
+  critical: "hsl(var(--destructive))",
+  desperate: "hsl(var(--destructive))",
+};
+
+const PHASE_LABELS: Record<string, { label: string; color: string }> = {
+  active_basho: { label: "Tournament", color: "hsl(var(--gold))" },
+  pre_basho: { label: "Pre-Basho", color: "hsl(var(--west))" },
+  post_basho: { label: "Post-Basho", color: "hsl(var(--success))" },
+  interim: { label: "Interim", color: "hsl(var(--muted-foreground))" },
+  banzuke_reveal: { label: "Banzuke", color: "hsl(var(--primary))" },
+};
+
+/** Left cluster — date, phase, era tone, and player funds. */
+export function ContextCluster({ world }: { world: WorldState | null }) {
+  const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
+  const inBasho = world?.cyclePhase === "active_basho";
+  const bashoDay = world?.currentBasho?.day ?? 1;
+  const cyclePhase = world?.cyclePhase ?? "interim";
+  const phaseMeta = PHASE_LABELS[cyclePhase] ?? PHASE_LABELS.interim;
+
+  const yearLabel = world ? `Year ${world.year}` : "—";
+  const weekLabel = world ? `Wk ${world.calendar?.currentWeek ?? world.week}` : "—";
+
+  return (
+    <div className="hidden lg:flex items-center gap-4 flex-1">
+      {/* Date block */}
+      <div className="flex items-center gap-2">
+        <div className="flex flex-col">
+          <span
+            className="text-[9px] uppercase text-[hsl(var(--muted-foreground))]"
+            style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
+          >
+            Date
+          </span>
+          <span
+            className="text-[12px] font-semibold text-[hsl(var(--foreground)/0.85)] leading-tight tabular-nums"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {yearLabel} · {weekLabel}
+          </span>
+        </div>
+      </div>
+
+      {/* Phase block */}
+      <div
+        className="h-7 px-2.5 rounded flex items-center gap-2"
+        style={{
+          background: `${phaseMeta.color}18`,
+          border: `1px solid ${phaseMeta.color}35`,
+        }}
+      >
+        <div
+          className="w-1.5 h-1.5 rounded-full"
+          style={{
+            background: phaseMeta.color,
+            boxShadow: `0 0 5px ${phaseMeta.color}`,
+          }}
+        />
+        <span
+          className="text-[11px] font-semibold leading-none"
+          style={{
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "0.05em",
+            color: phaseMeta.color,
+          }}
+        >
+          {inBasho ? `Day ${bashoDay}` : phaseMeta.label}
+        </span>
+      </div>
+
+      {/* Era Tone badge — surfaces real world.meta.tone */}
+      {world?.meta?.tone && <EraToneBadge tone={world.meta.tone as EraTone} />}
+
+      {/* Funds block */}
+      {playerHeya && (
+        <TooltipWrap
+          content={
+            <div className="text-xs space-y-0.5">
+              <p className="font-semibold">{formatYen(playerHeya.funds)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                Runway · {playerHeya.runwayBand}
+              </p>
+            </div>
+          }
+          side="bottom"
+        >
+          <div className="flex flex-col cursor-help">
+            <span
+              className="text-[9px] uppercase text-[hsl(var(--muted-foreground))]"
+              style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
+            >
+              Funds
+            </span>
+            <span
+              className="text-[12px] font-semibold leading-tight tabular-nums"
+              style={{
+                fontFamily: "var(--font-mono)",
+                color:
+                  playerHeya.funds < 0
+                    ? "hsl(var(--destructive))"
+                    : (RUNWAY_COLORS[playerHeya.runwayBand ?? ""] ?? "hsl(var(--foreground))"),
+              }}
+            >
+              {playerHeya.funds >= 0
+                ? formatYen(playerHeya.funds)
+                : `-${formatYen(Math.abs(playerHeya.funds))}`}
+            </span>
+          </div>
+        </TooltipWrap>
+      )}
+    </div>
+  );
+}
+
+/** Right-hand controls — autosave dot, holiday, save/load, theme, settings, pause. */
+export function NavControls({ world, inBasho }: { world: WorldState | null; inBasho: boolean }) {
+  const { goOnHoliday } = useGame();
+  const { setTheme, resolvedTheme } = useTheme();
+  const autosaveStatus = useAutosaveIndicator();
+  const navigate = useNavigate();
+  const [showHolidayDialog, setShowHolidayDialog] = useState(false);
+  const isSimulating = useGameStore((s) => s.isSimulating);
+  const simPaused = useGameStore((s) => s.simPaused);
+  const sendCommand = useGameStore((s) => s.sendCommand);
+
+  return (
+    <>
+      {/* Autosave indicator */}
+      {world && autosaveStatus !== "idle" && (
+        <div
+          className="w-1.5 h-1.5 rounded-full"
+          style={{
+            background:
+              autosaveStatus === "saving" ? "hsl(var(--primary))" : "hsl(var(--success))",
+            animation: autosaveStatus === "saving" ? "pulse 1s ease-in-out infinite" : "none",
+          }}
+        />
+      )}
+
+      {/* Go on Holiday button — only during interim */}
+      {world && !inBasho && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 text-[10px] uppercase font-mono tracking-widest text-muted-foreground hover:text-foreground"
+          onClick={() => setShowHolidayDialog(true)}
+          tooltip="Skip ahead with safety gates"
+          tooltipSide="bottom"
+        >
+          Holiday
+        </Button>
+      )}
+      <Dialog open={showHolidayDialog} onOpenChange={setShowHolidayDialog}>
+        <HolidayDialog
+          onConfirm={(config) => {
+            goOnHoliday(config);
+            setShowHolidayDialog(false);
+          }}
+          onCancel={() => setShowHolidayDialog(false)}
+        />
+      </Dialog>
+
+      <SaveLoadDialog />
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+        aria-label="Toggle theme"
+        tooltip={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+        tooltipSide="bottom"
+      >
+        {resolvedTheme === "dark" ? (
+          <Sun className="h-3.5 w-3.5" />
+        ) : (
+          <Moon className="h-3.5 w-3.5" />
+        )}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+        onClick={() => navigate({ to: "/settings" })}
+        aria-label="Settings"
+        tooltip="Settings"
+        tooltipSide="bottom"
+      >
+        <Settings className="h-3.5 w-3.5" />
+      </Button>
+
+      {/* Pause/resume control — only while a multi-day sim is running */}
+      {isSimulating && (
+        <TooltipWrap content={simPaused ? "Resume simulation" : "Pause simulation"} side="left">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            aria-label={simPaused ? "Resume simulation" : "Pause simulation"}
+            aria-pressed={simPaused}
+            onClick={() => sendCommand({ type: simPaused ? "RESUME_SIM" : "PAUSE_SIM" })}
+          >
+            {simPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+          </Button>
+        </TooltipWrap>
+      )}
+    </>
+  );
+}
+
+/** Smart-advance hero button — routes or advances by phase. */
+export function AdvanceButton({ world }: { world: WorldState }) {
+  const { advanceOneDay } = useGame();
+  const navigate = useNavigate();
+  const inBasho = world.cyclePhase === "active_basho";
+  const bashoDay = world.currentBasho?.day ?? 1;
+  const cyclePhase = world.cyclePhase ?? "interim";
+
+  const label = inBasho
+    ? `Day ${bashoDay}`
+    : world.globalCup?.isActive
+      ? "Global Cup"
+      : cyclePhase === "banzuke_reveal"
+        ? "Banzuke"
+        : cyclePhase === "pre_basho"
+          ? "Start Basho"
+          : "Continue";
+
+  const tooltip = inBasho
+    ? "Advance to next day of tournament"
+    : cyclePhase === "banzuke_reveal"
+      ? "Review the new banzuke rankings"
+      : cyclePhase === "pre_basho"
+        ? "Start the tournament preparations"
+        : "Advance the simulation one day";
+
+  return (
+    <TooltipWrap content={tooltip} side="left">
+      <Button asChild variant="ghost" className="p-0 h-auto hover:bg-transparent">
+        <button
+          aria-label={tooltip}
+          onClick={() => {
+            if (cyclePhase === "active_basho") navigate({ to: "/basho" });
+            else if (cyclePhase === "banzuke_reveal") navigate({ to: "/recap" });
+            else advanceOneDay();
+          }}
+          className="relative h-8 px-4 rounded flex items-center gap-2 overflow-hidden group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+          style={{
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "0.08em",
+            background: inBasho
+              ? "linear-gradient(135deg, hsl(var(--east)) 0%, hsl(44 78% 46%) 100%)"
+              : cyclePhase === "banzuke_reveal"
+                ? "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--west)) 100%)"
+                : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(44 68% 40%) 100%)",
+            color: "hsl(222 32% 5%)",
+            boxShadow: inBasho
+              ? "0 2px 12px hsl(var(--east) / 0.3), inset 0 1px 0 hsl(38 80% 80% / 0.3)"
+              : "0 2px 12px hsl(var(--primary) / 0.35), inset 0 1px 0 hsl(38 80% 80% / 0.3)",
+          }}
+        >
+          <span
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, hsl(38 80% 80% / 0.2) 50%, transparent 100%)",
+              transform: "skewX(-20deg)",
+            }}
+          />
+          <span className="relative hidden sm:inline">{label}</span>
+          <ChevronRight className="relative h-3.5 w-3.5" />
+        </button>
+      </Button>
+    </TooltipWrap>
+  );
+}
+
+/** Basho day progress rail under the bar. */
+export function BashoProgressRail({ day }: { day: number }) {
+  return (
+    <div className="h-0.5 w-full" style={{ background: "hsl(var(--border))" }}>
+      <div
+        className="h-full transition-all duration-700"
+        style={{
+          width: `${(day / 15) * 100}%`,
+          background: "linear-gradient(to right, hsl(var(--east)), hsl(var(--gold)))",
+          boxShadow: "0 0 4px hsl(var(--gold) / 0.5)",
+        }}
+      />
+    </div>
+  );
+}

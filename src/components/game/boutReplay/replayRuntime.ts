@@ -13,7 +13,12 @@ import type { BoutScript, SeededRNG } from "@/presenters/engineAccess";
 import { PHASES, type ReplayPhase, type RikishiState, type Particle } from "./boutCanvas";
 import type { ReplayRuntime } from "./replayFx";
 import type { ReplayTickCtx } from "./replayLoop";
-import { replayTick } from "./replayLoop";
+import {
+  replayTick,
+  beginReplaySession,
+  scheduleNextFrame,
+  cancelReplayLoop,
+} from "./replayLoop";
 import type { ReplayControlsCtx } from "./replayControls";
 import type { BoutReplayProgress, ReplaySpeed } from "./useBoutReplay";
 
@@ -197,12 +202,12 @@ export function useReplayLoop(
   drawFrame: (ctx: CanvasRenderingContext2D, W: number, H: number) => void,
   updateProgress: () => void
 ) {
-  const { animRef, isPlayingRef, lastTimeRef } = refs;
+  const { animRef, isPlayingRef } = refs;
   // ── Main RAF loop ────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!isPlaying) return;
 
-    lastTimeRef.current = 0;
+    beginReplaySession(refs);
 
     const ctx: ReplayTickCtx = {
       ...rt,
@@ -214,14 +219,12 @@ export function useReplayLoop(
     const loop = (timestamp: number) => {
       if (!isPlayingRef.current) return;
       replayTick(ctx, timestamp, drawFrame, updateProgress);
-      animRef.current = requestAnimationFrame(loop);
+      scheduleNextFrame(animRef, loop);
     };
 
-    animRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animRef.current !== null) cancelAnimationFrame(animRef.current);
-    };
-  }, [isPlaying, rt, phaseDurations, setters, onComplete, drawFrame, updateProgress, animRef, isPlayingRef, lastTimeRef]);
+    scheduleNextFrame(animRef, loop);
+    return () => cancelReplayLoop(animRef);
+  }, [isPlaying, rt, phaseDurations, setters, onComplete, drawFrame, updateProgress, animRef, isPlayingRef, refs]);
 
   // Static draw when paused
   useEffect(() => {

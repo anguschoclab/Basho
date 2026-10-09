@@ -40,11 +40,18 @@ const GENUINE_WRITE_ONLY_FIELDS = [
 describe("Write-only state fields — surface to UI", () => {
   for (const field of GENUINE_WRITE_ONLY_FIELDS) {
     describe(`WorldState.${field}`, () => {
-      it("is read by at least one .tsx page or component", () => {
-        const tsxFiles = runtimeFiles.filter((f) => extname(f) === ".tsx");
-        const tsxBlob = tsxFiles.map((f) => readFileSync(f, "utf-8")).join("\n");
+      it("is read by at least one .tsx page/component or .ts UI-layer hook", () => {
+        // UI layer = .tsx anywhere, plus .ts under hooks/components/pages —
+        // a field consumed via a derived-state hook (useAlmanacDerived.ts)
+        // still surfaces to the screen even though no .tsx names it directly.
+        const uiLayerFiles = runtimeFiles.filter((f) => {
+          if (extname(f) === ".tsx") return true;
+          if (extname(f) !== ".ts") return false;
+          return ["/hooks/", "/components/", "/pages/"].some((dir) => f.includes(dir));
+        });
+        const uiBlob = uiLayerFiles.map((f) => readFileSync(f, "utf-8")).join("\n");
         const pattern = new RegExp(`\\.${field}\\b`);
-        expect(pattern.test(tsxBlob), `${field} is not read by any .tsx file`).toBe(true);
+        expect(pattern.test(uiBlob), `${field} is not read by any UI-layer file`).toBe(true);
       });
 
       it("is read by a presenter or selector", () => {

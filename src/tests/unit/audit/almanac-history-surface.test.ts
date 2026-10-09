@@ -27,13 +27,13 @@ describe("HistoryService — tick phase wiring", () => {
 
 describe("AlmanacPage — UI surface", () => {
   it("reads world.history for past basho results", () => {
-    const page = readSrcFile("pages/AlmanacPage.tsx");
-    expect(page).toContain("getHistory");
+    const tabs = readSrcFile("components/almanac/AlmanacTabs.tsx");
+    expect(tabs).toContain("getHistory");
   });
 
   it("reads world.records for all-time and active records", () => {
-    const page = readSrcFile("pages/AlmanacPage.tsx");
-    expect(page).toContain("world.records");
+    const tabs = readSrcFile("components/almanac/AlmanacTabs.tsx");
+    expect(tabs).toContain("world.records");
   });
 
   it("uses getHistory(world).length for snapshot count, not bounded almanacSnapshots", () => {
@@ -41,20 +41,20 @@ describe("AlmanacPage — UI surface", () => {
     // cold storage (OPFS). The count displayed should reflect the total
     // number of completed bashos (getHistory(world).length, capped at 500),
     // which is what the "Past Bashos" tab actually displays.
-    const page = readSrcFile("pages/AlmanacPage.tsx");
-    expect(page).toContain("getHistory(world)");
-    expect(page).not.toContain("selectAlmanacSnapshots");
+    const hook = readSrcFile("hooks/useAlmanacDerived.ts");
+    expect(hook).toContain("getHistory(world)");
+    expect(hook).not.toContain("selectAlmanacSnapshots");
     // world.almanacSnapshots is still read for the hot-window indicator, but
     // must NOT be the primary count source.
-    expect(page).toContain("almanacSnapshots");
+    expect(hook).toContain("almanacSnapshots");
   });
 });
 
 describe("HistoryPage — UI surface", () => {
   it("renders past basho history with BASHO_CALENDAR", () => {
-    const page = readSrcFile("pages/HistoryPage.tsx");
-    expect(page).toContain("BASHO_CALENDAR");
-    expect(page).toContain("RikishiName");
+    const card = readSrcFile("components/history/BashoHistoryCard.tsx");
+    expect(card).toContain("BASHO_CALENDAR");
+    expect(card).toContain("RikishiName");
   });
 });
 

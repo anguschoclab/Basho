@@ -79,8 +79,8 @@ describe("TrainingPhilosophyService — tick phase wiring", () => {
 
 describe("StablePage — legacy UI surface", () => {
   it("mounts MentorAssignmentPanel for mentor/apprentice wiring", () => {
-    const page = readSrcFile("pages/StablePage.tsx");
-    expect(page).toContain("MentorAssignmentPanel");
+    const tabs = readSrcFile("components/stable/StablePageTabs.tsx");
+    expect(tabs).toContain("MentorAssignmentPanel");
   });
 
   it("mounts ChronicleRoom for stable history", () => {
@@ -91,13 +91,13 @@ describe("StablePage — legacy UI surface", () => {
 
 describe("OyakataPage — legacy UI surface", () => {
   it("renders oyakata traits and profile", () => {
-    const page = readSrcFile("pages/OyakataPage.tsx");
-    expect(page).toContain("TRAIT_LABELS");
-    expect(page).toContain("toTraitBand");
+    const sections = readSrcFile("components/oyakata/OyakataPageSections.tsx");
+    expect(sections).toContain("TRAIT_LABELS");
+    expect(sections).toContain("toTraitBand");
   });
 
   it("uses menteesOf from lineage module", () => {
-    const page = readSrcFile("pages/OyakataPage.tsx");
-    expect(page).toContain("menteesOf");
+    const hook = readSrcFile("hooks/useOyakataSelection.ts");
+    expect(hook).toContain("menteesOf");
   });
 });

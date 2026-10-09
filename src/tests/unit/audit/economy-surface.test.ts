@@ -88,8 +88,9 @@ describe("EconomyPage — renders economy fields", () => {
   });
 
   it("renders weekly finances via calculateHeyaWeeklyFinances", () => {
+    const hook = readSrcFile("hooks/useEconomyDerived.ts");
+    expect(hook).toContain("calculateHeyaWeeklyFinances");
     const page = readSrcFile("pages/EconomyPage.tsx");
-    expect(page).toContain("calculateHeyaWeeklyFinances");
     expect(page).toContain("IncomeExpensesCards");
   });
 });

@@ -237,7 +237,7 @@ describe("CI Gate: Write-only state field classification", () => {
   ];
 
   it("every UI-read field appears in at least one UI file", () => {
-    const uiDirs = ["presenters", "pages", "components", "contexts"];
+    const uiDirs = ["presenters", "pages", "components", "contexts", "hooks"];
     let uiSource = "";
     for (const dir of uiDirs) {
       uiSource += collectSource(join(SRC, dir));

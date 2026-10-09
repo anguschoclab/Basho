@@ -1,5 +1,4 @@
-import { useMemo, useCallback, useState } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2, AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -9,15 +8,9 @@ import { useGame } from "@/contexts/useGame";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
-import { getPlayerHeya } from "@/presenters/engineAccess";
-import { getRikishi } from "@/presenters/worldAccess";
-import { calculateHeyaWeeklyFinances } from "@/presenters/engineAccess";
-import { toast } from "sonner";
 import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUtils";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { FinancialHealthOverview } from "@/components/economy/FinancialHealthOverview";
 import { BailoutCard } from "@/components/economy/BailoutCard";
-import { error } from "@/presenters/engineAccess";
 import { DebtSection } from "@/components/economy/DebtSection";
 import { KoenkaiSekitoriCards } from "@/components/economy/KoenkaiSekitoriCards";
 import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
@@ -25,7 +18,8 @@ import { SponsorDrawCard } from "@/components/economy/SponsorDrawCard";
 import { EconomyInfoNote } from "@/components/economy/EconomyInfoNote";
 import { FinancialTrendsChart } from "@/components/economy/FinancialTrendsChart";
 import { SortMenu } from "@/components/ui/SortMenu";
-import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import type { SortDirection } from "@/lib/sortUtils";
+import { useEconomyDerived } from "@/hooks/useEconomyDerived";
 
 /** Loan type matching DebtSection component requirements. */
 interface DebtLoan {
@@ -49,95 +43,18 @@ const EARNER_SORT_OPTIONS = [
 /** economy page. */
 export default function EconomyPage() {
   const { state } = useGame();
-  const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
   const [earnerSortKey, setEarnerSortKey] = useState<string>("kensho");
   const [earnerSortOrder, setEarnerSortOrder] = useState<SortDirection>("asc");
 
-  const playerHeya = useMemo(() => {
-    if (!world || !state.playerHeyaId) return null;
-    return getPlayerHeya(world) || null;
-  }, [world, state.playerHeyaId]);
-
-  const handleBailoutRequest = useCallback(() => {
-    if (!world || !state.playerHeyaId || !playerHeya) return;
-
-    if (playerHeya.funds >= 0) {
-      toast.error("Emergency funding is only available when in significant debt.");
-      return;
-    }
-
-    if (playerHeya.funds > -5_000_000) {
-      toast.info(
-        "The Association only considers bailouts for stables with debts exceeding ¥5,000,000."
-      );
-      return;
-    }
-
-    sendCommand({ type: "REQUEST_BAILOUT", heyaId: state.playerHeyaId });
-    toast.success("Emergency bailout requested. Processing...");
-  }, [state.playerHeyaId, playerHeya, sendCommand, world]);
-
-  const playerRikishi = useMemo(() => {
-    if (!playerHeya || !world) return [];
-    const ids: string[] = Array.isArray(playerHeya.rikishiIds) ? playerHeya.rikishiIds : [];
-
-    const result: ReturnType<typeof getRikishi>[] = [];
-    for (const id of ids) {
-      const rikishi = getRikishi(world, id);
-      if (rikishi) {
-        result.push(rikishi);
-      }
-    }
-    return result;
-  }, [playerHeya, world]);
-
-  // Sekitori count
-  const sekitoriCount = useMemo(() => {
-    if (!playerRikishi) return 0;
-    let count = 0;
-    for (const r of playerRikishi) {
-      if (r && isSekitoriDivision(r.division)) {
-        count++;
-      }
-    }
-    return count;
-  }, [playerRikishi]);
-
-  // Top earners
-  const topEarners = useMemo(() => {
-    const list = (playerRikishi as Array<NonNullable<(typeof playerRikishi)[number]>>).filter(
-      (r): r is NonNullable<typeof r> => r && typeof r === "object"
-    );
-    const accessor: Record<
-      string,
-      (r: NonNullable<(typeof playerRikishi)[number]>) => string | number | undefined
-    > = {
-      name: (r) => r.shikona,
-      kensho: (r) => Number(r.economics?.careerKenshoWon ?? 0) || 0,
-    };
-    const fn = accessor[earnerSortKey];
-    if (!fn)
-      return list
-        .sort((a, b) => {
-          const av = Number(a.economics?.careerKenshoWon ?? 0) || 0;
-          const bv = Number(b.economics?.careerKenshoWon ?? 0) || 0;
-          return bv - av;
-        })
-        .slice(0, 5);
-    return [...list].sort((a, b) => compareBy(a, b, fn, earnerSortOrder)).slice(0, 5);
-  }, [playerRikishi, earnerSortKey, earnerSortOrder]);
-
-  // Calculate actual weekly finances - moved before early return for React Hook rules
-  const weeklyFinances = useMemo(() => {
-    if (!world || !playerHeya) return null;
-    try {
-      return calculateHeyaWeeklyFinances(playerHeya, world);
-    } catch (e) {
-      error("Failed to calculate finances", "EconomyPage", e);
-      return null;
-    }
-  }, [world, playerHeya]);
+  const {
+    sendCommand,
+    playerHeya,
+    handleBailoutRequest,
+    sekitoriCount,
+    topEarners,
+    weeklyFinances,
+  } = useEconomyDerived(world, state.playerHeyaId, earnerSortKey, earnerSortOrder);
 
   if (!world) {
     return (
@@ -177,6 +94,7 @@ export default function EconomyPage() {
     playerHeya as typeof playerHeya & { riskIndicators?: { financial?: boolean } }
   )?.riskIndicators?.financial;
   const canRequestBailout = playerHeya.funds < 0;
+  const institutionData = projectHeyaData(world, playerHeya.id);
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
@@ -215,20 +133,14 @@ export default function EconomyPage() {
         <SponsorsPanel />
 
         {/* Institution Health */}
-        {playerHeya &&
-          world &&
-          (() => {
-            const data = projectHeyaData(world, playerHeya.id);
-            if (!data) return null;
-            return (
-              <InstitutionPanel
-                heya={playerHeya}
-                oyakata={data.oyakata}
-                oyakataQuirks={data.oyakataQuirks}
-                oyakataTraits={data.oyakataTraits}
-              />
-            );
-          })()}
+        {institutionData && (
+          <InstitutionPanel
+            heya={playerHeya}
+            oyakata={institutionData.oyakata}
+            oyakataQuirks={institutionData.oyakataQuirks}
+            oyakataTraits={institutionData.oyakataTraits}
+          />
+        )}
 
         {/* Financial Trends Chart */}
         {playerHeya?.ledger && (

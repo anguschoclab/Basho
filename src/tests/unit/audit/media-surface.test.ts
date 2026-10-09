@@ -35,15 +35,15 @@ describe("MediaPage — UI surface", () => {
   });
 
   it("renders media headlines and beats", () => {
-    const page = readSrcFile("pages/MediaPage.tsx");
-    expect(page).toContain("MediaHeadline");
-    expect(page).toContain("MediaBeat");
+    const sections = readSrcFile("components/media/MediaPageSections.tsx");
+    expect(sections).toContain("MediaHeadline");
+    expect(sections).toContain("MediaBeat");
   });
 
   it("renders media heat label and tone color from PerceptionPresenter", () => {
-    const page = readSrcFile("pages/MediaPage.tsx");
-    expect(page).toContain("getMediaHeatLabel");
-    expect(page).toContain("getMediaToneColor");
+    const sections = readSrcFile("components/media/MediaPageSections.tsx");
+    expect(sections).toContain("getMediaHeatLabel");
+    expect(sections).toContain("getMediaToneColor");
   });
 
   it("renders EventFeed for event log continuity", () => {

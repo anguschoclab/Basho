@@ -41,7 +41,7 @@ describe("RikishiProfileTab — dohyoIriStyle UI surface", () => {
 
 describe("RikishiPage — passes world to RikishiProfileTab", () => {
   it("passes world prop to RikishiProfileTab", () => {
-    const page = readSrcFile("pages/RikishiPage.tsx");
+    const page = readSrcFile("components/rikishi/RikishiPageSections.tsx");
     expect(page).toContain("world={world}");
     expect(page).toContain("RikishiProfileTab");
   });
