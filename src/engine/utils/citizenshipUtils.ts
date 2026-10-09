@@ -1,6 +1,7 @@
 import type { Rikishi } from "../types/rikishi";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../constants/engine/recruitment";
 
-const NATURALIZATION_YEARS = 5;
+export const NATURALIZATION_YEARS = 5;
 
 /**
  * Determines the current citizenship status of a rikishi.
@@ -13,7 +14,11 @@ export function getCitizenshipStatus(
     return "native";
   }
 
-  if (rikishi.citizenshipStatus === "naturalized") return "naturalized";
+  // "dual" citizens hold Japanese citizenship from the start (§5.3) — they
+  // behave exactly like naturalized rikishi for slot purposes.
+  if (rikishi.citizenshipStatus === "naturalized" || rikishi.citizenshipStatus === "dual") {
+    return "naturalized";
+  }
 
   // Check tenure for automatic naturalization logic
   if (rikishi.joinedHeyaDate) {
@@ -46,7 +51,7 @@ export function yearsUntilNaturalization(rikishi: Rikishi, currentYear: number):
 
 /**
  * Returns the current foreign quota usage for a given stable.
- * Limits are typically 2 per heya.
+ * The canonical limit is FOREIGN_RIKISHI_LIMIT_PER_HEYA (1 slot, §13.1).
  */
 export function getHeyaForeignUsage(rikishiList: Rikishi[], currentYear: number): number {
   let count = 0;
@@ -59,5 +64,5 @@ export function getHeyaForeignUsage(rikishiList: Rikishi[], currentYear: number)
 }
 
 export function isAtForeignLimit(rikishiList: Rikishi[], currentYear: number): boolean {
-  return getHeyaForeignUsage(rikishiList, currentYear) >= 2;
+  return getHeyaForeignUsage(rikishiList, currentYear) >= FOREIGN_RIKISHI_LIMIT_PER_HEYA;
 }

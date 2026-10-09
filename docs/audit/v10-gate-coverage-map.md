@@ -1,5 +1,9 @@
 # v10 Gate Coverage Map
 
+> **STALENESS NOTICE**: point-in-time snapshot retained for historical context.
+> Gate contents and file counts drift with the codebase; re-derive against
+> current sources before relying on specific rows.
+
 Generated: 2026-10-08 · Branch: `audit/v10`
 Purpose: enumerate what each existing gate *actually proves* vs. what it cannot
 prove, so the v10 audit fan-out does not re-verify gated classes — and so gate
@@ -21,7 +25,7 @@ prove, so the v10 audit fan-out does not re-verify gated classes — and so gate
 | `orphan-audit` + `orphanTracker` + `unreferenced-exports` | subprocess + CSV registry | New unreferenced exports tracked; baseline classified | **Integrity gap found v10**: mass `candidate`→`intentional` reclassification (`ffe7e08b`) swept **33 fully-dead functions** (def-only, never called anywhere) into `intentional` — incl. entire dead submodules: `kachiNokori.ts` helpers (hasKachiKoshi/isMakeKoshiConfirmed/calculateKachiNokoriForStandings/getYushoRaceLeaders), `MyosekiTradingService` market ops (initializeMyosekiMarket/listMyosekiForSale/returnLeasedMyoseki), `entityAccess.ts` (4 helpers), `ImpactBuilder` convenience wrappers (3), `shikona/helpers` (3), NPC strategy getters (2). Plus 17 `genuine` open items. See registry. |
 | `dead-service-wiring`, `*-surface` tests (per-domain) | structural assertions | Named services are wired into tick/handlers | Whether the wiring produces *correct* behavior (semantic) |
 | `ci-gates.test.ts` | `toContain` pins on key files | Pinned strings present | Vacuous pass if pin string could appear in a comment; coverage of "required" set is editorial |
-| `staleDocs.test.ts` | path resolution + annotation check | `bun run src/…` refs resolve; audit docs w/ regex-methodology mentions carry staleness annotations | **Doc-vs-code content drift** — `worker-command-surface.md` still lists deleted `AUTO_SIM_DAYS`; `phase-dependency-graph.md` ~15 nodes vs ~24 phase files; CLAUDE.md counts stale (860 files → actual 882 test files) |
+| `staleDocs.test.ts` | path resolution + annotation check | `bun run <path>` refs resolve; audit docs w/ regex-methodology mentions carry staleness annotations | **Doc-vs-code content drift** — `worker-command-surface.md` still lists deleted `AUTO_SIM_DAYS`; `phase-dependency-graph.md` ~15 nodes vs ~24 phase files; CLAUDE.md counts stale (860 files → actual 882 test files) |
 | `weakAssertionAudit` | 2 pattern checks | No sole-`expect(true)` / all-`toBeTruthy()`<3 files | Tautological table assertions, mock-echo assertions, can't-fail assertions (WS7) |
 | `dependencyAudit` | package.json checks | No dep/devDep dupes; no eslint pkgs in deps | Unused deps (`@tanstack/react-query` — provider-only, zero hooks), `bun audit` vulns (53 advisories ungated) |
 | `saveLoadIntegrity` | round-trip tests | Covered fields serialize correctly | Full WorldState field census vs serializer; migration/unknown-version behavior |

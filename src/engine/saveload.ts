@@ -1,7 +1,7 @@
 import { SerializationService } from "./persistence/SerializationService";
 import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotService";
 import { MigrationService } from "./persistence/MigrationService";
-import { destr } from "destr";
+import { parseSave, stringifySave } from "./persistence/collectionCodec";
 import { error } from "./utils/Logger";
 import type { WorldState, SaveGame } from "./types/index";
 import { CURRENT_SAVE_VERSION } from "./types/index";
@@ -24,13 +24,13 @@ export function saveGame(world: WorldState, slotName: string, _timestampISO?: st
     // world.historicalRikishi).
 
     const existingRaw = storage.getItem(key);
-    const existingParsed = existingRaw ? destr(existingRaw) : null;
+    const existingParsed = existingRaw ? parseSave(existingRaw) : null;
     const existing = SaveSlotService.isValidSave(existingParsed)
       ? (existingParsed as SaveGame)
       : undefined;
 
     const save = createSaveGame(world, slotName, existing, _timestampISO);
-    storage.setItem(key, JSON.stringify(save));
+    storage.setItem(key, stringifySave(save));
     return true;
   } catch (e) {
     error(`Failed to save game: ${e instanceof Error ? e.message : String(e)}`, "SaveLoad");
@@ -50,7 +50,7 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
     const raw = storage.getItem(key);
     if (!raw) return null;
 
-    const parsed = destr(raw);
+    const parsed = parseSave(raw);
     if (!SaveSlotService.isValidSave(parsed)) return null;
 
     const originalSave = parsed as SaveGame;
@@ -59,7 +59,7 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
     // Persist the migrated save back to storage so future loads skip migration
     if (migratedSave.version !== originalSave.version) {
       try {
-        storage.setItem(key, JSON.stringify(migratedSave));
+        storage.setItem(key, stringifySave(migratedSave));
       } catch (e) {
         error("Failed to persist migrated save back to storage", "SaveLoad", e);
       }
@@ -127,12 +127,12 @@ export function quickSave(world: WorldState, _timestampISO?: string): boolean {
 
   for (let i = 1; i <= SaveSlotService.getSlotCount(); i++) {
     const slot = `slot_${i}`;
-    if (!existing.has(slot)) return saveGame(world, slot);
+    if (!existing.has(slot)) return saveGame(world, slot, _timestampISO);
   }
 
   // Sort and overwrite oldest
   const oldest = infos.slice().sort((a, b) => a.savedAt.localeCompare(b.savedAt))[0];
-  return saveGame(world, oldest?.slotName || "slot_1");
+  return saveGame(world, oldest?.slotName || "slot_1", _timestampISO);
 }
 
 export function exportSave(
@@ -141,7 +141,7 @@ export function exportSave(
   timestampISO?: string
 ): { json: string; filename: string } {
   const save = createSaveGame(world, undefined, undefined, timestampISO);
-  const json = JSON.stringify(save, null, 2);
+  const json = stringifySave(save, 2);
   const defaultFilename =
     filename || `basho_${world.year}_${world.currentBashoName || "save"}.json`;
   return { json, filename: defaultFilename };
@@ -150,7 +150,7 @@ export function exportSave(
 export async function importSave(file: File): Promise<WorldState | null> {
   try {
     const text = await file.text();
-    const parsed = destr(text);
+    const parsed = parseSave(text);
     if (!SaveSlotService.isValidSave(parsed)) throw new Error("Invalid save file structure");
     const { save: migratedSave } = MigrationService.migrateSave(parsed as SaveGame);
     return SerializationService.deserializeWorld(migratedSave.world);

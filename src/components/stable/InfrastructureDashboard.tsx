@@ -22,7 +22,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
 import type { Heya } from "@/engine/types/heya";
 
@@ -136,18 +135,16 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
               </CardHeader>
 
               <CardContent className="space-y-4">
-                {/* Construction Progress */}
+                {/* Construction status — no progress datum exists in the queue
+                    entries, so only the recorded ETA is shown. */}
                 {isBuilding && (
                   <div className="space-y-2 p-3 bg-warning/10 rounded-lg border border-warning/20">
                     <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-warning">
                       <span>Construction Underway</span>
-                      <span>ETA: {project.completionYear}</span>
+                      <span>
+                        ETA: {project.completionBasho} {project.completionYear}
+                      </span>
                     </div>
-                    <Progress
-                      value={45}
-                      className="h-1.5 bg-warning/20"
-                      aria-label="Construction progress"
-                    />
                   </div>
                 )}
 

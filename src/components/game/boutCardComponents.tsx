@@ -82,7 +82,7 @@ export function BoutTags({
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap mt-2">
-      {heatBand && heatBand !== "cold" && heatConfig[heatBand] && (
+      {heatBand && heatBand !== "dormant" && heatConfig[heatBand] && (
         <TooltipWrap
           content={
             <>

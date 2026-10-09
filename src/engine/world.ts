@@ -122,19 +122,23 @@ export function advanceBashoDay(world: WorldState): WorldState {
  * @param {import("./types/combat").BoutTactic} [playerTactic] - Optional tactic chosen by the player.
  * @returns {Object} An object containing the updated world state and the bout result.
  */
-export function simulateBoutForToday(
-  world: WorldState,
-  unplayedIndex: number,
-  playerTactic?: import("./types/combat").BoutTactic
-): { world: WorldState; result?: BoutResult } {
-  let currentWorld = world;
-  const basho = getCurrentBasho(currentWorld);
-  if (!basho) return { world: currentWorld };
-
-  const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
-  const match = todays[unplayedIndex];
-  if (!match) return { world: currentWorld };
-
+/**
+ * Shared per-bout core: resolve the bout, apply its result impact, and return
+ * the evolved world plus the standings delta the caller must persist.
+ * Does NOT write `match.result` into `basho.matches` or consume tactics —
+ * callers own those so the batch path can avoid per-bout array copies.
+ */
+function resolveAndApplyBout(
+  currentWorld: WorldState,
+  basho: BashoState,
+  match: MatchScheduleLike,
+  tactic: import("./types/combat").BoutTactic | undefined,
+  fallbackBoutId: string
+): {
+  world: WorldState;
+  result?: BoutResult;
+  updatedStandings?: Map<string, { wins: number; losses: number }>;
+} {
   const east = currentWorld.rikishi.get(match.eastRikishiId);
   const west = currentWorld.rikishi.get(match.westRikishiId);
   if (!east || !west) return { world: currentWorld };
@@ -152,7 +156,7 @@ export function simulateBoutForToday(
     : undefined;
 
   const boutContext = {
-    id: match.boutId ?? `d${basho.day}-b${unplayedIndex}`,
+    id: match.boutId ?? fallbackBoutId,
     day: basho.day,
     rikishiEastId: east.id,
     rikishiWestId: west.id,
@@ -165,20 +169,65 @@ export function simulateBoutForToday(
     east,
     west,
     basho,
-    playerTactic,
+    tactic,
     currentWorld
   );
 
-  const boutImpact = applyBoutResult(currentWorld, match, result);
-  currentWorld = resolveImpacts(currentWorld, [resolveImpact, boutImpact]);
+  const boutImpact = applyBoutResult(currentWorld, match as MatchSchedule, result);
+  const nextWorld = resolveImpacts(currentWorld, [resolveImpact, boutImpact]);
 
-  // Handle standings update from metadata immutably
-  if (boutImpact.metadata?.updatedStandings && currentWorld.currentBasho) {
-    const standingsMap = boutImpact.metadata.updatedStandings as Map<
-      string,
-      { wins: number; losses: number }
-    >;
-    // Also set match.result on the match in the matches array
+  return {
+    world: nextWorld,
+    result,
+    updatedStandings: boutImpact.metadata?.updatedStandings as
+      | Map<string, { wins: number; losses: number }>
+      | undefined,
+  };
+}
+
+type MatchScheduleLike = Pick<
+  import("./types/basho").MatchSchedule,
+  "boutId" | "day" | "eastRikishiId" | "westRikishiId"
+>;
+
+/** Consume a bout tactic after it has been applied (V5-B09 semantics). */
+function consumeBoutTactic(world: WorldState, boutId: string | undefined): WorldState {
+  if (!boutId || world.boutTactics?.[boutId] === undefined) return world;
+  const nextTactics = Object.fromEntries(
+    Object.entries(world.boutTactics).filter(([k]) => k !== boutId)
+  );
+  return resolveImpacts(world, [
+    createImpactBuilder("consumeBoutTactic")
+      .updateWorldField("boutTactics", nextTactics)
+      .build(),
+  ]);
+}
+
+export function simulateBoutForToday(
+  world: WorldState,
+  unplayedIndex: number,
+  playerTactic?: import("./types/combat").BoutTactic
+): { world: WorldState; result?: BoutResult } {
+  let currentWorld = world;
+  const basho = getCurrentBasho(currentWorld);
+  if (!basho) return { world: currentWorld };
+
+  const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
+  const match = todays[unplayedIndex];
+  if (!match) return { world: currentWorld };
+
+  const { world: appliedWorld, result, updatedStandings } = resolveAndApplyBout(
+    currentWorld,
+    basho,
+    match,
+    playerTactic,
+    `d${basho.day}-b${unplayedIndex}`
+  );
+  currentWorld = appliedWorld;
+  if (!result) return { world: currentWorld };
+
+  // Persist match.result (and standings) into the current basho
+  if (currentWorld.currentBasho) {
     const updatedMatches = currentWorld.currentBasho.matches.map((m) =>
       m.boutId === match.boutId ? { ...m, result } : m
     );
@@ -186,40 +235,81 @@ export function simulateBoutForToday(
       createImpactBuilder("simulateBoutForToday")
         .updateWorldField("currentBasho", {
           ...currentWorld.currentBasho,
-          standings: standingsMap,
-          matches: updatedMatches,
-        })
-        .build(),
-    ]);
-  } else if (currentWorld.currentBasho) {
-    // Even without standings update, persist match.result
-    const updatedMatches = currentWorld.currentBasho.matches.map((m) =>
-      m.boutId === match.boutId ? { ...m, result } : m
-    );
-    currentWorld = resolveImpacts(currentWorld, [
-      createImpactBuilder("simulateBoutForToday")
-        .updateWorldField("currentBasho", {
-          ...currentWorld.currentBasho,
+          ...(updatedStandings ? { standings: updatedStandings } : {}),
           matches: updatedMatches,
         })
         .build(),
     ]);
   }
 
-  // Consume the applied tactic so it cannot be re-applied to another bout
-  // or leak into a later day (V5-B09).
-  if (match.boutId && currentWorld.boutTactics?.[match.boutId] !== undefined) {
-    const nextTactics = Object.fromEntries(
-      Object.entries(currentWorld.boutTactics).filter(([k]) => k !== match.boutId)
-    );
-    currentWorld = resolveImpacts(currentWorld, [
-      createImpactBuilder("simulateBoutForToday")
-        .updateWorldField("boutTactics", nextTactics)
-        .build(),
-    ]);
-  }
+  currentWorld = consumeBoutTactic(currentWorld, match.boutId);
 
   return { world: currentWorld, result };
+}
+
+/**
+ * Simulates ALL unplayed bouts for the basho's current day in one pass.
+ *
+ * The per-bout `simulateBoutForToday` path scans `basho.matches` (filter) and
+ * rebuilds it (map) on every call — O(matches²) per day, ~2.7M element ops for
+ * a full card. This batch variant takes one mutable copy of the matches array
+ * per day and writes results by index — O(matches) once — while preserving
+ * per-bout world evolution (standings feed each subsequent bout).
+ */
+export function simulateBoutsForDay(world: WorldState): {
+  world: WorldState;
+  results: BoutResult[];
+} {
+  let currentWorld = world;
+  const initialBasho = getCurrentBasho(currentWorld);
+  if (!initialBasho) return { world: currentWorld, results: [] };
+
+  const day = initialBasho.day;
+  // Owned mutable copy — safe to share across iterations because worldFields
+  // updates shallow-spread (no clone) and nothing else mutates this array.
+  const matches = (initialBasho.matches ?? []).slice();
+  const results: BoutResult[] = [];
+
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    if (match.day !== day || match.result) continue;
+
+    const basho = getCurrentBasho(currentWorld);
+    if (!basho || basho.day !== day) break;
+
+    const tactic = (match.boutId ? currentWorld.boutTactics?.[match.boutId] : undefined) as
+      | import("./types/combat").BoutTactic
+      | undefined;
+
+    const { world: appliedWorld, result, updatedStandings } = resolveAndApplyBout(
+      currentWorld,
+      basho,
+      match,
+      tactic,
+      `d${day}-b${i}`
+    );
+    currentWorld = appliedWorld;
+    if (!result) continue;
+
+    matches[i] = { ...match, result };
+
+    if (currentWorld.currentBasho) {
+      currentWorld = resolveImpacts(currentWorld, [
+        createImpactBuilder("simulateBoutsForDay")
+          .updateWorldField("currentBasho", {
+            ...currentWorld.currentBasho,
+            ...(updatedStandings ? { standings: updatedStandings } : {}),
+            matches,
+          })
+          .build(),
+      ]);
+    }
+
+    currentWorld = consumeBoutTactic(currentWorld, match.boutId);
+    results.push(result);
+  }
+
+  return { world: currentWorld, results };
 }
 
 // applyBoutResult - removed and moved to src/engine/bout/boutResultApplier.ts

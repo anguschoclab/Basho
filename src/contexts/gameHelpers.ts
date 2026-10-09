@@ -31,7 +31,9 @@ export function autosaveWithSignal(world: WorldState): boolean {
   saveInProgress = true;
   signalAutosave("saving");
 
-  const ok = rawAutosave(world);
+  // Wall-clock lives here, in the UI layer — engine code may not call
+  // new Date() (dateArithmeticGuard), so callers must supply the stamp.
+  const ok = rawAutosave(world, new Date().toISOString());
 
   // Clear any existing timeouts to prevent signal overlap
   if (doneTimeoutId) clearTimeout(doneTimeoutId);

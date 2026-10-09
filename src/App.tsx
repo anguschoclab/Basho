@@ -12,6 +12,7 @@ import { router } from "./routes";
 import { WorkerInitializer } from "./components/worker/WorkerInitializer";
 import { InboxNewsTicker } from "./components/game/InboxNewsTicker";
 import { CrisisModal } from "./components/game/CrisisModal";
+import { GlobalErrorBanner } from "./components/layout/GlobalErrorBanner";
 
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -47,6 +48,7 @@ const App = () => {
               <WorkerInitializer />
               <InboxNewsTicker />
               <CrisisModal />
+              <GlobalErrorBanner />
               <Toaster />
               <OpfsQuotaListener />
               <Sonner />

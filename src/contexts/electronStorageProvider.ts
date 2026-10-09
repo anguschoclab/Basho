@@ -11,8 +11,6 @@ import { error } from "@/engine/utils/Logger";
 import { isValidStorageKey } from "@/utils/storageKeyValidation";
 import LZString from "lz-string";
 
-const KEYS_RELOAD_DEBOUNCE_MS = 100;
-
 /**
  * Marker prefix for LZ-compressed values in the localStorage fallback.
  * A serialized save world can exceed Chromium's ~5MB localStorage quota
@@ -49,6 +47,7 @@ const IDB_STORE = "kv";
  */
 export class ElectronStorageProvider implements IStorageProvider {
   private storage!: {
+    /** Electron: Promise via ipcRenderer.invoke. Web: synchronous string|null. */
     get: (key: string) => unknown;
     set: (key: string, value: unknown) => void;
     delete: (key: string) => void;
@@ -56,8 +55,15 @@ export class ElectronStorageProvider implements IStorageProvider {
     keys: () => Promise<Record<string, unknown>>;
   };
   private isElectron: boolean;
-  private cachedKeys: string[] = [];
-  private keysReloadTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /**
+   * Electron read-through cache. Every preload `storage.get` resolves via
+   * `ipcRenderer.invoke` — a Promise — but IStorageProvider is synchronous.
+   * We hydrate this cache from `storage.keys()` (which returns the whole
+   * key→value record) at startup and write through on every mutation, so
+   * getItem never touches the async bridge directly.
+   */
+  private electronCache = new Map<string, string>();
 
   /** Web-fallback state. */
   private idb: IDBDatabase | null = null;
@@ -71,10 +77,7 @@ export class ElectronStorageProvider implements IStorageProvider {
     this.ready = Promise.resolve();
     if (this.isElectron) {
       this.storage = window.electronCustom?.storage ?? this.storage;
-      // Load keys asynchronously
-      this.loadKeys().catch((e) =>
-        error("Failed to load keys from electron-store", "ElectronStorage", e)
-      );
+      this.ready = this.hydrateElectronStore();
     } else if (typeof indexedDB !== "undefined") {
       this.storage = {
         get: (key: string) => this.webGet(key),
@@ -272,20 +275,34 @@ export class ElectronStorageProvider implements IStorageProvider {
     return done;
   }
 
-  private async loadKeys(): Promise<void> {
-    if (this.isElectron) {
-      try {
-        const keysObj = await this.storage.keys();
-        this.cachedKeys = Object.keys(keysObj);
-      } catch (e) {
-        error("Failed to load keys from electron-store", "ElectronStorage", e);
-        this.cachedKeys = [];
+  /**
+   * Hydrates the Electron value cache from `storage.keys()`, which returns
+   * the full key→value record from electron-store. Mirrors the web fallback:
+   * never clobber a fresher value written during the hydration gap.
+   */
+  private async hydrateElectronStore(): Promise<void> {
+    try {
+      const record = await this.storage.keys();
+      for (const [k, v] of Object.entries(record)) {
+        if (typeof v === "string" && !this.electronCache.has(k)) {
+          this.electronCache.set(k, v);
+        }
       }
+    } catch (e) {
+      error("Failed to hydrate electron-store cache", "ElectronStorage", e);
+    } finally {
+      this.hydrated = true;
     }
   }
 
   getItem(key: string): string | null {
     if (!isValidStorageKey(key)) return null;
+    if (this.isElectron) {
+      // Synchronous read-through cache — the IPC get returns a Promise and
+      // cannot be awaited here. Pre-hydration reads return null; bootstrap
+      // awaits storageReady() before the save list is shown.
+      return this.electronCache.get(key) ?? null;
+    }
     const value = this.storage.get(key);
     if (value == null) return null;
     return value as string;
@@ -293,32 +310,26 @@ export class ElectronStorageProvider implements IStorageProvider {
 
   setItem(key: string, value: string): void {
     if (!isValidStorageKey(key)) return;
-    this.storage.set(key, value);
     if (this.isElectron) {
-      if (!this.cachedKeys.includes(key)) {
-        this.cachedKeys.push(key);
-      }
-      this.scheduleKeysReload();
+      this.electronCache.set(key, value);
+      this.storage.set(key, value);
+      return;
     }
+    this.storage.set(key, value);
   }
 
   removeItem(key: string): void {
     if (!isValidStorageKey(key)) return;
-    this.storage.delete(key);
     if (this.isElectron) {
-      this.cachedKeys = this.cachedKeys.filter((k) => k !== key);
-      this.scheduleKeysReload();
+      this.electronCache.delete(key);
+      this.storage.delete(key);
+      return;
     }
+    this.storage.delete(key);
   }
 
-  private scheduleKeysReload(): void {
-    if (this.keysReloadTimer) clearTimeout(this.keysReloadTimer);
-    this.keysReloadTimer = setTimeout(() => {
-      this.keysReloadTimer = undefined;
-      this.loadKeys().catch((e) =>
-        error("Failed to reload keys from electron-store", "ElectronStorage", e)
-      );
-    }, KEYS_RELOAD_DEBOUNCE_MS);
+  private electronKeyList(): string[] {
+    return [...this.electronCache.keys()];
   }
 
   key(index: number): string | null {
@@ -327,8 +338,7 @@ export class ElectronStorageProvider implements IStorageProvider {
       return this.webKeyList()[index] ?? null;
     }
 
-    // For Electron, use cached keys
-    return this.cachedKeys[index] || null;
+    return this.electronKeyList()[index] ?? null;
   }
 
   get length(): number {
@@ -336,8 +346,7 @@ export class ElectronStorageProvider implements IStorageProvider {
       return this.webKeyList().length;
     }
 
-    // For Electron, use cached keys length
-    return this.cachedKeys.length;
+    return this.electronCache.size;
   }
 }
 

@@ -33,6 +33,8 @@ interface GameStoreState {
   progress: { message: string; current: number; total: number } | null;
   /** Error message if a simulation fails. */
   error: string | null;
+  /** User-visible notice for the most recently dropped command (mid-tick). */
+  commandRejected: string | null;
   /** Whether to show the onboarding tour. */
   showTour: boolean;
   /** Reason for dismissing the tour (e.g., 'completed', 'skipped'). */
@@ -50,8 +52,12 @@ interface GameStoreState {
   // Actions
   /** Initializes the engine background worker. */
   initWorker: () => void;
-  /** Sends a command to the background worker. */
-  sendCommand: (command: EngineCommand) => void;
+  /**
+   * Sends a command to the background worker.
+   * @returns false when the command was dropped (tick in progress) so
+   *          callers can abort their own state changes and/or surface it.
+   */
+  sendCommand: (command: EngineCommand) => boolean;
   /** Sets the UI digest. */
   setDigest: (digest: UIDigest) => void;
   /** Toggles the simulation state. */
@@ -78,6 +84,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   simPaused: false,
   progress: null,
   error: null,
+  commandRejected: null,
   showTour: false,
   dismissedTourReason: null,
   worker: null,
@@ -90,6 +97,25 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const worker = new Worker(new URL("../engine/worker/engine.worker.ts", import.meta.url), {
       type: "module",
     });
+
+    // A catastrophic worker failure (uncaught exception, module load error)
+    // never posts an ERROR event — without onerror, pendingTick stays true
+    // forever and every subsequent command is silently dropped.
+    const onWorkerFailure = (message: string) =>
+      set({
+        error: message,
+        isSimulating: false,
+        pendingTick: false,
+        progress: null,
+      });
+    worker.onerror = (event) => {
+      onWorkerFailure(
+        `Simulation worker crashed: ${event.message || "unknown error"}`
+      );
+    };
+    worker.onmessageerror = () => {
+      onWorkerFailure("Simulation worker returned an unreadable message");
+    };
 
     worker.onmessage = (event: MessageEvent<EngineEvent>) => {
       const data = event.data;
@@ -146,8 +172,12 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     // worker reads simPaused only at the loop top between day ticks.
     const isPauseControl = command.type === "PAUSE_SIM" || command.type === "RESUME_SIM";
     if (pendingTick && !isPauseControl) {
-      warn(`Command "${command.type}" dropped - tick in progress`, "Store");
-      return;
+      const notice = `Command "${command.type}" dropped - tick in progress`;
+      warn(notice, "Store");
+      // Surface the drop so the UI can render it — a silent console.warn is
+      // how the mid-tick LOAD_WORLD revert went unnoticed.
+      set({ commandRejected: notice });
+      return false;
     }
 
     if (!worker) {
@@ -170,6 +200,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     }
 
     get().worker?.postMessage(command);
+    return true;
   },
 
   setDigest: (digest) => set({ digest }),

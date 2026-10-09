@@ -17,13 +17,26 @@ export function mockElectronAPI(opts?: {
     getPath: vi.fn().mockResolvedValue(opts?.appPath ?? "/fake/userData"),
   };
 
+  // Every bridge call resolves via ipcRenderer.invoke — the mock must return
+  // Promises like the real preload or it silently papers over the async
+  // boundary (see audit WS5-01).
+  const backing: Record<string, unknown> = { ...(opts?.storageKeys ?? {}) };
   const storageMock = {
-    get: vi.fn().mockReturnValue(null),
-    set: vi.fn().mockReturnValue(undefined),
-    delete: vi.fn().mockReturnValue(undefined),
-    clear: vi.fn().mockReturnValue(undefined),
-    keys: vi.fn().mockResolvedValue(opts?.storageKeys ?? {}),
-    size: vi.fn().mockReturnValue(0),
+    get: vi.fn((key: string) => Promise.resolve(backing[key] ?? null)),
+    set: vi.fn((key: string, value: unknown) => {
+      backing[key] = value;
+      return Promise.resolve();
+    }),
+    delete: vi.fn((key: string) => {
+      delete backing[key];
+      return Promise.resolve();
+    }),
+    clear: vi.fn(() => {
+      for (const k of Object.keys(backing)) delete backing[k];
+      return Promise.resolve();
+    }),
+    keys: vi.fn(() => Promise.resolve({ ...backing })),
+    size: vi.fn(() => Promise.resolve(Object.keys(backing).length)),
   };
 
   const win = globalThis as unknown as Record<string, unknown>;

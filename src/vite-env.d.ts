@@ -5,13 +5,14 @@ interface Window {
   __CSP_NONCE__?: string;
   __webpack_nonce__?: string;
   electronCustom?: {
+    /** All methods resolve via ipcRenderer.invoke — every call is async. */
     storage: {
-      get: (key: string) => unknown;
-      set: (key: string, value: unknown) => void;
-      delete: (key: string) => void;
-      clear: () => void;
+      get: (key: string) => Promise<unknown>;
+      set: (key: string, value: unknown) => Promise<void>;
+      delete: (key: string) => Promise<void>;
+      clear: () => Promise<void>;
       keys: () => Promise<Record<string, unknown>>;
-      size: () => number;
+      size: () => Promise<number>;
     };
     window: {
       minimize: () => void;

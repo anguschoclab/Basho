@@ -28,6 +28,11 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         world: action.world,
+        // Bump the sync revision so GameContext's LOAD_WORLD effect pushes
+        // this world to the worker — even mid-tick, where sendCommand would
+        // drop it and the in-flight WORLD_UPDATED would then silently
+        // revert the player's load (WS3-04).
+        uiWorldRevision: (state.uiWorldRevision ?? 0) + 1,
         playerHeyaId: action.world.playerHeyaId || null,
         playerOyakataId: action.world.playerHeyaId
           ? (action.world.heyas.get(action.world.playerHeyaId)?.oyakataId ?? null)

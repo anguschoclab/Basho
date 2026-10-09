@@ -105,7 +105,7 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
 
   const heatBand = getHeatBand(rivalryHeat);
   const heatConfig = HEAT_CONFIG[heatBand];
-  const showHeat = rivalryHeat >= 25;
+  const showHeat = heatBand !== "dormant";
 
   const aLeads = h2hReport.aWins > h2hReport.bWins;
   const bLeads = h2hReport.bWins > h2hReport.aWins;

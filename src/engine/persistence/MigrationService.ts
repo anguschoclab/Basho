@@ -11,6 +11,7 @@ import { CURRENT_SAVE_VERSION, KNOWN_SAVE_VERSIONS } from "../types/save";
 import type { Heya } from "../types/heya";
 import type { Rikishi } from "../types/rikishi";
 import { warn } from "../utils/Logger";
+import { parseSave, stringifySave } from "./collectionCodec";
 import { generateGyoji, generateShimpan } from "../systems/officials/GyojiService";
 
 export interface MigrationContext {
@@ -371,7 +372,9 @@ export const MigrationService = {
     }
 
     const steps = this.getMigrationPath(fromVersion, toVersion);
-    let current: SaveGame = JSON.parse(JSON.stringify(save)); // deep copy
+    // Deep copy through the collection codec — nested Maps/Sets survive
+    // the round trip as real collections, not {} husks.
+    let current: SaveGame = parseSave(stringifySave(save)) as SaveGame;
 
     for (const step of steps) {
       current = step(current, ctx);

@@ -13,7 +13,7 @@ import type { TalentPoolWorldState } from "./talent";
 import type { CyclePhase, WorldState } from "./world";
 import type { BashoResult } from "./basho";
 import type { Sponsor, Koenkai } from "./sponsors";
-import type { ClosedHeyaRecord } from "./world";
+import type { ClosedHeyaRecord, PreBashoAssessment } from "./world";
 import type { Staff } from "./staff";
 import type { HistoryIndex } from "../historyIndex";
 import type { RetiredRikishiSummary } from "./history";
@@ -26,6 +26,23 @@ import type { OzekiKadobanMap } from "../banzuke";
 import type { MediaState } from "./media";
 import type { AlmanacSnapshot } from "../almanac";
 import type { HeyaTrainingState } from "./training";
+
+/** Element type of PreBashoAssessment.rikishiAssessments. */
+export type RikishiAssessmentEntry =
+  PreBashoAssessment["rikishiAssessments"] extends Map<string, infer V> ? V : never;
+
+/**
+ * Serialized PreBashoAssessment — rikishiAssessments is stored as a record
+ * (explicit mapToObject) or a Map (collection-codec reviver restores it).
+ */
+export type SerializedPreBashoAssessment = Omit<
+  PreBashoAssessment,
+  "rikishiAssessments"
+> & {
+  rikishiAssessments:
+    | Map<string, RikishiAssessmentEntry>
+    | Record<string, RikishiAssessmentEntry>;
+};
 
 /** Serialized form of sponsor pool for JSON storage. */
 export interface SerializedSponsorPool {
@@ -147,6 +164,7 @@ export interface SerializedWorldState {
   // ── Pending / in-flight state ───────────────────────────────────────────
   pendingCrisis?: WorldState["pendingCrisis"];
   pendingDecisions?: WorldState["pendingDecisions"];
+  pendingRikishiRequests?: WorldState["pendingRikishiRequests"];
   pendingExhibitions?: WorldState["pendingExhibitions"];
   matchmakingOverride?: WorldState["matchmakingOverride"];
   activeBasho?: WorldState["activeBasho"];
@@ -156,10 +174,12 @@ export interface SerializedWorldState {
   // ── NPC & scheduling internals ──────────────────────────────────────────
   npcScoutingPriorities?: WorldState["npcScoutingPriorities"];
   npcBidPolicies?: WorldState["npcBidPolicies"];
+  bashoNpcPosture?: WorldState["bashoNpcPosture"];
+  factionPostures?: WorldState["factionPostures"];
   _populationTarget?: number;
   _recruitmentWindow?: WorldState["_recruitmentWindow"];
   _postBashoMeta?: WorldState["_postBashoMeta"];
-  _preBashoAssessment?: WorldState["_preBashoAssessment"];
+  _preBashoAssessment?: SerializedPreBashoAssessment;
   isInitialSeed?: boolean;
 }
 

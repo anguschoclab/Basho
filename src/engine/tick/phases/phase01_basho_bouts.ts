@@ -15,11 +15,9 @@
  */
 
 import type { WorldState } from "../../types/world";
-import type { BoutTactic } from "../../types/combat";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { simulateBoutForToday, advanceBashoDay } from "../../world";
-import { buildBashoMatchIndex } from "../../bout/bashoMatchIndex";
+import { simulateBoutsForDay, advanceBashoDay } from "../../world";
 import {
   generateNakabiSummary,
   logNakabiCheckpoint,
@@ -37,31 +35,12 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
 
   let currentWorld = world;
 
-  // Pre-index matches by day for O(1) lookup (B1.4)
-  const matchIndex = buildBashoMatchIndex(basho);
-
-  // Simulate all unplayed bouts for the current day
-  // Use a safety cap to avoid infinite loops from bad data
-  const MAX_ITERATIONS = 128;
-  for (let i = 0; i < MAX_ITERATIONS; i++) {
-    const currentBasho = currentWorld.currentBasho;
-    if (!currentBasho) break;
-
-    // Use pre-indexed matches for O(1) day lookup
-    const dayMatches = matchIndex.get(currentBasho.day) ?? [];
-    const todays = dayMatches.filter((m) => !m.result);
-    if (todays.length === 0) break;
-
-    // V5-B09: player tactics live on world.boutTactics so they survive the
-    // main-thread -> worker boundary. Forward the stored tactic for the bout
-    // being resolved instead of always passing no tactic.
-    const boutId = todays[0].boutId;
-    const tactic = (boutId ? currentWorld.boutTactics?.[boutId] : undefined) as
-      BoutTactic | undefined;
-    const { world: nextWorld, result } = simulateBoutForToday(currentWorld, 0, tactic);
-    currentWorld = nextWorld;
-    if (!result) break;
-  }
+  // Simulate all unplayed bouts for the current day in a single pass.
+  // simulateBoutsForDay owns one mutable copy of the matches array and writes
+  // each bout result by index — the old per-bout loop re-scanned and re-mapped
+  // the full matches array on every call (O(matches²) per day, ~2.7M element
+  // ops). Player tactics are read from world.boutTactics per bout (V5-B09).
+  currentWorld = simulateBoutsForDay(currentWorld).world;
 
   // Oyakata intervention: NPC oyakata may intervene with slumping rikishi
   // Check after all bouts are resolved for the day, before advancing the day
@@ -125,6 +104,7 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     "allTimeKimariteStats",
     "shimpanPool",
     "gyojiPool",
+    "bashoNpcPosture",
   ] as const;
   for (const field of PASSTHROUGH_FIELDS) {
     if (currentWorld[field] !== world[field]) {

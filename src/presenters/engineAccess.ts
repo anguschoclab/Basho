@@ -73,7 +73,7 @@ export { SparringService } from "../engine/systems/training/SparringService";
 export { computeDisplayTrainingMultiplier } from "../engine/systems/training/TrainingMath";
 export { NarrativeService } from "../engine/systems/narrative/NarrativeService";
 export { error, warn } from "../engine/utils/Logger";
-export { getHeyaForeignUsage } from "../engine/utils/citizenshipUtils";
+export { getHeyaForeignUsage, NATURALIZATION_YEARS } from "../engine/utils/citizenshipUtils";
 export { formatSaveDate } from "../engine/utils/formatters";
 export { clamp } from "../engine/utils/math";
 export { sortStandings } from "../engine/utils/sort";

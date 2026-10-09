@@ -1,0 +1,1122 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CrisisService — golden master > _autonomousSim world always yields empty impact 1`] = `
+"{
+  "metadata": {
+    "source": "checkForWeeklyCrisis",
+    "timestamp": 1
+  }
+}"
+`;
+
+exports[`CrisisService — golden master > empty world across weeks (no-crisis vs triggered depends on seeded roll) 1`] = `
+"{
+  "metadata": {
+    "source": "checkForWeeklyCrisis",
+    "timestamp": 1
+  }
+}"
+`;
+
+exports[`CrisisService — golden master > empty world across weeks (no-crisis vs triggered depends on seeded roll) 2`] = `
+"{
+  "metadata": {
+    "source": "checkForWeeklyCrisis",
+    "timestamp": 2
+  }
+}"
+`;
+
+exports[`CrisisService — golden master > empty world across weeks (no-crisis vs triggered depends on seeded roll) 3`] = `
+"{
+  "metadata": {
+    "source": "checkForWeeklyCrisis",
+    "timestamp": 3
+  }
+}"
+`;
+
+exports[`CrisisService — golden master > empty world across weeks (no-crisis vs triggered depends on seeded roll) 4`] = `
+"{
+  "metadata": {
+    "source": "checkForWeeklyCrisis",
+    "timestamp": 4
+  },
+  "events": [
+    {
+      "type": "NARRATIVE_CRISIS_TRIGGERED",
+      "category": "narrative",
+      "data": {
+        "eventId": "stomach_flu",
+        "title": "Stomach Flu Outbreak",
+        "description": "A nasty virus is sweeping through the stables. Several rikishi are showing symptoms.",
+        "incident": "An unexpected situation has developed: Stomach Flu Outbreak"
+      },
+      "importance": "major"
+    }
+  ],
+  "worldFields": {
+    "pendingCrisis": {
+      "id": "stomach_flu",
+      "title": "Stomach Flu Outbreak",
+      "description": "A nasty virus is sweeping through the stables. Several rikishi are showing symptoms.",
+      "options": [
+        {
+          "id": "quarantine",
+          "label": "Quarantine & Rest"
+        },
+        {
+          "id": "push_through",
+          "label": "Push Through"
+        }
+      ]
+    }
+  }
+}"
+`;
+
+exports[`CrisisService — golden master > empty world across weeks (no-crisis vs triggered depends on seeded roll) 5`] = `
+"{
+  "metadata": {
+    "source": "checkForWeeklyCrisis",
+    "timestamp": 5
+  },
+  "events": [
+    {
+      "type": "NARRATIVE_CRISIS_TRIGGERED",
+      "category": "narrative",
+      "data": {
+        "eventId": "media_firestorm",
+        "title": "Media Firestorm",
+        "description": "A journalist is preparing an expose on the 'toxic culture' within the modern sumo stables.",
+        "incident": "An unexpected situation has developed: Media Firestorm"
+      },
+      "importance": "major"
+    }
+  ],
+  "worldFields": {
+    "pendingCrisis": {
+      "id": "media_firestorm",
+      "title": "Media Firestorm",
+      "description": "A journalist is preparing an expose on the 'toxic culture' within the modern sumo stables.",
+      "options": [
+        {
+          "id": "exclusive",
+          "label": "Offer Exclusive Interview"
+        },
+        {
+          "id": "no_comment",
+          "label": "No Comment"
+        }
+      ]
+    }
+  }
+}"
+`;
+
+exports[`CrisisService — golden master > rollEvent registry selection across seeds 1`] = `
+{
+  "description": "The Sumo Association has announced a surprise audit of stable welfare and financial records.",
+  "id": "governance_audit",
+  "options": [
+    {
+      "id": "cooperate",
+      "impactGenerator": [Function],
+      "label": "Full Cooperation",
+    },
+    {
+      "id": "stonewall",
+      "impactGenerator": [Function],
+      "label": "Stonewall",
+    },
+  ],
+  "title": "Compliance Audit",
+}
+`;
+
+exports[`CrisisService — golden master > rollEvent registry selection across seeds 2`] = `
+{
+  "description": "A rival stable master has criticized your training methods and challenged your top rikishi to a private duel.",
+  "id": "dojo_duel",
+  "options": [
+    {
+      "id": "accept",
+      "impactGenerator": [Function],
+      "label": "Accept the Challenge",
+    },
+    {
+      "id": "decline",
+      "impactGenerator": [Function],
+      "label": "Ignore the Distraction",
+    },
+  ],
+  "title": "The Dojo Challenge",
+}
+`;
+
+exports[`CrisisService — golden master > rollEvent registry selection across seeds 3`] = `
+{
+  "description": "The Sumo Association has announced a surprise audit of stable welfare and financial records.",
+  "id": "governance_audit",
+  "options": [
+    {
+      "id": "cooperate",
+      "impactGenerator": [Function],
+      "label": "Full Cooperation",
+    },
+    {
+      "id": "stonewall",
+      "impactGenerator": [Function],
+      "label": "Stonewall",
+    },
+  ],
+  "title": "Compliance Audit",
+}
+`;
+
+exports[`DynastyService — golden master > age 65 with eligible sekitori successor 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "mandatory"
+          }
+        ]
+      ]
+    },
+    "rikishiUpdates": {
+      "__map": [
+        [
+          "r-sec",
+          {
+            "isRetired": true,
+            "retirementYear": 2026,
+            "retirementReason": "Promoted to Oyakata"
+          }
+        ]
+      ]
+    },
+    "heyaUpdates": {
+      "__map": [
+        [
+          "heya-1",
+          {
+            "dynasty": [
+              {
+                "era": 1,
+                "oyakataId": "oya-1",
+                "oyakataName": "Oyakata-oya-1",
+                "reignFrom": 2021,
+                "reignTo": 2026,
+                "achievementsInReign": {
+                  "yushoCount": 0,
+                  "globalCupWins": 0,
+                  "hofInductees": [],
+                  "boardSeatsWon": 0
+                },
+                "trainingPhilosophyAtReign": {
+                  "focusBias": "balanced",
+                  "intensityBias": "moderate",
+                  "recruitmentBias": "domestic"
+                }
+              }
+            ],
+            "trainingPhilosophy": {
+              "focusBias": "balanced",
+              "intensityBias": "moderate",
+              "recruitmentBias": "domestic",
+              "targetFocusBias": "balanced",
+              "targetIntensityBias": "moderate",
+              "transitionProgress": 0
+            },
+            "legacyTier": "emerging",
+            "oyakataId": "oyakata_promoted_r-sec"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "warning",
+        "reason": "Oyakata-oya-1 is 65 years old. Mandatory retirement at 65 (JSA).",
+        "score": 100
+      },
+      "heyaId": "heya-1"
+    },
+    {
+      "type": "LIFECYCLE_EVENT",
+      "category": "narrative",
+      "data": {
+        "rikishiId": "r-sec",
+        "shikona": "Wrestler-r-sec",
+        "status": "oyakata_promotion",
+        "reason": "Oyakata-oya-1 has reached the JSA retirement age of 65. Wrestler-r-sec takes command.",
+        "incident": "A new era begins at Heya-heya-1."
+      },
+      "heyaId": "heya-1",
+      "importance": "headline"
+    }
+  ],
+  "collections": {
+    "oyakataToAdd": [
+      {
+        "id": "oyakata_promoted_r-sec",
+        "heyaId": "heya-1",
+        "name": "Wrestler-r-sec Oyakata",
+        "shikona": "Wrestler-r-sec",
+        "formerShikona": "Wrestler-r-sec",
+        "highestRank": "maegashira",
+        "age": 31,
+        "yearsInCharge": 0,
+        "archetype": "traditionalist",
+        "traits": {
+          "ambition": 50,
+          "patience": 50,
+          "risk": 50,
+          "tradition": 50,
+          "compassion": 50
+        },
+        "tenure": {
+          "startedYear": 2026,
+          "bashoServed": 0,
+          "championships": 0,
+          "sekitoriProduced": 0,
+          "insolvencyEvents": 0,
+          "majorScandals": 0,
+          "forcedMergers": 0
+        },
+        "successionReadiness": "stable",
+        "formerRikishiId": "r-sec"
+      }
+    ],
+    "rikishiToHistorical": [
+      "r-sec"
+    ],
+    "activeRikishiIdsToRemove": [
+      "r-sec"
+    ]
+  }
+}"
+`;
+
+exports[`DynastyService — golden master > age 65 with only makushita-top10 drought fallback 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "mandatory"
+          }
+        ]
+      ]
+    },
+    "rikishiUpdates": {
+      "__map": [
+        [
+          "r-mak",
+          {
+            "isRetired": true,
+            "retirementYear": 2026,
+            "retirementReason": "Promoted to Oyakata"
+          }
+        ]
+      ]
+    },
+    "heyaUpdates": {
+      "__map": [
+        [
+          "heya-1",
+          {
+            "dynasty": [
+              {
+                "era": 1,
+                "oyakataId": "oya-1",
+                "oyakataName": "Oyakata-oya-1",
+                "reignFrom": 2021,
+                "reignTo": 2026,
+                "achievementsInReign": {
+                  "yushoCount": 0,
+                  "globalCupWins": 0,
+                  "hofInductees": [],
+                  "boardSeatsWon": 0
+                },
+                "trainingPhilosophyAtReign": {
+                  "focusBias": "balanced",
+                  "intensityBias": "moderate",
+                  "recruitmentBias": "domestic"
+                }
+              }
+            ],
+            "trainingPhilosophy": {
+              "focusBias": "balanced",
+              "intensityBias": "moderate",
+              "recruitmentBias": "domestic",
+              "targetFocusBias": "balanced",
+              "targetIntensityBias": "moderate",
+              "transitionProgress": 0
+            },
+            "legacyTier": "emerging",
+            "oyakataId": "oyakata_promoted_r-mak"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "warning",
+        "reason": "Oyakata-oya-1 is 65 years old. Mandatory retirement at 65 (JSA).",
+        "score": 100
+      },
+      "heyaId": "heya-1"
+    },
+    {
+      "type": "LIFECYCLE_EVENT",
+      "category": "narrative",
+      "data": {
+        "rikishiId": "r-mak",
+        "shikona": "Wrestler-r-mak",
+        "status": "oyakata_promotion",
+        "reason": "Oyakata-oya-1 has reached the JSA retirement age of 65. Wrestler-r-mak takes command.",
+        "incident": "A new era begins at Heya-heya-1."
+      },
+      "heyaId": "heya-1",
+      "importance": "headline"
+    }
+  ],
+  "collections": {
+    "oyakataToAdd": [
+      {
+        "id": "oyakata_promoted_r-mak",
+        "heyaId": "heya-1",
+        "name": "Wrestler-r-mak Oyakata",
+        "shikona": "Wrestler-r-mak",
+        "formerShikona": "Wrestler-r-mak",
+        "highestRank": "maegashira",
+        "age": 31,
+        "yearsInCharge": 0,
+        "archetype": "traditionalist",
+        "traits": {
+          "ambition": 50,
+          "patience": 50,
+          "risk": 50,
+          "tradition": 50,
+          "compassion": 50
+        },
+        "tenure": {
+          "startedYear": 2026,
+          "bashoServed": 0,
+          "championships": 0,
+          "sekitoriProduced": 0,
+          "insolvencyEvents": 0,
+          "majorScandals": 0,
+          "forcedMergers": 0
+        },
+        "successionReadiness": "stable",
+        "formerRikishiId": "r-mak"
+      }
+    ],
+    "rikishiToHistorical": [
+      "r-mak"
+    ],
+    "activeRikishiIdsToRemove": [
+      "r-mak"
+    ]
+  }
+}"
+`;
+
+exports[`DynastyService — golden master > deriveLegacyTier / getLegacyTierTrainingBonus 1`] = `
+[
+  [
+    "none",
+    1,
+  ],
+  [
+    "bronze",
+    1,
+  ],
+  [
+    "silver",
+    1,
+  ],
+  [
+    "gold",
+    1,
+  ],
+  [
+    "platinum",
+    1,
+  ],
+  [
+    "mythic",
+    1,
+  ],
+  [
+    undefined,
+    1,
+  ],
+]
+`;
+
+exports[`DynastyService — golden master > findEligibleSuccessors across roster shapes 1`] = `
+[
+  "r-sec",
+]
+`;
+
+exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 50 (no successors) 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "stable"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "info",
+        "reason": "Oyakata-oya-1 is 50 years old. Mandatory retirement at 65 (JSA).",
+        "score": 0
+      },
+      "heyaId": "heya-1"
+    }
+  ]
+}"
+`;
+
+exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 59 (no successors) 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "stable"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "info",
+        "reason": "Oyakata-oya-1 is 59 years old. Mandatory retirement at 65 (JSA).",
+        "score": 40
+      },
+      "heyaId": "heya-1"
+    }
+  ]
+}"
+`;
+
+exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 60 (no successors) 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "transitioning"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "info",
+        "reason": "Oyakata-oya-1 is 60 years old. Mandatory retirement at 65 (JSA).",
+        "score": 50
+      },
+      "heyaId": "heya-1"
+    }
+  ]
+}"
+`;
+
+exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 62 (no successors) 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "transitioning"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "warning",
+        "reason": "Oyakata-oya-1 is 62 years old. Mandatory retirement at 65 (JSA).",
+        "score": 70
+      },
+      "heyaId": "heya-1"
+    }
+  ]
+}"
+`;
+
+exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 64 (no successors) 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "transitioning"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "warning",
+        "reason": "Oyakata-oya-1 is 64 years old. Mandatory retirement at 65 (JSA).",
+        "score": 90
+      },
+      "heyaId": "heya-1"
+    }
+  ]
+}"
+`;
+
+exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 65 (no successors) 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "mandatory"
+          }
+        ]
+      ]
+    },
+    "heyaUpdates": {
+      "__map": [
+        [
+          "heya-1",
+          {
+            "oyakataId": "oyakata_trustee_heya-1_2026"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "warning",
+        "reason": "Oyakata-oya-1 is 65 years old. Mandatory retirement at 65 (JSA).",
+        "score": 100
+      },
+      "heyaId": "heya-1"
+    },
+    {
+      "type": "LIFECYCLE_EVENT",
+      "category": "narrative",
+      "data": {
+        "status": "oyakata_promotion",
+        "reason": "Oyakata-oya-1 has retired. JSA has appointed a trustee for Heya-heya-1."
+      },
+      "heyaId": "heya-1",
+      "importance": "headline"
+    }
+  ],
+  "collections": {
+    "oyakataToAdd": [
+      {
+        "id": "oyakata_trustee_heya-1_2026",
+        "heyaId": "heya-1",
+        "name": "JSA Trustee (Shikona-oya-1 lineage)",
+        "shikona": "Trustee",
+        "age": 45,
+        "yearsInCharge": 0,
+        "archetype": "traditionalist",
+        "traits": {
+          "ambition": 30,
+          "patience": 50,
+          "risk": 20,
+          "tradition": 80,
+          "compassion": 50
+        },
+        "isCaretaker": true,
+        "tenure": {
+          "startedYear": 2026,
+          "bashoServed": 0,
+          "championships": 0,
+          "sekitoriProduced": 0,
+          "insolvencyEvents": 0,
+          "majorScandals": 0,
+          "forcedMergers": 0
+        },
+        "successionReadiness": "stable"
+      }
+    ],
+    "oyakataToRemove": [
+      "oya-1"
+    ]
+  }
+}"
+`;
+
+exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 70 (no successors) 1`] = `
+"{
+  "metadata": {
+    "source": "tickSuccessionCheck",
+    "timestamp": 1
+  },
+  "entities": {
+    "oyakataUpdates": {
+      "__map": [
+        [
+          "oya-1",
+          {
+            "successionReadiness": "mandatory"
+          }
+        ]
+      ]
+    },
+    "heyaUpdates": {
+      "__map": [
+        [
+          "heya-1",
+          {
+            "oyakataId": "oyakata_trustee_heya-1_2026"
+          }
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "type": "GOVERNANCE_RULING",
+      "category": "discipline",
+      "data": {
+        "incident": "succession_readiness_update",
+        "status": "warning",
+        "reason": "Oyakata-oya-1 is 70 years old. Mandatory retirement at 65 (JSA).",
+        "score": 100
+      },
+      "heyaId": "heya-1"
+    },
+    {
+      "type": "LIFECYCLE_EVENT",
+      "category": "narrative",
+      "data": {
+        "status": "oyakata_promotion",
+        "reason": "Oyakata-oya-1 has retired. JSA has appointed a trustee for Heya-heya-1."
+      },
+      "heyaId": "heya-1",
+      "importance": "headline"
+    }
+  ],
+  "collections": {
+    "oyakataToAdd": [
+      {
+        "id": "oyakata_trustee_heya-1_2026",
+        "heyaId": "heya-1",
+        "name": "JSA Trustee (Shikona-oya-1 lineage)",
+        "shikona": "Trustee",
+        "age": 45,
+        "yearsInCharge": 0,
+        "archetype": "traditionalist",
+        "traits": {
+          "ambition": 30,
+          "patience": 50,
+          "risk": 20,
+          "tradition": 80,
+          "compassion": 50
+        },
+        "isCaretaker": true,
+        "tenure": {
+          "startedYear": 2026,
+          "bashoServed": 0,
+          "championships": 0,
+          "sekitoriProduced": 0,
+          "insolvencyEvents": 0,
+          "majorScandals": 0,
+          "forcedMergers": 0
+        },
+        "successionReadiness": "stable"
+      }
+    ],
+    "oyakataToRemove": [
+      "oya-1"
+    ]
+  }
+}"
+`;
+
+exports[`GlobalCupService — golden master > initializeTournament impact 1`] = `
+"{
+  "metadata": {
+    "source": "GlobalCupService.initializeTournament",
+    "timestamp": 1
+  },
+  "worldFields": {
+    "globalCup": {
+      "year": 2026,
+      "phase": "quarterfinals",
+      "isActive": true,
+      "participants": [
+        {
+          "rikishiId": "r-yoko",
+          "shikona": "Wrestler-r-yoko",
+          "rank": "yokozuna",
+          "heyaId": "heya-r-yoko",
+          "nationality": "JP",
+          "isChallenger": false,
+          "seed": 1
+        },
+        {
+          "rikishiId": "r-ozeki",
+          "shikona": "Wrestler-r-ozeki",
+          "rank": "ozeki",
+          "heyaId": "heya-r-ozeki",
+          "nationality": "JP",
+          "isChallenger": false,
+          "seed": 2
+        },
+        {
+          "rikishiId": "r-seki",
+          "shikona": "Wrestler-r-seki",
+          "rank": "sekiwake",
+          "heyaId": "heya-r-seki",
+          "nationality": "JP",
+          "isChallenger": false,
+          "seed": 3
+        },
+        {
+          "rikishiId": "r-komu",
+          "shikona": "Wrestler-r-komu",
+          "rank": "komusubi",
+          "heyaId": "heya-r-komu",
+          "nationality": "JP",
+          "isChallenger": false,
+          "seed": 4
+        },
+        {
+          "rikishiId": "r-m1",
+          "shikona": "Wrestler-r-m1",
+          "rank": "maegashira",
+          "heyaId": "heya-r-m1",
+          "nationality": "JP",
+          "isChallenger": false,
+          "seed": 5
+        },
+        {
+          "rikishiId": "r-jry",
+          "shikona": "Wrestler-r-jry",
+          "rank": "maegashira",
+          "heyaId": "heya-r-jry",
+          "nationality": "JP",
+          "isChallenger": false,
+          "seed": 6
+        },
+        {
+          "rikishiId": "challenger_2026_1",
+          "shikona": "Giant of the Steppe",
+          "rank": "Ozeki",
+          "nationality": "Mongolia",
+          "isChallenger": true,
+          "seed": 7
+        },
+        {
+          "rikishiId": "challenger_2026_2",
+          "shikona": "Estonian Colossus",
+          "rank": "Ozeki",
+          "nationality": "Estonia",
+          "isChallenger": true,
+          "seed": 8
+        }
+      ],
+      "bracket": [
+        {
+          "id": "gc_2026_qf_0",
+          "round": "quarterfinal",
+          "matchNumber": 1,
+          "eastRikishiId": "r-yoko",
+          "westRikishiId": "challenger_2026_2",
+          "day": 0
+        },
+        {
+          "id": "gc_2026_qf_1",
+          "round": "quarterfinal",
+          "matchNumber": 2,
+          "eastRikishiId": "r-ozeki",
+          "westRikishiId": "challenger_2026_1",
+          "day": 0
+        },
+        {
+          "id": "gc_2026_qf_2",
+          "round": "quarterfinal",
+          "matchNumber": 3,
+          "eastRikishiId": "r-seki",
+          "westRikishiId": "r-jry",
+          "day": 0
+        },
+        {
+          "id": "gc_2026_qf_3",
+          "round": "quarterfinal",
+          "matchNumber": 4,
+          "eastRikishiId": "r-komu",
+          "westRikishiId": "r-m1",
+          "day": 0
+        }
+      ],
+      "startedAtWeek": 1
+    }
+  },
+  "events": [
+    {
+      "type": "GLOBAL_CUP_START",
+      "category": "narrative",
+      "data": {
+        "incident": "The Worlds Exhibition 2026 has begun! 8 elite wrestlers enter the dohyo."
+      },
+      "importance": "headline"
+    }
+  ]
+}"
+`;
+
+exports[`GlobalCupService — golden master > selectParticipants ordering + foreign slots 1`] = `
+[
+  {
+    "heyaId": "heya-r-yoko",
+    "isChallenger": false,
+    "nationality": "JP",
+    "rank": "yokozuna",
+    "rikishiId": "r-yoko",
+    "seed": 1,
+    "shikona": "Wrestler-r-yoko",
+  },
+  {
+    "heyaId": "heya-r-ozeki",
+    "isChallenger": false,
+    "nationality": "JP",
+    "rank": "ozeki",
+    "rikishiId": "r-ozeki",
+    "seed": 2,
+    "shikona": "Wrestler-r-ozeki",
+  },
+  {
+    "heyaId": "heya-r-seki",
+    "isChallenger": false,
+    "nationality": "JP",
+    "rank": "sekiwake",
+    "rikishiId": "r-seki",
+    "seed": 3,
+    "shikona": "Wrestler-r-seki",
+  },
+  {
+    "heyaId": "heya-r-komu",
+    "isChallenger": false,
+    "nationality": "JP",
+    "rank": "komusubi",
+    "rikishiId": "r-komu",
+    "seed": 4,
+    "shikona": "Wrestler-r-komu",
+  },
+  {
+    "heyaId": "heya-r-m1",
+    "isChallenger": false,
+    "nationality": "JP",
+    "rank": "maegashira",
+    "rikishiId": "r-m1",
+    "seed": 5,
+    "shikona": "Wrestler-r-m1",
+  },
+  {
+    "heyaId": "heya-r-jry",
+    "isChallenger": false,
+    "nationality": "JP",
+    "rank": "maegashira",
+    "rikishiId": "r-jry",
+    "seed": 6,
+    "shikona": "Wrestler-r-jry",
+  },
+  {
+    "isChallenger": true,
+    "nationality": "Mongolia",
+    "rank": "Ozeki",
+    "rikishiId": "challenger_2026_1",
+    "seed": 7,
+    "shikona": "Giant of the Steppe",
+  },
+  {
+    "isChallenger": true,
+    "nationality": "Estonia",
+    "rank": "Ozeki",
+    "rikishiId": "challenger_2026_2",
+    "seed": 8,
+    "shikona": "Estonian Colossus",
+  },
+]
+`;
+
+exports[`GlobalCupService — golden master > simulateMatch deterministic result 1`] = `
+{
+  "duration": 12,
+  "winner": "east",
+  "winningKimarite": "yorikiri",
+}
+`;
+
+exports[`YokozunaService — golden master > evaluateCandidate across rikishi profiles 1`] = `
+[
+  "maegashira-not-candidate",
+  null,
+]
+`;
+
+exports[`YokozunaService — golden master > evaluateCandidate across rikishi profiles 2`] = `
+[
+  "ozeki-14wins",
+  {
+    "name": "Wrestler-r-ozeki-14wins",
+    "performances": [],
+    "reasons": [
+      "Recent Tournament Champion",
+    ],
+    "recommendation": "watch",
+    "rikishiId": "r-ozeki-14wins",
+    "sentiment": 82.5,
+  },
+]
+`;
+
+exports[`YokozunaService — golden master > evaluateCandidate across rikishi profiles 3`] = `
+[
+  "ozeki-10wins",
+  {
+    "name": "Wrestler-r-ozeki-10wins",
+    "performances": [],
+    "reasons": [],
+    "recommendation": "reject",
+    "rikishiId": "r-ozeki-10wins",
+    "sentiment": 22.5,
+  },
+]
+`;
+
+exports[`YokozunaService — golden master > evaluateCandidate across rikishi profiles 4`] = `
+[
+  "ozeki-8wins",
+  {
+    "name": "Wrestler-r-ozeki-8wins",
+    "performances": [],
+    "reasons": [],
+    "recommendation": "reject",
+    "rikishiId": "r-ozeki-8wins",
+    "sentiment": 12.5,
+  },
+]
+`;
+
+exports[`YokozunaService — golden master > evaluateCandidate across rikishi profiles 5`] = `
+[
+  "ozeki-4wins",
+  {
+    "name": "Wrestler-r-ozeki-4wins",
+    "performances": [],
+    "reasons": [],
+    "recommendation": "reject",
+    "rikishiId": "r-ozeki-4wins",
+    "sentiment": -7.5,
+  },
+]
+`;
+
+exports[`YokozunaService — golden master > evaluateCandidate across rikishi profiles 6`] = `
+[
+  "yokozuna-already",
+  null,
+]
+`;

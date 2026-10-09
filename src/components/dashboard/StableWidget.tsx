@@ -2,12 +2,11 @@ import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import type { PerceptionSnapshot } from "@/presenters/engineAccess";
 import { BaseWidget } from "./BaseWidget";
 import { getCachedPerception } from "@/presenters/uiDigest";
-import { Building2, Heart, Shield, Users, Handshake, UserPlus, Briefcase, Zap } from "lucide-react";
+import { Building2, Heart, Shield, Users, Handshake, Zap } from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
   inspired: "text-success",
@@ -107,28 +106,6 @@ export function StableWidget() {
           />
         </div>
 
-        {/* Development Progress */}
-        <div className="space-y-3 pt-1">
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <Briefcase className="h-3 w-3" /> Staff Development
-              </span>
-              <span className="text-foreground">Level 3 / 5</span>
-            </div>
-            <Progress value={60} className="h-1" />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <UserPlus className="h-3 w-3" /> Naturalization
-              </span>
-              <span className="text-foreground">Years: 4 / 10</span>
-            </div>
-            <Progress value={40} className="h-1 bg-muted/50" />
-          </div>
-        </div>
       </div>
     </BaseWidget>
   );

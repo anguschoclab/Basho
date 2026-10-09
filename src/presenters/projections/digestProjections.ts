@@ -142,7 +142,7 @@ export function buildEventSections(world: WorldState): DigestSection[] {
   if (trainingItems.length)
     sections.push({
       id: "training",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text,
+      title: BardEngine.resolve(sectionRng, "ui.digest.sections.training").text,
       items: trainingItems,
     });
   if (scoutItems.length) sections.push({ id: "scouting", title: "Scouting", items: scoutItems });

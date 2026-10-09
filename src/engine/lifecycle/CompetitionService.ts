@@ -64,7 +64,13 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   const basho = world.currentBasho;
   if (!basho) return builder.build();
 
-  const { topCandidates, bestWins } = calculateStandings(basho);
+  // The headline yūshō is the MAKUUCHI championship — a lower-division
+  // zensho must never outrank it. Lower divisions get their own winners via
+  // divisionYushoMap below. Fall back to the merged table only for worlds
+  // that have no makuuchi rikishi at all (e.g. a brand-new stable).
+  const makuuchiStandings = calculateDivisionStandings(basho, world, "makuuchi");
+  const { topCandidates, bestWins } =
+    makuuchiStandings.topCandidates.length > 0 ? makuuchiStandings : calculateStandings(basho);
 
   if (topCandidates.length === 0) return builder.build();
 

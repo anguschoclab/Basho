@@ -1,0 +1,7224 @@
+{
+  "generatedAt": "2026-10-08T21:42:23.498Z",
+  "threshold": 40,
+  "entries": [
+    {
+      "file": "src/engine/bout/boutNarrative.ts",
+      "symbol": "generateBoutNarrative",
+      "kind": "function",
+      "startLine": 186,
+      "endLine": 2808,
+      "loc": 2623,
+      "exported": true
+    },
+    {
+      "file": "src/engine/kimariteStrategies.ts",
+      "symbol": "KIMARITE_STRATEGIES",
+      "kind": "const-arr",
+      "startLine": 101,
+      "endLine": 1059,
+      "loc": 959,
+      "exported": true
+    },
+    {
+      "file": "src/engine/glossary/GlossaryService.ts",
+      "symbol": "GLOSSARY_TERMS",
+      "kind": "const-arr",
+      "startLine": 23,
+      "endLine": 776,
+      "loc": 754,
+      "exported": false
+    },
+    {
+      "file": "src/pages/GovernancePage.tsx",
+      "symbol": "GovernancePage",
+      "kind": "function",
+      "startLine": 37,
+      "endLine": 736,
+      "loc": 700,
+      "exported": true
+    },
+    {
+      "file": "src/engine/worker/engine.worker.ts",
+      "symbol": "self.onmessage",
+      "kind": "arrow",
+      "startLine": 150,
+      "endLine": 844,
+      "loc": 695,
+      "exported": false
+    },
+    {
+      "file": "src/engine/banzuke/BanzukePublisher.ts",
+      "symbol": "publishBanzukeUpdate",
+      "kind": "function",
+      "startLine": 50,
+      "endLine": 740,
+      "loc": 691,
+      "exported": true
+    },
+    {
+      "file": "src/engine/worker/engine.worker.ts",
+      "symbol": "COMMAND_HANDLERS",
+      "kind": "const-obj",
+      "startLine": 157,
+      "endLine": 827,
+      "loc": 671,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RikishiCareerTab.tsx",
+      "symbol": "RikishiCareerTab",
+      "kind": "function",
+      "startLine": 147,
+      "endLine": 750,
+      "loc": 604,
+      "exported": true
+    },
+    {
+      "file": "src/engine/EventBus.ts",
+      "symbol": "EventBus",
+      "kind": "const-obj",
+      "startLine": 66,
+      "endLine": 633,
+      "loc": 568,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/PostBashoPressService.ts",
+      "symbol": "PostBashoPressService",
+      "kind": "const-obj",
+      "startLine": 33,
+      "endLine": 561,
+      "loc": 529,
+      "exported": true
+    },
+    {
+      "file": "src/pages/Dashboard.tsx",
+      "symbol": "Dashboard",
+      "kind": "function",
+      "startLine": 65,
+      "endLine": 576,
+      "loc": 512,
+      "exported": true
+    },
+    {
+      "file": "src/contexts/GameContext.tsx",
+      "symbol": "GameProvider",
+      "kind": "function",
+      "startLine": 55,
+      "endLine": 526,
+      "loc": 472,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutReplay/useBoutReplay.ts",
+      "symbol": "useBoutReplay",
+      "kind": "function",
+      "startLine": 63,
+      "endLine": 534,
+      "loc": 472,
+      "exported": true
+    },
+    {
+      "file": "src/pages/BashoPage.tsx",
+      "symbol": "BashoPage",
+      "kind": "function",
+      "startLine": 148,
+      "endLine": 603,
+      "loc": 456,
+      "exported": true
+    },
+    {
+      "file": "src/engine/kimariteRegistry.ts",
+      "symbol": "KIMARITE_ENRICHMENT",
+      "kind": "const-obj",
+      "startLine": 118,
+      "endLine": 570,
+      "loc": 453,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/narrative/RivalryService.ts",
+      "symbol": "RivalryService",
+      "kind": "const-obj",
+      "startLine": 93,
+      "endLine": 530,
+      "loc": 438,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutNarrative.ts",
+      "symbol": "anonymous@1409",
+      "kind": "arrow",
+      "startLine": 1409,
+      "endLine": 1835,
+      "loc": 427,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RikishiProfileHeader.tsx",
+      "symbol": "RikishiProfileHeader",
+      "kind": "function",
+      "startLine": 37,
+      "endLine": 440,
+      "loc": 404,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutResultApplier.ts",
+      "symbol": "applyBoutResult",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 420,
+      "loc": 387,
+      "exported": true
+    },
+    {
+      "file": "src/pages/AlmanacPage.tsx",
+      "symbol": "AlmanacPage",
+      "kind": "function",
+      "startLine": 90,
+      "endLine": 464,
+      "loc": 375,
+      "exported": true
+    },
+    {
+      "file": "src/pages/RecapPage.tsx",
+      "symbol": "RecapPage",
+      "kind": "function",
+      "startLine": 128,
+      "endLine": 501,
+      "loc": 374,
+      "exported": true
+    },
+    {
+      "file": "src/components/recap/NarrativeSummary.tsx",
+      "symbol": "NarrativeSummary",
+      "kind": "function",
+      "startLine": 126,
+      "endLine": 496,
+      "loc": 371,
+      "exported": true
+    },
+    {
+      "file": "src/components/scouting/RecruitingTab.tsx",
+      "symbol": "RecruitingTab",
+      "kind": "function",
+      "startLine": 82,
+      "endLine": 452,
+      "loc": 371,
+      "exported": true
+    },
+    {
+      "file": "src/pages/MainMenu.tsx",
+      "symbol": "MainMenu",
+      "kind": "function",
+      "startLine": 36,
+      "endLine": 397,
+      "loc": 362,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/training/TrainingService.ts",
+      "symbol": "applyWeeklyTraining",
+      "kind": "function",
+      "startLine": 121,
+      "endLine": 479,
+      "loc": 359,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutResolver.ts",
+      "symbol": "resolveBout",
+      "kind": "function",
+      "startLine": 148,
+      "endLine": 502,
+      "loc": 355,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/training/TrainingService.ts",
+      "symbol": "anonymous@127",
+      "kind": "arrow",
+      "startLine": 127,
+      "endLine": 476,
+      "loc": 350,
+      "exported": false
+    },
+    {
+      "file": "src/engine/persistence/SerializationService.ts",
+      "symbol": "SerializationService",
+      "kind": "const-obj",
+      "startLine": 21,
+      "endLine": 360,
+      "loc": 340,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/AppSidebar.tsx",
+      "symbol": "AppSidebar",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 352,
+      "loc": 333,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/SaveLoadDialog.tsx",
+      "symbol": "SaveLoadDialog",
+      "kind": "function",
+      "startLine": 43,
+      "endLine": 375,
+      "loc": 333,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/CrisisService.ts",
+      "symbol": "CrisisService",
+      "kind": "const-obj",
+      "startLine": 107,
+      "endLine": 431,
+      "loc": 325,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/YokozunaService.ts",
+      "symbol": "YokozunaService",
+      "kind": "const-obj",
+      "startLine": 58,
+      "endLine": 371,
+      "loc": 314,
+      "exported": true
+    },
+    {
+      "file": "src/pages/MyosekiMarketPage.tsx",
+      "symbol": "MyosekiMarketPage",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 343,
+      "loc": 311,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/WeeklyDrillPlanner.tsx",
+      "symbol": "WeeklyDrillPlanner",
+      "kind": "function",
+      "startLine": 88,
+      "endLine": 395,
+      "loc": 308,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/legacy/DynastyService.ts",
+      "symbol": "DynastyService",
+      "kind": "const-obj",
+      "startLine": 47,
+      "endLine": 354,
+      "loc": 308,
+      "exported": true
+    },
+    {
+      "file": "src/pages/OyakataPage.tsx",
+      "symbol": "OyakataPage",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 338,
+      "loc": 307,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/weekly.ts",
+      "symbol": "makeNPCWeeklyDecision",
+      "kind": "function",
+      "startLine": 54,
+      "endLine": 359,
+      "loc": 306,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/TopNavBar.tsx",
+      "symbol": "TopNavBar",
+      "kind": "function",
+      "startLine": 35,
+      "endLine": 339,
+      "loc": 305,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/CompetitionService.ts",
+      "symbol": "concludeBashoCompetition",
+      "kind": "function",
+      "startLine": 62,
+      "endLine": 366,
+      "loc": 305,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/GlobalCupService.ts",
+      "symbol": "GlobalCupService",
+      "kind": "const-obj",
+      "startLine": 23,
+      "endLine": 321,
+      "loc": 299,
+      "exported": true
+    },
+    {
+      "file": "src/pages/TalentPoolPage.tsx",
+      "symbol": "TalentPoolPage",
+      "kind": "function",
+      "startLine": 74,
+      "endLine": 371,
+      "loc": 298,
+      "exported": true
+    },
+    {
+      "file": "src/components/avatar/SumoAvatar.tsx",
+      "symbol": "SumoAvatar",
+      "kind": "fn-expr",
+      "startLine": 53,
+      "endLine": 345,
+      "loc": 293,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/worldCircuit/WorldCircuitService.ts",
+      "symbol": "WorldCircuitService",
+      "kind": "const-obj",
+      "startLine": 38,
+      "endLine": 329,
+      "loc": 292,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BoutNarrativeModal.tsx",
+      "symbol": "BoutNarrativeModal",
+      "kind": "function",
+      "startLine": 130,
+      "endLine": 411,
+      "loc": 282,
+      "exported": true
+    },
+    {
+      "file": "src/pages/MediaPage.tsx",
+      "symbol": "MediaPage",
+      "kind": "function",
+      "startLine": 195,
+      "endLine": 472,
+      "loc": 278,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/physics/tachiai.ts",
+      "symbol": "resolveTachiaiV2",
+      "kind": "function",
+      "startLine": 47,
+      "endLine": 323,
+      "loc": 277,
+      "exported": true
+    },
+    {
+      "file": "src/engine/simulation/TournamentSimulator.ts",
+      "symbol": "simulateEntireBasho",
+      "kind": "function",
+      "startLine": 23,
+      "endLine": 295,
+      "loc": 273,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/CrisisService.ts",
+      "symbol": "getRegistry",
+      "kind": "method",
+      "startLine": 161,
+      "endLine": 430,
+      "loc": 270,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/governanceReview.ts",
+      "symbol": "runGovernanceReview",
+      "kind": "function",
+      "startLine": 65,
+      "endLine": 328,
+      "loc": 264,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutReplay/boutCanvas/animation.ts",
+      "symbol": "getTargetState",
+      "kind": "function",
+      "startLine": 27,
+      "endLine": 286,
+      "loc": 260,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutReplay/boutCanvas/draw.ts",
+      "symbol": "drawRikishi",
+      "kind": "function",
+      "startLine": 98,
+      "endLine": 356,
+      "loc": 259,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/BashoHistory.ts",
+      "symbol": "recordBashoHistory",
+      "kind": "function",
+      "startLine": 19,
+      "endLine": 276,
+      "loc": 258,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/DramaMatchmaker.ts",
+      "symbol": "scoreDrama",
+      "kind": "function",
+      "startLine": 148,
+      "endLine": 402,
+      "loc": 255,
+      "exported": true
+    },
+    {
+      "file": "src/pages/StablePage.tsx",
+      "symbol": "StablePage",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 286,
+      "loc": 254,
+      "exported": true
+    },
+    {
+      "file": "src/pages/RivalriesPage.tsx",
+      "symbol": "RivalriesPage",
+      "kind": "function",
+      "startLine": 37,
+      "endLine": 289,
+      "loc": 253,
+      "exported": true
+    },
+    {
+      "file": "src/engine/simulation/SimTuningService.ts",
+      "symbol": "SimTuningService",
+      "kind": "const-obj",
+      "startLine": 49,
+      "endLine": 301,
+      "loc": 253,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/KeshoEditor.tsx",
+      "symbol": "KeshoEditor",
+      "kind": "function",
+      "startLine": 58,
+      "endLine": 308,
+      "loc": 251,
+      "exported": true
+    },
+    {
+      "file": "src/engine/kimariteRegistry.ts",
+      "symbol": "KIMARITE_REGISTRY",
+      "kind": "const-arr",
+      "startLine": 576,
+      "endLine": 826,
+      "loc": 251,
+      "exported": true
+    },
+    {
+      "file": "src/components/recap/TournamentCeremony.tsx",
+      "symbol": "TournamentCeremony",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 278,
+      "loc": 250,
+      "exported": true
+    },
+    {
+      "file": "src/components/recruitment/YouthAcademyPanel.tsx",
+      "symbol": "YouthAcademyPanel",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 270,
+      "loc": 249,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/SponsorsPanel.tsx",
+      "symbol": "SponsorsPanel",
+      "kind": "function",
+      "startLine": 47,
+      "endLine": 295,
+      "loc": 249,
+      "exported": true
+    },
+    {
+      "file": "src/components/onboarding/ExhibitionBout.tsx",
+      "symbol": "ExhibitionBout",
+      "kind": "function",
+      "startLine": 52,
+      "endLine": 299,
+      "loc": 248,
+      "exported": true
+    },
+    {
+      "file": "src/engine/simulation/SimTuningService.ts",
+      "symbol": "calculateMetrics",
+      "kind": "method",
+      "startLine": 53,
+      "endLine": 300,
+      "loc": 248,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcAI/execution.ts",
+      "symbol": "executeAgentDecisions",
+      "kind": "function",
+      "startLine": 83,
+      "endLine": 326,
+      "loc": 244,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/StrategicPlanner.ts",
+      "symbol": "PLAN_CATALOG",
+      "kind": "const-arr",
+      "startLine": 71,
+      "endLine": 313,
+      "loc": 243,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bout/physics/tickBeltBattle.ts",
+      "symbol": "tickBeltBattle",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 273,
+      "loc": 241,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/GlobalStrategicHub.tsx",
+      "symbol": "GlobalStrategicHub",
+      "kind": "function",
+      "startLine": 26,
+      "endLine": 262,
+      "loc": 237,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/physics/tickPushBattle.ts",
+      "symbol": "tickPushBattle",
+      "kind": "function",
+      "startLine": 39,
+      "endLine": 269,
+      "loc": 231,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/RikishiCard.tsx",
+      "symbol": "RikishiCard",
+      "kind": "fn-expr",
+      "startLine": 17,
+      "endLine": 245,
+      "loc": 229,
+      "exported": true
+    },
+    {
+      "file": "src/pages/HistoryPage.tsx",
+      "symbol": "HistoryPage",
+      "kind": "function",
+      "startLine": 88,
+      "endLine": 313,
+      "loc": 226,
+      "exported": true
+    },
+    {
+      "file": "src/components/menu/RikishiDetailDialog.tsx",
+      "symbol": "RikishiDetailDialog",
+      "kind": "function",
+      "startLine": 45,
+      "endLine": 267,
+      "loc": 223,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RosterList.tsx",
+      "symbol": "RosterList",
+      "kind": "function",
+      "startLine": 58,
+      "endLine": 277,
+      "loc": 220,
+      "exported": true
+    },
+    {
+      "file": "src/pages/BanzukePage.tsx",
+      "symbol": "BanzukePage",
+      "kind": "function",
+      "startLine": 45,
+      "endLine": 264,
+      "loc": 220,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/PostBashoPressService.ts",
+      "symbol": "generateChampionLines",
+      "kind": "method",
+      "startLine": 113,
+      "endLine": 332,
+      "loc": 220,
+      "exported": false
+    },
+    {
+      "file": "src/pages/EconomyPage.tsx",
+      "symbol": "EconomyPage",
+      "kind": "function",
+      "startLine": 50,
+      "endLine": 268,
+      "loc": 219,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/InfrastructureService.ts",
+      "symbol": "InfrastructureService",
+      "kind": "const-obj",
+      "startLine": 34,
+      "endLine": 252,
+      "loc": 219,
+      "exported": true
+    },
+    {
+      "file": "src/components/menu/SaveSlotManager.tsx",
+      "symbol": "SaveSlotManager",
+      "kind": "function",
+      "startLine": 39,
+      "endLine": 256,
+      "loc": 218,
+      "exported": true
+    },
+    {
+      "file": "src/pages/RikishiPage.tsx",
+      "symbol": "RikishiPage",
+      "kind": "function",
+      "startLine": 40,
+      "endLine": 257,
+      "loc": 218,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/NarrativeService.ts",
+      "symbol": "NarrativeService",
+      "kind": "const-obj",
+      "startLine": 153,
+      "endLine": 370,
+      "loc": 218,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/YokozunaService.ts",
+      "symbol": "evaluateActiveYokozuna",
+      "kind": "method",
+      "startLine": 159,
+      "endLine": 370,
+      "loc": 212,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/InjuryRecoveryPanel.tsx",
+      "symbol": "InjuryRecoveryPanel",
+      "kind": "function",
+      "startLine": 37,
+      "endLine": 246,
+      "loc": 210,
+      "exported": true
+    },
+    {
+      "file": "src/components/scouting/CompareModePanel.tsx",
+      "symbol": "CompareModePanel",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 226,
+      "loc": 209,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/crestMotifs.tsx",
+      "symbol": "renderCrestMotif",
+      "kind": "function",
+      "startLine": 10,
+      "endLine": 217,
+      "loc": 208,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/FacilitiesManagementPanel.tsx",
+      "symbol": "FacilitiesManagementPanel",
+      "kind": "function",
+      "startLine": 118,
+      "endLine": 324,
+      "loc": 207,
+      "exported": true
+    },
+    {
+      "file": "src/engine/simulation/AutoSimService.ts",
+      "symbol": "runAutoSim",
+      "kind": "function",
+      "startLine": 73,
+      "endLine": 279,
+      "loc": 207,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/ImpactResolver.ts",
+      "symbol": "_applyImpact",
+      "kind": "function",
+      "startLine": 193,
+      "endLine": 398,
+      "loc": 206,
+      "exported": false
+    },
+    {
+      "file": "src/components/economy/SponsorshipHub.tsx",
+      "symbol": "SponsorshipHub",
+      "kind": "function",
+      "startLine": 49,
+      "endLine": 251,
+      "loc": 203,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/crestMotifs.tsx",
+      "symbol": "MOTIF_HANDLERS",
+      "kind": "const-obj",
+      "startLine": 11,
+      "endLine": 209,
+      "loc": 199,
+      "exported": false
+    },
+    {
+      "file": "src/components/stable/ChronicleRoom.tsx",
+      "symbol": "ChronicleRoom",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 212,
+      "loc": 199,
+      "exported": true
+    },
+    {
+      "file": "src/pages/TrainingPage.tsx",
+      "symbol": "TrainingPage",
+      "kind": "function",
+      "startLine": 42,
+      "endLine": 240,
+      "loc": 199,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase06_yearly_boundary.ts",
+      "symbol": "phase06_yearly_boundary",
+      "kind": "function",
+      "startLine": 39,
+      "endLine": 237,
+      "loc": 199,
+      "exported": true
+    },
+    {
+      "file": "src/pages/HallOfFamePage.tsx",
+      "symbol": "HallOfFamePage",
+      "kind": "function",
+      "startLine": 422,
+      "endLine": 618,
+      "loc": 197,
+      "exported": true
+    },
+    {
+      "file": "src/components/menu/HeyaPreview.tsx",
+      "symbol": "HeyaPreview",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 230,
+      "loc": 193,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BoutResultDisplay.tsx",
+      "symbol": "BoutResultDisplay",
+      "kind": "function",
+      "startLine": 67,
+      "endLine": 257,
+      "loc": 191,
+      "exported": true
+    },
+    {
+      "file": "src/pages/StaffPage.tsx",
+      "symbol": "StaffPage",
+      "kind": "function",
+      "startLine": 99,
+      "endLine": 289,
+      "loc": 191,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/InfrastructureDashboard.tsx",
+      "symbol": "InfrastructureDashboard",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 220,
+      "loc": 187,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/KimariteSelectionEngine.ts",
+      "symbol": "KimariteSelectionEngine",
+      "kind": "const-obj",
+      "startLine": 40,
+      "endLine": 225,
+      "loc": 186,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase05_monthly_boundary.ts",
+      "symbol": "phase05_monthly_boundary",
+      "kind": "function",
+      "startLine": 50,
+      "endLine": 232,
+      "loc": 183,
+      "exported": true
+    },
+    {
+      "file": "src/engine/banzuke.ts",
+      "symbol": "updateBanzuke",
+      "kind": "function",
+      "startLine": 176,
+      "endLine": 357,
+      "loc": 182,
+      "exported": true
+    },
+    {
+      "file": "src/pages/RegionalHubPage.tsx",
+      "symbol": "RegionalHubPage",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 201,
+      "loc": 181,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/KimariteSelectionEngine.ts",
+      "symbol": "evaluate",
+      "kind": "method",
+      "startLine": 44,
+      "endLine": 224,
+      "loc": 181,
+      "exported": false
+    },
+    {
+      "file": "src/pages/SettingsPage.tsx",
+      "symbol": "SettingsPage",
+      "kind": "function",
+      "startLine": 17,
+      "endLine": 196,
+      "loc": 180,
+      "exported": true
+    },
+    {
+      "file": "src/pages/GlobalCupPage.tsx",
+      "symbol": "GlobalCupPage",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 197,
+      "loc": 178,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutGrip.ts",
+      "symbol": "evolveGripGeometry",
+      "kind": "function",
+      "startLine": 185,
+      "endLine": 362,
+      "loc": 178,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/WelfarePanel.tsx",
+      "symbol": "WelfarePanel",
+      "kind": "function",
+      "startLine": 27,
+      "endLine": 202,
+      "loc": 176,
+      "exported": true
+    },
+    {
+      "file": "src/pages/SchedulePage.tsx",
+      "symbol": "SchedulePage",
+      "kind": "function",
+      "startLine": 23,
+      "endLine": 198,
+      "loc": 176,
+      "exported": true
+    },
+    {
+      "file": "src/components/scouting/OpponentScoutingTab.tsx",
+      "symbol": "OpponentScoutingTab",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 198,
+      "loc": 174,
+      "exported": true
+    },
+    {
+      "file": "src/pages/StaffPage.tsx",
+      "symbol": "StaffCard",
+      "kind": "function",
+      "startLine": 291,
+      "endLine": 464,
+      "loc": 174,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RankBadge.tsx",
+      "symbol": "RankBadge",
+      "kind": "function",
+      "startLine": 91,
+      "endLine": 263,
+      "loc": 173,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle.ts",
+      "symbol": "_generateRookie",
+      "kind": "function",
+      "startLine": 199,
+      "endLine": 371,
+      "loc": 173,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/PrizeDistribution.ts",
+      "symbol": "distributePrizes",
+      "kind": "function",
+      "startLine": 26,
+      "endLine": 198,
+      "loc": 173,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_governance.ts",
+      "symbol": "phase01_week_governance",
+      "kind": "function",
+      "startLine": 41,
+      "endLine": 212,
+      "loc": 172,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutReplay/useBoutReplay.ts",
+      "symbol": "anonymous@326",
+      "kind": "arrow",
+      "startLine": 326,
+      "endLine": 496,
+      "loc": 171,
+      "exported": false
+    },
+    {
+      "file": "src/components/layout/EventLogPanel.tsx",
+      "symbol": "EventLogPanel",
+      "kind": "function",
+      "startLine": 27,
+      "endLine": 196,
+      "loc": 170,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/CrisisModal.tsx",
+      "symbol": "CrisisModal",
+      "kind": "function",
+      "startLine": 26,
+      "endLine": 195,
+      "loc": 170,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/ActionQueueWidget.tsx",
+      "symbol": "ActionQueueWidget",
+      "kind": "function",
+      "startLine": 74,
+      "endLine": 242,
+      "loc": 169,
+      "exported": true
+    },
+    {
+      "file": "src/engine/agents/CrisisAgent.ts",
+      "symbol": "spawnCrisisAgent",
+      "kind": "function",
+      "startLine": 35,
+      "endLine": 202,
+      "loc": 168,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/DebtSection.tsx",
+      "symbol": "DebtSection",
+      "kind": "function",
+      "startLine": 44,
+      "endLine": 209,
+      "loc": 166,
+      "exported": true
+    },
+    {
+      "file": "src/pages/HistoryPage.tsx",
+      "symbol": "anonymous@145",
+      "kind": "arrow",
+      "startLine": 145,
+      "endLine": 307,
+      "loc": 163,
+      "exported": false
+    },
+    {
+      "file": "src/contexts/bashoSlice.ts",
+      "symbol": "bashoSlice",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 179,
+      "loc": 162,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutReplay/useBoutReplay.ts",
+      "symbol": "loop",
+      "kind": "arrow",
+      "startLine": 331,
+      "endLine": 490,
+      "loc": 160,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/CalendarWidget.tsx",
+      "symbol": "CalendarWidget",
+      "kind": "function",
+      "startLine": 10,
+      "endLine": 169,
+      "loc": 160,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/legacy/LegacyService.ts",
+      "symbol": "LegacyService",
+      "kind": "const-obj",
+      "startLine": 27,
+      "endLine": 186,
+      "loc": 160,
+      "exported": true
+    },
+    {
+      "file": "src/components/wizard/IdentityStep.tsx",
+      "symbol": "IdentityStep",
+      "kind": "function",
+      "startLine": 76,
+      "endLine": 234,
+      "loc": 159,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/training/SparringService.ts",
+      "symbol": "SparringService",
+      "kind": "const-obj",
+      "startLine": 88,
+      "endLine": 246,
+      "loc": 159,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/PromotionPipelineWidget.tsx",
+      "symbol": "PromotionPipelineWidget",
+      "kind": "function",
+      "startLine": 121,
+      "endLine": 276,
+      "loc": 156,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/InstitutionPanel.tsx",
+      "symbol": "InstitutionPanel",
+      "kind": "function",
+      "startLine": 70,
+      "endLine": 224,
+      "loc": 155,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BoutCard.tsx",
+      "symbol": "anonymous@25",
+      "kind": "arrow",
+      "startLine": 25,
+      "endLine": 177,
+      "loc": 153,
+      "exported": true
+    },
+    {
+      "file": "src/components/kesho/keshoPatterns.tsx",
+      "symbol": "renderBasePattern",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 164,
+      "loc": 153,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/physics/edgeCrisis.ts",
+      "symbol": "tickEdgeCrisis",
+      "kind": "function",
+      "startLine": 80,
+      "endLine": 232,
+      "loc": 153,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BanzukeReveal.tsx",
+      "symbol": "BanzukeReveal",
+      "kind": "function",
+      "startLine": 17,
+      "endLine": 167,
+      "loc": 151,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutGrip.ts",
+      "symbol": "initBeltBattle",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 183,
+      "loc": 151,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_npc_ai.ts",
+      "symbol": "phase01_week_npc_ai",
+      "kind": "function",
+      "startLine": 87,
+      "endLine": 237,
+      "loc": 151,
+      "exported": true
+    },
+    {
+      "file": "src/engine/loop/LoopDecisionEngine.ts",
+      "symbol": "detectDueDecisions",
+      "kind": "function",
+      "startLine": 35,
+      "endLine": 184,
+      "loc": 150,
+      "exported": true
+    },
+    {
+      "file": "src/pages/TrendsPage.tsx",
+      "symbol": "TrendsPage",
+      "kind": "function",
+      "startLine": 30,
+      "endLine": 178,
+      "loc": 149,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/recruitment/ScoutingService.ts",
+      "symbol": "ScoutingService",
+      "kind": "const-obj",
+      "startLine": 79,
+      "endLine": 226,
+      "loc": 148,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/PerceptionOverview.tsx",
+      "symbol": "PerceptionOverview",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 168,
+      "loc": 147,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/MatchDayViewer.tsx",
+      "symbol": "MatchDayViewer",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 179,
+      "loc": 146,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/BeyaWideRegime.tsx",
+      "symbol": "BeyaWideRegime",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 177,
+      "loc": 145,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateGenerator.ts",
+      "symbol": "generateCandidate",
+      "kind": "function",
+      "startLine": 90,
+      "endLine": 233,
+      "loc": 144,
+      "exported": true
+    },
+    {
+      "file": "src/engine/almanac/career.ts",
+      "symbol": "generateCareerRecord",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 181,
+      "loc": 144,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutPhaseLoop.ts",
+      "symbol": "runPhaseLoop",
+      "kind": "function",
+      "startLine": 36,
+      "endLine": 179,
+      "loc": 144,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RikishiProfileTab.tsx",
+      "symbol": "RikishiProfileTab",
+      "kind": "function",
+      "startLine": 173,
+      "endLine": 315,
+      "loc": 143,
+      "exported": true
+    },
+    {
+      "file": "src/components/menu/HeyaCard.tsx",
+      "symbol": "HeyaCard",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 170,
+      "loc": 143,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateCareer.ts",
+      "symbol": "simulateCareerProgression",
+      "kind": "function",
+      "startLine": 54,
+      "endLine": 196,
+      "loc": 143,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/TrainingWidget.tsx",
+      "symbol": "TrainingWidget",
+      "kind": "function",
+      "startLine": 101,
+      "endLine": 242,
+      "loc": 142,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_welfare.ts",
+      "symbol": "phase01_week_welfare",
+      "kind": "function",
+      "startLine": 54,
+      "endLine": 195,
+      "loc": 142,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bard/BardEngine.ts",
+      "symbol": "BardEngine",
+      "kind": "const-obj",
+      "startLine": 346,
+      "endLine": 486,
+      "loc": 141,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/tickDaily.ts",
+      "symbol": "advanceOneDay",
+      "kind": "function",
+      "startLine": 103,
+      "endLine": 243,
+      "loc": 141,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/retireeOyakataConversion.ts",
+      "symbol": "processRetireeOyakataConversion",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 167,
+      "loc": 139,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/SparringPanel.tsx",
+      "symbol": "SparringPanel",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 171,
+      "loc": 138,
+      "exported": true
+    },
+    {
+      "file": "src/components/media/PressConference.tsx",
+      "symbol": "PressConference",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 169,
+      "loc": 138,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/medicalProjection.ts",
+      "symbol": "projectMedicalUIDigest",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 164,
+      "loc": 137,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/BashoWidget.tsx",
+      "symbol": "BashoWidget",
+      "kind": "function",
+      "startLine": 56,
+      "endLine": 192,
+      "loc": 137,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolNPCRecruitment.ts",
+      "symbol": "fillVacanciesForNPCWithBidding",
+      "kind": "function",
+      "startLine": 126,
+      "endLine": 261,
+      "loc": 136,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/FacilityROIChart.tsx",
+      "symbol": "FacilityROIChart",
+      "kind": "function",
+      "startLine": 143,
+      "endLine": 277,
+      "loc": 135,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/StableStatsTable.tsx",
+      "symbol": "StableStatsTable",
+      "kind": "function",
+      "startLine": 35,
+      "endLine": 169,
+      "loc": 135,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateBuilder.ts",
+      "symbol": "generateFullRikishi",
+      "kind": "function",
+      "startLine": 181,
+      "endLine": 315,
+      "loc": 135,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/SuccessionModal.tsx",
+      "symbol": "SuccessionModal",
+      "kind": "function",
+      "startLine": 27,
+      "endLine": 160,
+      "loc": 134,
+      "exported": true
+    },
+    {
+      "file": "src/pages/CandidatePoolPage.tsx",
+      "symbol": "CandidatePoolPage",
+      "kind": "function",
+      "startLine": 146,
+      "endLine": 279,
+      "loc": 134,
+      "exported": true
+    },
+    {
+      "file": "src/engine/prestige/prestigeSystem.ts",
+      "symbol": "runPrestigeDecay",
+      "kind": "function",
+      "startLine": 77,
+      "endLine": 210,
+      "loc": 134,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RosterList.tsx",
+      "symbol": "anonymous@131",
+      "kind": "arrow",
+      "startLine": 131,
+      "endLine": 263,
+      "loc": 133,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/BoutReplayViewer.tsx",
+      "symbol": "BoutReplayViewer",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 161,
+      "loc": 133,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/health/InjuryService.ts",
+      "symbol": "onBoutResolvedInjury",
+      "kind": "function",
+      "startLine": 196,
+      "endLine": 328,
+      "loc": 133,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiCombatTab.tsx",
+      "symbol": "RikishiCombatTab",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 154,
+      "loc": 130,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bard/BardEngine.ts",
+      "symbol": "interpolate",
+      "kind": "function",
+      "startLine": 215,
+      "endLine": 344,
+      "loc": 130,
+      "exported": true
+    },
+    {
+      "file": "src/engine/archetype.ts",
+      "symbol": "ARCHETYPE_DEFINITIONS",
+      "kind": "const-obj",
+      "startLine": 14,
+      "endLine": 143,
+      "loc": 130,
+      "exported": false
+    },
+    {
+      "file": "src/engine/persistence/SerializationService.ts",
+      "symbol": "deserializeWorld",
+      "kind": "method",
+      "startLine": 180,
+      "endLine": 309,
+      "loc": 130,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/legacy/BloodlineService.ts",
+      "symbol": "BloodlineService",
+      "kind": "const-obj",
+      "startLine": 43,
+      "endLine": 172,
+      "loc": 130,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BoutPreMatchOverlay.tsx",
+      "symbol": "BoutPreMatchOverlay",
+      "kind": "function",
+      "startLine": 103,
+      "endLine": 231,
+      "loc": 129,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_basho_bouts.ts",
+      "symbol": "phase01_basho_bouts",
+      "kind": "function",
+      "startLine": 31,
+      "endLine": 159,
+      "loc": 129,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase06_narrative.ts",
+      "symbol": "phase06_narrative",
+      "kind": "function",
+      "startLine": 46,
+      "endLine": 174,
+      "loc": 129,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/FinancesWidget.tsx",
+      "symbol": "FinancesWidget",
+      "kind": "function",
+      "startLine": 8,
+      "endLine": 135,
+      "loc": 128,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/PressConference.tsx",
+      "symbol": "PressConference",
+      "kind": "function",
+      "startLine": 170,
+      "endLine": 296,
+      "loc": 127,
+      "exported": true
+    },
+    {
+      "file": "src/hooks/useTrainingProfile.ts",
+      "symbol": "useTrainingProfile",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 148,
+      "loc": 127,
+      "exported": true
+    },
+    {
+      "file": "src/pages/NewGameWizard.tsx",
+      "symbol": "NewGameWizard",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 154,
+      "loc": 127,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/IncomeExpensesCards.tsx",
+      "symbol": "IncomeExpensesCards",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 145,
+      "loc": 126,
+      "exported": true
+    },
+    {
+      "file": "src/pages/GovernancePage.tsx",
+      "symbol": "anonymous@59",
+      "kind": "arrow",
+      "startLine": 59,
+      "endLine": 184,
+      "loc": 126,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/actionQueue.ts",
+      "symbol": "buildActionQueue",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 162,
+      "loc": 125,
+      "exported": true
+    },
+    {
+      "file": "src/pages/HallOfFamePage.tsx",
+      "symbol": "InducteeFullCard",
+      "kind": "function",
+      "startLine": 96,
+      "endLine": 220,
+      "loc": 125,
+      "exported": false
+    },
+    {
+      "file": "src/engine/core/ImpactBuilder.ts",
+      "symbol": "ImpactBuilder.merge",
+      "kind": "method",
+      "startLine": 392,
+      "endLine": 516,
+      "loc": 125,
+      "exported": false
+    },
+    {
+      "file": "src/engine/lifecycle/retirementNarrative.ts",
+      "symbol": "generateRetirementNarrative",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 144,
+      "loc": 125,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/KihakuService.ts",
+      "symbol": "KihakuService",
+      "kind": "const-obj",
+      "startLine": 36,
+      "endLine": 160,
+      "loc": 125,
+      "exported": true
+    },
+    {
+      "file": "src/store/gameStore.ts",
+      "symbol": "anonymous@71",
+      "kind": "arrow",
+      "startLine": 71,
+      "endLine": 195,
+      "loc": 125,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/InjuryRiskHeatmap.tsx",
+      "symbol": "InjuryRiskHeatmap",
+      "kind": "function",
+      "startLine": 60,
+      "endLine": 183,
+      "loc": 124,
+      "exported": true
+    },
+    {
+      "file": "src/components/scouting/RecruitingTab.tsx",
+      "symbol": "anonymous@290",
+      "kind": "arrow",
+      "startLine": 290,
+      "endLine": 413,
+      "loc": 124,
+      "exported": false
+    },
+    {
+      "file": "src/pages/TalentPoolPage.tsx",
+      "symbol": "anonymous@244",
+      "kind": "arrow",
+      "startLine": 244,
+      "endLine": 366,
+      "loc": 123,
+      "exported": false
+    },
+    {
+      "file": "src/engine/mergers.ts",
+      "symbol": "executeMerger",
+      "kind": "function",
+      "startLine": 26,
+      "endLine": 148,
+      "loc": 123,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/media/MediaBoutService.ts",
+      "symbol": "updateMediaFromBout",
+      "kind": "function",
+      "startLine": 49,
+      "endLine": 171,
+      "loc": 123,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_rivalries.ts",
+      "symbol": "phase01_week_rivalries",
+      "kind": "function",
+      "startLine": 31,
+      "endLine": 153,
+      "loc": 123,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/IndividualFocusSlots.tsx",
+      "symbol": "IndividualFocusSlots",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 146,
+      "loc": 122,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/DramaMatchmaker.ts",
+      "symbol": "applyDramaBudget",
+      "kind": "function",
+      "startLine": 440,
+      "endLine": 561,
+      "loc": 122,
+      "exported": true
+    },
+    {
+      "file": "src/constants/ui/wizard.ts",
+      "symbol": "OYAKATA_BACKSTORIES",
+      "kind": "const-arr",
+      "startLine": 25,
+      "endLine": 145,
+      "loc": 121,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/AcademyManagementPanel.tsx",
+      "symbol": "AcademyManagementPanel",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 152,
+      "loc": 121,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/TrainingAnalytics.tsx",
+      "symbol": "TrainingAnalytics",
+      "kind": "function",
+      "startLine": 54,
+      "endLine": 174,
+      "loc": 121,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/PressConference.tsx",
+      "symbol": "generatePressQuestions",
+      "kind": "function",
+      "startLine": 27,
+      "endLine": 147,
+      "loc": 121,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/KenshoManagementWidget.tsx",
+      "symbol": "KenshoManagementWidget",
+      "kind": "function",
+      "startLine": 10,
+      "endLine": 130,
+      "loc": 121,
+      "exported": true
+    },
+    {
+      "file": "src/components/kesho/keshoBorders.tsx",
+      "symbol": "renderBorder",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 132,
+      "loc": 121,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/ImpactResolver.ts",
+      "symbol": "mergeImpacts",
+      "kind": "function",
+      "startLine": 496,
+      "endLine": 616,
+      "loc": 121,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/control-center/DataTable.tsx",
+      "symbol": "DataTableInner",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 147,
+      "loc": 120,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/perceptionComponents.tsx",
+      "symbol": "anonymous@377",
+      "kind": "arrow",
+      "startLine": 377,
+      "endLine": 495,
+      "loc": 119,
+      "exported": true
+    },
+    {
+      "file": "src/engine/historyIndex.ts",
+      "symbol": "indexBashoResult",
+      "kind": "function",
+      "startLine": 240,
+      "endLine": 358,
+      "loc": 119,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/InfrastructureDashboard.tsx",
+      "symbol": "anonymous@99",
+      "kind": "arrow",
+      "startLine": 99,
+      "endLine": 216,
+      "loc": 118,
+      "exported": false
+    },
+    {
+      "file": "src/engine/holiday.ts",
+      "symbol": "checkGate",
+      "kind": "function",
+      "startLine": 117,
+      "endLine": 234,
+      "loc": 118,
+      "exported": false
+    },
+    {
+      "file": "src/engine/agents/FinanceAgent.ts",
+      "symbol": "spawnFinanceAgent",
+      "kind": "function",
+      "startLine": 36,
+      "endLine": 153,
+      "loc": 118,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/TsukebitoPanel.tsx",
+      "symbol": "TsukebitoPanel",
+      "kind": "function",
+      "startLine": 13,
+      "endLine": 129,
+      "loc": 117,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolMaintenance.ts",
+      "symbol": "tickWeekTalentPool",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 130,
+      "loc": 117,
+      "exported": true
+    },
+    {
+      "file": "src/engine/agents/GovernanceAgent.ts",
+      "symbol": "spawnGovernanceAgent",
+      "kind": "function",
+      "startLine": 36,
+      "endLine": 151,
+      "loc": 116,
+      "exported": true
+    },
+    {
+      "file": "src/engine/agents/NarrativeAgent.ts",
+      "symbol": "spawnNarrativeAgent",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 147,
+      "loc": 116,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
+      "symbol": "CANONICAL_MYOSEKI_NAMES",
+      "kind": "const-arr",
+      "startLine": 20,
+      "endLine": 135,
+      "loc": 116,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_recruitment.ts",
+      "symbol": "phase01_week_recruitment",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 140,
+      "loc": 116,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/KeshoMawashiGallery.tsx",
+      "symbol": "KeshoMawashiGallery",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 128,
+      "loc": 115,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/HolidayDialog.tsx",
+      "symbol": "HolidayDialog",
+      "kind": "function",
+      "startLine": 41,
+      "endLine": 155,
+      "loc": 115,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/ProgressionTracker.tsx",
+      "symbol": "ProgressionTracker",
+      "kind": "function",
+      "startLine": 148,
+      "endLine": 262,
+      "loc": 115,
+      "exported": true
+    },
+    {
+      "file": "src/engine/oyakataPersonalities.ts",
+      "symbol": "generateOyakata",
+      "kind": "function",
+      "startLine": 194,
+      "endLine": 307,
+      "loc": 114,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/applyOyakataConfig.ts",
+      "symbol": "PLAYER_BACKSTORIES",
+      "kind": "const-arr",
+      "startLine": 43,
+      "endLine": 156,
+      "loc": 114,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/WeeklyDrillPlanner.tsx",
+      "symbol": "anonymous@248",
+      "kind": "arrow",
+      "startLine": 248,
+      "endLine": 360,
+      "loc": 113,
+      "exported": false
+    },
+    {
+      "file": "src/pages/HistoryDashboard.tsx",
+      "symbol": "StablesTab",
+      "kind": "arrow",
+      "startLine": 196,
+      "endLine": 308,
+      "loc": 113,
+      "exported": false
+    },
+    {
+      "file": "src/engine/types/infrastructure.ts",
+      "symbol": "FACILITY_REGISTRY",
+      "kind": "const-obj",
+      "startLine": 49,
+      "endLine": 161,
+      "loc": 113,
+      "exported": true
+    },
+    {
+      "file": "src/engine/agents/RecruitmentAgent.ts",
+      "symbol": "spawnRecruitmentAgent",
+      "kind": "function",
+      "startLine": 35,
+      "endLine": 147,
+      "loc": 113,
+      "exported": true
+    },
+    {
+      "file": "src/engine/records.ts",
+      "symbol": "onBashoEnded",
+      "kind": "function",
+      "startLine": 111,
+      "endLine": 223,
+      "loc": 113,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/training/MentorshipService.ts",
+      "symbol": "MentorshipService",
+      "kind": "const-obj",
+      "startLine": 65,
+      "endLine": 177,
+      "loc": 113,
+      "exported": true
+    },
+    {
+      "file": "src/components/wizard/StableStep.tsx",
+      "symbol": "StableStep",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 133,
+      "loc": 112,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/TrendsWidget.tsx",
+      "symbol": "TrendsWidget",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 123,
+      "loc": 112,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/DebtSection.tsx",
+      "symbol": "anonymous@94",
+      "kind": "arrow",
+      "startLine": 94,
+      "endLine": 204,
+      "loc": 111,
+      "exported": false
+    },
+    {
+      "file": "src/components/layout/AppSidebar.tsx",
+      "symbol": "anonymous@143",
+      "kind": "arrow",
+      "startLine": 143,
+      "endLine": 253,
+      "loc": 111,
+      "exported": false
+    },
+    {
+      "file": "src/components/kesho/KeshoMawashiDisplay.tsx",
+      "symbol": "KeshoMawashiDisplay",
+      "kind": "function",
+      "startLine": 24,
+      "endLine": 134,
+      "loc": 111,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts",
+      "symbol": "generateKeshoForPromotions",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 132,
+      "loc": 111,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/EntityService.ts",
+      "symbol": "EntityService",
+      "kind": "const-obj",
+      "startLine": 19,
+      "endLine": 128,
+      "loc": 110,
+      "exported": true
+    },
+    {
+      "file": "src/engine/agents/RivalryAgent.ts",
+      "symbol": "spawnRivalryAgent",
+      "kind": "function",
+      "startLine": 31,
+      "endLine": 140,
+      "loc": 110,
+      "exported": true
+    },
+    {
+      "file": "src/components/rivalries/RivalryCard.tsx",
+      "symbol": "RivalryCard",
+      "kind": "function",
+      "startLine": 40,
+      "endLine": 148,
+      "loc": 109,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/LowerDivisionSwiss.ts",
+      "symbol": "phase2",
+      "kind": "function",
+      "startLine": 128,
+      "endLine": 236,
+      "loc": 109,
+      "exported": false
+    },
+    {
+      "file": "src/components/onboarding/OnboardingTourDialog.tsx",
+      "symbol": "OnboardingTourDialog",
+      "kind": "function",
+      "startLine": 45,
+      "endLine": 152,
+      "loc": 108,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/MatchmakingPhases.ts",
+      "symbol": "scorePairing",
+      "kind": "function",
+      "startLine": 178,
+      "endLine": 285,
+      "loc": 108,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/media/MediaPreBashoService.ts",
+      "symbol": "triggerPreBashoJournalism",
+      "kind": "function",
+      "startLine": 19,
+      "endLine": 126,
+      "loc": 108,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/InfrastructurePanel.tsx",
+      "symbol": "InfrastructurePanel",
+      "kind": "function",
+      "startLine": 27,
+      "endLine": 133,
+      "loc": 107,
+      "exported": true
+    },
+    {
+      "file": "src/engine/historyIndex.ts",
+      "symbol": "buildHistoryIndex",
+      "kind": "function",
+      "startLine": 94,
+      "endLine": 200,
+      "loc": 107,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/buildRetiredRikishiSummary.ts",
+      "symbol": "buildRetiredRikishiSummary",
+      "kind": "function",
+      "startLine": 17,
+      "endLine": 123,
+      "loc": 107,
+      "exported": true
+    },
+    {
+      "file": "src/engine/myosekiMarket.ts",
+      "symbol": "MYOSEKI_NAMES",
+      "kind": "const-arr",
+      "startLine": 25,
+      "endLine": 131,
+      "loc": 107,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/applyOyakataConfig.ts",
+      "symbol": "applyOyakataCreationConfig",
+      "kind": "function",
+      "startLine": 171,
+      "endLine": 277,
+      "loc": 107,
+      "exported": true
+    },
+    {
+      "file": "src/constants/engine/kimariteTargets.ts",
+      "symbol": "KIMARITE_FREQUENCY_TARGETS",
+      "kind": "const-obj",
+      "startLine": 23,
+      "endLine": 128,
+      "loc": 106,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/PlayoffBracket.tsx",
+      "symbol": "PlayoffBracket",
+      "kind": "function",
+      "startLine": 11,
+      "endLine": 116,
+      "loc": 106,
+      "exported": true
+    },
+    {
+      "file": "src/pages/TalentPoolPage.tsx",
+      "symbol": "anonymous@257",
+      "kind": "arrow",
+      "startLine": 257,
+      "endLine": 362,
+      "loc": 106,
+      "exported": false
+    },
+    {
+      "file": "src/engine/shikona/generation.ts",
+      "symbol": "generateCandidate",
+      "kind": "function",
+      "startLine": 23,
+      "endLine": 128,
+      "loc": 106,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/SwissAlgorithm.ts",
+      "symbol": "phase2",
+      "kind": "function",
+      "startLine": 265,
+      "endLine": 370,
+      "loc": 106,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/narrative/RivalryService.ts",
+      "symbol": "onBoutResolved",
+      "kind": "method",
+      "startLine": 149,
+      "endLine": 254,
+      "loc": 106,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/RecruitSigningDialog.tsx",
+      "symbol": "RecruitSigningDialog",
+      "kind": "function",
+      "startLine": 72,
+      "endLine": 176,
+      "loc": 105,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/IntaiCeremony.tsx",
+      "symbol": "IntaiCeremony",
+      "kind": "function",
+      "startLine": 83,
+      "endLine": 187,
+      "loc": 105,
+      "exported": true
+    },
+    {
+      "file": "src/hooks/useRosterData.ts",
+      "symbol": "useRosterData",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 116,
+      "loc": 105,
+      "exported": true
+    },
+    {
+      "file": "src/engine/economics.ts",
+      "symbol": "onBoutResolvedEconomics",
+      "kind": "function",
+      "startLine": 91,
+      "endLine": 195,
+      "loc": 105,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle.ts",
+      "symbol": "checkRetirement",
+      "kind": "function",
+      "startLine": 82,
+      "endLine": 185,
+      "loc": 104,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidatePoolService.ts",
+      "symbol": "tickWeekCandidatePool",
+      "kind": "function",
+      "startLine": 258,
+      "endLine": 361,
+      "loc": 104,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/RosterWidget.tsx",
+      "symbol": "RosterWidget",
+      "kind": "function",
+      "startLine": 176,
+      "endLine": 278,
+      "loc": 103,
+      "exported": true
+    },
+    {
+      "file": "src/engine/persistence/MigrationService.ts",
+      "symbol": "migrateToV1_1_0",
+      "kind": "arrow",
+      "startLine": 48,
+      "endLine": 150,
+      "loc": 103,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/SponsorRecruitmentWidget.tsx",
+      "symbol": "SponsorRecruitmentWidget",
+      "kind": "function",
+      "startLine": 91,
+      "endLine": 192,
+      "loc": 102,
+      "exported": true
+    },
+    {
+      "file": "src/pages/YouthAcademyPage.tsx",
+      "symbol": "YouthAcademyPage",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 121,
+      "loc": 102,
+      "exported": true
+    },
+    {
+      "file": "src/engine/types/banzuke.ts",
+      "symbol": "RANK_HIERARCHY",
+      "kind": "const-obj",
+      "startLine": 116,
+      "endLine": 217,
+      "loc": 102,
+      "exported": true
+    },
+    {
+      "file": "src/engine/persistence/SerializationService.ts",
+      "symbol": "liveWorld",
+      "kind": "const-obj",
+      "startLine": 197,
+      "endLine": 298,
+      "loc": 102,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolNPCRecruitment.ts",
+      "symbol": "fillVacanciesForNPC",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 121,
+      "loc": 102,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/WorldFactory.ts",
+      "symbol": "generateInitialWorld",
+      "kind": "function",
+      "startLine": 68,
+      "endLine": 169,
+      "loc": 102,
+      "exported": true
+    },
+    {
+      "file": "src/engine/loop/LoopDecisionEngine.ts",
+      "symbol": "applyDecisionEffect",
+      "kind": "function",
+      "startLine": 252,
+      "endLine": 353,
+      "loc": 102,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/planOutcomes.ts",
+      "symbol": "evaluatePlanOutcome",
+      "kind": "function",
+      "startLine": 166,
+      "endLine": 267,
+      "loc": 102,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiGlobalCup.tsx",
+      "symbol": "RikishiGlobalCup",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 118,
+      "loc": 101,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiCareerTab.tsx",
+      "symbol": "anonymous@419",
+      "kind": "arrow",
+      "startLine": 419,
+      "endLine": 519,
+      "loc": 101,
+      "exported": false
+    },
+    {
+      "file": "src/hooks/useSaveSlotManager.ts",
+      "symbol": "useSaveSlotManager",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 120,
+      "loc": 101,
+      "exported": true
+    },
+    {
+      "file": "src/components/officials/OfficialsPanel.tsx",
+      "symbol": "OfficialsPanel",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 113,
+      "loc": 100,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/legacy/TrainingPhilosophyService.ts",
+      "symbol": "TrainingPhilosophyService",
+      "kind": "const-obj",
+      "startLine": 23,
+      "endLine": 122,
+      "loc": 100,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateBuilder.ts",
+      "symbol": "convertCandidateToRikishi",
+      "kind": "function",
+      "startLine": 321,
+      "endLine": 420,
+      "loc": 100,
+      "exported": true
+    },
+    {
+      "file": "src/components/TitleBar.tsx",
+      "symbol": "TitleBar",
+      "kind": "function",
+      "startLine": 9,
+      "endLine": 107,
+      "loc": 99,
+      "exported": true
+    },
+    {
+      "file": "src/components/scouting/StableIntelTab.tsx",
+      "symbol": "StableIntelTab",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 119,
+      "loc": 99,
+      "exported": true
+    },
+    {
+      "file": "src/engine/holiday.ts",
+      "symbol": "GATE_HANDLERS",
+      "kind": "const-obj",
+      "startLine": 132,
+      "endLine": 230,
+      "loc": 99,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bard/BardEngine.ts",
+      "symbol": "anonymous@225",
+      "kind": "arrow",
+      "startLine": 225,
+      "endLine": 323,
+      "loc": 99,
+      "exported": false
+    },
+    {
+      "file": "src/engine/world.ts",
+      "symbol": "simulateBoutForToday",
+      "kind": "function",
+      "startLine": 125,
+      "endLine": 223,
+      "loc": 99,
+      "exported": true
+    },
+    {
+      "file": "src/engine/agents/MediaAgent.ts",
+      "symbol": "spawnMediaAgent",
+      "kind": "function",
+      "startLine": 31,
+      "endLine": 128,
+      "loc": 98,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/PostBashoPressService.ts",
+      "symbol": "generatePrizeWinnerLines",
+      "kind": "method",
+      "startLine": 334,
+      "endLine": 431,
+      "loc": 98,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/FinanceCalculator.ts",
+      "symbol": "calculateHeyaWeeklyFinances",
+      "kind": "function",
+      "startLine": 65,
+      "endLine": 161,
+      "loc": 97,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_training.ts",
+      "symbol": "phase01_week_training",
+      "kind": "function",
+      "startLine": 66,
+      "endLine": 162,
+      "loc": 97,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/recapProjections.ts",
+      "symbol": "selectFromMatches",
+      "kind": "function",
+      "startLine": 97,
+      "endLine": 192,
+      "loc": 96,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/RosterWidget.tsx",
+      "symbol": "anonymous@17",
+      "kind": "arrow",
+      "startLine": 17,
+      "endLine": 112,
+      "loc": 96,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/MentorAssignmentPanel.tsx",
+      "symbol": "MentorAssignmentPanel",
+      "kind": "function",
+      "startLine": 64,
+      "endLine": 158,
+      "loc": 95,
+      "exported": true
+    },
+    {
+      "file": "src/hooks/useKeyboardShortcuts.ts",
+      "symbol": "useKeyboardShortcuts",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 126,
+      "loc": 95,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/HeyaBrandGenerator.ts",
+      "symbol": "HEYA_NAME_TRADITIONS",
+      "kind": "const-obj",
+      "startLine": 16,
+      "endLine": 110,
+      "loc": 95,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/legacy/DynastyService.ts",
+      "symbol": "triggerSuccession",
+      "kind": "method",
+      "startLine": 165,
+      "endLine": 259,
+      "loc": 95,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/InjuryRecoveryPanel.tsx",
+      "symbol": "anonymous@94",
+      "kind": "arrow",
+      "startLine": 94,
+      "endLine": 187,
+      "loc": 94,
+      "exported": false
+    },
+    {
+      "file": "src/pages/InjuryRecoveryPage.tsx",
+      "symbol": "InjuryRecoveryPage",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 113,
+      "loc": 94,
+      "exported": true
+    },
+    {
+      "file": "src/pages/CandidatePoolPage.tsx",
+      "symbol": "CandidateRow",
+      "kind": "function",
+      "startLine": 44,
+      "endLine": 137,
+      "loc": 94,
+      "exported": false
+    },
+    {
+      "file": "src/engine/matchmaking/LowerDivisionSwiss.ts",
+      "symbol": "scoreLowerDivisionDrama",
+      "kind": "function",
+      "startLine": 247,
+      "endLine": 340,
+      "loc": 94,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/GlobalCupService.ts",
+      "symbol": "selectParticipants",
+      "kind": "method",
+      "startLine": 27,
+      "endLine": 120,
+      "loc": 94,
+      "exported": false
+    },
+    {
+      "file": "src/components/ui/sidebar/core.tsx",
+      "symbol": "Sidebar",
+      "kind": "function",
+      "startLine": 10,
+      "endLine": 102,
+      "loc": 93,
+      "exported": true
+    },
+    {
+      "file": "src/pages/GlossaryPage.tsx",
+      "symbol": "GlossaryPage",
+      "kind": "function",
+      "startLine": 23,
+      "endLine": 115,
+      "loc": 93,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/PlayoffResolver.ts",
+      "symbol": "resolvePlayoffs",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 110,
+      "loc": 93,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/TacticalCoordinator.ts",
+      "symbol": "applyPlanConstraints",
+      "kind": "function",
+      "startLine": 130,
+      "endLine": 222,
+      "loc": 93,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_npc_ai.ts",
+      "symbol": "maybeAssignNPCSparringPairs",
+      "kind": "function",
+      "startLine": 313,
+      "endLine": 405,
+      "loc": 93,
+      "exported": false
+    },
+    {
+      "file": "src/engine/lineage.ts",
+      "symbol": "assignMentor",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 120,
+      "loc": 92,
+      "exported": true
+    },
+    {
+      "file": "src/engine/persistence/SaveSlotService.ts",
+      "symbol": "SaveSlotService",
+      "kind": "const-obj",
+      "startLine": 26,
+      "endLine": 117,
+      "loc": 92,
+      "exported": true
+    },
+    {
+      "file": "src/engine/almanac/narrativeEnrichment.ts",
+      "symbol": "runAlmanacNarrativeUpdate",
+      "kind": "function",
+      "startLine": 210,
+      "endLine": 301,
+      "loc": 92,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/governanceProjections.ts",
+      "symbol": "projectGovernanceDerived",
+      "kind": "function",
+      "startLine": 66,
+      "endLine": 156,
+      "loc": 91,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/bashoProjections.ts",
+      "symbol": "projectBashoUIDigest",
+      "kind": "function",
+      "startLine": 24,
+      "endLine": 114,
+      "loc": 91,
+      "exported": true
+    },
+    {
+      "file": "src/components/basho/BashoStandingsEvolution.tsx",
+      "symbol": "BashoStandingsEvolution",
+      "kind": "function",
+      "startLine": 45,
+      "endLine": 135,
+      "loc": 91,
+      "exported": true
+    },
+    {
+      "file": "src/components/banzuke/YokozunaTrajectory.tsx",
+      "symbol": "CandidateCard",
+      "kind": "function",
+      "startLine": 93,
+      "endLine": 183,
+      "loc": 91,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/boutReplay/boutCanvas/draw.ts",
+      "symbol": "drawDohyo",
+      "kind": "function",
+      "startLine": 6,
+      "endLine": 96,
+      "loc": 91,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/HeyaFactory.ts",
+      "symbol": "createHeyaWithOyakata",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 128,
+      "loc": 91,
+      "exported": true
+    },
+    {
+      "file": "src/components/ui/sidebar/provider.tsx",
+      "symbol": "SidebarProvider",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 103,
+      "loc": 90,
+      "exported": true
+    },
+    {
+      "file": "src/components/wizard/FactionStep.tsx",
+      "symbol": "FactionStep",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 117,
+      "loc": 90,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BanzukeReveal.tsx",
+      "symbol": "anonymous@65",
+      "kind": "arrow",
+      "startLine": 65,
+      "endLine": 154,
+      "loc": 90,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/StableWidget.tsx",
+      "symbol": "StableWidget",
+      "kind": "function",
+      "startLine": 46,
+      "endLine": 135,
+      "loc": 90,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/training/SparringService.ts",
+      "symbol": "applyWeeklySparring",
+      "kind": "function",
+      "startLine": 397,
+      "endLine": 486,
+      "loc": 90,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/meta/EraDriftService.ts",
+      "symbol": "processYearlyEraDrift",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 117,
+      "loc": 90,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidatePoolService.ts",
+      "symbol": "simulateNPCInterest",
+      "kind": "function",
+      "startLine": 99,
+      "endLine": 188,
+      "loc": 90,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/BaseWidget.tsx",
+      "symbol": "BaseWidget",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 120,
+      "loc": 89,
+      "exported": true
+    },
+    {
+      "file": "src/components/onboarding/MentorOverlay.tsx",
+      "symbol": "MentorOverlay",
+      "kind": "function",
+      "startLine": 47,
+      "endLine": 135,
+      "loc": 89,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/SwissAlgorithm.ts",
+      "symbol": "phase3",
+      "kind": "function",
+      "startLine": 390,
+      "endLine": 478,
+      "loc": 89,
+      "exported": false
+    },
+    {
+      "file": "src/engine/persistence/SerializationService.ts",
+      "symbol": "serializeWorld",
+      "kind": "method",
+      "startLine": 85,
+      "endLine": 173,
+      "loc": 89,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/narrative/RivalryHeatService.ts",
+      "symbol": "applyBoutToPairState",
+      "kind": "function",
+      "startLine": 114,
+      "endLine": 202,
+      "loc": 89,
+      "exported": true
+    },
+    {
+      "file": "src/components/ui/EmptyState.tsx",
+      "symbol": "EmptyState",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 125,
+      "loc": 88,
+      "exported": true
+    },
+    {
+      "file": "src/components/banzuke/RikishiCell.tsx",
+      "symbol": "RikishiCell",
+      "kind": "fn-expr",
+      "startLine": 20,
+      "endLine": 107,
+      "loc": 88,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/AppSidebar.tsx",
+      "symbol": "anonymous@162",
+      "kind": "arrow",
+      "startLine": 162,
+      "endLine": 249,
+      "loc": 88,
+      "exported": false
+    },
+    {
+      "file": "src/engine/strategy/NPCStrategyService.ts",
+      "symbol": "decideTrainingIntensity",
+      "kind": "function",
+      "startLine": 68,
+      "endLine": 155,
+      "loc": 88,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/rivalriesProjections.ts",
+      "symbol": "projectRivalriesPage",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 119,
+      "loc": 87,
+      "exported": true
+    },
+    {
+      "file": "src/components/recap/NarrativeSummary.tsx",
+      "symbol": "anonymous@332",
+      "kind": "arrow",
+      "startLine": 332,
+      "endLine": 418,
+      "loc": 87,
+      "exported": false
+    },
+    {
+      "file": "src/components/scouting/OpponentScoutingTab.tsx",
+      "symbol": "anonymous@103",
+      "kind": "arrow",
+      "startLine": 103,
+      "endLine": 189,
+      "loc": 87,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/KenshoService.ts",
+      "symbol": "assignKenshoBanners",
+      "kind": "function",
+      "startLine": 117,
+      "endLine": 203,
+      "loc": 87,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "generateKeshoMawashi",
+      "kind": "function",
+      "startLine": 39,
+      "endLine": 125,
+      "loc": 87,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/worldCircuit/WorldCircuitService.ts",
+      "symbol": "processExhibitionResult",
+      "kind": "method",
+      "startLine": 93,
+      "endLine": 179,
+      "loc": 87,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcAI/weekly.ts",
+      "symbol": "applyPromotionAwareness",
+      "kind": "function",
+      "startLine": 361,
+      "endLine": 447,
+      "loc": 87,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/FacilitiesManagementPanel.tsx",
+      "symbol": "anonymous@206",
+      "kind": "arrow",
+      "startLine": 206,
+      "endLine": 291,
+      "loc": 86,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcAIWorkers.ts",
+      "symbol": "spawnPersonnelWorker",
+      "kind": "function",
+      "startLine": 149,
+      "endLine": 234,
+      "loc": 86,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/SwissAlgorithm.ts",
+      "symbol": "phase1",
+      "kind": "function",
+      "startLine": 176,
+      "endLine": 261,
+      "loc": 86,
+      "exported": false
+    },
+    {
+      "file": "src/components/stable/HeyaBrandBadge.tsx",
+      "symbol": "HeyaBrandBadge",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 105,
+      "loc": 85,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/sidebarConfig.ts",
+      "symbol": "getMenuGroups",
+      "kind": "function",
+      "startLine": 52,
+      "endLine": 136,
+      "loc": 85,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/IndividualFocusSlots.tsx",
+      "symbol": "anonymous@49",
+      "kind": "arrow",
+      "startLine": 49,
+      "endLine": 133,
+      "loc": 85,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/LineageTree.tsx",
+      "symbol": "LineageTree",
+      "kind": "arrow",
+      "startLine": 16,
+      "endLine": 100,
+      "loc": 85,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/InfrastructurePanel.tsx",
+      "symbol": "anonymous@44",
+      "kind": "arrow",
+      "startLine": 44,
+      "endLine": 128,
+      "loc": 85,
+      "exported": false
+    },
+    {
+      "file": "src/components/menu/SaveSlotManager.tsx",
+      "symbol": "anonymous@116",
+      "kind": "arrow",
+      "startLine": 116,
+      "endLine": 200,
+      "loc": 85,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/GlobalCupService.ts",
+      "symbol": "advanceTournament",
+      "kind": "method",
+      "startLine": 178,
+      "endLine": 262,
+      "loc": 85,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/RosterFactory.ts",
+      "symbol": "createRosters",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 105,
+      "loc": 85,
+      "exported": true
+    },
+    {
+      "file": "src/engine/h2h.ts",
+      "symbol": "generateH2HCommentary",
+      "kind": "function",
+      "startLine": 121,
+      "endLine": 205,
+      "loc": 85,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/tacticProfiles.ts",
+      "symbol": "TACTIC_PROFILES",
+      "kind": "const-obj",
+      "startLine": 68,
+      "endLine": 152,
+      "loc": 85,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/physics/resultBuilders.ts",
+      "symbol": "buildBoutResultV2",
+      "kind": "function",
+      "startLine": 15,
+      "endLine": 99,
+      "loc": 85,
+      "exported": true
+    },
+    {
+      "file": "src/hooks/useKenshoData.ts",
+      "symbol": "useKenshoData",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 97,
+      "loc": 84,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/CareerService.ts",
+      "symbol": "CareerService",
+      "kind": "const-obj",
+      "startLine": 46,
+      "endLine": 129,
+      "loc": 84,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/meta/HistoryService.ts",
+      "symbol": "HistoryService",
+      "kind": "const-obj",
+      "startLine": 15,
+      "endLine": 98,
+      "loc": 84,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiProfileTab.tsx",
+      "symbol": "generateScoutNote",
+      "kind": "function",
+      "startLine": 31,
+      "endLine": 113,
+      "loc": 83,
+      "exported": false
+    },
+    {
+      "file": "src/engine/training/WeightJourney.ts",
+      "symbol": "applyWeightJourneyTick",
+      "kind": "function",
+      "startLine": 64,
+      "endLine": 146,
+      "loc": 83,
+      "exported": true
+    },
+    {
+      "file": "src/engine/events.ts",
+      "symbol": "logEngineEvent",
+      "kind": "function",
+      "startLine": 83,
+      "endLine": 165,
+      "loc": 83,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateStats.ts",
+      "symbol": "rollPotential",
+      "kind": "function",
+      "startLine": 113,
+      "endLine": 195,
+      "loc": 83,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/npcAgentProjections.ts",
+      "symbol": "surfaceEvent",
+      "kind": "function",
+      "startLine": 49,
+      "endLine": 130,
+      "loc": 82,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/perceptionComponents.tsx",
+      "symbol": "RikishiComparisonGrid",
+      "kind": "function",
+      "startLine": 155,
+      "endLine": 236,
+      "loc": 82,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/GlobalCupWidget.tsx",
+      "symbol": "GlobalCupWidget",
+      "kind": "function",
+      "startLine": 13,
+      "endLine": 94,
+      "loc": 82,
+      "exported": true
+    },
+    {
+      "file": "src/pages/BanzukePage.tsx",
+      "symbol": "DivisionTable",
+      "kind": "fn-expr",
+      "startLine": 275,
+      "endLine": 356,
+      "loc": 82,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/ScoutingWidget.tsx",
+      "symbol": "ScoutingWidget",
+      "kind": "function",
+      "startLine": 135,
+      "endLine": 215,
+      "loc": 81,
+      "exported": true
+    },
+    {
+      "file": "src/engine/banzuke/specialPrizes.ts",
+      "symbol": "determineSpecialPrizes",
+      "kind": "function",
+      "startLine": 15,
+      "endLine": 95,
+      "loc": 81,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/ScandalService.ts",
+      "symbol": "tickWeekGovernance",
+      "kind": "function",
+      "startLine": 91,
+      "endLine": 171,
+      "loc": 81,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/rikishi/transformers/roster.ts",
+      "symbol": "projectRosterEntry",
+      "kind": "function",
+      "startLine": 26,
+      "endLine": 105,
+      "loc": 80,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/EventLogPanel.tsx",
+      "symbol": "anonymous@106",
+      "kind": "arrow",
+      "startLine": 106,
+      "endLine": 185,
+      "loc": 80,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/YokozunaDeliberation.tsx",
+      "symbol": "YokozunaDeliberation",
+      "kind": "function",
+      "startLine": 55,
+      "endLine": 134,
+      "loc": 80,
+      "exported": true
+    },
+    {
+      "file": "src/components/EventDetailDialog.tsx",
+      "symbol": "EventDetailDialog",
+      "kind": "function",
+      "startLine": 83,
+      "endLine": 161,
+      "loc": 79,
+      "exported": true
+    },
+    {
+      "file": "src/pages/HallOfFamePage.tsx",
+      "symbol": "CategoryTab",
+      "kind": "function",
+      "startLine": 266,
+      "endLine": 344,
+      "loc": 79,
+      "exported": false
+    },
+    {
+      "file": "src/pages/RivalStablesPage.tsx",
+      "symbol": "RivalStablesPage",
+      "kind": "function",
+      "startLine": 19,
+      "endLine": 97,
+      "loc": 79,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/welfare/WelfareCalculations.ts",
+      "symbol": "calculateWeeklyWelfareDelta",
+      "kind": "function",
+      "startLine": 94,
+      "endLine": 172,
+      "loc": 79,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/worldCircuit/WorldCircuitService.ts",
+      "symbol": "applyStyleDrift",
+      "kind": "method",
+      "startLine": 250,
+      "endLine": 328,
+      "loc": 79,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_daily_welfare.ts",
+      "symbol": "phase01_daily_welfare",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 110,
+      "loc": 79,
+      "exported": true
+    },
+    {
+      "file": "src/pages/BookmarksPage.tsx",
+      "symbol": "BookmarksPage",
+      "kind": "function",
+      "startLine": 86,
+      "endLine": 163,
+      "loc": 78,
+      "exported": true
+    },
+    {
+      "file": "src/engine/holiday.ts",
+      "symbol": "buildHolidayDigest",
+      "kind": "function",
+      "startLine": 305,
+      "endLine": 382,
+      "loc": 78,
+      "exported": false
+    },
+    {
+      "file": "src/engine/banzuke.ts",
+      "symbol": "banzukeMovementEvents",
+      "kind": "function",
+      "startLine": 368,
+      "endLine": 445,
+      "loc": 78,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcAIWorkers.ts",
+      "symbol": "spawnGlobalWorker",
+      "kind": "function",
+      "startLine": 239,
+      "endLine": 316,
+      "loc": 78,
+      "exported": true
+    },
+    {
+      "file": "src/engine/overflow.ts",
+      "symbol": "enforceHardCapRosterOverflow",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 98,
+      "loc": 78,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/training/TrainingMath.ts",
+      "symbol": "calculateGrowthWithModifiers",
+      "kind": "function",
+      "startLine": 249,
+      "endLine": 326,
+      "loc": 78,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/stableSelectionProjections.ts",
+      "symbol": "selectRecommendedStables",
+      "kind": "function",
+      "startLine": 41,
+      "endLine": 117,
+      "loc": 77,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/SubNavTabs.tsx",
+      "symbol": "SubNavTabs",
+      "kind": "function",
+      "startLine": 19,
+      "endLine": 95,
+      "loc": 77,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/HoFInductionCeremony.tsx",
+      "symbol": "HoFInductionCeremony",
+      "kind": "function",
+      "startLine": 55,
+      "endLine": 131,
+      "loc": 77,
+      "exported": true
+    },
+    {
+      "file": "src/engine/perception.ts",
+      "symbol": "buildPerceptionSnapshot",
+      "kind": "function",
+      "startLine": 379,
+      "endLine": 455,
+      "loc": 77,
+      "exported": true
+    },
+    {
+      "file": "src/engine/oyakataStylePreferences.ts",
+      "symbol": "getOyakataStyleProfile",
+      "kind": "function",
+      "startLine": 49,
+      "endLine": 125,
+      "loc": 77,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/KimariteSelectionEngine.ts",
+      "symbol": "anonymous@96",
+      "kind": "arrow",
+      "startLine": 96,
+      "endLine": 172,
+      "loc": 77,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/globalCupProjections.ts",
+      "symbol": "projectGlobalCup",
+      "kind": "function",
+      "startLine": 17,
+      "endLine": 92,
+      "loc": 76,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/SponsorshipHub.tsx",
+      "symbol": "anonymous@122",
+      "kind": "arrow",
+      "startLine": 122,
+      "endLine": 197,
+      "loc": 76,
+      "exported": false
+    },
+    {
+      "file": "src/components/wizard/IdentityStep.tsx",
+      "symbol": "anonymous@138",
+      "kind": "arrow",
+      "startLine": 138,
+      "endLine": 213,
+      "loc": 76,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/SaveLoadDialogComponents.tsx",
+      "symbol": "anonymous@16",
+      "kind": "arrow",
+      "startLine": 16,
+      "endLine": 91,
+      "loc": 76,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutCardComponents.tsx",
+      "symbol": "BoutTags",
+      "kind": "function",
+      "startLine": 68,
+      "endLine": 143,
+      "loc": 76,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/ActionQueueWidget.tsx",
+      "symbol": "anonymous@163",
+      "kind": "arrow",
+      "startLine": 163,
+      "endLine": 238,
+      "loc": 76,
+      "exported": false
+    },
+    {
+      "file": "src/pages/RivalriesPage.tsx",
+      "symbol": "anonymous@56",
+      "kind": "arrow",
+      "startLine": 56,
+      "endLine": 131,
+      "loc": 76,
+      "exported": false
+    },
+    {
+      "file": "src/engine/lifecycle/RegistryService.ts",
+      "symbol": "runCareerJournalUpdates",
+      "kind": "function",
+      "startLine": 90,
+      "endLine": 165,
+      "loc": 76,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/governanceReview.ts",
+      "symbol": "runRetirements",
+      "kind": "function",
+      "startLine": 380,
+      "endLine": 455,
+      "loc": 76,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/SponsorContractsPanel.tsx",
+      "symbol": "SponsorContractsPanel",
+      "kind": "function",
+      "startLine": 98,
+      "endLine": 172,
+      "loc": 75,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/FacilitiesWidget.tsx",
+      "symbol": "FacilitiesWidget",
+      "kind": "function",
+      "startLine": 45,
+      "endLine": 119,
+      "loc": 75,
+      "exported": true
+    },
+    {
+      "file": "src/engine/schedule.ts",
+      "symbol": "scheduleDivisionDay",
+      "kind": "function",
+      "startLine": 88,
+      "endLine": 162,
+      "loc": 75,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/PostBashoPressService.ts",
+      "symbol": "generatePressConference",
+      "kind": "method",
+      "startLine": 37,
+      "endLine": 111,
+      "loc": 75,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/talentPoolScoutingOps.ts",
+      "symbol": "getScoutedCandidateView",
+      "kind": "function",
+      "startLine": 140,
+      "endLine": 214,
+      "loc": 75,
+      "exported": true
+    },
+    {
+      "file": "src/engine/almanac/snapshot.ts",
+      "symbol": "buildAlmanacSnapshot",
+      "kind": "function",
+      "startLine": 7,
+      "endLine": 81,
+      "loc": 75,
+      "exported": true
+    },
+    {
+      "file": "src/components/basho/NakabiHighlightCard.tsx",
+      "symbol": "NakabiHighlightCard",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 85,
+      "loc": 74,
+      "exported": true
+    },
+    {
+      "file": "src/engine/records.ts",
+      "symbol": "updateLeaderboard",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 105,
+      "loc": 74,
+      "exported": false
+    },
+    {
+      "file": "src/components/economy/FinancialTrendsChart.tsx",
+      "symbol": "FinancialTrendsChart",
+      "kind": "function",
+      "startLine": 134,
+      "endLine": 206,
+      "loc": 73,
+      "exported": true
+    },
+    {
+      "file": "src/engine/almanac/career.ts",
+      "symbol": "simulateRankProgression",
+      "kind": "function",
+      "startLine": 233,
+      "endLine": 305,
+      "loc": 73,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/tickDaily.ts",
+      "symbol": "advanceDaysFast",
+      "kind": "function",
+      "startLine": 301,
+      "endLine": 373,
+      "loc": 73,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase00_preflight.ts",
+      "symbol": "checkPhaseTransition",
+      "kind": "function",
+      "startLine": 123,
+      "endLine": 195,
+      "loc": 73,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/phases/monthly/facilities/npcInvestment.ts",
+      "symbol": "processNpcAutoInvestment",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 93,
+      "loc": 73,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/AppLayout.tsx",
+      "symbol": "AppLayout",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 100,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/KeyBoutsSection.tsx",
+      "symbol": "KeyBoutsSection",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 93,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/HoFTimeline.tsx",
+      "symbol": "HoFTimeline",
+      "kind": "function",
+      "startLine": 41,
+      "endLine": 112,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/PreBashoAssessment.tsx",
+      "symbol": "PreBashoAssessment",
+      "kind": "function",
+      "startLine": 101,
+      "endLine": 172,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/components/kesho/keshoEffects.tsx",
+      "symbol": "renderEmbroideryEffect",
+      "kind": "function",
+      "startLine": 13,
+      "endLine": 84,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/engine/banzuke.ts",
+      "symbol": "compareBanzuke",
+      "kind": "function",
+      "startLine": 78,
+      "endLine": 149,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/engine/naturalization.ts",
+      "symbol": "checkNaturalizations",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 92,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/basho/NakabiService.ts",
+      "symbol": "generateNakabiSummary",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 109,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/MochikyukinService.ts",
+      "symbol": "accumulateMochikyukinPoints",
+      "kind": "function",
+      "startLine": 37,
+      "endLine": 108,
+      "loc": 72,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/SponsorSatisfactionChart.tsx",
+      "symbol": "SponsorSatisfactionChart",
+      "kind": "function",
+      "startLine": 62,
+      "endLine": 132,
+      "loc": 71,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiKeshoMawashi.tsx",
+      "symbol": "RikishiKeshoMawashi",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 90,
+      "loc": 71,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/YushoRaceWidget.tsx",
+      "symbol": "anonymous@25",
+      "kind": "arrow",
+      "startLine": 25,
+      "endLine": 95,
+      "loc": 71,
+      "exported": false
+    },
+    {
+      "file": "src/pages/HallOfFamePage.tsx",
+      "symbol": "AllInducteesTab",
+      "kind": "function",
+      "startLine": 348,
+      "endLine": 418,
+      "loc": 71,
+      "exported": false
+    },
+    {
+      "file": "src/pages/OyakataPage.tsx",
+      "symbol": "anonymous@261",
+      "kind": "arrow",
+      "startLine": 261,
+      "endLine": 331,
+      "loc": 71,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/sponsorshipMutations.ts",
+      "symbol": "adjustKoenkaiBandToPrestige",
+      "kind": "function",
+      "startLine": 192,
+      "endLine": 262,
+      "loc": 71,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase_pre_basho_assessment.ts",
+      "symbol": "phase_pre_basho_assessment",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 104,
+      "loc": 71,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiPotentialPanel.tsx",
+      "symbol": "RikishiPotentialPanel",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 102,
+      "loc": 70,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/EventLogPanel.tsx",
+      "symbol": "anonymous@114",
+      "kind": "arrow",
+      "startLine": 114,
+      "endLine": 183,
+      "loc": 70,
+      "exported": false
+    },
+    {
+      "file": "src/engine/avatarGenerator.ts",
+      "symbol": "generateAvatarConfig",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 89,
+      "loc": 70,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/recruitment/YouthAcademyService.ts",
+      "symbol": "promoteIntake",
+      "kind": "function",
+      "startLine": 321,
+      "endLine": 390,
+      "loc": 70,
+      "exported": true
+    },
+    {
+      "file": "src/components/exhibition/ExhibitionInvitationsPanel.tsx",
+      "symbol": "InvitationRow",
+      "kind": "function",
+      "startLine": 65,
+      "endLine": 133,
+      "loc": 69,
+      "exported": false
+    },
+    {
+      "file": "src/pages/HistoryDashboard.tsx",
+      "symbol": "CohortsTab",
+      "kind": "function",
+      "startLine": 310,
+      "endLine": 378,
+      "loc": 69,
+      "exported": false
+    },
+    {
+      "file": "src/engine/calendar.ts",
+      "symbol": "BASHO_CALENDAR",
+      "kind": "const-obj",
+      "startLine": 31,
+      "endLine": 99,
+      "loc": 69,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/recruitment/YouthAcademyService.ts",
+      "symbol": "generateYearlyIntake",
+      "kind": "function",
+      "startLine": 198,
+      "endLine": 266,
+      "loc": 69,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/ticks.ts",
+      "symbol": "tickWeekNPC",
+      "kind": "function",
+      "startLine": 67,
+      "endLine": 135,
+      "loc": 69,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiLineage.tsx",
+      "symbol": "RikishiLineage",
+      "kind": "function",
+      "startLine": 13,
+      "endLine": 80,
+      "loc": 68,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/SponsorContractsPanel.tsx",
+      "symbol": "anonymous@24",
+      "kind": "arrow",
+      "startLine": 24,
+      "endLine": 91,
+      "loc": 68,
+      "exported": false
+    },
+    {
+      "file": "src/hooks/useKeyboardShortcuts.ts",
+      "symbol": "anonymous@39",
+      "kind": "arrow",
+      "startLine": 39,
+      "endLine": 106,
+      "loc": 68,
+      "exported": false
+    },
+    {
+      "file": "src/engine/core/ImpactResolver.ts",
+      "symbol": "applyArrayAppends",
+      "kind": "function",
+      "startLine": 108,
+      "endLine": 175,
+      "loc": 68,
+      "exported": false
+    },
+    {
+      "file": "src/engine/loans.ts",
+      "symbol": "issueBailoutLoanIfNeeded",
+      "kind": "function",
+      "startLine": 109,
+      "endLine": 176,
+      "loc": 68,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/training/TrainingMath.ts",
+      "symbol": "extractTrainingModifiers",
+      "kind": "function",
+      "startLine": 176,
+      "endLine": 243,
+      "loc": 68,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/RivalryService.ts",
+      "symbol": "seedInitialRivalries",
+      "kind": "method",
+      "startLine": 375,
+      "endLine": 442,
+      "loc": 68,
+      "exported": false
+    },
+    {
+      "file": "src/engine/almanac/narrativeEnrichment.ts",
+      "symbol": "enrichAlmanacRecord",
+      "kind": "function",
+      "startLine": 141,
+      "endLine": 208,
+      "loc": 68,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/yaocho.ts",
+      "symbol": "checkYaocho",
+      "kind": "function",
+      "startLine": 131,
+      "endLine": 198,
+      "loc": 68,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/tsukebitoProjections.ts",
+      "symbol": "projectTsukebito",
+      "kind": "function",
+      "startLine": 45,
+      "endLine": 111,
+      "loc": 67,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/digestProjections.ts",
+      "symbol": "buildWeeklyDigest",
+      "kind": "function",
+      "startLine": 280,
+      "endLine": 346,
+      "loc": 67,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/KeshoMawashiGallery.tsx",
+      "symbol": "anonymous@58",
+      "kind": "arrow",
+      "startLine": 58,
+      "endLine": 124,
+      "loc": 67,
+      "exported": false
+    },
+    {
+      "file": "src/components/recap/NarrativeSummary.tsx",
+      "symbol": "EventCard",
+      "kind": "function",
+      "startLine": 58,
+      "endLine": 124,
+      "loc": 67,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RikishiNaturalization.tsx",
+      "symbol": "RikishiNaturalization",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 84,
+      "loc": 67,
+      "exported": true
+    },
+    {
+      "file": "src/pages/ScoutingPage.tsx",
+      "symbol": "ScoutingPage",
+      "kind": "function",
+      "startLine": 15,
+      "endLine": 81,
+      "loc": 67,
+      "exported": true
+    },
+    {
+      "file": "src/pages/GovernancePage.tsx",
+      "symbol": "anonymous@521",
+      "kind": "arrow",
+      "startLine": 521,
+      "endLine": 587,
+      "loc": 67,
+      "exported": false
+    },
+    {
+      "file": "src/engine/lifecycle/CareerService.ts",
+      "symbol": "processRetirements",
+      "kind": "method",
+      "startLine": 62,
+      "endLine": 128,
+      "loc": 67,
+      "exported": false
+    },
+    {
+      "file": "src/engine/governance/yokozunaAttendants.ts",
+      "symbol": "assignYokozunaAttendants",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 91,
+      "loc": 67,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/RivalryService.ts",
+      "symbol": "maybeSeedSparringRivalry",
+      "kind": "method",
+      "startLine": 463,
+      "endLine": 529,
+      "loc": 67,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcAI/ticks.ts",
+      "symbol": "tickMonthlyNPC",
+      "kind": "function",
+      "startLine": 137,
+      "endLine": 203,
+      "loc": 67,
+      "exported": true
+    },
+    {
+      "file": "src/components/basho/JungyoInvitationCard.tsx",
+      "symbol": "JungyoInvitationCard",
+      "kind": "function",
+      "startLine": 13,
+      "endLine": 78,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/control-center/StatCard.tsx",
+      "symbol": "StatCard",
+      "kind": "function",
+      "startLine": 64,
+      "endLine": 129,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/DigestWidget.tsx",
+      "symbol": "DigestWidget",
+      "kind": "function",
+      "startLine": 154,
+      "endLine": 219,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/engine/simulation/ChronicleService.ts",
+      "symbol": "ChronicleService",
+      "kind": "const-obj",
+      "startLine": 9,
+      "endLine": 74,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/engine/myosekiMarket.ts",
+      "symbol": "tickMyosekiMarket",
+      "kind": "function",
+      "startLine": 204,
+      "endLine": 269,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/engine/oyakataStylePreferences.ts",
+      "symbol": "PHILOSOPHY_HANDLERS",
+      "kind": "const-obj",
+      "startLine": 57,
+      "endLine": 122,
+      "loc": 66,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/HeyaFactory.ts",
+      "symbol": "createStables",
+      "kind": "function",
+      "startLine": 147,
+      "endLine": 212,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolStateService.ts",
+      "symbol": "tickYear",
+      "kind": "function",
+      "startLine": 266,
+      "endLine": 331,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/monthly/economics/salaries.ts",
+      "symbol": "processHeyaEconomics",
+      "kind": "function",
+      "startLine": 31,
+      "endLine": 96,
+      "loc": 66,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutReplay/BoutControls.tsx",
+      "symbol": "BoutControls",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 86,
+      "loc": 65,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/perceptionComponents.tsx",
+      "symbol": "H2HPanel",
+      "kind": "function",
+      "startLine": 262,
+      "endLine": 326,
+      "loc": 65,
+      "exported": true
+    },
+    {
+      "file": "src/pages/BookmarksPage.tsx",
+      "symbol": "BookmarkItem",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 84,
+      "loc": 65,
+      "exported": false
+    },
+    {
+      "file": "src/pages/MediaPage.tsx",
+      "symbol": "anonymous@268",
+      "kind": "arrow",
+      "startLine": 268,
+      "endLine": 332,
+      "loc": 65,
+      "exported": false
+    },
+    {
+      "file": "src/engine/facilities.ts",
+      "symbol": "npcFacilityInvestment",
+      "kind": "function",
+      "startLine": 254,
+      "endLine": 318,
+      "loc": 65,
+      "exported": false
+    },
+    {
+      "file": "src/engine/actions/OyakataIntervention.ts",
+      "symbol": "applyOyakataIntervention",
+      "kind": "function",
+      "startLine": 42,
+      "endLine": 106,
+      "loc": 65,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/GomenfudaService.ts",
+      "symbol": "recordGomenfuda",
+      "kind": "function",
+      "startLine": 39,
+      "endLine": 103,
+      "loc": 65,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/ScandalService.ts",
+      "symbol": "issueGovernanceRuling",
+      "kind": "function",
+      "startLine": 279,
+      "endLine": 343,
+      "loc": 65,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/RecruitmentController.ts",
+      "symbol": "allocateVacancies",
+      "kind": "function",
+      "startLine": 43,
+      "endLine": 107,
+      "loc": 65,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiCareerTab.tsx",
+      "symbol": "anonymous@581",
+      "kind": "arrow",
+      "startLine": 581,
+      "endLine": 644,
+      "loc": 64,
+      "exported": false
+    },
+    {
+      "file": "src/components/menu/MainMenuFooter.tsx",
+      "symbol": "MainMenuFooter",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 77,
+      "loc": 64,
+      "exported": true
+    },
+    {
+      "file": "src/engine/history.ts",
+      "symbol": "checkShikonaChange",
+      "kind": "function",
+      "startLine": 166,
+      "endLine": 229,
+      "loc": 64,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/handlers.ts",
+      "symbol": "consolidateOyakataMemory",
+      "kind": "function",
+      "startLine": 140,
+      "endLine": 203,
+      "loc": 64,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/npc_ai/memory.ts",
+      "symbol": "consolidateOyakataMemoryPure",
+      "kind": "function",
+      "startLine": 13,
+      "endLine": 76,
+      "loc": 64,
+      "exported": true
+    },
+    {
+      "file": "src/constants/engine/career.ts",
+      "symbol": "ORIGINS",
+      "kind": "const-arr",
+      "startLine": 205,
+      "endLine": 267,
+      "loc": 63,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/control-center/ListCard.tsx",
+      "symbol": "ListCard",
+      "kind": "function",
+      "startLine": 47,
+      "endLine": 109,
+      "loc": 63,
+      "exported": true
+    },
+    {
+      "file": "src/components/kesho/KeshoBadge.tsx",
+      "symbol": "KeshoBadge",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 83,
+      "loc": 63,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bard/BardEngine.ts",
+      "symbol": "getOptions",
+      "kind": "function",
+      "startLine": 148,
+      "endLine": 210,
+      "loc": 63,
+      "exported": false
+    },
+    {
+      "file": "src/engine/shikona/legacy.ts",
+      "symbol": "extractLegacyPrefix",
+      "kind": "function",
+      "startLine": 10,
+      "endLine": 72,
+      "loc": 63,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/PlayoffResolver.ts",
+      "symbol": "resolveDivisionPlayoffs",
+      "kind": "function",
+      "startLine": 155,
+      "endLine": 217,
+      "loc": 63,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolOffers.ts",
+      "symbol": "offerCandidate",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 82,
+      "loc": 63,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase_pre_basho_assessment.ts",
+      "symbol": "assessRikishi",
+      "kind": "function",
+      "startLine": 109,
+      "endLine": 171,
+      "loc": 63,
+      "exported": false
+    },
+    {
+      "file": "src/constants/engine/training.ts",
+      "symbol": "FOCUS_BIAS_MATRIX",
+      "kind": "const-obj",
+      "startLine": 43,
+      "endLine": 104,
+      "loc": 62,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/banzukeUI.ts",
+      "symbol": "buildBanzukeRows",
+      "kind": "function",
+      "startLine": 70,
+      "endLine": 131,
+      "loc": 62,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/eventProjections.ts",
+      "symbol": "projectBashoResults",
+      "kind": "function",
+      "startLine": 54,
+      "endLine": 115,
+      "loc": 62,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/NewsWidget.tsx",
+      "symbol": "NewsWidget",
+      "kind": "function",
+      "startLine": 113,
+      "endLine": 174,
+      "loc": 62,
+      "exported": true
+    },
+    {
+      "file": "src/pages/StablePage.tsx",
+      "symbol": "anonymous@158",
+      "kind": "arrow",
+      "startLine": 158,
+      "endLine": 219,
+      "loc": 62,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bard/dramaGenerator.ts",
+      "symbol": "generateRandomDrama",
+      "kind": "function",
+      "startLine": 54,
+      "endLine": 115,
+      "loc": 62,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/sponsorshipMutations.ts",
+      "symbol": "processSponsorChurn",
+      "kind": "function",
+      "startLine": 121,
+      "endLine": 182,
+      "loc": 62,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/InfrastructureService.ts",
+      "symbol": "startConstruction",
+      "kind": "method",
+      "startLine": 59,
+      "endLine": 120,
+      "loc": 62,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolStateService.ts",
+      "symbol": "reinjectToTalentPool",
+      "kind": "function",
+      "startLine": 82,
+      "endLine": 143,
+      "loc": 62,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/welfare/transitions.ts",
+      "symbol": "handleWatchTransition",
+      "kind": "function",
+      "startLine": 115,
+      "endLine": 176,
+      "loc": 62,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_health.ts",
+      "symbol": "processInjuryRoll",
+      "kind": "function",
+      "startLine": 101,
+      "endLine": 162,
+      "loc": 62,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/dashboardProjections.ts",
+      "symbol": "projectBanzukeUIDigest",
+      "kind": "function",
+      "startLine": 75,
+      "endLine": 135,
+      "loc": 61,
+      "exported": true
+    },
+    {
+      "file": "src/components/ui/SortMenu.tsx",
+      "symbol": "SortMenuInner",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 89,
+      "loc": 61,
+      "exported": false
+    },
+    {
+      "file": "src/hooks/useSortState.ts",
+      "symbol": "useSortState",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 74,
+      "loc": 61,
+      "exported": true
+    },
+    {
+      "file": "src/pages/OyakataPage.tsx",
+      "symbol": "anonymous@270",
+      "kind": "arrow",
+      "startLine": 270,
+      "endLine": 330,
+      "loc": 61,
+      "exported": false
+    },
+    {
+      "file": "src/engine/shikona.ts",
+      "symbol": "generateShikona",
+      "kind": "function",
+      "startLine": 42,
+      "endLine": 102,
+      "loc": 61,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/ImpactResolver.ts",
+      "symbol": "applyEntityUpdates",
+      "kind": "function",
+      "startLine": 46,
+      "endLine": 106,
+      "loc": 61,
+      "exported": false
+    },
+    {
+      "file": "src/engine/schedule.ts",
+      "symbol": "scheduleJuryoWithCrossover",
+      "kind": "function",
+      "startLine": 264,
+      "endLine": 324,
+      "loc": 61,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/sponsorshipMutations.ts",
+      "symbol": "recruitSponsor",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 85,
+      "loc": 61,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/PersonaAssignment.ts",
+      "symbol": "assignPersonalityTraits",
+      "kind": "function",
+      "startLine": 52,
+      "endLine": 112,
+      "loc": 61,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/heyaUI.ts",
+      "symbol": "projectHeya",
+      "kind": "function",
+      "startLine": 44,
+      "endLine": 103,
+      "loc": 60,
+      "exported": true
+    },
+    {
+      "file": "src/components/wizard/StableStep.tsx",
+      "symbol": "anonymous@48",
+      "kind": "arrow",
+      "startLine": 48,
+      "endLine": 107,
+      "loc": 60,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/GlobalCupWidget.tsx",
+      "symbol": "anonymous@20",
+      "kind": "arrow",
+      "startLine": 20,
+      "endLine": 79,
+      "loc": 60,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/BanzukeWidget.tsx",
+      "symbol": "anonymous@26",
+      "kind": "arrow",
+      "startLine": 26,
+      "endLine": 85,
+      "loc": 60,
+      "exported": false
+    },
+    {
+      "file": "src/components/governance/OyakataProfileDrawer.tsx",
+      "symbol": "OyakataProfileDrawer",
+      "kind": "function",
+      "startLine": 17,
+      "endLine": 76,
+      "loc": 60,
+      "exported": true
+    },
+    {
+      "file": "src/pages/BashoPage.tsx",
+      "symbol": "ScheduleOverview",
+      "kind": "function",
+      "startLine": 86,
+      "endLine": 145,
+      "loc": 60,
+      "exported": false
+    },
+    {
+      "file": "src/pages/HistoryDashboard.tsx",
+      "symbol": "HistoryDashboard",
+      "kind": "arrow",
+      "startLine": 29,
+      "endLine": 88,
+      "loc": 60,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/PostBashoPressService.ts",
+      "symbol": "generateLowerDivisionChampionLines",
+      "kind": "method",
+      "startLine": 501,
+      "endLine": 560,
+      "loc": 60,
+      "exported": false
+    },
+    {
+      "file": "src/components/layout/MainContentPane.tsx",
+      "symbol": "MainContentPane",
+      "kind": "function",
+      "startLine": 11,
+      "endLine": 69,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/MobileEventLog.tsx",
+      "symbol": "MobileEventLog",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 78,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/NarrativeCeremonyDialog.tsx",
+      "symbol": "NarrativeCeremonyDialog",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 78,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/components/kesho/keshoComponents.tsx",
+      "symbol": "YokozunaTsunaDisplay",
+      "kind": "function",
+      "startLine": 77,
+      "endLine": 135,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/engine/simulation/AutoSimService.ts",
+      "symbol": "checkStopCondition",
+      "kind": "function",
+      "startLine": 290,
+      "endLine": 348,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/NPCPersonaService.ts",
+      "symbol": "getManagerPersona",
+      "kind": "function",
+      "startLine": 180,
+      "endLine": 238,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/BoutAI.ts",
+      "symbol": "chooseTactic",
+      "kind": "function",
+      "startLine": 96,
+      "endLine": 154,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/engine/strategy/NPCStrategyService.ts",
+      "symbol": "decideTrainingFocus",
+      "kind": "function",
+      "startLine": 160,
+      "endLine": 218,
+      "loc": 59,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_welfare.ts",
+      "symbol": "orchestrateTransitionsPure",
+      "kind": "function",
+      "startLine": 197,
+      "endLine": 255,
+      "loc": 59,
+      "exported": false
+    },
+    {
+      "file": "src/components/rivalries/rivalryUtils.tsx",
+      "symbol": "H2HBar",
+      "kind": "function",
+      "startLine": 11,
+      "endLine": 68,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/KoenkaiSekitoriCards.tsx",
+      "symbol": "KoenkaiSekitoriCards",
+      "kind": "function",
+      "startLine": 19,
+      "endLine": 76,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/components/charts/ProgressArc.tsx",
+      "symbol": "ProgressArc",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 89,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/RosterWidget.tsx",
+      "symbol": "anonymous@116",
+      "kind": "arrow",
+      "startLine": 116,
+      "endLine": 173,
+      "loc": 58,
+      "exported": false
+    },
+    {
+      "file": "src/pages/GovernancePage.tsx",
+      "symbol": "anonymous@642",
+      "kind": "arrow",
+      "startLine": 642,
+      "endLine": 699,
+      "loc": 58,
+      "exported": false
+    },
+    {
+      "file": "src/engine/banzuke/promotionLogic.ts",
+      "symbol": "computeMovementUnits",
+      "kind": "function",
+      "startLine": 106,
+      "endLine": 163,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/ImpactResolver.ts",
+      "symbol": "resolveImpacts",
+      "kind": "function",
+      "startLine": 433,
+      "endLine": 490,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/engine/oyakataPersonalities.ts",
+      "symbol": "OYAKATA_ARCHETYPES",
+      "kind": "const-obj",
+      "startLine": 34,
+      "endLine": 91,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/engine/persistence/MigrationService.ts",
+      "symbol": "migrateToV1_2_0",
+      "kind": "arrow",
+      "startLine": 159,
+      "endLine": 216,
+      "loc": 58,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/ScandalService.ts",
+      "symbol": "reportScandal",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 85,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/engine/h2h.ts",
+      "symbol": "updateH2H",
+      "kind": "function",
+      "startLine": 47,
+      "endLine": 104,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_week_npc_ai.ts",
+      "symbol": "maybeAssignNPCMentors",
+      "kind": "function",
+      "startLine": 243,
+      "endLine": 300,
+      "loc": 58,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/pipelineRunner.ts",
+      "symbol": "runPipeline",
+      "kind": "function",
+      "startLine": 116,
+      "endLine": 173,
+      "loc": 58,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/historyProjections.ts",
+      "symbol": "projectHistoryAggregate",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 78,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/eventLogHelpers.ts",
+      "symbol": "getEventRoute",
+      "kind": "function",
+      "startLine": 50,
+      "endLine": 106,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/SponsorRecruitmentWidget.tsx",
+      "symbol": "anonymous@32",
+      "kind": "arrow",
+      "startLine": 32,
+      "endLine": 88,
+      "loc": 57,
+      "exported": false
+    },
+    {
+      "file": "src/components/governance/RivalOyakataCard.tsx",
+      "symbol": "RivalOyakataCard",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 76,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/RNGRegistry.ts",
+      "symbol": "RNGRegistry",
+      "kind": "const-obj",
+      "startLine": 38,
+      "endLine": 94,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/engine/staff.ts",
+      "symbol": "generateStaff",
+      "kind": "function",
+      "startLine": 79,
+      "endLine": 135,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/basho/ExhibitionBashoService.ts",
+      "symbol": "simulateExhibitionBasho",
+      "kind": "function",
+      "startLine": 144,
+      "endLine": 200,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/recruitment/YouthAcademyService.ts",
+      "symbol": "hireAcademyStaff",
+      "kind": "function",
+      "startLine": 437,
+      "endLine": 493,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/media/MediaEventService.ts",
+      "symbol": "handleMediaEventForHeya",
+      "kind": "function",
+      "startLine": 138,
+      "endLine": 194,
+      "loc": 57,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/tickDaily.ts",
+      "symbol": "batchAdvanceCalendar",
+      "kind": "function",
+      "startLine": 380,
+      "endLine": 436,
+      "loc": 57,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/cornerAdviceProjection.ts",
+      "symbol": "projectCornerAdvice",
+      "kind": "function",
+      "startLine": 28,
+      "endLine": 83,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/components/rivalries/RivalriesHeader.tsx",
+      "symbol": "RivalriesHeader",
+      "kind": "function",
+      "startLine": 19,
+      "endLine": 74,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/FinancialHealthOverview.tsx",
+      "symbol": "FinancialHealthOverview",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 76,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BoutLog.tsx",
+      "symbol": "BoutLog",
+      "kind": "function",
+      "startLine": 50,
+      "endLine": 105,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/IntelligencePanel.tsx",
+      "symbol": "IntelligencePanel",
+      "kind": "fn-expr",
+      "startLine": 32,
+      "endLine": 87,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/NewsWidget.tsx",
+      "symbol": "anonymous@54",
+      "kind": "arrow",
+      "startLine": 54,
+      "endLine": 109,
+      "loc": 56,
+      "exported": false
+    },
+    {
+      "file": "src/pages/FacilitiesPage.tsx",
+      "symbol": "FacilitiesPage",
+      "kind": "function",
+      "startLine": 16,
+      "endLine": 71,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/engine/banzuke/banzukeHelpers.ts",
+      "symbol": "resolveBanzukeTie",
+      "kind": "function",
+      "startLine": 47,
+      "endLine": 102,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/EntityCollection.ts",
+      "symbol": "EntityCollection",
+      "kind": "const-obj",
+      "startLine": 30,
+      "endLine": 85,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/engine/worker/engine.worker.ts",
+      "symbol": "TICK_MULTIPLE_DAYS",
+      "kind": "arrow",
+      "startLine": 181,
+      "endLine": 236,
+      "loc": 56,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/PoliticalFavorsService.ts",
+      "symbol": "PoliticalFavorsService",
+      "kind": "const-obj",
+      "startLine": 44,
+      "endLine": 99,
+      "loc": 56,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/weekly.ts",
+      "symbol": "applyInjuryRiskReduction",
+      "kind": "function",
+      "startLine": 449,
+      "endLine": 504,
+      "loc": 56,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/uiFormatters.ts",
+      "symbol": "formatMetaTrends",
+      "kind": "function",
+      "startLine": 101,
+      "endLine": 155,
+      "loc": 55,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/PlayoffBracket.tsx",
+      "symbol": "anonymous@57",
+      "kind": "arrow",
+      "startLine": 57,
+      "endLine": 111,
+      "loc": 55,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/YushoRaceWidget.tsx",
+      "symbol": "YushoRaceWidget",
+      "kind": "arrow",
+      "startLine": 97,
+      "endLine": 151,
+      "loc": 55,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/AcademyWidget.tsx",
+      "symbol": "AcademyWidget",
+      "kind": "function",
+      "startLine": 15,
+      "endLine": 69,
+      "loc": 55,
+      "exported": true
+    },
+    {
+      "file": "src/pages/AlmanacPage.tsx",
+      "symbol": "LeaderboardWidget",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 88,
+      "loc": 55,
+      "exported": false
+    },
+    {
+      "file": "src/engine/banzuke.ts",
+      "symbol": "computeVariableSanyakuCounts",
+      "kind": "function",
+      "startLine": 456,
+      "endLine": 510,
+      "loc": 55,
+      "exported": true
+    },
+    {
+      "file": "src/engine/schedule.ts",
+      "symbol": "applyMatchmakingAvoid",
+      "kind": "function",
+      "startLine": 367,
+      "endLine": 421,
+      "loc": 55,
+      "exported": false
+    },
+    {
+      "file": "src/engine/lifecycle/RegistryService.ts",
+      "symbol": "openRecruitmentWindow",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 83,
+      "loc": 55,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "generateColors",
+      "kind": "function",
+      "startLine": 257,
+      "endLine": 311,
+      "loc": 55,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "selectBasePattern",
+      "kind": "function",
+      "startLine": 314,
+      "endLine": 368,
+      "loc": 55,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/recruitment/ScoutingService.ts",
+      "symbol": "createScoutedView",
+      "kind": "method",
+      "startLine": 83,
+      "endLine": 137,
+      "loc": 55,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolOffers.ts",
+      "symbol": "resolveCandidateSuitor",
+      "kind": "function",
+      "startLine": 87,
+      "endLine": 141,
+      "loc": 55,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/terminalKimarite.ts",
+      "symbol": "BELT_FALL_CANDIDATES",
+      "kind": "const-arr",
+      "startLine": 104,
+      "endLine": 158,
+      "loc": 55,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/phases/phase00_preflight.ts",
+      "symbol": "phase00_preflight",
+      "kind": "function",
+      "startLine": 29,
+      "endLine": 83,
+      "loc": 55,
+      "exported": true
+    },
+    {
+      "file": "src/components/charts/GlobalCupStats.tsx",
+      "symbol": "BracketProgressChart",
+      "kind": "function",
+      "startLine": 86,
+      "endLine": 139,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/EventFeed.tsx",
+      "symbol": "EventFeed",
+      "kind": "function",
+      "startLine": 93,
+      "endLine": 146,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/pages/RegionalHubPage.tsx",
+      "symbol": "anonymous@87",
+      "kind": "arrow",
+      "startLine": 87,
+      "endLine": 140,
+      "loc": 54,
+      "exported": false
+    },
+    {
+      "file": "src/engine/loans.ts",
+      "symbol": "determineLoanTerms",
+      "kind": "function",
+      "startLine": 24,
+      "endLine": 77,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/engine/myosekiMarket.ts",
+      "symbol": "generateMyosekiMarket",
+      "kind": "function",
+      "startLine": 144,
+      "endLine": 197,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/MochikyukinService.ts",
+      "symbol": "payMochikyukinBonuses",
+      "kind": "function",
+      "startLine": 114,
+      "endLine": 167,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/recruitment/ScoutingService.ts",
+      "symbol": "getScoutedAttributes",
+      "kind": "method",
+      "startLine": 161,
+      "endLine": 214,
+      "loc": 54,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/media/MediaEventService.ts",
+      "symbol": "handleMediaEvent",
+      "kind": "function",
+      "startLine": 75,
+      "endLine": 128,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcSponsorStrategy.ts",
+      "symbol": "DefaultSponsorStrategy",
+      "kind": "const-obj",
+      "startLine": 39,
+      "endLine": 92,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/welfare/transitions.ts",
+      "symbol": "handleInvestigationTransition",
+      "kind": "function",
+      "startLine": 178,
+      "endLine": 231,
+      "loc": 54,
+      "exported": true
+    },
+    {
+      "file": "src/contexts/GameContext.tsx",
+      "symbol": "anonymous@417",
+      "kind": "arrow",
+      "startLine": 417,
+      "endLine": 469,
+      "loc": 53,
+      "exported": false
+    },
+    {
+      "file": "src/components/stable/AcademyManagementPanel.tsx",
+      "symbol": "anonymous@56",
+      "kind": "arrow",
+      "startLine": 56,
+      "endLine": 108,
+      "loc": 53,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/SponsorsPanel.tsx",
+      "symbol": "anonymous@52",
+      "kind": "arrow",
+      "startLine": 52,
+      "endLine": 104,
+      "loc": 53,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/GlobalCupBracket.tsx",
+      "symbol": "MatchCard",
+      "kind": "function",
+      "startLine": 16,
+      "endLine": 68,
+      "loc": 53,
+      "exported": false
+    },
+    {
+      "file": "src/engine/banzuke/promotionLogic.ts",
+      "symbol": "bestTierAllowed",
+      "kind": "function",
+      "startLine": 166,
+      "endLine": 218,
+      "loc": 53,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/BashoHistory.ts",
+      "symbol": "checkYokozunaPromotions",
+      "kind": "function",
+      "startLine": 282,
+      "endLine": 334,
+      "loc": 53,
+      "exported": true
+    },
+    {
+      "file": "src/engine/facilities.ts",
+      "symbol": "investInFacility",
+      "kind": "function",
+      "startLine": 101,
+      "endLine": 153,
+      "loc": 53,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
+      "symbol": "purchaseMyoseki",
+      "kind": "function",
+      "startLine": 201,
+      "endLine": 253,
+      "loc": 53,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/boutProjections.ts",
+      "symbol": "projectOpponentScoutingUIDigest",
+      "kind": "function",
+      "startLine": 136,
+      "endLine": 187,
+      "loc": 52,
+      "exported": true
+    },
+    {
+      "file": "src/components/ui/sidebar/menu.tsx",
+      "symbol": "SidebarMenuButton",
+      "kind": "function",
+      "startLine": 62,
+      "endLine": 113,
+      "loc": 52,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/InjuryRiskHeatmap.tsx",
+      "symbol": "anonymous@106",
+      "kind": "arrow",
+      "startLine": 106,
+      "endLine": 157,
+      "loc": 52,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/PreBashoAssessment.tsx",
+      "symbol": "anonymous@23",
+      "kind": "arrow",
+      "startLine": 23,
+      "endLine": 74,
+      "loc": 52,
+      "exported": false
+    },
+    {
+      "file": "src/components/menu/HeyaPreview.tsx",
+      "symbol": "anonymous@136",
+      "kind": "arrow",
+      "startLine": 136,
+      "endLine": 187,
+      "loc": 52,
+      "exported": false
+    },
+    {
+      "file": "src/components/kesho/keshoComponents.tsx",
+      "symbol": "TierBadge",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 65,
+      "loc": 52,
+      "exported": true
+    },
+    {
+      "file": "src/components/kesho/keshoSymbols.tsx",
+      "symbol": "renderSecondarySymbol",
+      "kind": "function",
+      "startLine": 61,
+      "endLine": 112,
+      "loc": 52,
+      "exported": true
+    },
+    {
+      "file": "src/hooks/use-toast.ts",
+      "symbol": "reducer",
+      "kind": "arrow",
+      "startLine": 67,
+      "endLine": 118,
+      "loc": 52,
+      "exported": false
+    },
+    {
+      "file": "src/engine/persistence/MigrationService.ts",
+      "symbol": "MigrationService",
+      "kind": "const-obj",
+      "startLine": 331,
+      "endLine": 382,
+      "loc": 52,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/SponsorContractService.ts",
+      "symbol": "renewSponsorContract",
+      "kind": "function",
+      "startLine": 36,
+      "endLine": 87,
+      "loc": 52,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/media/MediaEventService.ts",
+      "symbol": "generateGovernanceHeadline",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 69,
+      "loc": 52,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/media/MediaBoutService.ts",
+      "symbol": "processStreak",
+      "kind": "function",
+      "startLine": 249,
+      "endLine": 300,
+      "loc": 52,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcSponsorStrategy.ts",
+      "symbol": "evaluateSponsorRecruitment",
+      "kind": "method",
+      "startLine": 40,
+      "endLine": 91,
+      "loc": 52,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/promotionProjections.ts",
+      "symbol": "getYokozunaCandidates",
+      "kind": "function",
+      "startLine": 93,
+      "endLine": 143,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/components/stable/SuccessionModal.tsx",
+      "symbol": "anonymous@74",
+      "kind": "arrow",
+      "startLine": 74,
+      "endLine": 124,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/components/ui/button.tsx",
+      "symbol": "Button",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 68,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/components/economy/FinancialTrendsChart.tsx",
+      "symbol": "buildWeeklyBuckets",
+      "kind": "function",
+      "startLine": 45,
+      "endLine": 95,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/components/layout/Breadcrumbs.tsx",
+      "symbol": "Breadcrumbs",
+      "kind": "function",
+      "startLine": 77,
+      "endLine": 127,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/TrainingWidget.tsx",
+      "symbol": "anonymous@17",
+      "kind": "arrow",
+      "startLine": 17,
+      "endLine": 67,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/pages/MyosekiMarketPage.tsx",
+      "symbol": "anonymous@196",
+      "kind": "arrow",
+      "startLine": 196,
+      "endLine": 246,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/engine/advisor/AdvisorService.ts",
+      "symbol": "leagueRecommendations",
+      "kind": "function",
+      "startLine": 199,
+      "endLine": 249,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/engine/loans.ts",
+      "symbol": "processMonthlyLoanRepayments",
+      "kind": "function",
+      "startLine": 182,
+      "endLine": 232,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lifecycle/BashoHistory.ts",
+      "symbol": "newAwardEntries",
+      "kind": "const-arr",
+      "startLine": 136,
+      "endLine": 186,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/TravelAllowanceService.ts",
+      "symbol": "distributeKoenkaiToSekitori",
+      "kind": "function",
+      "startLine": 123,
+      "endLine": 173,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/PoliticalFavorsService.ts",
+      "symbol": "requestFavor",
+      "kind": "method",
+      "startLine": 48,
+      "endLine": 98,
+      "loc": 51,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateStats.ts",
+      "symbol": "generateRikishiStats",
+      "kind": "function",
+      "startLine": 249,
+      "endLine": 299,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/ReplayMetadata.ts",
+      "symbol": "getReplayPhaseDurations",
+      "kind": "function",
+      "startLine": 135,
+      "endLine": 185,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutPhaseLoop.ts",
+      "symbol": "resolveBoutPhysicsImpl",
+      "kind": "function",
+      "startLine": 182,
+      "endLine": 232,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/handlers.ts",
+      "symbol": "handleNPCMediaEvent",
+      "kind": "function",
+      "startLine": 88,
+      "endLine": 138,
+      "loc": 51,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/digestProjections.ts",
+      "symbol": "buildEventSections",
+      "kind": "function",
+      "startLine": 108,
+      "endLine": 157,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/sponsorProjection.ts",
+      "symbol": "buildAndSortActiveSponsors",
+      "kind": "function",
+      "startLine": 58,
+      "endLine": 107,
+      "loc": 50,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RikishiProfileTab.tsx",
+      "symbol": "generateBadges",
+      "kind": "function",
+      "startLine": 115,
+      "endLine": 164,
+      "loc": 50,
+      "exported": false
+    },
+    {
+      "file": "src/components/wizard/WizardFooter.tsx",
+      "symbol": "WizardFooter",
+      "kind": "function",
+      "startLine": 17,
+      "endLine": 66,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/components/wizard/FactionStep.tsx",
+      "symbol": "anonymous@47",
+      "kind": "arrow",
+      "startLine": 47,
+      "endLine": 96,
+      "loc": 50,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/GlobalCupBracket.tsx",
+      "symbol": "GlobalCupBracket",
+      "kind": "function",
+      "startLine": 70,
+      "endLine": 119,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/DigestWidget.tsx",
+      "symbol": "anonymous@49",
+      "kind": "arrow",
+      "startLine": 49,
+      "endLine": 98,
+      "loc": 50,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/ScoutingWidget.tsx",
+      "symbol": "anonymous@83",
+      "kind": "arrow",
+      "startLine": 83,
+      "endLine": 132,
+      "loc": 50,
+      "exported": false
+    },
+    {
+      "file": "src/hooks/useCalendarActions.ts",
+      "symbol": "useCalendarActions",
+      "kind": "function",
+      "startLine": 6,
+      "endLine": 55,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/types/keshoMawashi.ts",
+      "symbol": "CORPORATE_INDUSTRY_PALETTES",
+      "kind": "const-obj",
+      "startLine": 406,
+      "endLine": 455,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/staff.ts",
+      "symbol": "getHeyaStaffBonuses",
+      "kind": "function",
+      "startLine": 330,
+      "endLine": 379,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/InfrastructureService.ts",
+      "symbol": "getHeyaBonuses",
+      "kind": "method",
+      "startLine": 202,
+      "endLine": 251,
+      "loc": 50,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/training/SparringService.ts",
+      "symbol": "assignSparringPair",
+      "kind": "function",
+      "startLine": 272,
+      "endLine": 321,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/legacy/LegacyService.ts",
+      "symbol": "registerLegacyTrait",
+      "kind": "method",
+      "startLine": 31,
+      "endLine": 80,
+      "loc": 50,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/talentPoolScoutingOps.ts",
+      "symbol": "scoutPool",
+      "kind": "function",
+      "startLine": 26,
+      "endLine": 75,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolMaterialization.ts",
+      "symbol": "materializeCandidateToRikishiInternal",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 63,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/yaocho.ts",
+      "symbol": "evaluateYaochoIndicators",
+      "kind": "function",
+      "startLine": 53,
+      "endLine": 102,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutResolver.ts",
+      "symbol": "applyRivalryToRikishi",
+      "kind": "function",
+      "startLine": 570,
+      "endLine": 619,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/engine/strategy/NPCStrategyService.ts",
+      "symbol": "decideScoutingPriority",
+      "kind": "function",
+      "startLine": 292,
+      "endLine": 341,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/store/gameStore.ts",
+      "symbol": "initWorker",
+      "kind": "arrow",
+      "startLine": 86,
+      "endLine": 135,
+      "loc": 50,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/hofProjection.ts",
+      "symbol": "projectHOFUIDigest",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 81,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/components/ui/SkeletonCard.tsx",
+      "symbol": "SkeletonCard",
+      "kind": "function",
+      "startLine": 32,
+      "endLine": 80,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/KihakuStatRow.tsx",
+      "symbol": "KihakuStatRow",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 73,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/components/training/WeightJourneyCard.tsx",
+      "symbol": "WeightJourneyCard",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 73,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/pages/MediaPage.tsx",
+      "symbol": "HeadlineCard",
+      "kind": "function",
+      "startLine": 75,
+      "endLine": 123,
+      "loc": 49,
+      "exported": false
+    },
+    {
+      "file": "src/engine/history.ts",
+      "symbol": "runHistoryUpdates",
+      "kind": "function",
+      "startLine": 112,
+      "endLine": 160,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/engine/advisor/AdvisorService.ts",
+      "symbol": "bashoRecommendations",
+      "kind": "function",
+      "startLine": 148,
+      "endLine": 196,
+      "loc": 49,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bard/dramaGenerator.ts",
+      "symbol": "triggerCrisis",
+      "kind": "function",
+      "startLine": 275,
+      "endLine": 323,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/engine/types/keshoMawashi.ts",
+      "symbol": "MOTIF_COLOR_ASSOCIATIONS",
+      "kind": "const-obj",
+      "startLine": 352,
+      "endLine": 400,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/engine/shikona/legacy.ts",
+      "symbol": "extractLegacySuffix",
+      "kind": "function",
+      "startLine": 74,
+      "endLine": 122,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/engine/facilities.ts",
+      "symbol": "applyMonthlyDecayOrMaintenance",
+      "kind": "function",
+      "startLine": 197,
+      "endLine": 245,
+      "loc": 49,
+      "exported": false
+    },
+    {
+      "file": "src/engine/scoutingStore.ts",
+      "symbol": "getOrCreateScouted",
+      "kind": "function",
+      "startLine": 95,
+      "endLine": 143,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/GlobalCupService.ts",
+      "symbol": "initializeTournament",
+      "kind": "method",
+      "startLine": 125,
+      "endLine": 173,
+      "loc": 49,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "generateDescription",
+      "kind": "function",
+      "startLine": 601,
+      "endLine": 649,
+      "loc": 49,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/ScandalService.ts",
+      "symbol": "runElections",
+      "kind": "function",
+      "startLine": 177,
+      "endLine": 225,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/engine/data/sumo_geography.ts",
+      "symbol": "JAPANESE_PREFECTURES",
+      "kind": "const-arr",
+      "startLine": 1,
+      "endLine": 49,
+      "loc": 49,
+      "exported": true
+    },
+    {
+      "file": "src/engine/almanac/career.ts",
+      "symbol": "simulateBashoPerformance",
+      "kind": "function",
+      "startLine": 183,
+      "endLine": 231,
+      "loc": 49,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/trainingProjections.ts",
+      "symbol": "projectTrainingSummary",
+      "kind": "function",
+      "startLine": 47,
+      "endLine": 94,
+      "loc": 48,
+      "exported": true
+    },
+    {
+      "file": "src/components/dashboard/BanzukeWidget.tsx",
+      "symbol": "BanzukeWidget",
+      "kind": "function",
+      "startLine": 126,
+      "endLine": 173,
+      "loc": 48,
+      "exported": true
+    },
+    {
+      "file": "src/engine/holiday.ts",
+      "symbol": "runHoliday",
+      "kind": "function",
+      "startLine": 393,
+      "endLine": 440,
+      "loc": 48,
+      "exported": true
+    },
+    {
+      "file": "src/engine/lineage.ts",
+      "symbol": "recordOyakataHandover",
+      "kind": "function",
+      "startLine": 141,
+      "endLine": 188,
+      "loc": 48,
+      "exported": true
+    },
+    {
+      "file": "src/engine/shikona/legacy.ts",
+      "symbol": "commonPrefixes",
+      "kind": "const-arr",
+      "startLine": 12,
+      "endLine": 59,
+      "loc": 48,
+      "exported": false
+    },
+    {
+      "file": "src/engine/kimariteRegistry.ts",
+      "symbol": "CATEGORY_DEFAULTS",
+      "kind": "const-obj",
+      "startLine": 27,
+      "endLine": 74,
+      "loc": 48,
+      "exported": false
+    },
+    {
+      "file": "src/engine/persistence/SaveSlotService.ts",
+      "symbol": "getSaveSlotInfos",
+      "kind": "method",
+      "startLine": 48,
+      "endLine": 95,
+      "loc": 48,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "generateMainSymbol",
+      "kind": "function",
+      "startLine": 452,
+      "endLine": 499,
+      "loc": 48,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/meta/HistoryService.ts",
+      "symbol": "updateAllTimeRecords",
+      "kind": "method",
+      "startLine": 20,
+      "endLine": 67,
+      "loc": 48,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateBuilder.ts",
+      "symbol": "createBaseInfo",
+      "kind": "function",
+      "startLine": 42,
+      "endLine": 89,
+      "loc": 48,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/RosterFactory.ts",
+      "symbol": "anonymous@55",
+      "kind": "arrow",
+      "startLine": 55,
+      "endLine": 102,
+      "loc": 48,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/financeProjections.ts",
+      "symbol": "projectFinanceSummary",
+      "kind": "function",
+      "startLine": 46,
+      "endLine": 92,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/mediaProjection.ts",
+      "symbol": "projectMediaUIDigest",
+      "kind": "function",
+      "startLine": 15,
+      "endLine": 61,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/components/charts/GlobalCupStats.tsx",
+      "symbol": "ParticipantNationalityChart",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 84,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/MatchDayViewer.tsx",
+      "symbol": "anonymous@57",
+      "kind": "arrow",
+      "startLine": 57,
+      "endLine": 103,
+      "loc": 47,
+      "exported": false
+    },
+    {
+      "file": "src/components/academy/AcademyStaffList.tsx",
+      "symbol": "AcademyStaffList",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 68,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/components/exhibition/ExhibitionInvitationsPanel.tsx",
+      "symbol": "ExhibitionInvitationsPanel",
+      "kind": "function",
+      "startLine": 17,
+      "endLine": 63,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/pages/GovernancePage.tsx",
+      "symbol": "anonymous@400",
+      "kind": "arrow",
+      "startLine": 400,
+      "endLine": 446,
+      "loc": 47,
+      "exported": false
+    },
+    {
+      "file": "src/engine/banzuke/banzukeMovementNarrative.ts",
+      "symbol": "generateBanzukeMovementNarrative",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 58,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bard/narrativeContext.ts",
+      "symbol": "buildNarrativeContext",
+      "kind": "function",
+      "startLine": 49,
+      "endLine": 95,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/engine/shikona/houseStyles.ts",
+      "symbol": "HOUSE_STYLES",
+      "kind": "const-arr",
+      "startLine": 9,
+      "endLine": 55,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/engine/shikona/heyaPrefixes.ts",
+      "symbol": "HEYA_SIGNATURE_PREFIXES",
+      "kind": "const-obj",
+      "startLine": 15,
+      "endLine": 61,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/engine/matchmaking/LowerDivisionSwiss.ts",
+      "symbol": "phase1",
+      "kind": "function",
+      "startLine": 72,
+      "endLine": 118,
+      "loc": 47,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/basho/ExhibitionBashoService.ts",
+      "symbol": "getExhibitionBashoSchedule",
+      "kind": "function",
+      "startLine": 51,
+      "endLine": 97,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/legacy/DynastyService.ts",
+      "symbol": "findEligibleSuccessors",
+      "kind": "method",
+      "startLine": 109,
+      "endLine": 155,
+      "loc": 47,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/GovernanceService.ts",
+      "symbol": "resolveCrisis",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 60,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/HeyaFactory.ts",
+      "symbol": "HEYA_NAMES",
+      "kind": "const-arr",
+      "startLine": 154,
+      "endLine": 200,
+      "loc": 47,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/talentPoolScoutingOps.ts",
+      "symbol": "scoutCandidate",
+      "kind": "function",
+      "startLine": 80,
+      "endLine": 126,
+      "loc": 47,
+      "exported": true
+    },
+    {
+      "file": "src/engine/strategy/NPCFinanceCalculator.ts",
+      "symbol": "BUY_MYOSEKI_RULE",
+      "kind": "const-obj",
+      "startLine": 37,
+      "endLine": 83,
+      "loc": 47,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/phases/phase06_narrative.ts",
+      "symbol": "deriveRecentAchievements",
+      "kind": "function",
+      "startLine": 178,
+      "endLine": 224,
+      "loc": 47,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/dashboardProjections.ts",
+      "symbol": "projectDashboardUIDigest",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 70,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/economyProjections.ts",
+      "symbol": "projectMergerWarnings",
+      "kind": "function",
+      "startLine": 61,
+      "endLine": 106,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/SubNavTabs.tsx",
+      "symbol": "anonymous@46",
+      "kind": "arrow",
+      "startLine": 46,
+      "endLine": 91,
+      "loc": 46,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/PlayoffBracket.tsx",
+      "symbol": "anonymous@63",
+      "kind": "arrow",
+      "startLine": 63,
+      "endLine": 108,
+      "loc": 46,
+      "exported": false
+    },
+    {
+      "file": "src/pages/SponsorManagementPage.tsx",
+      "symbol": "SponsorManagementPage",
+      "kind": "function",
+      "startLine": 14,
+      "endLine": 59,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/pages/HistoryDashboard.tsx",
+      "symbol": "LeaderboardCard",
+      "kind": "function",
+      "startLine": 90,
+      "endLine": 135,
+      "loc": 46,
+      "exported": false
+    },
+    {
+      "file": "src/engine/loans.ts",
+      "symbol": "prepayLoan",
+      "kind": "function",
+      "startLine": 238,
+      "endLine": 283,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/engine/staff.ts",
+      "symbol": "tickStaffWeek",
+      "kind": "function",
+      "startLine": 144,
+      "endLine": 189,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/sponsorshipQueries.ts",
+      "symbol": "createKoenkai",
+      "kind": "function",
+      "startLine": 97,
+      "endLine": 142,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/legacy/DynastyService.ts",
+      "symbol": "tickSuccessionCheck",
+      "kind": "method",
+      "startLine": 56,
+      "endLine": 101,
+      "loc": 46,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/legacy/BloodlineService.ts",
+      "symbol": "applyHeritageBonus",
+      "kind": "method",
+      "startLine": 77,
+      "endLine": 122,
+      "loc": 46,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/worldCircuit/WorldCircuitService.ts",
+      "symbol": "manageAcademy",
+      "kind": "function",
+      "startLine": 335,
+      "endLine": 380,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidatePoolService.ts",
+      "symbol": "createDefaultCandidatePoolState",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 79,
+      "loc": 46,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/CandidatePoolService.ts",
+      "symbol": "poachCandidate",
+      "kind": "function",
+      "startLine": 203,
+      "endLine": 248,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolStateService.ts",
+      "symbol": "createDefaultTalentPoolState",
+      "kind": "function",
+      "startLine": 23,
+      "endLine": 68,
+      "loc": 46,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bout/kimariteClassifier.ts",
+      "symbol": "evaluateKimariteAttempt",
+      "kind": "function",
+      "startLine": 21,
+      "endLine": 66,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/StrategicPlanner.ts",
+      "symbol": "createPlan",
+      "kind": "function",
+      "startLine": 329,
+      "endLine": 374,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/handlers.ts",
+      "symbol": "handleNPCCrisis",
+      "kind": "function",
+      "startLine": 41,
+      "endLine": 86,
+      "loc": 46,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/rikishi/index.ts",
+      "symbol": "projectRikishi",
+      "kind": "function",
+      "startLine": 95,
+      "endLine": 139,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/promotionProjections.ts",
+      "symbol": "getOzekiRunCandidates",
+      "kind": "function",
+      "startLine": 44,
+      "endLine": 88,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/sponsorProjection.ts",
+      "symbol": "buildSponsorData",
+      "kind": "function",
+      "startLine": 109,
+      "endLine": 153,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/boutReplay/useBoutReplay.ts",
+      "symbol": "anonymous@223",
+      "kind": "arrow",
+      "startLine": 223,
+      "endLine": 267,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/InboxNewsTicker.tsx",
+      "symbol": "InboxNewsTicker",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 56,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/components/academy/AcademyIntakeCard.tsx",
+      "symbol": "AcademyIntakeCard",
+      "kind": "function",
+      "startLine": 16,
+      "endLine": 60,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/components/kesho/keshoSymbols.tsx",
+      "symbol": "renderSymbol",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 56,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/pages/Dashboard.tsx",
+      "symbol": "anonymous@140",
+      "kind": "arrow",
+      "startLine": 140,
+      "endLine": 184,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/engine/myosekiMarket.ts",
+      "symbol": "buyMyoseki",
+      "kind": "function",
+      "startLine": 306,
+      "endLine": 350,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/economy/InfrastructureService.ts",
+      "symbol": "processCompletionTick",
+      "kind": "method",
+      "startLine": 142,
+      "endLine": 186,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/YokozunaService.ts",
+      "symbol": "evaluateCandidate",
+      "kind": "method",
+      "startLine": 64,
+      "endLine": 108,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/worldCircuit/WorldCircuitService.ts",
+      "symbol": "generateYearlyInvitations",
+      "kind": "method",
+      "startLine": 43,
+      "endLine": 87,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/HeyaFactory.ts",
+      "symbol": "heya",
+      "kind": "const-obj",
+      "startLine": 81,
+      "endLine": 125,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolMaterialization.ts",
+      "symbol": "finalizeSignedCandidates",
+      "kind": "function",
+      "startLine": 100,
+      "endLine": 144,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcSponsorStrategyHelpers.ts",
+      "symbol": "evaluateSponsorRecruitmentCommon",
+      "kind": "function",
+      "startLine": 152,
+      "endLine": 196,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/boutTacticAftermath.ts",
+      "symbol": "aftermathForSide",
+      "kind": "function",
+      "startLine": 24,
+      "endLine": 68,
+      "loc": 45,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bout/boutAchievements.ts",
+      "symbol": "detectKinboshi",
+      "kind": "function",
+      "startLine": 24,
+      "endLine": 68,
+      "loc": 45,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/historyCohortProjections.ts",
+      "symbol": "selectCohortSummaries",
+      "kind": "function",
+      "startLine": 27,
+      "endLine": 70,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiProfileTab.tsx",
+      "symbol": "templates",
+      "kind": "const-obj",
+      "startLine": 66,
+      "endLine": 109,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/components/training/TsukebitoPanel.tsx",
+      "symbol": "anonymous@74",
+      "kind": "arrow",
+      "startLine": 74,
+      "endLine": 117,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/ScoutingWidget.tsx",
+      "symbol": "anonymous@35",
+      "kind": "arrow",
+      "startLine": 35,
+      "endLine": 78,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/components/menu/statureConfig.ts",
+      "symbol": "STATURE_CONFIG",
+      "kind": "const-obj",
+      "startLine": 21,
+      "endLine": 64,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/hooks/useFinancesData.ts",
+      "symbol": "useFinancesData",
+      "kind": "function",
+      "startLine": 8,
+      "endLine": 51,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/pages/RecapPage.tsx",
+      "symbol": "groupEventsByNarrative",
+      "kind": "function",
+      "startLine": 60,
+      "endLine": 103,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/pages/MediaPage.tsx",
+      "symbol": "BeatFilter",
+      "kind": "function",
+      "startLine": 125,
+      "endLine": 168,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/pages/HistoryDashboard.tsx",
+      "symbol": "anonymous@331",
+      "kind": "arrow",
+      "startLine": 331,
+      "endLine": 374,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bard/dramaGenerator.ts",
+      "symbol": "checkBashoDayDrama",
+      "kind": "function",
+      "startLine": 164,
+      "endLine": 207,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/SimulationConfig.ts",
+      "symbol": "SIMULATION_CONFIG",
+      "kind": "const-obj",
+      "startLine": 8,
+      "endLine": 51,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/shikona/generation.ts",
+      "symbol": "PATTERN_HANDLERS",
+      "kind": "const-obj",
+      "startLine": 81,
+      "endLine": 124,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/engine/shikona/rankRules.ts",
+      "symbol": "RANK_RULES",
+      "kind": "const-arr",
+      "startLine": 9,
+      "endLine": 52,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/simulation/AutoSimService.ts",
+      "symbol": "STOP_HANDLERS",
+      "kind": "const-obj",
+      "startLine": 301,
+      "endLine": 344,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/engine/utils/jsonParser.ts",
+      "symbol": "parseLLMResponse",
+      "kind": "function",
+      "startLine": 33,
+      "endLine": 76,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/basho/ExhibitionBashoService.ts",
+      "symbol": "events",
+      "kind": "const-arr",
+      "startLine": 52,
+      "endLine": 95,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/TravelAllowanceService.ts",
+      "symbol": "payTravelAllowance",
+      "kind": "function",
+      "startLine": 31,
+      "endLine": 74,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateStats.ts",
+      "symbol": "deriveCurrentAbility",
+      "kind": "function",
+      "startLine": 201,
+      "endLine": 244,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/strategy/NPCStrategyFramework.ts",
+      "symbol": "TraitChecks",
+      "kind": "const-obj",
+      "startLine": 139,
+      "endLine": 182,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/opponentLearning.ts",
+      "symbol": "onBoutResolvedOpponentModels",
+      "kind": "function",
+      "startLine": 67,
+      "endLine": 110,
+      "loc": 44,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/tickDaily.ts",
+      "symbol": "daysUntilPhaseTransition",
+      "kind": "function",
+      "startLine": 472,
+      "endLine": 515,
+      "loc": 44,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/digestProjections.ts",
+      "symbol": "buildMatchupItems",
+      "kind": "function",
+      "startLine": 184,
+      "endLine": 226,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/projections/hofProjection.ts",
+      "symbol": "anonymous@36",
+      "kind": "arrow",
+      "startLine": 36,
+      "endLine": 78,
+      "loc": 43,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/recapBanzukeRevealProjections.ts",
+      "symbol": "buildBanzukeRevealEntries",
+      "kind": "function",
+      "startLine": 30,
+      "endLine": 72,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/SponsorDrawCard.tsx",
+      "symbol": "SponsorDrawCard",
+      "kind": "function",
+      "startLine": 18,
+      "endLine": 60,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/components/economy/FacilityROIChart.tsx",
+      "symbol": "CustomTooltip",
+      "kind": "function",
+      "startLine": 99,
+      "endLine": 141,
+      "loc": 43,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/DigestWidget.tsx",
+      "symbol": "anonymous@102",
+      "kind": "arrow",
+      "startLine": 102,
+      "endLine": 144,
+      "loc": 43,
+      "exported": false
+    },
+    {
+      "file": "src/pages/SchedulePage.tsx",
+      "symbol": "anonymous@148",
+      "kind": "arrow",
+      "startLine": 148,
+      "endLine": 190,
+      "loc": 43,
+      "exported": false
+    },
+    {
+      "file": "src/engine/history.ts",
+      "symbol": "generateCareerSnapshot",
+      "kind": "function",
+      "startLine": 22,
+      "endLine": 64,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/engine/core/SimulationRunner.ts",
+      "symbol": "runPostBashoResolution",
+      "kind": "function",
+      "startLine": 34,
+      "endLine": 76,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/engine/scoutingStore.ts",
+      "symbol": "onBoutResolvedScouting",
+      "kind": "function",
+      "startLine": 233,
+      "endLine": 275,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/recruitment/YouthAcademyService.ts",
+      "symbol": "applyWeeklyDevelopment",
+      "kind": "function",
+      "startLine": 273,
+      "endLine": 315,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/governance/KihakuService.ts",
+      "symbol": "extractFromBasho",
+      "kind": "method",
+      "startLine": 104,
+      "endLine": 146,
+      "loc": 43,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
+      "symbol": "leaseMyoseki",
+      "kind": "function",
+      "startLine": 258,
+      "endLine": 300,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/generation/WorldFactory.ts",
+      "symbol": "world",
+      "kind": "const-obj",
+      "startLine": 79,
+      "endLine": 121,
+      "loc": 43,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/TalentPoolStateService.ts",
+      "symbol": "injectRikishiAsCandidate",
+      "kind": "function",
+      "startLine": 150,
+      "endLine": 192,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/engine/strategy/NPCStrategyService.ts",
+      "symbol": "decideRecovery",
+      "kind": "function",
+      "startLine": 223,
+      "endLine": 265,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/engine/npcAI/ticks.ts",
+      "symbol": "applyNPCDecision",
+      "kind": "function",
+      "startLine": 23,
+      "endLine": 65,
+      "loc": 43,
+      "exported": true
+    },
+    {
+      "file": "src/App.tsx",
+      "symbol": "App",
+      "kind": "arrow",
+      "startLine": 20,
+      "endLine": 61,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/contexts/electronStorageProvider.ts",
+      "symbol": "ElectronStorageProvider.constructor",
+      "kind": "method",
+      "startLine": 68,
+      "endLine": 109,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/constants/engine/training.ts",
+      "symbol": "DRILL_EFFECTS",
+      "kind": "const-obj",
+      "startLine": 148,
+      "endLine": 189,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/presenters/youthAcademyProjections.ts",
+      "symbol": "projectYouthAcademy",
+      "kind": "function",
+      "startLine": 52,
+      "endLine": 93,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/components/basho/computeStandingsEvolution.ts",
+      "symbol": "computeStandingsEvolution",
+      "kind": "function",
+      "startLine": 19,
+      "endLine": 60,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/components/rikishi/RikishiPotentialPanel.tsx",
+      "symbol": "anonymous@47",
+      "kind": "arrow",
+      "startLine": 47,
+      "endLine": 88,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RikishiCombatTab.tsx",
+      "symbol": "anonymous@103",
+      "kind": "arrow",
+      "startLine": 103,
+      "endLine": 144,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/components/rikishi/RikishiCareerTab.tsx",
+      "symbol": "anonymous@657",
+      "kind": "arrow",
+      "startLine": 657,
+      "endLine": 698,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/components/layout/FloatingShortcuts.tsx",
+      "symbol": "FloatingShortcuts",
+      "kind": "function",
+      "startLine": 11,
+      "endLine": 52,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/IntaiCeremony.tsx",
+      "symbol": "getCareerNarrative",
+      "kind": "function",
+      "startLine": 36,
+      "endLine": 77,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/CornerAdvicePanel.tsx",
+      "symbol": "CornerAdvicePanel",
+      "kind": "fn-expr",
+      "startLine": 11,
+      "endLine": 52,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/BoutNarrativeModal.tsx",
+      "symbol": "anonymous@334",
+      "kind": "arrow",
+      "startLine": 334,
+      "endLine": 375,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/engine/advisor/AdvisorService.ts",
+      "symbol": "rosterRecommendations",
+      "kind": "function",
+      "startLine": 75,
+      "endLine": 116,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bard/BardEngine.ts",
+      "symbol": "resolve",
+      "kind": "method",
+      "startLine": 408,
+      "endLine": 449,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/engine/storage/opfsArchive.ts",
+      "symbol": "validateBoutLog",
+      "kind": "function",
+      "startLine": 10,
+      "endLine": 51,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/engine/storage/opfsArchive.ts",
+      "symbol": "OPFSArchiveService.getArchivedBoutIdsForSeason",
+      "kind": "method",
+      "startLine": 226,
+      "endLine": 267,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcRecruitmentStrategy.ts",
+      "symbol": "DefaultRecruitmentStrategy",
+      "kind": "const-obj",
+      "startLine": 57,
+      "endLine": 98,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/engine/events.ts",
+      "symbol": "queryEvents",
+      "kind": "function",
+      "startLine": 187,
+      "endLine": 228,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "COLOR_GENERATORS",
+      "kind": "const-obj",
+      "startLine": 267,
+      "endLine": 308,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/narrative/PostBashoPressService.ts",
+      "symbol": "generateYokozunaBidLines",
+      "kind": "method",
+      "startLine": 433,
+      "endLine": 474,
+      "loc": 42,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/phases/welfare/transitions.ts",
+      "symbol": "handleCompliantTransition",
+      "kind": "function",
+      "startLine": 72,
+      "endLine": 113,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/monthly/training/archetypeDrift.ts",
+      "symbol": "processArchetypeDrift",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 53,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/engine/tick/phases/phase01_daily_sponsors.ts",
+      "symbol": "phase01_daily_sponsors",
+      "kind": "function",
+      "startLine": 20,
+      "endLine": 61,
+      "loc": 42,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/control-center/ProgressRow.tsx",
+      "symbol": "ProgressRow",
+      "kind": "function",
+      "startLine": 39,
+      "endLine": 79,
+      "loc": 41,
+      "exported": true
+    },
+    {
+      "file": "src/components/layout/control-center/DataTable.tsx",
+      "symbol": "anonymous@63",
+      "kind": "arrow",
+      "startLine": 63,
+      "endLine": 103,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/components/game/LineageTree.tsx",
+      "symbol": "anonymous@44",
+      "kind": "arrow",
+      "startLine": 44,
+      "endLine": 84,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/components/dashboard/BashoWidget.tsx",
+      "symbol": "anonymous@13",
+      "kind": "arrow",
+      "startLine": 13,
+      "endLine": 53,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/pages/BashoPage.tsx",
+      "symbol": "anonymous@102",
+      "kind": "arrow",
+      "startLine": 102,
+      "endLine": 142,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/bard/dramaGenerator.ts",
+      "symbol": "STORED_CRISIS_OPTION_EFFECTS",
+      "kind": "const-obj",
+      "startLine": 218,
+      "endLine": 258,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/EventBus.ts",
+      "symbol": "enrichEventContext",
+      "kind": "function",
+      "startLine": 24,
+      "endLine": 64,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/oyakataStylePreferences.ts",
+      "symbol": "scoreRecruitForOyakata",
+      "kind": "function",
+      "startLine": 128,
+      "endLine": 168,
+      "loc": 41,
+      "exported": true
+    },
+    {
+      "file": "src/engine/worker/engine.worker.ts",
+      "symbol": "APPLY_PRESS_CONFERENCE",
+      "kind": "arrow",
+      "startLine": 452,
+      "endLine": 492,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/worker/engine.worker.ts",
+      "symbol": "GO_ON_HOLIDAY",
+      "kind": "arrow",
+      "startLine": 611,
+      "endLine": 651,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/economy/infrastructureValidation.ts",
+      "symbol": "validateConstruction",
+      "kind": "function",
+      "startLine": 36,
+      "endLine": 76,
+      "loc": 41,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "generateSponsorInfo",
+      "kind": "function",
+      "startLine": 558,
+      "endLine": 598,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/training/MentorshipService.ts",
+      "symbol": "applyMentorshipBonuses",
+      "kind": "function",
+      "startLine": 228,
+      "endLine": 268,
+      "loc": 41,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/narrative/RivalryService.ts",
+      "symbol": "applyWeeklyDecay",
+      "kind": "method",
+      "startLine": 275,
+      "endLine": 315,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/governance/MyosekiTradingService.ts",
+      "symbol": "returnLeasedMyoseki",
+      "kind": "function",
+      "startLine": 305,
+      "endLine": 345,
+      "loc": 41,
+      "exported": true
+    },
+    {
+      "file": "src/engine/bout/physics/edgeCrisis.ts",
+      "symbol": "buildEdgeCrisis",
+      "kind": "function",
+      "startLine": 38,
+      "endLine": 78,
+      "loc": 41,
+      "exported": true
+    },
+    {
+      "file": "src/engine/strategy/NPCGovernanceCalculator.ts",
+      "symbol": "POLITICAL_SABOTAGE_RULE",
+      "kind": "const-obj",
+      "startLine": 38,
+      "endLine": 78,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/engine/npcAI/LeaguePerception.ts",
+      "symbol": "buildDivisionPressure",
+      "kind": "function",
+      "startLine": 46,
+      "endLine": 86,
+      "loc": 41,
+      "exported": false
+    },
+    {
+      "file": "src/presenters/projections/governanceProjections.ts",
+      "symbol": "projectGomenfuda",
+      "kind": "function",
+      "startLine": 216,
+      "endLine": 255,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/components/ui/KimariteTag.tsx",
+      "symbol": "KimariteTag",
+      "kind": "function",
+      "startLine": 25,
+      "endLine": 64,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/boutReplay/boutCanvas/draw.ts",
+      "symbol": "drawKimariteBanner",
+      "kind": "function",
+      "startLine": 442,
+      "endLine": 481,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/components/game/ProgressionTracker.tsx",
+      "symbol": "anonymous@58",
+      "kind": "arrow",
+      "startLine": 58,
+      "endLine": 97,
+      "loc": 40,
+      "exported": false
+    },
+    {
+      "file": "src/components/MentionText.tsx",
+      "symbol": "MentionText",
+      "kind": "function",
+      "startLine": 12,
+      "endLine": 51,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/pages/HistoryDashboard.tsx",
+      "symbol": "anonymous@226",
+      "kind": "arrow",
+      "startLine": 226,
+      "endLine": 265,
+      "loc": 40,
+      "exported": false
+    },
+    {
+      "file": "src/engine/governance/kanrekiCeremony.ts",
+      "symbol": "performKanrekiCeremony",
+      "kind": "function",
+      "startLine": 53,
+      "endLine": 92,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts",
+      "symbol": "generateSecondarySymbol",
+      "kind": "function",
+      "startLine": 502,
+      "endLine": 541,
+      "loc": 40,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/narrative/CrisisService.ts",
+      "symbol": "applyHeyaDelta",
+      "kind": "function",
+      "startLine": 24,
+      "endLine": 63,
+      "loc": 40,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/CandidateBuilder.ts",
+      "symbol": "createCombatStats",
+      "kind": "function",
+      "startLine": 97,
+      "endLine": 136,
+      "loc": 40,
+      "exported": false
+    },
+    {
+      "file": "src/engine/systems/generation/SponsorGenerator.ts",
+      "symbol": "generateSponsor",
+      "kind": "function",
+      "startLine": 122,
+      "endLine": 161,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/NPCPersonaService.ts",
+      "symbol": "ensurePersonaForOyakata",
+      "kind": "function",
+      "startLine": 120,
+      "endLine": 159,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/engine/systems/media/MediaPreBashoService.ts",
+      "symbol": "buildMediaDigest",
+      "kind": "function",
+      "startLine": 173,
+      "endLine": 212,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/engine/world.ts",
+      "symbol": "advanceBashoDay",
+      "kind": "function",
+      "startLine": 75,
+      "endLine": 114,
+      "loc": 40,
+      "exported": true
+    },
+    {
+      "file": "src/engine/almanac/narrativeEnrichment.ts",
+      "symbol": "notableBoutToHighlights",
+      "kind": "function",
+      "startLine": 92,
+      "endLine": 131,
+      "loc": 40,
+      "exported": false
+    },
+    {
+      "file": "src/engine/tick/phases/welfare/transitions.ts",
+      "symbol": "transitionToSanctioned",
+      "kind": "function",
+      "startLine": 233,
+      "endLine": 272,
+      "loc": 40,
+      "exported": true
+    }
+  ]
+}

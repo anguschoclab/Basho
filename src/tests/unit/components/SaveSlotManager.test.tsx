@@ -53,7 +53,7 @@ function makeProps(overrides: Record<string, unknown> = {}) {
   return {
     getSaveSlots: vi.fn(() => [makeSlot()]),
     loadFromSlot: vi.fn(() => true),
-    loadFromAutosave: vi.fn(),
+    loadFromAutosave: vi.fn(() => true),
     hasAutosave: vi.fn(() => false),
     onLoadSuccess: vi.fn(),
     loadWorldDirect: vi.fn(),

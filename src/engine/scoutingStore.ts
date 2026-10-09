@@ -65,6 +65,15 @@ function ensureScoutingTable(world: WorldState): Record<string, ScoutedRikishi> 
 }
 
 /**
+ * Read-only access to the scouting table. Returns null when the player has
+ * no scouting state — read paths (presenters, projections) must never
+ * materialize world.playerKnowledge as a side effect (WS4-04).
+ */
+function readScoutingTable(world: WorldState): Record<string, ScoutedRikishi> | null {
+  return (world.playerKnowledge?.scouting as Record<string, ScoutedRikishi>) ?? null;
+}
+
+/**
  * Get world week.
  *  * @param world - The World.
  *  * @returns The result.
@@ -97,8 +106,11 @@ export function getOrCreateScouted(
   rikishiId: Id,
   baselineObservation: number = 0
 ): ScoutedRikishi {
-  const table = ensureScoutingTable(world);
-  const existing = table[rikishiId];
+  // Pure read path: never creates world.playerKnowledge, never writes into
+  // the scouting table. Persistence belongs to the explicit write paths
+  // (setScoutingInvestment / warmScoutingForRikishiList / impact writes).
+  const table = readScoutingTable(world);
+  const existing = table?.[rikishiId];
   const currentWeek = getWorldWeek(world);
   const playerHeyaId = getPlayerHeyaId(world);
 
@@ -129,17 +141,16 @@ export function getOrCreateScouted(
   }
 
   if (existing) {
-    // Keep public info and snapshot fresh (safe / prevents drift)
-    table[rikishiId] = refreshTruthSnapshot(existing, truth);
-    return table[rikishiId];
+    // Return a refreshed snapshot to the caller but do NOT write it back —
+    // this function is called on render paths, and an in-place write would
+    // diverge the main-thread world from the worker-authoritative copy.
+    return refreshTruthSnapshot(existing, truth);
   }
 
   const isOwned = truth.heyaId === playerHeyaId;
   const obs = isOwned ? 100 : Math.max(0, baselineObservation);
 
-  const created = ScoutingService.createScoutedView(currentWeek, truth, playerHeyaId, obs, "none");
-  table[rikishiId] = created;
-  return created;
+  return ScoutingService.createScoutedView(currentWeek, truth, playerHeyaId, obs, "none");
 }
 
 /**
@@ -211,14 +222,19 @@ export function getScoutingLevel(
 }
 
 /**
- * Convenience: ensure scouting entries exist for a whole list (e.g. banzuke page).
+ * Write path: persist scouting entries for a whole list. Callers that only
+ * want to READ scouting data must use getOrCreateScouted directly — this
+ * function intentionally materializes entries into world.playerKnowledge.
  */
 export function warmScoutingForRikishiList(
   world: WorldState,
   rikishiIds: Id[],
   baselineObservation: number = 0
 ): void {
-  for (const id of rikishiIds) getOrCreateScouted(world, id, baselineObservation);
+  const table = ensureScoutingTable(world);
+  for (const id of rikishiIds) {
+    if (!table[id]) table[id] = getOrCreateScouted(world, id, baselineObservation);
+  }
 }
 
 /** =========================

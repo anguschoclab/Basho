@@ -305,18 +305,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [state.world]
   );
 
-  const loadFromSlot = useCallback(
-    (slotName: string) => {
-      const world = loadGame(slotName);
-      if (world) {
-        dispatch(actions.loadWorld(world));
-        sendCommand({ type: "LOAD_WORLD", world });
-        return true;
-      }
-      return false;
-    },
-    [sendCommand]
-  );
+  const loadFromSlot = useCallback((slotName: string) => {
+    const world = loadGame(slotName);
+    if (world) {
+      // The reducer's LOAD_WORLD case bumps uiWorldRevision; the sync effect
+      // above pushes the world to the worker — and retries when a tick is in
+      // flight, so the load can't be silently reverted mid-tick (WS3-04).
+      dispatch(actions.loadWorld(world));
+      return true;
+    }
+    return false;
+  }, []);
 
   const quickSaveAction = useCallback(() => {
     if (!state.world) return false;
@@ -328,23 +327,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const world = loadAutosave();
     if (world) {
       dispatch(actions.loadWorld(world));
-      sendCommand({ type: "LOAD_WORLD", world });
       return true;
     }
     return false;
-  }, [sendCommand]);
+  }, []);
 
   // V9-B01: external save import loads the deserialized world verbatim on both
   // sides of the boundary — reducer first, then the worker's authoritative
   // copy. No createWorld fallback: regenerating from the seed would discard
   // the imported save's progress.
-  const loadWorldDirect = useCallback(
-    (world: WorldState) => {
-      dispatch(actions.loadWorld(world));
-      sendCommand({ type: "LOAD_WORLD", world });
-    },
-    [sendCommand]
-  );
+  const loadWorldDirect = useCallback((world: WorldState) => {
+    dispatch(actions.loadWorld(world));
+  }, []);
 
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);

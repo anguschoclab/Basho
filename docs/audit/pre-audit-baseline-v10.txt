@@ -35,9 +35,26 @@ NOTED DURING BASELINE
 - @tanstack/react-query: only QueryClientProvider wrapper in App.tsx:5,18,43,58;
   zero useQuery/useMutation call sites — dead provider (WS8 finding).
 
-PENDING (appended as completed)
--------------------------------
-bun run test:coverage     (running; per-file table → docs/audit/coverage-v10.json)
-bun run test:perf         (pending — expected: yokozunaPromotionAutoSim known failure)
-bench-pipelines + perf-gate-check (pending)
-diagnostic-25yr-sim       (pending — record determinism hash)
+bun run test:perf         FAIL (known) — 10/11 pass; yokozunaPromotionAutoSim fails
+                          deterministically: 12 basho from a 0-yokozuna world produce
+                          no yokozuna and no promotion event (~108s). Pre-existing on
+                          main; corroborated by yokozunaPresence (0 yokozuna across
+                          12 simulated basho). → WS2 investigation: promotion criteria
+                          may be unreachable in autosim.
+
+bun run test:coverage     SUITE FAIL (non-production) — 8,444 tests pass; single failure
+                          is staleDocs.test.ts flagging docs/audit/ai-audit-v2.md, an
+                          UNTRACKED file created by a concurrent audit session that
+                          contains grep-methodology text without a staleness annotation.
+                          Coverage report dir not written on this run (coverage/ absent).
+                          → WS1/WS8 note: staleDocs gate fires on in-flight audit docs;
+                          require current/superseded annotations on all new audit docs.
+
+diagnostic-25yr-sim       RUNNING at baseline time; early signals (yrs 2026-2032):
+                          Y=2→3→1 yokozuna drift downward (promotion deficit persists),
+                          3-5 heya insolvency WARNs per year (persistent bankruptcy
+                          cluster: Nishonoseki/Asakayama/Oshogatsu recur), HoF grows,
+                          Global Cup fires. Final JSON report appended when complete.
+
+bench-pipelines + perf-gate-check (deferred — perf-gate baseline is stale since
+                          2026-08-09 per WS8-05; run post-triage in Phase 5)

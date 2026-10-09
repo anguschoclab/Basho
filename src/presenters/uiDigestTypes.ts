@@ -7,7 +7,7 @@
 
 import type { BashoName, MatchSchedule, BoutResult } from "../engine/types/basho";
 import type { UIRikishi } from "./rikishi";
-import type { RivalryPairState } from "../engine/rivalries";
+import type { RivalryPairState, RivalryHeatBand } from "../engine/rivalries";
 import type { Heya } from "../engine/types/heya";
 import type { Oyakata, OyakataTraits } from "../engine/types/oyakata";
 import type { HoFInductee } from "../engine/hallOfFame";
@@ -19,8 +19,8 @@ import type { UIRankRow } from "./banzukeUI";
 
 // ── Heat Band Types ───────────────────────────────────────────────────────────
 
-/** Heat band for rivalries — ordered from cold to inferno */
-export type HeatBand = "cold" | "warm" | "hot" | "inferno";
+/** Heat band for rivalries — canonical engine banding (NarrativeBands) */
+export type HeatBand = RivalryHeatBand;
 
 // ── Basho UI Types ────────────────────────────────────────────────────────────
 

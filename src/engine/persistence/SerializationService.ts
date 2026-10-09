@@ -3,7 +3,7 @@ import { phase02_context } from "../tick/phases/phase02_context";
 import { resolveImpacts } from "../core/ImpactResolver";
 import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
-import type { SerializedBashoState } from "../types/save";
+import type { SerializedBashoState, RikishiAssessmentEntry } from "../types/save";
 import type { SponsorPool } from "../types/sponsors";
 import type { SerializedSponsorPool } from "../types/save";
 import type { SerializedWorldState } from "../types/save";
@@ -156,6 +156,7 @@ export const SerializationService = {
 
       pendingCrisis: world.pendingCrisis,
       pendingDecisions: world.pendingDecisions,
+      pendingRikishiRequests: world.pendingRikishiRequests,
       pendingExhibitions: world.pendingExhibitions,
       matchmakingOverride: world.matchmakingOverride,
       activeBasho: world.activeBasho,
@@ -164,10 +165,21 @@ export const SerializationService = {
 
       npcScoutingPriorities: world.npcScoutingPriorities,
       npcBidPolicies: world.npcBidPolicies,
+      bashoNpcPosture: world.bashoNpcPosture,
+      factionPostures: world.factionPostures,
       _populationTarget: world._populationTarget,
       _recruitmentWindow: world._recruitmentWindow,
       _postBashoMeta: world._postBashoMeta,
-      _preBashoAssessment: world._preBashoAssessment,
+      // Convert the nested Map explicitly — JSON.stringify would otherwise
+      // reduce rikishiAssessments to {} and crash PreBashoAssessment on load.
+      _preBashoAssessment: world._preBashoAssessment
+        ? {
+            ...world._preBashoAssessment,
+            rikishiAssessments: this.mapToObject(
+              world._preBashoAssessment.rikishiAssessments
+            ),
+          }
+        : undefined,
       isInitialSeed: world.isInitialSeed,
     };
   },
@@ -282,6 +294,7 @@ export const SerializationService = {
 
       pendingCrisis: s.pendingCrisis,
       pendingDecisions: s.pendingDecisions,
+      pendingRikishiRequests: s.pendingRikishiRequests,
       pendingExhibitions: s.pendingExhibitions,
       matchmakingOverride: s.matchmakingOverride,
       activeBasho: s.activeBasho,
@@ -290,10 +303,27 @@ export const SerializationService = {
 
       npcScoutingPriorities: s.npcScoutingPriorities,
       npcBidPolicies: s.npcBidPolicies,
+      bashoNpcPosture: s.bashoNpcPosture,
+      factionPostures: s.factionPostures,
       _populationTarget: s._populationTarget,
       _recruitmentWindow: s._recruitmentWindow,
       _postBashoMeta: s._postBashoMeta,
-      _preBashoAssessment: s._preBashoAssessment,
+      // rikishiAssessments arrives as: a live Map (collection-codec reviver),
+      // a Record (explicit mapToObject on serialize), or a legacy {} husk.
+      _preBashoAssessment: s._preBashoAssessment
+        ? {
+            ...s._preBashoAssessment,
+            rikishiAssessments:
+              s._preBashoAssessment.rikishiAssessments instanceof Map
+                ? s._preBashoAssessment.rikishiAssessments
+                : this.objectToMap(
+                    (s._preBashoAssessment.rikishiAssessments ?? {}) as Record<
+                      string,
+                      RikishiAssessmentEntry
+                    >
+                  ),
+          }
+        : undefined,
       isInitialSeed: s.isInitialSeed,
     };
 

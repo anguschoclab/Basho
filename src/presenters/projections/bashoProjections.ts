@@ -11,6 +11,7 @@ import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "../uiD
 import { projectRikishi } from "../rikishi";
 import { generateH2HCommentary } from "../../engine/h2h";
 import { getRivalry } from "../../engine/rivalries";
+import { toRivalryHeatBand } from "../../engine/descriptorBands";
 import { compareRanks } from "../../engine/banzuke";
 import { toRankPosition } from "../../engine/types/banzuke";
 import { sortStandings } from "../../engine/utils/sort";
@@ -49,10 +50,7 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
     const rivalriesState = world.rivalriesState;
     const rivalry = (rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null) ?? null;
     const heat = rivalry?.heat ?? 0;
-    let heatBand: HeatBand = "cold";
-    if (heat >= 75) heatBand = "inferno";
-    else if (heat >= 50) heatBand = "hot";
-    else if (heat >= 25) heatBand = "warm";
+    const heatBand: HeatBand = toRivalryHeatBand(heat);
 
     matches.push({
       ...match,

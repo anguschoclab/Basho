@@ -7,7 +7,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 // Mock the world engine functions used by phase01_basho_bouts
 vi.mock("@/engine/world", () => ({
-  simulateBoutForToday: vi.fn(),
+  simulateBoutsForDay: vi.fn(),
   advanceBashoDay: vi.fn(),
 }));
 
@@ -78,7 +78,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
   it("advanceOneDay during active_basho calls phase01_basho_bouts to simulate bouts", () => {
     const world = makeBashoWorld(1);
 
-    (worldEngine.simulateBoutForToday as any).mockImplementation((w: WorldState) => {
+    (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => {
       const basho = w.currentBasho;
       if (!basho) return { world: w };
       return {
@@ -95,7 +95,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
             ]),
           },
         },
-        result: mockBoutResult,
+        results: [mockBoutResult],
       };
     });
 
@@ -110,7 +110,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
 
     const result = advanceOneDay(world);
 
-    expect(worldEngine.simulateBoutForToday).toHaveBeenCalled();
+    expect(worldEngine.simulateBoutsForDay).toHaveBeenCalled();
     expect(worldEngine.advanceBashoDay).toHaveBeenCalled();
     expect(result.currentBasho?.day).toBe(2);
   });
@@ -118,7 +118,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
   it("advanceOneDay during active_basho advances calendar in lockstep with basho day", () => {
     const world = makeBashoWorld(1);
 
-    (worldEngine.simulateBoutForToday as any).mockImplementation((w: WorldState) => ({
+    (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => ({
       world: {
         ...w,
         currentBasho: {
@@ -128,7 +128,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
           ),
         },
       },
-      result: mockBoutResult,
+      results: [mockBoutResult],
     }));
 
     (worldEngine.advanceBashoDay as any).mockImplementation((w: WorldState) => ({
@@ -147,9 +147,9 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
     const originalDay = world.currentBasho?.day;
     const originalMatches = world.currentBasho?.matches;
 
-    (worldEngine.simulateBoutForToday as any).mockImplementation((w: WorldState) => ({
+    (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => ({
       world: { ...w, currentBasho: { ...w.currentBasho!, day: 999 } },
-      result: mockBoutResult,
+      results: [mockBoutResult],
     }));
     (worldEngine.advanceBashoDay as any).mockImplementation((w: WorldState) => ({
       ...w,
@@ -165,7 +165,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
   it("advanceOneDay resolves bouts and updates standings", () => {
     const world = makeBashoWorld(1);
 
-    (worldEngine.simulateBoutForToday as any).mockImplementation((w: WorldState) => {
+    (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => {
       const basho = w.currentBasho!;
       return {
         world: {
@@ -181,7 +181,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
             ]),
           },
         },
-        result: mockBoutResult,
+        results: [mockBoutResult],
       };
     });
 
@@ -205,7 +205,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
   it("advanceOneDay on day 15 advances basho day beyond 15", () => {
     const world = makeBashoWorld(15);
 
-    (worldEngine.simulateBoutForToday as any).mockImplementation((w: WorldState) => ({
+    (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => ({
       world: {
         ...w,
         currentBasho: {
@@ -215,7 +215,7 @@ describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
           ),
         },
       },
-      result: mockBoutResult,
+      results: [mockBoutResult],
     }));
 
     (worldEngine.advanceBashoDay as any).mockImplementation((w: WorldState) => ({
@@ -238,12 +238,15 @@ describe("P1.2: Basho pipeline — already-played bouts are not re-simulated", (
     const matches = world.currentBasho!.matches!;
     matches[0].result = mockBoutResult;
 
-    (worldEngine.simulateBoutForToday as any).mockImplementation((w: WorldState) => {
+    // All bouts already have results — the batch call must be a no-op
+    // that preserves the existing results unchanged.
+    (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => {
       const basho = w.currentBasho;
-      if (!basho) return { world: w };
-      const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
-      if (todays.length === 0) return { world: w };
-      return { world: w, result: mockBoutResult };
+      const pending = (basho?.matches ?? []).filter(
+        (m) => m.day === basho!.day && !m.result
+      );
+      expect(pending.length).toBe(0);
+      return { world: w, results: [] };
     });
 
     (worldEngine.advanceBashoDay as any).mockImplementation((w: WorldState) => ({
@@ -252,9 +255,6 @@ describe("P1.2: Basho pipeline — already-played bouts are not re-simulated", (
     }));
 
     const result = advanceOneDay(world);
-
-    // simulateBoutForToday should NOT have been called — all bouts already have results
-    expect(worldEngine.simulateBoutForToday).not.toHaveBeenCalled();
 
     const day1Matches = result.currentBasho?.matches?.filter((m) => m.day === 1) ?? [];
     expect(day1Matches[0].result?.winnerRikishiId).toBe("r-east");
@@ -269,14 +269,14 @@ describe("P1.2: Basho pipeline — phase does not run outside active_basho", () 
   it("advanceOneDay during interim does NOT call phase01_basho_bouts", () => {
     const world = makeBashoWorld(1, { cyclePhase: "interim" });
 
-    (worldEngine.simulateBoutForToday as any).mockImplementation(() => ({
+    (worldEngine.simulateBoutsForDay as any).mockImplementation(() => ({
       world,
-      result: mockBoutResult,
+      results: [mockBoutResult],
     }));
     (worldEngine.advanceBashoDay as any).mockImplementation((w: WorldState) => w);
 
     advanceOneDay(world);
 
-    expect(worldEngine.simulateBoutForToday).not.toHaveBeenCalled();
+    expect(worldEngine.simulateBoutsForDay).not.toHaveBeenCalled();
   });
 });

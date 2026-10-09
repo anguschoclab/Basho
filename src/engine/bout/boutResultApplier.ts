@@ -8,6 +8,8 @@
 
 import type { WorldState } from "../types/world";
 import type { BoutResult, MatchSchedule } from "../types/basho";
+import type { MatchResultLog } from "../types/records";
+import type { Rikishi } from "../types/rikishi";
 import { updateH2H } from "../h2h";
 import * as injuries from "../systems/health/InjuryService";
 import * as rivalries from "../rivalries";
@@ -22,6 +24,7 @@ import type { StateImpact } from "../core/StateImpact";
 import { checkMentorMenteeBout } from "../systems/training/MentorshipService";
 import { getRikishi } from "../queries";
 import { BOUT_DURATION_FATIGUE_PER_TICK } from "../../constants/engine/condition";
+import { RIKISHI_BOUT_HISTORY_MAX } from "../../constants/engine/bout";
 
 /**
  * Apply the result of a single bout to the world.
@@ -173,12 +176,26 @@ export function applyBoutResult(
     }
   }
 
+  // Per-bout MatchResultLog — the authoritative history[] entry that feeds
+  // getH2HReport, streak labels, and favored-kimarite projections. Capped at
+  // a rolling window (RIKISHI_BOUT_HISTORY_MAX) — boundHistoryArrays bounds
+  // world-level arrays but not per-rikishi logs.
+  const logEntryBase = {
+    kimarite: result.kimarite ?? "",
+    bashoId: basho.id ?? `${basho.bashoName}-${world.year}`,
+    day: match.day ?? 0,
+    year: world.year ?? 0,
+  };
+  const appendBoutLog = (log: Rikishi["history"], entry: MatchResultLog) =>
+    [...(log ?? []), entry].slice(-RIKISHI_BOUT_HISTORY_MAX);
+
   builder.updateRikishi(winner.id, {
     careerWins: (winner.careerWins ?? 0) + 1,
     currentBashoWins: winnerBashoWins,
     currentBashoRecord: { wins: winnerBashoWins, losses: winner.currentBashoLosses ?? 0 },
     currentWinStreak: winnerStreak,
     currentLossStreak: winnerLossStreak,
+    history: appendBoutLog(winner.history, { ...logEntryBase, opponentId: loser.id, win: true }),
   });
   builder.updateRikishi(loser.id, {
     careerLosses: (loser.careerLosses ?? 0) + 1,
@@ -186,6 +203,7 @@ export function applyBoutResult(
     currentBashoRecord: { wins: loser.currentBashoWins ?? 0, losses: loserBashoLosses },
     currentWinStreak: loserStreak,
     currentLossStreak: loserLossStreak,
+    history: appendBoutLog(loser.history, { ...logEntryBase, opponentId: winner.id, win: false }),
   });
 
   // Increment makuuchiWins if winner is in makuuchi division

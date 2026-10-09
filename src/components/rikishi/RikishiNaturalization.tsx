@@ -2,6 +2,12 @@
  * RikishiNaturalization.tsx
  *
  * Naturalization timeline section for foreign rikishi.
+ *
+ * The engine rule (citizenshipUtils) is tenure-based: a foreign rikishi
+ * naturalizes after NATURALIZATION_YEARS years of residency counted from
+ * `joinedHeyaDate`. There is no wins or rank bar — a separate prestige
+ * pathway (naturalization.ts) can grant early citizenship to elite
+ * careers, but it is a rare chance roll, not a progress meter.
  */
 
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +16,7 @@ import { UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
+import { NATURALIZATION_YEARS } from "@/presenters/engineAccess";
 
 interface RikishiNaturalizationProps {
   rikishi: UIRikishi;
@@ -19,6 +26,15 @@ export function RikishiNaturalization({ rikishi }: RikishiNaturalizationProps) {
   if (rikishi.nationality === "Japan") {
     return null;
   }
+
+  const isNaturalized = rikishi.citizenshipStatus === "naturalized";
+  const yearsRemaining = rikishi.yearsToNaturalization ?? 0;
+  const tenurePct = isNaturalized
+    ? 100
+    : Math.min(
+        100,
+        Math.max(0, Math.round(((NATURALIZATION_YEARS - yearsRemaining) / NATURALIZATION_YEARS) * 100))
+      );
 
   return (
     <div className="mb-10 p-6 bg-gold/5 border-2 border-gold/10 rounded-lg relative overflow-hidden group">
@@ -31,53 +47,40 @@ export function RikishiNaturalization({ rikishi }: RikishiNaturalizationProps) {
             Naturalization Timeline
           </h3>
           <p className="text-[10px] uppercase font-black tracking-[0.2em] text-gold/70">
-            Institutional Residency Tracker
+            Residency Requirement: {NATURALIZATION_YEARS} Years
           </p>
         </div>
         <Badge
           className={cn(
             "font-black tracking-widest text-[10px] h-6",
-            rikishi.careerWins >= 400 ? "bg-success" : "bg-gold"
+            isNaturalized ? "bg-success" : "bg-gold"
           )}
         >
-          {rikishi.careerWins >= 400 ? "ELIGIBLE" : "IN REVIEW"}
+          {isNaturalized ? "NATURALIZED" : "IN RESIDENCY"}
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-        {[
-          {
-            label: "Tenure",
-            val: Math.min(100, Math.floor((rikishi.careerHistory.length / 60) * 100)),
-            target: "60 Basho",
-            tooltip: "Tenure progress: 60 basho required for naturalization eligibility",
-          },
-          {
-            label: "Wins",
-            val: Math.min(100, Math.floor((rikishi.careerWins / 400) * 100)),
-            target: "400 Wins",
-            tooltip: "Victory progress: 400 career wins required",
-          },
-          {
-            label: "Stature",
-            val: rikishi.rank === "yokozuna" || rikishi.rank === "ozeki" ? 100 : 30,
-            target: "Sanyaku",
-            tooltip: "Rank requirement: Must reach Komusubi or higher",
-          },
-        ].map((p, i) => (
-          <TooltipWrap key={i} content={p.tooltip} side="top">
-            <div className="space-y-2 cursor-help">
-              <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                <span>{p.label}</span>
-                <span>{p.val}%</span>
-              </div>
-              <Progress value={p.val} className="h-1.5 bg-gold/30" />
-              <p className="text-[9px] font-bold text-gold/60 uppercase tracking-widest italic">
-                {p.target} Target
-              </p>
+      <div className="grid grid-cols-1 gap-8 relative z-10">
+        <TooltipWrap
+          content={`Tenure progress: ${NATURALIZATION_YEARS} years of residency required for naturalization`}
+          side="top"
+        >
+          <div className="space-y-2 cursor-help">
+            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <span>Residency Tenure</span>
+              <span>
+                {isNaturalized ? "Complete" : `${yearsRemaining} yr${yearsRemaining === 1 ? "" : "s"} remaining`}
+              </span>
             </div>
-          </TooltipWrap>
-        ))}
+            <Progress value={tenurePct} className="h-1.5 bg-gold/30" />
+            <p className="text-[9px] font-bold text-gold/60 uppercase tracking-widest italic">
+              {NATURALIZATION_YEARS} Years Target
+            </p>
+          </div>
+        </TooltipWrap>
+        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+          Elite careers may be granted early citizenship at the association&apos;s discretion.
+        </p>
       </div>
     </div>
   );

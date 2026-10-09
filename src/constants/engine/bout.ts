@@ -140,3 +140,11 @@ export const FATIGUE_LOG_TICK_2 = 20;
 
 /** Instability floor for timeout stability comparison. */
 export const INSTABILITY_FLOOR = 0.01;
+
+/**
+ * Rolling window for `Rikishi.history` (per-bout MatchResultLog entries).
+ * ~500 bouts ≈ 33 basho ≈ 5.5 years — enough for streaks, recent H2H, and
+ * favored-kimarite projections without unbounded save growth (the same
+ * rationale as boundHistoryArrays' HISTORY_MAX_ENTRIES for world arrays).
+ */
+export const RIKISHI_BOUT_HISTORY_MAX = 500;

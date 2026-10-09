@@ -7,24 +7,23 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 /**
  * V5-B09 regression: player bout tactics chosen in the UI are stored in
  * reducer UI state only (`state.boutTactics`) and never reach the worker.
- * phase01_basho_bouts calls simulateBoutForToday(currentWorld, 0) with no
- * tactic, so when TICK_DAY re-resolves the day the tactic is discarded and
- * WORLD_UPDATED overwrites what the player watched.
  *
  * Post-fix contract being pinned here: tactics must live in WorldState
  * (world.boutTactics: Record<boutId, BoutTactic>) so the authoritative
- * worker path can apply them during bout resolution.
+ * worker path can apply them during bout resolution. The phase resolves the
+ * day's bouts via `simulateBoutsForDay` (batch, world.ts), which forwards the
+ * stored tactic to `resolveBout` — spied here at the resolveBout boundary.
  */
 
-const simulateSpy = vi.fn();
+const resolveSpy = vi.fn();
 
-vi.mock("@/engine/world", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/engine/world")>();
+vi.mock("@/engine/bout/boutResolver", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/engine/bout/boutResolver")>();
   return {
     ...actual,
-    simulateBoutForToday: (...args: Parameters<typeof actual.simulateBoutForToday>) => {
-      simulateSpy(...args);
-      return actual.simulateBoutForToday(...args);
+    resolveBout: (...args: Parameters<typeof actual.resolveBout>) => {
+      resolveSpy(...args);
+      return actual.resolveBout(...args);
     },
   };
 });
@@ -91,8 +90,8 @@ function makeWorld(): WorldState {
 }
 
 describe("phase01_basho_bouts player tactics (V5-B09)", () => {
-  beforeEach(() => simulateSpy.mockClear());
-  afterEach(() => simulateSpy.mockClear());
+  beforeEach(() => resolveSpy.mockClear());
+  afterEach(() => resolveSpy.mockClear());
 
   it("applies a tactic stored in world.boutTactics for the bout's id", () => {
     const world = makeWorld();
@@ -105,10 +104,11 @@ describe("phase01_basho_bouts player tactics (V5-B09)", () => {
     const impact = phase01_basho_bouts(world);
     resolveImpacts(world, [impact]);
 
-    const callWithTactic = simulateSpy.mock.calls.find((c) => c[2] === "HENKA");
+    // resolveBout(boutContext, east, west, basho, tactic, world) — arg 4 is the tactic
+    const callWithTactic = resolveSpy.mock.calls.find((c) => c[4] === "HENKA");
     expect(
       callWithTactic,
-      "phase01_basho_bouts must forward the stored tactic to simulateBoutForToday"
+      "phase01_basho_bouts must forward the stored tactic to resolveBout"
     ).toBeDefined();
   });
 
@@ -118,9 +118,9 @@ describe("phase01_basho_bouts player tactics (V5-B09)", () => {
     resolveImpacts(world, [impact]);
 
     // Every call should have undefined/absent tactic arg
-    for (const call of simulateSpy.mock.calls) {
-      expect(call[2] === undefined || call[2] === null).toBe(true);
+    for (const call of resolveSpy.mock.calls) {
+      expect(call[4] === undefined || call[4] === null).toBe(true);
     }
-    expect(simulateSpy.mock.calls.length).toBeGreaterThan(0);
+    expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
   });
 });

@@ -16,7 +16,6 @@ import { RivalryService } from "../../engine/systems/narrative/RivalryService";
 import { projectRikishi } from "../rikishi";
 import * as talentpool from "../../engine/systems/generation/TalentPoolService";
 import {
-  warmScoutingForRikishiList,
   getOrCreateScouted,
   getScoutingLevel,
 } from "../../engine/scoutingStore";
@@ -177,13 +176,10 @@ export function projectOpponentScoutingUIDigest(
     return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
   });
 
-  const sliced = list.slice(0, 40);
-  warmScoutingForRikishiList(
-    world,
-    sliced.map((r) => r.id)
-  );
-
-  return { opponents: sliced };
+  // No warmScoutingForRikishiList here — this is a render path, and
+  // persisting scouting entries from a projection mutates the main-thread
+  // world copy, diverging it from the worker-authoritative state (WS4-04).
+  return { opponents: list.slice(0, 40) };
 }
 
 /** H2H matchup data between two rikishi */

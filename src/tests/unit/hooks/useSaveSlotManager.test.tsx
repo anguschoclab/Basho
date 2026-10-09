@@ -31,7 +31,7 @@ function makeSlot(overrides: Partial<SaveSlotInfo> = {}): SaveSlotInfo {
 function makeProps(overrides: Partial<any> = {}) {
   const getSaveSlots = vi.fn(() => [makeSlot()]);
   const loadFromSlot = vi.fn(() => true);
-  const loadFromAutosave = vi.fn();
+  const loadFromAutosave = vi.fn(() => true);
   const hasAutosave = vi.fn(() => false);
   const onLoadSuccess = vi.fn();
   const loadWorldDirect = vi.fn();
@@ -80,7 +80,7 @@ describe("useSaveSlotManager", () => {
   });
 
   it("handleContinue calls loadFromAutosave when autosave exists", () => {
-    const loadFromAutosave = vi.fn();
+    const loadFromAutosave = vi.fn(() => true);
     const onLoadSuccess = vi.fn();
     const props = makeProps({
       loadFromAutosave,

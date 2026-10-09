@@ -1,6 +1,5 @@
 import { buildAlmanacSnapshot } from "../almanac";
 import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
-import { autosave } from "../saveload";
 import { safeCall } from "../utils/safe";
 import { rngForWorld } from "../rng";
 import { opfsArchiveService } from "../storage/opfsArchive";
@@ -15,6 +14,7 @@ import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
 import { historyCache } from "../historyCache";
 import { getRikishi } from "../queries";
 import { selectKeyBouts } from "../../presenters/projections/recapProjections";
+import { applyBashoTenure } from "../systems/legacy/tenure";
 
 export function recordBashoHistory(
   world: WorldState,
@@ -268,9 +268,16 @@ export function recordBashoHistory(
   // Phase L: Institutional Depth - Check for Yokozuna Deliberations
   checkYokozunaPromotions(world, builder);
 
-  safeCall(() => {
-    autosave(world);
-  });
+  // WS5 — tenure bookkeeping: bashoServed/championships, the
+  // consecutiveUnderperformanceBasho counter the non-financial merger path
+  // reads, and legacyModifier decay.
+  applyBashoTenure(world, builder, basho, yusho);
+
+  // No engine-side autosave here — persistence is a UI concern. The
+  // GameContext world-change effect autosaves with a real wall-clock
+  // timestamp; an engine-initiated write can't stamp one (no new Date()
+  // allowed in engine) and on the worker thread no storage provider is
+  // registered anyway.
 
   return builder.build();
 }

@@ -1,6 +1,6 @@
 import { getStorageProvider, type IStorageProvider } from "../storageProvider";
 import { stableTieBreak } from "../utils/sort";
-import { destr } from "destr";
+import { parseSave } from "./collectionCodec";
 import type { SaveGame, SaveVersion, BashoName } from "../types/index";
 import { KNOWN_SAVE_VERSIONS } from "../types/index";
 
@@ -56,7 +56,7 @@ export const SaveSlotService = {
       try {
         const raw = storage.getItem(key);
         if (!raw) continue;
-        const parsed = destr(raw);
+        const parsed = parseSave(raw);
         if (!this.isValidSave(parsed)) continue;
 
         const save = parsed as SaveGame;
@@ -98,7 +98,18 @@ export const SaveSlotService = {
     if (!x || typeof x !== "object") return false;
     const obj = x as Record<string, unknown>;
     if (!obj.version || !obj.world) return false;
-    return (KNOWN_SAVE_VERSIONS as readonly string[]).includes(obj.version as string);
+    if (!(KNOWN_SAVE_VERSIONS as readonly string[]).includes(obj.version as string)) {
+      return false;
+    }
+    // Reject hollow saves — a matching version number on a world lacking the
+    // serialized core shape (WS5-07). A corrupt save that parses but holds
+    // no world data must fail here, not mid-game.
+    const world = obj.world as Record<string, unknown>;
+    if (typeof world !== "object" || world === null) return false;
+    if (typeof world.seed !== "string" || world.seed.length === 0) return false;
+    if (typeof world.rikishi !== "object" || world.rikishi === null) return false;
+    if (typeof world.heyas !== "object" || world.heyas === null) return false;
+    return true;
   },
 
   getAvailableSlotNames(): string[] {

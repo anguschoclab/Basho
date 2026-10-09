@@ -6,9 +6,10 @@
 
 import React from "react";
 import type { UIRikishi } from "@/presenters/uiModels";
+import { toRivalryHeatBand, type RivalryHeatBand } from "@/presenters/engineAccess";
 import { Flame, Thermometer, Snowflake } from "lucide-react";
 
-export type RivalryHeatBand = "cold" | "warm" | "hot" | "inferno";
+export type { RivalryHeatBand };
 
 export interface MatchLike {
   day?: number;
@@ -40,34 +41,36 @@ export interface MatchRowData extends MatchLike {
 }
 
 export function getHeatBand(heat: number): RivalryHeatBand {
-  if (heat >= 75) return "inferno";
-  if (heat >= 50) return "hot";
-  if (heat >= 25) return "warm";
-  return "cold";
+  return toRivalryHeatBand(heat);
 }
 
 export const HEAT_CONFIG: Record<
-  string,
+  RivalryHeatBand,
   { icon: React.ReactNode; label: string; classes: string }
 > = {
-  inferno: {
+  legendary: {
     icon: <Flame className="h-3.5 w-3.5" />,
-    label: "Inferno Rivalry",
+    label: "Legendary Rivalry",
     classes: "bg-destructive/15 text-destructive border-destructive/25",
   },
-  hot: {
+  fierce: {
+    icon: <Flame className="h-3.5 w-3.5" />,
+    label: "Fierce Rivalry",
+    classes: "bg-destructive/10 text-destructive border-destructive/20",
+  },
+  heated: {
     icon: <Thermometer className="h-3.5 w-3.5" />,
     label: "Heated Rivalry",
     classes: "bg-warning/15 text-warning border-warning/25",
   },
-  warm: {
+  simmering: {
     icon: <Thermometer className="h-3.5 w-3.5" />,
-    label: "Warm Rivalry",
+    label: "Simmering Rivalry",
     classes: "bg-warning/10 text-warning/80 border-warning/20",
   },
-  cold: {
+  dormant: {
     icon: <Snowflake className="h-3.5 w-3.5" />,
-    label: "Cold",
+    label: "Dormant",
     classes: "bg-muted text-muted-foreground border-border",
   },
 };

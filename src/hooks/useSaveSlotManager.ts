@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 export interface UseSaveSlotManagerProps {
   getSaveSlots: () => SaveSlotInfo[];
   loadFromSlot: (slotName: string) => boolean;
-  loadFromAutosave: () => void;
+  loadFromAutosave: () => boolean;
   hasAutosave: () => boolean;
   onLoadSuccess: () => void;
   /** Loads an imported world verbatim. Required — there is deliberately no
@@ -47,8 +47,9 @@ export function useSaveSlotManager({
 
   const handleContinue = () => {
     if (hasAutosave()) {
-      loadFromAutosave();
-      onLoadSuccess();
+      // Only navigate on success — a rejected/corrupt load must not
+      // strand the player in a game with no world.
+      if (loadFromAutosave()) onLoadSuccess();
       return;
     }
     if (saveSlots.length > 0) setShowLoadDialog(true);
