@@ -39,8 +39,7 @@ interface AuditEntry {
  */
 const INTENTIONAL_EXPORTS: Record<string, string> = {
   // ── Type exports: public API contracts ──
-  "src/engine/systems/NPCPersonaService.ts:NPCPersona": "Public type for NPC persona configuration",
-  "src/engine/systems/NPCPersonaService.ts:OyakataPersona": "Public type for oyakata persona data",
+    "src/engine/systems/NPCPersonaService.ts:OyakataPersona": "Public type for oyakata persona data",
   "src/engine/systems/basho/ExhibitionBashoService.ts:ExhibitionBashoName":
     "Public type for exhibition basho naming",
   "src/engine/systems/basho/ExhibitionBashoService.ts:ExhibitionBashoInfo":
@@ -95,8 +94,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/banzuke/banzukeMovementNarrative.ts:BanzukeMovementNarrativeLine":
     "Public type for banzuke movement narrative",
   "src/engine/bard/BardEngine.ts:ResolutionPath": "Public type for bard resolution path",
-  "src/engine/bard/BardEngine.ts:BardResult": "Public type for bard engine result",
-  "src/engine/bard/BardEngine.ts:RegistryEntry": "Public type for bard registry entry",
+    "src/engine/bard/BardEngine.ts:RegistryEntry": "Public type for bard registry entry",
   "src/engine/bard/BardEngine.ts:BardArchive": "Public type for bard archive",
   "src/engine/bard/dramaGenerator.ts:DramaEvent": "Public type for drama event",
   "src/engine/bard/narrativeContext.ts:CrowdStyle": "Public type for crowd style",
@@ -104,8 +102,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Public type for narrative event map entry",
   "src/engine/bout/CareerHighlights.ts:CareerHighlightType":
     "Public type for career highlight type",
-  "src/engine/bout/boutNarrative.ts:PbpVoice": "Public type for play-by-play voice",
-  "src/engine/core/EntityCollection.ts:EntityQueryOptions": "Public type for entity query options",
+    "src/engine/core/EntityCollection.ts:EntityQueryOptions": "Public type for entity query options",
   "src/engine/core/RNGRegistry.ts:SystemRNGKey": "Public type for system RNG key",
   "src/engine/lifecycle/retirementNarrative.ts:RetirementNarrativeLine":
     "Public type for retirement narrative line",
@@ -136,9 +133,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config for initial sponsor tier distribution",
   "src/engine/actions/InjuredEncouragement.ts:ENCOURAGEMENT_MOTIVATION_BOOST":
     "Config constant for encouragement action",
-  "src/engine/bout/kachiNokori.ts:KACHI_KOSHI_WINS":
-    "Config constant for kachi-koshi win threshold",
-  "src/engine/matchmaking/MatchmakingPhases.ts:DEFAULT_MATCHMAKING_RULES":
+    "src/engine/matchmaking/MatchmakingPhases.ts:DEFAULT_MATCHMAKING_RULES":
     "Default matchmaking rules; used by basho setup",
   "src/engine/bard/narrativeContext.ts:VENUE_PROFILES":
     "Venue profile data for narrative generation",
@@ -292,6 +287,12 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config constant for the opponent-model eviction cap",
   "src/engine/npcAI/planOutcomes.ts:PlanOutcome":
     "Public type for the plan-outcome classification result",
+  "src/engine/npcAI/ArchetypeAdaptation.ts:MetaAdaptationState":
+    "Exported for unit testing; consumed via evaluateAdaptation in production",
+  "src/engine/npcAI/ArchetypeAdaptation.ts:updateMetaAdaptation":
+    "Internal helper invoked by evaluateAdaptation; exported for unit testing",
+  "src/engine/npcAI/execution.ts:applyCrisisRescue":
+    "Internal rescue handler invoked in-module; exported for unit testing",
 
   "src/engine/advisor/AdvisorService.ts:getPlayerDigest":
     "Utility function retained for future wiring",
@@ -304,9 +305,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/bard/dramaGenerator.ts:triggerCrisis":
     "Internal crisis factory invoked by checkTriggeredDrama; exported for unit testing",
   "src/engine/bard/BardEngine.ts:interpolate": "Utility function retained for future wiring",
-  "src/engine/bout/boutNarrative.ts:isSanyakuPromotionByRank":
-    "Utility function retained for future wiring",
-  "src/engine/bout/yaocho.ts:YaochoIndicators": "Public type for YaochoIndicators contract",
+    "src/engine/bout/yaocho.ts:YaochoIndicators": "Public type for YaochoIndicators contract",
   "src/engine/bout/yaocho.ts:evaluateYaochoIndicators":
     "Utility function retained for future wiring",
   "src/engine/bout/yaocho.ts:calculateYaochoChance": "Utility function retained for future wiring",
@@ -362,11 +361,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config constant retained for engine configuration",
   "src/engine/training/WeightJourney.ts:shouldEnterWeightJourney":
     "Utility function retained for future wiring",
-  "src/engine/utils/citizenshipUtils.ts:countsAsForeign":
-    "Utility function retained for future wiring",
-  "src/engine/utils/citizenshipUtils.ts:isAtForeignLimit":
-    "Utility function retained for future wiring",
-  "src/engine/utils/Logger.ts:logger": "Utility function retained for future wiring",
+      "src/engine/utils/Logger.ts:logger": "Utility function retained for future wiring",
   "src/engine/utils/entityAccess.ts:getHeyaOrThrow": "Utility function retained for future wiring",
   "src/engine/utils/entityAccess.ts:getRikishiOrThrow":
     "Utility function retained for future wiring",
@@ -387,6 +382,14 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Public type for terminal kimarite context",
   "src/engine/bout/terminalKimarite.ts:pickTerminalKimarite":
     "Internal picker exercised directly by terminalKimarite.test.ts",
+  "src/engine/npcAI/ArchetypeAdaptation.ts:MetaAdaptationState":
+    "Public type for meta-adaptation state persisted on oyakata.memory",
+  "src/engine/npcAI/ArchetypeAdaptation.ts:updateMetaAdaptation":
+    "Core adaptation updater; called internally by evaluateAdaptation and directly by archetypeAdaptation.test.ts",
+  "src/engine/npcAI/execution.ts:applyCrisisRescue":
+    "Extracted crisis-rescue helper; called inside execution.ts and directly by benefactorSeek.test.ts",
+  "src/components/rikishi/RikishiPageSections.tsx:RikishiPageSections":
+    "Imported by pages/RikishiPage.tsx; auditor misses the grouped import",
 };
 
 /**

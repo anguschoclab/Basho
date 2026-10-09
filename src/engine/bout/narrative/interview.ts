@@ -278,7 +278,7 @@ function askRivalryQuestion(p: PbpPipeline): void {
   );
 }
 
-export function beatInterview(p: PbpPipeline): void {
+function beatInterview(p: PbpPipeline): void {
   const { seed } = p;
   // 18. Post-bout interview (personality-driven, multi-question, RNG-gated)
   const interviewRng: SeededRNG = rngFromSeed(seed, "pbp", "interview-gate");

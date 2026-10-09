@@ -8,7 +8,7 @@ import { NARRATIVE_CALL_REVERSED_CHANCE, NARRATIVE_GYOJI_CONFUSED_CHANCE, NARRAT
 import { BardEngine } from "../../bard/BardEngine";
 import { rngFromSeed } from "../../rng";
 
-export function beatPostBoutYushoRace(p: PbpPipeline): void {
+function beatPostBoutYushoRace(p: PbpPipeline): void {
   const { postBoutRng, push, result, winnerRikishi, winnerWins } = p;
   // 15. Post-bout yusho race update
   if (result.isYushoRace) {
@@ -25,7 +25,7 @@ export function beatPostBoutYushoRace(p: PbpPipeline): void {
 
 }
 
-export function beatPostBoutLeaderboard(p: PbpPipeline): void {
+function beatPostBoutLeaderboard(p: PbpPipeline): void {
   const { day, loserRikishi, loserWins, postBoutRng, push, winnerRikishi, winnerWins, world } = p;
   // 15a. Post-bout leaderboard update — sole leader, falls out, ties leader
   if (world.currentBasho && day >= 5) {
@@ -89,7 +89,7 @@ export function beatPostBoutLeaderboard(p: PbpPipeline): void {
 
 }
 
-export function beatPostBoutStoryline(p: PbpPipeline): void {
+function beatPostBoutStoryline(p: PbpPipeline): void {
   const { day, loserLosses, loserRikishi, loserWins, postBoutRng, push, winnerLosses, winnerRikishi, winnerWins } = p;
   // 15b. Post-bout storyline: streaks, first win, sole leader
   const winnerWinStreak = winnerRikishi.currentWinStreak ?? 0;
@@ -170,7 +170,7 @@ export function beatPostBoutStoryline(p: PbpPipeline): void {
 
 }
 
-export function beatPostBoutUpset(p: PbpPipeline): void {
+function beatPostBoutUpset(p: PbpPipeline): void {
   const { day, loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
   // 15c. Post-bout upset over elite — maegashira beats yokozuna/ozeki
   if (result.upset && result.isKinboshi) {
@@ -190,7 +190,7 @@ export function beatPostBoutUpset(p: PbpPipeline): void {
 
 }
 
-export function beatComebackWin(p: PbpPipeline): void {
+function beatComebackWin(p: PbpPipeline): void {
   const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
   // 15c2. Comeback win narrative (Gap 5): winner escaped edge crisis during bout
   const winnerHadEdgeCrisisEscape = result.log.some(
@@ -214,7 +214,7 @@ export function beatComebackWin(p: PbpPipeline): void {
 
 }
 
-export function beatPostBoutRivalry(p: PbpPipeline): void {
+function beatPostBoutRivalry(p: PbpPipeline): void {
   const { east, loserRikishi, pair, postBoutRng, push, result, west, winnerRikishi } = p;
   // 15d. Post-bout rivalry result (7.2): narrative about series implications
   if (pair && pair.meetings >= 1) {
@@ -262,7 +262,7 @@ export function beatPostBoutRivalry(p: PbpPipeline): void {
 
 }
 
-export function beatKenshoEconomic(p: PbpPipeline): void {
+function beatKenshoEconomic(p: PbpPipeline): void {
   const { postBoutRng, push, result, winnerRikishi } = p;
   // 15e. Kensho & economic context (7.3): mention sponsor envelopes when awarded
   if (result.kenshoEnvelopes > 0) {
@@ -280,7 +280,7 @@ export function beatKenshoEconomic(p: PbpPipeline): void {
 
 }
 
-export function beatAgeDecline(p: PbpPipeline): void {
+function beatAgeDecline(p: PbpPipeline): void {
   const { loserRikishi, postBoutRng, push, winnerRikishi } = p;
   // 15f. Age-based decline narrative (6.4): father time / defying age
   {
@@ -330,7 +330,7 @@ export function beatAgeDecline(p: PbpPipeline): void {
 
 }
 
-export function beatPostBoutInjury(p: PbpPipeline): void {
+function beatPostBoutInjury(p: PbpPipeline): void {
   const { east, postBoutRng, push, result, west } = p;
   // 15g. Post-bout injury assessment (6.3)
   if (result.inBoutInjury) {
@@ -367,7 +367,7 @@ export function beatPostBoutInjury(p: PbpPipeline): void {
 
 }
 
-export function beatMomentumScore(p: PbpPipeline): void {
+function beatMomentumScore(p: PbpPipeline): void {
   const { east, postBoutRng, push, result, west } = p;
   // 15h. Momentum score narrative (Gap 7)
   // Highlight dominant momentum when the score exceeds the threshold
@@ -389,7 +389,7 @@ export function beatMomentumScore(p: PbpPipeline): void {
 
 }
 
-export function beatMonoii(p: PbpPipeline): void {
+function beatMonoii(p: PbpPipeline): void {
   const { loserRikishi, push, result, seed, winnerRikishi } = p;
   // 16. Mono-ii (judge consultation) — expanded sub-paths
   if (result.monoii) {
@@ -483,7 +483,7 @@ export function beatMonoii(p: PbpPipeline): void {
 
 }
 
-export function beatReplayHighlight(p: PbpPipeline): void {
+function beatReplayHighlight(p: PbpPipeline): void {
   const { east, loserRikishi, push, result, seed, west, winnerRikishi } = p;
   // 17. Replay highlight — expanded sub-paths
   if (result.excitementScore !== undefined && result.excitementScore > 30) {

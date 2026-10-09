@@ -9,7 +9,7 @@ import { AGE_DIFF_THRESHOLD, CAREER_BOUT_MILESTONES, CAREER_WIN_MILESTONES } fro
 import { BardEngine } from "../../bard/BardEngine";
 import { isYushoContention } from "../boutContention";
 
-export function beatBodyType(p: PbpPipeline): void {
+function beatBodyType(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3f-2. Body type narrative (5.1)
   for (const r of [east, west]) {
@@ -27,7 +27,7 @@ export function beatBodyType(p: PbpPipeline): void {
 
 }
 
-export function beatHeyaStyle(p: PbpPipeline): void {
+function beatHeyaStyle(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3f-3. Heya style narrative (5.3)
   const seenHeya = new Set<string>();
@@ -54,7 +54,7 @@ export function beatHeyaStyle(p: PbpPipeline): void {
 
 }
 
-export function beatArchetypeEvolution(p: PbpPipeline): void {
+function beatArchetypeEvolution(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3f-4. Archetype evolution narrative (2.3)
   for (const r of [east, west]) {
@@ -78,7 +78,7 @@ export function beatArchetypeEvolution(p: PbpPipeline): void {
 
 }
 
-export function beatArchetypeCounter(p: PbpPipeline): void {
+function beatArchetypeCounter(p: PbpPipeline): void {
   const { east, preBoutRng, push, result, west } = p;
   // 3f-5. Archetype counter narrative — when archetypeMatchup.counterActivated is true
   if (result.archetypeMatchup?.counterActivated) {
@@ -98,7 +98,7 @@ export function beatArchetypeCounter(p: PbpPipeline): void {
 
 }
 
-export function beatAgeNarrative(p: PbpPipeline): void {
+function beatAgeNarrative(p: PbpPipeline): void {
   const { east, eastAge, preBoutRng, push, west, westAge } = p;
   // 3g. Age narrative (veteran vs youngster)
   const ageDiff = Math.abs(eastAge - westAge);
@@ -122,7 +122,7 @@ export function beatAgeNarrative(p: PbpPipeline): void {
 
 }
 
-export function beatVeterans(p: PbpPipeline): void {
+function beatVeterans(p: PbpPipeline): void {
   const { east, eastAge, preBoutRng, push, west, westAge } = p;
   // 3g2. Battle of veterans (6.4): when both rikishi are 30+, add special framing
   if (eastAge >= 30 && westAge >= 30) {
@@ -140,7 +140,7 @@ export function beatVeterans(p: PbpPipeline): void {
 
 }
 
-export function beatCareerWinMilestone(p: PbpPipeline): void {
+function beatCareerWinMilestone(p: PbpPipeline): void {
   const { preBoutRng, push, winnerRikishi } = p;
   // 3h. Career win milestone check
   for (const milestone of CAREER_WIN_MILESTONES) {
@@ -160,7 +160,7 @@ export function beatCareerWinMilestone(p: PbpPipeline): void {
 
 }
 
-export function beatCareerBoutMilestone(p: PbpPipeline): void {
+function beatCareerBoutMilestone(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3h2. Career bout count milestone (Gap 1)
   for (const r of [east, west]) {
@@ -183,7 +183,7 @@ export function beatCareerBoutMilestone(p: PbpPipeline): void {
 
 }
 
-export function beatConsecutiveKachi(p: PbpPipeline): void {
+function beatConsecutiveKachi(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3i. Consecutive kachi-koshi streak
   const eastKachiStreak = east.consecutiveKachiKoshi ?? 0;
@@ -204,7 +204,7 @@ export function beatConsecutiveKachi(p: PbpPipeline): void {
 
 }
 
-export function beatKadobanMention(p: PbpPipeline): void {
+function beatKadobanMention(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3j. Kadoban mention
   const kadobanMap = world.ozekiKadoban ?? {};
@@ -224,7 +224,7 @@ export function beatKadobanMention(p: PbpPipeline): void {
 
 }
 
-export function beatOzekiReturn(p: PbpPipeline): void {
+function beatOzekiReturn(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3j2. Ozeki return detection (sekiwake/komusubi formerly ozeki, with 9+ wins)
   for (const r of [east, west]) {
@@ -247,7 +247,7 @@ export function beatOzekiReturn(p: PbpPipeline): void {
 
 }
 
-export function beatYokozunaPromotion(p: PbpPipeline): void {
+function beatYokozunaPromotion(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3j3. Yokozuna promotion detection (ozeki with consecutiveStrongOzeki >= 1)
   for (const r of [east, west]) {
@@ -265,7 +265,7 @@ export function beatYokozunaPromotion(p: PbpPipeline): void {
 
 }
 
-export function beatSpoiler(p: PbpPipeline): void {
+function beatSpoiler(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3j3b. Spoiler narrative (Gap 7): former sanyaku facing a contender
   for (const [spoiler, contender] of [
@@ -302,7 +302,7 @@ export function beatSpoiler(p: PbpPipeline): void {
 
 }
 
-export function beatCareerPhase(p: PbpPipeline): void {
+function beatCareerPhase(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3j4. Career phase narrative (6.1): debut, prime, decline, veteran
   for (const r of [east, west]) {
@@ -329,7 +329,7 @@ export function beatCareerPhase(p: PbpPipeline): void {
 
 }
 
-export function beatRankDebut(p: PbpPipeline): void {
+function beatRankDebut(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3j4b. Rank debut narrative (Gap 8): shin-sekiwake, shin-komusubi, shin-maegashira
   for (const r of [east, west]) {

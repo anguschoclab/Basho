@@ -8,7 +8,7 @@ import { BardEngine } from "../../bard/BardEngine";
 import { rngFromSeed } from "../../rng";
 import { BloodlineService } from "../../systems/legacy/BloodlineService";
 
-export function beatOpeningVenue(p: PbpPipeline): void {
+function beatOpeningVenue(p: PbpPipeline): void {
   const { ctx, day, east, intensity, push, seed, west } = p;
   // 1. Venue opening line
   const openingRng = rngFromSeed(seed, "pbp", "opening");
@@ -24,7 +24,7 @@ export function beatOpeningVenue(p: PbpPipeline): void {
 
 }
 
-export function beatDynasty(p: PbpPipeline): void {
+function beatDynasty(p: PbpPipeline): void {
   const { east, push, seed, west, world } = p;
   // 2. Dynasty Narrative
   const eastAncestor = BloodlineService.checkDynastyNarrative(east, world);
@@ -47,7 +47,7 @@ export function beatDynasty(p: PbpPipeline): void {
 
 }
 
-export function beatDramaOpening(p: PbpPipeline): void {
+function beatDramaOpening(p: PbpPipeline): void {
   const { east, push, result, seed, west } = p;
   // 3. Drama-aware opening line (reads from result.dramaticContext)
   if (result.dramaticContext && result.dramaticContext.score > 0) {
@@ -64,7 +64,7 @@ export function beatDramaOpening(p: PbpPipeline): void {
 
 }
 
-export function beatRivalryContext(p: PbpPipeline): void {
+function beatRivalryContext(p: PbpPipeline): void {
   const { east, isGrudgeMatch, pair, push, seed, west } = p;
   // 3a. Rivalry context (h2h history)
   const rivalryTags: PbpTag[] = isGrudgeMatch ? ["rivalry", "grudge_match"] : ["rivalry"];
@@ -191,7 +191,7 @@ export function beatRivalryContext(p: PbpPipeline): void {
   }
 }
 
-export function beatStreakCallout(p: PbpPipeline): void {
+function beatStreakCallout(p: PbpPipeline): void {
   const { east, push, seed, west } = p;
   // 3b. In-basho win streak callout
   const eastStreak = east.currentBashoWins ?? 0;

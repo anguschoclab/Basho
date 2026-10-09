@@ -7,7 +7,7 @@ import type { PbpTag } from "./pbpTypes";
 import { BardEngine } from "../../bard/BardEngine";
 import { rngFromSeed } from "../../rng";
 
-export function beatFinishTechnique(p: PbpPipeline): void {
+function beatFinishTechnique(p: PbpPipeline): void {
   const { east, push, result, seed, west } = p;
   // 8. Finishing technique
   if (result.kimarite) {
@@ -32,7 +32,7 @@ export function beatFinishTechnique(p: PbpPipeline): void {
 
 }
 
-export function beatSpecialAwards(p: PbpPipeline): void {
+function beatSpecialAwards(p: PbpPipeline): void {
   const { east, push, result, seed, west } = p;
   // 9. Special Awards
   if (result.awardFact === "kinboshi" || result.awardFact === "ginboshi") {
@@ -50,7 +50,7 @@ export function beatSpecialAwards(p: PbpPipeline): void {
 
 }
 
-export function beatCeremony(p: PbpPipeline): void {
+function beatCeremony(p: PbpPipeline): void {
   const { ctx, east, push, result, seed, west } = p;
   // 10. Ceremony — post-bout ritual (all voices, dramatic gets special templates)
   if (result.kimarite && result.kimarite !== "fusensho") {
@@ -75,7 +75,7 @@ export function beatCeremony(p: PbpPipeline): void {
 
 }
 
-export function beatClosingLine(p: PbpPipeline): void {
+function beatClosingLine(p: PbpPipeline): void {
   const { ctx, east, intensity, push, result, seed, west } = p;
   // 11. Closing line (dramatic voice only)
   if (ctx.voiceStyle === "dramatic") {

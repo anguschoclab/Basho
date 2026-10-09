@@ -339,6 +339,20 @@ re-exports dropped; `destr` retained (live in npcAIWorkers/storage).
 `GENUINE_ORPHANS` map + baseline-orphans.json cleared. ~93 "intentional"
 unreferenced-*function* entries remain for a second look.
 
+**Census follow-up (committed):** 72 `candidate` entries triaged — 67
+`beat*` narrative helpers + ceremony/interview/prelude/stakes/resolution/
+postbout internals were exported-but-only-intra-module; all unexported in
+place (functions kept — they're reached via the `narrate*` entry points).
+`applyCrisisRescue`, `updateMetaAdaptation`, `MetaAdaptationState` remain
+exported as test-consumed internals (classified `intentional`). 7 stale
+classification keys removed (wired meanwhile: `countsAsForeign`,
+`isAtForeignLimit`, `PbpVoice`, `isSanyakuPromotionByRank`,
+`KACHI_KOSHI_WINS`, `BardResult`, `NPCPersona`).
+**Scanner fix:** `findUnusedComponents` flagged any `*.tsx` whose basename
+didn't appear elsewhere — false-positived multi-component files
+(`*Sections.tsx`) whose exports are imported under member names. Now also
+accepts usage of any exported symbol.
+
 ### V10-R06: Coverage blind spot — FIXED
 
 `coverage.include` now spans `src/**/*.{ts,tsx}` for components/contexts/

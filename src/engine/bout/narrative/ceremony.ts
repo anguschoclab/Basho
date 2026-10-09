@@ -7,7 +7,7 @@ import { RITUAL_SALT_CHANCE_UNDERSTATED } from "../../../constants/engine/genera
 import { BardEngine } from "../../bard/BardEngine";
 import { rngFromSeed } from "../../rng";
 
-export function beatRingEntrances(p: PbpPipeline): void {
+function beatRingEntrances(p: PbpPipeline): void {
   const { ctx, east, intensity, push, result, rng, seed, west } = p;
   // 4. Ring entrances (east + west, two separate lines for entity linking)
   if (result.log.length > 0) {

@@ -25,8 +25,8 @@ import {
   META_BID_FAMILY_BONUS,
 } from "../../constants/engine/perception";
 
-export type MetaFamily = keyof MetaHistoryEntry["familyShares"];
-export type MetaPosture = "none" | "embrace_meta" | "counter_meta";
+type MetaFamily = keyof MetaHistoryEntry["familyShares"];
+type MetaPosture = "none" | "embrace_meta" | "counter_meta";
 
 /** Persisted on oyakata.memory — tracks the manager's meta-read over time. */
 export interface MetaAdaptationState {

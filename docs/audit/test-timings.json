@@ -1772,11 +1772,6 @@
           "durationMs": 35
         },
         {
-          "file": "src/tests/unit/engine/utils/jsonParser.test.ts",
-          "testCount": 19,
-          "durationMs": 35
-        },
-        {
           "file": "src/tests/unit/helpers/__boutTestHelpers.test.ts",
           "testCount": 9,
           "durationMs": 35
@@ -2804,11 +2799,6 @@
         {
           "file": "src/tests/unit/engine/bout/boutNarrative.yusho.test.ts",
           "testCount": 4,
-          "durationMs": 20
-        },
-        {
-          "file": "src/tests/unit/engine/bout/honbasho.test.ts",
-          "testCount": 9,
           "durationMs": 20
         },
         {
@@ -3977,11 +3967,6 @@
           "durationMs": 12
         },
         {
-          "file": "src/tests/unit/engine/utils/collectionOperations.test.ts",
-          "testCount": 14,
-          "durationMs": 12
-        },
-        {
           "file": "src/tests/unit/engine/utils/formatters.currency.test.ts",
           "testCount": 7,
           "durationMs": 12
@@ -4124,11 +4109,6 @@
         {
           "file": "src/tests/unit/engine/bout/rivalryEdgeCrisis.test.ts",
           "testCount": 5,
-          "durationMs": 10
-        },
-        {
-          "file": "src/tests/unit/engine/core/EntityService.test.ts",
-          "testCount": 17,
           "durationMs": 10
         },
         {

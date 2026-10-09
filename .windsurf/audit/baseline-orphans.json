@@ -1,25 +1,14 @@
 {
-  "generatedAt": "2026-10-08T16:26:09.333Z",
+  "generatedAt": "2026-10-09T10:47:47.975Z",
   "summary": {
-    "total": 208,
-    "unreferencedExports": 208,
+    "total": 188,
+    "unreferencedExports": 188,
     "orphanRoutes": 0,
     "untickedServices": 0,
     "unusedComponents": 0,
     "writeOnlyState": 0
   },
   "entries": [
-    {
-      "id": "ORPH-0001",
-      "file": "src/engine/systems/NPCPersonaService.ts",
-      "symbol": "NPCPersona",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
     {
       "id": "ORPH-0002",
       "file": "src/engine/systems/NPCPersonaService.ts",
@@ -978,6 +967,28 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0284",
+      "file": "src/engine/npcAI/ArchetypeAdaptation.ts",
+      "symbol": "MetaAdaptationState",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0287",
+      "file": "src/engine/npcAI/ArchetypeAdaptation.ts",
+      "symbol": "updateMetaAdaptation",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
       "id": "ORPH-0093",
       "file": "src/engine/npcAI/LeaguePerception.ts",
       "symbol": "emptyLeaguePerception",
@@ -1025,6 +1036,17 @@
       "id": "ORPH-0097",
       "file": "src/engine/npcAI/TacticalCoordinator.ts",
       "symbol": "CoordinationInput",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0288",
+      "file": "src/engine/npcAI/execution.ts",
+      "symbol": "applyCrisisRescue",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1157,17 +1179,6 @@
       "id": "ORPH-0110",
       "file": "src/engine/bard/BardEngine.ts",
       "symbol": "ResolutionPath",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0111",
-      "file": "src/engine/bard/BardEngine.ts",
-      "symbol": "BardResult",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1374,28 +1385,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0129",
-      "file": "src/engine/bout/boutNarrative.ts",
-      "symbol": "isSanyakuPromotionByRank",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0130",
-      "file": "src/engine/bout/boutNarrative.ts",
-      "symbol": "PbpVoice",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0131",
       "file": "src/engine/bout/boutResolver.ts",
       "symbol": "applyRivalryToRikishi",
@@ -1443,17 +1432,6 @@
       "id": "ORPH-0212",
       "file": "src/engine/bout/hiwaza.ts",
       "symbol": "classifyHiwaza",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0138",
-      "file": "src/engine/bout/kachiNokori.ts",
-      "symbol": "KACHI_KOSHI_WINS",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -2004,28 +1982,6 @@
       "id": "ORPH-0187",
       "file": "src/engine/utils/Logger.ts",
       "symbol": "logger",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0188",
-      "file": "src/engine/utils/citizenshipUtils.ts",
-      "symbol": "countsAsForeign",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0189",
-      "file": "src/engine/utils/citizenshipUtils.ts",
-      "symbol": "isAtForeignLimit",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",

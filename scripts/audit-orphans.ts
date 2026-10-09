@@ -553,9 +553,15 @@ function findUnusedComponents(): OrphanEntry[] {
     const otherFiles = runtimeFiles.filter((f) => f !== compFile);
     const otherBlob = otherFiles.map((f) => readContent(f)).join("\n");
 
-    // Look for import or JSX usage
+    // Look for import or JSX usage — by basename, or by any exported symbol
+    // (multi-component files like *Sections.tsx don't export a symbol
+    // matching their basename; the file is live if any export is consumed)
     const usagePattern = new RegExp(`\\b${escapeRegex(compName)}\\b`);
-    if (!usagePattern.test(otherBlob)) {
+    const fileExports = extractExports(compFile);
+    const anyExportUsed = fileExports.some((exp) =>
+      new RegExp(`\\b${escapeRegex(exp.name)}\\b`).test(otherBlob)
+    );
+    if (!usagePattern.test(otherBlob) && !anyExportUsed) {
       entries.push({
         id: nextId(),
         file: relPath(compFile),

@@ -7,7 +7,7 @@ import { countMakuuchiTournaments, generateKyujoNarrative } from "./helpers";
 import { BASHO_DAYS, H2H_STREAK_THRESHOLD, HEIGHT_DIFF_THRESHOLD, INJURY_MENTION_CHANCE, STYLE_DESC_CHANCE, WEIGHT_DIFF_THRESHOLD } from "../../../constants/engine/generation";
 import { BardEngine } from "../../bard/BardEngine";
 
-export function beatCurrentRecords(p: PbpPipeline): void {
+function beatCurrentRecords(p: PbpPipeline): void {
   const { day, east, eastLosses, eastWins, preBoutRng, push, west, westLosses, westWins } = p;
   // 3a-pre. Current basho records
 
@@ -49,7 +49,7 @@ export function beatCurrentRecords(p: PbpPipeline): void {
 
 }
 
-export function beatPrevBashoRecord(p: PbpPipeline): void {
+function beatPrevBashoRecord(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3a-pre2. Previous basho record
   const eastPrevBasho = east.careerHistory?.[east.careerHistory.length - 1];
@@ -123,7 +123,7 @@ export function beatPrevBashoRecord(p: PbpPipeline): void {
 
 }
 
-export function beatCareerHighRank(p: PbpPipeline): void {
+function beatCareerHighRank(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3a-pre3. Career-high rank detection
   for (const r of [east, west]) {
@@ -154,7 +154,7 @@ export function beatCareerHighRank(p: PbpPipeline): void {
 
 }
 
-export function beatStoryline(p: PbpPipeline): void {
+function beatStoryline(p: PbpPipeline): void {
   const { day, east, preBoutRng, push, west } = p;
   // 3a-pre4. Storyline context: kachi-koshi chase, make-koshi avoidance, rookie, tournament count
   for (const r of [east, west]) {
@@ -188,7 +188,7 @@ export function beatStoryline(p: PbpPipeline): void {
 
 }
 
-export function beatSevenSeven(p: PbpPipeline): void {
+function beatSevenSeven(p: PbpPipeline): void {
   const { east, eastLosses, eastWins, preBoutRng, push, west, westLosses, westWins } = p;
   // 3a-pre5. 7-7 pressure — both rikishi at 7-7, everything on the line
   if (eastWins === 7 && eastLosses === 7 && westWins === 7 && westLosses === 7) {
@@ -206,7 +206,7 @@ export function beatSevenSeven(p: PbpPipeline): void {
 
 }
 
-export function beatShikonaConferred(p: PbpPipeline): void {
+function beatShikonaConferred(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3a-pre6. Fighting name conferred early — rikishi carries shikona before sekitori
   for (const r of [east, west]) {
@@ -224,7 +224,7 @@ export function beatShikonaConferred(p: PbpPipeline): void {
 
 }
 
-export function beatRookieTourneyCount(p: PbpPipeline): void {
+function beatRookieTourneyCount(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // Rookie / tournament count
   for (const r of [east, west]) {
@@ -275,7 +275,7 @@ export function beatRookieTourneyCount(p: PbpPipeline): void {
 
 }
 
-export function beatH2HStreak(p: PbpPipeline): void {
+function beatH2HStreak(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3c. True H2H consecutive streak (from rikishi.h2h records)
   const eastH2h = east.h2h[west.id];
@@ -297,7 +297,7 @@ export function beatH2HStreak(p: PbpPipeline): void {
 
 }
 
-export function beatInjuryMention(p: PbpPipeline): void {
+function beatInjuryMention(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3d. Injury mention (probabilistic, with sub-path selection)
   if (east.injured || west.injured) {
@@ -329,7 +329,7 @@ export function beatInjuryMention(p: PbpPipeline): void {
 
 }
 
-export function beatInjuryRecovery(p: PbpPipeline): void {
+function beatInjuryRecovery(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3d-2. Injury recovery narrative (6.3): rikishi returning from injury
   for (const r of [east, west]) {
@@ -358,7 +358,7 @@ export function beatInjuryRecovery(p: PbpPipeline): void {
 
 }
 
-export function beatOzekiDemotionComeback(p: PbpPipeline): void {
+function beatOzekiDemotionComeback(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3d-3. Ozeki demotion comeback narrative
   for (const r of [east, west]) {
@@ -376,7 +376,7 @@ export function beatOzekiDemotionComeback(p: PbpPipeline): void {
 
 }
 
-export function beatSonOfStablemaster(p: PbpPipeline): void {
+function beatSonOfStablemaster(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3d-4. Son of stablemaster narrative
   for (const r of [east, west]) {
@@ -394,7 +394,7 @@ export function beatSonOfStablemaster(p: PbpPipeline): void {
 
 }
 
-export function beatPhysicalComparison(p: PbpPipeline): void {
+function beatPhysicalComparison(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3e. Physical comparison (weight/height diff)
   const weightDiff = Math.abs(east.weight - west.weight);
@@ -418,7 +418,7 @@ export function beatPhysicalComparison(p: PbpPipeline): void {
 
 }
 
-export function beatStyleDescription(p: PbpPipeline): void {
+function beatStyleDescription(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3f. Fighting style description (probabilistic)
   if (preBoutRng.next() < STYLE_DESC_CHANCE) {

@@ -8,7 +8,7 @@ import { BASHO_DAYS, BIRTHDAY_WINDOW_DAYS, FIRST_WIN_MENTION_MIN_DAY, LEADERBOAR
 import { BardEngine } from "../../bard/BardEngine";
 import { isPlayoffScenario, isYushoContention } from "../boutContention";
 
-export function beatHometown(p: PbpPipeline): void {
+function beatHometown(p: PbpPipeline): void {
   const { bashoInfo, east, preBoutRng, push, west } = p;
   // 3k. Hometown angle
   if (east.origin && west.origin && east.origin !== west.origin) {
@@ -29,7 +29,7 @@ export function beatHometown(p: PbpPipeline): void {
 
 }
 
-export function beatBirthday(p: PbpPipeline): void {
+function beatBirthday(p: PbpPipeline): void {
   const { bashoInfo, day, east, preBoutRng, push, west } = p;
   // 3l. Birthday mention (within BIRTHDAY_WINDOW_DAYS of current basho day)
   if (bashoInfo) {
@@ -53,7 +53,7 @@ export function beatBirthday(p: PbpPipeline): void {
 
 }
 
-export function beatWinlessFirstWin(p: PbpPipeline): void {
+function beatWinlessFirstWin(p: PbpPipeline): void {
   const { day, east, eastLosses, eastWins, preBoutRng, push, west, westLosses, westWins } = p;
   // 3m. Winless / first win callout
   if (day >= WINLESS_MENTION_MIN_DAY) {
@@ -105,7 +105,7 @@ export function beatWinlessFirstWin(p: PbpPipeline): void {
 
 }
 
-export function beatTournamentDay(p: PbpPipeline): void {
+function beatTournamentDay(p: PbpPipeline): void {
   const { day, east, preBoutRng, push, west } = p;
   // 3n. Tournament day context
   if (day === BASHO_DAYS) {
@@ -178,7 +178,7 @@ export function beatTournamentDay(p: PbpPipeline): void {
 
 }
 
-export function beatTitleStakes(p: PbpPipeline): void {
+function beatTitleStakes(p: PbpPipeline): void {
   const { east, preBoutRng, push, result, west } = p;
   // 3o. Title stakes / yusho race context
   if (result.isYushoRace || result.isTitleStakes) {
@@ -197,7 +197,7 @@ export function beatTitleStakes(p: PbpPipeline): void {
 
 }
 
-export function beatLeaderboard(p: PbpPipeline): void {
+function beatLeaderboard(p: PbpPipeline): void {
   const { day, preBoutRng, push, world } = p;
   // 3p. Leaderboard summary (days 5+, when leader has enough wins)
   if (day >= 5 && world.currentBasho) {
@@ -240,7 +240,7 @@ export function beatLeaderboard(p: PbpPipeline): void {
 
 }
 
-export function beatPlayoffImplications(p: PbpPipeline): void {
+function beatPlayoffImplications(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3p2. Yusho contention / playoff implications
   if (world.currentBasho) {
@@ -272,7 +272,7 @@ export function beatPlayoffImplications(p: PbpPipeline): void {
 
 }
 
-export function beatKenshoMention(p: PbpPipeline): void {
+function beatKenshoMention(p: PbpPipeline): void {
   const { east, preBoutRng, push, result, west } = p;
   // 3p3. Pre-bout kensho mention (7.3): sponsor interest when high kensho expected
   if (result.kenshoEnvelopes > 3) {
@@ -291,7 +291,7 @@ export function beatKenshoMention(p: PbpPipeline): void {
 
 }
 
-export function beatBoutOfTheDay(p: PbpPipeline): void {
+function beatBoutOfTheDay(p: PbpPipeline): void {
   const { east, preBoutRng, push, result, west } = p;
   // 3p4. Bout of the day designation (Gap 6): high-drama matchup
   if (
