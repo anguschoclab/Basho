@@ -22,17 +22,23 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const [filter, setFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
 
-  const events = useMemo(() => {
-    if (!eventLogData?.events) return [];
-    const all = [...eventLogData.events];
-    all.reverse();
-    return all.slice(0, 100);
-  }, [eventLogData?.events]);
-
   const filteredEvents = useMemo(() => {
-    if (filter === "all") return events;
-    return events.filter((e) => e.category === filter);
-  }, [events, filter]);
+    if (!eventLogData?.events) return [];
+
+    const result: EngineEvent[] = [];
+    const rawEvents = eventLogData.events;
+
+    // Iterate backwards to avoid spreading/reversing the entire large array
+    for (let i = rawEvents.length - 1; i >= 0; i--) {
+      const e = rawEvents[i];
+      if (filter === "all" || e.category === filter) {
+        result.push(e);
+        if (result.length >= 100) break; // Break early once we have 100 matches
+      }
+    }
+
+    return result;
+  }, [eventLogData?.events, filter]);
 
   const grouped = useMemo(() => {
     const groups: EventGroup[] = [];
