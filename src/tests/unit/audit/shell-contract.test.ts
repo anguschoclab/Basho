@@ -81,7 +81,8 @@ describe("Shell contract — PageHeader usage", () => {
     "pages/ScoutingPage.tsx",
     "pages/GovernancePage.tsx",
     "pages/MyosekiMarketPage.tsx",
-    "pages/GlobalCupPage.tsx",
+    // GlobalCupPage delegates PageHeader to CupHero in GlobalCupSections
+    "components/game/GlobalCupSections.tsx",
     "pages/RegionalHubPage.tsx",
     "pages/GlossaryPage.tsx",
     "pages/HistoryDashboard.tsx",

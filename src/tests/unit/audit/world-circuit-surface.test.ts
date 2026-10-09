@@ -86,8 +86,8 @@ describe("GlobalCupPage — UI surface", () => {
   });
 
   it("renders GlobalCupBracket for tournament bracket", () => {
-    const page = readSrcFile("pages/GlobalCupPage.tsx");
-    expect(page).toContain("GlobalCupBracket");
+    const sections = readSrcFile("components/game/GlobalCupSections.tsx");
+    expect(sections).toContain("GlobalCupBracket");
   });
 
   it("renders EventFeed for event log continuity", () => {
