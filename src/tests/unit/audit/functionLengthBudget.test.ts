@@ -64,7 +64,6 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   "src/engine/systems/governance/YokozunaService.ts::evaluateActiveYokozuna": { loc: 212, kind: "method" },
   "src/engine/simulation/AutoSimService.ts::runAutoSim": { loc: 207, kind: "function" },
   "src/engine/core/ImpactResolver.ts::_applyImpact": { loc: 206, kind: "function" },
-  "src/components/economy/SponsorshipHub.tsx::SponsorshipHub": { loc: 203, kind: "function" },
   "src/components/stable/ChronicleRoom.tsx::ChronicleRoom": { loc: 199, kind: "function" },
   "src/pages/TrainingPage.tsx::TrainingPage": { loc: 199, kind: "function" },
   "src/engine/tick/phases/phase06_yearly_boundary.ts::phase06_yearly_boundary": { loc: 199, kind: "function" },
