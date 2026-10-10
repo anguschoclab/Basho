@@ -88,10 +88,7 @@ export function RosterCard({
   onRikishiClick: (id: string) => void;
 }) {
   return (
-    <TooltipWrap
-      content={`View detailed Association dossier for ${r.shikona}`}
-      side="top"
-    >
+    <TooltipWrap content={`View detailed Association dossier for ${r.shikona}`} side="top">
       <Card
         className="paper group hover:border-primary/50 cursor-pointer overflow-hidden relative animate-in zoom-in-95 fill-mode-both focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
         style={{ animationDelay: `${index * 40}ms` }}
@@ -118,9 +115,7 @@ export function RosterCard({
                   config={r.avatarConfig}
                   size="xs"
                   showHairstyle={true}
-                  expression={
-                    r.isInjured ? "intense" : r.motivation > 70 ? "confident" : "neutral"
-                  }
+                  expression={r.isInjured ? "intense" : r.motivation > 70 ? "confident" : "neutral"}
                   fallback={r.shikona}
                 />
                 {/* Kesho badge for sekitori */}
@@ -129,12 +124,7 @@ export function RosterCard({
                     <KeshoBadge kesho={r.keshoMawashi} size="sm" />
                   </TooltipWrap>
                 )}
-                <RankBadge
-                  rank={r.rank}
-                  rankNumber={r.rankNumber}
-                  side={r.side}
-                  variant="roster"
-                />
+                <RankBadge rank={r.rank} rankNumber={r.rankNumber} side={r.side} variant="roster" />
               </div>
               <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
                 {r.shikona}
@@ -187,10 +177,7 @@ export function RosterCard({
               </div>
             </div>
             <div className="space-y-1 pl-1">
-              <TooltipWrap
-                content="Observed match pace and initial reaction speed"
-                side="top"
-              >
+              <TooltipWrap content="Observed match pace and initial reaction speed" side="top">
                 <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none cursor-help">
                   <Activity className="h-2.5 w-2.5 text-west" /> Pace
                 </div>

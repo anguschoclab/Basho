@@ -82,9 +82,7 @@ export function CareerAsRikishiCard({ oyakata }: { oyakata: Oyakata }) {
         <CardTitle className="flex items-center gap-2">
           <Crown className="h-5 w-5" /> Career as Rikishi
         </CardTitle>
-        <CardDescription>
-          Former wrestling career before becoming a stable master.
-        </CardDescription>
+        <CardDescription>Former wrestling career before becoming a stable master.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
@@ -137,8 +135,8 @@ export function CareerAsRikishiCard({ oyakata }: { oyakata: Oyakata }) {
                   variant="retired"
                 />
                 <p className="text-sm text-gold italic">
-                  Former yokozuna ceremonial rope, displayed as a symbol of the highest
-                  achievement in sumo.
+                  Former yokozuna ceremonial rope, displayed as a symbol of the highest achievement
+                  in sumo.
                 </p>
               </div>
             </div>
@@ -173,10 +171,7 @@ export function MentorshipCard({ sel }: { sel: Sel }) {
               <div className="flex flex-wrap gap-2">
                 {pair.mentees.map((mentee) => (
                   <Badge key={mentee.id} variant="outline" className="text-sm">
-                    <RikishiName
-                      id={mentee.id}
-                      name={mentee.shikona || mentee.name || "Unknown"}
-                    />{" "}
+                    <RikishiName id={mentee.id} name={mentee.shikona || mentee.name || "Unknown"} />{" "}
                     ({mentee.rank})
                   </Badge>
                 ))}
@@ -212,12 +207,7 @@ function OyakataCard({
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <SumoAvatar
-            config={o.avatarConfig}
-            size="sm"
-            showHairstyle={true}
-            fallback={o.name}
-          />
+          <SumoAvatar config={o.avatarConfig} size="sm" showHairstyle={true} fallback={o.name} />
           <div className="flex-1">
             <p className="font-medium">{o.name}</p>
             <p className="text-sm text-muted-foreground">
@@ -239,9 +229,7 @@ function OyakataCard({
               }
               className="capitalize text-xs"
             >
-              {o.highestRank.toLowerCase() === "yokozuna" && (
-                <Crown className="h-3 w-3 mr-1" />
-              )}
+              {o.highestRank.toLowerCase() === "yokozuna" && <Crown className="h-3 w-3 mr-1" />}
               {o.highestRank}
             </Badge>
           )}

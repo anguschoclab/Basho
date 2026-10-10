@@ -101,9 +101,8 @@ export function OpponentCard({
               </Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-1">
-              {r.heyaName} • {r.height}cm{" "}
-              <span className="opacity-60">({r.heightDescriptor})</span> / {r.weight}kg{" "}
-              <span className="opacity-60">({r.weightDescriptor})</span>
+              {r.heyaName} • {r.height}cm <span className="opacity-60">({r.heightDescriptor})</span>{" "}
+              / {r.weight}kg <span className="opacity-60">({r.weightDescriptor})</span>
             </div>
 
             {/* Scouted attributes — narrative only */}

@@ -5,12 +5,7 @@
  * import footer) and the delete-confirmation alert.
  */
 
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { activationKeyHandler } from "@/lib/a11y";
 import {
   AlertDialog,
@@ -57,10 +52,7 @@ function SaveSlotCard({
             <span className="font-display font-bold text-lg group-hover:text-primary transition-colors">
               {slot.playerHeyaName || "Vagrant Oyakata"}
             </span>
-            <Badge
-              variant="secondary"
-              className="text-[10px] font-bold uppercase tracking-widest"
-            >
+            <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-widest">
               {slot.slotName === "autosave" ? "Dynamic" : "Stable"}
             </Badge>
           </div>
@@ -212,8 +204,8 @@ export function DeleteSlotDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete save?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete {confirmDelete?.replace("slot_", "Slot ")}? This
-            action cannot be undone.
+            Are you sure you want to delete {confirmDelete?.replace("slot_", "Slot ")}? This action
+            cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

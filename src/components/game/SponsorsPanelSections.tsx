@@ -136,7 +136,11 @@ export function ActiveSponsorsCard({
               {(["T5", "T4", "T3", "T2", "T1", "T0"] as SponsorTier[])
                 .filter((t) => (tierSummary[t] || 0) > 0)
                 .map((t) => (
-                  <Badge key={t} variant="outline" className={`text-[10px] ${TIER_LABELS[t].color}`}>
+                  <Badge
+                    key={t}
+                    variant="outline"
+                    className={`text-[10px] ${TIER_LABELS[t].color}`}
+                  >
                     {TIER_LABELS[t].label}: {tierSummary[t]}
                   </Badge>
                 ))}
@@ -179,9 +183,7 @@ export function ActiveSponsorsCard({
             );
           })}
           {totalActive > 10 && (
-            <p className="text-xs text-muted-foreground pt-1">
-              +{totalActive - 10} more sponsors
-            </p>
+            <p className="text-xs text-muted-foreground pt-1">+{totalActive - 10} more sponsors</p>
           )}
           {totalActive === 0 && (
             <p className="text-sm text-muted-foreground text-center py-4">
@@ -203,9 +205,7 @@ export function ChurnedSponsorsCard({ churned }: { churned: Sponsor[] }) {
           <TrendingDown className="h-5 w-5 text-destructive" />
           Recently Departed
         </CardTitle>
-        <CardDescription>
-          Sponsors who ended their relationship with your stable
-        </CardDescription>
+        <CardDescription>Sponsors who ended their relationship with your stable</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

@@ -159,8 +159,7 @@ export function NavControls({ world, inBasho }: { world: WorldState | null; inBa
         <div
           className="w-1.5 h-1.5 rounded-full"
           style={{
-            background:
-              autosaveStatus === "saving" ? "hsl(var(--primary))" : "hsl(var(--success))",
+            background: autosaveStatus === "saving" ? "hsl(var(--primary))" : "hsl(var(--success))",
             animation: autosaveStatus === "saving" ? "pulse 1s ease-in-out infinite" : "none",
           }}
         />

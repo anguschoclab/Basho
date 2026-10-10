@@ -122,11 +122,7 @@ export function BashoHistoryCard({
               </div>
               <div className="text-sm text-muted-foreground">
                 {safeRankJa(yushoRikishi.rank)} •{" "}
-                {yushoHeya ? (
-                  <StableName id={yushoHeya.id} name={yushoHeya.name} />
-                ) : (
-                  "—"
-                )}
+                {yushoHeya ? <StableName id={yushoHeya.id} name={yushoHeya.name} /> : "—"}
               </div>
             </div>
           ) : (

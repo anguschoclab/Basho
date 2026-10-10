@@ -6,13 +6,7 @@
  */
 
 import { useGameStore } from "../../store/gameStore";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { decisionToastMessage } from "./decisionFeedback";

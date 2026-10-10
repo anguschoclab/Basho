@@ -7,11 +7,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import { Button } from "@/components/ui/button";
 import { simulateBout } from "@/presenters/engineAccess";
 import { useGame } from "@/contexts/useGame";
-import {
-  CompareRikishiHeader,
-  CompareStats,
-  TrialClashSection,
-} from "./CompareModePanelSections";
+import { CompareRikishiHeader, CompareStats, TrialClashSection } from "./CompareModePanelSections";
 
 interface CompareModePanelProps {
   rikishiA: UIRikishi;

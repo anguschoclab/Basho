@@ -77,7 +77,10 @@ const EventFeedItem = React.memo(
             text={event.title}
             className="text-sm font-medium text-muted-foreground truncate block"
           />
-          <MentionText text={event.summary} className="text-xs text-muted-foreground line-clamp-2" />
+          <MentionText
+            text={event.summary}
+            className="text-xs text-muted-foreground line-clamp-2"
+          />
           <p className="text-xs text-muted-foreground mt-1">{formatEventTime(event)}</p>
         </div>
       </div>

@@ -119,9 +119,7 @@ function PoliticalFavorsList({ heya }: { heya: Heya }) {
                     })()}
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-foreground/90">
-                      {favor.label}
-                    </div>
+                    <div className="text-xs font-bold text-foreground/90">{favor.label}</div>
                     <div className="text-[10px] text-muted-foreground/80 leading-tight">
                       {favor.description}
                     </div>
@@ -228,12 +226,7 @@ function IchimonRankings({
         )}
       </div>
       {derived.factionList.length > 0 ? (
-        <ListCard
-          eyebrow=""
-          title="Current Standing"
-          rows={sortedFactionRows}
-          icon={Trophy}
-        />
+        <ListCard eyebrow="" title="Current Standing" rows={sortedFactionRows} icon={Trophy} />
       ) : (
         <p className="text-sm text-muted-foreground">No faction data available.</p>
       )}
