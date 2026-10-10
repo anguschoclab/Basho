@@ -50,9 +50,7 @@ function stripTemplates(src: string): string {
 }
 
 function resolveImport(spec: string, fromFile: string): boolean {
-  const base = spec.startsWith("@/")
-    ? join(SRC, spec.slice(2))
-    : resolve(dirname(fromFile), spec);
+  const base = spec.startsWith("@/") ? join(SRC, spec.slice(2)) : resolve(dirname(fromFile), spec);
   if (existsSync(base) && statSync(base).isFile()) return true;
   for (const ext of RESOLVABLE) if (existsSync(base + ext)) return true;
   for (const ext of RESOLVABLE) if (existsSync(join(base, `index${ext}`))) return true;
@@ -120,12 +118,22 @@ function scanFile(file: string): Finding[] {
   // ── readSrcFile("lit") / readRepoFile("lit") ─────────────────────────────
   for (const m of stripped.matchAll(/readSrcFile\(\s*["']([^"']+)["']/g)) {
     if (!existsSync(join(SRC, m[1]))) {
-      findings.push({ file: rel, kind: "fs-path", subject: `src/${m[1]}`, detail: "readSrcFile target missing" });
+      findings.push({
+        file: rel,
+        kind: "fs-path",
+        subject: `src/${m[1]}`,
+        detail: "readSrcFile target missing",
+      });
     }
   }
   for (const m of stripped.matchAll(/readRepoFile\(\s*["']([^"']+)["']/g)) {
     if (!existsSync(join(ROOT, m[1]))) {
-      findings.push({ file: rel, kind: "fs-path", subject: m[1], detail: "readRepoFile target missing" });
+      findings.push({
+        file: rel,
+        kind: "fs-path",
+        subject: m[1],
+        detail: "readRepoFile target missing",
+      });
     }
   }
 

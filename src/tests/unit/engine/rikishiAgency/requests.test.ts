@@ -20,10 +20,7 @@ function worldWith(rikishi: Rikishi[], heyaId = "h-npc"): WorldState {
   const map = new Map<string, Rikishi>();
   for (const r of rikishi) map.set(r.id, r);
   world.rikishi = map;
-  world.heyas.set(
-    heyaId,
-    MockFactory.createHeya(heyaId, { rikishiIds: rikishi.map((r) => r.id) })
-  );
+  world.heyas.set(heyaId, MockFactory.createHeya(heyaId, { rikishiIds: rikishi.map((r) => r.id) }));
   return world;
 }
 
@@ -51,12 +48,8 @@ describe("request generation", () => {
       fatigue: 85,
       behavior: { discipline: 50, mediaSavvy: 50, stress: 60 },
     } as Partial<Rikishi>);
-    const next = resolveImpacts(worldWith([r]), [
-      phase01_week_rikishi_agency(worldWith([r])),
-    ]);
-    const reqs = (next.pendingRikishiRequests ?? []).filter(
-      (q) => q.rikishiId === "r-tired"
-    );
+    const next = resolveImpacts(worldWith([r]), [phase01_week_rikishi_agency(worldWith([r]))]);
+    const reqs = (next.pendingRikishiRequests ?? []).filter((q) => q.rikishiId === "r-tired");
     expect(reqs.some((q) => q.type === "request_rest")).toBe(true);
   });
 
@@ -124,8 +117,6 @@ describe("request generation", () => {
     const next = resolveImpacts(world, [phase01_week_rikishi_agency(world)]);
     const agency = next.rikishi.get("r1")!.agency;
     expect(agency).toBeDefined();
-    expect(["loyal", "wavering", "restless", "discontent"]).toContain(
-      agency!.loyaltyBand
-    );
+    expect(["loyal", "wavering", "restless", "discontent"]).toContain(agency!.loyaltyBand);
   });
 });

@@ -17,7 +17,13 @@ import {
   getUpgradeCostEstimate,
 } from "@/presenters/uiDigest";
 import { formatYen } from "@/utils/engineUtils";
-import { AXIS_META, FACILITY_BAND_COLORS, BAND_LABELS, getLevelBand, getEffectPercent } from "./facilityMeta";
+import {
+  AXIS_META,
+  FACILITY_BAND_COLORS,
+  BAND_LABELS,
+  getLevelBand,
+  getEffectPercent,
+} from "./facilityMeta";
 
 /** Toast shown after an upgrade lands via WORLD_UPDATED. */
 export interface UpgradeToast {
@@ -196,12 +202,11 @@ export function FacilitiesInfoCard() {
           injuries.
         </p>
         <p>
-          • <strong>Kitchen & Chanko</strong> boosts strength and stamina development
-          specifically.
+          • <strong>Kitchen & Chanko</strong> boosts strength and stamina development specifically.
         </p>
         <p>
-          • Facilities <strong>decay by 2 points/month</strong> if you can't afford the
-          maintenance cost.
+          • Facilities <strong>decay by 2 points/month</strong> if you can't afford the maintenance
+          cost.
         </p>
         <p>
           • Upgrade costs <strong>scale with level</strong> — higher facilities are exponentially

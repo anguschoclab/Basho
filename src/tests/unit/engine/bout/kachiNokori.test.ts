@@ -23,7 +23,3 @@ describe("Kachi-nokori — calculateKachiNokori", () => {
     expect(calculateKachiNokori(9)).toBe(1);
   });
 });
-
-
-
-

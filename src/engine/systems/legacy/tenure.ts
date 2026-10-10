@@ -78,7 +78,11 @@ export function applyBashoTenure(
     entered.add(r.heyaId);
     if (!isSekitoriDivision(r.division)) continue;
     const rec = basho.standings.get(rid);
-    if (rec && rec.wins + rec.losses >= UNDERPERFORMANCE_MIN_BOUTS && rec.wins >= SEKITORI_KACHI_KOSHI_WINS) {
+    if (
+      rec &&
+      rec.wins + rec.losses >= UNDERPERFORMANCE_MIN_BOUTS &&
+      rec.wins >= SEKITORI_KACHI_KOSHI_WINS
+    ) {
       sekitoriKK.add(r.heyaId);
     }
   }

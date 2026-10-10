@@ -56,9 +56,7 @@ describe("WorldFactory — gyoji & shimpan pool generation", () => {
 
 describe("WorldFactory — myoseki market", () => {
   it("populates world.myosekiMarket with stocks and history", async () => {
-    const { generateInitialWorld } = await import(
-      "@/engine/systems/generation/WorldFactory"
-    );
+    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory");
     const world = generateInitialWorld("test-myoseki-market");
     expect(world.myosekiMarket).toBeDefined();
     expect(Object.keys(world.myosekiMarket!.stocks).length).toBeGreaterThan(0);
@@ -66,9 +64,7 @@ describe("WorldFactory — myoseki market", () => {
   });
 
   it("assigns stock to active oyakata", async () => {
-    const { generateInitialWorld } = await import(
-      "@/engine/systems/generation/WorldFactory"
-    );
+    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory");
     const world = generateInitialWorld("test-myoseki-oyakata");
     const stocks = Object.values(world.myosekiMarket!.stocks);
     const owned = stocks.filter((s) => s.ownerId !== "JSA");

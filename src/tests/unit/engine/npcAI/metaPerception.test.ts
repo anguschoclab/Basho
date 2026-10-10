@@ -30,7 +30,11 @@ describe("buildMetaPerception", () => {
         tone: "explosive",
         drift: { oshidashi: 1.4 },
         history: [
-          { year: 2030, tone: "explosive", familyShares: { push: 0.62, belt: 0.2, speed: 0.1, trick: 0.08 } },
+          {
+            year: 2030,
+            tone: "explosive",
+            familyShares: { push: 0.62, belt: 0.2, speed: 0.1, trick: 0.08 },
+          },
         ],
       },
     });
@@ -57,7 +61,11 @@ describe("buildMetaPerception", () => {
         tone: "classic",
         drift: {},
         history: [
-          { year: 2030, tone: "classic", familyShares: { push: 0.25, belt: 0.5, speed: 0.15, trick: 0.1 } },
+          {
+            year: 2030,
+            tone: "classic",
+            familyShares: { push: 0.25, belt: 0.5, speed: 0.15, trick: 0.1 },
+          },
         ],
       },
       globalKimariteStats: {},
@@ -80,8 +88,16 @@ describe("buildMetaPerception", () => {
         tone: "explosive",
         drift: {},
         history: [
-          { year: 2029, tone: "explosive", familyShares: { push: 0.45, belt: 0.3, speed: 0.15, trick: 0.1 } },
-          { year: 2030, tone: "explosive", familyShares: { push: 0.6, belt: 0.22, speed: 0.1, trick: 0.08 } },
+          {
+            year: 2029,
+            tone: "explosive",
+            familyShares: { push: 0.45, belt: 0.3, speed: 0.15, trick: 0.1 },
+          },
+          {
+            year: 2030,
+            tone: "explosive",
+            familyShares: { push: 0.6, belt: 0.22, speed: 0.1, trick: 0.08 },
+          },
         ],
       },
     });
@@ -98,8 +114,16 @@ describe("buildMetaPerception", () => {
         tone: "explosive",
         drift: {},
         history: [
-          { year: 2029, tone: "explosive", familyShares: { push: 0.6, belt: 0.2, speed: 0.1, trick: 0.1 } },
-          { year: 2030, tone: "explosive", familyShares: { push: 0.38, belt: 0.34, speed: 0.15, trick: 0.13 } },
+          {
+            year: 2029,
+            tone: "explosive",
+            familyShares: { push: 0.6, belt: 0.2, speed: 0.1, trick: 0.1 },
+          },
+          {
+            year: 2030,
+            tone: "explosive",
+            familyShares: { push: 0.38, belt: 0.34, speed: 0.15, trick: 0.13 },
+          },
         ],
       },
     });
@@ -160,7 +184,12 @@ describe("EraDriftService meta history", () => {
     expect(entry.year).toBe(2031);
     expect(entry.tone).toBe("explosive"); // push-dominant year
     expect(entry.familyShares.push).toBeGreaterThan(entry.familyShares.belt);
-    expect(entry.familyShares.push + entry.familyShares.belt + entry.familyShares.speed + entry.familyShares.trick).toBeCloseTo(1, 5);
+    expect(
+      entry.familyShares.push +
+        entry.familyShares.belt +
+        entry.familyShares.speed +
+        entry.familyShares.trick
+    ).toBeCloseTo(1, 5);
   });
 
   it("preserves prior history across the yearly meta overwrite and caps the window", () => {
@@ -190,7 +219,11 @@ describe("meta serialization", () => {
         tone: "explosive",
         drift: { oshidashi: 1.2 },
         history: [
-          { year: 2030, tone: "explosive", familyShares: { push: 0.6, belt: 0.2, speed: 0.1, trick: 0.1 } },
+          {
+            year: 2030,
+            tone: "explosive",
+            familyShares: { push: 0.6, belt: 0.2, speed: 0.1, trick: 0.1 },
+          },
         ],
       },
     });
@@ -212,7 +245,11 @@ describe("buildLeaguePerception", () => {
         tone: "explosive",
         drift: {},
         history: [
-          { year: 2030, tone: "explosive", familyShares: { push: 0.6, belt: 0.2, speed: 0.1, trick: 0.1 } },
+          {
+            year: 2030,
+            tone: "explosive",
+            familyShares: { push: 0.6, belt: 0.2, speed: 0.1, trick: 0.1 },
+          },
         ],
       },
       heyas: new Map(),

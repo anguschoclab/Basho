@@ -203,9 +203,7 @@ export function CandidateCard({ c, state }: { c: CandidateDigestEntry; state: St
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              {isSelected && (
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              )}
+              {isSelected && <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
               <h3 className="font-display font-semibold">
                 {c.visibilityBand === "hidden"
                   ? "Unknown Prospect"
@@ -257,10 +255,7 @@ export function CandidateCard({ c, state }: { c: CandidateDigestEntry; state: St
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
             <div className="flex items-center gap-1">
               <Search className="h-3 w-3 text-muted-foreground" />
-              <ScoutingConfidenceBadge
-                scoutLevel={c.scoutLevel}
-                hasBias={c.hasBias ?? false}
-              />
+              <ScoutingConfidenceBadge scoutLevel={c.scoutLevel} hasBias={c.hasBias ?? false} />
             </div>
 
             <div className="flex gap-1">
@@ -281,9 +276,7 @@ export function CandidateCard({ c, state }: { c: CandidateDigestEntry; state: St
                   variant="default"
                   size="sm"
                   disabled={
-                    state.limitReached &&
-                    c.nationality !== "Japan" &&
-                    c.nationality !== "Japanese"
+                    state.limitReached && c.nationality !== "Japan" && c.nationality !== "Japanese"
                   }
                   className="h-7 text-xs gap-1"
                   onClick={(e) => {

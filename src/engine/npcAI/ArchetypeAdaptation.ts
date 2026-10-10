@@ -192,7 +192,12 @@ export function updateMetaAdaptation(
     if (observed && prev?.committedPosture && prev.committedFamily === observed && magnitudeOk) {
       return {
         state,
-        adaptation: adaptationForPosture(prev.committedPosture, observed, recoveryOverride, reasoning),
+        adaptation: adaptationForPosture(
+          prev.committedPosture,
+          observed,
+          recoveryOverride,
+          reasoning
+        ),
       };
     }
     return { state, adaptation: { ...NO_ADAPTATION, recoveryOverride, reasoning } };

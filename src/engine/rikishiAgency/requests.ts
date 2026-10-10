@@ -59,7 +59,8 @@ export function resolveNPCRequest(
     case "seek_transfer":
       // Transfers are almost always refused — only genuinely compassionate
       // stables let a miserable rikishi walk.
-      return compassion >= 70 && (oyakata.archetype === "nurturer" || oyakata.archetype === "indulgent")
+      return compassion >= 70 &&
+        (oyakata.archetype === "nurturer" || oyakata.archetype === "indulgent")
         ? "grant"
         : "deny";
     case "retirement_consideration":
@@ -70,7 +71,9 @@ export function resolveNPCRequest(
       return pickMentor(world, r) ? "grant" : "deny";
     case "tactic_dispute":
       // Traditionalists dismiss style complaints; adaptive minds listen.
-      return tradition < 60 || oyakata.archetype === "scientist" || oyakata.archetype === "strategist"
+      return tradition < 60 ||
+        oyakata.archetype === "scientist" ||
+        oyakata.archetype === "strategist"
         ? "grant"
         : "deny";
     default:

@@ -190,10 +190,7 @@ function DayCell({
   const meta = DRILL_METADATA[drill];
   return (
     <div className="relative">
-      <Select
-        value={drill}
-        onValueChange={(v) => onPlanUpdate(rikishiId, day.id, v as DrillType)}
-      >
+      <Select value={drill} onValueChange={(v) => onPlanUpdate(rikishiId, day.id, v as DrillType)}>
         <SelectTrigger
           className={cn(
             "h-14 w-full border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-all",
@@ -251,15 +248,9 @@ function RikishiRow({
             "transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-xs",
             isSelected ? "text-primary" : "text-muted-foreground/30 hover:text-primary"
           )}
-          aria-label={
-            isSelected ? `Deselect ${rikishi.shikona}` : `Select ${rikishi.shikona}`
-          }
+          aria-label={isSelected ? `Deselect ${rikishi.shikona}` : `Select ${rikishi.shikona}`}
         >
-          {isSelected ? (
-            <CheckSquare className="h-4 w-4" />
-          ) : (
-            <Square className="h-4 w-4" />
-          )}
+          {isSelected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
         </button>
       </div>
 
@@ -280,9 +271,7 @@ function RikishiRow({
             <RikishiName id={rikishi.id} name={rikishi.shikona} />
           </div>
           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            <span
-              className={cn(isExhausted ? "text-destructive font-bold" : "text-success")}
-            >
+            <span className={cn(isExhausted ? "text-destructive font-bold" : "text-success")}>
               {FATIGUE_LABELS[fb].split(" ")[0]}
             </span>
             <span className="opacity-20">|</span>
@@ -363,8 +352,8 @@ export function RegimenFooter() {
         </h3>
         <p className="text-[11px] text-muted-foreground italic leading-relaxed max-w-2xl font-medium">
           Confirm your weekly training allocation. High-intensity drills like{" "}
-          <span className="font-bold text-warning">Butsukari</span> provide massive Power gains
-          but will exhaust your rikishi. Use{" "}
+          <span className="font-bold text-warning">Butsukari</span> provide massive Power gains but
+          will exhaust your rikishi. Use{" "}
           <span className="font-bold text-success text-[10px] bg-success/10 px-1 rounded">
             SHINDO
           </span>{" "}

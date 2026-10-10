@@ -117,10 +117,10 @@ DISPROVED = claim did not survive production-path verification.
   five yokozuna promotion cases dead; autosim showed zero promotions and the
   `yokozunaPromotionAutoSim` perf test failed deterministically.
 - **Fix:** Headline yusho computed via `calculateDivisionStandings(basho,
-  world, "makuuchi")` with fallback to merged standings only when no makuuchi
+world, "makuuchi")` with fallback to merged standings only when no makuuchi
   rikishi exist. Lower divisions keep per-division winners via
   `divisionYushoMap`.
-- **Evidence:** `yokozunaPromotionPath.test.ts` — the promotion *write* path
+- **Evidence:** `yokozunaPromotionPath.test.ts` — the promotion _write_ path
   control passed pre-fix (narrowing the bug to winner selection).
 - **Status:** FIXED
 
@@ -131,7 +131,7 @@ DISPROVED = claim did not survive production-path verification.
   `src/components/rikishi/RikishiNaturalization.tsx`
 - **Mechanism:** Hardcoded "Staff Development Level 3 / 5" (Progress 60),
   "Naturalization Years: 4 / 10" (Progress 40), construction `Progress
-  value={45}`, and invented naturalization criteria ("60 Basho", "400 Wins",
+value={45}`, and invented naturalization criteria ("60 Basho", "400 Wins",
   "Sanyaku") — none derived from state. The construction queue carries only
   `completionYear`/`completionBasho`; no progress datum exists.
 - **Fix:** Fabricated rows/bars removed; Infrastructure shows the real ETA
@@ -456,14 +456,14 @@ upstream where persona quirks are visible. ORPH-0098 removed from
 
 ## Disproved Findings
 
-| Claim | Verdict |
-|-------|---------|
-| WS8-13: electron output names wrong | DISPROVED — `out/main/main.cjs` verified against a real build |
-| Husky dead | PARTIALLY — fires locally; dead only on fresh clones (R08) |
-| ai-audit orphans (NPC crisis, matchmakingOverride, archiveActivePlan, decisionHistory) | DISPROVED — all wired post-WS work |
-| WS8: 59 worker handlers | CORRECTED — 58 commands / 58 handlers / 7 worker→UI responses |
-| Electron sandbox | Already correct — hunt narrowed to IPC payload validation |
-| `loadFromAutosave` doesn't return bool | CORRECTED — returns boolean; only the prop type lied |
+| Claim                                                                                  | Verdict                                                       |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| WS8-13: electron output names wrong                                                    | DISPROVED — `out/main/main.cjs` verified against a real build |
+| Husky dead                                                                             | PARTIALLY — fires locally; dead only on fresh clones (R08)    |
+| ai-audit orphans (NPC crisis, matchmakingOverride, archiveActivePlan, decisionHistory) | DISPROVED — all wired post-WS work                            |
+| WS8: 59 worker handlers                                                                | CORRECTED — 58 commands / 58 handlers / 7 worker→UI responses |
+| Electron sandbox                                                                       | Already correct — hunt narrowed to IPC payload validation     |
+| `loadFromAutosave` doesn't return bool                                                 | CORRECTED — returns boolean; only the prop type lied          |
 
 ---
 

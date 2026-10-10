@@ -30,14 +30,14 @@ function digest(decision: unknown): string {
   return JSON.stringify(
     decision,
     (_k, v) => (v instanceof Map ? { __map: [...v.entries()].sort() } : v),
-    2,
+    2
   );
 }
 
 function worldWithHeya(
   rikishi: Array<ReturnType<typeof mockRikishi>> = [],
   heyaOverrides: Parameters<typeof makeMockHeya>[1] = {},
-  oyakata?: Oyakata,
+  oyakata?: Oyakata
 ): WorldState {
   const heya = makeMockHeya("heya-1", {
     oyakataId: oyakata?.id,
@@ -88,7 +88,10 @@ describe("makeNPCWeeklyDecision — golden master", () => {
 
   it("yokozuna with 2+ council warnings → intensity reduced", () => {
     const yoko = mockRikishi("r-yoko", {
-      shikona: "Yokoyama", rank: "yokozuna", heyaId: "heya-1", councilWarnings: 2,
+      shikona: "Yokoyama",
+      rank: "yokozuna",
+      heyaId: "heya-1",
+      councilWarnings: 2,
     });
     const world = worldWithHeya([yoko], {}, mockOyakata("oya-1"));
     expect(digest(makeNPCWeeklyDecision(world, "heya-1"))).toMatchSnapshot();
@@ -96,7 +99,12 @@ describe("makeNPCWeeklyDecision — golden master", () => {
 
   it("high-risk roster → injury-risk reduction fires", () => {
     const rs = [1, 2, 3, 4].map((i) =>
-      mockRikishi(`r-hr${i}`, { shikona: `Risky${i}`, heyaId: "heya-1", condition: 20, fatigue: 90 }),
+      mockRikishi(`r-hr${i}`, {
+        shikona: `Risky${i}`,
+        heyaId: "heya-1",
+        condition: 20,
+        fatigue: 90,
+      })
     );
     const world = worldWithHeya(rs, {}, mockOyakata("oya-1"));
     expect(digest(makeNPCWeeklyDecision(world, "heya-1"))).toMatchSnapshot();

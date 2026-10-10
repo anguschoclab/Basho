@@ -242,9 +242,7 @@ describe("P1.2: Basho pipeline — already-played bouts are not re-simulated", (
     // that preserves the existing results unchanged.
     (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => {
       const basho = w.currentBasho;
-      const pending = (basho?.matches ?? []).filter(
-        (m) => m.day === basho!.day && !m.result
-      );
+      const pending = (basho?.matches ?? []).filter((m) => m.day === basho!.day && !m.result);
       expect(pending.length).toBe(0);
       return { world: w, results: [] };
     });

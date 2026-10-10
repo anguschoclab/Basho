@@ -81,9 +81,7 @@ export default function HallOfFamePage() {
           />
         )}
 
-        {world.bloodlineRegistry && (
-          <DynastyRegistry traits={world.bloodlineRegistry.traits} />
-        )}
+        {world.bloodlineRegistry && <DynastyRegistry traits={world.bloodlineRegistry.traits} />}
 
         <HofTabsRow
           totalInductees={totalInductees}

@@ -65,9 +65,7 @@ export function RivalOyakataCard({
           </div>
         )}
 
-        {tenureSummary && (
-          <div className="text-xs text-muted-foreground">{tenureSummary}</div>
-        )}
+        {tenureSummary && <div className="text-xs text-muted-foreground">{tenureSummary}</div>}
 
         {planId && (
           <div className="text-xs text-muted-foreground">

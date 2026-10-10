@@ -15,4 +15,3 @@ export const LEGACY_TIERS = {
   dynasty: { label: "Elite Dynasty", icon: Trophy },
   legend: { label: "Eternal Legend", icon: Star },
 };
-

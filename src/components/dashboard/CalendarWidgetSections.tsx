@@ -66,13 +66,7 @@ export function BashoDayProgress({ bashoDay }: { bashoDay: number }) {
 }
 
 /** Next basho indicator with seasonal flavor text. */
-export function NextBashoNote({
-  world,
-  bashoName,
-}: {
-  world: WorldState;
-  bashoName: string;
-}) {
+export function NextBashoNote({ world, bashoName }: { world: WorldState; bashoName: string }) {
   const info = BASHO_CALENDAR[bashoName as BashoName];
   const season = info?.season;
   const flavorText = season ? getSeasonalFlavor(season, world.seed) : null;
@@ -87,9 +81,7 @@ export function NextBashoNote({
         {info?.location && <span className="ml-1 opacity-70">· {info.location}</span>}
       </div>
       {flavorText && (
-        <p className="text-[10px] text-muted-foreground/60 italic leading-relaxed">
-          {flavorText}
-        </p>
+        <p className="text-[10px] text-muted-foreground/60 italic leading-relaxed">{flavorText}</p>
       )}
     </div>
   );

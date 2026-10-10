@@ -35,11 +35,14 @@ function crownYushoWinner(
   world: WorldState,
   basho: BashoState,
   sortedStandings: StandingEntry[]
-): { yushoEntry: StandingEntry | undefined; finalStandings: StandingEntry[]; playoffMatches: MatchSchedule[] } {
+): {
+  yushoEntry: StandingEntry | undefined;
+  finalStandings: StandingEntry[];
+  playoffMatches: MatchSchedule[];
+} {
   const makuuchi = sortedStandings.filter((s) => s.rikishi?.division === "makuuchi");
-  const finalStandings = sortStandings(
-    makuuchi.length > 0 ? makuuchi : sortedStandings,
-    (a, b) => stableTieBreak(a.id, b.id)
+  const finalStandings = sortStandings(makuuchi.length > 0 ? makuuchi : sortedStandings, (a, b) =>
+    stableTieBreak(a.id, b.id)
   );
 
   const topWins = finalStandings[0]?.wins ?? -1;
@@ -317,15 +320,7 @@ export function simulateEntireBasho(
 
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    const out = simulateDay(
-      workingWorld,
-      activeBasho,
-      day,
-      seed,
-      standings,
-      keyBouts,
-      injuries
-    );
+    const out = simulateDay(workingWorld, activeBasho, day, seed, standings, keyBouts, injuries);
     workingWorld = out.world;
     activeBasho = out.basho;
   }
@@ -345,7 +340,11 @@ export function simulateEntireBasho(
       losses: stats.losses,
     });
   }
-  const { yushoEntry, finalStandings, playoffMatches } = crownYushoWinner(workingWorld, activeBasho, sortedStandings);
+  const { yushoEntry, finalStandings, playoffMatches } = crownYushoWinner(
+    workingWorld,
+    activeBasho,
+    sortedStandings
+  );
 
   const yushoWinner = {
     id: yushoEntry?.id || "",

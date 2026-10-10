@@ -5,7 +5,12 @@
 import type { PbpPipeline } from "./pipeline";
 import type { PbpTag } from "./pbpTypes";
 import { BASHO_DAYS } from "../../../constants/engine/calendar";
-import { BIRTHDAY_WINDOW_DAYS, FIRST_WIN_MENTION_MIN_DAY, LEADERBOARD_MIN_LEADER_WINS, WINLESS_MENTION_MIN_DAY } from "../../../constants/engine/generation";
+import {
+  BIRTHDAY_WINDOW_DAYS,
+  FIRST_WIN_MENTION_MIN_DAY,
+  LEADERBOARD_MIN_LEADER_WINS,
+  WINLESS_MENTION_MIN_DAY,
+} from "../../../constants/engine/generation";
 import { BardEngine } from "../../bard/BardEngine";
 import { isPlayoffScenario, isYushoContention } from "../boutContention";
 
@@ -27,7 +32,6 @@ function beatHometown(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatBirthday(p: PbpPipeline): void {
@@ -51,7 +55,6 @@ function beatBirthday(p: PbpPipeline): void {
       }
     }
   }
-
 }
 
 function beatWinlessFirstWin(p: PbpPipeline): void {
@@ -103,7 +106,6 @@ function beatWinlessFirstWin(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatTournamentDay(p: PbpPipeline): void {
@@ -176,7 +178,6 @@ function beatTournamentDay(p: PbpPipeline): void {
       ["tournament_context"]
     );
   }
-
 }
 
 function beatTitleStakes(p: PbpPipeline): void {
@@ -195,7 +196,6 @@ function beatTitleStakes(p: PbpPipeline): void {
       tags
     );
   }
-
 }
 
 function beatLeaderboard(p: PbpPipeline): void {
@@ -238,7 +238,6 @@ function beatLeaderboard(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatPlayoffImplications(p: PbpPipeline): void {
@@ -270,7 +269,6 @@ function beatPlayoffImplications(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatKenshoMention(p: PbpPipeline): void {
@@ -289,7 +287,6 @@ function beatKenshoMention(p: PbpPipeline): void {
       ["kensho"]
     );
   }
-
 }
 
 function beatBoutOfTheDay(p: PbpPipeline): void {
@@ -312,7 +309,6 @@ function beatBoutOfTheDay(p: PbpPipeline): void {
       ["tournament_context"]
     );
   }
-
 }
 
 export function narrateStakes(p: PbpPipeline): void {

@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  initPhysicalBody,
-  isBodyFalling,
-  tawaraBounceResistance,
-} from "@/engine/bout/boutSpatial";
+import { initPhysicalBody, isBodyFalling, tawaraBounceResistance } from "@/engine/bout/boutSpatial";
 import { mockRikishi } from "../utils";
 import { TAWARA_RADIUS } from "@/engine/types/combat-spatial";
 
@@ -57,5 +53,4 @@ describe("boutSpatial", () => {
       expect(isBodyFalling(body)).toBe(true);
     });
   });
-
 });

@@ -13,7 +13,6 @@ import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { rngForWorld } from "../../rng";
 
-
 /** Base asking prices by prestige tier (in yen). */
 const MYOSEKI_BASE_PRICES: Record<MyosekiStock["prestigeTier"], number> = {
   elite: 500_000_000,

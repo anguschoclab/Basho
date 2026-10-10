@@ -10,11 +10,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { checkRetirement, _generateRookie } from "@/engine/lifecycle";
-import {
-  generateShikona,
-  generateRikishiName,
-  generateOyakataName,
-} from "@/engine/shikona";
+import { generateShikona, generateRikishiName, generateOyakataName } from "@/engine/shikona";
 import { compareBanzuke, computeVariableSanyakuCounts } from "@/engine/banzuke";
 import { SeededRNG } from "@/engine/rng";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "./utils";
@@ -22,13 +18,13 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 
 describe("checkRetirement — golden master", () => {
-  const cases: Array<[
-    label: string,
-    birthYear: number,
-    overrides: Partial<Rikishi>,
-  ]> = [
+  const cases: Array<[label: string, birthYear: number, overrides: Partial<Rikishi>]> = [
     ["young-healthy", 2005, {}],
-    ["young-career-injury", 2005, { injured: true, injuryWeeksRemaining: 60, injuryStatus: { severity: "serious" } as never }],
+    [
+      "young-career-injury",
+      2005,
+      { injured: true, injuryWeeksRemaining: 60, injuryStatus: { severity: "serious" } as never },
+    ],
     ["age-27", 1999, {}],
     ["age-30-decline", 1996, {}],
     ["age-35", 1991, {}],
@@ -97,10 +93,20 @@ describe("shikona.ts names — golden master", () => {
 });
 
 describe("banzuke.ts flat exports — golden master", () => {
-  function entry(id: string, rank: string, rankNumber: number | undefined, side: "east" | "west", division = "makuuchi"): BanzukeEntry {
+  function entry(
+    id: string,
+    rank: string,
+    rankNumber: number | undefined,
+    side: "east" | "west",
+    division = "makuuchi"
+  ): BanzukeEntry {
     return { rikishiId: id, position: { rank, rankNumber, side }, division } as never;
   }
-  function snap(ids: string[], ranks: Array<[string, number | undefined, "east" | "west"]>, division = "makuuchi") {
+  function snap(
+    ids: string[],
+    ranks: Array<[string, number | undefined, "east" | "west"]>,
+    division = "makuuchi"
+  ) {
     return {
       divisions: {
         [division]: {
@@ -114,8 +120,22 @@ describe("banzuke.ts flat exports — golden master", () => {
   }
 
   it("compareBanzuke movement classification", () => {
-    const prev = snap(["r1", "r2", "r3"], [["maegashira", 1, "east"], ["maegashira", 2, "east"], ["maegashira", 3, "east"]]);
-    const curr = snap(["r1", "r2", "r4"], [["komusubi", undefined, "east"], ["maegashira", 5, "west"], ["maegashira", 1, "east"]]);
+    const prev = snap(
+      ["r1", "r2", "r3"],
+      [
+        ["maegashira", 1, "east"],
+        ["maegashira", 2, "east"],
+        ["maegashira", 3, "east"],
+      ]
+    );
+    const curr = snap(
+      ["r1", "r2", "r4"],
+      [
+        ["komusubi", undefined, "east"],
+        ["maegashira", 5, "west"],
+        ["maegashira", 1, "east"],
+      ]
+    );
     const rikishiMap = new Map([
       ["r1", mockRikishi("r1")],
       ["r2", mockRikishi("r2")],
@@ -135,7 +155,10 @@ describe("banzuke.ts flat exports — golden master", () => {
       entry("m1", "maegashira", 1, "east"),
     ];
     const perf = new Map<string, BashoPerformance>([
-      ["o1", { rikishiId: "o1", wins: 13, losses: 2, absences: 0, promoteToYokozuna: true } as never],
+      [
+        "o1",
+        { rikishiId: "o1", wins: 13, losses: 2, absences: 0, promoteToYokozuna: true } as never,
+      ],
       ["s1", { rikishiId: "s1", wins: 12, losses: 3, absences: 0 } as never],
       ["k1", { rikishiId: "k1", wins: 9, losses: 6, absences: 0 } as never],
       ["m1", { rikishiId: "m1", wins: 14, losses: 1, absences: 0 } as never],

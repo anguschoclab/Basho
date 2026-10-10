@@ -216,9 +216,7 @@ export function PendingMediaCard({ events }: { events: NonNullable<WorldState["g
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-sm font-medium capitalize">
-                  {event.type.replace("_", " ")}
-                </p>
+                <p className="text-sm font-medium capitalize">{event.type.replace("_", " ")}</p>
                 <p className="text-xs text-muted-foreground">{event.reason}</p>
               </div>
               <Badge variant="outline" className="text-[10px] shrink-0">
@@ -280,13 +278,7 @@ export function PendingMediaCard({ events }: { events: NonNullable<WorldState["g
 }
 
 /** Top-headlines list with beat filtering. */
-export function HeadlinesCard({
-  world,
-  digest,
-}: {
-  world: WorldState;
-  digest: MediaDigest;
-}) {
+export function HeadlinesCard({ world, digest }: { world: WorldState; digest: MediaDigest }) {
   const [beatFilter, setBeatFilter] = useState<Set<MediaBeat>>(new Set());
 
   const allHeadlines: EnrichedHeadline[] = (digest?.headlines ?? [])
@@ -352,9 +344,7 @@ export function HotRikishiCard({ digest }: { digest: MediaDigest }) {
       </CardHeader>
       <CardContent>
         {hotRikishi.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-4">
-            No media heat data yet.
-          </p>
+          <p className="text-muted-foreground text-sm text-center py-4">No media heat data yet.</p>
         ) : (
           <div className="space-y-2">
             {hotRikishi.map(({ id, heat, rikishi, history }) => {
@@ -410,9 +400,7 @@ export function HeyaPressureCard({ digest }: { digest: MediaDigest }) {
       </CardHeader>
       <CardContent>
         {pressuredHeya.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-4">
-            No pressure data yet.
-          </p>
+          <p className="text-muted-foreground text-sm text-center py-4">No pressure data yet.</p>
         ) : (
           <div className="space-y-2">
             {pressuredHeya.map(({ id, pressure, heya }) => (
@@ -430,9 +418,7 @@ export function HeyaPressureCard({ digest }: { digest: MediaDigest }) {
                     style={{ width: `${Math.min(100, pressure)}%` }}
                   />
                 </div>
-                <span className="text-xs font-mono w-8 text-right">
-                  {Math.round(pressure)}
-                </span>
+                <span className="text-xs font-mono w-8 text-right">{Math.round(pressure)}</span>
               </div>
             ))}
           </div>

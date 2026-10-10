@@ -134,7 +134,7 @@ cleared the historical registry — this registry covers only fresh deltas.
 ## Doc Drift
 
 - **D01: CLAUDE.md slice list** — names `coreSlice, financeSlice, rosterSlice,
-  bookmarkSlice` as files. Reality: `bashoSlice`, `timeSlice`, `heyaSlice` +
+bookmarkSlice` as files. Reality: `bashoSlice`, `timeSlice`, `heyaSlice` +
   `coreSlice` inside `gameReducer.ts`. (After B03/B04 fixes: `bashoSlice` +
   `coreSlice` only.)
 - **D02: CLAUDE.md mock-factory line** — points at `src/tests/unit/engine/utils.ts`

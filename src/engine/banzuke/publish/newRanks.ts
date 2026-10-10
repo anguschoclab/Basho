@@ -166,11 +166,7 @@ function checkOzekiRankTransitions(
   }
 
   // Ozeki reclaim detection: demoted ozeki restored to ozeki rank (10+ win reclaim)
-  if (
-    oldRank !== "ozeki" &&
-    newEntry.position.rank === "ozeki" &&
-    rikishi.wasDemotedFromOzeki
-  ) {
+  if (oldRank !== "ozeki" && newEntry.position.rank === "ozeki" && rikishi.wasDemotedFromOzeki) {
     builder.updateRikishi(newEntry.rikishiId, {
       wasDemotedFromOzeki: false,
     });

@@ -21,7 +21,6 @@ function beatOpeningVenue(p: PbpPipeline): void {
     intensity,
   });
   push(openingRes.text, "opening");
-
 }
 
 function beatDynasty(p: PbpPipeline): void {
@@ -44,7 +43,6 @@ function beatDynasty(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatDramaOpening(p: PbpPipeline): void {
@@ -61,7 +59,6 @@ function beatDramaOpening(p: PbpPipeline): void {
     });
     push(dramaRes.text, "opening", ["drama"]);
   }
-
 }
 
 function beatRivalryContext(p: PbpPipeline): void {
@@ -214,7 +211,6 @@ function beatStreakCallout(p: PbpPipeline): void {
       ["dominant"]
     );
   }
-
 }
 
 export function narratePrelude(p: PbpPipeline): void {

@@ -3,7 +3,10 @@
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
 import type { PbpPipeline } from "./pipeline";
-import { CAREER_BOUT_MILESTONES, CAREER_WIN_MILESTONES } from "../../../constants/engine/generation";
+import {
+  CAREER_BOUT_MILESTONES,
+  CAREER_WIN_MILESTONES,
+} from "../../../constants/engine/generation";
 import { isKachiKoshi, isMakeKoshi } from "../../banzuke/banzukeHelpers";
 import { BardEngine } from "../../bard/BardEngine";
 
@@ -21,11 +24,19 @@ function beatPostBoutReaction(p: PbpPipeline): void {
     "post_bout",
     result.upset ? ["upset"] : []
   );
-
 }
 
 function beatPostBoutRecords(p: PbpPipeline): void {
-  const { loserLosses, loserRikishi, loserWins, postBoutRng, push, winnerLosses, winnerRikishi, winnerWins } = p;
+  const {
+    loserLosses,
+    loserRikishi,
+    loserWins,
+    postBoutRng,
+    push,
+    winnerLosses,
+    winnerRikishi,
+    winnerWins,
+  } = p;
   // 12b. Post-bout records update
 
   push(
@@ -48,11 +59,20 @@ function beatPostBoutRecords(p: PbpPipeline): void {
     "post_bout",
     []
   );
-
 }
 
 function beatBothEven(p: PbpPipeline): void {
-  const { day, loserLosses, loserRikishi, loserWins, postBoutRng, push, winnerLosses, winnerRikishi, winnerWins } = p;
+  const {
+    day,
+    loserLosses,
+    loserRikishi,
+    loserWins,
+    postBoutRng,
+    push,
+    winnerLosses,
+    winnerRikishi,
+    winnerWins,
+  } = p;
   // 12c. Both even after this bout
   if (winnerWins + 1 === loserWins && winnerLosses === loserLosses + 1) {
     push(
@@ -69,7 +89,6 @@ function beatBothEven(p: PbpPipeline): void {
       []
     );
   }
-
 }
 
 function beatPostBoutCareerImpact(p: PbpPipeline): void {
@@ -108,7 +127,6 @@ function beatPostBoutCareerImpact(p: PbpPipeline): void {
       break;
     }
   }
-
 }
 
 function beatPostBoutBoutMilestone(p: PbpPipeline): void {
@@ -131,11 +149,19 @@ function beatPostBoutBoutMilestone(p: PbpPipeline): void {
       }
     }
   }
-
 }
 
 function beatPostBoutKachi(p: PbpPipeline): void {
-  const { bashoInfo, day, loserLosses, loserRikishi, postBoutRng, push, winnerRikishi, winnerWins } = p;
+  const {
+    bashoInfo,
+    day,
+    loserLosses,
+    loserRikishi,
+    postBoutRng,
+    push,
+    winnerRikishi,
+    winnerWins,
+  } = p;
   // 14. Post-bout kachi-koshi / make-koshi confirmation
   if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
     push(
@@ -202,7 +228,6 @@ function beatPostBoutKachi(p: PbpPipeline): void {
       ["make_koshi"]
     );
   }
-
 }
 
 export function narratePostBout(p: PbpPipeline): void {

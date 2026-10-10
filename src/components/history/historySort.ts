@@ -39,4 +39,3 @@ export function sortHistory(
   if (!fn) return [...rawHistory].reverse();
   return [...rawHistory].sort((a, b) => compareBy(a, b, fn, sortOrder));
 }
-

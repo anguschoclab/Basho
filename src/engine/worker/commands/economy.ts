@@ -20,12 +20,7 @@ export function economyCommands(rt: WorkerRuntime): CommandHandlerMap {
   return {
     BUY_MYOSEKI: (cmd) => {
       if (rt.world) {
-        const impact = myoseki.buyMyoseki(
-          rt.world,
-          cmd.buyerId,
-          cmd.buyerHeyaId,
-          cmd.myosekiId
-        );
+        const impact = myoseki.buyMyoseki(rt.world, cmd.buyerId, cmd.buyerHeyaId, cmd.myosekiId);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

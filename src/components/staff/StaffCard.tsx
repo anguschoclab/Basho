@@ -49,8 +49,7 @@ function FireButton({ staff, onFire }: { staff: Staff; onFire: (id: string) => v
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently remove {staff.name} from your stable. You cannot undo
-            this action.
+            This will permanently remove {staff.name} from your stable. You cannot undo this action.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -48,8 +48,7 @@ export function phase01_week_rikishi_agency(world: WorldState): StateImpact {
     const disposition = deriveDisposition(world, r);
     const generated = generateRequests(world, r, disposition, pending.concat(newRequests));
     builder.updateRikishi(rid, {
-      agency:
-        generated.length > 0 ? { ...disposition, lastRequestWeek: week } : disposition,
+      agency: generated.length > 0 ? { ...disposition, lastRequestWeek: week } : disposition,
     });
     newRequests.push(...generated);
 

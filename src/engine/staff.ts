@@ -95,7 +95,13 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
     "renowned",
     "legendary",
   ];
-  const LOYALTY_BANDS: StaffLoyaltyBand[] = ["mercenary", "wavering", "stable", "devoted", "unshakable"];
+  const LOYALTY_BANDS: StaffLoyaltyBand[] = [
+    "mercenary",
+    "wavering",
+    "stable",
+    "devoted",
+    "unshakable",
+  ];
   const COMPETENCE_BANDS: CompetenceBand[] = [
     "feeble",
     "limited",

@@ -125,7 +125,13 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       nextOya.managerFlags = persona.managerFlags;
       nextOya.memory = consolidateOyakataMemoryPure(world, nextOya, perception);
 
-      const aiCtx: AIContext = buildAIContext(world, heya.id, nextOya, leaguePerception, perception);
+      const aiCtx: AIContext = buildAIContext(
+        world,
+        heya.id,
+        nextOya,
+        leaguePerception,
+        perception
+      );
 
       const activePlan = nextOya.memory?.activePlan;
       const needsReplan = shouldReplan(aiCtx, activePlan);
@@ -593,8 +599,7 @@ function applyPostDecisionBookkeeping(
             ? "moderate"
             : "minor";
       builder.merge(
-        handleNPCMediaEvent(world, heya.id, event.id, event.incident ?? event.type, severity)
-          .impact
+        handleNPCMediaEvent(world, heya.id, event.id, event.incident ?? event.type, severity).impact
       );
     }
   }

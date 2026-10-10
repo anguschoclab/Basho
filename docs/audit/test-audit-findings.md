@@ -8,6 +8,6 @@ Scanned 879 test files; 1 files flagged.
 intentional regression pin asserting a file was deleted (e.g. menu-core.tsx),
 not a stale subject.
 
-| File | Kind | Missing subject | Detail |
-|------|------|-----------------|--------|
+| File                                       | Kind    | Missing subject                   | Detail                             |
+| ------------------------------------------ | ------- | --------------------------------- | ---------------------------------- |
 | `src/tests/unit/audit/orphan-gaps.test.ts` | fs-path | `src/components/ui/menu-core.tsx` | join(...) resolves to missing path |

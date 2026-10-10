@@ -125,7 +125,9 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
 
           <div className="flex gap-4 p-4 rounded-xl bg-card/50 border border-border/50">
             <div className="shrink-0 mt-1">
-              {categoryIconMap[event.category] || <Info className="h-5 w-5 text-muted-foreground" />}
+              {categoryIconMap[event.category] || (
+                <Info className="h-5 w-5 text-muted-foreground" />
+              )}
             </div>
             <div className="space-y-1">
               <div className="text-xs uppercase font-bold text-muted-foreground tracking-widest">

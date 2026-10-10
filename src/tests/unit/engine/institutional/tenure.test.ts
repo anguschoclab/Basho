@@ -44,7 +44,9 @@ function tenureWorld(): { world: WorldState; oya: Oyakata } {
   return { world, oya };
 }
 
-function bashoWith(records: Record<string, { wins: number; losses: number; heyaId: string }>): BashoState {
+function bashoWith(
+  records: Record<string, { wins: number; losses: number; heyaId: string }>
+): BashoState {
   const standings = new Map(
     Object.entries(records).map(([id, s]) => [id, { wins: s.wins, losses: s.losses }])
   );
@@ -76,10 +78,7 @@ describe("applyBashoTenure", () => {
 
   it("credits a championship to the yusho winner's oyakata", () => {
     const { world } = tenureWorld();
-    world.rikishi.set(
-      "r1",
-      MockFactory.createRikishi({ id: "r1", heyaId: "h1" })
-    );
+    world.rikishi.set("r1", MockFactory.createRikishi({ id: "r1", heyaId: "h1" }));
     const basho = bashoWith({ r1: { wins: 14, losses: 1, heyaId: "h1" } });
 
     const builder = createImpactBuilder("test");
@@ -92,7 +91,11 @@ describe("applyBashoTenure", () => {
     const { world } = tenureWorld();
     world.rikishi.set(
       "r1",
-      MockFactory.createRikishi({ id: "r1", heyaId: "h1", division: "makuuchi" } as Partial<Rikishi>)
+      MockFactory.createRikishi({
+        id: "r1",
+        heyaId: "h1",
+        division: "makuuchi",
+      } as Partial<Rikishi>)
     );
     // 2-13: a clear losing basho for a sekitori entrant.
     const basho = bashoWith({ r1: { wins: 2, losses: 13, heyaId: "h1" } });
@@ -122,17 +125,13 @@ describe("producer instrumentation", () => {
 
   it("reportScandal at major severity increments majorScandals", () => {
     const { world } = tenureWorld();
-    const next = resolveImpacts(world, [
-      reportScandal(world, "h1", "major", "violence incident"),
-    ]);
+    const next = resolveImpacts(world, [reportScandal(world, "h1", "major", "violence incident")]);
     expect(next.oyakata.get("o1")!.tenure?.majorScandals).toBe(1);
   });
 
   it("minor scandals do not count", () => {
     const { world } = tenureWorld();
-    const next = resolveImpacts(world, [
-      reportScandal(world, "h1", "minor", "late night out"),
-    ]);
+    const next = resolveImpacts(world, [reportScandal(world, "h1", "minor", "late night out")]);
     expect(next.oyakata.get("o1")!.tenure?.majorScandals ?? 0).toBe(0);
   });
 });

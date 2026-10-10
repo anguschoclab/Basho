@@ -31,9 +31,7 @@ describe("NPC weekly decision — single canonical path", () => {
     const files = findFiles(join(SRC, "engine"), {
       exclude: /\.(test|spec)\./,
     });
-    const offenders = files.filter((f) =>
-      /\btickWeekNPC\b/.test(readFileSync(f, "utf8"))
-    );
+    const offenders = files.filter((f) => /\btickWeekNPC\b/.test(readFileSync(f, "utf8")));
     expect(offenders).toEqual([]);
   });
 });

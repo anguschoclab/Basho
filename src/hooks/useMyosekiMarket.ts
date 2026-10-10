@@ -50,45 +50,57 @@ export function useMyosekiMarket() {
   const handleBuy = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (!sendCommand({
-      type: "BUY_MYOSEKI",
-      myosekiId: stock.id,
-      buyerId: playerHeya.oyakataId,
-      buyerHeyaId: playerHeya.id,
-    })) return;
+    if (
+      !sendCommand({
+        type: "BUY_MYOSEKI",
+        myosekiId: stock.id,
+        buyerId: playerHeya.oyakataId,
+        buyerHeyaId: playerHeya.id,
+      })
+    )
+      return;
     toast.success(`Acquisition request for ${stock.name} submitted.`);
   };
 
   const handleLease = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (!sendCommand({
-      type: "LEASE_MYOSEKI",
-      myosekiId: stock.id,
-      buyerId: playerHeya.oyakataId,
-    })) return;
+    if (
+      !sendCommand({
+        type: "LEASE_MYOSEKI",
+        myosekiId: stock.id,
+        buyerId: playerHeya.oyakataId,
+      })
+    )
+      return;
     toast.success(`Lease request for ${stock.name} submitted.`);
   };
 
   const handleListForSale = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (!sendCommand({
-      type: "LIST_MYOSEKI_FOR_SALE",
-      myosekiId: stock.id,
-      holderId: playerHeya.oyakataId,
-    })) return;
+    if (
+      !sendCommand({
+        type: "LIST_MYOSEKI_FOR_SALE",
+        myosekiId: stock.id,
+        holderId: playerHeya.oyakataId,
+      })
+    )
+      return;
     toast.success(`${stock.name} listed for sale.`);
   };
 
   const handleEndLease = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (!sendCommand({
-      type: "RETURN_MYOSEKI_LEASE",
-      myosekiId: stock.id,
-      holderId: playerHeya.oyakataId,
-    })) return;
+    if (
+      !sendCommand({
+        type: "RETURN_MYOSEKI_LEASE",
+        myosekiId: stock.id,
+        holderId: playerHeya.oyakataId,
+      })
+    )
+      return;
     toast.success(`Lease on ${stock.name} ended.`);
   };
 

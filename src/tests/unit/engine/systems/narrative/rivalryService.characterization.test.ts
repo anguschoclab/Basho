@@ -16,7 +16,7 @@ function impactDigest(impact: unknown): string {
   return JSON.stringify(
     impact,
     (_k, v) => (v instanceof Map ? { __map: [...v.entries()].sort() } : v),
-    2,
+    2
   );
 }
 
@@ -24,7 +24,10 @@ function baseWorld(rivalriesState?: RivalriesState): WorldState {
   const east = mockRikishi("r-east", { shikona: "Eastho", heyaId: "heya-1" });
   const west = mockRikishi("r-west", { shikona: "Westzan", heyaId: "heya-2" });
   return makeMockWorld({
-    rikishi: new Map([[east.id, east], [west.id, west]]),
+    rikishi: new Map([
+      [east.id, east],
+      [west.id, west],
+    ]),
     activeRikishiIds: new Set([east.id, west.id]),
     rivalriesState,
     week: 7,
@@ -74,7 +77,7 @@ describe("RivalryService — golden master", () => {
 
   it("onBoutResolved — new pair first bout", () => {
     expect(
-      impactDigest(RivalryService.onBoutResolved(baseWorld(), { result: boutResult(), day: 5 })),
+      impactDigest(RivalryService.onBoutResolved(baseWorld(), { result: boutResult(), day: 5 }))
     ).toMatchSnapshot();
   });
 
@@ -87,10 +90,10 @@ describe("RivalryService — golden master", () => {
     expect({
       normal: impactDigest(RivalryService.onBoutResolved(world, { result: boutResult(), day: 5 })),
       upset: impactDigest(
-        RivalryService.onBoutResolved(world, { result: boutResult({ upset: true }), day: 5 }),
+        RivalryService.onBoutResolved(world, { result: boutResult({ upset: true }), day: 5 })
       ),
       kinboshi: impactDigest(
-        RivalryService.onBoutResolved(world, { result: boutResult({ isKinboshi: true }), day: 15 }),
+        RivalryService.onBoutResolved(world, { result: boutResult({ isKinboshi: true }), day: 15 })
       ),
     }).toMatchSnapshot();
   });
@@ -102,7 +105,10 @@ describe("RivalryService — golden master", () => {
     hot.meetings = 4;
     const cold = RivalryService.createFreshPair("r-west", "r-east", baseWorld());
     cold.heat = 10;
-    const state: RivalriesState = { version: "1.0.0", pairs: { [key]: hot, other: cold } } as RivalriesState;
+    const state: RivalriesState = {
+      version: "1.0.0",
+      pairs: { [key]: hot, other: cold },
+    } as RivalriesState;
     expect({
       empty: impactDigest(RivalryService.applyWeeklyDecay(baseWorld())),
       populated: impactDigest(RivalryService.applyWeeklyDecay(baseWorld(state))),
@@ -122,19 +128,19 @@ describe("RivalryService — golden master", () => {
     const world = baseWorld();
     expect({
       nonFriction: impactDigest(
-        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "neutral", 20),
+        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "neutral", 20)
       ),
       tooEarly: impactDigest(
-        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "friction", 5),
+        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "friction", 5)
       ),
       seededOrRngGated_12w: impactDigest(
-        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "friction", 12),
+        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "friction", 12)
       ),
       seededOrRngGated_30w: impactDigest(
-        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "friction", 30),
+        RivalryService.maybeSeedSparringRivalry(world, "r-east", "r-west", "friction", 30)
       ),
       missingRikishi: impactDigest(
-        RivalryService.maybeSeedSparringRivalry(world, "ghost-a", "ghost-b", "friction", 20),
+        RivalryService.maybeSeedSparringRivalry(world, "ghost-a", "ghost-b", "friction", 20)
       ),
     }).toMatchSnapshot();
   });

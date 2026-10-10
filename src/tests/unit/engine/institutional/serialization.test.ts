@@ -29,12 +29,8 @@ describe("institutional state round-trip", () => {
         forcedMergers: 0,
       },
     } as unknown as Oyakata);
-    const back = SerializationService.deserializeWorld(
-      SerializationService.serializeWorld(world)
-    );
-    expect(back.oyakata.get("o1")!.tenure).toEqual(
-      world.oyakata.get("o1")!.tenure
-    );
+    const back = SerializationService.deserializeWorld(SerializationService.serializeWorld(world));
+    expect(back.oyakata.get("o1")!.tenure).toEqual(world.oyakata.get("o1")!.tenure);
   });
 
   it("heya.legacyModifier and world.factionPostures survive save/load", () => {
@@ -45,9 +41,7 @@ describe("institutional state round-trip", () => {
     world.factionPostures = {
       Dewanoumi: { posture: "coordinated_pressure", targetHeyaId: "h-x", setWeek: 9 },
     };
-    const back = SerializationService.deserializeWorld(
-      SerializationService.serializeWorld(world)
-    );
+    const back = SerializationService.deserializeWorld(SerializationService.serializeWorld(world));
     expect(back.heyas.get("h1")!.legacyModifier).toEqual(h.legacyModifier);
     expect(back.factionPostures).toEqual(world.factionPostures);
   });

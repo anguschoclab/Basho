@@ -8,12 +8,7 @@ import { memo } from "react";
 import type { AvatarConfig } from "@/engine/types/avatar";
 import { cn } from "@/lib/utils";
 import type { AvatarExpression } from "./avatarGeometry";
-import {
-  AvatarFallback,
-  AvatarDefs,
-  AvatarHairstyle,
-  AvatarFaceDetails,
-} from "./AvatarParts";
+import { AvatarFallback, AvatarDefs, AvatarHairstyle, AvatarFaceDetails } from "./AvatarParts";
 import { AVATAR_COLORS } from "@/constants/ui/drawingPalette";
 
 interface SumoAvatarProps {

@@ -43,10 +43,7 @@ function sanctionedWorld(status: GovernanceStatus): { world: WorldState; oya: Oy
   const h = MockFactory.createHeya("h1", { oyakataId: "o1" });
   h.governanceStatus = status;
   world.heyas.set("h1", h);
-  world.rikishi.set(
-    "r1",
-    MockFactory.createRikishi({ id: "r1", heyaId: "h1" })
-  );
+  world.rikishi.set("r1", MockFactory.createRikishi({ id: "r1", heyaId: "h1" }));
   const oya = {
     id: "o1",
     heyaId: "h1",
@@ -91,7 +88,9 @@ describe("executeAgentDecisions — sanctioned low-visibility mode", () => {
     const { world, oya } = sanctionedWorld("sanctioned");
     const impact = executeAgentDecisions(world, "h1", baseDecisions(), oya);
     const sabotageEvents = (impact.events ?? []).filter((e) =>
-      JSON.stringify(e.data ?? {}).toLowerCase().includes("sabotage")
+      JSON.stringify(e.data ?? {})
+        .toLowerCase()
+        .includes("sabotage")
     );
     expect(sabotageEvents.length).toBe(0);
   });

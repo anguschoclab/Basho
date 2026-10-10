@@ -95,8 +95,8 @@ export function GovernanceRulingsTab({ derived, resolvedRulingIds }: Props) {
                   </Button>
                 </div>
                 <p className="text-[10px] text-muted-foreground/60 leading-tight">
-                  Lenient reduces scandal impact but costs capital. Harsh maximises the
-                  penalty and earns capital. Standard applies full effects as written.
+                  Lenient reduces scandal impact but costs capital. Harsh maximises the penalty and
+                  earns capital. Standard applies full effects as written.
                 </p>
               </CardContent>
             </Card>

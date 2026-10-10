@@ -163,4 +163,3 @@ export type WorkerEvent =
       type: "PERF_TRACE";
       trace: Array<{ phaseName: string; durationMs: number; impactSize?: number }>;
     };
-

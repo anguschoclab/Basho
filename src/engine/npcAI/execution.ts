@@ -494,10 +494,7 @@ export function applyCrisisRescue(
     // cover the gap with a scaled association bridge grant.
     const loanIssued = (loanImpact.entities?.heyaUpdates?.size ?? 0) > 0;
     if (!loanIssued) {
-      const grant = Math.min(
-        FACTION_BAILOUT_AMOUNT,
-        Math.max(2_000_000, -heya.funds + 2_000_000)
-      );
+      const grant = Math.min(FACTION_BAILOUT_AMOUNT, Math.max(2_000_000, -heya.funds + 2_000_000));
       builder.updateHeya(heya.id, { funds: heya.funds + grant });
       builder.logEvent(
         "FINANCIAL_ALERT",

@@ -10,7 +10,6 @@ import type { Oyakata } from "../types/oyakata";
 import type { Id } from "../types/common";
 import type { AIPlan, OpponentTacticModel, OyakataMemory, OyakataObservation } from "../ai/types";
 
-
 /**
  * Build an empty memory object for a freshly generated oyakata.
  * Safe to call when memory is undefined.

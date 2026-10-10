@@ -90,13 +90,29 @@ const BEATS: Array<[string, number, number]> = [
 
 // Pipeline candidate fields (outer-scope names the beats may consume)
 const PIPELINE = new Set([
-  "push", "ctx", "rng", "intensity", "east", "west", "result", "seed",
-  "bashoName", "day", "world", "lines",
+  "push",
+  "ctx",
+  "rng",
+  "intensity",
+  "east",
+  "west",
+  "result",
+  "seed",
+  "bashoName",
+  "day",
+  "world",
+  "lines",
 ]);
 
 function analyze(blockText: string): { declared: Set<string>; free: Set<string> } {
   const wrapped = `function __f(__p:any){\n${blockText}\n}`;
-  const sf = ts.createSourceFile("block.ts", wrapped, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sf = ts.createSourceFile(
+    "block.ts",
+    wrapped,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS
+  );
   const declared = new Set<string>();
   const bound = new Set<string>(["__p", "__f"]);
   const used = new Set<string>();
@@ -104,17 +120,25 @@ function analyze(blockText: string): { declared: Set<string>; free: Set<string> 
   const collectBound = (name: ts.BindingName | undefined) => {
     if (!name) return;
     if (ts.isIdentifier(name)) bound.add(name.text);
-    else ts.forEachChild(name, (n) => { if (ts.isBindingElement(n)) collectBound(n.name); });
+    else
+      ts.forEachChild(name, (n) => {
+        if (ts.isBindingElement(n)) collectBound(n.name);
+      });
   };
 
   const visit = (node: ts.Node) => {
     // declarations bind names
     if (ts.isVariableDeclaration(node)) collectBound(node.name);
-    else if (ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node)) {
+    else if (
+      ts.isFunctionDeclaration(node) ||
+      ts.isFunctionExpression(node) ||
+      ts.isArrowFunction(node)
+    ) {
       if (ts.isFunctionDeclaration(node) && node.name) bound.add(node.name.text);
       node.parameters.forEach((p) => collectBound(p.name));
     } else if (ts.isParameter(node)) collectBound(node.name);
-    else if (ts.isCatchClause(node) && node.variableDeclaration) collectBound(node.variableDeclaration.name);
+    else if (ts.isCatchClause(node) && node.variableDeclaration)
+      collectBound(node.variableDeclaration.name);
     else if (ts.isClassDeclaration(node) && node.name) bound.add(node.name.text);
     else if (ts.isImportSpecifier(node)) bound.add(node.name.text);
     else if (ts.isEnumMember(node) && ts.isIdentifier(node.name)) bound.add(node.name.text);
@@ -128,7 +152,11 @@ function analyze(blockText: string): { declared: Set<string>; free: Set<string> 
         (ts.isPropertyAssignment(p) && p.name === node) ||
         (ts.isPropertySignature(p) && p.name === node) ||
         (ts.isMethodSignature(p) && p.name === node) ||
-        (ts.isShorthandPropertyAssignment(p) === false && ts.isPropertyAssignment(p) && p.initializer === node ? false : false);
+        (ts.isShorthandPropertyAssignment(p) === false &&
+        ts.isPropertyAssignment(p) &&
+        p.initializer === node
+          ? false
+          : false);
       if (!isPropName) used.add(node.text);
     }
     ts.forEachChild(node, visit);
@@ -144,7 +172,10 @@ function analyze(blockText: string): { declared: Set<string>; free: Set<string> 
           const names: string[] = [];
           const walk = (n: ts.BindingName) => {
             if (ts.isIdentifier(n)) names.push(n.text);
-            else ts.forEachChild(n, (c) => { if (ts.isBindingElement(c)) walk(c.name); });
+            else
+              ts.forEachChild(n, (c) => {
+                if (ts.isBindingElement(c)) walk(c.name);
+              });
           };
           walk(d.name);
           names.forEach((n) => declared.add(n));
@@ -162,13 +193,39 @@ function analyze(blockText: string): { declared: Set<string>; free: Set<string> 
 // irrelevant — we only care about identifiers that came from the FUNCTION's
 // outer params/locals, i.e. not importable).
 const IMPORTABLE = new Set([
-  "BardEngine", "RivalryService", "BloodlineService", "rngFromSeed",
-  "BASHO_DAYS", "KACHI_KOSHI_WINS", "Math", "Object", "Array", "JSON", "Number",
-  "String", "Boolean", "Promise", "Map", "Set", "console", "undefined",
-  "recordKimariteOutcome", "getIntensity", "PbpLine", "PbpPhase", "PbpTag",
-  "buildNarrativeContext", "focusBiasToStyleKey", "isSanyakuPromotionByRank",
-  "SANYAKU_RANKS", "INTENSITY_DRAMATIC", "INTENSITY_UNDERSTATED",
-  "INTERIM_DAYS", "BASHO_NAMES", "countMakuuchiTournaments", "SeededRNG",
+  "BardEngine",
+  "RivalryService",
+  "BloodlineService",
+  "rngFromSeed",
+  "BASHO_DAYS",
+  "KACHI_KOSHI_WINS",
+  "Math",
+  "Object",
+  "Array",
+  "JSON",
+  "Number",
+  "String",
+  "Boolean",
+  "Promise",
+  "Map",
+  "Set",
+  "console",
+  "undefined",
+  "recordKimariteOutcome",
+  "getIntensity",
+  "PbpLine",
+  "PbpPhase",
+  "PbpTag",
+  "buildNarrativeContext",
+  "focusBiasToStyleKey",
+  "isSanyakuPromotionByRank",
+  "SANYAKU_RANKS",
+  "INTENSITY_DRAMATIC",
+  "INTENSITY_UNDERSTATED",
+  "INTERIM_DAYS",
+  "BASHO_NAMES",
+  "countMakuuchiTournaments",
+  "SeededRNG",
 ]);
 
 console.log("beat | top-level decls | free (pipeline deps marked *)");

@@ -15,10 +15,7 @@ import { getH2HReport } from "../../engine/h2h";
 import { RivalryService } from "../../engine/systems/narrative/RivalryService";
 import { projectRikishi } from "../rikishi";
 import * as talentpool from "../../engine/systems/generation/TalentPoolService";
-import {
-  getOrCreateScouted,
-  getScoutingLevel,
-} from "../../engine/scoutingStore";
+import { getOrCreateScouted, getScoutingLevel } from "../../engine/scoutingStore";
 import { getScoutedAttributes } from "../../engine/systems/recruitment/ScoutingService";
 import { EntityCollection } from "../../engine/core/EntityCollection";
 

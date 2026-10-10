@@ -33,7 +33,10 @@ export function RikishiNaturalization({ rikishi }: RikishiNaturalizationProps) {
     ? 100
     : Math.min(
         100,
-        Math.max(0, Math.round(((NATURALIZATION_YEARS - yearsRemaining) / NATURALIZATION_YEARS) * 100))
+        Math.max(
+          0,
+          Math.round(((NATURALIZATION_YEARS - yearsRemaining) / NATURALIZATION_YEARS) * 100)
+        )
       );
 
   return (
@@ -69,7 +72,9 @@ export function RikishiNaturalization({ rikishi }: RikishiNaturalizationProps) {
             <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               <span>Residency Tenure</span>
               <span>
-                {isNaturalized ? "Complete" : `${yearsRemaining} yr${yearsRemaining === 1 ? "" : "s"} remaining`}
+                {isNaturalized
+                  ? "Complete"
+                  : `${yearsRemaining} yr${yearsRemaining === 1 ? "" : "s"} remaining`}
               </span>
             </div>
             <Progress value={tenurePct} className="h-1.5 bg-gold/30" />

@@ -21,7 +21,10 @@ import {
   toNarrativeGroupedEvents,
 } from "@/components/recap/recapEventGroups";
 
-export function useRecapDerived(world: WorldState | null | undefined, lastBasho: BashoResult | undefined) {
+export function useRecapDerived(
+  world: WorldState | null | undefined,
+  lastBasho: BashoResult | undefined
+) {
   const [intaiQueue, setIntaiQueue] = useState<{ rikishi: UIRikishi; reason: string }[]>([]);
   const [currentIntaiIndex, setCurrentIntaiIndex] = useState(0);
 

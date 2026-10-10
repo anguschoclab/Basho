@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-
 concurrency:
   group: perf-gate-${{ github.ref }}
   cancel-in-progress: true

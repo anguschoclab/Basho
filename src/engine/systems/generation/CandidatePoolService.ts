@@ -28,10 +28,7 @@ import type {
   SuitorOfferType,
 } from "../../types/talent";
 import { RNGRegistry } from "../../core/RNGRegistry";
-import {
-  candidateConsumesForeignSlot,
-  foreignSlotOccupied,
-} from "../../npcAI/ForeignSlotPolicy";
+import { candidateConsumesForeignSlot, foreignSlotOccupied } from "../../npcAI/ForeignSlotPolicy";
 
 // ── Pool Initialization ───────────────────────────────────────────────────
 

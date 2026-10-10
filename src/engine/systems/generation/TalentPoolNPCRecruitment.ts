@@ -243,9 +243,7 @@ function computeNpcBid(
   if (bidPolicy?.familyBias) {
     const fp = candidate.combatProfile?.familyPreferences;
     if (fp) {
-      const dominant = (Object.entries(fp) as [string, number][]).sort(
-        (a, b) => b[1] - a[1]
-      )[0];
+      const dominant = (Object.entries(fp) as [string, number][]).sort((a, b) => b[1] - a[1])[0];
       if (dominant && dominant[0] === bidPolicy.familyBias.family) {
         bidAmount = Math.round(bidAmount * (1 + bidPolicy.familyBias.weight));
       }

@@ -6,11 +6,7 @@
  * (Slot row items live in ./SaveLoadDialogComponents.tsx.)
  */
 
-import {
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,8 +29,7 @@ type State = ReturnType<typeof useSaveLoadState>;
 
 /** Save/Load mode toggle tabs. */
 export function ModeTabs({ state }: { state: State }) {
-  const activeCls =
-    "bg-background text-foreground shadow-xs hover:bg-background";
+  const activeCls = "bg-background text-foreground shadow-xs hover:bg-background";
   const idleCls = "text-muted-foreground hover:text-foreground hover:bg-transparent";
   return (
     <div className="flex gap-1 rounded-lg bg-muted p-1">
@@ -87,9 +82,7 @@ export function SlotList({ state }: { state: State }) {
           ))}
 
         {state.mode === "load" && state.slots.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-6">
-            No saved games found.
-          </p>
+          <p className="text-sm text-muted-foreground text-center py-6">No saved games found.</p>
         )}
       </div>
     </ScrollArea>

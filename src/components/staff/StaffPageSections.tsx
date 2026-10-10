@@ -107,17 +107,14 @@ export function RecruitSlot({
         <DialogHeader>
           <DialogTitle>Recruit Staff Member</DialogTitle>
           <DialogDescription>
-            Hiring a specialist costs ¥500,000 upfront. Choose the role that fits your
-            current needs.
+            Hiring a specialist costs ¥500,000 upfront. Choose the role that fits your current
+            needs.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Select Specialty Role</label>
-            <Select
-              value={selectedRole}
-              onValueChange={(v) => onRoleChange(v as StaffRole)}
-            >
+            <Select value={selectedRole} onValueChange={(v) => onRoleChange(v as StaffRole)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
@@ -133,9 +130,7 @@ export function RecruitSlot({
             </Select>
           </div>
           <div className="p-4 rounded-lg bg-muted/50 border border-border/50">
-            <p className="text-sm font-medium text-foreground mb-1">
-              {ROLE_LABELS[selectedRole]}
-            </p>
+            <p className="text-sm font-medium text-foreground mb-1">{ROLE_LABELS[selectedRole]}</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {ROLE_DESCRIPTIONS[selectedRole]}
             </p>

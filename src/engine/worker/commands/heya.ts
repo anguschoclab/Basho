@@ -45,9 +45,7 @@ function withdrawRikishiCmd(rt: WorkerRuntime, cmd: Cmd<"WITHDRAW_RIKISHI">) {
 
 function treatInjuryCmd(rt: WorkerRuntime, cmd: Cmd<"TREAT_INJURY">) {
   if (rt.world) {
-    rt.world = resolveImpacts(rt.world, [
-      treatInjury(rt.world, cmd.rikishiId, cmd.weeks),
-    ]);
+    rt.world = resolveImpacts(rt.world, [treatInjury(rt.world, cmd.rikishiId, cmd.weeks)]);
     rt.syncAndDigest();
   }
 }
@@ -60,12 +58,7 @@ function retireRikishiCmd(rt: WorkerRuntime, cmd: Cmd<"RETIRE_RIKISHI">) {
     if (!target || target.heyaId !== rt.world.playerHeyaId) return;
     // 4-arg form: (id, year, reason, source) — the 2-arg overload treats
     // arg2 as the impact source and defaults year to DEFAULT_START_YEAR.
-    const impact = retireRikishiImpact(
-      cmd.rikishiId,
-      rt.world.year,
-      cmd.reason,
-      "RETIRE_RIKISHI"
-    );
+    const impact = retireRikishiImpact(cmd.rikishiId, rt.world.year, cmd.reason, "RETIRE_RIKISHI");
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
   }
@@ -98,11 +91,7 @@ function investInFacilityCmd(rt: WorkerRuntime, cmd: Cmd<"INVEST_IN_FACILITY">) 
 
 function buildInfrastructureCmd(rt: WorkerRuntime, cmd: Cmd<"BUILD_INFRASTRUCTURE">) {
   if (rt.world) {
-    const impact = InfrastructureService.startConstruction(
-      rt.world,
-      cmd.heyaId,
-      cmd.facilityId
-    );
+    const impact = InfrastructureService.startConstruction(rt.world, cmd.heyaId, cmd.facilityId);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
   }
@@ -127,13 +116,7 @@ function removeMentorCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_MENTOR">) {
 
 function addSparringPairCmd(rt: WorkerRuntime, cmd: Cmd<"ADD_SPARRING_PAIR">) {
   if (rt.world) {
-    const impact = assignSparringPair(
-      rt.world,
-      cmd.heyaId,
-      cmd.aId,
-      cmd.bId,
-      rt.world.week
-    );
+    const impact = assignSparringPair(rt.world, cmd.heyaId, cmd.aId, cmd.bId, rt.world.week);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
   }

@@ -218,21 +218,23 @@ export interface EngineStandingEntry {
   losses: number;
 }
 
-export const selectMakuuchiStandings = createSelector((world: WorldState): EngineStandingEntry[] => {
-  if (!world.currentBasho?.standings) return [];
-  const standings = world.currentBasho.standings;
-  const results: EngineStandingEntry[] = [];
-  for (const r of world.rikishi.values()) {
-    if (r.division === "makuuchi") {
-      results.push({
-        rikishi: r,
-        wins: standings.get(r.id)?.wins || 0,
-        losses: standings.get(r.id)?.losses || 0,
-      });
+export const selectMakuuchiStandings = createSelector(
+  (world: WorldState): EngineStandingEntry[] => {
+    if (!world.currentBasho?.standings) return [];
+    const standings = world.currentBasho.standings;
+    const results: EngineStandingEntry[] = [];
+    for (const r of world.rikishi.values()) {
+      if (r.division === "makuuchi") {
+        results.push({
+          rikishi: r,
+          wins: standings.get(r.id)?.wins || 0,
+          losses: standings.get(r.id)?.losses || 0,
+        });
+      }
     }
+    return sortStandings(results);
   }
-  return sortStandings(results);
-});
+);
 
 // ─── Write-only state field selectors ─────────────────────────────────────────
 // These surface previously write-only fields to the UI layer.

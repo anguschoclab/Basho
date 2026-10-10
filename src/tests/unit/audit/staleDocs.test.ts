@@ -7,7 +7,6 @@ const PROJECT_ROOT = join(import.meta.dirname, "../../../..");
 const DOCS_DIR = join(PROJECT_ROOT, "docs");
 const README = join(PROJECT_ROOT, "README.md");
 
-
 describe("L1.2: stale documentation audit", () => {
   it("README.md exists", () => {
     expect(existsSync(README), "README.md not found at project root").toBe(true);

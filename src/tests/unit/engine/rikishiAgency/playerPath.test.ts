@@ -29,10 +29,7 @@ function playerWorld(reqs: RikishiRequest[]): WorldState {
     shikona: "Tiredzan",
   } as Partial<Rikishi>);
   world.rikishi = new Map([[r.id, r]]);
-  world.heyas.set(
-    "h-player",
-    MockFactory.createHeya("h-player", { rikishiIds: ["r-p"] })
-  );
+  world.heyas.set("h-player", MockFactory.createHeya("h-player", { rikishiIds: ["r-p"] }));
   world.playerHeyaId = "h-player";
   world.pendingRikishiRequests = reqs;
   return world;
@@ -54,9 +51,7 @@ describe("player request decisions", () => {
     const d = due.find((x) => x.type === "rikishi_request");
     expect(d).toBeDefined();
     expect(d!.required).toBe(false);
-    expect(d!.options.map((o) => o.id)).toEqual(
-      expect.arrayContaining(["grant", "deny"])
-    );
+    expect(d!.options.map((o) => o.id)).toEqual(expect.arrayContaining(["grant", "deny"]));
     expect(d!.description).toContain("Tiredzan");
   });
 
@@ -68,9 +63,7 @@ describe("player request decisions", () => {
     const next = resolveImpacts(world, [resolveLoopDecision(world, d.id, "grant")]);
     expect(next.rikishi.get("r-p")!.fatigue).toBeLessThan(85);
     expect(next.rikishi.get("r-p")!.agency?.grantedCount).toBe(1);
-    expect(
-      (next.pendingRikishiRequests ?? []).some((q) => q.id === "req-p-1")
-    ).toBe(false);
+    expect((next.pendingRikishiRequests ?? []).some((q) => q.id === "req-p-1")).toBe(false);
     expect(next.pendingDecisions ?? []).toHaveLength(0);
   });
 
@@ -88,9 +81,7 @@ describe("player request decisions", () => {
     const r = next.rikishi.get("r-p")!;
     expect(r.agency?.deniedCount).toBe(1);
     expect(r.behavior.stress).toBeGreaterThan(40);
-    expect(
-      (next.pendingRikishiRequests ?? []).some((q) => q.id === "req-p-1")
-    ).toBe(false);
+    expect((next.pendingRikishiRequests ?? []).some((q) => q.id === "req-p-1")).toBe(false);
   });
 
   it("expired request defaults to deny with its consequence applied", () => {
@@ -102,15 +93,11 @@ describe("player request decisions", () => {
     };
     const d = detectDueDecisions(world).find((x) => x.type === "rikishi_request")!;
     // Simulate the decision sitting past its deadline.
-    world.pendingDecisions = [
-      { ...d, deadlineWeek: 5 },
-    ];
+    world.pendingDecisions = [{ ...d, deadlineWeek: 5 }];
     const next = resolveImpacts(world, [applyExpiredQueueDefaults(world)]);
     const r = next.rikishi.get("r-p")!;
     expect(r.agency?.deniedCount).toBe(1);
     expect(next.pendingDecisions ?? []).toHaveLength(0);
-    expect(
-      (next.pendingRikishiRequests ?? []).some((q) => q.id === "req-p-1")
-    ).toBe(false);
+    expect((next.pendingRikishiRequests ?? []).some((q) => q.id === "req-p-1")).toBe(false);
   });
 });

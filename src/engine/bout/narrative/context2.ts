@@ -5,7 +5,11 @@
 import type { PbpPipeline } from "./pipeline";
 import type { PbpTag } from "./pbpTypes";
 import { focusBiasToStyleKey, isSanyakuPromotionByRank, SANYAKU_RANKS } from "./helpers";
-import { AGE_DIFF_THRESHOLD, CAREER_BOUT_MILESTONES, CAREER_WIN_MILESTONES } from "../../../constants/engine/generation";
+import {
+  AGE_DIFF_THRESHOLD,
+  CAREER_BOUT_MILESTONES,
+  CAREER_WIN_MILESTONES,
+} from "../../../constants/engine/generation";
 import { BardEngine } from "../../bard/BardEngine";
 import { isYushoContention } from "../boutContention";
 
@@ -24,7 +28,6 @@ function beatBodyType(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatHeyaStyle(p: PbpPipeline): void {
@@ -51,7 +54,6 @@ function beatHeyaStyle(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatArchetypeEvolution(p: PbpPipeline): void {
@@ -75,7 +77,6 @@ function beatArchetypeEvolution(p: PbpPipeline): void {
       ["archetype_evolution"]
     );
   }
-
 }
 
 function beatArchetypeCounter(p: PbpPipeline): void {
@@ -95,7 +96,6 @@ function beatArchetypeCounter(p: PbpPipeline): void {
       ["archetype_counter"]
     );
   }
-
 }
 
 function beatAgeNarrative(p: PbpPipeline): void {
@@ -119,7 +119,6 @@ function beatAgeNarrative(p: PbpPipeline): void {
       ["age_diff", ...olderTags, ...youngerTags]
     );
   }
-
 }
 
 function beatVeterans(p: PbpPipeline): void {
@@ -137,7 +136,6 @@ function beatVeterans(p: PbpPipeline): void {
       ["veteran", "age_diff"]
     );
   }
-
 }
 
 function beatCareerWinMilestone(p: PbpPipeline): void {
@@ -157,7 +155,6 @@ function beatCareerWinMilestone(p: PbpPipeline): void {
       break;
     }
   }
-
 }
 
 function beatCareerBoutMilestone(p: PbpPipeline): void {
@@ -180,7 +177,6 @@ function beatCareerBoutMilestone(p: PbpPipeline): void {
       }
     }
   }
-
 }
 
 function beatConsecutiveKachi(p: PbpPipeline): void {
@@ -201,7 +197,6 @@ function beatConsecutiveKachi(p: PbpPipeline): void {
       ["consecutive_kachi"]
     );
   }
-
 }
 
 function beatKadobanMention(p: PbpPipeline): void {
@@ -221,7 +216,6 @@ function beatKadobanMention(p: PbpPipeline): void {
       ["kadoban"]
     );
   }
-
 }
 
 function beatOzekiReturn(p: PbpPipeline): void {
@@ -244,7 +238,6 @@ function beatOzekiReturn(p: PbpPipeline): void {
       }
     }
   }
-
 }
 
 function beatYokozunaPromotion(p: PbpPipeline): void {
@@ -262,7 +255,6 @@ function beatYokozunaPromotion(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatSpoiler(p: PbpPipeline): void {
@@ -299,7 +291,6 @@ function beatSpoiler(p: PbpPipeline): void {
     );
     break;
   }
-
 }
 
 function beatCareerPhase(p: PbpPipeline): void {
@@ -326,7 +317,6 @@ function beatCareerPhase(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatRankDebut(p: PbpPipeline): void {
@@ -368,7 +358,6 @@ function beatRankDebut(p: PbpPipeline): void {
       }
     }
   }
-
 }
 
 export function narrateStyle(p: PbpPipeline): void {

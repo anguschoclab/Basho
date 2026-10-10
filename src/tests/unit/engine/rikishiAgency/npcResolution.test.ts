@@ -89,9 +89,7 @@ describe("phase01_week_npc_ai — request resolution", () => {
     const next = resolveImpacts(world, [phase01_week_npc_ai(world)]);
     const r = next.rikishi.get("r1")!;
     expect(r.fatigue).toBeLessThan(85);
-    expect(
-      (next.pendingRikishiRequests ?? []).some((q) => q.id === "req-rest-1")
-    ).toBe(false);
+    expect((next.pendingRikishiRequests ?? []).some((q) => q.id === "req-rest-1")).toBe(false);
     expect(r.agency?.grantedCount ?? 0).toBeGreaterThan(0);
   });
 
@@ -106,8 +104,6 @@ describe("phase01_week_npc_ai — request resolution", () => {
     const r = next.rikishi.get("r1")!;
     expect(r.agency?.deniedCount).toBe(1);
     expect(r.behavior.stress).toBeGreaterThan(40);
-    expect(
-      (next.pendingRikishiRequests ?? []).some((q) => q.id === "req-rest-1")
-    ).toBe(false);
+    expect((next.pendingRikishiRequests ?? []).some((q) => q.id === "req-rest-1")).toBe(false);
   });
 });

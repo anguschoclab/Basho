@@ -29,7 +29,6 @@ function beatFinishTechnique(p: PbpPipeline): void {
     });
     push(res.text, "finish");
   }
-
 }
 
 function beatSpecialAwards(p: PbpPipeline): void {
@@ -47,7 +46,6 @@ function beatSpecialAwards(p: PbpPipeline): void {
       [result.awardFact as PbpTag]
     );
   }
-
 }
 
 function beatCeremony(p: PbpPipeline): void {
@@ -72,7 +70,6 @@ function beatCeremony(p: PbpPipeline): void {
       "ceremony"
     );
   }
-
 }
 
 function beatClosingLine(p: PbpPipeline): void {
@@ -97,7 +94,6 @@ function beatClosingLine(p: PbpPipeline): void {
       "closing"
     );
   }
-
 }
 
 export function narrateResolution(p: PbpPipeline): void {

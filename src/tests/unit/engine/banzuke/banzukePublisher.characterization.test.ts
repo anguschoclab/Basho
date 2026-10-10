@@ -14,8 +14,11 @@ import type { WorldState } from "@/engine/types/world";
 function digest(impact: unknown): string {
   return JSON.stringify(
     impact,
-    (_k, v) => (v instanceof Map ? { __map: [...v.entries()].sort(([a], [b]) => String(a).localeCompare(String(b))) } : v),
-    2,
+    (_k, v) =>
+      v instanceof Map
+        ? { __map: [...v.entries()].sort(([a], [b]) => String(a).localeCompare(String(b))) }
+        : v,
+    2
   );
 }
 
@@ -81,9 +84,7 @@ describe("publishBanzukeUpdate — golden master", () => {
   it("ozeki with consecutive yusho → promotion path", () => {
     const world = postBashoWorld();
     const ozeki = world.rikishi.get("r_ozeki")!;
-    ozeki.careerHistory = [
-      { bashoId: "prev", isYusho: true, wins: 13, rank: "ozeki" },
-    ] as never;
+    ozeki.careerHistory = [{ bashoId: "prev", isYusho: true, wins: 13, rank: "ozeki" }] as never;
     world.currentBasho!.standings.set("r_ozeki", { wins: 14, losses: 1, absences: 0 });
     world.history = [makeResultFixture("r_ozeki")];
     expect(digest(publishBanzukeUpdate(world))).toMatchSnapshot();

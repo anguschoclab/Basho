@@ -269,9 +269,7 @@ function buildRookieEntity(p: {
     personalityTraits: [],
     favoredKimarite: (buildCombatProfile(p.archetype).favoredKimarite ??
       []) as import("../types/rikishi").KimariteId[],
-    weakAgainstStyles: deriveWeakAgainstStyles(
-      p.archetype
-    ) as import("../types/rikishi").Style[],
+    weakAgainstStyles: deriveWeakAgainstStyles(p.archetype) as import("../types/rikishi").Style[],
     // Required Rikishi fields for career tracking
     consecutiveYusho: 0,
     careerHistory: [],

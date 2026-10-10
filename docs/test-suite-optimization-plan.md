@@ -4,13 +4,13 @@ Status: implemented 2026-10-08 · Results: `docs/audit/test-optimization-verdict
 
 ## Current state (measured, not estimated)
 
-| Suite      | Location                 | Files   | Tests  | Duration                     | Trigger                            |
-| ---------- | ------------------------ | ------- | ------ | ---------------------------- | ---------------------------------- |
-| Fast unit  | `src/tests/unit/**`      | 866     | ~8,394 | ~25s (vmThreads + parallel)  | every change / PR CI               |
-| Slow gates | `src/tests/slow/**`      | 11      | ~55    | ~174s                        | adhoc / nightly (`slow-tests.yml`) |
-| Perf       | `src/tests/perf/**`      | 4       | —      | ~130s                        | adhoc / nightly                    |
-| E2E smoke  | `e2e/` `--project=smoke` | 2 specs | 3      | ~2–4 min                     | adhoc                              |
-| E2E soak   | `e2e/` `--project=soak`  | 2 specs | 2      | ~8–10 min                    | adhoc                              |
+| Suite      | Location                 | Files   | Tests  | Duration                    | Trigger                            |
+| ---------- | ------------------------ | ------- | ------ | --------------------------- | ---------------------------------- |
+| Fast unit  | `src/tests/unit/**`      | 866     | ~8,394 | ~25s (vmThreads + parallel) | every change / PR CI               |
+| Slow gates | `src/tests/slow/**`      | 11      | ~55    | ~174s                       | adhoc / nightly (`slow-tests.yml`) |
+| Perf       | `src/tests/perf/**`      | 4       | —      | ~130s                       | adhoc / nightly                    |
+| E2E smoke  | `e2e/` `--project=smoke` | 2 specs | 3      | ~2–4 min                    | adhoc                              |
+| E2E soak   | `e2e/` `--project=soak`  | 2 specs | 2      | ~8–10 min                   | adhoc                              |
 
 Already landed (do not redo): `src/tests/slow/` split, `vitest.slow.config.ts`, `pool: "vmThreads"` on all vitest configs, Playwright smoke/soak projects, nightly `slow-tests.yml`, `noSubprocessInUnitTests` guardrail.
 
@@ -22,13 +22,13 @@ Already landed (do not redo): `src/tests/slow/` split, `vitest.slow.config.ts`, 
 4. **Redundant expensive work inside files**: `headless-playthrough.test.ts` runs the same 364-day `advanceDaysFast` **7 times** (once per `it`) on identical worlds — a shared `beforeAll` result would be ~6× cheaper. `lintStrictGate.test.ts` shells `bunx eslint .` twice; one `--format json` run answers both assertions. `orphan-audit.test.ts` runs `npx tsx scripts/audit-orphans.ts` ~4×; one run could feed all consistency checks.
 5. **Misplaced files at `unit/` root**: `react-compiler-gate.test.tsx`, `bootstrap.test.ts`, `toolchain-version.test.ts`, `react-version.test.ts`, `ui-ref-forwarding.test.tsx`, `useref-types.test.tsx`, `vite-config.test.ts`, `ErrorBoundary.test.tsx` — no subdirectory; several belong under `build/` or `components/`.
 6. **Fragile registry gates**: `ci-gates.test.ts` hardcodes expected audit filenames — every move/rename requires editing the gate (we already had to patch it once for the slow split).
-7. **`fileParallelism: false`** remains the global ceiling — retained today only because `orphan-audit` (now in slow) writes fixtures into `src/` while knip/madge scan it. The *fast* suite may have no remaining writer tests, making parallelism a possible free win — needs verification, not assumption.
+7. **`fileParallelism: false`** remains the global ceiling — retained today only because `orphan-audit` (now in slow) writes fixtures into `src/` while knip/madge scan it. The _fast_ suite may have no remaining writer tests, making parallelism a possible free win — needs verification, not assumption.
 
 ## Guiding principles
 
 - **One command, one promise**: `bun run test` must stay under ~2 min; anything slower goes to `slow/` or `perf/`.
 - **Canonical over local**: shared factories and fs helpers win over per-file definitions; local helpers only for custom signatures (already stated in `src/tests/helpers/README.md` — the plan makes it enforced).
-- **Gates, not snapshots**: audit tests should assert invariants that fail when *new* violations appear — not hardcode file lists that rot.
+- **Gates, not snapshots**: audit tests should assert invariants that fail when _new_ violations appear — not hardcode file lists that rot.
 - **Delete, don't embalm**: a test whose subject was removed is deleted outright; git history preserves it.
 
 ---

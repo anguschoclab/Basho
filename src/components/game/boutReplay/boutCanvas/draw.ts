@@ -8,13 +8,7 @@ import {
   DOHYO_COLORS,
   withAlpha,
 } from "@/constants/ui/drawingPalette";
-import {
-  computePose,
-  drawBody,
-  drawArms,
-  drawHead,
-  drawRankLabel,
-} from "./drawRikishiParts";
+import { computePose, drawBody, drawArms, drawHead, drawRankLabel } from "./drawRikishiParts";
 
 export function drawDohyo(
   ctx: CanvasRenderingContext2D,
@@ -136,7 +130,9 @@ export function drawRikishi(
   const isEast = side === "east";
   const skin = BOUT_FIGURE_COLORS.skin;
   const mawashi = isEast ? BOUT_FIGURE_COLORS.mawashiEast : BOUT_FIGURE_COLORS.mawashiWest;
-  const mawashiAccent = isEast ? BOUT_FIGURE_COLORS.mawashiEastAccent : BOUT_FIGURE_COLORS.mawashiWestAccent;
+  const mawashiAccent = isEast
+    ? BOUT_FIGURE_COLORS.mawashiEastAccent
+    : BOUT_FIGURE_COLORS.mawashiWestAccent;
 
   const pose = computePose(state, isEast, S, family, isLoser);
 

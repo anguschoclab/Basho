@@ -179,15 +179,11 @@ function resolveAndApplyBout(
     world: nextWorld,
     result,
     updatedStandings: boutImpact.metadata?.updatedStandings as
-      | Map<string, { wins: number; losses: number }>
-      | undefined,
+      Map<string, { wins: number; losses: number }> | undefined,
   };
 }
 
-type MatchScheduleLike = Pick<
-  MatchSchedule,
-  "boutId" | "day" | "eastRikishiId" | "westRikishiId"
->;
+type MatchScheduleLike = Pick<MatchSchedule, "boutId" | "day" | "eastRikishiId" | "westRikishiId">;
 
 /** Consume a bout tactic after it has been applied (V5-B09 semantics). */
 function consumeBoutTactic(world: WorldState, boutId: string | undefined): WorldState {
@@ -196,9 +192,7 @@ function consumeBoutTactic(world: WorldState, boutId: string | undefined): World
     Object.entries(world.boutTactics).filter(([k]) => k !== boutId)
   );
   return resolveImpacts(world, [
-    createImpactBuilder("consumeBoutTactic")
-      .updateWorldField("boutTactics", nextTactics)
-      .build(),
+    createImpactBuilder("consumeBoutTactic").updateWorldField("boutTactics", nextTactics).build(),
   ]);
 }
 
@@ -215,7 +209,11 @@ export function simulateBoutForToday(
   const match = todays[unplayedIndex];
   if (!match) return { world: currentWorld };
 
-  const { world: appliedWorld, result, updatedStandings } = resolveAndApplyBout(
+  const {
+    world: appliedWorld,
+    result,
+    updatedStandings,
+  } = resolveAndApplyBout(
     currentWorld,
     basho,
     match,
@@ -277,16 +275,13 @@ export function simulateBoutsForDay(world: WorldState): {
     if (!basho || basho.day !== day) break;
 
     const tactic = (match.boutId ? currentWorld.boutTactics?.[match.boutId] : undefined) as
-      | import("./types/combat").BoutTactic
-      | undefined;
+      import("./types/combat").BoutTactic | undefined;
 
-    const { world: appliedWorld, result, updatedStandings } = resolveAndApplyBout(
-      currentWorld,
-      basho,
-      match,
-      tactic,
-      `d${day}-b${i}`
-    );
+    const {
+      world: appliedWorld,
+      result,
+      updatedStandings,
+    } = resolveAndApplyBout(currentWorld, basho, match, tactic, `d${day}-b${i}`);
     currentWorld = appliedWorld;
     if (!result) continue;
 

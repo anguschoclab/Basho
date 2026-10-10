@@ -35,15 +35,7 @@ function BashoCrest() {
         fill="currentColor"
         opacity="0.9"
       />
-      <ellipse
-        cx="50"
-        cy="28"
-        rx="8"
-        ry="10"
-        stroke="currentColor"
-        strokeWidth="3"
-        fill="none"
-      />
+      <ellipse cx="50" cy="28" rx="8" ry="10" stroke="currentColor" strokeWidth="3" fill="none" />
       <path d="M30 35 Q50 32 70 35 L72 50 Q50 48 28 50 Z" fill="currentColor" />
       <circle
         cx="50"

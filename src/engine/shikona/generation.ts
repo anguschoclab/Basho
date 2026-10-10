@@ -6,7 +6,12 @@
 
 import { pick } from "../utils";
 import type { ShikonaGenerationConfig, HouseStyle, PatternId, RankRule } from "./types";
-import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, PRESTIGIOUS_FULL_NAMES, BASE_PATTERN_WEIGHTS } from "./constants";
+import {
+  SHIKONA_PREFIXES,
+  SHIKONA_SUFFIXES,
+  PRESTIGIOUS_FULL_NAMES,
+  BASE_PATTERN_WEIGHTS,
+} from "./constants";
 import {
   pickPrefixByCategoryBias,
   pickSuffixByCategoryBias,

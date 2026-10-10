@@ -52,13 +52,7 @@ function ChangeIcon({ change }: { change: string }) {
 }
 
 /** A single revealed rank-change row. */
-export function RevealEntryCard({
-  entry,
-  isCurrent,
-}: {
-  entry: RevealEntry;
-  isCurrent: boolean;
-}) {
+export function RevealEntryCard({ entry, isCurrent }: { entry: RevealEntry; isCurrent: boolean }) {
   return (
     <motion.div
       initial={{ x: -100, opacity: 0 }}

@@ -55,10 +55,9 @@ describe("command surface coverage", () => {
     const orphans = commandTypes().filter(
       (t) => dispatchSites(t).length === 0 && !ALLOWED_INTERNAL.has(t)
     );
-    expect(
-      orphans,
-      `Commands with handlers but no dispatch site: ${orphans.join(", ")}`
-    ).toEqual([]);
+    expect(orphans, `Commands with handlers but no dispatch site: ${orphans.join(", ")}`).toEqual(
+      []
+    );
   });
 
   it("ALLOWED_INTERNAL entries still name real commands", () => {

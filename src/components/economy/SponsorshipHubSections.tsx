@@ -206,8 +206,8 @@ export function SponsorAppealCta() {
         </h3>
         <p className="text-xs text-muted-foreground italic leading-relaxed max-w-2xl font-medium">
           Your stable's **Reputation** creates gravity for regional and national brands.
-          High-prestige rikishi acts as "Flagship Assets", attracting T4 and T5 sponsors who
-          demand absolute loyalty and consistent yūshō contention.
+          High-prestige rikishi acts as "Flagship Assets", attracting T4 and T5 sponsors who demand
+          absolute loyalty and consistent yūshō contention.
         </p>
         <div className="pt-4 flex flex-wrap gap-4">
           <Button className="bg-success hover:bg-success/90 text-success-foreground font-black uppercase tracking-widest text-[11px] px-10 h-12 shadow-xl shadow-success/20 transition-all">

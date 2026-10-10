@@ -70,8 +70,16 @@ describe("AdvisorService — WS7 league intel", () => {
     world.meta = {
       tone: "technical",
       history: [
-        { year: 4, tone: "technical", familyShares: { push: 0.2, belt: 0.5, speed: 0.2, trick: 0.1 } },
-        { year: 5, tone: "technical", familyShares: { push: 0.15, belt: 0.6, speed: 0.15, trick: 0.1 } },
+        {
+          year: 4,
+          tone: "technical",
+          familyShares: { push: 0.2, belt: 0.5, speed: 0.2, trick: 0.1 },
+        },
+        {
+          year: 5,
+          tone: "technical",
+          familyShares: { push: 0.15, belt: 0.6, speed: 0.15, trick: 0.1 },
+        },
       ],
     } as never;
 
@@ -86,7 +94,11 @@ describe("AdvisorService — WS7 league intel", () => {
     world.meta = {
       tone: "classic",
       history: [
-        { year: 5, tone: "classic", familyShares: { push: 0.27, belt: 0.26, speed: 0.25, trick: 0.22 } },
+        {
+          year: 5,
+          tone: "classic",
+          familyShares: { push: 0.27, belt: 0.26, speed: 0.25, trick: 0.22 },
+        },
       ],
     } as never;
 

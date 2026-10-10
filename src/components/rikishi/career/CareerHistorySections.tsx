@@ -19,10 +19,7 @@ import {
   Crown,
 } from "lucide-react";
 import type { Milestone } from "@/engine/types/history";
-import type {
-  NarrativeHighlight,
-  PromotionHistoryEntry,
-} from "@/presenters/engineAccess";
+import type { NarrativeHighlight, PromotionHistoryEntry } from "@/presenters/engineAccess";
 
 const HIGHLIGHT_ICONS: Partial<Record<NarrativeHighlight["type"], typeof Star>> = {
   yusho: Trophy,
@@ -100,10 +97,7 @@ export function PromotionHistory({
       </h3>
       <div className="space-y-2">
         {promotionHistory.map((p, i: number) => (
-          <div
-            key={i}
-            className="flex items-center gap-4 border border-border/40 rounded-lg p-3"
-          >
+          <div key={i} className="flex items-center gap-4 border border-border/40 rounded-lg p-3">
             <div className="flex items-center gap-2">
               {p.kind === "promotion" ? (
                 <ArrowUpCircle className="h-4 w-4 text-success" />

@@ -1,11 +1,7 @@
 // SaveLoadDialog.tsx — In-game save/load dialog with slot management
 // Sections live in ./SaveLoadDialogSections.tsx; state in useSaveLoadState.
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HardDrive } from "lucide-react";
 import { useSaveLoadState } from "@/hooks/useSaveLoadState";

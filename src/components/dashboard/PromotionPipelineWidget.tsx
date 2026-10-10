@@ -11,11 +11,7 @@ import {
   getKadobanDrama,
 } from "@/presenters/projections/promotionProjections";
 import { RANK_TIERS } from "@/constants/ui/promotion";
-import {
-  RankDistributionChart,
-  KadobanSection,
-  PromotionWatch,
-} from "./PromotionPipelineSections";
+import { RankDistributionChart, KadobanSection, PromotionWatch } from "./PromotionPipelineSections";
 
 export function PromotionPipelineWidget() {
   const { state } = useGame();

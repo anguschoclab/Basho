@@ -15,5 +15,4 @@ describe("AdvisorService does not mutate world state", () => {
     expect(recs).toBeInstanceOf(Array);
     expect(JSON.stringify(world)).toBe(snapshot);
   });
-
 });

@@ -27,7 +27,9 @@ export function SectionHeader({ eyebrow, title, lede, actions, className }: Sect
     >
       <div className="space-y-0.5">
         {eyebrow && (
-          <p className="stat-label text-[10px] text-muted-foreground tracking-[0.15em]">{eyebrow}</p>
+          <p className="stat-label text-[10px] text-muted-foreground tracking-[0.15em]">
+            {eyebrow}
+          </p>
         )}
         <h2 className="font-display font-semibold text-sm leading-tight">{title}</h2>
         {lede && <p className="text-[11px] text-muted-foreground font-body leading-snug">{lede}</p>}

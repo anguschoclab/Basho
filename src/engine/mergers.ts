@@ -171,8 +171,7 @@ function transferRosterAcrossMerger(
     if (consumesSlot && foreignOccupied.has(target.id)) {
       destId = dispersalCandidates.find(
         (h) =>
-          !foreignOccupied.has(h.id) &&
-          getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_MERGER
+          !foreignOccupied.has(h.id) && getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_MERGER
       )?.id;
     }
 

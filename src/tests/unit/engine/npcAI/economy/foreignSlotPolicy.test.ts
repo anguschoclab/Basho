@@ -28,9 +28,7 @@ function makeOyakata(overrides: Partial<Oyakata>): Oyakata {
 
 describe("candidateConsumesForeignSlot", () => {
   it("Japanese candidate does not consume the slot", () => {
-    expect(
-      candidateConsumesForeignSlot(makeCandidate({ nationality: "Japan" }))
-    ).toBe(false);
+    expect(candidateConsumesForeignSlot(makeCandidate({ nationality: "Japan" }))).toBe(false);
   });
 
   it("foreign-nationality candidate consumes the slot", () => {

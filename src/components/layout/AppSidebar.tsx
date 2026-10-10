@@ -5,11 +5,7 @@
  * ./AppSidebarSections.tsx (brand, nav groups, status footer).
  */
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 import { useLocation } from "@tanstack/react-router";
 import { useRef, useEffect } from "react";
 import { useGame } from "@/contexts/useGame";
@@ -89,11 +85,7 @@ export function AppSidebar() {
         onScroll={handleScroll}
         className="custom-scrollbar overflow-x-hidden"
       >
-        <SidebarNav
-          menuGroups={menuGroups}
-          isActive={isActive}
-          isSectionActive={isSectionActive}
-        />
+        <SidebarNav menuGroups={menuGroups} isActive={isActive} isSectionActive={isSectionActive} />
       </SidebarContent>
 
       <SidebarStatusFooter

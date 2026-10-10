@@ -30,13 +30,7 @@ export function EmptyChronicle() {
 }
 
 /** Legacy header — tier sigil, stable name, era badge, yusho/training stats. */
-export function ChronicleHeader({
-  report,
-  heya,
-}: {
-  report: DynastyReport;
-  heya: Heya;
-}) {
+export function ChronicleHeader({ report, heya }: { report: DynastyReport; heya: Heya }) {
   const currentTier = LEGACY_TIERS[report.legacyTier];
   const TierIcon = currentTier.icon;
 
@@ -45,9 +39,7 @@ export function ChronicleHeader({
       <div
         className={cn(
           "w-32 h-32 rounded-2xl flex items-center justify-center bg-card shadow-xl border-2",
-          report.legacyTier === "legend"
-            ? "border-gold/50 shadow-amber-900/20"
-            : "border-border"
+          report.legacyTier === "legend" ? "border-gold/50 shadow-amber-900/20" : "border-border"
         )}
       >
         <TierIcon
@@ -60,9 +52,7 @@ export function ChronicleHeader({
 
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-3">
-          <h2 className="text-3xl font-bold font-display tracking-tight uppercase">
-            {heya.name}
-          </h2>
+          <h2 className="text-3xl font-bold font-display tracking-tight uppercase">{heya.name}</h2>
           <Badge variant="outline" className="font-black border-primary/20 text-primary">
             ERA {report.currentEra}
           </Badge>
@@ -77,9 +67,7 @@ export function ChronicleHeader({
             <span className="text-[10px] uppercase font-black text-muted-foreground block">
               Total Yusho
             </span>
-            <span className="text-xl font-bold font-display tabular-nums">
-              {report.totalYusho}
-            </span>
+            <span className="text-xl font-bold font-display tabular-nums">{report.totalYusho}</span>
           </div>
           <div className="bg-card/50 border border-border rounded-lg px-4 py-2">
             <span className="text-[10px] uppercase font-black text-muted-foreground block">
@@ -115,7 +103,9 @@ export function EraTimeline({ eras }: { eras: DynastyRecord[] }) {
               <div className="absolute left-[13px] top-1.5 w-2 h-2 rounded-full bg-card group-hover:bg-primary transition-colors border-2 border-background" />
               <div className="bg-card/40 border border-border rounded-xl p-4 transition-all hover:bg-card/60 hover:border-border">
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-muted-foreground">The Reign of {era.oyakataName}</h4>
+                  <h4 className="font-bold text-muted-foreground">
+                    The Reign of {era.oyakataName}
+                  </h4>
                   <span className="text-[10px] font-mono text-muted-foreground">
                     {era.reignFrom} – {era.reignTo || "Present"}
                   </span>
@@ -123,8 +113,8 @@ export function EraTimeline({ eras }: { eras: DynastyRecord[] }) {
 
                 <div className="flex gap-4 text-[10px] text-muted-foreground uppercase font-black mb-3">
                   <div className="flex items-center gap-1">
-                    <Trophy className="h-3 w-3 text-gold/70" />{" "}
-                    {era.achievementsInReign.yushoCount} Yusho
+                    <Trophy className="h-3 w-3 text-gold/70" /> {era.achievementsInReign.yushoCount}{" "}
+                    Yusho
                   </div>
                   <div className="flex items-center gap-1">
                     <Globe className="h-3 w-3 text-primary/70" />{" "}
@@ -137,8 +127,7 @@ export function EraTimeline({ eras }: { eras: DynastyRecord[] }) {
                 </div>
 
                 <p className="text-sm italic text-muted-foreground bg-card/30 p-2 rounded-md border border-border">
-                  "{era.legacyBlurb || "A period of steady growth and institutional expansion."}
-                  "
+                  "{era.legacyBlurb || "A period of steady growth and institutional expansion."}"
                 </p>
               </div>
             </div>
@@ -155,9 +144,7 @@ export function ChronicleSideColumn({ report }: { report: DynastyReport }) {
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <Scroll className="h-4 w-4 text-primary" />
-          <h3 className="text-lg font-bold font-display uppercase tracking-widest">
-            Training DNA
-          </h3>
+          <h3 className="text-lg font-bold font-display uppercase tracking-widest">Training DNA</h3>
         </div>
         <Card className="glass shadow-xl overflow-hidden border-border/50">
           <CardContent className="p-0">
@@ -181,10 +168,7 @@ export function ChronicleSideColumn({ report }: { report: DynastyReport }) {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-border text-xs text-muted-foreground flex items-center gap-2">
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] uppercase font-black bg-card"
-                >
+                <Badge variant="secondary" className="text-[10px] uppercase font-black bg-card">
                   Inherited
                 </Badge>
                 <span>Recruiting {report.trainingPhilosophy.recruitmentBias} talent</span>

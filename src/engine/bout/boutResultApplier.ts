@@ -536,7 +536,17 @@ export function applyBoutResult(
   const kinboshiAwardCount = (result.awards ?? []).filter((a) => a.type === "kinboshi").length;
 
   // 3/4. H2H + secondary systems
-  notifySecondarySystems(world, match, result, east, west, winner, loser, kinboshiAwardCount, builder);
+  notifySecondarySystems(
+    world,
+    match,
+    result,
+    east,
+    west,
+    winner,
+    loser,
+    kinboshiAwardCount,
+    builder
+  );
 
   // 5. Media
   mergeMediaUpdate(world, match, result, east, builder);

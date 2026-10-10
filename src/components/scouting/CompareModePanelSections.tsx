@@ -35,9 +35,7 @@ export function CompareRikishiHeader({
         className="mx-auto"
         expression="neutral"
       />
-      <h3
-        className={cn("font-display font-bold text-lg", highlight && "text-primary")}
-      >
+      <h3 className={cn("font-display font-bold text-lg", highlight && "text-primary")}>
         {rikishi.shikona}
       </h3>
       <Badge

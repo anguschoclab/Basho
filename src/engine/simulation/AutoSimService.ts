@@ -291,10 +291,7 @@ function advanceOffSeason(currentWorld: WorldState, bashoName: string): WorldSta
 }
 
 /** Collect auto-resolved decision events into chronicle highlights. */
-function collectAutoDecisionHighlights(
-  currentWorld: WorldState,
-  chronicle: ChronicleReport
-): void {
+function collectAutoDecisionHighlights(currentWorld: WorldState, chronicle: ChronicleReport): void {
   const decisionEvents = (currentWorld.events?.log ?? [])
     .filter((e) => e.type === "DECISION_AUTO_RESOLVED")
     .slice(-10);

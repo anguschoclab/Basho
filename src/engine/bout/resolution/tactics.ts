@@ -62,9 +62,7 @@ function chooseNpcSideTactic(
     opponentFatigue: opponent.fatigue,
     opponentModel,
     rankPressure: deriveRankPressure(record, bashoDay),
-    heyaPosture: rikishi.heyaId
-      ? world.bashoNpcPosture?.[rikishi.heyaId]
-      : undefined,
+    heyaPosture: rikishi.heyaId ? world.bashoNpcPosture?.[rikishi.heyaId] : undefined,
   };
   return chooseTactic(rikishi, opponent, ctx);
 }

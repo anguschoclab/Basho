@@ -136,9 +136,7 @@ export function InjuredRikishiCard({
                   >
                     Withdraw
                   </Button>
-                  {gomenfudaProjection && (
-                    <GomenfudaStatusBadge projection={gomenfudaProjection} />
-                  )}
+                  {gomenfudaProjection && <GomenfudaStatusBadge projection={gomenfudaProjection} />}
                 </>
               )}
             </div>

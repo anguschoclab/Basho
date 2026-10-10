@@ -82,9 +82,7 @@ function SupportVerdict({ supportLevel }: { supportLevel: YokozunaCandidate["sup
   }
   if (supportLevel === "adequate") {
     return (
-      <span className="text-xs font-semibold text-gold font-display">
-        Under consideration
-      </span>
+      <span className="text-xs font-semibold text-gold font-display">Under consideration</span>
     );
   }
   return <span className="text-xs font-semibold text-destructive font-display">Insufficient</span>;

@@ -76,9 +76,7 @@ export function projectRivalStables(
     const recentDecisions = npcDecisions.filter((d) => d.heyaId === heya.id);
     const scouted = hasScoutingCoverage(world, heya.id);
     const oyakata = scouted ? getOyakataForHeya(world, heya.id) : undefined;
-    const posture = heya.ichimon
-      ? world.factionPostures?.[heya.ichimon]?.posture
-      : undefined;
+    const posture = heya.ichimon ? world.factionPostures?.[heya.ichimon]?.posture : undefined;
     rivals.push({
       heyaId: heya.id,
       heyaName: heya.name,

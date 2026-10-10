@@ -173,10 +173,7 @@ export function ExhibitionControls({
         {revealedCount}/{totalLines} actions
       </p>
       {!isFullyRevealed ? (
-        <Button
-          onClick={onNext}
-          className="gap-2 font-display font-black uppercase tracking-wide"
-        >
+        <Button onClick={onNext} className="gap-2 font-display font-black uppercase tracking-wide">
           Next <ChevronRight className="h-4 w-4" />
         </Button>
       ) : (

@@ -62,7 +62,8 @@ const RULES: Rule[] = [
     id: "banned-gradient",
     severity: "P0",
     bibleRef: "§1.3/§3.3 anti-patterns — no decorative gradients",
-    pattern: /bg-gradient|from-(purple|violet|fuchsia|indigo-5)|via-(purple|violet|fuchsia)|to-(purple|violet|fuchsia)/,
+    pattern:
+      /bg-gradient|from-(purple|violet|fuchsia|indigo-5)|via-(purple|violet|fuchsia)|to-(purple|violet|fuchsia)/,
     scopes: ["pages", "components", "contexts", "hooks", "presenters"],
   },
   {
@@ -160,9 +161,7 @@ export function scanDesignViolations(): DesignViolation[] {
         if (!rule.pattern.test(line)) continue;
         if (rule.skip?.test(line)) continue;
         if (rule.lookahead) {
-          const window = lines
-            .slice(i, i + (rule.lookaheadSpan ?? 1))
-            .join(" ");
+          const window = lines.slice(i, i + (rule.lookaheadSpan ?? 1)).join(" ");
           if (!rule.lookahead.test(window)) continue;
         }
         out.push({
@@ -189,7 +188,7 @@ if (isMain) {
     "file,line,rule,severity,bibleRef,snippet",
     ...violations.map(
       (v) =>
-        `${v.file},${v.line},${v.rule},${v.severity},${escapeCsv(v.bibleRef)},${escapeCsv(v.snippet)}`,
+        `${v.file},${v.line},${v.rule},${v.severity},${escapeCsv(v.bibleRef)},${escapeCsv(v.snippet)}`
     ),
   ].join("\n");
   const out = join(ROOT, "docs", "audit", "design-violations.csv");
@@ -198,6 +197,8 @@ if (isMain) {
   writeFileSync(out, csv + "\n");
   const counts = new Map<string, number>();
   for (const v of violations) counts.set(v.rule, (counts.get(v.rule) ?? 0) + 1);
-  console.log(`${violations.length} violations across ${new Set(violations.map((v) => v.file)).size} files`);
+  console.log(
+    `${violations.length} violations across ${new Set(violations.map((v) => v.file)).size} files`
+  );
   for (const [r, n] of [...counts].sort()) console.log(`  ${r}: ${n}`);
 }

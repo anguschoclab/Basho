@@ -150,9 +150,7 @@ function ctxFor(world: WorldState, heyaId: string): AIContext {
 describe("legacyModifier", () => {
   it("is written on the heya at succession from the predecessor's active plan", () => {
     const { world } = successionWorld({ predecessorPlanId: "rebuilding" });
-    const next = resolveImpacts(world, [
-      DynastyService.triggerSuccession(world, "h1", "heir1"),
-    ]);
+    const next = resolveImpacts(world, [DynastyService.triggerSuccession(world, "h1", "heir1")]);
     expect(next.heyas.get("h1")!.legacyModifier?.planFamilyBias).toBe("rebuilding");
     expect(next.heyas.get("h1")!.legacyModifier?.bashoRemaining).toBeGreaterThan(0);
   });

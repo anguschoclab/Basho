@@ -3,8 +3,16 @@
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
 import type { PbpPipeline } from "./pipeline";
-import { FIRST_WIN_MENTION_MIN_DAY, MOMENTUM_NARRATIVE_THRESHOLD, WEIGHT_DIFF_THRESHOLD } from "../../../constants/engine/generation";
-import { NARRATIVE_CALL_REVERSED_CHANCE, NARRATIVE_GYOJI_CONFUSED_CHANCE, NARRATIVE_REMATCH_CHANCE } from "../../../constants/engine/narrative";
+import {
+  FIRST_WIN_MENTION_MIN_DAY,
+  MOMENTUM_NARRATIVE_THRESHOLD,
+  WEIGHT_DIFF_THRESHOLD,
+} from "../../../constants/engine/generation";
+import {
+  NARRATIVE_CALL_REVERSED_CHANCE,
+  NARRATIVE_GYOJI_CONFUSED_CHANCE,
+  NARRATIVE_REMATCH_CHANCE,
+} from "../../../constants/engine/narrative";
 import { BardEngine } from "../../bard/BardEngine";
 import { rngFromSeed } from "../../rng";
 
@@ -22,7 +30,6 @@ function beatPostBoutYushoRace(p: PbpPipeline): void {
       ["yusho_race"]
     );
   }
-
 }
 
 function beatPostBoutLeaderboard(p: PbpPipeline): void {
@@ -86,11 +93,20 @@ function beatPostBoutLeaderboard(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatPostBoutStoryline(p: PbpPipeline): void {
-  const { day, loserLosses, loserRikishi, loserWins, postBoutRng, push, winnerLosses, winnerRikishi, winnerWins } = p;
+  const {
+    day,
+    loserLosses,
+    loserRikishi,
+    loserWins,
+    postBoutRng,
+    push,
+    winnerLosses,
+    winnerRikishi,
+    winnerWins,
+  } = p;
   // 15b. Post-bout storyline: streaks, first win, sole leader
   const winnerWinStreak = winnerRikishi.currentWinStreak ?? 0;
   const loserWinStreak = loserRikishi.currentWinStreak ?? 0;
@@ -167,7 +183,6 @@ function beatPostBoutStoryline(p: PbpPipeline): void {
       ["title_stakes"]
     );
   }
-
 }
 
 function beatPostBoutUpset(p: PbpPipeline): void {
@@ -187,7 +202,6 @@ function beatPostBoutUpset(p: PbpPipeline): void {
       ["upset"]
     );
   }
-
 }
 
 function beatComebackWin(p: PbpPipeline): void {
@@ -211,7 +225,6 @@ function beatComebackWin(p: PbpPipeline): void {
       ["comeback"]
     );
   }
-
 }
 
 function beatPostBoutRivalry(p: PbpPipeline): void {
@@ -259,7 +272,6 @@ function beatPostBoutRivalry(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatKenshoEconomic(p: PbpPipeline): void {
@@ -277,7 +289,6 @@ function beatKenshoEconomic(p: PbpPipeline): void {
       ["kensho"]
     );
   }
-
 }
 
 function beatAgeDecline(p: PbpPipeline): void {
@@ -327,7 +338,6 @@ function beatAgeDecline(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatPostBoutInjury(p: PbpPipeline): void {
@@ -364,7 +374,6 @@ function beatPostBoutInjury(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatMomentumScore(p: PbpPipeline): void {
@@ -386,7 +395,6 @@ function beatMomentumScore(p: PbpPipeline): void {
       ["momentum_shift"]
     );
   }
-
 }
 
 function beatMonoii(p: PbpPipeline): void {
@@ -480,7 +488,6 @@ function beatMonoii(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatReplayHighlight(p: PbpPipeline): void {
@@ -526,7 +533,6 @@ function beatReplayHighlight(p: PbpPipeline): void {
       ["drama"]
     );
   }
-
 }
 
 export function narrateAftermath(p: PbpPipeline): void {

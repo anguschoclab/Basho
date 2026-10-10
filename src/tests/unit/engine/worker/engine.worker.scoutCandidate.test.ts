@@ -94,8 +94,6 @@ describe("engine.worker — recruitment failure signaling", () => {
       revealCount: 3,
     } as unknown as EngineCommand);
 
-    expect(mockPostMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "ERROR" })
-    );
+    expect(mockPostMessage).toHaveBeenCalledWith(expect.objectContaining({ type: "ERROR" }));
   });
 });

@@ -119,9 +119,10 @@ function collectRetiredRikishi(world: WorldState): Array<Rikishi | RetiredRikish
   return retiredRikishi;
 }
 
-function computeRetirementAges(
-  retiredRikishi: Array<Rikishi | RetiredRikishiSummary>
-): { retirementAges: number[]; averageRetirementAge: number } {
+function computeRetirementAges(retiredRikishi: Array<Rikishi | RetiredRikishiSummary>): {
+  retirementAges: number[];
+  averageRetirementAge: number;
+} {
   const retirementAges: number[] = [];
   let retirementAgeSum = 0;
   for (const r of retiredRikishi) {
@@ -222,8 +223,7 @@ function computeOyakataMetrics(
   }
   const myosekiSaturation = myosekiTotal > 0 ? (heldMyoseki / myosekiTotal) * 100 : 0;
 
-  const promotionRate =
-    retiredCount > 0 ? (newOyakataFromRikishi / retiredCount) * 100 : 0;
+  const promotionRate = retiredCount > 0 ? (newOyakataFromRikishi / retiredCount) * 100 : 0;
 
   return {
     totalOyakata: oyakata.length,

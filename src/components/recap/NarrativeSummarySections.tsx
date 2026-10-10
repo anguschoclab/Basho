@@ -223,11 +223,7 @@ export function MovementsSection({ groupedEvents }: { groupedEvents: GroupedNarr
               <EventCard key={i} title={e.title} summary={e.summary} isRetirement icon={UserX} />
             ))}
             {groupedEvents.retirements.length === 0 && (
-              <EmptyState
-                icon={UserX}
-                title="No veteran departures recorded this basho."
-                compact
-              />
+              <EmptyState icon={UserX} title="No veteran departures recorded this basho." compact />
             )}
           </div>
         </section>
@@ -297,17 +293,15 @@ export function NarrativeGovernanceSection({
               <Clock className="h-3 w-3" /> Historical Timeline Drift
             </h4>
             <div className="space-y-3 pl-4 border-l-2 border-border/40">
-              {governanceLog
-                .slice(-5)
-                .map((log: GovernanceRuling, i: number) => (
-                  <div key={i} className="relative">
-                    <div className="absolute -left-[22px] top-1 h-2 w-2 rounded-full bg-border" />
-                    <div className="text-[10px] font-bold text-muted-foreground mb-1">
-                      {log.date || "Association Record"}
-                    </div>
-                    <p className="text-xs font-display italic leading-snug">{log.reason}</p>
+              {governanceLog.slice(-5).map((log: GovernanceRuling, i: number) => (
+                <div key={i} className="relative">
+                  <div className="absolute -left-[22px] top-1 h-2 w-2 rounded-full bg-border" />
+                  <div className="text-[10px] font-bold text-muted-foreground mb-1">
+                    {log.date || "Association Record"}
                   </div>
-                ))}
+                  <p className="text-xs font-display italic leading-snug">{log.reason}</p>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -383,9 +377,7 @@ function YdcEntry({ e }: { e: NonNullable<GroupedNarrativeEvents["ydcAccountabil
             </span>
           )}
         </div>
-        <p className="text-xs text-muted-foreground italic leading-relaxed">
-          "{e.summary}"
-        </p>
+        <p className="text-xs text-muted-foreground italic leading-relaxed">"{e.summary}"</p>
         {e.references && e.references.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {e.references.map((ref, j) => (
@@ -427,7 +419,11 @@ export function YdcSection({ groupedEvents }: { groupedEvents: GroupedNarrativeE
 }
 
 /** Post-basho press conference section. */
-export function PressConferenceSection({ groupedEvents }: { groupedEvents: GroupedNarrativeEvents }) {
+export function PressConferenceSection({
+  groupedEvents,
+}: {
+  groupedEvents: GroupedNarrativeEvents;
+}) {
   return (
     <section className="space-y-6 pt-6">
       <div className="flex items-center gap-3">
@@ -445,16 +441,11 @@ export function PressConferenceSection({ groupedEvents }: { groupedEvents: Group
                 {e.title}
               </div>
             </div>
-            <p className="text-xs text-muted-foreground italic leading-relaxed mb-3">
-              {e.summary}
-            </p>
+            <p className="text-xs text-muted-foreground italic leading-relaxed mb-3">{e.summary}</p>
             {e.narrative && e.narrative.length > 0 && (
               <div className="space-y-2 pl-4 border-l-2 border-primary/10">
                 {e.narrative.map((line, j) => (
-                  <p
-                    key={j}
-                    className="text-xs text-muted-foreground/80 italic leading-relaxed"
-                  >
+                  <p key={j} className="text-xs text-muted-foreground/80 italic leading-relaxed">
                     {line.text}
                   </p>
                 ))}
@@ -486,8 +477,8 @@ export function WrapUpFooter({
             Association Wrap-up
           </h3>
           <p className="text-sm text-muted-foreground max-w-md mx-auto italic font-display">
-            "The Association has ratified another successful tournament. The Banzuke committee
-            will now begin deliberations for the coming year."
+            "The Association has ratified another successful tournament. The Banzuke committee will
+            now begin deliberations for the coming year."
           </p>
         </div>
         <div className="bg-primary/5 p-4 rounded-lg flex items-center justify-center gap-12">
@@ -497,9 +488,7 @@ export function WrapUpFooter({
           </div>
           <div className="w-px h-8 bg-primary/10" />
           <div className="text-center">
-            <div className="text-2xl font-display font-black text-primary">
-              {activeHeyasCount}
-            </div>
+            <div className="text-2xl font-display font-black text-primary">{activeHeyasCount}</div>
             <div className="text-[10px] uppercase font-black opacity-40">Active Stables</div>
           </div>
         </div>

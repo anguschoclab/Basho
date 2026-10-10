@@ -104,7 +104,8 @@ const REQUEST_RULES: Array<{
   {
     type: "retirement_consideration",
     reason: "career_wind_down",
-    when: (r, d) => (r.age ?? 0) >= RETIREMENT_AGE_MIN && d.satisfaction <= RETIREMENT_SATISFACTION_MAX,
+    when: (r, d) =>
+      (r.age ?? 0) >= RETIREMENT_AGE_MIN && d.satisfaction <= RETIREMENT_SATISFACTION_MAX,
   },
   {
     type: "request_intensity",
@@ -142,7 +143,10 @@ export function generateRequests(
   pending: RikishiRequest[]
 ): RikishiRequest[] {
   const week = world.week ?? world.calendar?.currentWeek ?? 0;
-  if (disposition.lastRequestWeek != null && week - disposition.lastRequestWeek < REQUEST_COOLDOWN_WEEKS) {
+  if (
+    disposition.lastRequestWeek != null &&
+    week - disposition.lastRequestWeek < REQUEST_COOLDOWN_WEEKS
+  ) {
     return [];
   }
   const out: RikishiRequest[] = [];

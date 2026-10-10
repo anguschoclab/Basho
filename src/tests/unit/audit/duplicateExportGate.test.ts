@@ -10,10 +10,7 @@
  * const. Intentional splits must be renamed; identical values must be merged.
  */
 import { describe, expect, it } from "vitest";
-import {
-  scanConstDuplicates,
-  scanDuplicateExports,
-} from "../../../../scripts/duplicateExports";
+import { scanConstDuplicates, scanDuplicateExports } from "../../../../scripts/duplicateExports";
 
 /**
  * Intentional same-name exports (layered APIs / deliberate domain synonyms).
@@ -31,7 +28,8 @@ const ALLOWED_DUPLICATES: Record<string, string> = {
   // contexts/gameHelpers dispatches impacts onto GameState (UI projection);
   // engine/core/ImpactResolver resolves impacts onto WorldState (engine layer).
   // Same verb, different state domain + signature — intentional layering.
-  applyImpact: "GameState helper (contexts/gameHelpers) vs WorldState resolver (engine/ImpactResolver)",
+  applyImpact:
+    "GameState helper (contexts/gameHelpers) vs WorldState resolver (engine/ImpactResolver)",
 };
 
 /**
@@ -59,14 +57,10 @@ describe("duplicate-export gate", () => {
   it("no stale allowlist entries (resolved collisions must be removed)", () => {
     const { collisions } = scanDuplicateExports();
     const live = new Set(collisions.map((c) => c.name));
-    const stale = [
-      ...Object.keys(ALLOWED_DUPLICATES),
-      ...Object.keys(KNOWN_COLLISIONS),
-    ].filter((name) => !live.has(name));
-    expect(
-      stale,
-      `stale entries: ${stale.join(", ")} — remove resolved collisions`
-    ).toEqual([]);
+    const stale = [...Object.keys(ALLOWED_DUPLICATES), ...Object.keys(KNOWN_COLLISIONS)].filter(
+      (name) => !live.has(name)
+    );
+    expect(stale, `stale entries: ${stale.join(", ")} — remove resolved collisions`).toEqual([]);
   });
 
   it("constants/engine has no duplicate exported const names", () => {

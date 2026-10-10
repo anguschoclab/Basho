@@ -88,5 +88,3 @@ export function getStableFinances(world: WorldState, heyaId: Id): number {
   const h = world.heyas.get(heyaId);
   return h?.funds ?? 0;
 }
-
-

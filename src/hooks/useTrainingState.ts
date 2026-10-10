@@ -28,9 +28,7 @@ export function useTrainingState(
 
   const [trainingState, setTrainingState] = useState<HeyaTrainingState>(() => {
     if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");
-    return (
-      world.trainingState?.get(playerHeyaId) ?? createDefaultTrainingState(playerHeyaId || "")
-    );
+    return world.trainingState?.get(playerHeyaId) ?? createDefaultTrainingState(playerHeyaId || "");
   });
 
   // Apply a mutation locally, then persist via the worker command.
@@ -53,10 +51,7 @@ export function useTrainingState(
   const handleRecoveryChange = (recovery: RecoveryEmphasis) =>
     commit((prev) => ({ ...prev, activeProfile: { ...prev.activeProfile, recovery } }));
 
-  const handleIndividualFocusChange = (
-    rikishiId: string,
-    focusType: IndividualFocusType | null
-  ) =>
+  const handleIndividualFocusChange = (rikishiId: string, focusType: IndividualFocusType | null) =>
     commit((prev) => {
       const slots = (prev.focusSlots || []).filter((s) => s.rikishiId !== rikishiId);
       if (focusType) slots.push({ rikishiId, focusType });

@@ -144,7 +144,11 @@ const MOOD_OVERRIDES: Record<
 > = {
   anxious: {
     dojo_duel: {
-      accept: { to: "decline", reason: "[Crisis Agent] Anxiety override: declining challenge", rep: -3 },
+      accept: {
+        to: "decline",
+        reason: "[Crisis Agent] Anxiety override: declining challenge",
+        rep: -3,
+      },
     },
     sponsorship_friction: {
       call_bluff: {
@@ -162,7 +166,11 @@ const MOOD_OVERRIDES: Record<
       },
     },
     media_firestorm: {
-      exclusive: { to: "no_comment", reason: "[Crisis Agent] Emotional override: defiant stance", rep: -10 },
+      exclusive: {
+        to: "no_comment",
+        reason: "[Crisis Agent] Emotional override: defiant stance",
+        rep: -10,
+      },
     },
   },
   obsessed: {
@@ -174,7 +182,11 @@ const MOOD_OVERRIDES: Record<
       },
     },
     media_firestorm: {
-      exclusive: { to: "no_comment", reason: "[Crisis Agent] Emotional override: defiant stance", rep: -10 },
+      exclusive: {
+        to: "no_comment",
+        reason: "[Crisis Agent] Emotional override: defiant stance",
+        rep: -10,
+      },
     },
   },
 };

@@ -136,9 +136,7 @@ export function JunYushoCard({
               </Badge>
             </div>
           ))}
-          {!junYusho.length && (
-            <EmptyState icon={Medal} title="No runners-up recorded." compact />
-          )}
+          {!junYusho.length && <EmptyState icon={Medal} title="No runners-up recorded." compact />}
         </div>
       </CardContent>
     </Card>
@@ -176,9 +174,7 @@ export function KinboshiCard({
                 key={idx}
                 className="p-4 bg-gold/5 border-2 border-gold/10 rounded-lg space-y-3 relative overflow-hidden group"
               >
-                <div className="absolute top-0 right-0 p-2 opacity-5 font-black text-2xl">
-                  ★
-                </div>
+                <div className="absolute top-0 right-0 p-2 opacity-5 font-black text-2xl">★</div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Star className="h-4 w-4 text-gold" />

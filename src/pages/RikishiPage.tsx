@@ -65,9 +65,7 @@ export default function RikishiPage() {
     return (
       <RosterListView
         rikishiList={rikishiList}
-        onRikishiClick={(id) =>
-          navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: id } })
-        }
+        onRikishiClick={(id) => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: id } })}
       />
     );
   }

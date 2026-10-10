@@ -13,15 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import type { RecordEntry } from "@/engine/types/records";
 import type { BashoResult } from "@/engine/types/basho";
 import type { WorldState } from "@/presenters/uiDigest";
-import {
-  Medal,
-  Star,
-  TrendingUp,
-  Trophy,
-  Users,
-  Award,
-  Swords,
-} from "lucide-react";
+import { Medal, Star, TrendingUp, Trophy, Users, Award, Swords } from "lucide-react";
 import { getRikishi, getHistory } from "@/presenters/worldAccess";
 import { projectOfficials } from "@/presenters/officialsProjections";
 import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
@@ -144,16 +136,11 @@ export function PastBashosTab({ world }: { world: WorldState }) {
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs uppercase text-muted-foreground font-semibold">
-                  Attendance
-                </p>
+                <p className="text-xs uppercase text-muted-foreground font-semibold">Attendance</p>
                 <p className="font-mono text-lg">Full House</p>
               </div>
               <div className="text-right">
-                <Link
-                  to="/basho"
-                  className="text-primary hover:underline text-sm font-semibold"
-                >
+                <Link to="/basho" className="text-primary hover:underline text-sm font-semibold">
                   View Full Results →
                 </Link>
               </div>
@@ -166,7 +153,13 @@ export function PastBashosTab({ world }: { world: WorldState }) {
 }
 
 /** Record Book tab — all-time + active leaderboards. */
-export function RecordsTab({ world, giantSlayers }: { world: WorldState; giantSlayers: RecordEntry[] }) {
+export function RecordsTab({
+  world,
+  giantSlayers,
+}: {
+  world: WorldState;
+  giantSlayers: RecordEntry[];
+}) {
   const records = world.records || {
     allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
     active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
@@ -277,8 +270,8 @@ export function TechniquesTab({ derived }: { derived: Derived }) {
           {statsScope === "era"
             ? "Observed share of bout endings this era (resets each year) against the real-world makuuchi reference."
             : "Observed share of bout endings across the entire save history against the real-world makuuchi reference."}{" "}
-          Observed percentages are computed from recorded results; expected values are
-          all-time professional statistics.
+          Observed percentages are computed from recorded results; expected values are all-time
+          professional statistics.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -304,9 +297,7 @@ export function TechniquesTab({ derived }: { derived: Derived }) {
                 {kimariteStats.map((row) => (
                   <tr key={row.kimarite} className="border-b last:border-0">
                     <td className="py-1.5 pr-3 font-display">{row.name}</td>
-                    <td className="py-1.5 pr-3 text-right font-mono tabular-nums">
-                      {row.count}
-                    </td>
+                    <td className="py-1.5 pr-3 text-right font-mono tabular-nums">{row.count}</td>
                     <td className="py-1.5 pr-3 text-right font-mono tabular-nums">
                       {row.count > 0 ? `${row.observedPct.toFixed(2)}%` : "—"}
                     </td>
@@ -347,8 +338,8 @@ export function HallOfFameTab() {
         <div>
           <h3 className="text-xl font-bold">The Hall of Fame</h3>
           <p className="text-muted-foreground max-w-md mx-auto mt-2">
-            Reserved for the greatest legends of Sumo history. Wrestlers become eligible
-            after retiring with exceptional achievements.
+            Reserved for the greatest legends of Sumo history. Wrestlers become eligible after
+            retiring with exceptional achievements.
           </p>
         </div>
         <Badge variant="secondary" className="mt-4">

@@ -26,7 +26,10 @@ import type { WorldState } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/rikishi";
 import type { Rikishi as RawRikishi } from "@/engine/types/rikishi";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
-import type { useCareerProgressionData, useEarningsProgressionData } from "@/components/rikishi/useRikishiData";
+import type {
+  useCareerProgressionData,
+  useEarningsProgressionData,
+} from "@/components/rikishi/useRikishiData";
 import type { getHealthBadge } from "@/presenters/PerceptionPresenter";
 
 /** Stable roster list view — shown when no rikishiId is in the route. */

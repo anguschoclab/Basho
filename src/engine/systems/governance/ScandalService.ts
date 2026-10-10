@@ -85,7 +85,6 @@ export function reportScandal(
   return builder.build();
 }
 
-
 /**
  * Bi-annual JSA Board Elections.
  * Calculates institutional power based on political capital, reputation, and faction influence.

@@ -145,9 +145,7 @@ function RosterRow({
       <div className="text-right">
         <div className="text-xs font-display font-black uppercase">
           {rankLabel}{" "}
-          <span className="opacity-40">
-            {r.rikishi.rankNumber > 0 ? r.rikishi.rankNumber : ""}
-          </span>
+          <span className="opacity-40">{r.rikishi.rankNumber > 0 ? r.rikishi.rankNumber : ""}</span>
         </div>
         <div className="text-[10px] font-bold text-muted-foreground uppercase">
           {r.rikishi.side || "East"} Division
@@ -171,10 +169,7 @@ export function PreviewRoster({
         <h3 className="font-display font-bold text-base uppercase tracking-tight flex items-center gap-2">
           <Info className="h-4 w-4 text-primary" /> Active Roster
         </h3>
-        <Badge
-          variant="outline"
-          className="text-[10px] font-bold uppercase tracking-widest px-2"
-        >
+        <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest px-2">
           {roster.length} Records
         </Badge>
       </div>

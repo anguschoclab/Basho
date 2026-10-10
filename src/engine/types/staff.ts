@@ -27,7 +27,8 @@ export interface StaffCompetenceBands {
   secondary?: CompetenceBand;
 }
 
-export type StaffReputationBand = "unknown" | "questionable" | "respected" | "renowned" | "legendary";
+export type StaffReputationBand =
+  "unknown" | "questionable" | "respected" | "renowned" | "legendary";
 
 export type StaffLoyaltyBand = "mercenary" | "wavering" | "stable" | "devoted" | "unshakable";
 

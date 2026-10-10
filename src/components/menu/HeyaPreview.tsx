@@ -6,23 +6,13 @@
  */
 
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Heya } from "@/engine/types/heya";
 import { STATURE_CONFIG } from "./statureConfig";
 import { sortRikishiByRank } from "@/utils/engineUtils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RikishiDetailDialog } from "./RikishiDetailDialog";
-import {
-  PreviewHero,
-  PreviewStats,
-  PreviewRoster,
-  PreviewFooter,
-} from "./HeyaPreviewSections";
+import { PreviewHero, PreviewStats, PreviewRoster, PreviewFooter } from "./HeyaPreviewSections";
 
 interface HeyaPreviewProps {
   heya: Heya | null;

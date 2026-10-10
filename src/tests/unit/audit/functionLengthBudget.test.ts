@@ -38,7 +38,6 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   // boutNarrative.ts::generateBoutNarrative — split 2026-10 into bout/narrative/ beat modules
 
   "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 298, kind: "function" },
-
 };
 
 /** Anonymous over-budget functions are tracked as a per-file count (line-keyed names are unstable). */
@@ -67,11 +66,11 @@ describe("CI Gate: function-length budget (ratchet)", () => {
       (m) =>
         !m.symbol.startsWith("anonymous@") &&
         !KNOWN_OVERBUDGET[`${m.file}::${m.symbol}`] &&
-        !hasWaiver(m.file),
+        !hasWaiver(m.file)
     );
     expect(
       unknown.map((m) => `${m.file}::${m.symbol} (${m.kind}, ${m.loc} LOC)`),
-      `new over-budget symbols must be split, not listed`,
+      `new over-budget symbols must be split, not listed`
     ).toEqual([]);
   });
 
@@ -102,7 +101,8 @@ describe("CI Gate: function-length budget (ratchet)", () => {
     const staleOk: string[] = [];
     for (const [key, info] of Object.entries(KNOWN_OVERBUDGET)) {
       const m = byKey.get(key);
-      const budget = info.kind === "const-obj" || info.kind === "const-arr" ? OBJECT_BUDGET : FUNCTION_BUDGET;
+      const budget =
+        info.kind === "const-obj" || info.kind === "const-arr" ? OBJECT_BUDGET : FUNCTION_BUDGET;
       if (m && m.loc <= budget) staleOk.push(`${key} now ${m.loc} LOC — remove from list`);
     }
     expect(staleOk).toEqual([]);
@@ -110,7 +110,11 @@ describe("CI Gate: function-length budget (ratchet)", () => {
 
   it("files >250 LOC const-objects without budget waiver are flagged", () => {
     const unwaived = all.filter(
-      (m) => isObj(m) && m.loc > OBJECT_BUDGET && !KNOWN_OVERBUDGET[`${m.file}::${m.symbol}`] && !hasWaiver(m.file),
+      (m) =>
+        isObj(m) &&
+        m.loc > OBJECT_BUDGET &&
+        !KNOWN_OVERBUDGET[`${m.file}::${m.symbol}`] &&
+        !hasWaiver(m.file)
     );
     expect(unwaived.map((m) => `${m.file}::${m.symbol}`)).toEqual([]);
   });

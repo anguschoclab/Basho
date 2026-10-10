@@ -182,10 +182,7 @@ type DrillVector = {
 };
 
 /** Step 2: aggregate the 6-day weekly drill plan into a stat vector. */
-function aggregateDrillVector(
-  beyaState: HeyaTrainingState,
-  rikishi: Rikishi
-): DrillVector {
+function aggregateDrillVector(beyaState: HeyaTrainingState, rikishi: Rikishi): DrillVector {
   // If a manual schedule is provided, we aggregate the 6-day impact.
   // Otherwise, we default to Asageiko (basic conditioning).
   const weeklyPlan = beyaState.weeklyPlan?.[rikishi.id] || {
@@ -305,7 +302,9 @@ function applyStatBounds(
     getEffectiveCeiling(rikishi, "mental", world),
     Math.max(
       STAT_FLOOR,
-      (rikishi.stats.mental ?? 50) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental
+      (rikishi.stats.mental ?? 50) +
+        finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER +
+        decay.mental
     )
   );
 

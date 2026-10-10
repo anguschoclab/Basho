@@ -94,24 +94,53 @@ const BEATS: Array<{ name: string; mod: string; start: number; end: number }> = 
 
 // Cross-beat locals hoisted into the pipeline — stripped from beat bodies.
 const HOISTED = new Set([
-  "rivalryState", "rivalryKey", "pair", "isGrudgeMatch",
-  "preBoutRng", "postBoutRng", "winnerRikishi", "loserRikishi",
-  "eastWins", "eastLosses", "westWins", "westLosses",
-  "winnerWins", "winnerLosses", "loserWins", "loserLosses",
-  "eastAge", "westAge", "bashoInfo",
+  "rivalryState",
+  "rivalryKey",
+  "pair",
+  "isGrudgeMatch",
+  "preBoutRng",
+  "postBoutRng",
+  "winnerRikishi",
+  "loserRikishi",
+  "eastWins",
+  "eastLosses",
+  "westWins",
+  "westLosses",
+  "winnerWins",
+  "winnerLosses",
+  "loserWins",
+  "loserLosses",
+  "eastAge",
+  "westAge",
+  "bashoInfo",
 ]);
 
 // Pipeline fields every beat may consume.
 const PIPELINE = new Set([
-  "push", "ctx", "rng", "intensity", "east", "west", "result", "seed",
-  "bashoName", "day", "world", "lines", ...HOISTED,
+  "push",
+  "ctx",
+  "rng",
+  "intensity",
+  "east",
+  "west",
+  "result",
+  "seed",
+  "bashoName",
+  "day",
+  "world",
+  "lines",
+  ...HOISTED,
 ]);
 
 // Parse original import block → name -> module specifier
 const importMap = new Map<string, string>();
 for (const m of source.matchAll(/import\s*(?:type\s*)?\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)) {
   for (const part of m[1].split(",")) {
-    const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+    const name = part
+      .trim()
+      .split(/\s+as\s+/)
+      .pop()
+      ?.trim();
     if (name) importMap.set(name, m[2]);
   }
 }
@@ -119,7 +148,11 @@ for (const m of source.matchAll(/import\s*(?:type\s*)?\{([^}]+)\}\s*from\s*["'](
 const typeImports = new Set<string>();
 for (const m of source.matchAll(/import\s+type\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)) {
   for (const part of m[1].split(",")) {
-    const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+    const name = part
+      .trim()
+      .split(/\s+as\s+/)
+      .pop()
+      ?.trim();
     if (name) typeImports.add(name);
   }
 }
@@ -128,21 +161,35 @@ for (const m of source.matchAll(/import\s+type\s*\{([^}]+)\}\s*from\s*["']([^"']
 
 function analyze(blockText: string): { used: Set<string> } {
   const wrapped = `function __f(__p:any){\n${blockText}\n}`;
-  const sf = ts.createSourceFile("block.ts", wrapped, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sf = ts.createSourceFile(
+    "block.ts",
+    wrapped,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS
+  );
   const bound = new Set<string>(["__p", "__f"]);
   const used = new Set<string>();
   const collectBound = (name: ts.BindingName | undefined) => {
     if (!name) return;
     if (ts.isIdentifier(name)) bound.add(name.text);
-    else ts.forEachChild(name, (n) => { if (ts.isBindingElement(n)) collectBound(n.name); });
+    else
+      ts.forEachChild(name, (n) => {
+        if (ts.isBindingElement(n)) collectBound(n.name);
+      });
   };
   const visit = (node: ts.Node) => {
     if (ts.isVariableDeclaration(node)) collectBound(node.name);
-    else if (ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node)) {
+    else if (
+      ts.isFunctionDeclaration(node) ||
+      ts.isFunctionExpression(node) ||
+      ts.isArrowFunction(node)
+    ) {
       if (ts.isFunctionDeclaration(node) && node.name) bound.add(node.name.text);
       node.parameters.forEach((p) => collectBound(p.name));
     } else if (ts.isParameter(node)) collectBound(node.name);
-    else if (ts.isCatchClause(node) && node.variableDeclaration) collectBound(node.variableDeclaration.name);
+    else if (ts.isCatchClause(node) && node.variableDeclaration)
+      collectBound(node.variableDeclaration.name);
     else if (ts.isClassDeclaration(node) && node.name) bound.add(node.name.text);
     if (ts.isIdentifier(node)) {
       const p = node.parent;
@@ -209,7 +256,10 @@ for (const [mod, fns] of MODULES) {
   }
   const importLines = [...bySpec.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([spec, { names, isType }]) => `import ${isType ? "type " : ""}{ ${names.sort().join(", ")} } from "${spec}";`)
+    .map(
+      ([spec, { names, isType }]) =>
+        `import ${isType ? "type " : ""}{ ${names.sort().join(", ")} } from "${spec}";`
+    )
     .join("\n");
   const header = `/**\n * bout/narrative/${mod}.ts — extracted beats from generateBoutNarrative.\n * Code moved verbatim; dependencies arrive via the shared PbpPipeline.\n */\nimport type { PbpPipeline } from "./pipeline";\n${importLines}\n`;
   writeFileSync(join(OUT_DIR, `${mod}.ts`), header + fns.join(""));

@@ -105,7 +105,6 @@ export function StableWidget() {
             value={p.koenkaiBand}
           />
         </div>
-
       </div>
     </BaseWidget>
   );

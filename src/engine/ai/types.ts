@@ -65,8 +65,7 @@ export interface AIPlan {
   baseline?: PlanBaseline;
 }
 
-type AIRecommendationCategory =
-  "training" | "recruitment" | "finance" | "bout" | "governance";
+type AIRecommendationCategory = "training" | "recruitment" | "finance" | "bout" | "governance";
 
 type AIRecommendationPriority = "low" | "medium" | "high" | "critical";
 

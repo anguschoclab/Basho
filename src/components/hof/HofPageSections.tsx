@@ -94,9 +94,7 @@ export function DynastyRegistry({ traits }: { traits: Record<string, BloodlineTr
             >
               <div>
                 <div className="font-display font-medium text-sm">{trait.label}</div>
-                <div className="text-xs text-muted-foreground font-body">
-                  {trait.description}
-                </div>
+                <div className="text-xs text-muted-foreground font-body">{trait.description}</div>
               </div>
               <div className="text-xs text-muted-foreground font-mono tabular-nums">
                 {trait.ancestorShikona} · {trait.registeredYear}

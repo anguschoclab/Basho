@@ -17,8 +17,6 @@ import { collectSource, listSrcDir, readSrcFile } from "@/tests/helpers/fsScan";
 const ROOT = join(__dirname, "../../../..");
 const SRC = join(ROOT, "src");
 
-
-
 describe("CI Gate: Audit baseline files exist", () => {
   it("baseline-orphans.json exists", () => {
     const path = join(ROOT, ".windsurf", "audit", "baseline-orphans.json");
@@ -150,10 +148,7 @@ describe("CI Gate: Audit test suite completeness", () => {
   // Slow audit tests (subprocess gates, year-long playthroughs) live in
   // src/tests/slow/audit and run via `bun run test:slow` — both dirs count
   // toward completeness.
-  const auditDirs = [
-    join(SRC, "tests", "unit", "audit"),
-    join(SRC, "tests", "slow", "audit"),
-  ];
+  const auditDirs = [join(SRC, "tests", "unit", "audit"), join(SRC, "tests", "slow", "audit")];
 
   const auditFiles = auditDirs
     .filter((dir) => existsSync(dir))

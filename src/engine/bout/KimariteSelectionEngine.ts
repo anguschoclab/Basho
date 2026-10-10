@@ -61,8 +61,7 @@ function weightStrategies(
 
     // Division Biases (E2)
     if (division === "makuuchi") {
-      if (s.category === "nage" || s.category === "hineri")
-        weight *= KIMARITE_NAGE_HINERI_BOOST;
+      if (s.category === "nage" || s.category === "hineri") weight *= KIMARITE_NAGE_HINERI_BOOST;
       if (s.category === "kihon") weight *= KIMARITE_KIHON_PENALTY;
     } else if (division === "jonokuchi" || division === "jonidan") {
       if (s.category === "kihon") weight *= KIMARITE_KIHON_DEFENSE_BOOST;

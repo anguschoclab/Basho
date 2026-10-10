@@ -18,9 +18,9 @@ import { warn } from "../utils/Logger";
  * and JSON-safe SerializedWorldState objects.
  */
 
-  /**
-   * Serializes a Map or Record to a sorted JSON-safe object.
-   */
+/**
+ * Serializes a Map or Record to a sorted JSON-safe object.
+ */
 function mapToObject<T>(map: Map<string, T> | Record<string, T>): Record<string, T> {
   if (!(map instanceof Map)) return map;
   const obj: Record<string, T> = {};
@@ -32,9 +32,9 @@ function mapToObject<T>(map: Map<string, T> | Record<string, T>): Record<string,
   return obj;
 }
 
-  /**
-   * Deserializes a JSON object into a runtime Map with sorted keys.
-   */
+/**
+ * Deserializes a JSON object into a runtime Map with sorted keys.
+ */
 function objectToMap<T>(obj: Record<string, T | undefined>): Map<string, T> {
   const map = new Map<string, T>();
   if (!obj) return map;
@@ -45,9 +45,9 @@ function objectToMap<T>(obj: Record<string, T | undefined>): Map<string, T> {
   return map;
 }
 
-  /**
-   * Serialize basho state.
-   */
+/**
+ * Serialize basho state.
+ */
 function serializeBashoState(basho: BashoState): SerializedBashoState {
   return {
     year: basho.year,
@@ -60,9 +60,9 @@ function serializeBashoState(basho: BashoState): SerializedBashoState {
   };
 }
 
-  /**
-   * Deserialize basho state.
-   */
+/**
+ * Deserialize basho state.
+ */
 function deserializeBashoState(basho: SerializedBashoState): BashoState {
   return {
     year: basho.year,
@@ -76,11 +76,11 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
   };
 }
 
-  /**
-   * Transform WorldState to SerializedWorldState.
-   * NOTE: transientContext is intentionally excluded — it is ephemeral and
-   * must be rebuilt by rebuildTransientContext() on load.
-   */
+/**
+ * Transform WorldState to SerializedWorldState.
+ * NOTE: transientContext is intentionally excluded — it is ephemeral and
+ * must be rebuilt by rebuildTransientContext() on load.
+ */
 function serializeWorld(world: WorldState): SerializedWorldState {
   // transientContext is intentionally excluded — it is ephemeral
   return {
@@ -170,20 +170,18 @@ function serializeWorld(world: WorldState): SerializedWorldState {
     _preBashoAssessment: world._preBashoAssessment
       ? {
           ...world._preBashoAssessment,
-          rikishiAssessments: mapToObject(
-            world._preBashoAssessment.rikishiAssessments
-          ),
+          rikishiAssessments: mapToObject(world._preBashoAssessment.rikishiAssessments),
         }
       : undefined,
     isInitialSeed: world.isInitialSeed,
   };
 }
 
-  /**
-   * Transform SerializedWorldState to live WorldState.
-   * After reconstruction, rebuildTransientContext() is called so the UI
-   * immediately has valid activeModifiers without requiring a tick.
-   */
+/**
+ * Transform SerializedWorldState to live WorldState.
+ * After reconstruction, rebuildTransientContext() is called so the UI
+ * immediately has valid activeModifiers without requiring a tick.
+ */
 function deserializeWorld(serialized: SerializedWorldState): WorldState {
   // Reset impact timestamp counter for deterministic simulation when loading saved world
   resetImpactTimestampCounter();
@@ -279,9 +277,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
     planetRating: s.planetRating,
 
     sparringPairs: s.sparringPairs ? objectToMap(s.sparringPairs) : undefined,
-    heyaBrandIdentities: s.heyaBrandIdentities
-      ? objectToMap(s.heyaBrandIdentities)
-      : undefined,
+    heyaBrandIdentities: s.heyaBrandIdentities ? objectToMap(s.heyaBrandIdentities) : undefined,
     customKeshoConfigs: s.customKeshoConfigs,
     encouragementLog: s.encouragementLog,
 

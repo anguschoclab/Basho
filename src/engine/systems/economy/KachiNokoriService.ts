@@ -78,4 +78,3 @@ export function buildPostBashoPayload(
 export function kachiNokoriToMochikyukinPoints(kachiNokori: number, pointsPerWin: number): number {
   return kachiNokori * pointsPerWin;
 }
-

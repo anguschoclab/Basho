@@ -35,13 +35,8 @@ export type RikishiAssessmentEntry =
  * Serialized PreBashoAssessment — rikishiAssessments is stored as a record
  * (explicit mapToObject) or a Map (collection-codec reviver restores it).
  */
-export type SerializedPreBashoAssessment = Omit<
-  PreBashoAssessment,
-  "rikishiAssessments"
-> & {
-  rikishiAssessments:
-    | Map<string, RikishiAssessmentEntry>
-    | Record<string, RikishiAssessmentEntry>;
+export type SerializedPreBashoAssessment = Omit<PreBashoAssessment, "rikishiAssessments"> & {
+  rikishiAssessments: Map<string, RikishiAssessmentEntry> | Record<string, RikishiAssessmentEntry>;
 };
 
 /** Serialized form of sponsor pool for JSON storage. */

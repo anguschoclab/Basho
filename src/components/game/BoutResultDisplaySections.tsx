@@ -136,9 +136,7 @@ export function KimariteCard({
         <p className="text-base text-muted-foreground/80 mt-0.5">{kimariteNameJa}</p>
       )}
       {kimariteDescription && !compact && (
-        <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">
-          {kimariteDescription}
-        </p>
+        <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">{kimariteDescription}</p>
       )}
       {rarity && rarity !== "common" && !compact && (
         <Badge

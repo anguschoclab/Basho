@@ -5,7 +5,13 @@
 import type { PbpPipeline } from "./pipeline";
 import { countMakuuchiTournaments, generateKyujoNarrative } from "./helpers";
 import { BASHO_DAYS } from "../../../constants/engine/calendar";
-import { H2H_STREAK_THRESHOLD, HEIGHT_DIFF_THRESHOLD, INJURY_MENTION_CHANCE, STYLE_DESC_CHANCE, WEIGHT_DIFF_THRESHOLD } from "../../../constants/engine/generation";
+import {
+  H2H_STREAK_THRESHOLD,
+  HEIGHT_DIFF_THRESHOLD,
+  INJURY_MENTION_CHANCE,
+  STYLE_DESC_CHANCE,
+  WEIGHT_DIFF_THRESHOLD,
+} from "../../../constants/engine/generation";
 import { BardEngine } from "../../bard/BardEngine";
 
 function beatCurrentRecords(p: PbpPipeline): void {
@@ -47,7 +53,6 @@ function beatCurrentRecords(p: PbpPipeline): void {
       []
     );
   }
-
 }
 
 function beatPrevBashoRecord(p: PbpPipeline): void {
@@ -121,7 +126,6 @@ function beatPrevBashoRecord(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatCareerHighRank(p: PbpPipeline): void {
@@ -152,7 +156,6 @@ function beatCareerHighRank(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatStoryline(p: PbpPipeline): void {
@@ -186,7 +189,6 @@ function beatStoryline(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatSevenSeven(p: PbpPipeline): void {
@@ -204,7 +206,6 @@ function beatSevenSeven(p: PbpPipeline): void {
       ["title_stakes"]
     );
   }
-
 }
 
 function beatShikonaConferred(p: PbpPipeline): void {
@@ -222,7 +223,6 @@ function beatShikonaConferred(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatRookieTourneyCount(p: PbpPipeline): void {
@@ -273,7 +273,6 @@ function beatRookieTourneyCount(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatH2HStreak(p: PbpPipeline): void {
@@ -295,7 +294,6 @@ function beatH2HStreak(p: PbpPipeline): void {
       ["rivalry"]
     );
   }
-
 }
 
 function beatInjuryMention(p: PbpPipeline): void {
@@ -327,7 +325,6 @@ function beatInjuryMention(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatInjuryRecovery(p: PbpPipeline): void {
@@ -356,7 +353,6 @@ function beatInjuryRecovery(p: PbpPipeline): void {
       }
     }
   }
-
 }
 
 function beatOzekiDemotionComeback(p: PbpPipeline): void {
@@ -374,7 +370,6 @@ function beatOzekiDemotionComeback(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatSonOfStablemaster(p: PbpPipeline): void {
@@ -392,7 +387,6 @@ function beatSonOfStablemaster(p: PbpPipeline): void {
       );
     }
   }
-
 }
 
 function beatPhysicalComparison(p: PbpPipeline): void {
@@ -416,7 +410,6 @@ function beatPhysicalComparison(p: PbpPipeline): void {
       ["weight_diff"]
     );
   }
-
 }
 
 function beatStyleDescription(p: PbpPipeline): void {
@@ -438,7 +431,6 @@ function beatStyleDescription(p: PbpPipeline): void {
       []
     );
   }
-
 }
 
 export function narrateRecords(p: PbpPipeline): void {

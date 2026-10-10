@@ -38,10 +38,7 @@ export function useFlowActions(
     [sendCommand]
   );
 
-  const setPhase = useCallback(
-    (phase: GamePhase) => dispatch(actions.setPhase(phase)),
-    [dispatch]
-  );
+  const setPhase = useCallback((phase: GamePhase) => dispatch(actions.setPhase(phase)), [dispatch]);
 
   // World-mutating bashoSlice dispatches must not fire while pendingTick:
   // useWorkerSync defers the LOAD_WORLD sync, and the in-flight tick's
@@ -77,7 +74,10 @@ export function useFlowActions(
     [dispatchWorldMutation]
   );
   const simulateAllBouts = useCallback(
-    () => startTransition(() => dispatchWorldMutation("SIMULATE_ALL_BOUTS", actions.simulateAllBouts())),
+    () =>
+      startTransition(() =>
+        dispatchWorldMutation("SIMULATE_ALL_BOUTS", actions.simulateAllBouts())
+      ),
     [dispatchWorldMutation, startTransition]
   );
   const endDay = useCallback(() => dispatch(actions.endDay()), [dispatch]);

@@ -51,8 +51,7 @@ export function CompactRankBadge({
           // Juryo - visible
           division === "juryo" && "bg-west/20 text-west border border-west/30",
           // Makushita - muted but clear
-          division === "makushita" &&
-            "bg-secondary text-secondary-foreground border border-border",
+          division === "makushita" && "bg-secondary text-secondary-foreground border border-border",
           // Lower divisions - subtle
           division === "lower" && "bg-muted text-muted-foreground text-[10px]",
           className
@@ -65,13 +64,7 @@ export function CompactRankBadge({
 }
 
 /** Roster variant — for roster cards, emphasizes rank. */
-export function RosterRankBadge({
-  division,
-  rank,
-  side,
-  displayText,
-  className,
-}: VariantProps) {
+export function RosterRankBadge({ division, rank, side, displayText, className }: VariantProps) {
   return (
     <div className={cn("flex items-center gap-1.5", className)}>
       <span
@@ -98,9 +91,7 @@ export function RosterRankBadge({
         {displayText}
       </span>
       {side && (
-        <span
-          className={cn("text-[10px] font-black", side === "east" ? "text-east" : "text-west")}
-        >
+        <span className={cn("text-[10px] font-black", side === "east" ? "text-east" : "text-west")}>
           {side === "east" ? "東" : "西"}
         </span>
       )}
@@ -165,13 +156,7 @@ export function PillRankBadge({
 }
 
 /** Full variant — default, balanced presentation. */
-export function FullRankBadge({
-  rank,
-  side,
-  division,
-  displayText,
-  className,
-}: VariantProps) {
+export function FullRankBadge({ rank, side, division, displayText, className }: VariantProps) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <span

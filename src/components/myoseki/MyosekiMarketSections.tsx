@@ -118,8 +118,7 @@ export function MarketListingTab({ market }: { market: Market }) {
             <div>
               <CardTitle>Available for Acquisition</CardTitle>
               <CardDescription>
-                Acquiring Elder Stock is required to run a stable or keep retired stars on
-                staff.
+                Acquiring Elder Stock is required to run a stable or keep retired stars on staff.
               </CardDescription>
             </div>
             <SortMenu
@@ -166,15 +165,11 @@ export function OwnedSharesTab({
     <Card>
       <CardHeader>
         <CardTitle>Your Stable's Shares</CardTitle>
-        <CardDescription>
-          Shares owned or leased by your stable and its staff.
-        </CardDescription>
+        <CardDescription>Shares owned or leased by your stable and its staff.</CardDescription>
       </CardHeader>
       <CardContent>
         {market.myStocks.length === 0 ? (
-          <p className="text-muted-foreground">
-            Your stable does not currently hold any Myoseki.
-          </p>
+          <p className="text-muted-foreground">Your stable does not currently hold any Myoseki.</p>
         ) : (
           <div className="space-y-4">
             {market.myStocks.map((stock) => (
@@ -184,9 +179,7 @@ export function OwnedSharesTab({
               >
                 <div>
                   <p className="font-bold text-lg">{stock.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Tier: {stock.prestigeTier}
-                  </p>
+                  <p className="text-sm text-muted-foreground">Tier: {stock.prestigeTier}</p>
                 </div>
                 <div className="text-right space-y-2">
                   <div>
@@ -205,22 +198,14 @@ export function OwnedSharesTab({
                   {stock.status === "held" &&
                     stock.holderId === market.playerHeya?.oyakataId &&
                     onListForSale && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onListForSale(stock)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => onListForSale(stock)}>
                         List for Sale
                       </Button>
                     )}
                   {stock.status === "leased" &&
                     stock.holderId === market.playerHeya?.oyakataId &&
                     onEndLease && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onEndLease(stock)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => onEndLease(stock)}>
                         End Lease
                       </Button>
                     )}
@@ -249,10 +234,7 @@ export function TransactionHistoryTab({ market }: { market: Market }) {
           <ScrollArea className="h-[400px]">
             <div className="space-y-4">
               {m.history.map((tx) => (
-                <div
-                  key={tx.id}
-                  className="flex justify-between items-center border-b pb-2"
-                >
+                <div key={tx.id} className="flex justify-between items-center border-b pb-2">
                   <div>
                     <p className="font-medium text-sm">
                       {tx.type === "sale"

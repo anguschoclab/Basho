@@ -41,11 +41,7 @@ export function GlobalStrategicHub({ world, heyaId }: GlobalStrategicHubProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* World Influence Map (Presence) */}
-        <InfluenceCard
-          presence={presence}
-          regions={regions}
-          activeAcademies={activeAcademies}
-        />
+        <InfluenceCard presence={presence} regions={regions} activeAcademies={activeAcademies} />
 
         {/* Global Talent Pipeline */}
         <PipelineCard candidates={foreignCandidates} />

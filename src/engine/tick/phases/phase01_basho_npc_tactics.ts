@@ -41,19 +41,13 @@ function oyakataFor(world: WorldState, heyaId: Id): Oyakata | undefined {
 }
 
 /** Compute a banded basho posture for one NPC stable. */
-export function computeBashoPosture(
-  world: WorldState,
-  heyaId: Id,
-  entrantIds: Id[]
-): BashoPosture {
+export function computeBashoPosture(world: WorldState, heyaId: Id, entrantIds: Id[]): BashoPosture {
   const oyakata = oyakataFor(world, heyaId);
   const archetype = oyakata?.archetype ?? "strategist";
   const traits = oyakata?.traits;
   const basho = world.currentBasho;
 
-  const entrants = entrantIds
-    .map((id) => getRikishi(world, id))
-    .filter((r): r is Rikishi => !!r);
+  const entrants = entrantIds.map((id) => getRikishi(world, id)).filter((r): r is Rikishi => !!r);
   const injured = entrants.filter((r) => r.injured || r.isKyujo).length;
   const injuryRatio = entrants.length ? injured / entrants.length : 0;
 
@@ -101,8 +95,7 @@ export function shouldWithdrawInjuredToday(
   if (severity === "none") return false;
 
   const record = basho.standings.get(rikishi.id) ?? { wins: 0, losses: 0 };
-  const recordDecided =
-    record.wins >= KACHI_KOSHI_WINS || record.losses >= MAKE_KOSHI_LOSSES;
+  const recordDecided = record.wins >= KACHI_KOSHI_WINS || record.losses >= MAKE_KOSHI_LOSSES;
   const compassion = oyakata?.traits?.compassion ?? 50;
   const archetype = oyakata?.archetype ?? "strategist";
 

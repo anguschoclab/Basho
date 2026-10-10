@@ -6,23 +6,23 @@
 
 ### DELETE candidates (module genuinely dead — no production importer, no dev-tool role)
 
-| File | Evidence |
-|---|---|
-| `src/components/media/PressConference.tsx` | Only the `game/PressConference.tsx` variant is reachable; media/ variant has zero importers |
-| `src/components/ui/Sparkline.tsx` | Only imported by dead barrel `components/ui/index.ts`; MediaPage uses its own inline `HeatSparkline`; FinancesWidget reference is a comment |
-| `src/components/ui/colorMaps.ts` | Dead `HEAT_CONFIG` variant (emoji-icon map) lives here — the live one is `boutCardTypes.tsx` |
-| `src/contexts/domainHooks.ts` | Zero importers |
-| `src/utils/validatePath.ts` | **KEEP** — imported by `electron/main.ts` (outside `src/` BFS); electron-parity test asserts its presence |
-| `src/constants/engine/koreYoriSanyaku.ts` | Zero production importers |
-| `src/constants/engine/narrativeFlavor.ts` | Zero production importers (has own test) |
-| `src/constants/ui/kesho.ts` | Zero importers |
-| `src/constants/ui/presenters.ts` | Zero importers |
-| `src/engine/bout/honbasho.ts` | Dead module (5 GENUINE_ORPHANS); `ExhibitionBashoService.isHonbasho` is the live equivalent |
-| `src/engine/bout/kachiNokori.ts` | Dead + divergent `calculateKachiNokori` dup |
-| `src/engine/core/EntityService.ts` | Dead (GENUINE_ORPHAN) |
-| `src/engine/npcAI/contextBuilder.ts` | Dead `buildAIContext` — but `AIContext` is hand-built at 4 sites (`BoutAI`, `boutResolver`, `StrategicPlanner`, `phase01_week_npc_ai`) → either wire as canonical ctor or delete; verdict in registry |
-| `src/engine/npcAI/strategies/sponsor/SponsorStrategy.ts` | Dead strategy module |
-| `src/engine/systems/economy/infrastructureValidation.ts` | Zero external importers |
+| File                                                     | Evidence                                                                                                                                                                                              |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/media/PressConference.tsx`               | Only the `game/PressConference.tsx` variant is reachable; media/ variant has zero importers                                                                                                           |
+| `src/components/ui/Sparkline.tsx`                        | Only imported by dead barrel `components/ui/index.ts`; MediaPage uses its own inline `HeatSparkline`; FinancesWidget reference is a comment                                                           |
+| `src/components/ui/colorMaps.ts`                         | Dead `HEAT_CONFIG` variant (emoji-icon map) lives here — the live one is `boutCardTypes.tsx`                                                                                                          |
+| `src/contexts/domainHooks.ts`                            | Zero importers                                                                                                                                                                                        |
+| `src/utils/validatePath.ts`                              | **KEEP** — imported by `electron/main.ts` (outside `src/` BFS); electron-parity test asserts its presence                                                                                             |
+| `src/constants/engine/koreYoriSanyaku.ts`                | Zero production importers                                                                                                                                                                             |
+| `src/constants/engine/narrativeFlavor.ts`                | Zero production importers (has own test)                                                                                                                                                              |
+| `src/constants/ui/kesho.ts`                              | Zero importers                                                                                                                                                                                        |
+| `src/constants/ui/presenters.ts`                         | Zero importers                                                                                                                                                                                        |
+| `src/engine/bout/honbasho.ts`                            | Dead module (5 GENUINE_ORPHANS); `ExhibitionBashoService.isHonbasho` is the live equivalent                                                                                                           |
+| `src/engine/bout/kachiNokori.ts`                         | Dead + divergent `calculateKachiNokori` dup                                                                                                                                                           |
+| `src/engine/core/EntityService.ts`                       | Dead (GENUINE_ORPHAN)                                                                                                                                                                                 |
+| `src/engine/npcAI/contextBuilder.ts`                     | Dead `buildAIContext` — but `AIContext` is hand-built at 4 sites (`BoutAI`, `boutResolver`, `StrategicPlanner`, `phase01_week_npc_ai`) → either wire as canonical ctor or delete; verdict in registry |
+| `src/engine/npcAI/strategies/sponsor/SponsorStrategy.ts` | Dead strategy module                                                                                                                                                                                  |
+| `src/engine/systems/economy/infrastructureValidation.ts` | Zero external importers                                                                                                                                                                               |
 
 ### Dead barrels (index.ts with zero importers — delete or wire)
 

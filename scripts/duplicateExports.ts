@@ -98,8 +98,7 @@ function scanFile(root: string, file: string): ExportSite[] {
   const locals = localTopLevelNames(sf);
   const imports = importedNames(sf);
 
-  const push = (name: string, kind: ExportSite["kind"]) =>
-    out.push({ file: rel, name, kind });
+  const push = (name: string, kind: ExportSite["kind"]) => out.push({ file: rel, name, kind });
 
   for (const stmt of sf.statements) {
     // export { a, b as c } [from '...']
@@ -143,10 +142,7 @@ function scanFile(root: string, file: string): ExportSite[] {
       for (const d of stmt.declarationList.declarations) {
         if (ts.isIdentifier(d.name)) push(d.name.text, "value");
       }
-    } else if (
-      ts.isInterfaceDeclaration(stmt) ||
-      ts.isTypeAliasDeclaration(stmt)
-    ) {
+    } else if (ts.isInterfaceDeclaration(stmt) || ts.isTypeAliasDeclaration(stmt)) {
       if (stmt.name) push(stmt.name.text, "type");
     } else if (
       ts.isFunctionDeclaration(stmt) ||
@@ -214,10 +210,7 @@ export function scanDuplicateExports(root: string = process.cwd()): {
 }
 
 /** Const uniqueness within a subtree (e.g. constants/engine): same const name in 2+ files. */
-export function scanConstDuplicates(
-  root: string,
-  subtree: string
-): Map<string, string[]> {
+export function scanConstDuplicates(root: string, subtree: string): Map<string, string[]> {
   const dir = join(root, subtree);
   const decls = new Map<string, string[]>();
   for (const file of walk(dir)) {

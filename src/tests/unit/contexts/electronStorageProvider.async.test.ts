@@ -23,8 +23,8 @@ describe("ElectronStorageProvider — real async IPC contract", () => {
 
   it("getItem returns a string|null (never a Promise) on Electron", async () => {
     const store: Record<string, string> = {
-      "basho_save_autosave": '{"version":"1.4.0"}',
-      "basho_save_slot_1": '{"version":"1.4.0","x":1}',
+      basho_save_autosave: '{"version":"1.4.0"}',
+      basho_save_slot_1: '{"version":"1.4.0","x":1}',
     };
     const mocks = mockElectronAPI({ storageKeys: store });
     // Real preload contract: ipcRenderer.invoke returns a Promise for every op.

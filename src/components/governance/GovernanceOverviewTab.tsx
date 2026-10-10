@@ -43,16 +43,8 @@ export function GovernanceOverviewTab({ world, heya, derived }: Props) {
           stats={derived.welfareStats}
           progress={derived.welfareProgress}
         />
-        <StatCard
-          eyebrow="── JSA COUNCIL ──"
-          title="Council Status"
-          stats={derived.councilStats}
-        />
-        <StatCard
-          eyebrow="── RECORD ──"
-          title="Disciplinary Record"
-          stats={derived.recordStats}
-        />
+        <StatCard eyebrow="── JSA COUNCIL ──" title="Council Status" stats={derived.councilStats} />
+        <StatCard eyebrow="── RECORD ──" title="Disciplinary Record" stats={derived.recordStats} />
       </div>
 
       {derived.unresolvedRulings.length > 0 && (
@@ -81,11 +73,7 @@ export function GovernanceOverviewTab({ world, heya, derived }: Props) {
       )}
 
       {derived.mergerRows.length > 0 && (
-        <ListCard
-          eyebrow="── MERGER RISK ──"
-          title="Stables in Crisis"
-          rows={derived.mergerRows}
-        />
+        <ListCard eyebrow="── MERGER RISK ──" title="Stables in Crisis" rows={derived.mergerRows} />
       )}
 
       {derived.completedMergerRows.length > 0 && (
@@ -102,11 +90,7 @@ export function GovernanceOverviewTab({ world, heya, derived }: Props) {
   );
 }
 
-function UnresolvedRulings({
-  rulings,
-}: {
-  rulings: GovernanceDerivedData["unresolvedRulings"];
-}) {
+function UnresolvedRulings({ rulings }: { rulings: GovernanceDerivedData["unresolvedRulings"] }) {
   const sendCommand = useGameStore((s) => s.sendCommand);
   return (
     <div className="space-y-3">
@@ -122,9 +106,7 @@ function UnresolvedRulings({
                 key={sev}
                 size="sm"
                 variant="outline"
-                onClick={() =>
-                  sendCommand({ type: "ISSUE_RULING", rulingId: r.id, severity: sev })
-                }
+                onClick={() => sendCommand({ type: "ISSUE_RULING", rulingId: r.id, severity: sev })}
               >
                 {sev}
               </Button>
@@ -173,12 +155,8 @@ function YdcKihakuCard({ world }: { world: WorldState }) {
   return (
     <Card data-testid="ydc-kihaku-card">
       <CardHeader>
-        <CardTitle className="text-sm">
-          Yokozuna Deliberation — Fighting Spirit
-        </CardTitle>
-        <CardDescription>
-          Kihaku scores for borderline Yokozuna candidates
-        </CardDescription>
+        <CardTitle className="text-sm">Yokozuna Deliberation — Fighting Spirit</CardTitle>
+        <CardDescription>Kihaku scores for borderline Yokozuna candidates</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         {candidates.map((c) => (
@@ -200,12 +178,11 @@ function YdcKihakuCard({ world }: { world: WorldState }) {
               <span className="text-muted-foreground">
                 Yusho: {c.recentYushos} · Jun-Yusho: {c.recentJunYushos}
               </span>
-              {c.rikishi.kihakuIsenScore !== undefined &&
-                c.rikishi.kihakuIsenScore > 0 && (
-                  <Badge variant="secondary" className="text-[10px]">
-                    Kihaku: {c.rikishi.kihakuIsenScore}
-                  </Badge>
-                )}
+              {c.rikishi.kihakuIsenScore !== undefined && c.rikishi.kihakuIsenScore > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  Kihaku: {c.rikishi.kihakuIsenScore}
+                </Badge>
+              )}
             </div>
           </div>
         ))}
@@ -226,9 +203,7 @@ function GlobalCupCard({ world }: { world: WorldState }) {
         {
           label: "Nations",
           value: new Set(
-            world.globalCup.participants.map(
-              (p: { nationality: string }) => p.nationality
-            )
+            world.globalCup.participants.map((p: { nationality: string }) => p.nationality)
           ).size,
         },
         ...(world.globalCup.championId

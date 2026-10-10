@@ -19,11 +19,7 @@ import { CATEGORY_ICONS, sortInductees } from "./hofMeta";
 import { InducteeFullCard } from "./InducteeCards";
 
 /** Group sorted inductees by induction year (desc/asc per sort order). */
-function useInducteeGroups(
-  inductees: UIHofInductee[],
-  sortKey: string,
-  sortOrder: SortDirection
-) {
+function useInducteeGroups(inductees: UIHofInductee[], sortKey: string, sortOrder: SortDirection) {
   const sorted = useMemo(
     () => sortInductees(inductees, sortKey, sortOrder),
     [inductees, sortKey, sortOrder]
@@ -129,9 +125,7 @@ export function CategoryTab({
     );
   }
 
-  return (
-    <InducteeList sorted={sortedFlat ?? []} byYear={byYear} showCountBadge={true} />
-  );
+  return <InducteeList sorted={sortedFlat ?? []} byYear={byYear} showCountBadge={true} />;
 }
 
 // === All-time view ===

@@ -34,10 +34,7 @@ function seedHeyaAndOyakata(world: WorldState, rikishiIds: string[] = []): void 
     // still fire (pool ordering alone must not be the thing protecting it).
     makeMockHeya(HEYA, { rikishiIds, reputation: 60, oyakataId: "o-a", funds: 50_000_000 })
   );
-  world.oyakata.set(
-    "o-a",
-    MockFactory.createOyakata("o-a", { heyaId: HEYA })
-  );
+  world.oyakata.set("o-a", MockFactory.createOyakata("o-a", { heyaId: HEYA }));
 }
 
 function worldWithOccupiedForeignSlot(): WorldState {
@@ -262,9 +259,7 @@ describe("worldgen + merger — slot invariant beyond recruitment", () => {
 
 describe("offer path — slot semantics", () => {
   it("offerCandidate never blocks a dual-citizen candidate even with the slot occupied (§5.3)", async () => {
-    const { offerCandidate } = await import(
-      "@/engine/systems/generation/TalentPoolOffers"
-    );
+    const { offerCandidate } = await import("@/engine/systems/generation/TalentPoolOffers");
     const world = worldWithOccupiedForeignSlot();
     const dual = MockFactory.createCandidate("dc-offer", {
       candidateId: "dc-offer",
@@ -280,9 +275,8 @@ describe("offer path — slot semantics", () => {
   });
 
   it("suitor resolution never signs a slot-consuming foreigner to an occupied heya", async () => {
-    const { tickWeekCandidatePool } = await import(
-      "@/engine/systems/generation/CandidatePoolService"
-    );
+    const { tickWeekCandidatePool } =
+      await import("@/engine/systems/generation/CandidatePoolService");
     const world = worldWithOccupiedForeignSlot();
     const foreignCand = MockFactory.createCandidate("fc-suitors", {
       candidateId: "fc-suitors",
@@ -319,9 +313,8 @@ describe("offer path — slot semantics", () => {
 
 describe("finalizeSignedCandidates — last-line slot guard", () => {
   it("never materializes a second slot-consuming foreigner onto one heya", async () => {
-    const { finalizeSignedCandidates } = await import(
-      "@/engine/systems/generation/TalentPoolMaterialization"
-    );
+    const { finalizeSignedCandidates } =
+      await import("@/engine/systems/generation/TalentPoolMaterialization");
     const world = makeMockWorld({ week: 1, year: 2030 });
     seedHeyaAndOyakata(world, []);
     world.talentPool = MockFactory.createTalentPool();

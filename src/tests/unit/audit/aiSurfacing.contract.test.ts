@@ -34,9 +34,7 @@ function withEvents(world: WorldState): WorldState {
 
 describe("WS7 surfacing contract — emitted events reach the feed", () => {
   it("faction posture election surfaces a faction row", () => {
-    const world = withEvents(
-      MockFactory.createWorld({ week: 10, year: 2030 })
-    );
+    const world = withEvents(MockFactory.createWorld({ week: 10, year: 2030 }));
     // Dominant ichimon leader → coordinated_pressure, targeting the strongest
     // outsider (the player stable).
     const leaderOya = MockFactory.createOyakata("o-lead", { heyaId: "h-lead" });
@@ -63,7 +61,12 @@ describe("WS7 surfacing contract — emitted events reach the feed", () => {
     const world = withEvents(makeMockWorld({ week: 1, year: 2030 }));
     world.heyas.set(
       "heya-a",
-      makeMockHeya("heya-a", { rikishiIds: [], reputation: 60, oyakataId: "o-a", funds: 50_000_000 })
+      makeMockHeya("heya-a", {
+        rikishiIds: [],
+        reputation: 60,
+        oyakataId: "o-a",
+        funds: 50_000_000,
+      })
     );
     world.oyakata.set("o-a", MockFactory.createOyakata("o-a", { heyaId: "heya-a" }));
     world.playerHeyaId = "h-player";

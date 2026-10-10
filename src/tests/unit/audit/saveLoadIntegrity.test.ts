@@ -145,10 +145,9 @@ describe("L4.9: save/load integrity — field parity", () => {
     const dropped = Object.keys(serializedRecord).filter(
       (k) => serializedRecord[k] !== undefined && loaded[k] === undefined
     );
-    expect(
-      dropped,
-      `Serialized fields dropped by deserializeWorld: ${dropped.join(", ")}`
-    ).toEqual([]);
+    expect(dropped, `Serialized fields dropped by deserializeWorld: ${dropped.join(", ")}`).toEqual(
+      []
+    );
   });
 
   it("round-trips calendar, phase counters, era drift and player knowledge", () => {

@@ -14,11 +14,7 @@ import { makeMockWorld } from "../engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { EngineEvent, EventCategory } from "@/engine/types/events";
 
-function makeEvent(
-  id: string,
-  category: EventCategory,
-  type = "GENERIC"
-): EngineEvent {
+function makeEvent(id: string, category: EventCategory, type = "GENERIC"): EngineEvent {
   return {
     id,
     type,
@@ -57,15 +53,12 @@ describe("buildWeeklyDigest — dropped categories surface", () => {
     ["match", "basho"],
     ["milestone", "milestone"],
     ["facility", "facility"],
-  ])(
-    "category %s lands in a digest section (%s)",
-    (category, sectionId) => {
-      const digest = buildWeeklyDigest(worldWith([makeEvent("e1", category)]));
-      const ids = digest!.sections.map((s) => s.id);
-      expect(
-        ids,
-        `category "${category}" is dropped — expected a "${sectionId}" section in [${ids}]`
-      ).toContain(sectionId);
-    }
-  );
+  ])("category %s lands in a digest section (%s)", (category, sectionId) => {
+    const digest = buildWeeklyDigest(worldWith([makeEvent("e1", category)]));
+    const ids = digest!.sections.map((s) => s.id);
+    expect(
+      ids,
+      `category "${category}" is dropped — expected a "${sectionId}" section in [${ids}]`
+    ).toContain(sectionId);
+  });
 });

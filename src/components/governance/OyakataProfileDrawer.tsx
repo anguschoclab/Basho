@@ -56,8 +56,7 @@ export function OyakataProfileDrawer({
             )}
             {rival.factionPosture && (
               <div className="text-muted-foreground">
-                Ichimon posture:{" "}
-                <span className="text-foreground">{rival.factionPosture}</span>
+                Ichimon posture: <span className="text-foreground">{rival.factionPosture}</span>
               </div>
             )}
             {rival.planId && (

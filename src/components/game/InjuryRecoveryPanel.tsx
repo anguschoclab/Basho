@@ -69,9 +69,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                   key={info.id}
                   info={info}
                   gomenfudaProjection={gomenfudaProjection}
-                  onTreat={(id) =>
-                    sendCommand({ type: "TREAT_INJURY", rikishiId: id, weeks: 1 })
-                  }
+                  onTreat={(id) => sendCommand({ type: "TREAT_INJURY", rikishiId: id, weeks: 1 })}
                   onWithdraw={setPendingWithdrawId}
                 />
               ))}

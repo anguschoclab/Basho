@@ -49,10 +49,7 @@ export function ScheduleFilters({
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Division</label>
-          <Select
-            value={selectedDivision}
-            onValueChange={(v) => onDivisionChange(v as Division)}
-          >
+          <Select value={selectedDivision} onValueChange={(v) => onDivisionChange(v as Division)}>
             <SelectTrigger>
               <SelectValue placeholder="Select division" />
             </SelectTrigger>
@@ -110,9 +107,7 @@ function MatchCard({
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center p-4 gap-4">
         <div className="text-right">
-          <div
-            className={`font-bold text-lg ${result?.winner === "east" ? "text-primary" : ""}`}
-          >
+          <div className={`font-bold text-lg ${result?.winner === "east" ? "text-primary" : ""}`}>
             {east?.name || match.eastRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">East</div>
@@ -130,9 +125,7 @@ function MatchCard({
         </div>
 
         <div className="text-left">
-          <div
-            className={`font-bold text-lg ${result?.winner === "west" ? "text-primary" : ""}`}
-          >
+          <div className={`font-bold text-lg ${result?.winner === "west" ? "text-primary" : ""}`}>
             {west?.name || match.westRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">West</div>

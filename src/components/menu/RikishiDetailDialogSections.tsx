@@ -64,9 +64,7 @@ export function QuickStatsRow({ rikishi }: { rikishi: UIRikishi }) {
     <div className="flex gap-2 bg-black/5 p-3 rounded-lg border border-border/30">
       {RIKISHI_QUICK_STATS.map((stat) => (
         <div key={stat.label} className="flex-1 text-center">
-          <div className="text-2xl font-display font-black leading-none">
-            {stat.value(rikishi)}
-          </div>
+          <div className="text-2xl font-display font-black leading-none">{stat.value(rikishi)}</div>
           <div className="text-[10px] uppercase font-bold text-muted-foreground mt-1">
             {stat.label}
           </div>
@@ -104,14 +102,10 @@ export function BasicInfoGrid({
               : `${(rikishi as UIRikishi & Record<string, unknown>)[info.key] || "--"}${info.suffix}`}
           </div>
           {info.key === "height" && rikishi.heightDescriptor && (
-            <div className="text-[10px] text-muted-foreground/60">
-              {rikishi.heightDescriptor}
-            </div>
+            <div className="text-[10px] text-muted-foreground/60">{rikishi.heightDescriptor}</div>
           )}
           {info.key === "weight" && rikishi.weightDescriptor && (
-            <div className="text-[10px] text-muted-foreground/60">
-              {rikishi.weightDescriptor}
-            </div>
+            <div className="text-[10px] text-muted-foreground/60">{rikishi.weightDescriptor}</div>
           )}
           {info.key === "age" && selectedEntry?.rikishi.ageDescriptor ? (
             <div className="text-[10px] text-muted-foreground/60">
@@ -159,9 +153,7 @@ export function AttributesGrid({ rikishi }: { rikishi: UIRikishi }) {
               {stat.label}
             </div>
             <div className="text-xl font-display font-black text-foreground">
-              {((rikishi as UIRikishi & Record<string, unknown>)[
-                stat.key
-              ] as number) ?? "--"}
+              {((rikishi as UIRikishi & Record<string, unknown>)[stat.key] as number) ?? "--"}
             </div>
           </div>
         ))}
@@ -210,9 +202,7 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
               Grip
             </p>
             <p className="text-xs font-display font-black capitalize">
-              {rikishi.preferredGrip === "none"
-                ? "No Preference"
-                : rikishi.preferredGrip || "--"}
+              {rikishi.preferredGrip === "none" ? "No Preference" : rikishi.preferredGrip || "--"}
             </p>
           </div>
           <div className="bg-muted/40 rounded-lg p-2 space-y-0.5">
@@ -224,26 +214,24 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
             </p>
           </div>
         </div>
-        {rikishi.favoredKimariteDetailed &&
-          rikishi.favoredKimariteDetailed.length > 0 && (
-            <div className="pt-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                Signature Techniques
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {rikishi.favoredKimariteDetailed.slice(0, 5).map((k, i: number) => (
-                  <Badge
-                    key={i}
-                    variant="outline"
-                    className="text-[10px] font-bold uppercase tracking-widest h-5"
-                  >
-                    {k.kimarite}{" "}
-                    <span className="text-muted-foreground ml-1">{k.percentage}%</span>
-                  </Badge>
-                ))}
-              </div>
+        {rikishi.favoredKimariteDetailed && rikishi.favoredKimariteDetailed.length > 0 && (
+          <div className="pt-1">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+              Signature Techniques
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {rikishi.favoredKimariteDetailed.slice(0, 5).map((k, i: number) => (
+                <Badge
+                  key={i}
+                  variant="outline"
+                  className="text-[10px] font-bold uppercase tracking-widest h-5"
+                >
+                  {k.kimarite} <span className="text-muted-foreground ml-1">{k.percentage}%</span>
+                </Badge>
+              ))}
             </div>
-          )}
+          </div>
+        )}
       </div>
     </div>
   );

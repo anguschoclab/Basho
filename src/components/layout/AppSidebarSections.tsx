@@ -87,13 +87,7 @@ type SidebarItemExtras = MenuItem & {
 };
 
 /** Single navigation item (locked or link). */
-function NavItem({
-  item,
-  active,
-}: {
-  item: SidebarItemExtras;
-  active: boolean;
-}) {
+function NavItem({ item, active }: { item: SidebarItemExtras; active: boolean }) {
   if (item.locked) {
     return (
       <SidebarMenuItem>
@@ -206,9 +200,7 @@ export function SidebarNav({
             <SidebarMenu>
               {group.items.map((rawItem) => {
                 const item = rawItem as SidebarItemExtras;
-                const active = item.exactOnly
-                  ? isActive(item.url)
-                  : isSectionActive(item.url);
+                const active = item.exactOnly ? isActive(item.url) : isSectionActive(item.url);
                 return <NavItem key={item.url} item={item} active={active} />;
               })}
             </SidebarMenu>

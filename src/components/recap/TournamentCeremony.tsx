@@ -41,9 +41,7 @@ export function TournamentCeremony({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-1000">
       {/* ═══ YŪSHŌ CHAMPION ═══ */}
-      {champion && (
-        <ChampionSection champion={champion} isPlayerChampion={isPlayerChampion} />
-      )}
+      {champion && <ChampionSection champion={champion} isPlayerChampion={isPlayerChampion} />}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* ═══ JUN-YŪSHŌ (RUNNER-UP) ═══ */}

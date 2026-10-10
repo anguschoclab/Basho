@@ -19,7 +19,11 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 const TRAITS = { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 };
 
-function injuredRikishi(id: string, heyaId: string, severity: "minor" | "moderate" | "serious"): Rikishi {
+function injuredRikishi(
+  id: string,
+  heyaId: string,
+  severity: "minor" | "moderate" | "serious"
+): Rikishi {
   return MockFactory.createRikishi({
     id,
     heyaId,
@@ -61,9 +65,7 @@ function bashoWorld(opts: {
   for (const e of opts.entrants) {
     rikishi.set(e.id, MockFactory.createRikishi({ id: e.id, heyaId: e.heyaId }));
   }
-  const standings = new Map(
-    Object.entries(opts.standings ?? {}).map(([id, s]) => [id, { ...s }])
-  );
+  const standings = new Map(Object.entries(opts.standings ?? {}).map(([id, s]) => [id, { ...s }]));
 
   const world = MockFactory.createWorld({
     cyclePhase: "active_basho",
@@ -188,9 +190,7 @@ describe("basho posture", () => {
       archetype: "tyrant",
     });
     const next = resolveImpacts(world, [phase01_basho_npc_tactics(world)]);
-    expect(["conservative", "standard", "aggressive"]).toContain(
-      next.bashoNpcPosture?.["h-npc"]
-    );
+    expect(["conservative", "standard", "aggressive"]).toContain(next.bashoNpcPosture?.["h-npc"]);
     // Player heya gets no NPC posture.
     expect(next.bashoNpcPosture?.["h-player"]).toBeUndefined();
   });

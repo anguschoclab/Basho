@@ -140,11 +140,7 @@ export function DashboardBashoColumn({ world }: { world: WorldState }) {
   );
 }
 
-export function DashboardTrainingColumn({
-  training,
-}: {
-  training: DashboardDerived["training"];
-}) {
+export function DashboardTrainingColumn({ training }: { training: DashboardDerived["training"] }) {
   const navigate = useNavigate();
   return (
     <div className="space-y-4">
@@ -163,8 +159,7 @@ export function DashboardTrainingColumn({
           {
             label: "Focus",
             value: training
-              ? String(training.focus).charAt(0).toUpperCase() +
-                String(training.focus).slice(1)
+              ? String(training.focus).charAt(0).toUpperCase() + String(training.focus).slice(1)
               : "—",
           },
           {
@@ -194,9 +189,7 @@ export function DashboardTrainingColumn({
 
       {training && training.rosterStatuses.length > 0 && (
         <div className="paper rounded-lg p-4 space-y-2">
-          <p className="stat-label text-gold tracking-[0.15em] text-[10px]">
-            ── FATIGUE LEVELS ──
-          </p>
+          <p className="stat-label text-gold tracking-[0.15em] text-[10px]">── FATIGUE LEVELS ──</p>
           {training.rosterStatuses.slice(0, 6).map((rs) => (
             <ProgressRow
               key={rs.id}

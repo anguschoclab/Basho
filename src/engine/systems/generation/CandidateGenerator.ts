@@ -214,8 +214,7 @@ export function generateCandidate(args: {
         : [],
     isEmergentProdigy,
     // §5.3 — a small share of foreign-born recruits hold Japanese citizenship.
-    dualCitizen:
-      poolType === "foreign" ? rng.next() < DUAL_CITIZEN_RECRUIT_SHARE : undefined,
+    dualCitizen: poolType === "foreign" ? rng.next() < DUAL_CITIZEN_RECRUIT_SHARE : undefined,
 
     potentialStats: {
       power: paPkg.stats.power,

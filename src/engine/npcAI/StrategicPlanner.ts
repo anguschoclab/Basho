@@ -13,10 +13,7 @@ import type { LeaguePerception } from "../ai/types";
 import { getHeya } from "../queries";
 import { computePlanBaseline, computeStallPenalty } from "./planOutcomes";
 import { factionPlanBonus } from "./factions";
-import {
-  LEGACY_PLAN_BONUS,
-  GRUDGE_PLAN_BONUS,
-} from "../../constants/engine/succession";
+import { LEGACY_PLAN_BONUS, GRUDGE_PLAN_BONUS } from "../../constants/engine/succession";
 
 interface PlanTemplate {
   planId: string;

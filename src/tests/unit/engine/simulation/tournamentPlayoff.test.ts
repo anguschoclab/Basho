@@ -22,7 +22,7 @@ function mkWorld(boostedIds: string[]) {
   // Makuuchi field with distinct banzuke slots; boosted rikishi at 95 stats.
   // Rikishi spread across heyas — heya-mates can't be paired.
   for (let i = 0; i < 14; i++) {
-    const id = (`r${i}`) as Id;
+    const id = `r${i}` as Id;
     const isBoosted = boostedIds.includes(id);
     const r = MockFactory.createRikishi(id, {
       heyaId: heyas[i % 4].id,
@@ -31,9 +31,28 @@ function mkWorld(boostedIds: string[]) {
       rankNumber: Math.floor(i / 2) + 1,
       side: i % 2 === 0 ? "east" : "west",
       ...(isBoosted
-        ? { condition: 100, motivation: 100,
-            stats: { power: 95, technique: 95, speed: 95, balance: 95, stamina: 85, mental: 85 } as Rikishi["stats"] }
-        : { stats: { power: 30, technique: 30, speed: 30, balance: 30, stamina: 30, mental: 30 } as Rikishi["stats"] }),
+        ? {
+            condition: 100,
+            motivation: 100,
+            stats: {
+              power: 95,
+              technique: 95,
+              speed: 95,
+              balance: 95,
+              stamina: 85,
+              mental: 85,
+            } as Rikishi["stats"],
+          }
+        : {
+            stats: {
+              power: 30,
+              technique: 30,
+              speed: 30,
+              balance: 30,
+              stamina: 30,
+              mental: 30,
+            } as Rikishi["stats"],
+          }),
     });
     rikishi.set(id, r);
   }
@@ -47,9 +66,7 @@ describe("simulateEntireBasho playoff resolution", () => {
     const world = mkWorld(["r0", "r1"]);
     const res = simulateEntireBasho(world, "hatsu", "yoko-playoff-seed");
 
-    const maxWins = Math.max(
-      ...Array.from(res.standings.values()).map((s) => s.wins)
-    );
+    const maxWins = Math.max(...Array.from(res.standings.values()).map((s) => s.wins));
     const tied = [...res.standings.entries()]
       .filter(([, s]) => s.wins === maxWins)
       .map(([id]) => id);

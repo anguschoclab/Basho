@@ -49,12 +49,7 @@ function stableStateSnapshot(st: EngineStateV2) {
 const meta = { tone: "classic", drift: {} } as const;
 
 /** Run tachiai, then tick whichever battle phase it produced. */
-function runBattle(
-  seed: string,
-  east: Rikishi,
-  west: Rikishi,
-  ticks: number,
-) {
+function runBattle(seed: string, east: Rikishi, west: Rikishi, ticks: number) {
   const bout = makeBout();
   const st = initEngineStateV2(bout, east, west);
   const boutLog: BoutLogEntry[] = [];
@@ -78,9 +73,21 @@ function runBattle(
 
 type RikishiOverrides = Parameters<typeof mockRikishi>[1];
 const MATCHUPS: Array<[label: string, east: RikishiOverrides, west: RikishiOverrides]> = [
-  ["balanced-50s", { power: 50, speed: 50, balance: 50, technique: 50 }, { power: 50, speed: 50, balance: 50, technique: 50 }],
-  ["power-vs-speed", { power: 90, speed: 30, balance: 60, technique: 40 }, { power: 30, speed: 90, balance: 50, technique: 70 }],
-  ["oshi-vs-yotsu", { power: 80, speed: 70, technique: 50, style: "oshi" }, { power: 75, speed: 40, technique: 80, style: "yotsu" }],
+  [
+    "balanced-50s",
+    { power: 50, speed: 50, balance: 50, technique: 50 },
+    { power: 50, speed: 50, balance: 50, technique: 50 },
+  ],
+  [
+    "power-vs-speed",
+    { power: 90, speed: 30, balance: 60, technique: 40 },
+    { power: 30, speed: 90, balance: 50, technique: 70 },
+  ],
+  [
+    "oshi-vs-yotsu",
+    { power: 80, speed: 70, technique: 50, style: "oshi" },
+    { power: 75, speed: 40, technique: 80, style: "yotsu" },
+  ],
 ];
 
 describe("resolveTachiaiV2 — golden master", () => {
@@ -111,7 +118,10 @@ describe("battle ticks — golden master (belt or push per tachiai outcome)", ()
         expect(results).toMatchSnapshot();
         expect(st).toMatchSnapshot();
         expect(
-          boutLog.map((e) => (e as { type?: string }).type ?? (e as { data?: { event?: string } }).data?.event ?? e),
+          boutLog.map(
+            (e) =>
+              (e as { type?: string }).type ?? (e as { data?: { event?: string } }).data?.event ?? e
+          )
         ).toMatchSnapshot();
       });
     }

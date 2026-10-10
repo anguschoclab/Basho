@@ -5,7 +5,10 @@
  * orchestrating generatePressConference across fixture matrices.
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { PostBashoPressService, type PressConferenceContext } from "@/engine/systems/narrative/PostBashoPressService";
+import {
+  PostBashoPressService,
+  type PressConferenceContext,
+} from "@/engine/systems/narrative/PostBashoPressService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/rng";
 import { makeMockWorld, mockRikishi } from "../../utils";
@@ -34,7 +37,7 @@ describe("PostBashoPressService — golden master", () => {
 
   it("generateChampionLines", () => {
     expect(
-      PostBashoPressService.generateChampionLines(CHAMPION(), RNG(), "hatsu", 2026),
+      PostBashoPressService.generateChampionLines(CHAMPION(), RNG(), "hatsu", 2026)
     ).toMatchSnapshot();
   });
 
@@ -59,7 +62,7 @@ describe("PostBashoPressService — golden master", () => {
   it("generateOzekiStakeLines", () => {
     const r = mockRikishi("r-stake", { shikona: "Stakegawa", rank: "sekiwake" });
     expect(
-      PostBashoPressService.generateOzekiStakeLines(r, RNG(), "hatsu", 2026),
+      PostBashoPressService.generateOzekiStakeLines(r, RNG(), "hatsu", 2026)
     ).toMatchSnapshot();
   });
 
@@ -68,7 +71,12 @@ describe("PostBashoPressService — golden master", () => {
     expect({
       juryo: PostBashoPressService.generateLowerDivisionChampionLines(champ, RNG(), "hatsu", 2026),
       makushita: PostBashoPressService.generateLowerDivisionChampionLines(
-        champ, RNG(), "hatsu", 2026, "makushita"),
+        champ,
+        RNG(),
+        "hatsu",
+        2026,
+        "makushita"
+      ),
     }).toMatchSnapshot();
   });
 
@@ -76,7 +84,11 @@ describe("PostBashoPressService — golden master", () => {
     const champ = CHAMPION();
     const junYusho = mockRikishi("r-jun", { shikona: "Runnerup", rank: "sekiwake" });
     const prize = mockRikishi("r-prize", { shikona: "Prizeman", birthYear: 1988 });
-    const ozekiBid = mockRikishi("r-bid", { shikona: "Biddyama", rank: "ozeki", currentBashoWins: 13 });
+    const ozekiBid = mockRikishi("r-bid", {
+      shikona: "Biddyama",
+      rank: "ozeki",
+      currentBashoWins: 13,
+    });
     const world = worldWith(champ, junYusho, prize, ozekiBid);
     const ctx: PressConferenceContext = {
       yushoId: champ.id,

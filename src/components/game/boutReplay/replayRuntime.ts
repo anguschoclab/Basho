@@ -13,12 +13,7 @@ import type { BoutScript, SeededRNG } from "@/presenters/engineAccess";
 import { PHASES, type ReplayPhase, type RikishiState, type Particle } from "./boutCanvas";
 import type { ReplayRuntime } from "./replayFx";
 import type { ReplayTickCtx } from "./replayLoop";
-import {
-  replayTick,
-  beginReplaySession,
-  scheduleNextFrame,
-  cancelReplayLoop,
-} from "./replayLoop";
+import { replayTick, beginReplaySession, scheduleNextFrame, cancelReplayLoop } from "./replayLoop";
 import type { ReplayControlsCtx } from "./replayControls";
 import type { BoutReplayProgress, ReplaySpeed } from "./useBoutReplay";
 
@@ -224,7 +219,18 @@ export function useReplayLoop(
 
     scheduleNextFrame(animRef, loop);
     return () => cancelReplayLoop(animRef);
-  }, [isPlaying, rt, phaseDurations, setters, onComplete, drawFrame, updateProgress, animRef, isPlayingRef, refs]);
+  }, [
+    isPlaying,
+    rt,
+    phaseDurations,
+    setters,
+    onComplete,
+    drawFrame,
+    updateProgress,
+    animRef,
+    isPlayingRef,
+    refs,
+  ]);
 
   // Static draw when paused
   useEffect(() => {

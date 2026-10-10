@@ -63,9 +63,7 @@ export function CareerEarningsCard({
             </div>
           </div>
           <div className="space-y-1">
-            <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
-              Cash
-            </div>
+            <div className="text-[10px] uppercase font-black tracking-widest opacity-50">Cash</div>
             <div className="text-lg font-display font-black tabular-nums">
               ¥{economics.cash.toLocaleString("ja-JP")}
             </div>
@@ -98,11 +96,7 @@ export function CareerEarningsCard({
                 bottom: earningsProgressionData.length > 6 ? 40 : 10,
               }}
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="hsl(var(--border))"
-              />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
               <XAxis
                 dataKey="basho"
                 tick={{

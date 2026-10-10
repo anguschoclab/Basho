@@ -36,7 +36,9 @@ const outputs: string[] = [];
 for (let i = 0; i < RUNS; i++) {
   const t0 = Date.now();
   outputs.push(runOnce());
-  console.log(`run ${i + 1}: ${outputs[i].length} bytes in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+  console.log(
+    `run ${i + 1}: ${outputs[i].length} bytes in ${((Date.now() - t0) / 1000).toFixed(1)}s`
+  );
 }
 
 const identical = outputs.every((o) => o === outputs[0]);
@@ -51,4 +53,6 @@ if (!identical) {
   console.error(`  run2: ...${b.slice(Math.max(0, idx - 80), idx + 80)}...`);
   process.exit(1);
 }
-console.log(`\nPASS — ${RUNS} runs byte-identical (${outputs[0].length} bytes, horizon=${horizon})`);
+console.log(
+  `\nPASS — ${RUNS} runs byte-identical (${outputs[0].length} bytes, horizon=${horizon})`
+);

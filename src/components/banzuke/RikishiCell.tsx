@@ -65,11 +65,7 @@ export const RikishiCell = memo(function RikishiCell({
             content="Promotion Watch: Strong candidate for Yokozuna promotion"
             side="top"
           >
-            <span
-              className="text-sm ml-auto cursor-help"
-              role="img"
-              aria-label="Promotion Watch"
-            >
+            <span className="text-sm ml-auto cursor-help" role="img" aria-label="Promotion Watch">
               🏆
             </span>
           </TooltipWrap>

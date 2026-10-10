@@ -43,7 +43,11 @@ function dominantFamilyOf(entry: MetaHistoryEntry | undefined): Family | "none" 
   return bestShare > 0 ? best : "none";
 }
 
-function presenceFor(family: Family, latest?: MetaHistoryEntry, previous?: MetaHistoryEntry): Presence {
+function presenceFor(
+  family: Family,
+  latest?: MetaHistoryEntry,
+  previous?: MetaHistoryEntry
+): Presence {
   const share = latest?.familyShares[family] ?? 0;
   const prevShare = previous?.familyShares[family] ?? 0;
   if (share < META_PRESENCE_ABSENT_SHARE) return "absent";

@@ -42,7 +42,6 @@ function beatRingEntrances(p: PbpPipeline): void {
     const shikiriRng = rngFromSeed(seed, "pbp", "shikiri");
     push(BardEngine.resolve(shikiriRng, "combat.phases.ritual.shikiri", {}).text, "ritual");
   }
-
 }
 
 export function narrateCeremony(p: PbpPipeline): void {

@@ -58,10 +58,7 @@ export function RikishiCareerTab({
       <CareerProgressionChart data={careerProgressionData} />
 
       {/* Career Earnings */}
-      <CareerEarningsCard
-        earningsProgressionData={earningsProgressionData}
-        economics={economics}
-      />
+      <CareerEarningsCard earningsProgressionData={earningsProgressionData} economics={economics} />
 
       <BashoHistoryTable history={history} />
 

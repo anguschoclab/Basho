@@ -111,8 +111,7 @@ function awardSansho(
         : "sansho_ceremony.ginosho";
   const sanshoRes = BardEngine.resolve(sanshoRng, sanshoPath, {
     SHIKONA: r.shikona,
-    PRIZE_NAME:
-      type === "Shukun" ? "Shukun-sho" : type === "Kanto" ? "Kanto-sho" : "Gino-sho",
+    PRIZE_NAME: type === "Shukun" ? "Shukun-sho" : type === "Kanto" ? "Kanto-sho" : "Gino-sho",
     rikishiId: r.id,
   });
   if (sanshoRes.text && !sanshoRes.text.includes("[MISSING:")) {
@@ -171,9 +170,7 @@ function awardSansho(
       money: SANSHO_PRIZE_AMOUNT,
       status: "special_prize",
       regimen: type as string,
-      narrative: sanshoNarrativeLines.filter((l) =>
-        l.id.includes(`sansho-${type}-${rikishiId}`)
-      ),
+      narrative: sanshoNarrativeLines.filter((l) => l.id.includes(`sansho-${type}-${rikishiId}`)),
     },
     { rikishiId: r.id, heyaId: r.heyaId }
   );

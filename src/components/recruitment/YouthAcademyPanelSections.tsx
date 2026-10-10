@@ -117,9 +117,7 @@ export function StaffSection({
         </div>
       )}
       {!canHireMore && a.staff.length > 0 && (
-        <p className="text-[10px] text-muted-foreground">
-          Staff capacity reached for this level.
-        </p>
+        <p className="text-[10px] text-muted-foreground">Staff capacity reached for this level.</p>
       )}
     </div>
   );

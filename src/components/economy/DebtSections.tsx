@@ -105,9 +105,7 @@ export function LoanCard({
         </div>
         <div>
           <div className="text-[10px] text-muted-foreground uppercase font-bold">Monthly</div>
-          <div className="text-sm font-bold text-destructive">
-            {formatYen(loan.monthlyPayment)}
-          </div>
+          <div className="text-sm font-bold text-destructive">{formatYen(loan.monthlyPayment)}</div>
         </div>
       </div>
 

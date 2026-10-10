@@ -78,11 +78,7 @@ export function clinchTarget(script: BoutScript): Pair {
   };
 }
 
-export function momentumTarget(
-  p: number,
-  pe: number,
-  winnerSide: "east" | "west"
-): Pair {
+export function momentumTarget(p: number, pe: number, winnerSide: "east" | "west"): Pair {
   if (winnerSide === "east") {
     return {
       east: {
@@ -129,25 +125,9 @@ function finishTargetEastWins(p: number, script: BoutScript): Pair {
   const loserArcProgress = loserArcHeight != null ? 1.0 : undefined;
   // Loser (west) family-specific end positions
   const loserEndX =
-    f === "throw"
-      ? 0.82
-      : f === "pull"
-        ? 0.72
-        : f === "lift"
-          ? 0.78
-          : f === "trip"
-            ? 0.76
-            : 0.8;
+    f === "throw" ? 0.82 : f === "pull" ? 0.72 : f === "lift" ? 0.78 : f === "trip" ? 0.76 : 0.8;
   const loserEndY =
-    f === "throw"
-      ? 0.66
-      : f === "pull"
-        ? 0.6
-        : f === "lift"
-          ? 0.58
-          : f === "trip"
-            ? 0.68
-            : 0.63;
+    f === "throw" ? 0.66 : f === "pull" ? 0.6 : f === "lift" ? 0.58 : f === "trip" ? 0.68 : 0.63;
   const loserEndRot =
     f === "throw" ? -80 : f === "pull" ? -65 : f === "lift" ? -55 : f === "trip" ? -60 : -65;
   const loserEndScale = f === "lift" ? 0.78 : f === "trip" ? 0.68 : 0.72;
@@ -182,25 +162,9 @@ function finishTargetWestWins(p: number, script: BoutScript): Pair {
   const loserArcProgress = loserArcHeight != null ? 1.0 : undefined;
   // Winner = west, loser = east (mirror)
   const loserEndX =
-    f === "throw"
-      ? 0.18
-      : f === "pull"
-        ? 0.28
-        : f === "lift"
-          ? 0.22
-          : f === "trip"
-            ? 0.24
-            : 0.2;
+    f === "throw" ? 0.18 : f === "pull" ? 0.28 : f === "lift" ? 0.22 : f === "trip" ? 0.24 : 0.2;
   const loserEndY =
-    f === "throw"
-      ? 0.66
-      : f === "pull"
-        ? 0.6
-        : f === "lift"
-          ? 0.58
-          : f === "trip"
-            ? 0.68
-            : 0.63;
+    f === "throw" ? 0.66 : f === "pull" ? 0.6 : f === "lift" ? 0.58 : f === "trip" ? 0.68 : 0.63;
   const loserEndRot =
     f === "throw" ? 80 : f === "pull" ? 65 : f === "lift" ? 55 : f === "trip" ? 60 : 65;
   const loserEndScale = f === "lift" ? 0.78 : f === "trip" ? 0.68 : 0.72;
@@ -226,14 +190,8 @@ function finishTargetWestWins(p: number, script: BoutScript): Pair {
   };
 }
 
-export function finishTarget(
-  p: number,
-  winnerSide: "east" | "west",
-  script: BoutScript
-): Pair {
-  return winnerSide === "east"
-    ? finishTargetEastWins(p, script)
-    : finishTargetWestWins(p, script);
+export function finishTarget(p: number, winnerSide: "east" | "west", script: BoutScript): Pair {
+  return winnerSide === "east" ? finishTargetEastWins(p, script) : finishTargetWestWins(p, script);
 }
 
 export function ceremonyTarget(winnerSide: "east" | "west"): Pair {

@@ -98,9 +98,7 @@ function initWorker(get: StoreGet, set: StoreSet) {
       progress: null,
     });
   worker.onerror = (event) => {
-    onWorkerFailure(
-      `Simulation worker crashed: ${event.message || "unknown error"}`
-    );
+    onWorkerFailure(`Simulation worker crashed: ${event.message || "unknown error"}`);
   };
   worker.onmessageerror = () => {
     onWorkerFailure("Simulation worker returned an unreadable message");

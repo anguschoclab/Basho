@@ -52,9 +52,7 @@ export const LineageTree = ({ rikishiId }: LineageTreeProps) => {
                       <GitCommit className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
-                  {index < lineage.length - 1 && (
-                    <div className="w-0.5 h-8 bg-border" />
-                  )}
+                  {index < lineage.length - 1 && <div className="w-0.5 h-8 bg-border" />}
                 </div>
 
                 <div className="flex-1">
@@ -62,10 +60,7 @@ export const LineageTree = ({ rikishiId }: LineageTreeProps) => {
                     <p className="font-display font-bold text-muted-foreground group-hover:text-gold transition-colors">
                       {node.shikona}
                     </p>
-                    <Badge
-                      variant="outline"
-                      className="bg-card/50 text-[10px] uppercase font-mono"
-                    >
+                    <Badge variant="outline" className="bg-card/50 text-[10px] uppercase font-mono">
                       {node.rank}
                     </Badge>
                   </div>

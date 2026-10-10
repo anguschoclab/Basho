@@ -7,12 +7,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import {
-  getRankMeta,
-  getRankDivision,
-  formatRankDisplay,
-  formatJapanese,
-} from "./rankBadgeUtils";
+import { getRankMeta, getRankDivision, formatRankDisplay, formatJapanese } from "./rankBadgeUtils";
 import {
   CompactRankBadge,
   RosterRankBadge,

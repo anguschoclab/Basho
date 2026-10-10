@@ -108,9 +108,7 @@ function processExhibitionResult(
 
   // Simulate result: rikishi's combined stats vs. generated regional champion
   const rikishiPower =
-    ((rikishi.stats.technique ?? 50) +
-      (rikishi.stats.speed ?? 50) +
-      (rikishi.stats.mental ?? 50)) /
+    ((rikishi.stats.technique ?? 50) + (rikishi.stats.speed ?? 50) + (rikishi.stats.mental ?? 50)) /
     3;
   const regionalChampion = 50 + invitation.prestige / 2; // prestige 50 → opponent CA ~75
   const win = rng.next() < rikishiPower / (rikishiPower + regionalChampion);
@@ -203,7 +201,11 @@ function hasForeignAcademy(world: WorldState, heyaId: string, region: Exhibition
  * Build a foreign academy in a region where the heya has sufficient presence.
  * Requires presence >= ACADEMY_THRESHOLD (80). Refuses duplicates.
  */
-function buildForeignAcademy(world: WorldState, heyaId: string, region: ExhibitionRegion): StateImpact {
+function buildForeignAcademy(
+  world: WorldState,
+  heyaId: string,
+  region: ExhibitionRegion
+): StateImpact {
   const builder = createImpactBuilder("buildForeignAcademy");
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();

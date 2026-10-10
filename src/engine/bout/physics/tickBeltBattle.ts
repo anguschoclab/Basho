@@ -344,5 +344,16 @@ export function tickBeltBattle(
 
   logBeltCadence(st, belt, push, torqueAdvantage, boutLog);
 
-  return resolveBeltOutcome(rng, east, west, st, belt, push, torqueAdvantage, division, meta, tactics);
+  return resolveBeltOutcome(
+    rng,
+    east,
+    west,
+    st,
+    belt,
+    push,
+    torqueAdvantage,
+    division,
+    meta,
+    tactics
+  );
 }

@@ -18,5 +18,4 @@ describe("Player advisor integration", () => {
     const world = makeMockWorld({ playerHeyaId: undefined });
     expect(generateRecommendations(world)).toEqual([]);
   });
-
 });

@@ -156,7 +156,10 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
   };
 }
 
-export function projectGovernancePage(world: WorldState, heyaId: string): GovernancePageSummary | null {
+export function projectGovernancePage(
+  world: WorldState,
+  heyaId: string
+): GovernancePageSummary | null {
   const heya = world.heyas.get(heyaId);
   if (!heya) return null;
 

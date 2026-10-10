@@ -373,11 +373,7 @@ function checkRookieVsVeteran(a: Rikishi, b: Rikishi): DramaContext | null {
 }
 
 // Winless warrior: rikishi still winless on day 5+
-function checkWinlessWarrior(
-  day: number,
-  aRecord: Record2,
-  bRecord: Record2
-): DramaContext | null {
+function checkWinlessWarrior(day: number, aRecord: Record2, bRecord: Record2): DramaContext | null {
   if (day >= DRAMA_DAY_WINLESS_START && (aRecord.wins === 0 || bRecord.wins === 0)) {
     return {
       label: "winless_warrior",

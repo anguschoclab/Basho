@@ -27,7 +27,10 @@ function makeResult(overrides: Partial<BoutResult> = {}): BoutResult {
     isKinboshi: false,
     log: [
       { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-      { phase: "engagement", data: { tick: 1, family: "push", attackerSide: "east", forceDiff: 12 } },
+      {
+        phase: "engagement",
+        data: { tick: 1, family: "push", attackerSide: "east", forceDiff: 12 },
+      },
       { phase: "finish", data: { tick: 8, kimarite: "yorikiri" } },
     ],
     kenshoEnvelopes: 0,
@@ -38,7 +41,10 @@ function makeResult(overrides: Partial<BoutResult> = {}): BoutResult {
   } as BoutResult;
 }
 
-function makeWorld(east: ReturnType<typeof mockRikishi>, west: ReturnType<typeof mockRikishi>): WorldState {
+function makeWorld(
+  east: ReturnType<typeof mockRikishi>,
+  west: ReturnType<typeof mockRikishi>
+): WorldState {
   return makeMockWorld({
     rikishi: new Map([
       [east.id, east],
@@ -47,7 +53,14 @@ function makeWorld(east: ReturnType<typeof mockRikishi>, west: ReturnType<typeof
   }) as WorldState;
 }
 
-function narrate(result: BoutResult, east = mockRikishi("r-east"), west = mockRikishi("r-west"), day = 1, seed = "gm-seed", bashoName = "hatsu" as BashoName) {
+function narrate(
+  result: BoutResult,
+  east = mockRikishi("r-east"),
+  west = mockRikishi("r-west"),
+  day = 1,
+  seed = "gm-seed",
+  bashoName = "hatsu" as BashoName
+) {
   generateBoutNarrative(result, east, west, bashoName, day, seed, makeWorld(east, west));
   return result.pbpLines;
 }
@@ -87,7 +100,7 @@ describe("generateBoutNarrative — golden master", () => {
     const east = mockRikishi("r-east", { rank: "maegashira", rankNumber: 12 });
     const west = mockRikishi("r-west", { rank: "yokozuna" });
     expect(
-      narrate(makeResult({ upset: true, isKinboshi: true, kenshoEnvelopes: 20 }), east, west, 9),
+      narrate(makeResult({ upset: true, isKinboshi: true, kenshoEnvelopes: 20 }), east, west, 9)
     ).toMatchSnapshot();
   });
 
@@ -104,13 +117,15 @@ describe("generateBoutNarrative — golden master", () => {
         }),
         mockRikishi("r-east"),
         mockRikishi("r-west"),
-        5,
-      ),
+        5
+      )
     ).toMatchSnapshot();
   });
 
   it("timeout bout", () => {
-    expect(narrate(makeResult({ isTimeout: true, duration: 240 }), undefined, undefined, 10)).toMatchSnapshot();
+    expect(
+      narrate(makeResult({ isTimeout: true, duration: 240 }), undefined, undefined, 10)
+    ).toMatchSnapshot();
   });
 
   it("multi-frame log coverage", () => {
@@ -119,7 +134,10 @@ describe("generateBoutNarrative — golden master", () => {
         makeResult({
           log: [
             { phase: "tachiai", data: { tick: 0, tachiaiWinner: "west", margin: 4 } },
-            { phase: "engagement", data: { tick: 1, family: "belt", attackerSide: "west", torqueAdvantage: 8 } },
+            {
+              phase: "engagement",
+              data: { tick: 1, family: "belt", attackerSide: "west", torqueAdvantage: 8 },
+            },
             { phase: "clinch", data: { tick: 3 } },
             { phase: "momentum", data: { tick: 5, shift: "east" } },
             { phase: "edge_crisis", data: { tick: 7, side: "west" } },
@@ -134,8 +152,8 @@ describe("generateBoutNarrative — golden master", () => {
         }),
         mockRikishi("r-east"),
         mockRikishi("r-west"),
-        6,
-      ),
+        6
+      )
     ).toMatchSnapshot();
   });
 

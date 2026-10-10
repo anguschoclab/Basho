@@ -105,7 +105,8 @@ function surfaceGovernanceRuling(data: Record<string, unknown>): SurfacedRow | n
       return {
         category: "faction",
         decision: String(
-          data.reason ?? `The ${String(data.faction ?? "ichimon")} shifts to ${String(data.posture)}`
+          data.reason ??
+            `The ${String(data.faction ?? "ichimon")} shifts to ${String(data.posture)}`
         ),
         reasoning: "",
       };

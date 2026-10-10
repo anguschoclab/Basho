@@ -63,9 +63,7 @@ export function boundHistoryArrays(world: WorldState): WorldState {
   }
 
   if (encouragementLen > HISTORY_MAX_ENTRIES && world.encouragementLog) {
-    updates.encouragementLog = world.encouragementLog.slice(
-      encouragementLen - HISTORY_MAX_ENTRIES
-    );
+    updates.encouragementLog = world.encouragementLog.slice(encouragementLen - HISTORY_MAX_ENTRIES);
   }
 
   return { ...world, ...updates };

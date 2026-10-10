@@ -174,12 +174,8 @@ export function AcademyTab({ world, heya }: { world: WorldState; heya: Heya }) {
         cash={heya.funds}
         onBuild={() => sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: heya.id })}
         onUpgrade={() => sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: heya.id })}
-        onInvest={(amount) =>
-          sendCommand({ type: "INVEST_ACADEMY", heyaId: heya.id, amount })
-        }
-        onHireStaff={(role) =>
-          sendCommand({ type: "HIRE_ACADEMY_STAFF", heyaId: heya.id, role })
-        }
+        onInvest={(amount) => sendCommand({ type: "INVEST_ACADEMY", heyaId: heya.id, amount })}
+        onHireStaff={(role) => sendCommand({ type: "HIRE_ACADEMY_STAFF", heyaId: heya.id, role })}
         onPromote={(prospectId) =>
           sendCommand({ type: "PROMOTE_INTAKE", heyaId: heya.id, prospectId })
         }

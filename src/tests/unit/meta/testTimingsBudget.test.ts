@@ -14,10 +14,7 @@ const STALENESS_WARN_DAYS = 30;
 
 interface TimingsReport {
   generatedAt: string;
-  suites: Record<
-    string,
-    { files: Array<{ file: string; durationMs: number; testCount: number }> }
-  >;
+  suites: Record<string, { files: Array<{ file: string; durationMs: number; testCount: number }> }>;
 }
 
 // Reads the committed timing baseline (docs/audit/test-timings.json, refreshed
@@ -62,9 +59,7 @@ describe("fast suite timing budget", () => {
 
   it("every fast-suite test file is measured in the baseline (no permanent-green escape)", () => {
     const report = JSON.parse(readFileSync(TIMINGS_PATH, "utf-8")) as TimingsReport;
-    const measured = new Set(
-      (report.suites?.fast?.files ?? []).map((f) => f.file)
-    );
+    const measured = new Set((report.suites?.fast?.files ?? []).map((f) => f.file));
 
     const fastFiles: string[] = [];
     const walk = (dir: string) => {
@@ -90,8 +85,7 @@ describe("fast suite timing budget", () => {
   });
 
   it("baseline is not stale", () => {
-    const ageDays =
-      (Date.now() - statSync(TIMINGS_PATH).mtimeMs) / (1000 * 60 * 60 * 24);
+    const ageDays = (Date.now() - statSync(TIMINGS_PATH).mtimeMs) / (1000 * 60 * 60 * 24);
     if (ageDays > STALENESS_WARN_DAYS) {
       console.warn(
         `test-timings.json is ${Math.round(ageDays)}d old — ` +

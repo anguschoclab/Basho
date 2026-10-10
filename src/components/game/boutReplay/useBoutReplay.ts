@@ -100,7 +100,18 @@ export function useBoutReplay(
         lines,
         spawnParticles,
       }),
-    [canvasRef, refs, rng, result, winnerSide, boutScript, eastRikishi, westRikishi, lines, spawnParticles]
+    [
+      canvasRef,
+      refs,
+      rng,
+      result,
+      winnerSide,
+      boutScript,
+      eastRikishi,
+      westRikishi,
+      lines,
+      spawnParticles,
+    ]
   );
 
   const drawFrame = useCallback(
@@ -108,10 +119,7 @@ export function useBoutReplay(
     [rt]
   );
 
-  const setters = useMemo(
-    () => ({ setProgress, setUiPhase, setNarration, setIsPlaying }),
-    []
-  );
+  const setters = useMemo(() => ({ setProgress, setUiPhase, setNarration, setIsPlaying }), []);
 
   const controlsCtx = useMemo(
     () => buildReplayControls(canvasRef, refs, phaseDurations, lines, setters),
@@ -125,7 +133,16 @@ export function useBoutReplay(
     [controlsCtx, drawFrame]
   );
 
-  useReplayLoop(isPlaying, rt, refs, phaseDurations, setters, onComplete, drawFrame, updateProgress);
+  useReplayLoop(
+    isPlaying,
+    rt,
+    refs,
+    phaseDurations,
+    setters,
+    onComplete,
+    drawFrame,
+    updateProgress
+  );
 
   return {
     canvasRef,

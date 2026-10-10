@@ -32,9 +32,7 @@ function buildHistoryRows(history: NonNullable<Heya["governanceHistory"]>) {
         </div>
       ),
       sub: ruling.date as string | undefined,
-      value: ruling.effects?.fineAmount
-        ? formatFinePenalty(ruling.effects.fineAmount)
-        : undefined,
+      value: ruling.effects?.fineAmount ? formatFinePenalty(ruling.effects.fineAmount) : undefined,
       tone: "destructive" as const,
       trailing: (
         <Badge variant="outline" className="text-[10px]">

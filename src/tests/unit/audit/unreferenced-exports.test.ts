@@ -55,7 +55,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Config for initial sponsor tier distribution",
   "src/engine/actions/InjuredEncouragement.ts:ENCOURAGEMENT_MOTIVATION_BOOST":
     "Config constant for encouragement action",
-    "src/engine/matchmaking/MatchmakingPhases.ts:DEFAULT_MATCHMAKING_RULES":
+  "src/engine/matchmaking/MatchmakingPhases.ts:DEFAULT_MATCHMAKING_RULES":
     "Default matchmaking rules; used by basho setup",
   "src/engine/bard/narrativeContext.ts:VENUE_PROFILES":
     "Venue profile data for narrative generation",
@@ -171,18 +171,22 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Internal drama trigger invoked by processDramaTick; exported for unit testing",
   "src/engine/bard/dramaGenerator.ts:triggerCrisis":
     "Internal crisis factory invoked by checkTriggeredDrama; exported for unit testing",
-  "src/engine/bard/BardEngine.ts:interpolate": "Internal method invoked by BardEngine template rendering; exported for unit testing",
+  "src/engine/bard/BardEngine.ts:interpolate":
+    "Internal method invoked by BardEngine template rendering; exported for unit testing",
   "src/engine/bout/yaocho.ts:evaluateYaochoIndicators":
     "Internal helper invoked by checkYaocho; exported for unit testing",
-  "src/engine/bout/yaocho.ts:calculateYaochoChance": "Internal helper invoked by checkYaocho; exported for unit testing",
+  "src/engine/bout/yaocho.ts:calculateYaochoChance":
+    "Internal helper invoked by checkYaocho; exported for unit testing",
   "src/engine/bout/shinitai.ts:SHINITAI_INSTABILITY_DIFF_THRESHOLD":
     "Internal constant consumed by tryShinitai; value pinned by shinitai tests",
   "src/engine/bout/kinjite.ts:calculateHansokuChance":
     "Internal helper invoked by tryHansoku; exported for unit testing",
   "src/engine/bout/boutResolver.ts:applyRivalryToRikishi":
     "Internal helper invoked by resolveBout; exported for unit testing",
-  "src/engine/bout/boutGrip.ts:calculateTorque": "Internal helper invoked by computeNetTorque; exported for unit testing",
-  "src/engine/bout/boutGrip.ts:computeNetTorque": "Internal helper invoked by evolveGripGeometry and initBeltBattle; exported for unit testing",
+  "src/engine/bout/boutGrip.ts:calculateTorque":
+    "Internal helper invoked by computeNetTorque; exported for unit testing",
+  "src/engine/bout/boutGrip.ts:computeNetTorque":
+    "Internal helper invoked by evolveGripGeometry and initBeltBattle; exported for unit testing",
   "src/engine/bout/ReplayMetadata.ts:getBoutAnimationFamily":
     "Internal helper invoked by buildBoutScript; exported for unit testing",
   "src/engine/core/ImpactBuilder.ts:updateRikishiImpact":
@@ -203,13 +207,16 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Internal helper invoked by applyDramaBudget and isMakuuchiDebut; exported for unit testing",
   "src/engine/matchmaking/MatchmakingPhases.ts:buildCandidatePairs":
     "Internal helper invoked by generatePairs; exported for unit testing",
-  "src/engine/shikona/legacy.ts:extractLegacyPrefix": "Internal helper invoked by generateLegacyShikona; exported for unit testing",
-  "src/engine/shikona/legacy.ts:extractLegacySuffix": "Internal helper invoked by generateLegacyShikona; exported for unit testing",
+  "src/engine/shikona/legacy.ts:extractLegacyPrefix":
+    "Internal helper invoked by generateLegacyShikona; exported for unit testing",
+  "src/engine/shikona/legacy.ts:extractLegacySuffix":
+    "Internal helper invoked by generateLegacyShikona; exported for unit testing",
   "src/engine/training/WeightJourney.ts:WEIGHT_JOURNEY_WEEKLY_GAIN":
     "Internal constant consumed by applyWeightJourneyTick; value pinned by WeightJourney tests",
   "src/engine/training/WeightJourney.ts:shouldEnterWeightJourney":
     "Internal helper invoked by applyWeightJourneyTick; exported for unit testing",
-      "src/engine/utils/Logger.ts:logger": "Shared singleton backing the live debug/info/warn/error wrappers (consumed by bootstrap, useFlowActions, BanzukePublisher); pinned by logger tests",
+  "src/engine/utils/Logger.ts:logger":
+    "Shared singleton backing the live debug/info/warn/error wrappers (consumed by bootstrap, useFlowActions, BanzukePublisher); pinned by logger tests",
 
   "src/engine/systems/recruitment/YouthAcademyService.ts:getQualityBonus":
     "Public helper exercised directly by youthAcademy.test.ts",

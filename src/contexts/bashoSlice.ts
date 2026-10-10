@@ -134,10 +134,8 @@ function resolvePlayerTactic(
   world: WorldState,
   boutId: string | undefined
 ): BoutTactic | undefined {
-  return (
-    (boutId ? world.boutTactics?.[boutId] : undefined) ??
-    (boutId ? state.boutTactics[boutId] : undefined)
-  ) as BoutTactic | undefined;
+  return ((boutId ? world.boutTactics?.[boutId] : undefined) ??
+    (boutId ? state.boutTactics[boutId] : undefined)) as BoutTactic | undefined;
 }
 
 function simulateSingleBout(
@@ -155,10 +153,8 @@ function simulateSingleBout(
     if (idx >= 0) unplayedIndex = idx;
   }
   const target = todays[unplayedIndex];
-  const playerTactic = ((target?.boutId
-    ? state.world.boutTactics?.[target.boutId]
-    : undefined) ?? (action.boutId ? state.boutTactics[action.boutId] : undefined)) as
-    BoutTactic | undefined;
+  const playerTactic = ((target?.boutId ? state.world.boutTactics?.[target.boutId] : undefined) ??
+    (action.boutId ? state.boutTactics[action.boutId] : undefined)) as BoutTactic | undefined;
   const { world, result } = worldEngine.simulateBoutForToday(
     state.world,
     unplayedIndex,

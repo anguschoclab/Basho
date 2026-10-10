@@ -101,15 +101,14 @@ export function CitizenshipSection({ rikishi }: { rikishi: UIRikishi }) {
           />
           <p className="text-[10px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
             {rikishi.yearsToNaturalization} year
-            {rikishi.yearsToNaturalization !== 1 ? "s" : ""} until Japanese citizenship
-            eligibility
+            {rikishi.yearsToNaturalization !== 1 ? "s" : ""} until Japanese citizenship eligibility
           </p>
         </>
       )}
       {rikishi.citizenshipStatus === "naturalized" && (
         <p className="text-[10px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
-          This rikishi is a full Japanese citizen and no longer counts against the heya's
-          foreign quota.
+          This rikishi is a full Japanese citizen and no longer counts against the heya's foreign
+          quota.
         </p>
       )}
     </div>

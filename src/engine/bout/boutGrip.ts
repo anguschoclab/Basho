@@ -61,12 +61,9 @@ function applyTachiaiGripAdvantage(
  * so deep grippers always lead. Standard stays at whatever the tachiai-winner
  * code set.
  */
-function applyDepthLeverArm(
-  left: HandGrip | null,
-  right: HandGrip | null,
-  depth: string
-): void {
-  const lever = depth === "deep" ? LEVER_ARM_DEEP : depth === "maemitsu" ? LEVER_ARM_MAEMITSU : null;
+function applyDepthLeverArm(left: HandGrip | null, right: HandGrip | null, depth: string): void {
+  const lever =
+    depth === "deep" ? LEVER_ARM_DEEP : depth === "maemitsu" ? LEVER_ARM_MAEMITSU : null;
   if (lever === null) return;
   if (left) left.leverArm = lever;
   if (right) right.leverArm = lever;
@@ -179,11 +176,7 @@ function evolveDepthTier(belt: BeltBattleState, techniqueMargin: number): void {
 }
 
 /** Grip strength decay from fatigue + pressure strain on the losing side (1.8). */
-function decayGripStrength(
-  belt: BeltBattleState,
-  eastFatigue: number,
-  westFatigue: number
-): void {
+function decayGripStrength(belt: BeltBattleState, eastFatigue: number, westFatigue: number): void {
   // Grip strength decays with fatigue
   const eastFatigueDecay = 1 - eastFatigue * GRIP_FATIGUE_DECAY_RATE;
   const westFatigueDecay = 1 - westFatigue * GRIP_FATIGUE_DECAY_RATE;

@@ -34,10 +34,8 @@ export function HeaderBadges({
           "font-bold h-6 uppercase text-[10px] tracking-widest",
           healthBadge === "Fresh" && "border-success text-success bg-success/10",
           healthBadge === "Worn" && "border-warning text-warning bg-warning/10",
-          healthBadge === "Struggling" &&
-            "border-warning/70 text-warning/70 bg-warning/5",
-          healthBadge === "Critical" &&
-            "border-destructive text-destructive bg-destructive/10",
+          healthBadge === "Struggling" && "border-warning/70 text-warning/70 bg-warning/5",
+          healthBadge === "Critical" && "border-destructive text-destructive bg-destructive/10",
           healthBadge === "Recovering" && "border-primary text-primary bg-primary/10"
         )}
       >
@@ -112,9 +110,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
               </span>{" "}
               Yokozuna Promotion Watch
             </span>
-            <span className="opacity-70">
-              {rikishi.consecutiveStrongOzeki} / 2 Strong Basho
-            </span>
+            <span className="opacity-70">{rikishi.consecutiveStrongOzeki} / 2 Strong Basho</span>
           </div>
           <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
             <div
@@ -140,25 +136,19 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
             {(rikishi.councilWarnings ?? 0) > 0 && (
               <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
                 <span className="text-destructive/80">Council Warnings</span>
-                <span className="text-destructive font-bold">
-                  {rikishi.councilWarnings} / 3
-                </span>
+                <span className="text-destructive font-bold">{rikishi.councilWarnings} / 3</span>
               </div>
             )}
             {(rikishi.consecutiveMakeKoshi ?? 0) > 0 && (
               <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
                 <span className="text-destructive/80">Consecutive Make-Koshi</span>
-                <span className="text-destructive font-bold">
-                  {rikishi.consecutiveMakeKoshi}
-                </span>
+                <span className="text-destructive font-bold">{rikishi.consecutiveMakeKoshi}</span>
               </div>
             )}
             {(rikishi.consecutiveKyujo ?? 0) > 0 && (
               <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
                 <span className="text-destructive/80">Consecutive Kyujo</span>
-                <span className="text-destructive font-bold">
-                  {rikishi.consecutiveKyujo} / 3
-                </span>
+                <span className="text-destructive font-bold">{rikishi.consecutiveKyujo} / 3</span>
               </div>
             )}
           </div>
@@ -173,9 +163,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
               </span>{" "}
               Kachi-Koshi Streak
             </span>
-            <span className="text-warning font-black">
-              {rikishi.consecutiveKachiKoshi}
-            </span>
+            <span className="text-warning font-black">{rikishi.consecutiveKachiKoshi}</span>
           </div>
         </div>
       )}
@@ -234,9 +222,7 @@ export function HeaderIdentity({ rikishi }: { rikishi: UIRikishi }) {
             <>
               {" - "}
               {rikishi.combatArchetype ? (
-                <TooltipWrap
-                  content={getCombatArchetypeDescription(rikishi.combatArchetype)}
-                >
+                <TooltipWrap content={getCombatArchetypeDescription(rikishi.combatArchetype)}>
                   <span className="cursor-help border-b border-dotted border-white/30 hover:border-white/60">
                     {rikishi.archetypeName}
                   </span>
@@ -252,17 +238,13 @@ export function HeaderIdentity({ rikishi }: { rikishi: UIRikishi }) {
         <div className="flex flex-wrap items-center gap-3 mt-4">
           {rikishi.mentorName && (
             <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10">
-              <span className="text-[10px] text-white/40 uppercase font-black">
-                Mentor
-              </span>
+              <span className="text-[10px] text-white/40 uppercase font-black">Mentor</span>
               <span className="text-xs font-bold">{rikishi.mentorName}</span>
             </div>
           )}
           {(rikishi.menteeNames?.length ?? 0) > 0 && (
             <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10">
-              <span className="text-[10px] text-white/40 uppercase font-black">
-                Students
-              </span>
+              <span className="text-[10px] text-white/40 uppercase font-black">Students</span>
               <span className="text-xs font-bold">{rikishi.menteeNames?.join(", ")}</span>
             </div>
           )}
@@ -307,10 +289,7 @@ function buildStatEntries(rikishi: UIRikishi): StatEntry[] {
       label: "Current Record",
       value: `${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}`,
       sub: "This Tournament",
-      color:
-        rikishi.currentBashoWins >= rikishi.currentBashoLosses
-          ? "text-success"
-          : "text-gold",
+      color: rikishi.currentBashoWins >= rikishi.currentBashoLosses ? "text-success" : "text-gold",
       tooltip: "Current tournament win-loss record",
     },
     {
@@ -377,19 +356,15 @@ function buildStatEntries(rikishi: UIRikishi): StatEntry[] {
       value: rikishi.achievements?.kinboshiConceded ?? 0,
       sub: "To Maegashira",
       color: "text-destructive",
-      condition:
-        rikishi.rank === "yokozuna" &&
-        (rikishi.achievements?.kinboshiConceded ?? 0) > 0,
-      tooltip:
-        "Number of times defeated by a Maegashira while holding the Yokozuna rank",
+      condition: rikishi.rank === "yokozuna" && (rikishi.achievements?.kinboshiConceded ?? 0) > 0,
+      tooltip: "Number of times defeated by a Maegashira while holding the Yokozuna rank",
     },
     {
       label: "Upset Losses",
       value: rikishi.achievements?.ginboshiConceded ?? 0,
       sub: "To Maegashira",
       color: "text-destructive",
-      condition:
-        rikishi.rank === "ozeki" && (rikishi.achievements?.ginboshiConceded ?? 0) > 0,
+      condition: rikishi.rank === "ozeki" && (rikishi.achievements?.ginboshiConceded ?? 0) > 0,
       tooltip: "Number of times defeated by a Maegashira while holding the Ozeki rank",
     },
   ];

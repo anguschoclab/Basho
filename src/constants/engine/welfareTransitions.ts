@@ -118,5 +118,3 @@ export const SANCTION_PROGRESS_GAIN = 30;
 
 /** Compliance progress gain */
 export const COMPLIANCE_PROGRESS_GAIN = 50;
-
-

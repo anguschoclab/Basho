@@ -75,4 +75,3 @@ describe("generateRecommendations", () => {
     expect(boutRecs[0].relatedEntityId).toBe("o1");
   });
 });
-

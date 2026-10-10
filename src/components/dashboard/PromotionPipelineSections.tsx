@@ -131,11 +131,7 @@ export function RankDistributionChart({ data }: { data: RankDistributionPoint[] 
       </p>
       <div className="h-40 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            layout="vertical"
-            data={data}
-            margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
-          >
+          <BarChart layout="vertical" data={data} margin={{ top: 0, right: 8, left: 0, bottom: 0 }}>
             <XAxis type="number" hide />
             <YAxis
               type="category"
@@ -156,8 +152,7 @@ export function RankDistributionChart({ data }: { data: RankDistributionPoint[] 
                 const pt = payload[0].payload as { rank: string; count: number };
                 return (
                   <div className="bg-background border border-border rounded px-2 py-1 text-[10px] font-bold shadow">
-                    <span className="opacity-60">{pt.rank}</span>{" "}
-                    <span>{pt.count} rikishi</span>
+                    <span className="opacity-60">{pt.rank}</span> <span>{pt.count} rikishi</span>
                   </div>
                 );
               }}
@@ -176,11 +171,7 @@ export function RankDistributionChart({ data }: { data: RankDistributionPoint[] 
 }
 
 /** Kadoban alert section — demotion-watch rows. */
-export function KadobanSection({
-  entries,
-}: {
-  entries: ReturnType<typeof getKadobanDrama>;
-}) {
+export function KadobanSection({ entries }: { entries: ReturnType<typeof getKadobanDrama> }) {
   return (
     <div className="space-y-1.5">
       <p className="text-[10px] font-mono font-bold text-destructive uppercase tracking-widest">

@@ -85,8 +85,7 @@ function evaluateOzekiYokozunaBid(
   }
 
   // Track consecutive strong performances (12+) for borderline cases
-  const consecutiveStrongOzeki =
-    currentWins >= 12 ? (rikishi.consecutiveStrongOzeki || 0) + 1 : 0;
+  const consecutiveStrongOzeki = currentWins >= 12 ? (rikishi.consecutiveStrongOzeki || 0) + 1 : 0;
 
   // Narrative: Yokozuna Watch
   if (isYusho && !promoteToYokozuna) {
@@ -131,9 +130,7 @@ function evaluateYokozunaPressure(
   const isKyujo = stats.absences >= 15; // Full tournament miss
   const subPar = stats.wins < 10; // Fails to meet "Yokozuna standard"
 
-  const consecutiveMakeKoshi = isMakeKoshi || isKyujo
-    ? (rikishi.consecutiveMakeKoshi ?? 0) + 1
-    : 0;
+  const consecutiveMakeKoshi = isMakeKoshi || isKyujo ? (rikishi.consecutiveMakeKoshi ?? 0) + 1 : 0;
 
   const consecutiveKyujo = isKyujo ? (rikishi.consecutiveKyujo ?? 0) + 1 : 0;
 
@@ -195,9 +192,7 @@ function recordBashoPerformance(
   const history = world.history[world.history.length - 1];
 
   const dayResults = (lastBasho.matches ?? [])
-    .filter(
-      (m) => m.result && (m.eastRikishiId === id || m.westRikishiId === id) && m.day <= 15
-    )
+    .filter((m) => m.result && (m.eastRikishiId === id || m.westRikishiId === id) && m.day <= 15)
     .sort((a, b) => a.day - b.day)
     .flatMap((m) => {
       const res = m.result;

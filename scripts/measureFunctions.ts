@@ -49,7 +49,11 @@ function walk(dir: string, out: string[] = []): string[] {
       walk(p, out);
     } else if (st.isFile()) {
       const ext = extname(p);
-      if ((ext === ".ts" || ext === ".tsx") && !e.endsWith(".test.ts") && !e.endsWith(".test.tsx")) {
+      if (
+        (ext === ".ts" || ext === ".tsx") &&
+        !e.endsWith(".test.ts") &&
+        !e.endsWith(".test.tsx")
+      ) {
         out.push(p);
       }
     }
@@ -102,7 +106,7 @@ function measure(file: string, threshold: number): Measurement[] {
     text,
     ts.ScriptTarget.Latest,
     true,
-    file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+    file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS
   );
   const rel = relative(ROOT, file);
   const results: Measurement[] = [];
@@ -144,11 +148,11 @@ function measure(file: string, threshold: number): Measurement[] {
       ts.isConstructorDeclaration(node)
     ) {
       if (node.body) {
-        const cls = ts.isClassDeclaration(node.parent) || ts.isClassExpression(node.parent)
-          ? (node.parent.name?.text ?? "<class>")
-          : "";
-        const raw =
-          ts.isConstructorDeclaration(node) ? "constructor" : node.name.getText(sf);
+        const cls =
+          ts.isClassDeclaration(node.parent) || ts.isClassExpression(node.parent)
+            ? (node.parent.name?.text ?? "<class>")
+            : "";
+        const raw = ts.isConstructorDeclaration(node) ? "constructor" : node.name.getText(sf);
         push(node, "method", cls ? `${cls}.${raw}` : raw);
       }
     } else if (ts.isVariableDeclaration(node) && node.initializer) {
@@ -193,12 +197,13 @@ if (isMain) {
   const JSON_OUT = opt("--json");
 
   const all = scanFunctions(THRESHOLD);
-  const escapeCsv = (s: string) => (s.includes(",") || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s);
+  const escapeCsv = (s: string) =>
+    s.includes(",") || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
   const csv = [
     "file,symbol,kind,startLine,endLine,loc,exported",
     ...all.map(
       (m) =>
-        `${m.file},${escapeCsv(m.symbol)},${m.kind},${m.startLine},${m.endLine},${m.loc},${m.exported}`,
+        `${m.file},${escapeCsv(m.symbol)},${m.kind},${m.startLine},${m.endLine},${m.loc},${m.exported}`
     ),
   ].join("\n");
 
@@ -207,7 +212,14 @@ if (isMain) {
 
   if (JSON_OUT) {
     mkdirSync(dirname_safe(JSON_OUT), { recursive: true });
-    writeFileSync(JSON_OUT, JSON.stringify({ generatedAt: new Date().toISOString(), threshold: THRESHOLD, entries: all }, null, 2));
+    writeFileSync(
+      JSON_OUT,
+      JSON.stringify(
+        { generatedAt: new Date().toISOString(), threshold: THRESHOLD, entries: all },
+        null,
+        2
+      )
+    );
   }
 
   const byKind = new Map<string, number>();
@@ -216,7 +228,11 @@ if (isMain) {
   console.log(`measured entries -> ${all.length} >= ${THRESHOLD} LOC`);
   for (const [k, n] of [...byKind].sort()) console.log(`  ${k}: ${n}`);
   console.log(`entries >=150 LOC: ${over(150).length}`);
-  console.log(`  functions/arrows/methods >=150: ${over(150).filter((m) => m.kind !== "const-obj" && m.kind !== "const-arr").length}`);
-  console.log(`  const-obj/const-arr >=150: ${over(150).filter((m) => m.kind === "const-obj" || m.kind === "const-arr").length}`);
+  console.log(
+    `  functions/arrows/methods >=150: ${over(150).filter((m) => m.kind !== "const-obj" && m.kind !== "const-arr").length}`
+  );
+  console.log(
+    `  const-obj/const-arr >=150: ${over(150).filter((m) => m.kind === "const-obj" || m.kind === "const-arr").length}`
+  );
   console.log(`wrote ${relative(ROOT, OUT)}`);
 }

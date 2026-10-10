@@ -152,7 +152,7 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/presenters/stableSelectionProjections.test.ts",
   "unit/presenters/tsukebitoProjections.test.ts",
   "unit/presenters/uiModels.test.ts",
-  "unit/presenters/youthAcademyProjections.test.ts"
+  "unit/presenters/youthAcademyProjections.test.ts",
 ]);
 
 const LOCAL_FACTORY_RE =
@@ -176,7 +176,8 @@ describe("factory discipline — no new local entity factories", () => {
       violations,
       "New local entity factories detected — use MockFactory " +
         "(src/tests/helpers/utils/MockFactory.ts) or engine/utils.ts factories, " +
-        "or document why the local factory is needed:\n" + violations.join("\n")
+        "or document why the local factory is needed:\n" +
+        violations.join("\n")
     ).toEqual([]);
   });
 
@@ -192,7 +193,8 @@ describe("factory discipline — no new local entity factories", () => {
     expect(
       stale,
       "Allowlist entries whose file no longer defines a local factory " +
-        "(or was deleted) — remove them:\n" + stale.join("\n")
+        "(or was deleted) — remove them:\n" +
+        stale.join("\n")
     ).toEqual([]);
   });
 });

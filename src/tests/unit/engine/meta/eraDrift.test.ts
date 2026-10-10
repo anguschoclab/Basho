@@ -68,9 +68,7 @@ describe("EraDriftService tactical-family grouping", () => {
     const impact = processYearlyEraDrift(world);
     const after = resolveImpacts(world, [impact]);
 
-    const metaHeadline = (after.mediaState?.headlines ?? []).find((h) =>
-      h.tags?.includes("meta")
-    );
+    const metaHeadline = (after.mediaState?.headlines ?? []).find((h) => h.tags?.includes("meta"));
     expect(metaHeadline).toBeDefined();
     expect(metaHeadline!.title.length).toBeGreaterThan(0);
 

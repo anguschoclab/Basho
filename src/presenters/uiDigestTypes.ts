@@ -222,7 +222,6 @@ export interface ScheduleRules {
   allowForcedRepeats?: boolean;
 }
 
-
 // ── Bout Result Extensions ───────────────────────────────────────────────────
 
 /** Extended bout result with narrative properties */

@@ -46,13 +46,7 @@ export function RivalrySections({
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             {playerRivalries.map((pair, i) => (
-              <RivalryCard
-                key={pair.key}
-                pair={pair}
-                world={world}
-                isPlayerRivalry
-                index={i}
-              />
+              <RivalryCard key={pair.key} pair={pair} world={world} isPlayerRivalry index={i} />
             ))}
           </div>
         </section>
@@ -77,9 +71,7 @@ export function RivalrySections({
           <h2 className="font-display text-lg font-semibold flex items-center gap-2">
             <Landmark className="h-4 w-4 text-primary" />
             Institutional Feuds
-            <span className="text-xs text-muted-foreground font-normal">
-              (Stable vs Stable)
-            </span>
+            <span className="text-xs text-muted-foreground font-normal">(Stable vs Stable)</span>
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
             {stableRivalries.map((feud: RivalriesPageData["stableRivalries"][number]) => (
@@ -89,10 +81,7 @@ export function RivalrySections({
               >
                 <CardContent className="p-3">
                   <div className="flex justify-between items-center mb-2">
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] uppercase tracking-tighter"
-                    >
+                    <Badge variant="outline" className="text-[10px] uppercase tracking-tighter">
                       {feud.tone.replace("_", " ")}
                     </Badge>
                     <div className="text-[10px] font-mono text-primary">
@@ -100,9 +89,7 @@ export function RivalrySections({
                     </div>
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <div className="text-xs font-bold truncate max-w-[80px]">
-                      {feud.aName}
-                    </div>
+                    <div className="text-xs font-bold truncate max-w-[80px]">{feud.aName}</div>
                     <div className="text-[10px] text-muted-foreground">vs</div>
                     <div className="text-xs font-bold truncate max-w-[80px] text-right">
                       {feud.bName}
@@ -127,9 +114,7 @@ export function RivalrySections({
                 key={pair.key}
                 pair={pair}
                 world={world}
-                isPlayerRivalry={
-                  playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId)
-                }
+                isPlayerRivalry={playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId)}
                 index={i}
               />
             ))}

@@ -113,7 +113,16 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
 
   const yushoWinner = getRikishi(world, yusho);
   emitOzekiComeback(world, basho, yusho, yushoWinner, builder);
-  emitPostBashoPress(world, basho, yusho, yushoWinner, topCandidates, prizes, divisionYushoMap, builder);
+  emitPostBashoPress(
+    world,
+    basho,
+    yusho,
+    yushoWinner,
+    topCandidates,
+    prizes,
+    divisionYushoMap,
+    builder
+  );
 
   // Pay basho teate to non-sekitori rikishi
   const teateImpact = payBashoTeate(world);

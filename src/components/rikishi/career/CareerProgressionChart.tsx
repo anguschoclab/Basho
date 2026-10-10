@@ -108,11 +108,7 @@ export function CareerProgressionChart({
                   bottom: data.length > 6 ? 40 : 10,
                 }}
               >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="hsl(var(--border))"
-                />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="basho"
                   tick={{

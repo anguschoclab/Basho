@@ -4,10 +4,7 @@ import { type RivalryPairState } from "../../../../constants/engine/rivalry";
 import { deriveTone } from "../RivalryHeatService";
 import { createImpactBuilder } from "../../../core/ImpactBuilder";
 import type { StateImpact } from "../../../core/StateImpact";
-import {
-  CLOSENESS_DECAY_RATE,
-  SPITE_DECAY_RATE,
-} from "../../../../constants/engine/narrative";
+import { CLOSENESS_DECAY_RATE, SPITE_DECAY_RATE } from "../../../../constants/engine/narrative";
 import {
   RIVALRY_DECAY_WEEKS_LONG,
   RIVALRY_HEAT_MIN,

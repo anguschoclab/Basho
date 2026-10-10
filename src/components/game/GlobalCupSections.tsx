@@ -193,9 +193,7 @@ export function CupChampionBanner({
           <div className="text-2xl font-display font-bold text-gold">
             {rikishiNames.get(cup.championId) || "Unknown"}
           </div>
-          <div className="text-sm text-muted-foreground">
-            Winner of the Global Cup - 世界大相撲
-          </div>
+          <div className="text-sm text-muted-foreground">Winner of the Global Cup - 世界大相撲</div>
         </div>
       </div>
     </div>

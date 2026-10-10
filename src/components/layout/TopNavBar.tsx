@@ -9,12 +9,7 @@
 import { useGame } from "@/contexts/useGame";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  ContextCluster,
-  NavControls,
-  AdvanceButton,
-  BashoProgressRail,
-} from "./TopNavBarSections";
+import { ContextCluster, NavControls, AdvanceButton, BashoProgressRail } from "./TopNavBarSections";
 
 export function TopNavBar() {
   const { state } = useGame();

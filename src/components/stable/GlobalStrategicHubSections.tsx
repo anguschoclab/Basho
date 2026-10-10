@@ -91,9 +91,7 @@ export function PipelineCard({ candidates }: { candidates: Derived["foreignCandi
             International Pipeline
           </CardTitle>
         </div>
-        <CardDescription>
-          Visible candidates discovered through regional presence.
-        </CardDescription>
+        <CardDescription>Visible candidates discovered through regional presence.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -114,9 +112,7 @@ export function PipelineCard({ candidates }: { candidates: Derived["foreignCandi
                 </div>
               </div>
               {c.tags.includes("legacy") && (
-                <Badge className="bg-gold/20 text-gold border-gold/20 text-[10px]">
-                  LEGACY
-                </Badge>
+                <Badge className="bg-gold/20 text-gold border-gold/20 text-[10px]">LEGACY</Badge>
               )}
             </div>
           ))}
@@ -124,8 +120,7 @@ export function PipelineCard({ candidates }: { candidates: Derived["foreignCandi
             <div className="flex flex-col items-center justify-center h-48 text-center text-muted-foreground border border-dashed border-border rounded-lg">
               <MapPin className="h-8 w-8 mb-2 opacity-20" />
               <p className="text-xs">
-                No foreign candidates visible. Increase Regional Presence to 40+ to unlock
-                scouting.
+                No foreign candidates visible. Increase Regional Presence to 40+ to unlock scouting.
               </p>
             </div>
           )}
@@ -157,9 +152,7 @@ export function GlobalCupCard({
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
-          <div className="text-3xl font-display font-bold text-gold">
-            {heyaParticipants.length}
-          </div>
+          <div className="text-3xl font-display font-bold text-gold">{heyaParticipants.length}</div>
           <div className="text-sm text-muted-foreground">
             {heyaParticipants.length === 1 ? "Representative" : "Representatives"} in tournament
           </div>
@@ -213,10 +206,7 @@ export function AcademiesCard({ activeAcademies }: { activeAcademies: string[] }
         {activeAcademies.map((id) => {
           const def = FACILITY_REGISTRY[id as FacilityId];
           return (
-            <div
-              key={id}
-              className="p-3 rounded-lg border border-success/10 bg-card/40"
-            >
+            <div key={id} className="p-3 rounded-lg border border-success/10 bg-card/40">
               <div className="text-xs font-bold text-muted-foreground">{def?.label}</div>
               <div className="text-[10px] text-muted-foreground mt-1 line-clamp-2">
                 {def?.description}

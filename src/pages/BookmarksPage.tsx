@@ -9,12 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
 import { RikishiCard } from "@/components/game/RikishiCard";
 import { projectRikishi } from "@/presenters/rikishi";
-import {
-  getRikishi,
-  getHeya,
-  getAllBookmarks,
-  getBookmarksByType,
-} from "@/presenters/worldAccess";
+import { getRikishi, getHeya, getAllBookmarks, getBookmarksByType } from "@/presenters/worldAccess";
 import type { BookmarkEntry } from "@/presenters/worldAccess";
 
 function BookmarkItem({

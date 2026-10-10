@@ -34,7 +34,7 @@ function impactDigest(impact: unknown): string {
   return JSON.stringify(
     impact,
     (_k, v) => (v instanceof Map ? { __map: [...v.entries()].sort() } : v),
-    2,
+    2
   );
 }
 
@@ -63,7 +63,10 @@ describe("CrisisService — golden master", () => {
 
 describe("DynastyService — golden master", () => {
   function worldWithOyakata(age: number, successors: Array<ReturnType<typeof mockRikishi>> = []) {
-    const heya = makeMockHeya("heya-1", { oyakataId: "oya-1", rikishiIds: successors.map((r) => r.id) });
+    const heya = makeMockHeya("heya-1", {
+      oyakataId: "oya-1",
+      rikishiIds: successors.map((r) => r.id),
+    });
     const world = makeMockWorld({
       heyas: new Map([[heya.id, heya]]),
       rikishi: new Map(successors.map((r) => [r.id, r])),
@@ -110,7 +113,7 @@ describe("DynastyService — golden master", () => {
       ["none", "bronze", "silver", "gold", "platinum", "mythic", undefined].map((t) => [
         t,
         DynastyService.getLegacyTierTrainingBonus(t),
-      ]),
+      ])
     ).toMatchSnapshot();
   });
 });

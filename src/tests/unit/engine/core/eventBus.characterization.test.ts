@@ -17,8 +17,14 @@ function seededWorld(): WorldState {
   const heya1 = makeMockHeya("heya-1", { name: "East Stable" });
   const heya2 = makeMockHeya("heya-2", { name: "West Stable" });
   return makeMockWorld({
-    rikishi: new Map([[east.id, east], [west.id, west]]),
-    heyas: new Map([[heya1.id, heya1], [heya2.id, heya2]]),
+    rikishi: new Map([
+      [east.id, east],
+      [west.id, west],
+    ]),
+    heyas: new Map([
+      [heya1.id, heya1],
+      [heya2.id, heya2],
+    ]),
     activeRikishiIds: new Set([east.id, west.id]),
     year: 2026,
     week: 5,
@@ -72,7 +78,9 @@ describe("EventBus — golden master", () => {
   });
   it("awardConferred", () => {
     const w = seededWorld();
-    expect(eventDigest(w, EventBus.awardConferred(w, { ...CTX, status: "gino-sho" }))).toMatchSnapshot();
+    expect(
+      eventDigest(w, EventBus.awardConferred(w, { ...CTX, status: "gino-sho" }))
+    ).toMatchSnapshot();
   });
   it("lifecycleEvent (injury + retirement importance switch)", () => {
     const w = seededWorld();
@@ -104,7 +112,9 @@ describe("EventBus — golden master", () => {
   });
   it("monthlyFinanceReport", () => {
     const w = seededWorld();
-    expect(eventDigest(w, EventBus.monthlyFinanceReport(w, { ...CTX, heya: "East Stable" }))).toMatchSnapshot();
+    expect(
+      eventDigest(w, EventBus.monthlyFinanceReport(w, { ...CTX, heya: "East Stable" }))
+    ).toMatchSnapshot();
   });
   it("rivalryHeatSpike (heat<=75 vs >75 importance)", () => {
     const w = seededWorld();

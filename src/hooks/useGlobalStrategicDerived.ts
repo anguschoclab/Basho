@@ -47,5 +47,14 @@ export function useGlobalStrategicDerived(world: WorldState, heyaId: Id) {
       .length;
   }, [world.chronicle?.globalCups, heya]);
 
-  return { heya, presence, regions, foreignCandidates, activeAcademies, globalCup, heyaParticipants, globalCupWins };
+  return {
+    heya,
+    presence,
+    regions,
+    foreignCandidates,
+    activeAcademies,
+    globalCup,
+    heyaParticipants,
+    globalCupWins,
+  };
 }

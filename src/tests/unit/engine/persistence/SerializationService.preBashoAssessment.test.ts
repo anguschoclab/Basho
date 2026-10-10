@@ -86,12 +86,16 @@ describe("SaveSlotService.isValidSave — hollow world rejection", () => {
     const world = MockFactory.createWorld({});
     const serialized = SerializationService.serializeWorld(world);
     const noSeed = { ...serialized, seed: undefined };
-    expect(SaveSlotService.isValidSave({ version: CURRENT_SAVE_VERSION, world: noSeed })).toBe(false);
+    expect(SaveSlotService.isValidSave({ version: CURRENT_SAVE_VERSION, world: noSeed })).toBe(
+      false
+    );
   });
 
   it("still accepts a real serialized save", () => {
     const world = MockFactory.createWorld({});
     const serialized = SerializationService.serializeWorld(world);
-    expect(SaveSlotService.isValidSave({ version: CURRENT_SAVE_VERSION, world: serialized })).toBe(true);
+    expect(SaveSlotService.isValidSave({ version: CURRENT_SAVE_VERSION, world: serialized })).toBe(
+      true
+    );
   });
 });

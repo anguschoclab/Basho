@@ -271,15 +271,17 @@ function intelRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
     week?: number;
     data?: Record<string, unknown>;
   }[];
-  const shift = [...log].reverse().find(
-    (e) =>
-      e.type === "STRATEGY_SHIFT" &&
-      e.category === "ai_plan_change" &&
-      e.data?.heyaId !== undefined &&
-      e.data.heyaId !== heyaId &&
-      week - Number(e.week ?? 0) >= 0 &&
-      week - Number(e.week ?? 0) <= RIVAL_PLAN_INTEL_WINDOW_WEEKS
-  );
+  const shift = [...log]
+    .reverse()
+    .find(
+      (e) =>
+        e.type === "STRATEGY_SHIFT" &&
+        e.category === "ai_plan_change" &&
+        e.data?.heyaId !== undefined &&
+        e.data.heyaId !== heyaId &&
+        week - Number(e.week ?? 0) >= 0 &&
+        week - Number(e.week ?? 0) <= RIVAL_PLAN_INTEL_WINDOW_WEEKS
+    );
   if (shift) {
     const shiftHeyaId = String(shift.data?.heyaId);
     const rivalHeya = getHeya(world, shiftHeyaId);
@@ -408,4 +410,3 @@ export function generateRecommendations(world: WorldState, playerHeyaId?: Id): A
   recs.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
   return recs;
 }
-

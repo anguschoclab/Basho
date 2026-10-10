@@ -107,8 +107,7 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
           ? "repeated insolvency — the board lost confidence"
           : (tenure?.majorScandals ?? 0) >= SUCCESSION_MAJOR_SCANDALS
             ? "accumulated major scandals"
-            : (heya.consecutiveUnderperformanceBasho ?? 0) >=
-                SUCCESSION_UNDERPERFORMANCE_BASHO
+            : (heya.consecutiveUnderperformanceBasho ?? 0) >= SUCCESSION_UNDERPERFORMANCE_BASHO
               ? "chronic underperformance"
               : undefined;
 

@@ -59,9 +59,7 @@ export default function MyosekiMarketPage() {
               <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
                 Stable Funds
               </p>
-              <p className="text-lg font-bold font-mono">
-                ¥{market.playerFunds.toLocaleString()}
-              </p>
+              <p className="text-lg font-bold font-mono">¥{market.playerFunds.toLocaleString()}</p>
             </div>
           }
         />

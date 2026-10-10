@@ -22,9 +22,7 @@ export function bashoStatus(world: WorldState, ctx: NarrativeContext) {
     type: "BASHO_STATUS",
     category: "basho",
     importance:
-      ctx.status === "started" || ctx.status === "ended" || ctx.day === 15
-        ? "headline"
-        : "notable",
+      ctx.status === "started" || ctx.status === "ended" || ctx.day === 15 ? "headline" : "notable",
     phase: "basho_day",
     scope: "world",
     title: titleRes.text,

@@ -5,11 +5,7 @@
 import { useGame } from "@/contexts/useGame";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSponsorsDerived } from "@/hooks/useSponsorsDerived";
-import {
-  KoenkaiCard,
-  ActiveSponsorsCard,
-  ChurnedSponsorsCard,
-} from "./SponsorsPanelSections";
+import { KoenkaiCard, ActiveSponsorsCard, ChurnedSponsorsCard } from "./SponsorsPanelSections";
 
 /** sponsors panel. */
 export function SponsorsPanel() {
@@ -17,10 +13,7 @@ export function SponsorsPanel() {
   const world = state.world;
   const playerHeyaId = state.playerHeyaId;
 
-  const { activeSponsors, koenkai, churned, tierSummary } = useSponsorsDerived(
-    world,
-    playerHeyaId
-  );
+  const { activeSponsors, koenkai, churned, tierSummary } = useSponsorsDerived(world, playerHeyaId);
 
   if (!world?.sponsorPool) {
     return (

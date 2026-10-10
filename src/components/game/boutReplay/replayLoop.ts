@@ -166,7 +166,12 @@ export function replayTick(
   if (!advancePhase(ctx, delta, W, H)) return false;
 
   // Update rikishi positions
-  const target = getTargetState(ctx.phaseRef.current, ctx.progressRef.current, ctx.winnerSide, ctx.boutScript);
+  const target = getTargetState(
+    ctx.phaseRef.current,
+    ctx.progressRef.current,
+    ctx.winnerSide,
+    ctx.boutScript
+  );
   const smooth = clamp(delta * 0.012, 0, 0.25);
   ctx.eastRef.current = lerpState(ctx.eastRef.current, target.east, smooth);
   ctx.westRef.current = lerpState(ctx.westRef.current, target.west, smooth);
@@ -205,7 +210,11 @@ export function replayTick(
   };
 
   // Narration update
-  const ni = getPhaseNarrationIndex(ctx.phaseRef.current, ctx.progressRef.current, ctx.lines.length);
+  const ni = getPhaseNarrationIndex(
+    ctx.phaseRef.current,
+    ctx.progressRef.current,
+    ctx.lines.length
+  );
   if (ni !== ctx.narIndexRef.current) {
     ctx.narIndexRef.current = ni;
     ctx.setNarration(ctx.lines[ni] || "");

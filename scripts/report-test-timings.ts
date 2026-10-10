@@ -72,9 +72,18 @@ function parseArgs() {
 function parseJunitXml(xmlPath: string): TimingEntry[] {
   const xml = readFileSync(xmlPath, "utf8");
   const entries: TimingEntry[] = [];
-  for (const m of xml.matchAll(/<testsuite name="([^"]+)"[^>]*?tests="(\d+)"[^>]*?time="([\d.]+)"/g)) {
+  for (const m of xml.matchAll(
+    /<testsuite name="([^"]+)"[^>]*?tests="(\d+)"[^>]*?time="([\d.]+)"/g
+  )) {
     entries.push({
-      file: relative(ROOT, m[1].replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")),
+      file: relative(
+        ROOT,
+        m[1]
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g, ">")
+          .replace(/&lt;/g, "<")
+          .replace(/&amp;/g, "&")
+      ),
       testCount: Number(m[2]),
       durationMs: Math.round(Number(m[3]) * 1000),
     });
@@ -94,14 +103,16 @@ function runSuite(suite: string): string {
   const res = spawnSync(
     "bunx",
     ["vitest", "run", "--config", config, "--reporter=junit", `--outputFile=${tmp}`],
-    { cwd: ROOT, stdio: ["ignore", "inherit", "inherit"], env: process.env },
+    { cwd: ROOT, stdio: ["ignore", "inherit", "inherit"], env: process.env }
   );
   if (!existsSync(tmp)) {
     console.error(`vitest produced no JUnit report at ${tmp}`);
     process.exit(1);
   }
   if (res.status !== 0) {
-    console.warn(`warning: "${suite}" suite exited ${res.status} — timings reflect a failing/partial run`);
+    console.warn(
+      `warning: "${suite}" suite exited ${res.status} — timings reflect a failing/partial run`
+    );
   }
   return tmp;
 }
@@ -109,7 +120,9 @@ function runSuite(suite: string): string {
 function main() {
   const args = parseArgs();
   if (!args.suite) {
-    console.error("usage: report-test-timings.ts --suite <fast|slow|perf|all> [--out path] [--xml path] [--top n]");
+    console.error(
+      "usage: report-test-timings.ts --suite <fast|slow|perf|all> [--out path] [--xml path] [--top n]"
+    );
     process.exit(1);
   }
   const suites = args.suite === "all" ? Object.keys(SUITE_CONFIGS) : [args.suite];
@@ -138,7 +151,9 @@ function main() {
 
 function printTable(suite: string, files: TimingEntry[], top: number) {
   const total = files.reduce((s, f) => s + f.durationMs, 0);
-  console.log(`\n${suite}: ${files.length} files, ${(total / 1000).toFixed(1)}s total — top ${top}`);
+  console.log(
+    `\n${suite}: ${files.length} files, ${(total / 1000).toFixed(1)}s total — top ${top}`
+  );
   for (const f of files.slice(0, top)) {
     console.log(`  ${(f.durationMs / 1000).toFixed(1).padStart(7)}s  ${f.file}`);
   }

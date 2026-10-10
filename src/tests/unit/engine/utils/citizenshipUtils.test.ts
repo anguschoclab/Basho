@@ -118,9 +118,7 @@ describe("citizenshipUtils", () => {
     });
 
     it("returns false when no rikishi counts against the foreign slot", () => {
-      const rikishiList = [
-        MockFactory.createRikishi({ id: "n1", nationality: "Japan" }),
-      ];
+      const rikishiList = [MockFactory.createRikishi({ id: "n1", nationality: "Japan" })];
       expect(isAtForeignLimit(rikishiList, 2024)).toBe(false);
     });
 

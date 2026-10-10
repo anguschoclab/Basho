@@ -6,11 +6,7 @@
  */
 
 import { useMemo } from "react";
-import {
-  INTENSITY_MULTIPLIERS,
-  FOCUS_BIAS_MATRIX,
-  RANK_HIERARCHY,
-} from "@/presenters/uiDigest";
+import { INTENSITY_MULTIPLIERS, FOCUS_BIAS_MATRIX, RANK_HIERARCHY } from "@/presenters/uiDigest";
 import type { TrainingIntensity, TrainingFocus } from "@/engine/types/training";
 import { getRikishi } from "@/presenters/worldAccess";
 import type { Rikishi } from "@/engine/types/rikishi";

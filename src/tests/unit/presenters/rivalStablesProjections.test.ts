@@ -152,7 +152,7 @@ describe("projectRivalStables — WS7 rival intel", () => {
   it("never leaks raw trait numbers into the DTO", () => {
     const { rival } = worldWithRival({ scouted: true });
     const serialized = JSON.stringify(rival);
-    for (const leaked of ["ambition", "patience", "\"risk\"", "tradition", "compassion"]) {
+    for (const leaked of ["ambition", "patience", '"risk"', "tradition", "compassion"]) {
       expect(serialized).not.toContain(leaked);
     }
   });

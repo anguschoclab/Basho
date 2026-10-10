@@ -66,7 +66,12 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
           <CardDescription>Condition & fatigue risk scores per rikishi</CardDescription>
         </CardHeader>
         <CardContent>
-          <EmptyState icon={Activity} title="No Active Wrestlers" description="There are no rikishi in your stable to evaluate for injury risk." compact />
+          <EmptyState
+            icon={Activity}
+            title="No Active Wrestlers"
+            description="There are no rikishi in your stable to evaluate for injury risk."
+            compact
+          />
         </CardContent>
       </Card>
     );

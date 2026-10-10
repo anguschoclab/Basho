@@ -71,11 +71,7 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
   }
 
   // 7-7 pressure question: winner was at 7-7 before this bout
-  if (
-    winnerWins === 7 &&
-    winnerLosses === 7 &&
-    BardEngine.has("interview.questions.seven_seven")
-  ) {
+  if (winnerWins === 7 && winnerLosses === 7 && BardEngine.has("interview.questions.seven_seven")) {
     questionType = "seven_seven";
   }
   // Weight journey question: winner has active weight journey with significant progress
@@ -154,9 +150,7 @@ function runInterviewLoop(p: PbpPipeline, setup: InterviewSetup): void {
     if (winnerRikishi.personalityTraits && winnerRikishi.personalityTraits.length > 0) {
       if (qRng.next() < TRAIT_MODIFIER_CHANCE) {
         const trait =
-          winnerRikishi.personalityTraits[
-            qRng.int(0, winnerRikishi.personalityTraits.length - 1)
-          ];
+          winnerRikishi.personalityTraits[qRng.int(0, winnerRikishi.personalityTraits.length - 1)];
         const modifierPath = `interview.modifiers.${trait}`;
         if (BardEngine.has(modifierPath)) {
           push(

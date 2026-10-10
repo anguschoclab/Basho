@@ -8,9 +8,7 @@
 import { useMemo } from "react";
 import type { RivalryPairState } from "@/presenters/engineAccess";
 import { createDefaultRivalriesState, type RivalriesState } from "@/presenters/engineAccess";
-import {
-  projectRivalriesPage,
-} from "@/presenters/projections/rivalriesProjections";
+import { projectRivalriesPage } from "@/presenters/projections/rivalriesProjections";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import type { WorldState } from "@/presenters/uiDigest";
@@ -25,7 +23,7 @@ export function useRivalriesDerived(
   playerHeyaId: string | null | undefined,
   searchQuery: string,
   sortKey: string,
-  sortOrder: SortDirection,
+  sortOrder: SortDirection
 ) {
   const rivalriesState = useMemo<RivalriesState>(() => {
     if (!world) return createDefaultRivalriesState();

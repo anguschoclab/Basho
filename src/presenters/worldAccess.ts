@@ -26,10 +26,7 @@ export {
 
 // Canonical bookmark accessors — re-exported from the engine service so the
 // page layer never reaches into WorldState.playerKnowledge directly.
-export {
-  getAllBookmarks,
-  getBookmarksByType,
-} from "@/engine/systems/bookmark/BookmarkService";
+export { getAllBookmarks, getBookmarksByType } from "@/engine/systems/bookmark/BookmarkService";
 export type { BookmarkEntry } from "@/engine/types/world";
 
 export function getOyakata(world: WorldState, id: string): Oyakata | undefined {

@@ -132,12 +132,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
  * One heya's monthly cycle: JSA salaries + overhead, loan repayments, facility
  * decay, NPC auto-investment, then the runway-band sync and debt-floor clamp.
  */
-function processHeyaMonth(
-  world: WorldState,
-  heya: Heya,
-  id: string,
-  builder: ImpactBuilder
-): void {
+function processHeyaMonth(world: WorldState, heya: Heya, id: string, builder: ImpactBuilder): void {
   const heyaUpdates: HeyaUpdates = {};
 
   // -- Economics: Salaries & Upkeep --

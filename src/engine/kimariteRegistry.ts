@@ -4,7 +4,6 @@ import { KIMARITE_FREQUENCY_TARGETS, rarityFromShare } from "../constants/engine
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 import { KIMARITE_ENRICHMENT } from "./kimariteEnrichment";
 
-
 // --- Domain Models & Defaults ---
 
 type KimariteDefinition = Kimarite & { kimariteClass?: KimariteClass };
@@ -115,8 +114,6 @@ function defineKimarite(entry: KimariteBaseEntry): KimariteDefinition {
     isHighRisk: entry.isHighRisk ?? defaults.isHighRisk ?? false,
   } as KimariteDefinition;
 }
-
-
 
 // Local alias strictly for visual alignment of the static data block
 const K = defineKimarite;

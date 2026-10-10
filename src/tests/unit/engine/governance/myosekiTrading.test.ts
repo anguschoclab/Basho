@@ -10,7 +10,6 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "../utils";
 import type { MyosekiMarket } from "@/engine/types/myoseki";
 
-
 /** Deterministic two-stock market fixture (JSA-owned, available). */
 function makeMarket(): MyosekiMarket {
   return {
@@ -150,7 +149,13 @@ describe("Myoseki lease", () => {
     market.stocks[stockId].holderId = "oyakata-owner";
 
     const worldWithMarket = makeWorldWithMarket(market);
-    const impact = executeMyosekiLease(worldWithMarket, market, stockId, "oyakata-lessee", 5_000_000);
+    const impact = executeMyosekiLease(
+      worldWithMarket,
+      market,
+      stockId,
+      "oyakata-lessee",
+      5_000_000
+    );
     const updated = resolveImpacts(worldWithMarket, [impact]);
     const updatedMarket = (updated as any).myosekiMarket as MyosekiMarket;
 

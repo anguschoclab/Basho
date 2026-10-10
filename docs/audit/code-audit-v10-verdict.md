@@ -24,23 +24,23 @@ changes.
 
 ## Confirmed-fixed bugs (15)
 
-| ID | Area | Severity | Summary |
-|----|------|----------|---------|
-| B01 | Electron | CRITICAL | `getItem` returned IPC Promise cast to string — every save unloadable on desktop |
-| B02 | Persistence | HIGH | Nested Maps (`_preBashoAssessment.rikishiAssessments`) serialized to `{}` — deterministic load crash |
-| B03 | Worker sync | HIGH | `LOAD_WORLD` dropped mid-tick → silent world revert |
-| B04 | Worker | HIGH | `onerror`/`onmessageerror` unhandled → `pendingTick` stuck forever; errors never rendered |
-| B05 | Persistence | HIGH | Engine autosave stamped epoch; redundant engine-side `new Date()`; `handleContinue` ignored `loadFromAutosave` result |
-| B06 | Purity | HIGH | `getOrCreateScouted`/`boutProjections`/`ensureHeyaTrainingState` mutated WorldState on read paths |
-| B07 | Lifecycle | HIGH | Headline yusho selected across all divisions — juryo winners crowned; yokozuna path starved |
-| B08 | UI honesty | HIGH | Fabricated unconditional metrics ("Level 3/5", "4/10 years", 45% construction bar, invented naturalization criteria) |
-| B09 | UI parity | MEDIUM | Bout-card heat bands diverged from canonical descriptor bands (two duplicated wrong scales) |
-| B10 | UI | LOW | Digest "Training" section titled "Governance & Compliance" |
-| B11 | Correctness | MEDIUM | `rikishi.history` never written → H2H/streaks/career-log/favored-kimarite all dead |
-| B12 | Perf | MEDIUM | Per-bout O(matches²) amplification (~2.7M elem-ops/day) → `simulateBoutsForDay` batch path |
-| B13 | Test harness | — | Async-bridge mocks contradicted real preload signatures |
-| B14 | Save contract | — | `isValidSave` accepted hollow saves |
-| B15 | Autosim | HIGH | No playoff resolution + juryo bleeding into headline yusho → promotions unreachable; `yokozunaPromotionAutoSim` now green |
+| ID  | Area          | Severity | Summary                                                                                                                   |
+| --- | ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| B01 | Electron      | CRITICAL | `getItem` returned IPC Promise cast to string — every save unloadable on desktop                                          |
+| B02 | Persistence   | HIGH     | Nested Maps (`_preBashoAssessment.rikishiAssessments`) serialized to `{}` — deterministic load crash                      |
+| B03 | Worker sync   | HIGH     | `LOAD_WORLD` dropped mid-tick → silent world revert                                                                       |
+| B04 | Worker        | HIGH     | `onerror`/`onmessageerror` unhandled → `pendingTick` stuck forever; errors never rendered                                 |
+| B05 | Persistence   | HIGH     | Engine autosave stamped epoch; redundant engine-side `new Date()`; `handleContinue` ignored `loadFromAutosave` result     |
+| B06 | Purity        | HIGH     | `getOrCreateScouted`/`boutProjections`/`ensureHeyaTrainingState` mutated WorldState on read paths                         |
+| B07 | Lifecycle     | HIGH     | Headline yusho selected across all divisions — juryo winners crowned; yokozuna path starved                               |
+| B08 | UI honesty    | HIGH     | Fabricated unconditional metrics ("Level 3/5", "4/10 years", 45% construction bar, invented naturalization criteria)      |
+| B09 | UI parity     | MEDIUM   | Bout-card heat bands diverged from canonical descriptor bands (two duplicated wrong scales)                               |
+| B10 | UI            | LOW      | Digest "Training" section titled "Governance & Compliance"                                                                |
+| B11 | Correctness   | MEDIUM   | `rikishi.history` never written → H2H/streaks/career-log/favored-kimarite all dead                                        |
+| B12 | Perf          | MEDIUM   | Per-bout O(matches²) amplification (~2.7M elem-ops/day) → `simulateBoutsForDay` batch path                                |
+| B13 | Test harness  | —        | Async-bridge mocks contradicted real preload signatures                                                                   |
+| B14 | Save contract | —        | `isValidSave` accepted hollow saves                                                                                       |
+| B15 | Autosim       | HIGH     | No playoff resolution + juryo bleeding into headline yusho → promotions unreachable; `yokozunaPromotionAutoSim` now green |
 
 ## New durable artifacts
 
@@ -57,33 +57,34 @@ changes.
 ## Final gate matrix
 
 | Gate | Result | Notes |
-|------|--------|-------|
+| ---- | ------ | ----- |
+
 ### Post-convergence re-verification
 
 After the parallel refactor session landed and its breakage was repaired
 (`BashoPage` `NoActiveBashoEmpty` import, npcAI type errors, stale
 surface-test grep targets, snapshot refresh), the full matrix is green:
 
-| Gate | Result | Notes |
-|------|--------|-------|
-| `bun run type-check` | PASS | clean across all files |
-| `bun run lint:strict` | PASS | 0 errors |
-| `bun run test` | PASS | includes 2 new R11 adaptive-torikumi tests |
-| `bun run test:perf` | PASS | `yokozunaPromotionAutoSim` still green post-R11 |
-| `bun run build` | PASS | |
-| `scripts/purity-lint.sh` | PASS | |
-| `bun run test:e2e` | 5/5 PASS | earlier run; `NoActiveBashoEmpty` now fixed |
-| `bun run simulate` | PASS | |
+| Gate                     | Result   | Notes                                           |
+| ------------------------ | -------- | ----------------------------------------------- |
+| `bun run type-check`     | PASS     | clean across all files                          |
+| `bun run lint:strict`    | PASS     | 0 errors                                        |
+| `bun run test`           | PASS     | includes 2 new R11 adaptive-torikumi tests      |
+| `bun run test:perf`      | PASS     | `yokozunaPromotionAutoSim` still green post-R11 |
+| `bun run build`          | PASS     |                                                 |
+| `scripts/purity-lint.sh` | PASS     |                                                 |
+| `bun run test:e2e`       | 5/5 PASS | earlier run; `NoActiveBashoEmpty` now fixed     |
+| `bun run simulate`       | PASS     |                                                 |
 
 ### Gate matrix at initial verdict (superseded by above)
 
-| Gate | Result | Notes |
-|------|--------|-------|
-| `bun run test` | 8,687 pass / 9 fail | All 9 failures in parallel-session files (`GovernancePage` surface rewrite, `BanzukePublisher` attendant wiring, `npcAI/execution.ts` length drift, `TalentPoolNPCRecruitment` over-budget); `foreignCount` was mid-edit transient — green in isolation |
-| `bun run test:slow` | 56 pass / 1 fail | `lintStrictGate` — driven by parallel-session eslint debt |
-| `bun run test:perf` | 11 pass / 0 fail | `yokozunaPromotionAutoSim` fixed by B15 |
-| `bun run type-check` | FAIL | All errors in parallel-session files (`npcAI/*`, characterization tests, `BashoPage.tsx`, `scripts/*`); every file this audit touched type-checks clean |
-| `bun run lint:strict` | FAIL (11) | All 11 in parallel-session files (`scripts/analyzeNarrativeDeps`, `emitNarrativeModules`, `npcAI/*`); audit-touched files lint-clean |
+| Gate                  | Result              | Notes                                                                                                                                                                                                                                                   |
+| --------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run test`        | 8,687 pass / 9 fail | All 9 failures in parallel-session files (`GovernancePage` surface rewrite, `BanzukePublisher` attendant wiring, `npcAI/execution.ts` length drift, `TalentPoolNPCRecruitment` over-budget); `foreignCount` was mid-edit transient — green in isolation |
+| `bun run test:slow`   | 56 pass / 1 fail    | `lintStrictGate` — driven by parallel-session eslint debt                                                                                                                                                                                               |
+| `bun run test:perf`   | 11 pass / 0 fail    | `yokozunaPromotionAutoSim` fixed by B15                                                                                                                                                                                                                 |
+| `bun run type-check`  | FAIL                | All errors in parallel-session files (`npcAI/*`, characterization tests, `BashoPage.tsx`, `scripts/*`); every file this audit touched type-checks clean                                                                                                 |
+| `bun run lint:strict` | FAIL (11)           | All 11 in parallel-session files (`scripts/analyzeNarrativeDeps`, `emitNarrativeModules`, `npcAI/*`); audit-touched files lint-clean                                                                                                                    |
 
 ## Registered-not-fixed findings — FINAL STATE
 
@@ -111,7 +112,7 @@ All registered findings are now FIXED, VERIFIED-CLOSED, or disproved:
   `prepare`; `npx tsx` removed from CI; every `scripts/` file verified
   live and documented in `scripts/README.md`; **actions SHA-pinned**
   (`checkout`, `setup-bun`); **e2e workflow added** (`.github/workflows/
-  e2e.yml` — smoke gates PRs, soak nightly); **concurrency groups** on
+e2e.yml` — smoke gates PRs, soak nightly); **concurrency groups** on
   all PR-gating workflows; `.env.example` realigned to actual consumers
   (`GEMINI_MODEL_PRIMARY`/`_FALLBACK`, `VITE_GEMINI_API_KEY`); stale skill
   files repointed (`run-sim`, `test-specific-domain`,

@@ -6,7 +6,6 @@ import { findFiles } from "@/tests/helpers/fsScan";
 const ROOT = join(__dirname, "../../../..");
 const SRC = join(ROOT, "src");
 
-
 function isTestFile(filePath: string): boolean {
   return (
     filePath.includes(".test.") || filePath.includes(".spec.") || filePath.includes("__tests__")

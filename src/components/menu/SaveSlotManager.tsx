@@ -6,11 +6,7 @@
  * Sections live in ./SaveSlotManagerSections.tsx.
  */
 
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Database, History } from "lucide-react";
 import { useSaveSlotManager, type UseSaveSlotManagerProps } from "@/hooks/useSaveSlotManager";

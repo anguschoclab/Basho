@@ -94,11 +94,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     BUILD_FOREIGN_ACADEMY: (cmd) => {
       if (rt.world) {
-        const impact = WorldCircuitService.buildForeignAcademy(
-          rt.world,
-          cmd.heyaId,
-          cmd.region
-        );
+        const impact = WorldCircuitService.buildForeignAcademy(rt.world, cmd.heyaId, cmd.region);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

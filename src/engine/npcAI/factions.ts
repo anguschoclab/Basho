@@ -25,8 +25,7 @@ function strongestOutsider(world: WorldState, ichimon: IchimonName): string | un
   const scored: { id: string; score: number }[] = [];
   for (const heya of world.heyas.values()) {
     if (heya.ichimon === ichimon) continue;
-    const score =
-      (heya.prestige ?? heya.reputation ?? 0) + (heya.politicalCapital ?? 0) * 0.5;
+    const score = (heya.prestige ?? heya.reputation ?? 0) + (heya.politicalCapital ?? 0) * 0.5;
     scored.push({ id: heya.id, score });
   }
   scored.sort((a, b) => (b.score !== a.score ? b.score - a.score : a.id.localeCompare(b.id)));
@@ -47,8 +46,7 @@ export function electFactionPostures(
     const leaderHeya = leader ? world.heyas.get(leader.heyaId) : undefined;
     if (!leaderHeya) continue;
 
-    const fragile =
-      leaderHeya.runwayBand === "desperate" || leaderHeya.runwayBand === "critical";
+    const fragile = leaderHeya.runwayBand === "desperate" || leaderHeya.runwayBand === "critical";
     const dominant = leader?.capitalBand === "dominant";
 
     const posture: FactionPosture["posture"] = fragile

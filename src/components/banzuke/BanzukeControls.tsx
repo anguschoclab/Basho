@@ -76,11 +76,7 @@ export function BanzukeControlsRow({
                 side="top"
               >
                 <div className="flex items-center gap-2">
-                  <Switch
-                    id="show-changes"
-                    checked={showChanges}
-                    onCheckedChange={onShowChanges}
-                  />
+                  <Switch id="show-changes" checked={showChanges} onCheckedChange={onShowChanges} />
                   <Label
                     htmlFor="show-changes"
                     className="text-xs text-muted-foreground cursor-pointer"

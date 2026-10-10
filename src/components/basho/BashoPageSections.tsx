@@ -37,10 +37,7 @@ import {
   ChevronDown,
   Globe,
 } from "lucide-react";
-import {
-  getTotalBashodays,
-  needsScheduleForDay,
-} from "@/presenters/uiDigest";
+import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Division } from "@/engine/types/banzuke";
 import type { BashoName } from "@/engine/types/basho";

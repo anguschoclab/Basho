@@ -152,9 +152,7 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
   if (snap.negativeHeyas > 0)
     issues.push(`WARN: ${snap.negativeHeyas} heyas insolvent: ${snap.insolventHeyas.join(", ")}`);
   if (snap.foreignSlotViolations.length > 0)
-    issues.push(
-      `ERROR: foreign-slot limit violated: ${snap.foreignSlotViolations.join(", ")}`
-    );
+    issues.push(`ERROR: foreign-slot limit violated: ${snap.foreignSlotViolations.join(", ")}`);
   if (snap.heyaCount < 3) issues.push(`ERROR: Heya count collapsed to ${snap.heyaCount}`);
   if (snap.avgAge > 35) issues.push(`WARN: Avg rikishi age ${snap.avgAge} — roster aging out`);
   if (snap.avgAge < 18) issues.push(`WARN: Avg age ${snap.avgAge} — suspiciously young`);

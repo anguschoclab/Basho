@@ -4,13 +4,13 @@ Generated: 2026-10-08 · Implements `docs/test-suite-optimization-plan.md`
 
 ## Measured outcome
 
-| Metric                               | Before                                  | After           | Method                                                            |
-| ------------------------------------ | --------------------------------------- | --------------- | ----------------------------------------------------------------  |
-| `bun run test` wall clock            | ~50+ min baseline → 66s post-vmThreads  | **~25s**        | `vmThreads` + `fileParallelism` + `fsModuleCache`                 |
-| `bun run test:slow` (hook-inclusive) | 511s                                    | **174s**        | In-file consolidation (see below)                                 |
-| `bun run test:perf`                  | —                                       | 129.5s          | measured; **1 pre-existing failure** noted below                  |
-| Fast suite size                      | 864 files                               | 866 files       | +3 meta gates, +moved files                                       |
-| Dead subjects found                  | —                                       | **0 deletions** | `find-dead-test-subjects.ts` (1 intentional pin: `menu-core.tsx`) |
+| Metric                               | Before                                 | After           | Method                                                            |
+| ------------------------------------ | -------------------------------------- | --------------- | ----------------------------------------------------------------- |
+| `bun run test` wall clock            | ~50+ min baseline → 66s post-vmThreads | **~25s**        | `vmThreads` + `fileParallelism` + `fsModuleCache`                 |
+| `bun run test:slow` (hook-inclusive) | 511s                                   | **174s**        | In-file consolidation (see below)                                 |
+| `bun run test:perf`                  | —                                      | 129.5s          | measured; **1 pre-existing failure** noted below                  |
+| Fast suite size                      | 864 files                              | 866 files       | +3 meta gates, +moved files                                       |
+| Dead subjects found                  | —                                      | **0 deletions** | `find-dead-test-subjects.ts` (1 intentional pin: `menu-core.tsx`) |
 
 **Pre-existing failure (not from this work):**
 `src/tests/perf/yokozunaPromotionAutoSim.perf.test.ts` fails deterministically —

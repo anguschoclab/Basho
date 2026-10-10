@@ -11,10 +11,7 @@ import type { EngineEvent } from "@/engine/types/events";
 import { getHeya } from "@/presenters/worldAccess";
 
 /** Events belonging to the basho wrap-up phase (optionally one basho). */
-export function getBashoWrapEvents(
-  events: EngineEvent[],
-  bashoNumber?: number
-): EngineEvent[] {
+export function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {
   return events
     .filter(
       (e) =>
@@ -98,9 +95,7 @@ export function getPrestigeChanges(
 }
 
 /** Transform EngineEvent groups into the shape expected by NarrativeSummary. */
-export function toNarrativeGroupedEvents(
-  groupedEvents: ReturnType<typeof groupEventsByNarrative>
-) {
+export function toNarrativeGroupedEvents(groupedEvents: ReturnType<typeof groupEventsByNarrative>) {
   return {
     promotions: groupedEvents.promotions.map((e) => ({
       title: e.title,

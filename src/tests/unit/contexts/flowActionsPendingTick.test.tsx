@@ -49,8 +49,7 @@ describe("useFlowActions — world-mutating dispatchers vs pendingTick", () => {
     ["endBasho", (f: ReturnType<typeof useFlowActions>) => f.endBasho()],
     [
       "setBoutTactic",
-      (f: ReturnType<typeof useFlowActions>) =>
-        f.setBoutTactic("b1", "attack" as never),
+      (f: ReturnType<typeof useFlowActions>) => f.setBoutTactic("b1", "attack" as never),
     ],
   ])("drops %s mid-tick instead of letting the write be reverted", (label, invoke) => {
     useGameStore.setState({ pendingTick: true });

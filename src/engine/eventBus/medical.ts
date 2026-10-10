@@ -13,7 +13,11 @@ import { enrichEventContext } from "./context";
  * @param importance - Importance level of the event
  * @returns The logged engine event
  */
-export function medicalReportBase(world: WorldState, ctx: NarrativeContext, importance: EventImportance) {
+export function medicalReportBase(
+  world: WorldState,
+  ctx: NarrativeContext,
+  importance: EventImportance
+) {
   ctx = enrichEventContext(world, ctx);
   const rng = createRngForEvent(world, `medical-${ctx.rikishiId}-${ctx.status}`);
   const titleRes = BardEngine.resolve(rng, "events.medical.title", ctx);

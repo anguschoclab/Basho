@@ -57,11 +57,11 @@ describe("NarrativeProse", () => {
         getPotentialInfo(rng, input as any);
         expect(BardEngine.resolve).toHaveBeenCalledWith(
           rng,
-          `rikishi.descriptors.potential.${expected}.label`,
+          `rikishi.descriptors.potential.${expected}.label`
         );
         expect(BardEngine.resolve).toHaveBeenCalledWith(
           rng,
-          `rikishi.descriptors.potential.${expected}.tooltip`,
+          `rikishi.descriptors.potential.${expected}.tooltip`
         );
       }
     });
@@ -87,7 +87,7 @@ describe("NarrativeProse", () => {
         getScandalLabel(rng, input as any);
         expect(BardEngine.resolve).toHaveBeenCalledWith(
           rng,
-          `system.descriptors.bands.scandal.${expected}`,
+          `system.descriptors.bands.scandal.${expected}`
         );
       }
     });
@@ -101,7 +101,7 @@ describe("NarrativeProse", () => {
       getScandalLabel(rng, "unknown_band" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        `system.descriptors.bands.scandal.unknown_band`,
+        `system.descriptors.bands.scandal.unknown_band`
       );
     });
   });
@@ -127,11 +127,11 @@ describe("NarrativeProse", () => {
         getArchetypeInfo(rng, input);
         expect(BardEngine.resolve).toHaveBeenCalledWith(
           rng,
-          `rikishi.archetypes.${expected}.label`,
+          `rikishi.archetypes.${expected}.label`
         );
         expect(BardEngine.resolve).toHaveBeenCalledWith(
           rng,
-          `rikishi.archetypes.${expected}.description`,
+          `rikishi.archetypes.${expected}.description`
         );
       }
     });
@@ -148,23 +148,23 @@ describe("NarrativeProse", () => {
       getFatigueLabel(rng, "exhausted" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        `system.descriptors.bands.fatigue.exhausted`,
+        `system.descriptors.bands.fatigue.exhausted`
       );
 
       getRivalryHeatLabel(rng, "grudge" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        `system.descriptors.bands.rivalry.grudge`,
+        `system.descriptors.bands.rivalry.grudge`
       );
 
       hydrateDescriptor(rng, "condition", "prime");
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        `rikishi.descriptors.condition.prime.label`,
+        `rikishi.descriptors.condition.prime.label`
       );
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        `rikishi.descriptors.condition.prime.tooltip`,
+        `rikishi.descriptors.condition.prime.tooltip`
       );
     });
   });
@@ -179,13 +179,10 @@ describe("NarrativeProse", () => {
       });
 
       const result = getStatProse(rng, "strength", "legendary" as any);
+      expect(BardEngine.resolve).toHaveBeenCalledWith(rng, "rikishi.stats.power.legendary");
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        "rikishi.stats.power.legendary",
-      );
-      expect(BardEngine.resolve).toHaveBeenCalledWith(
-        rng,
-        "system.descriptors.bands.stats.legendary",
+        "system.descriptors.bands.stats.legendary"
       );
       expect(result).toBe("Fallback Label");
     });
@@ -199,10 +196,7 @@ describe("NarrativeProse", () => {
       });
 
       const result = getStatProse(rng, "speed", "abysmal" as any);
-      expect(BardEngine.resolve).toHaveBeenCalledWith(
-        rng,
-        "rikishi.stats.speed.abysmal",
-      );
+      expect(BardEngine.resolve).toHaveBeenCalledWith(rng, "rikishi.stats.speed.abysmal");
       expect(result).toBe("Specific Prose");
     });
   });
@@ -218,67 +212,52 @@ describe("NarrativeProse", () => {
       getStatLabel(rng, "legendary" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        "system.descriptors.bands.stats.legendary",
+        "system.descriptors.bands.stats.legendary"
       );
 
       getMomentumLabel(rng, "unstoppable" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        "system.descriptors.bands.momentum.unstoppable",
+        "system.descriptors.bands.momentum.unstoppable"
       );
 
       getPrizeLabel(rng, "yusho" as any);
-      expect(BardEngine.resolve).toHaveBeenCalledWith(
-        rng,
-        "system.descriptors.bands.prizes.yusho",
-      );
+      expect(BardEngine.resolve).toHaveBeenCalledWith(rng, "system.descriptors.bands.prizes.yusho");
 
       getTraitLabel(rng, "iron_will" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        "system.descriptors.bands.traits.iron_will",
+        "system.descriptors.bands.traits.iron_will"
       );
 
       getAgeLabel(rng, "veteran" as any);
-      expect(BardEngine.resolve).toHaveBeenCalledWith(
-        rng,
-        "system.descriptors.bands.age.veteran",
-      );
+      expect(BardEngine.resolve).toHaveBeenCalledWith(rng, "system.descriptors.bands.age.veteran");
 
       getExperienceLabel(rng, "seasoned" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        "system.descriptors.bands.experience.seasoned",
+        "system.descriptors.bands.experience.seasoned"
       );
 
       getWeightLabel(rng, "heavy" as any);
-      expect(BardEngine.resolve).toHaveBeenCalledWith(
-        rng,
-        "system.descriptors.bands.weight.heavy",
-      );
+      expect(BardEngine.resolve).toHaveBeenCalledWith(rng, "system.descriptors.bands.weight.heavy");
 
       getHeightLabel(rng, "tall" as any);
-      expect(BardEngine.resolve).toHaveBeenCalledWith(
-        rng,
-        "system.descriptors.bands.height.tall",
-      );
+      expect(BardEngine.resolve).toHaveBeenCalledWith(rng, "system.descriptors.bands.height.tall");
 
       getReputationLabel(rng, "respected" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        "system.descriptors.bands.reputation.respected",
+        "system.descriptors.bands.reputation.respected"
       );
 
       getInjurySeverityLabel(rng, "minor" as any);
-      expect(BardEngine.resolve).toHaveBeenCalledWith(
-        rng,
-        "system.descriptors.bands.injury.minor",
-      );
+      expect(BardEngine.resolve).toHaveBeenCalledWith(rng, "system.descriptors.bands.injury.minor");
 
       getWinRateLabel(rng, "dominant" as any);
       expect(BardEngine.resolve).toHaveBeenCalledWith(
         rng,
-        "system.descriptors.bands.winrate.dominant",
+        "system.descriptors.bands.winrate.dominant"
       );
     });
   });

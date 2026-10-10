@@ -87,4 +87,3 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
     hasHighRisk: injuryRiskHighCount > 0 || injuredCount > 0,
   };
 }
-
