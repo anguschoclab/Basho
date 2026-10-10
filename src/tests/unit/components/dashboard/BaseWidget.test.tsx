@@ -114,4 +114,30 @@ describe("BaseWidget", () => {
       expect(btn.getAttribute("aria-label")).toBe("Expand");
     });
   });
+
+  describe("onInteract keyboard activation", () => {
+    it("fires on Enter on the widget itself", () => {
+      const onInteract = vi.fn();
+      renderWidget({ onInteract });
+      fireEvent.keyDown(screen.getByRole("button", { name: "Test Widget" }), { key: "Enter" });
+      expect(onInteract).toHaveBeenCalledTimes(1);
+    });
+
+    it("fires on Space on the widget itself", () => {
+      const onInteract = vi.fn();
+      renderWidget({ onInteract });
+      fireEvent.keyDown(screen.getByRole("button", { name: "Test Widget" }), { key: " " });
+      expect(onInteract).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores Enter bubbled up from a child button", () => {
+      const onInteract = vi.fn();
+      renderWidget({
+        onInteract,
+        headerAction: { label: "More", onClick: vi.fn() },
+      });
+      fireEvent.keyDown(screen.getByRole("button", { name: "More" }), { key: "Enter" });
+      expect(onInteract).not.toHaveBeenCalled();
+    });
+  });
 });

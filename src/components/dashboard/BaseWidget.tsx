@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { type LucideIcon, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { activationKeyHandler } from "@/lib/a11y";
 
 export interface BaseWidgetAction {
   label: string;
@@ -54,12 +55,7 @@ export function BaseWidget({
       role={onInteract ? "button" : undefined}
       aria-label={onInteract ? title : undefined}
       tabIndex={onInteract ? 0 : undefined}
-      onKeyDown={(e) => {
-        if (onInteract && e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          onInteract();
-        }
-      }}
+      onKeyDown={onInteract ? activationKeyHandler(onInteract, { selfOnly: true }) : undefined}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
