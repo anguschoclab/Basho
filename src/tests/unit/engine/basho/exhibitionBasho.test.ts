@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import * as rngModule from "@/engine/rng";
 import {
   isExhibitionBasho,
   isHonbasho,
@@ -137,5 +138,58 @@ describe("simulateExhibitionBasho", () => {
   it("rivalry seed chance is configured", () => {
     expect(EXHIBITION_RIVALRY_SEED_CHANCE).toBeGreaterThan(0);
     expect(EXHIBITION_RIVALRY_SEED_CHANCE).toBeLessThan(1.0);
+  });
+
+  it("applies fatigue penalty on injury when RNG is under threshold", () => {
+    const r1 = mockRikishi("r-1", {
+      shikona: "Rikishi 1",
+      fatigue: 0,
+      economics: { cash: 1000, popularity: 50 } as any,
+    });
+    const world = makeMockWorld({
+      rikishi: new Map([[r1.id, r1]]),
+    });
+    // Force RNG to always return 0 to trigger injury branch
+    vi.spyOn(rngModule, "rngForWorld").mockReturnValue({ next: () => 0 } as any);
+
+    const impact = simulateExhibitionBasho(world, "february-jungyo", [r1]);
+    const updated = resolveImpacts(world, [impact]);
+    const updatedR1 = updated.rikishi.get("r-1");
+    // EXHIBITION_INJURY_FATIGUE_PENALTY is 2
+    expect(updatedR1?.fatigue).toBe(2);
+
+    vi.restoreAllMocks();
+  });
+
+  it("seeds rivalry when RNG is under threshold and there are valid rivals", () => {
+    const r1 = mockRikishi("r-1", {
+      shikona: "Rikishi 1",
+      heyaId: "heya-1",
+      economics: { cash: 1000, popularity: 50 } as any,
+    });
+    const r2 = mockRikishi("r-2", {
+      shikona: "Rikishi 2",
+      heyaId: "heya-2",
+      economics: { cash: 1000, popularity: 50 } as any,
+    });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [r1.id, r1],
+        [r2.id, r2],
+      ]),
+    });
+    // Force RNG to always return 0 to trigger rivalry branch
+    vi.spyOn(rngModule, "rngForWorld").mockReturnValue({ next: () => 0 } as any);
+
+    const impact = simulateExhibitionBasho(world, "february-jungyo", [r1, r2]);
+    // The rivalry event should be logged for r1 targeting r2
+    const events = impact.events || [];
+    const rivalryEvent = events.find((e) => e.type === "LIFECYCLE_EVENT" && e.category === "rivalry");
+    expect(rivalryEvent).toBeDefined();
+    expect(rivalryEvent?.data.rikishiId).toBe("r-1");
+    expect(rivalryEvent?.data.rivalId).toBe("r-2");
+    expect(rivalryEvent?.data.status).toBe("exhibition_rivalry_seeded");
+
+    vi.restoreAllMocks();
   });
 });
