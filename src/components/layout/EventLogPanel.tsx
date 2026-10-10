@@ -22,17 +22,20 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const [filter, setFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
 
-  const events = useMemo(() => {
-    if (!eventLogData?.events) return [];
-    const all = [...eventLogData.events];
-    all.reverse();
-    return all.slice(0, 100);
-  }, [eventLogData?.events]);
-
   const filteredEvents = useMemo(() => {
-    if (filter === "all") return events;
-    return events.filter((e) => e.category === filter);
-  }, [events, filter]);
+    const log = eventLogData?.events;
+    if (!log) return [];
+
+    // ⚡ Bolt: Iterate backwards and break early to avoid O(N) array copy and filter overhead
+    const out: EngineEvent[] = [];
+    for (let i = log.length - 1; i >= 0; i--) {
+      if (out.length >= 100) break;
+      const e = log[i];
+      if (filter !== "all" && e.category !== filter) continue;
+      out.push(e);
+    }
+    return out;
+  }, [eventLogData?.events, filter]);
 
   const grouped = useMemo(() => {
     const groups: EventGroup[] = [];

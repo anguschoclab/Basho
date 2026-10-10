@@ -97,29 +97,32 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
   const events = useMemo(() => {
     const allEvents = workerWorld?.events?.log || [];
     const filterSet = filterTypes ? new Set(filterTypes) : null;
-    let filtered = filterSet
-      ? allEvents.filter((e: EngineEvent) => filterSet.has(e.type))
-      : allEvents;
 
-    if (minImportance) {
-      const impMap: Record<EventImportance, number> = {
-        minor: 0,
-        notable: 1,
-        major: 2,
-        headline: 3,
-      };
-      const minVal = impMap[minImportance];
-      filtered = filtered.filter((e: EngineEvent) => impMap[e.importance || "minor"] >= minVal);
+    const impMap: Record<EventImportance, number> = {
+      minor: 0,
+      notable: 1,
+      major: 2,
+      headline: 3,
+    };
+    const minVal = minImportance ? impMap[minImportance] : -1;
+
+    // ⚡ Bolt: Iterate backwards and break early to avoid O(N) filtering of the full event log array
+    const out: EngineEvent[] = [];
+    for (let i = allEvents.length - 1; i >= 0; i--) {
+      if (out.length >= maxEvents) break;
+      const e = allEvents[i];
+      if (filterSet && !filterSet.has(e.type)) continue;
+      if (minVal >= 0 && impMap[e.importance || "minor"] < minVal) continue;
+      out.push(e);
     }
 
-    // Sort by most recent first
-    filtered = [...filtered].sort((a, b) => {
+    out.sort((a, b) => {
       if (a.year !== b.year) return b.year - a.year;
       if (a.week !== b.week) return b.week - a.week;
       return 0;
     });
 
-    return filtered.slice(0, maxEvents);
+    return out;
   }, [workerWorld?.events?.log, maxEvents, filterTypes, minImportance]);
 
   return (
