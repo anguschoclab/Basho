@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 
 vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) =>
@@ -18,6 +18,11 @@ vi.mock("@/components/governance/RivalOyakataCard", () => ({
 
 vi.mock("@/components/npc/NPCAgentFeed", () => ({
   NPCAgentFeed: () => React.createElement("div", { "data-testid": "npc-agent-feed" }),
+}));
+
+vi.mock("@/components/governance/OyakataProfileDrawer", () => ({
+  OyakataProfileDrawer: ({ open }: any) =>
+    open ? React.createElement("div", { "data-testid": "rival-profile-drawer" }) : null,
 }));
 
 vi.mock("@/presenters/npcAgentProjections", () => ({
@@ -76,5 +81,21 @@ describe("RivalStablesPage", () => {
     render(<RivalStablesPage />);
     expect(screen.getByTestId("rival-oyakata-card-rival-1")).toBeDefined();
     expect(screen.getByTestId("rival-oyakata-card-rival-2")).toBeDefined();
+  });
+
+  it("pressing Enter on a rival card opens the profile drawer", () => {
+    mockUseGame.mockReturnValue({ state: { world: { seed: "test", heyas: new Map() } } });
+    const { container } = render(<RivalStablesPage />);
+    const card = container.querySelector('[role="button"]')!;
+    fireEvent.keyDown(card, { key: "Enter" });
+    expect(screen.getByTestId("rival-profile-drawer")).toBeDefined();
+  });
+
+  it("pressing Space on a rival card opens the profile drawer", () => {
+    mockUseGame.mockReturnValue({ state: { world: { seed: "test", heyas: new Map() } } });
+    const { container } = render(<RivalStablesPage />);
+    const card = container.querySelector('[role="button"]')!;
+    fireEvent.keyDown(card, { key: " " });
+    expect(screen.getByTestId("rival-profile-drawer")).toBeDefined();
   });
 });

@@ -41,7 +41,7 @@ export function GovernancePoliticsTab({ world, heya, derived }: Props) {
   return (
     <TabsContent value="politics" className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <PoliticalStanding world={world} heya={heya} />
+        <PoliticalStanding heya={heya} />
         <PoliticalFavorsList heya={heya} />
         <IchimonRankings world={world} heya={heya} derived={derived} />
       </div>
@@ -49,8 +49,15 @@ export function GovernancePoliticsTab({ world, heya, derived }: Props) {
   );
 }
 
-function PoliticalStanding({ world, heya }: { world: WorldState; heya: Heya }) {
+function PoliticalStanding({ heya }: { heya: Heya }) {
   const { spendPoliticalCapital } = useGame();
+  const handleSpend = () => {
+    if ((heya.politicalCapital ?? 0) >= 100) {
+      spendPoliticalCapital(heya.id, 100);
+      return;
+    }
+    toast.error("Not enough Political Capital (need 100).");
+  };
   return (
     <div className="space-y-4">
       <SectionHeader eyebrow="── CAPITAL ──" title="Your Political Standing" />
@@ -69,13 +76,7 @@ function PoliticalStanding({ world, heya }: { world: WorldState; heya: Heya }) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              if (heya && (heya.politicalCapital ?? 0) >= 100 && world) {
-                spendPoliticalCapital(heya.id, 100);
-              } else {
-                toast.error("Not enough Political Capital (need 100).");
-              }
-            }}
+            onClick={handleSpend}
             disabled={(heya.politicalCapital ?? 0) < 100}
             tooltip={
               (heya.politicalCapital ?? 0) < 100

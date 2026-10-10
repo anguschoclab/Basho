@@ -89,6 +89,25 @@ describe("ListCard", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
+  it("calls onClick handler on Enter and Space keydown", () => {
+    const onClick = vi.fn();
+    const rows: ListRow[] = [{ id: "r1", label: "Keyable", onClick }];
+    render(<ListCard eyebrow="E" title="T" rows={rows} />);
+    const row = screen.getByText("Keyable").closest("div")!;
+    fireEvent.keyDown(row, { key: "Enter" });
+    fireEvent.keyDown(row, { key: " " });
+    expect(onClick).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignores non-activation keys on rows", () => {
+    const onClick = vi.fn();
+    const rows: ListRow[] = [{ id: "r1", label: "Keyable", onClick }];
+    render(<ListCard eyebrow="E" title="T" rows={rows} />);
+    const row = screen.getByText("Keyable").closest("div")!;
+    fireEvent.keyDown(row, { key: "Tab" });
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
   it("adds cursor-pointer class when row has onClick", () => {
     const rows: ListRow[] = [{ id: "r1", label: "Clickable", onClick: vi.fn() }];
     const { container } = render(<ListCard eyebrow="E" title="T" rows={rows} />);

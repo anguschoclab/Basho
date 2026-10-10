@@ -387,17 +387,18 @@ export const StablePerceptionCard = React.memo(
     onToggleCompare: (id: string) => void;
     onNavigate: (id: string) => void;
   }) => {
+    const handleClick = (e: React.MouseEvent) => {
+      if (comparing) {
+        e.preventDefault();
+        onToggleCompare(snap.heyaId);
+        return;
+      }
+      onNavigate(snap.heyaId);
+    };
     return (
       <Card
         className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
-        onClick={(e) => {
-          if (comparing) {
-            e.preventDefault();
-            onToggleCompare(snap.heyaId);
-          } else {
-            onNavigate(snap.heyaId);
-          }
-        }}
+        onClick={handleClick}
       >
         <CardContent className="p-3">
           <div className="flex items-start justify-between gap-3">

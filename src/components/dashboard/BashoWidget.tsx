@@ -8,6 +8,23 @@ import { BaseWidget } from "./BaseWidget";
 import { selectInjuredRikishi } from "@/presenters/selectors";
 import { sortStandings } from "@/presenters/engineAccess";
 import { EmptyState } from "@/components/ui/EmptyState";
+import type { BashoState } from "@/engine/types/basho";
+
+type BashoMatch = BashoState["matches"][number];
+
+/** Single-pass tally of bout outcomes for the leaderboard header stats. */
+function countMatchOutcomes(matches: BashoMatch[]) {
+  let bouts = 0;
+  let kinboshi = 0;
+  let upsets = 0;
+  for (const m of matches) {
+    if (!m.result) continue;
+    bouts++;
+    if ((m.result as { isKinboshi?: boolean })?.isKinboshi) kinboshi++;
+    if (m.result?.upset) upsets++;
+  }
+  return { bouts, kinboshi, upsets };
+}
 
 const LeaderboardRow = React.memo(
   ({
@@ -72,18 +89,8 @@ export function BashoWidget() {
     const matches = basho.matches || [];
 
     // ⚡ Bolt Performance Optimization: Single-pass loops to avoid allocating intermediate arrays
-    let completedCount = 0;
-    let kinboshi = 0;
-    let upsets = 0;
+    const { bouts: completedCount, kinboshi, upsets } = countMatchOutcomes(matches);
     const injuries = selectInjuredRikishi(world).length;
-
-    for (const m of matches) {
-      if (m.result) {
-        completedCount++;
-        if ((m.result as { isKinboshi?: boolean })?.isKinboshi) kinboshi++;
-        if (m.result?.upset) upsets++;
-      }
-    }
 
     const standingsArr = sortStandings(
       Array.from(basho.standings.entries()).map(([id, rec]) => ({ id, ...rec }))
@@ -164,28 +171,22 @@ export function BashoWidget() {
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1 mb-1">
           Leaderboard
         </div>
-        {(() => {
-          const limit = stats.top5.length;
-          const nodes = new Array(limit);
-          for (let i = 0; i < limit; i++) {
-            const s = stats.top5[i];
-            const r = world.rikishi.get(s.id);
-            if (!r) continue;
-            const isPlayer = r.heyaId === world.playerHeyaId;
-            nodes[i] = (
-              <LeaderboardRow
-                key={s.id}
-                id={r.id}
-                shikona={r.shikona}
-                wins={s.wins}
-                losses={s.losses}
-                i={i}
-                isPlayer={isPlayer}
-              />
-            );
-          }
-          return nodes;
-        })()}
+        {stats.top5.flatMap((s, i) => {
+          const r = world.rikishi.get(s.id);
+          return r
+            ? [
+                <LeaderboardRow
+                  key={s.id}
+                  id={r.id}
+                  shikona={r.shikona}
+                  wins={s.wins}
+                  losses={s.losses}
+                  i={i}
+                  isPlayer={r.heyaId === world.playerHeyaId}
+                />,
+              ]
+            : [];
+        })}
       </div>
     </BaseWidget>
   );

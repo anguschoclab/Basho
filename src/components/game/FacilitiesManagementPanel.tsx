@@ -23,6 +23,18 @@ interface FacilitiesManagementPanelProps {
 
 const AXES: FacilityAxis[] = ["training", "recovery", "nutrition"];
 
+/** First facility axis whose level increased between renders, or null. */
+function detectFacilityUpgrade(prev: Heya, heya: Heya): UpgradeToast | null {
+  for (const axis of AXES) {
+    const oldLevel = prev.facilities[axis] ?? 0;
+    const newLevel = heya.facilities[axis] ?? 0;
+    if (newLevel > oldLevel) {
+      return { axis, oldLevel, newLevel, cost: prev.funds - heya.funds };
+    }
+  }
+  return null;
+}
+
 /**
  * facilities management panel.
  *  * @param { heya, isOwner, onUpgrade } - The component props.
@@ -39,17 +51,8 @@ export function FacilitiesManagementPanel({
   // Detect heya changes from WORLD_UPDATED and derive toast from real world diff
   useEffect(() => {
     const prev = prevHeyaRef.current;
-    if (prev) {
-      for (const axis of AXES) {
-        const oldLevel = prev.facilities[axis] ?? 0;
-        const newLevel = heya.facilities[axis] ?? 0;
-        if (newLevel > oldLevel) {
-          const cost = prev.funds - heya.funds;
-          setToast({ axis, oldLevel, newLevel, cost });
-          break;
-        }
-      }
-    }
+    const upgrade = prev ? detectFacilityUpgrade(prev, heya) : null;
+    if (upgrade) setToast(upgrade);
     prevHeyaRef.current = heya;
   }, [heya]);
 

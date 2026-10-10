@@ -24,21 +24,19 @@ export function InstitutionWidget() {
     );
   }
 
+  const data = projectHeyaData(world, heya.id);
+
   return (
     <BaseWidget title="Institution" icon={Building2} className="h-full">
       <div className="p-0">
-        {(() => {
-          const data = projectHeyaData(world, heya.id);
-          if (!data) return null;
-          return (
-            <InstitutionPanel
-              heya={heya}
-              oyakata={data.oyakata}
-              oyakataQuirks={data.oyakataQuirks}
-              oyakataTraits={data.oyakataTraits}
-            />
-          );
-        })()}
+        {data && (
+          <InstitutionPanel
+            heya={heya}
+            oyakata={data.oyakata}
+            oyakataQuirks={data.oyakataQuirks}
+            oyakataTraits={data.oyakataTraits}
+          />
+        )}
       </div>
     </BaseWidget>
   );

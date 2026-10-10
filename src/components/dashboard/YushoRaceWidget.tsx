@@ -16,6 +16,7 @@ import { getRikishiByDivision } from "@/presenters/engineAccess";
 import { sortStandings } from "@/presenters/engineAccess";
 import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishi";
 import type { Rikishi } from "@/engine/types/rikishi";
+import { activationKeyHandler } from "@/lib/a11y";
 
 interface YushoContenderProps {
   entry: UIRosterEntry;
@@ -41,12 +42,7 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
       role="button"
       aria-label={`View ${entry.shikona}`}
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          navigate({ to: "/rikishi", params: { id: entry.id } });
-        }
-      }}
+      onKeyDown={activationKeyHandler(() => navigate({ to: "/rikishi", params: { id: entry.id } }))}
     >
       {/* Avatar with medal */}
       <div className="relative">

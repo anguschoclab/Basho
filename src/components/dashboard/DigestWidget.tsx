@@ -23,6 +23,7 @@ import {
   Building2,
   Newspaper,
 } from "lucide-react";
+import { activationKeyHandler } from "@/lib/a11y";
 
 const KIND_ICON: Record<string, React.ElementType> = {
   training: TrendingUp,
@@ -72,16 +73,7 @@ const DigestItemRow = React.memo(
         aria-label={hasEntity ? title : undefined}
         tabIndex={hasEntity ? 0 : undefined}
         onClick={entityPath ? () => onNavigate(entityPath) : undefined}
-        onKeyDown={
-          entityPath
-            ? (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onNavigate(entityPath);
-                }
-              }
-            : undefined
-        }
+        onKeyDown={entityPath ? activationKeyHandler(() => onNavigate(entityPath)) : undefined}
       >
         <Icon className={`h-3 w-3 mt-0.5 shrink-0 ${color}`} />
         <div className="min-w-0">
@@ -114,25 +106,17 @@ const DigestSectionView = React.memo(
           {title}
         </div>
         <div className="space-y-1">
-          {(() => {
-            const limit = Math.min(DIGEST_WIDGET_MAX_ITEMS, items.length);
-            const nodes = new Array(limit);
-            for (let i = 0; i < limit; i++) {
-              const item = items[i];
-              nodes[i] = (
-                <DigestItemRow
-                  key={item.id}
-                  kind={item.kind}
-                  title={item.title}
-                  detail={item.detail}
-                  rikishiId={item.rikishiId}
-                  heyaId={item.heyaId}
-                  onNavigate={onNavigate}
-                />
-              );
-            }
-            return nodes;
-          })()}
+          {items.slice(0, DIGEST_WIDGET_MAX_ITEMS).map((item) => (
+            <DigestItemRow
+              key={item.id}
+              kind={item.kind}
+              title={item.title}
+              detail={item.detail}
+              rikishiId={item.rikishiId}
+              heyaId={item.heyaId}
+              onNavigate={onNavigate}
+            />
+          ))}
           {items.length > DIGEST_WIDGET_MAX_ITEMS && (
             <p className="text-[10px] text-muted-foreground pl-5">
               +{items.length - DIGEST_WIDGET_MAX_ITEMS} more
@@ -195,22 +179,14 @@ export function DigestWidget({ digest: digestProp, fullPage = false }: DigestWid
       ) : (
         <ScrollArea className={scrollHeight}>
           <div className="space-y-3 pr-3">
-            {(() => {
-              const limit = Math.min(maxSections, digest.sections.length);
-              const nodes = new Array(limit);
-              for (let i = 0; i < limit; i++) {
-                const section = digest.sections[i];
-                nodes[i] = (
-                  <DigestSectionView
-                    key={section.id}
-                    title={section.title}
-                    items={section.items}
-                    onNavigate={handleNavigate}
-                  />
-                );
-              }
-              return nodes;
-            })()}
+            {digest.sections.slice(0, maxSections).map((section) => (
+              <DigestSectionView
+                key={section.id}
+                title={section.title}
+                items={section.items}
+                onNavigate={handleNavigate}
+              />
+            ))}
           </div>
         </ScrollArea>
       )}

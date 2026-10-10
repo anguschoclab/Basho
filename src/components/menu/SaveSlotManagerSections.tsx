@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { activationKeyHandler } from "@/lib/a11y";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,12 +49,7 @@ function SaveSlotCard({
       role="button"
       aria-label={`Load save slot ${slot.slotName}`}
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onLoad(slot.slotName);
-        }
-      }}
+      onKeyDown={activationKeyHandler(() => onLoad(slot.slotName))}
     >
       <CardContent className="p-4 flex items-center justify-between">
         <div className="flex-1">

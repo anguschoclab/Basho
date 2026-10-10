@@ -16,6 +16,7 @@ import { KeshoBadge } from "@/components/kesho/KeshoBadge";
 import { RankBadge } from "./RankBadge";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import type { SortDirection } from "@/lib/sortUtils";
+import { activationKeyHandler } from "@/lib/a11y";
 
 const SORT_OPTIONS: SortOption[] = [
   { key: "rank", label: "Rank" },
@@ -98,12 +99,7 @@ export function RosterCard({
         role="button"
         aria-label={`View ${r.shikona}`}
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onRikishiClick(r.id);
-          }
-        }}
+        onKeyDown={activationKeyHandler(() => onRikishiClick(r.id))}
       >
         <div
           className={cn(

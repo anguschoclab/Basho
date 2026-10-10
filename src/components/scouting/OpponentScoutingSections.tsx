@@ -16,6 +16,7 @@ import { AttrChip } from "./AttrChip";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import type { SortDirection } from "@/lib/sortUtils";
 import type { projectOpponentScoutingUIDigest } from "@/presenters/uiDigest";
+import { activationKeyHandler } from "@/lib/a11y";
 
 type Opponent = ReturnType<typeof projectOpponentScoutingUIDigest>["opponents"][number];
 type ScoutingLevel = "none" | "light" | "standard" | "deep";
@@ -86,12 +87,7 @@ export function OpponentCard({
       tabIndex={0}
       aria-label={`View details for ${r.shikona}`}
       onClick={openProfile}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openProfile();
-        }
-      }}
+      onKeyDown={activationKeyHandler(openProfile)}
     >
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">

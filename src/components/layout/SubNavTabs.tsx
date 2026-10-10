@@ -26,6 +26,14 @@ export function SubNavTabs({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleSelect = (tab: SubNavTab) => {
+    if (tab.href) {
+      navigate({ to: tab.href });
+      return;
+    }
+    onTabChange?.(tab.id);
+  };
+
   return (
     <div className={cn("flex items-center h-11 gap-0 overflow-x-auto no-scrollbar", className)}>
       {/* Optional page title */}
@@ -49,13 +57,7 @@ export function SubNavTabs({
             <TooltipWrap key={tab.id} content={`View ${tab.label}`} side="bottom">
               <button
                 aria-current={isActive ? "page" : undefined}
-                onClick={() => {
-                  if (tab.href) {
-                    navigate({ to: tab.href });
-                  } else {
-                    onTabChange?.(tab.id);
-                  }
-                }}
+                onClick={() => handleSelect(tab)}
                 className={cn(
                   "relative h-full px-4 flex items-center transition-all duration-150 group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                   isActive

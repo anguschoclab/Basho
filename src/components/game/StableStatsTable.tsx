@@ -8,6 +8,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import { cn } from "@/lib/utils";
 import { useSortState } from "@/hooks/useSortState";
 import { compareBy } from "@/lib/sortUtils";
+import { activationKeyHandler } from "@/lib/a11y";
 
 interface StableStatsTableProps {
   rikishiList: UIRikishi[];
@@ -190,12 +191,7 @@ const TableHeader = React.memo(function TableHeader({
       role="button"
       aria-label={`Sort by ${label}`}
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick(id);
-        }
-      }}
+      onKeyDown={activationKeyHandler(() => onClick(id))}
     >
       <div className="flex items-center gap-2">
         {label}
@@ -222,12 +218,7 @@ const DivisionFilterBadge = React.memo(function DivisionFilterBadge({
       role="button"
       aria-label={`Filter by ${division}`}
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick(division);
-        }
-      }}
+      onKeyDown={activationKeyHandler(() => onClick(division))}
     >
       {division}
     </Badge>

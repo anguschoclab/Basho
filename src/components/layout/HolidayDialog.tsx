@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Plane, ShieldCheck } from "lucide-react";
 import type { HolidayTarget, SafetyGate, DelegationPolicy } from "@/engine/holiday";
+import { activationKeyHandler } from "@/lib/a11y";
 
 const TARGETS: { value: HolidayTarget; label: string }[] = [
   { value: "nextDay", label: "Next Day" },
@@ -98,12 +99,7 @@ export function HolidayDialog({
                 variant={gates.includes(g.value) ? "default" : "outline"}
                 className="cursor-pointer text-[10px] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
                 onClick={() => toggleGate(g.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleGate(g.value);
-                  }
-                }}
+                onKeyDown={activationKeyHandler(() => toggleGate(g.value))}
                 role="button"
                 tabIndex={0}
                 aria-label={`Toggle ${g.label} safety gate`}

@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { EventLogPanel } from "@/components/layout/EventLogPanel";
 import type { EngineEvent } from "@/engine/types/events";
+
+vi.mock("@/components/EventDetailDialog", () => ({
+  EventDetailDialog: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="event-detail-dialog" /> : null,
+}));
 
 function makeEvent(category: EngineEvent["category"], title: string, summary: string): EngineEvent {
   return {
@@ -65,5 +70,21 @@ describe("EventLogPanel AI events", () => {
     );
     expect(screen.getByText("Strategic Plan Shift")).toBeDefined();
     expect(screen.getByText("AI Plan")).toBeDefined();
+  });
+
+  it("opens the event detail dialog on Enter keydown of a row", () => {
+    const event = makeEvent("ai_decision", "AI Management Decision", "Details here.");
+    render(
+      <EventLogPanel
+        eventLogData={{
+          events: [event],
+          getRikishi: () => null,
+          getHeya: () => undefined,
+          playerHeyaId: "h1",
+        }}
+      />
+    );
+    fireEvent.keyDown(screen.getByLabelText("AI Management Decision"), { key: "Enter" });
+    expect(screen.getByTestId("event-detail-dialog")).toBeDefined();
   });
 });

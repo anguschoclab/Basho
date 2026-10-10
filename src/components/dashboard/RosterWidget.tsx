@@ -12,6 +12,7 @@ import { CompareModePanel } from "../scouting/CompareModePanel";
 import { ROSTER_WIDGET_MAX_ITEMS } from "../../constants/ui/display";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
 import { useRosterData, type RosterEntryWithHealth } from "@/hooks/useRosterData";
+import { activationKeyHandler } from "@/lib/a11y";
 
 const RosterEntryRow = React.memo(
   ({
@@ -48,12 +49,7 @@ const RosterEntryRow = React.memo(
         role="button"
         aria-label={`Select ${shikona}`}
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onToggleSelect(id);
-          }
-        }}
+        onKeyDown={activationKeyHandler(() => onToggleSelect(id))}
       >
         <div
           className={cn(
@@ -130,32 +126,25 @@ const RosterList = React.memo(
       return <EmptyState icon={Users} title="No wrestlers in roster" compact />;
     }
 
+    const selectedSet = new Set(selectedIds);
+
     return (
       <>
-        {(() => {
-          const limit = Math.min(ROSTER_WIDGET_MAX_ITEMS, roster.length);
-          const selectedSet = new Set(selectedIds);
-          const nodes = new Array(limit);
-          for (let i = 0; i < limit; i++) {
-            const entry = roster[i];
-            nodes[i] = (
-              <RosterEntryRow
-                key={entry.id}
-                id={entry.id}
-                shikona={entry.shikona}
-                rank={entry.rank}
-                isInjured={entry.isInjured}
-                potentialBand={entry.potentialBand}
-                fatigue={entry.fatigue}
-                healthBadge={entry.healthBadge}
-                isSelected={selectedSet.has(entry.id)}
-                onWithdraw={onWithdraw}
-                onToggleSelect={onToggleSelect}
-              />
-            );
-          }
-          return nodes;
-        })()}
+        {roster.slice(0, ROSTER_WIDGET_MAX_ITEMS).map((entry) => (
+          <RosterEntryRow
+            key={entry.id}
+            id={entry.id}
+            shikona={entry.shikona}
+            rank={entry.rank}
+            isInjured={entry.isInjured}
+            potentialBand={entry.potentialBand}
+            fatigue={entry.fatigue}
+            healthBadge={entry.healthBadge}
+            isSelected={selectedSet.has(entry.id)}
+            onWithdraw={onWithdraw}
+            onToggleSelect={onToggleSelect}
+          />
+        ))}
         {roster.length > ROSTER_WIDGET_MAX_ITEMS && (
           <TooltipWrap content="Navigate to the full rikishi directory" side="top">
             <Button

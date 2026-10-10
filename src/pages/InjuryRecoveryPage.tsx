@@ -10,11 +10,28 @@ import { WelfarePanel } from "@/components/game/WelfarePanel";
 import { projectMedicalUIDigest } from "@/presenters/uiDigest";
 import { InjuryRiskHeatmap } from "@/components/training/InjuryRiskHeatmap";
 import type { DietRegimen } from "@/engine/types/economy";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { resolveRegistryLabel } from "@/presenters/uiUtilities";
 import { BardEngine } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
 import { getHeyaRoster } from "@/presenters/engineAccess";
 import { useDomainsReady } from "@/hooks/useDomainsReady";
+
+/** Bard-resolved injury summary line for a roster row, or undefined when healthy. */
+function injurySummaryFor(r: Rikishi, rng: SeededRNG): string | undefined {
+  if (!r.injured || !r.injuryStatus) return undefined;
+  const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
+  // InjurySeverity is "minor" | "moderate" | "serious" | "none" — map to BardEngine key
+  const rawSev = r.injuryStatus.severity as string;
+  const sevKey = rawSev === "minor" ? "minor" : rawSev === "serious" ? "severe" : "moderate";
+  const sevLabel = BardEngine.resolve(rng, `ui.labels.injury.severity.${sevKey}`).text;
+  const weeks = r.injuryWeeksRemaining?.toString() ?? "?";
+  return BardEngine.resolve(rng, "ui.labels.injury.summary_format", {
+    SEV: sevLabel,
+    LOC: loc,
+    WEEKS: weeks,
+  }).text;
+}
 
 /** injury recovery page. */
 export default function InjuryRecoveryPage() {
@@ -35,36 +52,15 @@ export default function InjuryRecoveryPage() {
     const rng = state.world.rng || new SeededRNG(state.world.seed || "medical_heatmap");
     return getHeyaRoster(state.world, state.playerHeyaId)
       .filter((r) => !r.isRetired)
-      .map((r) => {
-        const rankLabel = resolveRegistryLabel("ranks", r.rank);
-
-        let injurySummary: string | undefined;
-        if (r.injured && r.injuryStatus) {
-          const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
-          // InjurySeverity is "minor" | "moderate" | "serious" | "none" — map to BardEngine key
-          const rawSev = r.injuryStatus.severity as string;
-          let sevKey = "moderate";
-          if (rawSev === "minor") sevKey = "minor";
-          else if (rawSev === "serious") sevKey = "severe";
-          const sevLabel = BardEngine.resolve(rng, `ui.labels.injury.severity.${sevKey}`).text;
-          const weeks = r.injuryWeeksRemaining?.toString() ?? "?";
-          injurySummary = BardEngine.resolve(rng, "ui.labels.injury.summary_format", {
-            SEV: sevLabel,
-            LOC: loc,
-            WEEKS: weeks,
-          }).text;
-        }
-
-        return {
-          id: r.id,
-          shikona: r.shikona,
-          rankLabel,
-          isInjured: r.injured,
-          condition: r.condition ?? 100,
-          fatigue: r.fatigue ?? 0,
-          injurySummary,
-        };
-      });
+      .map((r) => ({
+        id: r.id,
+        shikona: r.shikona,
+        rankLabel: resolveRegistryLabel("ranks", r.rank),
+        isInjured: r.injured,
+        condition: r.condition ?? 100,
+        fatigue: r.fatigue ?? 0,
+        injurySummary: injurySummaryFor(r, rng),
+      }));
   }, [state.world, state.playerHeyaId, domainsReady]);
 
   const handleSetDiet = useCallback(

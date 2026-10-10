@@ -11,6 +11,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { formatSaveDate } from "@/presenters/engineAccess";
 import { Save, Trash2, Clock } from "lucide-react";
 import type { SaveSlotInfo } from "@/presenters/engineAccess";
+import { activationKeyHandler } from "@/lib/a11y";
 
 export const SaveSlotItem = React.memo(
   ({
@@ -40,16 +41,9 @@ export const SaveSlotItem = React.memo(
               mode === "load" ? `Load save slot ${slot.slotName}` : `Save to slot ${slot.slotName}`
             }
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                if (mode === "load") {
-                  onLoad(slot.slotName);
-                } else {
-                  onSave(slot.slotName);
-                }
-              }
-            }}
+            onKeyDown={activationKeyHandler(() =>
+              mode === "load" ? onLoad(slot.slotName) : onSave(slot.slotName)
+            )}
           >
             <div className="flex items-center gap-2">
               <span className="font-medium text-sm truncate">
@@ -101,12 +95,7 @@ export const EmptySlotItem = React.memo(
           role="button"
           aria-label={`Save to empty slot ${slotName}`}
           tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              onSave(slotName);
-            }
-          }}
+          onKeyDown={activationKeyHandler(() => onSave(slotName))}
         >
           <Save className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">

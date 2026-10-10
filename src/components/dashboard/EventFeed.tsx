@@ -24,6 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 import { MentionText } from "@/components/MentionText";
 import { EventDetailDialog } from "@/components/EventDetailDialog";
+import { activationKeyHandler } from "@/lib/a11y";
 
 interface EventFeedProps {
   maxEvents?: number;
@@ -68,12 +69,7 @@ const EventFeedItem = React.memo(
         aria-label={event.title}
         tabIndex={0}
         onClick={() => onSelect(event)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onSelect(event);
-          }
-        }}
+        onKeyDown={activationKeyHandler(() => onSelect(event))}
       >
         <div className="mt-0.5 flex-shrink-0">{Icon}</div>
         <div className="flex-1 min-w-0">

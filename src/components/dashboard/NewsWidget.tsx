@@ -50,6 +50,31 @@ const CAT_COLOR: Record<string, string> = {
   media_tabloid: "text-gold",
 };
 
+/** Resolves display icon + color for an event category, with media-outlet overrides. */
+function resolveCategoryMeta(
+  category: string,
+  outlet: string | undefined
+): { Icon: LucideIcon; color: string; titleClass: string } {
+  let Icon = CAT_ICON[category] || Newspaper;
+  let color = CAT_COLOR[category] || "text-muted-foreground";
+
+  // Special handling for media outlets
+  if (category === "media" && outlet === "TABLOID") {
+    color = "text-gold font-bold";
+  } else if (category === "media" && outlet === "SPORTS_DAILY") {
+    color = "text-west font-semibold";
+  } else if (category === "media" && outlet === "JSA_OFFICIAL") {
+    color = "text-foreground font-mono uppercase border-b border-foreground/20";
+    Icon = Scale;
+  }
+
+  return {
+    Icon,
+    color,
+    titleClass: category === "media" && outlet === "TABLOID" ? "text-gold" : "",
+  };
+}
+
 const NewsEventRow = React.memo(
   ({
     category,
@@ -66,44 +91,19 @@ const NewsEventRow = React.memo(
     outlet?: string;
     isPlayer: boolean;
   }) => {
-    let Icon = CAT_ICON[category] || Newspaper;
-    let color = CAT_COLOR[category] || "text-muted-foreground";
-
-    // Special handling for media outlets
-    if (category === "media" && outlet) {
-      if (outlet === "TABLOID") {
-        color = "text-gold font-bold";
-      } else if (outlet === "SPORTS_DAILY") {
-        color = "text-west font-semibold";
-      } else if (outlet === "JSA_OFFICIAL") {
-        color = "text-foreground font-mono uppercase border-b border-foreground/20";
-        Icon = Scale;
-      }
-
-      return (
-        <div
-          className={`flex items-start gap-2 py-1.5 px-2 rounded-md text-xs transition-colors hover:bg-muted/50 ${
-            isPlayer ? "border-l-2 border-l-primary bg-primary/5" : ""
-          }`}
-        >
-          <Icon className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${color}`} />
-          <div className="flex-1 min-w-0">
-            <div
-              className={`font-medium truncate ${category === "media" && outlet === "TABLOID" ? "text-gold" : ""}`}
-            >
-              {title}
-            </div>
-            <div className="text-[11px] text-muted-foreground truncate">{summary}</div>
-          </div>
-          <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums">
-            W{week}
-          </span>
-        </div>
-      );
-    }
+    const { Icon, color, titleClass } = resolveCategoryMeta(category, outlet);
     return (
-      <div className="flex">
-        <span>News</span>
+      <div
+        className={`flex items-start gap-2 py-1.5 px-2 rounded-md text-xs transition-colors hover:bg-muted/50 ${
+          isPlayer ? "border-l-2 border-l-primary bg-primary/5" : ""
+        }`}
+      >
+        <Icon className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${color}`} />
+        <div className="flex-1 min-w-0">
+          <div className={`font-medium truncate ${titleClass}`}>{title}</div>
+          <div className="text-[11px] text-muted-foreground truncate">{summary}</div>
+        </div>
+        <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums">W{week}</span>
       </div>
     );
   }
@@ -147,25 +147,17 @@ export function NewsWidget() {
           />
         ) : (
           <div className="space-y-0.5 pr-3">
-            {(() => {
-              const limit = recentEvents.length;
-              const nodes = new Array(limit);
-              for (let i = 0; i < limit; i++) {
-                const e = recentEvents[i];
-                nodes[i] = (
-                  <NewsEventRow
-                    key={e.id}
-                    category={e.category}
-                    title={e.title}
-                    summary={e.summary}
-                    week={e.week}
-                    outlet={(e.data as { outlet?: string })?.outlet}
-                    isPlayer={e.heyaId === world?.playerHeyaId}
-                  />
-                );
-              }
-              return nodes;
-            })()}
+            {recentEvents.map((e) => (
+              <NewsEventRow
+                key={e.id}
+                category={e.category}
+                title={e.title}
+                summary={e.summary}
+                week={e.week}
+                outlet={(e.data as { outlet?: string })?.outlet}
+                isPlayer={e.heyaId === world?.playerHeyaId}
+              />
+            ))}
           </div>
         )}
       </ScrollArea>

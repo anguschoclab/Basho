@@ -3,6 +3,7 @@ import { ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSortState } from "@/hooks/useSortState";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import { activationKeyHandler } from "@/lib/a11y";
 
 export interface Column<T> {
   key: string;
@@ -87,12 +88,7 @@ function DataTableInner<T>({
                 role="button"
                 aria-label={`Sort by ${col.label}`}
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    handleHeaderClick(col);
-                  }
-                }}
+                onKeyDown={activationKeyHandler(() => handleHeaderClick(col))}
               >
                 <div className="flex items-center gap-2">
                   {col.label}
@@ -116,12 +112,7 @@ function DataTableInner<T>({
             role={onRowClick ? "button" : undefined}
             aria-label={onRowClick ? "Select row" : undefined}
             tabIndex={onRowClick ? 0 : undefined}
-            onKeyDown={(e) => {
-              if (onRowClick && (e.key === "Enter" || e.key === " ")) {
-                e.preventDefault();
-                onRowClick(row);
-              }
-            }}
+            onKeyDown={onRowClick ? activationKeyHandler(() => onRowClick(row)) : undefined}
           >
             {columns.map((col) => (
               <td

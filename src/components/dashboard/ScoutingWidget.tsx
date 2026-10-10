@@ -96,27 +96,18 @@ const ProspectList = React.memo(
         {topProspects.length === 0 ? (
           <EmptyState icon={Search} title="No prospects scouted yet" compact />
         ) : (
-          (() => {
-            const limit = topProspects.length;
-            const nodes = new Array(limit);
-            for (let i = 0; i < limit; i++) {
-              const c = topProspects[i];
-              const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
-              nodes[i] = (
-                <ProspectRow
-                  key={c.candidateId}
-                  candidateId={c.candidateId}
-                  name={c.name}
-                  archetype={c.archetype}
-                  talentSeed={c.talentSeed}
-                  pool={c.pool}
-                  visibilityBand={c.visibilityBand}
-                  intel={intel}
-                />
-              );
-            }
-            return nodes;
-          })()
+          topProspects.map((c) => (
+            <ProspectRow
+              key={c.candidateId}
+              candidateId={c.candidateId}
+              name={c.name}
+              archetype={c.archetype}
+              talentSeed={c.talentSeed}
+              pool={c.pool}
+              visibilityBand={c.visibilityBand}
+              intel={talentpool.getCandidateScoutingLevel(world, c.candidateId)}
+            />
+          ))
         )}
         {prospectsLength > 6 && (
           <Button

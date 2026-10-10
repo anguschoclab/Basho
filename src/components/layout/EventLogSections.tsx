@@ -13,6 +13,7 @@ import type { EngineEvent } from "@/engine/types/events";
 import { formatEventTime } from "@/presenters/uiDigest";
 import { getCategoryMeta } from "./eventLogHelpers";
 import { MentionText } from "../MentionText";
+import { activationKeyHandler } from "@/lib/a11y";
 
 const FILTER_OPTIONS = [
   { value: "all", label: "All" },
@@ -70,12 +71,7 @@ function EventRow({
   return (
     <div
       onClick={() => onClick(e)}
-      onKeyDown={(evt) => {
-        if (evt.key === "Enter" || evt.key === " ") {
-          evt.preventDefault();
-          onClick(e);
-        }
-      }}
+      onKeyDown={activationKeyHandler(() => onClick(e))}
       role="button"
       aria-label={e.title}
       tabIndex={0}

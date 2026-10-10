@@ -96,6 +96,11 @@ interface CustomTooltipProps {
   label?: string;
 }
 
+function formatTooltipValue(p: CustomTooltipPayload, datum?: AxisDatum) {
+  if (p.name === "Cost (¥M)") return formatYen(datum?.upgradeCost ?? 0);
+  return typeof p.value === "number" ? p.value.toFixed(2) : p.value;
+}
+
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -120,20 +125,11 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       ) : (
         <>
           <p className="text-muted-foreground mb-1">Current level: {datum?.currentLevel ?? "—"}</p>
-          {payload.map((p) => {
-            if (p.name === "Cost (¥M)") {
-              return (
-                <p key={p.name} style={{ color: p.color }}>
-                  {p.name}: {formatYen(datum?.upgradeCost ?? 0)}
-                </p>
-              );
-            }
-            return (
-              <p key={p.name} style={{ color: p.color }}>
-                {p.name}: {typeof p.value === "number" ? p.value.toFixed(2) : p.value}
-              </p>
-            );
-          })}
+          {payload.map((p) => (
+            <p key={p.name} style={{ color: p.color }}>
+              {p.name}: {formatTooltipValue(p, datum)}
+            </p>
+          ))}
         </>
       )}
     </div>

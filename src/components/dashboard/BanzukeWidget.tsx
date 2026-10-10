@@ -97,28 +97,20 @@ const BanzukeList = React.memo(({ topRanked }: { topRanked: BanzukeEntry[] }) =>
   }
   return (
     <>
-      {(() => {
-        const limit = topRanked.length;
-        const nodes = new Array(limit);
-        for (let i = 0; i < limit; i++) {
-          const { entry, isPlayer, avatarConfig } = topRanked[i];
-          nodes[i] = (
-            <BanzukeEntryRow
-              key={entry.id}
-              id={entry.id}
-              shikona={entry.shikona}
-              rank={entry.rank}
-              rankNumber={entry.rankNumber}
-              side={entry.side as "east" | "west"}
-              record={entry.record}
-              isPlayer={isPlayer}
-              i={i}
-              avatarConfig={avatarConfig}
-            />
-          );
-        }
-        return nodes;
-      })()}
+      {topRanked.map(({ entry, isPlayer, avatarConfig }, i) => (
+        <BanzukeEntryRow
+          key={entry.id}
+          id={entry.id}
+          shikona={entry.shikona}
+          rank={entry.rank}
+          rankNumber={entry.rankNumber}
+          side={entry.side as "east" | "west"}
+          record={entry.record}
+          isPlayer={isPlayer}
+          i={i}
+          avatarConfig={avatarConfig}
+        />
+      ))}
     </>
   );
 });

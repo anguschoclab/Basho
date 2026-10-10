@@ -15,6 +15,7 @@ import type { RivalStableDTO } from "@/presenters/rivalStablesProjections";
 import { RivalOyakataCard } from "@/components/governance/RivalOyakataCard";
 import { OyakataProfileDrawer } from "@/components/governance/OyakataProfileDrawer";
 import { NPCAgentFeed } from "@/components/npc/NPCAgentFeed";
+import { activationKeyHandler } from "@/lib/a11y";
 
 export default function RivalStablesPage() {
   const { state } = useGame();
@@ -58,12 +59,7 @@ export default function RivalStablesPage() {
                 className="cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background rounded"
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSelectedRival(rival);
-                  }
-                }}
+                onKeyDown={activationKeyHandler(() => setSelectedRival(rival))}
               >
                 <RivalOyakataCard
                   heyaId={rival.heyaId}

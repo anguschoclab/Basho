@@ -15,6 +15,26 @@ import type { MatchRowData } from "./boutCardTypes";
 
 // ── Types ──────────────────────────────────────────────
 
+type ScoutingMap = NonNullable<WorldState["playerKnowledge"]>["scouting"];
+
+/** Scouting hint for a player bout, derived from the player's knowledge of the opponent. */
+function scoutHintFor(
+  match: Pick<BoutMatchUI, "isPlayerBout" | "eastRikishi" | "westRikishi">,
+  scouting: ScoutingMap
+): string | undefined {
+  if (!match.isPlayerBout || !scouting) return undefined;
+  const opponentId =
+    match.eastRikishi?.isPlayerOwned === false
+      ? match.eastRikishi?.id
+      : match.westRikishi?.isPlayerOwned === false
+        ? match.westRikishi?.id
+        : null;
+  if (!opponentId) return undefined;
+  const scouted = scouting[opponentId];
+  if (!scouted?.publicInfo?.archetype) return undefined;
+  return `Scouting: likely ${scouted.publicInfo.archetype} fighter (Lvl ${scouted.scoutingLevel})`;
+}
+
 /** Defines the structure for match day viewer props. */
 interface MatchDayViewerProps {
   matches: BoutMatchUI[]; // enriched via projectBashoUIDigest
@@ -63,20 +83,7 @@ export function MatchDayViewer({
         east: m.eastRikishi,
         west: m.westRikishi,
       } as typeof m & { scoutHint?: string };
-      if (enriched.isPlayerBout && scouting) {
-        const opponentId =
-          enriched.eastRikishi?.isPlayerOwned === false
-            ? enriched.eastRikishi?.id
-            : enriched.westRikishi?.isPlayerOwned === false
-              ? enriched.westRikishi?.id
-              : null;
-        if (opponentId) {
-          const scouted = scouting[opponentId];
-          if (scouted?.publicInfo?.archetype) {
-            enriched.scoutHint = `Scouting: likely ${scouted.publicInfo.archetype} fighter (Lvl ${scouted.scoutingLevel})`;
-          }
-        }
-      }
+      enriched.scoutHint = scoutHintFor(enriched, scouting);
       return enriched;
     });
     return mapped.sort((a, b) => {
@@ -108,6 +115,12 @@ export function MatchDayViewer({
     return count;
   }, [sortedMatches]);
 
+  const handleBeginPreview = () => {
+    const match = matches.find((m) => m.boutId === previewData?.boutId);
+    setPreviewBoutId(null);
+    if (match) onBoutClick?.(match);
+  };
+
   if (sortedMatches.length === 0) {
     return (
       <Card className="paper">
@@ -125,11 +138,7 @@ export function MatchDayViewer({
         <BoutPreMatchOverlay
           preview={previewData}
           onDismiss={() => setPreviewBoutId(null)}
-          onBegin={() => {
-            const match = matches.find((m) => m.boutId === previewData.boutId);
-            setPreviewBoutId(null);
-            if (match) onBoutClick?.(match);
-          }}
+          onBegin={handleBeginPreview}
         />
       )}
       <Card className="paper overflow-hidden">
@@ -152,25 +161,18 @@ export function MatchDayViewer({
           </div>
 
           <div className="divide-y divide-border/50 max-h-[620px] overflow-auto">
-            {(() => {
-              const limit = sortedMatches.length;
-              const nodes = new Array(limit);
-              for (let i = 0; i < limit; i++) {
-                const match = sortedMatches[i];
-                if (!match) continue;
-                nodes[i] = (
-                  <BoutCard
-                    key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${i}`}
-                    match={match as unknown as MatchRowData}
-                    idx={i}
-                    onBoutClick={handleBoutClick}
-                    onTacticChange={onTacticChange}
-                    playerTactics={playerTactics}
-                  />
-                );
-              }
-              return nodes;
-            })()}
+            {sortedMatches.map((match, i) =>
+              match ? (
+                <BoutCard
+                  key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${i}`}
+                  match={match as unknown as MatchRowData}
+                  idx={i}
+                  onBoutClick={handleBoutClick}
+                  onTacticChange={onTacticChange}
+                  playerTactics={playerTactics}
+                />
+              ) : null
+            )}
           </div>
         </CardContent>
       </Card>

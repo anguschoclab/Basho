@@ -4,11 +4,10 @@
  * Step 3: Acquire stable for new game wizard.
  */
 
-import { Building, ArrowLeft, Sparkles, CheckCircle2 } from "lucide-react";
+import { Building, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { StableCard } from "./StableStepSections";
 import type { Heya } from "@/engine/types/heya";
 
 interface StableStepProps {
@@ -45,65 +44,13 @@ export function StableStep({
 
         <ScrollArea className="h-[500px] pr-4">
           <div className="grid gap-4 md:grid-cols-2">
-            {stables.map((heya: Heya) => (
-              <div
+            {stables.map((heya) => (
+              <StableCard
                 key={heya.id}
-                role="button"
-                tabIndex={0}
-                aria-label={`Select ${heya.name}`}
-                aria-pressed={selectedHeyaId === heya.id}
-                className={cn(
-                  "dossier-paper p-5 rounded-lg cursor-pointer transition-all relative overflow-hidden group",
-                  "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                  selectedHeyaId === heya.id
-                    ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl"
-                    : "opacity-80 hover:opacity-100"
-                )}
-                onClick={() => onHeyaSelect(heya.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onHeyaSelect(heya.id);
-                  }
-                }}
-              >
-                {selectedHeyaId === heya.id && (
-                  <div className="absolute top-0 right-0 bg-primary text-white p-2 rounded-bl-xl shadow-lg z-10">
-                    <CheckCircle2 className="h-4 w-4" />
-                  </div>
-                )}
-                <div className="space-y-3">
-                  <div>
-                    <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
-                      {heya.name}
-                    </div>
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">
-                      {heya.location || "Tokyo"} • {new Set(heya.rikishiIds ?? []).size}{" "}
-                      Professional Wrestlers
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] font-black uppercase tracking-widest h-5 bg-primary/10 border-primary/20 text-primary"
-                    >
-                      {heya.statureBand}
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] font-black uppercase tracking-widest h-5 border-2"
-                    >
-                      {heya.facilitiesBand}
-                    </Badge>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground line-clamp-2 italic italic">
-                    "
-                    {heya.descriptor ||
-                      "A stable with a long-standing history of training excellence."}
-                    "
-                  </p>
-                </div>
-              </div>
+                heya={heya}
+                isSelected={selectedHeyaId === heya.id}
+                onSelect={onHeyaSelect}
+              />
             ))}
           </div>
         </ScrollArea>

@@ -129,6 +129,27 @@ export function TrainingWidget() {
   const financialPenalty = activeModifiers?.financialPenalty ?? false;
   const moraleBoost = activeModifiers?.moraleBoost ?? false;
 
+  const multiplierData = [
+    {
+      label: "Growth",
+      value: effectiveGrowthMultiplier,
+      icon: Zap,
+      color: financialPenalty ? "bg-destructive" : "bg-primary",
+    },
+    {
+      label: "Fatigue",
+      value: intensityInfo.fatigue,
+      icon: Activity,
+      color: intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
+    },
+    {
+      label: "Recovery",
+      value: recoveryInfo.fatigueDecay,
+      icon: Shield,
+      color: "bg-success",
+    },
+  ];
+
   return (
     <BaseWidget title="Training" icon={Dumbbell} headerAction={headerAction}>
       {/* Current profile */}
@@ -160,43 +181,15 @@ export function TrainingWidget() {
 
       {/* Multiplier bars — Growth uses effectiveGrowthMultiplier from transientContext */}
       <div className="grid grid-cols-3 gap-2 text-[10px]">
-        {(() => {
-          const multiplierData = [
-            {
-              label: "Growth",
-              value: effectiveGrowthMultiplier,
-              icon: Zap,
-              color: financialPenalty ? "bg-destructive" : "bg-primary",
-            },
-            {
-              label: "Fatigue",
-              value: intensityInfo.fatigue,
-              icon: Activity,
-              color: intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
-            },
-            {
-              label: "Recovery",
-              value: recoveryInfo.fatigueDecay,
-              icon: Shield,
-              color: "bg-success",
-            },
-          ];
-          const limit = multiplierData.length;
-          const nodes = new Array(limit);
-          for (let i = 0; i < limit; i++) {
-            const m = multiplierData[i];
-            nodes[i] = (
-              <MultiplierBar
-                key={m.label}
-                label={m.label}
-                value={m.value}
-                icon={m.icon}
-                color={m.color}
-              />
-            );
-          }
-          return nodes;
-        })()}
+        {multiplierData.map((m) => (
+          <MultiplierBar
+            key={m.label}
+            label={m.label}
+            value={m.value}
+            icon={m.icon}
+            color={m.color}
+          />
+        ))}
       </div>
 
       <Button

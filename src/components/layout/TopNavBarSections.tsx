@@ -264,16 +264,24 @@ export function AdvanceButton({ world }: { world: WorldState }) {
         ? "Start the tournament preparations"
         : "Advance the simulation one day";
 
+  const handleAdvance = () => {
+    if (cyclePhase === "active_basho") {
+      navigate({ to: "/basho" });
+      return;
+    }
+    if (cyclePhase === "banzuke_reveal") {
+      navigate({ to: "/recap" });
+      return;
+    }
+    advanceOneDay();
+  };
+
   return (
     <TooltipWrap content={tooltip} side="left">
       <Button asChild variant="ghost" className="p-0 h-auto hover:bg-transparent">
         <button
           aria-label={tooltip}
-          onClick={() => {
-            if (cyclePhase === "active_basho") navigate({ to: "/basho" });
-            else if (cyclePhase === "banzuke_reveal") navigate({ to: "/recap" });
-            else advanceOneDay();
-          }}
+          onClick={handleAdvance}
           className="relative h-8 px-4 rounded flex items-center gap-2 overflow-hidden group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
           style={{
             fontFamily: "var(--font-mono)",

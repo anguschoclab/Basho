@@ -11,6 +11,13 @@ interface KeshoMawashiGalleryProps {
   heyaId: string;
 }
 
+/** Sort weight by rank: Makuuchi first, then Juryo. */
+function rankWeight(r: Rikishi) {
+  if (r.division === "makuuchi") return 100;
+  if (r.division === "juryo") return 50;
+  return 0;
+}
+
 export function KeshoMawashiGallery({ world, heyaId }: KeshoMawashiGalleryProps) {
   const heya = world.heyas.get(heyaId);
 
@@ -19,15 +26,7 @@ export function KeshoMawashiGallery({ world, heyaId }: KeshoMawashiGalleryProps)
     return (heya.rikishiIds ?? [])
       .map((id) => world.rikishi.get(id))
       .filter((r): r is Rikishi => !!(r && r.keshoMawashi))
-      .sort((a, b) => {
-        // Sort by rank: Makuuchi first, then Juryo
-        const getRankWeight = (r: Rikishi) => {
-          if (r.division === "makuuchi") return 100;
-          if (r.division === "juryo") return 50;
-          return 0;
-        };
-        return getRankWeight(b) - getRankWeight(a);
-      });
+      .sort((a, b) => rankWeight(b) - rankWeight(a));
   }, [world, heya]);
 
   if (sekitoriWithKesho.length === 0) {

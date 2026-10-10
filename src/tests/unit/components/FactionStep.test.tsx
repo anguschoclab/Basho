@@ -80,6 +80,18 @@ describe("FactionStep", () => {
     expect(defaultProps.onIchimonChange).toHaveBeenCalledWith("Dewanoumi");
   });
 
+  it("pressing Enter on a card calls onIchimonChange with faction id", () => {
+    render(<FactionStep {...defaultProps} />);
+    fireEvent.keyDown(screen.getByLabelText("Select Dewanoumi faction"), { key: "Enter" });
+    expect(defaultProps.onIchimonChange).toHaveBeenCalledWith("Dewanoumi");
+  });
+
+  it("pressing Space on a card calls onIchimonChange with faction id", () => {
+    render(<FactionStep {...defaultProps} />);
+    fireEvent.keyDown(screen.getByLabelText("Select Nishonoseki faction"), { key: " " });
+    expect(defaultProps.onIchimonChange).toHaveBeenCalledWith("Nishonoseki");
+  });
+
   it("Next button calls onNext", () => {
     render(<FactionStep {...defaultProps} />);
     fireEvent.click(screen.getByText(/Verify Allegiance/i));

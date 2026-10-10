@@ -15,6 +15,7 @@ import { DynastyService } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";
 import { cn } from "@/lib/utils";
+import { activationKeyHandler } from "@/lib/a11y";
 
 interface SuccessionModalProps {
   isOpen: boolean;
@@ -79,12 +80,7 @@ export function SuccessionModal({
                   aria-label={`Select successor ${c.shikona}`}
                   aria-pressed={selectedId === c.id}
                   onClick={() => setSelectedId(c.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setSelectedId(c.id);
-                    }
-                  }}
+                  onKeyDown={activationKeyHandler(() => setSelectedId(c.id))}
                   className={cn(
                     "flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer group",
                     "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",

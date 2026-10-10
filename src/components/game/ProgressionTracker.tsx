@@ -167,26 +167,18 @@ export function ProgressionTracker({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {(() => {
-              const limit = yokozunaCandidates.length;
-              const nodes = new Array(limit);
-              for (let i = 0; i < limit; i++) {
-                const c = yokozunaCandidates[i];
-                nodes[i] = (
-                  <YokozunaRow
-                    key={c.rikishi.id}
-                    rikishiId={c.rikishi.id}
-                    shikona={c.rikishi.shikona}
-                    isStrong={c.isStrong}
-                    isPlayer={c.rikishi.heyaId === playerHeyaId}
-                    narrative={c.narrative}
-                    consecutiveYushos={c.consecutiveYushos}
-                    recentYushos={c.recentYushos}
-                  />
-                );
-              }
-              return nodes;
-            })()}
+            {yokozunaCandidates.map((c) => (
+              <YokozunaRow
+                key={c.rikishi.id}
+                rikishiId={c.rikishi.id}
+                shikona={c.rikishi.shikona}
+                isStrong={c.isStrong}
+                isPlayer={c.rikishi.heyaId === playerHeyaId}
+                narrative={c.narrative}
+                consecutiveYushos={c.consecutiveYushos}
+                recentYushos={c.recentYushos}
+              />
+            ))}
           </CardContent>
         </Card>
       )}
@@ -201,27 +193,19 @@ export function ProgressionTracker({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {(() => {
-              const limit = ozekiRuns.length;
-              const nodes = new Array(limit);
-              for (let i = 0; i < limit; i++) {
-                const c = ozekiRuns[i];
-                nodes[i] = (
-                  <OzekiRow
-                    key={c.rikishi.id}
-                    rikishiId={c.rikishi.id}
-                    shikona={c.rikishi.shikona}
-                    rank={c.rikishi.rank}
-                    isPlayer={c.rikishi.heyaId === playerHeyaId}
-                    narrative={c.narrative}
-                    progress={c.progress}
-                    recentWins={c.recentWins}
-                    threshold={c.threshold}
-                  />
-                );
-              }
-              return nodes;
-            })()}
+            {ozekiRuns.map((c) => (
+              <OzekiRow
+                key={c.rikishi.id}
+                rikishiId={c.rikishi.id}
+                shikona={c.rikishi.shikona}
+                rank={c.rikishi.rank}
+                isPlayer={c.rikishi.heyaId === playerHeyaId}
+                narrative={c.narrative}
+                progress={c.progress}
+                recentWins={c.recentWins}
+                threshold={c.threshold}
+              />
+            ))}
           </CardContent>
         </Card>
       )}
@@ -236,24 +220,16 @@ export function ProgressionTracker({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {(() => {
-              const limit = kadobanDrama.length;
-              const nodes = new Array(limit);
-              for (let i = 0; i < limit; i++) {
-                const entry = kadobanDrama[i];
-                nodes[i] = (
-                  <KadobanRow
-                    key={entry.rikishi.id}
-                    rikishiId={entry.rikishi.id}
-                    shikona={entry.rikishi.shikona}
-                    isDemoted={entry.isDemoted}
-                    isPlayer={entry.rikishi.heyaId === playerHeyaId}
-                    narrative={entry.narrative}
-                  />
-                );
-              }
-              return nodes;
-            })()}
+            {kadobanDrama.map((entry) => (
+              <KadobanRow
+                key={entry.rikishi.id}
+                rikishiId={entry.rikishi.id}
+                shikona={entry.rikishi.shikona}
+                isDemoted={entry.isDemoted}
+                isPlayer={entry.rikishi.heyaId === playerHeyaId}
+                narrative={entry.narrative}
+              />
+            ))}
           </CardContent>
         </Card>
       )}

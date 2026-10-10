@@ -14,6 +14,7 @@ import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
 import { STATURE_CONFIG } from "./statureConfig";
+import { activationKeyHandler } from "@/lib/a11y";
 
 interface HeyaCardProps {
   heya: Heya;
@@ -55,12 +56,7 @@ export function HeyaCard({
         isSelected ? "border-primary ring-2 ring-primary/30 bg-primary/5" : ""
       }`}
       onClick={onSelect}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onSelect();
-        }
-      }}
+      onKeyDown={activationKeyHandler(onSelect)}
       onDoubleClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

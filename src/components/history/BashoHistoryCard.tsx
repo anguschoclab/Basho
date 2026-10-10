@@ -147,15 +147,15 @@ export function BashoHistoryCard({
                 <span className="text-sm font-medium">準優勝 Jun-Yūshō</span>
               </div>
               <div className="space-y-1">
-                {junYushoIds.slice(0, 3).map((rid) => {
-                  const r = getRikishi?.(rid) ?? null;
-                  if (!r) return null;
-                  return (
+                {junYushoIds
+                  .slice(0, 3)
+                  .map((rid) => ({ rid, rikishi: getRikishi?.(rid) ?? null }))
+                  .filter((e): e is { rid: string; rikishi: Rikishi } => e.rikishi !== null)
+                  .map(({ rid, rikishi }) => (
                     <div key={rid} className="font-display">
-                      <RikishiName id={rid} name={r.shikona} />
+                      <RikishiName id={rid} name={rikishi.shikona} />
                     </div>
-                  );
-                })}
+                  ))}
               </div>
             </div>
           ) : (

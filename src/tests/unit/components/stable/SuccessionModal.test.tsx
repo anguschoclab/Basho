@@ -147,6 +147,40 @@ describe("SuccessionModal", () => {
     expect(selectedRow).toBeTruthy();
   });
 
+  it("pressing Enter on a candidate selects it", () => {
+    vi.mocked(DynastyService.findEligibleSuccessors).mockReturnValue(["r1"]);
+    const world = makeWorld({ rikishi: [makeRikishi("r1", "Hakuho", "h1")] });
+    renderWithProvider(
+      <SuccessionModal
+        isOpen={true}
+        onClose={vi.fn()}
+        world={world}
+        heyaId="h1"
+        onSelect={vi.fn()}
+      />
+    );
+    fireEvent.keyDown(screen.getByLabelText("Select successor Hakuho"), { key: "Enter" });
+    const selectedRow = screen.getByText("Hakuho").closest("[class*='bg-gold']");
+    expect(selectedRow).toBeTruthy();
+  });
+
+  it("pressing Space on a candidate selects it", () => {
+    vi.mocked(DynastyService.findEligibleSuccessors).mockReturnValue(["r1"]);
+    const world = makeWorld({ rikishi: [makeRikishi("r1", "Hakuho", "h1")] });
+    renderWithProvider(
+      <SuccessionModal
+        isOpen={true}
+        onClose={vi.fn()}
+        world={world}
+        heyaId="h1"
+        onSelect={vi.fn()}
+      />
+    );
+    fireEvent.keyDown(screen.getByLabelText("Select successor Hakuho"), { key: " " });
+    const selectedRow = screen.getByText("Hakuho").closest("[class*='bg-gold']");
+    expect(selectedRow).toBeTruthy();
+  });
+
   it("Finalize button is disabled until a candidate is selected", () => {
     vi.mocked(DynastyService.findEligibleSuccessors).mockReturnValue(["r1"]);
     const world = makeWorld({ rikishi: [makeRikishi("r1", "Hakuho", "h1")] });

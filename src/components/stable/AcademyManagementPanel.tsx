@@ -40,6 +40,12 @@ export function AcademyManagementPanel({
 }) {
   const [investBudgets, setInvestBudgets] = useState<Record<string, number>>({});
 
+  const handleInvestConfirm = (region: string) => {
+    const budget = investBudgets[region];
+    if (budget) onManage?.(region, budget);
+    setInvestBudgets((prev) => ({ ...prev, [region]: 0 }));
+  };
+
   return (
     <Card className="border-primary/20" data-testid="academy-management-panel">
       <CardContent className="p-4 space-y-3">
@@ -93,11 +99,7 @@ export function AcademyManagementPanel({
                       variant="default"
                       className="h-5 px-2 text-[10px] ml-auto"
                       disabled={!investBudgets[a.region]}
-                      onClick={() => {
-                        const budget = investBudgets[a.region];
-                        if (budget) onManage(a.region, budget);
-                        setInvestBudgets((prev) => ({ ...prev, [a.region]: 0 }));
-                      }}
+                      onClick={() => handleInvestConfirm(a.region)}
                       data-testid={`invest-academy-${a.region}`}
                     >
                       Confirm

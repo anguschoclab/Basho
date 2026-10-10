@@ -19,6 +19,7 @@ import { getHeya, getAllOyakata } from "@/presenters/worldAccess";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy } from "@/lib/sortUtils";
+import { activationKeyHandler } from "@/lib/a11y";
 import type { useOyakataSelection } from "@/hooks/useOyakataSelection";
 
 type Sel = ReturnType<typeof useOyakataSelection>;
@@ -207,12 +208,7 @@ function OyakataCard({
       onClick={() => onSelect(o)}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onSelect(o);
-        }
-      }}
+      onKeyDown={activationKeyHandler(() => onSelect(o))}
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">

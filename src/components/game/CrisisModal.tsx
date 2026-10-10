@@ -28,28 +28,28 @@ export function CrisisModal() {
   const handleResolve = (choiceId: string, choiceLabel?: string) => {
     if (!crisis.id) return;
     const isWorldBacked = crisis.type === "loop_decision" || crisis.type === "pending_crisis";
-    if (isWorldBacked) {
-      // pendingCrisis may be a loop_decision; check the world state
-      const isLoop = world?.pendingCrisis?.type === "loop_decision";
-      if (isLoop) {
-        sendCommand({
-          type: "RESOLVE_LOOP_DECISION",
-          decisionId: crisis.id,
-          optionId: choiceId,
-        });
-        if (choiceLabel) toast.success(decisionToastMessage(choiceLabel));
-      } else {
-        sendCommand({
-          type: "RESOLVE_CRISIS",
-          crisisId: crisis.id,
-          choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
-        });
-      }
-      // Do NOT close optimistically: the world clears pendingCrisis on a
-      // successful resolve, which closes the modal via `crisis` → null.
-      // If the command was dropped (tick in progress) or failed, the
-      // modal must stay open — otherwise a halted sim softlocks with no
-      // way to re-attempt the resolution.
+    if (!isWorldBacked) {
+      sendCommand({
+        type: "RESOLVE_CRISIS",
+        crisisId: crisis.id,
+        choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
+      });
+      setIsOpen(false);
+      return;
+    }
+    // Do NOT close optimistically: the world clears pendingCrisis on a
+    // successful resolve, which closes the modal via `crisis` → null.
+    // If the command was dropped (tick in progress) or failed, the
+    // modal must stay open — otherwise a halted sim softlocks with no
+    // way to re-attempt the resolution.
+    // pendingCrisis may be a loop_decision; check the world state
+    if (world?.pendingCrisis?.type === "loop_decision") {
+      sendCommand({
+        type: "RESOLVE_LOOP_DECISION",
+        decisionId: crisis.id,
+        optionId: choiceId,
+      });
+      if (choiceLabel) toast.success(decisionToastMessage(choiceLabel));
       return;
     }
     sendCommand({
@@ -57,7 +57,6 @@ export function CrisisModal() {
       crisisId: crisis.id,
       choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
     });
-    setIsOpen(false);
   };
 
   return (

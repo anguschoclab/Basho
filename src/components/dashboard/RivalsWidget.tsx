@@ -42,24 +42,16 @@ const RivalRow = React.memo(
 const RivalList = React.memo(({ rivals }: { rivals: ReturnType<typeof selectTopRivals> }) => {
   return (
     <>
-      {(() => {
-        const limit = rivals.length;
-        const nodes = new Array(limit);
-        for (let i = 0; i < limit; i++) {
-          const r = rivals[i];
-          nodes[i] = (
-            <RivalRow
-              key={r.id}
-              id={r.id}
-              name={r.name}
-              prestige={r.prestige}
-              roster={r.roster}
-              heat={r.heat}
-            />
-          );
-        }
-        return nodes;
-      })()}
+      {rivals.map((r) => (
+        <RivalRow
+          key={r.id}
+          id={r.id}
+          name={r.name}
+          prestige={r.prestige}
+          roster={r.roster}
+          heat={r.heat}
+        />
+      ))}
     </>
   );
 });

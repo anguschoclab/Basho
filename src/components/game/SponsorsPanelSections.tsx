@@ -40,6 +40,29 @@ function tierIcon(tier: SponsorTier) {
   return <Building2 className="h-3.5 w-3.5" />;
 }
 
+/** Single kōenkai member row; renders nothing if the sponsor is unknown. */
+function KoenkaiMemberRow({
+  member,
+  world,
+}: {
+  member: Koenkai["members"][number];
+  world: WorldState;
+}) {
+  const sponsor = world.sponsorPool?.sponsors.get(member.sponsorId);
+  if (!sponsor) return null;
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center gap-2 min-w-0">
+        {tierIcon(sponsor.tier)}
+        <span className="truncate">{sponsor.displayName}</span>
+      </div>
+      <Badge variant="outline" className="text-[10px] shrink-0">
+        {ROLE_LABELS[member.role] ?? member.role}
+      </Badge>
+    </div>
+  );
+}
+
 /** Kōenkai association summary + member list. */
 export function KoenkaiCard({ world, koenkai }: { world: WorldState; koenkai: Koenkai }) {
   return (
@@ -66,21 +89,9 @@ export function KoenkaiCard({ world, koenkai }: { world: WorldState; koenkai: Ko
           <>
             <Separator />
             <div className="space-y-2">
-              {koenkai.members.slice(0, 6).map((m) => {
-                const sponsor = world.sponsorPool?.sponsors.get(m.sponsorId);
-                if (!sponsor) return null;
-                return (
-                  <div key={m.relId} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 min-w-0">
-                      {tierIcon(sponsor.tier)}
-                      <span className="truncate">{sponsor.displayName}</span>
-                    </div>
-                    <Badge variant="outline" className="text-[10px] shrink-0">
-                      {ROLE_LABELS[m.role] ?? m.role}
-                    </Badge>
-                  </div>
-                );
-              })}
+              {koenkai.members.slice(0, 6).map((m) => (
+                <KoenkaiMemberRow key={m.relId} member={m} world={world} />
+              ))}
               {koenkai.members.length > 6 && (
                 <p className="text-xs text-muted-foreground">
                   +{koenkai.members.length - 6} more members
@@ -122,16 +133,13 @@ export function ActiveSponsorsCard({
         {totalActive > 0 && (
           <>
             <div className="flex flex-wrap gap-2">
-              {(["T5", "T4", "T3", "T2", "T1", "T0"] as SponsorTier[]).map((t) => {
-                const count = tierSummary[t] || 0;
-                if (count === 0) return null;
-                const cfg = TIER_LABELS[t];
-                return (
-                  <Badge key={t} variant="outline" className={`text-[10px] ${cfg.color}`}>
-                    {cfg.label}: {count}
+              {(["T5", "T4", "T3", "T2", "T1", "T0"] as SponsorTier[])
+                .filter((t) => (tierSummary[t] || 0) > 0)
+                .map((t) => (
+                  <Badge key={t} variant="outline" className={`text-[10px] ${TIER_LABELS[t].color}`}>
+                    {TIER_LABELS[t].label}: {tierSummary[t]}
                   </Badge>
-                );
-              })}
+                ))}
             </div>
             <Separator />
           </>

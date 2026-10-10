@@ -11,6 +11,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { CardEyebrow } from "./CardEyebrow";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { activationKeyHandler } from "@/lib/a11y";
 
 export interface ListRow {
   id: string;
@@ -77,12 +78,7 @@ export function ListCard({
               role={row.onClick ? "button" : undefined}
               aria-label={row.onClick && typeof row.label === "string" ? row.label : undefined}
               tabIndex={row.onClick ? 0 : undefined}
-              onKeyDown={(e) => {
-                if (row.onClick && (e.key === "Enter" || e.key === " ")) {
-                  e.preventDefault();
-                  row.onClick();
-                }
-              }}
+              onKeyDown={row.onClick ? activationKeyHandler(row.onClick) : undefined}
             >
               {row.leading && <span className="shrink-0">{row.leading}</span>}
               <span className="flex-1 min-w-0 font-medium truncate">{row.label}</span>

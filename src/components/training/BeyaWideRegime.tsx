@@ -30,6 +30,12 @@ interface BeyaWideRegimeProps {
   onRecoveryChange: (recovery: RecoveryEmphasis) => void;
 }
 
+/** Subtitle reflects the focus's actual strongest bias. */
+function focusSubtitle(focus: TrainingFocus): string {
+  const [attr, mult] = Object.entries(FOCUS_BIAS_MATRIX[focus]).sort(([, a], [, b]) => b - a)[0];
+  return mult > 1 ? `+${Math.round((mult - 1) * 100)}% ${attr}` : "Balanced";
+}
+
 export function BeyaWideRegime({
   trainingState,
   onIntensityChange,
@@ -117,13 +123,7 @@ export function BeyaWideRegime({
                     {getFocusLabel(focus)}
                   </div>
                   <p className="text-[10px] uppercase font-black text-muted-foreground tracking-widest opacity-60">
-                    {(() => {
-                      // Subtitle reflects the focus's actual strongest bias.
-                      const [attr, mult] = Object.entries(FOCUS_BIAS_MATRIX[focus]).sort(
-                        ([, a], [, b]) => b - a
-                      )[0];
-                      return mult > 1 ? `+${Math.round((mult - 1) * 100)}% ${attr}` : "Balanced";
-                    })()}
+                    {focusSubtitle(focus)}
                   </p>
                   {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
                 </button>
