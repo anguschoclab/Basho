@@ -22,23 +22,23 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const [filter, setFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
 
-  const events = useMemo(() => {
-    if (!eventLogData?.events) return [];
-    const all = [...eventLogData.events];
-    all.reverse();
-    return all.slice(0, 100);
-  }, [eventLogData?.events]);
-
-  const filteredEvents = useMemo(() => {
-    if (filter === "all") return events;
-    return events.filter((e) => e.category === filter);
-  }, [events, filter]);
-
   const grouped = useMemo(() => {
     const groups: EventGroup[] = [];
+    if (!eventLogData?.events) return groups;
     let currentLabel = "";
+    const allEvents = eventLogData.events;
+    let count = 0;
 
-    for (const e of filteredEvents) {
+    // The event log is append-only and chronologically ordered.
+    // We iterate backwards to collect the most recent matches without O(N) filter/sort/reverse.
+    for (let i = allEvents.length - 1; i >= 0; i--) {
+      const e = allEvents[i];
+      if (filter !== "all" && e.category !== filter) {
+        continue;
+      }
+      count++;
+      if (count > 100) break;
+
       const label =
         e.bashoNumber !== undefined
           ? `Basho ${e.bashoNumber} · Year ${e.year}`
@@ -52,7 +52,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
       }
     }
     return groups;
-  }, [filteredEvents]);
+  }, [eventLogData?.events, filter]);
 
   const handleEventClick = useCallback((e: EngineEvent) => {
     setSelectedEvent(e);

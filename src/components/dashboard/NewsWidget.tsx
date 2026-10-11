@@ -119,8 +119,11 @@ export function NewsWidget() {
     const log = world.events.log;
     const len = log.length;
     const result = [];
-    for (let i = Math.max(0, len - 15); i < len; i++) {
-      result.unshift(log[i]);
+    // Iterate backwards from the end of the chronologically ordered array
+    // to collect recent events efficiently, avoiding array manipulation on the full log
+    const count = Math.min(15, len);
+    for (let i = 0; i < count; i++) {
+      result.push(log[len - 1 - i]);
     }
     return result;
   }, [world?.events?.log]);
