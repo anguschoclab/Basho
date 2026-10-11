@@ -1,0 +1,1 @@
+## 2025-03-09 - [GlobalCupWidget EmptyState] **Issue:** [GlobalCupWidget used raw HTML paragraph tags for unhandled/inactive state] **Learning:** [Inactive widget states need standard styling consistent with other missing/inactive states] **Rule:** [Always use <EmptyState> with compact=true instead of custom `<p>` tags for unhandled/inactive states within widgets.]

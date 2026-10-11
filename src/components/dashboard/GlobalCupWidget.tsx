@@ -9,6 +9,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { Trophy, Users, Calendar } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export function GlobalCupWidget() {
   const navigate = useNavigate();
@@ -20,11 +21,12 @@ export function GlobalCupWidget() {
   const content = useMemo(() => {
     if (!cup || !cup.isActive) {
       return (
-        <div className="p-4 text-center text-muted-foreground text-sm">
-          <Trophy className="h-8 w-8 mx-auto mb-2 text-muted" />
-          <p>Global Cup will begin during interim weeks 10-11</p>
-          <p className="text-xs mt-1">The Worlds Exhibition - 世界大相撲</p>
-        </div>
+        <EmptyState
+          icon={Trophy}
+          title="Global Cup will begin during interim weeks 10-11"
+          description="The Worlds Exhibition - 世界大相撲"
+          compact
+        />
       );
     }
 
