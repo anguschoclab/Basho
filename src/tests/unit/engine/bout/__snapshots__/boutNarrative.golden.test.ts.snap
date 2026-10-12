@@ -844,7 +844,7 @@ exports[`generateBoutNarrative — golden master > in-bout injury narrative 1`] 
     "tags": [
       "injury",
     ],
-    "text": "The medical staff is concerned about [[rikishi:r-west:Wrestler-r-west]]'s knee — a kyujo may be on the horizon.",
+    "text": "That knee injury looks serious — [[rikishi:r-west:Wrestler-r-west]]'s participation going forward is in doubt.",
     "voice": "understated",
   },
 ]
