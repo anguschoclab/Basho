@@ -95,31 +95,42 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
   const handleSelect = useCallback((e: EngineEvent) => setSelectedEvent(e), []);
 
   const events = useMemo(() => {
-    const allEvents = workerWorld?.events?.log || [];
-    const filterSet = filterTypes ? new Set(filterTypes) : null;
-    let filtered = filterSet
-      ? allEvents.filter((e: EngineEvent) => filterSet.has(e.type))
-      : allEvents;
+    const allEvents = workerWorld?.events?.log;
+    if (!allEvents || allEvents.length === 0) return [];
 
-    if (minImportance) {
-      const impMap: Record<EventImportance, number> = {
-        minor: 0,
-        notable: 1,
-        major: 2,
-        headline: 3,
-      };
-      const minVal = impMap[minImportance];
-      filtered = filtered.filter((e: EngineEvent) => impMap[e.importance || "minor"] >= minVal);
+    const filterSet = filterTypes ? new Set(filterTypes) : null;
+    const impMap: Record<EventImportance, number> = {
+      minor: 0,
+      notable: 1,
+      major: 2,
+      headline: 3,
+    };
+    const minVal = minImportance ? impMap[minImportance] : 0;
+
+    const result: EngineEvent[] = [];
+    // Iterate backwards since log is chronologically ordered (append-only)
+    // The previous implementation used sort() which sorted by year/week descending.
+    // By iterating backwards, we get the same order organically.
+    for (let i = allEvents.length - 1; i >= 0; i--) {
+      const e = allEvents[i];
+      if (filterSet && !filterSet.has(e.type)) continue;
+      if (minImportance && impMap[e.importance || "minor"] < minVal) continue;
+
+      result.push(e);
+      if (result.length >= maxEvents) break;
     }
 
-    // Sort by most recent first
-    filtered = [...filtered].sort((a, b) => {
+    // Sort the result to ensure it matches the previous sort logic precisely.
+    // While the engine guarantees the log is chronologically ordered ascending,
+    // we want to display it descending (most recent first). Since we iterate
+    // backwards, we actually get the most recent ones FIRST, so they are mostly in the correct order!
+    // However, if the source log had multiple items in the same year/week
+    // we still want to ensure a stable sort according to the original logic
+    return result.sort((a, b) => {
       if (a.year !== b.year) return b.year - a.year;
       if (a.week !== b.week) return b.week - a.week;
       return 0;
     });
-
-    return filtered.slice(0, maxEvents);
   }, [workerWorld?.events?.log, maxEvents, filterTypes, minImportance]);
 
   return (
