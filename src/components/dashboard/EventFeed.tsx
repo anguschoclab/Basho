@@ -109,8 +109,6 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
 
     const result: EngineEvent[] = [];
     // Iterate backwards since log is chronologically ordered (append-only)
-    // The previous implementation used sort() which sorted by year/week descending.
-    // By iterating backwards, we get the same order organically.
     for (let i = allEvents.length - 1; i >= 0; i--) {
       const e = allEvents[i];
       if (filterSet && !filterSet.has(e.type)) continue;
