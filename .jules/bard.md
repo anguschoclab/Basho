@@ -1,0 +1,1 @@
+## 2023-10-24 - [Injury kyujo warning enrichment] **Discovery:** High drama moments like injuries often have limited template variety (e.g. `injury_kyujo_warning`), leading to repetition during crucial moments. **Rule:** Enrich high-frequency, high-drama templates with varied phrasings. **Check:** Verify token usage and run `BardEngine` tests.
