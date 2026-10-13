@@ -95,17 +95,21 @@ export function MatchDayViewer({
       const aPlayed = !!a.result;
       const bPlayed = !!b.result;
       if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
-      const aPos = {
-        rank: a.eastRikishi.rank,
-        side: a.eastRikishi.side ?? "east",
-        rankNumber: a.eastRikishi.rankNumber,
-      };
-      const bPos = {
-        rank: b.eastRikishi.rank,
-        side: b.eastRikishi.side ?? "east",
-        rankNumber: b.eastRikishi.rankNumber,
-      };
-      return compareRanks(aPos as unknown as RankPosition, bPos as unknown as RankPosition);
+      const aRank = a.eastRikishi.rank;
+      const aSide = a.eastRikishi.side ?? "east";
+      const aPos: RankPosition =
+        aRank === "yokozuna" || aRank === "ozeki" || aRank === "sekiwake" || aRank === "komusubi"
+          ? { rank: aRank, side: aSide }
+          : { rank: aRank, side: aSide, rankNumber: a.eastRikishi.rankNumber ?? 1 };
+
+      const bRank = b.eastRikishi.rank;
+      const bSide = b.eastRikishi.side ?? "east";
+      const bPos: RankPosition =
+        bRank === "yokozuna" || bRank === "ozeki" || bRank === "sekiwake" || bRank === "komusubi"
+          ? { rank: bRank, side: bSide }
+          : { rank: bRank, side: bSide, rankNumber: b.eastRikishi.rankNumber ?? 1 };
+
+      return compareRanks(aPos, bPos);
     });
   }, [matches, world?.playerKnowledge?.scouting]);
 
