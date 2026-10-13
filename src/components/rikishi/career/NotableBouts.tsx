@@ -11,6 +11,9 @@ import type { NotableBoutEntry } from "@/presenters/engineAccess";
 
 export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry[] }) {
   const [expandedBoutId, setExpandedBoutId] = useState<string | null>(null);
+  const handleToggle = (boutId: string) => {
+    setExpandedBoutId((prev) => (prev === boutId ? null : boutId));
+  };
   if (!notableBouts || notableBouts.length === 0) return null;
   return (
     <div className="space-y-6 pt-10 border-t-2 border-dashed">
@@ -22,32 +25,19 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
         {notableBouts.map((b, i: number) => (
           <div
             key={i}
-            className="border border-border/40 rounded-lg p-4 hover:bg-primary/5 transition-colors"
+            className="border border-border/40 rounded-lg p-4 hover:bg-primary/5 transition-colors group"
           >
-            <div
-              className="flex items-center justify-between cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm ring-offset-background"
-              onClick={() => setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId)}
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              className="w-full flex items-center justify-between cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-xs ring-offset-background"
+              onClick={() => handleToggle(b.boutId)}
               aria-expanded={expandedBoutId === b.boutId}
               aria-controls={`bout-details-${b.boutId}`}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId);
-                }
-              }}
             >
               <div className="flex items-center gap-3">
-                <button
-                  className="text-xs font-black uppercase tracking-widest text-primary hover:underline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId);
-                  }}
-                >
+                <span className="text-xs font-black uppercase tracking-widest text-primary group-hover:underline">
                   {b.boutId}
-                </button>
+                </span>
                 <span className="text-sm font-display font-black">
                   {b.winner ? "W" : "L"} vs {b.opponentShikona}
                 </span>
@@ -81,12 +71,9 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
                   {b.year} {b.bashoName} Day {b.day}
                 </Badge>
               </div>
-            </div>
+            </button>
             {expandedBoutId === b.boutId && b.narrativeLines.length > 0 && (
-              <div
-                id={`bout-details-${b.boutId}`}
-                className="mt-3 pt-3 border-t border-border/20 space-y-1"
-              >
+              <div id={`bout-details-${b.boutId}`} className="mt-3 pt-3 border-t border-border/20 space-y-1">
                 {b.narrativeLines.map((line, j: number) => (
                   <p key={j} className="text-xs text-muted-foreground font-display italic">
                     {line}
