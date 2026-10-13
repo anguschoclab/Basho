@@ -25,8 +25,18 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
             className="border border-border/40 rounded-lg p-4 hover:bg-primary/5 transition-colors"
           >
             <div
-              className="flex items-center justify-between cursor-pointer"
+              className="flex items-center justify-between cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm ring-offset-background"
               onClick={() => setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId)}
+              role="button"
+              tabIndex={0}
+              aria-expanded={expandedBoutId === b.boutId}
+              aria-controls={`bout-details-${b.boutId}`}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId);
+                }
+              }}
             >
               <div className="flex items-center gap-3">
                 <button
@@ -73,7 +83,10 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
               </div>
             </div>
             {expandedBoutId === b.boutId && b.narrativeLines.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-border/20 space-y-1">
+              <div
+                id={`bout-details-${b.boutId}`}
+                className="mt-3 pt-3 border-t border-border/20 space-y-1"
+              >
                 {b.narrativeLines.map((line, j: number) => (
                   <p key={j} className="text-xs text-muted-foreground font-display italic">
                     {line}
