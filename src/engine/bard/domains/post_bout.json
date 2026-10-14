@@ -229,7 +229,12 @@
   "career_bout_milestone": [
     "That was %SHIKONA%'s %MILESTONE%th career bout — a remarkable milestone of longevity.",
     "History for %SHIKONA% — %MILESTONE% total bouts on the dohyo and counting.",
-    "A milestone of endurance: %SHIKONA% reaches the %MILESTONE%-bout mark."
+    "A milestone of endurance: %SHIKONA% reaches the %MILESTONE%-bout mark.",
+    "Another day, another battle — %SHIKONA% steps down after his %MILESTONE%th career appearance.",
+    "The dust settles on bout number %MILESTONE% for the veteran %SHIKONA%.",
+    "Few rikishi ever see their %MILESTONE%th match, but %SHIKONA% joins that elite group today.",
+    "Decades of keiko and countless clashes have led %SHIKONA% to this %MILESTONE%-bout milestone.",
+    "A testament to resilience — %SHIKONA% crosses the incredible %MILESTONE%-bout threshold."
   ],
   "comeback_win": [
     "A stunning comeback victory for %WINNER% — saved from the edge of defeat!",
