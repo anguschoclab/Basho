@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import type { EngineEvent } from "@/engine/types/events";
+import { scanRecentEvents } from "@/presenters/selectors";
 import { EventDetailDialog } from "../EventDetailDialog";
 import { EventLogHeader, EventLogList, type EventGroup } from "./EventLogSections";
 
@@ -22,17 +23,14 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const [filter, setFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
 
-  const events = useMemo(() => {
-    if (!eventLogData?.events) return [];
-    const all = [...eventLogData.events];
-    all.reverse();
-    return all.slice(0, 100);
-  }, [eventLogData?.events]);
-
-  const filteredEvents = useMemo(() => {
-    if (filter === "all") return events;
-    return events.filter((e) => e.category === filter);
-  }, [events, filter]);
+  const filteredEvents = useMemo(
+    () =>
+      scanRecentEvents(eventLogData?.events, {
+        category: filter === "all" ? undefined : (filter as EngineEvent["category"]),
+        limit: 100,
+      }),
+    [eventLogData?.events, filter]
+  );
 
   const grouped = useMemo(() => {
     const groups: EventGroup[] = [];

@@ -22,6 +22,7 @@ import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
+import { scanRecentEvents } from "@/presenters/selectors";
 import { MentionText } from "@/components/MentionText";
 import { EventDetailDialog } from "@/components/EventDetailDialog";
 import { activationKeyHandler } from "@/lib/a11y";
@@ -94,33 +95,15 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
   const handleSelect = useCallback((e: EngineEvent) => setSelectedEvent(e), []);
 
-  const events = useMemo(() => {
-    const allEvents = workerWorld?.events?.log || [];
-    const filterSet = filterTypes ? new Set(filterTypes) : null;
-    let filtered = filterSet
-      ? allEvents.filter((e: EngineEvent) => filterSet.has(e.type))
-      : allEvents;
-
-    if (minImportance) {
-      const impMap: Record<EventImportance, number> = {
-        minor: 0,
-        notable: 1,
-        major: 2,
-        headline: 3,
-      };
-      const minVal = impMap[minImportance];
-      filtered = filtered.filter((e: EngineEvent) => impMap[e.importance || "minor"] >= minVal);
-    }
-
-    // Sort by most recent first
-    filtered = [...filtered].sort((a, b) => {
-      if (a.year !== b.year) return b.year - a.year;
-      if (a.week !== b.week) return b.week - a.week;
-      return 0;
-    });
-
-    return filtered.slice(0, maxEvents);
-  }, [workerWorld?.events?.log, maxEvents, filterTypes, minImportance]);
+  const events = useMemo(
+    () =>
+      scanRecentEvents(workerWorld?.events?.log, {
+        types: filterTypes,
+        minImportance,
+        limit: maxEvents,
+      }),
+    [workerWorld?.events?.log, maxEvents, filterTypes, minImportance]
+  );
 
   return (
     <BaseWidget title="Event Feed" icon={Bell}>

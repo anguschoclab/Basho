@@ -8,7 +8,6 @@
  * EventBus factory methods live in ./EventBus.ts
  */
 
-import { stableTieBreak } from "./utils/sort";
 import { rngForWorld } from "./rng";
 import { DEFAULT_START_YEAR } from "../constants/engine/calendar";
 import type { WorldState } from "./types/world";
@@ -182,6 +181,67 @@ export function isDurableEvent(e: Pick<EngineEvent, "category" | "importance">):
 /**
  * Query events.
  */
+const IMPORTANCE_SCORE: Record<EventImportance, number> = {
+  minor: 0,
+  notable: 1,
+  major: 2,
+  headline: 3,
+};
+
+/** Filter options for {@link scanRecentEvents}. */
+export interface ScanRecentEventsOptions {
+  limit?: number;
+  types?: readonly string[];
+  category?: EventCategory;
+  scope?: EventScope;
+  heyaId?: Id;
+  rikishiId?: Id;
+  minImportance?: EventImportance;
+}
+
+/**
+ * Canonical most-recent-first extraction over the append-only `events.log`.
+ *
+ * The log is chronological — the only writers are `logEngineEvent`'s `push`
+ * and an order-preserving eviction `filter` — so scanning backwards collects
+ * the most recent matches in O(N) worst case (typically O(k)), then a
+ * defensive re-sort of the bounded result by (year, week, day) descending
+ * guards the contract against any future non-append-only writer. Events
+ * sharing a timestamp keep insertion-recency order (later-pushed = more
+ * recent). Callers should NOT chain a `.filter().sort().slice()` pipeline on
+ * the raw log — use this.
+ */
+export function scanRecentEvents(
+  log: readonly EngineEvent[] | undefined,
+  opts: ScanRecentEventsOptions = {}
+): EngineEvent[] {
+  if (!log || log.length === 0) return [];
+  const typesSet = opts.types?.length ? new Set(opts.types) : undefined;
+  const minImp = opts.minImportance !== undefined ? IMPORTANCE_SCORE[opts.minImportance] : -1;
+  const limit = opts.limit ?? Infinity;
+
+  const out: EngineEvent[] = [];
+  for (let i = log.length - 1; i >= 0 && out.length < limit; i--) {
+    const e = log[i];
+    if (typesSet && !typesSet.has(e.type)) continue;
+    if (opts.category && e.category !== opts.category) continue;
+    if (opts.scope && e.scope !== opts.scope) continue;
+    if (opts.heyaId && e.heyaId !== opts.heyaId) continue;
+    if (opts.rikishiId && e.rikishiId !== opts.rikishiId) continue;
+    if (minImp >= 0 && IMPORTANCE_SCORE[e.importance ?? "minor"] < minImp) continue;
+    out.push(e);
+  }
+
+  if (out.length > 1) {
+    out.sort((a, b) => {
+      const ta = a.year * 1e6 + a.week * 100 + (a.day ?? 0);
+      const tb = b.year * 1e6 + b.week * 100 + (b.day ?? 0);
+      return tb - ta;
+    });
+  }
+  return out;
+}
+
 export function queryEvents(
   world: WorldState,
   filters: {
@@ -195,32 +255,13 @@ export function queryEvents(
   }
 ): EngineEvent[] {
   const events = ensureEventsState(world).log;
-  const impScore = (i: EventImportance) =>
-    i === "headline" ? 3 : i === "major" ? 2 : i === "notable" ? 1 : 0;
-  const minImp = filters.minImportance ? impScore(filters.minImportance) : -1;
-
-  const typesSet = filters.types?.length ? new Set(filters.types) : undefined;
-
-  // ⚡ Bolt: Use a single-pass loop instead of multiple chained .filter() calls
-  // to avoid O(N * filters) intermediate array allocations on large event logs.
-  const out: EngineEvent[] = [];
-  for (let i = 0; i < events.length; i++) {
-    const e = events[i];
-    if (filters.category && e.category !== filters.category) continue;
-    if (filters.scope && e.scope !== filters.scope) continue;
-    if (filters.heyaId && e.heyaId !== filters.heyaId) continue;
-    if (filters.rikishiId && e.rikishiId !== filters.rikishiId) continue;
-    if (typesSet && !typesSet.has(e.type)) continue;
-    if (minImp >= 0 && impScore(e.importance) < minImp) continue;
-    out.push(e);
-  }
-
-  return out
-    .sort((a, b) => {
-      const ta = a.year * 1e6 + a.week * 100 + (a.day ?? 0);
-      const tb = b.year * 1e6 + b.week * 100 + (b.day ?? 0);
-      if (ta !== tb) return tb - ta;
-      return stableTieBreak(b.id, a.id);
-    })
-    .slice(0, filters.limit ?? 50);
+  return scanRecentEvents(events, {
+    limit: filters.limit ?? 50,
+    category: filters.category,
+    scope: filters.scope,
+    heyaId: filters.heyaId,
+    rikishiId: filters.rikishiId,
+    types: filters.types,
+    minImportance: filters.minImportance,
+  });
 }

@@ -9,6 +9,11 @@ import type { RetiredRikishiSummary } from "../engine/types/history";
 import type { Heya } from "../engine/types/heya";
 import type { EngineEvent } from "../engine/types/events";
 import { queryEvents } from "../engine/events";
+
+// Re-export the canonical most-recent-first extractor so UI components can
+// reach it without importing from src/engine/ (ESLint no-restricted-imports).
+export { scanRecentEvents } from "../engine/events";
+export type { ScanRecentEventsOptions } from "../engine/events";
 import { sortStandings } from "../engine/utils/sort";
 import { getCachedPerception } from "./uiDigest";
 import { getKimarite, KIMARITE_REGISTRY } from "../engine/kimariteRegistry";
