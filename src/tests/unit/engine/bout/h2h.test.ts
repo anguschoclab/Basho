@@ -543,7 +543,14 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toBe("History is heavily on Alpha's side today with a commanding 4-0 record.");
+    expect([
+      "Alpha has absolutely dominated this matchup, leading the series 4-0.",
+      "Beta has struggled historically here, winning only 0 of their 4 meetings.",
+      "History is heavily on Alpha's side today with a commanding 4-0 record.",
+      "It has been one-way traffic in this rivalry, as Alpha boasts a massive 4-0 advantage.",
+      "Beta faces an uphill psychological battle today, having won only 0 of their 4 encounters.",
+      "The historical dominance of Alpha is undeniable — they come in with a 4-0 edge over Beta."
+    ]).toContain(text);
   });
 
   it("handles lopsided domination (P2 > P1)", () => {
@@ -557,7 +564,14 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toBe("Beta has absolutely dominated this matchup, leading the series 4-0.");
+    expect([
+      "Beta has absolutely dominated this matchup, leading the series 4-0.",
+      "Alpha has struggled historically here, winning only 0 of their 4 meetings.",
+      "History is heavily on Beta's side today with a commanding 4-0 record.",
+      "It has been one-way traffic in this rivalry, as Beta boasts a massive 4-0 advantage.",
+      "Alpha faces an uphill psychological battle today, having won only 0 of their 4 encounters.",
+      "The historical dominance of Beta is undeniable — they come in with a 4-0 edge over Alpha."
+    ]).toContain(text);
   });
 
   it("handles deadlock", () => {
@@ -571,7 +585,14 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toBe("This is as close as it gets—a 3-2 career split between them.");
+    expect([
+      "This is as close as it gets—a 3-2 career split between them.",
+      "A true rivalry! The record stands at 3 wins to 2.",
+      "Neither man has been able to gain a decisive edge in this series.",
+      "With 3 wins and 2 losses, there's virtually nothing separating these two.",
+      "The lifetime series is perfectly poised at 3 to 2.",
+      "A fiercely contested matchup historically, sitting at a tight 3-2 split."
+    ]).toContain(text);
   });
 
   it("falls back to generic text", () => {
@@ -610,6 +631,13 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toBe("Last time they met on Day 14, Alpha won decisively by yorikiri.");
+    expect([
+      "Last time they met on Day 14, Alpha won decisively by yorikiri.",
+      "Beta will be looking for revenge after that yorikiri loss in the previous basho.",
+      "Fans remember their last bout well—a crushing yorikiri victory for Alpha.",
+      "Alpha had the upper hand in their previous encounter, finishing Beta with a clean yorikiri.",
+      "The sting of a Day 14 yorikiri defeat still lingers for Beta.",
+      "Expect Beta to come out aggressively after falling to Alpha's yorikiri in their last meeting."
+    ]).toContain(text);
   });
 });

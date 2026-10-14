@@ -9,6 +9,9 @@ classification.
 **Legend:** FIXED = implemented + targeted tests green. OPEN = confirmed, not yet
 implemented. DISPROVED = claim did not survive production-path verification.
 ASSESSED = evaluated, not a bug (debt note only).
+**Staleness note:** grep/regex sweeps below were discovery aids only — every
+entry was verified against production call paths before classification; any
+entry superseded by later findings is marked as such inline.
 
 ---
 

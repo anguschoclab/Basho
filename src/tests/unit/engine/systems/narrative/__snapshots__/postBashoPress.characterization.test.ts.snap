@@ -197,7 +197,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "The YDC acknowledges [[rikishi:r-champ:Championmaru]]'s strong tournament but reaffirms: only a championship will suffice.",
+    "text": "Despite the solid run, the message for [[rikishi:r-champ:Championmaru]] is clear: only a championship next tournament will elevate him.",
   },
   {
     "id": "press-ydc-bid-r-champ-hatsu-2026-score",
@@ -213,7 +213,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "The YDC acknowledges [[rikishi:r-bid:Biddyama]]'s strong tournament but reaffirms: only a championship will suffice.",
+    "text": "Despite the solid run, the message for [[rikishi:r-bid:Biddyama]] is clear: only a championship next tournament will elevate him.",
   },
   {
     "id": "press-ydc-bid-r-bid-hatsu-2026-score",
@@ -268,7 +268,7 @@ exports[`PostBashoPressService — golden master > generateYokozunaBidLines acro
       "tags": [
         "post_basho_press",
       ],
-      "text": "The Chief Judge notes that [[rikishi:r-ozeki:Ozesho]]'s Yokozuna bid continues, but he will have to win the title to rise.",
+      "text": "'[[rikishi:r-ozeki:Ozesho]] has the qualities, but the yusho is the threshold,' the Chief Judge states.",
     },
   ],
   "w13": [
@@ -278,7 +278,7 @@ exports[`PostBashoPressService — golden master > generateYokozunaBidLines acro
       "tags": [
         "post_basho_press",
       ],
-      "text": "The Chief Judge notes that [[rikishi:r-ozeki:Ozesho]]'s Yokozuna bid continues, but he will have to win the title to rise.",
+      "text": "'[[rikishi:r-ozeki:Ozesho]] has the qualities, but the yusho is the threshold,' the Chief Judge states.",
     },
     {
       "id": "press-ydc-bid-r-ozeki-hatsu-2026-score",
@@ -286,7 +286,7 @@ exports[`PostBashoPressService — golden master > generateYokozunaBidLines acro
       "tags": [
         "post_basho_press",
       ],
-      "text": "The YDC notes that [[rikishi:r-ozeki:Ozesho]]'s 13-win performance strengthens his Yokozuna candidacy considerably.",
+      "text": "'Double-digit wins are expected — 13 and above is what truly moves the needle,' the Chief Judge says.",
     },
   ],
   "w14": [
@@ -296,7 +296,7 @@ exports[`PostBashoPressService — golden master > generateYokozunaBidLines acro
       "tags": [
         "post_basho_press",
       ],
-      "text": "The Chief Judge notes that [[rikishi:r-ozeki:Ozesho]]'s Yokozuna bid continues, but he will have to win the title to rise.",
+      "text": "'[[rikishi:r-ozeki:Ozesho]] has the qualities, but the yusho is the threshold,' the Chief Judge states.",
     },
     {
       "id": "press-ydc-bid-r-ozeki-hatsu-2026-score",
@@ -304,7 +304,7 @@ exports[`PostBashoPressService — golden master > generateYokozunaBidLines acro
       "tags": [
         "post_basho_press",
       ],
-      "text": "The YDC notes that [[rikishi:r-ozeki:Ozesho]]'s 13-win performance strengthens his Yokozuna candidacy considerably.",
+      "text": "'Double-digit wins are expected — 13 and above is what truly moves the needle,' the Chief Judge says.",
     },
   ],
 }

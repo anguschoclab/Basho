@@ -247,7 +247,11 @@
     "%SHIKONA% is clutching his %AREA% — that could threaten the rest of his tournament.",
     "The medical staff is concerned about %SHIKONA%'s %AREA% — a kyujo may be on the horizon.",
     "That %AREA% injury looks serious — %SHIKONA%'s participation going forward is in doubt.",
-    "A worrying sign for %SHIKONA% — the %AREA% could force a withdrawal if it worsens."
+    "A worrying sign for %SHIKONA% — the %AREA% could force a withdrawal if it worsens.",
+    "The way %SHIKONA% favors that %AREA% suggests his tournament might be over before he even reaches the locker room.",
+    "%SHIKONA% is in visible agony, and a kyujo seems almost inevitable with a %AREA% injury like that.",
+    "Medical staff rush to assess the %AREA% — we might have seen the last of %SHIKONA% this basho.",
+    "A devastating blow for %SHIKONA%; recovering from that %AREA% damage in time for tomorrow looks impossible."
   ],
   "playoff_result": [
     "The yusho is decided! %WINNER% prevails over %LOSER% in the playoff.",

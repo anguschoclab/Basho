@@ -31,7 +31,7 @@ exports[`generateBoutNarrative — golden master > 7-7 pressure both sides 1`] =
     "id": "gm-bout-pre_bout-3",
     "phase": "pre_bout",
     "tags": [],
-    "text": "A crucial matchup — both at 7 and 7. The loser falls out of contention.",
+    "text": "Do-or-die for the yusho. A 7-7 showdown between Wrestler-r-east and Wrestler-r-west where the loser is eliminated.",
     "voice": "dramatic",
   },
   {
@@ -254,7 +254,7 @@ exports[`generateBoutNarrative — golden master > different seeds produce diffe
     "id": "gm-bout-pre_bout-2",
     "phase": "pre_bout",
     "tags": [],
-    "text": "Identical records — both men at 3 and 1.",
+    "text": "Nothing separates them on the leaderboard — Wrestler-r-east and Wrestler-r-west are deadlocked at 3 wins and 1 losses.",
     "voice": "understated",
   },
   {
@@ -382,7 +382,7 @@ exports[`generateBoutNarrative — golden master > different seeds produce diffe
     "id": "gm-bout-pre_bout-2",
     "phase": "pre_bout",
     "tags": [],
-    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "text": "A perfectly matched pairing today. Both Wrestler-r-east and Wrestler-r-west enter at 3-1.",
     "voice": "understated",
   },
   {
@@ -533,7 +533,7 @@ exports[`generateBoutNarrative — golden master > final day senshuraku 1`] = `
     "id": "gm-bout-pre_bout-3",
     "phase": "pre_bout",
     "tags": [],
-    "text": "A tale of two records — Wrestler-r-east 9-5, Wrestler-r-west 7-7.",
+    "text": "Wrestler-r-east comes in confident at 9 and 5. Wrestler-r-west needs a win badly at 7 and 7.",
     "voice": "dramatic",
   },
   {
@@ -719,7 +719,7 @@ exports[`generateBoutNarrative — golden master > in-bout injury narrative 1`] 
     "id": "gm-bout-pre_bout-2",
     "phase": "pre_bout",
     "tags": [],
-    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "text": "A perfectly matched pairing today. Both Wrestler-r-east and Wrestler-r-west enter at 3-1.",
     "voice": "understated",
   },
   {
@@ -844,7 +844,7 @@ exports[`generateBoutNarrative — golden master > in-bout injury narrative 1`] 
     "tags": [
       "injury",
     ],
-    "text": "The medical staff is concerned about [[rikishi:r-west:Wrestler-r-west]]'s knee — a kyujo may be on the horizon.",
+    "text": "That knee injury looks serious — [[rikishi:r-west:Wrestler-r-west]]'s participation going forward is in doubt.",
     "voice": "understated",
   },
 ]
@@ -881,7 +881,7 @@ exports[`generateBoutNarrative — golden master > mid-basho day 8 with records 
     "id": "gm-bout-pre_bout-3",
     "phase": "pre_bout",
     "tags": [],
-    "text": "Two contenders here — Wrestler-r-east at 5 and 3, Wrestler-r-west also at 4 and 3.",
+    "text": "Both men come in with momentum. Wrestler-r-east stands at 5 and 2, while Wrestler-r-west is 4 and 3.",
     "voice": "formal",
   },
   {
@@ -1144,7 +1144,7 @@ exports[`generateBoutNarrative — golden master > multi-frame log coverage 1`] 
     "id": "gm-bout-pre_bout-2",
     "phase": "pre_bout",
     "tags": [],
-    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "text": "A perfectly matched pairing today. Both Wrestler-r-east and Wrestler-r-west enter at 3-1.",
     "voice": "formal",
   },
   {
@@ -1314,7 +1314,7 @@ exports[`generateBoutNarrative — golden master > timeout bout 1`] = `
     "id": "gm-bout-pre_bout-2",
     "phase": "pre_bout",
     "tags": [],
-    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "text": "A perfectly matched pairing today. Both Wrestler-r-east and Wrestler-r-west enter at 3-1.",
     "voice": "formal",
   },
   {
@@ -1456,7 +1456,7 @@ exports[`generateBoutNarrative — golden master > upset + kinboshi + kensho 1`]
     "id": "gm-bout-pre_bout-2",
     "phase": "pre_bout",
     "tags": [],
-    "text": "Even Steven — Wrestler-r-east and Wrestler-r-west each with 3 wins and 1 losses.",
+    "text": "A perfectly matched pairing today. Both Wrestler-r-east and Wrestler-r-west enter at 3-1.",
     "voice": "dramatic",
   },
   {
@@ -1643,7 +1643,7 @@ exports[`generateBoutNarrative — golden master > winning streak callout 1`] = 
     "id": "gm-bout-pre_bout-3",
     "phase": "pre_bout",
     "tags": [],
-    "text": "A tale of two records — Wrestler-r-east 13-0, Wrestler-r-west 4-9.",
+    "text": "Wrestler-r-east comes in confident at 13 and 0. Wrestler-r-west needs a win badly at 4 and 9.",
     "voice": "dramatic",
   },
   {
