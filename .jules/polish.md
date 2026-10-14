@@ -1,0 +1,1 @@
+## 2023-10-24 - Fix RivalsWidget empty state **Issue:** RivalsWidget was returning null when there were no rivals. **Learning:** Dashboard widgets should use EmptyState component instead of returning null to avoid grid collapse. **Rule:** Use EmptyState component with compact=true inside BaseWidget for empty lists.
