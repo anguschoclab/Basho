@@ -121,8 +121,8 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                       <Badge
                         variant="outline"
                         className={cn(
-                          "text-[9px] px-1 py-0 h-4 border-transparent bg-muted/20",
-                          rival.streak > 0 ? "text-green-500" : "text-red-500"
+                          "text-[10px] px-1 py-0 h-4 border-transparent bg-muted/20",
+                          rival.streak > 0 ? "text-success" : "text-destructive"
                         )}
                       >
                         {rival.streak > 0 ? `W${rival.streak}` : `L${Math.abs(rival.streak)}`}

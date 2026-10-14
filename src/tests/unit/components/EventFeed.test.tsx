@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
-import { EventFeed } from "@/components/dashboard/EventFeed";
+import { EventFeed, GlobalCupEventFeed } from "@/components/dashboard/EventFeed";
 import { useGameStore } from "@/store/gameStore";
 import type { EngineEvent } from "@/engine/types/events";
 
@@ -119,6 +119,14 @@ describe("EventFeed filtering", () => {
     mockStore({ events: { log: [] } });
     render(<EventFeed maxEvents={10} />);
     expect(screen.queryByText("No recent events")).toBeTruthy();
+  });
+
+  it("GlobalCupEventFeed renders only GLOBAL_CUP events", () => {
+    render(<GlobalCupEventFeed />);
+    expect(screen.queryByText("Event e1")).toBeTruthy();
+    expect(screen.queryByText("Event e4")).toBeTruthy();
+    expect(screen.queryByText("Event e2")).toBeNull();
+    expect(screen.queryByText("Event e3")).toBeNull();
   });
 });
 
