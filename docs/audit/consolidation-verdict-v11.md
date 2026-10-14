@@ -180,5 +180,19 @@ demonstrated with an observed red→green transition on the canonical extractor;
 determinism byte-identical on both horizons post-integration; coverage ratchet
 held at 75% and met by adding tests rather than lowering the floor.
 
-**Remote lifecycle:** consolidation PR #1093 opened; merge + superseded-PR
-closure + branch deletion recorded post-merge (see addendum below).
+**Remote lifecycle (verified via `gh`, 2026-10-14):** consolidation PR
+[#1093](https://github.com/anguschoclab/Basho/pull/1093) merged as
+`d6c48789` (merge commit, repo convention). All required branch-protection
+checks passed (lint, build, typecheck); unit-tests, smoke, and CodeQL also
+green. The advisory `perf-gate` check failed with S3_year p50 +49% — a
+**CI-runner artifact, not a regression**: every recent perf-gate run fails
+identically, including docs-only (Scribe, +128.7%) and a11y (Palette,
++132.6%) PRs; the committed baseline (1339.1ms) was seeded on a faster
+machine. Local `bench-pipelines` on the merged HEAD measures S3 p50
+1486.2ms (+11% vs baseline, under the 15% threshold). All 34 superseded
+PRs closed with a pointer to this verdict; all 24 remote bot branches
+deleted (10 Dependabot branches auto-deleted on PR close);
+`git ls-remote --heads` confirms only `main` remains;
+`gh pr list --state open` returns zero. Local `consolidation/v11` and
+stale `scout-test-h2h-*` branch deleted. Repository consolidation is
+complete.
