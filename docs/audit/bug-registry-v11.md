@@ -34,7 +34,9 @@ entry superseded by later findings is marked as such inline.
   `boutId` (precedented at :119-121), drop :74 cast. #1089's `?? 1` replaced by
   canonical `toRankPosition` which throws on missing `rankNumber` (`banzuke.ts:58-66`).
 - **Evidence:** tsgo compile + `MatchDayViewer` tests stay green.
-- **Status:** OPEN → fixed in consolidation commit (see verdict doc)
+- **Status:** FIXED — `ViewerMatch` type declared; both casts dropped;
+  `onBoutClick` resolves the canonical `BoutMatchUI` via `boutId` lookup;
+  sort uses `toRankPosition` re-exported through `presenters/uiDigest`.
 
 ### V11-B02 (WS-F, LOW): Weak `(rec as { wins: number })` casts in `rivals.ts` — extended by #1061
 
@@ -42,9 +44,10 @@ entry superseded by later findings is marked as such inline.
 - **Mechanism:** `calculateTopRivals` casts the H2H record to inline anonymous
   types instead of `H2HRecord` (`engine/h2h.ts` — has `wins/losses/streak/lastMatch`).
   #1061 adds `streak` via the same weak-cast pattern.
-- **Fix:** Import `H2HRecord`, drop all four inline casts. Streak data verified real
-  (`h2h.ts:64,76,114`).
-- **Status:** OPEN → fixed in consolidation commit
+- **Fix:** `rec` is already `H2HRecord` (`r.h2h: Record<string, H2HRecord>`) —
+  all four inline casts dropped to direct field access; `streak ?? 0` kept
+  for legacy-save tolerance.
+- **Status:** FIXED
 
 ### V11-B03 (WS-H, DOC): CLAUDE.md status line stale
 
@@ -54,6 +57,28 @@ entry superseded by later findings is marked as such inline.
 ### V11-B04 (WS-H, DOC): `bug-registry-v10.md` header says "(ongoing)"
 
 - Verified zero OPEN/DEFERRED entries (30 FIXED). Header marked CONVERGED.
+- **Status:** FIXED
+
+### V11-B05 (WS-F, HYGIENE): Untracked ` 2.*` duplicate files failing typecheck
+
+- **Files:** `src/presenters/rikishi/types 2.ts`, `src/presenters/rikishi/transformers/rivals 2.ts`,
+  `src/components/rikishi/RikishiCombatTab 2.tsx` — stale macOS-style copy
+  artifacts, untracked by git but inside tsconfig's `src/**` include, so they
+  are typechecked and rot silently (the stale `rivals 2.ts` lacked `streak`
+  after #1061's `UIRivalEntry` change).
+- **Status:** FIXED — deleted; unimported by any source file.
+
+### V11-B06 (DEPENDABOT, GATE): `typescript` 7.0.2 bump rejected
+
+- **PR #1078:** TS7 removes the JS compiler API surface
+  (`ts.isCallExpression`, `createSourceFile`, visitors). Six consumers depend
+  on it: `templateTokenIntegrity.test.ts`, `deep-nesting.test.ts` (gate tests)
+  and `scripts/{analyzeNarrativeDeps,duplicateExports,emitNarrativeModules,measureFunctions}.ts`.
+  Reproduced: 480+ typecheck errors on `typescript@7.0.2`.
+- **Resolution:** `typescript` pinned back at `^6.0.3` (serves API consumers
+  only; typecheck itself runs on `@typescript/native` independently).
+- **Status:** REJECTED — documented; revisit when API consumers migrate to a
+  TS7-compatible AST surface (e.g. tsgo API or an alternative parser).
 
 ## Assessed — Not Bugs
 
