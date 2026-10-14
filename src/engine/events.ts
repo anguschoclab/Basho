@@ -77,6 +77,10 @@ interface LogEngineEventParams {
  * which will be applied atomically by `ImpactResolver`.
  *
  * This function also relies on `world.dayIndexGlobal` to scope deduplication.
+ *
+ * @returns The logged EngineEvent, or `undefined` if this exact event (by dedupeKey)
+ * was already logged today BUT has since been evicted from the live log array due to
+ * the MAX_LIVE_EVENT_LOG capacity limit. Callers must handle the undefined case.
  */
 export function logEngineEvent(
   world: WorldState,

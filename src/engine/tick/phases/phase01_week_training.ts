@@ -8,17 +8,22 @@
  * - Apply heritage bonuses from bloodline traits (BloodlineService)
  * - Apply mentorship technique bleed and adaptability penalties (MentorshipService)
  * - Apply sparring stat bonuses and rivalry seeding (SparringService)
+ * - Apply tsukebito assignments and benefits, plus ototodeshi effects (TsukebitoService)
+ * - Apply weight journey adjustments (WeightJourney)
  *
- * Impact merging order:
+ * Impact merging order (sequenced against progressively-resolved world state to prevent stale snapshot clobbering):
  * 1. Training bonuses are applied first (base gains)
  * 2. Heritage bonuses are applied (heritage stat floors)
  * 3. Mentorship bonuses are applied (technique bleed, adaptability penalty)
  * 4. Sparring bonuses are applied (stat bleed from stronger to weaker)
+ * 5. Tsukebito and ototodeshi effects are applied (using post-sparring world)
+ * 6. Weight journey ticks are applied (using post-tsukebito world)
  *
  * @see TrainingService for standard training logic
  * @see BloodlineService for heritage-based bonuses
  * @see MentorshipService for mentor-apprentice bonuses
  * @see SparringService for sparring partnership bonuses
+ * @see TsukebitoService for attendant and junior disciple bonuses
  */
 
 import type { WorldState } from "../../types/world";
@@ -42,16 +47,14 @@ import { getRikishi } from "../../queries";
 /**
  * Weekly training tick phase.
  *
- * Applies standard training, heritage bonuses, mentorship technique bleed, and sparring bonuses.
- * All impacts are merged into a single StateImpact for atomic application.
+ * Applies standard training, heritage bonuses, mentorship, sparring, tsukebito benefits,
+ * and weight journey ticks. Sub-systems are sequenced so their impacts compose correctly.
  *
  * Algorithm:
- * 1. Apply standard weekly training (TrainingService.applyWeeklyTraining)
- * 2. Apply heritage bonuses (BloodlineService.applyHeritageBonus)
- * 3. Apply mentorship bonuses (applyMentorshipBonuses)
- * 4. Apply sparring bonuses and rivalry seeding (applyWeeklySparring)
- * 5. Merge all rikishi updates, world fields, and events
- * 6. Return combined StateImpact
+ * 1. Sequence standard training, heritage, mentorship, and sparring impacts against the base world.
+ * 2. Resolve the intermediate world to compute tsukebito assignments and benefits.
+ * 3. Resolve the post-tsukebito world to compute weight journey ticks.
+ * 4. Merge all sequenced and composed impacts into a single returned StateImpact.
  *
  * @param {WorldState} world - The current world state.
  * @returns {StateImpact} Combined impact describing all training-related changes.
