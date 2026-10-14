@@ -11,6 +11,7 @@ import {
 } from "@/engine/systems/narrative/PostBashoPressService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/rng";
+import { toIdMap } from "@/engine/utils";
 import { makeMockWorld, mockRikishi } from "../../utils";
 import type { WorldState } from "@/engine/types/world";
 
@@ -18,7 +19,7 @@ const RNG = () => rngFromSeed("press-char-seed", "narrative", "post_basho_press"
 
 function worldWith(...rs: Array<ReturnType<typeof mockRikishi>>): WorldState {
   return makeMockWorld({
-    rikishi: new Map(rs.map((r) => [r.id, r])),
+    rikishi: toIdMap(rs),
     activeRikishiIds: new Set(rs.map((r) => r.id)),
   });
 }

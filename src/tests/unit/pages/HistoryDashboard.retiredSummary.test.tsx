@@ -7,6 +7,7 @@ import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
+import { toIdMap } from "@/engine/utils";
 
 // Mock AppLayout to avoid layout complexity
 vi.mock("@/components/layout/AppLayout", () => ({
@@ -115,9 +116,9 @@ function makeWorldWithRetired(
     week: 1,
     dayIndexGlobal: 0,
     cyclePhase: "interim",
-    heyas: new Map(heyas.map((h) => [h.id, h])),
+    heyas: toIdMap(heyas),
     rikishi: new Map(),
-    historicalRikishi: new Map(retired.map((r) => [r.id, r])),
+    historicalRikishi: toIdMap(retired),
     activeRikishiIds: new Set(),
     oyakata: new Map(),
     staff: new Map(),

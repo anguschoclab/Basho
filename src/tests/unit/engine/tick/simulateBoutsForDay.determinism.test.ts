@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { toKeyedMap } from "@/engine/utils";
 import type { MatchSchedule } from "@/engine/types/basho";
 
 function world() {
@@ -38,8 +39,10 @@ function world() {
     rikishi.set(`e${i}`, mk(`e${i}`, "east"));
     rikishi.set(`w${i}`, mk(`w${i}`, "west"));
   }
-  const standings = new Map(
-    [...rikishi.keys()].map((id) => [id, { wins: 0, losses: 0, absences: 0 }])
+  const standings = toKeyedMap(
+    [...rikishi.keys()],
+    (id) => id,
+    () => ({ wins: 0, losses: 0, absences: 0 })
   );
   return MockFactory.createWorld({
     rikishi,

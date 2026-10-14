@@ -4,6 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { selectKachiNokoriLeaders } from "@/presenters/projections/recapKachiNokoriProjections";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(rikishi: any[]): WorldState {
@@ -11,7 +12,7 @@ function makeWorld(rikishi: any[]): WorldState {
     seed: "kachi-test",
     year: 2026,
     heyas: new Map([["h1", { id: "h1", name: "Test" }]]),
-    rikishi: new Map(rikishi.map((r) => [r.id, r])),
+    rikishi: toIdMap(rikishi),
     activeRikishiIds: rikishi.map((r) => r.id),
     playerHeyaId: "h1",
   } as any;

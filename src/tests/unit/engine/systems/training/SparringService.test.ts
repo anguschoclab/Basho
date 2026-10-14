@@ -7,6 +7,7 @@ import {
 } from "@/engine/systems/training/SparringService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { SparringPair, SparringState } from "@/engine/types/training";
 import { SPARRING_MAX_BLEED } from "@/constants/engine/sparring";
@@ -19,7 +20,7 @@ function makeSparringWorld(
   const heya = makeMockHeya(heyaId, {
     rikishiIds: rikishiList.map((r) => r.id),
   });
-  const rikishiMap = new Map(rikishiList.map((r) => [r.id, r]));
+  const rikishiMap = toIdMap(rikishiList);
   const world = makeMockWorld({
     rikishi: rikishiMap,
     sparringPairs,

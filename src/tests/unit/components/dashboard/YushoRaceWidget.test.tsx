@@ -14,13 +14,18 @@ vi.mock("@/contexts/useGame", () => ({
 
 import { YushoRaceWidget } from "@/components/dashboard/YushoRaceWidget";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { toKeyedMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeWorldWithBasho(rikishi: Rikishi[], wins: number[]): WorldState {
   const world = MockFactory.createWorld();
   world.currentBasho = MockFactory.createBasho({
-    standings: new Map(rikishi.map((r, i) => [r.id, { wins: wins[i], losses: 0 }])),
+    standings: toKeyedMap(
+      rikishi,
+      (r) => r.id,
+      (_r, i) => ({ wins: wins[i], losses: 0 })
+    ),
   });
   for (const r of rikishi) {
     world.rikishi.set(r.id, r);

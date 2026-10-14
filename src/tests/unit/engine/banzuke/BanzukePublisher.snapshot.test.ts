@@ -19,6 +19,7 @@ import { buildBanzukeSnapshot } from "@/engine/banzuke/banzukeSnapshot";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeBashoKey } from "@/engine/historyIndex";
 import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BanzukeEntry, Division } from "@/engine/types/banzuke";
 
@@ -54,7 +55,7 @@ function makePostBashoWorld(): WorldState {
   const world = makeMockWorld({
     year: YEAR,
     cyclePhase: "post_basho",
-    rikishi: new Map(rikishi.map((r) => [r.id, r])),
+    rikishi: toIdMap(rikishi),
     history: [makeResultFixture("r_m5")],
     currentBasho: makeMockBasho({
       year: YEAR,

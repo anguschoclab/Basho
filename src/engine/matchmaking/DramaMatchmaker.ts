@@ -653,17 +653,20 @@ export function applyDramaBudget(
 
   // Add drama labels to reasons for high-drama bouts (skip if already labeled from swap)
   // Uses cached drama scores instead of recomputing
-  const finalPairings = bestPairings.map((p, idx) => {
-    if (p.reasons.some((r: string) => r.startsWith("drama_"))) return p;
-    const drama = dramaCache.get(idx);
-    if (drama && drama.score > 0) {
-      return {
-        ...p,
-        reasons: [...p.reasons, `drama_${drama.label}`],
-      };
+  const finalPairings: MatchPairing[] = [];
+  for (let idx = 0; idx < bestPairings.length; idx++) {
+    const p = bestPairings[idx];
+    if (p.reasons.some((r: string) => r.startsWith("drama_"))) {
+      finalPairings.push(p);
+      continue;
     }
-    return p;
-  });
+    const drama = dramaCache.get(idx);
+    finalPairings.push(
+      drama && drama.score > 0
+        ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] }
+        : p
+    );
+  }
 
   return finalPairings;
 }

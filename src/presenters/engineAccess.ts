@@ -53,6 +53,7 @@ export {
 } from "../engine/rivalries";
 export { SeededRNG, rngFromSeed, type SeededRNG as SeededRNGType } from "../engine/rng";
 export { makeDeterministicSeed } from "../engine/utils/seed";
+export { toIdMap, toKeyedMap } from "../engine/utils/collections";
 export { deleteSave, exportSave, importSave, type SaveSlotInfo } from "../engine/saveload";
 export { getActiveRikishi as selectActiveRikishi } from "../engine/selectors";
 export { generateToshiyoriName } from "../engine/shikona/toshiyoriNames";

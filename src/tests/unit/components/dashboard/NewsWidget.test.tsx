@@ -64,4 +64,25 @@ describe("NewsWidget", () => {
     ]);
     expect(screen.getByText("Tabloid scoop")).toBeTruthy();
   });
+
+  it("renders SPORTS_DAILY and JSA_OFFICIAL outlet rows", () => {
+    renderWithEvents([
+      makeEvent({
+        id: "e1",
+        category: "media",
+        title: "Sports desk report",
+        summary: "Analysis",
+        data: { outlet: "SPORTS_DAILY" } as EngineEvent["data"],
+      }),
+      makeEvent({
+        id: "e2",
+        category: "media",
+        title: "JSA statement",
+        summary: "Official notice",
+        data: { outlet: "JSA_OFFICIAL" } as EngineEvent["data"],
+      }),
+    ]);
+    expect(screen.getByText("Sports desk report")).toBeTruthy();
+    expect(screen.getByText("JSA statement")).toBeTruthy();
+  });
 });

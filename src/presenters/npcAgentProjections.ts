@@ -261,42 +261,47 @@ function surfaceEvent(e: LogEvent): SurfacedRow | null {
 
 export function projectNPCAgentActivity(world: WorldState): NPCAgentProjection {
   const log = world.events?.log ?? [];
-  const npcDecisions = (log as LogEvent[])
-    .map((e) => ({ e, row: surfaceEvent(e) }))
-    .filter((x): x is { e: LogEvent; row: SurfacedRow } => x.row !== null)
-    .slice(-MAX_DECISIONS)
-    .reverse()
-    .map(({ e, row }) => {
-      const data = e.data ?? {};
-      const heyaId = String(data.heyaId ?? e.heyaId ?? "");
-      const heya = world.heyas.get(heyaId);
-      return {
-        heyaId,
-        // Unattributed league-level rows (e.g. WORLD_META_EVOLUTION) are
-        // credited to the association, not a fabricated stable.
-        heyaName: heya?.name ?? String(data.heyaName ?? (heyaId ? "Unknown" : "Kyokai")),
-        category: row.category,
-        decision: row.decision,
-        reasoning: row.reasoning,
-        week: Number(e.week ?? data.week ?? 0),
-        planId: row.planId,
-      };
-    });
+  const npcDecisions: NPCDecisionDTO[] = [];
 
-  // The feed is "rival oyakata activity" — shared event types (FINANCIAL_ALERT,
-  // GOVERNANCE_RULING, LIFECYCLE_EVENT) also fire for the player's stable.
-  const filtered = npcDecisions.filter(
-    (d) => !world.playerHeyaId || d.heyaId !== world.playerHeyaId
-  );
+  // Backward scan of the append-only log — avoids O(N) .map()/.filter()
+  // intermediate arrays on logs that can reach 12k items, and skips
+  // player-heya rows during collection so the result can still fill to
+  // MAX_DECISIONS (previously: slice N then filter, which could under-fill).
+  for (let i = log.length - 1; i >= 0 && npcDecisions.length < MAX_DECISIONS; i--) {
+    const e = log[i] as LogEvent;
+
+    // Skip if it's the player's stable (as the previous filter did)
+    const eHeyaId = String(e.data?.heyaId ?? e.heyaId ?? "");
+    if (world.playerHeyaId && eHeyaId === world.playerHeyaId) {
+      continue;
+    }
+
+    const row = surfaceEvent(e);
+    if (!row) continue;
+
+    const data = e.data ?? {};
+    const heyaId = eHeyaId;
+    const heya = world.heyas.get(heyaId);
+
+    npcDecisions.push({
+      heyaId,
+      heyaName: heya?.name ?? String(data.heyaName ?? (heyaId ? "Unknown" : "Kyokai")),
+      category: row.category,
+      decision: row.decision,
+      reasoning: row.reasoning,
+      week: Number(e.week ?? data.week ?? 0),
+      planId: row.planId,
+    });
+  }
 
   const decisionsByHeya: Record<string, number> = {};
-  for (const d of filtered) {
+  for (const d of npcDecisions) {
     decisionsByHeya[d.heyaId] = (decisionsByHeya[d.heyaId] ?? 0) + 1;
   }
 
   return {
-    decisions: filtered,
-    hasRecentActivity: filtered.length > 0,
+    decisions: npcDecisions,
+    hasRecentActivity: npcDecisions.length > 0,
     decisionsByHeya,
   };
 }

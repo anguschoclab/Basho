@@ -18,6 +18,7 @@ import {
   Scale,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { scanRecentEvents } from "@/presenters/selectors";
 
 const CAT_ICON: Record<string, LucideIcon> = {
   match: Swords,
@@ -114,16 +115,10 @@ export function NewsWidget() {
   const { state } = useGame();
   const world = state.world;
 
-  const recentEvents = useMemo(() => {
-    if (!world?.events?.log) return [];
-    const log = world.events.log;
-    const len = log.length;
-    const result = [];
-    for (let i = Math.max(0, len - 15); i < len; i++) {
-      result.unshift(log[i]);
-    }
-    return result;
-  }, [world?.events?.log]);
+  const recentEvents = useMemo(
+    () => scanRecentEvents(world?.events?.log, { limit: 15 }),
+    [world?.events?.log]
+  );
 
   return (
     <BaseWidget

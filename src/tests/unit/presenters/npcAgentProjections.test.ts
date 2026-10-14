@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { projectNPCAgentActivity } from "@/presenters/npcAgentProjections";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(events: any[] = [], heyas: any[] = []): WorldState {
@@ -7,7 +8,7 @@ function makeWorld(events: any[] = [], heyas: any[] = []): WorldState {
     seed: "test",
     year: 2024,
     week: 10,
-    heyas: new Map(heyas.map((h) => [h.id, h])),
+    heyas: toIdMap(heyas),
     rikishi: new Map(),
     events: { version: "1.0.0", log: events, dedupe: {} },
   } as any;
@@ -58,6 +59,48 @@ describe("projectNPCAgentActivity", () => {
     }));
     const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
     expect(result.decisions.length).toBeLessThanOrEqual(20);
+  });
+
+  it("fills to MAX_DECISIONS with non-player rows when player events sit in the tail", () => {
+    // Regression pin for the v11 backward-scan consolidation: player-heya
+    // rows are skipped DURING collection, so the feed still fills to 20 NPC
+    // rows even when player events interleave the most recent entries.
+    // (Pre-v11 sliced the newest 20 surfaced rows then filtered — a player
+    // row in the tail dropped the count to 19.)
+    const events = Array.from({ length: 25 }, (_, i) => ({
+      type: "NPC_MANAGER_DECISION",
+      week: i,
+      data: {
+        heyaId: i === 24 ? "hp" : "h1",
+        category: "test",
+        decision: `decision-${i}`,
+      },
+    }));
+    const world = makeWorld(events, [
+      { id: "h1", name: "H1" },
+      { id: "hp", name: "Player Heya" },
+    ]) as WorldState & { playerHeyaId?: string };
+    world.playerHeyaId = "hp";
+    const result = projectNPCAgentActivity(world);
+    expect(result.decisions).toHaveLength(20);
+    expect(result.decisions.every((d) => d.heyaId !== "hp")).toBe(true);
+    // Newest-first: the most recent NPC row is decision-23 (index 24 is the
+    // player's row and must not appear).
+    expect(result.decisions[0].decision).toBe("decision-23");
+    expect(result.decisions.some((d) => d.decision === "decision-24")).toBe(false);
+  });
+
+  it("excludes player-heya rows entirely regardless of position", () => {
+    const events = [
+      { type: "NPC_MANAGER_DECISION", week: 1, data: { heyaId: "hp", decision: "mine" } },
+      { type: "NPC_MANAGER_DECISION", week: 2, data: { heyaId: "h1", decision: "theirs" } },
+    ];
+    const world = makeWorld(events, [{ id: "h1", name: "H1" }]) as WorldState & {
+      playerHeyaId?: string;
+    };
+    world.playerHeyaId = "hp";
+    const result = projectNPCAgentActivity(world);
+    expect(result.decisions.map((d) => d.decision)).toEqual(["theirs"]);
   });
 
   it("computes decisionsByHeya counts", () => {
@@ -447,5 +490,123 @@ describe("WS7 — WS1–WS6 behavior surfacing", () => {
     const result = projectNPCAgentActivity(world);
     expect(result.decisions).toHaveLength(1);
     expect(result.decisions[0].heyaId).toBe("h1");
+  });
+
+  it("surfaces sponsor recruitment as a sponsorship row", () => {
+    const events = [
+      {
+        type: "NPC_MANAGER_DECISION",
+        week: 4,
+        data: {
+          heyaId: "h1",
+          action: "sponsor_recruited",
+          sponsor: "Kirin Brewery",
+          reasoning: "Brand alignment",
+        },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions[0].category).toBe("sponsorship");
+    expect(result.decisions[0].decision).toContain("Kirin Brewery");
+    expect(result.decisions[0].reasoning).toBe("Brand alignment");
+  });
+
+  it("surfaces rebuild posture shifts as strategy rows", () => {
+    const events = [
+      {
+        type: "NPC_MANAGER_DECISION",
+        week: 4,
+        data: { heyaId: "h1", strategy: "rebuild" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions[0].category).toBe("strategy");
+    expect(result.decisions[0].decision).toContain("rebuild");
+  });
+
+  it("surfaces training intensity directives as training rows", () => {
+    const events = [
+      {
+        type: "NPC_MANAGER_DECISION",
+        week: 4,
+        data: { heyaId: "h1", intensity: "punishing", focus: "tachiai" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions[0].category).toBe("training");
+    expect(result.decisions[0].decision).toContain("punishing");
+    expect(result.decisions[0].decision).toContain("tachiai");
+  });
+
+  it("skips succession readiness ticks that are not warnings", () => {
+    const events = [
+      {
+        type: "GOVERNANCE_RULING",
+        week: 8,
+        data: {
+          heyaId: "h1",
+          incident: "succession_readiness_update",
+          status: "stable",
+        },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(0);
+  });
+
+  it("skips unrecognized lifecycle, financial, and governance events", () => {
+    const events = [
+      { type: "LIFECYCLE_EVENT", week: 1, data: { heyaId: "h1", status: "other" } },
+      { type: "FINANCIAL_ALERT", week: 1, data: { heyaId: "h1", incident: "tax_filed" } },
+      { type: "GOVERNANCE_RULING", week: 1, data: { heyaId: "h1", incident: "fine" } },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(0);
+  });
+
+  it("skips STRATEGY_SHIFT events outside the ai_plan_change category", () => {
+    const events = [
+      {
+        type: "STRATEGY_SHIFT",
+        week: 9,
+        category: "other",
+        data: { heyaId: "h1", planId: "p1" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(0);
+  });
+
+  it("skips WELFARE_COMPLIANCE events that are not stable unrest", () => {
+    const events = [
+      {
+        type: "WELFARE_COMPLIANCE",
+        week: 7,
+        data: { heyaId: "h1", status: "compliant" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(0);
+  });
+
+  it("surfaces only notable-or-above MANAGEMENT_DECISION training shifts", () => {
+    const events = [
+      {
+        type: "MANAGEMENT_DECISION",
+        week: 4,
+        importance: "minor",
+        data: { heyaId: "h1", intensity: "light" },
+      },
+      {
+        type: "MANAGEMENT_DECISION",
+        week: 4,
+        importance: "major",
+        data: { heyaId: "h1", intensity: "punishing", focus: "belt", reasoningLog: "deep prep" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(1);
+    expect(result.decisions[0].decision).toContain("punishing");
+    expect(result.decisions[0].reasoning).toBe("deep prep");
   });
 });

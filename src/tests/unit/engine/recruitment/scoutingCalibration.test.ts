@@ -3,6 +3,7 @@ import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
 import { recruitmentBalanceMultiplier } from "@/engine/systems/generation/competitiveBalance";
 import { clearQueryCaches } from "@/engine/queries";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { toKeyedMap } from "@/engine/utils";
 import {
   PERCEPTION_NOISE_BASE,
   PERCEPTION_NOISE_FLOOR,
@@ -162,11 +163,11 @@ describe("competitive-balance handicap does not create absolute talent lockout",
   it("even fully handicapped (floor 0.4x) vs fully boosted (1.6x), a big enough underlying advantage still wins sometimes", () => {
     const strategy = getRecruitmentStrategy("traditionalist");
     const strongIds = Array.from({ length: 10 }, (_, i) => `strong-s${i}`);
-    const rikishi = new Map(
-      strongIds.map((id) => [
-        id,
-        mockRikishi(id, { heyaId: "strong", division: "makuuchi", rank: "maegashira" }),
-      ])
+    const rikishi = toKeyedMap(
+      strongIds,
+      (id) => id,
+      (id) =>
+        mockRikishi(id, { heyaId: "strong", division: "makuuchi", rank: "maegashira" })
     );
     const heyas = new Map([
       ["strong", makeMockHeya("strong", { funds: 300_000_000, rikishiIds: strongIds })],

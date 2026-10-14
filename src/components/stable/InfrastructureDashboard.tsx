@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
 import type { Heya } from "@/engine/types/heya";
 import { InfrastructureOverview, FacilityCard } from "./InfrastructureSections";
+import { toKeyedMap } from "@/presenters/engineAccess";
 
 interface InfrastructureDashboardProps {
   heya: Heya;
@@ -19,7 +20,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
   const infra = heya.infrastructure || {};
   const queue = useMemo(() => heya.constructionQueue || [], [heya.constructionQueue]);
 
-  const projectByFacilityId = useMemo(() => new Map(queue.map((q) => [q.facilityId, q])), [queue]);
+  const projectByFacilityId = useMemo(() => toKeyedMap(queue, (q) => q.facilityId), [queue]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
 import { makeMockWorld, makeMockHeya } from "../utils";
+import { toKeyedMap } from "@/engine/utils";
 import type { TalentCandidate } from "@/engine/types/talent";
 import type { Oyakata } from "@/engine/types/oyakata";
 
@@ -14,8 +15,10 @@ describe("bidding uses perceived (scouted) talent, not true talent", () => {
   const HEYA_IDS = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
   function buildWorld() {
-    const heyas = new Map(
-      HEYA_IDS.map((id) => [id, makeMockHeya(id, { funds: 50_000_000, rikishiIds: [] })])
+    const heyas = toKeyedMap(
+      HEYA_IDS,
+      (id) => id,
+      (id) => makeMockHeya(id, { funds: 50_000_000, rikishiIds: [] })
     );
     const candidate = {
       candidateId: "c1",

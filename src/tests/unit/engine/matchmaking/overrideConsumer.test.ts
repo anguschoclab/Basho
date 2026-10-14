@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { scheduleDivisionDay } from "@/engine/schedule";
+import { toKeyedMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RivalriesState } from "@/constants/engine/rivalry";
@@ -62,7 +63,11 @@ function buildMakuuchiWorld(withOverride: boolean): WorldState {
   const basho = MockFactory.createBasho({
     day: 1,
     matches: [],
-    standings: new Map([...rikishi.keys()].map((id) => [id, { wins: 0, losses: 0 } as never])),
+    standings: toKeyedMap(
+      [...rikishi.keys()],
+      (id) => id,
+      () => ({ wins: 0, losses: 0 }) as never
+    ),
   });
 
   return MockFactory.createWorld({

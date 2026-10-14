@@ -87,7 +87,7 @@ describe("SaveSlotManager", () => {
     renderWithProvider(<SaveSlotManager {...makeProps({ getSaveSlots: vi.fn(() => []) })} />);
     // Need to open the dialog first
     fireEvent.click(screen.getByText("Archive Management"));
-    expect(screen.getByText("No archival records detected.")).toBeTruthy();
+    expect(screen.getByText("No archival records detected")).toBeTruthy();
   });
 
   it("getSaveSlots throws → renders empty without crash", () => {
@@ -101,7 +101,7 @@ describe("SaveSlotManager", () => {
       />
     );
     fireEvent.click(screen.getByText("Archive Management"));
-    expect(screen.getByText("No archival records detected.")).toBeTruthy();
+    expect(screen.getByText("No archival records detected")).toBeTruthy();
   });
 
   it("successful import with loadWorldDirect", async () => {

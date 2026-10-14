@@ -8,12 +8,18 @@
   "domination": [
     "%P1% has absolutely dominated this matchup, leading the series %WINS%-%LOSSES%.",
     "%P2% has struggled historically here, winning only %LOSSES% of their %TOTAL% meetings.",
-    "History is heavily on %P1%'s side today with a commanding %WINS%-%LOSSES% record."
+    "History is heavily on %P1%'s side today with a commanding %WINS%-%LOSSES% record.",
+    "It has been one-way traffic in this rivalry, as %P1% boasts a massive %WINS%-%LOSSES% advantage.",
+    "%P2% faces an uphill psychological battle today, having won only %LOSSES% of their %TOTAL% encounters.",
+    "The historical dominance of %P1% is undeniable — they come in with a %WINS%-%LOSSES% edge over %P2%."
   ],
   "deadlock": [
     "This is as close as it gets—a %WINS%-%LOSSES% career split between them.",
     "A true rivalry! The record stands at %WINS% wins to %LOSSES%.",
-    "Neither man has been able to gain a decisive edge in this series."
+    "Neither man has been able to gain a decisive edge in this series.",
+    "With %WINS% wins and %LOSSES% losses, there's virtually nothing separating these two.",
+    "The lifetime series is perfectly poised at %WINS% to %LOSSES%.",
+    "A fiercely contested matchup historically, sitting at a tight %WINS%-%LOSSES% split."
   ],
   "winning_streak": [
     "%P1% enters the ring confident, having won the last %STREAK% meetings against %P2%.",
@@ -30,7 +36,10 @@
   "recent": [
     "Last time they met on Day %DAY%, %WINNER% won decisively by %KIMARITE%.",
     "%LOSER% will be looking for revenge after that %KIMARITE% loss in the previous basho.",
-    "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%."
+    "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%.",
+    "%WINNER% had the upper hand in their previous encounter, finishing %LOSER% with a clean %KIMARITE%.",
+    "The sting of a Day %DAY% %KIMARITE% defeat still lingers for %LOSER%.",
+    "Expect %LOSER% to come out aggressively after falling to %WINNER%'s %KIMARITE% in their last meeting."
   ],
   "winless": [
     "%P2% has never defeated %P1% in %TOTAL% meetings. Will today be different?",

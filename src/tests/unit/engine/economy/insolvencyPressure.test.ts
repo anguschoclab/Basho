@@ -10,6 +10,7 @@ import {
   FIXED_OPERATING_OVERHEAD_WEEKLY,
 } from "@/constants/engine/economic";
 import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
@@ -56,7 +57,7 @@ describe("Insolvency pressure and wealth stratification", () => {
       mockRikishi("w-r4", { rank: "sandanme", division: "sandanme", heyaId: "heya-weak" }),
       mockRikishi("w-r5", { rank: "jonidan", division: "jonidan", heyaId: "heya-weak" }),
     ];
-    const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
+    const rikishiMap = toIdMap(rikishi);
 
     const weakHeya = makeMockHeya("heya-weak", {
       funds: 0,
@@ -89,7 +90,7 @@ describe("Insolvency pressure and wealth stratification", () => {
       mockRikishi("s-r3", { rank: "maegashira", division: "makuuchi", heyaId: "heya-strong" }),
       mockRikishi("s-r4", { rank: "makushita", division: "makushita", heyaId: "heya-strong" }),
     ];
-    const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
+    const rikishiMap = toIdMap(rikishi);
 
     const strongHeya = makeMockHeya("heya-strong", {
       funds: 50_000_000,

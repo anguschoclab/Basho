@@ -7,6 +7,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import { toIdMap } from "@/engine/utils";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
@@ -46,7 +47,7 @@ function worldWithHeya(
   });
   const world = makeMockWorld({
     heyas: new Map([[heya.id, heya]]),
-    rikishi: new Map(rikishi.map((r) => [r.id, r])),
+    rikishi: toIdMap(rikishi),
     activeRikishiIds: new Set(rikishi.map((r) => r.id)),
     week: 6,
     year: 2026,

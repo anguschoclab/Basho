@@ -7,6 +7,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import { toIdMap } from "@/engine/utils";
 import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 
@@ -48,7 +49,7 @@ function postBashoWorld(): WorldState {
   return makeMockWorld({
     year: YEAR,
     cyclePhase: "post_basho",
-    rikishi: new Map(rikishi.map((r) => [r.id, r])),
+    rikishi: toIdMap(rikishi),
     activeRikishiIds: new Set(rikishi.map((r) => r.id)),
     history: [makeResultFixture("r_m5")],
     currentBasho: makeMockBasho({

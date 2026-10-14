@@ -3,6 +3,7 @@ import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from 
 import { KIMARITE_FREQUENCY_TARGETS, rarityFromShare } from "../constants/engine/kimariteTargets";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 import { KIMARITE_ENRICHMENT } from "./kimariteEnrichment";
+import { toIdMap } from "./utils";
 
 // --- Domain Models & Defaults ---
 
@@ -375,7 +376,7 @@ export const KIMARITE_REGISTRY: KimariteDefinition[] = [
 // --- High-Performance Lookups ---
 
 /** Pre-computed map for O(1) direct ID lookups during combat simulations */
-const KIMARITE_MAP = new Map<string, KimariteDefinition>(KIMARITE_REGISTRY.map((k) => [k.id, k]));
+const KIMARITE_MAP = toIdMap(KIMARITE_REGISTRY);
 
 /** Get kimarite by ID (O(1) operation) */
 export function getKimarite(id: string): KimariteDefinition | undefined {

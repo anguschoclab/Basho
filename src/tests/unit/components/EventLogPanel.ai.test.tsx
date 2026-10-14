@@ -87,4 +87,23 @@ describe("EventLogPanel AI events", () => {
     fireEvent.keyDown(screen.getByLabelText("AI Management Decision"), { key: "Enter" });
     expect(screen.getByTestId("event-detail-dialog")).toBeDefined();
   });
+
+  it("groups multiple same-week events under one week header", () => {
+    const e1 = { ...makeEvent("ai_decision", "First", "a"), id: "e1" };
+    const e2 = { ...makeEvent("ai_decision", "Second", "b"), id: "e2" };
+    render(
+      <EventLogPanel
+        eventLogData={{
+          events: [e1, e2],
+          getRikishi: () => null,
+          getHeya: () => undefined,
+          playerHeyaId: "h1",
+        }}
+      />
+    );
+    expect(screen.getByText("First")).toBeDefined();
+    expect(screen.getByText("Second")).toBeDefined();
+    // One shared week label rather than two headers.
+    expect(screen.getAllByText(/Week 1/)).toHaveLength(1);
+  });
 });

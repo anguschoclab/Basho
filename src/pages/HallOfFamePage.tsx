@@ -39,6 +39,15 @@ export default function HallOfFamePage() {
     return map;
   }, [hof]);
 
+  const hofRikishiMap = useMemo(() => {
+    const map = new Map<string, unknown>();
+    for (const ind of hof?.inductees ?? []) {
+      const r = world ? getRikishi(world, ind.rikishiId) : undefined;
+      if (r) map.set(ind.rikishiId, r);
+    }
+    return map as unknown as Map<string, UIRikishi>;
+  }, [hof, world]);
+
   const totalInductees = hof?.inductees.length ?? 0;
   const totalAwards = world ? (world.awardLog?.length ?? awardLog.length) : 0;
 
@@ -68,15 +77,7 @@ export default function HallOfFamePage() {
 
         {totalInductees > 0 && (
           <HoFTimeline
-            rikishiMap={
-              new Map(
-                (hof?.inductees ?? [])
-                  .map(
-                    (ind) => [ind.rikishiId, getRikishi(world, ind.rikishiId)] as [string, unknown]
-                  )
-                  .filter((pair) => !!pair[1])
-              ) as unknown as Map<string, UIRikishi>
-            }
+            rikishiMap={hofRikishiMap}
             inductees={hof?.inductees ?? []}
           />
         )}

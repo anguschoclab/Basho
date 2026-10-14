@@ -27,6 +27,7 @@ import {
   needsScheduleForDay,
 } from "./scheduleHelpers";
 import type { DramaContext, DramaLabel } from "./matchmaking/DramaMatchmaker";
+import { toKeyedMap } from "./utils";
 
 // === DRAMA CONTEXT EXTRACTION ===
 
@@ -328,7 +329,7 @@ function applyMatchmakingAvoid(
   requesterHeyaId: string,
   world: WorldState
 ): { pairings: MatchPairing[]; consumed: boolean } {
-  const heyaOf = new Map(pool.map((r) => [r.id, r.heyaId]));
+  const heyaOf = toKeyedMap(pool, (r) => r.id, (r) => r.heyaId);
   const requesterInPool = pool.some((r) => r.heyaId === requesterHeyaId);
   if (!requesterInPool) return { pairings, consumed: false };
 

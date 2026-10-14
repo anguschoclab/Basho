@@ -6,16 +6,24 @@ import { BoutCard } from "./BoutCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CircleDot, Swords } from "lucide-react";
-import { compareRanks, buildBoutPreviewUI } from "@/presenters/uiDigest";
-import type { RankPosition } from "@/engine/types/banzuke";
+import { compareRanks, buildBoutPreviewUI, toRankPosition } from "@/presenters/uiDigest";
 import { BoutPreMatchOverlay } from "./BoutPreMatchOverlay";
 import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
+import type { UIRikishi } from "@/presenters/rikishi";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { MatchRowData } from "./boutCardTypes";
 
 // ── Types ──────────────────────────────────────────────
 
 type ScoutingMap = NonNullable<WorldState["playerKnowledge"]>["scouting"];
+
+/** Enriched display row: canonical BoutMatchUI plus BoutCard's east/west refs. */
+type ViewerMatch = Omit<BoutMatchUI, "result"> & {
+  result?: NonNullable<BoutMatchUI["result"]>;
+  east: UIRikishi;
+  west: UIRikishi;
+  scoutHint?: string;
+};
 
 /** Scouting hint for a player bout, derived from the player's knowledge of the opponent. */
 function scoutHintFor(
@@ -71,18 +79,21 @@ export function MatchDayViewer({
       setPreviewBoutId(match.boutId);
       return;
     }
-    onBoutClick?.(match as unknown as BoutMatchUI);
+    // Pass the canonical BoutMatchUI (rows are enriched spread copies).
+    const source = match.boutId ? matches.find((m) => m.boutId === match.boutId) : undefined;
+    if (source) onBoutClick?.(source);
   };
 
   const sortedMatches = useMemo(() => {
     const scouting = world?.playerKnowledge?.scouting;
-    const mapped = [...matches].map((m) => {
+    const mapped = [...matches].map((m): ViewerMatch | null => {
       if (!m) return m;
-      const enriched = {
+      const enriched: ViewerMatch = {
         ...m,
+        result: m.result ?? undefined,
         east: m.eastRikishi,
         west: m.westRikishi,
-      } as typeof m & { scoutHint?: string };
+      };
       enriched.scoutHint = scoutHintFor(enriched, scouting);
       return enriched;
     });
@@ -95,17 +106,17 @@ export function MatchDayViewer({
       const aPlayed = !!a.result;
       const bPlayed = !!b.result;
       if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
-      const aPos = {
+      const aPos = toRankPosition({
         rank: a.eastRikishi.rank,
-        side: a.eastRikishi.side ?? "east",
+        side: a.eastRikishi.side,
         rankNumber: a.eastRikishi.rankNumber,
-      };
-      const bPos = {
+      });
+      const bPos = toRankPosition({
         rank: b.eastRikishi.rank,
-        side: b.eastRikishi.side ?? "east",
+        side: b.eastRikishi.side,
         rankNumber: b.eastRikishi.rankNumber,
-      };
-      return compareRanks(aPos as unknown as RankPosition, bPos as unknown as RankPosition);
+      });
+      return compareRanks(aPos, bPos);
     });
   }, [matches, world?.playerKnowledge?.scouting]);
 
@@ -165,7 +176,7 @@ export function MatchDayViewer({
               match ? (
                 <BoutCard
                   key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${i}`}
-                  match={match as unknown as MatchRowData}
+                  match={match}
                   idx={i}
                   onBoutClick={handleBoutClick}
                   onTacticChange={onTacticChange}

@@ -12,6 +12,7 @@ import { phase01_basho_npc_tactics } from "@/engine/tick/phases";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { readSrcFile } from "@/tests/helpers/fsScan";
+import { toKeyedMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 import type { Oyakata } from "@/engine/types/oyakata";
@@ -65,7 +66,11 @@ function bashoWorld(opts: {
   for (const e of opts.entrants) {
     rikishi.set(e.id, MockFactory.createRikishi({ id: e.id, heyaId: e.heyaId }));
   }
-  const standings = new Map(Object.entries(opts.standings ?? {}).map(([id, s]) => [id, { ...s }]));
+  const standings = toKeyedMap(
+    Object.entries(opts.standings ?? {}),
+    ([id]) => id,
+    ([, s]) => ({ ...s })
+  );
 
   const world = MockFactory.createWorld({
     cyclePhase: "active_basho",

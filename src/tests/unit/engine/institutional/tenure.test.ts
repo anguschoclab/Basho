@@ -21,6 +21,7 @@ import { applyBashoTenure } from "@/engine/systems/legacy/tenure";
 import { issueBailoutLoanIfNeeded } from "@/engine/loans";
 import { reportScandal } from "@/engine/systems/governance/ScandalService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { toKeyedMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 import type { Oyakata } from "@/engine/types/oyakata";
@@ -47,8 +48,10 @@ function tenureWorld(): { world: WorldState; oya: Oyakata } {
 function bashoWith(
   records: Record<string, { wins: number; losses: number; heyaId: string }>
 ): BashoState {
-  const standings = new Map(
-    Object.entries(records).map(([id, s]) => [id, { wins: s.wins, losses: s.losses }])
+  const standings = toKeyedMap(
+    Object.entries(records),
+    ([id]) => id,
+    ([, s]) => ({ wins: s.wins, losses: s.losses })
   );
   return {
     id: "b1",

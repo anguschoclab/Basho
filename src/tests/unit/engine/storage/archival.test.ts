@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { runRetiredRikishiSummarization } from "@/engine/archival";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, mockRikishi } from "../utils";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
@@ -52,7 +53,7 @@ function makeHistoricalRikishi(id: string, overrides: Partial<Rikishi> = {}): Ri
 
 function makeWorldWithHistorical(rikishi: Rikishi[]): WorldState {
   const world = makeMockWorld();
-  world.historicalRikishi = new Map(rikishi.map((r) => [r.id, r]));
+  world.historicalRikishi = toIdMap(rikishi);
   return world;
 }
 

@@ -92,6 +92,7 @@ export { FATIGUE_LABELS, TRAIT_LABELS, SCANDAL_LABELS } from "../constants/ui/la
 export { RANK_NAMES } from "../constants/engine/recruitment";
 export { clamp, clampInt } from "../engine/utils";
 export { formatRank, RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
+export { toRankPosition } from "../engine/types/banzuke";
 export { formatStance, formatFinePenalty, formatEventTime } from "../engine/utils/formatters";
 export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
 export { deleteSave, importSave } from "../engine/saveload";
