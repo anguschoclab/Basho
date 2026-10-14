@@ -60,6 +60,48 @@ describe("projectNPCAgentActivity", () => {
     expect(result.decisions.length).toBeLessThanOrEqual(20);
   });
 
+  it("fills to MAX_DECISIONS with non-player rows when player events sit in the tail", () => {
+    // Regression pin for the v11 backward-scan consolidation: player-heya
+    // rows are skipped DURING collection, so the feed still fills to 20 NPC
+    // rows even when player events interleave the most recent entries.
+    // (Pre-v11 sliced the newest 20 surfaced rows then filtered — a player
+    // row in the tail dropped the count to 19.)
+    const events = Array.from({ length: 25 }, (_, i) => ({
+      type: "NPC_MANAGER_DECISION",
+      week: i,
+      data: {
+        heyaId: i === 24 ? "hp" : "h1",
+        category: "test",
+        decision: `decision-${i}`,
+      },
+    }));
+    const world = makeWorld(events, [
+      { id: "h1", name: "H1" },
+      { id: "hp", name: "Player Heya" },
+    ]) as WorldState & { playerHeyaId?: string };
+    world.playerHeyaId = "hp";
+    const result = projectNPCAgentActivity(world);
+    expect(result.decisions).toHaveLength(20);
+    expect(result.decisions.every((d) => d.heyaId !== "hp")).toBe(true);
+    // Newest-first: the most recent NPC row is decision-23 (index 24 is the
+    // player's row and must not appear).
+    expect(result.decisions[0].decision).toBe("decision-23");
+    expect(result.decisions.some((d) => d.decision === "decision-24")).toBe(false);
+  });
+
+  it("excludes player-heya rows entirely regardless of position", () => {
+    const events = [
+      { type: "NPC_MANAGER_DECISION", week: 1, data: { heyaId: "hp", decision: "mine" } },
+      { type: "NPC_MANAGER_DECISION", week: 2, data: { heyaId: "h1", decision: "theirs" } },
+    ];
+    const world = makeWorld(events, [{ id: "h1", name: "H1" }]) as WorldState & {
+      playerHeyaId?: string;
+    };
+    world.playerHeyaId = "hp";
+    const result = projectNPCAgentActivity(world);
+    expect(result.decisions.map((d) => d.decision)).toEqual(["theirs"]);
+  });
+
   it("computes decisionsByHeya counts", () => {
     const events = [
       { type: "NPC_MANAGER_DECISION", week: 1, data: { heyaId: "h1", category: "a" } },

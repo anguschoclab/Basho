@@ -6,6 +6,13 @@ import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
 
 vi.mock("@/presenters/uiDigest", () => ({
   compareRanks: vi.fn(() => 0),
+  toRankPosition: vi.fn(
+    (args: { rank: string; side: string; rankNumber?: number }) => ({
+      rank: args.rank,
+      side: args.side,
+      rankNumber: args.rankNumber,
+    })
+  ),
   buildBoutPreviewUI: vi.fn(() => null),
 }));
 
