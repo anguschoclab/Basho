@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { StableName } from "@/components/ClickableName";
 import { Swords, Flame } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { selectTopRivals } from "@/presenters/selectors";
 
 const RivalRow = React.memo(
@@ -74,13 +75,17 @@ export function RivalsWidget() {
     return selectTopRivals(world);
   }, [world]);
 
-  if (!world || !rivals.length) return null;
+  if (!world) return null;
 
   return (
     <BaseWidget title="Rival Stables" icon={Swords} headerAction={headerAction}>
-      <div className="space-y-0.5">
-        <RivalList rivals={rivals} />
-      </div>
+      {rivals.length === 0 ? (
+        <EmptyState icon={Swords} title="No rival stables" compact />
+      ) : (
+        <div className="space-y-0.5">
+          <RivalList rivals={rivals} />
+        </div>
+      )}
     </BaseWidget>
   );
 }
