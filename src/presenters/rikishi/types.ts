@@ -133,6 +133,7 @@ export interface UIRivalEntry {
   totalBouts: number;
   heat: number;
   tone: string;
+  streak: number;
 }
 
 /** Rivals data */

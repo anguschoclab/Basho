@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Save, Trash2, Upload, Clock, ArrowRight, Star } from "lucide-react";
 import { formatSaveDate, type SaveSlotInfo } from "@/presenters/engineAccess";
 import type { BashoName } from "@/engine/types/basho";
@@ -146,9 +147,11 @@ export function ArchiveDialogContent({
       <ScrollArea className="max-h-[400px] mt-4 pr-1">
         <div className="space-y-3">
           {saveSlots.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-12 italic opacity-60">
-              No archival records detected.
-            </p>
+            <EmptyState
+              icon={Save}
+              title="No archival records detected"
+              description="Start a new career to create save data."
+            />
           ) : (
             saveSlots.map((slot) => (
               <SaveSlotCard
