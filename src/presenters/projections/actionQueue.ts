@@ -78,9 +78,17 @@ export function buildActionQueue(
 
   // 4. Promotion deliberation event
   if (world.events?.log) {
-    const hasDeliberation = world.events.log.some(
-      (e) => (e as { type?: string }).type === "PROMOTION_DELIBERATION"
-    );
+    let hasDeliberation = false;
+    for (let i = world.events.log.length - 1; i >= 0; i--) {
+      const e = world.events.log[i] as { type?: string };
+      // Stop scanning backward if we hit an older week (deliberations are current-week only)
+      // but if we don't have week information, we'll scan until we find one or run out of events
+      if (e.type === "PROMOTION_DELIBERATION") {
+        hasDeliberation = true;
+        break;
+      }
+    }
+
     if (hasDeliberation) {
       items.push({
         kind: "navigate",

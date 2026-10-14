@@ -123,15 +123,19 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
   const mergerCandidates = selectMergerCandidates(world);
 
   const eventLog = world.events?.log ?? [];
-  const completedMergerEvents = eventLog
-    .filter((e) => e.type === "GOVERNANCE_RULING" && e.data?.incident === "stable_merger")
-    .sort((a, b) => b.year - a.year || b.week - a.week)
-    .slice(0, 10) as Array<{
+  const completedMergerEvents: Array<{
     id: string;
     year: number;
     week: number;
     data?: { heyaname?: string; heya?: string; reason?: string; incident?: string };
-  }>;
+  }> = [];
+
+  for (let i = eventLog.length - 1; i >= 0 && completedMergerEvents.length < 10; i--) {
+    const e = eventLog[i];
+    if (e.type === "GOVERNANCE_RULING" && e.data?.incident === "stable_merger") {
+      completedMergerEvents.push(e as unknown as typeof completedMergerEvents[0]);
+    }
+  }
 
   const factionList = Object.values(world.factions ?? {}).sort((a, b) => b.influence - a.influence);
 
@@ -222,32 +226,48 @@ export function projectGomenfuda(world: WorldState, heyaId: string): GomenfudaPr
   const log = world.events?.log ?? [];
   const SANCTION_THRESHOLD = 3;
 
-  const gomenfudaEvents = log.filter(
-    (e: { type: string; category: string; data: Record<string, unknown> }) =>
+  let count = 0;
+  const recentEvents: Array<{
+    rikishiId: string;
+    bashoName: string;
+    reason: string;
+    reputationPenalty: number;
+    year: number;
+  }> = [];
+
+  for (let i = log.length - 1; i >= 0; i--) {
+    const e = log[i] as { type: string; category: string; data: Record<string, unknown> };
+    if (
       e.type === "BASHO_STATUS" &&
       e.category === "discipline" &&
       e.data?.status === "gomenfuda_posted" &&
       e.data?.heyaId === heyaId
-  );
+    ) {
+      const eYear = Number(e.data?.year ?? 0);
+      if (eYear === year) {
+        count++;
+      }
 
-  const currentYearEvents = gomenfudaEvents.filter(
-    (e: { data: Record<string, unknown> }) => e.data?.year === year
-  );
+      // We only need the 5 most recent events across all years
+      if (recentEvents.length < 5) {
+        recentEvents.push({
+          rikishiId: String(e.data?.rikishiId ?? ""),
+          bashoName: String(e.data?.bashoName ?? ""),
+          reason: String(e.data?.reason ?? ""),
+          reputationPenalty: Number(e.data?.reputationPenalty ?? 0),
+          year: eYear,
+        });
+      }
 
-  const count = currentYearEvents.length;
+      // We can stop scanning once we have 5 recent events AND we've gone past the current year
+      if (recentEvents.length >= 5 && eYear < year) {
+        break;
+      }
+    }
+  }
+
   const hasSanctionWarning = count >= SANCTION_THRESHOLD;
   const sanctionRiskPercent = Math.min(100, Math.round((count / SANCTION_THRESHOLD) * 100));
-
-  const recentEvents = gomenfudaEvents
-    .slice(-5)
-    .reverse()
-    .map((e: { data: Record<string, unknown> }) => ({
-      rikishiId: String(e.data?.rikishiId ?? ""),
-      bashoName: String(e.data?.bashoName ?? ""),
-      reason: String(e.data?.reason ?? ""),
-      reputationPenalty: Number(e.data?.reputationPenalty ?? 0),
-      year: Number(e.data?.year ?? 0),
-    }));
 
   return {
     count,
