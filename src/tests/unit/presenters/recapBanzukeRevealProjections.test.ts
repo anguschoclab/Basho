@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { buildBanzukeRevealEntries } from "@/presenters/projections/recapBanzukeRevealProjections";
 import { makeMockWorld, mockRikishi } from "../engine/utils";
 import { createEmptyHistoryIndex } from "@/engine/historyIndex";
+import { toIdMap, toKeyedMap } from "@/engine/utils";
 import type { BashoResult } from "@/engine/types/basho";
 import type { BanzukeSnapshot, Division, RankPosition } from "@/engine/types/banzuke";
 
@@ -90,18 +91,17 @@ describe("buildBanzukeRevealEntries", () => {
     idx.banzukeByBasho["2026-1"] = prev;
 
     const world = makeMockWorld({
-      rikishi: new Map(
-        ["r1", "r2", "r3", "r4", "r5"].map((id) => [
-          id,
-          mockRikishi(id, { shikona: `Shiko-${id}` }),
-        ])
+      rikishi: toKeyedMap(
+        ["r1", "r2", "r3", "r4", "r5"],
+        (id) => id,
+        (id) => mockRikishi(id, { shikona: `Shiko-${id}` })
       ),
       currentBanzuke: current,
       historyIndex: idx,
     });
 
     const entries = buildBanzukeRevealEntries(world, lastBasho(2026, 2));
-    const byId = new Map(entries.map((e) => [e.id, e]));
+    const byId = toIdMap(entries);
 
     expect(byId.get("r1")?.change).toBe("up");
     expect(byId.get("r1")?.shikona).toBe("Shiko-r1");
@@ -142,7 +142,7 @@ describe("buildBanzukeRevealEntries", () => {
     const idx = createEmptyHistoryIndex();
     // no prev snapshot → all "new"
     const world = makeMockWorld({
-      rikishi: new Map(mk(30).map((a) => [a.id, mockRikishi(a.id)])),
+      rikishi: toKeyedMap(mk(30), (a) => a.id, (a) => mockRikishi(a.id)),
       currentBanzuke: current,
       historyIndex: idx,
     });

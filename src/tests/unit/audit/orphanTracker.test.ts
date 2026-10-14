@@ -14,6 +14,7 @@ import {
   type PriorTrackerRow,
   type TrackedEntry,
 } from "../../../../scripts/orphanTracker";
+import { toKeyedMap } from "@/engine/utils";
 
 function entry(file: string, symbol: string): TrackedEntry {
   return { id: "", file, symbol, status: "candidate" };
@@ -96,7 +97,7 @@ describe("mergeTrackerState", () => {
       [entry("src/z.ts", "zeta"), entry("src/a.ts", "alpha"), entry("src/m.ts", "mu")],
       prior
     );
-    const byKey = new Map(merged.map((m) => [`${m.file}:${m.symbol}`, m]));
+    const byKey = toKeyedMap(merged, (m) => `${m.file}:${m.symbol}`);
     expect(byKey.get("src/a.ts:alpha")!.id).toBe("ORPH-0007");
     expect(byKey.get("src/m.ts:mu")!.id).toBe("ORPH-0008");
     expect(byKey.get("src/z.ts:zeta")!.id).toBe("ORPH-0009");

@@ -13,6 +13,7 @@ import { projectRecruitmentUIDigest } from "@/presenters/uiDigest";
 import { getHeyaForeignUsage, getHeyaRoster } from "@/presenters/engineAccess";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import { toKeyedMap } from "@/engine/utils";
 
 export function useRecruitingState(playerHeyaId: string | null) {
   const { state } = useGame();
@@ -117,7 +118,7 @@ export function useRecruitingState(playerHeyaId: string | null) {
   };
 
   const candidateById = useMemo(
-    () => new Map(digest.candidates.map((c) => [c.candidateId, c])),
+    () => toKeyedMap(digest.candidates, (c) => c.candidateId),
     [digest.candidates]
   );
 

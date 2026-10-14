@@ -80,6 +80,29 @@ entry superseded by later findings is marked as such inline.
 - **Status:** REJECTED — documented; revisit when API consumers migrate to a
   TS7-compatible AST surface (e.g. tsgo API or an alternative parser).
 
+### V11-B07 (WS-PERF, LOW): Intermediate `entries[]` allocations in `new Map(list.map(...))` idiom
+
+- **Files (engine):** `SwissAlgorithm.ts` (2× `rikishiMap`), `LowerDivisionSwiss.ts`
+  (`rikishiMap`), `banzuke.ts` (keyed by `rikishiId`), `schedule.ts` (`id`→`heyaId`),
+  `kimariteRegistry.ts` (`code`→def); plus `LowerDivisionSwiss.ts`/`DramaMatchmaker.ts`
+  outer `pairings.map(...)` passes containing a `drama_`-prefix `.some()` guard.
+- **Mechanism:** `new Map(list.map(r => [r.id, r]))` allocates an intermediate
+  entry-pair array per call; the `.map`-wrapper passes allocate a cloned `MatchPairing`
+  array even when no pairing needs a drama label.
+- **Fix:** New `src/engine/utils/collections.ts` — `toIdMap` (`.id`-keyed, single loop)
+  and `toKeyedMap` (custom key/value selectors, index-aware). All `new Map(arr.map(...))`
+  sites converted engine-wide plus the same idiom in `perceptionComponents`,
+  `SparringPanel`, `useRecruitingState`, `InfrastructureDashboard`, and
+  `IndividualFocusSlots`; `banzukeSnapshot`'s `Object.fromEntries(DIVISIONS.map(...))`
+  converted to a direct loop; both `drama_`-label passes converted to single-pass loops
+  preserving the skip-guard, clone-on-change semantics, pairing order, and label
+  vocabulary consumed by `extractDramaContext` (`schedule.ts`).
+- **Evidence:** `collections.test.ts` (11 tests) + `lowerDivisionSwiss.test.ts`
+  characterization pin (6 tests); targeted matchmaking/banzuke/schedule tests green;
+  `test`, `test:perf`, `type-check`, `lint:strict`, and `determinism-double-run basho`
+  byte-identical.
+- **Status:** FIXED
+
 ## Assessed — Not Bugs
 
 | ID | Finding | Verdict |

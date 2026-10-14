@@ -18,6 +18,7 @@ import type { BashoState } from "../types/basho";
 import type { Division } from "../types/banzuke";
 import type { Rikishi } from "../types/rikishi";
 import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
+import { toIdMap } from "../utils";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
@@ -349,20 +350,22 @@ function applyLowerDivisionDramaLabels(
   day: number,
   standings: Map<string, { wins: number; losses: number }>
 ): MatchPairing[] {
-  return pairings.map((p) => {
-    if (p.reasons.some((r: string) => r.startsWith("drama_"))) return p;
+  const out: MatchPairing[] = [];
+  for (const p of pairings) {
+    if (p.reasons.some((r: string) => r.startsWith("drama_"))) {
+      out.push(p);
+      continue;
+    }
     const east = rikishiMap.get(p.eastId);
     const west = rikishiMap.get(p.westId);
-    if (!east || !west) return p;
-    const drama = scoreLowerDivisionDrama(east, west, day, standings);
-    if (drama && drama.score > 0) {
-      return {
-        ...p,
-        reasons: [...p.reasons, `drama_${drama.label}`],
-      };
-    }
-    return p;
-  });
+    const drama = east && west ? scoreLowerDivisionDrama(east, west, day, standings) : null;
+    out.push(
+      drama && drama.score > 0
+        ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] }
+        : p
+    );
+  }
+  return out;
 }
 
 // ── Public: buildLowerDivisionSwiss ─────────────────────────────────────────────────
@@ -406,7 +409,7 @@ export function buildLowerDivisionSwiss(
   }
 
   // Apply drama labels for lower division narrative context (3.3)
-  const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
+  const rikishiMap = toIdMap(rikishi);
   const withDrama = applyLowerDivisionDramaLabels(raw, rikishiMap, day, basho.standings);
 
   return withDrama;

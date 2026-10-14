@@ -6,6 +6,7 @@ import {
 } from "@/engine/systems/welfare/WelfareCalculations";
 import { clearQueryCaches } from "@/engine/queries";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { WelfareState } from "@/engine/types/economy";
@@ -70,7 +71,7 @@ function setupHeya(
     rikishiIds: rikishiList.map((r) => r.id),
     ...heyaOverrides,
   });
-  const rikishiMap = new Map(rikishiList.map((r) => [r.id, r]));
+  const rikishiMap = toIdMap(rikishiList);
   const world = makeMockWorld({
     rikishi: rikishiMap,
     ...worldOverrides,

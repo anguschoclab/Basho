@@ -4,6 +4,7 @@ import {
   scoutingNoiseSpread,
 } from "@/engine/systems/recruitment/perceivedTalent";
 import { makeMockWorld, makeMockHeya } from "../utils";
+import { toKeyedMap } from "@/engine/utils";
 import {
   PERCEPTION_NOISE_BASE,
   PERCEPTION_NOISE_FLOOR,
@@ -14,7 +15,7 @@ const candidate = (id: string, talentSeed: number) =>
   ({ candidateId: id, talentSeed }) as unknown as TalentCandidate;
 
 function worldWith(heyaIds: string[]) {
-  const heyas = new Map(heyaIds.map((id) => [id, makeMockHeya(id, { rikishiIds: [] })]));
+  const heyas = toKeyedMap(heyaIds, (id) => id, (id) => makeMockHeya(id, { rikishiIds: [] }));
   return makeMockWorld({ heyas, rikishi: new Map() });
 }
 

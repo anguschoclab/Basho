@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { applyMentorshipBonuses } from "@/engine/systems/training/MentorshipService";
 import { MAX_STAT_CEILING } from "@/constants/engine/training";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
+import { toIdMap } from "@/engine/utils";
 
 type MockRikishiOverrides = Parameters<typeof mockRikishi>[1];
 
@@ -19,11 +20,7 @@ function makeWorldWithPair(
   });
   mentor.menteeIds = ["apprentice"];
 
-  const rikishi = new Map([
-    [mentor.id, mentor],
-    [apprentice.id, apprentice],
-    ...extraRikishi.map((r) => [r.id, r] as const),
-  ]);
+  const rikishi = toIdMap([mentor, apprentice, ...extraRikishi]);
   const heya = makeMockHeya("h1", { rikishiIds: Array.from(rikishi.keys()) });
   return makeMockWorld({ rikishi, heyas: new Map([["h1", heya]]) });
 }

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { projectNPCAgentActivity } from "@/presenters/npcAgentProjections";
+import { toIdMap } from "@/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(events: any[] = [], heyas: any[] = []): WorldState {
@@ -7,7 +8,7 @@ function makeWorld(events: any[] = [], heyas: any[] = []): WorldState {
     seed: "test",
     year: 2024,
     week: 10,
-    heyas: new Map(heyas.map((h) => [h.id, h])),
+    heyas: toIdMap(heyas),
     rikishi: new Map(),
     events: { version: "1.0.0", log: events, dedupe: {} },
   } as any;

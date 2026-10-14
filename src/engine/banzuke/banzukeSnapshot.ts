@@ -53,12 +53,10 @@ export function buildBanzukeSnapshot(
   year: number,
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6
 ): BanzukeSnapshot {
-  const divisions = Object.fromEntries(
-    DIVISIONS.map((division) => [
-      division,
-      { division, slots: [], assignments: [] } as DivisionBanzukeSnapshot,
-    ])
-  ) as Record<Division, DivisionBanzukeSnapshot>;
+  const divisions = {} as Record<Division, DivisionBanzukeSnapshot>;
+  for (const division of DIVISIONS) {
+    divisions[division] = { division, slots: [], assignments: [] };
+  }
 
   for (const entry of entries) {
     const bucket = divisions[entry.division];

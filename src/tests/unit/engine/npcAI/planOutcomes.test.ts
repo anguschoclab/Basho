@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { evaluatePlanOutcome, computePlanBaseline } from "@/engine/npcAI/planOutcomes";
+import { toKeyedMap } from "@/engine/utils";
 import type { AIPlan } from "@/engine/ai/types";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoResult } from "@/engine/types/basho";
@@ -44,14 +45,14 @@ interface WorldOpts {
 }
 
 function makeWorld(opts: WorldOpts = {}): WorldState {
-  const rikishi = new Map(
-    (opts.rikishiRanks ?? ["maegashira", "maegashira"]).map((rank, i) => {
-      const r = MockFactory.createRikishi(`r${i}`, {
+  const rikishi = toKeyedMap(
+    opts.rikishiRanks ?? ["maegashira", "maegashira"],
+    (_rank, i) => `r${i}`,
+    (rank, i) =>
+      MockFactory.createRikishi(`r${i}`, {
         heyaId: "heya-a",
         rank: rank as never,
-      });
-      return [`r${i}`, r];
-    })
+      })
   );
   const heya = MockFactory.createHeya("heya-a", {
     rikishiIds: [...rikishi.keys()],

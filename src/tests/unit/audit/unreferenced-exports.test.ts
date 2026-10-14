@@ -15,6 +15,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { toKeyedMap } from "@/engine/utils";
 
 const ROOT = join(__dirname, "../../../..");
 const AUDIT_JSON = join(ROOT, ".windsurf", "audit", "baseline-orphans.json");
@@ -282,7 +283,7 @@ function loadAuditEntries(): AuditEntry[] {
 
 describe("Phase 5c: Orphan classification", () => {
   const entries = loadAuditEntries();
-  const entriesByKey = new Map(entries.map((e) => [`${e.file}:${e.symbol}`, e]));
+  const entriesByKey = toKeyedMap(entries, (e) => `${e.file}:${e.symbol}`);
 
   it("audit baseline exists", () => {
     expect(entries.length).toBeGreaterThanOrEqual(0);

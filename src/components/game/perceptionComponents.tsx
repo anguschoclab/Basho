@@ -14,7 +14,7 @@ import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, Swords } from 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useGame } from "@/contexts/useGame";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
-import type { PerceptionSnapshot } from "@/presenters/engineAccess";
+import { toKeyedMap, type PerceptionSnapshot } from "@/presenters/engineAccess";
 import type { H2HMatchupData } from "@/presenters/projections/boutProjections";
 import {
   STATURE_COLOR,
@@ -167,11 +167,11 @@ export function RikishiComparisonGrid({
   );
 
   const perceptionAById = useMemo(
-    () => new Map(snapA.rikishiPerceptions.map((r) => [r.rikishiId, r])),
+    () => toKeyedMap(snapA.rikishiPerceptions, (r) => r.rikishiId),
     [snapA.rikishiPerceptions]
   );
   const perceptionBById = useMemo(
-    () => new Map(snapB.rikishiPerceptions.map((r) => [r.rikishiId, r])),
+    () => toKeyedMap(snapB.rikishiPerceptions, (r) => r.rikishiId),
     [snapB.rikishiPerceptions]
   );
 

@@ -10,7 +10,7 @@
  * Export: buildSwissTorikumi
  */
 
-import { clamp } from "../utils";
+import { clamp, toIdMap } from "../utils";
 import type { BashoState } from "../types/basho";
 import type { Division } from "../types/banzuke";
 import type { Rikishi } from "../types/rikishi";
@@ -486,7 +486,7 @@ function phase3(
  * Pairings tagged "kore_yori_sanyaku" or "finale" are always at the end.
  */
 function sortChronologically(pairings: MatchPairing[], pool: Rikishi[]): MatchPairing[] {
-  const byId = new Map<string, Rikishi>(pool.map((r) => [r.id, r]));
+  const byId = toIdMap(pool);
 
   const rankScore = (p: MatchPairing): number => {
     const east = byId.get(p.eastId);
@@ -547,7 +547,7 @@ export function buildSwissTorikumi(
   else raw = phase2(basho, pool, facedSet, options.rivalriesState);
 
   // Apply drama budget post-processing to maximize narrative value
-  const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
+  const rikishiMap = toIdMap(rikishi);
   const optimizedPairings = applyDramaBudget(raw, rikishiMap, day, basho.standings, facedSet);
 
   return sortChronologically(optimizedPairings, pool);

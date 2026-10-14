@@ -13,6 +13,7 @@ import { FOCUS_MODE_OPTIONS } from "@/constants/ui/training";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { IndividualFocusType } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types";
+import { toKeyedMap } from "@/presenters/engineAccess";
 
 interface IndividualFocusSlotsProps {
   rikishiList: Rikishi[];
@@ -27,7 +28,7 @@ export function IndividualFocusSlots({
   trainingState,
   onIndividualFocusChange,
 }: IndividualFocusSlotsProps) {
-  const focusMap = new Map((trainingState.focusSlots || []).map((f) => [f.rikishiId, f]));
+  const focusMap = toKeyedMap(trainingState.focusSlots || [], (f) => f.rikishiId);
 
   return (
     <section className="space-y-6 pt-10 border-t-2 border-dashed">

@@ -11,6 +11,7 @@ import {
 import { join } from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { toKeyedMap } from "@/engine/utils";
 
 const execAsync = promisify(exec);
 
@@ -266,7 +267,11 @@ describe("Audit runner — tracker id stability", () => {
         );
         const run2 = await runAudit();
 
-        const ids1 = new Map(run1.entries.map((e) => [`${e.file}:${e.symbol}`, e.id]));
+        const ids1 = toKeyedMap(
+          run1.entries,
+          (e) => `${e.file}:${e.symbol}`,
+          (e) => e.id
+        );
         const shifted: string[] = [];
         for (const e of run2.entries) {
           const prev = ids1.get(`${e.file}:${e.symbol}`);

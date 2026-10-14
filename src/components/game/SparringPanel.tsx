@@ -13,7 +13,7 @@ import { Swords, Plus, X } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { SparringPair } from "@/engine/types/training";
-import { SparringService } from "@/presenters/engineAccess";
+import { SparringService, toIdMap } from "@/presenters/engineAccess";
 
 interface Props {
   heyaRikishi: Rikishi[];
@@ -37,7 +37,7 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
 
   const pairedIds = useMemo(() => new Set(pairs.flatMap((p) => [p.aId, p.bId])), [pairs]);
 
-  const rikishiById = useMemo(() => new Map(heyaRikishi.map((r) => [r.id, r])), [heyaRikishi]);
+  const rikishiById = useMemo(() => toIdMap(heyaRikishi), [heyaRikishi]);
 
   const availableRikishi = useMemo(
     () => heyaRikishi.filter((r) => !pairedIds.has(r.id) && !r.injured && !r.isRetired),

@@ -15,6 +15,7 @@ import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { toIdMap } from "@/engine/utils";
 
 // Registry families: oshidashi → push; uwatenage/shitatenage → belt.
 const PUSH_HEAVY_STATS = {
@@ -146,22 +147,20 @@ describe("buildMetaPerception", () => {
 
   it("bands injury climate from active roster injury counts", () => {
     const healthy = MockFactory.createWorld({
-      rikishi: new Map(
-        Array.from({ length: 10 }, (_, i) => [
-          `r${i}`,
-          MockFactory.createRikishi({ id: `r${i}`, injured: false, isKyujo: false }),
-        ])
+      rikishi: toIdMap(
+        Array.from({ length: 10 }, (_, i) =>
+          MockFactory.createRikishi({ id: `r${i}`, injured: false, isKyujo: false })
+        )
       ),
       meta: { tone: "classic", drift: {} },
     });
     expect(buildMetaPerception(healthy).injuryClimate).toBe("low");
 
     const battered = MockFactory.createWorld({
-      rikishi: new Map(
-        Array.from({ length: 10 }, (_, i) => [
-          `r${i}`,
-          MockFactory.createRikishi({ id: `r${i}`, injured: i < 4, isKyujo: i < 4 }),
-        ])
+      rikishi: toIdMap(
+        Array.from({ length: 10 }, (_, i) =>
+          MockFactory.createRikishi({ id: `r${i}`, injured: i < 4, isKyujo: i < 4 })
+        )
       ),
       meta: { tone: "classic", drift: {} },
     });

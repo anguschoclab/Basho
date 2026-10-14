@@ -621,8 +621,8 @@ function bagContextKeys(): string[] {
  * heya/heyaname/oyakata/shikona/winner/loser/east/west names; documented
  * caller fields (factory jsdocs + test ctxs) cover the rest.
  */
-const BAG_CONTEXT: Record<string, string> = Object.fromEntries(
-  [
+const BAG_CONTEXT: Record<string, string> = {};
+for (const k of [
     "shikona",
     "heya",
     "heyaname",
@@ -726,8 +726,9 @@ const BAG_CONTEXT: Record<string, string> = Object.fromEntries(
     "RESULT",
     "NAME",
     ...bagContextKeys(),
-  ].map((k) => [k, "X"])
-);
+]) {
+  BAG_CONTEXT[k] = "X";
+}
 
 interface Row {
   path: string;
@@ -751,7 +752,11 @@ const PATTERN_HINTS: Record<string, string[]> = {
 };
 
 function addRow(path: string, ctxKeys: string[] | null, loc: string): void {
-  const context = ctxKeys === null ? BAG_CONTEXT : Object.fromEntries(ctxKeys.map((k) => [k, "X"]));
+  let context = BAG_CONTEXT;
+  if (ctxKeys !== null) {
+    context = {};
+    for (const k of ctxKeys) context[k] = "X";
+  }
   const key = `${path}::${Object.keys(context).sort().join(",")}`;
   if (!rows.has(key)) rows.set(key, { path, context, loc });
 }

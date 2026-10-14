@@ -37,6 +37,7 @@ import type { WorldState } from "./types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "./banzuke/ozekiLogic";
 import { computeMovementUnits, bestTierAllowed } from "./banzuke/promotionLogic";
 import { buildFullSlotTemplate } from "./banzuke/banzukeTemplate";
+import { toKeyedMap } from "./utils";
 
 /** Defines the structure for banzuke update result. */
 interface BanzukeUpdateResult {
@@ -446,7 +447,7 @@ function banzukeMovementEvents(
   prevOzeki: OzekiKadobanMap
 ): MovementEvent[] {
   const events: MovementEvent[] = [];
-  const oldById = new Map(old.map((e) => [e.rikishiId, e]));
+  const oldById = toKeyedMap(old, (e) => e.rikishiId);
 
   for (const e of assigned) {
     const o = oldById.get(e.rikishiId);

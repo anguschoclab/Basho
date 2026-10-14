@@ -4,6 +4,7 @@ import {
   applyDramaBudget,
   isMakuuchiDebut,
 } from "@/engine/matchmaking/DramaMatchmaker";
+import { toIdMap, toKeyedMap } from "@/engine/utils";
 import { mockRikishi } from "../utils";
 import type { MatchPairing } from "@/engine/matchmaking/MatchmakingPhases";
 
@@ -202,8 +203,8 @@ describe("DramaMatchmaker", () => {
         mockRikishi(`r${i}`, { currentBashoWins: 7, currentBashoLosses: 7 })
       );
 
-      const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
-      const standings = new Map(rikishi.map((r) => [r.id, { wins: 7, losses: 7 }]));
+      const rikishiMap = toIdMap(rikishi);
+      const standings = toKeyedMap(rikishi, (r) => r.id, () => ({ wins: 7, losses: 7 }));
 
       const pairings: MatchPairing[] = [
         { eastId: "r0", westId: "r1", score: 1, reasons: [] },
@@ -305,8 +306,8 @@ describe("DramaMatchmaker", () => {
         mockRikishi(`r${i}`, { currentBashoWins: 7, currentBashoLosses: 7 })
       );
 
-      const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
-      const standings = new Map(rikishi.map((r) => [r.id, { wins: 7, losses: 7 }]));
+      const rikishiMap = toIdMap(rikishi);
+      const standings = toKeyedMap(rikishi, (r) => r.id, () => ({ wins: 7, losses: 7 }));
 
       const pairings: MatchPairing[] = [
         { eastId: "r0", westId: "r1", score: 1, reasons: [] },

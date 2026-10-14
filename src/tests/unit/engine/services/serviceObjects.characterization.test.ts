@@ -12,6 +12,7 @@ import { CrisisService } from "@/engine/systems/narrative/CrisisService";
 import { DynastyService } from "@/engine/systems/legacy/DynastyService";
 import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
 import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
+import { toIdMap } from "@/engine/utils";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
 import type { Oyakata } from "@/engine/types/oyakata";
 
@@ -69,7 +70,7 @@ describe("DynastyService — golden master", () => {
     });
     const world = makeMockWorld({
       heyas: new Map([[heya.id, heya]]),
-      rikishi: new Map(successors.map((r) => [r.id, r])),
+      rikishi: toIdMap(successors),
       activeRikishiIds: new Set(successors.map((r) => r.id)),
     });
     world.oyakata.set("oya-1", mockOyakata("oya-1", { age }));
@@ -131,7 +132,7 @@ describe("GlobalCupService — golden master", () => {
       mockRikishi("r-jry", { rank: "maegashira", division: "juryo", rankNumber: 2 }),
     ];
     return makeMockWorld({
-      rikishi: new Map(roster.map((r) => [r.id, r])),
+      rikishi: toIdMap(roster),
       activeRikishiIds: new Set(roster.map((r) => r.id)),
     });
   }
