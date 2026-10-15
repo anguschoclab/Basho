@@ -78,9 +78,16 @@ export function buildActionQueue(
 
   // 4. Promotion deliberation event
   if (world.events?.log) {
-    const hasDeliberation = world.events.log.some(
-      (e) => (e as { type?: string }).type === "PROMOTION_DELIBERATION"
-    );
+    // ⚡ BOLT: events.log is append-only and can reach ~10k items.
+    // Iterating backwards finds recent events in O(1) and avoids .some() closure overhead.
+    let hasDeliberation = false;
+    for (let i = world.events.log.length - 1; i >= 0; i--) {
+      if ((world.events.log[i] as { type?: string }).type === "PROMOTION_DELIBERATION") {
+        hasDeliberation = true;
+        break;
+      }
+    }
+
     if (hasDeliberation) {
       items.push({
         kind: "navigate",
