@@ -76,11 +76,15 @@ interface LogEngineEventParams {
  * Instead, simulation phases must push event definitions to `StateImpact.events`,
  * which will be applied atomically by `ImpactResolver`.
  *
- * This function also relies on `world.dayIndexGlobal` to scope deduplication.
+ * @contract Deduplication is strictly scoped to the current `world.dayIndexGlobal`.
+ * The dedupe map (`world.events.dedupe`) resets entirely on day rollover to prevent unbounded growth.
+ * Therefore, duplicate events spanning across different days will NOT be deduplicated.
  *
- * @returns The logged EngineEvent, or `undefined` if this exact event (by dedupeKey)
- * was already logged today BUT has since been evicted from the live log array due to
- * the MAX_LIVE_EVENT_LOG capacity limit. Callers must handle the undefined case.
+ * @contract Dedupe hits return the ORIGINAL event object from the live log.
+ * If a dedupe hit occurs but the original event has been evicted from the `MAX_LIVE_EVENT_LOG` bounds,
+ * this function returns `undefined`. Callers must handle the `undefined` case.
+ *
+ * @returns The logged EngineEvent, or `undefined` if evicted after a dedupe hit.
  */
 export function logEngineEvent(
   world: WorldState,
