@@ -1,0 +1,1 @@
+## 2026-10-16 - Added upset_elite variations **Discovery:** The 'upset_elite' templates are used in post-bout summaries when an elite rikishi is upset. **Rule:** The template must accept the provided tokens (WINNER, LOSER, LOSER_RANK, DAY). **Check:** Verify token usage manually and through unit tests.
