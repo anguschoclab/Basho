@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { activationKeyHandler } from "@/lib/a11y";
 import { formatYenToMan } from "@/utils/engineUtils";
 import { OYAKATA_BACKSTORIES } from "../../constants/ui/wizard";
 
@@ -122,13 +123,18 @@ function BackstoryCard({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`Select ${bs.label} backstory`}
+      aria-pressed={isSelected}
       className={cn(
-        "relative dossier-paper p-5 rounded-lg cursor-pointer transition-all hover:scale-[1.01] overflow-hidden",
+        "relative dossier-paper p-5 rounded-lg cursor-pointer transition-all hover:scale-[1.01] overflow-hidden focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
         isSelected
           ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl"
           : "opacity-70 hover:opacity-100"
       )}
       onClick={() => onSelect(bs.id)}
+      onKeyDown={activationKeyHandler(() => onSelect(bs.id))}
     >
       {/* Watermark */}
       <div className="absolute -top-2 -right-2 opacity-5 font-display text-3xl font-black pointer-events-none select-none">
