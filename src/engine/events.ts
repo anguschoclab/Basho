@@ -36,11 +36,10 @@ export { EventBus } from "./EventBus";
 /**
  * Ensure events state exists on the world object, initializing it if needed.
  *
- * **Coordinator-only:** This function mutates `world.events` in-place and must
- * only be called from the coordinator layer (`ImpactResolver`). Calling it from
- * within simulation phases violates the pure pipeline contract — simulation
- * phases must queue events via `ImpactBuilder.logEvent()` → `StateImpact.events[]`
- * and let the `ImpactResolver` apply them atomically after all phases complete.
+ * While this performs a benign initial assignment if events are undefined,
+ * actual event appending (via `logEngineEvent`) is strictly Coordinator-only.
+ * Pure simulation phases must queue events via `ImpactBuilder.logEvent()`
+ * rather than writing to this state directly.
  */
 export function ensureEventsState(world: WorldState): EventsState {
   if (world.events && world.events.version && Array.isArray(world.events.log)) {
