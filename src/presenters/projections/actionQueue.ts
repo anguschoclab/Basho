@@ -78,9 +78,15 @@ export function buildActionQueue(
 
   // 4. Promotion deliberation event
   if (world.events?.log) {
-    const hasDeliberation = world.events.log.some(
-      (e) => (e as { type?: string }).type === "PROMOTION_DELIBERATION"
-    );
+    let hasDeliberation = false;
+    // Bolt: optimize - world.events.log is an append-only array that can grow large.
+    // Recent events are at the end, so search backwards to avoid full array O(N) traversal.
+    for (let i = world.events.log.length - 1; i >= 0; i--) {
+      if ((world.events.log[i] as { type?: string }).type === "PROMOTION_DELIBERATION") {
+        hasDeliberation = true;
+        break;
+      }
+    }
     if (hasDeliberation) {
       items.push({
         kind: "navigate",
