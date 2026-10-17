@@ -84,7 +84,11 @@
       "Big upset on day %DAY% — %WINNER% topples %LOSER%, a %LOSER_RANK% falls to a maegashira.",
       "The Kokugikan shakes! %WINNER% pulls off a stunning day %DAY% victory over the %LOSER_RANK%.",
       "Absolutely sensational from %WINNER%, handing the %LOSER_RANK% a shocking defeat.",
-      "Giant killer! %WINNER% conquers %LOSER% to claim a massive upset."
+      "Giant killer! %WINNER% conquers %LOSER% to claim a massive upset.",
+      "The arena explodes as %WINNER% brings down the %LOSER_RANK% — an unforgettable day %DAY% shock!",
+      "History made on the dohyo! %WINNER% overcomes the %LOSER_RANK% in a bout for the ages.",
+      "A monumental victory for %WINNER%, felling the %LOSER_RANK% when it mattered most.",
+      "No one saw this coming! %WINNER% silences the crowd with a triumph over the %LOSER_RANK%."
     ],
     "consecutive_kachi": [
       "Kachi-koshi for the %ORDINAL% consecutive tournament for %SHIKONA%!",
