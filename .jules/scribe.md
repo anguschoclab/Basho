@@ -1,0 +1,1 @@
+## 2024-10-18 - Fix README test command bunx alias **Gap:** The README instructed developers to use `bunx vitest run <filepath>` to run single test files, but the `bunx` command alias is not available in all environments. **Truth:** The canonical command to execute packages is `bun x vitest run <filepath>`. **Watch:** Other developer onboarding guides or scripts assuming `bunx`.
