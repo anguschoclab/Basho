@@ -112,9 +112,8 @@ export function RosterCard({
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <SumoAvatar
-                  config={r.avatarConfig}
+                  avatar={r.avatar}
                   size="xs"
-                  showHairstyle={true}
                   expression={r.isInjured ? "intense" : r.motivation > 70 ? "confident" : "neutral"}
                   fallback={r.shikona}
                 />

@@ -40,7 +40,7 @@ describe("CandidateBuilder — avatar field migration", () => {
       expect(rikishi.avatarConfig?.seed).toBe("rikishi-full-002");
     });
 
-    it("produces a valid AvatarConfig shape (hairstyle, ageStage, skinToneKey)", () => {
+    it("produces a valid AvatarIdentity shape (seed, headShape, skinTone)", () => {
       const rng = rngFromSeed("test", "candidate", "full-shape");
       const rikishi = generateFullRikishi({
         id: "rikishi-full-003",
@@ -52,9 +52,9 @@ describe("CandidateBuilder — avatar field migration", () => {
         rankNumber: 10,
       });
 
-      expect(rikishi.avatarConfig?.hairstyle).toBeDefined();
-      expect(rikishi.avatarConfig?.ageStage).toBeDefined();
-      expect(rikishi.avatarConfig?.skinToneKey).toBeDefined();
+      expect(rikishi.avatarConfig?.seed).toBeDefined();
+      expect(rikishi.avatarConfig?.headShape).toBeDefined();
+      expect(rikishi.avatarConfig?.skinTone).toBeDefined();
     });
   });
 

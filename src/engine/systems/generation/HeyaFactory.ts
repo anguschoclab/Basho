@@ -11,7 +11,7 @@ import { Oyakata, OyakataArchetype } from "../../types/oyakata";
 import { generateOyakataName } from "../../shikona";
 import { seededPick } from "../../utils/random";
 import { generateOyakata } from "../../oyakataPersonalities";
-import { generateAvatarConfig } from "../../avatarGenerator";
+import { generateAvatarIdentity } from "../../avatarGenerator";
 import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "../../shikona/heyaPrefixes";
 import { WorldState } from "../../types/world";
 import { FOUNDING_SEED_FUNDS, HEYA_COUNT_CAP } from "../../../constants/engine/economic";
@@ -66,12 +66,10 @@ export function createHeyaWithOyakata(args: {
     tier
   );
 
-  oyakata.avatarConfig = generateAvatarConfig({
+  oyakata.avatarConfig = generateAvatarIdentity({
     seed: oyakataId,
     nationality: "Japan",
-    age,
-    isSekitori: false,
-    isOyakata: true,
+    role: "oyakata",
   });
 
   const shikonaPrefix =

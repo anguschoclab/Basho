@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Crown, Brain, Activity } from "lucide-react";
 import type { NPCDecisionDTO } from "@/presenters/npcAgentProjections";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 export interface RivalOyakataCardProps {
   heyaId: string;
@@ -15,6 +17,7 @@ export interface RivalOyakataCardProps {
   ichimon?: string;
   legacyTier?: string;
   decisions: NPCDecisionDTO[];
+  oyakataAvatar?: AvatarRenderData;
   // WS7 — banded rival intel. Optional; absence means "unknown", never
   // a fabricated placeholder.
   scouted?: boolean;
@@ -31,6 +34,7 @@ export function RivalOyakataCard({
   ichimon,
   legacyTier,
   decisions,
+  oyakataAvatar,
   scouted,
   archetypeLabel,
   mood,
@@ -44,7 +48,11 @@ export function RivalOyakataCard({
     <Card data-testid={`rival-oyakata-card-${heyaId}`}>
       <CardContent className="p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <Crown className="h-4 w-4 text-primary" />
+          {oyakataAvatar ? (
+            <SumoAvatar avatar={oyakataAvatar} size="sm" fallback={heyaName} />
+          ) : (
+            <Crown className="h-4 w-4 text-primary" />
+          )}
           <span className="text-sm font-medium">{heyaName}</span>
           {legacyTier && (
             <Badge variant="outline" className="ml-auto text-[10px] capitalize">

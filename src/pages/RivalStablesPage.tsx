@@ -73,6 +73,7 @@ export default function RivalStablesPage() {
                   tenureSummary={rival.tenureSummary}
                   factionPosture={rival.factionPosture}
                   planId={rival.planId}
+                  oyakataAvatar={rival.oyakataAvatar}
                 />
               </div>
             ))}

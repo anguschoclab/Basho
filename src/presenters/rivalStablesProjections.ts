@@ -12,7 +12,9 @@
  */
 import type { WorldState } from "../engine/types/world";
 import type { NPCDecisionDTO } from "./npcAgentProjections";
+import type { AvatarRenderData } from "../engine/types/avatar";
 import { getOyakataForHeya } from "../engine/queries";
+import { resolveAvatar, oyakataStageInput } from "../engine/avatarGenerator";
 
 export interface RivalStableDTO {
   heyaId: string;
@@ -33,6 +35,8 @@ export interface RivalStableDTO {
   factionPosture?: string;
   /** Most recent surfaced strategic plan id, if any. */
   planId?: string;
+  /** Stablemaster portrait — public knowledge, always shown. */
+  oyakataAvatar?: AvatarRenderData;
 }
 
 export interface RivalStablesProjection {
@@ -76,6 +80,8 @@ export function projectRivalStables(
     const recentDecisions = npcDecisions.filter((d) => d.heyaId === heya.id);
     const scouted = hasScoutingCoverage(world, heya.id);
     const oyakata = scouted ? getOyakataForHeya(world, heya.id) : undefined;
+    // Faces are public record (stablemasters appear at every basho).
+    const face = getOyakataForHeya(world, heya.id);
     const posture = heya.ichimon ? world.factionPostures?.[heya.ichimon]?.posture : undefined;
     rivals.push({
       heyaId: heya.id,
@@ -90,6 +96,9 @@ export function projectRivalStables(
       tenureSummary: tenureSummary(world, heya.id),
       factionPosture: posture,
       planId: recentDecisions.find((d) => d.planId)?.planId,
+      oyakataAvatar: face
+        ? resolveAvatar({ id: face.id, stored: face.avatarConfig, ...oyakataStageInput(face) })
+        : undefined,
     });
   }
 

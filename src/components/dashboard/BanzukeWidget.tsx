@@ -11,7 +11,7 @@ import { BaseWidget } from "./BaseWidget";
 import { RankInline } from "@/components/rikishi/RankBadge";
 import { getActiveRikishi } from "@/presenters/engineAccess";
 
-import type { AvatarConfig } from "@/engine/types/avatar";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0,
@@ -32,7 +32,7 @@ const BanzukeEntryRow = React.memo(
     record,
     isPlayer,
     i,
-    avatarConfig,
+    avatar,
   }: {
     id: string;
     shikona: string;
@@ -42,7 +42,7 @@ const BanzukeEntryRow = React.memo(
     record: string;
     isPlayer: boolean;
     i: number;
-    avatarConfig: AvatarConfig | undefined;
+    avatar: AvatarRenderData | undefined;
   }) => {
     return (
       <div
@@ -52,19 +52,7 @@ const BanzukeEntryRow = React.memo(
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <SumoAvatar
-              config={avatarConfig}
-              size="xs"
-              showHairstyle={
-                rank === "yokozuna" ||
-                rank === "ozeki" ||
-                rank === "sekiwake" ||
-                rank === "komusubi" ||
-                rank === "maegashira"
-              }
-              rankTier={rank}
-              fallback={shikona}
-            />
+            <SumoAvatar avatar={avatar} size="xs" rankTier={rank} fallback={shikona} />
             <RankInline
               rank={rank}
               rankNumber={rankNumber}
@@ -88,7 +76,6 @@ const BanzukeEntryRow = React.memo(
 type BanzukeEntry = {
   entry: UIRosterEntry;
   isPlayer: boolean;
-  avatarConfig: AvatarConfig | undefined;
 };
 
 const BanzukeList = React.memo(({ topRanked }: { topRanked: BanzukeEntry[] }) => {
@@ -97,7 +84,7 @@ const BanzukeList = React.memo(({ topRanked }: { topRanked: BanzukeEntry[] }) =>
   }
   return (
     <>
-      {topRanked.map(({ entry, isPlayer, avatarConfig }, i) => (
+      {topRanked.map(({ entry, isPlayer }, i) => (
         <BanzukeEntryRow
           key={entry.id}
           id={entry.id}
@@ -108,7 +95,7 @@ const BanzukeList = React.memo(({ topRanked }: { topRanked: BanzukeEntry[] }) =>
           record={entry.record}
           isPlayer={isPlayer}
           i={i}
-          avatarConfig={avatarConfig}
+          avatar={entry.avatar}
         />
       ))}
     </>
@@ -145,9 +132,8 @@ export function BanzukeWidget() {
     const result = [];
     for (const r of top10) {
       result.push({
-        entry: projectRosterEntry(r),
+        entry: projectRosterEntry(r, world),
         isPlayer: r.heyaId === world.playerHeyaId,
-        avatarConfig: r.avatarConfig,
       });
     }
     return result;

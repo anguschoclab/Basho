@@ -10,7 +10,7 @@ import type { Rank, Division, Side } from "../../engine/types/banzuke";
 import type { Style, CombatArchetype } from "../../engine/types/combat";
 import type { RikishiDescriptor, PotentialBand } from "../../engine/descriptorBands";
 import type { SalaryBreakdown } from "../../engine/economics_awards";
-import type { AvatarConfig } from "../../engine/types/avatar";
+import type { AvatarConfig, AvatarRenderData } from "../../engine/types/avatar";
 import type { KeshoMawashi, YokozunaTsuna } from "../../engine/types/keshoMawashi";
 import type {
   AgeBand,
@@ -183,6 +183,7 @@ export interface RikishiEconomicsDTO {
 
 /** Kesho-mawashi and visual customization */
 export interface RikishiVisualDTO {
+  avatar?: AvatarRenderData;
   avatarConfig?: AvatarConfig;
   keshoMawashi?: KeshoMawashi;
   yokozunaTsuna?: YokozunaTsuna;
@@ -302,6 +303,7 @@ export interface UIRosterEntry {
   momentum: number;
   potentialBand: PotentialBand;
   keshoMawashi?: KeshoMawashi;
+  avatar?: AvatarRenderData;
   avatarConfig?: AvatarConfig;
   rankDelta?: UIRankDelta;
   archetypeLabel?: string;

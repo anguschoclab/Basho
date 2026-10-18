@@ -2,6 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar } from "@/presenters/avatarProjections";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/presenters/engineAccess";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
@@ -77,9 +78,8 @@ export function HoFInductionCeremony({
       cardContent={
         <>
           <SumoAvatar
-            config={undefined}
+            avatar={resolveAvatar({ id: inductee.rikishiId, role: "rikishi", isRetired: true, age: 60 })}
             size="lg"
-            showHairstyle={true}
             fallback={inductee.shikona}
             expression={inductee.category === "champion" ? "confident" : "determined"}
             className={`border-2 ${ceremony.color}`}

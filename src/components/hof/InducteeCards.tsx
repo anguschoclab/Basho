@@ -29,9 +29,8 @@ export function RikishiPortrait({
 
   return (
     <SumoAvatar
-      config={rikishi?.avatarConfig}
+      avatar={rikishi?.avatar}
       size="lg"
-      showHairstyle={true}
       fallback={rikishi?.shikona}
       expression={
         category === "champion" ? "confident" : category === "technician" ? "determined" : "neutral"

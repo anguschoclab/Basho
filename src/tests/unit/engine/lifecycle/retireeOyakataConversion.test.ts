@@ -248,11 +248,9 @@ describe("processRetireeOyakataConversion — oyakata generation", () => {
     const newOyakata = Array.from(next.oyakata?.values() ?? []).find(
       (o: any) => o.formerShikona === "legend5" || o.name?.includes("legend5")
     );
-    // Avatar should be transferred with oyakata hairstyle
+    // Avatar identity should transfer while the oyakata stage is derived at render time
     expect(newOyakata).toBeDefined();
-    if (newOyakata?.avatarConfig) {
-      expect((newOyakata.avatarConfig as any).hairstyle).toBe("oyakata");
-    }
+    expect(newOyakata?.avatarConfig?.seed).toBe(retiree.avatarConfig?.seed);
   });
 
   it("logs elder_stock_acquired lifecycle event", () => {

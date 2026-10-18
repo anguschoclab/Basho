@@ -12,7 +12,7 @@ import { generateShikona } from "../../shikona";
 import { rollArchetype, buildCombatProfile, deriveWeakAgainstStyles } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
 import type { TalentCandidate } from "../../types/talent";
-import { generateAvatarConfig } from "../../avatarGenerator";
+import { generateAvatarIdentity } from "../../avatarGenerator";
 import {
   rollAgeForRank,
   rollDevelopmentProfile,
@@ -21,7 +21,6 @@ import {
   generateRikishiStats,
 } from "./CandidateStats";
 import { generateSyntheticCareer, type DivisionRecords } from "./CandidateCareer";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { MOCHIKYUKIN_INITIAL_POINTS } from "../../../constants/engine/economic";
 import { applyPersonaAssignment } from "./PersonaAssignment";
 import { assignPreSumoBackground, applyBackgroundStatModifiers } from "./PreSumoBackground";
@@ -55,7 +54,6 @@ function createBaseInfo(
   currentYear: number
 ) {
   const age = currentYear - birthYear;
-  const isSekitori = isSekitoriDivision(division);
   const citizenshipStatus = !isForeign({ nationality }) ? "native" : "foreign";
 
   return {
@@ -77,11 +75,10 @@ function createBaseInfo(
     behavior: { discipline: 70, mediaSavvy: 50, stress: 0 },
     personalityTraits: [],
 
-    avatarConfig: generateAvatarConfig({
+    avatarConfig: generateAvatarIdentity({
       seed: id,
       nationality,
-      age,
-      isSekitori,
+      role: "rikishi",
     }),
     talentSeed: rng.int(0, 1000000),
     joinedHeyaDate: String(currentYear),

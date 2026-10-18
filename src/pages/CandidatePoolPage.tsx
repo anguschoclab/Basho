@@ -24,6 +24,8 @@ import { Eye, Swords, TrendingUp, AlertCircle } from "lucide-react";
 import type { TalentCandidate, SuitorInterestBand } from "@/engine/types/talent";
 import { listNPCWatchedCandidates, getTopSuitor } from "@/presenters/engineAccess";
 import { getPlayerHeya, getHeya } from "@/presenters/engineAccess";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, candidateStageInput } from "@/presenters/avatarProjections";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
@@ -46,12 +48,14 @@ function CandidateRow({
   topSuitor,
   heyaName,
   playerHeyaId,
+  currentYear,
   onPoach,
 }: {
   candidate: TalentCandidate;
   topSuitor: { heyaId: string; interestBand: SuitorInterestBand } | undefined;
   heyaName: string;
   playerHeyaId: string | undefined;
+  currentYear: number;
   onPoach: (candidateId: string) => void;
 }) {
   const canPoach =
@@ -60,6 +64,16 @@ function CandidateRow({
 
   return (
     <div className="flex items-center gap-3 py-2 px-3 rounded-md border border-border/40 hover:bg-muted/30 transition-colors">
+      <SumoAvatar
+        avatar={resolveAvatar({
+          id: candidate.personId,
+          stored: candidate.avatarConfig,
+          nationality: candidate.nationality,
+          ...candidateStageInput(candidate, currentYear),
+        })}
+        size="sm"
+        fallback={candidate.name}
+      />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-medium truncate">{candidate.name}</span>
@@ -265,6 +279,7 @@ export default function CandidatePoolPage() {
                       topSuitor={topSuitor}
                       heyaName={heyaName}
                       playerHeyaId={playerHeyaId}
+                      currentYear={world.year}
                       onPoach={onPoach}
                     />
                   );

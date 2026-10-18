@@ -29,6 +29,7 @@ interface BoutNarrativeModalProps {
   autoPlay?: boolean;
   gyojiName?: string;
   gyojiAccuracy?: number;
+  gyojiAvatar?: import("@/engine/types/avatar").AvatarRenderData;
   /** Observed share of this kimarite this era (0–100). Omit when no stats exist. */
   kimariteObservedPct?: number;
 }
@@ -63,6 +64,7 @@ export function BoutNarrativeModal({
   autoPlay = true,
   gyojiName,
   gyojiAccuracy,
+  gyojiAvatar,
   kimariteObservedPct,
 }: BoutNarrativeModalProps) {
   const handleClose = onClose ?? (() => onOpenChange?.(false));
@@ -116,6 +118,7 @@ export function BoutNarrativeModal({
           autoPlay={autoPlay}
           gyojiName={gyojiName}
           gyojiAccuracy={gyojiAccuracy}
+          gyojiAvatar={gyojiAvatar}
           replayKey={replayKey}
           onReplay={() => setReplayKey((k) => k + 1)}
           onProgressUpdate={setAnimProgress}

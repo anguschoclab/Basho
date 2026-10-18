@@ -1,24 +1,33 @@
 /**
  * SumoAvatar.tsx
- * Procedural SVG avatar component for sumo wrestlers, oyakata, and staff.
- * Sub-renderers live in ./AvatarParts.tsx.
+ * Pixel-art avatar component (24×24) for rikishi, oyakata, staff, and officials.
+ * Compose runs in ./pixelCompose.ts; sprites in ./pixelAtlas.ts.
  */
 
-import { memo } from "react";
-import type { AvatarConfig } from "@/engine/types/avatar";
+import { memo, useMemo } from "react";
+import type {
+  AvatarIdentity,
+  AvatarStage,
+  AvatarRenderData,
+  AvatarExpression,
+} from "@/engine/types/avatar";
+import { deriveAvatarStage } from "@/presenters/avatarProjections";
+import { composeAvatar } from "./pixelCompose";
 import { cn } from "@/lib/utils";
-import type { AvatarExpression } from "./avatarGeometry";
-import { AvatarFallback, AvatarDefs, AvatarHairstyle, AvatarFaceDetails } from "./AvatarParts";
-import { AVATAR_COLORS } from "@/constants/ui/drawingPalette";
 
 interface SumoAvatarProps {
-  config?: AvatarConfig;
+  /** Resolved {identity, stage} pair from a presenter — preferred. */
+  avatar?: AvatarRenderData;
+  /** Stored identity; renders with `stage` prop or a default stage. */
+  config?: AvatarIdentity;
+  /** Optional stage to combine with `config`. */
+  stage?: AvatarStage;
+  /** Expression override applied on top of the resolved stage. */
+  expression?: AvatarExpression;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
   animate?: boolean;
-  showHairstyle?: boolean;
-  expression?: "neutral" | "determined" | "confident" | "intense";
-  fallback?: string; // Initials fallback
+  fallback?: string;
   rankTier?: string;
   showGlow?: boolean;
 }
@@ -44,35 +53,65 @@ const RANK_BORDER_COLORS: Record<string, string> = {
   jonokuchi: "border-muted-foreground",
 };
 
+function AvatarFallback({
+  pixelSize,
+  className,
+  fallback,
+}: {
+  pixelSize: number;
+  className?: string;
+  fallback?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded bg-muted flex items-center justify-center font-bold text-muted-foreground shrink-0",
+        className
+      )}
+      style={{ width: pixelSize, height: pixelSize, fontSize: pixelSize * 0.4 }}
+    >
+      {fallback?.slice(0, 2) ?? "?"}
+    </div>
+  );
+}
+
 export const SumoAvatar = memo(function SumoAvatar({
+  avatar,
   config,
+  stage,
+  expression,
   size = "md",
   className,
   animate,
-  showHairstyle = true,
-  expression,
   fallback,
   rankTier,
   showGlow,
 }: SumoAvatarProps) {
   const pixelSize = SIZE_MAP[size];
 
-  // Fallback to initials if no config
-  if (!config) {
-    return <AvatarFallback pixelSize={pixelSize} className={className} fallback={fallback} />;
+  const identity = avatar?.identity ?? config;
+  let resolvedStage =
+    avatar?.stage ?? stage ?? (identity ? deriveAvatarStage({}, identity) : undefined);
+  if (expression && resolvedStage && resolvedStage.expression !== expression) {
+    resolvedStage = { ...resolvedStage, expression };
   }
 
-  // Determine expression override or from config
-  const finalExpression: AvatarExpression | undefined = expression ?? config.expression;
+  const paths = useMemo(
+    () => (identity && resolvedStage ? composeAvatar(identity, resolvedStage) : null),
+    [identity, resolvedStage]
+  );
 
-  // Calculate stroke width based on size
-  const strokeWidth = size === "xs" ? 1.5 : size === "sm" ? 2 : 2.5;
+  if (!identity || !paths) {
+    return <AvatarFallback pixelSize={pixelSize} className={className} fallback={fallback} />;
+  }
 
   return (
     <svg
       width={pixelSize}
       height={pixelSize}
-      viewBox="0 0 100 100"
+      viewBox="0 0 24 24"
+      shapeRendering="crispEdges"
+      role="img"
       className={cn(
         "rounded overflow-hidden shrink-0",
         animate && "avatar-animate",
@@ -81,24 +120,9 @@ export const SumoAvatar = memo(function SumoAvatar({
         className
       )}
     >
-      <AvatarDefs config={config} />
-
-      {/* Face base with gradient */}
-      <circle
-        cx="50"
-        cy="55"
-        r="40"
-        fill={`url(#faceGradient-${config.seed})`}
-        stroke={AVATAR_COLORS.ink}
-        strokeWidth={strokeWidth}
-        filter={`url(#shadow-${config.seed})`}
-      />
-
-      {/* Ears, eyes, brows, nose, mouth, wrinkles, face shape */}
-      <AvatarFaceDetails config={config} finalExpression={finalExpression} />
-
-      {/* Hairstyle */}
-      {showHairstyle && <AvatarHairstyle config={config} />}
+      {[...paths.entries()].map(([hex, d]) => (
+        <path key={hex} d={d} fill={hex} />
+      ))}
     </svg>
   );
 });

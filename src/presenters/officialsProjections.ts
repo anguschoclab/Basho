@@ -3,6 +3,8 @@
  */
 import type { WorldState } from "../engine/types/world";
 import type { Gyoji } from "../engine/types/gyoji";
+import type { AvatarRenderData } from "../engine/types/avatar";
+import { resolveAvatar, gyojiStageInput, shimpanStageInput } from "../engine/avatarGenerator";
 
 export interface GyojiDTO {
   id: string;
@@ -13,6 +15,7 @@ export interface GyojiDTO {
   boutsOfficiated: number;
   callsReversed: number;
   reversalRate: number;
+  avatar?: AvatarRenderData;
 }
 
 export interface ShimpanDTO {
@@ -20,6 +23,7 @@ export interface ShimpanDTO {
   name: string;
   accuracy: number;
   consultations: number;
+  avatar?: AvatarRenderData;
 }
 
 export interface OfficialsProjection {
@@ -52,6 +56,7 @@ export function projectOfficials(world: WorldState): OfficialsProjection {
     boutsOfficiated: g.boutsOfficiated,
     callsReversed: g.callsReversed,
     reversalRate: g.boutsOfficiated > 0 ? g.callsReversed / g.boutsOfficiated : 0,
+    avatar: resolveAvatar({ id: g.id, stored: g.avatarConfig, ...gyojiStageInput(g) }),
   }));
 
   const shimpan: ShimpanDTO[] = shimpanPool.map((s) => ({
@@ -59,6 +64,7 @@ export function projectOfficials(world: WorldState): OfficialsProjection {
     name: s.name,
     accuracy: s.accuracy,
     consultations: s.consultations,
+    avatar: resolveAvatar({ id: s.id, stored: s.avatarConfig, ...shimpanStageInput(s) }),
   }));
 
   const sorted = [...gyoji].sort((a, b) => b.accuracy - a.accuracy);

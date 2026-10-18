@@ -7,6 +7,7 @@
  */
 
 import type { Id } from "./common";
+import type { AvatarIdentity } from "./avatar";
 
 /** Gyoji rank — tate-gyoji (top) down to lower ranks. */
 export type GyojiRank = "tate" | "fuku-tate" | "sanyaku" | "makuuchi" | "juryo" | "makushita";
@@ -23,6 +24,9 @@ export interface Gyoji {
   accuracy: number;
   /** Years of experience. */
   yearsActive: number;
+  /** Approximate age — drives avatar stage (graying, wrinkles). */
+  age?: number;
+  avatarConfig?: AvatarIdentity;
   /** Number of bouts officiated. */
   boutsOfficiated: number;
   /** Number of calls reversed by mono-ii. */
@@ -44,6 +48,9 @@ export interface Shimpan {
   accuracy: number;
   /** Years of experience. */
   yearsActive: number;
+  /** Approximate age — drives avatar stage. */
+  age?: number;
+  avatarConfig?: AvatarIdentity;
   /** Number of mono-ii consultations participated in. */
   consultations: number;
 }

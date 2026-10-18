@@ -7,12 +7,19 @@
 import type { Rikishi } from "../../../engine/types/rikishi";
 import type { WorldState } from "../../../engine/types/world";
 import type { RikishiVisualDTO, RikishiH2HDTO } from "../types";
+import { resolveAvatar, rikishiStageInput } from "../../../engine/avatarGenerator";
 
 /**
  * Transform visual/appearance fields.
  */
 export function toVisualDTO(r: Rikishi, world: WorldState): RikishiVisualDTO {
   return {
+    avatar: resolveAvatar({
+      id: r.id,
+      stored: r.avatarConfig,
+      nationality: r.nationality,
+      ...rikishiStageInput(r, world.year),
+    }),
     avatarConfig: r.avatarConfig,
     keshoMawashi: world.customKeshoConfigs?.[r.id]
       ? ({

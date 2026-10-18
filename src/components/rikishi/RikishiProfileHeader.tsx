@@ -58,9 +58,8 @@ export function RikishiProfileHeader({
           <div className="flex flex-col lg:flex-row items-start justify-between gap-6 relative z-10">
             <div className="flex items-center gap-6">
               <SumoAvatar
-                config={rikishi.avatarConfig}
+                avatar={rikishi.avatar}
                 size="lg"
-                showHairstyle={true}
                 expression={rikishi.isInjured ? "intense" : "determined"}
                 fallback={rikishi.shikona}
                 className="border-4 border-white/20 shadow-2xl"

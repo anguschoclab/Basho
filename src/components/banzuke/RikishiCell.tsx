@@ -6,7 +6,6 @@ import type { UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoMiniIndicator } from "@/components/kesho/KeshoMiniIndicator";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 interface Props {
   entry: UIRosterEntry | null;
@@ -40,12 +39,7 @@ export const RikishiCell = memo(function RikishiCell({
             <span className="shrink-0 h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow cursor-help" />
           </TooltipWrap>
         )}
-        <SumoAvatar
-          config={entry.avatarConfig}
-          size="xs"
-          showHairstyle={isSekitoriDivision(entry.division)}
-          fallback={entry.shikona}
-        />
+        <SumoAvatar avatar={entry.avatar} size="xs" fallback={entry.shikona} />
         {/* Kesho indicator for sekitori */}
         {entry.keshoMawashi && (
           <TooltipWrap content={`Kesho-mawashi (${entry.keshoMawashi.tier})`} side="top">

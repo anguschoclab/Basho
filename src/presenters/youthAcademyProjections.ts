@@ -10,6 +10,7 @@ import {
   MAX_ACADEMY_LEVEL,
 } from "../engine/systems/recruitment/YouthAcademyService";
 import type { AcademyStaff } from "../engine/types/academy";
+import type { AvatarIdentity } from "../engine/types/avatar";
 
 export interface YouthProspectDTO {
   id: string;
@@ -19,6 +20,7 @@ export interface YouthProspectDTO {
   potential: number;
   currentAbility: number;
   developmentPoints: number;
+  avatarConfig?: AvatarIdentity;
 }
 
 export interface YouthAcademyDTO {
@@ -84,6 +86,7 @@ export function projectYouthAcademy(world: WorldState, heyaId: string): YouthAca
         potential: p.potential,
         currentAbility: p.currentAbility,
         developmentPoints: p.developmentPoints,
+        avatarConfig: p.avatarConfig,
       })),
     },
     hasAcademy: true,

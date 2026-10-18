@@ -7,6 +7,7 @@ import type {
   StaffLoyaltyBand,
 } from "./types/staff";
 import { type SeededRNG, rngFromSeed } from "./rng";
+import { generateAvatarIdentity } from "./avatarGenerator";
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
 import { createImpactBuilder } from "./core/ImpactBuilder";
@@ -133,6 +134,7 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
     scandalExposure: Math.floor(rng.next() * STAFF_SCANDAL_EXPOSURE_RANGE),
     yearsAtBeya: Math.max(0, Math.floor(rng.next() * (age - STAFF_MIN_AGE_FOR_YEARS_CALC))),
     priorAffiliations: [],
+    avatarConfig: generateAvatarIdentity({ seed: id, nationality: "Japan", role: "staff" }),
     successorEligible:
       role === "assistant_oyakata" &&
       age > STAFF_SUCCESSOR_AGE_THRESHOLD &&

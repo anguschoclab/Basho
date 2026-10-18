@@ -23,8 +23,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
+import { ShieldCheck, Zap, Heart, Award, Trash2 } from "lucide-react";
 import type { Staff } from "@/engine/types/staff";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, staffStageInput } from "@/presenters/avatarProjections";
 import { toFatigueBand, toScandalBand } from "@/presenters/engineAccess";
 import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
 import { STAFF_BAND_COLORS, ROLE_LABELS, staffBonusText } from "./staffMeta";
@@ -167,9 +169,15 @@ export function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center border border-border/50">
-              <Briefcase className="h-6 w-6 text-muted-foreground" />
-            </div>
+            <SumoAvatar
+              avatar={resolveAvatar({
+                id: staff.id,
+                stored: staff.avatarConfig,
+                ...staffStageInput(staff),
+              })}
+              size="md"
+              fallback={staff.name}
+            />
             <div>
               <CardTitle className="text-lg">{staff.name}</CardTitle>
               <CardDescription className="font-bold uppercase tracking-tighter text-[10px] text-primary/80">

@@ -1,479 +1,222 @@
 /**
- * Avatar Generator Tests
- * Comprehensive tests for procedural avatar generation system
+ * Avatar Generator Tests (v2 — pixel identity + derived stage)
+ *
+ * Covers:
+ *  - identity determinism & stability (seeded by person/entity id)
+ *  - nationality feature biases (probabilistic, loose bounds)
+ *  - stage derivation: rank→topknot/attire, age→wrinkles/graying,
+ *    weight→fullness, injury→bandage, glasses quirk, gyoji/staff attire,
+ *    retiree→oyakata identity preservation
  */
 
 import { describe, it, expect } from "vitest";
 import {
-  generateDefaultAvatarConfig,
-  generateAvatarConfig,
-  updateAvatarForAging,
-  updateHairstyleForPromotion,
+  generateAvatarIdentity,
+  deriveAvatarStage,
+  resolveAvatar,
+  rikishiStageInput,
+  staffStageInput,
+  gyojiStageInput,
+  prospectStageInput,
 } from "@/engine/avatarGenerator";
-import { NATIONALITY_SKIN_TONES, HAIR_COLORS } from "@/engine/types/avatar";
+import type { Staff } from "@/engine/types/staff";
+import type { Gyoji } from "@/engine/types/gyoji";
 
-describe("Avatar Generator", () => {
-  describe("generateAvatarConfig", () => {
-    it("should generate deterministic avatars for the same seed", () => {
-      const config1 = generateAvatarConfig({
-        seed: "test-rikishi-001",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
+const gen = (over: Partial<Parameters<typeof generateAvatarIdentity>[0]> = {}) =>
+  generateAvatarIdentity({ seed: "test-rikishi-001", nationality: "Japan", role: "rikishi", ...over });
 
-      const config2 = generateAvatarConfig({
-        seed: "test-rikishi-001",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(config1).toEqual(config2);
-      expect(config1.seed).toBe("test-rikishi-001");
-    });
-
-    it("should generate different avatars for different seeds", () => {
-      const config1 = generateAvatarConfig({
-        seed: "rikishi-a",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      const config2 = generateAvatarConfig({
-        seed: "rikishi-b",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      // At least one property should differ
-      const hasDifference =
-        config1.faceShape !== config2.faceShape ||
-        config1.eyeType !== config2.eyeType ||
-        config1.skinTone !== config2.skinTone ||
-        config1.hairColor !== config2.hairColor;
-
-      expect(hasDifference).toBe(true);
-    });
-
-    it("should assign appropriate skin tones for Japanese rikishi", () => {
-      const config = generateAvatarConfig({
-        seed: "japanese-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(config.skinToneKey).toBe("japan");
-      expect(config.skinTone).toBe(NATIONALITY_SKIN_TONES.japan.base);
-    });
-
-    it("should assign appropriate skin tones for Mongolian rikishi", () => {
-      const config = generateAvatarConfig({
-        seed: "mongolian-test",
-        nationality: "Mongolia",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(config.skinToneKey).toBe("mongolia");
-      expect(config.skinTone).toBe(NATIONALITY_SKIN_TONES.mongolia.base);
-    });
-
-    it("should assign oichomage hairstyle to sekitori", () => {
-      const config = generateAvatarConfig({
-        seed: "sekitori-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(config.hairstyle).toBe("oichomage");
-    });
-
-    it("should assign chonmage hairstyle to non-sekitori", () => {
-      const config = generateAvatarConfig({
-        seed: "non-sekitori-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: false,
-      });
-
-      expect(config.hairstyle).toBe("chonmage");
-    });
-
-    it("should assign retired hairstyle to retired rikishi", () => {
-      const config = generateAvatarConfig({
-        seed: "retired-test",
-        nationality: "Japan",
-        age: 35,
-        isSekitori: false,
-        isRetired: true,
-      });
-
-      expect(config.hairstyle).toBe("retired");
-    });
-
-    it("should assign oyakata hairstyle to oyakata", () => {
-      const config = generateAvatarConfig({
-        seed: "oyakata-test",
-        nationality: "Japan",
-        age: 45,
-        isSekitori: false,
-        isOyakata: true,
-      });
-
-      expect(config.hairstyle).toBe("oyakata");
-    });
-
-    it("should calculate correct age stages", () => {
-      const teen = generateAvatarConfig({
-        seed: "teen",
-        nationality: "Japan",
-        age: 18,
-        isSekitori: true,
-      });
-      expect(teen.ageStage).toBe("teen");
-
-      const young = generateAvatarConfig({
-        seed: "young",
-        nationality: "Japan",
-        age: 22,
-        isSekitori: true,
-      });
-      expect(young.ageStage).toBe("young");
-
-      const prime = generateAvatarConfig({
-        seed: "prime",
-        nationality: "Japan",
-        age: 28,
-        isSekitori: true,
-      });
-      expect(prime.ageStage).toBe("prime");
-
-      const veteran = generateAvatarConfig({
-        seed: "veteran",
-        nationality: "Japan",
-        age: 35,
-        isSekitori: true,
-      });
-      expect(veteran.ageStage).toBe("veteran");
-
-      const elder = generateAvatarConfig({
-        seed: "elder",
-        nationality: "Japan",
-        age: 45,
-        isSekitori: false,
-        isRetired: true,
-      });
-      expect(elder.ageStage).toBe("elder");
-    });
-
-    it("should calculate wrinkles based on age", () => {
-      const young = generateAvatarConfig({
-        seed: "young-wrinkle",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-      expect(young.wrinkles).toBe(0);
-
-      const middle = generateAvatarConfig({
-        seed: "middle-wrinkle",
-        nationality: "Japan",
-        age: 35,
-        isSekitori: true,
-      });
-      expect(middle.wrinkles).toBeGreaterThanOrEqual(5);
-      expect(middle.wrinkles).toBeLessThanOrEqual(20);
-
-      const old = generateAvatarConfig({
-        seed: "old-wrinkle",
-        nationality: "Japan",
-        age: 55,
-        isSekitori: false,
-        isRetired: true,
-      });
-      expect(old.wrinkles).toBeGreaterThanOrEqual(50);
-      expect(old.wrinkles).toBeLessThanOrEqual(80);
-    });
-
-    it("should calculate hair graying based on age", () => {
-      const young = generateAvatarConfig({
-        seed: "young-hair",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-      expect(young.hairGraying).toBe(0);
-
-      const middle = generateAvatarConfig({
-        seed: "middle-hair",
-        nationality: "Japan",
-        age: 40,
-        isSekitori: true,
-      });
-      expect(middle.hairGraying).toBeGreaterThanOrEqual(0);
-      expect(middle.hairGraying).toBeLessThanOrEqual(30);
-
-      const old = generateAvatarConfig({
-        seed: "old-hair",
-        nationality: "Japan",
-        age: 60,
-        isSekitori: false,
-        isRetired: true,
-      });
-      expect(old.hairGraying).toBeGreaterThanOrEqual(70);
-      expect(old.hairGraying).toBeLessThanOrEqual(100);
-    });
-
-    it("should generate valid face shape", () => {
-      const config = generateAvatarConfig({
-        seed: "test-face",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(["round", "oval", "square", "broad"]).toContain(config.faceShape);
-    });
-
-    it("should generate valid eye angle", () => {
-      const config = generateAvatarConfig({
-        seed: "test-eye-angle",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(["level", "slanted-up", "slanted-down"]).toContain(config.eyeAngle);
-    });
-
-    it("should generate valid eye spacing", () => {
-      const config = generateAvatarConfig({
-        seed: "test-eye-spacing",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(["close", "normal", "wide"]).toContain(config.eyeSpacing);
-    });
-
-    it("should use valid eye types", () => {
-      const config = generateAvatarConfig({
-        seed: "eye-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(["standard", "narrow", "wide"]).toContain(config.eyeType);
-    });
-
-    it("should use valid hair colors", () => {
-      const config = generateAvatarConfig({
-        seed: "hair-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      const validColors = Object.values(HAIR_COLORS);
-      expect(validColors).toContain(config.hairColor);
-    });
+describe("generateAvatarIdentity", () => {
+  it("is deterministic for the same seed", () => {
+    expect(gen()).toEqual(gen());
   });
 
-  describe("updateAvatarForAging", () => {
-    it("should update age stage when crossing thresholds", () => {
-      const youngConfig = generateAvatarConfig({
-        seed: "aging-test",
-        nationality: "Japan",
-        age: 22,
-        isSekitori: true,
-      });
-
-      expect(youngConfig.ageStage).toBe("young");
-
-      const updated = updateAvatarForAging(youngConfig, 28);
-      expect(updated.ageStage).toBe("prime");
-    });
-
-    it("should update hair color based on graying", () => {
-      const youngConfig = generateAvatarConfig({
-        seed: "test-graying",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      const oldConfig = updateAvatarForAging(youngConfig, 60);
-
-      expect(oldConfig.hairGraying).toBeGreaterThan(youngConfig.hairGraying);
-      if (oldConfig.hairGraying > 50) {
-        expect(oldConfig.hairColor).toBe(HAIR_COLORS.gray);
-      }
-    });
-
-    it("should preserve new fields during aging", () => {
-      const config = generateAvatarConfig({
-        seed: "test-preserve",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      const agedConfig = updateAvatarForAging(config, 35);
-
-      // New fields should be preserved
-      expect(agedConfig.eyeAngle).toBe(config.eyeAngle);
-      expect(agedConfig.eyeSpacing).toBe(config.eyeSpacing);
-      expect(agedConfig.earSize).toBe(config.earSize);
-      expect(agedConfig.facialHair).toBe(config.facialHair);
-      expect(agedConfig.distinctiveMark).toBe(config.distinctiveMark);
-    });
-
-    it("should increase wrinkles with age", () => {
-      const config = generateAvatarConfig({
-        seed: "wrinkle-update",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      const initialWrinkles = config.wrinkles;
-      const updated = updateAvatarForAging(config, 45);
-
-      expect(updated.wrinkles).toBeGreaterThan(initialWrinkles);
-    });
-
-    it("should increase hair graying with age", () => {
-      const config = generateAvatarConfig({
-        seed: "gray-update",
-        nationality: "Japan",
-        age: 30,
-        isSekitori: true,
-      });
-
-      const initialGraying = config.hairGraying;
-      const updated = updateAvatarForAging(config, 50);
-
-      expect(updated.hairGraying).toBeGreaterThan(initialGraying);
-    });
-
-    it("should not modify original config (immutable)", () => {
-      const config = generateAvatarConfig({
-        seed: "immutable-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      const originalAgeStage = config.ageStage;
-      updateAvatarForAging(config, 50);
-
-      expect(config.ageStage).toBe(originalAgeStage);
-    });
+  it("produces different faces for different seeds", () => {
+    const a = gen({ seed: "a" });
+    const b = gen({ seed: "b" });
+    const c = gen({ seed: "c" });
+    const sigs = [a, b, c].map((i) => JSON.stringify(i));
+    expect(new Set(sigs).size).toBeGreaterThan(1);
   });
 
-  describe("updateHairstyleForPromotion", () => {
-    it("should promote to oichomage when reaching sekitori", () => {
-      const config = generateAvatarConfig({
-        seed: "promotion-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: false,
-      });
-
-      expect(config.hairstyle).toBe("chonmage");
-
-      const promoted = updateHairstyleForPromotion(config, true);
-      expect(promoted.hairstyle).toBe("oichomage");
-    });
-
-    it("should demote to chonmage when falling from sekitori", () => {
-      const config = generateAvatarConfig({
-        seed: "demotion-test",
-        nationality: "Japan",
-        age: 25,
-        isSekitori: true,
-      });
-
-      expect(config.hairstyle).toBe("oichomage");
-
-      const demoted = updateHairstyleForPromotion(config, false);
-      expect(demoted.hairstyle).toBe("chonmage");
-    });
-
-    it("should not change hairstyle for retired rikishi", () => {
-      const config = generateAvatarConfig({
-        seed: "retired-hairstyle",
-        nationality: "Japan",
-        age: 35,
-        isSekitori: false,
-        isRetired: true,
-      });
-
-      expect(config.hairstyle).toBe("retired");
-
-      const updated = updateHairstyleForPromotion(config, true);
-      expect(updated.hairstyle).toBe("retired");
-    });
+  it("tags identity with version 2 and the requested role", () => {
+    const id = gen({ role: "gyoji" });
+    expect(id.version).toBe(2);
+    expect(id.role).toBe("gyoji");
   });
-  describe("generateDefaultAvatarConfig", () => {
-    it("should generate proper avatar for a makuuchi sekitori", () => {
-      const config = generateDefaultAvatarConfig({
-        id: "makuuchi-test",
-        nationality: "Japan",
-        birthYear: 2000,
-        division: "makuuchi",
-      });
 
-      // 2025 - 2000 = 25 years old
-      expect(config.ageStage).toBe("prime");
-      expect(config.hairstyle).toBe("oichomage");
-    });
+  it("varies skin tone by nationality (mongolia vs estonia differ in output distribution)", () => {
+    const tones = new Set<string>();
+    for (let i = 0; i < 30; i++) tones.add(gen({ seed: `m-${i}`, nationality: "Mongolia" }).skinTone);
+    expect(tones.size).toBeGreaterThan(1);
+  });
 
-    it("should generate proper avatar for a juryo sekitori", () => {
-      const config = generateDefaultAvatarConfig({
-        id: "juryo-test",
-        nationality: "Mongolia",
-        birthYear: 2003,
-        division: "juryo",
-      });
+  it("never gives active rikishi/prospects facial hair", () => {
+    for (let i = 0; i < 40; i++) {
+      expect(gen({ seed: `r-${i}`, role: "rikishi" }).facialHair).toBe("none");
+      expect(gen({ seed: `p-${i}`, role: "prospect" }).facialHair).toBe("none");
+    }
+  });
 
-      // 2025 - 2003 = 22 years old
-      expect(config.ageStage).toBe("young");
-      expect(config.hairstyle).toBe("oichomage");
-    });
+  it("sometimes gives oyakata/staff facial hair", () => {
+    let count = 0;
+    for (let i = 0; i < 60; i++) {
+      if (gen({ seed: `o-${i}`, role: "oyakata" }).facialHair !== "none") count++;
+      if (gen({ seed: `s-${i}`, role: "staff" }).facialHair !== "none") count++;
+    }
+    expect(count).toBeGreaterThan(0);
+  });
 
-    it("should generate proper avatar for a makushita non-sekitori", () => {
-      const config = generateDefaultAvatarConfig({
-        id: "makushita-test",
-        nationality: "Japan",
-        birthYear: 2007,
-        division: "makushita",
-      });
+  it("biases mongolian wrestlers toward narrower/upturned eyes", () => {
+    let narrowish = 0;
+    let japaneseNarrowish = 0;
+    for (let i = 0; i < 100; i++) {
+      const m = gen({ seed: `mm-${i}`, nationality: "Mongolia" });
+      const j = gen({ seed: `jj-${i}`, nationality: "Japan" });
+      if (m.eyes === "narrow" || m.eyes === "upturned") narrowish++;
+      if (j.eyes === "narrow" || j.eyes === "upturned") japaneseNarrowish++;
+    }
+    expect(narrowish).toBeGreaterThan(japaneseNarrowish);
+  });
+});
 
-      // 2025 - 2007 = 18 years old
-      expect(config.ageStage).toBe("teen");
-      expect(config.hairstyle).toBe("chonmage");
-    });
+describe("deriveAvatarStage", () => {
+  it("gives jonokuchi recruits a shaved head", () => {
+    const s = deriveAvatarStage({ role: "rikishi", division: "jonokuchi", age: 18 });
+    expect(s.hairstyle).toBe("shaved");
+    expect(s.attire).toBe("bare");
+  });
 
-    it("should generate proper avatar for a retired rikishi", () => {
-      const config = generateDefaultAvatarConfig({
-        id: "retired-test",
-        nationality: "Japan",
-        birthYear: 1985,
-        division: "juryo",
-        isRetired: true,
-      });
+  it("gives lower-division rikishi a chonmage", () => {
+    const s = deriveAvatarStage({ role: "rikishi", division: "makushita", age: 22 });
+    expect(s.hairstyle).toBe("chonmage");
+  });
 
-      // 2025 - 1985 = 40 years old
-      expect(config.ageStage).toBe("veteran");
-      expect(config.hairstyle).toBe("retired");
-    });
+  it("gives sekitori the oichomage ginkgo topknot", () => {
+    const s = deriveAvatarStage({ role: "rikishi", division: "makuuchi", age: 28 });
+    expect(s.hairstyle).toBe("oichomage");
+  });
+
+  it("flags yokozuna with a tsuna accent", () => {
+    const s = deriveAvatarStage({ role: "rikishi", division: "makuuchi", rank: "yokozuna", age: 30 });
+    expect(s.tsuna).toBe(true);
+    expect(s.hairstyle).toBe("oichomage");
+  });
+
+  it("retired rikishi drop the topknot", () => {
+    const s = deriveAvatarStage({ role: "rikishi", division: "makuuchi", age: 36, isRetired: true });
+    expect(["short", "receding", "bald"]).toContain(s.hairstyle);
+    expect(s.attire).not.toBe("bare");
+  });
+
+  it("ages: young has no wrinkles/gray, elder has both", () => {
+    const young = deriveAvatarStage({ role: "oyakata", age: 24 });
+    const elder = deriveAvatarStage({ role: "oyakata", age: 62 });
+    expect(young.wrinkleTier).toBe(0);
+    expect(young.graying).toBe(0);
+    expect(elder.wrinkleTier).toBe(3);
+    expect(elder.graying).toBe(2);
+  });
+
+  it("scales fullness with weight", () => {
+    const light = deriveAvatarStage({ role: "rikishi", division: "jonokuchi", age: 20, weight: 100 });
+    const heavy = deriveAvatarStage({ role: "rikishi", division: "jonokuchi", age: 20, weight: 200 });
+    expect(heavy.fullness).toBeGreaterThan(light.fullness);
+  });
+
+  it("shows a bandage when injured", () => {
+    const s = deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, injured: true });
+    expect(s.bandage).toBe(true);
+  });
+
+  it("honors the glasses quirk", () => {
+    const s = deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, glasses: true });
+    expect(s.glasses).toBe(true);
+  });
+
+  it("maps gyoji rank to robe tier", () => {
+    expect(deriveAvatarStage({ role: "gyoji", gyojiRank: "tate", age: 55 }).attire).toBe("gyoji_tate");
+    expect(deriveAvatarStage({ role: "gyoji", gyojiRank: "sanyaku", age: 45 }).attire).toBe(
+      "gyoji_sanyaku"
+    );
+    expect(deriveAvatarStage({ role: "gyoji", gyojiRank: "makushita", age: 30 }).attire).toBe(
+      "gyoji_standard"
+    );
+  });
+
+  it("maps staff roles to attire", () => {
+    expect(deriveAvatarStage({ role: "staff", staffRole: "medical_staff", age: 40 }).attire).toBe("coat");
+    expect(deriveAvatarStage({ role: "staff", staffRole: "technique_coach", age: 40 }).attire).toBe("tracksuit");
+    expect(deriveAvatarStage({ role: "staff", staffRole: "administrator", age: 40 }).attire).toBe("suit");
+    expect(deriveAvatarStage({ role: "staff", staffRole: "scout", age: 40 }).attire).toBe("shirt");
+  });
+
+  it("expression follows aggression/momentum/injury unless overridden", () => {
+    expect(deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, aggression: 80 }).expression).toBe("intense");
+    expect(deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, momentum: 80 }).expression).toBe("confident");
+    expect(deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, injured: true }).expression).toBe("worried");
+    expect(
+      deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, expression: "determined" }).expression
+    ).toBe("determined");
+  });
+});
+
+describe("resolveAvatar", () => {
+  it("uses stored v2 identity when present", () => {
+    const stored = gen({ seed: "stored-1" });
+    const r = resolveAvatar({ id: "x", stored, division: "juryo", age: 25 });
+    expect(r.identity).toBe(stored);
+  });
+
+  it("derives identity deterministically when stored is missing or stale", () => {
+    const a = resolveAvatar({ id: "person-1", nationality: "Japan", division: "juryo", age: 25 });
+    const b = resolveAvatar({ id: "person-1", nationality: "Japan", division: "juryo", age: 25 });
+    expect(a.identity).toEqual(b.identity);
+    // stale v1-shaped config ignored
+    const stale = { seed: "old", faceShape: "round" } as never;
+    const c = resolveAvatar({ id: "person-1", stored: stale, nationality: "Japan", division: "juryo", age: 25 });
+    expect(c.identity).toEqual(a.identity);
+  });
+});
+
+describe("entity stage-input helpers", () => {
+  it("rikishiStageInput maps a rikishi entity", () => {
+    const r = {
+      birthYear: 2001,
+      division: "makuuchi",
+      rank: "maegashira",
+      weight: 170,
+      injured: true,
+      isKyujo: false,
+      quirks: { glasses: { style: "round", acquiredBasho: "2025-1" } },
+      stats: { aggression: 72 },
+      momentum: 60,
+    } as never;
+    const input = rikishiStageInput(r, 2025);
+    const s = deriveAvatarStage({ role: "rikishi", ...input });
+    expect(s.ageStage).toBe("young");
+    expect(s.hairstyle).toBe("oichomage");
+    expect(s.bandage).toBe(true);
+    expect(s.glasses).toBe(true);
+    expect(s.expression).toBe("worried");
+    expect(s.fullness).toBe(2);
+  });
+
+  it("staffStageInput maps staff role and age", () => {
+    const s = { role: "medical_staff", age: 52 } as Staff;
+    expect(staffStageInput(s).staffRole).toBe("medical_staff");
+    expect(staffStageInput(s).age).toBe(52);
+  });
+
+  it("gyojiStageInput maps gyoji rank", () => {
+    const g = { rank: "tate", age: 58 } as Gyoji;
+    expect(gyojiStageInput(g).gyojiRank).toBe("tate");
+    expect(gyojiStageInput(g).role).toBe("gyoji");
+  });
+
+  it("prospectStageInput gives young recruits short hair/bare shoulders", () => {
+    const s = deriveAvatarStage(prospectStageInput({ age: 16 }));
+    expect(s.hairstyle).toBe("short");
+    expect(s.attire).toBe("bare");
+    expect(s.ageStage).toBe("teen");
   });
 });

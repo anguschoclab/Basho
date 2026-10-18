@@ -46,9 +46,8 @@ export function WinnerReveal({
         {winner && (
           <div className="flex flex-col items-center gap-1">
             <SumoAvatar
-              config={winner.avatarConfig}
+              avatar={winner.avatar}
               size="lg"
-              showHairstyle={true}
               expression="confident"
               fallback={winner.shikona}
               className="border-2 border-gold/50 shadow-lg"
@@ -60,9 +59,8 @@ export function WinnerReveal({
         {loser && (
           <div className="flex flex-col items-center gap-1">
             <SumoAvatar
-              config={loser.avatarConfig}
+              avatar={loser.avatar}
               size="lg"
-              showHairstyle={true}
               expression="neutral"
               fallback={loser.shikona}
               className="border-2 border-muted opacity-70"

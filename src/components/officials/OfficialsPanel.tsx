@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Gavel, Users } from "lucide-react";
 import type { OfficialsProjection } from "@/presenters/officialsProjections";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 export function OfficialsPanel({ projection }: { projection: OfficialsProjection }) {
   const { gyoji, shimpan, topGyoji, totalBoutsOfficiated, totalReversals } = projection;
@@ -43,6 +44,7 @@ export function OfficialsPanel({ projection }: { projection: OfficialsProjection
                   data-testid={`gyoji-row-${g.id}`}
                 >
                   <div className="flex items-center gap-2">
+                    <SumoAvatar avatar={g.avatar} size="xs" fallback={g.name} />
                     <span className="text-sm font-medium">{g.name}</span>
                     <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
                       {g.rankLabel}
@@ -87,7 +89,10 @@ export function OfficialsPanel({ projection }: { projection: OfficialsProjection
                   className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/30"
                   data-testid={`shimpan-row-${s.id}`}
                 >
-                  <span className="text-sm font-medium">{s.name}</span>
+                  <div className="flex items-center gap-2">
+                    <SumoAvatar avatar={s.avatar} size="xs" fallback={s.name} />
+                    <span className="text-sm font-medium">{s.name}</span>
+                  </div>
                   <div className="flex items-center gap-3 text-xs tabular-nums">
                     <span className="text-muted-foreground">{s.consultations} consultations</span>
                     <span

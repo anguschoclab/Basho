@@ -3,6 +3,7 @@
  */
 
 import type { Id } from "./common";
+import type { AvatarIdentity } from "./avatar";
 
 /** Type representing a staff role. */
 export type StaffRole =
@@ -48,4 +49,5 @@ export interface Staff {
   yearsAtBeya: number;
   priorAffiliations: Id[];
   successorEligible: boolean;
+  avatarConfig?: AvatarIdentity;
 }

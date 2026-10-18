@@ -150,6 +150,9 @@ export interface TalentCandidate {
    * as scouting observations accumulate, eventually revealing true values.
    */
   scoutingBias?: ScoutingBias;
+  /** Persistent avatar identity — seeded by personId so the face survives
+   *  conversion to a Rikishi record. */
+  avatarConfig?: import("./avatar").AvatarIdentity;
 }
 
 /**

@@ -19,6 +19,7 @@ import { rankScore, calculateStreak } from "./career";
 import type { KeshoMawashi } from "../../../engine/types/keshoMawashi";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { computeKachiNokori } from "../../kachiNokori";
+import { resolveAvatar, rikishiStageInput } from "../../../engine/avatarGenerator";
 
 /**
  * Project a rikishi into a roster entry for banzuke/roster display.
@@ -83,6 +84,12 @@ export function projectRosterEntry(
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     archetypeLabel: resolveRegistryLabel("archetypes", r.combatProfile?.archetype ?? "hybrid"),
     rankDelta,
+    avatar: resolveAvatar({
+      id: r.id,
+      stored: r.avatarConfig,
+      nationality: r.nationality,
+      ...rikishiStageInput(r, world?.year ?? DEFAULT_START_YEAR),
+    }),
     avatarConfig: r.avatarConfig,
     keshoMawashi: world?.customKeshoConfigs?.[r.id]
       ? ({ ...r.keshoMawashi, ...world.customKeshoConfigs[r.id] } as KeshoMawashi)

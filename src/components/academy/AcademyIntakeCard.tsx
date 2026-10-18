@@ -7,6 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import type { YouthProspectDTO } from "@/presenters/youthAcademyProjections";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, prospectStageInput } from "@/presenters/avatarProjections";
 
 interface AcademyIntakeCardProps {
   prospect: YouthProspectDTO;
@@ -23,7 +25,18 @@ export function AcademyIntakeCard({ prospect, onPromote }: AcademyIntakeCardProp
     <Card data-testid={`intake-card-${prospect.id}`}>
       <CardContent className="p-3 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="font-display text-sm font-semibold">{prospect.shikona}</span>
+          <div className="flex items-center gap-2">
+            <SumoAvatar
+              avatar={resolveAvatar({
+                id: prospect.id,
+                stored: prospect.avatarConfig,
+                ...prospectStageInput(prospect),
+              })}
+              size="xs"
+              fallback={prospect.shikona}
+            />
+            <span className="font-display text-sm font-semibold">{prospect.shikona}</span>
+          </div>
           <Badge variant="outline" className="text-[10px]">
             Age {prospect.age}
           </Badge>

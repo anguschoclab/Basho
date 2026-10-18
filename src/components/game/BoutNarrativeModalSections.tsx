@@ -19,6 +19,8 @@ import type { PbpLine } from "@/presenters/engineAccess";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
 import { PbpLineText } from "./PbpLineText";
 import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { cn } from "@/lib/utils";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { PHASE_STYLE, TAG_ICONS } from "./boutModalConstants";
@@ -31,6 +33,7 @@ export function BoutModalHeader({
   autoPlay,
   gyojiName,
   gyojiAccuracy,
+  gyojiAvatar,
   replayKey,
   onReplay,
   onProgressUpdate,
@@ -41,6 +44,7 @@ export function BoutModalHeader({
   autoPlay: boolean;
   gyojiName?: string;
   gyojiAccuracy?: number;
+  gyojiAvatar?: AvatarRenderData;
   replayKey: number;
   onReplay: () => void;
   onProgressUpdate: (progress: BoutReplayProgress | null) => void;
@@ -84,6 +88,7 @@ export function BoutModalHeader({
         {/* Gyoji badge */}
         {gyojiName && (
           <div className="flex items-center justify-center gap-2 mb-2" data-testid="gyoji-badge">
+            {gyojiAvatar && <SumoAvatar avatar={gyojiAvatar} size="xs" fallback={gyojiName} />}
             <Badge variant="outline" className="text-[10px]">
               Gyoji: {gyojiName}
             </Badge>

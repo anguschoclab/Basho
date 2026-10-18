@@ -5,6 +5,7 @@
 import type { Gyoji, Shimpan, ShimpanPanel } from "../../types/gyoji";
 import type { Id } from "../../types/common";
 import { SeededRNG } from "../../rng";
+import { generateAvatarIdentity } from "../../avatarGenerator";
 
 /** Generate a gyoji with deterministic stats from a seed. */
 export function generateGyoji(seed: string, rank: Gyoji["rank"], index: number): Gyoji {
@@ -15,13 +16,17 @@ export function generateGyoji(seed: string, rank: Gyoji["rank"], index: number):
   const surnames = ["Kimura", "Shikimori", "Inosuke", "Hideki", "Toshio", "Masaru"];
   const givenName = rank === "tate" ? "Shonosuke" : "Kazuki";
   const surname = surnames[Math.floor(rng.next() * surnames.length)];
+  const id = `gyoji-${rank}-${index}` as Id;
+  const yearsActive = Math.floor(rng.next() * 15) + 1;
 
   return {
-    id: `gyoji-${rank}-${index}` as Id,
+    id,
     name: `${surname} ${givenName}`,
     rank,
     accuracy,
-    yearsActive: Math.floor(rng.next() * 15) + 1,
+    yearsActive,
+    age: 28 + yearsActive + Math.floor(rng.next() * 5),
+    avatarConfig: generateAvatarIdentity({ seed: id, nationality: "Japan", role: "gyoji" }),
     boutsOfficiated: 0,
     callsReversed: 0,
   };
@@ -33,12 +38,16 @@ export function generateShimpan(seed: string, index: number): Shimpan {
   const accuracy = Math.max(40, Math.min(90, 60 + Math.floor(rng.next() * 30 - 15)));
   const surnames = ["Iwai", "Nakamura", "Tanaka", "Sato", "Suzuki"];
   const name = surnames[Math.floor(rng.next() * surnames.length)];
+  const id = `shimpan-${index}` as Id;
+  const yearsActive = Math.floor(rng.next() * 20) + 1;
 
   return {
-    id: `shimpan-${index}` as Id,
+    id,
     name,
     accuracy,
-    yearsActive: Math.floor(rng.next() * 20) + 1,
+    yearsActive,
+    age: 40 + yearsActive + Math.floor(rng.next() * 5),
+    avatarConfig: generateAvatarIdentity({ seed: id, nationality: "Japan", role: "shimpan" }),
     consultations: 0,
   };
 }

@@ -24,9 +24,8 @@ export function RikishiCardHeader({ rikishi }: { rikishi: UIRikishi }) {
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
           <SumoAvatar
-            config={rikishi.avatarConfig}
+            avatar={rikishi.avatar}
             size="md"
-            showHairstyle={true}
             expression={
               rikishi.isInjured ? "intense" : rikishi.motivation > 70 ? "confident" : "neutral"
             }

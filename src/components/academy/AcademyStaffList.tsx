@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
 import type { AcademyStaff } from "@/engine/types/academy";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, academyStaffStageInput } from "@/presenters/avatarProjections";
 
 const ROLE_LABELS: Record<string, string> = {
   head_coach: "Head Coach",
@@ -38,7 +40,18 @@ export function AcademyStaffList({ staff, maxStaff, onHire }: AcademyStaffListPr
       </div>
       {staff.map((s) => (
         <div key={s.id} className="flex items-center justify-between text-xs">
-          <span>{ROLE_LABELS[s.role] ?? s.role}</span>
+          <div className="flex items-center gap-2">
+            <SumoAvatar
+              avatar={resolveAvatar({
+                id: s.id,
+                stored: s.avatarConfig,
+                ...academyStaffStageInput(s),
+              })}
+              size="xs"
+              fallback={s.name}
+            />
+            <span>{ROLE_LABELS[s.role] ?? s.role}</span>
+          </div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-muted-foreground">{s.name}</span>
             <Badge variant="secondary" className="text-[10px]">

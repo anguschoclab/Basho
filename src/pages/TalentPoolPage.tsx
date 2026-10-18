@@ -19,8 +19,42 @@ import { talentpool } from "@/presenters/engineAccess";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/presenters/engineAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeya, getOyakata, getTalentPool } from "@/presenters/worldAccess";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, candidateStageInput } from "@/presenters/avatarProjections";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
+
+function CandidateHeading({
+  candidate,
+  currentYear,
+  visible,
+  title,
+  subtitle,
+}: {
+  candidate: TalentCandidate;
+  currentYear: number;
+  visible: boolean;
+  title: string;
+  subtitle: string;
+}) {
+  const avatar = visible
+    ? resolveAvatar({
+        id: candidate.personId,
+        stored: candidate.avatarConfig,
+        nationality: candidate.nationality,
+        ...candidateStageInput(candidate, currentYear),
+      })
+    : undefined;
+  return (
+    <div className="flex items-center gap-3">
+      <SumoAvatar avatar={avatar} size="md" fallback={visible ? candidate.name : "?"} />
+      <div>
+        <CardTitle className="text-base">{title}</CardTitle>
+        <CardDescription>{subtitle}</CardDescription>
+      </div>
+    </div>
+  );
+}
 
 function poolLabel(pool: TalentPoolType) {
   switch (pool) {
@@ -265,10 +299,10 @@ export default function TalentPoolPage() {
                       <Card key={c.candidateId} className="overflow-hidden">
                         <CardHeader>
                           <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <CardTitle className="text-base">{title}</CardTitle>
-                              <CardDescription>{sub}</CardDescription>
-                            </div>
+                            <CandidateHeading
+                              candidate={c} currentYear={world.year} visible={canShowName}
+                              title={title} subtitle={sub}
+                            />
                             {c.tags.includes("amateur_star") && <Badge>Star</Badge>}
                             {(c.nationality ?? "Japan") !== "Japan" && (
                               <Badge variant="secondary">Foreign</Badge>

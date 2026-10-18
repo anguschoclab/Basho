@@ -79,6 +79,27 @@ export const AVATAR_COLORS = {
   skinShadow: "#c4987a",
   hairWhite: "#e0e0e0",
   hairGray: "#6b6b6b",
+  /** Pixel-avatar extras: lens glass, bandage cloth, portrait backdrop. */
+  glass: "#a8c8e0",
+  bandage: "#f3efe4",
+  backdrop: "#2a3444",
+  backdropDark: "#1a2230",
+} as const;
+
+/** Pixel-avatar attire palettes (base + accent/collar per outfit). */
+export const AVATAR_ATTIRE_COLORS = {
+  bare: { base: "skin", accent: "skinShadow" },
+  kimono: { base: "#2f3a56", accent: "#d9d9d9" },
+  suit: { base: "#26262e", accent: "#e8e8e8" },
+  tracksuit: { base: "#1d4ed8", accent: "#ffffff" },
+  coat: { base: "#e8e6df", accent: "#9ca3af" },
+  polo: { base: "#2f6b4f", accent: "#1f4a36" },
+  shirt: { base: "#8a7a55", accent: "#6b5f42" },
+  apron: { base: "#e8dcc0", accent: "#b8a888" },
+  gyoji_tate: { base: "#9b1c1c", accent: "#7c3aed" },
+  gyoji_sanyaku: { base: "#5b21b6", accent: "#2e1065" },
+  gyoji_standard: { base: "#1e3a5f", accent: "#152a46" },
+  shimpan: { base: "#141414", accent: "#e8e8e8" },
 } as const;
 
 /** Kesho-mawashi silk/sheen artwork and tsuna rope. */

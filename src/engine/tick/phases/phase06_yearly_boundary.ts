@@ -14,10 +14,9 @@ import type { WorldState } from "../../types/world";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { processYearEndInduction, createEmptyHallOfFame } from "../../hallOfFame";
 import * as npcAI from "../../npcAI";
-import { updateAvatarForAging, updateHairstyleForPromotion } from "../../avatarGenerator";
+// Avatar aging/promotion is derived at render time — see avatarGenerator.deriveAvatarStage.
 import { processYearlyEraDrift } from "../../systems/meta/EraDriftService";
 import { InfrastructureService } from "../../systems/economy/InfrastructureService";
 import { GlobalCupService } from "../../systems/economy/GlobalCupService";
@@ -195,16 +194,9 @@ function ageRikishiAndUpdateRecords(builder: ImpactBuilder, world: WorldState): 
     const r = getRikishi(world, id);
     if (!r) continue; // Skip retired rikishi - they don't need age/avatar updates
     const age = world.year - r.birthYear;
-    const isSekitori = isSekitoriDivision(r.division);
 
     // Explicitly update rikishi age property for metrics and checks
     builder.updateRikishi(id, { age });
-
-    if (r.avatarConfig) {
-      const updated = updateAvatarForAging(r.avatarConfig, age);
-      const withHairstyle = updateHairstyleForPromotion(updated, isSekitori);
-      builder.updateRikishi(id, { avatarConfig: withHairstyle });
-    }
 
     // All-Time Records (fused from separate loop — B2.1)
     if (r.careerWins > 100 || r.rank === "yokozuna") {
@@ -231,9 +223,6 @@ function ageOyakata(builder: ImpactBuilder, world: WorldState): void {
       yearsInCharge: (o.yearsInCharge ?? 0) + 1,
     };
 
-    if (o.avatarConfig) {
-      updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age ?? 0);
-    }
     builder.updateOyakata(id, updated);
   }
 }

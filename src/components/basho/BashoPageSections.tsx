@@ -391,6 +391,9 @@ export function BashoModals({
           gyojiAccuracy={
             officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.accuracy
           }
+          gyojiAvatar={
+            officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.avatar
+          }
           kimariteObservedPct={selectKimariteObservedShare(world, selectedBout.result.kimarite)}
         />
       )}
@@ -409,6 +412,10 @@ export function BashoModals({
           gyojiAccuracy={
             officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)
               ?.accuracy
+          }
+          gyojiAvatar={
+            officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)
+              ?.avatar
           }
           kimariteObservedPct={selectKimariteObservedShare(
             world,

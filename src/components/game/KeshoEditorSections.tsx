@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoMawashi, TraditionalMotif } from "@/engine/types/keshoMawashi";
-import type { AvatarConfig } from "@/engine/types/avatar";
+import type { AvatarIdentity } from "@/engine/types/avatar";
+import { resolveAvatar } from "@/presenters/avatarProjections";
 import { cn } from "@/lib/utils";
 import { MOTIFS, PRESET_PALETTES } from "./keshoEditorData";
 import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
@@ -21,15 +22,17 @@ export function KeshoPreview({
   rikishi,
   config,
 }: {
-  rikishi: { shikona: string; avatarConfig?: AvatarConfig; id: string };
+  rikishi: { shikona: string; avatarConfig?: AvatarIdentity; id: string };
   config: Partial<KeshoMawashi>;
 }) {
-  // Preview config merged into avatar config
-  const previewAvatarConfig = {
-    ...rikishi.avatarConfig,
-    seed: rikishi.avatarConfig?.seed ?? rikishi.id,
-    mawashiColor: config.primaryColor || KESHO_COLORS.crimson,
-  };
+  // Preview: wrestler identity + live kesho color as an attire accent
+  const previewAvatar = resolveAvatar({
+    id: rikishi.id,
+    stored: rikishi.avatarConfig,
+    role: "rikishi",
+    division: "makuuchi",
+    attireOverride: config.primaryColor || KESHO_COLORS.crimson,
+  });
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-muted/30 p-8 border-r border-border/50 overflow-hidden">
@@ -38,11 +41,7 @@ export function KeshoPreview({
       <div className="relative z-10 text-center space-y-4">
         {/* Large Preview */}
         <div className="p-8 rounded-full bg-background border border-primary/10 shadow-2xl">
-          <SumoAvatar
-            config={previewAvatarConfig as AvatarConfig}
-            size="xl"
-            expression="determined"
-          />
+          <SumoAvatar avatar={previewAvatar} size="xl" expression="determined" />
         </div>
 
         <div>

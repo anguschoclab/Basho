@@ -19,6 +19,7 @@ import type {
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { getHeya } from "../../queries";
 import { rngFromSeed } from "../../rng";
+import { generateAvatarIdentity } from "../../avatarGenerator";
 
 /** Re-export types for convenience. */
 export type { AcademyLevel, AcademyStaff, AcademyStaffRole, YouthProspect };
@@ -220,9 +221,11 @@ export function generateYearlyIntake(world: WorldState, heyaId: string): StateIm
     const basePotential = 30 + rng.int(0, 39);
     const potential = Math.min(95, basePotential + qualityBonus + Math.floor(staffBonus));
 
+    const prospectId = `${heyaId}-prospect-${world.year}-${i}`;
     newProspects.push({
-      id: `${heyaId}-prospect-${world.year}-${i}`,
+      id: prospectId,
       shikona: `${PROSPECT_LAST_NAMES[lastIdx]} ${PROSPECT_FIRST_NAMES[firstIdx]}`,
+      avatarConfig: generateAvatarIdentity({ seed: prospectId, nationality: "Japan", role: "prospect" }),
       age: rng.int(15, 17),
       region: PROSPECT_REGIONS[regionIdx],
       potential,
@@ -455,12 +458,15 @@ export function hireAcademyStaff(
   const lastIdx = rng.int(0, STAFF_LAST_NAMES.length - 1);
   const quality = rng.int(40, 89);
 
+  const staffId = `${heyaId}-staff-${role}-${world.year}`;
   const newStaff: AcademyStaff = {
-    id: `${heyaId}-staff-${role}-${world.year}`,
+    id: staffId,
     role,
     name: `${STAFF_LAST_NAMES[lastIdx]} ${STAFF_FIRST_NAMES[firstIdx]}`,
     quality,
     hiredAtYear: world.year,
+    age: rng.int(30, 60),
+    avatarConfig: generateAvatarIdentity({ seed: staffId, nationality: "Japan", role: "staff" }),
   };
 
   builder.updateHeya(heyaId, {

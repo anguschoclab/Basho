@@ -101,6 +101,28 @@ describe("projectOfficials", () => {
     expect(result.shimpan[0].consultations).toBe(5);
   });
 
+  it("includes resolved pixel avatars on gyoji and shimpan DTOs", () => {
+    const gyoji: Gyoji[] = [
+      {
+        id: "g1",
+        name: "Kimura Shonosuke",
+        rank: "tate",
+        accuracy: 85,
+        yearsActive: 10,
+        boutsOfficiated: 100,
+        callsReversed: 5,
+      },
+    ];
+    const shimpan: Shimpan[] = [
+      { id: "s1", name: "Iwai", accuracy: 75, yearsActive: 10, consultations: 5 },
+    ];
+    const result = projectOfficials(makeWorld(gyoji, shimpan));
+    expect(result.gyoji[0].avatar?.identity.role).toBe("gyoji");
+    expect(result.gyoji[0].avatar?.stage.attire).toBe("gyoji_tate");
+    expect(result.shimpan[0].avatar?.identity.role).toBe("shimpan");
+    expect(result.shimpan[0].avatar?.stage.attire).toBe("shimpan");
+  });
+
   it("handles zero bouts officiated (reversalRate = 0)", () => {
     const gyoji: Gyoji[] = [
       {

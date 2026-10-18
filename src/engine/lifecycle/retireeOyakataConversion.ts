@@ -15,7 +15,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { generateOyakata } from "@/engine/oyakataPersonalities";
 import { foundStable } from "@/engine/systems/generation/WorldFactory";
-import { updateAvatarForAging } from "@/engine/avatarGenerator";
+import { generateAvatarIdentity } from "@/engine/avatarGenerator";
 import { recordOyakataHandover } from "@/engine/lineage";
 import { rngForWorld } from "@/engine/rng";
 import { FOUNDING_CHANCE } from "@/constants/engine/economic";
@@ -84,12 +84,16 @@ export function processRetireeOyakataConversion(
     retiree.shikona
   );
 
-  // Transfer and update rikishi avatar to oyakata
+  // Carry the wrestler's face into elder life: same identity, new role.
+  // Hairstyle/graying re-derive from age+role at render time.
   if (retiree.avatarConfig) {
-    newOyakata.avatarConfig = {
-      ...updateAvatarForAging(retiree.avatarConfig, age),
-      hairstyle: "oyakata",
-    };
+    newOyakata.avatarConfig = { ...retiree.avatarConfig, role: "oyakata" };
+  } else {
+    newOyakata.avatarConfig = generateAvatarIdentity({
+      seed: newOyakataId,
+      nationality: "Japan",
+      role: "oyakata",
+    });
   }
 
   // Queue Myoseki update

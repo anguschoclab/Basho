@@ -13,7 +13,6 @@
 import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { Button } from "@/components/ui/button";
 import { Swords } from "lucide-react";
 import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
@@ -176,9 +175,8 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <SumoAvatar
-                  config={eastRikishi.avatarConfig}
+                  avatar={eastRikishi.avatar}
                   size="md"
-                  showHairstyle={isSekitoriDivision(eastRikishi.division)}
                   fallback={eastRikishi.shikona}
                   className="mb-1"
                 />
@@ -190,9 +188,8 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
               </div>
               <div className="text-left">
                 <SumoAvatar
-                  config={westRikishi.avatarConfig}
+                  avatar={westRikishi.avatar}
                   size="md"
-                  showHairstyle={isSekitoriDivision(westRikishi.division)}
                   fallback={westRikishi.shikona}
                   className="mb-1"
                 />

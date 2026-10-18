@@ -31,6 +31,7 @@ import type { WorldState } from "../../types/world";
 import type { RikishiStats } from "../../types/rikishi";
 import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "../../data/sumo_geography";
 import { generateScoutingBias } from "../recruitment/FogOfWarService";
+import { generateAvatarIdentity } from "../../avatarGenerator";
 import {
   EMERGENT_PRODIGY_CHANCE,
   PRODIGY_STAT_BONUS,
@@ -88,6 +89,16 @@ import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitmen
  * console.log(candidate.name, candidate.archetype);
  * ```
  */
+function rollDevelopmentProfile(rng: SeededRNG): DevelopmentProfile {
+  const roll = rng.next();
+  let acc = 0;
+  for (const [profile, weight] of Object.entries(DEVELOPMENT_PROFILE_WEIGHTS)) {
+    acc += weight;
+    if (roll < acc) return profile as DevelopmentProfile;
+  }
+  return "standard";
+}
+
 export function generateCandidate(args: {
   id: string;
   rng: SeededRNG;
@@ -107,16 +118,7 @@ export function generateCandidate(args: {
 
   // Candidates are always future jonokuchi recruits — roll PA + dev profile so
   // scouting can reveal their trajectory before signing.
-  const developmentProfile = (() => {
-    const roll = rng.next();
-    let acc = 0;
-    const entries = Object.entries(DEVELOPMENT_PROFILE_WEIGHTS);
-    for (const [p, w] of entries) {
-      acc += w;
-      if (roll < acc) return p as DevelopmentProfile;
-    }
-    return "standard" as DevelopmentProfile;
-  })();
+  const developmentProfile = rollDevelopmentProfile(rng);
 
   // Phase 5: Emergent Prodigy (1.5% chance)
   const isEmergentProdigy = rng.next() < EMERGENT_PRODIGY_CHANCE;
@@ -175,11 +177,16 @@ export function generateCandidate(args: {
     legacyShikona: undefined,
   });
 
+  // personId doubles as the avatar seed so the scout-card face carries over
+  // unchanged when the candidate is converted into a Rikishi.
+  const personId = rng.uuid("PS");
+  const nationality = poolType === "foreign" ? origin : "Japan";
+
   return {
     candidateId: id,
-    personId: rng.uuid("PS"),
+    personId,
     name,
-    nationality: poolType === "foreign" ? origin : "Japan",
+    nationality,
     birthYear:
       currentYear -
       (DEBUT_AGE_BASE +
@@ -232,5 +239,6 @@ export function generateCandidate(args: {
     bloodlineTrait: legacyTrait ?? undefined,
     // Generate deterministic scouting bias that skews initial stat readings
     scoutingBias: generateScoutingBias(id, currentYear),
+    avatarConfig: generateAvatarIdentity({ seed: personId, nationality, role: "prospect" }),
   };
 }

@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { WorldState } from "@/presenters/uiDigest";
 import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown, Award } from "lucide-react";
@@ -207,7 +208,11 @@ function OyakataCard({
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <SumoAvatar config={o.avatarConfig} size="sm" showHairstyle={true} fallback={o.name} />
+          <SumoAvatar
+            avatar={resolveAvatar({ id: o.id, stored: o.avatarConfig, ...oyakataStageInput(o) })}
+            size="sm"
+            fallback={o.name}
+          />
           <div className="flex-1">
             <p className="font-medium">{o.name}</p>
             <p className="text-sm text-muted-foreground">
