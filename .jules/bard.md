@@ -1,0 +1,1 @@
+## 2025-02-17 - [Add Post Bout Variants] **Discovery:** Expanding template keys needs to be careful to not use unpopulated tokens. **Rule:** Check the existing strings for the variables used and strictly stick to them. **Check:** Run `bun x vitest run src/tests/unit/engine/bard/` before shipping to make sure there are no errors about missing tokens.

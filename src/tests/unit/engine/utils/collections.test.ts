@@ -66,7 +66,11 @@ describe("toKeyedMap", () => {
       { id: "a", heyaId: "h1" },
       { id: "b", heyaId: "h2" },
     ];
-    const map = toKeyedMap(pool, (r) => r.id, (r) => r.heyaId);
+    const map = toKeyedMap(
+      pool,
+      (r) => r.id,
+      (r) => r.heyaId
+    );
 
     expect(map.get("a")).toBe("h1");
     expect(map.get("b")).toBe("h2");
@@ -75,7 +79,11 @@ describe("toKeyedMap", () => {
   it("exposes the item index to selectors", () => {
     const wins = [10, 20];
     const pool = [{ id: "a" }, { id: "b" }];
-    const map = toKeyedMap(pool, (r) => r.id, (_r, i) => wins[i]);
+    const map = toKeyedMap(
+      pool,
+      (r) => r.id,
+      (_r, i) => wins[i]
+    );
 
     expect(map.get("a")).toBe(10);
     expect(map.get("b")).toBe(20);
@@ -86,7 +94,11 @@ describe("toKeyedMap", () => {
       { k: "same", v: 1 },
       { k: "same", v: 2 },
     ];
-    const map = toKeyedMap(items, (i) => i.k, (i) => i.v);
+    const map = toKeyedMap(
+      items,
+      (i) => i.k,
+      (i) => i.v
+    );
     expect(map.get("same")).toBe(2);
   });
 

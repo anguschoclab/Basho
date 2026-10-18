@@ -329,7 +329,11 @@ function applyMatchmakingAvoid(
   requesterHeyaId: string,
   world: WorldState
 ): { pairings: MatchPairing[]; consumed: boolean } {
-  const heyaOf = toKeyedMap(pool, (r) => r.id, (r) => r.heyaId);
+  const heyaOf = toKeyedMap(
+    pool,
+    (r) => r.id,
+    (r) => r.heyaId
+  );
   const requesterInPool = pool.some((r) => r.heyaId === requesterHeyaId);
   if (!requesterInPool) return { pairings, consumed: false };
 
