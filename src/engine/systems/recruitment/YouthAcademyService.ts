@@ -20,6 +20,22 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { getHeya } from "../../queries";
 import { rngFromSeed } from "../../rng";
 import { generateAvatarIdentity } from "../../avatarGenerator";
+import type { Rikishi, RikishiStats } from "../../types/rikishi";
+import type { Rank, Division } from "../../types/banzuke";
+import { clamp, clampInt } from "../../utils/math";
+import { rollArchetype, rollArchetypeWithBias, buildCombatProfile } from "../../archetype";
+import {
+  rollDevelopmentProfile,
+  rollPotential,
+  generateRikishiStats,
+} from "../generation/CandidateStats";
+import {
+  createBaseInfo,
+  createCombatStats,
+  createCareerHistory,
+} from "../generation/CandidateBuilder";
+import { applyPersonaAssignment } from "../generation/PersonaAssignment";
+import { MOCHIKYUKIN_INITIAL_POINTS } from "../../../constants/engine/economic";
 
 /** Re-export types for convenience. */
 export type { AcademyLevel, AcademyStaff, AcademyStaffRole, YouthProspect };
@@ -339,22 +355,94 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
 
   // Create a new rikishi from the prospect and add to roster
   const newRikishiId = prospectId;
-  const newRikishi = {
-    id: newRikishiId,
-    shikona: prospect.shikona,
-    heyaId,
+  const rng = rngFromSeed(world.seed, "academy-promote", newRikishiId);
+  const rank: Rank = "jonokuchi";
+  const division: Division = "jonokuchi";
+  const archetype = heya.trainingPhilosophy
+    ? rollArchetypeWithBias(rng, heya.trainingPhilosophy)
+    : rollArchetype(rng);
+  const combatProfile = buildCombatProfile(archetype);
+  const developmentProfile = rollDevelopmentProfile(rng, prospect.age, rank);
+  const potentialPkg = rollPotential({
+    rng,
+    rank,
+    profile: combatProfile,
+    developmentProfile,
     nationality: "Japan",
-    birthYear: world.year - prospect.age,
-    height: 175,
-    weight: 100,
-    momentum: 50,
-    fatigue: 0,
-    injured: false,
-    injuryWeeksRemaining: 0,
-    rank: "Jonokuchi",
-    rankNumber: 50,
+  });
+
+  const rolled = generateRikishiStats({ rng, rank, profile: combatProfile });
+  // Academy development carries over: currentAbility lifts the rolled baseline.
+  const inherit = (v: number) =>
+    clampInt(v * 0.5 + prospect.currentAbility * 0.5, 10, 100);
+  const rikishiStats: RikishiStats = {
+    ...rolled,
+    power: inherit(rolled.power),
+    technique: inherit(rolled.technique),
+    speed: inherit(rolled.speed),
+    stamina: inherit(rolled.stamina),
+    mental: inherit(rolled.mental),
+    adaptability: inherit(rolled.adaptability),
+    balance: inherit(rolled.balance),
+    aggression: inherit(rolled.aggression),
+    achievements: {
+      kinboshiEarned: 0,
+      ginboshiEarned: 0,
+      kinboshiConceded: 0,
+      ginboshiConceded: 0,
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+      // JSA opens every debutant's mochikyukin account at the symbolic ¥3.
+      mochikyukinPoints: MOCHIKYUKIN_INITIAL_POINTS,
+    },
+  };
+
+  // The academy's scouting grade (prospect.potential) lifts the PA ceiling —
+  // never below the promoted rikishi's starting stats.
+  const paScale = clamp(prospect.potential / 70, 0.5, 1.5);
+  const paLift = (v: number, cur: number) => Math.max(clampInt(v * paScale, 10, 100), cur);
+  const potential: Rikishi["potential"] = {
+    stats: {
+      ...potentialPkg.stats,
+      power: paLift(potentialPkg.stats.power, rikishiStats.power),
+      technique: paLift(potentialPkg.stats.technique, rikishiStats.technique),
+      speed: paLift(potentialPkg.stats.speed, rikishiStats.speed),
+      stamina: paLift(potentialPkg.stats.stamina, rikishiStats.stamina),
+      mental: paLift(potentialPkg.stats.mental, rikishiStats.mental),
+      adaptability: paLift(potentialPkg.stats.adaptability, rikishiStats.adaptability),
+      balance: paLift(potentialPkg.stats.balance, rikishiStats.balance),
+      aggression: paLift(potentialPkg.stats.aggression, rikishiStats.aggression),
+      weight: paLift(potentialPkg.stats.weight, rikishiStats.weight),
+      achievements: rikishiStats.achievements,
+    } as RikishiStats,
+    heightCm: Math.max(potentialPkg.heightCm, rolled.height),
+    weightKg: Math.max(potentialPkg.weightKg, rolled.weight),
+    developmentSpeed: potentialPkg.developmentSpeed,
+    peakAgeOffset: potentialPkg.peakAgeOffset,
+    ceilingFraction: potentialPkg.ceilingFraction,
+    profile: potentialPkg.profile,
+  };
+
+  const newRikishi = {
+    ...createBaseInfo(
+      newRikishiId,
+      prospect.shikona,
+      world.year - prospect.age,
+      rank,
+      50,
+      division,
+      "east",
+      rolled.height,
+      rolled.weight,
+      rng,
+      "Japan",
+      world.year
+    ),
+    ...createCombatStats(rikishiStats, division, archetype, combatProfile),
+    ...createCareerHistory({ careerWins: 0, careerLosses: 0, yushoCount: 0 }),
+    heyaId,
+    origin: prospect.region,
     isRetired: false,
-    debutYear: world.year,
+    potential,
     avatarConfig:
       prospect.avatarConfig ??
       generateAvatarIdentity({
@@ -363,12 +451,11 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
         role: "rikishi",
       }),
     recruitmentCohortId: `academy-${world.year}`,
-    // Inherit development as starting ability
-    strength: Math.floor(prospect.currentAbility * 0.4),
-    technique: Math.floor(prospect.currentAbility * 0.4),
-    speed: Math.floor(prospect.currentAbility * 0.2),
-    potential: prospect.potential,
-  } as unknown as import("../../types/rikishi").Rikishi;
+    heyaHistory: [],
+    lineage: {},
+  } as Rikishi;
+
+  applyPersonaAssignment(newRikishi, archetype, rng);
 
   builder.addRikishi(newRikishi);
 

@@ -39,7 +39,7 @@ import {
 } from "../../../constants/engine/generation";
 import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitment";
 
-function createBaseInfo(
+export function createBaseInfo(
   id: string,
   name: string,
   birthYear: number,
@@ -92,7 +92,7 @@ export function deriveStyle(archetype: CombatArchetype): Style {
   return "hybrid";
 }
 
-function createCombatStats(
+export function createCombatStats(
   rikishiStats: RikishiStats,
   division: Division,
   archetype: CombatArchetype,
@@ -133,7 +133,7 @@ function createCombatStats(
   };
 }
 
-function createCareerHistory(records: {
+export function createCareerHistory(records: {
   careerWins: number;
   careerLosses: number;
   yushoCount: number;

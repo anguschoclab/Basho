@@ -192,6 +192,34 @@ describe("YouthAcademyService", () => {
       const heya = w3.heyas.get("h1")!;
       expect(heya.rikishiIds).toContain(prospect.id);
     });
+
+    it("produces a structurally complete rikishi", () => {
+      const world = makeWorld();
+      const w1 = apply(world, [buildYouthAcademy(world, "h1")]);
+      const w2 = apply(w1, [generateYearlyIntake(w1, "h1")]);
+      const prospect = getYouthAcademy(w2.heyas.get("h1")!)!.prospects[0];
+      const w3 = apply(w2, [promoteIntake(w2, "h1", prospect.id)]);
+      const r = w3.rikishi.get(prospect.id)!;
+
+      expect(r.id).toBe(prospect.id);
+      expect(r.shikona).toBe(prospect.shikona);
+      expect(r.heyaId).toBe("h1");
+      expect(r.rank).toBe("jonokuchi");
+      expect(r.division).toBe("jonokuchi");
+      expect(r.stats.power).toEqual(expect.any(Number));
+      expect(r.stats.technique).toEqual(expect.any(Number));
+      expect(r.combatProfile).toBeDefined();
+      expect(r.style).toBeDefined();
+      expect(r.isKyujo).toBe(false);
+      expect(r.divisionRecords.jonokuchi).toEqual({ wins: 0, losses: 0 });
+      expect(Array.isArray(r.careerHistory)).toBe(true);
+      expect(r.h2h).toEqual({});
+      // potential must be a development package, not a raw 0-100 number
+      expect(r.potential?.stats?.power).toEqual(expect.any(Number));
+      expect(r.potential!.stats.power).toBeGreaterThanOrEqual(r.stats.power);
+      expect(r.avatarConfig).toBeDefined();
+      expect(r.injuryStatus?.type).toBe("none");
+    });
   });
 
   describe("investInAcademy", () => {
