@@ -10,6 +10,7 @@ import { useGame } from "@/contexts/useGame";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ContextCluster, NavControls, AdvanceButton, BashoProgressRail } from "./TopNavBarSections";
+import { GlobalEntitySearch } from "./GlobalEntitySearch";
 
 export function TopNavBar() {
   const { state } = useGame();
@@ -38,6 +39,9 @@ export function TopNavBar() {
 
         {/* ─ Context Info: Date + Phase ─ */}
         <ContextCluster world={world} />
+
+        {/* ─ Global entity search (wrestlers + stables) ─ */}
+        <GlobalEntitySearch />
 
         {/* Spacer on mobile */}
         <div className="flex-1 lg:hidden" />

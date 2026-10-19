@@ -79,6 +79,7 @@ const TAB_TRIGGER_CLASS =
 export function RikishiProfileBody({
   rikishi,
   rawRikishi,
+  readOnly = false,
   world,
   playerHeyaId,
   activeTab,
@@ -95,6 +96,8 @@ export function RikishiProfileBody({
 }: {
   rikishi: UIRikishi;
   rawRikishi: RawRikishi;
+  /** Retired rikishi: hide intai ceremony and admin actions. */
+  readOnly?: boolean;
   world: WorldState;
   playerHeyaId: string | null | undefined;
   activeTab: string;
@@ -185,35 +188,39 @@ export function RikishiProfileBody({
           </TabsContent>
         </Tabs>
       </div>
-      <div className="mt-10 pt-6 border-t border-destructive/20">
-        <div className="flex items-center justify-between p-4 rounded bg-destructive/5 border border-destructive/10">
-          <div>
-            <h4 className="font-display font-bold text-destructive uppercase tracking-tight">
-              Administrative Actions
-            </h4>
-            <p className="text-[11px] text-muted-foreground font-body">
-              Declare retirement (intai) for this rikishi.
-            </p>
+      {!readOnly && (
+        <>
+          <div className="mt-10 pt-6 border-t border-destructive/20">
+            <div className="flex items-center justify-between p-4 rounded bg-destructive/5 border border-destructive/10">
+              <div>
+                <h4 className="font-display font-bold text-destructive uppercase tracking-tight">
+                  Administrative Actions
+                </h4>
+                <p className="text-[11px] text-muted-foreground font-body">
+                  Declare retirement (intai) for this rikishi.
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="gap-2"
+                onClick={() => onShowIntaiCeremony(true)}
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Declare Retirement
+              </Button>
+            </div>
           </div>
-          <Button
-            variant="destructive"
-            size="sm"
-            className="gap-2"
-            onClick={() => onShowIntaiCeremony(true)}
-          >
-            <Trash2 className="h-3.5 w-3.5" /> Declare Retirement
-          </Button>
-        </div>
-      </div>
 
-      <IntaiCeremony
-        rikishi={rikishi}
-        reason="Personal decision of the Stable Master (Player)"
-        heyaName={getHeya(world, rikishi.heyaId)?.name || "Unknown"}
-        isPlayerRikishi={true}
-        open={showIntaiCeremony}
-        onClose={onFinalizeRetirement}
-      />
+          <IntaiCeremony
+            rikishi={rikishi}
+            reason="Personal decision of the Stable Master (Player)"
+            heyaName={getHeya(world, rikishi.heyaId)?.name || "Unknown"}
+            isPlayerRikishi={true}
+            open={showIntaiCeremony}
+            onClose={onFinalizeRetirement}
+          />
+        </>
+      )}
     </div>
   );
 }

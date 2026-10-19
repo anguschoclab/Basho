@@ -198,3 +198,71 @@ describe("RosterList sorting", () => {
     expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
   });
 });
+
+describe("RosterList filtering", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it("renders a filter input", () => {
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
+    expect(screen.getByPlaceholderText(/filter roster/i)).toBeTruthy();
+  });
+
+  it("filters cards by shikona substring, case-insensitive", () => {
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
+    fireEvent.change(screen.getByPlaceholderText(/filter roster/i), {
+      target: { value: "brav" },
+    });
+    expect(getCardOrder()).toEqual(["Bravo"]);
+  });
+
+  it("shows a no-matches EmptyState when the filter excludes all rikishi", () => {
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
+    fireEvent.change(screen.getByPlaceholderText(/filter roster/i), {
+      target: { value: "zzz" },
+    });
+    expect(screen.getByText("No matches found")).toBeTruthy();
+    expect(screen.queryByText("Dohyo Empty")).toBeNull();
+  });
+
+  it("clearing the filter restores all cards", () => {
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
+    const input = screen.getByPlaceholderText(/filter roster/i);
+    fireEvent.change(input, { target: { value: "brav" } });
+    expect(getCardOrder()).toEqual(["Bravo"]);
+    fireEvent.change(input, { target: { value: "" } });
+    expect(getCardOrder()).toHaveLength(3);
+  });
+
+  it("keeps 'Dohyo Empty' for an empty roster (v7 pin #978)", () => {
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={[]} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
+    expect(screen.getByRole("heading", { name: "Dohyo Empty" })).toBeTruthy();
+  });
+});

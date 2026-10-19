@@ -123,6 +123,29 @@ export default tseslint.config(
                 "UI components should only consume processed UIDigest. Direct access to raw engine state or systems is forbidden.",
             },
             {
+              // The @/engine/types barrel re-exports all of types/world via
+              // `export *` — ban those names through the barrel so the
+              // WorldState restriction above can't be bypassed.
+              group: ["**/engine/types", "**/engine/types/index"],
+              importNames: [
+                "WorldState",
+                "PreBashoAssessment",
+                "CyclePhase",
+                "StyleDriftMults",
+                "ActiveModifiers",
+                "TickDeltas",
+                "TransientContext",
+                "RecruitmentWindow",
+                "MetaHistoryEntry",
+                "PostBashoMeta",
+                "ClosedHeyaRecord",
+                "BookmarkEntry",
+                "PendingExhibition",
+              ],
+              message:
+                "World-state types must be imported via @/presenters/uiDigest, not the engine types barrel.",
+            },
+            {
               // Blanket deny over every engine path — the previous
               // enumerated list leaked simulation/matchmaking/npcAI/
               // lifecycle/governance/persistence deep paths (V10-R08).

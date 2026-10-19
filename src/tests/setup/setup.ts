@@ -34,6 +34,24 @@ beforeAll(() => {
   }
 });
 
+// jsdom does not implement matchMedia, but useIsMobile (sidebar, breadcrumbs,
+// nav search) relies on it. Shape mirrors the defensive stub in sonner.test.tsx.
+beforeAll(() => {
+  if (!hasDOM) return;
+  if (!window.matchMedia) {
+    window.matchMedia = ((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    })) as unknown as typeof window.matchMedia;
+  }
+});
+
 // jsdom does not implement ResizeObserver, but recharts ResponsiveContainer relies on it.
 beforeAll(() => {
   if (!hasDOM) return;

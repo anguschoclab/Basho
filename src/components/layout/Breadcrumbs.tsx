@@ -2,12 +2,18 @@
  * Breadcrumbs.tsx
  * ==============
  * Route-aware breadcrumb navigation for deep page hierarchies.
- * Collapses middle segments on mobile for space efficiency.
+ * Labels resolve from the real nested route tree; dynamic params
+ * (/rikishi/$id, /stable/$id) resolve to entity names from world state.
+ * Collapses middle segments on mobile — tap "..." to expand.
  */
 
+import React, { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { ChevronRight, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { getHeya, getRikishiAnywhere } from "@/presenters/worldAccess";
+import type { WorldState } from "@/presenters/uiDigest";
 
 interface BreadcrumbItem {
   label: string;
@@ -17,10 +23,13 @@ interface BreadcrumbItem {
 
 interface BreadcrumbsProps {
   items?: BreadcrumbItem[];
+  /** World state — used to resolve dynamic route params to entity names. */
+  world?: WorldState;
   className?: string;
 }
 
-// Route to breadcrumb label mapping
+// Route to breadcrumb label mapping — matches the real nested route tree.
+// Names align with sidebarConfig.ts canonical labels.
 const ROUTE_LABELS: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/stable": "Stable",
@@ -37,24 +46,66 @@ const ROUTE_LABELS: Record<string, string> = {
   "/jsa": "Association",
   "/jsa/governance": "Governance",
   "/jsa/trends": "Trends",
+  "/jsa/talent": "Talent Pools",
+  "/jsa/candidates": "Candidate Pool",
   "/basho": "Basho",
-  "/banzuke": "Banzuke",
-  "/schedule": "Schedule",
-  "/rivalries": "Rivalries",
-  "/history": "History",
-  "/almanac": "Almanac",
-  "/hall-of-fame": "Hall of Fame",
-  "/museum": "Museum",
-  "/media": "Media",
+  "/basho/schedule": "Schedule",
+  "/basho/banzuke": "Banzuke",
+  "/basho/rivalries": "Rivalries",
+  "/records": "Records",
+  "/records/history": "Stable History",
+  "/records/almanac": "Almanac",
+  "/records/hall-of-fame": "Hall of Fame",
+  "/records/museum": "Museum",
+  "/media": "Press & Rep",
   "/myoseki": "Elder Market",
   "/global-cup": "Global Cup",
   "/world-circuit": "World Circuit",
   "/rikishi": "Rikishi",
-  "/recap": "Recap",
+  "/recap": "Events & Recap",
+  "/digest": "Weekly Report",
+  "/bookmarks": "Bookmarks",
+  "/glossary": "Glossary",
+  "/rival-stables": "Rival Stables",
+  "/academy": "Youth Academy",
   "/settings": "Settings",
+  "/new-game": "New Game",
 };
 
-function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
+// Section base routes that have no index page — retarget the crumb to the
+// section's landing child (matches sidebar ordering).
+const SECTION_LANDING: Record<string, string> = {
+  "/office": "/office/finances",
+  "/jsa": "/jsa/governance",
+};
+
+function prettifySegment(segment: string): string {
+  return segment
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/** Resolve a dynamic leaf segment to an entity name from world state. */
+function resolveEntityLabel(
+  segments: string[],
+  index: number,
+  world?: WorldState
+): string | null {
+  if (!world || index === 0) return null;
+  const parent = segments[index - 1];
+  const id = segments[index];
+  if (parent === "rikishi") {
+    return getRikishiAnywhere(world, id)?.shikona ?? null;
+  }
+  if (parent === "stable") {
+    return getHeya(world, id)?.name ?? null;
+  }
+  return null;
+}
+
+function generateBreadcrumbs(pathname: string, world?: WorldState): BreadcrumbItem[] {
   const crumbs: BreadcrumbItem[] = [{ label: "Home", href: "/dashboard" }];
 
   // Build up path segments
@@ -63,10 +114,13 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
 
   for (let i = 0; i < segments.length; i++) {
     currentPath += `/${segments[i]}`;
-    const label = ROUTE_LABELS[currentPath] || segments[i];
+    const label =
+      ROUTE_LABELS[currentPath] ??
+      resolveEntityLabel(segments, i, world) ??
+      prettifySegment(segments[i]);
     crumbs.push({
       label,
-      href: currentPath,
+      href: SECTION_LANDING[currentPath] ?? currentPath,
       isCurrent: i === segments.length - 1,
     });
   }
@@ -74,20 +128,21 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   return crumbs;
 }
 
-export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, world, className }: BreadcrumbsProps) {
   const location = useLocation();
-  const breadcrumbs = items || generateBreadcrumbs(location.pathname);
+  const isMobile = useIsMobile();
+  const [expanded, setExpanded] = useState(false);
+  const breadcrumbs = items || generateBreadcrumbs(location.pathname, world);
 
-  // Mobile: collapse middle segments if more than 3
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-  const displayCrumbs =
-    isMobile && breadcrumbs.length > 3
-      ? [
-          breadcrumbs[0],
-          { label: "...", href: "", isCurrent: false },
-          breadcrumbs[breadcrumbs.length - 1],
-        ]
-      : breadcrumbs;
+  // Mobile: collapse middle segments if more than 3 (expandable via "...")
+  const collapsed = isMobile && !expanded && breadcrumbs.length > 3;
+  const displayCrumbs = collapsed
+    ? [
+        breadcrumbs[0],
+        { label: "...", href: "", isCurrent: false },
+        breadcrumbs[breadcrumbs.length - 1],
+      ]
+    : breadcrumbs;
 
   if (breadcrumbs.length <= 1) return null;
 
@@ -105,7 +160,14 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
             {index > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
 
             {isEllipsis ? (
-              <span className="px-1 text-muted-foreground/50">...</span>
+              <button
+                type="button"
+                aria-label="Show all breadcrumbs"
+                onClick={() => setExpanded(true)}
+                className="px-1 text-muted-foreground/50 hover:text-foreground transition-colors"
+              >
+                ...
+              </button>
             ) : isLast ? (
               <span className="font-medium text-foreground px-1" aria-current="page">
                 {crumb.label}
@@ -125,7 +187,5 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     </nav>
   );
 }
-
-import React from "react";
 
 export default Breadcrumbs;

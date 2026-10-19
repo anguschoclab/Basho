@@ -3,7 +3,8 @@ import { Trophy } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
-import type { MatchSchedule, WorldState } from "@/engine/types/index";
+import type { MatchSchedule } from "@/engine/types/index";
+import type { WorldState } from "@/presenters/uiDigest";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 interface PlayoffBracketProps {

@@ -6,15 +6,15 @@
  */
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { Zap, Activity, Filter, LayoutGrid } from "lucide-react";
+import { Zap, Activity, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoBadge } from "@/components/kesho/KeshoBadge";
 import { RankBadge } from "./RankBadge";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { Input } from "@/components/ui/input";
 import type { SortDirection } from "@/lib/sortUtils";
 import { activationKeyHandler } from "@/lib/a11y";
 
@@ -26,10 +26,14 @@ const SORT_OPTIONS: SortOption[] = [
   { key: "condition", label: "Condition" },
 ];
 
-/** Header row — title, registry toggle, filter, sort menu. */
+/** Header row — title, shikona filter input, sort menu. */
 export function RosterToolbar({
+  searchQuery,
+  onSearchChange,
   onSortChange,
 }: {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
   onSortChange: (key: string, order: SortDirection) => void;
 }) {
   return (
@@ -47,24 +51,25 @@ export function RosterToolbar({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="bg-muted p-1 rounded-lg flex items-center gap-1 border">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-3 text-[10px] font-black uppercase tracking-widest bg-background shadow-xs"
-            tooltip="Toggle official Association registry view"
-          >
-            <LayoutGrid className="h-3 w-3 mr-1.5" /> Registry
-          </Button>
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Filter roster…"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="h-8 w-48 pl-8 pr-8 text-xs"
+            aria-label="Filter roster"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => onSearchChange("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear roster filter"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-10 px-4 text-[10px] font-black uppercase tracking-widest border-2 gap-2"
-          tooltip="Filter roster by rank, division, or status"
-        >
-          <Filter className="h-3.5 w-3.5" /> Filter
-        </Button>
         <SortMenu
           options={SORT_OPTIONS}
           storageKey="basho_sort_roster"

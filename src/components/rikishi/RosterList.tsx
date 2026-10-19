@@ -7,7 +7,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { Zap } from "lucide-react";
+import { Zap, Search } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { SortDirection } from "@/lib/sortUtils";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -27,15 +27,24 @@ interface RosterListProps {
 export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
   const [sortKey, setSortKey] = useState<string>("rank");
   const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const sorted = useMemo(
     () => sortRoster(rikishiList, sortKey, sortOrder),
     [rikishiList, sortKey, sortOrder]
   );
 
+  const q = searchQuery.toLowerCase().trim();
+  const filtered = useMemo(
+    () => (q ? sorted.filter((r) => r.shikona?.toLowerCase().includes(q)) : sorted),
+    [sorted, q]
+  );
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
       <RosterToolbar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
         onSortChange={(key, order) => {
           setSortKey(key);
           setSortOrder(order);
@@ -43,7 +52,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
       />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {sorted.map((r, idx) => (
+        {filtered.map((r, idx) => (
           <RosterCard key={r.id} rikishi={r} index={idx} onRikishiClick={onRikishiClick} />
         ))}
 
@@ -53,6 +62,16 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
               icon={Zap}
               title="Dohyo Empty"
               description="Your stable records show no active rikishi under Association tenure."
+            />
+          </div>
+        )}
+
+        {rikishiList.length > 0 && filtered.length === 0 && (
+          <div className="col-span-full py-16 bg-muted/20 border-2 border-dashed rounded-lg">
+            <EmptyState
+              icon={Search}
+              title="No matches found"
+              description={`No wrestlers match "${searchQuery}"`}
             />
           </div>
         )}

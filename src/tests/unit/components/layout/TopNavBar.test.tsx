@@ -90,6 +90,10 @@ vi.mock("@/components/layout/EraToneBadge", () => ({
   ),
 }));
 
+vi.mock("@/components/layout/GlobalEntitySearch", () => ({
+  GlobalEntitySearch: () => <div data-testid="global-entity-search" />,
+}));
+
 // --- Helpers ---
 
 function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
@@ -342,6 +346,19 @@ describe("TopNavBar", () => {
     expect(container.querySelector("svg.lucide-moon")).toBeTruthy();
     fireEvent.click(screen.getByLabelText("Toggle theme"));
     expect(mockSetTheme).toHaveBeenCalledWith("dark");
+  });
+
+  // ─ Global entity search ─
+  it("renders the entity search when world is present", () => {
+    mockContext({ world: makeWorld() });
+    render(<TopNavBar />);
+    expect(screen.getByTestId("global-entity-search")).toBeTruthy();
+  });
+
+  it("renders the entity search even when world is null", () => {
+    mockContext({ world: null });
+    render(<TopNavBar />);
+    expect(screen.getByTestId("global-entity-search")).toBeTruthy();
   });
 
   // ─ Settings button ─

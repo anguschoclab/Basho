@@ -4,6 +4,7 @@
 import { useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
+import { focusGlobalSearch } from "@/components/game/searchFocusSignal";
 
 /** Defines the structure for shortcut options. */
 interface ShortcutOptions {
@@ -56,6 +57,13 @@ export function useKeyboardShortcuts({ onToggleEventLog, onOpenSaveLoad }: Short
       if (key === "s" && ctrl && e.shiftKey) {
         e.preventDefault();
         onOpenSaveLoad?.();
+        return;
+      }
+
+      // ── / or Ctrl+K: Focus global entity search ──
+      if ((key === "/" && !ctrl) || (key === "k" && ctrl)) {
+        e.preventDefault();
+        focusGlobalSearch();
         return;
       }
 
@@ -127,6 +135,8 @@ export function useKeyboardShortcuts({ onToggleEventLog, onOpenSaveLoad }: Short
 
 /** Shortcut reference data for UI display */
 export const SHORTCUT_REFERENCE = [
+  { key: "/", action: "Focus entity search" },
+  { key: "Ctrl+K", action: "Focus entity search" },
   { key: "Space", action: "Advance time / Simulate bouts" },
   { key: "Ctrl+S", action: "Quick save" },
   { key: "Ctrl+⇧+S", action: "Save/Load dialog" },

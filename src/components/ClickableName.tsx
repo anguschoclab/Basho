@@ -1,6 +1,8 @@
 // Reusable clickable name component for rikishi, stable, and oyakata names
+import { use } from "react";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { GameContext } from "@/contexts/gameContextInstance";
 
 /** Type representing name type. */
 type NameType = "rikishi" | "stable" | "oyakata";
@@ -14,10 +16,9 @@ interface ClickableNameProps {
   children?: React.ReactNode;
 }
 
-const routeMap: Record<NameType, string> = {
+const routeMap: Record<Exclude<NameType, "oyakata">, string> = {
   rikishi: "/rikishi",
   stable: "/stable",
-  oyakata: "/oyakata", // Oyakata links to their profile page
 };
 
 const SAFE_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
@@ -38,9 +39,33 @@ function sanitizeId(id: string): string {
  * @param props.children - Optional children to render instead of the name
  */
 export function ClickableName({ type, id, name, className, children }: ClickableNameProps) {
-  const basePath = routeMap[type];
+  const ctx = use(GameContext);
   const safeId = sanitizeId(id);
-  const to = `${basePath}/${safeId}`;
+
+  // There is no /oyakata/$id route — an oyakata mention links to their stable
+  // page instead; unresolved IDs render as plain text rather than a dead link.
+  if (type === "oyakata") {
+    const heyaId = ctx?.state?.world?.oyakata.get(id)?.heyaId;
+    const safeHeyaId = sanitizeId(heyaId ?? "");
+    if (!safeHeyaId) {
+      return <span className={className}>{children ?? name}</span>;
+    }
+    return (
+      <Link
+        to="/stable/$id"
+        params={{ id: safeHeyaId }}
+        className={cn(
+          "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-xs",
+          className
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children ?? name}
+      </Link>
+    );
+  }
+
+  const to = `${routeMap[type]}/${safeId}`;
 
   return (
     <Link
@@ -95,15 +120,28 @@ export function StableName({ id, name, className, children }: Omit<ClickableName
 /**
  * A convenience component for clickable oyakata names.
  *
+ * There is no /oyakata/$id route — when `heyaId` is provided the name links to
+ * the oyakata's stable page (/stable/$heyaId); otherwise it renders plain
+ * text rather than a dead link.
+ *
  * @param props - Component properties
  * @param props.id - The unique identifier for the oyakata
+ * @param props.heyaId - The oyakata's stable id; links to that stable's page
  * @param props.name - The display name of the oyakata
  * @param props.className - Optional CSS classes for styling
  * @param props.children - Optional children to render instead of the name
  */
-export function OyakataName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
+export function OyakataName({
+  heyaId,
+  name,
+  className,
+  children,
+}: Omit<ClickableNameProps, "type"> & { heyaId?: string }) {
+  if (!heyaId) {
+    return <span className={className}>{children ?? name}</span>;
+  }
   return (
-    <ClickableName type="oyakata" id={id} name={name} className={className}>
+    <ClickableName type="stable" id={heyaId} name={name} className={className}>
       {children}
     </ClickableName>
   );

@@ -8,16 +8,22 @@ import { ClickableName, RikishiName, StableName, OyakataName } from "@/component
 vi.mock("@tanstack/react-router", () => ({
   Link: ({
     to,
+    params,
     className,
     onClick,
     children,
   }: {
     to: string;
+    params?: Record<string, string>;
     className?: string;
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     children?: React.ReactNode;
   }) => {
-    const safeHref = to.startsWith("/") && !to.includes("://") ? to : "#";
+    // Resolve $param placeholders the way TanStack Router does
+    const resolved = params
+      ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m)
+      : to;
+    const safeHref = resolved.startsWith("/") && !resolved.includes("://") ? resolved : "#";
     return (
       <a href={safeHref} className={className} onClick={onClick} data-testid="router-link">
         {children}
@@ -44,7 +50,6 @@ describe("ClickableName", () => {
   it.each([
     ["rikishi", "r1", "/rikishi/r1"],
     ["stable", "s1", "/stable/s1"],
-    ["oyakata", "o1", "/oyakata/o1"],
   ] as const)("renders correct route for type=%s id=%s", (type, id, expectedTo) => {
     render(<ClickableName type={type} id={id} name="Test" />);
     const link = screen.getByTestId("router-link");
@@ -250,11 +255,17 @@ describe("Convenience wrappers", () => {
     expect(screen.queryByText("Miyagino")).toBeNull();
   });
 
-  it("OyakataName passes type=oyakata and forwards props", () => {
-    render(<OyakataName id="o3" name="Chiganoura" className="oyakata-link" />);
+  it("OyakataName links to the oyakata's stable when heyaId is provided", () => {
+    render(<OyakataName id="o3" name="Chiganoura" heyaId="h-ise" className="oyakata-link" />);
     const link = screen.getByTestId("router-link");
-    expect(link.getAttribute("href")).toBe("/oyakata/o3");
+    expect(link.getAttribute("href")).toBe("/stable/h-ise");
     expect(link.classList.contains("oyakata-link")).toBe(true);
+    expect(screen.getByText("Chiganoura")).toBeTruthy();
+  });
+
+  it("OyakataName without heyaId renders plain text (no dead /oyakata route)", () => {
+    render(<OyakataName id="o3" name="Chiganoura" />);
+    expect(screen.queryByTestId("router-link")).toBeNull();
     expect(screen.getByText("Chiganoura")).toBeTruthy();
   });
 

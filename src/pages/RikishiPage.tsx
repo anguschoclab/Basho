@@ -17,11 +17,14 @@ import { projectRikishi } from "@/presenters/uiModels";
 import { getMentor, menteesOf } from "@/presenters/engineAccess";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import type { CareerSnapshot } from "@/engine/types/history";
+import type { Rikishi as RawRikishi } from "@/engine/types/rikishi";
 import {
   useCareerProgressionData,
   useEarningsProgressionData,
 } from "@/components/rikishi/useRikishiData";
 import { EntityCollection } from "@/presenters/engineAccess";
+import { getRikishiAnywhere, isRetiredRikishiSummaryEntry } from "@/presenters/worldAccess";
+import { RetiredRikishiProfile } from "@/components/rikishi/RetiredRikishiProfile";
 import {
   RosterListView,
   RikishiNotFound,
@@ -46,8 +49,14 @@ export default function RikishiPage() {
     );
   }, [world, effectiveHeyaId, rikishiId]);
 
-  // Get raw rikishi data safely
-  const rawRikishi = world?.rikishi.get(rikishiId || "");
+  // Get raw rikishi data — active map first, then historicalRikishi so
+  // retired rikishi (full records pre-pruning, compact summaries after) are
+  // reachable from search/links instead of dead-ending at RikishiNotFound.
+  const entry = world && rikishiId ? getRikishiAnywhere(world, rikishiId) : undefined;
+  const retiredSummary =
+    entry && isRetiredRikishiSummaryEntry(entry) ? entry : undefined;
+  const rawRikishi: RawRikishi | undefined =
+    entry && !isRetiredRikishiSummaryEntry(entry) ? entry : undefined;
   const rikishi = rawRikishi && world ? projectRikishi(rawRikishi, world) : null;
   const history = rikishi?.careerHistory;
 
@@ -71,6 +80,8 @@ export default function RikishiPage() {
   }
 
   // ── Individual Profile View ─────────────────────────
+  if (retiredSummary) return <RetiredRikishiProfile summary={retiredSummary} world={world} />;
+
   if (!rawRikishi || !rikishi)
     return <RikishiNotFound onBack={() => navigate({ to: "/stable/roster" })} />;
 
@@ -84,21 +95,13 @@ export default function RikishiPage() {
   };
 
   return (
-    <AppLayout
-      pageTitle="Rikishi Profile"
-      subNavTabs={STABLE_TABS}
-      activeSubTab="roster"
-      breadcrumbItems={[
-        { label: "Home", href: "/dashboard" },
-        { label: "Roster", href: "/stable/roster" },
-        { label: rikishi.shikona, href: `/rikishi/${rikishiId}`, isCurrent: true },
-      ]}
-    >
+    <AppLayout pageTitle="Rikishi Profile" subNavTabs={STABLE_TABS} activeSubTab="roster">
       <title>{rikishi.shikona} — Official Association Profile | Basho</title>
 
       <RikishiProfileBody
         rikishi={rikishi}
         rawRikishi={rawRikishi}
+        readOnly={rawRikishi.isRetired === true}
         world={world}
         playerHeyaId={playerHeyaId}
         activeTab={activeTab}

@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
 
 // Mock TanStack Router: Link as real <a>, useLocation returns controllable pathname
 const mockLocation = { pathname: "/dashboard" };
@@ -20,6 +24,10 @@ vi.mock("@tanstack/react-router", () => ({
   ),
   useLocation: () => mockLocation,
 }));
+
+function worldFixture(overrides: Partial<WorldState> = {}): WorldState {
+  return MockFactory.createWorld(overrides);
+}
 
 describe("Breadcrumbs", () => {
   beforeEach(() => {
@@ -71,11 +79,84 @@ describe("Breadcrumbs", () => {
     expect(screen.getByText("Governance")).toBeTruthy();
   });
 
-  it("falls back to raw segment for unknown routes", () => {
-    mockLocation.pathname = "/unknown/path";
+  it("labels nested tournament routes correctly", () => {
+    mockLocation.pathname = "/basho/banzuke";
     render(<Breadcrumbs />);
-    expect(screen.getByText("unknown")).toBeTruthy();
-    expect(screen.getByText("path")).toBeTruthy();
+    expect(screen.getByText("Basho")).toBeTruthy();
+    expect(screen.getByText("Banzuke")).toBeTruthy();
+  });
+
+  it("labels nested records routes with sidebar-canonical names", () => {
+    mockLocation.pathname = "/records/history";
+    render(<Breadcrumbs />);
+    expect(screen.getByText("Records")).toBeTruthy();
+    expect(screen.getByText("Stable History")).toBeTruthy();
+  });
+
+  it("labels /jsa/talent as Talent Pools", () => {
+    mockLocation.pathname = "/jsa/talent";
+    render(<Breadcrumbs />);
+    expect(screen.getByText("Talent Pools")).toBeTruthy();
+  });
+
+  it("Title-Cases unknown segments instead of showing raw text", () => {
+    mockLocation.pathname = "/unknown/some-path";
+    render(<Breadcrumbs />);
+    expect(screen.getByText("Unknown")).toBeTruthy();
+    expect(screen.getByText("Some Path")).toBeTruthy();
+    expect(screen.queryByText("unknown")).toBeNull();
+    expect(screen.queryByText("some-path")).toBeNull();
+  });
+
+  it("resolves /rikishi/$id crumb to the rikishi's shikona from world", () => {
+    const world = worldFixture({
+      rikishi: new Map([["r42", { id: "r42", shikona: "Hakuho" } as unknown as Rikishi]]),
+    });
+    mockLocation.pathname = "/rikishi/r42";
+    render(<Breadcrumbs world={world} />);
+    expect(screen.getByText("Rikishi")).toBeTruthy();
+    expect(screen.getByText("Hakuho")).toBeTruthy();
+  });
+
+  it("resolves retired rikishi via historicalRikishi", () => {
+    const world = worldFixture({
+      historicalRikishi: new Map([
+        ["old1", { id: "old1", shikona: "Taiho", isSummary: true } as never],
+      ]),
+    });
+    mockLocation.pathname = "/rikishi/old1";
+    render(<Breadcrumbs world={world} />);
+    expect(screen.getByText("Taiho")).toBeTruthy();
+  });
+
+  it("resolves /stable/$id crumb to the heya's name from world", () => {
+    const world = worldFixture({
+      heyas: new Map([["h7", { id: "h7", name: "Miyagino" } as unknown as Heya]]),
+    });
+    mockLocation.pathname = "/stable/h7";
+    render(<Breadcrumbs world={world} />);
+    expect(screen.getByText("Stable")).toBeTruthy();
+    expect(screen.getByText("Miyagino")).toBeTruthy();
+  });
+
+  it("Title-Cases unresolved dynamic ids when world lacks the entity", () => {
+    mockLocation.pathname = "/rikishi/r-missing";
+    render(<Breadcrumbs world={worldFixture()} />);
+    expect(screen.getByText("R Missing")).toBeTruthy();
+  });
+
+  it("section base crumbs link to a real landing page, not the dead base route", () => {
+    mockLocation.pathname = "/office/finances";
+    render(<Breadcrumbs />);
+    const officeLink = screen.getByText("Office").closest("a");
+    expect(officeLink?.getAttribute("href")).toBe("/office/finances");
+  });
+
+  it("Association section crumb links to /jsa/governance", () => {
+    mockLocation.pathname = "/jsa/trends";
+    render(<Breadcrumbs />);
+    const link = screen.getByText("Association").closest("a");
+    expect(link?.getAttribute("href")).toBe("/jsa/governance");
   });
 
   it("custom items prop overrides generateBreadcrumbs", () => {
@@ -109,6 +190,24 @@ describe("Breadcrumbs", () => {
     expect(screen.getByText("Details")).toBeTruthy();
     expect(screen.queryByText("Stable")).toBeNull();
     expect(screen.queryByText("Roster")).toBeNull();
+  });
+
+  it("ellipsis button expands to reveal hidden crumbs when clicked", () => {
+    Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 500 });
+    render(
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/dashboard" },
+          { label: "Stable", href: "/stable" },
+          { label: "Roster", href: "/stable/roster" },
+          { label: "Details", href: "/stable/roster/details", isCurrent: true },
+        ]}
+      />
+    );
+    fireEvent.click(screen.getByLabelText("Show all breadcrumbs"));
+    expect(screen.getByText("Stable")).toBeTruthy();
+    expect(screen.getByText("Roster")).toBeTruthy();
+    expect(screen.queryByText("...")).toBeNull();
   });
 
   it("does not collapse on mobile when exactly 3 crumbs", () => {
@@ -154,7 +253,7 @@ describe("Breadcrumbs", () => {
     expect(chevrons.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("ellipsis crumb renders as span not anchor", () => {
+  it("ellipsis crumb renders as a button (expandable), not a link", () => {
     Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 500 });
     render(
       <Breadcrumbs
@@ -166,8 +265,7 @@ describe("Breadcrumbs", () => {
         ]}
       />
     );
-    const ellipsis = screen.getByText("...");
-    expect(ellipsis.tagName).toBe("SPAN");
+    const ellipsis = screen.getByLabelText("Show all breadcrumbs");
     expect(ellipsis.closest("a")).toBeNull();
   });
 

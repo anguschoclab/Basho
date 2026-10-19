@@ -21,6 +21,7 @@ export {
   getHeyaRoster,
   getRikishiAnywhere,
   getRetiredRikishiSummary,
+  isRetiredRikishiSummaryEntry,
   loadFullRikishiRecord,
 } from "@/engine/queries";
 
