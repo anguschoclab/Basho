@@ -220,9 +220,19 @@ function tryRivalryShift(
   if (!rivalriesState || !heyaPairs) return false;
 
   // Hottest heya rivalry involving this heya.
-  const top = Object.values(heyaPairs)
-    .filter((p) => p.heyaAId === heyaId || p.heyaBId === heyaId)
-    .sort((a, b) => b.heat - a.heat)[0];
+  // ⚡ Bolt: Single pass manual loop replaces .filter().sort()[0] for performance
+  let top: typeof heyaPairs[string] | undefined;
+  let maxHeat = -Infinity;
+  const pairs = Object.values(heyaPairs);
+  for (let i = 0; i < pairs.length; i++) {
+    const p = pairs[i];
+    if (p.heyaAId === heyaId || p.heyaBId === heyaId) {
+      if (p.heat > maxHeat) {
+        maxHeat = p.heat;
+        top = p;
+      }
+    }
+  }
   if (!top) return false;
 
   const updated = {
