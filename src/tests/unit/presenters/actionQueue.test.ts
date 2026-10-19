@@ -126,6 +126,39 @@ describe("buildActionQueue", () => {
     });
   });
 
+  it("does not emit deliberation item for a stale event buried past the recency window", () => {
+    // PROMOTION_DELIBERATION is durable — it never rolls off the live log.
+    // The engine's recency convention (phase06_narrative) is the last 20
+    // entries; an event deeper than that must not surface the action item.
+    const filler = Array.from({ length: 20 }, (_, i) => ({ type: "NOTE", id: `f${i}` }) as never);
+    const world = makeWorld({
+      events: {
+        log: [
+          { type: "PROMOTION_DELIBERATION", context: { rikishiId: "r1" } } as never,
+          ...filler,
+        ],
+        headlines: [],
+      } as unknown as WorldState["events"],
+    });
+    const queue = buildActionQueue(world, null, makeTraining(), makeFinance());
+    expect(queue.find((i) => i.title === "Promotion deliberation available")).toBeUndefined();
+  });
+
+  it("still surfaces a deliberation inside the recency window even with newer events after it", () => {
+    const filler = Array.from({ length: 19 }, (_, i) => ({ type: "NOTE", id: `f${i}` }) as never);
+    const world = makeWorld({
+      events: {
+        log: [
+          { type: "PROMOTION_DELIBERATION", context: { rikishiId: "r1" } } as never,
+          ...filler,
+        ],
+        headlines: [],
+      } as unknown as WorldState["events"],
+    });
+    const queue = buildActionQueue(world, null, makeTraining(), makeFinance());
+    expect(queue.find((i) => i.title === "Promotion deliberation available")).toBeDefined();
+  });
+
   it("emits info for pre-basho phase", () => {
     const world = makeWorld({ cyclePhase: "pre_basho" });
     const queue = buildActionQueue(world, null, makeTraining(), makeFinance());

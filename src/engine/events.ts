@@ -36,11 +36,10 @@ export { EventBus } from "./EventBus";
 /**
  * Ensure events state exists on the world object, initializing it if needed.
  *
- * **Coordinator-only:** This function mutates `world.events` in-place and must
- * only be called from the coordinator layer (`ImpactResolver`). Calling it from
- * within simulation phases violates the pure pipeline contract — simulation
- * phases must queue events via `ImpactBuilder.logEvent()` → `StateImpact.events[]`
- * and let the `ImpactResolver` apply them atomically after all phases complete.
+ * While this performs a benign initial assignment if events are undefined,
+ * actual event appending (via `logEngineEvent`) is strictly Coordinator-only.
+ * Pure simulation phases must queue events via `ImpactBuilder.logEvent()`
+ * rather than writing to this state directly.
  */
 export function ensureEventsState(world: WorldState): EventsState {
   if (world.events && world.events.version && Array.isArray(world.events.log)) {
@@ -76,11 +75,15 @@ interface LogEngineEventParams {
  * Instead, simulation phases must push event definitions to `StateImpact.events`,
  * which will be applied atomically by `ImpactResolver`.
  *
- * This function also relies on `world.dayIndexGlobal` to scope deduplication.
+ * @contract Deduplication is strictly scoped to the current `world.dayIndexGlobal`.
+ * The dedupe map (`world.events.dedupe`) resets entirely on day rollover to prevent unbounded growth.
+ * Therefore, duplicate events spanning across different days will NOT be deduplicated.
  *
- * @returns The logged EngineEvent, or `undefined` if this exact event (by dedupeKey)
- * was already logged today BUT has since been evicted from the live log array due to
- * the MAX_LIVE_EVENT_LOG capacity limit. Callers must handle the undefined case.
+ * @contract Dedupe hits return the ORIGINAL event object from the live log.
+ * If a dedupe hit occurs but the original event has been evicted from the `MAX_LIVE_EVENT_LOG` bounds,
+ * this function returns `undefined`. Callers must handle the `undefined` case.
+ *
+ * @returns The logged EngineEvent, or `undefined` if evicted after a dedupe hit.
  */
 export function logEngineEvent(
   world: WorldState,
@@ -201,6 +204,13 @@ export interface ScanRecentEventsOptions {
   heyaId?: Id;
   rikishiId?: Id;
   minImportance?: EventImportance;
+  /**
+   * Arbitrary event predicate applied per-element before the limit counts —
+   * for filters on `data.*` fields or other event properties not covered by
+   * the structured options. Predicate-matching entries are collected until
+   * `limit` is reached; non-matching entries never count toward it.
+   */
+  predicate?: (e: EngineEvent) => boolean;
 }
 
 /**
@@ -233,6 +243,7 @@ export function scanRecentEvents(
     if (opts.heyaId && e.heyaId !== opts.heyaId) continue;
     if (opts.rikishiId && e.rikishiId !== opts.rikishiId) continue;
     if (minImp >= 0 && IMPORTANCE_SCORE[e.importance ?? "minor"] < minImp) continue;
+    if (opts.predicate && !opts.predicate(e)) continue;
     out.push(e);
   }
 

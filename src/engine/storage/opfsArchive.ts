@@ -230,9 +230,7 @@ export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService
     const ids: string[] = [];
     try {
       // Async iteration over directory handles with concurrent chunking for performance
-      const iterator = (
-        dir as unknown as Record<string, () => AsyncIterableIterator<FileSystemHandle>>
-      ).values();
+      const iterator = dir.values();
       const CHUNK_SIZE = 100;
       let isDone = false;
 

@@ -4,6 +4,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import { scanRecentEvents } from "../../engine/events";
 import type { Heya } from "../../engine/types/heya";
 import type { TrainingSummary } from "./trainingProjections";
 import type { FinanceSummary } from "./financeProjections";
@@ -76,11 +77,16 @@ export function buildActionQueue(
     });
   }
 
-  // 4. Promotion deliberation event
+  // 4. Promotion deliberation event — recent only. The event type is durable
+  // (never evicted from the live log), so an unbounded existence check keeps
+  // this item sticky forever. The engine's recency convention for it is the
+  // last 20 log entries (see phase06_narrative).
   if (world.events?.log) {
-    const hasDeliberation = world.events.log.some(
-      (e) => (e as { type?: string }).type === "PROMOTION_DELIBERATION"
-    );
+    const hasDeliberation =
+      scanRecentEvents(world.events.log.slice(-20), {
+        types: ["PROMOTION_DELIBERATION"],
+        limit: 1,
+      }).length > 0;
     if (hasDeliberation) {
       items.push({
         kind: "navigate",

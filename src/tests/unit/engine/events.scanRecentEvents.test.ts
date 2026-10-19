@@ -114,4 +114,65 @@ describe("scanRecentEvents", () => {
     const out = scanRecentEvents(log, { category: "basho" });
     expect(out.map((e) => e.id)).toEqual(["c-basho-2", "c-basho-1"]);
   });
+
+  it("predicate filters before the limit counts — no under-fill", () => {
+    // 15 predicate-matches interleaved with 5 newer non-matches of the same
+    // type: limit 10 must still collect 10 matching events, not stop early.
+    const log = [
+      ...Array.from({ length: 15 }, (_, i) =>
+        ev(`m${i}`, 2026, 1, i, { type: "GOVERNANCE_RULING", data: { incident: "stable_merger" } })
+      ),
+      ...Array.from({ length: 5 }, (_, i) =>
+        ev(`x${i}`, 2026, 2, i, { type: "GOVERNANCE_RULING", data: { incident: "other" } })
+      ),
+    ];
+    const out = scanRecentEvents(log, {
+      types: ["GOVERNANCE_RULING"],
+      limit: 10,
+      predicate: (e) => e.data?.incident === "stable_merger",
+    });
+    expect(out).toHaveLength(10);
+    expect(out.every((e) => e.data?.incident === "stable_merger")).toBe(true);
+  });
+
+  it("predicate composes with types and category filters", () => {
+    const log = [
+      ev("a", 2026, 1, 1, {
+        type: "BASHO_STATUS",
+        category: "discipline",
+        data: { status: "gomenfuda_posted", heyaId: "h1" },
+      }),
+      ev("b", 2026, 1, 2, {
+        type: "BASHO_STATUS",
+        category: "discipline",
+        data: { status: "gomenfuda_posted", heyaId: "h2" },
+      }),
+      ev("c", 2026, 1, 3, {
+        type: "BASHO_STATUS",
+        category: "economy",
+        data: { status: "gomenfuda_posted", heyaId: "h1" },
+      }),
+      ev("d", 2026, 1, 4, {
+        type: "RECORD_BROKEN",
+        category: "discipline",
+        data: { status: "gomenfuda_posted", heyaId: "h1" },
+      }),
+    ];
+    const out = scanRecentEvents(log, {
+      types: ["BASHO_STATUS"],
+      category: "discipline",
+      predicate: (e) => e.data?.status === "gomenfuda_posted" && e.data?.heyaId === "h1",
+    });
+    expect(out.map((e) => e.id)).toEqual(["a"]);
+  });
+
+  it("predicate-only scan returns newest-first matches", () => {
+    const log = [
+      ev("hit-old", 2025, 1, 1, { data: { flag: true } }),
+      ev("miss", 2025, 2, 1, { data: { flag: false } }),
+      ev("hit-new", 2026, 1, 1, { data: { flag: true } }),
+    ];
+    const out = scanRecentEvents(log, { predicate: (e) => e.data?.flag === true });
+    expect(out.map((e) => e.id)).toEqual(["hit-new", "hit-old"]);
+  });
 });

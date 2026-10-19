@@ -3,6 +3,7 @@ import {
   projectGovernanceDerived,
   projectGomenfuda,
 } from "@/presenters/projections/governanceProjections";
+import type { EngineEvent } from "@/engine/types/events";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 
@@ -268,5 +269,71 @@ describe("projectGomenfuda", () => {
     expect(result.recentEvents).toHaveLength(2);
     expect(result.recentEvents[0].rikishiId).toBe("r2");
     expect(result.recentEvents[0].reason).toBe("scandal");
+  });
+});
+
+describe("projectGovernanceDerived — completedMergerEvents extraction", () => {
+  function mergerEvent(id: string, year: number): EngineEvent {
+    return {
+      id,
+      type: "GOVERNANCE_RULING",
+      year,
+      week: 1,
+      day: 1,
+      phase: "weekly",
+      category: "discipline",
+      importance: "minor",
+      scope: "world",
+      title: "t",
+      summary: "s",
+      data: { incident: "stable_merger" },
+    } as EngineEvent;
+  }
+
+  it("returns only stable_merger rulings, newest-first, capped at 10", () => {
+    const log = [
+      ...Array.from({ length: 12 }, (_, i) => mergerEvent(`m${i}`, 2020 + i)),
+      {
+        ...mergerEvent("other1", 2040),
+        data: { incident: "welfare_fine" },
+      } as EngineEvent,
+      {
+        ...mergerEvent("other2", 2041),
+        data: { incident: "loan_default" },
+      } as EngineEvent,
+    ];
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+    (world.events as { log: EngineEvent[] }).log = log;
+    const out = projectGovernanceDerived(world, heya);
+    expect(out.completedMergerEvents).toHaveLength(10);
+    expect(out.completedMergerEvents[0].id).toBe("m11");
+    expect(out.completedMergerEvents[9].id).toBe("m2");
+    expect(
+      out.completedMergerEvents.every(
+        (e) => e.id !== "other1" && e.id !== "other2"
+      )
+    ).toBe(true);
+  });
+
+  it("collects predicate matches even when newer non-matches sit at the tail", () => {
+    const log = [
+      ...Array.from({ length: 5 }, (_, i) => mergerEvent(`m${i}`, 2020 + i)),
+      ...Array.from({ length: 20 }, (_, i) => ({
+        ...mergerEvent(`x${i}`, 2030 + i),
+        data: { incident: "other" },
+      })),
+    ];
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+    (world.events as { log: EngineEvent[] }).log = log;
+    const out = projectGovernanceDerived(world, heya);
+    expect(out.completedMergerEvents.map((e) => e.id)).toEqual([
+      "m4",
+      "m3",
+      "m2",
+      "m1",
+      "m0",
+    ]);
   });
 });

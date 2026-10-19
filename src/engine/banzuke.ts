@@ -350,6 +350,7 @@ function scoreBanzukeCandidates(
       // Level 1: Previous Slot Closeness (oldKey)
       // Level 2: H2H
       // Level 3: SOS Proxy
+      // Level 4: Performance Quality
       return resolveBanzukeTie(a as BanzukeCandidate, b as BanzukeCandidate, world, perfById);
     });
 }

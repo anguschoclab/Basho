@@ -75,7 +75,7 @@ prefer the fast suite or target specific files directly:
 
 ```bash
 bun run test                   # fast unit tests (src/tests/unit/**)
-bunx vitest run <filepath>     # single file
+bun x vitest run <filepath>    # single file
 ```
 
 Slow and long-horizon suites run adhoc — they spawn subprocesses

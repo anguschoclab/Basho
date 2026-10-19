@@ -42,7 +42,8 @@ export function compareRanks(a: RankPosition, b: RankPosition): number {
  * 1. Previous Rank Closeness (oldKey): Lower oldKey (already higher rank) wins.
  * 2. Head-to-Head: Lifetime rivalry check.
  * 3. SOS Proxy: Weighted by opponentAvgTier from BashoPerformance.
- * 4. Fallback: Stable result based on ID.
+ * 4. Performance Quality: Bonuses for Yusho, Jun-Yusho, Special Prizes, and Kinboshi.
+ * 5. Fallback: Stable result based on ID.
  */
 export function resolveBanzukeTie(
   a: BanzukeCandidate,
@@ -82,7 +83,7 @@ export function resolveBanzukeTie(
     if (sosa !== sosb) return sosa - sosb;
   }
 
-  // Level 3.5: Performance Quality (4.3) — yusho, jun-yusho, special prizes, kinboshi
+  // Level 4: Performance Quality — yusho, jun-yusho, special prizes, kinboshi
   if (perfa && perfb) {
     const aQuality =
       (perfa.yusho ? 100 : 0) +
@@ -97,7 +98,7 @@ export function resolveBanzukeTie(
     if (aQuality !== bQuality) return bQuality - aQuality;
   }
 
-  // Level 4: Fallback (Deterministic Stability)
+  // Level 5: Fallback (Deterministic Stability)
   return a.entry.rikishiId.localeCompare(b.entry.rikishiId);
 }
 

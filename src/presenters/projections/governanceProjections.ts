@@ -14,6 +14,7 @@ import { POLITICAL_FAVORS } from "../../engine/systems/governance/PoliticalFavor
 export { POLITICAL_FAVORS };
 import type { StatItem } from "@/components/layout/page-shell";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "../selectors";
+import { scanRecentEvents } from "../../engine/events";
 import { toScandalBand } from "@/engine/descriptorBands";
 import type { ScandalBand } from "@/engine/systems/narrative/NarrativeBands";
 
@@ -123,10 +124,11 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
   const mergerCandidates = selectMergerCandidates(world);
 
   const eventLog = world.events?.log ?? [];
-  const completedMergerEvents = eventLog
-    .filter((e) => e.type === "GOVERNANCE_RULING" && e.data?.incident === "stable_merger")
-    .sort((a, b) => b.year - a.year || b.week - a.week)
-    .slice(0, 10) as Array<{
+  const completedMergerEvents = scanRecentEvents(eventLog, {
+    types: ["GOVERNANCE_RULING"],
+    limit: 10,
+    predicate: (e) => e.data?.incident === "stable_merger",
+  }) as Array<{
     id: string;
     year: number;
     week: number;
@@ -222,32 +224,23 @@ export function projectGomenfuda(world: WorldState, heyaId: string): GomenfudaPr
   const log = world.events?.log ?? [];
   const SANCTION_THRESHOLD = 3;
 
-  const gomenfudaEvents = log.filter(
-    (e: { type: string; category: string; data: Record<string, unknown> }) =>
-      e.type === "BASHO_STATUS" &&
-      e.category === "discipline" &&
-      e.data?.status === "gomenfuda_posted" &&
-      e.data?.heyaId === heyaId
-  );
+  const gomenfudaEvents = scanRecentEvents(log, {
+    types: ["BASHO_STATUS"],
+    category: "discipline",
+    predicate: (e) => e.data?.status === "gomenfuda_posted" && e.data?.heyaId === heyaId,
+  });
 
-  const currentYearEvents = gomenfudaEvents.filter(
-    (e: { data: Record<string, unknown> }) => e.data?.year === year
-  );
-
-  const count = currentYearEvents.length;
+  const count = gomenfudaEvents.filter((e) => e.data?.year === year).length;
   const hasSanctionWarning = count >= SANCTION_THRESHOLD;
   const sanctionRiskPercent = Math.min(100, Math.round((count / SANCTION_THRESHOLD) * 100));
 
-  const recentEvents = gomenfudaEvents
-    .slice(-5)
-    .reverse()
-    .map((e: { data: Record<string, unknown> }) => ({
-      rikishiId: String(e.data?.rikishiId ?? ""),
-      bashoName: String(e.data?.bashoName ?? ""),
-      reason: String(e.data?.reason ?? ""),
-      reputationPenalty: Number(e.data?.reputationPenalty ?? 0),
-      year: Number(e.data?.year ?? 0),
-    }));
+  const recentEvents = gomenfudaEvents.slice(0, 5).map((e) => ({
+    rikishiId: String(e.data?.rikishiId ?? ""),
+    bashoName: String(e.data?.bashoName ?? ""),
+    reason: String(e.data?.reason ?? ""),
+    reputationPenalty: Number(e.data?.reputationPenalty ?? 0),
+    year: Number(e.data?.year ?? 0),
+  }));
 
   return {
     count,

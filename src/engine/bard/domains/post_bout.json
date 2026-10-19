@@ -84,7 +84,11 @@
       "Big upset on day %DAY% — %WINNER% topples %LOSER%, a %LOSER_RANK% falls to a maegashira.",
       "The Kokugikan shakes! %WINNER% pulls off a stunning day %DAY% victory over the %LOSER_RANK%.",
       "Absolutely sensational from %WINNER%, handing the %LOSER_RANK% a shocking defeat.",
-      "Giant killer! %WINNER% conquers %LOSER% to claim a massive upset."
+      "Giant killer! %WINNER% conquers %LOSER% to claim a massive upset.",
+      "The arena explodes as %WINNER% brings down the %LOSER_RANK% — an unforgettable day %DAY% shock!",
+      "History made on the dohyo! %WINNER% overcomes the %LOSER_RANK% in a bout for the ages.",
+      "A monumental victory for %WINNER%, felling the %LOSER_RANK% when it mattered most.",
+      "No one saw this coming! %WINNER% silences the crowd with a triumph over the %LOSER_RANK%."
     ],
     "consecutive_kachi": [
       "Kachi-koshi for the %ORDINAL% consecutive tournament for %SHIKONA%!",
@@ -164,7 +168,10 @@
   "kensho": [
     "%ENVELOPES% kensho envelopes rain down for %WINNER% — the sponsors are pleased.",
     "Sponsor banners flutter as %WINNER% collects %ENVELOPES% kensho envelopes.",
-    "%WINNER% is rewarded with %ENVELOPES% kensho payouts — a lucrative day on the dohyo."
+    "%WINNER% is rewarded with %ENVELOPES% kensho payouts — a lucrative day on the dohyo.",
+    "A lucrative victory for %WINNER%, scooping up %ENVELOPES% kensho envelopes.",
+    "%WINNER% claims the bout and a handsome %ENVELOPES% envelopes of kensho money.",
+    "The sponsors reward %WINNER% with %ENVELOPES% kensho envelopes for a job well done."
   ],
   "master_intervention": [
     "%WINNER% credits the master's intervention before match 7 — 'He reset my mind and my sumo.'",
@@ -181,12 +188,18 @@
     "Father time catches up to %LOSER% — the years are taking their toll.",
     "%LOSER% can't turn back the clock — age finally factoring into the result.",
     "The legs aren't what they used to be for %LOSER% — time remains undefeated.",
-    "%LOSER% shows flashes of the old brilliance, but the body can't keep up anymore."
+    "%LOSER% shows flashes of the old brilliance, but the body can't keep up anymore.",
+    "The veteran %LOSER% looks every bit his age after that taxing bout.",
+    "Age is an undefeated opponent, and it seems to have caught up with %LOSER%.",
+    "A stark reminder for %LOSER% that Father Time spares no rikishi."
   ],
   "early_decline": [
     "The first signs of decline are showing for %LOSER% — reflexes just a half-step slower.",
     "%LOSER% isn't the rikishi he was two years ago — the slide has begun.",
-    "A tough loss for %LOSER% — the body is starting to betray him."
+    "A tough loss for %LOSER% — the body is starting to betray him.",
+    "A bit of the old spark seems missing from %LOSER% today.",
+    "%LOSER% hesitates where he once would have exploded — the decline is starting to show.",
+    "You have to wonder if the prime years are behind %LOSER% after a performance like that."
   ],
   "late_decline": [
     "The end feels near for %LOSER% — each bout is a battle against the clock.",
@@ -224,18 +237,32 @@
   "career_milestone": [
     "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",
     "History for %SHIKONA% — career win number %MILESTONE% is in the books.",
-    "A milestone moment: %SHIKONA% reaches the %MILESTONE%-win mark."
+    "A milestone moment: %SHIKONA% reaches the %MILESTONE%-win mark.",
+    "%SHIKONA% enters the history books with his %MILESTONE%th career victory.",
+    "A monumental achievement — %SHIKONA% stands tall with %MILESTONE% career wins.",
+    "Win number %MILESTONE% for %SHIKONA% — a testament to his dedication on the dohyo."
   ],
   "career_bout_milestone": [
     "That was %SHIKONA%'s %MILESTONE%th career bout — a remarkable milestone of longevity.",
     "History for %SHIKONA% — %MILESTONE% total bouts on the dohyo and counting.",
-    "A milestone of endurance: %SHIKONA% reaches the %MILESTONE%-bout mark."
+    "A milestone of endurance: %SHIKONA% reaches the %MILESTONE%-bout mark.",
+    "Another day, another battle — %SHIKONA% steps down after his %MILESTONE%th career appearance.",
+    "The dust settles on bout number %MILESTONE% for the veteran %SHIKONA%.",
+    "Few rikishi ever see their %MILESTONE%th match, but %SHIKONA% joins that elite group today.",
+    "Decades of keiko and countless clashes have led %SHIKONA% to this %MILESTONE%-bout milestone.",
+    "A testament to resilience — %SHIKONA% crosses the incredible %MILESTONE%-bout threshold.",
+    "Stepping onto the dohyo for the %MILESTONE%th time, %SHIKONA% shows incredible longevity.",
+    "A testament to resilience — %SHIKONA% reaches %MILESTONE% career bouts.",
+    "That marks %MILESTONE% total bouts for %SHIKONA%. A true ironman of the sport."
   ],
   "comeback_win": [
     "A stunning comeback victory for %WINNER% — saved from the edge of defeat!",
     "%WINNER% was on the brink, but turns it around to defeat %LOSER%!",
     "Incredible resilience from %WINNER% — a comeback win from the edge of the dohyo.",
-    "%WINNER% snatches victory from the jaws of defeat against %LOSER%."
+    "%WINNER% snatches victory from the jaws of defeat against %LOSER%.",
+    "From the brink of defeat! %WINNER% orchestrates a spectacular turnaround.",
+    "A miraculous escape! %WINNER% somehow pulls out the victory against %LOSER%.",
+    "Down but not out — %WINNER% digs deep to steal the win from %LOSER%."
   ],
   "momentum_shift": [
     "%DOMINANT% has seized complete control of this bout — the momentum is overwhelming.",
@@ -271,7 +298,11 @@
     "%SHIKONA% secures a hard-fought kachi-koshi today, reaching %WINS% victories.",
     "The pressure lifts — %SHIKONA% guarantees a winning basho at %WINS% wins.",
     "%SHIKONA% completes the primary goal of any tournament: kachi-koshi with %WINS% wins.",
-    "Win number %WINS% seals the deal. %SHIKONA% walks away with kachi-koshi."
+    "Win number %WINS% seals the deal. %SHIKONA% walks away with kachi-koshi.",
+    "The milestone is reached — %SHIKONA% hits %WINS% wins for kachi-koshi.",
+    "%SHIKONA% crosses the finish line for a winning record, now sitting at %WINS% wins.",
+    "A crucial %WINS%th victory for %SHIKONA%, securing kachi-koshi.",
+    "Kachi-koshi achieved! %SHIKONA% celebrates reaching %WINS% wins this basho."
   ],
   "make_koshi": [
     "Make-koshi for %SHIKONA% — %LOSSES% losses confirm a losing tournament.",
@@ -281,7 +312,11 @@
     "The damage is done. %SHIKONA% confirms a losing basho with %LOSSES% losses.",
     "Make-koshi becomes a reality for %SHIKONA% after loss number %LOSSES%.",
     "A basho to forget for %SHIKONA% as %LOSSES% losses guarantee make-koshi.",
-    "%SHIKONA% hits the dreaded %LOSSES%-loss mark, sealing a make-koshi finish."
+    "%SHIKONA% hits the dreaded %LOSSES%-loss mark, sealing a make-koshi finish.",
+    "The dreaded make-koshi is official as %SHIKONA% drops to %LOSSES% losses.",
+    "A tough reality for %SHIKONA% — %LOSSES% losses confirm a losing tournament.",
+    "%SHIKONA% suffers his %LOSSES%th defeat, sealing make-koshi.",
+    "There's no escaping it now — %LOSSES% losses mean a losing record for %SHIKONA%."
   ],
   "yusho_race": [
     "%WINNER% stays alive in the yusho race at %WINS% wins. The crowd roars.",
@@ -296,12 +331,18 @@
   "birthday_kachi": [
     "Kachi-koshi on his birthday! %SHIKONA% celebrates with a winning record.",
     "What a birthday gift — %SHIKONA% secures kachi-koshi on his special day.",
-    "%SHIKONA% picks up kachi-koshi on his birthday. A double celebration."
+    "%SHIKONA% picks up kachi-koshi on his birthday. A double celebration.",
+    "A perfect birthday for %SHIKONA%, wrapping up kachi-koshi on his special day.",
+    "Birthday cheers all around — %SHIKONA% locks in his winning record today.",
+    "No better way to celebrate! %SHIKONA% secures kachi-koshi on his birthday."
   ],
   "birthday_milestone": [
     "%SHIKONA% picks up his %MILESTONE%th career victory on his birthday. A double celebration.",
     "What a birthday — %SHIKONA% notches his %MILESTONE%th career win on his special day.",
-    "A milestone and a birthday — %SHIKONA% celebrates %MILESTONE% career wins."
+    "A milestone and a birthday — %SHIKONA% celebrates %MILESTONE% career wins.",
+    "A truly memorable birthday for %SHIKONA%, reaching %MILESTONE% career victories.",
+    "%SHIKONA% hits win number %MILESTONE% on his birthday. A reason to celebrate tonight.",
+    "The milestone arrives right on his birthday! %MILESTONE% wins for %SHIKONA%."
   ],
   "mono_ii": {
     "gunbai_contested": [

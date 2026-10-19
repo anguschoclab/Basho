@@ -1,0 +1,36 @@
+# Pre-Consolidation Baseline v12
+**Date:** 2026-10-20
+**Branch:** main @ 397624d3 (up to date with origin/main, clean tree)
+**Plan:** ~/.devin/plans/plan-ff8ab1ac12fdbd23.md (validated draft)
+
+## Gate Results (all on clean main)
+
+| Gate | Command | Result |
+|---|---|---|
+| Typecheck | `bun run type-check` (tsgo --build --force) | ✅ 0 errors |
+| Lint strict | `bun run lint:strict` (--max-warnings 0) | ✅ 0 warnings, exit 0 |
+| Vite build | `bun run build` | ✅ PASS 6.63s |
+| Electron build | `bunx electron-vite build` | ✅ PASS |
+| Fast suite | `bun run test` (vitest) | ✅ **963 files / 8,888 passed / 1 skipped / 0 failures** — 34.64s |
+| Slow suite | `bun run test:slow` | ⏭️ DEFERRED per user instruction (ad hoc later) |
+| Perf suite | `bun run test:perf` | ▶️ planned in Phase 5 (deferred item, user opted in) |
+| E2E smoke | `bun run test:e2e:smoke` | ▶️ planned in Phase 5 (deferred item, user opted in) |
+| Coverage | `bun run test:coverage` | ▶️ planned in Phase 5 (deferred item, user opted in) |
+| Determinism | `bun scripts/determinism-double-run.ts basho` | ▶️ planned in Phase 5 |
+
+## Audit tooling baselines
+
+- `bun scripts/audit-orphans.ts` → **108 unreferenced exports** — identical count to v11 baseline (P0: `KACHI_NOKORI_THRESHOLD` persists; debt note, not new).
+- `find src e2e electron scripts -name "* 2.*"` → **clean** (no Finder-copy artifacts in tracked dirs; stray `lib.*.d 2.ts` copies observed inside `node_modules/typescript/lib` — untracked local FS artifact only, not a repo finding).
+- `Math.random`/`Date.now` in `src/engine` → **clean** (2 hits are comments: `calendar.ts:5`, `RecruitmentController.ts:39`).
+- `as any` in production code → **0** (2 grep hits are comment text: `performance.ts:244`, `identity.ts:5`). v11 zero-cast claim holds.
+- `as unknown as` census → 14 sites; all are data-boundary JSON/shape casts EXCEPT `opfsArchive.ts:234` (see bug registry V12-B02 — provably unnecessary).
+
+## Post-v11 main drift (7 commits since #1093 merge)
+
+`1c13c70a` v11 remote-lifecycle docs · `eb1dc043`/`e44d20aa` deterministic pixel avatars · `68bc0ec1` promoteIntake complete-Rikishi · `0bd01e79` debutYear career records · `d7a6f71e` entity search + resolver breadcrumbs · `397624d3` design-bible thematic rename + hardened scan + shell fixes.
+
+## CLAUDE.md staleness observed at baseline
+
+- Status line says "943 test files, 8,759 tests" — actual **963 / 8,888** (post-v11 commits added tests). DOC fix in consolidation.
+- Directory map omits `src/engine/npcAI/` (17+ files), `src/engine/storage/`, `src/engine/lifecycle/` — candidate doc findings.

@@ -229,17 +229,32 @@ function runRecruitmentPass(
 
   // Evaluate the strongest available candidate, not an arbitrary key.
   // Track the record key — RecruitmentAgent resolves candidates[candidateId].
-  const [bestCandidateId] =
-    Object.entries(world.talentPool.candidates)
-      .filter(([, c]) => c.availabilityState === "available")
-      .sort(([, a], [, b]) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0))[0] ?? [];
+  // Single pass preserves sort-then-first semantics: strict `>` keeps the
+  // first entry among tied seeds, matching stable-sort order.
+  let bestCandidateId: string | undefined;
+  let bestSeed = -Infinity;
+  for (const [id, c] of Object.entries(world.talentPool.candidates)) {
+    if (c.availabilityState === "available") {
+      const seed = c.talentSeed ?? 0;
+      if (seed > bestSeed) {
+        bestSeed = seed;
+        bestCandidateId = id;
+      }
+    }
+  }
   if (!bestCandidateId) return NO_VACANCY_RESULT;
 
   // Rival pressure: the hottest heya-rivalry pair this stable sits in.
-  const rivalHeyaId = Object.values(world.rivalriesState?.heyaRivalryPairs ?? {})
-    .filter((p) => p.heyaAId === heyaId || p.heyaBId === heyaId)
-    .sort((a, b) => b.heat - a.heat)
-    .map((p) => (p.heyaAId === heyaId ? p.heyaBId : p.heyaAId))[0];
+  let rivalHeyaId: string | undefined;
+  let maxHeat = -Infinity;
+  for (const p of Object.values(world.rivalriesState?.heyaRivalryPairs ?? {})) {
+    if (p.heyaAId === heyaId || p.heyaBId === heyaId) {
+      if (p.heat > maxHeat) {
+        maxHeat = p.heat;
+        rivalHeyaId = p.heyaAId === heyaId ? p.heyaBId : p.heyaAId;
+      }
+    }
+  }
   const recruitmentCtx: RecruitmentAgentContext = {
     oyakata,
     world,

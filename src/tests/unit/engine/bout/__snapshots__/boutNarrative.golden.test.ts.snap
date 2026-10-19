@@ -199,7 +199,7 @@ exports[`generateBoutNarrative — golden master > 7-7 pressure both sides 1`] =
     "tags": [
       "kachi_koshi",
     ],
-    "text": "[[rikishi:r-east:Wrestler-r-east]] completes the primary goal of any tournament: kachi-koshi with 8 wins.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] crosses the finish line for a winning record, now sitting at 8 wins.",
     "voice": "dramatic",
   },
   {
@@ -208,7 +208,7 @@ exports[`generateBoutNarrative — golden master > 7-7 pressure both sides 1`] =
     "tags": [
       "make_koshi",
     ],
-    "text": "[[rikishi:r-west:Wrestler-r-west]] drops to make-koshi. The demotion talk will begin.",
+    "text": "The math is unforgiving — 8 losses mean make-koshi for [[rikishi:r-west:Wrestler-r-west]].",
     "voice": "dramatic",
   },
   {
@@ -673,7 +673,7 @@ exports[`generateBoutNarrative — golden master > final day senshuraku 1`] = `
     "tags": [
       "kachi_koshi",
     ],
-    "text": "[[rikishi:r-east:Wrestler-r-east]] completes the primary goal of any tournament: kachi-koshi with 10 wins.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] crosses the finish line for a winning record, now sitting at 10 wins.",
     "voice": "dramatic",
   },
   {
@@ -682,7 +682,7 @@ exports[`generateBoutNarrative — golden master > final day senshuraku 1`] = `
     "tags": [
       "make_koshi",
     ],
-    "text": "[[rikishi:r-west:Wrestler-r-west]] drops to make-koshi. The demotion talk will begin.",
+    "text": "The math is unforgiving — 8 losses mean make-koshi for [[rikishi:r-west:Wrestler-r-west]].",
     "voice": "dramatic",
   },
   {
@@ -1597,7 +1597,7 @@ exports[`generateBoutNarrative — golden master > upset + kinboshi + kensho 1`]
     "tags": [
       "upset",
     ],
-    "text": "Absolutely sensational from [[rikishi:r-east:Wrestler-r-east]], handing the yokozuna a shocking defeat.",
+    "text": "A monumental victory for [[rikishi:r-east:Wrestler-r-east]], felling the yokozuna when it mattered most.",
     "voice": "dramatic",
   },
   {
@@ -1773,7 +1773,7 @@ exports[`generateBoutNarrative — golden master > winning streak callout 1`] = 
     "tags": [
       "kachi_koshi",
     ],
-    "text": "[[rikishi:r-east:Wrestler-r-east]] completes the primary goal of any tournament: kachi-koshi with 14 wins.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] crosses the finish line for a winning record, now sitting at 14 wins.",
     "voice": "dramatic",
   },
   {
@@ -1782,7 +1782,7 @@ exports[`generateBoutNarrative — golden master > winning streak callout 1`] = 
     "tags": [
       "make_koshi",
     ],
-    "text": "[[rikishi:r-west:Wrestler-r-west]] drops to make-koshi. The demotion talk will begin.",
+    "text": "The math is unforgiving — 10 losses mean make-koshi for [[rikishi:r-west:Wrestler-r-west]].",
     "voice": "dramatic",
   },
 ]
