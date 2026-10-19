@@ -67,7 +67,7 @@ tests pin ordering, limits, and composition (`events.scanRecentEvents.test.ts`).
 
 **Totals:** 17 APPROVED (13 merged as-is/payload, 4 merged with correction),
 6 SUPERSEDED (3× Bolt action-queue near-duplicates → one canonical compose,
-#1119 → better fix, #1116 partial via payload extraction), 10 dependabot landed.
+\#1119 → better fix, #1116 partial via payload extraction), 10 dependabot landed.
 No PR rejected for incorrectness; every claim was verified against production
 paths before classification.
 
@@ -83,3 +83,15 @@ paths before classification.
 - `bun run test:slow` (subprocess audits, long sims) — per instruction, runs ad hoc.
 - `bun run test:e2e:soak` — deferred.
 - V12-B06 unreferenced-exports debt — pre-existing, gated, unchanged.
+
+## Remote lifecycle
+
+- All 27 PRs (#1094–#1120) closed with verdict-pointer comments referencing
+  this document and consolidation commit `7375ffe4`.
+- All bot branches deleted from origin, including the five stragglers swept in
+  the post-verdict pass (`bolt-optimize-action-queue-*`,
+  `bolt/action-queue-perf-*`, `polish/rivals-empty-state-*`,
+  `scribe-events-doc-*`, `scribe/readme-test-command-fix-*`); dependabot
+  branches were auto-deleted on close.
+- Verified 2026-10-20: `gh pr list --state open` → empty;
+  `git ls-remote --heads origin` → `main` only; local tracking refs pruned.
