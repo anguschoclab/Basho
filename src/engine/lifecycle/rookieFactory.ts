@@ -194,6 +194,7 @@ function buildRookieEntity(p: {
     nationality: isCollegeRecruit({ origin: p.origin.name }) ? "Japan" : p.origin.name,
     birthYear: p.currentYear - p.age,
     origin: p.origin.name,
+    debutYear: p.currentYear,
 
     // Rank
     rank: p.isElite ? "makushita" : p.targetRank,

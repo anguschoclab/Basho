@@ -357,6 +357,12 @@ function sanitizeRikishi(r: Rikishi): void {
     if (typeof e.totalEarnings !== "number") e.totalEarnings = 0;
     if (typeof e.currentBashoEarnings !== "number") e.currentBashoEarnings = 0;
   }
+  if (typeof r.debutYear !== "number") {
+    const firstSnapshotYear = r.careerHistory?.length
+      ? Math.min(...r.careerHistory.map((c) => c.year))
+      : undefined;
+    r.debutYear = firstSnapshotYear ?? r.birthYear + 16;
+  }
   if (typeof r.talentSeed !== "number") {
     let hash = 0;
     const idStr = String(r.id || "");

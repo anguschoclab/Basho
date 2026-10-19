@@ -42,10 +42,13 @@ export function generateCareerRecord(
 ): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
-  const careerBasho = Math.floor(
+  const rolledCareerBasho = Math.floor(
     CAREER_BASHO_BASE + rankMult * CAREER_BASHO_RANK_MULTIPLIER + rng() * CAREER_BASHO_RNG_RANGE
   );
-  const debutYear = world.year - Math.floor(careerBasho / 6);
+  const debutYear = rikishi.debutYear ?? world.year - Math.floor(rolledCareerBasho / 6);
+  // A tracked debutYear anchors the record's span to debut→now; an over-long
+  // rolled career is clipped by the world-year break inside the loop.
+  const careerBasho = Math.max(rolledCareerBasho, (world.year - debutYear) * 6);
   const debutBashoIndex = Math.floor(rng() * 6);
   const bashoNames: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
 

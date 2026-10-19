@@ -284,6 +284,7 @@ export function generateFullRikishi(args: {
     ),
     ...createCombatStats(rikishiStats, division, archetype, profile),
     ...createCareerHistory(records),
+    debutYear: records.debutYear,
     potential: {
       stats: {
         ...potentialPkg.stats,
@@ -366,6 +367,7 @@ export function convertCandidateToRikishi(args: {
     ),
     ...createCombatStats(rikishiStats, division, candidate.archetype, candidate.combatProfile),
     ...createCareerHistory({ careerWins: 0, careerLosses: 0, yushoCount: 0 }),
+    debutYear: currentYear,
     heyaId,
     nationality: candidate.nationality,
     origin: candidate.originRegion,

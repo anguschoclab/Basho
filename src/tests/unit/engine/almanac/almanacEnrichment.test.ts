@@ -132,6 +132,16 @@ describe("buildNotableBoutEntry", () => {
   });
 });
 
+describe("createEmptyAlmanacRecord", () => {
+  it("prefers the rikishi's tracked debutYear over the birthYear+16 estimate", () => {
+    const rikishi = mockRikishi("r1", { birthYear: 1990, debutYear: 2008 });
+    expect(createEmptyAlmanacRecord(rikishi).debutYear).toBe(2008);
+
+    const untracked = mockRikishi("r2", { birthYear: 1990 });
+    expect(createEmptyAlmanacRecord(untracked).debutYear).toBe(2006);
+  });
+});
+
 describe("enrichAlmanacRecord", () => {
   let world: ReturnType<typeof makeMockWorld>;
   let rikishi: Rikishi;

@@ -64,6 +64,7 @@ function simulateCareerProgression(args: {
   careerLosses: number;
   yushoCount: number;
   divisionRecords: DivisionRecords;
+  debutYear: number;
 } {
   const {
     rng,
@@ -192,6 +193,9 @@ function simulateCareerProgression(args: {
     careerLosses: totalLosses,
     yushoCount,
     divisionRecords,
+    // The simulated career spans `yearsActive` years ending now — the debut
+    // year is the anchor the record was built from.
+    debutYear: currentYear - yearsActive,
   };
 }
 
@@ -211,6 +215,7 @@ export function generateSyntheticCareer(args: {
   careerLosses: number;
   yushoCount: number;
   divisionRecords: DivisionRecords;
+  debutYear: number;
 } {
   // Use career progression simulation for more realistic records
   const progression = simulateCareerProgression({
@@ -228,5 +233,6 @@ export function generateSyntheticCareer(args: {
     careerLosses: progression.careerLosses,
     yushoCount: progression.yushoCount,
     divisionRecords: progression.divisionRecords,
+    debutYear: progression.debutYear,
   };
 }

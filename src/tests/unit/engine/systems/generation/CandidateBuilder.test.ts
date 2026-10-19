@@ -246,6 +246,23 @@ describe("CandidateBuilder — structural compatibility", () => {
       expect(r.stats.mental).toBeDefined();
       expect(r.stats.adaptability).toBeDefined();
     });
+
+    it("tracks debutYear consistent with the synthetic career", () => {
+      const rng = rngFromSeed("test", "candidate", "debut-full");
+      const r = generateFullRikishi({
+        id: "rikishi-debut-001",
+        rng,
+        currentYear: 2025,
+        rank: "maegashira",
+        division: "makuuchi",
+        side: "east",
+        rankNumber: 10,
+      });
+
+      expect(r.debutYear).toBeDefined();
+      expect(r.debutYear!).toBeGreaterThanOrEqual(r.birthYear);
+      expect(r.debutYear!).toBeLessThanOrEqual(2025);
+    });
   });
 
   describe("convertCandidateToRikishi — mochikyukin debut seed", () => {
@@ -345,6 +362,39 @@ describe("CandidateBuilder — structural compatibility", () => {
       expect(r.nationality).toBeDefined();
       expect(r.combatProfile).toBeDefined();
       expect(r.stats).toBeDefined();
+    });
+
+    it("stamps debutYear at recruitment", () => {
+      const rng = rngFromSeed("test", "candidate", "debut-convert");
+      const candidate: TalentCandidate = {
+        candidateId: "cand-debut-001",
+        personId: "person-debut-001",
+        name: "Debut Test",
+        birthYear: 2005,
+        originRegion: "Tokyo",
+        nationality: "Japan",
+        visibilityBand: "partial",
+        reputationSeed: 90,
+        tags: [],
+        combatProfile: buildCombatProfile("oshi"),
+        availabilityState: "available",
+        competingSuitors: [],
+        archetype: "oshi",
+        style: "oshi",
+        heightPotentialCm: 180,
+        weightPotentialKg: 130,
+        talentSeed: 12345,
+        temperament: { discipline: 70, volatility: 30 },
+      } as unknown as TalentCandidate;
+
+      const r = convertCandidateToRikishi({
+        candidate,
+        rng,
+        currentYear: 2025,
+        heyaId: "heya-001",
+      });
+
+      expect(r.debutYear).toBe(2025);
     });
 
     it("preserves candidate developmentProfile", () => {

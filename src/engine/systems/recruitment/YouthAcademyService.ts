@@ -442,6 +442,7 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
     heyaId,
     origin: prospect.region,
     isRetired: false,
+    debutYear: world.year,
     potential,
     avatarConfig:
       prospect.avatarConfig ??

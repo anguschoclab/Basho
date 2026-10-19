@@ -116,6 +116,8 @@ export interface RetiredRikishiSummary {
   id: Id;
   shikona: string;
   birthYear: number;
+  /** Year of professional debut — carried over so archived careers stay anchored. */
+  debutYear?: number;
   heyaId: Id;
   origin?: string;
 

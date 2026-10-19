@@ -95,6 +95,8 @@ export interface Rikishi {
   birthMonth?: number;
   birthDay?: number;
   origin?: string;
+  /** Year of professional debut (jonokuchi entry). Backfilled at load if absent. */
+  debutYear?: number;
 
   height: number;
   weight: number;

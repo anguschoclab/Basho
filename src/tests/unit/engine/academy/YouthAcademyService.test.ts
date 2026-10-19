@@ -219,6 +219,7 @@ describe("YouthAcademyService", () => {
       expect(r.potential!.stats.power).toBeGreaterThanOrEqual(r.stats.power);
       expect(r.avatarConfig).toBeDefined();
       expect(r.injuryStatus?.type).toBe("none");
+      expect(r.debutYear).toBe(world.year);
     });
   });
 

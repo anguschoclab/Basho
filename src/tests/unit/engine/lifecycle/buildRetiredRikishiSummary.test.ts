@@ -232,6 +232,28 @@ describe("buildRetiredRikishiSummary", () => {
     expect(buildRetiredRikishiSummary(withoutKinboshi).kinboshiCount).toBe(0);
   });
 
+  it("carries debutYear onto the summary, falling back to earliest aggregate", () => {
+    const tracked = mockRikishi("r-debut", {
+      careerHistory: [],
+      retirementYear: 2020,
+      retirementReason: "Age",
+      isRetired: true,
+      debutYear: 1998,
+    });
+    expect(buildRetiredRikishiSummary(tracked).debutYear).toBe(1998);
+
+    const untracked = mockRikishi("r-debut-fallback", {
+      careerHistory: [
+        makeSnapshot(2004, "maegashira", "makuuchi", 10, 5),
+        makeSnapshot(2003, "juryo", "juryo", 9, 6),
+      ],
+      retirementYear: 2020,
+      retirementReason: "Age",
+      isRetired: true,
+    });
+    expect(buildRetiredRikishiSummary(untracked).debutYear).toBe(2003);
+  });
+
   it("preserves lineage and bloodlineTraitId for DynastyService compatibility", () => {
     const rikishi = mockRikishi("r-lineage", {
       careerHistory: [],

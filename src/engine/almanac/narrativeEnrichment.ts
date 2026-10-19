@@ -13,7 +13,7 @@ export function createEmptyAlmanacRecord(rikishi: Rikishi): RikishiCareerRecord 
   return {
     rikishiId: rikishi.id,
     shikona: rikishi.shikona,
-    debutYear: rikishi.birthYear + 16,
+    debutYear: rikishi.debutYear ?? rikishi.birthYear + 16,
     debutBasho: "hatsu",
     totalWins: rikishi.careerWins,
     totalLosses: rikishi.careerLosses,
