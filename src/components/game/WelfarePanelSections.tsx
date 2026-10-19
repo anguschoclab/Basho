@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Utensils, Shield, Heart, Activity } from "lucide-react";
 import type { DietRegimen } from "@/engine/types/economy";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
@@ -193,6 +194,7 @@ export function HealthOverviewCard({ perception }: { perception: Perception }) {
         <div className="space-y-2">
           {perception.rikishiHealthPerceptions.slice(0, 12).map((rp) => (
             <div key={rp.rikishiId} className="flex items-center gap-3 text-sm">
+              <SumoAvatar avatar={rp.avatar} size="xs" fallback={rp.shikona} />
               <div className="flex-1 min-w-0 truncate">
                 <span className="font-medium">{rp.shikona}</span>
                 <span className="text-xs text-muted-foreground ml-1">({rp.rank})</span>

@@ -51,7 +51,7 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
   return (
     <div className="relative flex flex-col gap-6 p-6 max-w-2xl mx-auto w-full">
       {/* Header + matchup */}
-      <ExhibitionHeader east={east} west={west} />
+      <ExhibitionHeader east={east} west={west} currentYear={world.year} />
 
       {/* PbP log */}
       <ExhibitionPbpLog logLines={logLines} revealedCount={revealedCount} />

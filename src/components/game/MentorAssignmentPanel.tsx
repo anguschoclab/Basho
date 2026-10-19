@@ -21,6 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserMinus, GraduationCap } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { MentorshipService } from "@/presenters/engineAccess";
 
@@ -38,6 +41,8 @@ export interface MentorAssignmentPanelProps {
   onAssignMentor: (mentorId: string) => void;
   /** Callback when a mentor is removed. */
   onRemoveMentor: () => void;
+  /** Current world year — drives avatar stage derivation. */
+  currentYear?: number;
 }
 
 /**
@@ -67,7 +72,15 @@ export function MentorAssignmentPanel({
   roster,
   onAssignMentor,
   onRemoveMentor,
+  currentYear = DEFAULT_START_YEAR,
 }: MentorAssignmentPanelProps): React.JSX.Element {
+  const avatarOf = (r: Rikishi) =>
+    resolveAvatar({
+      id: r.id,
+      stored: r.avatarConfig,
+      nationality: r.nationality,
+      ...rikishiStageInput(r, currentYear),
+    });
   /**
    * Filter eligible mentors from the heya roster.
    * Uses MentorshipService.canMentor so the UI and engine share one source of truth.
@@ -105,7 +118,12 @@ export function MentorAssignmentPanel({
          * Display current mentor with remove option.
          */
         <div className="flex items-center justify-between gap-2">
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-xs gap-1.5 pl-1">
+            <SumoAvatar
+              avatar={avatarOf(currentMentor)}
+              size="xs"
+              fallback={currentMentor.shikona}
+            />
             Mentor: {currentMentor.shikona} ({currentMentor.rank})
           </Badge>
           <Button
@@ -136,7 +154,14 @@ export function MentorAssignmentPanel({
               ) : (
                 eligibleMentors.map((mentor) => (
                   <SelectItem key={mentor.id} value={mentor.id} className="text-xs">
-                    {mentor.shikona} ({mentor.rank})
+                    <span className="flex items-center gap-1.5">
+                      <SumoAvatar
+                        avatar={avatarOf(mentor)}
+                        size="xs"
+                        fallback={mentor.shikona}
+                      />
+                      {mentor.shikona} ({mentor.rank})
+                    </span>
                   </SelectItem>
                 ))
               )}

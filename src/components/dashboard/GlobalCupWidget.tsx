@@ -8,6 +8,8 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { Trophy, Users, Calendar } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -68,14 +70,32 @@ export function GlobalCupWidget() {
           </div>
         </div>
 
-        {cup.championId && (
-          <div className="p-2 rounded bg-gold/10 border border-gold/20">
-            <span className="text-[10px] uppercase text-muted-foreground">Champion</span>
-            <div className="font-bold text-gold">
-              {world?.rikishi.get(cup.championId)?.shikona || "Unknown"}
-            </div>
-          </div>
-        )}
+        {cup.championId &&
+          (() => {
+            const champion = world?.rikishi.get(cup.championId);
+            return (
+              <div className="p-2 rounded bg-gold/10 border border-gold/20">
+                <span className="text-[10px] uppercase text-muted-foreground">Champion</span>
+                <div className="font-bold text-gold flex items-center gap-2 mt-1">
+                  <SumoAvatar
+                    avatar={
+                      champion
+                        ? resolveAvatar({
+                            id: champion.id,
+                            stored: champion.avatarConfig,
+                            nationality: champion.nationality,
+                            ...rikishiStageInput(champion, world?.year ?? 0),
+                          })
+                        : undefined
+                    }
+                    size="xs"
+                    fallback={champion?.shikona}
+                  />
+                  {champion?.shikona || "Unknown"}
+                </div>
+              </div>
+            );
+          })()}
       </div>
     );
   }, [cup, world]);

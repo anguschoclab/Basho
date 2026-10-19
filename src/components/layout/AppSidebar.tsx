@@ -11,6 +11,7 @@ import { useRef, useEffect } from "react";
 import { useGame } from "@/contexts/useGame";
 import { getMenuGroups } from "./sidebarConfig";
 import { getPlayerHeya } from "@/presenters/engineAccess";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import { SidebarBrand, SidebarNav, SidebarStatusFooter } from "./AppSidebarSections";
 
 export function AppSidebar() {
@@ -23,6 +24,16 @@ export function AppSidebar() {
   const isLoaded = !!world;
   const tutorialCompleted = world?.tutorialState?.completed ?? false;
   const playerHeya = isLoaded && world ? (getPlayerHeya(world) ?? null) : null;
+  const playerOyakata =
+    world && playerHeya?.oyakataId ? world.oyakata.get(playerHeya.oyakataId) : undefined;
+  const playerOyakataAvatar = playerOyakata
+    ? resolveAvatar({
+        id: playerOyakata.id,
+        stored: playerOyakata.avatarConfig,
+        seedAliases: playerOyakata.formerRikishiId ? [playerOyakata.formerRikishiId] : [],
+        ...oyakataStageInput(playerOyakata),
+      })
+    : undefined;
 
   const inBasho = world?.cyclePhase === "active_basho";
   const bashoDay = world?.currentBasho?.day;
@@ -90,6 +101,7 @@ export function AppSidebar() {
 
       <SidebarStatusFooter
         playerHeya={playerHeya}
+        playerOyakataAvatar={playerOyakataAvatar}
         fundsCritical={!!fundsCritical}
         inBasho={!!inBasho}
         bashoDay={bashoDay}

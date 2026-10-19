@@ -161,10 +161,29 @@ describe("deriveAvatarStage", () => {
 });
 
 describe("resolveAvatar", () => {
-  it("uses stored v2 identity when present", () => {
+  it("uses stored v2 identity when present and seeded by the entity id", () => {
     const stored = gen({ seed: "stored-1" });
-    const r = resolveAvatar({ id: "x", stored, division: "juryo", age: 25 });
+    const r = resolveAvatar({ id: "stored-1", stored, division: "juryo", age: 25 });
     expect(r.identity).toBe(stored);
+  });
+
+  it("accepts stored identity seeded by a declared alias", () => {
+    const stored = gen({ seed: "former-rikishi-1" });
+    const r = resolveAvatar({
+      id: "oyakata-1",
+      stored,
+      seedAliases: ["former-rikishi-1"],
+      role: "oyakata",
+      age: 55,
+    });
+    expect(r.identity).toBe(stored);
+  });
+
+  it("rejects stored identity whose seed belongs to a different entity", () => {
+    const stored = gen({ seed: "other-entity" });
+    const r = resolveAvatar({ id: "x", stored, division: "juryo", age: 25 });
+    expect(r.identity).not.toBe(stored);
+    expect(r.identity.seed).toBe("x");
   });
 
   it("derives identity deterministically when stored is missing or stale", () => {

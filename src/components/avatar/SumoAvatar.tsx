@@ -64,6 +64,8 @@ function AvatarFallback({
 }) {
   return (
     <div
+      data-avatar
+      aria-hidden="true"
       className={cn(
         "rounded bg-muted flex items-center justify-center font-bold text-muted-foreground shrink-0",
         className
@@ -107,6 +109,7 @@ export const SumoAvatar = memo(function SumoAvatar({
 
   return (
     <svg
+      data-avatar
       width={pixelSize}
       height={pixelSize}
       viewBox="0 0 24 24"

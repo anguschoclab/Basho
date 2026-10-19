@@ -15,11 +15,29 @@ import type { BashoResult } from "@/engine/types/basho";
 import type { WorldState } from "@/presenters/uiDigest";
 import { Medal, Star, TrendingUp, Trophy, Users, Award, Swords } from "lucide-react";
 import { getRikishi, getHistory } from "@/presenters/worldAccess";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { useGame } from "@/contexts/useGame";
 import { projectOfficials } from "@/presenters/officialsProjections";
 import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
 import type { useAlmanacDerived } from "@/hooks/useAlmanacDerived";
 
 type Derived = ReturnType<typeof useAlmanacDerived>;
+
+/** Resolves a rikishi avatar chip from world state by id. */
+function RikishiAvatarChip({ rikishiId, shikona }: { rikishiId: string; shikona: string }) {
+  const { state } = useGame();
+  const rikishi = state.world?.rikishi.get(rikishiId);
+  const avatar = rikishi
+    ? resolveAvatar({
+        id: rikishi.id,
+        stored: rikishi.avatarConfig,
+        nationality: rikishi.nationality,
+        ...rikishiStageInput(rikishi, state.world?.year ?? 0),
+      })
+    : undefined;
+  return <SumoAvatar avatar={avatar} size="xs" fallback={shikona} />;
+}
 
 /** Leaderboard widget for record book displays. */
 export function LeaderboardWidget({
@@ -58,6 +76,7 @@ export function LeaderboardWidget({
                 >
                   {idx + 1}
                 </span>
+                <RikishiAvatarChip rikishiId={entry.rikishiId} shikona={entry.shikona} />
                 <span className="flex-1 font-display truncate">{entry.shikona}</span>
                 <div className="text-right">
                   <Badge variant="outline" className="font-mono text-xs tabular-nums">
@@ -115,7 +134,17 @@ export function PastBashosTab({ world }: { world: WorldState }) {
           </p>
         </Card>
       ) : (
-        [...getHistory(world)].reverse().map((basho: BashoResult, idx) => (
+        [...getHistory(world)].reverse().map((basho: BashoResult, idx) => {
+          const yushoRikishi = getRikishi(world, basho.yusho);
+          const yushoAvatar = yushoRikishi
+            ? resolveAvatar({
+                id: yushoRikishi.id,
+                stored: yushoRikishi.avatarConfig,
+                nationality: yushoRikishi.nationality,
+                ...rikishiStageInput(yushoRikishi, world.year),
+              })
+            : undefined;
+          return (
           <Card key={idx} className="paper overflow-hidden">
             <div className="p-4 border-b flex justify-between items-center bg-secondary/20">
               <div>
@@ -131,8 +160,11 @@ export function PastBashosTab({ world }: { world: WorldState }) {
                 <p className="text-xs uppercase text-muted-foreground font-semibold">
                   Yūshō Winner
                 </p>
-                <p className="font-display font-bold text-lg">
-                  {getRikishi(world, basho.yusho)?.shikona ?? basho.yusho ?? "Reserved"}
+                <p className="font-display font-bold text-lg flex items-center gap-2">
+                  {yushoRikishi && (
+                    <SumoAvatar avatar={yushoAvatar} size="xs" fallback={yushoRikishi.shikona} />
+                  )}
+                  {yushoRikishi?.shikona ?? basho.yusho ?? "Reserved"}
                 </p>
               </div>
               <div className="space-y-1">
@@ -146,7 +178,8 @@ export function PastBashosTab({ world }: { world: WorldState }) {
               </div>
             </CardContent>
           </Card>
-        ))
+          );
+        })
       )}
     </div>
   );

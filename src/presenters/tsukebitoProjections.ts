@@ -3,6 +3,8 @@
  */
 import type { WorldState } from "../engine/types/world";
 import type { Rikishi } from "../engine/types/rikishi";
+import type { AvatarRenderData } from "../engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "../engine/avatarGenerator";
 import {
   isEligibleForTsukebito,
   isJuniorTsukebitoEligible,
@@ -13,11 +15,13 @@ export interface TsukebitoAssignmentDTO {
   seniorId: string;
   seniorShikona: string;
   seniorRankLabel: string;
+  seniorAvatar?: AvatarRenderData;
   tsukebitoIds: string[];
   tsukebito: Array<{
     id: string;
     shikona: string;
     rankLabel: string;
+    avatar?: AvatarRenderData;
   }>;
 }
 
@@ -29,12 +33,14 @@ export interface TsukebitoProjection {
     rankLabel: string;
     currentCount: number;
     maxCount: number;
+    avatar?: AvatarRenderData;
   }>;
   eligibleJuniors: Array<{
     id: string;
     shikona: string;
     rankLabel: string;
     assignedTo: string | null;
+    avatar?: AvatarRenderData;
   }>;
 }
 
@@ -47,7 +53,17 @@ function rankLabel(r: Rikishi): string {
   return rankObj.label ?? String(rank);
 }
 
+function avatarOf(r: Rikishi, year: number): AvatarRenderData {
+  return resolveAvatar({
+    id: r.id,
+    stored: r.avatarConfig,
+    nationality: r.nationality,
+    ...rikishiStageInput(r, year),
+  });
+}
+
 export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoProjection {
+  const year = world.year;
   const heyaRikishi = Array.from(world.rikishi.values()).filter(
     (r) => r.heyaId === heyaId && !r.isRetired
   );
@@ -67,7 +83,7 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
       seniors.push(r);
       const tsukebitoIds = r.tsukebitoIds;
       if (tsukebitoIds !== undefined && tsukebitoIds.length > 0) {
-        const tsukebito: Array<{ id: string; shikona: string; rankLabel: string }> = [];
+        const tsukebito: TsukebitoAssignmentDTO["tsukebito"] = [];
         for (let j = 0; j < tsukebitoIds.length; j++) {
           const tId = tsukebitoIds[j];
           juniorAssignments[tId] = r.id;
@@ -77,6 +93,7 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
               id: t.id,
               shikona: t.shikona,
               rankLabel: rankLabel(t),
+              avatar: avatarOf(t, year),
             });
           }
         }
@@ -85,6 +102,7 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
           seniorId: r.id,
           seniorShikona: r.shikona,
           seniorRankLabel: rankLabel(r),
+          seniorAvatar: avatarOf(r, year),
           tsukebitoIds,
           tsukebito,
         });
@@ -102,6 +120,7 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
     rankLabel: rankLabel(s),
     currentCount: (s.tsukebitoIds ?? []).length,
     maxCount: MAX_TSUKEBITO_PER_SENIOR,
+    avatar: avatarOf(s, year),
   }));
 
   const eligibleJuniors = juniors.map((j) => ({
@@ -109,6 +128,7 @@ export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoPr
     shikona: j.shikona,
     rankLabel: rankLabel(j),
     assignedTo: juniorAssignments[j.id] ?? null,
+    avatar: avatarOf(j, year),
   }));
 
   return { assignments, eligibleSeniors, eligibleJuniors };

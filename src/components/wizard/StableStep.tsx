@@ -9,9 +9,12 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StableCard } from "./StableStepSections";
 import type { Heya } from "@/engine/types/heya";
+import type { WorldState } from "@/presenters/uiDigest";
 
 interface StableStepProps {
   stables: Heya[];
+  /** Optional world — used to render each stable's oyakata portrait. */
+  world?: WorldState | null;
   selectedHeyaId: string | null;
   onHeyaSelect: (heyaId: string) => void;
   onPrev: () => void;
@@ -20,6 +23,7 @@ interface StableStepProps {
 
 export function StableStep({
   stables,
+  world,
   selectedHeyaId,
   onHeyaSelect,
   onPrev,
@@ -48,6 +52,7 @@ export function StableStep({
               <StableCard
                 key={heya.id}
                 heya={heya}
+                oyakata={heya.oyakataId ? (world?.oyakata.get(heya.oyakataId) ?? null) : null}
                 isSelected={selectedHeyaId === heya.id}
                 onSelect={onHeyaSelect}
               />

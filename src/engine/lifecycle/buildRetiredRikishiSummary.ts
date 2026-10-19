@@ -96,6 +96,7 @@ export function buildRetiredRikishiSummary(rikishi: Rikishi): RetiredRikishiSumm
     birthYear: rikishi.birthYear,
     heyaId: rikishi.heyaId,
     origin: rikishi.origin,
+    avatarConfig: rikishi.avatarConfig,
 
     careerWins: rikishi.careerWins ?? 0,
     careerLosses: rikishi.careerLosses ?? 0,

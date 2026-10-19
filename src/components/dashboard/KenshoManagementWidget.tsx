@@ -5,12 +5,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Coins, TrendingUp, Calendar } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { useKenshoData } from "@/hooks/useKenshoData";
 
 export function KenshoManagementWidget() {
   const {
     heyaId,
     heya,
+    worldYear,
     playerRikishi,
     totalKenshoEarnings,
     projectedKensho,
@@ -61,11 +64,14 @@ export function KenshoManagementWidget() {
                     key={bout.boutId}
                     className="flex items-center justify-between p-2 rounded border bg-card"
                   >
-                    <div>
-                      <div className="font-medium text-sm">
-                        <RikishiName id={bout.rikishiId} name={bout.rikishiName} />
+                    <div className="flex items-center gap-2">
+                      <SumoAvatar avatar={bout.avatar} size="xs" fallback={bout.rikishiName} />
+                      <div>
+                        <div className="font-medium text-sm">
+                          <RikishiName id={bout.rikishiId} name={bout.rikishiName} />
+                        </div>
+                        <div className="text-xs text-muted-foreground">{bout.boutId}</div>
                       </div>
-                      <div className="text-xs text-muted-foreground">{bout.boutId}</div>
                     </div>
                     <div className="text-right">
                       <div className="font-semibold text-gold">
@@ -102,13 +108,25 @@ export function KenshoManagementWidget() {
                     key={rikishi.id}
                     className="flex items-center justify-between p-2 rounded border bg-card"
                   >
-                    <div>
-                      <div className="font-medium text-sm">
-                        <RikishiName id={rikishi.id} name={rikishi.shikona || rikishi.id} />
+                    <div className="flex items-center gap-2">
+                      <SumoAvatar
+                        avatar={resolveAvatar({
+                          id: rikishi.id,
+                          stored: rikishi.avatarConfig,
+                          nationality: rikishi.nationality,
+                          ...rikishiStageInput(rikishi, worldYear),
+                        })}
+                        size="xs"
+                        fallback={rikishi.shikona || rikishi.id}
+                      />
+                      <div>
+                        <div className="font-medium text-sm">
+                          <RikishiName id={rikishi.id} name={rikishi.shikona || rikishi.id} />
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {rank}
+                        </Badge>
                       </div>
-                      <Badge variant="outline" className="text-xs">
-                        {rank}
-                      </Badge>
                     </div>
                     <div className="text-right">
                       <div className="font-semibold text-gold">{formatYen(kenshoEarnings)}</div>

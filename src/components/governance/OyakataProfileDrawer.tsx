@@ -12,6 +12,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { RivalStableDTO } from "@/presenters/rivalStablesProjections";
 
 export function OyakataProfileDrawer({
@@ -29,8 +30,13 @@ export function OyakataProfileDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="overflow-y-auto" data-testid="oyakata-profile-drawer">
         <SheetHeader>
-          <SheetTitle data-testid="drawer-heya-name">{rival.heyaName}</SheetTitle>
-          <SheetDescription>Rival Stable Profile</SheetDescription>
+          <div className="flex items-center gap-3">
+            <SumoAvatar avatar={rival.oyakataAvatar} size="lg" fallback={rival.oyakataName} />
+            <div>
+              <SheetTitle data-testid="drawer-heya-name">{rival.heyaName}</SheetTitle>
+              <SheetDescription>{rival.oyakataName} — Rival Stable Profile</SheetDescription>
+            </div>
+          </div>
         </SheetHeader>
 
         <div className="space-y-4 p-4">

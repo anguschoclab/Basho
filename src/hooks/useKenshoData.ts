@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useGame } from "@/contexts/useGame";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { BoutResult } from "@/engine/types/basho";
 
 export interface KenshoBoutEntry {
@@ -9,6 +11,7 @@ export interface KenshoBoutEntry {
   boutId: string;
   kenshoEnvelopes: number;
   awardFact?: string;
+  avatar?: AvatarRenderData;
 }
 
 export function useKenshoData() {
@@ -62,6 +65,14 @@ export function useKenshoData() {
         const eastRikishi = world.rikishi.get(match.eastRikishiId);
         const westRikishi = world.rikishi.get(match.westRikishiId);
 
+        const boutAvatar = (r: Rikishi) =>
+          resolveAvatar({
+            id: r.id,
+            stored: r.avatarConfig,
+            nationality: r.nationality,
+            ...rikishiStageInput(r, world?.year ?? 0),
+          });
+
         if (eastRikishi && heya.rikishiIds.includes(eastRikishi.id) && result.kenshoEnvelopes > 0) {
           arr.push({
             rikishiId: eastRikishi.id,
@@ -69,6 +80,7 @@ export function useKenshoData() {
             boutId: match.boutId,
             kenshoEnvelopes: result.kenshoEnvelopes,
             awardFact: result.awardFact || undefined,
+            avatar: boutAvatar(eastRikishi),
           });
         }
 
@@ -79,16 +91,18 @@ export function useKenshoData() {
             boutId: match.boutId,
             kenshoEnvelopes: result.kenshoEnvelopes,
             awardFact: result.awardFact || undefined,
+            avatar: boutAvatar(westRikishi),
           });
         }
       }
     }
     return arr;
-  }, [world?.currentBasho?.matches, world?.rikishi, heya?.rikishiIds]);
+  }, [world?.currentBasho?.matches, world?.rikishi, world?.year, heya?.rikishiIds]);
 
   return {
     heyaId,
     heya,
+    worldYear: world?.year ?? 0,
     playerRikishi,
     totalKenshoEarnings,
     projectedKensho,

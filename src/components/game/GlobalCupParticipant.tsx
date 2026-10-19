@@ -5,6 +5,9 @@
  */
 
 import { cn } from "@/lib/utils";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { useGame } from "@/contexts/useGame";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import type { GlobalCupParticipant } from "@/engine/types/globalCup";
 
 interface GlobalCupParticipantProps {
@@ -36,6 +39,16 @@ export function GlobalCupParticipantCard({
   className,
 }: GlobalCupParticipantProps) {
   const flag = flagMap[participant.nationality] || "🏳️";
+  const { state } = useGame();
+  const rikishi = state.world?.rikishi.get(participant.rikishiId);
+  const avatar = rikishi
+    ? resolveAvatar({
+        id: rikishi.id,
+        stored: rikishi.avatarConfig,
+        nationality: rikishi.nationality,
+        ...rikishiStageInput(rikishi, state.world?.year ?? 0),
+      })
+    : undefined;
 
   return (
     <div
@@ -46,7 +59,10 @@ export function GlobalCupParticipantCard({
       )}
     >
       <div className="flex items-center gap-3">
-        <div className="text-2xl">{flag}</div>
+        <div className="relative">
+          <SumoAvatar avatar={avatar} size="sm" fallback={participant.shikona} />
+          <span className="absolute -bottom-1 -right-1 text-[10px] leading-none">{flag}</span>
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase">

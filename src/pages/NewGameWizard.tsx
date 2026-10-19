@@ -126,6 +126,7 @@ export default function NewGameWizard() {
         {step === 3 && !preselectedHeyaId && (
           <StableStep
             stables={stables}
+            world={state.world}
             selectedHeyaId={selectedHeyaId}
             onHeyaSelect={setSelectedHeyaId}
             onPrev={handlePrev}

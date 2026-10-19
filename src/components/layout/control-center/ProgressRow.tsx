@@ -6,9 +6,12 @@
  */
 
 import { cn } from "@/lib/utils";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 
 interface ProgressRowProps {
   name: string;
+  avatar?: AvatarRenderData;
   subtitle?: string;
   value: number;
   tone?: "default" | "gold" | "east" | "west" | "success" | "warning" | "destructive";
@@ -38,6 +41,7 @@ const TEXT_TONE: Record<string, string> = {
 
 export function ProgressRow({
   name,
+  avatar,
   subtitle,
   value,
   tone = "default",
@@ -49,9 +53,12 @@ export function ProgressRow({
   return (
     <div className={cn("space-y-1", className)}>
       <div className="flex items-baseline justify-between gap-2">
-        <div className="min-w-0">
-          <span className="text-xs font-medium truncate block">{name}</span>
-          {subtitle && <span className="text-[10px] text-muted-foreground">{subtitle}</span>}
+        <div className="flex items-center gap-1.5 min-w-0">
+          {avatar && <SumoAvatar avatar={avatar} size="xs" fallback={name} />}
+          <div className="min-w-0">
+            <span className="text-xs font-medium truncate block">{name}</span>
+            {subtitle && <span className="text-[10px] text-muted-foreground">{subtitle}</span>}
+          </div>
         </div>
         {showValue && (
           <span

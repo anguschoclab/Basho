@@ -3,13 +3,19 @@
 
 import { useMemo } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { HoFInductee } from "@/presenters/engineAccess";
-import type { UIRikishi } from "@/presenters/uiModels";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+
+export interface HofTimelineEntry {
+  shikona: string;
+  avatar?: AvatarRenderData;
+}
 
 /** Defines the structure for ho f timeline props. */
 interface HoFTimelineProps {
   inductees: HoFInductee[];
-  rikishiMap: Map<string, UIRikishi>;
+  rikishiMap: Map<string, HofTimelineEntry>;
 }
 
 /**
@@ -22,15 +28,17 @@ function TimelinePortrait({
   rikishi,
 }: {
   inductee: HoFInductee;
-  rikishi: UIRikishi | undefined;
+  rikishi: HofTimelineEntry | undefined;
 }) {
   const name = rikishi?.shikona ?? inductee.rikishiId;
-  const initial = name.charAt(0).toUpperCase();
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="w-8 h-8 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-[11px] font-bold text-primary">
-        {initial}
-      </div>
+      <SumoAvatar
+        avatar={rikishi?.avatar}
+        size="sm"
+        fallback={name}
+        className="border border-primary/30"
+      />
       <span className="text-[10px] text-muted-foreground max-w-[60px] truncate text-center">
         {name}
       </span>

@@ -47,6 +47,8 @@ export interface YouthAcademyState {
   budget: number; // weekly development budget
   staff: AcademyStaff[];
   lastIntakeYear: number; // year of last yearly intake
+  /** Monotonic hire counter — keeps staff ids unique across same-year re-hires. */
+  staffHireSeq?: number;
 }
 
 /** Configuration for academy management. */

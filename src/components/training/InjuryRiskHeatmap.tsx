@@ -5,6 +5,8 @@ import { toFatigueBand } from "@/presenters/engineAccess";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Activity } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 
 interface InjuryRiskHeatmapProps {
   rikishiList: Array<{
@@ -15,6 +17,7 @@ interface InjuryRiskHeatmapProps {
     condition: number;
     fatigue: number;
     injurySummary?: string;
+    avatar?: AvatarRenderData;
   }>;
 }
 
@@ -127,7 +130,8 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
                           r.isInjured && r.injurySummary ? <span>{r.injurySummary}</span> : null
                         }
                       >
-                        <span className="cursor-default">
+                        <span className="cursor-default inline-flex items-center gap-2">
+                          <SumoAvatar avatar={r.avatar} size="xs" fallback={r.shikona} />
                           <span className="font-medium">{r.shikona}</span>
                           <span className="ml-2 text-xs text-muted-foreground">{r.rankLabel}</span>
                           {r.isInjured && (

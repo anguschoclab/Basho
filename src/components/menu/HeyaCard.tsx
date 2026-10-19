@@ -11,7 +11,10 @@ import { Button } from "@/components/ui/button";
 import { StableName } from "@/components/ClickableName";
 import { HeyaBrandBadge } from "@/components/stable/HeyaBrandBadge";
 import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
 import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
 import { STATURE_CONFIG } from "./statureConfig";
 import { activationKeyHandler } from "@/lib/a11y";
@@ -24,6 +27,48 @@ interface HeyaCardProps {
   isRecommended?: boolean;
   sekitoriCount: number;
   brandIdentity?: HeyaBrandIdentity;
+  /** The stable's oyakata — the stable's "face" on selection cards. */
+  oyakata?: Oyakata;
+}
+
+/** Risk badges row (financial / governance / rivalry). */
+function RiskBadges({ heya }: { heya: Heya }) {
+  const riskIndicators = (
+    heya as Heya & {
+      riskIndicators?: { financial?: boolean; governance?: boolean; rivalry?: boolean };
+    }
+  ).riskIndicators;
+  if (!riskIndicators?.financial && !riskIndicators?.governance && !riskIndicators?.rivalry) {
+    return null;
+  }
+  return (
+    <div className="flex gap-1 pt-1 flex-wrap">
+      {riskIndicators.financial && (
+        <Badge
+          variant="outline"
+          className="text-[10px] bg-destructive/10 text-destructive border-destructive/20 font-bold"
+        >
+          💴 FINANCIAL RISK
+        </Badge>
+      )}
+      {riskIndicators.governance && (
+        <Badge
+          variant="outline"
+          className="text-[10px] bg-gold/10 text-gold border-gold/20 font-bold"
+        >
+          ⚖️ GOVERNANCE
+        </Badge>
+      )}
+      {riskIndicators.rivalry && (
+        <Badge
+          variant="outline"
+          className="text-[10px] bg-primary/10 text-primary border-primary/20 font-bold"
+        >
+          🔥 RIVALRY
+        </Badge>
+      )}
+    </div>
+  );
 }
 
 export function HeyaCard({
@@ -34,18 +79,10 @@ export function HeyaCard({
   isRecommended,
   sekitoriCount,
   brandIdentity,
+  oyakata,
 }: HeyaCardProps) {
   const config = STATURE_CONFIG[heya.statureBand];
   const Icon = config.icon;
-
-  const riskIndicators = (
-    heya as Heya & {
-      riskIndicators?: { financial?: boolean; governance?: boolean; rivalry?: boolean };
-    }
-  ).riskIndicators;
-  const financial = !!riskIndicators?.financial;
-  const governance = !!riskIndicators?.governance;
-  const rivalry = !!riskIndicators?.rivalry;
 
   return (
     <Card
@@ -68,6 +105,18 @@ export function HeyaCard({
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-3 min-w-0">
             {brandIdentity && <HeyaBrandBadge brand={brandIdentity} size="sm" />}
+            {oyakata && (
+              <SumoAvatar
+                avatar={resolveAvatar({
+                  id: oyakata.id,
+                  stored: oyakata.avatarConfig,
+                  seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+                  ...oyakataStageInput(oyakata),
+                })}
+                size="sm"
+                fallback={oyakata.name}
+              />
+            )}
             <div className="min-w-0">
               <CardTitle className="text-lg flex items-center gap-2">
                 <span className="truncate">
@@ -113,34 +162,7 @@ export function HeyaCard({
           </span>
         </div>
 
-        {(financial || governance || rivalry) && (
-          <div className="flex gap-1 pt-1 flex-wrap">
-            {financial && (
-              <Badge
-                variant="outline"
-                className="text-[10px] bg-destructive/10 text-destructive border-destructive/20 font-bold"
-              >
-                💴 FINANCIAL RISK
-              </Badge>
-            )}
-            {governance && (
-              <Badge
-                variant="outline"
-                className="text-[10px] bg-gold/10 text-gold border-gold/20 font-bold"
-              >
-                ⚖️ GOVERNANCE
-              </Badge>
-            )}
-            {rivalry && (
-              <Badge
-                variant="outline"
-                className="text-[10px] bg-primary/10 text-primary border-primary/20 font-bold"
-              >
-                🔥 RIVALRY
-              </Badge>
-            )}
-          </div>
-        )}
+        <RiskBadges heya={heya} />
 
         <div className="pt-2 flex items-center justify-between">
           <Button

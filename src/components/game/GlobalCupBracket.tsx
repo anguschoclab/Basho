@@ -5,7 +5,25 @@
  */
 
 import { cn } from "@/lib/utils";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { useGame } from "@/contexts/useGame";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import type { GlobalCupMatch } from "@/engine/types/globalCup";
+
+/** Resolves a rikishi avatar chip from world state by id. */
+function BracketAvatarChip({ rikishiId, name }: { rikishiId: string; name: string }) {
+  const { state } = useGame();
+  const rikishi = state.world?.rikishi.get(rikishiId);
+  const avatar = rikishi
+    ? resolveAvatar({
+        id: rikishi.id,
+        stored: rikishi.avatarConfig,
+        nationality: rikishi.nationality,
+        ...rikishiStageInput(rikishi, state.world?.year ?? 0),
+      })
+    : undefined;
+  return <SumoAvatar avatar={avatar} size="xs" fallback={name} />;
+}
 
 interface GlobalCupBracketProps {
   matches: GlobalCupMatch[];
@@ -38,7 +56,10 @@ function MatchCard({
         )}
       >
         <span className="font-mono text-[10px] text-muted-foreground">E</span>
-        <span className="truncate">{eastName}</span>
+        <span className="truncate flex items-center gap-1">
+          <BracketAvatarChip rikishiId={match.eastRikishiId} name={eastName} />
+          {eastName}
+        </span>
         {isEastWinner && <span className="text-success">●</span>}
       </div>
 
@@ -53,7 +74,10 @@ function MatchCard({
         )}
       >
         <span className="font-mono text-[10px] text-muted-foreground">W</span>
-        <span className="truncate">{westName}</span>
+        <span className="truncate flex items-center gap-1">
+          <BracketAvatarChip rikishiId={match.westRikishiId} name={westName} />
+          {westName}
+        </span>
         {isWestWinner && <span className="text-success">●</span>}
       </div>
 

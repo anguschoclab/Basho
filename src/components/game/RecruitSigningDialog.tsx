@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 
 /** Defines the structure for recruit signing dialog props. */
 interface RecruitSigningDialogProps {
@@ -40,6 +42,7 @@ interface RecruitSigningDialogProps {
     height?: number;
     weight?: number;
     visibilityBand?: string;
+    avatar?: AvatarRenderData;
   } | null;
   playerHeyaName?: string;
   rosterSize?: number;
@@ -99,10 +102,18 @@ export function RecruitSigningDialog({
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-4">
-              <p className="text-sm text-foreground/80">
-                Submit a formal offer to recruit <strong>{name}</strong> to{" "}
-                <strong>{playerHeyaName || "your stable"}</strong>.
-              </p>
+              <div className="flex items-center gap-3">
+                <SumoAvatar
+                  avatar={candidate.visibilityBand === "hidden" ? undefined : candidate.avatar}
+                  size="lg"
+                  fallback={name}
+                  className="border border-border"
+                />
+                <p className="text-sm text-foreground/80">
+                  Submit a formal offer to recruit <strong>{name}</strong> to{" "}
+                  <strong>{playerHeyaName || "your stable"}</strong>.
+                </p>
+              </div>
 
               <div className="flex flex-wrap gap-2">
                 {candidate.poolType && (

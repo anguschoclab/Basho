@@ -123,7 +123,7 @@ export function RikishiProfileBody({
       />
 
       <div className="p-8">
-        <RikishiLineage mentor={mentor} mentees={mentees} rikishiId={rikishi.id} />
+        <RikishiLineage mentor={mentor} mentees={mentees} rikishiId={rikishi.id} currentYear={world.year} />
         <RikishiKeshoMawashi rikishi={rikishi} />
         <RikishiNaturalization rikishi={rikishi} />
 

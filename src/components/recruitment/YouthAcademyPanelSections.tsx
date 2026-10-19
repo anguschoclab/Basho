@@ -9,6 +9,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, ArrowUpCircle, Coins, UserPlus, CheckCircle } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import {
+  resolveAvatar,
+  academyStaffStageInput,
+  prospectStageInput,
+} from "@/presenters/avatarProjections";
 import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
 import type { AcademyStaffRole } from "@/engine/types/academy";
 
@@ -87,7 +93,16 @@ export function StaffSection({
               className="flex items-center justify-between p-2 rounded border border-border/50 text-xs"
               data-testid={`staff-${s.id}`}
             >
-              <div>
+              <div className="flex items-center gap-2">
+                <SumoAvatar
+                  avatar={resolveAvatar({
+                    id: s.id,
+                    stored: s.avatarConfig,
+                    ...academyStaffStageInput(s),
+                  })}
+                  size="xs"
+                  fallback={s.name}
+                />
                 <span className="font-medium">{s.name}</span>
                 <span className="text-muted-foreground ml-2">{STAFF_LABELS[s.role]}</span>
               </div>
@@ -145,7 +160,16 @@ export function ProspectsSection({
           className="flex items-center justify-between p-2 rounded border border-border/50 text-xs"
           data-testid={`prospect-${p.id}`}
         >
-          <div className="flex-1">
+          <div className="flex-1 flex items-center gap-2">
+            <SumoAvatar
+              avatar={resolveAvatar({
+                id: p.id,
+                stored: p.avatarConfig,
+                ...prospectStageInput(p),
+              })}
+              size="xs"
+              fallback={p.shikona}
+            />
             <span className="font-medium">{p.shikona}</span>
             <span className="text-muted-foreground ml-2">Age {p.age}</span>
             <span className="text-muted-foreground ml-2">{p.region}</span>

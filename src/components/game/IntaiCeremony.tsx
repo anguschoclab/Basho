@@ -12,8 +12,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Crown, Scissors, Heart } from "lucide-react";
+import { Scissors, Heart } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 
@@ -111,9 +112,7 @@ export function IntaiCeremony({
             className={`p-4 rounded-lg border ${isPlayerRikishi ? "border-primary/30 bg-primary/5" : "border-border bg-muted/30"}`}
           >
             <div className="flex items-center gap-4">
-              <div className="h-14 w-14 rounded-full bg-muted flex items-center justify-center">
-                <Crown className="h-7 w-7 text-muted-foreground" />
-              </div>
+              <SumoAvatar avatar={rikishi.avatar} size="lg" fallback={rikishi.shikona} />
               <div className="flex-1">
                 <h3 className="text-2xl font-display font-bold">
                   <RikishiName id={rikishi.id} name={rikishi.shikona} />

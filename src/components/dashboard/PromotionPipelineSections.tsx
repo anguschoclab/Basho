@@ -6,6 +6,7 @@
  */
 
 import { Badge } from "@/components/ui/badge";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { AlertTriangle, Trophy, ChevronUp } from "lucide-react";
 import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
@@ -54,6 +55,7 @@ function OzekiRow({ candidate }: { candidate: OzekiRunCandidate }) {
   return (
     <div className="space-y-1 py-1.5">
       <div className="flex items-center gap-2">
+        <SumoAvatar avatar={rikishi.avatar} size="xs" fallback={rikishi.shikona} />
         <span className="text-xs font-semibold truncate flex-1">{rikishi.shikona}</span>
         <MiniRankBadge rank={rikishi.rank} />
         <span className="text-[10px] font-mono text-muted-foreground tabular-nums shrink-0">
@@ -83,6 +85,7 @@ function YokozunaRow({ candidate }: { candidate: YokozunaCandidate }) {
           : `${recentJunYushos} Jun-Y`;
   return (
     <div className="flex items-center gap-2 py-1.5">
+      <SumoAvatar avatar={rikishi.avatar} size="xs" fallback={rikishi.shikona} />
       <Trophy className="h-3 w-3 text-gold shrink-0" />
       <span className="text-xs font-semibold truncate flex-1">{rikishi.shikona}</span>
       <MiniRankBadge rank={rikishi.rank} />
@@ -92,12 +95,10 @@ function YokozunaRow({ candidate }: { candidate: YokozunaCandidate }) {
 }
 
 function KadobanRow({ entry }: { entry: ReturnType<typeof getKadobanDrama>[number] }) {
-  const { rikishi, isDemoted } = entry as {
-    rikishi: { id: string; shikona: string; rank: string };
-    isDemoted: boolean;
-  };
+  const { rikishi, isDemoted } = entry;
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-destructive/5 border border-destructive/20">
+      <SumoAvatar avatar={rikishi.avatar} size="xs" fallback={rikishi.shikona} />
       <AlertTriangle
         className={`h-3 w-3 shrink-0 ${isDemoted ? "text-destructive animate-pulse" : "text-warning"}`}
       />

@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Swords, Plus, X } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { SparringPair } from "@/engine/types/training";
 import { SparringService, toIdMap } from "@/presenters/engineAccess";
@@ -20,6 +23,8 @@ interface Props {
   pairs: SparringPair[];
   onAddPair: (aId: string, bId: string) => void;
   onRemovePair: (aId: string, bId: string) => void;
+  /** Current world year — drives avatar stage derivation. */
+  currentYear?: number;
 }
 
 const CHEM_STYLES = {
@@ -31,9 +36,75 @@ const CHEM_STYLES = {
   neutral: { label: "Neutral", className: "text-muted-foreground" },
 } as const;
 
-export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: Props) {
+function RikishiOption({ rikishi, avatarOf }: { rikishi: Rikishi; avatarOf: (r: Rikishi) => ReturnType<typeof resolveAvatar> }) {
+  return (
+    <span className="flex items-center gap-1.5">
+      <SumoAvatar avatar={avatarOf(rikishi)} size="xs" fallback={rikishi.shikona} />
+      {rikishi.shikona}
+    </span>
+  );
+}
+
+function SparringPairRow({
+  pair,
+  rikishiById,
+  avatarOf,
+  onRemove,
+}: {
+  pair: SparringPair;
+  rikishiById: Map<string, Rikishi>;
+  avatarOf: (r: Rikishi) => ReturnType<typeof resolveAvatar>;
+  onRemove: (aId: string, bId: string) => void;
+}) {
+  const a = rikishiById.get(pair.aId);
+  const b = rikishiById.get(pair.bId);
+  if (!a || !b) return null;
+  const chem = CHEM_STYLES[pair.chemistry];
+  return (
+    <div className="flex items-center justify-between gap-2 py-1">
+      <span className="flex items-center gap-2 text-sm">
+        <RikishiOption rikishi={a} avatarOf={avatarOf} />
+        <span className="text-muted-foreground">vs</span>
+        <RikishiOption rikishi={b} avatarOf={avatarOf} />
+      </span>
+      <Badge variant="outline" className={`font-mono text-[10px] tracking-wider ${chem.className}`}>
+        {chem.label}
+      </Badge>
+      <span className="text-xs text-muted-foreground font-mono tabular-nums">
+        {pair.weeksActive}w
+      </span>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="h-6 w-6 p-0"
+        aria-label="Remove pair"
+        tooltip="Remove pair"
+        tooltipSide="top"
+        onClick={() => onRemove(pair.aId, pair.bId)}
+      >
+        <X className="h-3 w-3" />
+      </Button>
+    </div>
+  );
+}
+
+export function SparringPanel({
+  heyaRikishi,
+  pairs,
+  onAddPair,
+  onRemovePair,
+  currentYear = DEFAULT_START_YEAR,
+}: Props) {
   const [selectedA, setSelectedA] = useState("");
   const [selectedB, setSelectedB] = useState("");
+
+  const avatarOf = (r: Rikishi) =>
+    resolveAvatar({
+      id: r.id,
+      stored: r.avatarConfig,
+      nationality: r.nationality,
+      ...rikishiStageInput(r, currentYear),
+    });
 
   const pairedIds = useMemo(() => new Set(pairs.flatMap((p) => [p.aId, p.bId])), [pairs]);
 
@@ -78,42 +149,15 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
           />
         )}
 
-        {pairs.map((pair) => {
-          const a = rikishiById.get(pair.aId);
-          const b = rikishiById.get(pair.bId);
-          if (!a || !b) return null;
-          const chem = CHEM_STYLES[pair.chemistry];
-          return (
-            <div
-              key={`${pair.aId}-${pair.bId}`}
-              className="flex items-center justify-between gap-2 py-1"
-            >
-              <span className="text-sm">
-                {a.shikona} <span className="text-muted-foreground">vs</span> {b.shikona}
-              </span>
-              <Badge
-                variant="outline"
-                className={`font-mono text-[10px] tracking-wider ${chem.className}`}
-              >
-                {chem.label}
-              </Badge>
-              <span className="text-xs text-muted-foreground font-mono tabular-nums">
-                {pair.weeksActive}w
-              </span>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0"
-                aria-label="Remove pair"
-                tooltip="Remove pair"
-                tooltipSide="top"
-                onClick={() => onRemovePair(pair.aId, pair.bId)}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          );
-        })}
+        {pairs.map((pair) => (
+          <SparringPairRow
+            key={`${pair.aId}-${pair.bId}`}
+            pair={pair}
+            rikishiById={rikishiById}
+            avatarOf={avatarOf}
+            onRemove={onRemovePair}
+          />
+        ))}
 
         {availableRikishi.length >= 2 && (
           <div className="flex gap-2 items-center pt-2 border-t">
@@ -125,7 +169,7 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
                 {availableRikishi.map((r) =>
                   r.id === selectedB ? null : (
                     <SelectItem key={r.id} value={r.id}>
-                      {r.shikona}
+                      <RikishiOption rikishi={r} avatarOf={avatarOf} />
                     </SelectItem>
                   )
                 )}
@@ -140,7 +184,7 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
                 {availableRikishi.map((r) =>
                   r.id === selectedA ? null : (
                     <SelectItem key={r.id} value={r.id}>
-                      {r.shikona}
+                      <RikishiOption rikishi={r} avatarOf={avatarOf} />
                     </SelectItem>
                   )
                 )}

@@ -78,20 +78,23 @@ export default function TrainingPage() {
           onPlanUpdate={handlePlanUpdate}
           onBulkUpdate={handleBulkUpdate}
           onMultiBulkUpdate={handleMultiBulkUpdate}
+          currentYear={world.year}
         />
 
         <SparringPanel
           heyaRikishi={rikishiList}
+          currentYear={world.year}
           pairs={Object.values(world.sparringPairs?.get(playerHeyaId)?.pairs ?? {})}
           onAddPair={(aId, bId) => addSparringPair(playerHeyaId, aId, bId)}
           onRemovePair={(aId, bId) => removeSparringPair(playerHeyaId, aId, bId)}
         />
 
-        <WeightJourneysSection rikishiList={rikishiList} />
+        <WeightJourneysSection rikishiList={rikishiList} currentYear={world.year} />
 
         <IndividualFocusSlots
           rikishiList={rikishiList}
           trainingState={trainingState}
+          currentYear={world.year}
           onIndividualFocusChange={handleIndividualFocusChange}
         />
 

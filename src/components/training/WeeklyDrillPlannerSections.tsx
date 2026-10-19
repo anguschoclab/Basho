@@ -31,6 +31,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { FATIGUE_LABELS, toFatigueBand } from "@/presenters/uiDigest";
 import type { DrillType } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types";
@@ -219,11 +222,13 @@ function RikishiRow({
   schedule,
   planner,
   onPlanUpdate,
+  currentYear = DEFAULT_START_YEAR,
 }: {
   rikishi: Rikishi;
   schedule: Record<number, DrillType>;
   planner: Planner;
   onPlanUpdate: (rikishiId: string, day: number, drillType: DrillType) => void;
+  currentYear?: number;
 }) {
   const isSelected = planner.selectedIds.has(rikishi.id);
   const fb = toFatigueBand(rikishi.fatigue ?? 0);
@@ -256,16 +261,17 @@ function RikishiRow({
 
       {/* Profile Cell */}
       <div className="flex items-center gap-3 pl-2">
-        <div
-          className={cn(
-            "h-8 w-8 rounded-full flex items-center justify-center font-display font-black text-xs shrink-0 shadow-inner",
-            rikishi.injured
-              ? "bg-destructive/10 text-destructive"
-              : "bg-muted text-muted-foreground"
-          )}
-        >
-          {rikishi.shikona.charAt(0)}
-        </div>
+        <SumoAvatar
+          avatar={resolveAvatar({
+            id: rikishi.id,
+            stored: rikishi.avatarConfig,
+            nationality: rikishi.nationality,
+            ...rikishiStageInput(rikishi, currentYear),
+          })}
+          size="sm"
+          fallback={rikishi.shikona}
+          className={cn(rikishi.injured && "ring-2 ring-destructive/40")}
+        />
         <div className="min-w-0 pr-4">
           <div className="font-display font-black text-sm uppercase tracking-tighter truncate">
             <RikishiName id={rikishi.id} name={rikishi.shikona} />
@@ -314,11 +320,13 @@ export function DrillGrid({
   weeklyPlan,
   planner,
   onPlanUpdate,
+  currentYear,
 }: {
   rikishiList: Rikishi[];
   weeklyPlan: Record<string, Record<number, DrillType>>;
   planner: Planner;
   onPlanUpdate: (rikishiId: string, day: number, drillType: DrillType) => void;
+  currentYear?: number;
 }) {
   return (
     <div className="grid gap-2 overflow-x-auto pb-4">
@@ -330,6 +338,7 @@ export function DrillGrid({
           schedule={weeklyPlan[rikishi.id] || {}}
           planner={planner}
           onPlanUpdate={onPlanUpdate}
+          currentYear={currentYear}
         />
       ))}
     </div>

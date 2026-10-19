@@ -10,10 +10,11 @@ import { Award } from "lucide-react";
 import { HoFTimeline } from "@/components/game/HoFTimeline";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import { projectHOFUIDigest } from "@/presenters/uiDigest";
-import { getRikishi } from "@/presenters/worldAccess";
+import { getRikishi, getHistoricalRikishi } from "@/presenters/worldAccess";
 import { selectAwardLog } from "@/presenters/selectors";
+import { resolveAvatar } from "@/presenters/avatarProjections";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
-import type { UIRikishi } from "@/presenters/uiModels";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { SortDirection } from "@/lib/sortUtils";
 import { HallHero, DynastyRegistry, HofTabsRow } from "@/components/hof/HofPageSections";
 
@@ -40,12 +41,22 @@ export default function HallOfFamePage() {
   }, [hof]);
 
   const hofRikishiMap = useMemo(() => {
-    const map = new Map<string, unknown>();
+    const map = new Map<string, { shikona: string; avatar?: AvatarRenderData }>();
     for (const ind of hof?.inductees ?? []) {
-      const r = world ? getRikishi(world, ind.rikishiId) : undefined;
-      if (r) map.set(ind.rikishiId, r);
+      if (!world) continue;
+      const r = getRikishi(world, ind.rikishiId);
+      const hist = r ?? getHistoricalRikishi(world, ind.rikishiId);
+      if (!hist) continue;
+      const avatar = resolveAvatar({
+        id: hist.id,
+        stored: hist.avatarConfig,
+        nationality: "nationality" in hist ? hist.nationality : undefined,
+        role: "rikishi",
+        age: world.year - (hist.birthYear ?? world.year - 25),
+      });
+      map.set(ind.rikishiId, { shikona: hist.shikona, avatar });
     }
-    return map as unknown as Map<string, UIRikishi>;
+    return map;
   }, [hof, world]);
 
   const totalInductees = hof?.inductees.length ?? 0;

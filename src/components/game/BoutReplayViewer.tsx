@@ -6,6 +6,7 @@ import type { Ref } from "react";
 import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { REPLAY_PHASE_LABELS, CROWD_TEXT } from "./boutReplay/boutCanvas";
 import { useBoutReplay } from "./boutReplay/useBoutReplay";
 import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
@@ -69,7 +70,7 @@ export function BoutReplayViewer({
       {/* Header: fighters */}
       <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border text-sm">
         <div className="flex items-center gap-2">
-          <span className="inline-block w-2.5 h-2.5 rounded-full bg-west" />
+          <SumoAvatar avatar={eastRikishi.avatar} size="xs" fallback={eastRikishi.shikona} />
           <span className="font-semibold">{eastRikishi.shikona}</span>
           <span className="text-muted-foreground text-xs">{eastRikishi.rankLabel}</span>
         </div>
@@ -77,6 +78,7 @@ export function BoutReplayViewer({
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground text-xs">{westRikishi.rankLabel}</span>
           <span className="font-semibold">{westRikishi.shikona}</span>
+          <SumoAvatar avatar={westRikishi.avatar} size="xs" fallback={westRikishi.shikona} />
           <span
             aria-hidden="true"
             className="inline-block w-2.5 h-2.5 rounded-full bg-destructive"

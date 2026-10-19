@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowUpDown, TrendingUp, TrendingDown, Search } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { cn } from "@/lib/utils";
 import { useSortState } from "@/hooks/useSortState";
@@ -228,7 +229,12 @@ const DivisionFilterBadge = React.memo(function DivisionFilterBadge({
 const StableStatsRow = React.memo(function StableStatsRow({ r }: { r: UIRikishi }) {
   return (
     <tr className="border-b border-border/30 hover:bg-muted/30 transition-colors">
-      <td className="py-3 px-4 font-medium">{r.shikona}</td>
+      <td className="py-3 px-4 font-medium">
+        <div className="flex items-center gap-2">
+          <SumoAvatar avatar={r.avatar} size="xs" fallback={r.shikona} />
+          <span className="truncate">{r.shikona}</span>
+        </div>
+      </td>
       <td className="py-3 px-4 capitalize text-muted-foreground">{r.division}</td>
       <td className="py-3 px-4">{r.careerWins}</td>
       <td className="py-3 px-4 text-muted-foreground">{r.careerLosses}</td>

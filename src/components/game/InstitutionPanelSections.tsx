@@ -8,6 +8,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import { formatYen } from "@/utils/engineUtils";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata, OyakataArchetype, OyakataTraits } from "@/engine/types/oyakata";
@@ -147,7 +149,20 @@ export function PersonaSection({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <UserCog className="h-4 w-4" />
+        {oyakata ? (
+          <SumoAvatar
+            avatar={resolveAvatar({
+              id: oyakata.id,
+              stored: oyakata.avatarConfig,
+              seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+              ...oyakataStageInput(oyakata),
+            })}
+            size="sm"
+            fallback={oyakata.name}
+          />
+        ) : (
+          <UserCog className="h-4 w-4" />
+        )}
         <div className="text-sm font-medium">Oyakata Persona</div>
         {oyakata?.archetype && <Badge variant="secondary">{oyakata.archetype}</Badge>}
       </div>

@@ -6,6 +6,7 @@ import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { EntityCollection } from "@/presenters/engineAccess";
 import { projectRikishi, RANK_HIERARCHY, RANK_NAMES } from "@/presenters/uiDigest";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
@@ -90,6 +91,7 @@ export function StableIntelTab({ playerHeyaId }: { playerHeyaId: string | null }
                 <div
                   className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`}
                 />
+                <SumoAvatar avatar={r.avatar} size="sm" fallback={r.shikona} />
                 <div className="flex-1 min-w-0">
                   <div className="font-display font-medium truncate">{r.shikona}</div>
                   <div className="text-xs text-muted-foreground">

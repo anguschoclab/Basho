@@ -2,6 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Crown, Users } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
 
@@ -76,9 +77,12 @@ export function YokozunaDeliberation({
       subtitle="Yokozuna Deliberation Council"
       cardContent={
         <>
-          <div className="h-14 w-14 rounded-full bg-gold/20 flex items-center justify-center">
-            <Crown className="h-7 w-7 text-gold" />
-          </div>
+          <SumoAvatar
+            avatar={rikishi.avatar}
+            size="lg"
+            fallback={rikishi.shikona}
+            className="border-2 border-gold/40"
+          />
           <div>
             <p className="text-lg font-display font-bold">
               <RikishiName id={rikishi.id} name={rikishi.shikona} />

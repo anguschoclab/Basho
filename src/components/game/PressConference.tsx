@@ -3,7 +3,9 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Mic, MessageSquare, TrendingUp, Camera, TrendingDown, Newspaper } from "lucide-react";
+import { Mic, MessageSquare, TrendingUp, TrendingDown, Newspaper } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar } from "@/presenters/avatarProjections";
 
 /** Defines the structure for press question. */
 interface PressQuestion {
@@ -227,7 +229,15 @@ export function PressConference({
           <div className="space-y-4">
             {/* Reporter */}
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-              <Camera className="h-5 w-5 text-muted-foreground" />
+              <SumoAvatar
+                avatar={resolveAvatar({
+                  id: `press-${question.reporter}`,
+                  role: "staff",
+                  age: 38,
+                })}
+                size="sm"
+                fallback={question.reporter}
+              />
               <div>
                 <p className="text-sm font-medium">{question.reporter}</p>
                 <p className="text-xs text-muted-foreground">{question.outlet}</p>

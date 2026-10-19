@@ -8,24 +8,29 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Activity, Users } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { FATIGUE_LABELS, toFatigueBand, getCareerPhase } from "@/presenters/uiDigest";
 import { FOCUS_MODE_OPTIONS } from "@/constants/ui/training";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { IndividualFocusType } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types";
 import { toKeyedMap } from "@/presenters/engineAccess";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 interface IndividualFocusSlotsProps {
   rikishiList: Rikishi[];
   trainingState: {
     focusSlots?: Array<{ rikishiId: string; focusType: IndividualFocusType }>;
   };
+  currentYear?: number;
   onIndividualFocusChange: (rikishiId: string, focusType: IndividualFocusType | null) => void;
 }
 
 export function IndividualFocusSlots({
   rikishiList,
   trainingState,
+  currentYear = DEFAULT_START_YEAR,
   onIndividualFocusChange,
 }: IndividualFocusSlotsProps) {
   const focusMap = toKeyedMap(trainingState.focusSlots || [], (f) => f.rikishiId);
@@ -59,16 +64,16 @@ export function IndividualFocusSlots({
               style={{ animationDelay: `${idx * 50}ms` }}
             >
               <div className="flex-1 min-w-0 flex items-center gap-6">
-                <div
-                  className={cn(
-                    "h-12 w-12 rounded-full flex items-center justify-center font-display font-black text-lg shadow-inner",
-                    rikishi.injured
-                      ? "bg-destructive/10 text-destructive"
-                      : "bg-muted text-muted-foreground"
-                  )}
-                >
-                  {rikishi.shikona.charAt(0)}
-                </div>
+                <SumoAvatar
+                  avatar={resolveAvatar({
+                    id: rikishi.id,
+                    stored: rikishi.avatarConfig,
+                    nationality: rikishi.nationality,
+                    ...rikishiStageInput(rikishi, currentYear),
+                  })}
+                  size="md"
+                  fallback={rikishi.shikona}
+                />
                 <div className="min-w-0">
                   <div className="flex items-center gap-3 mb-1">
                     <span className="font-display font-black text-xl uppercase tracking-tighter truncate group-hover:text-primary transition-colors">

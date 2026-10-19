@@ -29,6 +29,8 @@ export interface NakabiSummary {
     wins: number;
     losses: number;
     note: string;
+    /** Resolved avatar — populated by presenters, not persisted in events. */
+    avatar?: import("../../types/avatar").AvatarRenderData;
   }>;
 }
 

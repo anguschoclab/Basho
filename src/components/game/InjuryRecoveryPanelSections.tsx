@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Heart, Activity, AlertTriangle, Clock, Thermometer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,6 +79,7 @@ export function InjuredRikishiCard({
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
+              <SumoAvatar avatar={info.avatar} size="sm" fallback={info.shikona} />
               <h4 className="font-display font-semibold">
                 <RikishiName id={info.id} name={info.shikona} />
               </h4>

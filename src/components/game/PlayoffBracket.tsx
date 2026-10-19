@@ -1,7 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import type { MatchSchedule, WorldState } from "@/engine/types/index";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 interface PlayoffBracketProps {
   matches: MatchSchedule[];
@@ -9,6 +12,15 @@ interface PlayoffBracketProps {
 }
 
 export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
+  const avatarOf = (r: Rikishi | undefined) =>
+    r
+      ? resolveAvatar({
+          id: r.id,
+          stored: r.avatarConfig,
+          nationality: r.nationality,
+          ...rikishiStageInput(r, world.year),
+        })
+      : undefined;
   if (!matches || matches.length === 0) return null;
 
   // Group by round (day 16 = round 1, day 17 = round 2, etc.)
@@ -43,7 +55,10 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
               Champion via Playoff
             </p>
-            <p className="text-xl font-display font-bold">{champion.shikona}</p>
+            <div className="flex items-center justify-center gap-3">
+              <SumoAvatar avatar={avatarOf(champion)} size="md" fallback={champion.shikona} />
+              <p className="text-xl font-display font-bold">{champion.shikona}</p>
+            </div>
             {finalMatch?.result && (
               <p className="text-xs text-muted-foreground mt-1">
                 Won by {finalMatch.result.kimariteName || finalMatch.result.kimarite}
@@ -76,6 +91,7 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
                         }`}
                       >
                         <div className="w-1 h-4 rounded-full bg-east" />
+                        <SumoAvatar avatar={avatarOf(east)} size="xs" fallback={east?.shikona} />
                         <RikishiName
                           id={m.eastRikishiId}
                           name={east?.shikona || "???"}
@@ -90,6 +106,7 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
                         }`}
                       >
                         <div className="w-1 h-4 rounded-full bg-west" />
+                        <SumoAvatar avatar={avatarOf(west)} size="xs" fallback={west?.shikona} />
                         <RikishiName
                           id={m.westRikishiId}
                           name={west?.shikona || "???"}

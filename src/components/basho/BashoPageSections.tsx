@@ -25,6 +25,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import {
   Play,
@@ -323,6 +324,11 @@ export function BashoStandingsSidebar({
                   {idx === 0 ? <Crown className="h-3 w-3 text-gold inline" /> : `${idx + 1}`}
                 </span>
                 {isPlayer && <Star className="h-2.5 w-2.5 shrink-0" fill="currentColor" />}
+                <SumoAvatar
+                  avatar={entry?.rikishi?.avatar}
+                  size="xs"
+                  fallback={entry?.rikishi?.shikona}
+                />
                 <span className="flex-1 font-display truncate">
                   {entry?.rikishi?.shikona ?? "—"}
                 </span>

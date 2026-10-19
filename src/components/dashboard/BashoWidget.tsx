@@ -5,6 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import { selectInjuredRikishi } from "@/presenters/selectors";
 import { sortStandings } from "@/presenters/engineAccess";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -30,6 +33,7 @@ const LeaderboardRow = React.memo(
   ({
     id,
     shikona,
+    avatar,
     wins,
     losses,
     i,
@@ -37,6 +41,7 @@ const LeaderboardRow = React.memo(
   }: {
     id: string;
     shikona: string;
+    avatar?: AvatarRenderData;
     wins: number;
     losses: number;
     i: number;
@@ -57,8 +62,10 @@ const LeaderboardRow = React.memo(
         >
           {i + 1}
         </span>
+        <SumoAvatar avatar={avatar} size="xs" fallback={shikona} />
         {i === 0 && <Crown className="h-3.5 w-3.5 text-gold" />}
         <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
+
         <span className="font-mono text-muted-foreground tabular-nums">
           {wins}-{losses}
         </span>
@@ -179,6 +186,12 @@ export function BashoWidget() {
                   key={s.id}
                   id={r.id}
                   shikona={r.shikona}
+                  avatar={resolveAvatar({
+                    id: r.id,
+                    stored: r.avatarConfig,
+                    nationality: r.nationality,
+                    ...rikishiStageInput(r, world.year),
+                  })}
                   wins={s.wins}
                   losses={s.losses}
                   i={i}

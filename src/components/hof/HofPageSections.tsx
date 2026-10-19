@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, Shield, Target, Award, Crown } from "lucide-react";
 import { SortMenu } from "@/components/ui/SortMenu";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar } from "@/presenters/avatarProjections";
 import type { SortDirection } from "@/lib/sortUtils";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
@@ -96,7 +98,17 @@ export function DynastyRegistry({ traits }: { traits: Record<string, BloodlineTr
                 <div className="font-display font-medium text-sm">{trait.label}</div>
                 <div className="text-xs text-muted-foreground font-body">{trait.description}</div>
               </div>
-              <div className="text-xs text-muted-foreground font-mono tabular-nums">
+              <div className="text-xs text-muted-foreground font-mono tabular-nums flex items-center gap-1.5">
+                <SumoAvatar
+                  avatar={resolveAvatar({
+                    id: `ancestor-${trait.ancestorShikona}`,
+                    role: "rikishi",
+                    isRetired: true,
+                    age: 55,
+                  })}
+                  size="xs"
+                  fallback={trait.ancestorShikona}
+                />
                 {trait.ancestorShikona} · {trait.registeredYear}
               </div>
             </div>

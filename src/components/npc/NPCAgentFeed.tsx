@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Eye } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { NPCAgentProjection, NPCDecisionDTO } from "@/presenters/npcAgentProjections";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -76,6 +77,7 @@ function DecisionRow({ decision }: { decision: NPCDecisionDTO }) {
       data-testid={`npc-decision-${decision.heyaId}-${decision.week}`}
     >
       <div className="flex items-center gap-2 mb-1">
+        <SumoAvatar avatar={decision.oyakataAvatar} size="xs" fallback={decision.heyaName} />
         <span className="text-sm font-medium">{decision.heyaName}</span>
         <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
           {categoryLabel}

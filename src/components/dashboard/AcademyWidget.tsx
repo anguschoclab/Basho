@@ -3,6 +3,8 @@
  * Shows next intake countdown and top prospect.
  */
 import { GraduationCap } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, prospectStageInput } from "@/presenters/avatarProjections";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
@@ -57,8 +59,17 @@ export function AcademyWidget({ projection, currentYear }: AcademyWidgetProps) {
           </div>
         )}
         {topProspect && (
-          <div className="text-xs">
-            <span className="text-muted-foreground">Top prospect: </span>
+          <div className="text-xs flex items-center gap-1.5">
+            <span className="text-muted-foreground">Top prospect:</span>
+            <SumoAvatar
+              avatar={resolveAvatar({
+                id: topProspect.id,
+                stored: topProspect.avatarConfig,
+                ...prospectStageInput(topProspect),
+              })}
+              size="xs"
+              fallback={topProspect.shikona}
+            />
             <span className="font-medium">{topProspect.shikona}</span>
             <span className="text-muted-foreground"> (POT {topProspect.potential})</span>
           </div>

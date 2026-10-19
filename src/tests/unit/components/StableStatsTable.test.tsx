@@ -62,7 +62,11 @@ function makeMultiRikishi(): UIRikishi[] {
 
 function getCellText(container: HTMLElement, cellIndex: number): string[] {
   const rows = container.querySelectorAll("tbody tr");
-  return Array.from(rows).map((row) => row.querySelectorAll("td")[cellIndex]?.textContent ?? "");
+  return Array.from(rows).map((row) => {
+    const cell = row.querySelectorAll("td")[cellIndex]?.cloneNode(true) as HTMLElement | undefined;
+    cell?.querySelectorAll("[data-avatar]").forEach((el) => el.remove());
+    return cell?.textContent ?? "";
+  });
 }
 
 function clickFilterBadge(container: HTMLElement, text: string): void {

@@ -10,7 +10,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { User, Award, History, ArrowRight } from "lucide-react";
+import { Award, ArrowRight } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import {
+  resolveAvatar,
+  rikishiStageInput,
+  oyakataStageInput,
+} from "@/presenters/avatarProjections";
 import { DynastyService } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";
@@ -46,14 +52,24 @@ export function SuccessionModal({
 
   if (!heya || !oyakata) return null;
 
+  const oyakataAvatar = resolveAvatar({
+    id: oyakata.id,
+    stored: oyakata.avatarConfig,
+    seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+    ...oyakataStageInput(oyakata),
+  });
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] paper border-gold/30">
         <DialogHeader className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-full bg-gold/10 text-gold">
-              <History className="h-6 w-6" />
-            </div>
+            <SumoAvatar
+              avatar={oyakataAvatar}
+              size="lg"
+              fallback={oyakata.name}
+              className="border-2 border-gold/30"
+            />
             <div>
               <DialogTitle className="text-2xl font-bold font-display uppercase tracking-tight">
                 The Rite of Succession
@@ -90,9 +106,16 @@ export function SuccessionModal({
                   )}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-gold transition-colors">
-                      <User className="h-5 w-5" />
-                    </div>
+                    <SumoAvatar
+                      avatar={resolveAvatar({
+                        id: c.id,
+                        stored: c.avatarConfig,
+                        nationality: c.nationality,
+                        ...rikishiStageInput(c, world.year),
+                      })}
+                      size="md"
+                      fallback={c.shikona}
+                    />
                     <div>
                       <div className="font-bold font-display text-lg">{c.shikona}</div>
                       <div className="text-xs text-muted-foreground flex items-center gap-2">

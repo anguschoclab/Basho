@@ -8,8 +8,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Scroll, Trophy, Users, History, Globe } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import type { Heya } from "@/engine/types/heya";
 import type { DynastyRecord } from "@/engine/types/dynasty";
+import type { WorldState } from "@/presenters/uiDigest";
 import { LEGACY_TIERS, type DynastyReport } from "./chronicleTiers";
 import { cn } from "@/lib/utils";
 
@@ -84,7 +87,7 @@ export function ChronicleHeader({ report, heya }: { report: DynastyReport; heya:
 }
 
 /** Era timeline — one entry per oyakata reign, newest first. */
-export function EraTimeline({ eras }: { eras: DynastyRecord[] }) {
+export function EraTimeline({ eras, world }: { eras: DynastyRecord[]; world: WorldState }) {
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
@@ -103,9 +106,30 @@ export function EraTimeline({ eras }: { eras: DynastyRecord[] }) {
               <div className="absolute left-[13px] top-1.5 w-2 h-2 rounded-full bg-card group-hover:bg-primary transition-colors border-2 border-background" />
               <div className="bg-card/40 border border-border rounded-xl p-4 transition-all hover:bg-card/60 hover:border-border">
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-muted-foreground">
-                    The Reign of {era.oyakataName}
-                  </h4>
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const oy = world.oyakata.get(era.oyakataId);
+                      return (
+                        <SumoAvatar
+                          avatar={
+                            oy
+                              ? resolveAvatar({
+                                  id: oy.id,
+                                  stored: oy.avatarConfig,
+                                  seedAliases: oy.formerRikishiId ? [oy.formerRikishiId] : [],
+                                  ...oyakataStageInput(oy),
+                                })
+                              : undefined
+                          }
+                          size="xs"
+                          fallback={era.oyakataName}
+                        />
+                      );
+                    })()}
+                    <h4 className="font-bold text-muted-foreground">
+                      The Reign of {era.oyakataName}
+                    </h4>
+                  </div>
                   <span className="text-[10px] font-mono text-muted-foreground">
                     {era.reignFrom} – {era.reignTo || "Present"}
                   </span>

@@ -10,7 +10,9 @@
 
 import type { WorldState } from "../../engine/types/world";
 import type { BashoResult } from "../../engine/types/basho";
+import type { AvatarRenderData } from "../../engine/types/avatar";
 import { compareBanzuke, formatRankPosition, RANK_HIERARCHY, makeBashoKey } from "../engineAccess";
+import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
 import { getRikishiMap } from "../worldAccess";
 
 /** One row of the reveal sequence — a rikishi's old → new position. */
@@ -20,6 +22,7 @@ export interface BanzukeRevealEntry {
   oldRank: string;
   newRank: string;
   change: "up" | "down" | "none" | "new" | "division_change";
+  avatar?: AvatarRenderData;
 }
 
 /**
@@ -60,12 +63,21 @@ export function buildBanzukeRevealEntries(
       }
     }
 
+    const entity = world.rikishi.get(change.rikishiId);
     entries.push({
       id: change.rikishiId,
       shikona: rikishi.shikona,
       oldRank: change.oldPosition ? formatRankPosition(change.oldPosition) : "New Entry",
       newRank: formatRankPosition(change.newPosition),
       change: displayChange,
+      avatar: entity
+        ? resolveAvatar({
+            id: entity.id,
+            stored: entity.avatarConfig,
+            nationality: entity.nationality,
+            ...rikishiStageInput(entity, world.year),
+          })
+        : undefined,
     });
   }
   return entries;

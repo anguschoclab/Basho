@@ -8,14 +8,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Award } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { kenshoTierLabel } from "./economyUtils";
 import type { Rikishi } from "@/engine/types";
 
 interface SponsorDrawCardProps {
   topEarners: Rikishi[];
+  /** Current world year — drives avatar stage derivation. */
+  currentYear?: number;
 }
 
-export function SponsorDrawCard({ topEarners }: SponsorDrawCardProps) {
+export function SponsorDrawCard({ topEarners, currentYear = DEFAULT_START_YEAR }: SponsorDrawCardProps) {
   if (topEarners.length === 0) return null;
 
   return (
@@ -39,6 +44,20 @@ export function SponsorDrawCard({ topEarners }: SponsorDrawCardProps) {
                   <span className="text-2xl font-display font-bold text-muted-foreground shrink-0">
                     {i + 1}
                   </span>
+                  <SumoAvatar
+                    avatar={
+                      r
+                        ? resolveAvatar({
+                            id: r.id,
+                            stored: r.avatarConfig,
+                            nationality: r.nationality,
+                            ...rikishiStageInput(r, currentYear),
+                          })
+                        : undefined
+                    }
+                    size="sm"
+                    fallback={r?.shikona}
+                  />
                   <div className="min-w-0">
                     <p className="font-medium truncate">
                       <RikishiName id={r?.id} name={r?.shikona ?? "Unknown"} />

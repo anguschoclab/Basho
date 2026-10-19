@@ -37,6 +37,8 @@ export interface RivalStableDTO {
   planId?: string;
   /** Stablemaster portrait — public knowledge, always shown. */
   oyakataAvatar?: AvatarRenderData;
+  /** Stablemaster name — public record. */
+  oyakataName?: string;
 }
 
 export interface RivalStablesProjection {
@@ -97,8 +99,14 @@ export function projectRivalStables(
       factionPosture: posture,
       planId: recentDecisions.find((d) => d.planId)?.planId,
       oyakataAvatar: face
-        ? resolveAvatar({ id: face.id, stored: face.avatarConfig, ...oyakataStageInput(face) })
+        ? resolveAvatar({
+            id: face.id,
+            stored: face.avatarConfig,
+            seedAliases: face.formerRikishiId ? [face.formerRikishiId] : [],
+            ...oyakataStageInput(face),
+          })
         : undefined,
+      oyakataName: face?.name,
     });
   }
 

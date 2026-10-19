@@ -12,6 +12,9 @@ import { GlobalCupParticipantCard } from "@/components/game/GlobalCupParticipant
 import { ProgressArc } from "@/components/charts/ProgressArc";
 import { GlobalCupDashboardStats } from "@/components/charts/GlobalCupStats";
 import { EventFeed } from "@/components/dashboard/EventFeed";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { useGame } from "@/contexts/useGame";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import type { GlobalCupParticipant } from "@/engine/types/globalCup";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { projectGlobalCup } from "@/presenters/projections/globalCupProjections";
@@ -180,12 +183,24 @@ export function CupChampionBanner({
   cup: GlobalCupState;
   rikishiNames: Map<string, string>;
 }) {
+  const { state } = useGame();
   if (!cup.championId) return null;
+
+  const champion = state.world?.rikishi.get(cup.championId);
+  const championAvatar = champion
+    ? resolveAvatar({
+        id: champion.id,
+        stored: champion.avatarConfig,
+        nationality: champion.nationality,
+        ...rikishiStageInput(champion, state.world?.year ?? 0),
+      })
+    : undefined;
 
   return (
     <div className="p-6 rounded-lg bg-gold/10 border border-gold/30">
       <div className="flex items-center gap-4">
         <Trophy className="h-12 w-12 text-gold" />
+        <SumoAvatar avatar={championAvatar} size="lg" fallback={rikishiNames.get(cup.championId) || "?"} />
         <div>
           <div className="text-[10px] font-mono uppercase text-muted-foreground">
             {cup.year} Champion

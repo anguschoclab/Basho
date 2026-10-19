@@ -2,12 +2,18 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { KeshoMawashiDisplay } from "@/components/kesho/KeshoMawashiDisplay";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { Badge } from "@/components/ui/badge";
 import { Palette, Award, ShieldCheck } from "lucide-react";
 
 interface KeshoMawashiGalleryProps {
-  world: { heyas: Map<string, { rikishiIds?: string[] }>; rikishi: Map<string, Rikishi> };
+  world: {
+    heyas: Map<string, { rikishiIds?: string[] }>;
+    rikishi: Map<string, Rikishi>;
+    year: number;
+  };
   heyaId: string;
 }
 
@@ -61,7 +67,17 @@ export function KeshoMawashiGallery({ world, heyaId }: KeshoMawashiGalleryProps)
           >
             <CardHeader className="p-4 pb-0 flex flex-row items-center justify-between space-y-0">
               <div className="space-y-1">
-                <CardTitle className="text-sm">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <SumoAvatar
+                    avatar={resolveAvatar({
+                      id: rikishi.id,
+                      stored: rikishi.avatarConfig,
+                      nationality: rikishi.nationality,
+                      ...rikishiStageInput(rikishi, world.year),
+                    })}
+                    size="xs"
+                    fallback={rikishi.shikona}
+                  />
                   <RikishiName
                     id={rikishi.id}
                     name={rikishi.shikona}

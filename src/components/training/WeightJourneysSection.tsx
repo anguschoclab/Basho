@@ -7,8 +7,16 @@
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import { WeightJourneyCard } from "./WeightJourneyCard";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
-export function WeightJourneysSection({ rikishiList }: { rikishiList: Rikishi[] }) {
+export function WeightJourneysSection({
+  rikishiList,
+  currentYear = DEFAULT_START_YEAR,
+}: {
+  rikishiList: Rikishi[];
+  currentYear?: number;
+}) {
   if (!rikishiList.some((r) => r.weightJourney)) return null;
   return (
     <div className="space-y-4">
@@ -17,7 +25,17 @@ export function WeightJourneysSection({ rikishiList }: { rikishiList: Rikishi[] 
         {rikishiList
           .filter((r) => r.weightJourney)
           .map((r) => (
-            <WeightJourneyCard key={r.id} journey={r.weightJourney} shikona={r.shikona} />
+            <WeightJourneyCard
+              key={r.id}
+              journey={r.weightJourney}
+              shikona={r.shikona}
+              avatar={resolveAvatar({
+                id: r.id,
+                stored: r.avatarConfig,
+                nationality: r.nationality,
+                ...rikishiStageInput(r, currentYear),
+              })}
+            />
           ))}
       </div>
     </div>

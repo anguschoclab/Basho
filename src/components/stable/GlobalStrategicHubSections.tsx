@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Globe, GraduationCap, MapPin, TrendingUp, Users, Trophy } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Link } from "@tanstack/react-router";
 import { FACILITY_REGISTRY, type FacilityId } from "@/engine/types/infrastructure";
 import type { useGlobalStrategicDerived } from "@/hooks/useGlobalStrategicDerived";
@@ -101,9 +102,7 @@ export function PipelineCard({ candidates }: { candidates: Derived["foreignCandi
               className="flex items-center justify-between p-3 rounded-lg bg-card/50 border border-border"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center text-[10px] font-bold">
-                  {c.originRegion.substring(0, 3)}
-                </div>
+                <SumoAvatar avatar={c.avatar} size="sm" fallback={c.name} />
                 <div>
                   <div className="text-sm font-bold">{c.name}</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-widest">
@@ -162,8 +161,9 @@ export function GlobalCupCard({
             <Badge
               key={p.rikishiId}
               variant="outline"
-              className="text-[10px] border-gold/30 text-gold"
+              className="text-[10px] border-gold/30 text-gold flex items-center gap-1.5 py-1 pl-1"
             >
+              <SumoAvatar avatar={p.avatar} size="xs" fallback={p.shikona} />
               #{p.seed} {p.shikona}
             </Badge>
           ))}

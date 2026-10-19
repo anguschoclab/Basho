@@ -3,7 +3,39 @@ import { useGame } from "../../contexts/useGame";
 import { getLineageTree } from "../../engine/lineage";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { GitCommit, Crown, User, ChevronDown } from "lucide-react";
+import { Crown, ChevronDown } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar } from "@/presenters/avatarProjections";
+import { getRikishiAnywhere } from "@/presenters/worldAccess";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import type { WorldState } from "@/presenters/uiDigest";
+
+type LineageNode = ReturnType<typeof getLineageTree>[number];
+
+/** Resolve display avatars for every lineage node. */
+function resolveLineageAvatars(
+  world: WorldState | null | undefined,
+  lineage: LineageNode[]
+): Map<string, AvatarRenderData> {
+  const map = new Map<string, AvatarRenderData>();
+  if (!world) return map;
+  for (const node of lineage) {
+    const r = getRikishiAnywhere(world, node.id);
+    if (!r) continue;
+    map.set(
+      node.id,
+      resolveAvatar({
+        id: r.id,
+        stored: r.avatarConfig,
+        nationality: "nationality" in r ? r.nationality : undefined,
+        role: "rikishi",
+        age: world.year - (r.birthYear ?? world.year - 25),
+        rank: "rank" in r ? r.rank : r.peakRank,
+      })
+    );
+  }
+  return map;
+}
 
 interface LineageTreeProps {
   rikishiId: string;
@@ -15,11 +47,14 @@ interface LineageTreeProps {
  */
 export const LineageTree = ({ rikishiId }: LineageTreeProps) => {
   const { state } = useGame();
+  const world = state.world;
 
   const lineage = useMemo(() => {
-    if (!state.world) return [];
-    return getLineageTree(state.world, rikishiId);
-  }, [state.world, rikishiId]);
+    if (!world) return [];
+    return getLineageTree(world, rikishiId);
+  }, [world, rikishiId]);
+
+  const avatarById = useMemo(() => resolveLineageAvatars(world, lineage), [world, lineage]);
 
   if (lineage.length === 0) {
     return (
@@ -45,13 +80,12 @@ export const LineageTree = ({ rikishiId }: LineageTreeProps) => {
             <React.Fragment key={node.id}>
               <div className="flex items-center gap-4 group">
                 <div className="relative flex flex-col items-center">
-                  <div className="w-10 h-10 rounded-full bg-card border-2 border-border flex items-center justify-center group-hover:border-gold transition-colors">
-                    {index === 0 ? (
-                      <User className="h-5 w-5 text-gold" />
-                    ) : (
-                      <GitCommit className="h-5 w-5 text-muted-foreground" />
-                    )}
-                  </div>
+                  <SumoAvatar
+                    avatar={avatarById.get(node.id)}
+                    size="md"
+                    fallback={node.shikona}
+                    className="border-2 border-border group-hover:border-gold transition-colors"
+                  />
                   {index < lineage.length - 1 && <div className="w-0.5 h-8 bg-border" />}
                 </div>
 

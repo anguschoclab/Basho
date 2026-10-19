@@ -209,7 +209,12 @@ function OyakataCard({
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           <SumoAvatar
-            avatar={resolveAvatar({ id: o.id, stored: o.avatarConfig, ...oyakataStageInput(o) })}
+            avatar={resolveAvatar({
+              id: o.id,
+              stored: o.avatarConfig,
+              seedAliases: o.formerRikishiId ? [o.formerRikishiId] : [],
+              ...oyakataStageInput(o),
+            })}
             size="sm"
             fallback={o.name}
           />

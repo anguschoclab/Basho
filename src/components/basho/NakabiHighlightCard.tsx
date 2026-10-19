@@ -7,6 +7,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flag, TrendingUp } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { RikishiName } from "@/components/ClickableName";
 import type { NakabiProjection } from "@/presenters/nakabiProjections";
 
 export function NakabiHighlightCard({ projection }: { projection: NakabiProjection }) {
@@ -45,7 +47,22 @@ export function NakabiHighlightCard({ projection }: { projection: NakabiProjecti
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="p-2 rounded bg-muted/20">
             <div className="text-muted-foreground">Leader</div>
-            <div className="text-sm font-medium">{summary.leaderId ? summary.leaderId : "—"}</div>
+            <div className="flex items-center gap-2 mt-0.5">
+              <SumoAvatar
+                avatar={summary.leaderAvatar}
+                size="xs"
+                fallback={summary.leaderShikona}
+              />
+              {summary.leaderShikona ? (
+                <RikishiName
+                  id={summary.leaderId ?? ""}
+                  name={summary.leaderShikona}
+                  className="text-sm font-medium"
+                />
+              ) : (
+                <span className="text-sm font-medium">—</span>
+              )}
+            </div>
             <div className="text-xs tabular-nums text-muted-foreground">
               {summary.leaderWins}-{summary.leaderLosses}
             </div>
@@ -68,7 +85,8 @@ export function NakabiHighlightCard({ projection }: { projection: NakabiProjecti
                 className="flex items-center justify-between p-2 rounded border border-border/50 text-xs"
                 data-testid={`nakabi-performer-${p.rikishiId}`}
               >
-                <div>
+                <div className="flex items-center gap-2">
+                  <SumoAvatar avatar={p.avatar} size="xs" fallback={p.shikona} />
                   <span className="font-medium">{p.shikona}</span>
                   <span className="text-muted-foreground ml-2 tabular-nums">
                     {p.wins}-{p.losses}

@@ -8,7 +8,9 @@
 
 import type { WorldState } from "@/presenters/uiDigest";
 import type { EngineEvent } from "@/engine/types/events";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import { getHeya } from "@/presenters/worldAccess";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 
 /** Events belonging to the basho wrap-up phase (optionally one basho). */
 export function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {
@@ -70,13 +72,18 @@ export function groupEventsByNarrative(events: EngineEvent[]) {
   return groups;
 }
 
-/** Recent prestige/stature changes resolved to their heya. */
+/** Recent prestige/stature changes resolved to their heya, with the stable's oyakata portrait. */
 export function getPrestigeChanges(
   world: WorldState
-): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
+): Array<{
+  heya: { name: string; prestigeBand: string; reputation: number };
+  change: string;
+  oyakataAvatar?: AvatarRenderData;
+}> {
   const changes: Array<{
     heya: { name: string; prestigeBand: string; reputation: number };
     change: string;
+    oyakataAvatar?: AvatarRenderData;
   }> = [];
   if (!world) return changes;
   const prestige_events = (world.events?.log || [])
@@ -88,7 +95,21 @@ export function getPrestigeChanges(
   for (const e of prestige_events) {
     if (e.heyaId) {
       const heya = getHeya(world, e.heyaId);
-      if (heya) changes.push({ heya, change: e.summary });
+      if (heya) {
+        const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
+        changes.push({
+          heya,
+          change: e.summary,
+          oyakataAvatar: oyakata
+            ? resolveAvatar({
+                id: oyakata.id,
+                stored: oyakata.avatarConfig,
+                seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+                ...oyakataStageInput(oyakata),
+              })
+            : undefined,
+        });
+      }
     }
   }
   return changes;

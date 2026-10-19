@@ -10,6 +10,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { TrendingUp, AlertTriangle, Users, Trophy } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { MatchRowData, HEAT_CONFIG } from "./boutCardTypes.tsx";
 
 export function RikishiSide({
@@ -25,7 +26,18 @@ export function RikishiSide({
 }) {
   const isEast = side === "east";
   return (
-    <div className={`flex-1 min-w-0 ${isEast ? "text-right" : "text-left"}`}>
+    <div
+      className={`flex-1 min-w-0 flex items-center gap-2 ${
+        isEast ? "flex-row-reverse text-right" : "text-left"
+      }`}
+    >
+      <SumoAvatar
+        avatar={rikishi.avatar}
+        size="sm"
+        fallback={rikishi.shikona}
+        className="shrink-0"
+      />
+      <div className="min-w-0">
       <Button
         variant="ghost"
         onClick={(e) => {
@@ -47,6 +59,7 @@ export function RikishiSide({
           {rikishi.currentBashoWins ?? 0}-{rikishi.currentBashoLosses ?? 0}
         </span>
         <span className={`h-1.5 w-1.5 rounded-full ${isEast ? "bg-east" : "bg-west"}`} />
+      </div>
       </div>
     </div>
   );

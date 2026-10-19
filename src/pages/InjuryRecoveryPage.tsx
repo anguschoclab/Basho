@@ -12,6 +12,7 @@ import { InjuryRiskHeatmap } from "@/components/training/InjuryRiskHeatmap";
 import type { DietRegimen } from "@/engine/types/economy";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { resolveRegistryLabel } from "@/presenters/uiUtilities";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { BardEngine } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
 import { getHeyaRoster } from "@/presenters/engineAccess";
@@ -49,8 +50,9 @@ export default function InjuryRecoveryPage() {
 
   const rikishiList = useMemo(() => {
     if (!state.world || !state.playerHeyaId || !domainsReady) return [];
-    const rng = state.world.rng || new SeededRNG(state.world.seed || "medical_heatmap");
-    return getHeyaRoster(state.world, state.playerHeyaId)
+    const world = state.world;
+    const rng = world.rng || new SeededRNG(world.seed || "medical_heatmap");
+    return getHeyaRoster(world, state.playerHeyaId)
       .filter((r) => !r.isRetired)
       .map((r) => ({
         id: r.id,
@@ -60,6 +62,12 @@ export default function InjuryRecoveryPage() {
         condition: r.condition ?? 100,
         fatigue: r.fatigue ?? 0,
         injurySummary: injurySummaryFor(r, rng),
+        avatar: resolveAvatar({
+          id: r.id,
+          stored: r.avatarConfig,
+          nationality: r.nationality,
+          ...rikishiStageInput(r, world.year),
+        }),
       }));
   }, [state.world, state.playerHeyaId, domainsReady]);
 

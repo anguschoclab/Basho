@@ -244,6 +244,28 @@ describe("YouthAcademyService", () => {
       const academy = getYouthAcademy(w3.heyas.get("h1")!);
       expect(academy!.staff.filter((s) => s.role === "head_coach")).toHaveLength(1);
     });
+
+    it("assigns a unique id when the same role is re-hired within one year", () => {
+      const world = makeWorld(10_000_000);
+      const w1 = apply(world, [buildYouthAcademy(world, "h1")]);
+      const w2 = apply(w1, [hireAcademyStaff(w1, "h1", "head_coach")]);
+      const firstId = getYouthAcademy(w2.heyas.get("h1")!)!.staff[0].id;
+
+      // Simulate the staff member leaving, then re-hiring the same role in the
+      // same year — the id must not collide with the departed staffer.
+      const academy = getYouthAcademy(w2.heyas.get("h1")!)!;
+      const cleared = {
+        ...w2,
+        heyas: new Map(w2.heyas).set("h1", {
+          ...w2.heyas.get("h1")!,
+          youthAcademy: { ...academy, staff: [] },
+        }),
+      } as WorldState;
+      const w3 = apply(cleared, [hireAcademyStaff(cleared, "h1", "head_coach")]);
+      const secondId = getYouthAcademy(w3.heyas.get("h1")!)!.staff[0].id;
+
+      expect(secondId).not.toBe(firstId);
+    });
   });
 
   describe("helper functions", () => {

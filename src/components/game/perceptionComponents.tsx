@@ -12,9 +12,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, Swords } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { useGame } from "@/contexts/useGame";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
 import { toKeyedMap, type PerceptionSnapshot } from "@/presenters/engineAccess";
+import { getOyakataForHeya } from "@/presenters/worldAccess";
+import { oyakataStageInput } from "@/presenters/avatarProjections";
 import type { H2HMatchupData } from "@/presenters/projections/boutProjections";
 import {
   STATURE_COLOR,
@@ -38,18 +42,34 @@ export const RikishiSelectorItem = React.memo(
     return (
       <Button
         variant="ghost"
-        className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+        className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors gap-1.5 ${
           isSelected
             ? "bg-primary/20 text-primary hover:bg-primary/30"
             : "hover:bg-secondary/50 text-foreground"
         }`}
         onClick={() => onSelect(r.rikishiId)}
       >
+        <RikishiAvatarChip rikishiId={r.rikishiId} shikona={r.shikona} />
         {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
       </Button>
     );
   }
 );
+
+/** Resolves a rikishi avatar from world state by id. */
+function RikishiAvatarChip({ rikishiId, shikona }: { rikishiId: string; shikona: string }) {
+  const { state } = useGame();
+  const rikishi = state.world?.rikishi?.get(rikishiId);
+  const avatar = rikishi
+    ? resolveAvatar({
+        id: rikishi.id,
+        stored: rikishi.avatarConfig,
+        nationality: rikishi.nationality,
+        ...rikishiStageInput(rikishi, state.world?.year ?? 0),
+      })
+    : undefined;
+  return <SumoAvatar avatar={avatar} size="xs" fallback={shikona} />;
+}
 
 export function RikishiSelectorList({
   perceptions,
@@ -201,12 +221,18 @@ export function RikishiComparisonGrid({
 
       {rA && rB ? (
         <div className="space-y-1">
-          <div className="grid grid-cols-[1fr_24px_64px_24px_1fr] gap-1 text-xs font-medium pb-1 border-b border-border">
-            <div className="text-right truncate text-primary">{rA.shikona}</div>
+          <div className="grid grid-cols-[1fr_24px_64px_24px_1fr] gap-1 text-xs font-medium pb-1 border-b border-border items-center">
+            <div className="text-right truncate text-primary flex items-center justify-end gap-1.5">
+              {rA.shikona}
+              <RikishiAvatarChip rikishiId={rA.rikishiId} shikona={rA.shikona} />
+            </div>
             <div />
             <div className="text-center text-muted-foreground">Metric</div>
             <div />
-            <div className="truncate text-primary">{rB.shikona}</div>
+            <div className="truncate text-primary flex items-center gap-1.5">
+              <RikishiAvatarChip rikishiId={rB.rikishiId} shikona={rB.shikona} />
+              {rB.shikona}
+            </div>
           </div>
           <RikishiRow label="Rank" valA={rA.rank} valB={rB.rank} />
           <RikishiRow label="Style" valA={rA.style} valB={rB.style} />
@@ -328,15 +354,17 @@ export function H2HPanel({ heyaAId, heyaBId }: { heyaAId: string; heyaBId: strin
 export const MatchupRow = React.memo(({ m }: { m: H2HMatchupData }) => {
   return (
     <div className="flex items-center justify-between text-xs p-2 rounded bg-secondary/30">
-      <div className="flex-1 text-right truncate">
+      <div className="flex-1 text-right truncate flex items-center justify-end gap-1.5">
         <RikishiName id={m.rikishiAId} name={m.rikishiAName} className="text-xs font-medium" />
+        <SumoAvatar avatar={m.avatarA} size="xs" fallback={m.rikishiAName} />
       </div>
       <div className="mx-3 font-mono text-muted-foreground whitespace-nowrap">
         <span className={m.aWins > m.bWins ? "text-primary font-bold" : ""}>{m.aWins}</span>
         {" - "}
         <span className={m.bWins > m.aWins ? "text-primary font-bold" : ""}>{m.bWins}</span>
       </div>
-      <div className="flex-1 truncate">
+      <div className="flex-1 truncate flex items-center gap-1.5">
+        <SumoAvatar avatar={m.avatarB} size="xs" fallback={m.rikishiBName} />
         <RikishiName id={m.rikishiBId} name={m.rikishiBName} className="text-xs font-medium" />
       </div>
       {m.lastKimarite && (
@@ -395,6 +423,17 @@ export const StablePerceptionCard = React.memo(
       }
       onNavigate(snap.heyaId);
     };
+    const { state } = useGame();
+    const world = state?.world;
+    const oyakata = world?.heyas ? getOyakataForHeya(world, snap.heyaId) : undefined;
+    const oyakataAvatar = oyakata
+      ? resolveAvatar({
+          id: oyakata.id,
+          stored: oyakata.avatarConfig,
+          seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+          ...oyakataStageInput(oyakata),
+        })
+      : undefined;
     return (
       <Card
         className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
@@ -402,6 +441,12 @@ export const StablePerceptionCard = React.memo(
       >
         <CardContent className="p-3">
           <div className="flex items-start justify-between gap-3">
+            <SumoAvatar
+              avatar={oyakataAvatar}
+              size="sm"
+              fallback={snap.heyaName}
+              className="shrink-0 mt-0.5"
+            />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 {comparing ? (

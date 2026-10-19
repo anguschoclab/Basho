@@ -370,6 +370,16 @@ export function convertCandidateToRikishi(args: {
     nationality: candidate.nationality,
     origin: candidate.originRegion,
     talentSeed: candidate.talentSeed,
+    // Identity continuity: the scout-card face carries over unchanged.
+    // The candidate's identity is seeded by personId — which becomes this
+    // rikishi's id — so feature draws must be copied, not regenerated.
+    avatarConfig:
+      candidate.avatarConfig ??
+      generateAvatarIdentity({
+        seed: candidate.personId,
+        nationality: candidate.nationality,
+        role: "rikishi",
+      }),
     // §5.3 — dual citizens hold Japanese citizenship: they never consume
     // the foreign slot and are exempt from the naturalization timer.
     ...(candidate.dualCitizen ? { citizenshipStatus: "dual" as const } : {}),

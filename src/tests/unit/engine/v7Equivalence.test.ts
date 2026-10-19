@@ -201,16 +201,53 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
           seniorId: "sen",
           seniorShikona: "Senior",
           seniorRankLabel: "maegashira",
+          seniorAvatar: expect.objectContaining({
+            identity: expect.objectContaining({ seed: "sen" }),
+          }),
           tsukebitoIds: ["jr1"],
-          tsukebito: [{ id: "jr1", shikona: "JuniorOne", rankLabel: "maegashira" }],
+          tsukebito: [
+            {
+              id: "jr1",
+              shikona: "JuniorOne",
+              rankLabel: "maegashira",
+              avatar: expect.objectContaining({
+                identity: expect.objectContaining({ seed: "jr1" }),
+              }),
+            },
+          ],
         },
       ],
       eligibleSeniors: [
-        { id: "sen", shikona: "Senior", rankLabel: "maegashira", currentCount: 1, maxCount: 2 },
+        {
+          id: "sen",
+          shikona: "Senior",
+          rankLabel: "maegashira",
+          currentCount: 1,
+          maxCount: 2,
+          avatar: expect.objectContaining({
+            identity: expect.objectContaining({ seed: "sen" }),
+          }),
+        },
       ],
       eligibleJuniors: [
-        { id: "jr1", shikona: "JuniorOne", rankLabel: "maegashira", assignedTo: "sen" },
-        { id: "jr2", shikona: "JuniorTwo", rankLabel: "maegashira", assignedTo: null },
+        {
+          id: "jr1",
+          shikona: "JuniorOne",
+          rankLabel: "maegashira",
+          assignedTo: "sen",
+          avatar: expect.objectContaining({
+            identity: expect.objectContaining({ seed: "jr1" }),
+          }),
+        },
+        {
+          id: "jr2",
+          shikona: "JuniorTwo",
+          rankLabel: "maegashira",
+          assignedTo: null,
+          avatar: expect.objectContaining({
+            identity: expect.objectContaining({ seed: "jr2" }),
+          }),
+        },
       ],
     });
   });

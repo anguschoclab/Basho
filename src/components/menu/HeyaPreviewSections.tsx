@@ -13,6 +13,7 @@ import { Star, ArrowRight, User, Info, Trophy, MapPin, Building } from "lucide-r
 import type { Heya } from "@/engine/types/heya";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { HEYA_STATS } from "../../constants/ui/heyaPreview";
 import type { RikishiPreview } from "../../constants/ui/heyaPreview";
@@ -116,11 +117,12 @@ function RosterRow({
       style={{ animationDelay: `${index * 30}ms` }}
     >
       <div className="flex items-center gap-3 min-w-0">
-        <div
-          className={`h-8 w-8 rounded-full flex items-center justify-center font-display font-bold text-xs ${isSekitori ? "bg-primary text-white shadow-lg" : "bg-muted text-muted-foreground"}`}
-        >
-          {r.rikishi.shikona.charAt(0)}
-        </div>
+        <SumoAvatar
+          avatar={r.rikishi.avatar}
+          size="sm"
+          fallback={r.rikishi.shikona}
+          className={isSekitori ? "ring-2 ring-primary/40" : ""}
+        />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span

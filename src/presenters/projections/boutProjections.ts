@@ -18,6 +18,9 @@ import * as talentpool from "../../engine/systems/generation/TalentPoolService";
 import { getOrCreateScouted, getScoutingLevel } from "../../engine/scoutingStore";
 import { getScoutedAttributes } from "../../engine/systems/recruitment/ScoutingService";
 import { EntityCollection } from "../../engine/core/EntityCollection";
+import type { Rikishi } from "../../engine/types/rikishi";
+import type { AvatarRenderData } from "../../engine/types/avatar";
+import { resolveAvatar, rikishiStageInput, candidateStageInput } from "../../engine/avatarGenerator";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
@@ -61,6 +64,8 @@ export interface CandidateDigestEntry extends TalentCandidate {
    * Decays as scouting observations accumulate.
    */
   biasStrength?: number;
+  /** Resolved avatar for the prospect portrait. */
+  avatar?: AvatarRenderData;
   /** UI-enriched properties for recruitment display */
   poolType?: TalentPoolType;
   age?: number;
@@ -112,6 +117,12 @@ export function projectRecruitmentUIDigest(
     const scoutedView = talentpool.getScoutedCandidateView(world, c.candidateId);
     return {
       ...c,
+      avatar: resolveAvatar({
+        id: c.personId,
+        stored: c.avatarConfig,
+        nationality: c.nationality,
+        ...candidateStageInput(c, world.year),
+      }),
       scoutLevel,
       scoutInfo: getScoutInfo(scoutLevel),
       hasBias: scoutedView?.hasBias,
@@ -189,6 +200,8 @@ export interface H2HMatchupData {
   bWins: number;
   lastKimarite?: string;
   lastWinner?: string;
+  avatarA?: AvatarRenderData;
+  avatarB?: AvatarRenderData;
 }
 
 /**
@@ -196,14 +209,15 @@ export interface H2HMatchupData {
  */
 function buildMatchupData(
   rAId: string,
-  rA: { shikona: string },
+  rA: Rikishi,
   rBId: string,
-  rB: { shikona: string },
+  rB: Rikishi,
   record: {
     wins: number;
     losses: number;
     lastMatch?: { kimarite?: string; winnerId?: string } | null;
-  }
+  },
+  currentYear: number
 ): H2HMatchupData {
   return {
     rikishiAId: rAId,
@@ -214,6 +228,18 @@ function buildMatchupData(
     bWins: record.losses,
     lastKimarite: record.lastMatch?.kimarite,
     lastWinner: record.lastMatch?.winnerId === rAId ? rA.shikona : rB.shikona,
+    avatarA: resolveAvatar({
+      id: rA.id,
+      stored: rA.avatarConfig,
+      nationality: rA.nationality,
+      ...rikishiStageInput(rA, currentYear),
+    }),
+    avatarB: resolveAvatar({
+      id: rB.id,
+      stored: rB.avatarConfig,
+      nationality: rB.nationality,
+      ...rikishiStageInput(rB, currentYear),
+    }),
   };
 }
 
@@ -246,7 +272,7 @@ function calculateHeyaMatchups(
 
       winsA += record.wins;
       winsB += record.losses;
-      matchups.push(buildMatchupData(rAId, rA, rBId, rB, record));
+      matchups.push(buildMatchupData(rAId, rA, rBId, rB, record, world.year));
     }
   }
 

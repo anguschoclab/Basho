@@ -6,9 +6,11 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import type { AvatarRenderData } from "../../engine/types/avatar";
 import type { FatigueBand } from "../../engine/systems/narrative/NarrativeBands";
 import { ensureHeyaTrainingState } from "../../presenters/uiDigest";
 import { toFatigueBand } from "../../engine/descriptorBands";
+import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
 import { FATIGUE_LABELS } from "../../constants/ui/labels";
 
 export interface TrainingRikishiStatus {
@@ -18,6 +20,7 @@ export interface TrainingRikishiStatus {
   fatigueLabel: string;
   injuryRisk: "low" | "medium" | "high";
   isInjured: boolean;
+  avatar?: AvatarRenderData;
 }
 
 export interface TrainingSummary {
@@ -66,6 +69,12 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
       fatigueLabel: FATIGUE_LABELS[fatigueBand],
       injuryRisk,
       isInjured,
+      avatar: resolveAvatar({
+        id: r.id,
+        stored: r.avatarConfig,
+        nationality: r.nationality,
+        ...rikishiStageInput(r, world.year),
+      }),
     });
     fatigueSum += fatigue;
     if (injuryRisk === "high") injuryRiskHighCount++;

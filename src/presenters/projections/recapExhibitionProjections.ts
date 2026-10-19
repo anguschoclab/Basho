@@ -5,6 +5,8 @@
  * jungyo results that the player may have participated in.
  */
 import type { WorldState } from "../../engine/types/world";
+import type { AvatarRenderData } from "../../engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
 
 export interface ExhibitionResultDTO {
   exhibitionId: string;
@@ -17,6 +19,7 @@ export interface ExhibitionResultDTO {
     shikona: string;
     wins: number;
     losses: number;
+    avatar?: AvatarRenderData;
   }>;
 }
 
@@ -39,12 +42,23 @@ export function selectExhibitionResults(
       location: (data.location as string) ?? "—",
       stipend: (data.stipend as number) ?? 0,
       playerParticipated: playerHeyaId ? resultsArr.some((r) => r.heyaId === playerHeyaId) : false,
-      results: resultsArr.map((r) => ({
-        rikishiId: (r.rikishiId as string) ?? "",
-        shikona: (r.shikona as string) ?? "—",
-        wins: (r.wins as number) ?? 0,
-        losses: (r.losses as number) ?? 0,
-      })),
+      results: resultsArr.map((r) => {
+        const entity = world.rikishi.get((r.rikishiId as string) ?? "");
+        return {
+          rikishiId: (r.rikishiId as string) ?? "",
+          shikona: (r.shikona as string) ?? "—",
+          wins: (r.wins as number) ?? 0,
+          losses: (r.losses as number) ?? 0,
+          avatar: entity
+            ? resolveAvatar({
+                id: entity.id,
+                stored: entity.avatarConfig,
+                nationality: entity.nationality,
+                ...rikishiStageInput(entity, world.year),
+              })
+            : undefined,
+        };
+      }),
     });
   }
 

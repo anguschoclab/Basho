@@ -16,6 +16,7 @@ import { selectTopKihakuPerformers } from "@/presenters/projections/recapKihakuP
 import { selectKachiNokoriLeaders } from "@/presenters/projections/recapKachiNokoriProjections";
 import { selectExhibitionResults } from "@/presenters/projections/recapExhibitionProjections";
 import { EntityCollection } from "@/presenters/engineAccess";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeya, getRikishi, getRikishiAnywhere } from "@/presenters/worldAccess";
 import { projectRikishi } from "@/presenters/uiModels";
@@ -86,6 +87,7 @@ export function KihakuSection({ world }: { world: WorldState }) {
           >
             <div className="flex items-center gap-3">
               <span className="text-muted-foreground tabular-nums text-sm">#{i + 1}</span>
+              <SumoAvatar avatar={p.avatar} size="xs" fallback={p.shikona} />
               <span className="font-medium">{p.shikona}</span>
               <span className="text-xs text-muted-foreground">{p.heyaName}</span>
             </div>
@@ -118,6 +120,7 @@ export function KachiNokoriSection({ world }: { world: WorldState }) {
           >
             <div className="flex items-center gap-3">
               <span className="text-muted-foreground tabular-nums text-sm">#{i + 1}</span>
+              <SumoAvatar avatar={k.avatar} size="xs" fallback={k.shikona} />
               <span className="font-medium">{k.shikona}</span>
               <span className="text-xs text-muted-foreground">{k.heyaName}</span>
             </div>
@@ -156,7 +159,10 @@ export function ExhibitionSection({ world }: { world: WorldState }) {
               <div className="text-xs space-y-1">
                 {ex.results.slice(0, 5).map((r, i) => (
                   <div key={i} className="flex justify-between">
-                    <span>{r.shikona}</span>
+                    <span className="flex items-center gap-2">
+                      <SumoAvatar avatar={r.avatar} size="xs" fallback={r.shikona} />
+                      {r.shikona}
+                    </span>
                     <span className="tabular-nums">
                       {r.wins}-{r.losses}
                     </span>

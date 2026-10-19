@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Search } from "lucide-react";
 import { RANK_NAMES } from "@/presenters/uiDigest";
 import { AttrChip } from "./AttrChip";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import type { SortDirection } from "@/lib/sortUtils";
 import type { projectOpponentScoutingUIDigest } from "@/presenters/uiDigest";
@@ -92,6 +93,12 @@ export function OpponentCard({
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
           {/* Identity */}
+          <SumoAvatar
+            avatar={r.avatar}
+            size="md"
+            fallback={r.shikona}
+            className="shrink-0 mt-0.5"
+          />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-display font-semibold text-lg truncate">{r.shikona}</h3>

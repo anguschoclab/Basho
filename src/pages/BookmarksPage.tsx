@@ -9,7 +9,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
 import { RikishiCard } from "@/components/game/RikishiCard";
 import { projectRikishi } from "@/presenters/rikishi";
-import { getRikishi, getHeya, getAllBookmarks, getBookmarksByType } from "@/presenters/worldAccess";
+import { getRikishi, getHeya, getOyakata, getAllBookmarks, getBookmarksByType } from "@/presenters/worldAccess";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import type { BookmarkEntry } from "@/presenters/worldAccess";
 
 function BookmarkItem({
@@ -36,10 +38,29 @@ function BookmarkItem({
       case "heya": {
         const h = getHeya(world, bookmark.entityId);
         if (!h) return <p className="text-sm text-muted-foreground">Heya not found</p>;
+        const oyakata = h.oyakataId ? getOyakata(world, h.oyakataId) : undefined;
         return (
-          <div className="p-3 rounded-lg border border-primary/10 bg-card/50">
-            <p className="font-display text-primary">{h.name}</p>
-            <p className="text-xs text-muted-foreground">{h.rikishiIds?.length ?? 0} rikishi</p>
+          <div className="p-3 rounded-lg border border-primary/10 bg-card/50 flex items-center gap-3">
+            <SumoAvatar
+              avatar={
+                oyakata
+                  ? resolveAvatar({
+                      id: oyakata.id,
+                      stored: oyakata.avatarConfig,
+                      seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+                      ...oyakataStageInput(oyakata),
+                    })
+                  : undefined
+              }
+              size="sm"
+              fallback={h.name}
+            />
+            <div>
+              <p className="font-display text-primary">{h.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {h.rikishiIds?.length ?? 0} rikishi
+              </p>
+            </div>
           </div>
         );
       }

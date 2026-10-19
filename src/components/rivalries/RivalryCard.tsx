@@ -8,33 +8,35 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flame } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { formatRank, clamp } from "@/presenters/uiDigest";
 import { getDisplayHeatBand } from "./rivalryUtils.pure";
 import { H2HBar, HeatGauge } from "./rivalryUtils";
 import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "../../constants/ui/rivalry";
 import type { RivalryPairState, RivalryTrigger } from "@/presenters/engineAccess";
 import { toRankPosition } from "@/engine/types/banzuke";
-import type { Rank, Side } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 interface RivalryCardProps {
   pair: RivalryPairState;
   world: {
-    rikishi: Map<
-      string,
-      {
-        id: string;
-        heyaId: string;
-        shikona: string;
-        rank: Rank;
-        side?: Side;
-        rankNumber?: number;
-      }
-    >;
+    rikishi: Map<string, Rikishi>;
     heyas: Map<string, { id: string; name: string }>;
     playerHeyaId?: string;
+    year?: number;
   };
   isPlayerRivalry?: boolean;
   index: number;
+}
+
+function rivalAvatar(r: Rikishi, year: number) {
+  return resolveAvatar({
+    id: r.id,
+    stored: r.avatarConfig,
+    nationality: r.nationality,
+    ...rikishiStageInput(r, year),
+  });
 }
 
 export function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) {
@@ -99,8 +101,15 @@ export function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCard
 
         <div className="flex items-center gap-3">
           <div className="flex-1 text-right space-y-0.5">
-            <div className="font-display font-bold text-base">
-              <RikishiName id={rikishiA.id} name={rikishiA.shikona} />
+            <div className="flex items-center justify-end gap-2">
+              <div className="font-display font-bold text-base">
+                <RikishiName id={rikishiA.id} name={rikishiA.shikona} />
+              </div>
+              <SumoAvatar
+                avatar={rivalAvatar(rikishiA, world.year ?? 2025)}
+                size="sm"
+                fallback={rikishiA.shikona}
+              />
             </div>
             <div className="text-[10px] text-muted-foreground">{rankA}</div>
             {heyaA && (
@@ -115,8 +124,15 @@ export function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCard
             </div>
           </div>
           <div className="flex-1 space-y-0.5">
-            <div className="font-display font-bold text-base">
-              <RikishiName id={rikishiB.id} name={rikishiB.shikona} />
+            <div className="flex items-center gap-2">
+              <SumoAvatar
+                avatar={rivalAvatar(rikishiB, world.year ?? 2025)}
+                size="sm"
+                fallback={rikishiB.shikona}
+              />
+              <div className="font-display font-bold text-base">
+                <RikishiName id={rikishiB.id} name={rikishiB.shikona} />
+              </div>
             </div>
             <div className="text-[10px] text-muted-foreground">{rankB}</div>
             {heyaB && (

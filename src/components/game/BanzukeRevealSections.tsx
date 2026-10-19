@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Badge } from "../ui/badge";
 import { ArrowUp, ArrowDown, Minus, Star, ArrowRight } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 import type { BanzukeRevealEntry } from "@/presenters/projections/recapBanzukeRevealProjections";
 
@@ -62,7 +63,9 @@ export function RevealEntryCard({ entry, isCurrent }: { entry: RevealEntry; isCu
         CHANGE_CARD_CLASS[entry.change] ?? "bg-card/60 border-border"
       }`}
     >
-      <div className="flex flex-col">
+      <div className="flex items-center gap-3">
+        <SumoAvatar avatar={entry.avatar} size="md" fallback={entry.shikona} />
+        <div className="flex flex-col">
         <span className="text-xs text-muted-foreground uppercase font-bold tabular-nums">
           Rank Change
         </span>
@@ -80,6 +83,7 @@ export function RevealEntryCard({ entry, isCurrent }: { entry: RevealEntry; isCu
               DIV
             </Badge>
           )}
+        </div>
         </div>
       </div>
 

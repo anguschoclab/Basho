@@ -5,6 +5,8 @@
  * for sekitori post-basho.
  */
 import type { WorldState } from "../../engine/types/world";
+import type { AvatarRenderData } from "../../engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
 import { getAllRikishi } from "../worldAccess";
 import { buildPostBashoPayload } from "../../engine/systems/economy/KachiNokoriService";
 
@@ -14,6 +16,7 @@ export interface KachiNokoriDTO {
   heyaName: string;
   wins: number;
   kachiNokori: number;
+  avatar?: AvatarRenderData;
 }
 
 export function selectKachiNokoriLeaders(world: WorldState, limit = 10): KachiNokoriDTO[] {
@@ -37,6 +40,12 @@ export function selectKachiNokoriLeaders(world: WorldState, limit = 10): KachiNo
       heyaName: heyaMap.get(r.heyaId)?.name ?? "—",
       wins: bashoRecord.wins,
       kachiNokori: payload.kachiNokori,
+      avatar: resolveAvatar({
+        id: r.id,
+        stored: r.avatarConfig,
+        nationality: r.nationality,
+        ...rikishiStageInput(r, world.year),
+      }),
     });
   }
 

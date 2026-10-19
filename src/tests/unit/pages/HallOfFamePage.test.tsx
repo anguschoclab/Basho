@@ -40,6 +40,7 @@ vi.mock("@/presenters/uiDigest", () => ({
 
 vi.mock("@/presenters/worldAccess", () => ({
   getRikishi: () => null,
+  getHistoricalRikishi: () => null,
 }));
 
 vi.mock("@/presenters/selectors", () => ({

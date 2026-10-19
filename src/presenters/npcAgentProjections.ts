@@ -9,10 +9,14 @@
  * rival postures, and NPC media responses.
  */
 import type { WorldState } from "../engine/types/world";
+import type { AvatarRenderData } from "../engine/types/avatar";
+import { resolveAvatar, oyakataStageInput } from "../engine/avatarGenerator";
 
 export interface NPCDecisionDTO {
   heyaId: string;
   heyaName: string;
+  /** The stable's face — its oyakata portrait. */
+  oyakataAvatar?: AvatarRenderData;
   category: string;
   decision: string;
   reasoning: string;
@@ -282,10 +286,19 @@ export function projectNPCAgentActivity(world: WorldState): NPCAgentProjection {
     const data = e.data ?? {};
     const heyaId = eHeyaId;
     const heya = world.heyas.get(heyaId);
+    const oyakata = heya?.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
 
     npcDecisions.push({
       heyaId,
       heyaName: heya?.name ?? String(data.heyaName ?? (heyaId ? "Unknown" : "Kyokai")),
+      oyakataAvatar: oyakata
+        ? resolveAvatar({
+            id: oyakata.id,
+            stored: oyakata.avatarConfig,
+            seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+            ...oyakataStageInput(oyakata),
+          })
+        : undefined,
       category: row.category,
       decision: row.decision,
       reasoning: row.reasoning,

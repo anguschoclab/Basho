@@ -12,6 +12,7 @@ import type { Heya } from "../types/heya";
 import { resetImpactTimestampCounter } from "../core/StateImpact";
 import { RANK_HIERARCHY } from "../banzuke";
 import { warn } from "../utils/Logger";
+import { ensureAvatarIdentities } from "../avatarGenerator";
 
 /**
  * Serialization Service handles the transformation between runtime Maps
@@ -313,6 +314,10 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
       : undefined,
     isInitialSeed: s.isInitialSeed,
   };
+
+  // Backfill avatar identities for entities saved before v2 avatars (or any
+  // entity missing one) — deterministic, seeded by each entity's stable id.
+  ensureAvatarIdentities(liveWorld);
 
   // Rebuild ephemeral transientContext so the UI has valid activeModifiers
   // immediately after a save is loaded, without requiring an advance.

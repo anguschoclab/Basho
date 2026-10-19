@@ -355,6 +355,13 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
     rankNumber: 50,
     isRetired: false,
     debutYear: world.year,
+    avatarConfig:
+      prospect.avatarConfig ??
+      generateAvatarIdentity({
+        seed: newRikishiId,
+        nationality: "Japan",
+        role: "rikishi",
+      }),
     recruitmentCohortId: `academy-${world.year}`,
     // Inherit development as starting ability
     strength: Math.floor(prospect.currentAbility * 0.4),
@@ -453,12 +460,19 @@ export function hireAcademyStaff(
   const cash = heya.funds;
   if (cash < STAFF_HIRE_COST) return builder.build();
 
-  const rng = rngFromSeed(world.seed, "academy-staff", `${heyaId}-${role}-${world.year}`);
+  // A persistent hire sequence keeps ids (and the rng stream) unique even when
+  // the same role is re-hired within one year.
+  const hireSeq = academy.staffHireSeq ?? 0;
+  const rng = rngFromSeed(
+    world.seed,
+    "academy-staff",
+    `${heyaId}-${role}-${world.year}-${hireSeq}`
+  );
   const firstIdx = rng.int(0, STAFF_FIRST_NAMES.length - 1);
   const lastIdx = rng.int(0, STAFF_LAST_NAMES.length - 1);
   const quality = rng.int(40, 89);
 
-  const staffId = `${heyaId}-staff-${role}-${world.year}`;
+  const staffId = rng.uuid("AS");
   const newStaff: AcademyStaff = {
     id: staffId,
     role,
@@ -473,6 +487,7 @@ export function hireAcademyStaff(
     youthAcademy: {
       ...academy,
       staff: [...academy.staff, newStaff],
+      staffHireSeq: hireSeq + 1,
     },
     funds: cash - STAFF_HIRE_COST,
   });

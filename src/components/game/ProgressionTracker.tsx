@@ -4,8 +4,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Crown, ShieldAlert, TrendingUp, AlertTriangle } from "lucide-react";
+import { Crown, ShieldAlert, TrendingUp } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { UIRikishi } from "@/presenters/uiModels";
 import React from "react";
 import {
@@ -19,6 +21,7 @@ const YokozunaRow = React.memo(
   ({
     rikishiId,
     shikona,
+    avatar,
     isStrong,
     isPlayer,
     narrative,
@@ -27,6 +30,7 @@ const YokozunaRow = React.memo(
   }: {
     rikishiId: string;
     shikona: string;
+    avatar?: AvatarRenderData;
     isStrong?: boolean;
     isPlayer: boolean;
     narrative: string;
@@ -35,6 +39,7 @@ const YokozunaRow = React.memo(
   }) => {
     return (
       <div className="flex items-start gap-3">
+        <SumoAvatar avatar={avatar} size="sm" fallback={shikona} />
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-display font-bold">
@@ -58,6 +63,7 @@ const OzekiRow = React.memo(
   ({
     rikishiId,
     shikona,
+    avatar,
     rank,
     isPlayer,
     narrative,
@@ -67,6 +73,7 @@ const OzekiRow = React.memo(
   }: {
     rikishiId: string;
     shikona: string;
+    avatar?: AvatarRenderData;
     rank: string;
     isPlayer: boolean;
     narrative: string;
@@ -77,6 +84,7 @@ const OzekiRow = React.memo(
     return (
       <div className="space-y-2">
         <div className="flex items-center gap-2">
+          <SumoAvatar avatar={avatar} size="xs" fallback={shikona} />
           <span className="font-display font-bold">
             <RikishiName id={rikishiId} name={shikona} />
           </span>
@@ -101,21 +109,21 @@ const KadobanRow = React.memo(
   ({
     rikishiId,
     shikona,
+    avatar,
     isDemoted,
     isPlayer,
     narrative,
   }: {
     rikishiId: string;
     shikona: string;
+    avatar?: AvatarRenderData;
     isDemoted: boolean;
     isPlayer: boolean;
     narrative: string;
   }) => {
     return (
       <div className="flex items-start gap-3">
-        <AlertTriangle
-          className={`h-4 w-4 mt-0.5 shrink-0 ${isDemoted ? "text-destructive" : "text-gold"}`}
-        />
+        <SumoAvatar avatar={avatar} size="sm" fallback={shikona} />
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-display font-bold">
@@ -172,6 +180,7 @@ export function ProgressionTracker({
                 key={c.rikishi.id}
                 rikishiId={c.rikishi.id}
                 shikona={c.rikishi.shikona}
+                avatar={c.rikishi.avatar}
                 isStrong={c.isStrong}
                 isPlayer={c.rikishi.heyaId === playerHeyaId}
                 narrative={c.narrative}
@@ -198,6 +207,7 @@ export function ProgressionTracker({
                 key={c.rikishi.id}
                 rikishiId={c.rikishi.id}
                 shikona={c.rikishi.shikona}
+                avatar={c.rikishi.avatar}
                 rank={c.rikishi.rank}
                 isPlayer={c.rikishi.heyaId === playerHeyaId}
                 narrative={c.narrative}
@@ -225,6 +235,7 @@ export function ProgressionTracker({
                 key={entry.rikishi.id}
                 rikishiId={entry.rikishi.id}
                 shikona={entry.rikishi.shikona}
+                avatar={entry.rikishi.avatar}
                 isDemoted={entry.isDemoted}
                 isPlayer={entry.rikishi.heyaId === playerHeyaId}
                 narrative={entry.narrative}

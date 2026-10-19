@@ -194,6 +194,7 @@ export function DashboardTrainingColumn({ training }: { training: DashboardDeriv
             <ProgressRow
               key={rs.id}
               name={rs.shikona}
+              avatar={rs.avatar}
               subtitle={rs.fatigueLabel}
               value={rs.fatigue}
               tone={rs.fatigue > 70 ? "destructive" : rs.fatigue > 40 ? "warning" : "success"}

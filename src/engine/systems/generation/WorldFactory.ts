@@ -35,6 +35,7 @@ import { createStables } from "./HeyaFactory";
 import { createRosters } from "./RosterFactory";
 import { ensureCandidatePoolState } from "./CandidatePoolService";
 import { generateGyoji, generateShimpan } from "../officials/GyojiService";
+import { ensureAvatarIdentities } from "../../avatarGenerator";
 import { generateMyosekiMarket } from "../../myosekiMarket";
 import type { Gyoji, Shimpan } from "../../types/gyoji";
 
@@ -167,6 +168,10 @@ export function generateInitialWorld(seed: string): WorldState {
   // The returned impact must be resolved into the world — ensureRivalriesState
   // is a pure accessor, so a discarded impact leaves the seeds unapplied.
   world = resolveImpacts(world, [RivalryService.seedInitialRivalries(world)]);
+
+  // Guarantee every person entity carries a v2 avatar identity — the census
+  // also catches anything generation sites missed.
+  ensureAvatarIdentities(world);
 
   return world;
 }

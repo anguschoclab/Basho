@@ -3,26 +3,33 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import { Swords, Flame } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import { selectTopRivals } from "@/presenters/selectors";
+import type { WorldState } from "@/presenters/uiDigest";
 
 const RivalRow = React.memo(
   ({
     id,
     name,
+    oyakataAvatar,
     prestige,
     roster,
     heat,
   }: {
     id: string;
     name: string;
+    oyakataAvatar?: AvatarRenderData;
     prestige: string;
     roster: string;
     heat: string;
   }) => {
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
+        <SumoAvatar avatar={oyakataAvatar} size="xs" fallback={name} />
         <StableName id={id} name={name} className="font-medium flex-1 truncate" />
         <Badge variant="outline" className="text-[10px] capitalize shrink-0">
           {prestige}
@@ -39,22 +46,43 @@ const RivalRow = React.memo(
 );
 
 /** rivals widget. */
-const RivalList = React.memo(({ rivals }: { rivals: ReturnType<typeof selectTopRivals> }) => {
-  return (
-    <>
-      {rivals.map((r) => (
-        <RivalRow
-          key={r.id}
-          id={r.id}
-          name={r.name}
-          prestige={r.prestige}
-          roster={r.roster}
-          heat={r.heat}
-        />
-      ))}
-    </>
-  );
-});
+const RivalList = React.memo(
+  ({
+    rivals,
+    world,
+  }: {
+    rivals: ReturnType<typeof selectTopRivals>;
+    world: WorldState;
+  }) => {
+    return (
+      <>
+        {rivals.map((r) => {
+          const oyakataId = world.heyas.get(r.id)?.oyakataId;
+          const oyakata = oyakataId ? world.oyakata.get(oyakataId) : undefined;
+          const oyakataAvatar = oyakata
+            ? resolveAvatar({
+                id: oyakata.id,
+                stored: oyakata.avatarConfig,
+                seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+                ...oyakataStageInput(oyakata),
+              })
+            : undefined;
+          return (
+            <RivalRow
+              key={r.id}
+              id={r.id}
+              name={r.name}
+              oyakataAvatar={oyakataAvatar}
+              prestige={r.prestige}
+              roster={r.roster}
+              heat={r.heat}
+            />
+          );
+        })}
+      </>
+    );
+  }
+);
 
 export function RivalsWidget() {
   const { state } = useGame();
@@ -79,7 +107,7 @@ export function RivalsWidget() {
   return (
     <BaseWidget title="Rival Stables" icon={Swords} headerAction={headerAction}>
       <div className="space-y-0.5">
-        <RivalList rivals={rivals} />
+        <RivalList rivals={rivals} world={world} />
       </div>
     </BaseWidget>
   );

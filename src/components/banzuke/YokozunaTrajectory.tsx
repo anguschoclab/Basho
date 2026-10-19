@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { YokozunaCandidate } from "@/presenters/projections/promotionProjections";
 
 interface YokozunaTrajectoryProps {
@@ -108,6 +109,7 @@ function CandidateCard({ candidate }: { candidate: YokozunaCandidate }) {
       <CardContent className="p-4 space-y-3">
         {/* Header */}
         <div className="flex items-center gap-2 flex-wrap">
+          <SumoAvatar avatar={rikishi.avatar} size="sm" fallback={rikishi.shikona} />
           <span className="font-display font-bold text-base tracking-tight">{rikishi.shikona}</span>
           <Badge variant="gold">{rikishi.rankLabel}</Badge>
           {rikishi.isPlayerOwned && (

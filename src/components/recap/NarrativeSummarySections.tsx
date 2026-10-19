@@ -23,6 +23,9 @@ import {
   Newspaper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar } from "@/presenters/avatarProjections";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { GovernanceRuling } from "@/engine/types/economy";
 
 export interface GroupedNarrativeEvents {
@@ -48,6 +51,7 @@ export interface GroupedNarrativeEvents {
 export interface PrestigeChange {
   heya: { name: string; prestigeBand: string; reputation: number };
   change: string;
+  oyakataAvatar?: AvatarRenderData;
 }
 
 /** Promotion/demotion/retirement ledger card. */
@@ -134,8 +138,12 @@ export function PrestigeShiftsSection({ prestigeChanges }: { prestigeChanges: Pr
             key={i}
             className="dossier-paper p-5 rounded-lg border-l-4 border-l-primary flex items-start gap-4 hover:border-primary/40 transition-colors"
           >
-            <div className="h-10 w-10 bg-primary/5 rounded-lg flex items-center justify-center shrink-0">
-              <Building2 className="h-5 w-5 text-primary" />
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0">
+              {item.oyakataAvatar ? (
+                <SumoAvatar avatar={item.oyakataAvatar} size="md" fallback={item.heya.name} />
+              ) : (
+                <Building2 className="h-5 w-5 text-primary" />
+              )}
             </div>
             <div className="space-y-2 flex-1">
               <div className="flex items-center justify-between">
@@ -372,7 +380,16 @@ function YdcEntry({ e }: { e: NonNullable<GroupedNarrativeEvents["ydcAccountabil
             {e.status.replace(/_/g, " ").toUpperCase()}
           </Badge>
           {e.chairmanName && (
-            <span className="text-[10px] text-muted-foreground italic">
+            <span className="text-[10px] text-muted-foreground italic flex items-center gap-1">
+              <SumoAvatar
+                avatar={resolveAvatar({
+                  id: `ydc-chairman-${e.chairmanName}`,
+                  role: "oyakata",
+                  age: 65,
+                })}
+                size="xs"
+                fallback={e.chairmanName}
+              />
               — Chairman {e.chairmanName}
             </span>
           )}

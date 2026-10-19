@@ -5,6 +5,8 @@
  * and returns the top 5 performers for display.
  */
 import type { WorldState } from "../../engine/types/world";
+import type { AvatarRenderData } from "../../engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
 import { getAllRikishi } from "../worldAccess";
 
 export interface KihakuPerformerDTO {
@@ -13,6 +15,7 @@ export interface KihakuPerformerDTO {
   heyaId: string;
   heyaName: string;
   kihakuIsenScore: number;
+  avatar?: AvatarRenderData;
   label: string;
 }
 
@@ -39,6 +42,12 @@ export function selectTopKihakuPerformers(world: WorldState, limit = 5): KihakuP
       heyaId: r.heyaId,
       heyaName: heyaMap.get(r.heyaId)?.name ?? "—",
       kihakuIsenScore: r.kihakuIsenScore,
+      avatar: resolveAvatar({
+        id: r.id,
+        stored: r.avatarConfig,
+        nationality: r.nationality,
+        ...rikishiStageInput(r, world.year),
+      }),
       label: kihakuLabel(r.kihakuIsenScore),
     }))
     .sort((a, b) => b.kihakuIsenScore - a.kihakuIsenScore)

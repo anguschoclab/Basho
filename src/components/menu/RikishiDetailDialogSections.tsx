@@ -6,6 +6,7 @@
  */
 
 import { Badge } from "@/components/ui/badge";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   MapPin,
@@ -38,7 +39,14 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
       <div className="absolute top-0 right-0 p-6 opacity-10 font-display text-6xl font-black pointer-events-none uppercase -rotate-12 translate-x-6 -translate-y-3">
         {rikishi.rank}
       </div>
-      <div className="space-y-2 relative z-10">
+      <div className="space-y-2 relative z-10 flex items-center gap-4">
+        <SumoAvatar
+          avatar={rikishi.avatar}
+          size="lg"
+          fallback={rikishi.shikona}
+          className="border-2 border-white/20"
+        />
+        <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Badge
             variant="secondary"
@@ -53,6 +61,7 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
         <h2 className="text-3xl font-display font-black tracking-tight sumi-e-ink">
           {rikishi.shikona}
         </h2>
+        </div>
       </div>
     </div>
   );

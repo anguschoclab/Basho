@@ -149,7 +149,11 @@ export default function BashoPage() {
 
         {/* Standings evolution chart — active basho only */}
         {world.cyclePhase === "active_basho" && world.currentBasho && (
-          <BashoStandingsEvolution basho={world.currentBasho} rikishiMap={getRikishiMap(world)} />
+          <BashoStandingsEvolution
+            basho={world.currentBasho}
+            rikishiMap={getRikishiMap(world)}
+            currentYear={world.year}
+          />
         )}
       </div>
 

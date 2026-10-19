@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Swords } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { CornerAdviceProjection } from "@/presenters/projections/cornerAdviceProjection";
 
 interface CornerAdvicePanelProps {
@@ -21,10 +22,20 @@ export const CornerAdvicePanel = React.memo(function CornerAdvicePanel({
           <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
             Corner Advice
           </h3>
-          <Badge variant="outline" className="text-[10px] ml-auto">
-            <Swords className="h-3 w-3 mr-1" />
-            {advice.playerRikishi.shikona ?? advice.playerRikishi.name} vs{" "}
-            {advice.opponent.shikona ?? advice.opponent.name}
+          <Badge variant="outline" className="text-[10px] ml-auto gap-1 py-0.5">
+            <SumoAvatar
+              avatar={advice.playerRikishi.avatar}
+              size="xs"
+              fallback={advice.playerRikishi.shikona}
+            />
+            <span>{advice.playerRikishi.shikona ?? advice.playerRikishi.name}</span>
+            <Swords className="h-3 w-3 mx-0.5" />
+            <SumoAvatar
+              avatar={advice.opponent.avatar}
+              size="xs"
+              fallback={advice.opponent.shikona}
+            />
+            <span>{advice.opponent.shikona ?? advice.opponent.name}</span>
           </Badge>
         </div>
         <div className="space-y-2">

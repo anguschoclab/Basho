@@ -8,11 +8,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Trophy, Star, Medal, Crown, Award, Zap, Building } from "lucide-react";
+import { Star, Medal, Crown, Award, Zap, Building } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RikishiName } from "@/components/ClickableName";
 import { StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 /** Yūshō champion heraldry block. */
 export function ChampionSection({
@@ -47,8 +48,12 @@ export function ChampionSection({
 
         <CardContent className="pt-4 pb-8 flex flex-col md:flex-row items-center gap-12 px-8">
           <div className="relative">
-            <div className="h-32 w-32 bg-gold/10 rounded-full flex items-center justify-center border-4 border-gold/20 relative z-10">
-              <Trophy className="h-16 w-16 text-gold drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
+            <div className="h-32 w-32 bg-gold/10 rounded-full flex items-center justify-center border-4 border-gold/20 relative z-10 overflow-hidden">
+              <SumoAvatar
+                avatar={champion.rikishi.avatar}
+                size="xl"
+                fallback={champion.rikishi.shikona}
+              />
             </div>
             <div className="absolute -bottom-2 translate-y-1/2 left-1/2 -translate-x-1/2 bg-gold text-white font-black text-[10px] px-3 py-1 rounded-full shadow-lg z-20">
               優勝

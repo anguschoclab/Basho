@@ -24,6 +24,8 @@ interface WeeklyDrillPlannerProps {
   onPlanUpdate: (rikishiId: string, day: number, drillType: DrillType) => void;
   onBulkUpdate: (rikishiId: string, daySchedule: Record<number, DrillType>) => void;
   onMultiBulkUpdate: (rikishiIds: string[], daySchedule: Record<number, DrillType>) => void;
+  /** Current world year — drives avatar stage derivation. */
+  currentYear?: number;
 }
 
 export function WeeklyDrillPlanner({
@@ -32,6 +34,7 @@ export function WeeklyDrillPlanner({
   onPlanUpdate,
   onBulkUpdate,
   onMultiBulkUpdate,
+  currentYear,
 }: WeeklyDrillPlannerProps) {
   const planner = useDrillPlanner({ rikishiList, onBulkUpdate, onMultiBulkUpdate });
 
@@ -44,6 +47,7 @@ export function WeeklyDrillPlanner({
         weeklyPlan={weeklyPlan}
         planner={planner}
         onPlanUpdate={onPlanUpdate}
+        currentYear={currentYear}
       />
       <RegimenFooter />
     </section>

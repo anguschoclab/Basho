@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";
 import { listVisibleCandidates } from "@/presenters/engineAccess";
+import { resolveAvatar, candidateStageInput, rikishiStageInput } from "@/presenters/avatarProjections";
 
 export function useGlobalStrategicDerived(world: WorldState, heyaId: Id) {
   const heya = world.heyas.get(heyaId);
@@ -23,7 +24,17 @@ export function useGlobalStrategicDerived(world: WorldState, heyaId: Id) {
 
   const foreignCandidates = useMemo(() => {
     if (!heya) return [];
-    return listVisibleCandidates(world, "foreign").filter((c) => presence[c.originRegion] >= 40);
+    return listVisibleCandidates(world, "foreign")
+      .filter((c) => presence[c.originRegion] >= 40)
+      .map((c) => ({
+        ...c,
+        avatar: resolveAvatar({
+          id: c.personId,
+          stored: c.avatarConfig,
+          nationality: c.nationality,
+          ...candidateStageInput(c, world.year),
+        }),
+      }));
   }, [world, presence, heya]);
 
   const activeAcademies = useMemo(() => {
@@ -37,8 +48,23 @@ export function useGlobalStrategicDerived(world: WorldState, heyaId: Id) {
   const globalCup = world.globalCup;
   const heyaParticipants = useMemo(() => {
     if (!globalCup) return [];
-    return globalCup.participants.filter((p) => p.heyaId === heyaId);
-  }, [globalCup, heyaId]);
+    return globalCup.participants
+      .filter((p) => p.heyaId === heyaId)
+      .map((p) => {
+        const r = world.rikishi.get(p.rikishiId);
+        return {
+          ...p,
+          avatar: r
+            ? resolveAvatar({
+                id: r.id,
+                stored: r.avatarConfig,
+                nationality: r.nationality,
+                ...rikishiStageInput(r, world.year),
+              })
+            : undefined,
+        };
+      });
+  }, [globalCup, heyaId, world]);
 
   // Count historical Global Cup wins for this heya
   const globalCupWins = useMemo(() => {

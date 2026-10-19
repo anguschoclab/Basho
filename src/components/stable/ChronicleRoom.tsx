@@ -32,7 +32,7 @@ export function ChronicleRoom({ world, heyaId }: ChronicleRoomProps) {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Era Timeline */}
-        <EraTimeline eras={report.eras} />
+        <EraTimeline eras={report.eras} world={world} />
 
         {/* Philosophy & Bloodlines */}
         <ChronicleSideColumn report={report} />

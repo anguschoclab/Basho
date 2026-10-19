@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import {
   Search,
   Eye,
@@ -204,6 +205,11 @@ export function CandidateCard({ c, state }: { c: CandidateDigestEntry; state: St
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               {isSelected && <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
+              <SumoAvatar
+                avatar={c.avatar}
+                size="sm"
+                fallback={c.visibilityBand === "hidden" ? "?" : c.name}
+              />
               <h3 className="font-display font-semibold">
                 {c.visibilityBand === "hidden"
                   ? "Unknown Prospect"

@@ -14,6 +14,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { AlertTriangle, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
@@ -73,7 +74,9 @@ export function RosterTab({
                   }
                 >
                   <CardContent className="p-4 flex justify-between items-center">
-                    <div>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <SumoAvatar avatar={r.avatar} size="sm" fallback={r.shikona} />
+                      <div className="min-w-0">
                       <div className="font-bold flex items-center gap-1.5">
                         {r.shikona}
                         {r.isInjured && (
@@ -100,6 +103,7 @@ export function RosterTab({
                         {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
                         {r.side ? ` ${r.side === "east" ? "E" : "W"}` : ""}
                       </div>
+                      </div>
                     </div>
                     <Badge variant="secondary">
                       {r.currentBashoWins}-{r.currentBashoLosses}
@@ -111,6 +115,7 @@ export function RosterTab({
                         apprenticeId={r.id}
                         mentorId={r.mentorId}
                         roster={rawRoster}
+                        currentYear={world.year}
                         onAssignMentor={(mentorId) => assignMentor(mentorId, r.id)}
                         onRemoveMentor={() => removeMentor(r.id)}
                       />

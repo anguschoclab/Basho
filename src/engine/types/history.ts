@@ -119,6 +119,9 @@ export interface RetiredRikishiSummary {
   heyaId: Id;
   origin?: string;
 
+  /** Persistent avatar identity — carried over so archived faces stay stable. */
+  avatarConfig?: import("./avatar").AvatarIdentity;
+
   // Career totals
   careerWins: number;
   careerLosses: number;

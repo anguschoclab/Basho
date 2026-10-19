@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SortMenu } from "@/components/ui/SortMenu";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import type { MyosekiStock } from "@/engine/types/myoseki";
 import type { useMyosekiMarket } from "@/hooks/useMyosekiMarket";
 
@@ -71,8 +73,30 @@ function StockCard({ stock, market }: { stock: MyosekiStock; market: Market }) {
             {stock.prestigeTier}
           </Badge>
         </div>
-        <CardDescription>
-          Owned by: {stock.ownerId === "JSA" ? "Sumo Association" : stock.ownerId}
+        <CardDescription className="flex items-center gap-2">
+          Owned by:
+          {stock.ownerId === "JSA" ? (
+            "Sumo Association"
+          ) : (
+            <>
+              <SumoAvatar
+                avatar={(() => {
+                  const owner = market.world?.oyakata.get(stock.ownerId);
+                  return owner
+                    ? resolveAvatar({
+                        id: owner.id,
+                        stored: owner.avatarConfig,
+                        seedAliases: owner.formerRikishiId ? [owner.formerRikishiId] : [],
+                        ...oyakataStageInput(owner),
+                      })
+                    : undefined;
+                })()}
+                size="xs"
+                fallback={stock.ownerId}
+              />
+              {market.world?.oyakata.get(stock.ownerId)?.name ?? stock.ownerId}
+            </>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent>

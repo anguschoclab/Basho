@@ -9,6 +9,8 @@ import { getRikishi } from "../../engine/queries";
 import { getAdvice } from "../../engine/bout/CornerAdvice";
 import type { WorldState } from "../../engine/types/world";
 import type { Rikishi } from "../../engine/types/rikishi";
+import type { AvatarRenderData } from "../../engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
 
 export interface CornerAdviceItem {
   id: string;
@@ -20,8 +22,8 @@ export interface CornerAdviceItem {
 }
 
 export interface CornerAdviceProjection {
-  playerRikishi: Pick<Rikishi, "id" | "shikona" | "name">;
-  opponent: Pick<Rikishi, "id" | "shikona" | "name">;
+  playerRikishi: Pick<Rikishi, "id" | "shikona" | "name"> & { avatar?: AvatarRenderData };
+  opponent: Pick<Rikishi, "id" | "shikona" | "name"> & { avatar?: AvatarRenderData };
   advice: CornerAdviceItem[];
 }
 
@@ -69,8 +71,24 @@ export function projectCornerAdvice(
       id: playerRikishi.id,
       shikona: playerRikishi.shikona,
       name: playerRikishi.name,
+      avatar: resolveAvatar({
+        id: playerRikishi.id,
+        stored: playerRikishi.avatarConfig,
+        nationality: playerRikishi.nationality,
+        ...rikishiStageInput(playerRikishi, world.year),
+      }),
     },
-    opponent: { id: opponent.id, shikona: opponent.shikona, name: opponent.name },
+    opponent: {
+      id: opponent.id,
+      shikona: opponent.shikona,
+      name: opponent.name,
+      avatar: resolveAvatar({
+        id: opponent.id,
+        stored: opponent.avatarConfig,
+        nationality: opponent.nationality,
+        ...rikishiStageInput(opponent, world.year),
+      }),
+    },
     advice: recs.map((r) => ({
       id: r.id,
       title: r.title,

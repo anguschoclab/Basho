@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "./BaseWidget";
 import { Users, HeartPulse, AlertTriangle, Activity, Star, UserMinus, Layers } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ const RosterEntryRow = React.memo(
     id,
     shikona,
     rank,
+    avatar,
     isInjured,
     potentialBand,
     fatigue,
@@ -29,6 +31,7 @@ const RosterEntryRow = React.memo(
   }: {
     id: string;
     shikona: string;
+    avatar?: RosterEntryWithHealth["avatar"];
     rank: string;
     isInjured: boolean;
     potentialBand: string;
@@ -57,6 +60,7 @@ const RosterEntryRow = React.memo(
             isSelected ? "bg-primary" : "bg-muted group-hover:bg-muted-foreground/30"
           )}
         />
+        <SumoAvatar avatar={avatar} size="xs" fallback={shikona} />
         <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
         <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{rank}</span>
         <Badge
@@ -136,6 +140,7 @@ const RosterList = React.memo(
             id={entry.id}
             shikona={entry.shikona}
             rank={entry.rank}
+            avatar={entry.avatar}
             isInjured={entry.isInjured}
             potentialBand={entry.potentialBand}
             fatigue={entry.fatigue}

@@ -57,6 +57,7 @@ export default function MainMenu() {
           <MainMenuSelectedFooter
             selectedHeyaId={state.selectedHeyaId}
             stables={state.stables}
+            world={state.world}
             onBegin={beginWithHeya}
           />
         </main>

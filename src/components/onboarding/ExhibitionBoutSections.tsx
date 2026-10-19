@@ -8,17 +8,38 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult } from "@/engine/types/basho";
 import type { WorldState } from "@/presenters/uiDigest";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight, Swords, Trophy } from "lucide-react";
+import { ChevronRight, Swords } from "lucide-react";
 import { PbpLineText } from "@/components/game/PbpLineText";
 import { KimariteTag } from "@/components/ui/KimariteTag";
 import { selectKimariteObservedShare } from "@/presenters/selectors";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
+/** Resolve a rikishi's current avatar render data for exhibition display. */
+function exhibitionAvatar(r: Rikishi, currentYear: number): AvatarRenderData {
+  return resolveAvatar({
+    id: r.id,
+    stored: r.avatarConfig,
+    nationality: r.nationality,
+    ...rikishiStageInput(r, currentYear),
+  });
+}
+
 /** Title block + east/west matchup display. */
-export function ExhibitionHeader({ east, west }: { east: Rikishi; west: Rikishi }) {
+export function ExhibitionHeader({
+  east,
+  west,
+  currentYear,
+}: {
+  east: Rikishi;
+  west: Rikishi;
+  currentYear: number;
+}) {
   return (
     <>
       <div className="text-center space-y-1">
@@ -31,7 +52,13 @@ export function ExhibitionHeader({ east, west }: { east: Rikishi; west: Rikishi 
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="flex-1 text-center">
+        <div className="flex-1 text-center space-y-2">
+          <SumoAvatar
+            avatar={exhibitionAvatar(east, currentYear)}
+            size="lg"
+            fallback={east.shikona}
+            className="mx-auto"
+          />
           <div className="text-lg font-display font-black uppercase">
             {east.shikona ?? east.name}
           </div>
@@ -42,7 +69,13 @@ export function ExhibitionHeader({ east, west }: { east: Rikishi; west: Rikishi 
         <div className="shrink-0">
           <Swords className="h-6 w-6 text-muted-foreground" />
         </div>
-        <div className="flex-1 text-center">
+        <div className="flex-1 text-center space-y-2">
+          <SumoAvatar
+            avatar={exhibitionAvatar(west, currentYear)}
+            size="lg"
+            fallback={west.shikona}
+            className="mx-auto"
+          />
           <div className="text-lg font-display font-black uppercase">
             {west.shikona ?? west.name}
           </div>
@@ -101,7 +134,12 @@ export function ExhibitionResultBanner({
 }) {
   return (
     <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-lg p-4 animate-in fade-in duration-500">
-      <Trophy className="h-6 w-6 text-primary shrink-0" />
+      <SumoAvatar
+        avatar={exhibitionAvatar(winnerRikishi, world.year)}
+        size="md"
+        fallback={winnerRikishi.shikona}
+        className="shrink-0"
+      />
       <div>
         <p className="text-[10px] font-black uppercase tracking-widest text-primary">Result</p>
         <p className="font-display font-black text-lg uppercase">

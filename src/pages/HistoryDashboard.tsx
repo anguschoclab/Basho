@@ -19,6 +19,8 @@ import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Rank } from "@/engine/types/banzuke";
 import { selectCohortSummaries } from "@/presenters/projections/historyCohortProjections";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 
 /**
  * HistoryDashboard - The Museum of Sumo
@@ -75,7 +77,11 @@ export const HistoryDashboard = () => {
           </TabsContent>
 
           <TabsContent value="stables">
-            <StablesTab heyas={getAllHeyas(world)} retired={selectRetiredRikishi(world)} />
+            <StablesTab
+              heyas={getAllHeyas(world)}
+              retired={selectRetiredRikishi(world)}
+              world={world}
+            />
           </TabsContent>
 
           <TabsContent value="cohorts">
@@ -86,6 +92,21 @@ export const HistoryDashboard = () => {
     </AppLayout>
   );
 };
+
+/** Resolves a rikishi avatar chip from world state by id. */
+function RikishiAvatarChip({ rikishiId, name }: { rikishiId: string; name: string }) {
+  const { state } = useGame();
+  const rikishi = state.world?.rikishi?.get(rikishiId);
+  const avatar = rikishi
+    ? resolveAvatar({
+        id: rikishi.id,
+        stored: rikishi.avatarConfig,
+        nationality: rikishi.nationality,
+        ...rikishiStageInput(rikishi, state.world?.year ?? 0),
+      })
+    : undefined;
+  return <SumoAvatar avatar={avatar} size="xs" fallback={name} />;
+}
 
 function LeaderboardCard({
   title,
@@ -121,6 +142,7 @@ function LeaderboardCard({
                 >
                   {idx + 1}
                 </span>
+                <RikishiAvatarChip rikishiId={entry.rikishiId} name={entry.shikona} />
                 <span className="flex-1 font-display truncate">{entry.shikona}</span>
                 <Badge variant="outline" className="font-mono text-xs tabular-nums">
                   {entry.value}
@@ -196,9 +218,11 @@ const retiredAccessor: Record<string, (r: RetiredEntry) => string | number | und
 const StablesTab = ({
   heyas,
   retired,
+  world,
 }: {
   heyas: Heya[];
   retired: Array<Rikishi | RetiredRikishiSummary>;
+  world: WorldState;
 }) => {
   const [sortKey, setSortKey] = useState<string>("name");
   const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
@@ -290,8 +314,20 @@ const StablesTab = ({
             {sortedRetired.slice(0, 40).map((r: RetiredEntry) => {
               const heyaName = heyasById[r.heyaId]?.name || r.heyaId;
               const rankLabel = isSummaryEntry(r) ? r.peakRank : r.rank;
+              const avatar = resolveAvatar({
+                id: r.id,
+                stored: r.avatarConfig,
+                nationality: (r as Rikishi).nationality,
+                role: "rikishi",
+                age: isSummaryEntry(r)
+                  ? Math.max(30, world.year - r.birthYear)
+                  : (r as Rikishi).age ?? world.year - r.birthYear,
+                rank: rankLabel,
+                isRetired: true,
+              });
               return (
                 <Card key={r.id} className="paper p-3 text-center">
+                  <SumoAvatar avatar={avatar} size="md" fallback={r.shikona} className="mx-auto mb-2" />
                   <div className="font-display font-semibold text-sm mb-1">{r.shikona}</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mb-1">
                     {rankLabel || "—"}
@@ -358,9 +394,12 @@ function CohortsTab({ world }: { world: WorldState }) {
                     Top Prospects
                   </span>
                   {c.topProspects.map((p) => (
-                    <div key={p.rikishiId} className="flex justify-between text-xs">
-                      <span className={p.isRetired ? "text-muted-foreground line-through" : ""}>
-                        {p.shikona}
+                    <div key={p.rikishiId} className="flex items-center justify-between text-xs">
+                      <span
+                        className={`flex items-center gap-1.5 ${p.isRetired ? "text-muted-foreground" : ""}`}
+                      >
+                        <RikishiAvatarChip rikishiId={p.rikishiId} name={p.shikona} />
+                        <span className={p.isRetired ? "line-through" : ""}>{p.shikona}</span>
                       </span>
                       <Badge variant="outline" className="text-[10px]">
                         {p.rank}

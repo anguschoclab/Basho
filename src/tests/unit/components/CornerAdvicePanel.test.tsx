@@ -23,9 +23,11 @@ describe("CornerAdvicePanel", () => {
         },
       ],
     };
-    render(<CornerAdvicePanel advice={advice} />);
+    const { container } = render(<CornerAdvicePanel advice={advice} />);
     expect(screen.getByText("Corner Advice")).toBeDefined();
-    expect(screen.getByText("Takakeisho vs Terunofuji")).toBeDefined();
+    expect(screen.getByText("Takakeisho")).toBeDefined();
+    expect(screen.getByText("Terunofuji")).toBeDefined();
+    expect(container.querySelectorAll("[data-avatar]").length).toBe(2);
     expect(screen.getByText("Suggested tactic: PUSH")).toBeDefined();
     expect(screen.getByText("high")).toBeDefined();
   });

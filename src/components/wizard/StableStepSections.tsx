@@ -7,17 +7,22 @@
 
 import { CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
 import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
 
 /** Single stable card — selectable via click, Enter, or Space. */
 export function StableCard({
   heya,
+  oyakata,
   isSelected,
   onSelect,
 }: {
   heya: Heya;
+  oyakata?: Oyakata | null;
   isSelected: boolean;
   onSelect: (heyaId: string) => void;
 }) {
@@ -43,13 +48,35 @@ export function StableCard({
         </div>
       )}
       <div className="space-y-3">
-        <div>
-          <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
-            {heya.name}
-          </div>
-          <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">
-            {heya.location || "Tokyo"} • {new Set(heya.rikishiIds ?? []).size} Professional
-            Wrestlers
+        <div className="flex items-start gap-3">
+          <SumoAvatar
+            avatar={
+              oyakata
+                ? resolveAvatar({
+                    id: oyakata.id,
+                    stored: oyakata.avatarConfig,
+                    seedAliases: oyakata.formerRikishiId ? [oyakata.formerRikishiId] : [],
+                    ...oyakataStageInput(oyakata),
+                  })
+                : undefined
+            }
+            size="md"
+            fallback={heya.name}
+            className="shrink-0"
+          />
+          <div>
+            <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
+              {heya.name}
+            </div>
+            <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">
+              {heya.location || "Tokyo"} • {new Set(heya.rikishiIds ?? []).size} Professional
+              Wrestlers
+            </div>
+            {oyakata && (
+              <div className="text-[10px] text-muted-foreground mt-0.5">
+                Oyakata: {oyakata.name}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-wrap gap-2">

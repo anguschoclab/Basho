@@ -13,7 +13,10 @@ import { toPotentialBand } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import { talentpool } from "@/presenters/engineAccess";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, candidateStageInput } from "@/presenters/avatarProjections";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
@@ -39,6 +42,7 @@ const ProspectRow = React.memo(
     pool,
     visibilityBand,
     intel,
+    avatar,
   }: {
     candidateId: string;
     name: string;
@@ -47,6 +51,7 @@ const ProspectRow = React.memo(
     pool: TalentPoolType;
     visibilityBand: string;
     intel: number;
+    avatar?: AvatarRenderData;
   }) => {
     const canShowName = visibilityBand === "public" || intel >= 65;
     const potential = toPotentialBand(talentSeed);
@@ -55,6 +60,11 @@ const ProspectRow = React.memo(
 
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
+        <SumoAvatar
+          avatar={canShowName ? avatar : undefined}
+          size="xs"
+          fallback={canShowName ? name : "?"}
+        />
         <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
         <span className="flex-1 font-medium truncate">
           {canShowName ? name : "Unknown Prospect"}
@@ -106,6 +116,12 @@ const ProspectList = React.memo(
               pool={c.pool}
               visibilityBand={c.visibilityBand}
               intel={talentpool.getCandidateScoutingLevel(world, c.candidateId)}
+              avatar={resolveAvatar({
+                id: c.personId ?? c.candidateId,
+                stored: c.avatarConfig,
+                nationality: c.nationality,
+                ...candidateStageInput(c, world.year),
+              })}
             />
           ))
         )}

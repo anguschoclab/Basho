@@ -6,9 +6,12 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import type { Rikishi } from "../../engine/types/rikishi";
+import type { AvatarRenderData } from "../../engine/types/avatar";
 import { SeededRNG } from "../../engine/rng";
 import { BardEngine } from "../../engine/bard/BardEngine";
 import { getHeyaRoster } from "../../engine/queries";
+import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 function getFacilityLevelLabel(rng: SeededRNG, level: number): string {
@@ -83,6 +86,7 @@ export function projectMedicalUIDigest(world: WorldState) {
     rank: string;
     healthBand: string;
     momentum: "rising" | "stable" | "declining";
+    avatar?: AvatarRenderData;
   }> = roster.map((r) => {
     const condition = r.condition ?? 100;
     const band =
@@ -101,6 +105,12 @@ export function projectMedicalUIDigest(world: WorldState) {
       rank: r.rank ?? "—",
       healthBand: band,
       momentum: "stable" as const,
+      avatar: resolveAvatar({
+        id: r.id,
+        stored: r.avatarConfig,
+        nationality: r.nationality,
+        ...rikishiStageInput(r, world.year),
+      }),
     };
   });
 
@@ -108,41 +118,7 @@ export function projectMedicalUIDigest(world: WorldState) {
     heyaName: heya.name,
     facilityLevel: recoveryFacility,
     facilityLabel,
-    injuredRikishi: (() => {
-      const result: Array<{
-        id: string;
-        shikona: string;
-        severity: string;
-        location: string;
-        weeksRemaining: number;
-        weeksTotal: number;
-        recoveryProgress: number;
-        facilityBonus: number;
-        isKyujo: boolean;
-      }> = [];
-      for (const r of roster) {
-        if (!r.injured) continue;
-        const injuryStatus = r.injuryStatus;
-        const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
-        const weeksTotal = injuryStatus?.weeksToHeal ?? weeksRemaining + 2;
-        const recoveryProgress =
-          weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
-        const facilityBonus = Math.round((recoveryFacility - 50) / 10);
-
-        result.push({
-          id: r.id,
-          shikona: r.shikona,
-          severity: typeof injuryStatus?.severity === "string" ? injuryStatus.severity : "unknown",
-          location: injuryStatus?.location ?? "unknown",
-          weeksRemaining,
-          weeksTotal,
-          recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
-          facilityBonus,
-          isKyujo: r.isKyujo ?? false,
-        });
-      }
-      return result;
-    })(),
+    injuredRikishi: buildInjuredRikishi(roster, recoveryFacility, world.year),
     welfare: {
       welfareRisk: heya.welfareState?.welfareRisk ?? 0,
 
@@ -161,4 +137,48 @@ export function projectMedicalUIDigest(world: WorldState) {
       rikishiHealthPerceptions,
     },
   };
+}
+
+/** Build the injured-rikishi projection rows for the medical digest. */
+function buildInjuredRikishi(roster: Rikishi[], recoveryFacility: number, year: number) {
+  const result: Array<{
+    id: string;
+    shikona: string;
+    severity: string;
+    location: string;
+    weeksRemaining: number;
+    weeksTotal: number;
+    recoveryProgress: number;
+    facilityBonus: number;
+    isKyujo: boolean;
+    avatar?: AvatarRenderData;
+  }> = [];
+  for (const r of roster) {
+    if (!r.injured) continue;
+    const injuryStatus = r.injuryStatus;
+    const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
+    const weeksTotal = injuryStatus?.weeksToHeal ?? weeksRemaining + 2;
+    const recoveryProgress =
+      weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
+    const facilityBonus = Math.round((recoveryFacility - 50) / 10);
+
+    result.push({
+      id: r.id,
+      shikona: r.shikona,
+      severity: typeof injuryStatus?.severity === "string" ? injuryStatus.severity : "unknown",
+      location: injuryStatus?.location ?? "unknown",
+      weeksRemaining,
+      weeksTotal,
+      recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
+      facilityBonus,
+      isKyujo: r.isKyujo ?? false,
+      avatar: resolveAvatar({
+        id: r.id,
+        stored: r.avatarConfig,
+        nationality: r.nationality,
+        ...rikishiStageInput(r, year),
+      }),
+    });
+  }
+  return result;
 }

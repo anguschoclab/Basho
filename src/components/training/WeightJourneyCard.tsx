@@ -9,6 +9,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dumbbell, AlertTriangle, Zap } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 
 interface WeightJourneyData {
   targetKg: number;
@@ -20,9 +22,10 @@ interface WeightJourneyData {
 interface Props {
   journey?: WeightJourneyData;
   shikona: string;
+  avatar?: AvatarRenderData;
 }
 
-export function WeightJourneyCard({ journey, shikona }: Props) {
+export function WeightJourneyCard({ journey, shikona, avatar }: Props) {
   if (!journey) return null;
 
   const progressPercent = Math.min(100, (journey.progressKg / journey.targetKg) * 100);
@@ -42,7 +45,10 @@ export function WeightJourneyCard({ journey, shikona }: Props) {
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{shikona}</p>
+        <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <SumoAvatar avatar={avatar} size="xs" fallback={shikona} />
+          {shikona}
+        </p>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex justify-between text-sm">

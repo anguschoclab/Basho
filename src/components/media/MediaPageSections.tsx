@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName, StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { useGame } from "@/contexts/useGame";
 import { Flame, TrendingUp, Building2, Zap, Filter, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -30,6 +33,21 @@ import type { projectMediaUIDigest } from "@/presenters/uiDigest";
 
 type MediaDigest = ReturnType<typeof projectMediaUIDigest> | null;
 type EnrichedHeadline = MediaHeadline & { rikishiNames?: Record<string, string> };
+
+/** Resolves a rikishi avatar chip from world state by id. */
+function RikishiAvatarChip({ rikishiId, name }: { rikishiId: string; name: string }) {
+  const { state } = useGame();
+  const rikishi = state.world?.rikishi.get(rikishiId);
+  const avatar = rikishi
+    ? resolveAvatar({
+        id: rikishi.id,
+        stored: rikishi.avatarConfig,
+        nationality: rikishi.nationality,
+        ...rikishiStageInput(rikishi, state.world?.year ?? 0),
+      })
+    : undefined;
+  return <SumoAvatar avatar={avatar} size="xs" fallback={name} />;
+}
 
 /* ── Style maps ── */
 
@@ -108,7 +126,12 @@ function HeadlineCard({ headline }: { headline: EnrichedHeadline }) {
       <div className="flex items-center gap-2 flex-wrap">
         {headline.rikishiIds.map((id) => {
           const name = headline.rikishiNames?.[id] || "Unknown";
-          return <RikishiName key={id} id={id} name={name} className="text-xs" />;
+          return (
+            <span key={id} className="inline-flex items-center gap-1">
+              <RikishiAvatarChip rikishiId={id} name={name} />
+              <RikishiName id={id} name={name} className="text-xs" />
+            </span>
+          );
         })}
         {headline.bout?.upset && (
           <Badge variant="outline" className="text-[10px] bg-gold/10 text-gold border-gold/30">
@@ -351,6 +374,7 @@ export function HotRikishiCard({ digest }: { digest: MediaDigest }) {
               const heatLabel = getMediaHeatLabel(heat);
               return (
                 <div key={id} className="flex items-center gap-3">
+                  <SumoAvatar avatar={rikishi?.avatar} size="xs" fallback={rikishi?.shikona} />
                   <div className="flex-1 min-w-0">
                     <RikishiName
                       id={id}

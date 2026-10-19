@@ -234,7 +234,7 @@ describe("HistoryDashboard — Records tab", () => {
       })
     );
     render(<HistoryDashboard />);
-    for (let i = 1; i <= 5; i++) expect(screen.getByText(`R${i}`)).toBeTruthy();
+    for (let i = 1; i <= 5; i++) expect(screen.getAllByText(`R${i}`).length).toBeGreaterThan(0);
     expect(screen.queryByText("R6")).toBeNull();
     expect(screen.queryByText("R7")).toBeNull();
   });
@@ -257,7 +257,7 @@ describe("HistoryDashboard — Records tab", () => {
       })
     );
     render(<HistoryDashboard />);
-    for (let i = 1; i <= 5; i++) expect(screen.getByText(`R${i}`)).toBeTruthy();
+    for (let i = 1; i <= 5; i++) expect(screen.getAllByText(`R${i}`).length).toBeGreaterThan(0);
   });
 
   it("handles duplicate rikishiId entries without key collisions", () => {
@@ -462,7 +462,9 @@ describe("HistoryDashboard — Stables tab", () => {
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
     for (let i = 0; i <= 39; i++)
-      expect(screen.getByText(`R${String(i).padStart(2, "0")}`)).toBeTruthy();
+      expect(
+        screen.getAllByText(`R${String(i).padStart(2, "0")}`).length
+      ).toBeGreaterThan(0);
     for (let i = 40; i <= 44; i++)
       expect(screen.queryByText(`R${String(i).padStart(2, "0")}`)).toBeNull();
   });

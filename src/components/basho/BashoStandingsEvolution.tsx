@@ -17,7 +17,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { RikishiName } from "@/components/ClickableName";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { BoutResult } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { computeStandingsEvolution } from "./computeStandingsEvolution";
 import { CHART_SERIES } from "@/constants/ui/drawingPalette";
 
@@ -39,14 +44,17 @@ interface BashoStandingsEvolutionProps {
     results?: BoutResult[][];
     standings: Map<string, { wins: number; losses: number }>;
   };
-  rikishiMap: Map<string, { id: string; shikona: string; rank: string; rankNumber?: number }>;
+  rikishiMap: Map<string, Rikishi>;
   maxLines?: number;
+  /** Current world year — drives avatar stage derivation. */
+  currentYear?: number;
 }
 
 export function BashoStandingsEvolution({
   basho,
   rikishiMap,
   maxLines = 8,
+  currentYear = DEFAULT_START_YEAR,
 }: BashoStandingsEvolutionProps) {
   const { data, topIds } = useMemo(
     () => computeStandingsEvolution(basho, rikishiMap, maxLines),
@@ -57,6 +65,30 @@ export function BashoStandingsEvolution({
   const lineLabels = useMemo(
     () => topIds.map((id) => rikishiMap.get(id)?.shikona ?? id),
     [topIds, rikishiMap]
+  );
+
+  // Leader chips with pre-resolved avatars — keeps JSX free of nested conditionals
+  const leaderChips = useMemo(
+    () =>
+      topIds.slice(0, 4).flatMap((id) => {
+        const r = rikishiMap.get(id);
+        if (!r) return [];
+        const rec = basho.standings.get(id);
+        return [
+          {
+            id,
+            rikishi: r,
+            record: rec ? `${rec.wins}-${rec.losses}` : undefined,
+            avatar: resolveAvatar({
+              id: r.id,
+              stored: r.avatarConfig,
+              nationality: r.nationality,
+              ...rikishiStageInput(r, currentYear),
+            }),
+          },
+        ];
+      }),
+    [topIds, rikishiMap, basho.standings, currentYear]
   );
 
   const isEmpty = data.length === 0;
@@ -75,6 +107,18 @@ export function BashoStandingsEvolution({
             Standings evolution available after Day 2.
           </p>
         ) : (
+          <>
+          <div className="flex flex-wrap gap-3 pb-3">
+            {leaderChips.map((chip) => (
+              <div key={chip.id} className="flex items-center gap-1.5 text-xs">
+                <SumoAvatar avatar={chip.avatar} size="xs" fallback={chip.rikishi.shikona} />
+                <RikishiName id={chip.id} name={chip.rikishi.shikona} className="font-medium" />
+                {chip.record && (
+                  <span className="text-muted-foreground tabular-nums">{chip.record}</span>
+                )}
+              </div>
+            ))}
+          </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 16 }}>
@@ -129,6 +173,7 @@ export function BashoStandingsEvolution({
               </LineChart>
             </ResponsiveContainer>
           </div>
+          </>
         )}
       </CardContent>
     </Card>

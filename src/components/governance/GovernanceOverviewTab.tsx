@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { TabsContent } from "@/components/ui/tabs";
 import { Globe } from "lucide-react";
 import { Link } from "@tanstack/react-router";
@@ -166,6 +167,7 @@ function YdcKihakuCard({ world }: { world: WorldState }) {
             data-testid={`ydc-candidate-${c.rikishi.id}`}
           >
             <div className="flex items-center gap-2">
+              <SumoAvatar avatar={c.rikishi.avatar} size="xs" fallback={c.rikishi.shikona} />
               <span className="font-medium">{c.rikishi.shikona}</span>
               <Badge
                 variant={c.supportLevel === "strong" ? "default" : "outline"}

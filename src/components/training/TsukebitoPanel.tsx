@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Plus, X } from "lucide-react";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { TsukebitoProjection } from "@/presenters/tsukebitoProjections";
 
 export function TsukebitoPanel({
@@ -38,6 +39,7 @@ export function TsukebitoPanel({
                 data-testid={`tsukebito-assignment-${a.seniorId}`}
               >
                 <div className="flex items-center gap-2 mb-2">
+                  <SumoAvatar avatar={a.seniorAvatar} size="xs" fallback={a.seniorShikona} />
                   <span className="text-sm font-medium">{a.seniorShikona}</span>
                   <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
                     {a.seniorRankLabel}
@@ -46,7 +48,10 @@ export function TsukebitoPanel({
                 <div className="space-y-1">
                   {a.tsukebito.map((t) => (
                     <div key={t.id} className="flex items-center justify-between text-xs">
-                      <span>{t.shikona}</span>
+                      <span className="flex items-center gap-1.5">
+                        <SumoAvatar avatar={t.avatar} size="xs" fallback={t.shikona} />
+                        {t.shikona}
+                      </span>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -81,6 +86,7 @@ export function TsukebitoPanel({
                   data-testid={`tsukebito-senior-${s.id}`}
                 >
                   <div className="flex items-center gap-2 mb-2">
+                    <SumoAvatar avatar={s.avatar} size="xs" fallback={s.shikona} />
                     <span className="text-sm font-medium">{s.shikona}</span>
                     <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
                       {s.rankLabel}

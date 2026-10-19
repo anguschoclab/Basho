@@ -1,6 +1,9 @@
 import { Badge } from "@/components/ui/badge";
-import { Users, User } from "lucide-react";
+import { Users } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { LineageTree } from "@/components/game/LineageTree";
 
@@ -8,9 +11,17 @@ interface RikishiLineageProps {
   mentor: Rikishi | null;
   mentees: (Rikishi | null)[];
   rikishiId: string;
+  currentYear?: number;
 }
 
-export function RikishiLineage({ mentor, mentees, rikishiId }: RikishiLineageProps) {
+export function RikishiLineage({ mentor, mentees, rikishiId, currentYear = DEFAULT_START_YEAR }: RikishiLineageProps) {
+  const avatarOf = (r: Rikishi) =>
+    resolveAvatar({
+      id: r.id,
+      stored: r.avatarConfig,
+      nationality: r.nationality,
+      ...rikishiStageInput(r, currentYear),
+    });
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
       {/* Mentor & Mentees Summary */}
@@ -25,9 +36,7 @@ export function RikishiLineage({ mentor, mentees, rikishiId }: RikishiLineagePro
               <p className="text-[10px] text-muted-foreground uppercase mb-2">Primary Mentor</p>
               {mentor ? (
                 <div className="flex items-center gap-3 p-3 bg-card/50 border border-border/50 rounded-lg group hover:border-gold/50 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                  </div>
+                  <SumoAvatar avatar={avatarOf(mentor)} size="sm" fallback={mentor.shikona} />
                   <div>
                     <RikishiName
                       id={mentor.id}
@@ -55,7 +64,10 @@ export function RikishiLineage({ mentor, mentees, rikishiId }: RikishiLineagePro
                           key={m.id}
                           className="flex items-center justify-between p-2 hover:bg-card/30 rounded-md transition-colors"
                         >
-                          <RikishiName id={m.id} name={m.shikona} className="text-xs" />
+                          <span className="flex items-center gap-2 min-w-0">
+                            <SumoAvatar avatar={avatarOf(m)} size="xs" fallback={m.shikona} />
+                            <RikishiName id={m.id} name={m.shikona} className="text-xs" />
+                          </span>
                           <Badge variant="outline" className="text-[10px] px-1 py-0">
                             {m.rank}
                           </Badge>

@@ -11,6 +11,8 @@ import { Badge } from "../ui/badge";
 import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
 import { TooltipWrap } from "../ui/tooltip-wrap";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,11 +20,13 @@ import type {
   PreBashoAssessment as PreBashoAssessmentType,
   WorldState,
 } from "@/presenters/uiDigest";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 
 const AssessmentRow = React.memo(
   ({
     rikishiId,
     shikona,
+    avatar,
     injuryRisk,
     withdrawalRecommended,
     recommendedFocus,
@@ -30,6 +34,7 @@ const AssessmentRow = React.memo(
   }: {
     rikishiId: string;
     shikona: string;
+    avatar?: AvatarRenderData;
     injuryRisk: string;
     withdrawalRecommended: boolean;
     recommendedFocus: string;
@@ -38,6 +43,7 @@ const AssessmentRow = React.memo(
     return (
       <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-muted/50 text-xs">
         <div className="flex items-center gap-2 flex-1 min-w-0">
+          <SumoAvatar avatar={avatar} size="xs" fallback={shikona} />
           <span className="font-medium truncate">
             <RikishiName id={rikishiId} name={shikona} />
           </span>
@@ -86,6 +92,12 @@ const AssessmentList = React.memo(
           key={rikishiId}
           rikishiId={rikishiId}
           shikona={rikishi.shikona}
+          avatar={resolveAvatar({
+            id: rikishi.id,
+            stored: rikishi.avatarConfig,
+            nationality: rikishi.nationality,
+            ...rikishiStageInput(rikishi, world.year),
+          })}
           injuryRisk={rikishiAssessment.injuryRisk}
           withdrawalRecommended={rikishiAssessment.withdrawalRecommended}
           recommendedFocus={rikishiAssessment.recommendedFocus}

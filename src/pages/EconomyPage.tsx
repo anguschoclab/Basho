@@ -169,7 +169,7 @@ export default function EconomyPage() {
               }}
             />
           </div>
-          <SponsorDrawCard topEarners={topEarners} />
+          <SponsorDrawCard topEarners={topEarners} currentYear={world.year} />
         </div>
 
         {/* Info Note */}

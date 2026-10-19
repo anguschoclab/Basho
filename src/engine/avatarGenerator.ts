@@ -29,7 +29,7 @@ import type { Rikishi } from "./types/rikishi";
 import type { Oyakata } from "./types/oyakata";
 import type { Staff } from "./types/staff";
 import type { Gyoji, Shimpan } from "./types/gyoji";
-import type { AcademyStaff } from "./types/academy";
+import type { AcademyStaff, YouthProspect } from "./types/academy";
 import type { TalentCandidate } from "./types/talent";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
@@ -286,13 +286,19 @@ export interface ResolveAvatarArgs extends AvatarStageInput {
   id: string;
   nationality?: string;
   stored?: AvatarIdentity | undefined;
+  /**
+   * Extra seeds that legitimately belong to this entity — e.g. an oyakata
+   * converted from a rikishi keeps `seed = formerRikishiId`.
+   */
+  seedAliases?: string[];
 }
 
 /** Build the render pair: stored identity if present/valid, else derive by id. */
 export function resolveAvatar(args: ResolveAvatarArgs): AvatarRenderData {
-  const { id, nationality, stored, ...stageInput } = args;
+  const { id, nationality, stored, seedAliases, ...stageInput } = args;
+  const validSeeds = seedAliases?.length ? [id, ...seedAliases] : [id];
   const identity =
-    stored && stored.version === AVATAR_VERSION
+    stored && stored.version === AVATAR_VERSION && validSeeds.includes(stored.seed)
       ? stored
       : generateAvatarIdentity({
           seed: id,
@@ -301,6 +307,134 @@ export function resolveAvatar(args: ResolveAvatarArgs): AvatarRenderData {
         });
   const role = stageInput.role ?? identity.role;
   return { identity, stage: deriveAvatarStage({ ...stageInput, role }, identity) };
+}
+
+// ---------------------------------------------------------------------------
+// Load-time backfill
+// ---------------------------------------------------------------------------
+
+type HeyaLike = {
+  youthAcademy?: {
+    prospects?: YouthProspect[];
+    staff?: AcademyStaff[];
+  };
+};
+
+/** Minimal shape an entity needs to receive a generated identity. */
+type AvatarBearer = { id: string; avatarConfig?: AvatarIdentity; nationality?: string };
+
+function valuesOf<T>(c: Map<string, T> | Record<string, T> | undefined): T[] {
+  if (!c) return [];
+  return c instanceof Map ? Array.from(c.values()) : Object.values(c);
+}
+
+function isV2Identity(c: AvatarIdentity | undefined): c is AvatarIdentity {
+  return c != null && c.version === AVATAR_VERSION;
+}
+
+/**
+ * Assign deterministic v2 AvatarIdentity to every person entity missing one
+ * (or carrying a stale version). Seeds are bound to each entity's unique
+ * stable id — oyakata prefer `formerRikishiId` so converted elders keep the
+ * wrestler's face. Called at world creation and inside `deserializeWorld`.
+ */
+export function ensureAvatarIdentities(world: {
+  rikishi?: Map<string, AvatarBearer> | Record<string, AvatarBearer>;
+  historicalRikishi?: Map<string, AvatarBearer> | Record<string, AvatarBearer>;
+  oyakata?: Map<string, Oyakata> | Record<string, Oyakata>;
+  staff?: Map<string, Staff> | Record<string, Staff>;
+  gyojiPool?: Gyoji[];
+  shimpanPool?: Shimpan[];
+  talentPool?: { candidates?: Record<string, TalentCandidate> };
+  candidatePool?: { candidates?: Record<string, TalentCandidate> };
+  heyas?: Map<string, HeyaLike> | Record<string, HeyaLike>;
+}): void {
+  const rikishiVals = valuesOf(world.rikishi);
+  const histVals = valuesOf(world.historicalRikishi);
+  for (const r of [...rikishiVals, ...histVals]) {
+    if (!isV2Identity(r.avatarConfig)) {
+      r.avatarConfig = generateAvatarIdentity({
+        seed: r.id,
+        nationality: r.nationality ?? "Japan",
+        role: "rikishi",
+      });
+    }
+  }
+
+  for (const o of valuesOf(world.oyakata)) {
+    if (!isV2Identity(o.avatarConfig)) {
+      o.avatarConfig = generateAvatarIdentity({
+        seed: o.formerRikishiId ?? o.id,
+        nationality: "Japan",
+        role: "oyakata",
+      });
+    }
+  }
+
+  for (const s of valuesOf(world.staff)) {
+    if (!isV2Identity(s.avatarConfig)) {
+      s.avatarConfig = generateAvatarIdentity({
+        seed: s.id,
+        nationality: "Japan",
+        role: "staff",
+      });
+    }
+  }
+
+  for (const g of world.gyojiPool ?? []) {
+    if (!isV2Identity(g.avatarConfig)) {
+      g.avatarConfig = generateAvatarIdentity({
+        seed: g.id,
+        nationality: "Japan",
+        role: "gyoji",
+      });
+    }
+  }
+
+  for (const s of world.shimpanPool ?? []) {
+    if (!isV2Identity(s.avatarConfig)) {
+      s.avatarConfig = generateAvatarIdentity({
+        seed: s.id,
+        nationality: "Japan",
+        role: "shimpan",
+      });
+    }
+  }
+
+  for (const pool of [world.talentPool, world.candidatePool]) {
+    for (const c of Object.values(pool?.candidates ?? {})) {
+      if (!isV2Identity(c.avatarConfig)) {
+        c.avatarConfig = generateAvatarIdentity({
+          seed: c.personId,
+          nationality: c.nationality ?? "Japan",
+          role: "prospect",
+        });
+      }
+    }
+  }
+
+  for (const h of valuesOf(world.heyas)) {
+    const academy = h.youthAcademy;
+    if (!academy) continue;
+    for (const p of academy.prospects ?? []) {
+      if (!isV2Identity(p.avatarConfig)) {
+        p.avatarConfig = generateAvatarIdentity({
+          seed: p.id,
+          nationality: "Japan",
+          role: "prospect",
+        });
+      }
+    }
+    for (const s of academy.staff ?? []) {
+      if (!isV2Identity(s.avatarConfig)) {
+        s.avatarConfig = generateAvatarIdentity({
+          seed: s.id,
+          nationality: "Japan",
+          role: "staff",
+        });
+      }
+    }
+  }
 }
 
 export function rikishiStageInput(r: Rikishi, currentYear: number): AvatarStageInput {

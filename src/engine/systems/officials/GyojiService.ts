@@ -16,7 +16,7 @@ export function generateGyoji(seed: string, rank: Gyoji["rank"], index: number):
   const surnames = ["Kimura", "Shikimori", "Inosuke", "Hideki", "Toshio", "Masaru"];
   const givenName = rank === "tate" ? "Shonosuke" : "Kazuki";
   const surname = surnames[Math.floor(rng.next() * surnames.length)];
-  const id = `gyoji-${rank}-${index}` as Id;
+  const id = rng.uuid("GY") as Id;
   const yearsActive = Math.floor(rng.next() * 15) + 1;
 
   return {
@@ -38,7 +38,7 @@ export function generateShimpan(seed: string, index: number): Shimpan {
   const accuracy = Math.max(40, Math.min(90, 60 + Math.floor(rng.next() * 30 - 15)));
   const surnames = ["Iwai", "Nakamura", "Tanaka", "Sato", "Suzuki"];
   const name = surnames[Math.floor(rng.next() * surnames.length)];
-  const id = `shimpan-${index}` as Id;
+  const id = rng.uuid("SH") as Id;
   const yearsActive = Math.floor(rng.next() * 20) + 1;
 
   return {

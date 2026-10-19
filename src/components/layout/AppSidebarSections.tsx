@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Building2, AlertTriangle, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { getMenuGroups } from "./sidebarConfig";
 import type { getPlayerHeya } from "@/presenters/engineAccess";
 
@@ -214,11 +216,13 @@ export function SidebarNav({
 /** Footer: stable status + basho day progress. */
 export function SidebarStatusFooter({
   playerHeya,
+  playerOyakataAvatar,
   fundsCritical,
   inBasho,
   bashoDay,
 }: {
   playerHeya: PlayerHeya | null;
+  playerOyakataAvatar?: AvatarRenderData;
   fundsCritical: boolean;
   inBasho: boolean;
   bashoDay: number | undefined;
@@ -236,22 +240,31 @@ export function SidebarStatusFooter({
 
       {playerHeya && (
         <div className="flex items-center gap-2.5 px-1 group-data-[collapsible=icon]:justify-center">
-          {/* Stable status dot */}
-          <div
-            className="h-7 w-7 rounded shrink-0 flex items-center justify-center"
-            style={{
-              background: fundsCritical
-                ? "hsl(var(--destructive) / 0.15)"
-                : "hsl(var(--sidebar-foreground) / 0.08)",
-              border: `1px solid ${fundsCritical ? "hsl(var(--destructive) / 0.3)" : "hsl(var(--sidebar-border))"}`,
-            }}
-          >
-            {fundsCritical ? (
-              <AlertTriangle className="h-3.5 w-3.5 text-[hsl(var(--destructive))]" />
-            ) : (
-              <Building2 className="h-3.5 w-3.5 text-[hsl(var(--sidebar-foreground)/0.5)]" />
-            )}
-          </div>
+          {/* Stable face — player oyakata portrait (falls back to status icon) */}
+          {fundsCritical || !playerOyakataAvatar ? (
+            <div
+              className="h-7 w-7 rounded shrink-0 flex items-center justify-center"
+              style={{
+                background: fundsCritical
+                  ? "hsl(var(--destructive) / 0.15)"
+                  : "hsl(var(--sidebar-foreground) / 0.08)",
+                border: `1px solid ${fundsCritical ? "hsl(var(--destructive) / 0.3)" : "hsl(var(--sidebar-border))"}`,
+              }}
+            >
+              {fundsCritical ? (
+                <AlertTriangle className="h-3.5 w-3.5 text-[hsl(var(--destructive))]" />
+              ) : (
+                <Building2 className="h-3.5 w-3.5 text-[hsl(var(--sidebar-foreground)/0.5)]" />
+              )}
+            </div>
+          ) : (
+            <SumoAvatar
+              avatar={playerOyakataAvatar}
+              size="sm"
+              fallback={playerHeya.name}
+              className="shrink-0"
+            />
+          )}
 
           <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden">
             <span
