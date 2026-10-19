@@ -3,7 +3,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { useGame } from "@/contexts/useGame";
 import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";
 import { WelfarePanel } from "@/components/game/WelfarePanel";
@@ -99,7 +99,7 @@ export default function InjuryRecoveryPage() {
 
       <div className="space-y-8">
         <PageHeader
-          eyebrow="── MY STABLE ──"
+          eyebrow="MY STABLE"
           title="Performance Center"
           lede="Monitor and manage injured wrestlers. Better recovery facilities speed healing."
         />

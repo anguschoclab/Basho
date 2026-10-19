@@ -25,7 +25,7 @@ import type { WorldState } from "@/presenters/uiDigest";
 
 const RUNWAY_COLORS: Record<string, string> = {
   secure: "hsl(var(--success))",
-  comfortable: "hsl(145 55% 48%)",
+  comfortable: "hsl(var(--success) / 0.75)",
   tight: "hsl(var(--warning))",
   critical: "hsl(var(--destructive))",
   desperate: "hsl(var(--destructive))",
@@ -286,21 +286,21 @@ export function AdvanceButton({ world }: { world: WorldState }) {
             fontFamily: "var(--font-mono)",
             letterSpacing: "0.08em",
             background: inBasho
-              ? "linear-gradient(135deg, hsl(var(--east)) 0%, hsl(44 78% 46%) 100%)"
+              ? "linear-gradient(135deg, hsl(var(--east)) 0%, hsl(var(--gold)) 100%)"
               : cyclePhase === "banzuke_reveal"
                 ? "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--west)) 100%)"
-                : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(44 68% 40%) 100%)",
-            color: "hsl(222 32% 5%)",
+                : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--gold-deep)) 100%)",
+            color: "hsl(var(--primary-foreground))",
             boxShadow: inBasho
-              ? "0 2px 12px hsl(var(--east) / 0.3), inset 0 1px 0 hsl(38 80% 80% / 0.3)"
-              : "0 2px 12px hsl(var(--primary) / 0.35), inset 0 1px 0 hsl(38 80% 80% / 0.3)",
+              ? "0 2px 12px hsl(var(--east) / 0.3), inset 0 1px 0 hsl(var(--gold-highlight) / 0.3)"
+              : "0 2px 12px hsl(var(--primary) / 0.35), inset 0 1px 0 hsl(var(--gold-highlight) / 0.3)",
           }}
         >
           <span
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             style={{
               background:
-                "linear-gradient(90deg, transparent 0%, hsl(38 80% 80% / 0.2) 50%, transparent 100%)",
+                "linear-gradient(90deg, transparent 0%, hsl(var(--gold-highlight) / 0.2) 50%, transparent 100%)",
               transform: "skewX(-20deg)",
             }}
           />

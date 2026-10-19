@@ -122,9 +122,9 @@ export function NoActiveBashoEmpty() {
         <EmptyState
           icon={Trophy}
           title="No Active Tournament"
-          description="Advance time on the Control Center to begin the next basho."
+          description="Advance time on the Dashboard to begin the next basho."
           action={{
-            label: "Return to Control Center",
+            label: "Return to Dashboard",
             onClick: () => navigate({ to: "/dashboard" }),
             variant: "outline",
           }}

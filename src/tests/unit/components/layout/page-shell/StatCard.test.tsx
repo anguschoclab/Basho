@@ -5,10 +5,10 @@ import {
   StatCard,
   type StatItem,
   type ProgressItem,
-} from "@/components/layout/control-center/StatCard";
+} from "@/components/layout/page-shell/StatCard";
 
 // Mock CardEyebrow to isolate StatCard logic
-vi.mock("@/components/layout/control-center/CardEyebrow", () => ({
+vi.mock("@/components/layout/page-shell/CardEyebrow", () => ({
   CardEyebrow: ({ eyebrow, title, icon, actions }: any) => (
     <div
       data-testid="card-eyebrow"

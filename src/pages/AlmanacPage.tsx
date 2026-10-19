@@ -13,7 +13,7 @@ import { useGame } from "@/contexts/useGame";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { History, Award, Gavel, Swords, Trophy } from "lucide-react";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { useAlmanacDerived } from "@/hooks/useAlmanacDerived";
 import {
   AlmanacIntro,
@@ -50,7 +50,7 @@ export default function AlmanacPage() {
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── RECORDS ──"
+          eyebrow="RECORDS"
           title="力士名鑑"
           lede="The living memory of the dohyo — records, dynasties, and statistics."
         />

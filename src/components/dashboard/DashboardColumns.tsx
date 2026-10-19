@@ -1,7 +1,7 @@
 /**
  * DashboardColumns.tsx
  *
- * The three-column body of the Dashboard control center:
+ * The three-column body of the Dashboard:
  * stable overview, tournament/calendar, and training/trends.
  */
 
@@ -9,8 +9,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Coins, Dumbbell, Users } from "lucide-react";
 import type { WorldState } from "@/presenters/uiDigest";
-import { StatCard, ListCard, ProgressRow } from "@/components/layout/control-center";
-import { InstitutionWidget, TrendsWidget, CalendarWidget, BashoWidget } from "./index";
+import { StatCard, ListCard, ProgressRow } from "@/components/layout/page-shell";
+import { StableHealthWidget, TrendsWidget, CalendarWidget, BashoWidget } from "./index";
 import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
 import { projectNakabi } from "@/presenters/nakabiProjections";
 import { formatYen } from "@/utils/engineUtils";
@@ -27,9 +27,9 @@ export function DashboardStableColumn({ derived }: { derived: Derived }) {
   const { playerHeya, digest, finance, training, rosterData } = derived;
   return (
     <div className="space-y-4">
-      <InstitutionWidget />
+      <StableHealthWidget />
       <StatCard
-        eyebrow="── MY STABLE ──"
+        eyebrow="MY STABLE"
         title="Roster Status"
         icon={Users}
         stats={[
@@ -63,7 +63,7 @@ export function DashboardStableColumn({ derived }: { derived: Derived }) {
       />
 
       <ListCard
-        eyebrow="── TOP WRESTLERS ──"
+        eyebrow="TOP WRESTLERS"
         title="Active Roster"
         rows={rosterData.rows}
         actions={
@@ -79,7 +79,7 @@ export function DashboardStableColumn({ derived }: { derived: Derived }) {
       />
 
       <StatCard
-        eyebrow="── FINANCES ──"
+        eyebrow="FINANCES"
         title="Treasury"
         icon={Coins}
         stats={[
@@ -145,7 +145,7 @@ export function DashboardTrainingColumn({ training }: { training: DashboardDeriv
   return (
     <div className="space-y-4">
       <StatCard
-        eyebrow="── TRAINING ──"
+        eyebrow="TRAINING"
         title="Weekly Regime"
         icon={Dumbbell}
         stats={[
@@ -189,7 +189,7 @@ export function DashboardTrainingColumn({ training }: { training: DashboardDeriv
 
       {training && training.rosterStatuses.length > 0 && (
         <div className="paper rounded-lg p-4 space-y-2">
-          <p className="stat-label text-gold tracking-[0.15em] text-[10px]">── FATIGUE LEVELS ──</p>
+          <p className="stat-label text-gold tracking-[0.15em] text-[10px]">"FATIGUE LEVELS"</p>
           {training.rosterStatuses.slice(0, 6).map((rs) => (
             <ProgressRow
               key={rs.id}

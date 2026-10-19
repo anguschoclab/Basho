@@ -25,17 +25,33 @@ const FILTER_OPTIONS = [
   { value: "career", label: "Career" },
 ];
 
-/** Header — "Messages" title + category filter pills. */
+/** Header — "Messages" title + category filter pills + unread marker. */
 export function EventLogHeader({
   filter,
   onFilterChange,
+  unreadCount = 0,
+  onMarkAllRead,
 }: {
   filter: string;
   onFilterChange: (value: string) => void;
+  unreadCount?: number;
+  onMarkAllRead?: () => void;
 }) {
   return (
     <div className="p-3 border-b border-border shrink-0">
-      <h2 className="font-display font-semibold text-sm">Messages</h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-display font-semibold text-sm">Messages</h2>
+        {unreadCount > 0 && (
+          <button
+            type="button"
+            onClick={onMarkAllRead}
+            className="text-[10px] font-semibold text-primary hover:text-primary/80 transition-colors"
+            aria-label={`Mark all ${unreadCount} events as read`}
+          >
+            {unreadCount} new · mark all read
+          </button>
+        )}
+      </div>
       <div className="flex gap-1 mt-2 flex-wrap">
         {FILTER_OPTIONS.map((f) => (
           <Button
@@ -59,10 +75,12 @@ export function EventLogHeader({
 function EventRow({
   event: e,
   isPlayerRelevant,
+  isUnread = false,
   onClick,
 }: {
   event: EngineEvent;
   isPlayerRelevant: boolean;
+  isUnread?: boolean;
   onClick: (event: EngineEvent) => void;
 }) {
   const meta = getCategoryMeta(e.category);
@@ -93,7 +111,13 @@ function EventRow({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 mb-0.5">
-            <span className="text-xs font-bold text-muted-foreground group-hover:text-white transition-colors truncate">
+            <span className="text-xs font-bold text-muted-foreground group-hover:text-foreground transition-colors truncate flex items-center gap-1.5">
+              {isUnread && (
+                <span
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+                  aria-label="Unread event"
+                />
+              )}
               <MentionText text={e.title} />
             </span>
             <span className="text-[10px] text-muted-foreground shrink-0 font-medium">
@@ -138,10 +162,12 @@ export interface EventGroup {
 export function EventLogList({
   grouped,
   playerHeyaId,
+  isUnread,
   onEventClick,
 }: {
   grouped: EventGroup[];
   playerHeyaId?: string;
+  isUnread?: (id: string) => boolean;
   onEventClick: (event: EngineEvent) => void;
 }) {
   return (
@@ -164,6 +190,7 @@ export function EventLogList({
                 key={e.id}
                 event={e}
                 isPlayerRelevant={e.heyaId === playerHeyaId}
+                isUnread={isUnread?.(e.id) ?? false}
                 onClick={onEventClick}
               />
             ))}

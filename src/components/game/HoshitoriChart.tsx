@@ -41,7 +41,7 @@ function outcomeFromDayResult(d: DayResult): Outcome {
 const CELL_STYLE: Record<Outcome, string> = {
   win: "bg-foreground/90 text-background",
   loss: "bg-muted text-muted-foreground",
-  kinboshi: "bg-gold text-black",
+  kinboshi: "bg-gold text-gold-foreground",
   absence: "bg-muted/40 text-muted-foreground border border-dashed border-muted-foreground/40",
   pending: "bg-transparent text-muted-foreground/30 border border-dashed border-border/40",
 };

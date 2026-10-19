@@ -44,13 +44,13 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
           avatar={rikishi.avatar}
           size="lg"
           fallback={rikishi.shikona}
-          className="border-2 border-white/20"
+          className="border-2 border-on-scrim/20"
         />
         <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Badge
             variant="secondary"
-            className="text-[10px] uppercase font-black bg-white text-primary tracking-widest px-2"
+            className="text-[10px] uppercase font-black bg-card text-primary tracking-widest px-2"
           >
             Rikishi Dossier
           </Badge>
@@ -70,7 +70,7 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
 /** Quick-stats strip across the top of the body. */
 export function QuickStatsRow({ rikishi }: { rikishi: UIRikishi }) {
   return (
-    <div className="flex gap-2 bg-black/5 p-3 rounded-lg border border-border/30">
+    <div className="flex gap-2 bg-foreground/5 p-3 rounded-lg border border-border/30">
       {RIKISHI_QUICK_STATS.map((stat) => (
         <div key={stat.label} className="flex-1 text-center">
           <div className="text-2xl font-display font-black leading-none">{stat.value(rikishi)}</div>

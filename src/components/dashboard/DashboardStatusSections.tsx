@@ -1,7 +1,7 @@
 /**
  * DashboardStatusSections.tsx
  *
- * Conditional status sections of the Dashboard control center:
+ * Conditional status sections of the Dashboard:
  * exhibition invitations + gomenfuda sanctions, holiday digest,
  * phase-dependent widget grid, and the succession modal.
  */
@@ -29,7 +29,7 @@ import {
   TrainingWidget,
   PreBashoAssessmentPanel,
   RosterWidget,
-  IntelligencePanel,
+  AdvisorPanel,
   AcademyWidget,
 } from "./index";
 import type { DashboardDerived } from "@/hooks/useDashboardDerived";
@@ -148,7 +148,7 @@ export function DashboardPhaseWidgets({
         </>
       )}
       <RosterWidget />
-      <IntelligencePanel recommendations={advisorRecs} />
+      <AdvisorPanel recommendations={advisorRecs} />
       {world && playerHeya && (
         <AcademyWidget
           projection={projectYouthAcademy(world, playerHeya.id)}

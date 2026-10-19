@@ -1,7 +1,7 @@
 /**
  * ListCard.tsx
  * ============
- * Control Center generic list card.
+ * Page shell generic list card.
  * Accepts typed rows; renders eyebrow, title, and a scrollable list of items.
  * Each row: label (left), value (right), optional sub-label and tone color.
  */

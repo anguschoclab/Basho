@@ -546,6 +546,36 @@ When in doubt about a decorative element, ask: does this reference the arena, th
 - Event titles: sentence case, Spectral, foreground color
 - Event summaries: sentence case, Spectral, muted foreground, max 2 lines
 - Timestamps: JetBrains Mono, 10px, muted foreground
+- Filter pills: `aria-pressed` state, square/bordered buttons, active = primary
+- Event rows deep-link via `getEventRoute` to the canonical nested route — never to a redirect alias
+- Unread events carry a small primary dot; read state persists in `localStorage` via `eventReadStore`
+
+### Canonical Section Eyebrows
+
+Every `PageHeader` eyebrow is a single uppercase mono word from the section
+set — no decorative `── X ──` brackets:
+
+`DASHBOARD` · `MY STABLE` · `TOURNAMENT` · `OFFICE` · `ASSOCIATION` ·
+`RECORDS` · `POST-BASHO` · `REFERENCE` · `SETTINGS`
+
+### Banned Terms
+
+The following labels are retired. They describe institutions, spy fiction,
+or control rooms — not a heya.
+
+| Banned                          | Canonical replacement          |
+| ------------------------------- | ------------------------------ |
+| `Control Center`                | `Dashboard`                    |
+| `Institution` (the heya)        | `Stable` / `Heya` / `Health`   |
+| `Intelligence` (advice panel)   | `Advisor`                      |
+| `Scout Intel`                   | `Scouting`                     |
+| `Institutional Interface`       | plain loading copy             |
+| `Institutional Grade`           | `Sumo Management`              |
+| `Your intelligence network`     | `Scouts from rival stables`    |
+
+(`Institutional` remains valid inside the JSA/federation domain —
+institutional debt, stipulations, feuds — where it describes the
+association, not the player's heya.)
 
 ---
 
@@ -592,6 +622,7 @@ rather than hardcoded Tailwind color classes like `text-yellow-400`.
 | `src/components/layout/MainContentPane.tsx` | Content area wrapper, page title, padding                                 |
 | `src/components/layout/SubNavTabs.tsx`      | Page-level sub-navigation tabs                                            |
 | `src/components/layout/EventLogPanel.tsx`   | Right pane event log                                                      |
+| `src/components/layout/page-shell/`         | Canonical page primitives (PageHeader, StatCard, ListCard, DataTable…)    |
 
 ---
 
@@ -612,7 +643,35 @@ rather than hardcoded Tailwind color classes like `text-yellow-400`.
 | One primary CTA per view                          | Multiple gold buttons competing            |
 | Staggered entrance animations on lists            | Simultaneous pop-in of all list items      |
 | Test in dark mode first                           | Design in light mode, patch dark mode      |
+| Canonical single-word eyebrows (`DASHBOARD`)      | Decorative `── X ──` bracket eyebrows      |
+| `hsl(var(--token))` or token utilities            | `text-white`, `bg-black`, numeric `hsl()`  |
+| CSS variable shadows (`--shadow-gold`)            | Raw `rgba()` shadow values                 |
+| `letterSpacing` ≤ 0.15em                          | Inline tracking above 0.15em               |
+| Sumo-native labels (Dashboard, Stable, Advisor)   | Institutional/Intelligence/Control copy    |
 
 ---
 
-Last updated: April 2026 — Kokugikan Noir v1.0
+## 16. Mechanical Enforcement
+
+`scripts/designScan.ts` scans `src/components/**`, `src/pages/**`, and
+`src/contexts/**` and writes `docs/audit/design-violations.csv`.
+`src/tests/unit/audit/designBible.test.ts` gates the suite on zero
+violations. Enforced rules:
+
+| Rule                         | Severity | Catches                                                        |
+| ---------------------------- | -------- | -------------------------------------------------------------- |
+| `hardcoded-hsl`              | P0       | Numeric `hsl(44 …)` literals (only `hsl(var(--…))` is allowed) |
+| `raw-white-black`            | P0       | `text/bg/border/ring-from-to-via-white\|black` utilities       |
+| `rgba-shadow`                | P1       | `rgba(...)` in arbitrary Tailwind shadows and inline styles    |
+| `inline-oversized-tracking`  | P2       | `letterSpacing:` inline values above 0.15em                    |
+| `cosplay-copy`               | P2       | Banned strings (§11 Banned Terms) in source                    |
+| `screaming-copy`             | P2       | SNAKE_CASE display copy (plain uppercase eyebrows are allowed) |
+
+Exemptions are file-targeted via each rule's `exempt` field — the only
+sanctioned literal-color file is `src/constants/ui/drawingPalette.ts`
+(canvas/SVG drawing literals). `.glass` in `index.css` is a sanctioned
+token-based overlay class.
+
+---
+
+Last updated: October 2026 — Kokugikan Noir v1.1

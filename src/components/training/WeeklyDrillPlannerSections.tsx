@@ -349,10 +349,10 @@ export function DrillGrid({
 export function RegimenFooter() {
   return (
     <div className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-8 border-2 border-primary/20 shadow-2xl bg-primary/5 relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-1 bg-primary text-[10px] font-black uppercase text-white px-3 rotate-45 translate-x-4 translate-y-2">
+      <div className="absolute top-0 right-0 p-1 bg-primary text-[10px] font-black uppercase text-primary-foreground px-3 rotate-45 translate-x-4 translate-y-2">
         READY FOR TICK
       </div>
-      <div className="h-16 w-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg transform -rotate-3 hover:rotate-0 transition-transform">
+      <div className="h-16 w-16 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center shrink-0 shadow-lg transform -rotate-3 hover:rotate-0 transition-transform">
         <ArrowRightCircle className="h-10 w-10" />
       </div>
       <div className="space-y-3 flex-1">

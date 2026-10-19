@@ -2,7 +2,7 @@
  * StablePageTabs.tsx
  *
  * Tab content sections of StablePage — roster grid with mentor
- * assignment, institution panel, tsukebito attendants, and youth academy.
+ * assignment, stable health panel, tsukebito attendants, and youth academy.
  */
 
 import { useNavigate } from "@tanstack/react-router";
@@ -15,7 +15,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { AlertTriangle, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { InstitutionPanel } from "@/components/game/InstitutionPanel";
+import { StableHealthPanel } from "@/components/game/StableHealthPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
@@ -131,13 +131,13 @@ export function RosterTab({
   );
 }
 
-/** Institution panel for the viewed heya. */
-export function InstitutionTab({ world, heya }: { world: WorldState; heya: Heya }) {
+/** Stable health panel for the viewed heya. */
+export function HeyaTab({ world, heya }: { world: WorldState; heya: Heya }) {
   const data = projectHeyaData(world, heya.id);
   if (!data) return null;
   return (
-    <TabsContent value="institution" className="space-y-4">
-      <InstitutionPanel
+    <TabsContent value="heya" className="space-y-4">
+      <StableHealthPanel
         heya={heya}
         oyakata={data.oyakata ?? null}
         oyakataQuirks={data.oyakataQuirks}

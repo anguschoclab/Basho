@@ -1,5 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useState } from "react";
@@ -49,7 +49,7 @@ export default function RivalriesPage() {
 
       <div className="space-y-6 animate-fade-in">
         <PageHeader
-          eyebrow="── TOURNAMENT ──"
+          eyebrow="TOURNAMENT"
           title="Rivalries & Feuds"
           lede="Tension, history, and blood feuds across the dohyo."
         />

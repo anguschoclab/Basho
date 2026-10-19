@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Sparkles, TrendingUp, Swords, Coins, Users, Dumbbell, Trophy, Star } from "lucide-react";
 import type { AIRecommendation } from "@/presenters/engineAccess";
 
-interface IntelligencePanelProps {
+interface AdvisorPanelProps {
   recommendations: AIRecommendation[];
 }
 
@@ -29,9 +29,9 @@ const PRIORITY_VARIANT: Record<string, "default" | "destructive" | "secondary" |
   low: "outline",
 };
 
-export const IntelligencePanel = React.memo(function IntelligencePanel({
+export const AdvisorPanel = React.memo(function AdvisorPanel({
   recommendations,
-}: IntelligencePanelProps) {
+}: AdvisorPanelProps) {
   const sorted = useMemo(
     () =>
       [...recommendations].sort((a, b) => {
@@ -43,14 +43,14 @@ export const IntelligencePanel = React.memo(function IntelligencePanel({
 
   if (sorted.length === 0) {
     return (
-      <BaseWidget title="Intelligence" icon={Sparkles}>
+      <BaseWidget title="Advisor" icon={Sparkles}>
         <EmptyState title="No active recommendations" compact />
       </BaseWidget>
     );
   }
 
   return (
-    <BaseWidget title="Intelligence" icon={Sparkles}>
+    <BaseWidget title="Advisor" icon={Sparkles}>
       <ScrollArea className="h-[220px]">
         <div className="space-y-2 pr-3">
           {sorted.map((rec) => {
@@ -86,4 +86,4 @@ export const IntelligencePanel = React.memo(function IntelligencePanel({
   );
 });
 
-export default IntelligencePanel;
+export default AdvisorPanel;

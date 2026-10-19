@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { SimpleRankBadge } from "@/components/layout/control-center/RankBadge";
+import { SimpleRankBadge } from "@/components/layout/page-shell/RankBadge";
 
-describe("SimpleRankBadge (control-center)", () => {
+describe("SimpleRankBadge (page-shell)", () => {
   it.each([
     ["yokozuna", "rank-yokozuna"],
     ["ozeki", "rank-ozeki"],

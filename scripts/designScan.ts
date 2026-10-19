@@ -35,6 +35,8 @@ interface Rule {
   scopes: string[];
   /** skip lines matching this (comments, allowlists) */
   skip?: RegExp;
+  /** file paths exempt from this rule (relative-path regex, e.g. canvas literal palette) */
+  exempt?: RegExp;
   /** additional pattern that must appear within lookaheadSpan lines (incl. this line) */
   lookahead?: RegExp;
   /** how many lines ahead the lookahead may match */
@@ -125,9 +127,60 @@ const RULES: Rule[] = [
     id: "screaming-copy",
     severity: "P2",
     bibleRef: "§11 writing style — no SCREAMING_SNAKE display copy",
-    pattern: /["'`>][A-Z][A-Z_]{3,}[A-Z]["'<`]/,
+    // requires an underscore — single uppercase words (eyebrows, badges) are the
+    // sanctioned mono style; SECTOR_ALPHA-style snake tokens are the violation
+    pattern: /["'`>][A-Z][A-Z_]{2,}_[A-Z_]*[A-Z]["'<`]/,
     scopes: ["pages", "components"],
     skip: /import|from |require\(|const |className=|data-testid|key=|id=|type:|sendCommand|command|_SIM|_CMD|aria-|role=|includes\(|===|!==|filterTypes|startsWith|endsWith|\.test\(|match\(/,
+  },
+  {
+    id: "hardcoded-hsl",
+    severity: "P0",
+    bibleRef: "§2 colors — tokens only, no hardcoded HSL",
+    // hsl(222 32% 5%) is a violation; hsl(var(--gold) / 0.4) is not.
+    pattern: /\bhsl\(\s*(?!var\s*\()\d/,
+    scopes: ["pages", "components", "contexts", "hooks", "presenters", "constants"],
+    skip: /^\s*(\/\/|\/\*|\*)/,
+    // drawingPalette is the sanctioned single source of canvas/SVG literals
+    exempt: /constants\/ui\/drawingPalette\.ts$/,
+  },
+  {
+    id: "raw-white-black",
+    severity: "P0",
+    bibleRef: "§2 colors — tokens only, no raw white/black utilities",
+    // text-white, bg-black/80, border-white/20, from-black, ring-white/10, etc.
+    pattern:
+      /\b(?:text|bg|border|ring|fill|stroke|divide|placeholder|accent|caret|shadow|outline|decoration|from|via|to)-(?:white|black)(?:\/\d+)?\b/,
+    scopes: ["pages", "components", "contexts"],
+    skip: /^\s*(\/\/|\/\*|\*)/,
+  },
+  {
+    id: "rgba-shadow",
+    severity: "P1",
+    bibleRef: "§2 colors — tokens only, no raw rgb()/rgba() shadows",
+    // no \b — arbitrary classes like shadow-[..._rgba(0,0,0,.5)] are preceded by "_"
+    pattern: /[^a-zA-Z]rgba?\(\s*\d|\brgba?\(\s*\d/,
+    scopes: ["pages", "components", "contexts", "hooks", "presenters", "constants"],
+    skip: /^\s*(\/\/|\/\*|\*)/,
+    exempt: /constants\/ui\/drawingPalette\.ts$/,
+  },
+  {
+    id: "inline-oversized-tracking",
+    severity: "P2",
+    bibleRef: "§3.3 tracking ≤0.15em",
+    // letterSpacing: "0.18em" / letterSpacing="0.2em" / letterSpacing: "1em"
+    pattern: /letterSpacing\s*[:=]\s*["'`](?:0?\.(?:1[6-9]|[2-9])|[1-9])\d*em["'`]/,
+    scopes: ["pages", "components"],
+    skip: /^\s*(\/\/|\/\*|\*)/,
+  },
+  {
+    id: "cosplay-copy",
+    severity: "P2",
+    bibleRef: "§11 writing style — no HUD-cosplay institutional language",
+    pattern:
+      /\b(?:Control Center|CONTROL CENTER|Institutional Interface|Institutional Grade|Scout Intel|Scouting Intelligence|intelligence network|Intel requested|Perception Intel|COMMAND CENTER)\b/,
+    scopes: ["pages", "components", "constants", "hooks"],
+    skip: /^\s*(\/\/|\/\*|\*)|import |from |require\(|templatePath/,
   },
 ];
 
@@ -156,6 +209,7 @@ export function scanDesignViolations(): DesignViolation[] {
     const lines = src.split("\n");
     for (const rule of RULES) {
       if (!rule.scopes.includes(top)) continue;
+      if (rule.exempt?.test(rel)) continue;
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         if (!rule.pattern.test(line)) continue;

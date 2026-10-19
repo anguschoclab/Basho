@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { PageHeader } from "@/components/layout/control-center/PageHeader";
+import { PageHeader } from "@/components/layout/page-shell/PageHeader";
 
 describe("PageHeader", () => {
   it("renders a header element", () => {

@@ -197,7 +197,7 @@ export function SidebarMenuSkeleton({
         <div className="size-4 rounded-md bg-sidebar-accent" data-sidebar="menu-skeleton-icon" />
       )}
       <div
-        className="h-4 max-w-[--skeleton-width] flex-1 rounded-md bg-sidebar-accent"
+        className="h-4 max-w-(--skeleton-width) flex-1 rounded-md bg-sidebar-accent"
         data-sidebar="menu-skeleton-text"
         style={
           {

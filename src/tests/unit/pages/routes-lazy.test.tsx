@@ -79,7 +79,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   ),
 }));
 
-vi.mock("@/components/layout/control-center", () => ({
+vi.mock("@/components/layout/page-shell", () => ({
   PageHeader: () => <div data-testid="page-header" />,
   StatCard: () => <div data-testid="stat-card" />,
   ListCard: () => <div data-testid="list-card" />,
@@ -100,7 +100,7 @@ vi.mock("@/components/dashboard", () => ({
   GlobalCupWidget: () => <div data-testid="global-cup-widget" />,
   EventFeed: () => <div data-testid="event-feed" />,
   PromotionPipelineWidget: () => <div data-testid="promotion-widget" />,
-  InstitutionWidget: () => <div data-testid="institution-widget" />,
+  StableHealthWidget: () => <div data-testid="stable-health-widget" />,
   KenshoManagementWidget: () => <div data-testid="kensho-widget" />,
   SponsorRecruitmentWidget: () => <div data-testid="sponsor-widget" />,
   YushoRaceWidget: () => <div data-testid="yusho-widget" />,

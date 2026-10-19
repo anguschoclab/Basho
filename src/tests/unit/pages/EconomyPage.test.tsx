@@ -14,7 +14,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
 }));
 
-vi.mock("@/components/layout/control-center", () => ({
+vi.mock("@/components/layout/page-shell", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 
@@ -74,8 +74,8 @@ vi.mock("@/components/game/SponsorsPanel", () => ({
   SponsorsPanel: () => React.createElement("div", null, "Sponsors"),
 }));
 
-vi.mock("@/components/game/InstitutionPanel", () => ({
-  InstitutionPanel: () => React.createElement("div", null, "Institution"),
+vi.mock("@/components/game/StableHealthPanel", () => ({
+  StableHealthPanel: () => React.createElement("div", null, "Stable Health"),
 }));
 
 vi.mock("@/presenters/projections/heyaProjections", () => ({

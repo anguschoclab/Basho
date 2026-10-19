@@ -81,8 +81,8 @@ export function useRecruitingState(playerHeyaId: string | null) {
       effort: 1,
     });
     toast({
-      title: "Intel requested",
-      description: "Gathering deeper intelligence on this prospect...",
+      title: "Scout report requested",
+      description: "Gathering a deeper scout report on this prospect...",
     });
   };
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Trophy } from "lucide-react";
-import { CardEyebrow } from "@/components/layout/control-center/CardEyebrow";
+import { CardEyebrow } from "@/components/layout/page-shell/CardEyebrow";
 
 describe("CardEyebrow", () => {
   it("renders eyebrow text", () => {

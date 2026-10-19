@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
@@ -72,7 +72,7 @@ export default function StaffPage() {
     <AppLayout subNavTabs={STABLE_TABS} activeSubTab="staff" pageTitle="Support Staff">
       <div className="space-y-8">
         <PageHeader
-          eyebrow="── MY STABLE ──"
+          eyebrow="MY STABLE"
           title="Staff Management"
           lede="Manage the specialists who shape your heya's future."
         />

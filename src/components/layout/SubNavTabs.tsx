@@ -41,7 +41,7 @@ export function SubNavTabs({
         <div className="flex items-center gap-3 shrink-0 pr-5">
           <h1
             className="font-semibold text-[11px] uppercase text-[hsl(var(--muted-foreground))]"
-            style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.18em" }}
+            style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
           >
             {pageTitle}
           </h1>

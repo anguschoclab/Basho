@@ -55,7 +55,7 @@ export function ChampionSection({
                 fallback={champion.rikishi.shikona}
               />
             </div>
-            <div className="absolute -bottom-2 translate-y-1/2 left-1/2 -translate-x-1/2 bg-gold text-white font-black text-[10px] px-3 py-1 rounded-full shadow-lg z-20">
+            <div className="absolute -bottom-2 translate-y-1/2 left-1/2 -translate-x-1/2 bg-gold text-gold-foreground font-black text-[10px] px-3 py-1 rounded-full shadow-lg z-20">
               優勝
             </div>
           </div>
@@ -83,7 +83,7 @@ export function ChampionSection({
                 <div className="text-[10px] uppercase font-black opacity-40">Final Record</div>
               </div>
               {isPlayerChampion && (
-                <Badge className="bg-primary text-white font-black tracking-widest text-[10px] px-4 h-8 animate-pulse shadow-xl shadow-primary/20">
+                <Badge className="bg-primary text-primary-foreground font-black tracking-widest text-[10px] px-4 h-8 animate-pulse shadow-xl shadow-primary/20">
                   YOUR STABLE TRIUMPHS
                 </Badge>
               )}

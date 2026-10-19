@@ -1,6 +1,6 @@
-// InstitutionPanel.tsx
+// StableHealthPanel.tsx
 // Displays Welfare Risk, Compliance State, Governance, and Oyakata Persona for a Heya.
-// Canon: Beya as an institution.
+// Canon: Beya as a stable's standing.
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -13,13 +13,13 @@ import {
   GovernanceSection,
   PersonaSection,
   type WelfarePanelState,
-} from "./InstitutionPanelSections";
+} from "./StableHealthPanelSections";
 
 /**
- * institution panel.
+ * stable health panel.
  *  * @param { heya, oyakata, oyakataQuirks, oyakataTraits } - The component props.
  */
-export function InstitutionPanel({
+export function StableHealthPanel({
   heya,
   oyakata,
   oyakataQuirks,
@@ -39,7 +39,7 @@ export function InstitutionPanel({
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-4 w-4" />
-          Institutional Health
+          Stable Health
         </CardTitle>
         <CardDescription>
           Welfare responsibility, compliance posture, and manager persona.

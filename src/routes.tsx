@@ -135,7 +135,7 @@ const dashboardRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings",
-  component: () => withSuspense(SettingsPage),
+  component: () => withWorldGuard(SettingsPage),
 });
 const recapRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -435,7 +435,7 @@ const rikishiIdRoute = createRoute({
 const glossaryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/glossary",
-  component: () => withSuspense(GlossaryPage),
+  component: () => withWorldGuard(GlossaryPage),
 });
 
 const rivalStablesRoute = createRoute({

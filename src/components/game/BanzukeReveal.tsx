@@ -49,7 +49,7 @@ export function BanzukeReveal({
   }, [currentIndex, entries.length, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-6 text-white overflow-hidden">
+    <div className="fixed inset-0 z-[100] bg-scrim/90 flex flex-col items-center justify-center p-6 text-on-scrim overflow-hidden">
       <motion.h1
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}

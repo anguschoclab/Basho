@@ -39,7 +39,7 @@ export const CATEGORY_META: Record<string, { icon: LucideIcon; color: string; la
   facility: { icon: Wrench, color: "text-west", label: "Facility" },
   ai_decision: { icon: Sparkles, color: "text-primary", label: "AI Decision" },
   ai_plan_change: { icon: Sparkles, color: "text-accent", label: "AI Plan" },
-  ai_rival_posture: { icon: Sparkles, color: "text-warning", label: "Rival Intel" },
+  ai_rival_posture: { icon: Sparkles, color: "text-warning", label: "Rival Posture" },
   misc: { icon: MessageCircle, color: "text-muted-foreground", label: "Misc" },
 };
 
@@ -71,14 +71,14 @@ export function getEventRoute(e: EngineEvent): string | null {
   }
   if (cat === "scouting") return "/jsa/talent";
 
-  // Economy/sponsor → economy page
-  if (cat === "economy" || cat === "sponsor") return "/economy";
+  // Economy/sponsor → office finances page
+  if (cat === "economy" || cat === "sponsor") return "/office/finances";
 
   // Rivalry → rivalries page
-  if (cat === "rivalry") return "/rivalries";
+  if (cat === "rivalry") return "/basho/rivalries";
 
-  // Discipline/governance → governance
-  if (cat === "discipline") return "/governance";
+  // Discipline/governance → JSA governance
+  if (cat === "discipline") return "/jsa/governance";
 
   // Welfare → stable page (player's)
   if (cat === "welfare" && e.heyaId) return `/stable/${e.heyaId}`;

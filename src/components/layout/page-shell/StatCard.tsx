@@ -1,7 +1,7 @@
 /**
  * StatCard.tsx
  * ============
- * Control Center stat summary card.
+ * Page shell stat summary card.
  * Displays an eyebrow label, title, a grid of stat items, and optional
  * progress indicators. Icon is optional.
  */

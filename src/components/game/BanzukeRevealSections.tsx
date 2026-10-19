@@ -74,12 +74,12 @@ export function RevealEntryCard({ entry, isCurrent }: { entry: RevealEntry; isCu
             <RikishiName id={entry.id} name={entry.shikona} />
           </span>
           {entry.change === "new" && (
-            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-primary/80 text-white">
+            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-primary/80 text-primary-foreground">
               NEW
             </Badge>
           )}
           {entry.change === "division_change" && (
-            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-accent/80 text-white">
+            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-accent/80 text-primary-foreground">
               DIV
             </Badge>
           )}

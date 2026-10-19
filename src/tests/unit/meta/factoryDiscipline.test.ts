@@ -25,7 +25,7 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/components/KeshoEditor.test.tsx",
   "unit/components/RosterList.test.tsx",
   "unit/components/RosterWidget.test.tsx",
-  "unit/components/StableIntelTab.test.tsx",
+  "unit/components/MyStableTab.test.tsx",
   "unit/components/dashboard/CalendarWidget.test.tsx",
   "unit/components/dashboard/FinancesWidget.test.tsx",
   "unit/components/dashboard/KenshoManagementWidget.test.tsx",

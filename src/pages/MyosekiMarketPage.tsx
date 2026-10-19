@@ -10,7 +10,7 @@ import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -51,7 +51,7 @@ export default function MyosekiMarketPage() {
     >
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── ASSOCIATION ──"
+          eyebrow="ASSOCIATION"
           title="Elder Stock Market"
           lede="The Japan Sumo Association's restricted Elder Stock exchange. 105 shares exist in total."
           actions={

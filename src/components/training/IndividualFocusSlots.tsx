@@ -120,7 +120,7 @@ export function IndividualFocusSlots({
                           "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                           "flex flex-col items-center justify-center h-14 w-20 rounded-lg transition-all gap-1",
                           isActive
-                            ? "bg-primary text-white shadow-lg scale-105"
+                            ? "bg-primary text-primary-foreground shadow-lg scale-105"
                             : "text-muted-foreground hover:bg-muted"
                         )}
                         aria-label={`${opt.label}: ${opt.description}`}

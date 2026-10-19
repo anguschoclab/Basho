@@ -42,7 +42,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
 }));
 
-vi.mock("@/components/layout/control-center", () => ({
+vi.mock("@/components/layout/page-shell", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 

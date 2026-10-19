@@ -1,4 +1,4 @@
-// StableIntelTab.tsx — Full visibility into your own stables
+// MyStableTab.tsx — Full visibility into your own stables
 
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
@@ -19,7 +19,7 @@ const SORT_OPTIONS: SortOption[] = [
   { key: "technique", label: "Technique" },
 ];
 
-export function StableIntelTab({ playerHeyaId }: { playerHeyaId: string | null }) {
+export function MyStableTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const navigate = useNavigate();
   const { state } = useGame();
   const world = state.world;

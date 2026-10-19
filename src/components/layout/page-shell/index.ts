@@ -1,7 +1,7 @@
 /**
- * Control Center Primitive Library
+ * Page Shell Primitive Library
  * =================================
- * Shared layout primitives for all Control Center template pages.
+ * Shared layout primitives for all page-shell template pages.
  *
  * Convention
  * ----------

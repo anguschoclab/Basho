@@ -10,7 +10,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   ),
 }));
 
-vi.mock("@/components/layout/control-center", () => ({
+vi.mock("@/components/layout/page-shell", () => ({
   PageHeader: ({ title, lede }: { title: string; lede?: string }) => (
     <header data-testid="page-header">
       <h1>{title}</h1>

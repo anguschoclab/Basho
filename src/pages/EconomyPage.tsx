@@ -3,10 +3,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2, AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { useGame } from "@/contexts/useGame";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
-import { InstitutionPanel } from "@/components/game/InstitutionPanel";
+import { StableHealthPanel } from "@/components/game/StableHealthPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUtils";
 import { FinancialHealthOverview } from "@/components/economy/FinancialHealthOverview";
@@ -94,7 +94,7 @@ export default function EconomyPage() {
     playerHeya as typeof playerHeya & { riskIndicators?: { financial?: boolean } }
   )?.riskIndicators?.financial;
   const canRequestBailout = playerHeya.funds < 0;
-  const institutionData = projectHeyaData(world, playerHeya.id);
+  const stableHealthData = projectHeyaData(world, playerHeya.id);
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
@@ -102,7 +102,7 @@ export default function EconomyPage() {
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── OFFICE ──"
+          eyebrow="OFFICE"
           title="Financial Management"
           lede="Treasury overview, sponsorships, and debt obligations."
         />
@@ -132,13 +132,13 @@ export default function EconomyPage() {
 
         <SponsorsPanel />
 
-        {/* Institution Health */}
-        {institutionData && (
-          <InstitutionPanel
+        {/* Stable Health */}
+        {stableHealthData && (
+          <StableHealthPanel
             heya={playerHeya}
-            oyakata={institutionData.oyakata}
-            oyakataQuirks={institutionData.oyakataQuirks}
-            oyakataTraits={institutionData.oyakataTraits}
+            oyakata={stableHealthData.oyakata}
+            oyakataQuirks={stableHealthData.oyakataQuirks}
+            oyakataTraits={stableHealthData.oyakataTraits}
           />
         )}
 

@@ -50,6 +50,6 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   const dashboardHeading = page.locator("h1").first();
   await expect(dashboardHeading).toBeVisible({ timeout: 10000 });
 
-  // 6. AI deliverables: advisor digest and intelligence panel are surfaced on the dashboard
-  await expect(page.getByText("Intelligence").first()).toBeVisible({ timeout: 5000 });
+  // 6. AI deliverables: advisor digest and panel are surfaced on the dashboard
+  await expect(page.getByText("Advisor").first()).toBeVisible({ timeout: 5000 });
 });

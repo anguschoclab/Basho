@@ -56,7 +56,7 @@ export function TierBadge({ tier }: { tier: string }) {
       )}
       title={`Tier: ${config.label}`}
     >
-      <span className="text-[10px] font-bold text-white">{config.icon}</span>
+      <span className="text-[10px] font-bold text-on-scrim">{config.icon}</span>
       {/* Yokozuna gets a crown glow effect */}
       {tier === "yokozuna" && (
         <div className="absolute inset-0 rounded-full animate-pulse-glow bg-gold/20" />

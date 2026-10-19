@@ -5,7 +5,7 @@
  * dynasty registry card, and the tab strip + sort menu row.
  */
 
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,7 +34,7 @@ export function HallHero({
     <div className="relative overflow-hidden rounded-lg border bg-gold/5 p-6">
       <div className="absolute top-2 right-4 text-6xl opacity-10">🏛️</div>
       <PageHeader
-        eyebrow="── RECORDS ──"
+        eyebrow="RECORDS"
         title="Hall of Fame"
         lede={
           totalInductees > 0

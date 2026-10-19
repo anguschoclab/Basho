@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { projectMediaUIDigest } from "@/presenters/uiDigest";
 import { EventFeed } from "@/components/dashboard/EventFeed";
 import {
@@ -44,7 +44,7 @@ export default function MediaPage() {
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── ASSOCIATION ──"
+          eyebrow="ASSOCIATION"
           title="Media & Press"
           lede="Headlines, coverage, and public perception across the sumo world."
         />

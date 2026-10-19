@@ -62,7 +62,7 @@ export function RikishiProfileHeader({
                 size="lg"
                 expression={rikishi.isInjured ? "intense" : "determined"}
                 fallback={rikishi.shikona}
-                className="border-4 border-white/20 shadow-2xl"
+                className="border-4 border-on-scrim/20 shadow-2xl"
               />
               <div className="space-y-4">
                 <HeaderBadges

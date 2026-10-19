@@ -12,7 +12,7 @@ import { POLITICAL_FAVORS } from "../../engine/systems/governance/PoliticalFavor
 
 // Re-export for UI access (engine imports are restricted in pages)
 export { POLITICAL_FAVORS };
-import type { StatItem } from "@/components/layout/control-center";
+import type { StatItem } from "@/components/layout/page-shell";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "../selectors";
 import { toScandalBand } from "@/engine/descriptorBands";
 import type { ScandalBand } from "@/engine/systems/narrative/NarrativeBands";

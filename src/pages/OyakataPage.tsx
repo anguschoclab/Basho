@@ -9,7 +9,7 @@
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import {
   TraitsCard,
@@ -46,7 +46,7 @@ export default function OyakataPage() {
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── MY STABLE ──"
+          eyebrow="MY STABLE"
           title={selectedOyakata.name}
           lede={`${selectedOyakata.archetype?.replace("_", " ")} · Age ${selectedOyakata.age} · ${selectedOyakata.yearsInCharge} years in charge`}
         />

@@ -30,7 +30,7 @@ vi.mock("@/hooks/useRequireWorld", () => ({ useRequireWorld: () => true }));
 vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
 }));
-vi.mock("@/components/layout/control-center", () => ({
+vi.mock("@/components/layout/page-shell", () => ({
   PageHeader: ({ title }: { title?: string }) => <div>{title}</div>,
 }));
 

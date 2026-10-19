@@ -71,6 +71,15 @@ export const BOUT_HUD_COLORS = {
   zabuton: ["#7c3aed", "#db2777", "#0891b2", "#059669"] as const,
 } as const;
 
+/** Bout replay particle FX — rng-driven channels vary per particle (canvas fills). */
+export const FX_PARTICLES = {
+  /** Impact burst — warm orange, hue jitter applied by caller. */
+  impactAt: (hue: number) => `hsl(${hue},90%,60%)`,
+  /** Dohyo dust — fixed hue/sat, lightness varies per particle. */
+  dustAt: (lightness: number) => `hsl(38,55%,${lightness}%)`,
+  spark: "hsl(50,100%,70%)",
+} as const;
+
 /** SVG avatar anatomy (face outline, hair, expression accents). */
 export const AVATAR_COLORS = {
   ink: "#1a1a1a",

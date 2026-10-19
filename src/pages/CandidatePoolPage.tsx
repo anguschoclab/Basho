@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -215,7 +215,7 @@ export default function CandidatePoolPage() {
     <AppLayout pageTitle="NPC Watchlist" subNavTabs={ASSOCIATION_TABS} activeSubTab="talent">
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── ASSOCIATION ──"
+          eyebrow="ASSOCIATION"
           title="NPC Watchlist"
           lede="Candidates that rival stables are eyeing. Scout and poach before they sign."
         />
@@ -225,7 +225,7 @@ export default function CandidatePoolPage() {
             <div className="flex items-center justify-between gap-2">
               <CardTitle className="flex items-center gap-2">
                 <Eye className="h-5 w-5 text-primary" />
-                NPC Scouting Intelligence
+                Rival Scouting Reports
               </CardTitle>
               <SortMenu
                 options={SORT_OPTIONS}
@@ -239,7 +239,7 @@ export default function CandidatePoolPage() {
               />
             </div>
             <CardDescription>
-              Your intelligence network reports on prospects that rival stables have identified.
+              Scouts report on prospects that rival stables have identified.
               Make a competing offer to poach them before they sign.
             </CardDescription>
           </CardHeader>

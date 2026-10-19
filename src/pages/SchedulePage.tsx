@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { Division } from "@/engine/types/banzuke";
 import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
 import { getRikishi } from "@/presenters/worldAccess";
@@ -59,7 +59,7 @@ export default function SchedulePage() {
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── TOURNAMENT ──"
+          eyebrow="TOURNAMENT"
           title="Schedule"
           lede="View upcoming and past bouts for all divisions."
           actions={

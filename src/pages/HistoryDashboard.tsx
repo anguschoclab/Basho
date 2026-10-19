@@ -6,7 +6,7 @@ import { selectRetiredRikishi } from "@/presenters/selectors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { Trophy, Building2, ScrollText, Crown, AlertCircle, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi, Heya } from "@/presenters/uiDigest";
@@ -51,7 +51,7 @@ export const HistoryDashboard = () => {
     <AppLayout pageTitle="Museum" subNavTabs={RECORDS_TABS} activeSubTab="museum">
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── ARCHIVES ──"
+          eyebrow="RECORDS"
           title="Museum of Sumo"
           lede="Preserving the legacy of the Dohyo — records, stables, and the history of the world."
         />
@@ -359,7 +359,7 @@ function CohortsTab({ world }: { world: WorldState }) {
   return (
     <div className="space-y-4" data-testid="cohorts-tab">
       <PageHeader
-        eyebrow="── INTAKE CLASSES ──"
+        eyebrow="RECORDS"
         title="Recruitment Cohorts"
         lede="Track recruit classes and their development trajectories over time."
       />

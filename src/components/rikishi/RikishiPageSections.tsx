@@ -8,7 +8,7 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { RikishiProfileHeader } from "@/components/rikishi/RikishiProfileHeader";
@@ -46,7 +46,7 @@ export function RosterListView({
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── MY STABLE ──"
+          eyebrow="MY STABLE"
           title="Roster Management"
           lede="Manage your stable's wrestlers, view profiles, and track development."
         />

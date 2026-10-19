@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Trophy } from "lucide-react";
-import { ListCard, type ListRow } from "@/components/layout/control-center/ListCard";
+import { ListCard, type ListRow } from "@/components/layout/page-shell/ListCard";
 
 // Mock CardEyebrow to isolate ListCard logic
-vi.mock("@/components/layout/control-center/CardEyebrow", () => ({
+vi.mock("@/components/layout/page-shell/CardEyebrow", () => ({
   CardEyebrow: ({ eyebrow, title, icon, actions }: any) => (
     <div
       data-testid="card-eyebrow"

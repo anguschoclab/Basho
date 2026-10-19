@@ -118,7 +118,7 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
               </div>
             </div>
 
-            <DialogTitle className="text-2xl font-bold tracking-tight text-white leading-tight">
+            <DialogTitle className="text-2xl font-bold tracking-tight text-foreground leading-tight">
               <MentionText text={event.title} />
             </DialogTitle>
           </DialogHeader>
@@ -148,7 +148,7 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
               Close
             </Button>
             {targetRoute && (
-              <Button asChild className="bg-primary hover:bg-primary text-white gap-2">
+              <Button asChild className="bg-primary hover:bg-primary text-primary-foreground gap-2">
                 <Link to={targetRoute} onClick={onClose}>
                   View Details
                   <ChevronRight className="h-4 w-4" />

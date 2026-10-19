@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { IntelligencePanel } from "@/components/dashboard/IntelligencePanel";
+import { AdvisorPanel } from "@/components/dashboard/AdvisorPanel";
 import type { AIRecommendation } from "@/engine/ai/types";
 
 function renderPanel(recommendations: AIRecommendation[] = []) {
   return render(
     <TooltipProvider>
-      <IntelligencePanel recommendations={recommendations} />
+      <AdvisorPanel recommendations={recommendations} />
     </TooltipProvider>
   );
 }
 
-describe("IntelligencePanel", () => {
+describe("AdvisorPanel", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
@@ -20,7 +20,7 @@ describe("IntelligencePanel", () => {
 
   it("renders the panel title", () => {
     renderPanel();
-    expect(screen.getByText("Intelligence")).toBeDefined();
+    expect(screen.getByText("Advisor")).toBeDefined();
   });
 
   it("shows empty state when there are no recommendations", () => {

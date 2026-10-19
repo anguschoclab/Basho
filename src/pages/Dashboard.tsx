@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/useGame";
-import { Badge } from "@/components/ui/badge";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 import {
   getOzekiRunCandidates,
@@ -13,7 +12,7 @@ import { getHeyaCount } from "@/presenters/worldAccess";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { FinancesWidget, EventFeed, ActionQueueWidget } from "@/components/dashboard";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { useGameStore } from "@/store/gameStore";
@@ -31,7 +30,7 @@ import {
   DashboardSuccessionModal,
 } from "@/components/dashboard/DashboardStatusSections";
 
-/** Control Center — main dashboard. */
+/** Dashboard — main game hub. */
 export default function Dashboard() {
   const { state, hasAutosave, loadFromAutosave } = useGame();
   const navigate = useNavigate();
@@ -87,17 +86,9 @@ export default function Dashboard() {
       <div className="space-y-6 pb-10 animate-fade-in">
         {/* ── PAGE HEADER ── */}
         <PageHeader
-          eyebrow="── CONTROL CENTER ──"
+          eyebrow="DASHBOARD"
           title={derived.playerHeya ? derived.playerHeya.name : "Your Stable"}
           lede={`Year ${world.year} · Week ${world.week} · ${derived.phaseLabel}`}
-          actions={
-            <Badge
-              variant="outline"
-              className="text-[10px] font-bold uppercase text-gold border-gold/30"
-            >
-              司令塔
-            </Badge>
-          }
         />
 
         {/* ── ACTION QUEUE ── */}

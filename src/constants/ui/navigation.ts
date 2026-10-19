@@ -15,7 +15,7 @@ export const OFFICE_TABS = [
   { id: "economy", label: "Finances", href: "/office/finances" },
   { id: "facilities", label: "Facilities", href: "/office/facilities" },
   { id: "sponsors", label: "Sponsors", href: "/office/sponsors" },
-  { id: "scouting", label: "Scout Intel", href: "/office/scouting" },
+  { id: "scouting", label: "Scouting", href: "/office/scouting" },
   { id: "prospects", label: "Talent Pool", href: "/jsa/talent" },
 ];
 

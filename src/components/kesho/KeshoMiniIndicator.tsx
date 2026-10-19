@@ -48,7 +48,7 @@ export function KeshoMiniIndicator({ kesho, className }: KeshoMiniIndicatorProps
 
       {/* Tier-specific border */}
       <div
-        className="absolute inset-0 rounded-xs border border-white/20"
+        className="absolute inset-0 rounded-xs border border-on-scrim/20"
         style={{ borderColor: kesho.accentColor }}
       />
     </div>

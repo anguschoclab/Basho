@@ -1,7 +1,7 @@
 /**
  * trainingProjections.ts
  *
- * Training summary projection for the Control Center and Training page.
+ * Training summary projection for the Dashboard and Training page.
  * Also includes tsukebito (attendant) projections for player assignment.
  */
 

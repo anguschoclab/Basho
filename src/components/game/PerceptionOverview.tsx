@@ -71,7 +71,7 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
     <div className="space-y-4">
       <div className="flex items-center gap-2 flex-wrap">
         <Eye className="h-5 w-5 text-primary" />
-        <h3 className="font-display font-semibold">Stable Perception Intel</h3>
+        <h3 className="font-display font-semibold">Stable Perception</h3>
         <Badge variant="secondary" className="text-[10px]">
           {snapshots.length} stables
         </Badge>
@@ -94,7 +94,7 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
       <p className="text-xs text-muted-foreground">
         {comparing
           ? "Select two stables below to compare side-by-side."
-          : "Banded intelligence on rival stables. No raw numbers — only what the sumo world reveals."}
+          : "Banded reads on rival stables. No raw numbers — only what the sumo world reveals."}
       </p>
 
       {/* Comparison panel */}

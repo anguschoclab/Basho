@@ -43,7 +43,7 @@ export function StableCard({
       onKeyDown={activationKeyHandler(() => onSelect(heya.id))}
     >
       {isSelected && (
-        <div className="absolute top-0 right-0 bg-primary text-white p-2 rounded-bl-xl shadow-lg z-10">
+        <div className="absolute top-0 right-0 bg-primary text-primary-foreground p-2 rounded-bl-xl shadow-lg z-10">
           <CheckCircle2 className="h-4 w-4" />
         </div>
       )}

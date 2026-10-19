@@ -2,7 +2,7 @@ import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import * as GameContext from "@/contexts/useGame";
-import { StableIntelTab } from "@/components/scouting/StableIntelTab";
+import { MyStableTab } from "@/components/scouting/MyStableTab";
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
@@ -70,7 +70,7 @@ function getRowOrder(): string[] {
   return Array.from(rows).map((el) => el.querySelector(".font-display")?.textContent ?? "");
 }
 
-describe("StableIntelTab sorting", () => {
+describe("MyStableTab sorting", () => {
   beforeEach(() => {
     localStorage.clear();
     mockRoster = [
@@ -107,20 +107,20 @@ describe("StableIntelTab sorting", () => {
   it("defaults to rank order (yokozuna, ozeki, maegashira)", () => {
     const world = { playerHeyaId: "h1" };
     mockUseGame(world);
-    render(<StableIntelTab playerHeyaId="h1" />);
+    render(<MyStableTab playerHeyaId="h1" />);
     const order = getRowOrder();
     expect(order).toEqual(["Bravo", "Charlie", "Alpha"]);
   });
 
   it("renders a SortMenu control", () => {
     mockUseGame({ playerHeyaId: "h1" });
-    render(<StableIntelTab playerHeyaId="h1" />);
+    render(<MyStableTab playerHeyaId="h1" />);
     expect(screen.getByRole("combobox")).toBeTruthy();
   });
 
   it("sorting by shikona ascending reorders alphabetically", () => {
     mockUseGame({ playerHeyaId: "h1" });
-    render(<StableIntelTab playerHeyaId="h1" />);
+    render(<MyStableTab playerHeyaId="h1" />);
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Shikona"));
@@ -130,7 +130,7 @@ describe("StableIntelTab sorting", () => {
 
   it("sorting by power ascending", () => {
     mockUseGame({ playerHeyaId: "h1" });
-    render(<StableIntelTab playerHeyaId="h1" />);
+    render(<MyStableTab playerHeyaId="h1" />);
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Power"));
@@ -141,7 +141,7 @@ describe("StableIntelTab sorting", () => {
 
   it("sorting by technique ascending", () => {
     mockUseGame({ playerHeyaId: "h1" });
-    render(<StableIntelTab playerHeyaId="h1" />);
+    render(<MyStableTab playerHeyaId="h1" />);
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Technique"));
@@ -152,7 +152,7 @@ describe("StableIntelTab sorting", () => {
 
   it("persists sort state to localStorage", () => {
     mockUseGame({ playerHeyaId: "h1" });
-    render(<StableIntelTab playerHeyaId="h1" />);
+    render(<MyStableTab playerHeyaId="h1" />);
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Shikona"));
@@ -164,7 +164,7 @@ describe("StableIntelTab sorting", () => {
   it("restores sort state from localStorage on init", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "shikona", order: "desc" }));
     mockUseGame({ playerHeyaId: "h1" });
-    render(<StableIntelTab playerHeyaId="h1" />);
+    render(<MyStableTab playerHeyaId="h1" />);
     const order = getRowOrder();
     expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
   });

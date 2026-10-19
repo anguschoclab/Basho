@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ListCard } from "@/components/layout/control-center";
+import { ListCard } from "@/components/layout/page-shell";
 import { TabsContent } from "@/components/ui/tabs";
 import { AlertTriangle } from "lucide-react";
 import { useGame } from "@/contexts/useGame";
@@ -105,7 +105,7 @@ export function GovernanceRulingsTab({ derived, resolvedRulingIds }: Props) {
       )}
 
       <ListCard
-        eyebrow="── RECORD ──"
+        eyebrow="RECORD"
         title="Resolved Rulings"
         rows={derived.historyRows.filter((r) => resolvedRulingIds.has(r.id))}
         emptyText="No resolved rulings yet."

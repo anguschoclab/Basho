@@ -5,12 +5,13 @@
  * Alternative to the desktop sidebar event log.
  */
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Bell, X } from "lucide-react";
 import { EventFeed } from "@/components/dashboard/EventFeed";
 import { useGameStore } from "@/store/gameStore";
+import { useEventReadStore } from "@/store/eventReadStore";
 import { cn } from "@/lib/utils";
 
 interface MobileEventLogProps {
@@ -19,7 +20,12 @@ interface MobileEventLogProps {
 
 export function MobileEventLog({ className }: MobileEventLogProps) {
   const [open, setOpen] = useState(false);
-  const eventCount = useGameStore((s) => s.workerWorld?.events?.log?.length ?? 0);
+  const events = useGameStore((s) => s.workerWorld?.events?.log);
+  const readIds = useEventReadStore((s) => s.readIds);
+  const unreadCount = useMemo(
+    () => (events ?? []).reduce((n, e) => (readIds.has(e.id) ? n : n + 1), 0),
+    [events, readIds]
+  );
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -28,13 +34,13 @@ export function MobileEventLog({ className }: MobileEventLogProps) {
           variant="secondary"
           size="icon"
           aria-label={
-            eventCount > 0
-              ? `Open Event Log (${Math.min(eventCount, 99)}${eventCount > 99 ? "+" : ""} unread events)`
+            unreadCount > 0
+              ? `Open Event Log (${Math.min(unreadCount, 99)}${unreadCount > 99 ? "+" : ""} unread events)`
               : "Open Event Log"
           }
           tooltip={
-            eventCount > 0
-              ? `Open Event Log (${Math.min(eventCount, 99)}${eventCount > 99 ? "+" : ""} unread events)`
+            unreadCount > 0
+              ? `Open Event Log (${Math.min(unreadCount, 99)}${unreadCount > 99 ? "+" : ""} unread events)`
               : "Open Event Log"
           }
           tooltipSide="left"
@@ -45,9 +51,9 @@ export function MobileEventLog({ className }: MobileEventLogProps) {
           )}
         >
           <Bell className="h-5 w-5" />
-          {eventCount > 0 && (
+          {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-[10px] font-bold flex items-center justify-center text-primary-foreground">
-              {Math.min(eventCount, 99)}
+              {Math.min(unreadCount, 99)}
             </span>
           )}
         </Button>

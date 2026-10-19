@@ -2,7 +2,7 @@
  * Phase 4b: Shell contract regression tests.
  *
  * Proves that every content page uses AppLayout and PageHeader
- * (the Control Center shell template), and that pages with sub-navigation
+ * (the shared page shell template), and that pages with sub-navigation
  * pass subNavTabs to AppLayout.
  */
 

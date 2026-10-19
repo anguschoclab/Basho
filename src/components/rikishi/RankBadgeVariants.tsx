@@ -41,11 +41,11 @@ export function CompactRankBadge({
         className={cn(
           "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tight cursor-help",
           // Sanyaku - prominent
-          division === "sanyaku" && "bg-gold text-black",
-          division === "sanyaku" && rank === "ozeki" && "bg-silver text-black",
+          division === "sanyaku" && "bg-gold text-gold-foreground",
+          division === "sanyaku" && rank === "ozeki" && "bg-silver text-silver-foreground",
           division === "sanyaku" &&
             (rank === "sekiwake" || rank === "komusubi") &&
-            "bg-bronze text-white",
+            "bg-bronze text-bronze-foreground",
           // Makuuchi - distinct
           division === "makuuchi" && "bg-primary/20 text-primary border border-primary/30",
           // Juryo - visible
@@ -71,11 +71,11 @@ export function RosterRankBadge({ division, rank, side, displayText, className }
         className={cn(
           "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-black uppercase tracking-tight font-mono",
           // Sanyaku - gold treatment
-          division === "sanyaku" && "bg-gold text-black shadow-xs",
-          division === "sanyaku" && rank === "ozeki" && "bg-silver text-black",
+          division === "sanyaku" && "bg-gold text-gold-foreground shadow-xs",
+          division === "sanyaku" && rank === "ozeki" && "bg-silver text-silver-foreground",
           division === "sanyaku" &&
             (rank === "sekiwake" || rank === "komusubi") &&
-            "bg-bronze text-white",
+            "bg-bronze text-bronze-foreground",
           // Makuuchi - primary color
           division === "makuuchi" && "bg-primary/15 text-primary border border-primary/25",
           // Juryo - west blue
@@ -116,16 +116,16 @@ export function PillRankBadge({
           className={cn(
             "inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider",
             // Sanyaku - premium styling
-            division === "sanyaku" && "rank-shimmer text-black",
+            division === "sanyaku" && "rank-shimmer text-gold-foreground",
             division === "sanyaku" && rank === "yokozuna" && "bg-gold",
             division === "sanyaku" && rank === "ozeki" && "bg-silver",
             division === "sanyaku" &&
               (rank === "sekiwake" || rank === "komusubi") &&
-              "bg-bronze text-white",
+              "bg-bronze text-bronze-foreground",
             // Makuuchi
             division === "makuuchi" && "bg-primary text-primary-foreground",
             // Juryo
-            division === "juryo" && "bg-west text-white",
+            division === "juryo" && "bg-west text-west-foreground",
             // Makushita
             division === "makushita" && "bg-secondary border border-border text-foreground",
             // Lower divisions
@@ -139,7 +139,7 @@ export function PillRankBadge({
           <span
             className={cn(
               "inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-black",
-              side === "east" ? "bg-east text-white" : "bg-west text-white"
+              side === "east" ? "bg-east text-east-foreground" : "bg-west text-west-foreground"
             )}
           >
             {side === "east" ? "東" : "西"}
@@ -163,12 +163,12 @@ export function FullRankBadge({ rank, side, division, displayText, className }: 
         className={cn(
           "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-wide",
           // Sanyaku
-          division === "sanyaku" && "rank-shimmer text-black",
+          division === "sanyaku" && "rank-shimmer text-gold-foreground",
           division === "sanyaku" && rank === "yokozuna" && "bg-gold",
           division === "sanyaku" && rank === "ozeki" && "bg-silver",
           division === "sanyaku" &&
             (rank === "sekiwake" || rank === "komusubi") &&
-            "bg-bronze text-white",
+            "bg-bronze text-bronze-foreground",
           // Makuuchi
           division === "makuuchi" && "bg-primary/20 text-primary border border-primary/40",
           // Juryo

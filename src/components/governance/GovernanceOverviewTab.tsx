@@ -9,7 +9,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
+import { StatCard, ListCard, SectionHeader } from "@/components/layout/page-shell";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { TabsContent } from "@/components/ui/tabs";
 import { Globe } from "lucide-react";
@@ -33,19 +33,19 @@ export function GovernanceOverviewTab({ world, heya, derived }: Props) {
     <TabsContent value="overview" className="space-y-6">
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard
-          eyebrow="── REPUTATION ──"
+          eyebrow="REPUTATION"
           title="Public Perception"
           stats={derived.reputationStats}
           progress={derived.reputationProgress}
         />
         <StatCard
-          eyebrow="── COMPLIANCE ──"
+          eyebrow="COMPLIANCE"
           title="Welfare & Safety"
           stats={derived.welfareStats}
           progress={derived.welfareProgress}
         />
-        <StatCard eyebrow="── JSA COUNCIL ──" title="Council Status" stats={derived.councilStats} />
-        <StatCard eyebrow="── RECORD ──" title="Disciplinary Record" stats={derived.recordStats} />
+        <StatCard eyebrow="JSA COUNCIL" title="Council Status" stats={derived.councilStats} />
+        <StatCard eyebrow="RECORD" title="Disciplinary Record" stats={derived.recordStats} />
       </div>
 
       {derived.unresolvedRulings.length > 0 && (
@@ -53,7 +53,7 @@ export function GovernanceOverviewTab({ world, heya, derived }: Props) {
       )}
 
       <ListCard
-        eyebrow="── RULINGS ──"
+        eyebrow="RULINGS"
         title="Ruling History"
         rows={derived.historyRows}
         emptyText="No rulings on record. Keep it that way."
@@ -67,19 +67,19 @@ export function GovernanceOverviewTab({ world, heya, derived }: Props) {
 
       {derived.welfareRows.length > 0 && (
         <ListCard
-          eyebrow="── WELFARE ALERTS ──"
+          eyebrow="WELFARE ALERTS"
           title="Stables Under Scrutiny"
           rows={derived.welfareRows}
         />
       )}
 
       {derived.mergerRows.length > 0 && (
-        <ListCard eyebrow="── MERGER RISK ──" title="Stables in Crisis" rows={derived.mergerRows} />
+        <ListCard eyebrow="MERGER RISK" title="Stables in Crisis" rows={derived.mergerRows} />
       )}
 
       {derived.completedMergerRows.length > 0 && (
         <ListCard
-          eyebrow="── MERGERS ──"
+          eyebrow="MERGERS"
           title="Completed Stable Mergers"
           rows={derived.completedMergerRows}
           emptyText="No mergers on record."
@@ -95,7 +95,7 @@ function UnresolvedRulings({ rulings }: { rulings: GovernanceDerivedData["unreso
   const sendCommand = useGameStore((s) => s.sendCommand);
   return (
     <div className="space-y-3">
-      <SectionHeader eyebrow="── PENDING ──" title="Unresolved Rulings" />
+      <SectionHeader eyebrow="PENDING" title="Unresolved Rulings" />
       {rulings.map((r) => (
         <div key={r.id} className="rounded border border-primary/30 bg-primary/5 p-3">
           <div className="text-sm font-bold">
@@ -197,7 +197,7 @@ function GlobalCupCard({ world }: { world: WorldState }) {
   if (!world.globalCup) return null;
   return (
     <StatCard
-      eyebrow="── GLOBAL CUP ──"
+      eyebrow="GLOBAL CUP"
       title={`${world.globalCup.year} International Tournament`}
       stats={[
         { label: "Phase", value: world.globalCup.phase, tone: "gold" },

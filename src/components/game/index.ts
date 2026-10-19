@@ -8,7 +8,7 @@ export * from "./HoFInductionCeremony";
 export * from "./NarrativeCeremonyDialog";
 export * from "./HoFTimeline";
 export * from "./InjuryRecoveryPanel";
-export * from "./InstitutionPanel";
+export * from "./StableHealthPanel";
 export * from "./IntaiCeremony";
 export * from "./MatchDayViewer";
 export * from "./PerceptionOverview";

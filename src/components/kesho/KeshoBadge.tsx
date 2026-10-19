@@ -69,11 +69,11 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
       {showTier && (
         <div
           className={cn(
-            "absolute bottom-0 right-0 w-4 h-4 rounded-tl-sm border-2 border-white flex items-center justify-center",
+            "absolute bottom-0 right-0 w-4 h-4 rounded-tl-sm border-2 border-on-scrim flex items-center justify-center",
             tierColors[kesho.tier]
           )}
         >
-          <span className="text-[10px] font-bold text-white">
+          <span className="text-[10px] font-bold text-on-scrim">
             {kesho.tier.charAt(0).toUpperCase()}
           </span>
         </div>

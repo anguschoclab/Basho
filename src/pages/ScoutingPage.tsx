@@ -2,14 +2,14 @@
 // Decoupled from engine state per Architectural Boundary Enforcement
 
 import { OpponentScoutingTab } from "@/components/scouting/OpponentScoutingTab";
-import { StableIntelTab } from "@/components/scouting/StableIntelTab";
+import { MyStableTab } from "@/components/scouting/MyStableTab";
 import { RecruitingTab } from "@/components/scouting/RecruitingTab";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Eye, UserPlus, Shield } from "lucide-react";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
 
 export default function ScoutingPage() {
@@ -35,7 +35,7 @@ export default function ScoutingPage() {
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── OFFICE ──"
+          eyebrow="OFFICE"
           title="Scouting Network"
           lede="Scout opponents, evaluate prospects, and build your roster."
         />
@@ -51,7 +51,7 @@ export default function ScoutingPage() {
             </TabsTrigger>
             <TabsTrigger value="perception" className="gap-2">
               <Eye className="h-4 w-4" />
-              Intel
+              Perception
             </TabsTrigger>
             <TabsTrigger value="recruit" className="gap-2">
               <UserPlus className="h-4 w-4" />
@@ -64,7 +64,7 @@ export default function ScoutingPage() {
           </TabsContent>
 
           <TabsContent value="stable">
-            <StableIntelTab playerHeyaId={playerHeyaId} />
+            <MyStableTab playerHeyaId={playerHeyaId} />
           </TabsContent>
 
           <TabsContent value="perception">

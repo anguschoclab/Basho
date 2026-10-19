@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
@@ -58,7 +58,7 @@ export default function FacilitiesPage() {
 
       <div className="space-y-8">
         <PageHeader
-          eyebrow="── OFFICE ──"
+          eyebrow="OFFICE"
           title="Infrastructure"
           lede="Facility upgrades, training grounds, and physical plant investments."
         />

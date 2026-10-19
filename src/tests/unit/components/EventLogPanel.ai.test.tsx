@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { EventLogPanel } from "@/components/layout/EventLogPanel";
+import { useEventReadStore } from "@/store/eventReadStore";
 import type { EngineEvent } from "@/engine/types/events";
 
 vi.mock("@/components/EventDetailDialog", () => ({
@@ -27,6 +28,10 @@ function makeEvent(category: EngineEvent["category"], title: string, summary: st
 }
 
 describe("EventLogPanel AI events", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useEventReadStore.setState({ readIds: new Set() });
+  });
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
@@ -105,5 +110,43 @@ describe("EventLogPanel AI events", () => {
     expect(screen.getByText("Second")).toBeDefined();
     // One shared week label rather than two headers.
     expect(screen.getAllByText(/Week 1/)).toHaveLength(1);
+  });
+
+  it("renders all filter options and toggles aria-pressed", () => {
+    const event = makeEvent("ai_decision", "AI Management Decision", "Details here.");
+    render(
+      <EventLogPanel
+        eventLogData={{
+          events: [event],
+          getRikishi: () => null,
+          getHeya: () => undefined,
+          playerHeyaId: "h1",
+        }}
+      />
+    );
+    for (const label of ["All", "Basho", "Match", "Training", "Injury", "Economy", "Career"]) {
+      expect(screen.getByLabelText(`Filter by ${label}`)).toBeDefined();
+    }
+    expect(screen.getByLabelText("Filter by All").getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByLabelText("Filter by Training"));
+    expect(screen.getByLabelText("Filter by Training").getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByLabelText("Filter by All").getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("shows unread events with a marker and marks them read on click", () => {
+    const event = { ...makeEvent("ai_decision", "AI Management Decision", "Details here."), id: "unread-1" };
+    render(
+      <EventLogPanel
+        eventLogData={{
+          events: [event],
+          getRikishi: () => null,
+          getHeya: () => undefined,
+          playerHeyaId: "h1",
+        }}
+      />
+    );
+    expect(screen.getByLabelText("Unread event")).toBeDefined();
+    fireEvent.click(screen.getByLabelText("AI Management Decision"));
+    expect(screen.queryByLabelText("Unread event")).toBeNull();
   });
 });

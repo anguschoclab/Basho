@@ -10,14 +10,14 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
+import { StatCard, ListCard, SectionHeader } from "@/components/layout/page-shell";
 import { TabsContent } from "@/components/ui/tabs";
 import { Trophy, ShieldAlert, Coins, Scale } from "lucide-react";
 import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
-import type { StatItem } from "@/components/layout/control-center";
+import type { StatItem } from "@/components/layout/page-shell";
 import { POLITICAL_FAVORS } from "@/presenters/projections/governanceProjections";
 import { getOyakata } from "@/presenters/worldAccess";
 import type { WorldState } from "@/presenters/uiDigest";
@@ -60,7 +60,7 @@ function PoliticalStanding({ heya }: { heya: Heya }) {
   };
   return (
     <div className="space-y-4">
-      <SectionHeader eyebrow="── CAPITAL ──" title="Your Political Standing" />
+      <SectionHeader eyebrow="CAPITAL" title="Your Political Standing" />
       <StatCard
         eyebrow=""
         title={`${heya.ichimon ?? "Independent"} Ichimon`}
@@ -96,7 +96,7 @@ function PoliticalFavorsList({ heya }: { heya: Heya }) {
   const sendCommand = useGameStore((s) => s.sendCommand);
   return (
     <div className="space-y-4">
-      <SectionHeader eyebrow="── FAVORS ──" title="JSA Political Favors" />
+      <SectionHeader eyebrow="FAVORS" title="JSA Political Favors" />
       <div className="grid gap-3">
         {POLITICAL_FAVORS.map((favor) => {
           const icon =
@@ -211,7 +211,7 @@ function IchimonRankings({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <SectionHeader eyebrow="── RANKINGS ──" title="Ichimon Influence Rankings" />
+        <SectionHeader eyebrow="RANKINGS" title="Ichimon Influence Rankings" />
         {derived.factionList.length > 0 && (
           <SortMenu
             options={FACTION_SORT_OPTIONS}

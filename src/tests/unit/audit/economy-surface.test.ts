@@ -119,7 +119,7 @@ describe("Economy selectors — state field reachability", () => {
     expect(selectors).toMatch(/\.funds/);
   });
 
-  it("projectHeyaData surfaces economy data for InstitutionPanel", () => {
+  it("projectHeyaData surfaces economy data for StableHealthPanel", () => {
     const proj = readSrcFile("presenters/projections/heyaProjections.ts");
     expect(proj).toContain("projectHeyaData");
   });

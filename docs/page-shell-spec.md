@@ -1,14 +1,14 @@
-# Control Center — Design Spec & Application Guide
+# Page Shell — Design Spec & Application Guide
 
 **Companion to `design-bible.md` · Kokugikan Noir v1.0**
 
-The Control Center is the canonical page template for Basho. Every primary page (Roster, Basho, Finances, Banzuke, Federation, Press, Rivals…) is a variation on its anatomy. This document captures what the Control Center _is_, and how to port its patterns to the rest of the game.
+The Page Shell is the canonical page template for Basho. Every primary page (Roster, Basho, Finances, Banzuke, Federation, Press, Rivals…) is a variation on its anatomy. This document captures what the Page Shell _is_, and how to port its patterns to the rest of the game.
 
 ---
 
 ## 1. Purpose
 
-The Control Center is the player's bridge. At a glance it answers four questions in priority order:
+The Page Shell is the player's bridge. At a glance it answers four questions in priority order:
 
 1. **What moment are we in?** (page header — basho/day, narrative line)
 2. **What decision is pending?** (hero dossier card — one headline decision, never two)
@@ -21,7 +21,7 @@ Every other page answers the same four questions scoped to its domain. The templ
 
 ## 2. Anatomy
 
-```
+```text
 ┌────────────┬─────────────────────────────────────┬─────────────┐
 │ Sidebar    │ TopNavBar (date · funds · stable)   │             │
 │ (logo,     ├─────────────────────────────────────┤ Event Log   │
@@ -74,7 +74,7 @@ Six structural zones. Every page uses the same six. What varies is the **content
 
 Three groups, each with a 9px mono uppercase gold/0.6 label:
 
-- **MY STABLE** — Control Center, Roster (with count badge), Training, Heya Facilities, Finances
+- **MY STABLE** — Dashboard, Roster (with count badge), Training, Heya Facilities, Finances
 - **TOURNAMENT** — Aki Basho (with D07 vermillion badge), Banzuke, History
 - **SUMO WORLD** — Federation, Press, Rivals
 
@@ -118,7 +118,7 @@ Treatment:
 
 The bread-and-butter card. Two fixed rules of anatomy:
 
-```
+```text
 ┌─────────────────────────────────┐
 │ EYEBROW · EYEBROW      [ icon ] │ ← 10px mono uppercase, gold/0.6
 │ Card Title                      │ ← Shippori 1.125rem, weight 600
@@ -228,9 +228,9 @@ Reusable across domains:
 
 ### 4.5 Data → UI Translation Rule
 
-The presenter layer (`src/presenters/`) is responsible for every piece of data the Control Center consumes. **Pages never reach into `world` directly.** The flow is:
+The presenter layer (`src/presenters/`) is responsible for every piece of data the Page Shell consumes. **Pages never reach into `world` directly.** The flow is:
 
-```
+```text
 WorldState → selectors.ts → uiDigest.ts → projections/ → Page component
 ```
 
@@ -244,7 +244,7 @@ When building a new page to this template:
 
 ## 5. Component Contracts
 
-Build or reuse these shared components so every page composes from the same primitives. Put them in `src/components/layout/control-center/`:
+Build or reuse these shared components so every page composes from the same primitives. Put them in `src/components/layout/page-shell/`:
 
 | Component                                                      | Props                                      | Notes                                             |
 | -------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------- |
@@ -266,7 +266,7 @@ None of these components compute state; all receive pre-projected props. That is
 
 ## 6. Implementation Checklist (per page)
 
-When porting an existing page to the Control Center template:
+When porting an existing page to the Page Shell template:
 
 - [ ] Move all state derivation into a `<domain>Projections.ts` file under `src/presenters/projections/`
 - [ ] Replace bespoke page header with `<PageHeader>` — add the eyebrow
@@ -289,4 +289,4 @@ When porting an existing page to the Control Center template:
 
 ---
 
-_Companion document to design-bible.md — last updated 2026-04-19_
+Companion document to design-bible.md — last updated 2026-04-19

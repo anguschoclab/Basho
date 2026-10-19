@@ -35,11 +35,11 @@ export function PreviewHero({ heya, config }: { heya: Heya; config: StatureConfi
           <div className="flex items-center gap-2">
             <Badge
               variant="secondary"
-              className="text-[10px] uppercase font-black bg-white text-primary tracking-widest px-2"
+              className="text-[10px] uppercase font-black bg-card text-primary tracking-widest px-2"
             >
               Official Dossier
             </Badge>
-            <Badge className={`${config.color} border-0 text-white font-bold h-5`}>
+            <Badge className={`${config.color} border-0 font-bold h-5`}>
               {config.label}
             </Badge>
           </div>

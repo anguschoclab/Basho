@@ -6,7 +6,7 @@ import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { projectRikishi } from "@/presenters/rikishi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { Loader2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StableStatsTable } from "@/components/game/StableStatsTable";
@@ -20,7 +20,7 @@ import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { getHeyaRoster } from "@/presenters/engineAccess";
 import {
   RosterTab,
-  InstitutionTab,
+  HeyaTab,
   AttendantsTab,
   AcademyTab,
 } from "@/components/stable/StablePageTabs";
@@ -75,7 +75,7 @@ export default function StablePage() {
 
       <div className="space-y-8">
         <PageHeader
-          eyebrow="── MY STABLE ──"
+          eyebrow="MY STABLE"
           title={heya.name}
           lede={`${rikishiList.length} rikishi · ${heya.ichimon ?? "Independent"} Ichimon`}
         />
@@ -97,8 +97,8 @@ export default function StablePage() {
             <TabsTrigger value="sponsorship" className="flex-1 min-w-20">
               Sponsorship
             </TabsTrigger>
-            <TabsTrigger value="institution" className="flex-1 min-w-20">
-              Institution
+            <TabsTrigger value="heya" className="flex-1 min-w-20">
+              Health
             </TabsTrigger>
             <TabsTrigger value="global" className="flex-1 min-w-20">
               Global
@@ -140,7 +140,7 @@ export default function StablePage() {
             <StableStatsTable rikishiList={rikishiList} />
           </TabsContent>
 
-          <InstitutionTab world={world} heya={heya} />
+          <HeyaTab world={world} heya={heya} />
           <AttendantsTab world={world} heya={heya} />
           <AcademyTab world={world} heya={heya} />
         </Tabs>

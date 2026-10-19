@@ -55,9 +55,9 @@ describe("ScoutingPage — UI surface", () => {
     expect(page).toContain("OpponentScoutingTab");
   });
 
-  it("mounts StableIntelTab", () => {
+  it("mounts MyStableTab", () => {
     const page = readSrcFile("pages/ScoutingPage.tsx");
-    expect(page).toContain("StableIntelTab");
+    expect(page).toContain("MyStableTab");
   });
 
   it("mounts RecruitingTab", () => {

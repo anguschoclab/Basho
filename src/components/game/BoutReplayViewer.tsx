@@ -87,7 +87,7 @@ export function BoutReplayViewer({
       </div>
 
       {/* Canvas */}
-      <div className="relative bg-black">
+      <div className="relative bg-scrim">
         <canvas
           ref={canvasRef as React.RefObject<HTMLCanvasElement>}
           className="w-full block"
@@ -96,17 +96,17 @@ export function BoutReplayViewer({
 
         {/* Phase badge overlay */}
         <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none">
-          <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1 border border-white/10">
-            <span className="text-white/50 text-xs font-medium">{label.ja}</span>
-            <span className="text-white/20 text-xs">·</span>
+          <div className="flex items-center gap-1.5 bg-scrim/60 rounded-full px-3 py-1 border border-on-scrim/10">
+            <span className="text-on-scrim/50 text-xs font-medium">{label.ja}</span>
+            <span className="text-on-scrim/20 text-xs">·</span>
             {uiPhase === "tachiai" ? (
               <GlossaryTip termId="tachiai">
-                <span className="text-white text-xs font-semibold tracking-wider uppercase">
+                <span className="text-on-scrim text-xs font-semibold tracking-wider uppercase">
                   {label.en}
                 </span>
               </GlossaryTip>
             ) : (
-              <span className="text-white text-xs font-semibold tracking-wider uppercase">
+              <span className="text-on-scrim text-xs font-semibold tracking-wider uppercase">
                 {label.en}
               </span>
             )}
@@ -132,8 +132,8 @@ export function BoutReplayViewer({
               className={cn(
                 "text-xs font-medium transition-opacity duration-500 px-2 py-0.5 rounded-full",
                 uiPhase === "tachiai" || uiPhase === "finish" || uiPhase === "ceremony"
-                  ? "text-gold bg-black/50"
-                  : "text-white/50"
+                  ? "text-gold bg-scrim/50"
+                  : "text-on-scrim/50"
               )}
             >
               {CROWD_TEXT[uiPhase]}

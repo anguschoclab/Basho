@@ -1,6 +1,6 @@
 import { Building2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
@@ -64,7 +64,7 @@ export default function RegionalHubPage() {
     <AppLayout pageTitle="World Circuit" subNavTabs={TOURNAMENT_TABS} activeSubTab="world-circuit">
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── INTERNATIONAL ──"
+          eyebrow="TOURNAMENT"
           title="World Circuit Hub"
           lede="Manage international exhibitions and overseas academy operations."
         />

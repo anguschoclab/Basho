@@ -216,14 +216,14 @@ export function HeaderIdentity({ rikishi }: { rikishi: UIRikishi }) {
         <h1 className="font-display text-5xl font-black tracking-tight uppercase leading-none mb-1">
           {rikishi.shikona}
         </h1>
-        <p className="text-white/60 font-display text-sm tracking-widest uppercase">
+        <p className="text-on-scrim/60 font-display text-sm tracking-widest uppercase">
           {rikishi.heyaName} • {rikishi.styleName}
           {rikishi.archetypeName.toLowerCase() !== rikishi.styleName.toLowerCase() && (
             <>
               {" - "}
               {rikishi.combatArchetype ? (
                 <TooltipWrap content={getCombatArchetypeDescription(rikishi.combatArchetype)}>
-                  <span className="cursor-help border-b border-dotted border-white/30 hover:border-white/60">
+                  <span className="cursor-help border-b border-dotted border-on-scrim/30 hover:border-on-scrim/60">
                     {rikishi.archetypeName}
                   </span>
                 </TooltipWrap>
@@ -237,14 +237,14 @@ export function HeaderIdentity({ rikishi }: { rikishi: UIRikishi }) {
         {/* Phase M: Lineage Indicators */}
         <div className="flex flex-wrap items-center gap-3 mt-4">
           {rikishi.mentorName && (
-            <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10">
-              <span className="text-[10px] text-white/40 uppercase font-black">Mentor</span>
+            <div className="flex items-center gap-2 bg-scrim/20 px-3 py-1 rounded-full border border-on-scrim/10">
+              <span className="text-[10px] text-on-scrim/40 uppercase font-black">Mentor</span>
               <span className="text-xs font-bold">{rikishi.mentorName}</span>
             </div>
           )}
           {(rikishi.menteeNames?.length ?? 0) > 0 && (
-            <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10">
-              <span className="text-[10px] text-white/40 uppercase font-black">Students</span>
+            <div className="flex items-center gap-2 bg-scrim/20 px-3 py-1 rounded-full border border-on-scrim/10">
+              <span className="text-[10px] text-on-scrim/40 uppercase font-black">Students</span>
               <span className="text-xs font-bold">{rikishi.menteeNames?.join(", ")}</span>
             </div>
           )}
@@ -296,7 +296,7 @@ function buildStatEntries(rikishi: UIRikishi): StatEntry[] {
       label: "Career History",
       value: rikishi.careerRecord,
       sub: rikishi.careerAbsences > 0 ? "Wins-Losses-Absences" : "Professional Record",
-      color: "text-white",
+      color: "text-on-scrim",
       tooltip: "Lifetime professional record across all tournaments",
     },
     {
@@ -373,7 +373,7 @@ function buildStatEntries(rikishi: UIRikishi): StatEntry[] {
 /** Right-hand career stats column. */
 export function CareerStatsColumn({ rikishi }: { rikishi: UIRikishi }) {
   return (
-    <div className="flex gap-4 lg:gap-8 shrink-0 self-stretch lg:self-auto bg-black/20 p-4 lg:p-6 rounded-lg border border-white/10 shadow-inner w-full lg:w-auto justify-around lg:justify-start">
+    <div className="flex gap-4 lg:gap-8 shrink-0 self-stretch lg:self-auto bg-scrim/20 p-4 lg:p-6 rounded-lg border border-on-scrim/10 shadow-inner w-full lg:w-auto justify-around lg:justify-start">
       {buildStatEntries(rikishi).map((stat, i) => (
         <React.Fragment key={i}>
           {(stat.condition ?? true) && (

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { KanjiTile } from "@/components/layout/control-center/KanjiTile";
+import { KanjiTile } from "@/components/layout/page-shell/KanjiTile";
 
 describe("KanjiTile", () => {
   it("renders char text", () => {

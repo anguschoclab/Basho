@@ -4,7 +4,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { useGame } from "@/contexts/useGame";
 import { projectSponsorUIDigest } from "@/presenters/uiDigest";
 import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
@@ -39,7 +39,7 @@ export default function SponsorManagementPage() {
 
       <div className="space-y-8">
         <PageHeader
-          eyebrow="── OFFICE ──"
+          eyebrow="OFFICE"
           title="Sponsor Contracts"
           lede="Manage relationships with sponsors and kōenkai members. Renew expiring contracts to maintain income."
         />

@@ -18,6 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
+import { useEventReadStore } from "@/store/eventReadStore";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -93,7 +94,14 @@ const EventFeedItem = React.memo(
 export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventFeedProps) {
   const workerWorld = useGameStore((s) => s.workerWorld);
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
-  const handleSelect = useCallback((e: EngineEvent) => setSelectedEvent(e), []);
+  const markRead = useEventReadStore((s) => s.markRead);
+  const handleSelect = useCallback(
+    (e: EngineEvent) => {
+      markRead(e.id);
+      setSelectedEvent(e);
+    },
+    [markRead]
+  );
 
   const events = useMemo(
     () =>

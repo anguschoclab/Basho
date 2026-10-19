@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -45,12 +45,12 @@ export default function GlossaryPage() {
   ];
 
   return (
-    <AppLayout pageTitle="Glossary">
+    <AppLayout>
       <title>Glossary — Basho</title>
 
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── REFERENCE ──"
+          eyebrow="REFERENCE"
           title="Glossary"
           lede="Sumo terminology reference — ranks, techniques, structures, and culture."
         />

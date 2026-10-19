@@ -15,7 +15,7 @@ import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 
 import { TournamentCeremony } from "@/components/recap/TournamentCeremony";
 import { NarrativeSummary } from "@/components/recap/NarrativeSummary";
@@ -96,7 +96,7 @@ export default function RecapPage() {
         {/* ═══ HERO SECTION ═══ */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b-2 border-border/20">
           <PageHeader
-            eyebrow="── POST-BASHO ──"
+            eyebrow="POST-BASHO"
             title="Basho Recap"
             lede={`${bashoTitle} ${world.year} — The official ceremonial summary and world drift ledger.`}
           />
@@ -170,7 +170,7 @@ export default function RecapPage() {
       <div className="fixed bottom-10 right-10 z-50">
         <Button
           size="lg"
-          className="h-16 w-16 rounded shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] border-4 border-white/20 p-0"
+          className="h-16 w-16 rounded-full shadow-[var(--shadow-gold)] border-4 border-on-scrim/20 p-0"
           onClick={handleContinue}
           title="Finalize Basho"
         >

@@ -79,7 +79,7 @@ export function BeyaWideRegime({
                       variant="outline"
                       className={cn(
                         "text-[10px] font-black tracking-[0.15em]",
-                        isActive ? "bg-primary text-white border-0" : "opacity-50"
+                        isActive ? "bg-primary text-primary-foreground border-0" : "opacity-50"
                       )}
                     >
                       {describeTrainingEffect(eff.growth)}

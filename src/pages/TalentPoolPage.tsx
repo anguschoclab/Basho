@@ -3,7 +3,7 @@ import { StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,7 @@ const SORT_OPTIONS: SortOption[] = [
   { key: "name", label: "Name" },
   { key: "age", label: "Age" },
   { key: "potential", label: "Potential" },
-  { key: "intel", label: "Intel" },
+  { key: "intel", label: "Scout Level" },
 ];
 
 /** talent pool page. */
@@ -170,7 +170,7 @@ export default function TalentPoolPage() {
     if (!sendCommand({ type: "SCOUT_CANDIDATE", candidateId, effort: 1 })) return;
     toast({
       title: "Scouting initiated",
-      description: "Your scouts are gathering intel on this prospect.",
+      description: "Your scouts are gathering reports on this prospect.",
     });
   };
 
@@ -190,7 +190,7 @@ export default function TalentPoolPage() {
     <AppLayout pageTitle="Talent Pools" subNavTabs={ASSOCIATION_TABS} activeSubTab="talent">
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── ASSOCIATION ──"
+          eyebrow="ASSOCIATION"
           title="Talent Pools"
           lede="Persistent recruit pipelines: prospects exist before they enter sumo. Scout to reveal, then make offers."
         />
@@ -230,8 +230,8 @@ export default function TalentPoolPage() {
                 Search for leads
               </Button>
               <div className="text-xs text-muted-foreground">
-                This reveals hidden candidates into the list. Scouting a candidate increases intel
-                quality.
+                This reveals hidden candidates into the list. Scouting a candidate increases scout
+                report quality.
               </div>
             </div>
             {poolSummary.length > 0 && (
@@ -312,12 +312,12 @@ export default function TalentPoolPage() {
                         <CardContent className="space-y-3">
                           <div className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
-                              <div className="text-muted-foreground">Intel</div>
+                              <div className="text-muted-foreground">Scout Level</div>
                               <div className="font-mono">
                                 {intel >= 80
-                                  ? "Full Intel"
+                                  ? "Full Report"
                                   : intel >= 50
-                                    ? "Good Intel"
+                                    ? "Good Report"
                                     : intel >= 25
                                       ? "Partial"
                                       : "Limited"}

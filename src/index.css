@@ -52,6 +52,15 @@
   --color-bronze: hsl(var(--bronze));
   --color-east: hsl(var(--east));
   --color-west: hsl(var(--west));
+  --color-gold-deep: hsl(var(--gold-deep));
+  --color-gold-highlight: hsl(var(--gold-highlight));
+  --color-gold-foreground: hsl(var(--gold-foreground));
+  --color-silver-foreground: hsl(var(--silver-foreground));
+  --color-bronze-foreground: hsl(var(--bronze-foreground));
+  --color-east-foreground: hsl(var(--east-foreground));
+  --color-west-foreground: hsl(var(--west-foreground));
+  --color-scrim: hsl(var(--scrim));
+  --color-on-scrim: hsl(var(--on-scrim));
 
   --font-display: var(--font-display), serif;
   --font-body: var(--font-body), serif;
@@ -134,6 +143,19 @@
     --gold: 44 85% 55%;
     --silver: 220 10% 62%;
     --bronze: 25 56% 44%;
+    /* Deep gold — dimming endpoint for gold gradients */
+    --gold-deep: 43 62% 38%;
+    /* Pale gold glint — shimmer sheen and inset highlights */
+    --gold-highlight: 38 55% 78%;
+    /* Foreground on medal/east-west surfaces */
+    --gold-foreground: 220 30% 12%;
+    --silver-foreground: 220 30% 12%;
+    --bronze-foreground: 38 28% 97%;
+    --east-foreground: 38 28% 97%;
+    --west-foreground: 38 28% 97%;
+    /* Scrim — dark overlay backdrop; on-scrim — light text over it */
+    --scrim: 220 30% 12%;
+    --on-scrim: 38 28% 96%;
 
     /* Typography */
     --font-display: "Shippori Mincho B1", "Noto Serif JP", Georgia, serif;
@@ -207,6 +229,19 @@
     --gold: 44 90% 62%;
     --silver: 222 12% 56%;
     --bronze: 25 58% 48%;
+    /* Deep gold — dimming endpoint for gold gradients */
+    --gold-deep: 44 68% 40%;
+    /* Pale gold glint — shimmer sheen and inset highlights */
+    --gold-highlight: 38 80% 80%;
+    /* Foreground on medal/east-west surfaces */
+    --gold-foreground: 222 32% 5%;
+    --silver-foreground: 222 32% 5%;
+    --bronze-foreground: 38 32% 92%;
+    --east-foreground: 38 32% 92%;
+    --west-foreground: 38 32% 92%;
+    /* Scrim — dark overlay backdrop; on-scrim — light text over it */
+    --scrim: 222 32% 5%;
+    --on-scrim: 38 32% 92%;
 
     /* Shadows — deep arena darkness */
     --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.5);

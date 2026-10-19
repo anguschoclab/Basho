@@ -50,7 +50,7 @@ export function MainContentPane({
               <div className="ml-4 hidden lg:block shrink-0">
                 <span
                   className="text-[10px] uppercase text-[hsl(var(--muted-foreground)/0.55)]"
-                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
+                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
                 >
                   {pageTitle}
                 </span>

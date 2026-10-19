@@ -1,7 +1,7 @@
 /**
  * PageHeader.tsx
  * ==============
- * Control Center canonical page header.
+ * Page shell canonical page header.
  * Eyebrow: 10px mono gold uppercase.
  * Title: Shippori/display font, 2rem bold.
  * Lede: Spectral/body, muted, optional.

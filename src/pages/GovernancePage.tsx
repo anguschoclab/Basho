@@ -2,7 +2,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -49,7 +49,7 @@ export default function GovernancePage() {
     >
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── ASSOCIATION ──"
+          eyebrow="ASSOCIATION"
           title="Governance & Compliance"
           lede={`Official records of the Sumo Association regarding ${heya.name}.`}
           actions={

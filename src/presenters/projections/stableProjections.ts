@@ -1,7 +1,7 @@
 /**
  * stableProjections.ts
  *
- * Stable overview summary projection for the Control Center and Stable page.
+ * Stable overview summary projection for the Dashboard and Stable page.
  * Reads from PerceptionSnapshot + raw heya data.
  */
 

@@ -8,7 +8,7 @@
 
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -77,7 +77,7 @@ export function RetiredRikishiProfile({
         </div>
 
         <PageHeader
-          eyebrow="── CAREER ARCHIVES ──"
+          eyebrow="CAREER ARCHIVES"
           title="Career Summary"
           lede="Final Association record for this retired rikishi."
         />

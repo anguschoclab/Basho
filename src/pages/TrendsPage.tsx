@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { useGame } from "@/contexts/useGame";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -46,7 +46,7 @@ export default function TrendsPage() {
     <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="trends" pageTitle="JSA Trends">
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── ASSOCIATION ──"
+          eyebrow="ASSOCIATION"
           title="JSA Meta Trends"
           lede="Historical analysis of technical biases and institutional drifts."
         />

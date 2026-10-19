@@ -4,7 +4,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
@@ -63,7 +63,7 @@ export default function BashoPage() {
       <div className="space-y-4">
         {/* ═══════════ DAY HEADER ═══════════ */}
         <PageHeader
-          eyebrow="── TOURNAMENT ──"
+          eyebrow="TOURNAMENT"
           title={bashoInfo?.nameJa ?? "Basho"}
           lede={`${dayInfo?.dayJa ?? `Day ${day}`} · ${bashoInfo?.location ?? "—"} · ${completedBouts}/${matches.length} bouts complete${seasonalFlavor ? ` · ${seasonalFlavor}` : ""}`}
           actions={

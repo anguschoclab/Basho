@@ -60,7 +60,7 @@ export function getMenuGroups(
     {
       label: null,
       items: [
-        { title: "Control Center", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
         { title: "Events & Recap", url: "/recap", icon: Newspaper, exactOnly: true },
         { title: "Weekly Report", url: "/digest", icon: TrendingUp, exactOnly: true },
       ],

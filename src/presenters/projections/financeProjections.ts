@@ -1,7 +1,7 @@
 /**
  * financeProjections.ts
  *
- * Full finance summary projection for the Finance page and Control Center.
+ * Full finance summary projection for the Finance page and Dashboard.
  * Extracts the inline useMemo calculations from EconomyPage into a reusable presenter.
  */
 

@@ -151,7 +151,7 @@ export function FacilityCard({
           <div
             className={cn(
               "p-2 rounded-lg mb-2",
-              isActive ? "bg-primary text-white" : "bg-muted text-muted-foreground"
+              isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
             )}
           >
             {getFacilityIcon(facility.id)}

@@ -37,15 +37,17 @@ export function SidebarBrand() {
         <div
           className="h-8 w-8 rounded shrink-0 flex items-center justify-center relative overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(44 68% 40%) 100%)",
-            boxShadow: "0 2px 8px hsl(var(--gold) / 0.4), inset 0 1px 0 hsl(38 80% 80% / 0.4)",
+            background:
+              "linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-deep)) 100%)",
+            boxShadow:
+              "0 2px 8px hsl(var(--gold) / 0.4), inset 0 1px 0 hsl(var(--gold-highlight) / 0.4)",
           }}
         >
           <span
-            className="text-[hsl(222_32%_5%)] font-bold text-lg leading-none select-none"
+            className="text-gold-foreground font-bold text-lg leading-none select-none"
             style={{
               fontFamily: "var(--font-display)",
-              textShadow: "0 1px 2px hsl(0 0% 0% / 0.2)",
+              textShadow: "0 1px 2px hsl(var(--scrim) / 0.2)",
             }}
           >
             力
@@ -281,7 +283,7 @@ export function SidebarStatusFooter({
                     playerHeya.runwayBand === "secure"
                       ? "hsl(var(--success))"
                       : playerHeya.runwayBand === "comfortable"
-                        ? "hsl(145 55% 48%)"
+                        ? "hsl(var(--success) / 0.75)"
                         : playerHeya.runwayBand === "tight"
                           ? "hsl(var(--warning))"
                           : "hsl(var(--destructive))",

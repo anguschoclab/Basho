@@ -72,7 +72,7 @@ export function StableStep({
         <Button
           onClick={onFinish}
           disabled={!selectedHeyaId}
-          className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] rounded-lg bg-primary text-white hover:scale-105 transition-transform"
+          className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[var(--shadow-lg)] rounded-lg bg-primary text-primary-foreground hover:scale-105 transition-transform"
           {...(!selectedHeyaId
             ? { tooltip: "Select a stable to continue", tooltipSide: "top" }
             : {})}

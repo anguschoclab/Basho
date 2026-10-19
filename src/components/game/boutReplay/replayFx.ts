@@ -21,7 +21,7 @@ import {
   type Particle,
 } from "./boutCanvas";
 import type { SeededRNG } from "@/presenters/engineAccess";
-import { BOUT_HUD_COLORS, withAlpha } from "@/constants/ui/drawingPalette";
+import { BOUT_HUD_COLORS, FX_PARTICLES, withAlpha } from "@/constants/ui/drawingPalette";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutScript } from "@/presenters/engineAccess";
@@ -64,10 +64,10 @@ export function makeSpawnParticles(
       const angle = rng.next() * Math.PI * 2;
       const spd = 0.6 + rng.next() * 3;
       const colors: Record<Particle["type"], string> = {
-        impact: `hsl(${30 + rng.next() * 20},90%,60%)`,
+        impact: FX_PARTICLES.impactAt(30 + rng.next() * 20),
         salt: withAlpha(255, 255, 255, 0.7 + rng.next() * 0.3),
-        dust: `hsl(38,55%,${55 + rng.next() * 20}%)`,
-        spark: `hsl(50,100%,70%)`,
+        dust: FX_PARTICLES.dustAt(55 + rng.next() * 20),
+        spark: FX_PARTICLES.spark,
         zabuton: BOUT_HUD_COLORS.zabuton[Math.floor(rng.next() * 4)],
       };
       np.push({

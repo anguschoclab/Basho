@@ -20,10 +20,10 @@ export function WizardHeader({ currentStep, totalSteps = 4 }: WizardHeaderProps)
       </div>
 
       <div className="relative z-10 space-y-4">
-        <div className="h-14 w-14 bg-foreground/10 rounded-full mx-auto flex items-center justify-center border border-white/20 animate-in zoom-in duration-500">
-          <History className="h-7 w-7 text-white" />
+        <div className="h-14 w-14 bg-foreground/10 rounded-full mx-auto flex items-center justify-center border border-primary-foreground/20 animate-in zoom-in duration-500">
+          <History className="h-7 w-7 text-primary-foreground" />
         </div>
-        <h1 className="text-4xl font-display font-black tracking-tight text-white uppercase sumi-e-ink">
+        <h1 className="text-4xl font-display font-black tracking-tight text-primary-foreground uppercase sumi-e-ink">
           Begin Your Legacy
         </h1>
         <div className="flex items-center gap-1 justify-center">

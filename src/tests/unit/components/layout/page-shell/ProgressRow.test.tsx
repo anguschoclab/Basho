@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { ProgressRow } from "@/components/layout/control-center/ProgressRow";
+import { ProgressRow } from "@/components/layout/page-shell/ProgressRow";
 
 describe("ProgressRow", () => {
   it("renders name text", () => {

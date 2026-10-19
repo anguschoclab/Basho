@@ -55,7 +55,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
 }));
 
-vi.mock("@/components/layout/control-center", () => ({
+vi.mock("@/components/layout/page-shell", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 
@@ -168,12 +168,12 @@ describe("TalentPoolPage sorting", () => {
     expect(order).toEqual(["Alpha", "Charlie", "Bravo"]);
   });
 
-  it("sorting by intel ascending", () => {
+  it("sorting by scout level ascending", () => {
     mockUseGame({ playerHeyaId: "h1", year: 2024 });
     render(<TalentPoolPage />);
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
-    const elements = screen.getAllByText("Intel");
+    const elements = screen.getAllByText("Scout Level");
     fireEvent.click(elements[elements.length - 1]);
     const order = getCardTitles();
     // asc: 30, 50, 80 → Alpha, Charlie, Bravo

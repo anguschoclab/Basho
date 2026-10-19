@@ -3,13 +3,13 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { EventFeed } from "@/components/dashboard/EventFeed";
-import { InstitutionWidget } from "@/components/dashboard/InstitutionWidget";
+import { StableHealthWidget } from "@/components/dashboard/StableHealthWidget";
 
 vi.mock("@/contexts/useGame", () => ({
   useGame: vi.fn(),
 }));
 
-vi.mock("@/components/layout/control-center", () => ({
+vi.mock("@/components/layout/page-shell", () => ({
   WidgetCard: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   WidgetHeader: ({ title }: { title: string }) => <div>{title}</div>,
 }));
@@ -48,21 +48,21 @@ describe("EmptyState usage in dashboard widgets", () => {
     expect(screen.getByText("No recent events")).toBeTruthy();
   });
 
-  it("InstitutionWidget renders 'No stable selected' when no heya", () => {
+  it("StableHealthWidget renders 'No stable selected' when no heya", () => {
     mockState({
       world: { heyas: new Map() },
       playerHeyaId: null,
     });
-    render(<InstitutionWidget />);
+    render(<StableHealthWidget />);
     expect(screen.getByText("No stable selected")).toBeTruthy();
   });
 
-  it("InstitutionWidget renders 'No stable selected' when world is null", () => {
+  it("StableHealthWidget renders 'No stable selected' when world is null", () => {
     mockState({
       world: null,
       playerHeyaId: "heya1",
     });
-    render(<InstitutionWidget />);
+    render(<StableHealthWidget />);
     expect(screen.getByText("No stable selected")).toBeTruthy();
   });
 });

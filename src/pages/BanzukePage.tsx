@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/useGame";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { PageHeader } from "@/components/layout/control-center";
+import { PageHeader } from "@/components/layout/page-shell";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { DivisionTable } from "@/components/banzuke/DivisionTable";
 import { BanzukeControlsRow, MovementLegend } from "@/components/banzuke/BanzukeControls";
@@ -34,7 +34,7 @@ export default function BanzukePage() {
       <div className="space-y-4 animate-fade-in">
         {/* Header */}
         <PageHeader
-          eyebrow="── TOURNAMENT · BANZUKE ──"
+          eyebrow="TOURNAMENT"
           title="Official Rankings"
           lede={`${world.year} ${world.currentBashoName ?? "Upcoming"} · ${banzukeDigest.totalWrestlerCount} wrestlers listed`}
         />

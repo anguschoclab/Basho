@@ -1,7 +1,7 @@
 /**
- * InstitutionPanelSections.tsx
+ * StableHealthPanelSections.tsx
  *
- * Institution panel sections — welfare risk, governance, and the
+ * Stable health panel sections — welfare risk, governance, and the
  * oyakata persona block — plus the shared tone/badge helpers.
  */
 

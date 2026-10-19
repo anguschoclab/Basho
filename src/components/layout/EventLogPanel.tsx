@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import type { EngineEvent } from "@/engine/types/events";
 import { scanRecentEvents } from "@/presenters/selectors";
+import { useEventReadStore } from "@/store/eventReadStore";
 import { EventDetailDialog } from "../EventDetailDialog";
 import { EventLogHeader, EventLogList, type EventGroup } from "./EventLogSections";
 
@@ -22,6 +23,9 @@ interface EventLogPanelProps {
 export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const [filter, setFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
+  const readIds = useEventReadStore((s) => s.readIds);
+  const markRead = useEventReadStore((s) => s.markRead);
+  const markAllRead = useEventReadStore((s) => s.markAllRead);
 
   const filteredEvents = useMemo(
     () =>
@@ -52,17 +56,38 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
     return groups;
   }, [filteredEvents]);
 
-  const handleEventClick = useCallback((e: EngineEvent) => {
-    setSelectedEvent(e);
-  }, []);
+  const handleEventClick = useCallback(
+    (e: EngineEvent) => {
+      markRead(e.id);
+      setSelectedEvent(e);
+    },
+    [markRead]
+  );
+
+  const unreadCount = useMemo(
+    () => filteredEvents.reduce((n, e) => (readIds.has(e.id) ? n : n + 1), 0),
+    [filteredEvents, readIds]
+  );
+
+  const handleMarkAllRead = useCallback(() => {
+    markAllRead(filteredEvents.map((e) => e.id));
+  }, [markAllRead, filteredEvents]);
+
+  const isUnread = useCallback((id: string) => !readIds.has(id), [readIds]);
 
   return (
     <aside className={`flex flex-col border-r border-border bg-card/50 ${className}`}>
-      <EventLogHeader filter={filter} onFilterChange={setFilter} />
+      <EventLogHeader
+        filter={filter}
+        onFilterChange={setFilter}
+        unreadCount={unreadCount}
+        onMarkAllRead={handleMarkAllRead}
+      />
 
       <EventLogList
         grouped={grouped}
         playerHeyaId={eventLogData?.playerHeyaId}
+        isUnread={isUnread}
         onEventClick={handleEventClick}
       />
 
