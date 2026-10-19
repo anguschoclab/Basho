@@ -42,7 +42,8 @@ export function compareRanks(a: RankPosition, b: RankPosition): number {
  * 1. Previous Rank Closeness (oldKey): Lower oldKey (already higher rank) wins.
  * 2. Head-to-Head: Lifetime rivalry check.
  * 3. SOS Proxy: Weighted by opponentAvgTier from BashoPerformance.
- * 4. Fallback: Stable result based on ID.
+ * 4. Performance Quality: Bonuses for Yusho, Jun-Yusho, Special Prizes, and Kinboshi.
+ * 5. Fallback: Stable result based on ID.
  */
 export function resolveBanzukeTie(
   a: BanzukeCandidate,

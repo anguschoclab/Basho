@@ -1,0 +1,1 @@
+## 2024-05-18 - [resolveBanzukeTie Level 3.5] **Gap:** Missing docs on performance quality (Level 3.5) **Truth:** Tiebreaker also checks Yusho, Jun-Yusho, Special Prizes, and Kinboshi **Watch:** Other Banzuke helpers
