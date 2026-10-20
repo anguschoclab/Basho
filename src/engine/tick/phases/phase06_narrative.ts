@@ -199,10 +199,23 @@ function deriveRecentAchievements(world: WorldState): {
       subjects.kinboshi = kinboshiWinner.bout.winnerRikishiId;
     }
   }
-  const recentEvents = (world.events?.log ?? []).slice(-20);
-  const retirementEvent = [...recentEvents]
-    .reverse()
-    .find((e) => e.type === "RETIREMENT_ANNOUNCED");
+  // ⚡ Bolt: Single pass backward iteration replaces multiple array allocations (slice/spread/reverse)
+  const log = world.events?.log ?? [];
+  const lookback = Math.max(0, log.length - 20);
+  let retirementEvent;
+  let deliberationEvent;
+
+  for (let i = log.length - 1; i >= lookback; i--) {
+    const e = log[i];
+    if (!retirementEvent && e.type === "RETIREMENT_ANNOUNCED") {
+      retirementEvent = e;
+    }
+    if (!deliberationEvent && e.type === "PROMOTION_DELIBERATION") {
+      deliberationEvent = e;
+    }
+    if (retirementEvent && deliberationEvent) break;
+  }
+
   if (retirementEvent) {
     list.push("retirement");
     const rid =
@@ -210,9 +223,6 @@ function deriveRecentAchievements(world: WorldState): {
       (retirementEvent.rikishiId as string | undefined);
     if (rid) subjects.retirement = rid;
   }
-  const deliberationEvent = [...recentEvents]
-    .reverse()
-    .find((e) => e.type === "PROMOTION_DELIBERATION");
   if (deliberationEvent) {
     list.push("yokozuna_promotion");
     const rid =
