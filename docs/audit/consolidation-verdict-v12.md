@@ -19,6 +19,8 @@ audit WS-A–WS-L, strict test-first ordering (RED phase documented in
 | `determinism-double-run.ts basho` | PASS — byte-identical (16,242,923 B) |
 | `determinism-double-run.ts year` | PASS — byte-identical (80,148,128 B) |
 | Meta gates | factoryDiscipline, testTimingsBudget, all green; `test-timings.json` re-baselined |
+| `bun run test:perf` | 5 files / 14 tests green; `scanRecentEvents` measured 194× vs legacy extraction on 50k-event log |
+| `bun run test:coverage` | **all floors pass**: lines 76.14 / branches 64.57 / functions 68.35 / statements 78.11 (floors 73/61/64/75) — ratchet caveat resolved |
 
 Baseline before work: 963 files / 8,888 tests (`pre-consolidation-baseline-v12.txt`).
 Net change: +1 test file, +17 tests.
@@ -83,6 +85,8 @@ paths before classification.
 - `bun run test:slow` (subprocess audits, long sims) — per instruction, runs ad hoc.
 - `bun run test:e2e:soak` — deferred.
 - V12-B06 unreferenced-exports debt — pre-existing, gated, unchanged.
+- Coverage ratchet and perf suite were deferred at commit time, then measured
+  post-merge: both green (table above). No caveat outstanding.
 
 ## Remote lifecycle
 
