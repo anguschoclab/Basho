@@ -27,4 +27,19 @@
 
 ## GREEN evidence (appended after implementation)
 
-_Pending._
+**Date:** 2026-10-20 (post-merge re-verification on `main` @ `4ed537ae`)
+**Command:** same as above (3 contract test files)
+**Result:** 3 files passed / **51 tests passed** / 0 failed (864ms)
+
+- `events.scanRecentEvents.test.ts` — 11 tests green: the 3 previously-failing
+  `predicate` contract tests now pass (option implemented in `events.ts`),
+  plus 8 pre-existing scan tests unchanged.
+- `actionQueue.test.ts` — 11 tests green: the stale-PROMOTION_DELIBERATION
+  regression test now passes (`scanRecentEvents` over `log.slice(-20)` at
+  `actionQueue.ts:86`); all prior queue tests unchanged.
+- `governanceProjections.test.ts` — 29 tests green: the 6 parity pins held
+  through the `scanRecentEvents` + `predicate` migration at
+  `governanceProjections.ts:127` and `:227`.
+
+RED → GREEN ordering preserved: every implementation landed only after its
+failing contract test was observed on baseline.
