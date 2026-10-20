@@ -85,7 +85,14 @@ const MultiplierBar = React.memo(
           <Icon className="h-3 w-3" />
           <span>{label}</span>
         </div>
-        <div className="h-1 rounded-full bg-muted overflow-hidden">
+        <div
+          className="h-1 rounded-full bg-muted overflow-hidden"
+          role="progressbar"
+          aria-valuenow={Math.min(100, value * 60)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={label}
+        >
           <div
             className={`h-full rounded-full ${color} transition-all`}
             style={{ width: `${Math.min(100, value * 60)}%` }}

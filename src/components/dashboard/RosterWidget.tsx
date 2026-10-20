@@ -81,7 +81,14 @@ const RosterEntryRow = React.memo(
           <Star className="h-3 w-3 text-gold shrink-0" />
         )}
         {/* Fatigue bar */}
-        <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
+        <div
+          className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0"
+          role="progressbar"
+          aria-valuenow={fatigue}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Fatigue"
+        >
           <div
             className={`h-full rounded-full transition-all duration-300 ${
               fatigue > 70 ? "bg-destructive" : fatigue > 40 ? "bg-warning" : "bg-primary/60"
@@ -228,7 +235,14 @@ export function RosterWidget() {
       </div>
 
       {/* Team fatigue overview bar */}
-      <div className="h-1 rounded-full bg-muted overflow-hidden">
+      <div
+        className="h-1 rounded-full bg-muted overflow-hidden"
+        role="progressbar"
+        aria-valuenow={avgFatigueValue}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Team fatigue overview"
+      >
         <div
           className={`h-full rounded-full transition-all duration-500 ${
             avgFatigueValue > 70
