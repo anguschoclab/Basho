@@ -2,26 +2,41 @@
   "ceremony_intro": [
     "The sansho ceremony begins — the judges announce the special prize recipients.",
     "It's time for the special prize ceremony at the conclusion of the tournament.",
-    "The three special prizes are about to be awarded."
+    "The three special prizes are about to be awarded.",
+    "The Kokugikan quiets as the ceremony for the three special prizes commences.",
+    "Anticipation fills the arena as the sansho awards are announced.",
+    "The final day concludes with the awarding of the three prestigious special prizes."
   ],
   "shukunsho": [
     "The Shukun-sho goes to %SHIKONA% — Outstanding Performance Prize for a remarkable tournament.",
     "%SHIKONA% receives the Shukun-sho — the Outstanding Performance Prize is well deserved.",
-    "Outstanding Performance Prize: %SHIKONA% earns the Shukun-sho for his exceptional basho."
+    "Outstanding Performance Prize: %SHIKONA% earns the Shukun-sho for his exceptional basho.",
+    "A giant-killing basho earns %SHIKONA% the Shukun-sho for Outstanding Performance.",
+    "The judges recognize %SHIKONA%'s giant-killing feats with the Shukun-sho.",
+    "%SHIKONA% claims the Shukun-sho, a testament to his performance against the elite."
   ],
   "kantosho": [
     "The Kanto-sho is awarded to %SHIKONA% — Fighting Spirit Prize for his relentless effort.",
     "%SHIKONA% earns the Kanto-sho — the Fighting Spirit Prize recognizes his warrior's heart.",
-    "Fighting Spirit Prize: %SHIKONA% receives the Kanto-sho for his tenacious tournament."
+    "Fighting Spirit Prize: %SHIKONA% receives the Kanto-sho for his tenacious tournament.",
+    "For his never-say-die attitude, %SHIKONA% takes home the Kanto-sho.",
+    "The Kanto-sho for Fighting Spirit goes to %SHIKONA%, who battled fiercely all tournament.",
+    "%SHIKONA% is awarded the Kanto-sho, honoring his raw determination on the dohyo."
   ],
   "ginosho": [
     "The Gino-sho goes to %SHIKONA% — Technique Prize for his masterful sumo.",
     "%SHIKONA% is awarded the Gino-sho — the Technique Prize celebrates his skill and craft.",
-    "Technique Prize: %SHIKONA% earns the Gino-sho for his brilliant technical display."
+    "Technique Prize: %SHIKONA% earns the Gino-sho for his brilliant technical display.",
+    "A clinic in sumo mechanics earns %SHIKONA% the Gino-sho for Technique.",
+    "The judges award %SHIKONA% the Gino-sho, recognizing his vast technical repertoire.",
+    "%SHIKONA% receives the Gino-sho, a fitting reward for his flawless execution this basho."
   ],
   "multiple_prizes": [
     "%SHIKONA% sweeps the sansho — %COUNT% special prizes in a single tournament!",
     "An extraordinary haul for %SHIKONA% — %COUNT% special prizes awarded today.",
-    "%SHIKONA% makes history with %COUNT% sansho prizes in one basho."
+    "%SHIKONA% makes history with %COUNT% sansho prizes in one basho.",
+    "A rare feat! %SHIKONA% claims %COUNT% special prizes as the crowd roars.",
+    "The judges were thoroughly impressed — %SHIKONA% leaves with %COUNT% special prizes.",
+    "A tournament to remember for %SHIKONA%, securing %COUNT% sansho awards."
   ]
 }
