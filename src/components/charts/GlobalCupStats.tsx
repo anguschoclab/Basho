@@ -19,6 +19,7 @@ import {
 } from "recharts";
 import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { BarChart3, PieChart as PieIcon } from "lucide-react";
 import type { GlobalCupProjection } from "@/engine/types/globalCup";
 
@@ -47,7 +48,19 @@ export function ParticipantNationalityChart({ projection }: GlobalCupStatsProps)
     return Object.keys(counts).map((name) => ({ name, value: counts[name] }));
   }, [projection]);
 
-  if (data.length === 0) return null;
+  if (data.length === 0) {
+    return (
+      <WidgetCard>
+        <WidgetHeader title="Participant Nationalities" icon={PieIcon} />
+        <EmptyState
+          icon={PieIcon}
+          title="No Participants"
+          description="Awaiting global participants."
+          compact={true}
+        />
+      </WidgetCard>
+    );
+  }
 
   return (
     <WidgetCard>
@@ -110,7 +123,19 @@ export function BracketProgressChart({ projection }: GlobalCupStatsProps) {
     });
   }, [projection]);
 
-  if (data.length === 0) return null;
+  if (data.length === 0) {
+    return (
+      <WidgetCard>
+        <WidgetHeader title="Bracket Progress" icon={BarChart3} />
+        <EmptyState
+          icon={BarChart3}
+          title="No Bracket Data"
+          description="Bracket has not been generated yet."
+          compact={true}
+        />
+      </WidgetCard>
+    );
+  }
 
   return (
     <WidgetCard>
