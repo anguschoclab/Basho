@@ -99,6 +99,7 @@ export function toCareerDTO(r: Rikishi): RikishiCareerDTO {
         ? `${r.careerWins}-${r.careerLosses}-${r.careerAbsences}`
         : `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
+    consecutiveYusho: r.consecutiveYusho ?? 0,
     streak: streakInfo.streak,
     streakLabel: streakInfo.label,
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
