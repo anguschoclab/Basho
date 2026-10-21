@@ -1,1 +1,0 @@
-## 2025-10-21 - [Sansho Ceremony Token Mismatch] **Discovery:** Engine provides `%PRIZE_NAME%` to `sansho_ceremony.*sho` paths, but templates ignore it to manually output `Shukun-sho`, `Kanto-sho`, etc. **Rule:** Ignore unused tokens passed by engine if manual flavor text provides a better result. **Check:** Verify actual UI rendering matches desired flavor text.
