@@ -16,7 +16,6 @@ import { StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { HEYA_STATS } from "../../constants/ui/heyaPreview";
-import type { RikishiPreview } from "../../constants/ui/heyaPreview";
 import type { STATURE_CONFIG } from "./statureConfig";
 
 type StatureConfig = (typeof STATURE_CONFIG)[keyof typeof STATURE_CONFIG];
@@ -74,8 +73,8 @@ export function PreviewStats({
   return (
     <div className="grid grid-cols-3 gap-4">
       {HEYA_STATS.map((stat, i) => {
-        const value = stat.value(config, roster as unknown as RikishiPreview[], sekitoriCount);
-        const sub = stat.sub(config, roster as unknown as RikishiPreview[]);
+        const value = stat.value(config, roster, sekitoriCount);
+        const sub = stat.sub(config, roster);
         return (
           <div
             key={i}

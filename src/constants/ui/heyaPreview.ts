@@ -22,10 +22,10 @@ export interface HeyaStatEntry {
   label: string;
   value: (
     config: HeyaPreviewConfig,
-    roster: RikishiPreview[],
+    roster: unknown[],
     sekitoriCount: number
   ) => string | number;
-  sub: (config: HeyaPreviewConfig, roster: RikishiPreview[]) => string;
+  sub: (config: HeyaPreviewConfig, roster: unknown[]) => string;
 }
 
 /** Rikishi quick stat entry */
