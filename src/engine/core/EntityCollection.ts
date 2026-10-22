@@ -55,7 +55,10 @@ export const EntityCollection = {
 
   /**
    * Get all active (non-retired) rikishi for a specific heya.
-   * Delegates to queries.getHeyaRoster (memoized) and filters retired.
+   * Delegates to queries.getHeyaRoster (memoized) and filters out retired rikishi.
+   *
+   * @warning This returns ONLY active rikishi. To get a heya's full roster
+   * including retired members, use `getRikishi(world, { heyaId, includeRetired: true })`.
    */
   getHeyaRoster(world: WorldState, heyaId: string): Rikishi[] {
     return queryGetHeyaRoster(world, heyaId).filter((r) => !r.isRetired);
