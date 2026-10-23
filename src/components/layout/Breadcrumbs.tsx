@@ -164,7 +164,7 @@ export function Breadcrumbs({ items, world, className }: BreadcrumbsProps) {
                 type="button"
                 aria-label="Show all breadcrumbs"
                 onClick={() => setExpanded(true)}
-                className="px-1 text-muted-foreground/50 hover:text-foreground transition-colors"
+                className="px-1 text-muted-foreground/50 hover:text-foreground transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-xs"
               >
                 ...
               </button>
@@ -175,7 +175,7 @@ export function Breadcrumbs({ items, world, className }: BreadcrumbsProps) {
             ) : (
               <Link
                 to={crumb.href}
-                className="hover:text-foreground transition-colors px-1 flex items-center gap-1"
+                className="hover:text-foreground transition-colors px-1 flex items-center gap-1 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-xs"
               >
                 {index === 0 && <Home className="h-3 w-3" />}
                 <span className={index === 0 ? "hidden sm:inline" : ""}>{crumb.label}</span>
