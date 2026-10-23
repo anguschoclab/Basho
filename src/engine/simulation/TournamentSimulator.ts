@@ -46,7 +46,13 @@ function crownYushoWinner(
   );
 
   const topWins = finalStandings[0]?.wins ?? -1;
-  const tied = finalStandings.filter((s) => s.wins === topWins).map((s) => s.id);
+  // ⚡ Bolt: Single pass manual loop replaces .filter().map() for performance
+  const tied: string[] = [];
+  for (let i = 0; i < finalStandings.length; i++) {
+    if (finalStandings[i].wins === topWins) {
+      tied.push(finalStandings[i].id);
+    }
+  }
   const playoffMatches: MatchSchedule[] = [];
   let yushoEntry = finalStandings[0];
   if (tied.length > 1) {
