@@ -1,1 +1,3 @@
-## 2024-10-22 - Add focus-visible to Recruit Specialist\n**Learning:** Interactive elements with custom styling (like dashboard cards acting as buttons) often miss default browser focus outlines. Adding explicit focus-visible classes ensures keyboard accessibility parity.\n**Action:** Audit custom card-style buttons for missing focus-visible styling.
+## 2024-10-22 - Add focus-visible to Recruit Specialist
+**Learning:** Interactive elements with custom styling (like dashboard cards acting as buttons) often miss default browser focus outlines. Adding explicit focus-visible classes ensures keyboard accessibility parity.
+**Action:** Audit custom card-style buttons for missing focus-visible styling.
