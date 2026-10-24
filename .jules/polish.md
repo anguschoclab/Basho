@@ -1,0 +1,1 @@
+## 2024-05-24 - [Empty States in Dashboard Widgets] **Issue:** [Empty state returned null, collapsing grid] **Learning:** [Dashboard widgets must preserve layout] **Rule:** [Always use <EmptyState /> wrapped in <WidgetCard> for empty data states]
