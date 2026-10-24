@@ -28,6 +28,7 @@ import {
   getOyakataForHeya,
 } from "../../queries";
 import { spawnNarrativeAgent } from "../../agents/NarrativeAgent";
+import { scanRecentEvents } from "../../events";
 import { narrativeEventMap } from "../../bard/narrativeEventMap";
 import { BardEngine } from "../../bard/BardEngine";
 import { rngForWorld } from "../../rng";
@@ -200,9 +201,10 @@ export function deriveRecentAchievements(world: WorldState): {
     }
   }
   const recentEvents = (world.events?.log ?? []).slice(-20);
-  const retirementEvent = [...recentEvents]
-    .reverse()
-    .find((e) => e.type === "RETIREMENT_ANNOUNCED");
+  const retirementEvent = scanRecentEvents(recentEvents, {
+    types: ["RETIREMENT_ANNOUNCED"],
+    limit: 1,
+  })[0];
   if (retirementEvent) {
     list.push("retirement");
     const rid =
@@ -210,9 +212,10 @@ export function deriveRecentAchievements(world: WorldState): {
       (retirementEvent.rikishiId as string | undefined);
     if (rid) subjects.retirement = rid;
   }
-  const deliberationEvent = [...recentEvents]
-    .reverse()
-    .find((e) => e.type === "PROMOTION_DELIBERATION");
+  const deliberationEvent = scanRecentEvents(recentEvents, {
+    types: ["PROMOTION_DELIBERATION"],
+    limit: 1,
+  })[0];
   if (deliberationEvent) {
     list.push("yokozuna_promotion");
     const rid =

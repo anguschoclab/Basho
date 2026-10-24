@@ -46,7 +46,12 @@ function crownYushoWinner(
   );
 
   const topWins = finalStandings[0]?.wins ?? -1;
-  const tied = finalStandings.filter((s) => s.wins === topWins).map((s) => s.id);
+  const tied: string[] = [];
+  for (let i = 0; i < finalStandings.length; i++) {
+    if (finalStandings[i].wins === topWins) {
+      tied.push(finalStandings[i].id);
+    }
+  }
   const playoffMatches: MatchSchedule[] = [];
   let yushoEntry = finalStandings[0];
   if (tied.length > 1) {
@@ -253,6 +258,14 @@ function persistBashoState(
           ...heya,
           historicalYusho: (heya.historicalYusho || 0) + 1,
         });
+      }
+    }
+
+    // Every other rikishi's title streak ends when the basho concludes —
+    // including kyujo / non-participants, so the sweep covers the full map.
+    for (const [id, r] of nextRikishiMap) {
+      if (id !== yushoWinnerId && r.consecutiveYusho) {
+        nextRikishiMap.set(id, { ...r, consecutiveYusho: 0 });
       }
     }
   }

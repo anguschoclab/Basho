@@ -47,8 +47,17 @@ export function computeBashoPosture(world: WorldState, heyaId: Id, entrantIds: I
   const traits = oyakata?.traits;
   const basho = world.currentBasho;
 
-  const entrants = entrantIds.map((id) => getRikishi(world, id)).filter((r): r is Rikishi => !!r);
-  const injured = entrants.filter((r) => r.injured || r.isKyujo).length;
+  const entrants: Rikishi[] = [];
+  let injured = 0;
+  for (let i = 0; i < entrantIds.length; i++) {
+    const r = getRikishi(world, entrantIds[i]);
+    if (r) {
+      entrants.push(r);
+      if (r.injured || r.isKyujo) {
+        injured++;
+      }
+    }
+  }
   const injuryRatio = entrants.length ? injured / entrants.length : 0;
 
   // Conservative: welfare-first archetypes or a battered roster.
