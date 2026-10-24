@@ -118,11 +118,23 @@
     ]
   },
   "recruiting": {
-    "title": ["New Recruit Signed", "Scouting Success", "Prospect Joins a Stable"],
+    "title": [
+      "New Recruit Signed",
+      "Scouting Success",
+      "Prospect Joins a Stable",
+      "New Talent Secured",
+      "Recruitment Update",
+      "A New Face at %HEYANAME%"
+    ],
     "scouting_reports": [
       "Scouts report a promising new recruit: %SHIKONA% joins %HEYANAME%.",
       "%SHIKONA% has been discovered and signed by %HEYANAME%.",
-      "A new prospect, %SHIKONA%, enters the pipeline at %HEYANAME%."
+      "A new prospect, %SHIKONA%, enters the pipeline at %HEYANAME%.",
+      "%HEYANAME% welcomes %SHIKONA% to their stable — a notable addition to the roster.",
+      "Scouting efforts pay off as %HEYANAME% officially signs %SHIKONA%.",
+      "A promising journey begins for %SHIKONA%, the latest recruit to join %HEYANAME%.",
+      "With an eye to the future, %HEYANAME% has successfully recruited %SHIKONA%.",
+      "The pipeline grows: %SHIKONA% has committed to training at %HEYANAME%."
     ]
   },
   "management": {
