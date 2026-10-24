@@ -348,10 +348,7 @@ export const selectClosedHeyas = createSelector((world: WorldState) => {
 export const selectBloodlineRegistry = createSelector((world: WorldState) => {
   const registry = world.bloodlineRegistry;
   if (!registry) return [];
-  return Object.entries(registry.traits).map(([traitId, trait]) => ({
-    traitId,
-    ...(trait as unknown as Record<string, unknown>),
-  }));
+  return Object.values(registry.traits);
 });
 
 export const selectEncouragementLog = createSelector((world: WorldState) => {

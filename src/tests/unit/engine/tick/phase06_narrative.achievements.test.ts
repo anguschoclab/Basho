@@ -26,7 +26,7 @@ function ev(
     year: 2026,
     week: 1,
     phase: "weekly",
-    category: "lifecycle",
+    category: "career",
     importance: "minor",
     scope: "world",
     rikishiId: opts.rikishiId,

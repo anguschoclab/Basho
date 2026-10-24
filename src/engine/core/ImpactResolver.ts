@@ -661,10 +661,11 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
  * When several producers each write a COMPLETE snapshot derived from the same
  * base world (e.g. `economics`, `funds`, `stats`, `candidatePool`,
  * `mediaState`), a flat merge silently discards all but the last writer's
- * deltas — the JSA-salary-credit bug. Computing each producer on the world
- * resolved with its predecessors makes every absolute value already contain
- * the earlier writes, so the merged result composes correctly (including
- * append-style fields like `encouragementLog` and `mediaState.headlines`).
+ * absolute replacements if their domains intersect — the JSA-salary-credit bug.
+ * Computing each producer on a world progressively resolved with its predecessors
+ * ensures every absolute value computed already incorporates the earlier updates,
+ * so the composed result is correct (including append-style fields like
+ * `encouragementLog` and `mediaState.headlines`).
  *
  * Producers run in array order; each may return null/undefined to skip.
  */
