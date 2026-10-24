@@ -123,3 +123,73 @@ bun run test            # ~26s, 866 files
 bun run test:slow       # ~3min, 11 files
 bun run test:timings -- all   # regenerate docs/audit/test-timings.json
 ```
+
+## Curation pass — fast/slow re-tier (2026-10-24)
+
+Re-measured all suites into `docs/audit/test-timings.json` and re-tiered the
+categorical fast-suite violators found. RED→GREEN verified through the
+meta-gate suite (evidence below).
+
+### Demotions (3 files — two violation categories)
+
+| File | Measured | Category | Destination |
+|---|---|---|---|
+| `unit/engine/simulation/TournamentSimulatorJunYusho.test.ts` | 4,856–5,402ms | generated-world basho harness (`generateInitialWorld`+`simulateEntireBasho` ×5) | `slow/engine/simulation/` |
+| `unit/engine/simulation/junYushoIdBug.test.ts` | 4,153–4,720ms | generated-world basho harness (×4) | `slow/engine/simulation/` |
+| `unit/audit/commandSurfaceCoverage.test.ts` | 2,515–2,796ms | whole-repo scan, O(commands × files) re-walk — scales with repo growth | `slow/audit/` |
+
+### Slow-tier dispositions (all 16 files — kept)
+
+| File | Measured | Rule satisfied |
+|---|---|---|
+| `simulationInvariants` | 145.2s | 3-year `runAutoSim` |
+| `orphan-audit` | 56.0s | `npx tsx` subprocess + writes `__audit_*` fixtures into `src/` (self-cleans) |
+| `lintStrictGate` | 28.2s | `bunx eslint` subprocess |
+| `yokozunaPromotionAutoSim` | 11.5s | `runAutoSim` multi-basho |
+| `advanceCalendarDays` | 7.7s | long-horizon tick sim |
+| `autoSimCoreLoop` | 6.0s | `runAutoSim` (relocated v13; baseline row added this pass) |
+| `yokozunaPresence` | 6.0s | multi-basho generated-world sim |
+| `knipGuard` | 3.0s | `knip` subprocess |
+| `TournamentSimulatorJunYusho` | 2.6s | demoted this pass |
+| `circularDependency` | 2.3s | `madge` subprocess |
+| `commandSurfaceCoverage` | 2.0s | demoted this pass |
+| `junYushoIdBug` | 1.8s | demoted this pass |
+| `headless-playthrough` | 0.6s | 364-day `advanceDaysFast` (long-horizon rule) |
+| `phasePurity` | 0.1s | not strictly categorical — ts-morph project load; kept for `slow/audit` cohesion (promotion candidate if that dir ever splits) |
+| `engineReviewerGate` | 0.1s | `bun scripts/engine-reviewer.ts` subprocess (baseline row added this pass) |
+| `bundleBudget` | 0.0s | requires `dist/` — build-dependent |
+
+### Guardrail changes
+
+- `noSubprocessInUnitTests` gained a third rule: `generateInitialWorld` ×
+  `simulateEntireBasho` co-occurrence is banned in `unit/` (the harness
+  signature). Authored **before** the moves and observed RED naming exactly
+  the two files.
+- `testTimeoutBudget` hole closed: now also catches the trailing
+  `}, N);` timeout form (how the demoted files' eight `60000` budgets went
+  unnoticed), scoped to `unit/` — `slow/` legitimately uses 60–900s timeouts.
+- `report-test-timings.ts` gained `e2e-smoke`/`e2e-soak` suites via
+  Playwright's JUnit reporter (`PLAYWRIGHT_JUNIT_OUTPUT_NAME`); e2e files are
+  recorded by basename under their own suite keys.
+
+### RED→GREEN evidence
+
+1. New co-occurrence rule committed-in-tree → `noSubprocessInUnitTests` RED,
+   naming `TournamentSimulatorJunYusho` + `junYushoIdBug` (2 violations).
+2. `git mv` × 3 → `testTimingsBudget` RED on stale baseline paths (all 3).
+3. `bun run test:timings -- fast` regen → all meta gates GREEN (149 tests).
+4. Targeted slow run of moved files → 10/10 green (6.56s).
+
+### Consequences & watchlist
+
+- Fast suite: 966 → 963 files, ~−12.9s measured (top file now
+  `duplicateExportGate` 2.6s — parallel-contention variance, watchlist).
+- Slow suite: 13 → 16 files; engine job +~9s, audit job +~2s measured.
+- Fast watchlist (1–2s band, no action): `duplicateExportGate` 2.6s,
+  `HistoryDashboard` 1.8s, `tacticWinRate` 1.7s, `worldCircuit` 1.4s,
+  `replacementLoop` 1.3s, `RosterList`/`RecruitingTab`/`TalentPoolPage` ~1.1s.
+- `docs/TESTING.md` created — canonical five-tier matrix incl. e2e smoke/soak
+  placement and the combat-test granularity rule.
+- Timing-script caveat discovered: suites read the JSON at process start, so
+  concurrent `--suite` runs clobber each other — run them sequentially (a
+  `--xml` re-parse repairs any lost suite without re-running it).

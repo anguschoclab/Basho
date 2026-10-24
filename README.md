@@ -97,7 +97,8 @@ bun run test:e2e               # all e2e specs
 ```
 
 The slow and perf suites run nightly in CI (`.github/workflows/slow-tests.yml`);
-PRs gate on the fast suite, lint, and typecheck only.
+PRs gate on the fast suite, lint, and typecheck only. See `docs/TESTING.md` for
+the full tier matrix and membership rules.
 
 **Verify determinism (static analysis for RNG & mutable state violations):**
 

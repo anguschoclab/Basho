@@ -6,6 +6,8 @@
  *   bunx tsx scripts/report-test-timings.ts --suite fast   # vitest.config.ts
  *   bunx tsx scripts/report-test-timings.ts --suite slow   # vitest.slow.config.ts
  *   bunx tsx scripts/report-test-timings.ts --suite perf   # vitest.perf.config.ts
+ *   bunx tsx scripts/report-test-timings.ts --suite e2e-smoke  # playwright --project=smoke
+ *   bunx tsx scripts/report-test-timings.ts --suite e2e-soak   # playwright --project=soak
  *   bunx tsx scripts/report-test-timings.ts --suite all
  *   bunx tsx scripts/report-test-timings.ts --suite fast --json existing.json  # parse, don't run
  *
@@ -20,15 +22,17 @@
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { dirname, isAbsolute, join, relative } from "node:path";
 
 const ROOT = join(import.meta.dirname, "..");
 const DEFAULT_OUT = join(ROOT, "docs/audit/test-timings.json");
 
-const SUITE_CONFIGS: Record<string, string> = {
-  fast: "vitest.config.ts",
-  slow: "vitest.slow.config.ts",
-  perf: "vitest.perf.config.ts",
+const SUITE_CONFIGS: Record<string, { kind: "vitest" | "playwright"; target: string }> = {
+  fast: { kind: "vitest", target: "vitest.config.ts" },
+  slow: { kind: "vitest", target: "vitest.slow.config.ts" },
+  perf: { kind: "vitest", target: "vitest.perf.config.ts" },
+  "e2e-smoke": { kind: "playwright", target: "smoke" },
+  "e2e-soak": { kind: "playwright", target: "soak" },
 };
 
 interface TimingEntry {
@@ -75,15 +79,15 @@ function parseJunitXml(xmlPath: string): TimingEntry[] {
   for (const m of xml.matchAll(
     /<testsuite name="([^"]+)"[^>]*?tests="(\d+)"[^>]*?time="([\d.]+)"/g
   )) {
+    const name = m[1]
+      .replace(/&quot;/g, '"')
+      .replace(/&gt;/g, ">")
+      .replace(/&lt;/g, "<")
+      .replace(/&amp;/g, "&");
     entries.push({
-      file: relative(
-        ROOT,
-        m[1]
-          .replace(/&quot;/g, '"')
-          .replace(/&gt;/g, ">")
-          .replace(/&lt;/g, "<")
-          .replace(/&amp;/g, "&")
-      ),
+      // vitest emits absolute paths; playwright's JUnit suite names are
+      // already repo-relative spec paths.
+      file: isAbsolute(name) ? relative(ROOT, name) : name,
       testCount: Number(m[2]),
       durationMs: Math.round(Number(m[3]) * 1000),
     });
@@ -99,12 +103,17 @@ function runSuite(suite: string): string {
   }
   const tmp = join(ROOT, `node_modules/.cache/test-timings-${suite}.xml`);
   mkdirSync(dirname(tmp), { recursive: true });
-  console.log(`Running "${suite}" suite (config: ${config}) ...`);
-  const res = spawnSync(
-    "bunx",
-    ["vitest", "run", "--config", config, "--reporter=junit", `--outputFile=${tmp}`],
-    { cwd: ROOT, stdio: ["ignore", "inherit", "inherit"], env: process.env }
-  );
+  const env = { ...process.env, PLAYWRIGHT_JUNIT_OUTPUT_NAME: tmp };
+  const cmd =
+    config.kind === "playwright"
+      ? ["playwright", "test", `--project=${config.target}`, "--reporter=junit"]
+      : ["vitest", "run", "--config", config.target, "--reporter=junit", `--outputFile=${tmp}`];
+  console.log(`Running "${suite}" suite (${cmd.join(" ")}) ...`);
+  const res = spawnSync("bunx", cmd, {
+    cwd: ROOT,
+    stdio: ["ignore", "inherit", "inherit"],
+    env,
+  });
   if (!existsSync(tmp)) {
     console.error(`vitest produced no JUnit report at ${tmp}`);
     process.exit(1);

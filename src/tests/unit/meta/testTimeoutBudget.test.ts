@@ -4,15 +4,21 @@ import { join } from "path";
 import { findFiles, SRC as SRC_DIR } from "@/tests/helpers/fsScan";
 
 describe("L2.2: test timeout budget — no excessive per-test timeouts", () => {
-  it("no test sets a timeout greater than 5000ms", () => {
-    const testFiles = findFiles(join(SRC_DIR, "tests"));
+  it("no unit test sets a timeout greater than 5000ms", () => {
+    // Scoped to unit/: slow/ files legitimately carry 60–900s timeouts (serial
+    // suite, 600s cap). Two forms are checked: `it("x", 60000)` (numeric second
+    // arg) and `}, 60000);` (the trailing third-arg form — the pattern the
+    // demoted sim harnesses used to escape this gate).
+    const testFiles = findFiles(join(SRC_DIR, "tests", "unit"));
     const violations: string[] = [];
 
     for (const file of testFiles) {
       const content = readFileSync(file, "utf-8");
       const lines = content.split("\n");
       lines.forEach((line, i) => {
-        const match = line.match(/(?:test|it|describe)\s*\([^,]*,\s*(\d+)\s*[,)]/);
+        const match =
+          line.match(/(?:test|it|describe)\s*\([^,]*,\s*(\d+)\s*[,)]/) ??
+          line.match(/\}\s*,\s*(\d+)\s*\)\s*;/);
         if (match && parseInt(match[1], 10) > 5000) {
           violations.push(`${file}:${i + 1}: timeout ${match[1]}ms — ${line.trim()}`);
         }

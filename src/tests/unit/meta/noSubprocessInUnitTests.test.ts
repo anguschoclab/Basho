@@ -28,6 +28,28 @@ describe("unit suite speed guard", () => {
     ).toEqual([]);
   });
 
+  it("no unit test pairs generateInitialWorld with simulateEntireBasho (real-worldgen basho sims belong in src/tests/slow/)", () => {
+    // generateInitialWorld builds a complete seeded world and
+    // simulateEntireBasho then plays a full 15-day tournament over it — ~1s
+    // per pairing, and files using it historically measure 4-5s. Either call
+    // alone is legitimate (worldgen for shape checks, basho sims on mock
+    // worlds); the co-occurrence is the categorical slow-tier pattern.
+    const violations: string[] = [];
+    for (const file of testFiles()) {
+      const content = readFileSync(file, "utf-8");
+      if (
+        /\bgenerateInitialWorld\s*\(/.test(content) &&
+        /\bsimulateEntireBasho\s*\(/.test(content)
+      ) {
+        violations.push(file.replace(SRC + "/", ""));
+      }
+    }
+    expect(
+      violations,
+      `Unit tests running generated-world basho sims — move to src/tests/slow/:\n${violations.join("\n")}`
+    ).toEqual([]);
+  });
+
   it("no unit test drives the autonomous sim engine (runAutoSim belongs in src/tests/slow/)", () => {
     // runAutoSim always runs a full simulated year over a generated world —
     // inherently slow. generateInitialWorld/advanceDaysFast are NOT banned:

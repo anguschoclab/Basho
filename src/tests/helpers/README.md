@@ -4,9 +4,9 @@
 
 - `src/tests/unit/` — fast unit tests; run by default via `bun run test` on every change and every PR (~25–30s wall clock with `vmThreads` + `fileParallelism`).
   - `unit/audit/` — structural gates on production code (pure fs/AST reads, no subprocesses).
-  - `unit/meta/` — gates about the suite itself: `noSubprocessInUnitTests` (no `child_process`, no `runAutoSim`), `testTimeoutBudget`, `testTimingsBudget` (per-file duration budget vs the committed baseline), `factoryDiscipline` (no new local entity factories), `weakAssertionAudit`.
+  - `unit/meta/` — gates about the suite itself: `noSubprocessInUnitTests` (no `child_process`, no `runAutoSim`, no `generateInitialWorld`+`simulateEntireBasho` pairing), `testTimeoutBudget` (no >5s per-test timeouts in unit/), `testTimingsBudget` (per-file duration budget vs the committed baseline), `factoryDiscipline` (no new local entity factories), `weakAssertionAudit`.
   - Everything else under `unit/` mirrors `src/` structure (`unit/engine/x` tests `src/engine/x`, `unit/components/`, `unit/build/` for toolchain/build assertions, ...).
-- `src/tests/slow/` — slow gates run adhoc via `bun run test:slow` and nightly in CI (parallel `slow-engine-sims` + `slow-audit-gates` jobs). Put a test here if it spawns a subprocess (eslint/knip/madge/tsx), requires a prior `bun run build`, or simulates months/years of game time (`runAutoSim`, multi-hundred-day `advanceDaysFast` on generated worlds).
+- `src/tests/slow/` — slow gates run adhoc via `bun run test:slow` and nightly in CI (parallel `slow-engine-sims` + `slow-audit-gates` jobs). Put a test here if it spawns a subprocess (eslint/knip/madge/tsx/engine-reviewer), requires a prior `bun run build`, simulates months/years of game time (`runAutoSim`, multi-hundred-day `advanceDaysFast` on generated worlds, `generateInitialWorld`+`simulateEntireBasho` pairings), or scans the whole repo per-entity (e.g. `commandSurfaceCoverage`'s O(commands × files) walk).
 - `src/tests/perf/` — perf benchmarks; run adhoc via `bun run test:perf`.
 - `e2e/` — Playwright; `test:e2e:smoke` (routine) / `test:e2e:soak` (long lifecycle).
 
