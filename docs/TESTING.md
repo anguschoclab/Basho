@@ -8,7 +8,7 @@ sizes/timings below reflect `docs/audit/test-timings.json` (refresh:
 
 | Tier | Location / selector | Runner | Cadence | Membership rule |
 |---|---|---|---|---|
-| **Fast unit** | `src/tests/unit/**` (plus any `*.test.ts(x)` under `src/`) | `bun run test` (`vitest.config.ts`: jsdom, `vmThreads`, `fileParallelism`, `fsModuleCache`) | every change / PR CI | ~963 files. Must not: import `child_process`, call `runAutoSim`, pair `generateInitialWorld` with `simulateEntireBasho`, require prior `bun run build`, or exceed the 10s per-file budget (target <2s) |
+| **Fast unit** | `src/tests/unit/**` (plus any `*.test.ts(x)` under `src/`) | `bun run test` (`vitest.config.ts`: jsdom, `vmThreads`, `fileParallelism`, `fsModuleCache`) | every change / PR CI | ~964 files. Must not: import `child_process`, call `runAutoSim`, pair `generateInitialWorld` with `simulateEntireBasho`, require prior `bun run build`, or exceed the 10s per-file budget (target <2s) |
 | **Slow gates** | `src/tests/slow/{audit,engine}/**` | `bun run test:slow` (`vitest.slow.config.ts`: serial, 600s timeout) | adhoc / nightly `slow-tests.yml` (parallel `slow-engine-sims` + `slow-audit-gates` jobs; audit job builds first) | spawns a subprocess (eslint/knip/madge/tsx/engine-reviewer), requires `bun run build` output, simulates months/years of game time, or scans the whole repo in a way that scales with repo growth |
 | **Perf** | `src/tests/perf/**` (`*.perf.test.ts` convention) | `bun run test:perf` (`vitest.perf.config.ts`) | adhoc / nightly `perf-gate` job | timing-asserting benchmarks, not correctness gates |
 | **E2E smoke** | `e2e/` matching `(golden-path\|reload-restore).e2e.test.ts` | `bun run test:e2e:smoke` (Playwright `smoke` project) | PR gate + main pushes (`e2e.yml`, 15-min timeout) | golden-path browser flows, ~30–45s local |
@@ -82,8 +82,8 @@ merges per-file durations (hook-inclusive — vitest's JSON reporter hides
 
 | Suite | Files | Tests | Measured total |
 |---|---|---|---|
-| fast | 963 | 8,916 | ~74s file-time |
-| slow | 16 | 66 | ~273s (serial) |
+| fast | 964 | 8,917 | ~54s file-time |
+| slow | 15 | 75 | ~270s (serial) |
 | perf | 5 | 14 | ~154s |
 | e2e-smoke | 2 | 3 | ~40s |
 | e2e-soak | 2 | 2 | ~25 min (`year-of-bashos` dominates at ~24.7m) |
@@ -93,7 +93,7 @@ Slow-tier inventory: subprocess audits (`lintStrictGate`, `knipGuard`,
 (`bundleBudget`), long sims (`simulationInvariants`, `advanceCalendarDays`,
 `yokozunaPromotionAutoSim`, `yokozunaPresence`, `autoSimCoreLoop`,
 `headless-playthrough`, `junYushoIdBug`, `TournamentSimulatorJunYusho`),
-repo-scaling scans (`commandSurfaceCoverage`, `phasePurity`).
+repo-scaling scans (`commandSurfaceCoverage`).
 
 ## Conventions
 

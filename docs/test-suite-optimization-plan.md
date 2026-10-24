@@ -6,8 +6,8 @@ Status: implemented 2026-10-08 · Results: `docs/audit/test-optimization-verdict
 
 | Suite      | Location                 | Files   | Tests  | Duration                    | Trigger                            |
 | ---------- | ------------------------ | ------- | ------ | --------------------------- | ---------------------------------- |
-| Fast unit  | `src/tests/unit/**`      | 963     | ~8,916 | ~25–30s (vmThreads + parallel) | every change / PR CI               |
-| Slow gates | `src/tests/slow/**`      | 16      | ~66    | ~273s                       | adhoc / nightly (`slow-tests.yml`) |
+| Fast unit  | `src/tests/unit/**`      | 964     | ~8,917 | ~25–30s (vmThreads + parallel) | every change / PR CI               |
+| Slow gates | `src/tests/slow/**`      | 15      | ~75    | ~270s                       | adhoc / nightly (`slow-tests.yml`) |
 | Perf       | `src/tests/perf/**`      | 5       | —      | ~154s                       | adhoc / nightly                    |
 | E2E smoke  | `e2e/` `--project=smoke` | 2 specs | 3      | ~40s                        | PR gate                            |
 | E2E soak   | `e2e/` `--project=soak`  | 2 specs | 2      | ~8–10 min                   | nightly + manual                   |

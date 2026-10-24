@@ -133,7 +133,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
   | Command | Suite | When to run |
   |---------|-------|-------------|
   | `bun run test` | Fast unit tests (`src/tests/unit/**`) | Every change / every PR |
-  | `bun run test:slow` | Slow gates (`src/tests/slow/**` — subprocess audits: lintStrictGate, knipGuard, circularDependency, orphan-audit, engineReviewerGate; repo-scaling scans: commandSurfaceCoverage, phasePurity; long sims: headless-playthrough, simulationInvariants, advanceCalendarDays, yokozunaPromotionAutoSim, yokozunaPresence, autoSimCoreLoop, junYushoIdBug, TournamentSimulatorJunYusho; build-dependent: bundleBudget) | Adhoc / nightly CI (`slow-tests.yml`); needs `bun run build` first |
+  | `bun run test:slow` | Slow gates (`src/tests/slow/**` — subprocess audits: lintStrictGate, knipGuard, circularDependency, orphan-audit, engineReviewerGate; repo-scaling scans: commandSurfaceCoverage; long sims: headless-playthrough, simulationInvariants, advanceCalendarDays, yokozunaPromotionAutoSim, yokozunaPresence, autoSimCoreLoop, junYushoIdBug, TournamentSimulatorJunYusho; build-dependent: bundleBudget) | Adhoc / nightly CI (`slow-tests.yml`); needs `bun run build` first |
   | `bun run test:perf` | Perf benchmarks (`src/tests/perf/**`) | Adhoc |
   | `bun run test:all` | All three vitest suites | Pre-release verification |
   | `bun run test:e2e:smoke` | Playwright smoke (golden-path, reload-restore) | Adhoc, ~2–4 min |
@@ -145,7 +145,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 - **Mock factories:** primary is `src/tests/helpers/utils/MockFactory.ts` (~118 consumers); `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 73%, branches 61%, functions 64%, statements 75% (v8 provider) — ratchet floor re-baselined v10-R06 after `.tsx`/constants were added to `include`; measured run: 74.0/61.96/64.84/75.91
-- **Current status (test-suite curation, Oct 2026):** 963 fast files / 8,916 tests, 16 slow, 5 perf — all passing. `bun run type-check` clean. `bun run build` succeeds. E2E smoke: 3/3 specs green. Determinism verified byte-identical (basho + year horizons). Perf gate: baseline re-seeds on every main push (`always()`), so PR comparisons stay fresh. Suite tiers documented in `docs/TESTING.md`.
+- **Current status (test-suite curation, Oct 2026):** 964 fast files / 8,917 tests, 15 slow, 5 perf — all passing. `bun run type-check` clean. `bun run build` succeeds. E2E smoke: 3/3 specs green. Determinism verified byte-identical (basho + year horizons). Perf gate: baseline re-seeds on every main push (`always()`), so PR comparisons stay fresh. Suite tiers documented in `docs/TESTING.md`.
 - **Command-path note:** engine mutations go through the worker via `sendCommand`. The interactive basho path (`SIMULATE_BOUT` etc.) still resolves on the main thread for match animation, but tactics live on `world.boutTactics` and every world-mutating slice case bumps `state.uiWorldRevision`, which GameContext syncs back to the worker via `LOAD_WORLD`. Never reintroduce a world write that skips this sync.
 
 ## Routing (routes.tsx — TanStack Router)

@@ -138,7 +138,7 @@ meta-gate suite (evidence below).
 | `unit/engine/simulation/junYushoIdBug.test.ts` | 4,153–4,720ms | generated-world basho harness (×4) | `slow/engine/simulation/` |
 | `unit/audit/commandSurfaceCoverage.test.ts` | 2,515–2,796ms | whole-repo scan, O(commands × files) re-walk — scales with repo growth | `slow/audit/` |
 
-### Slow-tier dispositions (all 16 files — kept)
+### Slow-tier dispositions (15 files — kept; `phasePurity` promoted to `unit/audit/` 2026-10-24 re-measure: non-categorical 0.1s single-pass scan)
 
 | File | Measured | Rule satisfied |
 |---|---|---|
@@ -155,7 +155,6 @@ meta-gate suite (evidence below).
 | `commandSurfaceCoverage` | 2.0s | demoted this pass |
 | `junYushoIdBug` | 1.8s | demoted this pass |
 | `headless-playthrough` | 0.6s | 364-day `advanceDaysFast` (long-horizon rule) |
-| `phasePurity` | 0.1s | not strictly categorical — ts-morph project load; kept for `slow/audit` cohesion (promotion candidate if that dir ever splits) |
 | `engineReviewerGate` | 0.1s | `bun scripts/engine-reviewer.ts` subprocess (baseline row added this pass) |
 | `bundleBudget` | 0.0s | requires `dist/` — build-dependent |
 
@@ -184,7 +183,7 @@ meta-gate suite (evidence below).
 
 - Fast suite: 966 → 963 files, ~−12.9s measured (top file now
   `duplicateExportGate` 2.6s — parallel-contention variance, watchlist).
-- Slow suite: 13 → 16 files; engine job +~9s, audit job +~2s measured.
+- Slow suite: 13 → 16 → 15 files (phasePurity promoted to `unit/audit/` on the follow-up re-measure — it never satisfied a slow-tier rule); engine job +~9s, audit job +~2s measured.
 - Fast watchlist (1–2s band, no action): `duplicateExportGate` 2.6s,
   `HistoryDashboard` 1.8s, `tacticWinRate` 1.7s, `worldCircuit` 1.4s,
   `replacementLoop` 1.3s, `RosterList`/`RecruitingTab`/`TalentPoolPage` ~1.1s.
