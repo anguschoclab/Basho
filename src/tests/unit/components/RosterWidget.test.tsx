@@ -137,3 +137,28 @@ describe("RosterWidget selection", () => {
     expect(row3!.className).toContain("bg-primary/10");
   });
 });
+
+describe("RosterWidget a11y", () => {
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+
+  it("exposes per-row fatigue bars and the team overview bar as progressbars", () => {
+    const rikishiList = Array.from({ length: 3 }, (_, i) => makeRikishi(`r${i + 1}`));
+    mockUseGame(makeWorld(rikishiList));
+
+    render(
+      <TooltipProvider>
+        <RosterWidget />
+      </TooltipProvider>
+    );
+
+    expect(screen.getAllByLabelText("Fatigue")).toHaveLength(3);
+    const overview = screen.getByLabelText("Team fatigue overview");
+    expect(overview.getAttribute("role")).toBe("progressbar");
+    expect(overview.getAttribute("aria-valuemin")).toBe("0");
+    expect(overview.getAttribute("aria-valuemax")).toBe("100");
+    expect(Number(overview.getAttribute("aria-valuenow"))).toBeGreaterThanOrEqual(0);
+  });
+});

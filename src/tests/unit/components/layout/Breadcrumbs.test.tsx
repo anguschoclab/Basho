@@ -276,3 +276,23 @@ describe("Breadcrumbs", () => {
     expect(nav.classList.contains("custom-nav")).toBe(true);
   });
 });
+
+describe("Breadcrumbs a11y", () => {
+  it("interactive crumbs and the ellipsis button carry focus-visible rings", () => {
+    Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 500 });
+    render(
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/dashboard" },
+          { label: "Stable", href: "/stable" },
+          { label: "Roster", href: "/stable/roster" },
+          { label: "Details", href: "/stable/roster/details", isCurrent: true },
+        ]}
+      />
+    );
+    const ellipsis = screen.getByLabelText("Show all breadcrumbs");
+    expect(ellipsis.className).toContain("focus-visible:ring-2");
+    const homeLink = screen.getByText("Home").closest("a")!;
+    expect(homeLink.className).toContain("focus-visible:ring-2");
+  });
+});

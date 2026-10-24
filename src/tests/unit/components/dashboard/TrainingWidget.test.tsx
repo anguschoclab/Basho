@@ -81,3 +81,29 @@ describe("TrainingWidget", () => {
     expect(screen.getByText(/Quick-change/)).toBeTruthy();
   });
 });
+
+describe("TrainingWidget a11y", () => {
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+
+  it("exposes multiplier bars as progressbars with bounded values", () => {
+    mockUseGame(makeWorld());
+    render(
+      <TooltipProvider>
+        <TrainingWidget />
+      </TooltipProvider>
+    );
+
+    const bars = screen.getAllByRole("progressbar");
+    expect(bars.length).toBeGreaterThan(0);
+    for (const bar of bars) {
+      expect(bar.getAttribute("aria-valuemin")).toBe("0");
+      expect(bar.getAttribute("aria-valuemax")).toBe("100");
+      const now = Number(bar.getAttribute("aria-valuenow"));
+      expect(now).toBeGreaterThanOrEqual(0);
+      expect(now).toBeLessThanOrEqual(100);
+    }
+  });
+});
