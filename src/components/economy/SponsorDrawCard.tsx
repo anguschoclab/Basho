@@ -20,7 +20,10 @@ interface SponsorDrawCardProps {
   currentYear?: number;
 }
 
-export function SponsorDrawCard({ topEarners, currentYear = DEFAULT_START_YEAR }: SponsorDrawCardProps) {
+export function SponsorDrawCard({
+  topEarners,
+  currentYear = DEFAULT_START_YEAR,
+}: SponsorDrawCardProps) {
   if (topEarners.length === 0) return null;
 
   return (

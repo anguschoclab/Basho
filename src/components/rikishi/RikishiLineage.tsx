@@ -14,7 +14,12 @@ interface RikishiLineageProps {
   currentYear?: number;
 }
 
-export function RikishiLineage({ mentor, mentees, rikishiId, currentYear = DEFAULT_START_YEAR }: RikishiLineageProps) {
+export function RikishiLineage({
+  mentor,
+  mentees,
+  rikishiId,
+  currentYear = DEFAULT_START_YEAR,
+}: RikishiLineageProps) {
   const avatarOf = (r: Rikishi) =>
     resolveAvatar({
       id: r.id,

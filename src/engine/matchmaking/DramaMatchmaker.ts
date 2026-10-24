@@ -662,9 +662,7 @@ export function applyDramaBudget(
     }
     const drama = dramaCache.get(idx);
     finalPairings.push(
-      drama && drama.score > 0
-        ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] }
-        : p
+      drama && drama.score > 0 ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] } : p
     );
   }
 

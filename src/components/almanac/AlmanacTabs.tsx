@@ -145,39 +145,41 @@ export function PastBashosTab({ world }: { world: WorldState }) {
               })
             : undefined;
           return (
-          <Card key={idx} className="paper overflow-hidden">
-            <div className="p-4 border-b flex justify-between items-center bg-secondary/20">
-              <div>
-                <h3 className="font-bold text-lg capitalize">
-                  {basho.bashoName} {basho.year}
-                </h3>
-                <p className="text-xs text-muted-foreground">Tournament Snapshot</p>
+            <Card key={idx} className="paper overflow-hidden">
+              <div className="p-4 border-b flex justify-between items-center bg-secondary/20">
+                <div>
+                  <h3 className="font-bold text-lg capitalize">
+                    {basho.bashoName} {basho.year}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">Tournament Snapshot</p>
+                </div>
+                <Trophy className="h-6 w-6 text-gold" />
               </div>
-              <Trophy className="h-6 w-6 text-gold" />
-            </div>
-            <CardContent className="p-4 grid md:grid-cols-3 gap-4">
-              <div className="space-y-1">
-                <p className="text-xs uppercase text-muted-foreground font-semibold">
-                  Yūshō Winner
-                </p>
-                <p className="font-display font-bold text-lg flex items-center gap-2">
-                  {yushoRikishi && (
-                    <SumoAvatar avatar={yushoAvatar} size="xs" fallback={yushoRikishi.shikona} />
-                  )}
-                  {yushoRikishi?.shikona ?? basho.yusho ?? "Reserved"}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs uppercase text-muted-foreground font-semibold">Attendance</p>
-                <p className="font-mono text-lg">Full House</p>
-              </div>
-              <div className="text-right">
-                <Link to="/basho" className="text-primary hover:underline text-sm font-semibold">
-                  View Full Results →
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+              <CardContent className="p-4 grid md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs uppercase text-muted-foreground font-semibold">
+                    Yūshō Winner
+                  </p>
+                  <p className="font-display font-bold text-lg flex items-center gap-2">
+                    {yushoRikishi && (
+                      <SumoAvatar avatar={yushoAvatar} size="xs" fallback={yushoRikishi.shikona} />
+                    )}
+                    {yushoRikishi?.shikona ?? basho.yusho ?? "Reserved"}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs uppercase text-muted-foreground font-semibold">
+                    Attendance
+                  </p>
+                  <p className="font-mono text-lg">Full House</p>
+                </div>
+                <div className="text-right">
+                  <Link to="/basho" className="text-primary hover:underline text-sm font-semibold">
+                    View Full Results →
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           );
         })
       )}

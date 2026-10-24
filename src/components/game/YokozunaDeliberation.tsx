@@ -122,7 +122,9 @@ export function YokozunaDeliberation({
                 : "Decision Deferred"}
           </p>
           {isPlayerRikishi && verdict === "promoted" && (
-            <Badge className="mt-2 bg-gold text-gold-foreground">YOUR RIKISHI BECOMES YOKOZUNA!</Badge>
+            <Badge className="mt-2 bg-gold text-gold-foreground">
+              YOUR RIKISHI BECOMES YOKOZUNA!
+            </Badge>
           )}
           {reasoning.length > 0 && (
             <div className="mt-3 text-xs text-muted-foreground space-y-1">

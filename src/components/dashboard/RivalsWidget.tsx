@@ -48,13 +48,7 @@ const RivalRow = React.memo(
 
 /** rivals widget. */
 const RivalList = React.memo(
-  ({
-    rivals,
-    world,
-  }: {
-    rivals: ReturnType<typeof selectTopRivals>;
-    world: WorldState;
-  }) => {
+  ({ rivals, world }: { rivals: ReturnType<typeof selectTopRivals>; world: WorldState }) => {
     return (
       <>
         {rivals.map((r) => {

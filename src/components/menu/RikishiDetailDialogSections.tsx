@@ -47,20 +47,20 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
           className="border-2 border-on-scrim/20"
         />
         <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Badge
-            variant="secondary"
-            className="text-[10px] uppercase font-black bg-card text-primary tracking-widest px-2"
-          >
-            Rikishi Dossier
-          </Badge>
-          <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[10px] h-5 font-black">
-            {isSekitori ? "Sekitori" : "Junior"}
-          </Badge>
-        </div>
-        <h2 className="text-3xl font-display font-black tracking-tight sumi-e-ink">
-          {rikishi.shikona}
-        </h2>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="text-[10px] uppercase font-black bg-card text-primary tracking-widest px-2"
+            >
+              Rikishi Dossier
+            </Badge>
+            <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[10px] h-5 font-black">
+              {isSekitori ? "Sekitori" : "Junior"}
+            </Badge>
+          </div>
+          <h2 className="text-3xl font-display font-black tracking-tight sumi-e-ink">
+            {rikishi.shikona}
+          </h2>
         </div>
       </div>
     </div>

@@ -166,8 +166,7 @@ describe("competitive-balance handicap does not create absolute talent lockout",
     const rikishi = toKeyedMap(
       strongIds,
       (id) => id,
-      (id) =>
-        mockRikishi(id, { heyaId: "strong", division: "makuuchi", rank: "maegashira" })
+      (id) => mockRikishi(id, { heyaId: "strong", division: "makuuchi", rank: "maegashira" })
     );
     const heyas = new Map([
       ["strong", makeMockHeya("strong", { funds: 300_000_000, rikishiIds: strongIds })],

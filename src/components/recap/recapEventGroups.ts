@@ -73,9 +73,7 @@ export function groupEventsByNarrative(events: EngineEvent[]) {
 }
 
 /** Recent prestige/stature changes resolved to their heya, with the stable's oyakata portrait. */
-export function getPrestigeChanges(
-  world: WorldState
-): Array<{
+export function getPrestigeChanges(world: WorldState): Array<{
   heya: { name: string; prestigeBand: string; reputation: number };
   change: string;
   oyakataAvatar?: AvatarRenderData;

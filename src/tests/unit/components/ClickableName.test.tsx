@@ -20,9 +20,7 @@ vi.mock("@tanstack/react-router", () => ({
     children?: React.ReactNode;
   }) => {
     // Resolve $param placeholders the way TanStack Router does
-    const resolved = params
-      ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m)
-      : to;
+    const resolved = params ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m) : to;
     const safeHref = resolved.startsWith("/") && !resolved.includes("://") ? resolved : "#";
     return (
       <a href={safeHref} className={className} onClick={onClick} data-testid="router-link">

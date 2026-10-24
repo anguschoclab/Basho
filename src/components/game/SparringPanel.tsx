@@ -36,7 +36,13 @@ const CHEM_STYLES = {
   neutral: { label: "Neutral", className: "text-muted-foreground" },
 } as const;
 
-function RikishiOption({ rikishi, avatarOf }: { rikishi: Rikishi; avatarOf: (r: Rikishi) => ReturnType<typeof resolveAvatar> }) {
+function RikishiOption({
+  rikishi,
+  avatarOf,
+}: {
+  rikishi: Rikishi;
+  avatarOf: (r: Rikishi) => ReturnType<typeof resolveAvatar>;
+}) {
   return (
     <span className="flex items-center gap-1.5">
       <SumoAvatar avatar={avatarOf(rikishi)} size="xs" fallback={rikishi.shikona} />

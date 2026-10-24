@@ -23,7 +23,12 @@ import type { Staff } from "@/engine/types/staff";
 import type { Gyoji } from "@/engine/types/gyoji";
 
 const gen = (over: Partial<Parameters<typeof generateAvatarIdentity>[0]> = {}) =>
-  generateAvatarIdentity({ seed: "test-rikishi-001", nationality: "Japan", role: "rikishi", ...over });
+  generateAvatarIdentity({
+    seed: "test-rikishi-001",
+    nationality: "Japan",
+    role: "rikishi",
+    ...over,
+  });
 
 describe("generateAvatarIdentity", () => {
   it("is deterministic for the same seed", () => {
@@ -46,7 +51,8 @@ describe("generateAvatarIdentity", () => {
 
   it("varies skin tone by nationality (mongolia vs estonia differ in output distribution)", () => {
     const tones = new Set<string>();
-    for (let i = 0; i < 30; i++) tones.add(gen({ seed: `m-${i}`, nationality: "Mongolia" }).skinTone);
+    for (let i = 0; i < 30; i++)
+      tones.add(gen({ seed: `m-${i}`, nationality: "Mongolia" }).skinTone);
     expect(tones.size).toBeGreaterThan(1);
   });
 
@@ -97,13 +103,23 @@ describe("deriveAvatarStage", () => {
   });
 
   it("flags yokozuna with a tsuna accent", () => {
-    const s = deriveAvatarStage({ role: "rikishi", division: "makuuchi", rank: "yokozuna", age: 30 });
+    const s = deriveAvatarStage({
+      role: "rikishi",
+      division: "makuuchi",
+      rank: "yokozuna",
+      age: 30,
+    });
     expect(s.tsuna).toBe(true);
     expect(s.hairstyle).toBe("oichomage");
   });
 
   it("retired rikishi drop the topknot", () => {
-    const s = deriveAvatarStage({ role: "rikishi", division: "makuuchi", age: 36, isRetired: true });
+    const s = deriveAvatarStage({
+      role: "rikishi",
+      division: "makuuchi",
+      age: 36,
+      isRetired: true,
+    });
     expect(["short", "receding", "bald"]).toContain(s.hairstyle);
     expect(s.attire).not.toBe("bare");
   });
@@ -118,8 +134,18 @@ describe("deriveAvatarStage", () => {
   });
 
   it("scales fullness with weight", () => {
-    const light = deriveAvatarStage({ role: "rikishi", division: "jonokuchi", age: 20, weight: 100 });
-    const heavy = deriveAvatarStage({ role: "rikishi", division: "jonokuchi", age: 20, weight: 200 });
+    const light = deriveAvatarStage({
+      role: "rikishi",
+      division: "jonokuchi",
+      age: 20,
+      weight: 100,
+    });
+    const heavy = deriveAvatarStage({
+      role: "rikishi",
+      division: "jonokuchi",
+      age: 20,
+      weight: 200,
+    });
     expect(heavy.fullness).toBeGreaterThan(light.fullness);
   });
 
@@ -134,7 +160,9 @@ describe("deriveAvatarStage", () => {
   });
 
   it("maps gyoji rank to robe tier", () => {
-    expect(deriveAvatarStage({ role: "gyoji", gyojiRank: "tate", age: 55 }).attire).toBe("gyoji_tate");
+    expect(deriveAvatarStage({ role: "gyoji", gyojiRank: "tate", age: 55 }).attire).toBe(
+      "gyoji_tate"
+    );
     expect(deriveAvatarStage({ role: "gyoji", gyojiRank: "sanyaku", age: 45 }).attire).toBe(
       "gyoji_sanyaku"
     );
@@ -144,18 +172,31 @@ describe("deriveAvatarStage", () => {
   });
 
   it("maps staff roles to attire", () => {
-    expect(deriveAvatarStage({ role: "staff", staffRole: "medical_staff", age: 40 }).attire).toBe("coat");
-    expect(deriveAvatarStage({ role: "staff", staffRole: "technique_coach", age: 40 }).attire).toBe("tracksuit");
-    expect(deriveAvatarStage({ role: "staff", staffRole: "administrator", age: 40 }).attire).toBe("suit");
+    expect(deriveAvatarStage({ role: "staff", staffRole: "medical_staff", age: 40 }).attire).toBe(
+      "coat"
+    );
+    expect(deriveAvatarStage({ role: "staff", staffRole: "technique_coach", age: 40 }).attire).toBe(
+      "tracksuit"
+    );
+    expect(deriveAvatarStage({ role: "staff", staffRole: "administrator", age: 40 }).attire).toBe(
+      "suit"
+    );
     expect(deriveAvatarStage({ role: "staff", staffRole: "scout", age: 40 }).attire).toBe("shirt");
   });
 
   it("expression follows aggression/momentum/injury unless overridden", () => {
-    expect(deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, aggression: 80 }).expression).toBe("intense");
-    expect(deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, momentum: 80 }).expression).toBe("confident");
-    expect(deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, injured: true }).expression).toBe("worried");
     expect(
-      deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, expression: "determined" }).expression
+      deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, aggression: 80 }).expression
+    ).toBe("intense");
+    expect(
+      deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, momentum: 80 }).expression
+    ).toBe("confident");
+    expect(
+      deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, injured: true }).expression
+    ).toBe("worried");
+    expect(
+      deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, expression: "determined" })
+        .expression
     ).toBe("determined");
   });
 });
@@ -192,7 +233,13 @@ describe("resolveAvatar", () => {
     expect(a.identity).toEqual(b.identity);
     // stale v1-shaped config ignored
     const stale = { seed: "old", faceShape: "round" } as never;
-    const c = resolveAvatar({ id: "person-1", stored: stale, nationality: "Japan", division: "juryo", age: 25 });
+    const c = resolveAvatar({
+      id: "person-1",
+      stored: stale,
+      nationality: "Japan",
+      division: "juryo",
+      age: 25,
+    });
     expect(c.identity).toEqual(a.identity);
   });
 });

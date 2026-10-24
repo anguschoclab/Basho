@@ -15,7 +15,13 @@ import { describe, it, expect } from "vitest";
 import { scanRecentEvents } from "@/engine/events";
 import type { EngineEvent } from "@/engine/types/events";
 
-function ev(id: string, year: number, week: number, day = 0, overrides?: Partial<EngineEvent>): EngineEvent {
+function ev(
+  id: string,
+  year: number,
+  week: number,
+  day = 0,
+  overrides?: Partial<EngineEvent>
+): EngineEvent {
   return {
     id,
     type: "BASHO_STATUS",
@@ -75,10 +81,26 @@ describe("scanRecentEvents", () => {
 
   it("composes types + minImportance + category filters", () => {
     const log = [
-      ev("gov-major", 2026, 1, 1, { type: "GOVERNANCE_RULING", category: "discipline", importance: "major" }),
-      ev("basho-minor", 2026, 1, 2, { type: "BASHO_STATUS", category: "basho", importance: "minor" }),
-      ev("gov-minor", 2026, 1, 3, { type: "GOVERNANCE_RULING", category: "discipline", importance: "minor" }),
-      ev("train-major", 2026, 1, 4, { type: "TRAINING_UPDATE", category: "training", importance: "major" }),
+      ev("gov-major", 2026, 1, 1, {
+        type: "GOVERNANCE_RULING",
+        category: "discipline",
+        importance: "major",
+      }),
+      ev("basho-minor", 2026, 1, 2, {
+        type: "BASHO_STATUS",
+        category: "basho",
+        importance: "minor",
+      }),
+      ev("gov-minor", 2026, 1, 3, {
+        type: "GOVERNANCE_RULING",
+        category: "discipline",
+        importance: "minor",
+      }),
+      ev("train-major", 2026, 1, 4, {
+        type: "TRAINING_UPDATE",
+        category: "training",
+        importance: "major",
+      }),
     ];
     const out = scanRecentEvents(log, {
       types: ["GOVERNANCE_RULING"],

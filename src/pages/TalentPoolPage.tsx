@@ -300,8 +300,11 @@ export default function TalentPoolPage() {
                         <CardHeader>
                           <div className="flex items-start justify-between gap-2">
                             <CandidateHeading
-                              candidate={c} currentYear={world.year} visible={canShowName}
-                              title={title} subtitle={sub}
+                              candidate={c}
+                              currentYear={world.year}
+                              visible={canShowName}
+                              title={title}
+                              subtitle={sub}
                             />
                             {c.tags.includes("amateur_star") && <Badge>Star</Badge>}
                             {(c.nationality ?? "Japan") !== "Japan" && (

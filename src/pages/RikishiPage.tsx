@@ -53,8 +53,7 @@ export default function RikishiPage() {
   // retired rikishi (full records pre-pruning, compact summaries after) are
   // reachable from search/links instead of dead-ending at RikishiNotFound.
   const entry = world && rikishiId ? getRikishiAnywhere(world, rikishiId) : undefined;
-  const retiredSummary =
-    entry && isRetiredRikishiSummaryEntry(entry) ? entry : undefined;
+  const retiredSummary = entry && isRetiredRikishiSummaryEntry(entry) ? entry : undefined;
   const rawRikishi: RawRikishi | undefined =
     entry && !isRetiredRikishiSummaryEntry(entry) ? entry : undefined;
   const rikishi = rawRikishi && world ? projectRikishi(rawRikishi, world) : null;

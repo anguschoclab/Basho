@@ -9,7 +9,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
 import { RikishiCard } from "@/components/game/RikishiCard";
 import { projectRikishi } from "@/presenters/rikishi";
-import { getRikishi, getHeya, getOyakata, getAllBookmarks, getBookmarksByType } from "@/presenters/worldAccess";
+import {
+  getRikishi,
+  getHeya,
+  getOyakata,
+  getAllBookmarks,
+  getBookmarksByType,
+} from "@/presenters/worldAccess";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import type { BookmarkEntry } from "@/presenters/worldAccess";
@@ -57,9 +63,7 @@ function BookmarkItem({
             />
             <div>
               <p className="font-display text-primary">{h.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {h.rikishiIds?.length ?? 0} rikishi
-              </p>
+              <p className="text-xs text-muted-foreground">{h.rikishiIds?.length ?? 0} rikishi</p>
             </div>
           </div>
         );

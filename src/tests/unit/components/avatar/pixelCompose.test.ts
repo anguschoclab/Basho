@@ -7,7 +7,11 @@ import { composeAvatar } from "@/components/avatar/pixelCompose";
 import { compileArt, ATTIRE_PALETTES } from "@/components/avatar/pixelAtlas";
 import { generateAvatarIdentity, deriveAvatarStage } from "@/engine/avatarGenerator";
 
-const identity = generateAvatarIdentity({ seed: "compose-1", nationality: "Japan", role: "rikishi" });
+const identity = generateAvatarIdentity({
+  seed: "compose-1",
+  nationality: "Japan",
+  role: "rikishi",
+});
 const stage = deriveAvatarStage({ role: "rikishi", division: "makuuchi", age: 27, weight: 150 });
 
 describe("compileArt", () => {
@@ -23,8 +27,18 @@ describe("compileArt", () => {
 describe("ATTIRE_PALETTES", () => {
   it("covers every attire key the stage can emit", () => {
     const attires = [
-      "bare", "kimono", "suit", "tracksuit", "coat", "polo", "shirt", "apron",
-      "gyoji_tate", "gyoji_sanyaku", "gyoji_standard", "shimpan",
+      "bare",
+      "kimono",
+      "suit",
+      "tracksuit",
+      "coat",
+      "polo",
+      "shirt",
+      "apron",
+      "gyoji_tate",
+      "gyoji_sanyaku",
+      "gyoji_standard",
+      "shimpan",
     ] as const;
     for (const a of attires) expect(ATTIRE_PALETTES[a]).toBeDefined();
   });

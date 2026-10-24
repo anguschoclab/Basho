@@ -87,10 +87,7 @@ export default function HallOfFamePage() {
         />
 
         {totalInductees > 0 && (
-          <HoFTimeline
-            rikishiMap={hofRikishiMap}
-            inductees={hof?.inductees ?? []}
-          />
+          <HoFTimeline rikishiMap={hofRikishiMap} inductees={hof?.inductees ?? []} />
         )}
 
         {world.bloodlineRegistry && <DynastyRegistry traits={world.bloodlineRegistry.traits} />}

@@ -12,7 +12,11 @@ describe("SumoAvatar", () => {
   afterEach(cleanup);
 
   it("renders an SVG with pixel paths", () => {
-    const identity = generateAvatarIdentity({ seed: "ui-1", nationality: "Japan", role: "rikishi" });
+    const identity = generateAvatarIdentity({
+      seed: "ui-1",
+      nationality: "Japan",
+      role: "rikishi",
+    });
     const stage = deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25 });
     const { container } = render(<SumoAvatar avatar={{ identity, stage }} />);
     const svg = container.querySelector("svg");
@@ -28,7 +32,11 @@ describe("SumoAvatar", () => {
   });
 
   it("renders from a bare stored identity with a default stage", () => {
-    const identity = generateAvatarIdentity({ seed: "ui-2", nationality: "Mongolia", role: "oyakata" });
+    const identity = generateAvatarIdentity({
+      seed: "ui-2",
+      nationality: "Mongolia",
+      role: "oyakata",
+    });
     const { container } = render(<SumoAvatar config={identity} />);
     expect(container.querySelector("svg")).toBeTruthy();
   });

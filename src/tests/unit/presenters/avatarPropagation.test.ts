@@ -86,7 +86,13 @@ describe("projectNakabi — avatar propagation", () => {
               leaderLosses: 0,
               undefeatedCount: 1,
               notablePerformers: [
-                { rikishiId: "perf1", shikona: "Rikishi-perf1", wins: 8, losses: 0, note: "Leading" },
+                {
+                  rikishiId: "perf1",
+                  shikona: "Rikishi-perf1",
+                  wins: 8,
+                  losses: 0,
+                  note: "Leading",
+                },
               ],
             },
           },

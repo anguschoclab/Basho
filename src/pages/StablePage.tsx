@@ -18,12 +18,7 @@ import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { getHeyaRoster } from "@/presenters/engineAccess";
-import {
-  RosterTab,
-  HeyaTab,
-  AttendantsTab,
-  AcademyTab,
-} from "@/components/stable/StablePageTabs";
+import { RosterTab, HeyaTab, AttendantsTab, AcademyTab } from "@/components/stable/StablePageTabs";
 
 export default function StablePage() {
   const { id: routeId } = useParams({ strict: false });

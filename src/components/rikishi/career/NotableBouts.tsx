@@ -73,7 +73,10 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
               </div>
             </button>
             {expandedBoutId === b.boutId && b.narrativeLines.length > 0 && (
-              <div id={`bout-details-${b.boutId}`} className="mt-3 pt-3 border-t border-border/20 space-y-1">
+              <div
+                id={`bout-details-${b.boutId}`}
+                className="mt-3 pt-3 border-t border-border/20 space-y-1"
+              >
                 {b.narrativeLines.map((line, j: number) => (
                   <p key={j} className="text-xs text-muted-foreground font-display italic">
                     {line}
