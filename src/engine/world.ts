@@ -113,19 +113,17 @@ export function advanceBashoDay(world: WorldState): WorldState {
 }
 
 /**
- * Simulates a specific bout for the current day.
- * Handles bout resolution, impact calculation, and standings updates.
- *
- * @param {WorldState} world - The current world state.
- * @param {number} unplayedIndex - The index of the bout to simulate among today's unplayed matches.
- * @param {import("./types/combat").BoutTactic} [playerTactic] - Optional tactic chosen by the player.
- * @returns {Object} An object containing the updated world state and the bout result.
- */
-/**
  * Shared per-bout core: resolve the bout, apply its result impact, and return
  * the evolved world plus the standings delta the caller must persist.
  * Does NOT write `match.result` into `basho.matches` or consume tactics —
  * callers own those so the batch path can avoid per-bout array copies.
+ *
+ * @param {WorldState} currentWorld - The current world state.
+ * @param {BashoState} basho - The current basho state.
+ * @param {MatchScheduleLike} match - The bout schedule information.
+ * @param {import("./types/combat").BoutTactic} [tactic] - Optional tactic chosen by the player.
+ * @param {string} fallbackBoutId - Fallback ID if the match lacks a boutId.
+ * @returns {Object} An object containing the updated world state, the bout result, and updated standings.
  */
 function resolveAndApplyBout(
   currentWorld: WorldState,
@@ -196,6 +194,15 @@ function consumeBoutTactic(world: WorldState, boutId: string | undefined): World
   ]);
 }
 
+/**
+ * Simulates a specific bout for the current day.
+ * Handles bout resolution, impact calculation, and standings updates.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {number} unplayedIndex - The index of the bout to simulate among today's unplayed matches.
+ * @param {import("./types/combat").BoutTactic} [playerTactic] - Optional tactic chosen by the player.
+ * @returns {Object} An object containing the updated world state and the bout result.
+ */
 export function simulateBoutForToday(
   world: WorldState,
   unplayedIndex: number,
