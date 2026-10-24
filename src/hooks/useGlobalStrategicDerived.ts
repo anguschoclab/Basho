@@ -9,7 +9,11 @@ import { useMemo } from "react";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";
 import { listVisibleCandidates } from "@/presenters/engineAccess";
-import { resolveAvatar, candidateStageInput, rikishiStageInput } from "@/presenters/avatarProjections";
+import {
+  resolveAvatar,
+  candidateStageInput,
+  rikishiStageInput,
+} from "@/presenters/avatarProjections";
 
 export function useGlobalStrategicDerived(world: WorldState, heyaId: Id) {
   const heya = world.heyas.get(heyaId);

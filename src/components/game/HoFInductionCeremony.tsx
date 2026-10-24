@@ -78,7 +78,12 @@ export function HoFInductionCeremony({
       cardContent={
         <>
           <SumoAvatar
-            avatar={resolveAvatar({ id: inductee.rikishiId, role: "rikishi", isRetired: true, age: 60 })}
+            avatar={resolveAvatar({
+              id: inductee.rikishiId,
+              role: "rikishi",
+              isRetired: true,
+              age: 60,
+            })}
             size="lg"
             fallback={inductee.shikona}
             expression={inductee.category === "champion" ? "confident" : "determined"}

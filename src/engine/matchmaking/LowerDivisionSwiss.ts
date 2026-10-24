@@ -360,9 +360,7 @@ function applyLowerDivisionDramaLabels(
     const west = rikishiMap.get(p.westId);
     const drama = east && west ? scoreLowerDivisionDrama(east, west, day, standings) : null;
     out.push(
-      drama && drama.score > 0
-        ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] }
-        : p
+      drama && drama.score > 0 ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] } : p
     );
   }
   return out;

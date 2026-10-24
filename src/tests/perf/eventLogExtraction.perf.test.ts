@@ -130,7 +130,7 @@ describe("event log extraction perf", () => {
     console.log(
       `[perf] extract 50k: legacy mean=${legacy.mean.toFixed(2)}ms p99=${legacy.p99.toFixed(2)}ms | ` +
         `scanRecentEvents mean=${fast.mean.toFixed(3)}ms p99=${fast.p99.toFixed(3)}ms ` +
-        `(${((legacy.mean / fast.mean) || 0).toFixed(0)}x faster)`
+        `(${(legacy.mean / fast.mean || 0).toFixed(0)}x faster)`
     );
     // Generous bound: backward scan should be at least 2x faster (measured >>50x).
     expect(fast.mean).toBeLessThan(legacy.mean / 2);

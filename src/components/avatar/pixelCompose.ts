@@ -459,20 +459,15 @@ function resolveSlot(slot: PaletteSlot, identity: AvatarIdentity, stage: AvatarS
 }
 
 // "skin"/"skinShadow" tokens inside ATTIRE palettes resolve through skin slots.
-const ATTIRE_PALETTES_LOOKUP: Record<
-  AvatarStage["attire"],
-  { base: string; accent: string }
-> = Object.fromEntries(
-  Object.entries(AVATAR_ATTIRE_COLORS).map(([k, v]) => [
-    k,
-    { base: v.base as string, accent: v.accent as string },
-  ])
-) as Record<AvatarStage["attire"], { base: string; accent: string }>;
+const ATTIRE_PALETTES_LOOKUP: Record<AvatarStage["attire"], { base: string; accent: string }> =
+  Object.fromEntries(
+    Object.entries(AVATAR_ATTIRE_COLORS).map(([k, v]) => [
+      k,
+      { base: v.base as string, accent: v.accent as string },
+    ])
+  ) as Record<AvatarStage["attire"], { base: string; accent: string }>;
 
-export function composeAvatar(
-  identity: AvatarIdentity,
-  stage: AvatarStage
-): Map<string, string> {
+export function composeAvatar(identity: AvatarIdentity, stage: AvatarStage): Map<string, string> {
   const p = new Painter();
 
   // backdrop: full canvas, darker floor band

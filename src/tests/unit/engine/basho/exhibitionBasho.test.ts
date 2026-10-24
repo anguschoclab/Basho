@@ -103,7 +103,15 @@ describe("simulateExhibitionBasho", () => {
   it("awards partial stipend to participants", () => {
     const r1 = mockRikishi("r-1", {
       shikona: "Rikishi 1",
-      economics: { cash: 1000, popularity: 50, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0 },
+      economics: {
+        cash: 1000,
+        popularity: 50,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+      },
     });
     const world = makeMockWorld({
       rikishi: new Map([[r1.id, r1]]),
@@ -120,7 +128,15 @@ describe("simulateExhibitionBasho", () => {
     const r1 = mockRikishi("r-1", {
       shikona: "Rikishi 1",
       isRetired: true,
-      economics: { cash: 1000, popularity: 50, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0 },
+      economics: {
+        cash: 1000,
+        popularity: 50,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+      },
     });
     const world = makeMockWorld({
       rikishi: new Map([[r1.id, r1]]),
@@ -149,7 +165,15 @@ describe("simulateExhibitionBasho", () => {
     const r1 = mockRikishi("r-1", {
       shikona: "Rikishi 1",
       fatigue: 0,
-      economics: { cash: 1000, popularity: 50, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0 },
+      economics: {
+        cash: 1000,
+        popularity: 50,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+      },
     });
     const world = makeMockWorld({
       rikishi: new Map([[r1.id, r1]]),
@@ -167,12 +191,28 @@ describe("simulateExhibitionBasho", () => {
     const r1 = mockRikishi("r-1", {
       shikona: "Rikishi 1",
       heyaId: "heya-1",
-      economics: { cash: 1000, popularity: 50, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0 },
+      economics: {
+        cash: 1000,
+        popularity: 50,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+      },
     });
     const r2 = mockRikishi("r-2", {
       shikona: "Rikishi 2",
       heyaId: "heya-2",
-      economics: { cash: 1000, popularity: 50, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0 },
+      economics: {
+        cash: 1000,
+        popularity: 50,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+      },
     });
     const world = makeMockWorld({
       rikishi: new Map([
@@ -189,7 +229,9 @@ describe("simulateExhibitionBasho", () => {
     const impact = simulateExhibitionBasho(world, "february-jungyo", [r1, r2]);
     // The rivalry event should be logged for r1 targeting r2
     const events = impact.events || [];
-    const rivalryEvent = events.find((e) => e.type === "LIFECYCLE_EVENT" && e.category === "rivalry");
+    const rivalryEvent = events.find(
+      (e) => e.type === "LIFECYCLE_EVENT" && e.category === "rivalry"
+    );
     expect(rivalryEvent).toBeDefined();
     expect(rivalryEvent?.data.rikishiId).toBe("r-1");
     expect(rivalryEvent?.data.rivalId).toBe("r-2");

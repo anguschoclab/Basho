@@ -239,8 +239,8 @@ export default function CandidatePoolPage() {
               />
             </div>
             <CardDescription>
-              Scouts report on prospects that rival stables have identified.
-              Make a competing offer to poach them before they sign.
+              Scouts report on prospects that rival stables have identified. Make a competing offer
+              to poach them before they sign.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

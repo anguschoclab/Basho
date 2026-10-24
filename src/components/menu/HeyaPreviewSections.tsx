@@ -39,9 +39,7 @@ export function PreviewHero({ heya, config }: { heya: Heya; config: StatureConfi
             >
               Official Dossier
             </Badge>
-            <Badge className={`${config.color} border-0 font-bold h-5`}>
-              {config.label}
-            </Badge>
+            <Badge className={`${config.color} border-0 font-bold h-5`}>{config.label}</Badge>
           </div>
           <h2 className="text-3xl font-display font-black tracking-tight">
             <StableName id={heya.id} name={heya.name} /> Stable

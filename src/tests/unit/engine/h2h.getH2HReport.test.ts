@@ -8,18 +8,53 @@ describe("getH2HReport", () => {
     const rA = MockFactory.createRikishi({
       id: "a1",
       history: [
-        { year: 2024, day: 15, bashoId: "basho-1", opponentId: "b1", win: true, kimarite: "yorikiri" },
-        { year: 2024, day: 14, bashoId: "basho-2", opponentId: "c1", win: false, kimarite: "oshidashi" },
-        { year: 2025, day: 1, bashoId: "basho-3", opponentId: "b1", win: false, kimarite: "hatakikomi" }
-      ]
+        {
+          year: 2024,
+          day: 15,
+          bashoId: "basho-1",
+          opponentId: "b1",
+          win: true,
+          kimarite: "yorikiri",
+        },
+        {
+          year: 2024,
+          day: 14,
+          bashoId: "basho-2",
+          opponentId: "c1",
+          win: false,
+          kimarite: "oshidashi",
+        },
+        {
+          year: 2025,
+          day: 1,
+          bashoId: "basho-3",
+          opponentId: "b1",
+          win: false,
+          kimarite: "hatakikomi",
+        },
+      ],
     });
 
     const rB = MockFactory.createRikishi({
       id: "b1",
       history: [
-        { year: 2024, day: 15, bashoId: "basho-1", opponentId: "a1", win: false, kimarite: "yorikiri" },
-        { year: 2025, day: 1, bashoId: "basho-3", opponentId: "a1", win: true, kimarite: "hatakikomi" }
-      ]
+        {
+          year: 2024,
+          day: 15,
+          bashoId: "basho-1",
+          opponentId: "a1",
+          win: false,
+          kimarite: "yorikiri",
+        },
+        {
+          year: 2025,
+          day: 1,
+          bashoId: "basho-3",
+          opponentId: "a1",
+          win: true,
+          kimarite: "hatakikomi",
+        },
+      ],
     });
 
     const report = getH2HReport(rA, rB);
@@ -37,14 +72,14 @@ describe("getH2HReport", () => {
       year: 2025,
       day: 1,
       winnerId: "b1",
-      kimarite: "hatakikomi"
+      kimarite: "hatakikomi",
     });
     expect(report.recentMeetings[1]).toEqual({
       bashoId: "basho-1",
       year: 2024,
       day: 15,
       winnerId: "a1",
-      kimarite: "yorikiri"
+      kimarite: "yorikiri",
     });
   });
 
@@ -59,7 +94,7 @@ describe("getH2HReport", () => {
         bashoId: `basho-${i}`,
         opponentId: "b1",
         win: i % 2 === 0,
-        kimarite: "yorikiri"
+        kimarite: "yorikiri",
       });
       historyB.push({
         year: 2020 + i,
@@ -67,7 +102,7 @@ describe("getH2HReport", () => {
         bashoId: `basho-${i}`,
         opponentId: "a1",
         win: i % 2 !== 0,
-        kimarite: "yorikiri"
+        kimarite: "yorikiri",
       });
     }
 

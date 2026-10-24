@@ -309,11 +309,9 @@ describe("projectGovernanceDerived — completedMergerEvents extraction", () => 
     expect(out.completedMergerEvents).toHaveLength(10);
     expect(out.completedMergerEvents[0].id).toBe("m11");
     expect(out.completedMergerEvents[9].id).toBe("m2");
-    expect(
-      out.completedMergerEvents.every(
-        (e) => e.id !== "other1" && e.id !== "other2"
-      )
-    ).toBe(true);
+    expect(out.completedMergerEvents.every((e) => e.id !== "other1" && e.id !== "other2")).toBe(
+      true
+    );
   });
 
   it("collects predicate matches even when newer non-matches sit at the tail", () => {
@@ -328,12 +326,6 @@ describe("projectGovernanceDerived — completedMergerEvents extraction", () => 
     const world = makeWorld(heya);
     (world.events as { log: EngineEvent[] }).log = log;
     const out = projectGovernanceDerived(world, heya);
-    expect(out.completedMergerEvents.map((e) => e.id)).toEqual([
-      "m4",
-      "m3",
-      "m2",
-      "m1",
-      "m0",
-    ]);
+    expect(out.completedMergerEvents.map((e) => e.id)).toEqual(["m4", "m3", "m2", "m1", "m0"]);
   });
 });

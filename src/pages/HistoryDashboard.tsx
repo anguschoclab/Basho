@@ -321,13 +321,18 @@ const StablesTab = ({
                 role: "rikishi",
                 age: isSummaryEntry(r)
                   ? Math.max(30, world.year - r.birthYear)
-                  : (r as Rikishi).age ?? world.year - r.birthYear,
+                  : ((r as Rikishi).age ?? world.year - r.birthYear),
                 rank: rankLabel,
                 isRetired: true,
               });
               return (
                 <Card key={r.id} className="paper p-3 text-center">
-                  <SumoAvatar avatar={avatar} size="md" fallback={r.shikona} className="mx-auto mb-2" />
+                  <SumoAvatar
+                    avatar={avatar}
+                    size="md"
+                    fallback={r.shikona}
+                    className="mx-auto mb-2"
+                  />
                   <div className="font-display font-semibold text-sm mb-1">{r.shikona}</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mb-1">
                     {rankLabel || "—"}

@@ -161,7 +161,10 @@ describe("searchEntities", () => {
   it("caps rikishi and heya results at the exported caps", () => {
     const rikishi = new Map<string, Rikishi>();
     for (let i = 0; i < RIKISHI_RESULT_CAP + 5; i++) {
-      rikishi.set(`r${i}`, rikishiFixture({ id: `r${i}`, shikona: `Taka${String(i).padStart(2, "0")}` }));
+      rikishi.set(
+        `r${i}`,
+        rikishiFixture({ id: `r${i}`, shikona: `Taka${String(i).padStart(2, "0")}` })
+      );
     }
     const heyas = new Map<string, Heya>();
     for (let i = 0; i < HEYA_RESULT_CAP + 3; i++) {

@@ -15,7 +15,11 @@ const candidate = (id: string, talentSeed: number) =>
   ({ candidateId: id, talentSeed }) as unknown as TalentCandidate;
 
 function worldWith(heyaIds: string[]) {
-  const heyas = toKeyedMap(heyaIds, (id) => id, (id) => makeMockHeya(id, { rikishiIds: [] }));
+  const heyas = toKeyedMap(
+    heyaIds,
+    (id) => id,
+    (id) => makeMockHeya(id, { rikishiIds: [] })
+  );
   return makeMockWorld({ heyas, rikishi: new Map() });
 }
 

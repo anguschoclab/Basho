@@ -10,9 +10,7 @@ import type { AvatarRenderData } from "../engine/types/avatar";
 import { resolveAvatar, rikishiStageInput } from "../engine/avatarGenerator";
 
 export interface NakabiProjection {
-  summary:
-    | (NakabiSummary & { leaderShikona?: string; leaderAvatar?: AvatarRenderData })
-    | null;
+  summary: (NakabiSummary & { leaderShikona?: string; leaderAvatar?: AvatarRenderData }) | null;
   isNakabiDay: boolean;
 }
 

@@ -57,9 +57,7 @@ export function RetiredRikishiProfile({
           <SumoAvatar size="lg" fallback={summary.shikona} />
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-black tracking-tight">
-                {summary.shikona}
-              </h1>
+              <h1 className="text-3xl font-display font-black tracking-tight">{summary.shikona}</h1>
               <Badge variant="secondary" className="uppercase tracking-widest text-[10px]">
                 Retired {summary.retirementYear}
               </Badge>

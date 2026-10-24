@@ -7,24 +7,16 @@ import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
 
 vi.mock("@/presenters/uiDigest", () => ({
   compareRanks: vi.fn(() => 0),
-  toRankPosition: vi.fn(
-    (args: { rank: string; side: string; rankNumber?: number }) => ({
-      rank: args.rank,
-      side: args.side,
-      rankNumber: args.rankNumber,
-    })
-  ),
+  toRankPosition: vi.fn((args: { rank: string; side: string; rankNumber?: number }) => ({
+    rank: args.rank,
+    side: args.side,
+    rankNumber: args.rankNumber,
+  })),
   buildBoutPreviewUI: vi.fn(() => null),
 }));
 
 vi.mock("@/components/game/BoutPreMatchOverlay", () => ({
-  BoutPreMatchOverlay: ({
-    onBegin,
-    onDismiss,
-  }: {
-    onBegin: () => void;
-    onDismiss: () => void;
-  }) => (
+  BoutPreMatchOverlay: ({ onBegin, onDismiss }: { onBegin: () => void; onDismiss: () => void }) => (
     <div data-testid="prematch-overlay">
       <button onClick={onBegin}>Begin</button>
       <button onClick={onDismiss}>Dismiss</button>

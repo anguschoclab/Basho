@@ -12,10 +12,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { isRetiredRikishiSummaryEntry } from "@/engine/queries";
-import {
-  getRankDisplayEntry,
-  DIVISION_NAMES,
-} from "@/constants/engine/rankDisplay";
+import { getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 
 export const RIKISHI_RESULT_CAP = 10;
@@ -107,17 +104,15 @@ export function searchEntities(
   if (!q || !world) return empty;
 
   const matches = (r: { shikona?: string; realName?: string }) =>
-    matchScore(r.shikona ?? "", q) >= 0 ||
-    (r.realName ? matchScore(r.realName, q) >= 0 : false);
+    matchScore(r.shikona ?? "", q) >= 0 || (r.realName ? matchScore(r.realName, q) >= 0 : false);
 
   // Best (lowest) score across shikona and realName so a realName-only
   // match never outranks a shikona prefix match.
   const score = (r: { shikona?: string; realName?: string }) =>
     Math.min(
-      ...[
-        matchScore(r.shikona ?? "", q),
-        r.realName ? matchScore(r.realName, q) : -1,
-      ].filter((s) => s >= 0),
+      ...[matchScore(r.shikona ?? "", q), r.realName ? matchScore(r.realName, q) : -1].filter(
+        (s) => s >= 0
+      ),
       Number.MAX_SAFE_INTEGER
     );
 

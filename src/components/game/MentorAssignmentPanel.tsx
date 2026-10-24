@@ -155,11 +155,7 @@ export function MentorAssignmentPanel({
                 eligibleMentors.map((mentor) => (
                   <SelectItem key={mentor.id} value={mentor.id} className="text-xs">
                     <span className="flex items-center gap-1.5">
-                      <SumoAvatar
-                        avatar={avatarOf(mentor)}
-                        size="xs"
-                        fallback={mentor.shikona}
-                      />
+                      <SumoAvatar avatar={avatarOf(mentor)} size="xs" fallback={mentor.shikona} />
                       {mentor.shikona} ({mentor.rank})
                     </span>
                   </SelectItem>

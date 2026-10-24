@@ -241,7 +241,11 @@ export function generateYearlyIntake(world: WorldState, heyaId: string): StateIm
     newProspects.push({
       id: prospectId,
       shikona: `${PROSPECT_LAST_NAMES[lastIdx]} ${PROSPECT_FIRST_NAMES[firstIdx]}`,
-      avatarConfig: generateAvatarIdentity({ seed: prospectId, nationality: "Japan", role: "prospect" }),
+      avatarConfig: generateAvatarIdentity({
+        seed: prospectId,
+        nationality: "Japan",
+        role: "prospect",
+      }),
       age: rng.int(15, 17),
       region: PROSPECT_REGIONS[regionIdx],
       potential,
@@ -373,8 +377,7 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
 
   const rolled = generateRikishiStats({ rng, rank, profile: combatProfile });
   // Academy development carries over: currentAbility lifts the rolled baseline.
-  const inherit = (v: number) =>
-    clampInt(v * 0.5 + prospect.currentAbility * 0.5, 10, 100);
+  const inherit = (v: number) => clampInt(v * 0.5 + prospect.currentAbility * 0.5, 10, 100);
   const rikishiStats: RikishiStats = {
     ...rolled,
     power: inherit(rolled.power),

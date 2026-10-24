@@ -14,7 +14,11 @@ import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { RivalryCard } from "@/components/rivalries/RivalryCard";
 import { ChampionSection } from "@/components/recap/TournamentCeremonySections";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
-import { resolveAvatar, rikishiStageInput, oyakataStageInput } from "@/presenters/avatarProjections";
+import {
+  resolveAvatar,
+  rikishiStageInput,
+  oyakataStageInput,
+} from "@/presenters/avatarProjections";
 import { generateAvatarIdentity } from "@/engine/avatarGenerator";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types/rikishi";

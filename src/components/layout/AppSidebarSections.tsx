@@ -37,8 +37,7 @@ export function SidebarBrand() {
         <div
           className="h-8 w-8 rounded shrink-0 flex items-center justify-center relative overflow-hidden"
           style={{
-            background:
-              "linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-deep)) 100%)",
+            background: "linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-deep)) 100%)",
             boxShadow:
               "0 2px 8px hsl(var(--gold) / 0.4), inset 0 1px 0 hsl(var(--gold-highlight) / 0.4)",
           }}
