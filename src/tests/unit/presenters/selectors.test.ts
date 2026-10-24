@@ -6,6 +6,7 @@ import {
   selectRecentEvents,
   selectRetiredRikishi,
   selectKimariteStats,
+  selectBloodlineRegistry,
 } from "@/presenters/selectors";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -632,5 +633,34 @@ describe("selectKimariteStats", () => {
     expect(resultA).not.toBe(resultB);
     expect(resultA.map((r) => r.kimarite)).toEqual(["yorikiri"]);
     expect(resultB.map((r) => r.kimarite)).toEqual(["oshidashi"]);
+  });
+});
+
+describe("selectBloodlineRegistry", () => {
+  const trait = (id: string) => ({
+    traitId: id,
+    label: `Bloodline ${id}`,
+    description: `Trait from ${id}`,
+    statFloorBonus: { power: 5 },
+    ceilingBonus: 3,
+    ancestorShikona: `Ancestor-${id}`,
+    registeredYear: 2030,
+  });
+
+  it("returns an empty array when bloodlineRegistry is absent", () => {
+    const world = { bloodlineRegistry: undefined } as unknown as WorldState;
+    expect(selectBloodlineRegistry(world)).toEqual([]);
+  });
+
+  it("returns each trait with its traitId present", () => {
+    const world = {
+      bloodlineRegistry: {
+        traits: { a: trait("a"), b: trait("b") },
+      },
+    } as unknown as WorldState;
+    const result = selectBloodlineRegistry(world);
+    expect(result).toHaveLength(2);
+    expect(new Set(result.map((t) => t.traitId))).toEqual(new Set(["a", "b"]));
+    expect(result[0].label).toBe("Bloodline a");
   });
 });

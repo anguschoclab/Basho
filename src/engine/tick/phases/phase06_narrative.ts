@@ -175,7 +175,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function deriveRecentAchievements(world: WorldState): {
+export function deriveRecentAchievements(world: WorldState): {
   list: string[];
   subjects: Record<string, string>;
 } {

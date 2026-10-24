@@ -1,0 +1,50 @@
+# Pre-Consolidation Baseline v13
+**Date:** 2026-10-24
+**Branch:** main @ 624f0c3b (up to date with origin/main, clean tree)
+**Plan:** ~/.devin/plans/plan-313e87d710c2b906.md (validated draft — this file is a deliverable of that plan)
+
+## Gate Results (all on clean main)
+
+| Gate | Command | Result |
+|---|---|---|
+| Typecheck | `bun run type-check` (tsgo --build --force) | ✅ 0 errors |
+| Lint strict | `bun run lint:strict` (--max-warnings 0) | ✅ 0 warnings, exit 0 |
+| Vite build | `bun run build` | ✅ PASS |
+| Electron build | `bunx electron-vite build` | ✅ PASS (729ms renderer) |
+| Fast suite | `bun run test` (vitest) | ✅ **964 files / 8,905 passed / 1 skipped / 0 failures** — 32.86s |
+| Slow suite | `bun run test:slow` | ▶️ targeted run of relocated file in Phase 4.6; full suite per convention |
+| Perf suite | `bun run test:perf` | ▶️ Phase 5 |
+| E2E smoke | `bun run test:e2e:smoke` | ▶️ Phase 5 |
+| Coverage | `bun run test:coverage` | ▶️ Phase 5 (floors 73/61/64/75 per vitest.config.ts:77–81) |
+| Determinism | `bun scripts/determinism-double-run.ts` | ▶️ Phase 5 |
+
+## Audit tooling baselines
+
+- `bun scripts/audit-orphans.ts` → **108 unreferenced exports** — identical count to v11/v12 baselines (P0: `KACHI_NOKORI_THRESHOLD` persists; debt note, not new).
+- `Math.random`/`Date.now` in `src/engine` → **clean** (only comment hits: `RecruitmentController.ts:39`).
+- `as any` in production code → **0** (2 grep hits are comment text: `performance.ts:244`, `identity.ts:5`).
+- `as unknown as` census → **19 sites** in production (v12 counted 14; post-v12 commits added 5: holidayDigestProjections, recapExhibitionProjections, historyProjections ×2, boutProjections, RecruitingTabSections ×2 minus v12-landed fixes). 3 of the 19 are removed by this consolidation (HeyaPreviewSections ×2 via #1123, selectors.ts ×1 via #1134) → expect 16 post-landing.
+
+## Perf classification (V13-B02)
+
+Committed baseline `docs/audit/perf-baseline.json` timestamped **2026-10-08** (pre-avatar commits `eb1dc043`/`e44d20aa`):
+S1 p50=3.8ms · S2 p50=288.7ms · S3_year p50=1339.1ms/p99=1872.4ms · S4 p50=n/a.
+
+Local measurement on clean main (Apple Silicon, `bun scripts/bench-pipelines.ts`):
+S1 p50=9.3ms · S2 p50=356.3ms · **S3_year p50=1464.3ms/p99=1798.8ms** · S4_25yr p50=1481.8ms.
+
+S3 p50 delta vs committed baseline: **+9.3%** — under the 15% gate threshold; S3 p99 is *below* baseline p99. Yet all 15 open PRs show perf-gate FAIL at ~+42% (S3 p50 ≈1902ms) including doc-only PRs (#1127, #1133).
+
+**Classification: NOT a real engine regression.** A true +42% pipeline degradation would reproduce locally; +9.3% is consistent with modest drift since Oct 8 plus hardware-class difference. The uniform +42% across all 15 PRs (including docs-only changes) indicates CI-side environment/runner drift vs the stale Oct-8 baseline. Mechanism: `perf-gate.yml` re-seeds baseline on main only `if: success()` — with a stale baseline every run fails, so the baseline can never self-heal (circular failure).
+
+**Disposition:** gate repair — change the baseline-update step to run `always()` on main/develop so the baseline rolls forward on every main push (re-seed remains CI's job on main per convention; PRs keep their 15% gate against a fresh baseline). No T5 perf pin needed (no code regression to pin).
+
+## Post-v12 main drift
+
+`git log` since v12 verdict commit `7375ffe4`: only `46b60407`, `4ed537ae`, `624f0c3b` — all audit-doc commits. No production-code drift since v12 consolidation.
+
+## CLAUDE.md staleness check
+
+- Status line reads "964 test files, 8,905 tests" — **matches measured baseline exactly** (already refreshed, likely during v12 tail work).
+- Directory map already includes `src/engine/npcAI/`, `src/engine/storage/`, `src/engine/lifecycle/` — the v12-era gaps are closed.
+- Remaining drift: status line says "v12 consolidation" — update to v13 at Phase 4.7.
