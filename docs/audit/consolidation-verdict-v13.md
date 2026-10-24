@@ -66,17 +66,12 @@
 | T5 perf pin | n/a — no code regression (V13-B02 = gate repair) |
 | T6 meta verification | GREEN post-relocation |
 
-## Remote lifecycle
+## Remote lifecycle — COMPLETE
 
-- `git push origin main` → remote `main` = `2fc34e2e` (verified via `gh api` before connectivity dropped).
-- PR close + verdict-pointer comments: **#1122 confirmed closed.** The remaining 14 (#1121, #1123–#1135) and the 15 bot-branch deletions were **blocked by a local-network outage to GitHub** (api.github.com/github.com/codeload all time out at TLS/HTTP level while TCP 443/22 connect — general internet unaffected). The exact commands to finish the lifecycle are below; re-run once connectivity returns.
-  ```bash
-  for pr in 1121 1123 1124 1125 1126 1127 1128 1129 1130 1131 1132 1133 1134 1135; do
-    gh pr comment $pr --body "Adjudicated in consolidation v13 — see docs/audit/consolidation-verdict-v13.md on main." && gh pr close $pr
-  done
-  git push origin --delete bard-recruiting-enrichment-1038114386566243049 bard-sansho-variety-13512128570325176178 bolt-optimize-narrative-event-scan-483572929435921084 bolt-single-pass-loops-9191217874434025863 curator-surface-title-streak-12406470757546144466 mason-bloodline-registry-type-8768170740440210195 mason-remove-dirty-casts-heyapreview-8402940354176023922 mason/tighten-heyapreview-stats-3130857035488264386 palette-add-aria-roles-to-progress-bars-10952993154771723012 palette/breadcrumbs-focus-visible-14012899311685939184 polish-empty-state-global-cup-dashboard-7418316092280754438 scout-test-runAutoSim-14129305039102389844 scribe-fix-sequence-impacts-doc-11543582086027584286 scribe/doc-getheyaroster-behavior-7112756200715976047 ux-recruit-specialist-focus-16450471578785458200
-  git fetch --prune && gh pr list --state open && git ls-remote --heads origin
-  ```
+- `git push origin main` → remote `main` = `0a0fe091` (2fc34e2e..0a0fe091 pushed after a ~75-minute local GitHub outage).
+- PR close + verdict-pointer comments: **all 15 closed** — #1122 pre-outage; #1121, #1123–#1135 in the post-reconnect pass.
+- Bot branches deleted: **all 15** (`git push origin --delete` — each confirmed `- [deleted]`).
+- `gh pr list --state open` → **empty**; `git ls-remote --heads origin` → `main` only (`0a0fe091`); `git fetch --prune` clean; local refs pruned.
 
 ## V-ledger final dispositions
 
