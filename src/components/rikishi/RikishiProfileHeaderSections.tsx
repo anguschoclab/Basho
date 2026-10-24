@@ -308,6 +308,14 @@ function buildStatEntries(rikishi: UIRikishi): StatEntry[] {
       tooltip: "Total top-division championship victories",
     },
     {
+      label: "Title Streak",
+      value: rikishi.consecutiveYusho,
+      sub: "Consecutive Yūshō",
+      color: "text-accent",
+      condition: (rikishi.consecutiveYusho ?? 0) > 1,
+      tooltip: "Current consecutive top-division championship victories",
+    },
+    {
       label: "Special Prizes",
       value:
         (rikishi.specialPrizes?.shukunSho ?? 0) +

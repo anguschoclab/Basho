@@ -91,7 +91,7 @@ export function RecruitSlot({
         >
           <button
             aria-label="Recruit Specialist"
-            className="flex flex-col items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]"
+            className="flex flex-col items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background cursor-pointer"
           >
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
               <UserPlus className="h-6 w-6 text-primary" />

@@ -386,7 +386,14 @@ export function HotRikishiCard({ digest }: { digest: MediaDigest }) {
                     </div>
                   </div>
                   <HeatSparkline data={history} />
-                  <div className="w-20 h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="w-20 h-2 rounded-full bg-muted overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={Math.min(100, heat)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label="Media heat"
+                  >
                     <div
                       className="h-full rounded-full bg-primary transition-all"
                       style={{ width: `${Math.min(100, heat)}%` }}
@@ -436,7 +443,14 @@ export function HeyaPressureCard({ digest }: { digest: MediaDigest }) {
                     className="font-medium text-sm"
                   />
                 </div>
-                <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="w-24 h-2 rounded-full bg-muted overflow-hidden"
+                  role="progressbar"
+                  aria-valuenow={Math.min(100, pressure)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label="Media pressure"
+                >
                   <div
                     className="h-full rounded-full bg-destructive/70 transition-all"
                     style={{ width: `${Math.min(100, pressure)}%` }}

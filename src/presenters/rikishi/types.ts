@@ -94,6 +94,7 @@ export interface RikishiCareerDTO {
   careerAbsences: number;
   careerRecord: string;
   careerYusho: number;
+  consecutiveYusho: number;
   streak: number;
   streakLabel: string;
   winPercentage: number;
