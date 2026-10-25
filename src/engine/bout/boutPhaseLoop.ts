@@ -20,7 +20,7 @@ import {
   INSTABILITY_FLOOR,
 } from "../../constants/engine/bout";
 import type { EngineStateV2 } from "../types/combat-spatial";
-import { sideTactics, type BoutContext, type SideTactics } from "./boutUtils";
+import { sideTactics, skillTieBreak, type BoutContext, type SideTactics } from "./boutUtils";
 
 import { initEngineStateV2 } from "./physics/initState";
 import { resolveTachiaiV2 } from "./physics/tachiai";
@@ -134,7 +134,14 @@ function runPhaseLoop(
       },
     });
   } else {
-    winner = eastInstability <= westInstability ? "east" : "west";
+    // Dead-even stalemate → the better-balanced fighter is awarded the bout
+    // (balance IS the stability stat), then a seeded coin.
+    winner =
+      eastInstability < westInstability
+        ? "east"
+        : westInstability < eastInstability
+          ? "west"
+          : skillTieBreak(east, west, "balance", rng);
   }
 
   const hadBelt =

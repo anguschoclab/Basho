@@ -148,7 +148,8 @@ function integrateDominantDrive(
     st.west.velocityX = Math.abs(jitteredForceDiff) * DOMINANT_VELOCITY_SCALE;
     st.east.velocityX = Math.abs(jitteredForceDiff) * DOMINANT_VELOCITY_SCALE;
     if (rng.next() < (stat(east, "speed") / 100) * LATERAL_SLIP_CHANCE * (1 + eastLateralBonus)) {
-      push.eastLateralMomentum += LATERAL_SLIP_IMPULSE;
+      // Mirrored slip direction — east evades toward −z like west does +z.
+      push.eastLateralMomentum -= LATERAL_SLIP_IMPULSE;
     }
   }
 }
@@ -255,7 +256,14 @@ function resolvePushOutcome(
     Math.abs(push.eastForce - push.westForce) < CLINCH_FORCE_DIFF_MAX &&
     rng.next() < CLINCH_CONVERSION_BASE + beltPrefSum * CLINCH_BELT_PREF_SCALE
   ) {
-    const belt = initBeltBattle(rng, east, west, st.tachiaiWinner ?? "east");
+    // tachiaiWinner is always set by resolveTachiaiV2 — but if a future path
+    // reaches here unset, flip a seeded coin rather than defaulting east.
+    const belt = initBeltBattle(
+      rng,
+      east,
+      west,
+      st.tachiaiWinner ?? (rng.next() < 0.5 ? "east" : "west")
+    );
     st.phase = { tag: "belt_battle", state: belt, push };
     boutLog.push({
       phase: "engagement",

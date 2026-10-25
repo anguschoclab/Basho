@@ -14,6 +14,7 @@ import { buildBoutResultV2 } from "@/engine/bout/physics/resultBuilders";
 import { initEngineStateV2 } from "@/engine/bout/physics/initState";
 import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 import { isBodyFalling } from "@/engine/bout/boutSpatial";
+import { skillTieBreak } from "@/engine/bout/boutUtils";
 import { KimariteSelectionEngine } from "@/engine/bout/KimariteSelectionEngine";
 import { SeededRNG } from "@/engine/rng";
 import type {
@@ -192,16 +193,21 @@ describe("KimariteSelectionEngine edge cases", () => {
     const st = initEngineStateV2(BOUT, east, west);
     st.phase = {
       tag: "edge_crisis",
-      side: "east",
-      prev: "push_battle",
-      state: {
+      crisis: {
         side: "east",
-        escapeAngle: 0,
-        opponentPressureZ: 0,
         ticksInCrisis: 0,
-        escapeProgress: 0,
-      } as never,
-    } as EngineStateV2["phase"];
+        recoveryProbability: 0,
+        tawaraToePosition: 0,
+        tawaraBounceForce: 0,
+        escapeAngle: 0,
+        escapeForceAvailable: 0,
+        opponentPressureX: 0,
+        opponentPressureZ: 0,
+        escaped: false,
+      },
+      prev: "push_battle",
+      savedPush: pushPhase(60, 40).state as PushBattleState,
+    };
 
     const attempt = KimariteSelectionEngine.evaluate(
       east,
@@ -286,6 +292,42 @@ describe("mid-fight attempt selection is weighted, not argmax", () => {
     expect(attempts).toBeGreaterThan(0);
     // argmax gives west 0%; weighted-by-probability gives a real share.
     expect(westWins).toBeGreaterThan(0);
+  });
+});
+
+// ── Skill-driven tie-breaks — ambiguous outcomes resolve on stats ───────────
+
+describe("skillTieBreak — skill decides ambiguous outcomes, not position", () => {
+  it("awards the higher-stat side every time", () => {
+    const east = mockRikishi("e1", { technique: 80, balance: 40 });
+    const west = mockRikishi("w1", { technique: 30, balance: 90 });
+    for (let i = 0; i < 50; i++) {
+      const rng = new SeededRNG(`tb-${i}`);
+      expect(skillTieBreak(east, west, "technique", rng)).toBe("east");
+      expect(skillTieBreak(east, west, "balance", rng)).toBe("west");
+    }
+  });
+
+  it("falls back to a seeded coin when the stat is equal — no positional default", () => {
+    const east = mockRikishi("e1", { technique: 50 });
+    const west = mockRikishi("w1", { technique: 50 });
+    let eastWins = 0;
+    for (let i = 0; i < 200; i++) {
+      if (skillTieBreak(east, west, "technique", new SeededRNG(`eq-${i}`)) === "east") eastWins++;
+    }
+    // ~50% split — not a hard east default.
+    expect(eastWins).toBeGreaterThan(60);
+    expect(eastWins).toBeLessThan(140);
+  });
+
+  it("is deterministic for the same seed", () => {
+    const east = mockRikishi("e1", { technique: 50 });
+    const west = mockRikishi("w1", { technique: 50 });
+    for (const seed of ["d1", "d2", "d3"]) {
+      const a = skillTieBreak(east, west, "technique", new SeededRNG(seed));
+      const b = skillTieBreak(east, west, "technique", new SeededRNG(seed));
+      expect(a).toBe(b);
+    }
   });
 });
 
