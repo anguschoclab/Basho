@@ -1,18 +1,23 @@
 ---
 name: run-sim
-description: Runs engine determinism check and core simulation tests
+description: Runs engine determinism check, headless sim, and core simulation tests
 disable-model-invocation: true
 ---
 
-Run the simulation sanity suite (from the repository root):
+Quick engine simulation sanity checks (from the repository root):
 
 ```bash
+# Byte-identical determinism gate: same seed twice, compare serialized world
+bun scripts/determinism-double-run.ts basho   # 2-basho horizon
+bun scripts/determinism-double-run.ts year    # 1-year horizon
+
+# Headless autosim entry point (WorldFactory → runAutoSim)
+bun run simulate -- --seed myseed --basho 3
+
+# Targeted core-loop tests
 bun run test -- src/tests/unit/engine/lifecycle src/tests/unit/engine/matchmaking src/tests/unit/engine/worker
-```
 
-Or run the whole fast unit suite:
-
-```bash
+# Whole fast unit suite
 bun run test
 ```
 

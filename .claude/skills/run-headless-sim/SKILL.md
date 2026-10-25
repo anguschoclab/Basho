@@ -4,10 +4,11 @@ description: Runs the 25-year NPC-only headless simulation diagnostic
 disable-model-invocation: true
 ---
 
-Run the 25-year NPC-only headless simulation diagnostic to validate long-term simulation stability (from the repository root):
+Run the canonical 25-year headless simulation diagnostic to validate long-term simulation stability (from the repository root):
 
 ```bash
-bun scripts/headless-sim-25yr.ts
+bun scripts/diagnostic-25yr-sim.ts              # default: 25 years
+bun scripts/diagnostic-25yr-sim.ts --duration 5 # shorter horizon for iteration
 ```
 
-This validates economy balance, tournament frequency, rikishi population drift, yokozuna presence, and Global Cup firing over 25 years of simulation.
+Combines anomaly detection (per-year snapshots), error capture, and tuning metrics, and writes a JSON report. It validates economy balance, tournament frequency, rikishi population drift, yokozuna presence, foreign-rikishi limits, and Global Cup completion over the simulated span.

@@ -4,10 +4,10 @@ description: Runs tests with coverage reporting
 disable-model-invocation: true
 ---
 
-Run tests with coverage reporting to identify untested code (from the repository root):
+Run the fast unit suite with v8 coverage reporting to identify untested code (from the repository root):
 
 ```bash
 bun run test:coverage
 ```
 
-This measures test coverage for engine components. Coverage thresholds: 85% lines, branches, functions, statements.
+Coverage thresholds (ratchet floor, enforced in `vitest.config.ts`): lines 73%, branches 61%, functions 64%, statements 75%. Coverage runs the fast `src/tests/unit/**` suite only — slow and perf suites are excluded.
