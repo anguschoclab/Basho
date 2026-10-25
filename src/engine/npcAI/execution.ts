@@ -95,9 +95,17 @@ function applyFacilityUpgrade(
   if (!canSpend(FACILITY_UPGRADE_COST)) return false;
   const facilities = { ...heya.facilities };
   const keys = ["training", "recovery", "nutrition"] as const;
-  const target = keys
-    .filter((k) => facilities[k] < FACILITY_MAX_LEVEL)
-    .sort((a, b) => facilities[a] - facilities[b])[0];
+  // ⚡ Bolt: Single-pass manual loop replaces .filter().sort()[0] for performance
+  let target: typeof keys[number] | undefined;
+  let minLevel = Infinity;
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    const lvl = facilities[k];
+    if (lvl < FACILITY_MAX_LEVEL && lvl < minLevel) {
+      minLevel = lvl;
+      target = k;
+    }
+  }
   if (!target) return false;
   facilities[target] += 1;
   builder.updateHeya(heyaId, { facilities, funds: heya.funds - FACILITY_UPGRADE_COST });
@@ -117,18 +125,39 @@ function tryMyosekiPurchase(
   if (!decisions.finance.shouldBuyMyoseki || onCooldown(oyakata.memory, "myoseki", week)) {
     return false;
   }
-  const stocks = Object.values(world.myosekiMarket?.stocks ?? {})
-    .filter(
-      (s) =>
-        s.status === "available" &&
-        s.askingPrice !== undefined &&
-        s.askingPrice > 0 &&
-        canSpend(s.askingPrice)
-    )
-    .sort((a, b) => (a.askingPrice ?? 0) - (b.askingPrice ?? 0));
-  // Honor the agent's prioritized pick when it is still available and
-  // affordable; otherwise fall back to the cheapest eligible stock.
-  const target = stocks.find((s) => s.id === decisions.finance.myosekiId) ?? stocks[0];
+
+  // ⚡ Bolt: Single-pass manual loop replaces .filter().sort().find() for performance
+  let target = undefined;
+  let cheapestFallback = undefined;
+  let minAskingPrice = Infinity;
+
+  const allStocks = Object.values(world.myosekiMarket?.stocks ?? {});
+  for (let i = 0; i < allStocks.length; i++) {
+    const s = allStocks[i];
+    if (
+      s.status === "available" &&
+      s.askingPrice !== undefined &&
+      s.askingPrice > 0 &&
+      canSpend(s.askingPrice)
+    ) {
+      // Check if this is the agent's prioritized pick
+      if (s.id === decisions.finance.myosekiId) {
+        target = s;
+        break; // Found the preferred option, we can stop early
+      }
+      // Track the cheapest eligible stock as a fallback
+      if (s.askingPrice < minAskingPrice) {
+        minAskingPrice = s.askingPrice;
+        cheapestFallback = s;
+      }
+    }
+  }
+
+  // Honor the agent's prioritized pick; otherwise fall back to cheapest eligible stock
+  if (!target) {
+    target = cheapestFallback;
+  }
+
   if (target) {
     builder.merge(buyMyoseki(world, oyakata.id, heyaId, target.id));
     return true;
