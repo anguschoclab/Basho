@@ -350,3 +350,83 @@ describe("FinanceCalculator — duplicate rikishiIds", () => {
     expect(result.revenue).toBeCloseTo(weeklyJsa + otherIncome, 0);
   });
 });
+
+describe("FinanceCalculator — itemized breakdown (income/outgoings)", () => {
+  it("exposes real income components that sum to revenue", () => {
+    const heya = makeMockHeya("heya-bd", {
+      funds: 50_000_000,
+      facilities: { training: 10, recovery: 10, nutrition: 10 },
+      staffIds: [],
+      rikishiIds: ["r1", "r2"],
+      koenkaiBand: "powerful",
+      koenkaiId: "koen-1",
+    });
+    const world = makeMockWorld({
+      heyas: new Map([["heya-bd", heya]]),
+      rikishi: new Map([
+        ["r1", mockRikishi("r1", { heyaId: "heya-bd", rank: "maegashira" })],
+        ["r2", mockRikishi("r2", { heyaId: "heya-bd", rank: "komusubi" })],
+      ]),
+      sponsorPool: {
+        sponsors: new Map([
+          ["s1", { id: "s1", tier: "gold" } as unknown as Sponsor],
+          ["s2", { id: "s2", tier: "bronze" } as unknown as Sponsor],
+        ]),
+        koenkais: new Map([
+          ["koen-1", { id: "koen-1", members: [{ sponsorId: "s1" }, { sponsorId: "s2" }] } as unknown as Koenkai],
+        ]),
+      } as unknown as SponsorPool,
+    });
+
+    const result = calculateHeyaWeeklyFinances(heya, world);
+
+    const expectedKoenkai =
+      (KOENKAI_INCOME_POWERFUL * KOENKAI_INCOME_SPLIT.heyaPortion) / 4;
+    const expectedJsa =
+      ((JSA_PER_WRESTLER_SUBSIDY_MONTHLY["maegashira" as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY] ?? 0) +
+        (JSA_PER_WRESTLER_SUBSIDY_MONTHLY["komusubi" as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY] ?? 0)) / 4;
+    const expectedSponsor =
+      ((SPONSOR_TIER_INCOME["gold" as keyof typeof SPONSOR_TIER_INCOME] ?? 0) +
+        (SPONSOR_TIER_INCOME["bronze" as keyof typeof SPONSOR_TIER_INCOME] ?? 0)) / 4;
+
+    expect(result.income.koenkai).toBeCloseTo(expectedKoenkai);
+    expect(result.income.jsaSubsidy).toBeCloseTo(expectedJsa);
+    expect(result.income.sponsorTier).toBeCloseTo(expectedSponsor);
+    expect(result.income.jsaGrant).toBe(JSA_STABLE_WEEKLY_GRANT);
+    expect(result.income.oyakataSalary).toBe(OYAKATA_SALARY_MONTHLY / 4);
+    expect(result.revenue).toBeCloseTo(
+      result.income.koenkai +
+        result.income.jsaSubsidy +
+        result.income.sponsorTier +
+        result.income.jsaGrant +
+        result.income.oyakataSalary
+    );
+  });
+
+  it("exposes real expense components that sum to totalBurn", () => {
+    const heya = makeMockHeya("heya-bd2", {
+      funds: 10_000_000,
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
+      staffIds: ["st1", "st2"],
+      rikishiIds: [],
+      koenkaiBand: "none",
+    });
+    const world = makeMockWorld({ heyas: new Map([["heya-bd2", heya]]) });
+    const result = calculateHeyaWeeklyFinances(heya, world);
+
+    const expectedFacility =
+      50 * FACILITY_UPKEEP.training +
+      50 * FACILITY_UPKEEP.recovery +
+      50 * FACILITY_UPKEEP.nutrition;
+    expect(result.outgoings.facilityUpkeep).toBeCloseTo(expectedFacility);
+    expect(result.outgoings.staffUpkeep).toBeCloseTo(2 * STAFF_UPKEEP_PER_MEMBER);
+    expect(result.outgoings.fixedOverhead).toBe(FIXED_OPERATING_OVERHEAD_WEEKLY);
+    expect(result.outgoings.recruitment).toBe(RECRUITMENT_BUDGET_WEEKLY);
+    expect(result.totalBurn).toBeCloseTo(
+      result.outgoings.facilityUpkeep +
+        result.outgoings.staffUpkeep +
+        result.outgoings.fixedOverhead +
+        result.outgoings.recruitment
+    );
+  });
+});

@@ -11,13 +11,75 @@ import { formatYen } from "@/utils/engineUtils";
 interface WeeklyFinances {
   revenue: number;
   expenses: number;
+  totalBurn?: number;
+  income: {
+    koenkai: number;
+    jsaSubsidy: number;
+    sponsorTier: number;
+    jsaGrant: number;
+    oyakataSalary: number;
+  };
+  outgoings: {
+    facilityUpkeep: number;
+    staffUpkeep: number;
+    fixedOverhead: number;
+    recruitment: number;
+  };
 }
 
 interface IncomeExpensesCardsProps {
   weeklyFinances: WeeklyFinances | null;
 }
 
+function BreakdownRow({
+  label,
+  amount,
+  tone,
+}: {
+  label: string;
+  amount: number;
+  tone: "success" | "destructive";
+}) {
+  if (amount === 0) return null;
+  return (
+    <div className="flex items-start gap-3">
+      <div
+        aria-hidden="true"
+        className={`w-2 h-2 rounded-full mt-2 ${tone === "success" ? "bg-success" : "bg-destructive"}`}
+      />
+      <div className="flex w-full items-baseline justify-between gap-2">
+        <p className="font-medium">{label}</p>
+        <p className="text-sm text-muted-foreground tabular-nums">
+          {formatYen(Math.round(amount))} / week
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps) {
+  const incomeRows: Array<[string, number]> = weeklyFinances
+    ? [
+        ["Kōenkai Support", weeklyFinances.income.koenkai],
+        ["JSA Subsidies", weeklyFinances.income.jsaSubsidy],
+        ["Sponsor Tier Income", weeklyFinances.income.sponsorTier],
+        ["JSA Weekly Grant", weeklyFinances.income.jsaGrant],
+        ["Oyakata Salary", weeklyFinances.income.oyakataSalary],
+      ]
+    : [];
+  const expenseRows: Array<[string, number]> = weeklyFinances
+    ? [
+        ["Facility Upkeep", weeklyFinances.outgoings.facilityUpkeep],
+        ["Staff Upkeep", weeklyFinances.outgoings.staffUpkeep],
+        ["Fixed Operating Overhead", weeklyFinances.outgoings.fixedOverhead],
+        ["Recruitment Budget", weeklyFinances.outgoings.recruitment],
+      ]
+    : [];
+  const recruitmentSuspended =
+    weeklyFinances &&
+    weeklyFinances.totalBurn !== undefined &&
+    weeklyFinances.expenses < weeklyFinances.totalBurn;
+
   return (
     <>
       {/* Income Sources */}
@@ -40,33 +102,9 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                   </span>
                 </div>
                 <div className="space-y-2 pt-2">
-                  <div className="flex items-start gap-3">
-                    <div aria-hidden="true" className="w-2 h-2 rounded-full bg-success mt-2" />
-                    <div>
-                      <p className="font-medium">Kōenkai Support</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatYen(Math.round(weeklyFinances.revenue * 0.4))} / week (estimated)
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div aria-hidden="true" className="w-2 h-2 rounded-full bg-success mt-2" />
-                    <div>
-                      <p className="font-medium">JSA Subsidies</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatYen(Math.round(weeklyFinances.revenue * 0.35))} / week (estimated)
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div aria-hidden="true" className="w-2 h-2 rounded-full bg-success mt-2" />
-                    <div>
-                      <p className="font-medium">Sponsor Tier Income</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatYen(Math.round(weeklyFinances.revenue * 0.25))} / week (estimated)
-                      </p>
-                    </div>
-                  </div>
+                  {incomeRows.map(([label, amount]) => (
+                    <BreakdownRow key={label} label={label} amount={amount} tone="success" />
+                  ))}
                 </div>
               </>
             ) : (
@@ -96,43 +134,15 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                   </span>
                 </div>
                 <div className="space-y-2 pt-2">
-                  <div className="flex items-start gap-3">
-                    <div aria-hidden="true" className="w-2 h-2 rounded-full bg-destructive mt-2" />
-                    <div>
-                      <p className="font-medium">Facility Maintenance</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatYen(Math.round(weeklyFinances.expenses * 0.3))} / week (estimated)
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div aria-hidden="true" className="w-2 h-2 rounded-full bg-destructive mt-2" />
-                    <div>
-                      <p className="font-medium">Staff Salaries</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatYen(Math.round(weeklyFinances.expenses * 0.25))} / week (estimated)
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div aria-hidden="true" className="w-2 h-2 rounded-full bg-destructive mt-2" />
-                    <div>
-                      <p className="font-medium">Food Costs</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatYen(Math.round(weeklyFinances.expenses * 0.25))} / week (estimated)
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div aria-hidden="true" className="w-2 h-2 rounded-full bg-destructive mt-2" />
-                    <div>
-                      <p className="font-medium">Other Operations</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatYen(Math.round(weeklyFinances.expenses * 0.2))} / week (estimated)
-                      </p>
-                    </div>
-                  </div>
+                  {expenseRows.map(([label, amount]) => (
+                    <BreakdownRow key={label} label={label} amount={amount} tone="destructive" />
+                  ))}
                 </div>
+                {recruitmentSuspended && (
+                  <p className="text-[10px] text-muted-foreground pt-1">
+                    Recruitment suspended — income below operating costs
+                  </p>
+                )}
               </>
             ) : (
               <div className="text-sm text-muted-foreground italic">Financial data unavailable</div>

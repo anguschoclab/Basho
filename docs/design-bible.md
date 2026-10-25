@@ -675,3 +675,7 @@ token-based overlay class.
 ---
 
 Last updated: October 2026 — Kokugikan Noir v1.1
+
+## Data Integrity — No Fabricated Chrome
+
+Every on-screen value must map to real state. Invented estimates, fabricated breakdowns, or decorative strings that imply state the engine doesn't compute are violations — derive the value from engine state or don't show it. Examples of the rule applied: `IncomeExpensesCards` binds the itemized `HeyaFinanceResult.income`/`outgoings` breakdown (never fixed-percentage "estimates"); numbers render upright + `tabular-nums`; label tracking capped at `0.15em`.
