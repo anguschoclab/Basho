@@ -38,6 +38,7 @@ import {
   UTCHARI_MIN_TICKS_IN_CRISIS,
   OKURIDASHI_PRESSURE_Z_THRESHOLD,
   OKURITAOSHI_PRESSURE_Z_THRESHOLD,
+  BOUT_FATIGUE_INSTABILITY_FACTOR,
 } from "../../constants/engine/physics";
 
 export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
@@ -67,7 +68,11 @@ export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
 }
 
 export function isBodyFalling(body: PhysicalBody): boolean {
-  const maxOffset = body.footSpread / 2;
+  // Accumulated bout fatigue erodes effective foot spread, so a long duel
+  // converges to a fall instead of grinding to the tick cap.
+  const effectiveSpread =
+    body.footSpread / (1 + body.boutFatigue * BOUT_FATIGUE_INSTABILITY_FACTOR);
+  const maxOffset = effectiveSpread / 2;
   return Math.abs(body.cogOffset) > maxOffset;
 }
 

@@ -22,6 +22,7 @@ interface ComparisonStats {
   totalBouts: number;
   winnerDistribution: { east: number; west: number };
   kimariteFrequency: Record<string, number>;
+  timeoutBouts: number;
   durationStats: { min: number; max: number; avg: number };
   determinismPassed: boolean;
 }
@@ -97,7 +98,7 @@ function runBout(seed: string, index: number) {
 }
 
 interface BoutResult {
-  result: { winner: string; kimarite: string; duration: number };
+  result: { winner: string; kimarite: string; duration: number; isTimeout?: boolean };
 }
 
 function compareResults(results1: BoutResult[], results2: BoutResult[]): boolean {
@@ -114,6 +115,7 @@ function calculateStats(results: BoutResult[]): ComparisonStats {
     totalBouts: results.length,
     winnerDistribution: { east: 0, west: 0 },
     kimariteFrequency: {},
+    timeoutBouts: 0,
     durationStats: { min: Infinity, max: -Infinity, avg: 0 },
     determinismPassed: true,
   };
@@ -125,9 +127,15 @@ function calculateStats(results: BoutResult[]): ComparisonStats {
     const winner = r.result.winner as "east" | "west";
     stats.winnerDistribution[winner]++;
 
-    // Kimarite frequency
-    const kimarite = r.result.kimarite;
-    stats.kimariteFrequency[kimarite] = (stats.kimariteFrequency[kimarite] || 0) + 1;
+    // Timeout endings are synthetic (stability tiebreak at the tick cap), not
+    // produced techniques — count them separately instead of polluting the
+    // kimarite frequency table.
+    if (r.result.isTimeout) {
+      stats.timeoutBouts++;
+    } else {
+      const kimarite = r.result.kimarite;
+      stats.kimariteFrequency[kimarite] = (stats.kimariteFrequency[kimarite] || 0) + 1;
+    }
 
     // Duration stats
     const duration = r.result.duration;
@@ -180,6 +188,15 @@ function validateStats(stats: ComparisonStats): { passed: boolean; issues: strin
     issues.push(`Maximum duration ${stats.durationStats.max}s exceeds expected maximum of 240s`);
   }
 
+  // Stalemate rate: a small share of matched bouts can hit the tick cap, but
+  // >5% signals resolution rates are too low.
+  const timeoutRate = (stats.timeoutBouts / stats.totalBouts) * 100;
+  if (timeoutRate > 5) {
+    issues.push(
+      `Stalemate rate too high: ${stats.timeoutBouts}/${stats.totalBouts} bouts (${timeoutRate.toFixed(1)}%) hit the 240s timeout`
+    );
+  }
+
   return { passed: issues.length === 0, issues };
 }
 
@@ -222,10 +239,12 @@ export function runComparison(count: number, seed: string = "comparison-001"): C
   console.log(`  Min: ${stats.durationStats.min}s`);
   console.log(`  Max: ${stats.durationStats.max}s`);
   console.log(`  Avg: ${stats.durationStats.avg.toFixed(1)}s`);
-  console.log(`\nKimarite frequency:`);
+  console.log(`\nTimeout (stalemate) bouts: ${stats.timeoutBouts}`);
+  console.log(`\nKimarite frequency (organic endings, timeouts excluded):`);
+  const organicBouts = stats.totalBouts - stats.timeoutBouts;
   const sortedKimarite = Object.entries(stats.kimariteFrequency).sort((a, b) => b[1] - a[1]);
   for (const [kimarite, freq] of sortedKimarite) {
-    const percent = ((freq / stats.totalBouts) * 100).toFixed(1);
+    const percent = ((freq / Math.max(1, organicBouts)) * 100).toFixed(1);
     console.log(`  ${kimarite}: ${freq} (${percent}%)`);
   }
 

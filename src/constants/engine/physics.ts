@@ -399,6 +399,14 @@ export const HENKA_JITTER_MAGNITUDE = 8;
 /** In-bout fatigue multiplier for effective fatigue */
 export const BOUT_FATIGUE_MULTIPLIER = 0.4;
 
+/**
+ * How much accumulated bout fatigue erodes effective foot spread in the
+ * fall check. boutFatigue ~0.5-1.0/tick → a long duel's stability halves
+ * near the tick cap, so matched pairs converge to a fall rather than a
+ * synthetic timeout ending.
+ */
+export const BOUT_FATIGUE_INSTABILITY_FACTOR = 0.01;
+
 /** Force differential jitter magnitude */
 export const FORCE_DIFF_JITTER_MAGNITUDE = 3;
 

@@ -10,7 +10,8 @@ import {
 } from "../../../constants/engine/physics";
 import type { EngineStateV2 } from "../../types/combat-spatial";
 import type { BoutContext } from "../boutUtils";
-import type { CombatArchetype } from "../../types/combat";
+import type { CombatArchetype, TacticalFamily } from "../../types/combat";
+import { getKimarite } from "../../kimarite";
 
 export function buildBoutResultV2(
   bout: BoutContext,
@@ -47,12 +48,18 @@ export function buildBoutResultV2(
     )
   );
 
+  // Stance follows the battle the bout actually lived in — for tachiai-resolved
+  // (henka) finishes there is no battle phase, so derive it from the winning
+  // technique's family instead of defaulting to belt.
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
-    (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle") ||
-    st.phase.tag === "resolved"
+    (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle")
       ? "belt-dominant"
-      : "push-dominant";
+      : st.phase.tag === "resolved"
+        ? getKimarite(kimarite)?.tacticalFamily === "belt"
+          ? "belt-dominant"
+          : "push-dominant"
+        : "push-dominant";
 
   const winnerRikishi = winner === "east" ? east : west;
   const loserRikishi = winner === "east" ? west : east;
@@ -68,11 +75,22 @@ export function buildBoutResultV2(
   );
 
   // Archetype matchup data
+  // A counter "activates" when a side's counterFamily — the tactical family it
+  // counters most effectively — matches the opponent's dominant family.
+  const dominantFamily = (r: Rikishi): TacticalFamily => {
+    const prefs = r.combatProfile?.familyPreferences;
+    if (!prefs) return "push";
+    return (Object.entries(prefs) as [TacticalFamily, number][]).sort(
+      (a, b) => b[1] - a[1]
+    )[0][0];
+  };
+  const eastDominant = dominantFamily(east);
+  const westDominant = dominantFamily(west);
   const eastArchetype: CombatArchetype = east.combatProfile.archetype;
   const westArchetype: CombatArchetype = west.combatProfile.archetype;
   const counterActivated =
-    east.combatProfile.counterFamily === west.combatProfile.counterFamily ||
-    west.combatProfile.counterFamily === east.combatProfile.counterFamily;
+    east.combatProfile.counterFamily === westDominant ||
+    west.combatProfile.counterFamily === eastDominant;
 
   return {
     boutId: bout.id,
