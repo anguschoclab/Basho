@@ -18,8 +18,7 @@ import { getOpponentDominantFamily, suggestCounterTactic } from "../npcAI/Oppone
 import { buildMetaPerception } from "../npcAI/MetaPerception";
 import { candidateConsumesForeignSlot } from "../systems/generation/talentPoolReads";
 import { isAtForeignLimit } from "../utils/citizenshipUtils";
-
-const MAX_ROSTER = 30;
+import { HEYA_ROSTER_HARD_CAP } from "../../constants/engine/roster";
 
 const ROSTER_LOW_THRESHOLD = 10;
 
@@ -235,7 +234,7 @@ function leagueRecommendations(world: WorldState, heyaId: Id): AIRecommendation[
   // A top recruit is visible and rival stables have roster vacancies.
   if (league.topRecruitAvailable) {
     const rivalWithVacancy = [...world.heyas.values()].some(
-      (h) => h.id !== heyaId && (h.rikishiIds?.length ?? 0) < MAX_ROSTER
+      (h) => h.id !== heyaId && (h.rikishiIds?.length ?? 0) < HEYA_ROSTER_HARD_CAP
     );
     if (rivalWithVacancy) {
       recs.push(

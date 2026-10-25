@@ -10,6 +10,7 @@ import type { WorldState } from "../../engine/types/world";
 import type { BashoName, BoutResult, KeyBoutEntry, MatchSchedule } from "../../engine/types/basho";
 import type { Rikishi } from "../../engine/types/rikishi";
 import { RANK_HIERARCHY } from "../../engine/types/banzuke";
+import { BASHO_FINAL_DAY } from "../../constants/engine/calendar";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -110,7 +111,7 @@ function selectFromMatches(
   // 1. Yusho decider
   const yushoDecider = completed.find(
     (m) =>
-      m.day === 15 &&
+      m.day === BASHO_FINAL_DAY &&
       (m.dramaticContext?.label === "yusho_decider" ||
         m.result?.dramaticContext?.label === "yusho_decider")
   );
@@ -135,7 +136,7 @@ function selectFromMatches(
       yushoMoment = makeMoment("yusho_decider", bestMatch.result, bestMatch, bashoName);
     } else {
       // Fallback: last day-15 bout
-      const day15Bouts = completed.filter((m) => m.day === 15);
+      const day15Bouts = completed.filter((m) => m.day === BASHO_FINAL_DAY);
       if (day15Bouts.length > 0) {
         yushoMoment = makeMoment(
           "yusho_decider",

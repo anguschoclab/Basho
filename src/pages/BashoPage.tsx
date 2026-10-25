@@ -1,16 +1,13 @@
 // BashoPage.tsx — Redesigned Tournament Page
 // Clean layout with prominent day controls, better standings, and bout cards
 
-import { useNavigate } from "@tanstack/react-router";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { CornerAdvicePanel } from "@/components/game/CornerAdvicePanel";
 import { BashoStandingsEvolution } from "@/components/basho/BashoStandingsEvolution";
-import { BASHO_CALENDAR, getDayName, getTotalBashodays, isKeyDay } from "@/presenters/uiDigest";
+import { BASHO_CALENDAR, getDayName } from "@/presenters/uiDigest";
 import type { BashoName } from "@/engine/types/basho";
 import { getRikishiMap } from "@/presenters/worldAccess";
 import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
@@ -24,11 +21,12 @@ import {
   BashoStandingsSidebar,
   BashoModals,
   NoActiveBashoEmpty,
+  SanyakuCallout,
+  BashoHeaderActions,
 } from "@/components/basho/BashoPageSections";
 
 /** basho page. */
 export default function BashoPage() {
-  const navigate = useNavigate();
   const s = useBashoPageState();
   const { world, bashoDigest } = s;
 
@@ -66,32 +64,7 @@ export default function BashoPage() {
           eyebrow="TOURNAMENT"
           title={bashoInfo?.nameJa ?? "Basho"}
           lede={`${dayInfo?.dayJa ?? `Day ${day}`} · ${bashoInfo?.location ?? "—"} · ${completedBouts}/${matches.length} bouts complete${seasonalFlavor ? ` · ${seasonalFlavor}` : ""}`}
-          actions={
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-xs"
-                onClick={() => navigate({ to: "/dashboard" })}
-              >
-                ← Dashboard
-              </Button>
-              <Badge variant="outline" className="font-mono text-sm px-3 py-1">
-                Day {day}/{getTotalBashodays("makuuchi")}
-              </Badge>
-              {isKeyDay(day) && (
-                <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">Key Day</Badge>
-              )}
-              {bashoDigest?.isNakabiDay && (
-                <Badge
-                  className="bg-primary/20 text-primary border-primary/40 text-xs"
-                  data-testid="nakabi-badge"
-                >
-                  Nakabi (Mid-Basho)
-                </Badge>
-              )}
-            </div>
-          }
+          actions={<BashoHeaderActions day={day} isNakabiDay={bashoDigest.isNakabiDay} />}
         />
         <BashoDayControls
           day={day}
@@ -102,6 +75,11 @@ export default function BashoPage() {
           onSimulateAll={s.handleSimulateAll}
           onNextDay={s.handleNextDay}
         />
+
+        {/* Kore-yori-sanyaku ceremony call — shown once the day's final three bouts begin */}
+        {bashoDigest?.sanyakuCallout && (
+          <SanyakuCallout announcement={bashoDigest.sanyakuCallout} />
+        )}
 
         {/* Nakabi highlight card — shown on day 8 */}
         {bashoDigest?.isNakabiDay && <NakabiHighlightCard projection={s.nakabiProjection} />}

@@ -26,10 +26,6 @@ describe("knip dead code scan", () => {
     const output = stdout + stderr;
     const knownBarrelReExports = new Set([
       "src/components/ui/Sparkline.tsx",
-      "src/components/media/PressConference.tsx",
-      "src/constants/ui/kesho.ts",
-      "src/constants/ui/presenters.ts",
-      "src/engine/npcAI/strategies/sponsor/SponsorStrategy.ts",
       "src/tests/unit/utils/testFixtures.ts",
     ]);
     const lines = output

@@ -27,7 +27,7 @@ import {
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
 } from "../../constants/engine/calendarExtended";
-import { DEFAULT_START_YEAR, INTERIM_DAYS } from "../../constants/engine/calendar";
+import { DEFAULT_START_YEAR, INTERIM_DAYS, BASHO_FINAL_DAY } from "../../constants/engine/calendar";
 import { warn } from "../utils/Logger";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { clearQueryCaches } from "../queries";
@@ -113,7 +113,7 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   if (
     !world._autonomousSim &&
     world.cyclePhase === "active_basho" &&
-    (world.currentBasho?.day ?? 0) > 15
+    (world.currentBasho?.day ?? 0) > BASHO_FINAL_DAY
   ) {
     return world;
   }
@@ -365,7 +365,7 @@ export function advanceDaysFast(
     if (
       !currentWorld._autonomousSim &&
       currentWorld.cyclePhase === "active_basho" &&
-      (currentWorld.currentBasho?.day ?? 0) > 15
+      (currentWorld.currentBasho?.day ?? 0) > BASHO_FINAL_DAY
     )
       break;
 

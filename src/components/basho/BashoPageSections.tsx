@@ -38,7 +38,7 @@ import {
   ChevronDown,
   Globe,
 } from "lucide-react";
-import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
+import { getTotalBashodays, needsScheduleForDay, isKeyDay } from "@/presenters/uiDigest";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Division } from "@/engine/types/banzuke";
 import type { BashoName } from "@/engine/types/basho";
@@ -112,6 +112,46 @@ export function BashoDayControls({
 }
 
 /** Empty state when no tournament is active. */
+/** Day-header actions: dashboard shortcut, day counter, key-day and nakabi badges. */
+export function BashoHeaderActions({ day, isNakabiDay }: { day: number; isNakabiDay: boolean }) {
+  const navigate = useNavigate();
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        size="sm"
+        variant="ghost"
+        className="text-xs"
+        onClick={() => navigate({ to: "/dashboard" })}
+      >
+        ← Dashboard
+      </Button>
+      <Badge variant="outline" className="font-mono text-sm px-3 py-1">
+        Day {day}/{getTotalBashodays("makuuchi")}
+      </Badge>
+      {isKeyDay(day) && (
+        <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">Key Day</Badge>
+      )}
+      {isNakabiDay && (
+        <Badge
+          className="bg-primary/20 text-primary border-primary/40 text-xs"
+          data-testid="nakabi-badge"
+        >
+          Nakabi (Mid-Basho)
+        </Badge>
+      )}
+    </div>
+  );
+}
+
+/** Kore-yori-sanyaku ceremony call — shown once the day's final three bouts begin. */
+export function SanyakuCallout({ announcement }: { announcement: string }) {
+  return (
+    <div className="rounded-md border border-gold/30 bg-gold/10 px-4 py-2 text-sm font-medium text-gold">
+      {announcement}
+    </div>
+  );
+}
+
 export function NoActiveBashoEmpty() {
   const navigate = useNavigate();
   return (

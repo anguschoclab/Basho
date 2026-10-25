@@ -56,6 +56,7 @@ export interface BashoUIDigest {
   isKeyDay: boolean;
   isNakabiDay: boolean;
   seasonalFlavor?: string;
+  sanyakuCallout?: string;
 }
 
 // ── Heya UI Types ─────────────────────────────────────────────────────────────

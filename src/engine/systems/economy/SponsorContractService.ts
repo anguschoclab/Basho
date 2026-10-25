@@ -14,6 +14,10 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
 import type { Sponsor } from "../../types/sponsors";
+import {
+  SPONSOR_CONTRACT_DURATION_WEEKS,
+  SPONSOR_LOYALTY_INCREASE,
+} from "../../../constants/engine/sponsors";
 
 /**
  * Renews a sponsor contract.
@@ -63,13 +67,13 @@ export function renewSponsorContract(
   const updatedRelationships = [...sponsor.relationships];
   updatedRelationships[relIdx] = {
     ...rel,
-    endsAtTick: (world.week ?? 0) + 52,
+    endsAtTick: (world.week ?? 0) + SPONSOR_CONTRACT_DURATION_WEEKS,
     strength: Math.min(5, rel.strength + 1) as 1 | 2 | 3 | 4 | 5,
   };
 
   builder.updateSponsor(sponsorId, {
     relationships: updatedRelationships,
-    loyalty: Math.min(100, sponsor.loyalty + 3),
+    loyalty: Math.min(100, sponsor.loyalty + SPONSOR_LOYALTY_INCREASE),
   });
 
   builder.logEvent(

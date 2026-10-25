@@ -18,6 +18,10 @@ import { sortStandings } from "../../engine/utils/sort";
 import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "../../engine/calendar";
 import { isNakabiDay } from "../../engine/systems/basho/NakabiService";
 import { getRikishiByDivision, getPlayerHeya } from "../../engine/queries";
+import {
+  isSanyakuBout,
+  KORE_YORI_SANYAKU_ANNOUNCEMENT,
+} from "../../constants/engine/koreYoriSanyaku";
 
 /**
  * Project tournament live data for BashoPage.
@@ -108,5 +112,9 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
       BASHO_CALENDAR[basho.bashoName]?.season ?? "autumn",
       world.seed
     ),
+    sanyakuCallout:
+      completedBouts < matches.length && isSanyakuBout(completedBouts, matches.length)
+        ? KORE_YORI_SANYAKU_ANNOUNCEMENT
+        : undefined,
   };
 }
