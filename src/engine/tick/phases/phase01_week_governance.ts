@@ -17,7 +17,7 @@ import { mergeImpacts, resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
 import { YokozunaService } from "../../systems/governance/YokozunaService";
-import { CareerService } from "../../lifecycle/CareerService";
+import { processAllRetirements } from "../../lifecycle/processRetirements";
 import {
   MAX_POLITICAL_CAPITAL,
   DEFAULT_POLITICAL_CAPITAL,
@@ -76,7 +76,7 @@ function processPostBashoCouncil(builder: ImpactBuilder, world: WorldState): voi
   const ydcImpact = YokozunaService.processYDCCouncil(world);
   builder.merge(ydcImpact);
 
-  const careerImpact = CareerService.processRetirements(world);
+  const { impact: careerImpact } = processAllRetirements(world);
   builder.merge(careerImpact);
 
   // Recovery path: assign attendants to any yokozuna missing them

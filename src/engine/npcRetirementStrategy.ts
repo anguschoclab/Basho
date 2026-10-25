@@ -3,6 +3,7 @@ import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 import type { OyakataArchetype } from "./types/oyakata";
 import { checkRetirement } from "./lifecycle";
+import { retireRikishiFully } from "./lifecycle/processRetirements";
 import type { Rikishi } from "./types/rikishi";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
@@ -35,7 +36,7 @@ const NATURAL_RETIREMENT_RULE: StrategyRule = {
       if (!r) continue;
       const reason = checkRetirement(r, ctx.world.year, ctx.world.seed);
       if (reason) {
-        builder.retireRikishi(id, ctx.world.year, reason);
+        retireRikishiFully(ctx.world, r, reason, builder);
       }
     }
     return builder.build();
@@ -70,10 +71,11 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
       );
 
     if (candidates.length > 0) {
-      builder.retireRikishi(
-        candidates[0].id,
-        ctx.world.year,
-        "Forced retirement due to stable restructuring"
+      retireRikishiFully(
+        ctx.world,
+        candidates[0],
+        "Forced retirement due to stable restructuring",
+        builder
       );
     }
     return builder.build();

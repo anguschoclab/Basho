@@ -3,8 +3,8 @@
  * ===========================
  * Shared helper: accomplished retiree → oyakata conversion → (RNG-gated) stable founding.
  *
- * Extracted from governanceReview.ts `runRetirements` so the same logic runs in
- * BOTH the governance review path AND the AutoSim CareerService path.
+ * Called by the unified retirement processor (./processRetirements.ts), which
+ * every retirement path delegates to.
  *
  * Called unconditionally for any retiree — the age + accomplishment guard is INSIDE
  * this helper, so callers do not need to pre-filter.

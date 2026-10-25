@@ -39,6 +39,40 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
     expect(retired?.retirementYear).toBe(2050);
   });
 
+  it("NPC retirements emit the full unified bookkeeping (events + records cleanup)", () => {
+    const r = mockRikishi("r45", { birthYear: 2005, rank: "maegashira", power: 60 });
+    const heya = makeMockHeya("heya-1", { rikishiIds: ["r45"] });
+    const world = makeMockWorld({
+      year: 2050,
+      calendar: { currentWeek: 1 },
+      seed: "test-npc-bookkeeping",
+    });
+    world.rikishi.set("r45", r);
+    world.records = {
+      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+      active: {
+        careerWins: [{ rikishiId: "r45", shikona: "R45", value: 100, achievedDate: { year: 2040, month: 1 } }],
+        makuuchiWins: [],
+        yusho: [],
+        consecutiveYusho: [],
+        kinboshi: [],
+      },
+    };
+
+    const impact = DefaultRetirementStrategy.evaluateRetirements(world, heya, mockOyakata());
+
+    // Canonical career event + bard-feed event both emitted
+    const eventTypes = (impact.events ?? []).map((e) => e.type);
+    expect(eventTypes).toContain("LIFECYCLE_EVENT");
+    expect(eventTypes).toContain("RETIREMENT_ANNOUNCED");
+
+    // onRikishiRetired removes the retiree from active leaderboards
+    const resolved = resolveImpacts(world, [impact]);
+    expect(
+      resolved.records?.active?.careerWins?.some((e) => e.rikishiId === "r45")
+    ).toBeFalsy();
+  });
+
   it("force-retire rule never targets rikishi under age 28", () => {
     // 16 rikishi all age 20 (born 2030 at world.year 2050), heya full at 16
     const ids: string[] = [];
