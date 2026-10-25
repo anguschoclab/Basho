@@ -331,6 +331,7 @@ describe("skillTieBreak — skill decides ambiguous outcomes, not position", () 
   });
 });
 
+
 // ── Fatigue → instability coupling (stalemate convergence) ──────────────────
 
 describe("isBodyFalling — fatigue erodes effective foot spread", () => {
