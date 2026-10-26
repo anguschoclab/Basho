@@ -5,7 +5,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import { type SaveSlotInfo } from "@/engine/saveload";
-import { type HolidayConfig, type HolidayResult } from "@/engine/holiday";
+import { type HolidayConfig } from "@/engine/holiday";
 import { getMatchesForDay } from "./gameHelpers";
 
 export type { GamePhase, GameState } from "./gameTypes";
@@ -32,7 +32,7 @@ export interface GameContextValue {
   advanceInterim: (weeks?: number) => void;
   advanceOneDay: () => void;
   issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
-  goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
+  goOnHoliday: (config: HolidayConfig) => void;
   saveToSlot: (slotName: string) => boolean;
   loadFromSlot: (slotName: string) => boolean;
   loadWorldDirect: (world: WorldState) => void;

@@ -1,8 +1,36 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
 import type { NakabiProjection } from "@/presenters/nakabiProjections";
+
+// The leader name renders via RikishiName → TanStack <Link>; mock it to a
+// plain anchor per ClickableName.test.tsx convention (no RouterProvider needed).
+vi.mock("@tanstack/react-router", () => ({
+  Link: ({
+    to,
+    params,
+    className,
+    onClick,
+    children,
+  }: {
+    to: string;
+    params?: Record<string, string>;
+    className?: string;
+    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+    children?: React.ReactNode;
+  }) => {
+    const resolved = params
+      ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m)
+      : to;
+    const safeHref = resolved.startsWith("/") && !resolved.includes("://") ? resolved : "#";
+    return (
+      <a href={safeHref} className={className} onClick={onClick} data-testid="router-link">
+        {children}
+      </a>
+    );
+  },
+}));
 
 function makeProjection(overrides: Partial<NakabiProjection> = {}): NakabiProjection {
   return { summary: null, isNakabiDay: false, ...overrides };
@@ -30,6 +58,7 @@ describe("NakabiHighlightCard", () => {
         year: 2024,
         day: 8,
         leaderId: "r-1",
+        leaderShikona: "Testkaze",
         leaderWins: 8,
         leaderLosses: 0,
         undefeatedCount: 3,
@@ -50,6 +79,7 @@ describe("NakabiHighlightCard", () => {
         year: 2024,
         day: 8,
         leaderId: "r-1",
+        leaderShikona: "Testkaze",
         leaderWins: 8,
         leaderLosses: 0,
         undefeatedCount: 1,

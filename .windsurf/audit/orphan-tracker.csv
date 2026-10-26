@@ -1,7 +1,6 @@
 ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR
 "ORPH-0007","src/engine/systems/basho/ExhibitionBashoService.ts","isExhibitionBasho","unreferenced-export","P3","","","","","intentional",""
 "ORPH-0009","src/engine/systems/basho/ExhibitionBashoService.ts","isHonbasho","unreferenced-export","P3","","","","","intentional",""
-"ORPH-0010","src/engine/systems/basho/ExhibitionBashoService.ts","getNextEvent","unreferenced-export","P3","","","","","genuine",""
 "ORPH-0011","src/engine/systems/basho/NakabiService.ts","NAKABI_DAY","unreferenced-export","P3","","","","","intentional",""
 "ORPH-0015","src/engine/systems/economy/KachiNokoriService.ts","KACHI_NOKORI_THRESHOLD","unreferenced-export","P0","","","","","intentional",""
 "ORPH-0023","src/engine/systems/generation/FightingNameEarly.ts","EARLY_SHIKONA_CHANCE","unreferenced-export","P3","","","","","intentional",""

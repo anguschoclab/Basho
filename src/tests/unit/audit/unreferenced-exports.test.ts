@@ -264,8 +264,6 @@ const GENUINE_ORPHANS: Record<string, string> = {
   //  collectionOperations.ts, jsonParser.ts all removed; each was dead API
   //  superseded by ExhibitionBashoService / queries+EntityCollection /
   //  inline Map helpers / nothing (LLM-era parser).)
-  "src/engine/systems/basho/ExhibitionBashoService.ts:getNextEvent":
-    "ORPH-0010: next-event lookahead has no consumer — phase05 runs the current-month jungyo via getExhibitionBashoSchedule; wire when a calendar/upcoming-events surface exists",
   "src/engine/systems/generation/QuirkAssignment.ts:applyGlasses":
     "ORPH-0033: glasses quirk is write-only — assignQuirk can set poorEyesight but no avatar layer or mechanic reads quirks.glasses; needs an avatar glasses renderer or quirk effect to wire",
   "src/engine/systems/generation/QuirkAssignment.ts:hasPoorEyesight":

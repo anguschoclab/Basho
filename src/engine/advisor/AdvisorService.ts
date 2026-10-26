@@ -18,6 +18,7 @@ import { getOpponentDominantFamily, suggestCounterTactic } from "../npcAI/Oppone
 import { buildMetaPerception } from "../npcAI/MetaPerception";
 import { candidateConsumesForeignSlot } from "../systems/generation/talentPoolReads";
 import { isAtForeignLimit } from "../utils/citizenshipUtils";
+import { scanRecentEvents } from "../events";
 import { HEYA_ROSTER_HARD_CAP } from "../../constants/engine/roster";
 
 const ROSTER_LOW_THRESHOLD = 10;
@@ -264,23 +265,16 @@ function intelRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
   const week = world.calendar?.currentWeek ?? world.week ?? 0;
 
   // Rival plan shift — recent plan changes are actionable intelligence.
-  const log = (world.events?.log ?? []) as {
-    type: string;
-    category?: string;
-    week?: number;
-    data?: Record<string, unknown>;
-  }[];
-  const shift = [...log]
-    .reverse()
-    .find(
-      (e) =>
-        e.type === "STRATEGY_SHIFT" &&
-        e.category === "ai_plan_change" &&
-        e.data?.heyaId !== undefined &&
-        e.data.heyaId !== heyaId &&
-        week - Number(e.week ?? 0) >= 0 &&
-        week - Number(e.week ?? 0) <= RIVAL_PLAN_INTEL_WINDOW_WEEKS
-    );
+  const shift = scanRecentEvents(world.events?.log ?? [], {
+    types: ["STRATEGY_SHIFT"],
+    category: "ai_plan_change",
+    limit: 1,
+    predicate: (e) =>
+      e.data?.heyaId !== undefined &&
+      e.data.heyaId !== heyaId &&
+      week - Number(e.week ?? 0) >= 0 &&
+      week - Number(e.week ?? 0) <= RIVAL_PLAN_INTEL_WINDOW_WEEKS,
+  })[0];
   if (shift) {
     const shiftHeyaId = String(shift.data?.heyaId);
     const rivalHeya = getHeya(world, shiftHeyaId);

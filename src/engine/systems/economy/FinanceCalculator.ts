@@ -110,7 +110,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   if (koenkai) {
     for (const member of koenkai.members) {
       const sponsor = world.sponsorPool?.sponsors.get(member.sponsorId);
-      if (sponsor) {
+      if (sponsor && sponsor.active) {
         monthlySponsorTierIncome += SPONSOR_TIER_INCOME[sponsor.tier] || 0;
       }
     }

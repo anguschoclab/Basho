@@ -21,11 +21,24 @@ export const HistoryService = {
     const builder = createImpactBuilder("updateAllTimeRecords");
     const records = world.records || this.createEmptyRecords();
 
+    // Copy the lists this function touches — pushing/sorting the world's own
+    // arrays would mutate the pre-resolution world in place.
+    const nextRecords: WorldRecords = {
+      ...records,
+      allTime: {
+        ...records.allTime,
+        careerWins: [...records.allTime.careerWins],
+        yusho: [...records.allTime.yusho],
+        kinboshi: [...records.allTime.kinboshi],
+      },
+    };
+
     let changed = false;
     const currentYear = world.year ?? DEFAULT_START_YEAR;
     const currentMonth = world.calendar?.month ?? 1;
 
     const checkRecord = (list: RecordEntry[], value: number, limit: number = 5): boolean => {
+      if (value <= 0) return false;
       if (list.length < limit || value > list[list.length - 1].value) {
         list.push({
           rikishiId: rikishi.id,
@@ -41,17 +54,17 @@ export const HistoryService = {
     };
 
     // 1. Career Wins
-    if (checkRecord(records.allTime.careerWins, rikishi.careerWins ?? 0)) changed = true;
+    if (checkRecord(nextRecords.allTime.careerWins, rikishi.careerWins ?? 0)) changed = true;
 
     // 2. Yusho Count
-    if (checkRecord(records.allTime.yusho, rikishi.careerRecord?.yusho ?? 0)) changed = true;
+    if (checkRecord(nextRecords.allTime.yusho, rikishi.careerRecord?.yusho ?? 0)) changed = true;
 
     // 3. Kinboshi Earned
     const kinboshi = rikishi.stats?.achievements?.kinboshiEarned ?? 0;
-    if (kinboshi > 0 && checkRecord(records.allTime.kinboshi, kinboshi)) changed = true;
+    if (checkRecord(nextRecords.allTime.kinboshi, kinboshi)) changed = true;
 
     if (changed) {
-      builder.updateWorldField("records", records);
+      builder.updateWorldField("records", nextRecords);
       builder.logEvent(
         "RECORD_BROKEN",
         "narrative",

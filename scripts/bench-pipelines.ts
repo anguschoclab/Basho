@@ -16,6 +16,7 @@ import { generateInitialWorld } from "../src/engine/systems/generation/WorldFact
 import { advanceOneDay, advanceDaysFast } from "../src/engine/tick/tickDaily";
 import type { WorldState } from "../src/engine/types/world";
 import { performance } from "node:perf_hooks";
+import { cpus, platform, arch } from "node:os";
 import { createHash } from "node:crypto";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -48,6 +49,11 @@ export interface BenchmarkResult {
 
 export interface BenchmarkRun {
   timestamp: string;
+  environment?: {
+    platform: string;
+    arch: string;
+    cpu: string;
+  };
   results: BenchmarkResult[];
 }
 
@@ -133,6 +139,11 @@ export function runBenchmark(scenarios?: Record<string, ScenarioConfig>): Benchm
 
   return {
     timestamp: new Date().toISOString(),
+    environment: {
+      platform: platform(),
+      arch: arch(),
+      cpu: cpus()[0]?.model ?? "unknown",
+    },
     results,
   };
 }

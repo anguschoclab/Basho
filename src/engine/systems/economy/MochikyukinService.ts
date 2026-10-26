@@ -21,7 +21,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { Id } from "../../types/common";
 import {
   MOCHIKYUKIN_POINT_VALUE,
-  MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN,
+  MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT,
   MOCHIKYUKIN_POINTS_YUSHO,
   MOCHIKYUKIN_POINTS_KINBOSHI,
   MOCHIKYUKIN_POINTS_JUN_YUSHO,
@@ -72,7 +72,7 @@ export function accumulateMochikyukinPoints(
   if (bashoResults.kachiNokori > 0) {
     pointsEarned += kachiNokoriToMochikyukinPoints(
       bashoResults.kachiNokori,
-      MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN
+      MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT
     );
   }
 

@@ -519,3 +519,60 @@ describe("ImpactResolver", () => {
     });
   });
 });
+
+describe("mergeImpacts add/delete ordering", () => {
+  it("a later add supersedes an earlier delete of the same entity", () => {
+    const del: StateImpact = {
+      deletedEntities: { rikishiIds: ["r1"] },
+      metadata: { source: "a" },
+    };
+    const r1 = mockRikishi("r1", { heyaId: "h1" } as never);
+    const add: StateImpact = {
+      collections: { rikishiToAdd: [r1 as never] },
+      metadata: { source: "b" },
+    };
+    const merged = ImpactResolver.mergeImpacts([del, add]);
+    // The merged impact must not contain a stale delete that would kill
+    // the re-added rikishi (applyImpact runs collections before deletes).
+    expect(merged.deletedEntities?.rikishiIds ?? []).not.toContain("r1");
+    expect(merged.collections?.rikishiToAdd?.map((r) => (r as { id: string }).id)).toContain("r1");
+  });
+
+  it("a later delete supersedes an earlier add of the same entity", () => {
+    const r1 = mockRikishi("r1", { heyaId: "h1" } as never);
+    const add: StateImpact = {
+      collections: { rikishiToAdd: [r1 as never], activeRikishiIdsToAdd: ["r1"] },
+      metadata: { source: "a" },
+    };
+    const del: StateImpact = {
+      deletedEntities: { rikishiIds: ["r1"] },
+      metadata: { source: "b" },
+    };
+    const merged = ImpactResolver.mergeImpacts([add, del]);
+    expect(merged.deletedEntities?.rikishiIds).toContain("r1");
+    expect(merged.collections?.rikishiToAdd ?? []).toHaveLength(0);
+    expect(merged.collections?.activeRikishiIdsToAdd ?? []).not.toContain("r1");
+  });
+});
+
+describe("sequenceImpacts fault isolation", () => {
+  it("a throwing producer is skipped; earlier and later impacts still apply", () => {
+    const w = MockFactory.createWorld({ id: "w", seed: "s" } as never);
+    const r1 = mockRikishi("r1", {} as never);
+    const r2 = mockRikishi("r2", {} as never);
+    const mk = (r: unknown): StateImpact => ({
+      collections: { rikishiToAdd: [r as never] },
+      metadata: { source: "t" },
+    });
+    const { impacts, world: out } = ImpactResolver.sequenceImpacts(w, [
+      () => mk(r1),
+      () => {
+        throw new Error("boom");
+      },
+      () => mk(r2),
+    ]);
+    expect(impacts).toHaveLength(2);
+    expect(out.rikishi.has("r1")).toBe(true);
+    expect(out.rikishi.has("r2")).toBe(true);
+  });
+});

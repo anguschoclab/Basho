@@ -81,8 +81,10 @@ export function toDescriptorDTO(
   return {
     descriptor: toRikishiDescriptor(rng, r, r.descriptor),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),
-    conditionDescriptor: NarrativeService.getConditionDescriptor(rng, r.condition ?? 0.5).label,
-    moraleDescriptor: NarrativeService.getMoraleDescriptor(rng, r.motivation ?? 0.5).label,
+    // Engine condition/motivation are 0-100; the descriptor bands are 0-1.
+    conditionDescriptor: NarrativeService.getConditionDescriptor(rng, (r.condition ?? 50) / 100)
+      .label,
+    moraleDescriptor: NarrativeService.getMoraleDescriptor(rng, (r.motivation ?? 50) / 100).label,
     potentialDescriptor: NarrativeService.getPotentialDescriptor(rng, r.talentSeed ?? 50).label,
     ageDescriptor: NarrativeService.getAgeLabel(rng, NarrativeService.getAgeBand(age)),
     weightDescriptor: NarrativeService.getWeightLabel(

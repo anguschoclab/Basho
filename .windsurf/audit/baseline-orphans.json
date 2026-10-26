@@ -1,8 +1,8 @@
 {
   "generatedAt": "2026-10-24T16:00:00.447Z",
   "summary": {
-    "total": 108,
-    "unreferencedExports": 108,
+    "total": 107,
+    "unreferencedExports": 107,
     "orphanRoutes": 0,
     "untickedServices": 0,
     "unusedComponents": 0,
@@ -30,17 +30,6 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
-    },
-    {
-      "id": "ORPH-0010",
-      "file": "src/engine/systems/basho/ExhibitionBashoService.ts",
-      "symbol": "getNextEvent",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
     },
     {
       "id": "ORPH-0011",

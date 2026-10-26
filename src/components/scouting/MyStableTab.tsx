@@ -11,6 +11,7 @@ import { EntityCollection } from "@/presenters/engineAccess";
 import { projectRikishi, RANK_HIERARCHY, RANK_NAMES } from "@/presenters/uiDigest";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import { activationKeyHandler } from "@/lib/a11y";
 
 const SORT_OPTIONS: SortOption[] = [
   { key: "rank", label: "Rank" },
@@ -80,13 +81,22 @@ export function MyStableTab({ playerHeyaId }: { playerHeyaId: string | null }) {
             return (
               <div
                 key={r.id}
-                className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${r.shikona}`}
+                className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
                 onClick={() =>
                   navigate({
                     to: "/rikishi/$rikishiId",
                     params: { rikishiId: r.id },
                   })
                 }
+                onKeyDown={activationKeyHandler(() =>
+                  navigate({
+                    to: "/rikishi/$rikishiId",
+                    params: { rikishiId: r.id },
+                  })
+                )}
               >
                 <div
                   className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`}

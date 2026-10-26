@@ -45,7 +45,7 @@ export function handleInsolvency(heya: Heya, world: WorldState): StateImpact {
   if (heya.funds >= DEBT_LIMIT) return builder.build();
 
   const pool = world.sponsorPool;
-  const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
+  const koenkai = pool?.koenkais.get(heya.koenkaiId ?? "");
   const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai) : null;
 
   if (benefactor) {

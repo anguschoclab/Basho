@@ -33,6 +33,56 @@ import { maybeClassifyHiwaza, HIWAZA_IDS } from "./hiwaza";
 
 const MAX_TICKS = MAX_BOUT_TICKS;
 
+/**
+ * Per-tick bookkeeping: accumulate momentum from the push/belt force
+ * differential, log dominance sign-flips, and snapshot fatigue at the two
+ * designated ticks. Extracted from the phase loop for the LOC budget.
+ */
+function trackTickMomentumAndFatigue(st: EngineStateV2, boutLog: BoutLogEntry[]): void {
+  // --- Momentum tracking (1.4) ---
+  // Accumulate momentum based on force differential from push/belt state
+  let forceDiff = 0;
+  if (st.phase.tag === "push_battle") {
+    forceDiff = st.phase.state.eastForce - st.phase.state.westForce;
+  } else if (st.phase.tag === "belt_battle") {
+    forceDiff = st.phase.state.torqueEast - st.phase.state.torqueWest;
+  }
+  st.momentumScore += forceDiff * MOMENTUM_SCORE_FACTOR;
+
+  // Detect momentum shift (sign flip)
+  const currentDominant: Side | null =
+    st.momentumScore > MOMENTUM_DOMINANT_THRESHOLD
+      ? "east"
+      : st.momentumScore < -MOMENTUM_DOMINANT_THRESHOLD
+        ? "west"
+        : null;
+  if (currentDominant && st.prevDominantSide && currentDominant !== st.prevDominantSide) {
+    boutLog.push({
+      phase: "momentum_shift",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        prevDominantSide: st.prevDominantSide,
+        newDominantSide: currentDominant,
+        magnitude: Math.abs(st.momentumScore),
+      },
+    });
+  }
+  if (currentDominant) st.prevDominantSide = currentDominant;
+
+  // --- Fatigue snapshot logging (1.2) ---
+  if (st.tick === FATIGUE_LOG_TICK_1 || st.tick === FATIGUE_LOG_TICK_2) {
+    boutLog.push({
+      phase: "fatigue",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        eastFatigue: st.east.boutFatigue,
+        westFatigue: st.west.boutFatigue,
+        fatigueDelta: Math.abs(st.east.boutFatigue - st.west.boutFatigue),
+      },
+    });
+  }
+}
+
 function runPhaseLoop(
   rng: SeededRNG,
   east: Rikishi,
@@ -50,49 +100,7 @@ function runPhaseLoop(
 
   for (let i = 0; i < MAX_TICKS; i++) {
     st.tick++;
-
-    // --- Momentum tracking (1.4) ---
-    // Accumulate momentum based on force differential from push/belt state
-    let forceDiff = 0;
-    if (st.phase.tag === "push_battle") {
-      forceDiff = st.phase.state.eastForce - st.phase.state.westForce;
-    } else if (st.phase.tag === "belt_battle") {
-      forceDiff = st.phase.state.torqueEast - st.phase.state.torqueWest;
-    }
-    st.momentumScore += forceDiff * MOMENTUM_SCORE_FACTOR;
-
-    // Detect momentum shift (sign flip)
-    const currentDominant: Side | null =
-      st.momentumScore > MOMENTUM_DOMINANT_THRESHOLD
-        ? "east"
-        : st.momentumScore < -MOMENTUM_DOMINANT_THRESHOLD
-          ? "west"
-          : null;
-    if (currentDominant && st.prevDominantSide && currentDominant !== st.prevDominantSide) {
-      boutLog.push({
-        phase: "momentum_shift",
-        clock: st.tick * CLOCK_MULTIPLIER,
-        data: {
-          prevDominantSide: st.prevDominantSide,
-          newDominantSide: currentDominant,
-          magnitude: Math.abs(st.momentumScore),
-        },
-      });
-    }
-    if (currentDominant) st.prevDominantSide = currentDominant;
-
-    // --- Fatigue snapshot logging (1.2) ---
-    if (st.tick === FATIGUE_LOG_TICK_1 || st.tick === FATIGUE_LOG_TICK_2) {
-      boutLog.push({
-        phase: "fatigue",
-        clock: st.tick * CLOCK_MULTIPLIER,
-        data: {
-          eastFatigue: st.east.boutFatigue,
-          westFatigue: st.west.boutFatigue,
-          fatigueDelta: Math.abs(st.east.boutFatigue - st.west.boutFatigue),
-        },
-      });
-    }
+    trackTickMomentumAndFatigue(st, boutLog);
 
     const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta, tactics);
     if (pushResult?.winner && pushResult?.kimarite) {

@@ -135,6 +135,7 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
@@ -255,6 +256,7 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
@@ -382,6 +384,7 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -504,6 +507,7 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -584,6 +588,7 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -1343,6 +1348,7 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
@@ -1463,6 +1469,7 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
@@ -1544,6 +1551,7 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -1626,6 +1634,7 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -1706,6 +1715,7 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -2386,6 +2396,7 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
@@ -2506,6 +2517,7 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
@@ -2587,6 +2599,7 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -2669,6 +2682,7 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -2749,6 +2763,7 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
+            "interventionUsedThisBasho": false,
             "economics": {
               "cash": 0,
               "retirementFund": 0,

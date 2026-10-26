@@ -8,6 +8,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { useKenshoData } from "@/hooks/useKenshoData";
+import { KENSHO_AMOUNT_PER_ENVELOPE } from "@/constants/engine/economic";
 
 export function KenshoManagementWidget() {
   const {
@@ -78,7 +79,7 @@ export function KenshoManagementWidget() {
                         {bout.kenshoEnvelopes} envelopes
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {formatYen(bout.kenshoEnvelopes * 70000)}
+                        {formatYen(bout.kenshoEnvelopes * KENSHO_AMOUNT_PER_ENVELOPE)}
                       </div>
                     </div>
                     {bout.awardFact && (
@@ -100,7 +101,7 @@ export function KenshoManagementWidget() {
             <div className="space-y-2 pr-3">
               {playerRikishi.map((rikishi) => {
                 const economics = rikishi.economics;
-                const kenshoEarnings = (economics?.careerKenshoWon || 0) * 70000;
+                const kenshoEarnings = (economics?.careerKenshoWon || 0) * KENSHO_AMOUNT_PER_ENVELOPE;
                 const rank = rikishi.rank || "unknown";
 
                 return (
@@ -132,7 +133,7 @@ export function KenshoManagementWidget() {
                       <div className="font-semibold text-gold">{formatYen(kenshoEarnings)}</div>
                       <div className="text-xs text-muted-foreground">
                         {kenshoEarnings > 0
-                          ? `${Math.round(kenshoEarnings / 70000)} envelopes`
+                          ? `${Math.round(kenshoEarnings / KENSHO_AMOUNT_PER_ENVELOPE)} envelopes`
                           : "None"}
                       </div>
                     </div>

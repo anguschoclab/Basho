@@ -95,7 +95,7 @@ export function BashoWidget() {
     const basho = world.currentBasho;
     const matches = basho.matches || [];
 
-    // ⚡ Bolt Performance Optimization: Single-pass loops to avoid allocating intermediate arrays
+    // Single-pass loops to avoid allocating intermediate arrays
     const { bouts: completedCount, kinboshi, upsets } = countMatchOutcomes(matches);
     const injuries = selectInjuredRikishi(world).length;
 

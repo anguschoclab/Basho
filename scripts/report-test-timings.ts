@@ -86,8 +86,9 @@ function parseJunitXml(xmlPath: string): TimingEntry[] {
       .replace(/&amp;/g, "&");
     entries.push({
       // vitest emits absolute paths; playwright's JUnit suite names are
-      // already repo-relative spec paths.
-      file: isAbsolute(name) ? relative(ROOT, name) : name,
+      // already repo-relative spec paths. Normalize to forward slashes —
+      // the committed baseline and meta gate compare POSIX-style paths.
+      file: (isAbsolute(name) ? relative(ROOT, name) : name).replace(/\\/g, "/"),
       testCount: Number(m[2]),
       durationMs: Math.round(Number(m[3]) * 1000),
     });

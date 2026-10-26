@@ -180,7 +180,7 @@ function surfaceFinancialAlert(data: Record<string, unknown>): SurfacedRow | nul
 }
 
 /** Map an event to a feed row, or null when it isn't an NPC-AI surface. */
-function surfaceEvent(e: LogEvent): SurfacedRow | null {
+function surfaceEvent(e: LogEvent, world?: WorldState): SurfacedRow | null {
   const data = e.data ?? {};
   switch (e.type) {
     case "NPC_MANAGER_DECISION":
@@ -201,23 +201,26 @@ function surfaceEvent(e: LogEvent): SurfacedRow | null {
         decision: `Crisis response: ${String(data.choiceId ?? "unknown")}`,
         reasoning: "",
       };
-    case "RIVAL_POSTURE":
+    case "RIVAL_POSTURE": {
+      // Resolve the rival's heya id to a display name — never render a raw id.
+      const rivalName = data.rivalHeyaId
+        ? (world?.heyas.get(String(data.rivalHeyaId))?.name ??
+          `stable ${String(data.rivalHeyaId)}`)
+        : "";
+      const vsSuffix = rivalName ? ` vs ${rivalName}` : "";
       if (data.vendetta === true) {
         return {
           category: "vendetta",
-          decision: `Personal vendetta escalates the rivalry${
-            data.rivalHeyaId ? ` vs ${String(data.rivalHeyaId)}` : ""
-          }`,
+          decision: `Personal vendetta escalates the rivalry${vsSuffix}`,
           reasoning: "",
         };
       }
       return {
         category: "rivalry",
-        decision: `Rival posture: ${String(data.posture ?? "unknown")}${
-          data.rivalHeyaId ? ` vs ${String(data.rivalHeyaId)}` : ""
-        }`,
+        decision: `Rival posture: ${String(data.posture ?? "unknown")}${vsSuffix}`,
         reasoning: "",
       };
+    }
     case "GOVERNANCE_RULING":
       return surfaceGovernanceRuling(data);
     case "LIFECYCLE_EVENT":
@@ -280,7 +283,7 @@ export function projectNPCAgentActivity(world: WorldState): NPCAgentProjection {
       continue;
     }
 
-    const row = surfaceEvent(e);
+    const row = surfaceEvent(e, world);
     if (!row) continue;
 
     const data = e.data ?? {};

@@ -4,7 +4,6 @@ import {
   isExhibitionBasho,
   isHonbasho,
   getExhibitionBashoSchedule,
-  getNextEvent,
   simulateExhibitionBasho,
   EXHIBITION_INJURY_RISK_MULTIPLIER,
   EXHIBITION_STIPEND_MULTIPLIER,
@@ -58,28 +57,6 @@ describe("getExhibitionBashoSchedule", () => {
     for (const e of events) {
       expect(e.isHonbasho).toBe(false);
     }
-  });
-});
-
-describe("getNextEvent", () => {
-  it("returns exhibition event after hatsu (month 1 → 2)", () => {
-    const next = getNextEvent("hatsu", 1);
-    expect(next.isHonbasho).toBe(false);
-    expect(next.month).toBe(2);
-  });
-
-  it("returns honbasho after exhibition (month 2 → 3 = haru)", () => {
-    const next = getNextEvent("february-jungyo", 2);
-    expect(next.isHonbasho).toBe(true);
-    expect(next.name).toBe("haru");
-    expect(next.month).toBe(3);
-  });
-
-  it("wraps to next year after December", () => {
-    const next = getNextEvent("december-jungyo", 12);
-    expect(next.name).toBe("hatsu");
-    expect(next.month).toBe(1);
-    expect(next.isHonbasho).toBe(true);
   });
 });
 
@@ -194,5 +171,25 @@ describe("simulateExhibitionBasho", () => {
     expect(rivalryEvent?.data.rikishiId).toBe("r-1");
     expect(rivalryEvent?.data.rivalId).toBe("r-2");
     expect(rivalryEvent?.data.status).toBe("exhibition_rivalry_seeded");
+  });
+
+  it("rivalry seeding writes a real pair into rivalriesState (not just an event)", () => {
+    const r1 = mockRikishi("r-1", { shikona: "Rikishi 1", heyaId: "heya-1" });
+    const r2 = mockRikishi("r-2", { shikona: "Rikishi 2", heyaId: "heya-2" });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [r1.id, r1],
+        [r2.id, r2],
+      ]),
+    });
+    vi.spyOn(rngModule.SeededRNG.prototype, "next").mockReturnValue(0);
+
+    const impact = simulateExhibitionBasho(world, "february-jungyo", [r1, r2]);
+    const updated = resolveImpacts(world, [impact]);
+    const pairs = updated.rivalriesState?.pairs ?? {};
+    expect(Object.keys(pairs).length).toBeGreaterThan(0);
+    const pair = Object.values(pairs)[0];
+    expect(new Set([pair.aId, pair.bId])).toEqual(new Set(["r-1", "r-2"]));
+    expect(pair.heat).toBeGreaterThan(0);
   });
 });

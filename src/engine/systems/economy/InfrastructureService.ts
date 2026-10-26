@@ -96,7 +96,9 @@ export const InfrastructureService = {
       facilityId,
       level: nextLevel,
       completionYear: completionYear,
-      completionBasho: "TBD",
+      // Completions are only evaluated at the yearly boundary
+      // (processCompletionTick), so every project finishes at Hatsu.
+      completionBasho: "hatsu",
     };
 
     builder.updateHeya(heyaId, {

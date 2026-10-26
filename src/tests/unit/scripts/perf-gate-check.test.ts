@@ -5,9 +5,12 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { rmSync, existsSync, readFileSync } from "node:fs";
 
+const ENV = { platform: "linux", arch: "x64", cpu: "test-cpu" };
+
 function makeRun(p50: number): BenchmarkRun {
   return {
     timestamp: "2026-01-01T00:00:00.000Z",
+    environment: { ...ENV },
     results: [
       {
         scenario: "S3_year",
@@ -51,6 +54,7 @@ describe("checkRegression", () => {
     const baseline = makeRun(100);
     const current: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
+      environment: { ...ENV },
       results: [
         { scenario: "S3_year", p50_ms: 105, p99_ms: 250, mean_ms: 105, runs: 50, total_days: 365 },
       ],
@@ -65,6 +69,7 @@ describe("checkRegression", () => {
     const baseline = makeRun(100);
     const current: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
+      environment: { ...ENV },
       results: [
         { scenario: "S3_year", p50_ms: 100, p99_ms: 220, mean_ms: 100, runs: 50, total_days: 365 },
       ],
@@ -78,6 +83,7 @@ describe("checkRegression", () => {
     const baseline = makeRun(100);
     const current: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
+      environment: { ...ENV },
       results: [
         { scenario: "S1_single_day", p50_ms: 5, p99_ms: 10, mean_ms: 5, runs: 50, total_days: 1 },
       ],
@@ -90,6 +96,7 @@ describe("checkRegression", () => {
   it("handles missing S3_year scenario in baseline gracefully", () => {
     const baseline: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
+      environment: { ...ENV },
       results: [
         { scenario: "S1_single_day", p50_ms: 5, p99_ms: 10, mean_ms: 5, runs: 50, total_days: 1 },
       ],
@@ -98,6 +105,24 @@ describe("checkRegression", () => {
     const result = checkRegression(baseline, current);
     expect(result.passed).toBe(true);
     expect(result.message).toContain("S3_year");
+  });
+
+  it("skips the check when baseline and current environments differ", () => {
+    const baseline = makeRun(100);
+    const current = makeRun(1000);
+    current.environment = { platform: "win32", arch: "x64", cpu: "test-cpu" };
+    const result = checkRegression(baseline, current);
+    expect(result.passed).toBe(true);
+    expect(result.message).toContain("environment mismatch");
+  });
+
+  it("skips the check when the baseline has no recorded environment", () => {
+    const baseline = makeRun(100);
+    delete baseline.environment;
+    const current = makeRun(1000);
+    const result = checkRegression(baseline, current);
+    expect(result.passed).toBe(true);
+    expect(result.message).toContain("environment mismatch");
   });
 });
 
