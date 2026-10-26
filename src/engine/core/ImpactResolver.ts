@@ -714,17 +714,22 @@ function dropSupersededAdds(
 /**
  * Sequentially compute StateImpacts against a progressively-resolved world.
  *
- * mergeImpacts composes entity/world-field updates with last-wins semantics.
- * When several producers each write a COMPLETE snapshot derived from the same
- * base world (e.g. `economics`, `funds`, `stats`, `candidatePool`,
- * `mediaState`), a flat merge silently discards all but the last writer's
- * absolute replacements if their domains intersect — the JSA-salary-credit bug.
- * Computing each producer on a world progressively resolved with its predecessors
- * ensures every absolute value computed already incorporates the earlier updates,
- * so the composed result is correct (including append-style fields like
- * `encouragementLog` and `mediaState.headlines`).
+ * Contract:
+ * - Executes producer functions sequentially in array order.
+ * - Each producer receives a `WorldState` that includes all impacts resolved by earlier producers in the array.
+ * - `resolveImpacts` is called internally after each non-null impact, returning a new `WorldState` reference.
+ * - Fault Isolation: If a producer throws an error, it is logged and execution continues. Impacts from previous producers in the array are preserved.
  *
- * Producers run in array order; each may return null/undefined to skip.
+ * Why sequence instead of flat merge?
+ * `mergeImpacts` composes entity/world-field updates with last-wins semantics.
+ * When several producers each write a COMPLETE snapshot derived from the same base world
+ * (e.g. `economics`, `funds`, `stats`, `candidatePool`, `mediaState`), a flat merge silently discards
+ * all but the last writer's absolute replacements if their domains intersect (e.g., the JSA-salary-credit bug).
+ * Sequencing ensures every absolute value computed incorporates earlier updates.
+ *
+ * @param world - The initial `WorldState` base.
+ * @param producers - An array of functions returning `StateImpact | null | undefined`.
+ * @returns An object containing the array of generated `StateImpact`s and the final resolved `WorldState`.
  */
 export function sequenceImpacts(
   world: WorldState,
