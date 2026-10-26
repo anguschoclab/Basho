@@ -9,6 +9,7 @@ import type { Id } from "../../engine/types/common";
 import type { WorldState } from "../../engine/types/world";
 import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { RivalryPairState } from "../../engine/rivalries";
+import { RIVALRY_TONE_LABELS } from "../../constants/engine/rivalry";
 import { queryEvents } from "../../engine/events";
 import { generateH2HCommentary } from "../../engine/h2h";
 import { BardEngine } from "../../engine/bard/BardEngine";
@@ -363,7 +364,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
             id: `rivalry::${pair.key}`,
             kind: "narrative",
             title: `${rA?.shikona} vs ${rB?.shikona}`,
-            detail: `Intense ${pair.tone} building up for the tournament. Heat: ${Math.round(pair.heat)}`,
+            detail: `${RIVALRY_TONE_LABELS[pair.tone] ?? pair.tone} rivalry building up for the tournament. Heat: ${Math.round(pair.heat)}`,
             rikishiId: pair.aId,
           };
         });
@@ -385,7 +386,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
     counts: {
       trainingEvents: eventBuckets.training.length,
       injuries: injurySection?.items.length ?? 0,
-      recoveries: 0,
+      recoveries: eventBuckets.recoveries.length,
       economy: eventBuckets.economy.length,
       scouting: eventBuckets.scouting.length,
     },

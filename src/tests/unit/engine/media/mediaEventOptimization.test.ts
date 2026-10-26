@@ -22,6 +22,11 @@ describe("handleMediaEvent — for...in optimization safety", () => {
           effects: {},
         },
       ],
+      heyas: new Map([
+        ["h1", { id: "h1", rikishiIds: ["r1"] }],
+        ["h2", { id: "h2", rikishiIds: ["r2"] }],
+      ]),
+      playerHeyaId: "h1",
     } as any;
   });
 
@@ -38,9 +43,9 @@ describe("handleMediaEvent — for...in optimization safety", () => {
     const impact = handleMediaEvent(mockWorld, "e1", "apologize");
     const updated = resolveImpacts(mockWorld, [impact]);
 
-    // Should only process r1 and r2, not inherited "polluted"
+    // r1 (h1 roster) is cooled; r2 belongs to h2 and stays; "polluted" untouched.
     expect(updated.mediaState!.mediaHeat["r1"]).toBe(45);
-    expect(updated.mediaState!.mediaHeat["r2"]).toBe(15);
+    expect(updated.mediaState!.mediaHeat["r2"]).toBe(20);
     expect(updated.mediaState!.mediaHeat["polluted"]).toBeUndefined();
   });
 
@@ -59,6 +64,7 @@ describe("handleMediaEvent — for...in optimization safety", () => {
     const impact = handleMediaEvent(mockWorld, "e1", "deny");
     const updated = resolveImpacts(mockWorld, [impact]);
 
-    expect(updated.mediaState!.heyaPressure).toEqual({});
+    // Denial scopes to the responding heya — a missing entry starts from 0.
+    expect(updated.mediaState!.heyaPressure).toEqual({ h1: 5 });
   });
 });

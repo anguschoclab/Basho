@@ -88,17 +88,17 @@ const MultiplierBar = React.memo(
         <div
           className="h-1 rounded-full bg-muted overflow-hidden"
           role="progressbar"
-          aria-valuenow={Math.min(100, value * 60)}
+          aria-valuenow={Math.min(100, (value / 2) * 100)}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label={label}
         >
           <div
             className={`h-full rounded-full ${color} transition-all`}
-            style={{ width: `${Math.min(100, value * 60)}%` }}
+            style={{ width: `${Math.min(100, (value / 2) * 100)}%` }}
           />
         </div>
-        <span className="font-medium text-foreground">{(value * 100).toFixed(0)}%</span>
+        <span className="font-medium text-foreground">×{value.toFixed(2)}</span>
       </div>
     );
   }

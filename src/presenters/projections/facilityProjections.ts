@@ -5,20 +5,19 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import { BardEngine } from "../../engine/bard/BardEngine";
-import { SeededRNG } from "../../engine/rng";
-
 /**
  * Get facility level label.
+ *
+ * Honest band descriptor for a 0-100 facility level — do NOT source this from
+ * rikishi stat bard lines (wrong domain: "outpowered by opponents" is not a
+ * dojo quality).
  */
-export function getFacilityLevelLabel(rng: SeededRNG, level: number): string {
-  let band = "limited";
-  if (level >= 85) band = "exceptional";
-  else if (level >= 65) band = "outstanding";
-  else if (level >= 45) band = "strong";
-  else if (level >= 25) band = "capable";
-
-  return BardEngine.resolve(rng, `rikishi.stats.power.${band}`).text.split(" — ")[0].split(".")[0];
+export function getFacilityLevelLabel(level: number): string {
+  if (level >= 85) return "Exceptional";
+  if (level >= 65) return "Outstanding";
+  if (level >= 45) return "Strong";
+  if (level >= 25) return "Capable";
+  return "Limited";
 }
 
 /**

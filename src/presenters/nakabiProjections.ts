@@ -33,7 +33,7 @@ export function projectNakabi(world: WorldState): NakabiProjection {
           year: Number(d.year ?? world.year ?? 0),
           day: 8,
           leaderId: String(d.leaderId ?? ""),
-          leaderShikona: leader?.shikona ?? (String(d.leaderShikona ?? "") || undefined),
+          leaderShikona: leader?.shikona ?? String(d.leaderShikona ?? ""),
           leaderAvatar: leader
             ? resolveAvatar({
                 id: leader.id,

@@ -140,8 +140,9 @@ function checkPhaseTransition(
           const resetMedia = resetBashoMediaTracking(world.mediaState);
           builder.updateWorldField("mediaState", resetMedia);
         }
-        // Note: EventBus replaced with logEvent - but this is a complex transition
-        // For now, we'll skip the event log as it's a low-priority phase transition
+        // pre_basho → active_basho is the only transition that emits a
+        // PHASE_TRANSITION event; the other arms only write governanceLog via
+        // logTransition. (Kept as-is — broadening coverage is a V14 note.)
         builder.logEvent(
           "PHASE_TRANSITION",
           "misc",

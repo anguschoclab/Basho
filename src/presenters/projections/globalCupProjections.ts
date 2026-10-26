@@ -87,7 +87,7 @@ export function projectGlobalCup(world: WorldState): GlobalCupProjection | null 
     participants,
     bracket,
     champion,
-    history: [], // History populated from ChronicleService
+    history: world.chronicle?.globalCups ?? [],
   };
 }
 
@@ -113,39 +113,4 @@ function getFlagForNationality(nationality: string): string {
   return flags[nationality] || "🏳️";
 }
 
-/**
- * Check if Global Cup is currently active
- */
-export function isGlobalCupActive(world: WorldState): boolean {
-  return world.globalCup?.isActive ?? false;
-}
 
-/**
- * Get Global Cup phase
- */
-export function getGlobalCupPhase(world: WorldState): string | null {
-  return world.globalCup?.phase ?? null;
-}
-
-/**
- * Get tournament progress percentage
- */
-export function getGlobalCupProgress(world: WorldState): number {
-  const cup = world.globalCup;
-  if (!cup?.isActive) return 0;
-
-  switch (cup.phase) {
-    case "registration":
-      return 0;
-    case "quarterfinals":
-      return 25;
-    case "semifinals":
-      return 50;
-    case "finale":
-      return 75;
-    case "complete":
-      return 100;
-    default:
-      return 0;
-  }
-}

@@ -11,6 +11,7 @@ import { generatePreBashoHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { getHeya, getRikishi } from "../../queries";
+import { MAX_HEADLINES } from "../../../constants/engine/media";
 
 /**
  * Trigger pre-basho journalism hype.
@@ -89,7 +90,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   const currentHeadlines = world.mediaState?.headlines || [];
   builder.updateWorldField("mediaState", {
     version: world.mediaState?.version ?? "1.0.0",
-    headlines: [...currentHeadlines, ...headlines].slice(-50),
+    headlines: [...currentHeadlines, ...headlines].slice(-MAX_HEADLINES),
     mediaHeat: world.mediaState?.mediaHeat ?? {},
     heyaPressure: world.mediaState?.heyaPressure ?? {},
     bashoStreaks: world.mediaState?.bashoStreaks ?? {},

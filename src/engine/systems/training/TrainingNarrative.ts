@@ -13,41 +13,39 @@ import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../../t
 import { BardEngine } from "../../bard/BardEngine";
 import { SeededRNG } from "../../rng";
 
-function seededRng(world?: { rng?: SeededRNG }): SeededRNG {
-  return (world && world.rng) || new SeededRNG("training_narrative");
+/**
+ * Labels must be deterministic per template key and must not consume a
+ * shared world RNG stream — draining a mutable world.rng from a render path
+ * would make output depend on call order and corrupt engine determinism.
+ */
+function seededRng(templateKey: string): SeededRNG {
+  return new SeededRNG(`training_narrative:${templateKey}`);
 }
 
 /**
  * Get intensity label.
  */
-export function getIntensityLabel(
-  intensity: TrainingIntensity,
-  world?: { rng?: SeededRNG }
-): string {
-  const rng = seededRng(world);
-  return BardEngine.resolve(rng, `training.intensity.${intensity}`).text;
+export function getIntensityLabel(intensity: TrainingIntensity): string {
+  return BardEngine.resolve(seededRng(`training.intensity.${intensity}`), `training.intensity.${intensity}`).text;
 }
 
 /**
  * Get focus label.
  */
-export function getFocusLabel(focus: TrainingFocus, world?: { rng?: SeededRNG }): string {
-  const rng = seededRng(world);
-  return BardEngine.resolve(rng, `training.focus.${focus}`).text;
+export function getFocusLabel(focus: TrainingFocus): string {
+  return BardEngine.resolve(seededRng(`training.focus.${focus}`), `training.focus.${focus}`).text;
 }
 
 /**
  * Get recovery label.
  */
-export function getRecoveryLabel(recovery: RecoveryEmphasis, world?: { rng?: SeededRNG }): string {
-  const rng = seededRng(world);
-  return BardEngine.resolve(rng, `training.recovery.${recovery}`).text;
+export function getRecoveryLabel(recovery: RecoveryEmphasis): string {
+  return BardEngine.resolve(seededRng(`training.recovery.${recovery}`), `training.recovery.${recovery}`).text;
 }
 
 /**
  * Get focus mode label (individual slots).
  */
-export function getFocusModeLabel(mode: string, world?: { rng?: SeededRNG }): string {
-  const rng = seededRng(world);
-  return BardEngine.resolve(rng, `training.mode.${mode}`).text;
+export function getFocusModeLabel(mode: string): string {
+  return BardEngine.resolve(seededRng(`training.mode.${mode}`), `training.mode.${mode}`).text;
 }

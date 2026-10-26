@@ -161,8 +161,8 @@ export const BloodlineService = {
     const trait = world.bloodlineRegistry?.traits[traitId];
     if (!trait?.ancestorShikona) return null;
 
-    const ancestorSurname = trait.ancestorShikona.split(" ").at(-1) ?? "";
-    const rikishiSurname = rikishi.shikona.split(" ").at(-1) ?? "";
+    const ancestorSurname = trait.ancestorShikona.split(" ")[0] ?? "";
+    const rikishiSurname = rikishi.shikona.split(" ")[0] ?? "";
 
     if (ancestorSurname.length >= 3 && rikishiSurname === ancestorSurname) {
       return trait.ancestorShikona;

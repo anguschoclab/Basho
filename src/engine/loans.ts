@@ -58,7 +58,7 @@ export function determineLoanTerms(
 
     // Attempt to find a high-tier sponsor to be the benefactor using authoritative service
     const pool = world.sponsorPool;
-    const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
+    const koenkai = pool?.koenkais.get(heya.koenkaiId ?? "");
     const benefactorSponsor = pool ? selectBenefactor(heya.id, pool, koenkai) : null;
 
     if (benefactorSponsor) {
@@ -197,10 +197,10 @@ export function processMonthlyLoanRepayments(world: WorldState): StateImpact {
 
       const payment = Math.min(loan.monthlyPayment, loan.remainingBalance);
       totalPayment += payment;
-      loan.remainingBalance -= payment;
+      const remainingBalance = loan.remainingBalance - payment;
 
-      if (loan.remainingBalance > 0) {
-        remainingLoans.push(loan);
+      if (remainingBalance > 0) {
+        remainingLoans.push({ ...loan, remainingBalance });
       } else {
         // Loan paid off
         builder.logEvent(

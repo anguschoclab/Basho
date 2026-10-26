@@ -23,7 +23,7 @@ import {
   logNakabiCheckpoint,
   isNakabiDay,
 } from "../../systems/basho/NakabiService";
-import { mergeImpacts } from "../../core/ImpactResolver";
+import { mergeImpacts, applyImpact } from "../../core/ImpactResolver";
 import { applyOyakataIntervention } from "../../actions/OyakataIntervention";
 
 export function phase01_basho_bouts(world: WorldState): StateImpact {
@@ -57,7 +57,12 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
       const { success, impact: intImpact } = applyOyakataIntervention(currentWorld, rId);
       if (success) {
         builder.merge(intImpact);
-        currentWorld = { ...currentWorld };
+        // Resolve the intervention into the running world WITHOUT logging its
+        // events a second time (they still flow through the merged impact):
+        // later interventions must see interventionUsedThisBasho, and the
+        // final entity diff below must not re-export the pre-intervention
+        // rikishi over the merged update.
+        currentWorld = applyImpact(currentWorld, intImpact);
       }
     }
   }
@@ -105,6 +110,9 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     "shimpanPool",
     "gyojiPool",
     "bashoNpcPosture",
+    // boutResultApplier appends kinboshi/award entries via arrayAppends — a
+    // new awardLog array on currentWorld that must be re-exported.
+    "awardLog",
   ] as const;
   for (const field of PASSTHROUGH_FIELDS) {
     if (currentWorld[field] !== world[field]) {
@@ -127,6 +135,17 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
       const updated = currentWorld.rikishi.get(rId);
       if (updated) {
         builder.updateRikishi(rId, updated);
+      }
+    }
+  }
+
+  // Oyakata entity updates resolve into currentWorld.oyakata too (NPC
+  // opponent learning from resolved bouts). oyakata is a Map, not a
+  // worldField, so re-export changed entries by reference diff like rikishi.
+  if (currentWorld.oyakata !== world.oyakata) {
+    for (const [id, oya] of currentWorld.oyakata) {
+      if (world.oyakata.get(id) !== oya) {
+        builder.updateOyakata(id, oya);
       }
     }
   }

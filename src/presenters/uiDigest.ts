@@ -61,7 +61,6 @@ export {
 
 export {
   // Economy projections
-  projectLoanStatus,
   projectMergerWarnings,
 } from "./projections";
 

@@ -13,6 +13,7 @@ import { Star, ArrowRight, User, Info, Trophy, MapPin, Building } from "lucide-r
 import type { Heya } from "@/engine/types/heya";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { StableName } from "@/components/ClickableName";
+import { activationKeyHandler } from "@/lib/a11y";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { HEYA_STATS } from "../../constants/ui/heyaPreview";
@@ -126,8 +127,11 @@ function RosterRow({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span
-              className={`font-display font-black truncate cursor-pointer hover:underline underline-offset-2 transition-colors ${isSekitori ? "text-primary" : "text-foreground"}`}
+              role="button"
+              tabIndex={0}
+              className={`font-display font-black truncate cursor-pointer hover:underline underline-offset-2 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xs ${isSekitori ? "text-primary" : "text-foreground"}`}
               onClick={() => onSelect(r.rikishi)}
+              onKeyDown={activationKeyHandler(() => onSelect(r.rikishi))}
             >
               {r.rikishi.shikona}
             </span>

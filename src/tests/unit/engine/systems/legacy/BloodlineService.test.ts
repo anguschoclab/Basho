@@ -123,7 +123,9 @@ describe("BloodlineService.applyHeritageBonus", () => {
 describe("BloodlineService.checkDynastyNarrative", () => {
   it("returns ancestor shikona when rikishi surname matches ancestor surname", () => {
     const r = mockRikishi("r1", {
-      shikona: "Taro Hakuryu",
+      // Shikona are FamilyName GivenName — the bloodline match compares the
+      // family-name (first) token to the ancestor surname.
+      shikona: "Hakuryu Taro",
       lineage: { bloodlineTraitId: "bl_legend1" },
     });
     const world = makeWorld(r, mockTrait);

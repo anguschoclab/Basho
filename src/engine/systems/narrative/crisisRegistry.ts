@@ -135,10 +135,10 @@ const stomach_fluEvent: ActiveCrisis = {
         if (victim && r && !r.injured) {
           b.updateRikishi(victim, { injured: true, injuryWeeksRemaining: 1 });
           b.updateRikishiNestedField(victim, "injuryStatus", {
-            type: "illness",
+            type: "unknown",
             isInjured: true,
             severity: "minor",
-            location: "internal",
+            location: "other",
             weeksRemaining: 1,
             weeksToHeal: 1,
           });

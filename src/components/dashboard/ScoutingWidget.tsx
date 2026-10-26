@@ -155,7 +155,7 @@ export function ScoutingWidget() {
   }, [navigate]);
   const world = state.world;
 
-  // ⚡ Bolt Performance Optimization: Combine prospects parsing, pool counting, and top prospects derivation
+  // Combine prospects parsing, pool counting, and top prospects derivation
   // into a single useMemo hook to avoid multiple array iterations on every render.
   const { prospects, poolCounts, topProspects } = useMemo(() => {
     const defaultRes = {

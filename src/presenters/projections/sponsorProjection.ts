@@ -9,6 +9,7 @@ import type { WorldState } from "../../engine/types/world";
 import { SPONSOR_TIER_INCOME } from "../../engine/systems/economy/SponsorshipService";
 import { KOENKAI_MONTHLY_INCOME } from "../../engine/systems/economy/sponsorshipQueries";
 import { SPONSOR_RENEWAL_WINDOW_WEEKS } from "../../constants/engine/time";
+import { KOENKAI_INCOME_SPLIT } from "../../constants/engine/economic";
 import { getPlayerHeya } from "../../engine/queries";
 
 interface SponsorData {
@@ -155,8 +156,12 @@ function buildSponsorData(
 function calculateKoenkaiIncome(heya: { koenkaiBand?: string }): number {
   if (!heya.koenkaiBand) return 0;
   // Engine-authoritative table (0 / 500k / 1.5M / 3.5M / 7M per band) — the
-  // old 200k×{0,.5,1,2,4} multiplier understated income 5-8x.
-  return KOENKAI_MONTHLY_INCOME[heya.koenkaiBand as keyof typeof KOENKAI_MONTHLY_INCOME] ?? 0;
+  // old 200k×{0,.5,1,2,4} multiplier understated income 5-8x. The heya is
+  // credited only KOENKAI_INCOME_SPLIT.heyaPortion of the gross (the rest is
+  // distributed to sekitori), so show the credited share, not the gross.
+  const gross =
+    KOENKAI_MONTHLY_INCOME[heya.koenkaiBand as keyof typeof KOENKAI_MONTHLY_INCOME] ?? 0;
+  return Math.floor(gross * KOENKAI_INCOME_SPLIT.heyaPortion);
 }
 
 /**

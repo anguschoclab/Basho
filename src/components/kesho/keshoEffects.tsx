@@ -150,7 +150,12 @@ export function renderFringe(density: number, color: string): React.ReactNode {
         const x = KESHO_FRINGE_START_X_OFFSET + i * (KESHO_FRINGE_SPACING / fringeCount);
         const swayOffset = Math.sin((i / fringeCount) * Math.PI * 2) * KESHO_FRINGE_SWAY_OFFSET;
 
-        const length = KESHO_FRINGE_LENGTH_BASE + Math.random() * KESHO_FRINGE_LENGTH_VARIATION;
+        // Deterministic pseudo-random per tassel — Math.random() here would
+        // reshuffle fringe lengths on every React render (flicker) and trip
+        // the determinism audit.
+        const h1 = ((i * 2654435761) >>> 0) / 4294967296;
+        const h2 = ((i * 1597334677) >>> 0) / 4294967296;
+        const length = KESHO_FRINGE_LENGTH_BASE + h1 * KESHO_FRINGE_LENGTH_VARIATION;
         const delay = i * KESHO_FRINGE_DELAY_MULTIPLIER;
 
         return (
@@ -162,7 +167,7 @@ export function renderFringe(density: number, color: string): React.ReactNode {
               y2={KESHO_FRINGE_Y + length}
               stroke={color}
               strokeWidth="1.5"
-              opacity={KESHO_OPACITY_VERY_HIGH + Math.random() * KESHO_FRINGE_OPACITY_VARIATION}
+              opacity={KESHO_OPACITY_VERY_HIGH + h2 * KESHO_FRINGE_OPACITY_VARIATION}
               className="animate-sway"
               style={{ animationDelay: `${delay}s` }}
             />

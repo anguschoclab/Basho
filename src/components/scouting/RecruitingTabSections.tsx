@@ -29,6 +29,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Layers } from "lucide-react";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 import { cn } from "@/lib/utils";
+import { activationKeyHandler } from "@/lib/a11y";
 import { toPotentialBand } from "@/presenters/engineAccess";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
@@ -192,13 +193,20 @@ export function CandidateCard({ c, state }: { c: CandidateDigestEntry; state: St
 
   return (
     <Card
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
+      aria-label={`Select candidate ${c.name || c.candidateId}`}
       className={cn(
-        "paper cursor-pointer transition-all border-primary/10",
+        "paper cursor-pointer transition-all border-primary/10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary",
         isSelected
           ? "ring-2 ring-primary border-primary shadow-lg scale-[1.01] bg-primary/5"
           : "hover:border-primary/40"
       )}
       onClick={() => state.toggleSelection(c.candidateId)}
+      onKeyDown={activationKeyHandler(() => state.toggleSelection(c.candidateId), {
+        selfOnly: true,
+      })}
     >
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">

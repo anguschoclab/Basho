@@ -95,9 +95,15 @@ function applyFacilityUpgrade(
   if (!canSpend(FACILITY_UPGRADE_COST)) return false;
   const facilities = { ...heya.facilities };
   const keys = ["training", "recovery", "nutrition"] as const;
-  const target = keys
-    .filter((k) => facilities[k] < FACILITY_MAX_LEVEL)
-    .sort((a, b) => facilities[a] - facilities[b])[0];
+  let target: (typeof keys)[number] | undefined;
+  let minLevel = Infinity;
+  for (const k of keys) {
+    const lvl = facilities[k];
+    if (lvl < FACILITY_MAX_LEVEL && lvl < minLevel) {
+      minLevel = lvl;
+      target = k;
+    }
+  }
   if (!target) return false;
   facilities[target] += 1;
   builder.updateHeya(heyaId, { facilities, funds: heya.funds - FACILITY_UPGRADE_COST });
@@ -117,18 +123,31 @@ function tryMyosekiPurchase(
   if (!decisions.finance.shouldBuyMyoseki || onCooldown(oyakata.memory, "myoseki", week)) {
     return false;
   }
-  const stocks = Object.values(world.myosekiMarket?.stocks ?? {})
-    .filter(
-      (s) =>
-        s.status === "available" &&
-        s.askingPrice !== undefined &&
-        s.askingPrice > 0 &&
-        canSpend(s.askingPrice)
-    )
-    .sort((a, b) => (a.askingPrice ?? 0) - (b.askingPrice ?? 0));
-  // Honor the agent's prioritized pick when it is still available and
+  // Single pass: prefer the agent's prioritized pick when still available and
   // affordable; otherwise fall back to the cheapest eligible stock.
-  const target = stocks.find((s) => s.id === decisions.finance.myosekiId) ?? stocks[0];
+  let target: (typeof allStocks)[number] | undefined;
+  let cheapestFallback: (typeof allStocks)[number] | undefined;
+  let minAskingPrice = Infinity;
+  const allStocks = Object.values(world.myosekiMarket?.stocks ?? {});
+  for (const s of allStocks) {
+    if (
+      s.status !== "available" ||
+      s.askingPrice === undefined ||
+      s.askingPrice <= 0 ||
+      !canSpend(s.askingPrice)
+    ) {
+      continue;
+    }
+    if (s.id === decisions.finance.myosekiId) {
+      target = s;
+      break;
+    }
+    if (s.askingPrice < minAskingPrice) {
+      minAskingPrice = s.askingPrice;
+      cheapestFallback = s;
+    }
+  }
+  target ??= cheapestFallback;
   if (target) {
     builder.merge(buyMyoseki(world, oyakata.id, heyaId, target.id));
     return true;
@@ -546,7 +565,8 @@ export function applyCrisisRescue(
   }
   // sponsor_drive: emergency koenkai drive — a modest injection scaled to
   // existing koenkai strength, never exceeding one month of operating burn.
-  const koenkaiMembers = world.sponsorPool?.koenkais.get(heya.id)?.members.length ?? 100;
+  const koenkaiMembers =
+    world.sponsorPool?.koenkais.get(heya.koenkaiId ?? "")?.members.length ?? 100;
   const boost = Math.min(2_000_000, Math.max(250_000, Math.floor(koenkaiMembers * 2000)));
   builder.updateHeya(heya.id, { funds: heya.funds + boost });
   builder.logEvent(

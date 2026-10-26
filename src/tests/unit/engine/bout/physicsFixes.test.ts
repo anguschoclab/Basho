@@ -84,7 +84,10 @@ function combatProfile(overrides: Partial<CombatProfile> = {}): CombatProfile {
   };
 }
 
-function pushPhase(eastForce = 60, westForce = 40): EngineStateV2["phase"] {
+function pushPhase(
+  eastForce = 60,
+  westForce = 40
+): Extract<EngineStateV2["phase"], { tag: "push_battle" }> {
   return {
     tag: "push_battle",
     state: {

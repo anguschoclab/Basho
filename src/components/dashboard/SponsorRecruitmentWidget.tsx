@@ -100,7 +100,7 @@ export function SponsorRecruitmentWidget() {
   const heya = getPlayerHeya(world);
   if (!heya) return null;
 
-  const koenkai = world.sponsorPool.koenkais.get(world.playerHeyaId);
+  const koenkai = world.sponsorPool.koenkais.get(heya.koenkaiId ?? "");
   const existingSponsorIds = new Set(koenkai?.members.map((m) => m.sponsorId) || []);
 
   // Filter available sponsors (active, not already recruited)

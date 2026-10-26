@@ -20,6 +20,7 @@ export interface NakabiSummary {
   year: number;
   day: number;
   leaderId: string | null;
+  leaderShikona: string | null;
   leaderWins: number;
   leaderLosses: number;
   undefeatedCount: number;
@@ -103,6 +104,7 @@ export function generateNakabiSummary(
     year: world.year,
     day: NAKABI_DAY,
     leaderId: leader?.rikishiId ?? null,
+    leaderShikona: leader?.shikona ?? null,
     leaderWins: leader?.wins ?? 0,
     leaderLosses: leader?.losses ?? 0,
     undefeatedCount,
@@ -117,7 +119,9 @@ export function logNakabiCheckpoint(_world: WorldState, summary: NakabiSummary):
   const builder = createImpactBuilder("logNakabiCheckpoint");
 
   const leaderName =
-    summary.notablePerformers.find((p) => p.rikishiId === summary.leaderId)?.shikona ?? "Unknown";
+    summary.leaderShikona ??
+    summary.notablePerformers.find((p) => p.rikishiId === summary.leaderId)?.shikona ??
+    "Unknown";
 
   builder.logEvent(
     "BASHO_STATUS",
@@ -129,6 +133,7 @@ export function logNakabiCheckpoint(_world: WorldState, summary: NakabiSummary):
       year: summary.year,
       day: summary.day,
       leaderId: summary.leaderId,
+      leaderShikona: summary.leaderShikona,
       leaderWins: summary.leaderWins,
       leaderLosses: summary.leaderLosses,
       undefeatedCount: summary.undefeatedCount,
