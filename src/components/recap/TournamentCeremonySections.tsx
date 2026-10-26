@@ -91,7 +91,7 @@ export function ChampionSection({
           </div>
 
           <div className="hidden lg:flex flex-col items-end opacity-20 select-none pointer-events-none">
-            <div className="text-4xl font-display font-black italic">天皇賜杯</div>
+            <div className="text-4xl font-display font-black">天皇賜杯</div>
             <div className="text-xs uppercase font-black tracking-[0.15em]">Emperor's Cup</div>
           </div>
         </CardContent>

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { findFiles, SRC } from "@/tests/helpers/fsScan";
+import { findFiles, normalizePathSlashes, SRC } from "@/tests/helpers/fsScan";
 
 const TESTS_DIR = join(SRC, "tests");
 
@@ -164,7 +164,9 @@ describe("factory discipline — no new local entity factories", () => {
     const violations: string[] = [];
 
     for (const file of testFiles) {
-      const rel = file.replace(SRC + "/", "").replace("tests/", "");
+      const rel = normalizePathSlashes(file)
+        .replace(`${normalizePathSlashes(SRC)}/`, "")
+        .replace("tests/", "");
       if (ALLOWED_LOCAL_FACTORIES.has(rel)) continue;
       const content = readFileSync(file, "utf-8");
       if (LOCAL_FACTORY_RE.test(content)) {

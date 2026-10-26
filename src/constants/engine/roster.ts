@@ -8,6 +8,9 @@
 export const ROSTER_CAPACITY_STANDARD = 25;
 export const ROSTER_CAPACITY_MERGER = 30;
 
+/** Absolute roster ceiling — equals merger capacity. */
+export const HEYA_ROSTER_HARD_CAP = 30;
+
 // Transfer ratios
 export const TRANSFER_RATIO_STANDARD = 0.5;
 export const TRANSFER_RATIO_SCANDAL = 0.2;

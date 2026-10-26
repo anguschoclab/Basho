@@ -20,8 +20,12 @@ vi.mock("@/engine/prestige/prestigeSystem", () => ({
 vi.mock("@/engine/systems/governance/governanceReview", () => ({
   runGovernanceReview: vi.fn(() => ({ metadata: { source: "governance", timestamp: 0 } })),
   runAIMetaDrift: vi.fn(() => ({ metadata: { source: "aiMeta", timestamp: 0 } })),
-  runRetirements: vi.fn(() => ({
-    metadata: { source: "retirements", timestamp: 0, vacanciesByHeyaId: {} },
+}));
+
+vi.mock("@/engine/lifecycle/processRetirements", () => ({
+  processAllRetirements: vi.fn(() => ({
+    impact: { metadata: { source: "retirements", timestamp: 0 } },
+    vacanciesByHeyaId: {},
   })),
 }));
 
@@ -76,9 +80,9 @@ import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
 import { runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
 import {
   runGovernanceReview,
-  runRetirements,
   runAIMetaDrift,
 } from "@/engine/systems/governance/governanceReview";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import { onBashoEnded } from "@/engine/records";
 import * as ImpactResolver from "@/engine/core/ImpactResolver";
 import { openRecruitmentWindow } from "@/engine/lifecycle/RegistryService";
@@ -128,15 +132,16 @@ describe("runPostBashoResolution", () => {
     expect((runGovernanceReview as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
 
-  it("calls runRetirements exactly once", () => {
+  it("calls processAllRetirements exactly once", () => {
     runPostBashoResolution(makeWorld());
-    expect((runRetirements as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
+    expect((processAllRetirements as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
 
   it("falls back to empty object when vacanciesByHeyaId is undefined", () => {
     // Temporarily change the mock for this test
-    (runRetirements as ReturnType<typeof vi.fn>).mockImplementationOnce(() => ({
-      metadata: { source: "retirements", timestamp: 0 }, // no vacanciesByHeyaId
+    (processAllRetirements as ReturnType<typeof vi.fn>).mockImplementationOnce(() => ({
+      impact: { metadata: { source: "retirements", timestamp: 0 } },
+      vacanciesByHeyaId: undefined,
     }));
     runPostBashoResolution(makeWorld());
     const recruitCalls = (openRecruitmentWindow as ReturnType<typeof vi.fn>).mock.calls;

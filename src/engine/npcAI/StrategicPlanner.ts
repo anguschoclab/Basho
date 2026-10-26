@@ -29,7 +29,7 @@ interface PlanTemplate {
 function hasYushoLeaderInHeya(ctx: AIContext, league: LeaguePerception): boolean {
   const heya = getHeya(ctx.world, ctx.heyaId);
   if (!heya) return false;
-  // ⚡ Bolt: Iterate over array directly with .includes to avoid O(N) allocation overhead of new Set()
+  // Iterate over array directly with .includes to avoid O(N) allocation overhead of new Set()
   const rikishiIds = heya.rikishiIds ?? [];
   return league.yushoRace.leaders.some((l) => rikishiIds.includes(l.rikishiId));
 }
@@ -159,7 +159,7 @@ const PLAN_CATALOG: PlanTemplate[] = [
     dynamicConstraints: (ctx) => {
       // Focus the plan on the heya's hottest inter-heya rivalry.
       const pairs = ctx.world.rivalriesState?.heyaRivalryPairs ?? {};
-      // ⚡ Bolt: Single pass manual loop replaces .filter().sort()[0] for performance
+      // Single pass manual loop replaces .filter().sort()[0] for performance
       let top: { heyaAId: string; heyaBId: string; heat: number } | undefined;
       let maxHeat = -1;
       for (const p of Object.values(pairs)) {
@@ -374,7 +374,7 @@ export function createPlan(ctx: AIContext): AIPlan | undefined {
 
   const statusQuo = PLAN_CATALOG[PLAN_CATALOG.length - 1];
   const chosen = best && best.score > 10 ? best.template : statusQuo;
-  // ⚡ Bolt: Single pass manual loop replaces Math.max(...array.filter().map()) for performance
+  // Single pass manual loop replaces Math.max(...array.filter().map()) for performance
   let runnerUpScore = 0;
   for (const p of PLAN_CATALOG) {
     if (p.planId !== chosen.planId) {

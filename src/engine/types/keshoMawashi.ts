@@ -181,13 +181,14 @@ export const SEASONAL_MOTIFS: Record<Season, TraditionalMotif[]> = {
   winter: ["snow", "pine", "bamboo", "mountain", "cloud"],
 };
 
-/** Get season from basho name */
+/** Get season from basho name — matches the canonical seasons in calendar.ts
+ * (hatsu=winter, haru=spring, natsu/nagoya=summer, aki/kyushu=autumn). */
 export function getSeasonFromBasho(basho: string): Season {
   const lowerBasho = basho.toLowerCase();
-  if (lowerBasho.includes("hatsu") || lowerBasho.includes("haru")) return "spring";
-  if (lowerBasho.includes("natsu")) return "summer";
-  if (lowerBasho.includes("aki")) return "autumn";
-  if (lowerBasho.includes("kyushu")) return "winter";
+  if (lowerBasho.includes("haru")) return "spring";
+  if (lowerBasho.includes("natsu") || lowerBasho.includes("nagoya")) return "summer";
+  if (lowerBasho.includes("aki") || lowerBasho.includes("kyushu")) return "autumn";
+  if (lowerBasho.includes("hatsu")) return "winter";
   return "spring"; // default
 }
 

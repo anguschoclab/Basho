@@ -56,6 +56,7 @@ export interface BashoUIDigest {
   isKeyDay: boolean;
   isNakabiDay: boolean;
   seasonalFlavor?: string;
+  sanyakuCallout?: string;
 }
 
 // ── Heya UI Types ─────────────────────────────────────────────────────────────
@@ -180,23 +181,6 @@ export interface DashboardUIDigest {
 }
 
 // ── Economy UI Types ──────────────────────────────────────────────────────────
-
-/** Loan projection for economy page */
-export interface LoanProjection {
-  loanCount: number;
-  totalBalance: number;
-  totalMonthlyPayment: number;
-  isOverdue: boolean;
-  overdueCount: number;
-  loans: Array<{
-    id: string;
-    type: string;
-    providerName: string;
-    remainingBalance: number;
-    monthlyPayment: number;
-    interestRate: number;
-  }>;
-}
 
 /** Merger warning entry */
 export interface MergerWarning {

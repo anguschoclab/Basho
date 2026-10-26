@@ -588,7 +588,10 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       }
     }
 
-    // Merge collections with lazy array creation
+    // Merge collections with lazy array creation, then reconcile ordering:
+    // this impact's adds supersede earlier-merged deletes of the same entity
+    // (_applyImpact applies collections before deletes, so a stale delete
+    // would kill a re-added entity).
     if (impact.collections) {
       if (!merged.collections) merged.collections = {};
       for (const key in impact.collections) {
@@ -602,9 +605,11 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
         }
         target.push(...arr);
       }
+      dropSupersededDeletes(merged, impact.collections);
     }
 
-    // Merge deletions with lazy array creation
+    // Merge deletions with lazy array creation, then drop earlier-merged
+    // adds of the same entity (delete wins for the later writer).
     if (impact.deletedEntities) {
       if (!merged.deletedEntities) merged.deletedEntities = {};
       for (const key in impact.deletedEntities) {
@@ -618,6 +623,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
         }
         target.push(...ids);
       }
+      dropSupersededAdds(merged, impact.deletedEntities);
     }
 
     if (impact.worldFields) {
@@ -655,6 +661,57 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
 }
 
 /**
+ * Adds in `collections` supersede earlier-merged deletes of the same entity
+ * (last-wins across the merged batch).
+ */
+function dropSupersededDeletes(
+  merged: StateImpact,
+  collections: NonNullable<StateImpact["collections"]>
+): void {
+  const deletes = merged.deletedEntities as Record<string, string[] | undefined> | undefined;
+  if (!deletes) return;
+  const cols = collections as Record<string, unknown[] | undefined>;
+  const supersede = (addKey: string, deleteKey: string, flatKey?: string) => {
+    const ids = new Set<string>([
+      ...(cols[addKey] ?? []).map((o) => (o as { id: string }).id),
+      ...((flatKey ? (cols[flatKey] as string[] | undefined) : undefined) ?? []),
+    ]);
+    const existing = deletes[deleteKey];
+    if (existing && ids.size > 0) deletes[deleteKey] = existing.filter((id) => !ids.has(id));
+  };
+  supersede("rikishiToAdd", "rikishiIds", "activeRikishiIdsToAdd");
+  supersede("heyaToAdd", "heyaIds");
+  supersede("oyakataToAdd", "oyakataIds");
+}
+
+/**
+ * Deletes in `deleted` supersede earlier-merged adds of the same entity
+ * (last-wins across the merged batch).
+ */
+function dropSupersededAdds(
+  merged: StateImpact,
+  deleted: NonNullable<StateImpact["deletedEntities"]>
+): void {
+  const cols = merged.collections as Record<string, unknown[] | undefined> | undefined;
+  if (!cols) return;
+  const dropObjects = (addKey: string, ids: Set<string>) => {
+    const arr = cols[addKey];
+    if (arr) cols[addKey] = arr.filter((o) => !ids.has((o as { id: string }).id));
+  };
+  const dropIds = (addKey: string, ids: Set<string>) => {
+    const arr = cols[addKey] as string[] | undefined;
+    if (arr) cols[addKey] = arr.filter((id) => !ids.has(id));
+  };
+  if (deleted.rikishiIds?.length) {
+    const ids = new Set(deleted.rikishiIds);
+    dropObjects("rikishiToAdd", ids);
+    dropIds("activeRikishiIdsToAdd", ids);
+  }
+  if (deleted.heyaIds?.length) dropObjects("heyaToAdd", new Set(deleted.heyaIds));
+  if (deleted.oyakataIds?.length) dropObjects("oyakataToAdd", new Set(deleted.oyakataIds));
+}
+
+/**
  * Sequentially compute StateImpacts against a progressively-resolved world.
  *
  * mergeImpacts composes entity/world-field updates with last-wins semantics.
@@ -676,10 +733,16 @@ export function sequenceImpacts(
   const impacts: StateImpact[] = [];
   let current = world;
   for (const produce of producers) {
-    const impact = produce(current);
-    if (!impact) continue;
-    impacts.push(impact);
-    current = resolveImpacts(current, [impact]);
+    // Per-producer fault isolation — one throwing producer must not discard
+    // the impacts already computed in this batch (matches resolveImpacts).
+    try {
+      const impact = produce(current);
+      if (!impact) continue;
+      impacts.push(impact);
+      current = resolveImpacts(current, [impact]);
+    } catch (err) {
+      error(`Error in sequenced producer "${produce.name || "anonymous"}"`, "ImpactResolver", err);
+    }
   }
   return { impacts, world: current };
 }

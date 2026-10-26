@@ -12,8 +12,8 @@
  * even elite scouting departments misjudge prospects. The practical effect: money can't
  * reliably buy the actual best recruit, hidden gems can slip past big stables to small
  * ones and develop to their true potential there, and big stables sometimes overpay for
- * duds. This file is a pure, read-only helper — it is NOT wired into any recruitment
- * decision path yet.
+ * duds. This file is a pure, read-only helper — wired into NPC recruitment bidding
+ * (TalentPoolNPCRecruitment) as the perceived-talent estimate.
  */
 
 import {

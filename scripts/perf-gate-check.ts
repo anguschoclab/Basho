@@ -22,6 +22,22 @@ const CURRENT_PATH = join(__dirname, "..", "docs", "audit", "perf-current.json")
 const THRESHOLD = 0.15;
 const SCENARIO = "S3_year";
 
+/**
+ * Wall-clock comparisons are only meaningful between the same hardware.
+ * A baseline recorded on a different platform/arch (or with unknown
+ * provenance, i.e. no environment block) must not fail the gate — the
+ * caller should refresh it from a run on this machine instead.
+ */
+export function environmentsMatch(
+  baseline: BenchmarkRun,
+  current: BenchmarkRun
+): boolean {
+  const b = baseline.environment;
+  const c = current.environment;
+  if (!b || !c) return false;
+  return b.platform === c.platform && b.arch === c.arch;
+}
+
 export interface RegressionResult {
   passed: boolean;
   degradation: number;
@@ -36,6 +52,19 @@ export function checkRegression(
 ): RegressionResult {
   const baselineS3 = baseline.results.find((r) => r.scenario === SCENARIO);
   const currentS3 = current.results.find((r) => r.scenario === SCENARIO);
+
+  if (!environmentsMatch(baseline, current)) {
+    return {
+      passed: true,
+      degradation: 0,
+      p99Degradation: 0,
+      message:
+        `Baseline environment mismatch or unknown provenance ` +
+        `(baseline: ${baseline.environment ? `${baseline.environment.platform}/${baseline.environment.arch}` : "none"}, ` +
+        `current: ${current.environment ? `${current.environment.platform}/${current.environment.arch}` : "none"}) ` +
+        `— skipping wall-clock regression check; refresh the baseline on this machine`,
+    };
+  }
 
   if (!baselineS3 || !currentS3) {
     return {

@@ -116,7 +116,7 @@ export function generateKeshoForPromotions(
       builder.updateRikishi(rikishi.id, { keshoMawashi: kesho });
 
       builder.logEvent(
-        "KESHO_MAWASHI_CREATED",
+        "KESHO_CREATED",
         "narrative",
         {
           rikishiId: rikishi.id,

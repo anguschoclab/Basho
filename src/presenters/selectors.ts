@@ -77,12 +77,16 @@ export const selectRecentEvents = createSelector((world: WorldState) => {
     basho: [] as EngineEvent[],
     milestone: [] as EngineEvent[],
     facility: [] as EngineEvent[],
+    recoveries: [] as EngineEvent[],
   };
 
   for (const e of recentEvents) {
     if (e.week < thisWeek - 1 || e.week > thisWeek) continue;
 
-    if (e.category === "media" || e.type.includes("SCANDAL")) buckets.media.push(e);
+    const status = typeof e.data?.status === "string" ? e.data.status : "";
+    if (e.category === "injury" && (status === "recovery" || status === "treated"))
+      buckets.recoveries.push(e);
+    else if (e.category === "media" || e.type.includes("SCANDAL")) buckets.media.push(e);
     else if (e.category === "economy" || e.category === "sponsor") buckets.economy.push(e);
     else if (e.category === "scouting") buckets.scouting.push(e);
     else if (e.category === "training") buckets.training.push(e);

@@ -27,7 +27,7 @@ import {
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
 } from "../../constants/engine/calendarExtended";
-import { DEFAULT_START_YEAR, INTERIM_DAYS } from "../../constants/engine/calendar";
+import { DEFAULT_START_YEAR, INTERIM_DAYS, BASHO_FINAL_DAY } from "../../constants/engine/calendar";
 import { warn } from "../utils/Logger";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { clearQueryCaches } from "../queries";
@@ -113,7 +113,7 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   if (
     !world._autonomousSim &&
     world.cyclePhase === "active_basho" &&
-    (world.currentBasho?.day ?? 0) > 15
+    (world.currentBasho?.day ?? 0) > BASHO_FINAL_DAY
   ) {
     return world;
   }
@@ -124,8 +124,14 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   // Halt pipeline if a blocking crisis or required decision was set during preflight.
   // Skip in autonomous runs (AutoSim, holiday) — there is no interactive player to
   // resolve it, so halting would freeze the whole world indefinitely.
+  // The calendar day was still consumed by preflight, so advance the weekly
+  // counter too — otherwise a run of halted days starves the weekly tick
+  // forever while days elapse.
   if (!nextWorld._autonomousSim && shouldHaltAdvance(nextWorld)) {
-    return nextWorld;
+    return {
+      ...nextWorld,
+      _daysSinceLastWeeklyTick: (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1,
+    };
   }
 
   const boundaries = nextWorld.transientContext?.boundaries || {
@@ -164,42 +170,9 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
     }
 
     // Consume deferred boundaries from previous non-weekly days in this cycle
-    const pendingMonth = nextWorld.transientContext?.pendingMonthBoundary ?? false;
-    const pendingYear = nextWorld.transientContext?.pendingYearBoundary ?? false;
-    const effectiveMonthBoundary = boundaries.monthBoundary || pendingMonth;
-    const effectiveYearBoundary = boundaries.yearBoundary || pendingYear;
-
-    // If we have a deferred boundary, override boundaries so phases can detect it
-    if (effectiveMonthBoundary && !boundaries.monthBoundary) {
-      nextWorld = {
-        ...nextWorld,
-        transientContext: {
-          ...nextWorld.transientContext,
-          boundaries: {
-            ...(nextWorld.transientContext?.boundaries ?? {
-              monthBoundary: false,
-              yearBoundary: false,
-            }),
-            monthBoundary: true,
-          },
-        },
-      };
-    }
-    if (effectiveYearBoundary && !boundaries.yearBoundary) {
-      nextWorld = {
-        ...nextWorld,
-        transientContext: {
-          ...nextWorld.transientContext,
-          boundaries: {
-            ...(nextWorld.transientContext?.boundaries ?? {
-              monthBoundary: false,
-              yearBoundary: false,
-            }),
-            yearBoundary: true,
-          },
-        },
-      };
-    }
+    const { world: boundaryWorld, effectiveMonthBoundary, effectiveYearBoundary } =
+      applyDeferredBoundaries(nextWorld, boundaries);
+    nextWorld = boundaryWorld;
 
     // P3.7: Monthly market runs on month-boundary weekly ticks (not daily micro-phases)
     if (effectiveMonthBoundary) {
@@ -243,6 +216,39 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   }
 
   return nextWorld;
+}
+
+/**
+ * Fold deferred month/year boundary flags from prior non-weekly days into
+ * `transientContext.boundaries` so weekly phases can detect them.
+ */
+function applyDeferredBoundaries(
+  nextWorld: WorldState,
+  boundaries: { monthBoundary: boolean; yearBoundary: boolean }
+): { world: WorldState; effectiveMonthBoundary: boolean; effectiveYearBoundary: boolean } {
+  const pendingMonth = nextWorld.transientContext?.pendingMonthBoundary ?? false;
+  const pendingYear = nextWorld.transientContext?.pendingYearBoundary ?? false;
+  const effectiveMonthBoundary = boundaries.monthBoundary || pendingMonth;
+  const effectiveYearBoundary = boundaries.yearBoundary || pendingYear;
+
+  const setBoundary = (w: WorldState, key: "monthBoundary" | "yearBoundary"): WorldState => ({
+    ...w,
+    transientContext: {
+      ...w.transientContext,
+      boundaries: {
+        ...(w.transientContext?.boundaries ?? { monthBoundary: false, yearBoundary: false }),
+        [key]: true,
+      },
+    },
+  });
+
+  if (effectiveMonthBoundary && !boundaries.monthBoundary) {
+    nextWorld = setBoundary(nextWorld, "monthBoundary");
+  }
+  if (effectiveYearBoundary && !boundaries.yearBoundary) {
+    nextWorld = setBoundary(nextWorld, "yearBoundary");
+  }
+  return { world: nextWorld, effectiveMonthBoundary, effectiveYearBoundary };
 }
 
 function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport {
@@ -365,7 +371,7 @@ export function advanceDaysFast(
     if (
       !currentWorld._autonomousSim &&
       currentWorld.cyclePhase === "active_basho" &&
-      (currentWorld.currentBasho?.day ?? 0) > 15
+      (currentWorld.currentBasho?.day ?? 0) > BASHO_FINAL_DAY
     )
       break;
 

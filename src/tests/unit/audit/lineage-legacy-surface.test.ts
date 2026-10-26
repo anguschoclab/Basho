@@ -26,16 +26,17 @@ describe("BloodlineService — tick phase wiring", () => {
 });
 
 describe("LegacyService — call site wiring", () => {
-  it("registerLegacyTrait is called by CareerService on retirement", () => {
-    const svc = readSrcFile("engine/lifecycle/CareerService.ts");
+  it("registerLegacyTrait is called by the unified retirement processor", () => {
+    const svc = readSrcFile("engine/lifecycle/processRetirements.ts");
     expect(svc).toContain("LegacyService");
     expect(svc).toMatch(/LegacyService\.registerLegacyTrait/);
   });
 
-  it("registerLegacyTrait is also called by governanceReview", () => {
+  it("both legacy retirement call sites delegate to the unified processor", () => {
+    const cs = readSrcFile("engine/lifecycle/CareerService.ts");
+    expect(cs).toContain("processAllRetirements");
     const gr = readSrcFile("engine/systems/governance/governanceReview.ts");
-    expect(gr).toContain("LegacyService");
-    expect(gr).toMatch(/LegacyService\.registerLegacyTrait/);
+    expect(gr).toContain("processAllRetirements");
   });
 
   it("rollLegacyAncestry is called by CandidateGenerator", () => {

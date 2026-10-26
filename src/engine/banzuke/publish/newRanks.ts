@@ -61,6 +61,7 @@ export function applyNewRanks(
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          interventionUsedThisBasho: false,
           recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
           sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
           shikona: newShikona,
@@ -89,6 +90,7 @@ export function applyNewRanks(
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          interventionUsedThisBasho: false,
           recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
           sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
           economics: {

@@ -108,7 +108,7 @@ function measure(file: string, threshold: number): Measurement[] {
     true,
     file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS
   );
-  const rel = relative(ROOT, file);
+  const rel = relative(ROOT, file).replaceAll("\\", "/");
   const results: Measurement[] = [];
 
   const locOf = (node: ts.Node): { start: number; end: number; loc: number } => {

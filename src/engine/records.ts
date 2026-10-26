@@ -8,24 +8,6 @@ import type { StateImpact } from "./core/StateImpact";
 import { getRikishi } from "./queries";
 
 /**
- * Ensures the records state is initialized.
- * Returns StateImpact describing records initialization instead of mutating state directly.
- */
-export function ensureRecordsState(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("ensureRecordsState");
-
-  if (!world.records) {
-    const records = {
-      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    };
-    builder.updateWorldField("records", records);
-  }
-
-  return builder.build();
-}
-
-/**
  * Updates a specific leaderboard with a new entry if it qualifies for the Top 10.
  * Uses sorted insertion to maintain order efficiently.
  */
@@ -57,12 +39,12 @@ function updateLeaderboard(
     if (value <= list[existingIndex].value) {
       return;
     }
-    // Update existing item in place
-    const item = list[existingIndex];
-    item.value = value;
+    // Clone the entry before updating — the copied leaderboard arrays still
+    // alias the input world's RecordEntry objects, so in-place writes would
+    // leak into the pre-resolution world.
+    const item = { ...list[existingIndex], value };
     if (item.achievedDate) {
-      item.achievedDate.year = year;
-      item.achievedDate.month = month;
+      item.achievedDate = { ...item.achievedDate, year, month };
     }
 
     // Bubble up avoiding object swap allocation overhead
@@ -264,7 +246,7 @@ export function onRikishiRetired(world: WorldState, rikishiId: Id): StateImpact 
     },
   };
 
-  // ⚡ Bolt: Use manual shift/pop to remove from active lists to avoid O(N) allocation overhead of .filter()
+  // Use manual shift/pop to remove from active lists to avoid O(N) allocation overhead of .filter()
   removeActiveRecord(updatedRecords.active.careerWins, rikishiId);
   removeActiveRecord(updatedRecords.active.makuuchiWins, rikishiId);
   removeActiveRecord(updatedRecords.active.yusho, rikishiId);

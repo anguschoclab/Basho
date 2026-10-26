@@ -13,8 +13,8 @@ import { runPrestigeDecay } from "../prestige/prestigeSystem";
 import {
   runGovernanceReview,
   runAIMetaDrift,
-  runRetirements,
 } from "../systems/governance/governanceReview";
+import { processAllRetirements } from "../lifecycle/processRetirements";
 import { onBashoEnded } from "../records";
 import {
   processSponsorChurn,
@@ -52,9 +52,8 @@ export function runPostBashoResolution(world: WorldState): WorldState {
     (w) => runGovernanceReview(w),
     (w) => runAIMetaDrift(w),
     (w) => {
-      const impact = runRetirements(w);
-      retirementVacancies =
-        (impact.metadata?.vacanciesByHeyaId as Record<string, number> | undefined) ?? {};
+      const { impact, vacanciesByHeyaId } = processAllRetirements(w);
+      retirementVacancies = vacanciesByHeyaId ?? {};
       return impact;
     },
     (w) => processSponsorChurn(w, rng),

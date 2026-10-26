@@ -14,6 +14,7 @@ import { Utensils, Shield, Heart, Activity } from "lucide-react";
 import type { DietRegimen } from "@/engine/types/economy";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 import { MAX_RISK_PERCENTAGE, RISK_PERCENTAGE_MULTIPLIER } from "../../constants/ui/dashboard";
+import { HEALTH_COLOR } from "@/constants/ui/perception";
 import {
   COMPLIANCE_DISPLAY,
   WELFARE_RISK_DISPLAY,
@@ -33,13 +34,7 @@ const RISK_ADVICE: Record<string, string> = {
   critical: "Critical welfare issues. Immediate action needed to prevent sanctions.",
 };
 
-const HEALTH_COLORS: Record<string, string> = {
-  peak: "text-success",
-  good: "text-success",
-  fair: "text-gold",
-  worn: "text-warning",
-  fragile: "text-destructive",
-};
+const HEALTH_COLORS = HEALTH_COLOR;
 
 /** Compliance status card — JSA medical responsibility assessment. */
 export function ComplianceCard({ welfare }: { welfare: Welfare }) {

@@ -148,8 +148,8 @@ export function buildYouthAcademy(world: WorldState, heyaId: string): StateImpac
   });
 
   builder.logEvent(
-    "NARRATIVE_CRISIS_TRIGGERED",
-    "narrative",
+    "FACILITY_UPGRADED",
+    "facility",
     {
       eventId: "youth_academy_built",
       title: "Youth Academy Established",
@@ -189,8 +189,8 @@ export function upgradeYouthAcademy(world: WorldState, heyaId: string): StateImp
   });
 
   builder.logEvent(
-    "NARRATIVE_CRISIS_TRIGGERED",
-    "narrative",
+    "FACILITY_UPGRADED",
+    "facility",
     {
       eventId: "youth_academy_upgraded",
       title: `Youth Academy Upgraded to Level ${nextLevel}`,
@@ -263,8 +263,8 @@ export function generateYearlyIntake(world: WorldState, heyaId: string): StateIm
 
   if (newProspects.length > 0) {
     builder.logEvent(
-      "NARRATIVE_CRISIS_TRIGGERED",
-      "narrative",
+      "RECRUIT_DISCOVERED",
+      "scouting",
       {
         eventId: "youth_academy_intake",
         title: `Youth Academy Intake — ${world.year}`,
@@ -294,7 +294,13 @@ export function applyWeeklyDevelopment(world: WorldState, heyaId: string): State
   const staffQuality = academy.staff.reduce((sum, s) => sum + s.quality, 0);
   const staffMultiplier = 1 + staffQuality / 200;
   const levelMultiplier = 1 + academy.level * 0.2;
-  const budgetFactor = academy.budget > 0 ? Math.min(2, academy.budget / 10_000) : 0.5;
+  // The weekly development budget is a real weekly spend — debit it from
+  // heya funds. If the stable can't cover the budget, development runs at
+  // the underfunded factor and no funds are taken.
+  const weeklyCost = Math.max(0, academy.budget);
+  const affordable = (heya.funds ?? 0) >= weeklyCost;
+  const budgetFactor =
+    academy.budget > 0 && affordable ? Math.min(2, academy.budget / 10_000) : 0.5;
 
   const updatedProspects = academy.prospects.map((p) => {
     if (p.currentAbility >= p.potential) return p;
@@ -322,6 +328,7 @@ export function applyWeeklyDevelopment(world: WorldState, heyaId: string): State
       ...academy,
       prospects: updatedProspects,
     },
+    funds: (heya.funds ?? 0) - (affordable ? weeklyCost : 0),
   });
 
   return builder.build();
@@ -467,8 +474,8 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
   } as Partial<Heya>);
 
   builder.logEvent(
-    "NARRATIVE_CRISIS_TRIGGERED",
-    "narrative",
+    "LIFECYCLE_EVENT",
+    "career",
     {
       eventId: "youth_academy_promotion",
       title: "Academy Prospect Promoted",
@@ -509,13 +516,14 @@ export function investInAcademy(world: WorldState, heyaId: string, amount: numbe
   });
 
   builder.logEvent(
-    "NARRATIVE_CRISIS_TRIGGERED",
-    "narrative",
+    "MANAGEMENT_DECISION",
+    "economy",
     {
       eventId: "youth_academy_invest",
       title: "Academy Investment",
-      description: `${heya.name} invested ${amount.toLocaleString()} yen in the Youth Academy.`,
-      incident: `Weekly development budget increased by ${budgetIncrease.toLocaleString()} yen.`,
+      description: `${heya.name} invested ¥${amount} in the Youth Academy.`,
+      incident: `Weekly development budget increased by ¥${budgetIncrease}.`,
+      money: amount,
     },
     { heyaId, importance: "minor" }
   );
@@ -581,8 +589,8 @@ export function hireAcademyStaff(
   });
 
   builder.logEvent(
-    "NARRATIVE_CRISIS_TRIGGERED",
-    "narrative",
+    "MANAGEMENT_DECISION",
+    "economy",
     {
       eventId: "youth_academy_staff_hired",
       title: "Academy Staff Hired",

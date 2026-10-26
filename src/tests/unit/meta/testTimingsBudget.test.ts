@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync, statSync, readdirSync } from "fs";
 import { join } from "path";
-import { REPO_ROOT } from "@/tests/helpers/fsScan";
+import { normalizePathSlashes, REPO_ROOT } from "@/tests/helpers/fsScan";
 
 const TIMINGS_PATH = join(REPO_ROOT, "docs", "audit", "test-timings.json");
 
@@ -69,7 +69,7 @@ describe("fast suite timing budget", () => {
           if (entry.name === "slow" || entry.name === "perf" || entry.name === "e2e") continue;
           walk(p);
         } else if (/\.test\.tsx?$/.test(entry.name)) {
-          fastFiles.push(p.slice(REPO_ROOT.length + 1));
+          fastFiles.push(normalizePathSlashes(p.slice(REPO_ROOT.length + 1)));
         }
       }
     };

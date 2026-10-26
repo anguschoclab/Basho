@@ -4,6 +4,7 @@ import type { BoutTactic } from "../engine/types/combat";
 import type { WorldState } from "../engine/types/world";
 import * as worldEngine from "../engine/world";
 import { resolveImpacts } from "../engine/core/ImpactResolver";
+import { BASHO_FINAL_DAY } from "../constants/engine/calendar";
 
 /**
  * P3.4: bashoSlice is now fully immutable — no cloneWorldForTick needed.
@@ -40,7 +41,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       if (!state.world.currentBasho) return state;
       const world = worldEngine.advanceBashoDay(state.world);
       const day = world.currentBasho?.day ?? 0;
-      if (day > 15) {
+      if (day > BASHO_FINAL_DAY) {
         return { ...state, world, phase: "basho_results", uiWorldRevision: bump + 1 };
       }
       return {

@@ -16,10 +16,6 @@ import { issueBailoutLoanIfNeeded } from "../../loans";
 import { getHeyaRoster, getActiveRikishi, getRikishi } from "../../queries";
 import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../../mergers";
-import { checkRetirement } from "../../lifecycle";
-import { generateRetirementNarrative } from "../../lifecycle/retirementNarrative";
-import { onRikishiRetired } from "../../records";
-import { LegacyService } from "../legacy/LegacyService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import {
@@ -32,31 +28,8 @@ import {
   PRESTIGE_COLLAPSE_BAND,
   NON_FINANCIAL_MERGER_MAX_ROSTER,
 } from "../../../constants/engine/economic";
-import { processRetireeOyakataConversion } from "../../lifecycle/retireeOyakataConversion";
-import { opfsArchiveService } from "../../storage/opfsArchive";
-import { electronArchiveService } from "../../storage/electronArchive";
-import { warn } from "../../utils/Logger";
+import { processAllRetirements } from "../../lifecycle/processRetirements";
 
-/**
- * Archive a retiring rikishi's full record to cold storage.
- * Fire-and-forget: failures are logged but do not block retirement.
- */
-function archiveRikishiToColdStorage(rikishi: import("../../types/rikishi").Rikishi): void {
-  const archiveService =
-    typeof window !== "undefined" && window.__ELECTRON__ === true
-      ? electronArchiveService
-      : opfsArchiveService;
-
-  archiveService.archiveFullRikishiRecord(rikishi.id, rikishi).catch((err) => {
-    warn(
-      `Cold-storage archival failed for rikishi ${rikishi.id} (${rikishi.shikona}). ` +
-        `Full career detail will not be retrievable from cold storage. ` +
-        `Summary conversion at year-end will still proceed.`,
-      "governanceReview",
-      err
-    );
-  });
-}
 
 /**
  * Financial insolvency check: scandal report, bailout loans,
@@ -409,82 +382,14 @@ export function runAIMetaDrift(world: WorldState): StateImpact {
 }
 
 /**
- * Process retirements and return StateImpact with metadata.
- * Returns impact containing rikishiToHistorical operations and vacancy count in metadata.
+ * @deprecated Use processAllRetirements from ../../lifecycle/processRetirements
+ * directly — the unified processor every retirement path delegates to.
+ * Kept as a thin delegate for compatibility with existing callers and tests.
  */
 export function runRetirements(world: WorldState): StateImpact {
+  const { impact, vacanciesByHeyaId } = processAllRetirements(world);
   const builder = createImpactBuilder("retirements");
-  const vacanciesByHeyaId: Record<string, number> = {};
-  const rikishiToRetire: string[] = [];
-
-  for (const rikishiId of world.activeRikishiIds) {
-    const r = getRikishi(world, rikishiId);
-    if (!r) continue;
-    const id = r.id;
-    const reason = checkRetirement(r, world.year, world.seed);
-    if (reason) {
-      const careerWins = r.careerWins ?? 0;
-      const careerLosses = r.careerLosses ?? 0;
-      const yearsActive = world.year - r.birthYear - 15;
-      const highestRank = r.rank;
-      let yushoCount = 0;
-      for (const h of r.careerHistory ?? []) {
-        if (h.isYusho) yushoCount++;
-      }
-      const kinboshiCount = r.economics?.kinboshiCount ?? 0;
-      const retirementNarrative = generateRetirementNarrative(
-        r,
-        world,
-        `retirement-${id}-${world.year}`
-      );
-      builder.logEvent(
-        "LIFECYCLE_EVENT",
-        "career",
-        {
-          rikishiId: id,
-          heyaId: r.heyaId,
-          shikona: r.shikona ?? r.name ?? id,
-          status: "retirement",
-          reason,
-          careerWins,
-          careerLosses,
-          highestRank,
-          yushoCount,
-          kinboshiCount,
-          yearsActive,
-          careerPhase: r.declinePhase ?? "twilight",
-          origin: r.origin ?? "Japan",
-          retirementNarrative,
-        },
-        { heyaId: r.heyaId, rikishiId: id, importance: "headline" }
-      );
-      vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
-      rikishiToRetire.push(id);
-
-      // Constitution 2.3 & 61: Oyakata candidate eligibility + (RNG-gated) stable founding.
-      // Shared helper — also called from CareerService.processRetirements (AutoSim path).
-      processRetireeOyakataConversion(world, r, builder);
-
-      // Register bloodline trait if the retiree was accomplished (yokozuna/ozeki/sekiwake)
-      builder.merge(LegacyService.registerLegacyTrait(world, r));
-
-      // Merge retirement impact (records, etc.)
-      builder.merge(onRikishiRetired(world, id));
-    }
-  }
-
-  // Queue collection operation to move rikishi to historical
-  for (const id of rikishiToRetire) {
-    const r = getRikishi(world, id);
-    const reason = r ? checkRetirement(r, world.year, world.seed) : "Retirement";
-    builder.retireRikishi(id, world.year, reason ?? "Retirement");
-
-    // Archive full record to cold storage (fire-and-forget).
-    if (r) archiveRikishiToColdStorage(r);
-  }
-
-  // Add vacancy count to metadata
+  builder.merge(impact);
   builder.addMetadata("vacanciesByHeyaId", vacanciesByHeyaId);
-
   return builder.build();
 }

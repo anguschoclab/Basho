@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "fs";
 import { join, extname } from "path";
-import { findFiles } from "@/tests/helpers/fsScan";
+import { findFiles, normalizePathSlashes } from "@/tests/helpers/fsScan";
 
 const ROOT = join(__dirname, "../../../..");
 const SRC = join(ROOT, "src");
@@ -13,7 +13,7 @@ function isTestFile(filePath: string): boolean {
 }
 
 function isScriptFile(filePath: string): boolean {
-  return filePath.includes("/scripts/");
+  return normalizePathSlashes(filePath).includes("/scripts/");
 }
 
 const allSrcFiles = findFiles(SRC);
@@ -46,7 +46,8 @@ describe("Write-only state fields — surface to UI", () => {
         const uiLayerFiles = runtimeFiles.filter((f) => {
           if (extname(f) === ".tsx") return true;
           if (extname(f) !== ".ts") return false;
-          return ["/hooks/", "/components/", "/pages/"].some((dir) => f.includes(dir));
+          const normalized = normalizePathSlashes(f);
+          return ["/hooks/", "/components/", "/pages/"].some((dir) => normalized.includes(dir));
         });
         const uiBlob = uiLayerFiles.map((f) => readFileSync(f, "utf-8")).join("\n");
         const pattern = new RegExp(`\\.${field}\\b`);

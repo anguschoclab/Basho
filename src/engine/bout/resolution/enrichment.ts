@@ -106,7 +106,7 @@ export function enrichResult(
   builder: ImpactBuilder
 ) {
   // Enrich kimariteName from registry (classifier returns id; registry has display name)
-  // ⚡ Bolt: Replace O(N) array find with O(1) Map lookup in boutResolver
+  // Replace O(N) array find with O(1) Map lookup in boutResolver
   const k = getKimarite(result.kimarite);
   if (k) result.kimariteName = k.name;
 

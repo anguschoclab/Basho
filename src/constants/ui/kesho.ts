@@ -23,6 +23,21 @@ export const KESHO_INNER_BORDER_HEIGHT = 188;
 export const KESHO_INNER_BORDER_X = 24;
 export const KESHO_INNER_BORDER_Y = 24;
 
+/** Middle border dimensions (default/embossed style) */
+export const KESHO_MID_BORDER_X = 22;
+export const KESHO_MID_BORDER_Y = 22;
+export const KESHO_MID_BORDER_WIDTH = 156;
+export const KESHO_MID_BORDER_HEIGHT = 192;
+
+/** Rope border dimensions */
+export const KESHO_ROPE_BORDER_X = 18;
+export const KESHO_ROPE_BORDER_Y = 18;
+export const KESHO_ROPE_BORDER_WIDTH = 164;
+export const KESHO_ROPE_BORDER_HEIGHT = 200;
+
+/** Gold shimmer overlay dimensions */
+export const KESHO_SHIMMER_HEIGHT = 200;
+
 /** Fringe count base */
 export const KESHO_FRINGE_COUNT_BASE = 12;
 
@@ -53,10 +68,15 @@ export const KESHO_FRINGE_LENGTH_VARIATION = 15;
 /** Fringe animation delay multiplier */
 export const KESHO_FRINGE_DELAY_MULTIPLIER = 0.05;
 
-/** Fringe sway offset */
-export const KESHO_FRINGE_SWAY_OFFSET = 3;
+/** Fringe sway amplitude */
+export const KESHO_FRINGE_SWAY_OFFSET = 5;
+
+/** Fringe opacity random variation range */
+export const KESHO_FRINGE_OPACITY_VARIATION = 0.4;
 
 /** Opacity values */
+export const KESHO_OPACITY_FAINT = 0.15;
+export const KESHO_OPACITY_SECONDARY = 0.2;
 export const KESHO_OPACITY_LOW = 0.3;
 export const KESHO_OPACITY_MEDIUM = 0.4;
 export const KESHO_OPACITY_HIGH = 0.5;
@@ -66,7 +86,9 @@ export const KESHO_OPACITY_MAXIMUM = 0.9;
 
 /** Gradient offset percentages */
 export const KESHO_GRADIENT_START = 0;
+export const KESHO_GRADIENT_QUARTER = 25;
 export const KESHO_GRADIENT_MID = 50;
+export const KESHO_GRADIENT_THREE_QUARTER = 75;
 export const KESHO_GRADIENT_END = 100;
 
 /** Circle border count */
@@ -77,3 +99,6 @@ export const KESHO_CIRCLE_BORDER_SPACING = 40;
 
 /** Circle border X offset */
 export const KESHO_CIRCLE_BORDER_X_OFFSET = 20;
+
+/** Circle border Y spacing */
+export const KESHO_CIRCLE_BORDER_Y_SPACING = 49;

@@ -17,7 +17,7 @@ import { mergeImpacts, resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
 import { YokozunaService } from "../../systems/governance/YokozunaService";
-import { CareerService } from "../../lifecycle/CareerService";
+import { processAllRetirements } from "../../lifecycle/processRetirements";
 import {
   MAX_POLITICAL_CAPITAL,
   DEFAULT_POLITICAL_CAPITAL,
@@ -59,16 +59,27 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     logElectionParticipation(builder, world);
   }
 
-  // Apply ongoing scandal pressure to media state (scandalScore → heyaPressure bump)
-  const scandalImpact = evaluateScandals(world);
+  // Apply ongoing scandal pressure to media state (scandalScore → heyaPressure bump).
+  // Each producer below computes read-modify-write world-field snapshots, so
+  // it must run against the progressively-resolved world — otherwise its
+  // snapshot clobbers the earlier writes under last-write-wins merge
+  // (evaluateScandals would revert the sanction/probation headlines;
+  // tickMyosekiMarket would revert the NPC purchases while their funds
+  // debits still applied).
+  const reviewImpact = builder.build();
+  const afterReview = resolveImpacts(world, [reviewImpact]);
+
+  const scandalImpact = evaluateScandals(afterReview);
+  const afterScandal = resolveImpacts(afterReview, [scandalImpact]);
 
   // 5. NPC Myoseki Market Activity — NPC stables occasionally purchase available elder names.
-  const myosekiImpacts = processNpcMyosekiPurchases(world);
+  const { impacts: myosekiImpacts, world: afterPurchases } =
+    processNpcMyosekiPurchases(afterScandal);
 
   // 6. Weekly market tick — lease fee collection and asking-price drift.
-  const marketTickImpact = tickMyosekiMarket(world);
+  const marketTickImpact = tickMyosekiMarket(afterPurchases);
 
-  return mergeImpacts([builder.build(), scandalImpact, ...myosekiImpacts, marketTickImpact]);
+  return mergeImpacts([reviewImpact, scandalImpact, ...myosekiImpacts, marketTickImpact]);
 }
 
 /** YDC council, retirements, and yokozuna attendant recovery (post-basho only). */
@@ -76,7 +87,7 @@ function processPostBashoCouncil(builder: ImpactBuilder, world: WorldState): voi
   const ydcImpact = YokozunaService.processYDCCouncil(world);
   builder.merge(ydcImpact);
 
-  const careerImpact = CareerService.processRetirements(world);
+  const { impact: careerImpact } = processAllRetirements(world);
   builder.merge(careerImpact);
 
   // Recovery path: assign attendants to any yokozuna missing them
@@ -214,16 +225,19 @@ function logElectionParticipation(builder: ImpactBuilder, world: WorldState): vo
  * excludes stocks already sold this week and (b) buyer debits compose
  * correctly under last-write-wins merge.
  */
-function processNpcMyosekiPurchases(world: WorldState): StateImpact[] {
+function processNpcMyosekiPurchases(world: WorldState): {
+  impacts: StateImpact[];
+  world: WorldState;
+} {
   const market = world.myosekiMarket;
   const myosekiImpacts: StateImpact[] = [];
+  let w = world;
   if (market && market.stocks) {
     const rng = rngForWorld(
       world,
       "myoseki",
       `governance-trade_${world.year ?? 0}_${world.week ?? 0}`
     );
-    let w = world;
     for (const heyaId of world.heyas.keys()) {
       if (heyaId === world.playerHeyaId) continue;
       // ~2% chance per NPC heya per week to attempt a purchase
@@ -241,5 +255,5 @@ function processNpcMyosekiPurchases(world: WorldState): StateImpact[] {
       }
     }
   }
-  return myosekiImpacts;
+  return { impacts: myosekiImpacts, world: w };
 }

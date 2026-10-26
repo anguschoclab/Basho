@@ -26,6 +26,7 @@ import type { WorldState } from "@/presenters/uiDigest";
 import type { projectRikishi } from "@/presenters/rikishi";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
+import { activationKeyHandler } from "@/lib/a11y";
 
 type RikishiDTO = ReturnType<typeof projectRikishi>;
 
@@ -68,10 +69,18 @@ export function RosterTab({
                 side="top"
               >
                 <Card
-                  className="paper hover:border-primary transition-colors cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View ${r.shikona}`}
+                  className="paper hover:border-primary transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
                   onClick={() =>
                     navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })
                   }
+                  onKeyDown={activationKeyHandler(
+                    () =>
+                      navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } }),
+                    { selfOnly: true }
+                  )}
                 >
                   <CardContent className="p-4 flex justify-between items-center">
                     <div className="flex items-center gap-3 min-w-0">

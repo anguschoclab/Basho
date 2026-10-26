@@ -79,9 +79,11 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
 
   // Find the event in the governance log or media state
   const eventIndex = world.governanceLog?.findIndex((r) => r.id === eventId);
+  let targetHeyaId = world.playerHeyaId;
   if (eventIndex !== undefined && eventIndex >= 0 && world.governanceLog) {
     // Update the ruling with the player's choice via ImpactBuilder
     const ruling = world.governanceLog[eventIndex] as GovernanceRuling;
+    targetHeyaId = ruling.heyaId ?? targetHeyaId;
     const updatedRuling: GovernanceRuling = {
       ...ruling,
       playerChoice: choice,
@@ -94,25 +96,30 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
     builder.updateWorldField("governanceLog", updatedGovernanceLog);
   }
 
-  // Apply choice effects to media state
-  // Different choices could affect heat/pressure differently
+  // Apply choice effects to media state — scoped to the responding heya,
+  // matching the actor-scoped NPC variant: a player apology must not cool
+  // every rikishi league-wide, and a denial must not pressure every heya.
   const updatedMediaHeat = { ...world.mediaState.mediaHeat };
   const updatedHeyaPressure = { ...world.mediaState.heyaPressure };
 
-  if (choice === "apologize") {
+  if (choice === "apologize" && targetHeyaId) {
     // Apologizing reduces heat but may hurt reputation
     const mediaHeat = world.mediaState.mediaHeat;
-    for (const id in mediaHeat) {
+    const roster = getHeya(world, targetHeyaId)?.rikishiIds ?? [];
+    for (const id of roster) {
       if (!Object.prototype.hasOwnProperty.call(mediaHeat, id)) continue;
       updatedMediaHeat[id] = Math.max(0, (mediaHeat[id] as number) - 5);
     }
-  } else if (choice === "deny") {
-    // Denying may increase pressure
-    const heyaPressure = world.mediaState.heyaPressure;
-    for (const id in heyaPressure) {
-      if (!Object.prototype.hasOwnProperty.call(heyaPressure, id)) continue;
-      updatedHeyaPressure[id] = Math.min(100, (heyaPressure[id] as number) + 5);
-    }
+    updatedHeyaPressure[targetHeyaId] = Math.max(
+      0,
+      (updatedHeyaPressure[targetHeyaId] ?? 0) - 5
+    );
+  } else if (choice === "deny" && targetHeyaId) {
+    // Denying may increase pressure on the responding heya
+    updatedHeyaPressure[targetHeyaId] = Math.min(
+      100,
+      (updatedHeyaPressure[targetHeyaId] ?? 0) + 5
+    );
   } else if (choice === "ignore") {
     // Ignoring has no immediate effect but may cause decay
     // Natural decay will happen in weekly boundary

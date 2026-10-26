@@ -29,7 +29,6 @@ export interface FinanceSummary {
   koenkaiIncome: number;
   koenkaiIncomeLabel: string;
   hasLoan: boolean;
-  isOverdue: boolean;
   loanAmount: number;
   loanAmountLabel: string;
   isInsolventRisk: boolean;
@@ -51,15 +50,12 @@ export function projectFinanceSummary(world: WorldState): FinanceSummary | null 
   const fin = calculateHeyaWeeklyFinances(heya, world);
   const runwayBand = toRunwayBand(fin.runwayMonths);
 
+  // The Loan model has no term/due-date field — "overdue" cannot be derived,
+  // so no isOverdue flag is emitted (previously invented 12-month heuristic).
   const loans = heya.activeLoans ?? [];
-  const currentMonth = Math.ceil((world.week ?? 1) / 4);
   let loanAmount = 0;
-  let isOverdue = false;
   for (const l of loans) {
     loanAmount += l.remainingBalance;
-    if (!isOverdue && l.remainingBalance > 0 && currentMonth > l.issuedAtMonth + 12) {
-      isOverdue = true;
-    }
   }
 
   const koenkai = world.sponsorPool?.koenkais?.get(heya.koenkaiId ?? "");
@@ -84,7 +80,6 @@ export function projectFinanceSummary(world: WorldState): FinanceSummary | null 
     koenkaiIncome,
     koenkaiIncomeLabel: formatYen(koenkaiIncome),
     hasLoan: loanAmount > 0,
-    isOverdue,
     loanAmount,
     loanAmountLabel: formatYen(loanAmount),
     isInsolventRisk: heya.funds < 0 || runwayBand === "desperate",

@@ -22,6 +22,13 @@ describe("handleMediaEvent", () => {
           effects: {},
         },
       ],
+      // Choice effects are scoped to the responding heya (ruling.heyaId):
+      // apology cools that heya's roster only, denial pressures only that heya.
+      heyas: new Map([
+        ["heya1", { id: "heya1", rikishiIds: ["rikishi1"] }],
+        ["heya2", { id: "heya2", rikishiIds: ["rikishi2"] }],
+      ]),
+      playerHeyaId: "heya1",
     } as any;
   });
 
@@ -38,8 +45,10 @@ describe("handleMediaEvent", () => {
     const impact = handleMediaEvent(mockWorld, "event1", "apologize");
     const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
+    // Scoped to the responding heya's roster — rikishi2 (heya2) untouched.
     expect(updatedWorld.mediaState!.mediaHeat["rikishi1"]).toBe(45);
-    expect(updatedWorld.mediaState!.mediaHeat["rikishi2"]).toBe(15);
+    expect(updatedWorld.mediaState!.mediaHeat["rikishi2"]).toBe(20);
+    expect(updatedWorld.mediaState!.heyaPressure["heya1"]).toBe(55);
   });
 
   it("does not decrease heat below 0 when apologizing", () => {
@@ -55,7 +64,7 @@ describe("handleMediaEvent", () => {
     const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
     expect(updatedWorld.mediaState!.heyaPressure["heya1"]).toBe(65);
-    expect(updatedWorld.mediaState!.heyaPressure["heya2"]).toBe(15);
+    expect(updatedWorld.mediaState!.heyaPressure["heya2"]).toBe(10);
   });
 
   it("does not increase pressure above 100 when denying", () => {

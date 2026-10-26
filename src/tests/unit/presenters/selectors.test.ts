@@ -216,6 +216,7 @@ describe("selectRecentEvents", () => {
       basho: [],
       milestone: [],
       facility: [],
+      recoveries: [],
     });
   });
 

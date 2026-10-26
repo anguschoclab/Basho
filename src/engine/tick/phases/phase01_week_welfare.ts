@@ -144,7 +144,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
   const encImpacts: StateImpact[] = [];
   for (const [, heya] of world.heyas) {
     const roster = getHeyaRoster(encWorld, heya.id);
-    // ⚡ Bolt: Single pass loop over roster replaces two array.filter() passes for performance
+    // Single pass loop over roster replaces two array.filter() passes for performance
     const injured = [];
     const active = [];
     for (const r of roster) {
