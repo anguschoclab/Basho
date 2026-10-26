@@ -10,26 +10,95 @@
 
 import { resolveBoutPhysics } from "../src/engine/bout/boutPhysics";
 import { mockRikishi, makeMockBasho } from "../src/tests/unit/engine/utils";
+import { SeededRNG } from "../src/engine/rng";
+import type {
+  CombatArchetype,
+  GripPreference,
+  GripDepthPreference,
+  TacticalFamily,
+} from "../src/engine/types/combat";
 
 interface ComparisonStats {
   totalBouts: number;
   winnerDistribution: { east: number; west: number };
   kimariteFrequency: Record<string, number>;
+  timeoutBouts: number;
   durationStats: { min: number; max: number; avg: number };
   determinismPassed: boolean;
 }
 
-function runBout(_seed: string, index: number) {
-  const bout = { id: `test-${index}`, day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
-  const east = mockRikishi("r1");
-  const west = mockRikishi("r2");
+const STYLES = ["oshi", "yotsu", "hybrid"] as const;
+const ARCHETYPES: CombatArchetype[] = [
+  "oshi",
+  "yotsu",
+  "trickster",
+  "speedster",
+  "hybrid",
+  "giant",
+  "tsuppari",
+  "defensive",
+];
+const GRIPS: GripPreference[] = ["none", "migi", "hidari"];
+const GRIP_DEPTHS: GripDepthPreference[] = ["standard", "deep", "maemitsu"];
+const COUNTER_FAMILIES: TacticalFamily[] = ["push", "belt", "trick", "speed"];
+
+function makeVariedRikishi(rng: SeededRNG, id: string) {
+  const archetype = rng.pick(ARCHETYPES);
+  const weightKg = rng.int(90, 200);
+  const rikishi = mockRikishi(id, {
+    style: rng.pick([...STYLES]),
+    height: rng.int(165, 195),
+    power: rng.int(30, 70),
+    speed: rng.int(30, 70),
+    balance: rng.int(30, 70),
+    technique: rng.int(30, 70),
+    aggression: rng.int(30, 70),
+    mental: rng.int(30, 70),
+    experience: rng.int(30, 70),
+    stamina: rng.int(60, 100),
+    adaptability: rng.int(30, 70),
+    combatProfile: {
+      archetype,
+      familyPreferences: {
+        push: rng.int(10, 45),
+        belt: rng.int(10, 45),
+        trick: rng.int(10, 45),
+        speed: rng.int(10, 45),
+      },
+      preferredGrip: rng.pick(GRIPS),
+      preferredGripDepth: rng.pick(GRIP_DEPTHS),
+      statModifiers: {},
+      counterFamily: rng.pick(COUNTER_FAMILIES),
+      archetypeBehavior: {
+        tachiaiSpeedBonus: 0,
+        lateralMovementBonus: 0,
+        edgeEscapeBonus: 0,
+        beltTorqueBonus: 0,
+        pushVelocityBonus: 0,
+      },
+    },
+  });
+  rikishi.stats.weight = weightKg;
+  return rikishi;
+}
+
+function runBout(seed: string, index: number) {
+  const rng = new SeededRNG(seed);
+  const bout = {
+    id: `test-${index}`,
+    day: 1,
+    rikishiEastId: `east-${index}`,
+    rikishiWestId: `west-${index}`,
+  };
+  const east = makeVariedRikishi(rng, `east-${index}`);
+  const west = makeVariedRikishi(rng, `west-${index}`);
   const basho = makeMockBasho();
 
   return resolveBoutPhysics(bout, east, west, basho);
 }
 
 interface BoutResult {
-  result: { winner: string; kimarite: string; duration: number };
+  result: { winner: string; kimarite: string; duration: number; isTimeout?: boolean };
 }
 
 function compareResults(results1: BoutResult[], results2: BoutResult[]): boolean {
@@ -46,6 +115,7 @@ function calculateStats(results: BoutResult[]): ComparisonStats {
     totalBouts: results.length,
     winnerDistribution: { east: 0, west: 0 },
     kimariteFrequency: {},
+    timeoutBouts: 0,
     durationStats: { min: Infinity, max: -Infinity, avg: 0 },
     determinismPassed: true,
   };
@@ -57,9 +127,15 @@ function calculateStats(results: BoutResult[]): ComparisonStats {
     const winner = r.result.winner as "east" | "west";
     stats.winnerDistribution[winner]++;
 
-    // Kimarite frequency
-    const kimarite = r.result.kimarite;
-    stats.kimariteFrequency[kimarite] = (stats.kimariteFrequency[kimarite] || 0) + 1;
+    // Timeout endings are synthetic (stability tiebreak at the tick cap), not
+    // produced techniques — count them separately instead of polluting the
+    // kimarite frequency table.
+    if (r.result.isTimeout) {
+      stats.timeoutBouts++;
+    } else {
+      const kimarite = r.result.kimarite;
+      stats.kimariteFrequency[kimarite] = (stats.kimariteFrequency[kimarite] || 0) + 1;
+    }
 
     // Duration stats
     const duration = r.result.duration;
@@ -76,10 +152,13 @@ function calculateStats(results: BoutResult[]): ComparisonStats {
 function validateStats(stats: ComparisonStats): { passed: boolean; issues: string[] } {
   const issues: string[] = [];
 
-  // Check winner distribution (should be roughly balanced, allow ±2%)
+  // Check winner distribution (should be roughly balanced; flag only beyond 2σ
+  // of a fair coin — binomial SE at n bouts is sqrt(n*0.25), so noise can reach
+  // ±10% at n=100)
   const eastPercent = (stats.winnerDistribution.east / stats.totalBouts) * 100;
   const westPercent = (stats.winnerDistribution.west / stats.totalBouts) * 100;
-  if (Math.abs(eastPercent - 50) > 2) {
+  const sePercent = (Math.sqrt(stats.totalBouts * 0.25) / stats.totalBouts) * 100;
+  if (Math.abs(eastPercent - 50) > 2 * sePercent) {
     issues.push(
       `Winner distribution unbalanced: East ${eastPercent.toFixed(1)}%, West ${westPercent.toFixed(1)}%`
     );
@@ -107,6 +186,15 @@ function validateStats(stats: ComparisonStats): { passed: boolean; issues: strin
   }
   if (stats.durationStats.max > 240) {
     issues.push(`Maximum duration ${stats.durationStats.max}s exceeds expected maximum of 240s`);
+  }
+
+  // Stalemate rate: a small share of matched bouts can hit the tick cap, but
+  // >5% signals resolution rates are too low.
+  const timeoutRate = (stats.timeoutBouts / stats.totalBouts) * 100;
+  if (timeoutRate > 5) {
+    issues.push(
+      `Stalemate rate too high: ${stats.timeoutBouts}/${stats.totalBouts} bouts (${timeoutRate.toFixed(1)}%) hit the 240s timeout`
+    );
   }
 
   return { passed: issues.length === 0, issues };
@@ -151,10 +239,12 @@ export function runComparison(count: number, seed: string = "comparison-001"): C
   console.log(`  Min: ${stats.durationStats.min}s`);
   console.log(`  Max: ${stats.durationStats.max}s`);
   console.log(`  Avg: ${stats.durationStats.avg.toFixed(1)}s`);
-  console.log(`\nKimarite frequency:`);
+  console.log(`\nTimeout (stalemate) bouts: ${stats.timeoutBouts}`);
+  console.log(`\nKimarite frequency (organic endings, timeouts excluded):`);
+  const organicBouts = stats.totalBouts - stats.timeoutBouts;
   const sortedKimarite = Object.entries(stats.kimariteFrequency).sort((a, b) => b[1] - a[1]);
   for (const [kimarite, freq] of sortedKimarite) {
-    const percent = ((freq / stats.totalBouts) * 100).toFixed(1);
+    const percent = ((freq / Math.max(1, organicBouts)) * 100).toFixed(1);
     console.log(`  ${kimarite}: ${freq} (${percent}%)`);
   }
 
@@ -166,6 +256,8 @@ export function runComparison(count: number, seed: string = "comparison-001"): C
   } else {
     console.log("\n✅ All validation checks passed");
   }
+
+  process.exitCode = validation.passed ? 0 : 1;
 
   return stats;
 }

@@ -37,6 +37,30 @@ interface HeyaFinanceResult {
   runwayMonths: number;
   /** New funds after applying net (heya.funds + net). */
   nextFunds: number;
+  /** Itemized weekly income composition — sums to `revenue`. */
+  income: {
+    /** Kōenkai support (heya portion after sekitori split). */
+    koenkai: number;
+    /** JSA per-wrestler subsidy, rank-keyed. */
+    jsaSubsidy: number;
+    /** Sponsor tier income across the heya's kōenkai members. */
+    sponsorTier: number;
+    /** JSA flat weekly operational grant. */
+    jsaGrant: number;
+    /** Oyakata salary paid to the heya by JSA. */
+    oyakataSalary: number;
+  };
+  /** Itemized weekly expense composition — sums to `totalBurn` (pre-clamp). */
+  outgoings: {
+    /** Facility upkeep after administration discount. */
+    facilityUpkeep: number;
+    /** Staff upkeep after administration discount. */
+    staffUpkeep: number;
+    /** Fixed operating overhead (never clamped). */
+    fixedOverhead: number;
+    /** Discretionary recruitment budget (clamped away when insolvent). */
+    recruitment: number;
+  };
 }
 
 /**
@@ -86,7 +110,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   if (koenkai) {
     for (const member of koenkai.members) {
       const sponsor = world.sponsorPool?.sponsors.get(member.sponsorId);
-      if (sponsor) {
+      if (sponsor && sponsor.active) {
         monthlySponsorTierIncome += SPONSOR_TIER_INCOME[sponsor.tier] || 0;
       }
     }
@@ -157,5 +181,18 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
     totalBurn,
     runwayMonths,
     nextFunds,
+    income: {
+      koenkai: weeklyKoenkai,
+      jsaSubsidy: weeklyJsaSubsidy,
+      sponsorTier: weeklySponsorTierIncome,
+      jsaGrant: jsaBaseGrant,
+      oyakataSalary: weeklyOyakataSalary,
+    },
+    outgoings: {
+      facilityUpkeep,
+      staffUpkeep,
+      fixedOverhead: FIXED_OPERATING_OVERHEAD_WEEKLY,
+      recruitment: recruitmentCost,
+    },
   };
 }

@@ -20,28 +20,9 @@ import type { ScandalBand } from "@/engine/systems/narrative/NarrativeBands";
 
 export type { ScandalBand };
 
-export interface GovernancePageSummary {
-  status: string;
-  scandalScore: number;
-  scandalBand: ScandalBand;
-  politicalCapital: number;
-  politicalCapitalMax: number;
-  isSanctioned: boolean;
-  welfareWarnings: Array<{ heyaId: string; heyaName: string; riskBand: string }>;
-  mergerCandidates: Array<{ heyaId: string; heyaName: string; funds: number }>;
-  governanceLog: unknown[];
-}
-
-function toScandalBandLocal(score: number): ScandalBand {
-  if (score < 10) return "clean";
-  if (score < 30) return "whispers";
-  if (score < 55) return "scrutiny";
-  if (score < 80) return "scandal";
-  return "crisis";
-}
-
 export interface GovernanceDerived {
   status: string;
+  politicalCapital: number;
   scandal: number;
   scandalBand: ScandalBand;
   scandalTone: StatItem["tone"];
@@ -67,6 +48,7 @@ export interface GovernanceDerived {
 
 export function projectGovernanceDerived(world: WorldState, heya: Heya): GovernanceDerived {
   const status = heya.governanceStatus ?? "good_standing";
+  const politicalCapital = heya.politicalCapital ?? 0;
   const scandal = heya.scandalScore ?? 0;
 
   const scandalBand = toScandalBand(scandal) as ScandalBand;
@@ -139,6 +121,7 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
 
   return {
     status,
+    politicalCapital,
     scandal,
     scandalBand,
     scandalTone,
@@ -155,42 +138,6 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
     mergerCandidates,
     completedMergerEvents,
     factionList,
-  };
-}
-
-export function projectGovernancePage(
-  world: WorldState,
-  heyaId: string
-): GovernancePageSummary | null {
-  const heya = world.heyas.get(heyaId);
-  if (!heya) return null;
-
-  const scandalScore = heya.scandalScore ?? 0;
-  const status = heya.governanceStatus ?? "good_standing";
-  const politicalCapital = heya.politicalCapital ?? 0;
-
-  const welfareWarnings = selectHeyasWithCriticalWelfare(world).map((w) => ({
-    heyaId: w.id,
-    heyaName: w.name,
-    riskBand: "critical",
-  }));
-
-  const mergerCandidates = selectMergerCandidates(world).map((m) => ({
-    heyaId: m.id,
-    heyaName: m.name,
-    funds: m.funds ?? 0,
-  }));
-
-  return {
-    status,
-    scandalScore,
-    scandalBand: toScandalBandLocal(scandalScore),
-    politicalCapital,
-    politicalCapitalMax: 100,
-    isSanctioned: status === "sanctioned",
-    welfareWarnings,
-    mergerCandidates,
-    governanceLog: world.governanceLog ?? [],
   };
 }
 

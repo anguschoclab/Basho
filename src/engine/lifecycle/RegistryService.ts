@@ -125,6 +125,7 @@ export function runCareerJournalUpdates(world: WorldState): StateImpact {
         losses: r.careerLosses ?? 0,
         yusho: newYushoCount,
       },
+      consecutiveYusho: lastBasho.yusho === r.id ? (r.consecutiveYusho ?? 0) + 1 : 0,
       momentum: newMomentum,
     });
 

@@ -7,6 +7,11 @@
 import type { Rikishi } from "../../../engine/types/rikishi";
 import type { RikishiCareerDTO } from "../types";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import {
+  RANK_SCORE_TIER_MULTIPLIER,
+  RANK_SCORE_POSITION_MULTIPLIER,
+  RANK_SCORE_WEST_BONUS,
+} from "@/constants/ui/presenters";
 
 interface HistoryEntry {
   win?: boolean;
@@ -44,8 +49,8 @@ export function calculateAvgRank(history: HistoryEntry[]): string {
   const avg = sum / history.length;
 
   // Convert avg score back to a readable rank (Maegashira level is common)
-  const tier = Math.floor(avg / 1000);
-  const num = Math.floor((avg % 1000) / 2);
+  const tier = Math.floor(avg / RANK_SCORE_TIER_MULTIPLIER);
+  const num = Math.floor((avg % RANK_SCORE_TIER_MULTIPLIER) / RANK_SCORE_POSITION_MULTIPLIER);
   const RANK_MAP: Record<number, string> = {
     1: "Y",
     2: "O",
@@ -68,8 +73,8 @@ export function calculateAvgRank(history: HistoryEntry[]): string {
 export function rankScore(rank: string, rankNumber?: number, side?: string): number {
   const tier = RANK_HIERARCHY[rank as keyof typeof RANK_HIERARCHY]?.tier ?? 99;
   const num = rankNumber ?? 0;
-  const sideVal = side === "east" ? 0 : 0.5;
-  return tier * 1000 + num * 2 + sideVal;
+  const sideVal = side === "east" ? 0 : RANK_SCORE_WEST_BONUS;
+  return tier * RANK_SCORE_TIER_MULTIPLIER + num * RANK_SCORE_POSITION_MULTIPLIER + sideVal;
 }
 
 /**

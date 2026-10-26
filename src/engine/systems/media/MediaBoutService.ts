@@ -133,8 +133,8 @@ export function updateMediaFromBout(args: {
   // 4. Log significant headlines
   if (tier === "main_event" || tier === "national") {
     builder.logEvent(
-      "BOUT_RESOLVED",
-      "training",
+      "MEDIA_RESPONSE",
+      "media",
       {
         status: "meta_shift",
         incident: title,

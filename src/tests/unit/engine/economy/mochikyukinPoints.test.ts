@@ -6,7 +6,7 @@ import {
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import {
   MOCHIKYUKIN_POINT_VALUE,
-  MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN,
+  MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT,
   MOCHIKYUKIN_POINTS_YUSHO,
   MOCHIKYUKIN_POINTS_KINBOSHI,
   MOCHIKYUKIN_POINTS_JUN_YUSHO,
@@ -63,7 +63,7 @@ describe("accumulateMochikyukinPoints — per-kachi-nokori model", () => {
     } as any);
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points).toBe(2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+    expect(points).toBe(2 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT);
   });
 
   it("7-8 record (kachiNokori=0) → +0 points (negative clamped)", () => {
@@ -95,7 +95,7 @@ describe("accumulateMochikyukinPoints — per-kachi-nokori model", () => {
     } as any);
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points).toBe(2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_YUSHO);
+    expect(points).toBe(2 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT + MOCHIKYUKIN_POINTS_YUSHO);
   });
 
   it("jun-yusho adds 5 points", () => {
@@ -112,7 +112,7 @@ describe("accumulateMochikyukinPoints — per-kachi-nokori model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
     expect(points).toBe(
-      1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_JUN_YUSHO
+      1 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT + MOCHIKYUKIN_POINTS_JUN_YUSHO
     );
   });
 
@@ -130,7 +130,7 @@ describe("accumulateMochikyukinPoints — per-kachi-nokori model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
     expect(points).toBe(
-      1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 3 * MOCHIKYUKIN_POINTS_KINBOSHI
+      1 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT + 3 * MOCHIKYUKIN_POINTS_KINBOSHI
     );
   });
 
@@ -148,7 +148,7 @@ describe("accumulateMochikyukinPoints — per-kachi-nokori model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
     expect(points).toBe(
-      7 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN +
+      7 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT +
         MOCHIKYUKIN_POINTS_YUSHO +
         MOCHIKYUKIN_POINTS_ZENSHO_YUSHO
     );
@@ -435,7 +435,7 @@ describe("accumulateMochikyukinPoints — cumulative accumulation", () => {
     } as any);
     const resolved1 = resolveImpacts(world, [impact1]);
     const points1 = resolved1.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points1).toBe(10 + 2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+    expect(points1).toBe(10 + 2 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT);
 
     // Second basho: +0.5 points (1 kachi-nokori) on top of updated total
     const impact2 = accumulateMochikyukinPoints(resolved1, "r1", {
@@ -450,8 +450,8 @@ describe("accumulateMochikyukinPoints — cumulative accumulation", () => {
     const points2 = resolved2.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
     expect(points2).toBe(
       10 +
-        2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN +
-        1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN
+        2 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT +
+        1 * MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT
     );
   });
 });

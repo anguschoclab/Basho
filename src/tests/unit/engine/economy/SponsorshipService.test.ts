@@ -381,6 +381,7 @@ describe("SponsorshipService", () => {
         id: "h1",
         funds: opts.funds ?? 10_000_000,
         rikishiIds: [],
+        koenkaiId: "k1",
       } as unknown as Heya;
 
       const world = MockFactory.createWorld({
@@ -388,7 +389,7 @@ describe("SponsorshipService", () => {
         rikishi: new Map(),
         sponsorPool: {
           sponsors: new Map([["sp1", sponsor]]),
-          koenkais: new Map([["h1", koenkai]]),
+          koenkais: new Map([["k1", koenkai]]),
         },
         week: 1,
       });
@@ -441,7 +442,7 @@ describe("SponsorshipService", () => {
       // T2 cost = 400,000
       expect(updatedHeya.funds).toBe(10_000_000 - 400_000);
 
-      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("h1")!;
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
       expect(updatedKoenkai.members.length).toBe(1);
       expect(updatedKoenkai.members[0].sponsorId).toBe("sp1");
 

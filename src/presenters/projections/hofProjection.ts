@@ -31,7 +31,8 @@ export interface UIHofInductee extends HoFInductee {
  * Project Hall of Fame data for the HOF Page.
  */
 export function projectHOFUIDigest(world: WorldState): { inductees: UIHofInductee[] } {
-  const rawHof = getHallOfFame(world);
+  // Read the canonical world.hallOfFame field through the accessor.
+  const rawHof = world.hallOfFame ?? getHallOfFame(world);
 
   const inductees = rawHof.inductees.map((ind: HoFInductee) => {
     const rikishi = world.rikishi.get(ind.rikishiId);

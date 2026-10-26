@@ -56,10 +56,27 @@ export function treatInjury(world: WorldState, rikishiId: string, weeks: number)
   if (cut <= 0 || (heya.funds ?? 0) < cost) return builder.build();
 
   const remaining = (r.injuryWeeksRemaining ?? 0) - cut;
-  builder.updateRikishi(rikishiId, {
-    injuryWeeksRemaining: remaining,
-    injured: remaining > 0,
-  });
+  if (remaining <= 0) {
+    // Full recovery — apply the canonical RecoveryService clear now rather
+    // than leaving stale injuryStatus/currentInjury/isKyujo/
+    // medicalCertificate until the weekly tick sweeps them.
+    builder.updateRikishi(rikishiId, {
+      injuryWeeksRemaining: 0,
+      injured: false,
+      isKyujo: false,
+      kyujoReason: undefined,
+      injuryStatus: { type: "none", severity: "none", weeksRemaining: 0 },
+      injury: undefined,
+      medicalCertificate: undefined,
+      recentlyReturnedFromInjury: true,
+    });
+    builder.updateRikishiNestedField(rikishiId, "currentInjury", undefined);
+  } else {
+    builder.updateRikishi(rikishiId, {
+      injuryWeeksRemaining: remaining,
+      injured: true,
+    });
+  }
   builder.updateHeya(heya.id, { funds: (heya.funds ?? 0) - cost });
   builder.logEvent(
     "LIFECYCLE_EVENT",

@@ -7,7 +7,7 @@
  */
 
 import { useCallback, useMemo } from "react";
-import { type HolidayConfig, type HolidayResult } from "@/engine/holiday";
+import { type HolidayConfig } from "@/engine/holiday";
 import type { GameState } from "../gameTypes";
 import { useGameStore } from "@/store/gameStore";
 
@@ -150,11 +150,12 @@ function useSocialTutorialCommands() {
   }, [sendCommand]);
 
   const goOnHoliday = useCallback(
-    (config: HolidayConfig): HolidayResult | null => {
+    (config: HolidayConfig): void => {
       // Route through the worker so the holiday runs on the worker thread
       // and the world state is synced back via the normal command pipeline.
+      // The result surfaces later as a holiday_return event on the digest —
+      // this call is fire-and-forget, so it honestly returns void.
       sendCommand({ type: "GO_ON_HOLIDAY", config });
-      return null;
     },
     [sendCommand]
   );

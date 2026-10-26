@@ -95,6 +95,21 @@ function selectNPCHeyasForWeek(world: WorldState, npcHeyas: Heya[]): Heya[] {
 
 export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_npc_ai");
+
+  // World-field overlay: producers that compute read-modify-write snapshots
+  // (npcBidPolicies, rivalriesState, pendingExhibitions, myosekiMarket,
+  // governanceLog, mediaState) must read `overlay` — the phase base plus every
+  // world field merged so far — or their snapshots clobber each other under
+  // last-write-wins merge (npcBidPolicies lost all but the last heya's entry;
+  // media rulings re-resolved weekly; myoseki purchases reverted while funds
+  // stayed debited). `mergeAbsorb` folds each merged impact's world fields
+  // back into `overlay` so the next producer's snapshot composes on top.
+  const overlay = { ...world } as WorldState;
+  const mergeAbsorb = (b: ReturnType<typeof createImpactBuilder>, impact: StateImpact): void => {
+    b.merge(impact);
+    if (impact.worldFields) Object.assign(overlay, impact.worldFields);
+  };
+
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {
     ...(world.npcScoutingPriorities || {}),
   };
@@ -133,45 +148,9 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
         perception
       );
 
-      const activePlan = nextOya.memory?.activePlan;
-      const needsReplan = shouldReplan(aiCtx, activePlan);
-      let currentPlan = activePlan;
-      if (needsReplan || !currentPlan) {
-        if (activePlan) {
-          // Archive the outgoing plan with its measured outcome so future
-          // plan scoring can learn from it (scoreWithMemory).
-          const outcome = evaluatePlanOutcome(world, heya.id, activePlan);
-          nextOya.memory = archiveActivePlan(
-            nextOya.memory ?? getMemory(nextOya, world.week),
-            outcome.outcome,
-            outcome.summary,
-            world.week
-          );
-          aiCtx.memory = nextOya.memory;
-        }
-        const newPlan = createPlan(aiCtx);
-        if (newPlan) {
-          nextOya.memory = setActivePlan(
-            nextOya.memory ?? getMemory(nextOya, world.week),
-            newPlan,
-            world.week
-          );
-          currentPlan = newPlan;
-          builder.logEvent(
-            "STRATEGY_SHIFT",
-            "ai_plan_change",
-            {
-              heyaId: heya.id,
-              planId: newPlan.planId,
-              previousPlanId: activePlan?.planId,
-              reasoning: newPlan.reasoning.join(" | "),
-            },
-            { heyaId: heya.id, importance: "minor" }
-          );
-        }
-      }
+      const currentPlan = resolveActivePlan(world, heya, nextOya, aiCtx, builder);
 
-      const decision = makeNPCWeeklyDecision(world, heya.id, currentPlan);
+      const decision = makeNPCWeeklyDecision(overlay, heya.id, currentPlan);
 
       const adaptation = applyMetaAdaptation(world, heya, nextOya, decision);
       emitAdaptationCommit(heya.id, adaptation, builder);
@@ -195,20 +174,21 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       // staff investment, narrative events, npcBidPolicies, exhibition and
       // kyujo handling). Without this merge everything executeAgentDecisions
       // computed is silently discarded each week.
-      builder.merge(decision.impact);
+      mergeAbsorb(builder, decision.impact);
 
-      overlayBidPolicyBias(world, heya.id, adaptation, decision, builder);
+      overlayBidPolicyBias(overlay, heya.id, adaptation, decision, builder);
 
       foldExecutionCooldowns(world, nextOya, decision);
 
       applyPostDecisionBookkeeping(
-        world,
+        overlay,
         heya,
         nextOya,
         currentPlan,
         decision,
         scoutingMap,
-        builder
+        builder,
+        mergeAbsorb
       );
 
       builder.updateOyakata(nextOya.id, nextOya);
@@ -234,9 +214,60 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
   builder.updateWorldField("npcScoutingPriorities", scoutingMap);
 
-  builder.merge(enforceHardCapRosterOverflow(world));
+  mergeAbsorb(builder, enforceHardCapRosterOverflow(world));
 
   return builder.build();
+}
+
+/**
+ * Resolve the oyakata's active strategic plan for the week: replan when stale
+ * or absent, archiving the outgoing plan's measured outcome first.
+ */
+function resolveActivePlan(
+  world: WorldState,
+  heya: Heya,
+  nextOya: Oyakata,
+  aiCtx: AIContext,
+  builder: ReturnType<typeof createImpactBuilder>
+): AIPlan | undefined {
+  const activePlan = nextOya.memory?.activePlan;
+  const needsReplan = shouldReplan(aiCtx, activePlan);
+  let currentPlan = activePlan;
+  if (needsReplan || !currentPlan) {
+    if (activePlan) {
+      // Archive the outgoing plan with its measured outcome so future
+      // plan scoring can learn from it (scoreWithMemory).
+      const outcome = evaluatePlanOutcome(world, heya.id, activePlan);
+      nextOya.memory = archiveActivePlan(
+        nextOya.memory ?? getMemory(nextOya, world.week),
+        outcome.outcome,
+        outcome.summary,
+        world.week
+      );
+      aiCtx.memory = nextOya.memory;
+    }
+    const newPlan = createPlan(aiCtx);
+    if (newPlan) {
+      nextOya.memory = setActivePlan(
+        nextOya.memory ?? getMemory(nextOya, world.week),
+        newPlan,
+        world.week
+      );
+      currentPlan = newPlan;
+      builder.logEvent(
+        "STRATEGY_SHIFT",
+        "ai_plan_change",
+        {
+          heyaId: heya.id,
+          planId: newPlan.planId,
+          previousPlanId: activePlan?.planId,
+          reasoning: newPlan.reasoning.join(" | "),
+        },
+        { heyaId: heya.id, importance: "minor" }
+      );
+    }
+  }
+  return currentPlan;
 }
 
 /**
@@ -502,24 +533,26 @@ function electAndPublishFactionPostures(
  * the bias is cleared when the posture lapses.
  */
 function overlayBidPolicyBias(
-  world: WorldState,
+  overlay: WorldState,
   heyaId: Id,
   adaptation: MetaAdaptation,
   decision: NPCWeeklyDecision,
   builder: ReturnType<typeof createImpactBuilder>
 ): void {
   const policies = {
-    ...(decision.impact.worldFields?.npcBidPolicies ?? world.npcBidPolicies ?? {}),
+    ...(decision.impact.worldFields?.npcBidPolicies ?? overlay.npcBidPolicies ?? {}),
   };
   const cur = policies[heyaId];
   if (cur && adaptation.bidFamilyBias) {
     policies[heyaId] = { ...cur, familyBias: adaptation.bidFamilyBias };
     builder.updateWorldField("npcBidPolicies", policies);
+    overlay.npcBidPolicies = policies;
   } else if (cur?.familyBias && !adaptation.bidFamilyBias) {
     const next = { ...cur };
     delete next.familyBias;
     policies[heyaId] = next;
     builder.updateWorldField("npcBidPolicies", policies);
+    overlay.npcBidPolicies = policies;
   }
 }
 
@@ -562,7 +595,11 @@ function applyPostDecisionBookkeeping(
   currentPlan: AIPlan | undefined,
   decision: NPCWeeklyDecision,
   scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive">,
-  builder: ReturnType<typeof createImpactBuilder>
+  builder: ReturnType<typeof createImpactBuilder>,
+  mergeAbsorb: (
+    b: ReturnType<typeof createImpactBuilder>,
+    impact: StateImpact
+  ) => void
 ): void {
   if (currentPlan) {
     nextOya.memory = recordDecision(
@@ -583,11 +620,13 @@ function applyPostDecisionBookkeeping(
 
   // Resolve any active crisis autonomously via the CrisisAgent.
   if (heya.activeCrisis) {
-    builder.merge(resolveNPCCrisis(world, heya.id, heya.activeCrisis));
+    mergeAbsorb(builder, resolveNPCCrisis(world, heya.id, heya.activeCrisis));
   }
 
   // Handle media events for NPCs via the MediaAgent (actor-scoped
-  // effects; rulings already resolved by anyone are skipped).
+  // effects; rulings already resolved by anyone are skipped). `world` is the
+  // field overlay here: each handleNPCMediaEvent snapshot must see the
+  // actorChoice markings and pressure writes of the events merged before it.
   if (world.governanceLog) {
     for (const event of world.governanceLog) {
       if (event.heyaId !== heya.id) continue;
@@ -598,7 +637,8 @@ function applyPostDecisionBookkeeping(
           : event.severity === "medium"
             ? "moderate"
             : "minor";
-      builder.merge(
+      mergeAbsorb(
+        builder,
         handleNPCMediaEvent(world, heya.id, event.id, event.incident ?? event.type, severity).impact
       );
     }

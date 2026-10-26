@@ -5,6 +5,32 @@
  */
 
 import React from "react";
+import {
+  KESHO_BORDER_X,
+  KESHO_BORDER_Y,
+  KESHO_BORDER_WIDTH,
+  KESHO_BORDER_HEIGHT,
+  KESHO_INNER_BORDER_X,
+  KESHO_INNER_BORDER_Y,
+  KESHO_INNER_BORDER_WIDTH,
+  KESHO_INNER_BORDER_HEIGHT,
+  KESHO_MID_BORDER_X,
+  KESHO_MID_BORDER_Y,
+  KESHO_MID_BORDER_WIDTH,
+  KESHO_MID_BORDER_HEIGHT,
+  KESHO_ROPE_BORDER_X,
+  KESHO_ROPE_BORDER_Y,
+  KESHO_ROPE_BORDER_WIDTH,
+  KESHO_ROPE_BORDER_HEIGHT,
+  KESHO_CIRCLE_BORDER_COUNT,
+  KESHO_CIRCLE_BORDER_SPACING,
+  KESHO_CIRCLE_BORDER_X_OFFSET,
+  KESHO_CIRCLE_BORDER_Y_SPACING,
+  KESHO_OPACITY_FAINT,
+  KESHO_OPACITY_LOW,
+  KESHO_OPACITY_MEDIUM,
+  KESHO_OPACITY_HIGH,
+} from "@/constants/ui/kesho";
 
 /**
  * Render border style for the mawashi edge
@@ -15,26 +41,26 @@ export function renderBorder(borderStyle: string, color: string): React.ReactNod
       return (
         <>
           <rect
-            x="20"
-            y="20"
-            width="160"
-            height="196"
+            x={KESHO_BORDER_X}
+            y={KESHO_BORDER_Y}
+            width={KESHO_BORDER_WIDTH}
+            height={KESHO_BORDER_HEIGHT}
             rx="7"
             fill="none"
             stroke={color}
             strokeWidth="2"
-            opacity="0.5"
+            opacity={KESHO_OPACITY_HIGH}
           />
           <rect
-            x="24"
-            y="24"
-            width="152"
-            height="188"
+            x={KESHO_INNER_BORDER_X}
+            y={KESHO_INNER_BORDER_Y}
+            width={KESHO_INNER_BORDER_WIDTH}
+            height={KESHO_INNER_BORDER_HEIGHT}
             rx="5"
             fill="none"
             stroke={color}
             strokeWidth="1"
-            opacity="0.3"
+            opacity={KESHO_OPACITY_LOW}
           />
         </>
       );
@@ -42,24 +68,24 @@ export function renderBorder(borderStyle: string, color: string): React.ReactNod
       return (
         <>
           <rect
-            x="20"
-            y="20"
-            width="160"
-            height="196"
+            x={KESHO_BORDER_X}
+            y={KESHO_BORDER_Y}
+            width={KESHO_BORDER_WIDTH}
+            height={KESHO_BORDER_HEIGHT}
             rx="7"
             fill="none"
             stroke={color}
             strokeWidth="3"
-            opacity="0.4"
+            opacity={KESHO_OPACITY_MEDIUM}
           />
-          {[...Array(12)].map((_, i) => (
+          {[...Array(KESHO_CIRCLE_BORDER_COUNT)].map((_, i) => (
             <circle
               key={i}
-              cx={20 + (i % 4) * 40 + 20}
-              cy={20 + Math.floor(i / 4) * 49 + 20}
+              cx={2 * KESHO_CIRCLE_BORDER_X_OFFSET + (i % 4) * KESHO_CIRCLE_BORDER_SPACING}
+              cy={2 * KESHO_CIRCLE_BORDER_X_OFFSET + Math.floor(i / 4) * KESHO_CIRCLE_BORDER_Y_SPACING}
               r="3"
               fill={color}
-              opacity="0.3"
+              opacity={KESHO_OPACITY_LOW}
             />
           ))}
         </>
@@ -67,16 +93,16 @@ export function renderBorder(borderStyle: string, color: string): React.ReactNod
     case "rope":
       return (
         <rect
-          x="18"
-          y="18"
-          width="164"
-          height="200"
+          x={KESHO_ROPE_BORDER_X}
+          y={KESHO_ROPE_BORDER_Y}
+          width={KESHO_ROPE_BORDER_WIDTH}
+          height={KESHO_ROPE_BORDER_HEIGHT}
           rx="8"
           fill="none"
           stroke={color}
           strokeWidth="4"
           strokeDasharray="8 4"
-          opacity="0.5"
+          opacity={KESHO_OPACITY_HIGH}
         />
       );
     case "scalloped":
@@ -94,37 +120,37 @@ export function renderBorder(borderStyle: string, color: string): React.ReactNod
       return (
         <>
           <rect
-            x="20"
-            y="20"
-            width="160"
-            height="196"
+            x={KESHO_BORDER_X}
+            y={KESHO_BORDER_Y}
+            width={KESHO_BORDER_WIDTH}
+            height={KESHO_BORDER_HEIGHT}
             rx="7"
             fill="none"
             stroke={color}
             strokeWidth="1"
-            opacity="0.5"
+            opacity={KESHO_OPACITY_HIGH}
           />
           <rect
-            x="22"
-            y="22"
-            width="156"
-            height="192"
+            x={KESHO_MID_BORDER_X}
+            y={KESHO_MID_BORDER_Y}
+            width={KESHO_MID_BORDER_WIDTH}
+            height={KESHO_MID_BORDER_HEIGHT}
             rx="6"
             fill="none"
             stroke={color}
             strokeWidth="1"
-            opacity="0.3"
+            opacity={KESHO_OPACITY_LOW}
           />
           <rect
-            x="24"
-            y="24"
-            width="152"
-            height="188"
+            x={KESHO_INNER_BORDER_X}
+            y={KESHO_INNER_BORDER_Y}
+            width={KESHO_INNER_BORDER_WIDTH}
+            height={KESHO_INNER_BORDER_HEIGHT}
             rx="5"
             fill="none"
             stroke={color}
             strokeWidth="1"
-            opacity="0.15"
+            opacity={KESHO_OPACITY_FAINT}
           />
         </>
       );

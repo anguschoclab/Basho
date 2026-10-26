@@ -38,8 +38,12 @@ export function recruitSponsor(
   const sponsor = pool.sponsors.get(sponsorId);
   if (!sponsor || !sponsor.active) return builder.build();
 
+  // The koenkai map is keyed by koenkaiId (WorldFactory links it via heya.koenkaiId).
+  const koenkai = heya.koenkaiId != null ? pool.koenkais.get(heya.koenkaiId) : undefined;
+  if (!koenkai) return builder.build();
+
   // Check if heya already has this sponsor
-  const existingRel = pool.koenkais.get(heyaId)?.members.find((m) => m.sponsorId === sponsorId);
+  const existingRel = koenkai.members.find((m) => m.sponsorId === sponsorId);
   if (existingRel) return builder.build();
 
   const cost = SPONSOR_RECRUITMENT_COSTS[sponsor.tier] || 0;
@@ -51,9 +55,6 @@ export function recruitSponsor(
   builder.updateHeya(heyaId, { funds: heya.funds - cost });
 
   // Create sponsor relationship
-  const koenkai = pool.koenkais.get(heyaId);
-  if (!koenkai) return builder.build();
-
   const newRel: SponsorRelationship = {
     relId: rng.uuid("SR"),
     sponsorId,
@@ -64,9 +65,15 @@ export function recruitSponsor(
     startedAtTick: world.week || 0,
   };
 
-  builder.updateKoenkai(heyaId, {
+  builder.updateKoenkai(koenkai.koenkaiId, {
     members: [...koenkai.members, newRel],
     lastChangedTick: world.week || 0,
+  });
+
+  // Mirror onto sponsor.relationships so sponsor-side queries
+  // (countSponsors / filterEligibleSponsors / projections) see the member.
+  builder.updateSponsor(sponsorId, {
+    relationships: [...(sponsor.relationships ?? []), newRel],
   });
 
   builder.logEvent(
@@ -168,7 +175,13 @@ export function processSponsorChurn(world: WorldState, _rng?: SeededRNG): StateI
       });
 
       for (const sponsorId of membersToRemove) {
-        builder.updateSponsor(sponsorId, { active: false });
+        const sponsor = world.sponsorPool?.sponsors.get(sponsorId);
+        builder.updateSponsor(sponsorId, {
+          active: false,
+          relationships: (sponsor?.relationships ?? []).filter(
+            (r) => !(r.targetType === "heya" && r.targetId === heya.id)
+          ),
+        });
       }
 
       builder.updateHeya(heya.id, { koenkaiBand: newBand });
@@ -205,15 +218,19 @@ export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
     if (currentIdx === targetIdx) continue;
 
     let updatedMembers = koenkai.members;
+    const trimmedSponsorIds = new Set<string>();
 
     if (currentIdx > targetIdx) {
       // Band downgrade — trim weakest members proportional to gap
       const gap = currentIdx - targetIdx;
       const removeCount = Math.min(updatedMembers.length, gap);
       if (removeCount > 0) {
-        updatedMembers = [...updatedMembers]
-          .sort((a, b) => (a.strength ?? 1) - (b.strength ?? 1))
-          .slice(removeCount);
+        const sorted = [...updatedMembers].sort(
+          (a, b) => (a.strength ?? 1) - (b.strength ?? 1)
+        );
+        const removed = sorted.slice(0, removeCount);
+        for (const m of removed) trimmedSponsorIds.add(m.sponsorId);
+        updatedMembers = sorted.slice(removeCount);
       }
     } else {
       // Band upgrade — recruit eligible inactive sponsors (max 2 per basho)
@@ -235,20 +252,30 @@ export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
       }
 
       for (const sponsor of picked) {
-        updatedMembers = [
-          ...updatedMembers,
-          {
-            relId: `sr_${sponsor.sponsorId}_${world.dayIndexGlobal ?? 0}`,
-            sponsorId: sponsor.sponsorId,
-            targetType: "heya",
-            targetId: heya.id,
-            role: "koenkai_member",
-            strength: KOENKAI_MEMBER_STRENGTH,
-            startedAtTick: world.dayIndexGlobal ?? 0,
-          },
-        ];
-        builder.updateSponsor(sponsor.sponsorId, { active: true });
+        const newRel: SponsorRelationship = {
+          relId: `sr_${sponsor.sponsorId}_${world.dayIndexGlobal ?? 0}`,
+          sponsorId: sponsor.sponsorId,
+          targetType: "heya",
+          targetId: heya.id,
+          role: "koenkai_member",
+          strength: KOENKAI_MEMBER_STRENGTH as 1 | 2 | 3 | 4 | 5,
+          startedAtTick: world.dayIndexGlobal ?? 0,
+        };
+        updatedMembers = [...updatedMembers, newRel];
+        builder.updateSponsor(sponsor.sponsorId, {
+          active: true,
+          relationships: [...(sponsor.relationships ?? []), newRel],
+        });
       }
+    }
+
+    for (const sponsorId of trimmedSponsorIds) {
+      const sponsor = world.sponsorPool?.sponsors.get(sponsorId);
+      builder.updateSponsor(sponsorId, {
+        relationships: (sponsor?.relationships ?? []).filter(
+          (r) => !(r.targetType === "heya" && r.targetId === heya.id)
+        ),
+      });
     }
 
     builder.updateKoenkai(koenkaiId, {

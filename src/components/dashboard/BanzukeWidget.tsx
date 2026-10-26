@@ -117,7 +117,7 @@ export function BanzukeWidget() {
   const topRanked = useMemo(() => {
     if (!world) return [];
 
-    // ⚡ Bolt Performance Optimization: Collect all active rikishi
+    // Collect all active rikishi
     const activeRikishi = getActiveRikishi(world);
 
     // Sort, slice, and project in a minimal pipeline

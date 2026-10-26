@@ -10,6 +10,7 @@ import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
 import { TACTIC_PROFILES, type TacticProfile } from "@/presenters/engineAccess";
 import type { BoutTactic } from "@/engine/types/combat";
+import { activationKeyHandler } from "@/lib/a11y";
 
 function getTacticRiskIcon(profile: TacticProfile) {
   if (profile.injuryRiskMultiplier >= 1.3) return <Flame className="h-3 w-3 text-destructive" />;
@@ -39,10 +40,20 @@ export const BoutCard = React.memo(
     return (
       <div
         key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
+        role={hasResult ? "button" : undefined}
+        tabIndex={hasResult ? 0 : undefined}
+        aria-label={
+          hasResult
+            ? `View bout detail: ${match.east.shikona} vs ${match.west.shikona}`
+            : undefined
+        }
         onClick={() => hasResult && onBoutClick?.(match)}
+        onKeyDown={
+          hasResult ? activationKeyHandler(() => onBoutClick?.(match), { selfOnly: true }) : undefined
+        }
         className={`
                   bout-card bout-enter p-3 px-4
-                  ${hasResult ? "cursor-pointer" : ""}
+                  ${hasResult ? "cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary" : ""}
                   ${match.isPlayerBout ? "bout-card--player bg-primary/[0.03]" : ""}
                   ${hasResult ? "bg-card" : "bg-card/60"}
                 `}
@@ -159,8 +170,11 @@ export const BoutCard = React.memo(
             <div className="mt-3 pt-2 text-right">
               <Badge
                 variant="outline"
-                className="text-xs bg-muted hover:bg-muted/80 cursor-pointer"
+                role="button"
+                tabIndex={0}
+                className="text-xs bg-muted hover:bg-muted/80 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
                 onClick={() => onBoutClick?.(match)}
+                onKeyDown={activationKeyHandler(() => onBoutClick?.(match))}
               >
                 Confirm & Sim Bout &rarr;
               </Badge>

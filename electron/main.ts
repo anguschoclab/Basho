@@ -39,6 +39,7 @@ async function initStore() {
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
+let isQuitting = false;
 
 /**
  * sonner injects its stylesheet as an inline <style> at module load and has no
@@ -149,8 +150,10 @@ async function createWindow(): Promise<void> {
 
   // Save window state on close
   mainWindow.on("close", (e) => {
-    if (process.platform === "darwin") {
-      // On macOS, hide to tray instead of closing
+    if (process.platform === "darwin" && !isQuitting) {
+      // On macOS, hide to tray instead of closing — but only when not
+      // actually quitting. app.quit() re-fires "close"; without the flag
+      // Cmd+Q / tray Quit would be swallowed forever.
       if (!mainWindow?.isFullScreen()) {
         e.preventDefault();
         mainWindow?.hide();
@@ -702,4 +705,8 @@ app.on("window-all-closed", () => {
     tray?.destroy();
     app.quit();
   }
+});
+
+app.on("before-quit", () => {
+  isQuitting = true;
 });

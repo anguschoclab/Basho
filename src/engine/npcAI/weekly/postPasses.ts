@@ -122,7 +122,7 @@ export function applyInjuryRiskReduction(
     }
   }
 
-  // ⚡ Bolt: Use .length directly on the array to avoid O(N) allocation overhead of new Set()
+  // Use .length directly on the array to avoid O(N) allocation overhead of new Set()
   const rosterSize = (heya.rikishiIds ?? []).length;
   if (rosterSize > 0 && highRiskCount / rosterSize > HIGH_RISK_RATIO_THRESHOLD) {
     const intensity = decision.trainingIntensity;

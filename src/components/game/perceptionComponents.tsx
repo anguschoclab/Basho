@@ -18,6 +18,7 @@ import { useGame } from "@/contexts/useGame";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
 import { toKeyedMap, type PerceptionSnapshot } from "@/presenters/engineAccess";
 import { getOyakataForHeya } from "@/presenters/worldAccess";
+import { activationKeyHandler } from "@/lib/a11y";
 import { oyakataStageInput } from "@/presenters/avatarProjections";
 import type { H2HMatchupData } from "@/presenters/projections/boutProjections";
 import {
@@ -436,8 +437,17 @@ export const StablePerceptionCard = React.memo(
       : undefined;
     return (
       <Card
-        className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
+        role="button"
+        tabIndex={0}
+        aria-label={
+          comparing ? `Toggle ${snap.heyaName} for comparison` : `View ${snap.heyaName} stable`
+        }
+        className={`paper cursor-pointer hover:border-primary/50 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
         onClick={handleClick}
+        onKeyDown={activationKeyHandler(
+          () => (comparing ? onToggleCompare(snap.heyaId) : onNavigate(snap.heyaId)),
+          { selfOnly: true }
+        )}
       >
         <CardContent className="p-3">
           <div className="flex items-start justify-between gap-3">

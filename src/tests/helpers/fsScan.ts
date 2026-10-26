@@ -15,6 +15,11 @@ export const SRC = join(REPO_ROOT, "src");
 const DEFAULT_EXTS = [".ts", ".tsx"];
 const DEFAULT_SKIP_DIRS = new Set(["node_modules", ".git", "dist", "coverage"]);
 
+/** Normalize absolute or relative filesystem paths for repo audit assertions. */
+export function normalizePathSlashes(file: string): string {
+  return file.replaceAll("\\", "/");
+}
+
 export interface FindFilesOptions {
   /** Extensions to include (with dot). Default: [".ts", ".tsx"]. */
   exts?: string[];

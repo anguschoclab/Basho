@@ -45,8 +45,8 @@ export const KENSHO_SPLIT = {
 /** Mochikyukin (cumulative bonus) point value (¥ per point). */
 export const MOCHIKYUKIN_POINT_VALUE = 4_000;
 
-/** Mochikyukin points earned per net win above .500. */
-export const MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN = 0.5;
+/** Mochikyukin points earned per win above the 8th (kachi-nokori basis, matching the JSA formula). */
+export const MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT = 0.5;
 
 /** Mochikyukin points earned per yusho (championship). */
 export const MOCHIKYUKIN_POINTS_YUSHO = 30;

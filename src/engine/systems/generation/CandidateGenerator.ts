@@ -53,6 +53,16 @@ import {
 } from "../../../constants/engine/generation";
 import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitment";
 
+function rollDevelopmentProfile(rng: SeededRNG): DevelopmentProfile {
+  const roll = rng.next();
+  let acc = 0;
+  for (const [profile, weight] of Object.entries(DEVELOPMENT_PROFILE_WEIGHTS)) {
+    acc += weight;
+    if (roll < acc) return profile as DevelopmentProfile;
+  }
+  return "standard";
+}
+
 /**
  * Generates a single TalentCandidate for the recruitment pools.
  * Creates a complete candidate with archetype, stats, development profile,
@@ -89,16 +99,6 @@ import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitmen
  * console.log(candidate.name, candidate.archetype);
  * ```
  */
-function rollDevelopmentProfile(rng: SeededRNG): DevelopmentProfile {
-  const roll = rng.next();
-  let acc = 0;
-  for (const [profile, weight] of Object.entries(DEVELOPMENT_PROFILE_WEIGHTS)) {
-    acc += weight;
-    if (roll < acc) return profile as DevelopmentProfile;
-  }
-  return "standard";
-}
-
 export function generateCandidate(args: {
   id: string;
   rng: SeededRNG;

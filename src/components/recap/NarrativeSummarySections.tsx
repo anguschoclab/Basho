@@ -490,7 +490,7 @@ export function WrapUpFooter({
           <History className="h-8 w-8 text-primary opacity-30" />
         </div>
         <div className="space-y-2">
-          <h3 className="text-3xl font-display font-black tracking-tighter uppercase italic">
+          <h3 className="text-3xl font-display font-black tracking-tighter uppercase">
             Association Wrap-up
           </h3>
           <p className="text-sm text-muted-foreground max-w-md mx-auto italic font-display">

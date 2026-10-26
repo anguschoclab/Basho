@@ -8,22 +8,10 @@
 import type { WorldState } from "../../engine/types/world";
 import type { Rikishi } from "../../engine/types/rikishi";
 import type { AvatarRenderData } from "../../engine/types/avatar";
-import { SeededRNG } from "../../engine/rng";
-import { BardEngine } from "../../engine/bard/BardEngine";
 import { getHeyaRoster } from "../../engine/queries";
+import { getCachedPerception } from "../../engine/perception";
 import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-
-function getFacilityLevelLabel(rng: SeededRNG, level: number): string {
-  let band = "limited";
-  if (level >= 85) band = "exceptional";
-  else if (level >= 65) band = "outstanding";
-  else if (level >= 45) band = "strong";
-  else if (level >= 25) band = "capable";
-
-  // Note: re-using rikishi stats bands for facility quality labels
-  return BardEngine.resolve(rng, `rikishi.stats.power.${band}`).text.split(" — ")[0].split(".")[0];
-}
+import { getFacilityLevelLabel } from "./facilityProjections";
 
 /**
  * Project medical and injury recovery data.
@@ -35,76 +23,32 @@ export function projectMedicalUIDigest(world: WorldState) {
   if (!heya) return null;
 
   const roster = getHeyaRoster(world, playerHeyaId);
-  const rng = world.rng || new SeededRNG(world.seed || "medical_digest");
-
   const recoveryFacility = heya.facilities?.recovery ?? 50;
-  const facilityLabel = getFacilityLevelLabel(rng, recoveryFacility);
+  const facilityLabel = getFacilityLevelLabel(recoveryFacility);
 
-  // Build a perception summary used by WelfarePanel. Bands derived from raw
-  // welfare/morale numbers using simple thresholds.
-  const welfareRisk = heya.welfareState?.welfareRisk ?? 0;
-  const welfareRiskBand: "safe" | "cautious" | "elevated" | "critical" =
-    welfareRisk >= 75
-      ? "critical"
-      : welfareRisk >= 50
-        ? "elevated"
-        : welfareRisk >= 25
-          ? "cautious"
-          : "safe";
-
-  const morale = heya.welfareState?.morale ?? 50;
-  const moraleBand: "inspired" | "content" | "neutral" | "disgruntled" | "mutinous" =
-    morale >= 80
-      ? "inspired"
-      : morale >= 60
-        ? "content"
-        : morale >= 40
-          ? "neutral"
-          : morale >= 20
-            ? "disgruntled"
-            : "mutinous";
-
-  const rosterSize = roster.length;
-  let sekitoriCount = 0;
-  for (const r of roster) {
-    if (isSekitoriDivision(r.division)) sekitoriCount++;
-  }
-  const rosterStrengthBand: "dominant" | "strong" | "competitive" | "developing" | "weak" =
-    sekitoriCount >= 6
-      ? "dominant"
-      : sekitoriCount >= 4
-        ? "strong"
-        : sekitoriCount >= 2
-          ? "competitive"
-          : rosterSize >= 5
-            ? "developing"
-            : "weak";
+  // Bands come from the canonical perception snapshot (perception.ts /
+  // constants/engine/perception) — the same source WelfarePanel and the NPC
+  // AI use — so this panel can never disagree with the rest of the UI.
+  const snapshot = getCachedPerception(world, playerHeyaId);
+  const perceptionByRikishi = new Map(
+    snapshot.rikishiPerceptions.map((p) => [p.rikishiId, p])
+  );
 
   const rikishiHealthPerceptions: Array<{
     rikishiId: string;
     shikona: string;
     rank: string;
     healthBand: string;
-    momentum: "rising" | "stable" | "declining";
+    momentum: "rising" | "steady" | "declining";
     avatar?: AvatarRenderData;
   }> = roster.map((r) => {
-    const condition = r.condition ?? 100;
-    const band =
-      condition >= 90
-        ? "peak"
-        : condition >= 70
-          ? "good"
-          : condition >= 50
-            ? "fair"
-            : condition >= 30
-              ? "worn"
-              : "fragile";
+    const perception = perceptionByRikishi.get(r.id);
     return {
       rikishiId: r.id,
       shikona: r.shikona,
       rank: r.rank ?? "—",
-      healthBand: band,
-      momentum: "stable" as const,
+      healthBand: perception?.healthBand ?? "fair",
+      momentum: perception?.momentum ?? "steady",
       avatar: resolveAvatar({
         id: r.id,
         stored: r.avatarConfig,
@@ -129,11 +73,11 @@ export function projectMedicalUIDigest(world: WorldState) {
       weeksInState: heya.welfareState?.weeksInState ?? 0,
     },
     perception: {
-      welfareRiskBand,
-      moraleBand,
-      rosterStrengthBand,
-      stableMediaHeatBand: "neutral" as string,
-      rivalryPressureBand: "neutral" as string,
+      welfareRiskBand: snapshot.welfareRiskBand,
+      moraleBand: snapshot.moraleBand,
+      rosterStrengthBand: snapshot.rosterStrengthBand,
+      stableMediaHeatBand: snapshot.stableMediaHeatBand,
+      rivalryPressureBand: snapshot.rivalryPressureBand,
       rikishiHealthPerceptions,
     },
   };

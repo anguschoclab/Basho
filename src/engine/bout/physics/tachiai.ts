@@ -32,6 +32,7 @@ import { initBeltBattle } from "../boutGrip";
 import {
   stat,
   jitter,
+  skillTieBreak,
   computeTachiaiPower,
   tachiaiPowerWithMatchupPenalty,
   h2hConfidence,
@@ -329,7 +330,13 @@ export function resolveTachiaiV2(
   eastPower += eastTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
   westPower += westTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
 
-  const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
+  // Dead-even clash → better technician takes the inside, then seeded coin.
+  const tachiaiWinner: Side =
+    eastPower > westPower
+      ? "east"
+      : westPower > eastPower
+        ? "west"
+        : skillTieBreak(east, west, "technique", rng);
   st.tachiaiWinner = tachiaiWinner;
 
   // Tachiai richness (1.5): derive tachiaiType and contactPoint from winner's archetype

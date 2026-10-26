@@ -4,6 +4,7 @@ import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { BoutResult } from "@/engine/types/basho";
+import { KENSHO_AMOUNT_PER_ENVELOPE } from "@/constants/engine/economic";
 
 export interface KenshoBoutEntry {
   rikishiId: string;
@@ -33,7 +34,7 @@ export function useKenshoData() {
 
           const economics = rikishi.economics;
           if (economics) {
-            earningsSum += (economics.careerKenshoWon || 0) * 70000;
+            earningsSum += (economics.careerKenshoWon || 0) * KENSHO_AMOUNT_PER_ENVELOPE;
           }
 
           const rank = rikishi.rank;
@@ -42,7 +43,7 @@ export function useKenshoData() {
             if (rank === "yokozuna" || rank === "ozeki") baseProjection = 15;
             else if (rank === "sekiwake" || rank === "komusubi") baseProjection = 10;
             else if (rank.includes("maegashira")) baseProjection = 5;
-            projectedSum += baseProjection * 70000;
+            projectedSum += baseProjection * KENSHO_AMOUNT_PER_ENVELOPE;
           }
         }
       }

@@ -12,6 +12,22 @@ import { renderBorder } from "./keshoBorders";
 import { renderEmbroideryEffect, renderFringe } from "./keshoEffects";
 import { TierBadge } from "./keshoComponents";
 import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
+import {
+  KESHO_BORDER_X,
+  KESHO_BORDER_Y,
+  KESHO_BORDER_WIDTH,
+  KESHO_SHIMMER_HEIGHT,
+  KESHO_OPACITY_SECONDARY,
+  KESHO_OPACITY_LOW,
+  KESHO_OPACITY_MEDIUM,
+  KESHO_OPACITY_HIGH,
+  KESHO_OPACITY_VERY_HIGH,
+  KESHO_GRADIENT_START,
+  KESHO_GRADIENT_QUARTER,
+  KESHO_GRADIENT_MID,
+  KESHO_GRADIENT_THREE_QUARTER,
+  KESHO_GRADIENT_END,
+} from "@/constants/ui/kesho";
 
 interface KeshoMawashiDisplayProps {
   mawashi: KeshoMawashi;
@@ -86,22 +102,22 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
         {mawashi.goldThreadDensity > 0.3 && (
           <>
             <rect
-              x="20"
-              y="20"
-              width="160"
-              height="200"
+              x={KESHO_BORDER_X}
+              y={KESHO_BORDER_Y}
+              width={KESHO_BORDER_WIDTH}
+              height={KESHO_SHIMMER_HEIGHT}
               rx="8"
               fill="url(#goldShimmer)"
-              opacity={mawashi.goldThreadDensity * 0.4}
+              opacity={mawashi.goldThreadDensity * KESHO_OPACITY_MEDIUM}
             />
             <rect
-              x="20"
-              y="20"
-              width="160"
-              height="200"
+              x={KESHO_BORDER_X}
+              y={KESHO_BORDER_Y}
+              width={KESHO_BORDER_WIDTH}
+              height={KESHO_SHIMMER_HEIGHT}
               rx="8"
               fill="url(#goldShimmer2)"
-              opacity={mawashi.goldThreadDensity * 0.2}
+              opacity={mawashi.goldThreadDensity * KESHO_OPACITY_SECONDARY}
             />
           </>
         )}
@@ -112,16 +128,48 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
         {/* Definitions */}
         <defs>
           <linearGradient id="goldShimmer" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={KESHO_COLORS.gold} stopOpacity="0.3" />
-            <stop offset="25%" stopColor={KESHO_COLORS.goldMid} stopOpacity="0.4" />
-            <stop offset="50%" stopColor={KESHO_COLORS.gold} stopOpacity="0.6" />
-            <stop offset="75%" stopColor={KESHO_COLORS.goldMid} stopOpacity="0.4" />
-            <stop offset="100%" stopColor={KESHO_COLORS.gold} stopOpacity="0.3" />
+            <stop
+              offset={`${KESHO_GRADIENT_START}%`}
+              stopColor={KESHO_COLORS.gold}
+              stopOpacity={KESHO_OPACITY_LOW}
+            />
+            <stop
+              offset={`${KESHO_GRADIENT_QUARTER}%`}
+              stopColor={KESHO_COLORS.goldMid}
+              stopOpacity={KESHO_OPACITY_MEDIUM}
+            />
+            <stop
+              offset={`${KESHO_GRADIENT_MID}%`}
+              stopColor={KESHO_COLORS.gold}
+              stopOpacity={KESHO_OPACITY_VERY_HIGH}
+            />
+            <stop
+              offset={`${KESHO_GRADIENT_THREE_QUARTER}%`}
+              stopColor={KESHO_COLORS.goldMid}
+              stopOpacity={KESHO_OPACITY_MEDIUM}
+            />
+            <stop
+              offset={`${KESHO_GRADIENT_END}%`}
+              stopColor={KESHO_COLORS.gold}
+              stopOpacity={KESHO_OPACITY_LOW}
+            />
           </linearGradient>
           <linearGradient id="goldShimmer2" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={KESHO_COLORS.gold} stopOpacity="0" />
-            <stop offset="50%" stopColor={KESHO_COLORS.gold} stopOpacity="0.5" />
-            <stop offset="100%" stopColor={KESHO_COLORS.gold} stopOpacity="0" />
+            <stop
+              offset={`${KESHO_GRADIENT_START}%`}
+              stopColor={KESHO_COLORS.gold}
+              stopOpacity="0"
+            />
+            <stop
+              offset={`${KESHO_GRADIENT_MID}%`}
+              stopColor={KESHO_COLORS.gold}
+              stopOpacity={KESHO_OPACITY_HIGH}
+            />
+            <stop
+              offset={`${KESHO_GRADIENT_END}%`}
+              stopColor={KESHO_COLORS.gold}
+              stopOpacity="0"
+            />
           </linearGradient>
         </defs>
       </svg>

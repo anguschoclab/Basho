@@ -139,18 +139,19 @@ function rollWeightedSelection(
   weighted: { strategy: KimariteStrategy; weight: number }[],
   totalWeight: number,
   rng: SeededRNG
-): KimariteStrategy {
+): KimariteStrategy | null {
+  // No positive weight means no technique is actually attemptable here —
+  // returning null rather than silently picking the first entry.
+  if (totalWeight <= 0 || weighted.length === 0) return null;
   let roll = rng.next() * totalWeight;
-  let selected = weighted[0].strategy;
 
   for (const w of weighted) {
     roll -= w.weight;
     if (roll <= 0) {
-      selected = w.strategy;
-      break;
+      return w.strategy;
     }
   }
-  return selected;
+  return weighted[weighted.length - 1].strategy;
 }
 
 /** Execution Success Probability (E2): f(technique, difficulty, division). */
@@ -159,7 +160,7 @@ function computeSuccessProbability(
   selected: KimariteStrategy,
   division: Division | undefined
 ): number {
-  const attackerTech = attacker.stats?.technique ?? attacker.stats.technique ?? 50;
+  const attackerTech = attacker.stats?.technique ?? 50;
   const difficulty = selected.difficulty || DEFAULT_DIFFICULTY;
 
   // Base probability: tech (0-100) vs difficulty (1-10) scaled to 10-100
@@ -231,6 +232,7 @@ function evaluateSideAttempt(
     tactics
   );
   const selected = rollWeightedSelection(weighted, totalWeight, rng);
+  if (!selected) return null;
   const successProb = computeSuccessProbability(attacker, selected, division);
   const difficulty = selected.difficulty || DEFAULT_DIFFICULTY;
 
@@ -283,9 +285,17 @@ function evaluate(
     if (attempt) results.push(attempt);
   }
 
-  // Pick the best attempt (highest success probability among valid sides)
+  // Pick between the qualifying sides weighted by success probability —
+  // the better technician is favored but a weaker attempt can still land.
   if (results.length === 0) return null;
-  return results.sort((a, b) => b.successProbability - a.successProbability)[0];
+  if (results.length === 1) return results[0];
+  const totalProb = results.reduce((acc, r) => acc + r.successProbability, 0);
+  let roll = rng.next() * totalProb;
+  for (const r of results) {
+    roll -= r.successProbability;
+    if (roll <= 0) return r;
+  }
+  return results[results.length - 1];
 }
 
 /**

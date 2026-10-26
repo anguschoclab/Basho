@@ -249,6 +249,12 @@ function boundArrays(builder: ImpactBuilder, world: WorldState): void {
   if (bounded.awardLog && bounded.awardLog !== world.awardLog) {
     builder.updateWorldField("awardLog", bounded.awardLog);
   }
+  if (bounded.governanceLog && bounded.governanceLog !== world.governanceLog) {
+    builder.updateWorldField("governanceLog", bounded.governanceLog);
+  }
+  if (bounded.encouragementLog && bounded.encouragementLog !== world.encouragementLog) {
+    builder.updateWorldField("encouragementLog", bounded.encouragementLog);
+  }
   if (bounded.almanacSnapshots && bounded.almanacSnapshots !== world.almanacSnapshots) {
     builder.updateWorldField("almanacSnapshots", bounded.almanacSnapshots);
   }

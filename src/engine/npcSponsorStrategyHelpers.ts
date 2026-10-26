@@ -108,9 +108,26 @@ export function addSponsorRelationship(
   const updatedSponsors = new Map(pool.sponsors);
   updatedSponsors.set(sponsorId, updatedSponsor);
 
+  // Mirror heya-targeted relationships into koenkai.members so heya-side
+  // queries (FinanceCalculator tier income, churn, UI dedup) see
+  // NPC-recruited members too.
+  const updatedKoenkais = new Map(pool.koenkais);
+  if (relationship.targetType === "heya") {
+    const koenkaiId = world.heyas.get(relationship.targetId)?.koenkaiId;
+    const koenkai = koenkaiId ? updatedKoenkais.get(koenkaiId) : undefined;
+    if (koenkaiId && koenkai && !koenkai.members.some((m) => m.relId === relationship.relId)) {
+      updatedKoenkais.set(koenkaiId, {
+        ...koenkai,
+        members: [...koenkai.members, relationship],
+        lastChangedTick: world.week ?? 0,
+      });
+    }
+  }
+
   builder.updateWorldField("sponsorPool", {
     ...pool,
     sponsors: updatedSponsors,
+    koenkais: updatedKoenkais,
   });
 
   return builder.build();

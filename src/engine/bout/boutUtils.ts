@@ -95,6 +95,24 @@ export function jitter(rng: SeededRNG, scale = 1): number {
   return (rng.next() - 0.5) * scale;
 }
 
+/**
+ * Resolves an ambiguous decision on the relevant skill stat instead of a
+ * positional default — e.g., a dead-even tachiai goes to the better
+ * technician, a dead-even stalemate to the better-balanced fighter.
+ * If the stat itself is tied, falls back to a seeded coin flip.
+ */
+export function skillTieBreak(
+  east: Rikishi,
+  west: Rikishi,
+  statName: "technique" | "balance" | "mental" | "speed" | "power",
+  rng: SeededRNG
+): Side {
+  const e = stat(east, statName);
+  const w = stat(west, statName);
+  if (e !== w) return e > w ? "east" : "west";
+  return rng.next() < 0.5 ? "east" : "west";
+}
+
 // ---------------------------------------------------------------------------
 // Exported pure helpers (unit-testable, used internally)
 // ---------------------------------------------------------------------------

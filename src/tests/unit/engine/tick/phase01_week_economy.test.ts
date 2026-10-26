@@ -24,6 +24,8 @@ describe("phase01_week_economy", () => {
         totalBurn: 50,
         nextFunds: 1000,
         runwayMonths: 12,
+        income: { koenkai: 0, jsaSubsidy: 0, sponsorTier: 0, jsaGrant: 100, oyakataSalary: 0 },
+        outgoings: { facilityUpkeep: 50, staffUpkeep: 0, fixedOverhead: 0, recruitment: 0 },
       })
       .mockReturnValueOnce({
         revenue: 0,
@@ -31,6 +33,8 @@ describe("phase01_week_economy", () => {
         totalBurn: 100,
         nextFunds: -500,
         runwayMonths: 0,
+        income: { koenkai: 0, jsaSubsidy: 0, sponsorTier: 0, jsaGrant: 0, oyakataSalary: 0 },
+        outgoings: { facilityUpkeep: 100, staffUpkeep: 0, fixedOverhead: 0, recruitment: 0 },
       });
 
     const impact = phase01_week_economy(world);
