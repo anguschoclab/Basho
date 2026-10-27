@@ -1,11 +1,11 @@
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import { getHeyaRoster } from "../../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import { getHeyaRoster } from "@/engine/queries";
 import {
   BALANCE_STRENGTH_SENSITIVITY,
   BALANCE_MULTIPLIER_MIN,
   BALANCE_MULTIPLIER_MAX,
-} from "../../../constants/engine/recruitmentBalance";
+} from "@/constants/engine/recruitmentBalance";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 /** Sekitori (top-two-division) count is the stable-strength proxy. */

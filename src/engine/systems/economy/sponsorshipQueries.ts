@@ -1,14 +1,14 @@
-import { SeededRNG } from "../../rng";
-import type { Heya } from "../../types/heya";
+import { SeededRNG } from "@/engine/rng";
+import type { Heya } from "@/engine/types/heya";
 import type {
   Sponsor,
   SponsorPool,
   Koenkai,
   KoenkaiBandType,
   SponsorRelationship,
-} from "../../types/sponsors";
-import type { WorldState } from "../../types/world";
-import { getRikishi } from "../../queries";
+} from "@/engine/types/sponsors";
+import type { WorldState } from "@/engine/types/world";
+import { getRikishi } from "@/engine/queries";
 import {
   KOENKAI_INCOME_NONE,
   KOENKAI_INCOME_WEAK,
@@ -25,7 +25,7 @@ import {
   KOENKAI_MEMBER_COUNT_MAX,
   KOENKAI_PILLAR_STRENGTH,
   KOENKAI_MEMBER_STRENGTH,
-} from "../../../constants/engine/economyExtended";
+} from "@/constants/engine/economyExtended";
 
 export const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
   none: KOENKAI_INCOME_NONE,

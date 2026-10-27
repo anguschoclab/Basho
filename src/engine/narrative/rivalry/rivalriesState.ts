@@ -8,21 +8,16 @@
  * Goal: No monoliths, high-fidelity modularity.
  */
 
-import { RivalryService } from "./systems/narrative/RivalryService";
-import { WorldState } from "./types/world";
-import type { Id } from "./types/common";
-import type { MatchSchedule, BoutResult } from "./types/basho";
-import type { Rikishi } from "./types/rikishi";
-import type { RivalriesState, RivalryPairState } from "../constants/engine/rivalry";
-import type { StateImpact } from "./core/StateImpact";
-import { makeRivalryKey } from "./systems/narrative/rivalry/state";
+import { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RivalriesState, RivalryPairState } from "@/constants/engine/rivalry";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { makeRivalryKey } from "@/engine/systems/narrative/rivalry/state";
+import { RivalryService } from "@/engine/systems/narrative/RivalryService";
 
 // --- AUTHORITATIVE DELEGATION ---
-export * from "../constants/engine/rivalry";
-export * from "./systems/narrative/RivalryHeatService";
-export * from "./systems/narrative/RivalryService";
-export type { RivalryHeatBand } from "./systems/narrative/NarrativeBands";
-export { makeRivalryKey };
 
 /**
  * Create a fresh empty rivalries state (Legacy standalone).
@@ -60,4 +55,4 @@ export type {
   RivalryKey,
   RivalryTone,
   RivalryTrigger,
-} from "../constants/engine/rivalry";
+} from "@/constants/engine/rivalry";

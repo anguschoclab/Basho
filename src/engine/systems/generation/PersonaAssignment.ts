@@ -2,10 +2,10 @@
 // Assigns pressPersona, personalityTraits, and birthMonth/birthDay to rikishi
 // at generation time. Used by both lifecycle.ts (rookies) and CandidateBuilder.ts (recruits).
 
-import type { Rikishi } from "../../types/rikishi";
-import type { PressPersona } from "../../types/media";
-import type { CombatArchetype } from "../../types/combat";
-import type { SeededRNG } from "../../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { PressPersona } from "@/engine/types/media";
+import type { CombatArchetype } from "@/engine/types/combat";
+import type { SeededRNG } from "@/engine/rng";
 import {
   PERSONALITY_TRAITS,
   PERSONALITY_TRAITS_PER_RIKISHI_MIN,

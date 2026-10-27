@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { PotentialBand } from "@/presenters/engineAccess";
 import { toPotentialBand } from "@/presenters/engineAccess";

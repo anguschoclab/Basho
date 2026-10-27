@@ -6,18 +6,18 @@
  * Also processes rikishi retirements and Oyakata candidate conversion.
  */
 
-import { stableSort } from "../../utils/sort";
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import type { ImpactBuilder } from "../../core/ImpactBuilder";
-import * as governance from "./ScandalService";
-import { generateGovernanceHeadline } from "../media/MediaService";
-import { issueBailoutLoanIfNeeded } from "../../loans";
-import { getHeyaRoster, getActiveRikishi, getRikishi } from "../../queries";
-import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
-import { findMergerTarget, executeMerger } from "../../mergers";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
+import { stableSort } from "@/engine/utils/sort";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import * as governance from "@/engine/systems/governance/ScandalService";
+import { generateGovernanceHeadline } from "@/engine/systems/media/MediaService";
+import { issueBailoutLoanIfNeeded } from "@/engine/loans";
+import { getHeyaRoster, getActiveRikishi, getRikishi } from "@/engine/queries";
+import { PRESTIGE_ORDER, bandIndex } from "@/engine/prestige/prestigeSystem";
+import { findMergerTarget, executeMerger } from "@/engine/mergers";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
@@ -27,8 +27,8 @@ import {
   CHRONIC_UNDERPERFORMANCE_BASHO,
   PRESTIGE_COLLAPSE_BAND,
   NON_FINANCIAL_MERGER_MAX_ROSTER,
-} from "../../../constants/engine/economic";
-import { processAllRetirements } from "../../lifecycle/processRetirements";
+} from "@/constants/engine/economic";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 
 
 /**

@@ -6,10 +6,10 @@
  * relationship event in the world's encouragement log.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { WorldState } from "../types/world";
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 /** Motivation boost applied to the recipient */
 export const ENCOURAGEMENT_MOTIVATION_BOOST = 3;

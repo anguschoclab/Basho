@@ -16,7 +16,7 @@ import {
   ProspectsSection,
   InvestSection,
   UpgradeSection,
-} from "./YouthAcademyPanelSections";
+} from "@/components/recruitment/YouthAcademyPanelSections";
 
 export function YouthAcademyPanel({
   projection,

@@ -10,11 +10,11 @@
  *     when the player has scouting coverage of that stable's roster.
  *   - No raw trait numbers ever reach the DTO.
  */
-import type { WorldState } from "../engine/types/world";
-import type { NPCDecisionDTO } from "./npcAgentProjections";
-import type { AvatarRenderData } from "../engine/types/avatar";
-import { getOyakataForHeya } from "../engine/queries";
-import { resolveAvatar, oyakataStageInput } from "../engine/avatarGenerator";
+import type { WorldState } from "@/engine/types/world";
+import type { NPCDecisionDTO } from "@/presenters/npcAgentProjections";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { getOyakataForHeya } from "@/engine/queries";
+import { resolveAvatar, oyakataStageInput } from "@/engine/avatarGenerator";
 
 export interface RivalStableDTO {
   heyaId: string;

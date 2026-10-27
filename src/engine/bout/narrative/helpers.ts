@@ -2,20 +2,20 @@
  * helpers.ts — shared helpers for bout narration.
  * Moved verbatim from boutNarrative.ts during the narrative pipeline split.
  */
-import { rngFromSeed } from "../../rng";
-import type { Rikishi } from "../../types/rikishi";
-import type { Rank } from "../../types/banzuke";
-import type { BoutResult } from "../../types/basho";
-import { BardEngine } from "../../bard/BardEngine";
-import { type VoiceStyle } from "../../bard/narrativeContext";
+import { rngFromSeed } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Rank } from "@/engine/types/banzuke";
+import type { BoutResult } from "@/engine/types/basho";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { type VoiceStyle } from "@/engine/bard/narrativeContext";
 import {
   INTENSITY_DRAMATIC,
   INTENSITY_UNDERSTATED,
   INTENSITY_FORMAL,
   CAREER_WIN_MILESTONES,
-} from "../../../constants/engine/generation";
-import { NOTABLE_NARRATIVE_TAGS, NOTABLE_NARRATIVE_PHASES } from "../../almanac/types";
-import type { PbpLine } from "./pbpTypes";
+} from "@/constants/engine/generation";
+import { NOTABLE_NARRATIVE_TAGS, NOTABLE_NARRATIVE_PHASES } from "@/engine/almanac/types";
+import type { PbpLine } from "@/engine/bout/narrative/pbpTypes";
 
 export function countMakuuchiTournaments(history: { division?: string }[] | undefined): number {
   if (!history) return 0;

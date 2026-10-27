@@ -16,16 +16,16 @@
  *   - Determinism check: a prefix re-run must be identical
  */
 
-import { resolveBoutPhysics } from "../src/engine/bout/boutPhysics";
-import { mockRikishi, makeMockBasho } from "../src/tests/unit/engine/utils";
-import { SeededRNG } from "../src/engine/rng";
+import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
+import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
+import { SeededRNG } from "@/engine/rng";
 import {
   KIMARITE_FREQUENCY_TARGETS,
   KIMARITE_CATEGORY_TARGETS,
-} from "../src/constants/engine/kimariteFrequencies";
-import { KIMARITE_REGISTRY } from "../src/engine/kimariteRegistry";
-import type { Rikishi } from "../src/engine/types/rikishi";
-import type { Style, CombatArchetype } from "../src/engine/types/combat";
+} from "@/constants/engine/kimariteFrequencies";
+import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Style, CombatArchetype } from "@/engine/types/combat";
 
 const STYLES: Style[] = ["oshi", "yotsu", "hybrid"];
 const ARCHETYPES: CombatArchetype[] = [

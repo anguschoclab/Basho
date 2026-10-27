@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { phase01_week_npc_ai } from "@/engine/tick/phases/phase01_week_npc_ai";
-import { mockRikishi, makeMockWorld } from "../../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("phase01_week_npc_ai mentorship", () => {

@@ -1,8 +1,8 @@
-import type { WorldState } from "../types/world";
-import type { AlmanacSnapshot } from "./types";
-import type { MovementEvent } from "../types/banzuke";
-import type { Rank } from "../types/banzuke";
-import { getRikishi } from "../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
+import type { MovementEvent } from "@/engine/types/banzuke";
+import type { Rank } from "@/engine/types/banzuke";
+import { getRikishi } from "@/engine/queries";
 
 export function buildAlmanacSnapshot(
   world: WorldState,

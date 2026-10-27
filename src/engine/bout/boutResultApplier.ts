@@ -6,25 +6,25 @@
  * Returns StateImpact describing bout result application instead of mutating state.
  */
 
-import type { WorldState } from "../types/world";
-import type { BashoState, BoutResult, MatchSchedule } from "../types/basho";
-import type { MatchResultLog } from "../types/records";
-import type { Rikishi } from "../types/rikishi";
-import { updateH2H } from "../h2h";
-import * as injuries from "../systems/health/InjuryService";
-import * as rivalries from "../rivalries";
-import * as economics from "../economics";
-import type { NarrativeContext } from "../types/events";
-import * as scoutingStore from "../scoutingStore";
-import { onBoutResolvedOpponentModels } from "../npcAI/opponentLearning";
-import { updateMediaFromBout, createDefaultMediaState } from "../systems/media/MediaService";
-import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
-import { createImpactBuilder, ImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { checkMentorMenteeBout } from "../systems/training/MentorshipService";
-import { getRikishi } from "../queries";
-import { BOUT_DURATION_FATIGUE_PER_TICK } from "../../constants/engine/condition";
-import { RIKISHI_BOUT_HISTORY_MAX } from "../../constants/engine/bout";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState, BoutResult, MatchSchedule } from "@/engine/types/basho";
+import type { MatchResultLog } from "@/engine/types/records";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { updateH2H } from "@/engine/h2h";
+import * as injuries from "@/engine/systems/health/InjuryService";
+import { onBoutResolvedRivalries } from "@/engine/narrative/rivalry/rivalriesState";
+import * as economics from "@/engine/economics";
+import type { NarrativeContext } from "@/engine/types/events";
+import * as scoutingStore from "@/engine/scoutingStore";
+import { onBoutResolvedOpponentModels } from "@/engine/npcAI/opponentLearning";
+import { updateMediaFromBout, createDefaultMediaState } from "@/engine/systems/media/MediaService";
+import { applyAchievementImpact } from "@/engine/systems/economy/SponsorshipService";
+import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { checkMentorMenteeBout } from "@/engine/systems/training/MentorshipService";
+import { getRikishi } from "@/engine/queries";
+import { BOUT_DURATION_FATIGUE_PER_TICK } from "@/constants/engine/condition";
+import { RIKISHI_BOUT_HISTORY_MAX } from "@/constants/engine/bout";
 
 // ─── 1. Standings ────────────────────────────────────────────────────────────
 
@@ -367,7 +367,7 @@ function notifySecondarySystems(
     });
   }
 
-  builder.merge(rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));
+  builder.merge(onBoutResolvedRivalries(world, { match, result, east, west }));
   builder.merge(economics.onBoutResolvedEconomics(world, { match, result, east, west }));
 
   // Legacy economics.kinboshiCount counter — written AFTER the kensho

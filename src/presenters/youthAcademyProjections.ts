@@ -1,16 +1,16 @@
 /**
  * youthAcademyProjections.ts — projects youth academy state for UI.
  */
-import type { WorldState } from "../engine/types/world";
+import type { WorldState } from "@/engine/types/world";
 import {
   getYouthAcademy,
   getMaxProspects,
   getMaxStaff,
   getUpgradeCost,
   MAX_ACADEMY_LEVEL,
-} from "../engine/systems/recruitment/YouthAcademyService";
-import type { AcademyStaff } from "../engine/types/academy";
-import type { AvatarIdentity } from "../engine/types/avatar";
+} from "@/engine/systems/recruitment/YouthAcademyService";
+import type { AcademyStaff } from "@/engine/types/academy";
+import type { AvatarIdentity } from "@/engine/types/avatar";
 
 export interface YouthProspectDTO {
   id: string;

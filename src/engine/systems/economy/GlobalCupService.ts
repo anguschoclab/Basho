@@ -5,20 +5,20 @@
  * (Phase 3: Global Circuit & Rivalry Dynamics)
  */
 
-import { WorldState } from "../../types/world";
-import { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { isForeign } from "../../utils/identity";
+import { WorldState } from "@/engine/types/world";
+import { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { isForeign } from "@/engine/utils/identity";
 import type {
   GlobalCupMatch,
   GlobalCupParticipant,
   GlobalCupState,
   GlobalCupHistoryEntry,
   GlobalCupBoutResult,
-} from "../../types/globalCup";
-import { getRikishi } from "../../queries";
+} from "@/engine/types/globalCup";
+import { getRikishi } from "@/engine/queries";
 
 /**
  * Selection: Top 6 JSA Rikishi (by Rank) + 2 International Challengers.

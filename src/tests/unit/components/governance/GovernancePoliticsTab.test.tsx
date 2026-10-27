@@ -3,7 +3,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived.tsx";
+import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived";
 
 vi.mock("@/components/ui/tabs", () => ({
   TabsContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { applyOyakataIntervention } from "@/engine/actions/OyakataIntervention";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { INTERVENTION_MOTIVATION_BOOST } from "@/constants/engine/generation";

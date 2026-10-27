@@ -9,11 +9,13 @@
  * updated to the new module locations in the same commit as the move).
  */
 import { describe, it, expect } from "vitest";
-import { checkRetirement, _generateRookie } from "@/engine/lifecycle";
-import { generateShikona, generateRikishiName, generateOyakataName } from "@/engine/shikona";
-import { compareBanzuke, computeVariableSanyakuCounts } from "@/engine/banzuke";
+import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
+import { _generateRookie } from "@/engine/lifecycle/rookieFactory";
+import { generateShikona, generateRikishiName } from "@/engine/shikona/generateShikona";
+import { generateOyakataName } from "@/engine/shikona/oyakataNames";
+import { compareBanzuke, computeVariableSanyakuCounts } from "@/engine/banzuke/banzukeOps";
 import { SeededRNG } from "@/engine/rng";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "./utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 

@@ -5,8 +5,8 @@
  * (Phase 5: The Legacy Engine)
  */
 
-import type { TrainingPhilosophy } from "../../types/dynasty";
-import type { Oyakata, OyakataArchetype } from "../../types/oyakata";
+import type { TrainingPhilosophy } from "@/engine/types/dynasty";
+import type { Oyakata, OyakataArchetype } from "@/engine/types/oyakata";
 
 /** Dimension shift — how a new Oyakata's archetype nudges the inherited philosophy. */
 const ARCHETYPE_SHIFTS: Record<OyakataArchetype, Partial<TrainingPhilosophy>> = {

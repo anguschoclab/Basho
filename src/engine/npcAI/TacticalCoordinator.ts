@@ -6,19 +6,19 @@
  * stance to keep weekly decisions aligned with the active multi-week plan.
  */
 
-import type { AIPlan } from "../ai/types";
-import type { PerceptionSnapshot } from "../perception";
-import type { TrainingIntensity } from "../types/training";
+import type { AIPlan } from "@/engine/ai/types";
+import type { PerceptionSnapshot } from "@/engine/perception";
+import type { TrainingIntensity } from "@/engine/types/training";
 import type {
   TrainingWorkerResult,
   ScoutingWorkerResult,
   PersonnelWorkerResult,
-} from "../npcAIWorkers";
-import type { FinanceAgentResult } from "../agents/FinanceAgent";
-import type { GovernanceAgentResult } from "../agents/GovernanceAgent";
-import type { RecruitmentAgentResult } from "../agents/RecruitmentAgent";
-import type { RivalryAgentResult } from "../agents/RivalryAgent";
-import type { AgentDecisions, NPCWeeklyDecision } from "./types";
+} from "@/engine/npcAIWorkers";
+import type { FinanceAgentResult } from "@/engine/agents/FinanceAgent";
+import type { GovernanceAgentResult } from "@/engine/agents/GovernanceAgent";
+import type { RecruitmentAgentResult } from "@/engine/agents/RecruitmentAgent";
+import type { RivalryAgentResult } from "@/engine/agents/RivalryAgent";
+import type { AgentDecisions, NPCWeeklyDecision } from "@/engine/npcAI/types";
 
 export interface CoordinationInput {
   trainingProposal: TrainingWorkerResult;

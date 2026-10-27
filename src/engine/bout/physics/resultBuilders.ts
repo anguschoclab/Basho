@@ -1,17 +1,17 @@
-import type { Rikishi } from "../../types/rikishi";
-import type { BoutResult, BoutLogEntry } from "../../types/basho";
-import type { Side } from "../../types/banzuke";
-import type { KimariteId } from "../../types/combat";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BoutLogEntry } from "@/engine/types/basho";
+import type { Side } from "@/engine/types/banzuke";
+import type { KimariteId } from "@/engine/types/combat";
 import {
   DURATION_MIN_SECONDS,
   CLOCK_MULTIPLIER,
   EXCITEMENT_TICK_DIVISOR,
   EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS,
-} from "../../../constants/engine/physics";
-import type { EngineStateV2 } from "../../types/combat-spatial";
-import type { BoutContext } from "../boutUtils";
-import type { CombatArchetype, TacticalFamily } from "../../types/combat";
-import { getKimarite } from "../../kimarite";
+} from "@/constants/engine/physics";
+import type { EngineStateV2 } from "@/engine/types/combat-spatial";
+import type { BoutContext } from "@/engine/bout/boutUtils";
+import type { CombatArchetype, TacticalFamily } from "@/engine/types/combat";
+import { getKimarite } from "@/engine/kimariteRegistry";
 
 export function buildBoutResultV2(
   bout: BoutContext,

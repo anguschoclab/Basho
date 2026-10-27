@@ -8,7 +8,7 @@ import type {
   GovernanceAgentResult,
   RecruitmentAgentResult,
   RivalryAgentResult,
-} from "@/engine/agents";
+} from "@/engine/agents/index";
 import type { PersonnelWorkerResult } from "@/engine/npcAIWorkers";
 import type { AgentDecisions } from "@/engine/npcAI/types";
 

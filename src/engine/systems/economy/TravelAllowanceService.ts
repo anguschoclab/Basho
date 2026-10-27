@@ -7,22 +7,22 @@
  * ~¥450K–¥1.5M/year depending on rank. This is paid by the JSA.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   TRAVEL_ALLOWANCE_YEARLY,
   TSUKEBITO_COSTS_MONTHLY,
   KOENKAI_INCOME_SPLIT,
-} from "../../../constants/engine/economic";
+} from "@/constants/engine/economic";
 import {
   MONTHLY_DIVISOR,
   TRAVEL_ALLOWANCE_CASH_SPLIT,
   TRAVEL_ALLOWANCE_RETIREMENT_SPLIT,
-} from "../../../constants/engine/economyExtended";
-import { calculateKoenkaiIncome } from "./SponsorshipService";
-import { getRikishi } from "../../queries";
+} from "@/constants/engine/economyExtended";
+import { calculateKoenkaiIncome } from "@/engine/systems/economy/SponsorshipService";
+import { getRikishi } from "@/engine/queries";
 
 /**
  * Pay travel/jungyo allowance to sekitori.

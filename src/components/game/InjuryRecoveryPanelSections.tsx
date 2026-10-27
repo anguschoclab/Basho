@@ -22,8 +22,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
-import { getSeverityColor, getSeverityBadge } from "./severityHelpers";
-import { GomenfudaStatusBadge } from "./GomenfudaStatusBadge";
+import { getSeverityColor, getSeverityBadge } from "@/components/game/severityHelpers";
+import { GomenfudaStatusBadge } from "@/components/game/GomenfudaStatusBadge";
 import type { projectGomenfuda } from "@/presenters/projections/governanceProjections";
 
 type Digest = NonNullable<ReturnType<typeof projectMedicalUIDigest>>;

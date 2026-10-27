@@ -15,24 +15,24 @@
  * pre-phase world state or performs its own calculations.
  */
 
-import type { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { CrisisService } from "../../systems/narrative/CrisisService";
+import { CrisisService } from "@/engine/systems/narrative/CrisisService";
 import {
   getHeya,
   getRikishi,
   getRikishiAnywhere,
   getHeyaRoster,
   getOyakataForHeya,
-} from "../../queries";
-import { spawnNarrativeAgent } from "../../agents/NarrativeAgent";
-import { scanRecentEvents } from "../../events";
-import { narrativeEventMap } from "../../bard/narrativeEventMap";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngForWorld } from "../../rng";
-import type { NarrativeContext } from "../../types/events";
+} from "@/engine/queries";
+import { spawnNarrativeAgent } from "@/engine/agents/NarrativeAgent";
+import { scanRecentEvents } from "@/engine/events/events";
+import { narrativeEventMap } from "@/engine/bard/narrativeEventMap";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngForWorld } from "@/engine/rng";
+import type { NarrativeContext } from "@/engine/types/events";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 

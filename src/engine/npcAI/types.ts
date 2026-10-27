@@ -1,7 +1,7 @@
-import type { Id } from "../types/common";
-import type { OyakataArchetype, OyakataMood } from "../types/oyakata";
-import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../types/training";
-import type { StateImpact } from "../core/StateImpact";
+import type { Id } from "@/engine/types/common";
+import type { OyakataArchetype, OyakataMood } from "@/engine/types/oyakata";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/types/training";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 export interface AgentDecisions {
   finance: {

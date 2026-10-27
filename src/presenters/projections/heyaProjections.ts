@@ -5,10 +5,10 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { HeyaDataUI } from "../uiDigestTypes";
-import { projectRikishi } from "../rikishi";
-import type { UIRikishi } from "../rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { HeyaDataUI } from "@/presenters/uiDigestTypes";
+import { projectRikishi } from "@/presenters/rikishi/index";
+import type { UIRikishi } from "@/presenters/rikishi/index";
 
 /**
  * Project heya data with oyakata for ceremony components.

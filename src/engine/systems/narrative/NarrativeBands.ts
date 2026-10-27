@@ -79,7 +79,7 @@ import {
   HEIGHT_BAND_AVERAGE_MAX,
   HEIGHT_BAND_TALL_MAX,
   HEIGHT_BAND_GIANT_MAX,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 /** Generic band definition structure */
 export interface BandDef<T extends string> {

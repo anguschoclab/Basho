@@ -5,7 +5,7 @@
  * (Phase P: Stable Town & Infrastructure)
  */
 
-import { FACILITY_BASE_COSTS, FACILITY_MAINTENANCE_COSTS } from "../../constants/engine/facilities";
+import { FACILITY_BASE_COSTS, FACILITY_MAINTENANCE_COSTS } from "@/constants/engine/facilities";
 
 export type FacilityId =
   | "weights_room" // Buffs Strength growth & Butsukari drill

@@ -18,14 +18,14 @@
  * bashoId + day + rikishiId.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import type { Id } from "../../types/common";
-import type { Oyakata } from "../../types/oyakata";
-import type { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { getRikishi } from "../../queries";
-import { rngFromSeed } from "../../rng";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { Id } from "@/engine/types/common";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getRikishi } from "@/engine/queries";
+import { rngFromSeed } from "@/engine/rng";
 
 type BashoPosture = "conservative" | "standard" | "aggressive";
 

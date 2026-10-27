@@ -3,9 +3,9 @@ import {
   type Rank,
   type BashoPerformance,
   type BanzukeEntry,
-} from "../types/banzuke";
-import { kachiKoshiThreshold } from "./banzukeHelpers";
-import { OzekiKadobanState } from "./ozekiLogic";
+} from "@/engine/types/banzuke";
+import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
+import { OzekiKadobanState } from "@/engine/banzuke/ozekiLogic";
 import {
   ABSENCE_WEIGHT_FULL_KYUJO,
   ABSENCE_WEIGHT_HEAVY_KYUJO,
@@ -51,7 +51,7 @@ import {
   MAEGASHIRA_TOP_RANK_THRESHOLD,
   JONOKUCHI_YUSHO_TIER,
   JONOKUCHI_KACHI_TIER,
-} from "../../constants/engine/banzuke";
+} from "@/constants/engine/banzuke";
 
 /** Calculation of absence penalty based on bouts. */
 function calculateAbsencePenalty(absences: number, totalBouts: number): number {

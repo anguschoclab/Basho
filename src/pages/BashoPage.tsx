@@ -3,7 +3,7 @@
 
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { CornerAdvicePanel } from "@/components/game/CornerAdvicePanel";
 import { BashoStandingsEvolution } from "@/components/basho/BashoStandingsEvolution";

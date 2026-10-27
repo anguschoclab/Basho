@@ -18,6 +18,6 @@ export {
   getForeignCountsByHeya,
   countsAsForeignFromRikishi,
   candidateConsumesForeignSlot,
-} from "./talentPoolReads";
+} from "@/engine/systems/generation/talentPoolReads";
 
-export { scoutPool, scoutCandidate, getScoutedCandidateView } from "./talentPoolScoutingOps";
+export { scoutPool, scoutCandidate, getScoutedCandidateView } from "@/engine/systems/generation/talentPoolScoutingOps";

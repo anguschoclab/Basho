@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
-import { makeMockWorld, makeMockHeya } from "../utils";
-import { toKeyedMap } from "@/engine/utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import type { TalentCandidate } from "@/engine/types/talent";
 import type { Oyakata } from "@/engine/types/oyakata";
 

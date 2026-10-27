@@ -5,18 +5,18 @@
  * Facade composing the per-domain generators in ./postBashoPress/.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { PbpLine } from "../../bout/boutNarrative";
-import { rngFromSeed } from "../../rng";
-import { getRikishi } from "../../queries";
-import { generateChampionLines } from "./postBashoPress/champion";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { PbpLine } from "@/engine/bout/boutNarrative";
+import { rngFromSeed } from "@/engine/rng";
+import { getRikishi } from "@/engine/queries";
+import { generateChampionLines } from "@/engine/systems/narrative/postBashoPress/champion";
 import {
   generatePrizeWinnerLines,
   generateYokozunaBidLines,
   generateOzekiStakeLines,
-} from "./postBashoPress/prizes";
-import { generateLowerDivisionChampionLines } from "./postBashoPress/lowerDivision";
+} from "@/engine/systems/narrative/postBashoPress/prizes";
+import { generateLowerDivisionChampionLines } from "@/engine/systems/narrative/postBashoPress/lowerDivision";
 
 export interface PressConferenceContext {
   yushoId: Id;

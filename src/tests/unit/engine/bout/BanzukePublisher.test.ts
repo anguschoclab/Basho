@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
-import { mockRikishi, makeMockWorld, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";

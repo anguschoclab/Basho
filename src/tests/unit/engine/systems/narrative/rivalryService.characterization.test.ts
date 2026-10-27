@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { RivalryService } from "@/engine/systems/narrative/RivalryService";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { makeMockWorld, mockRikishi } from "../../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BoutResult } from "@/engine/types/basho";
 import type { RivalriesState } from "@/constants/engine/rivalry";

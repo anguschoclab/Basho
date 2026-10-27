@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import type { BanzukeRevealEntry } from "@/presenters/projections/recapBanzukeRevealProjections";
-import { RevealEntryCard } from "./BanzukeRevealSections";
+import { RevealEntryCard } from "@/components/game/BanzukeRevealSections";
 
 type RevealEntry = BanzukeRevealEntry;
 

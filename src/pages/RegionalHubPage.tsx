@@ -1,6 +1,6 @@
 import { Building2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";

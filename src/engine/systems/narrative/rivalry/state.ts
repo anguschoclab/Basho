@@ -1,18 +1,18 @@
-import type { WorldState } from "../../../types/world";
-import type { Id } from "../../../types/common";
-import { EntityCollection } from "../../../core/EntityCollection";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import {
   type RivalriesState,
   type RivalryPairState,
   type RivalryKey,
-} from "../../../../constants/engine/rivalry";
+} from "@/constants/engine/rivalry";
 import {
   RIVALRY_DECAY_WEEKS_SHORT,
   RIVALRY_DECAY_WEEKS_MEDIUM,
   RIVALRY_DECAY_RATE_SHORT,
   RIVALRY_DECAY_RATE_MEDIUM,
   RIVALRY_DECAY_RATE_LONG,
-} from "../../../../constants/engine/rivalry";
+} from "@/constants/engine/rivalry";
 
 /**
  * Flat lookup for rivalry decay rate based on weeks since last meeting.

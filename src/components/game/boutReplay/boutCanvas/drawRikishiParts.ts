@@ -6,10 +6,10 @@
  * values are verbatim from draw.ts.
  */
 
-import type { RikishiState } from "./types";
+import type { RikishiState } from "@/components/game/boutReplay/boutCanvas/types";
 import type { BoutAnimationFamily } from "@/presenters/engineAccess";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { clamp } from "./math";
+import { clamp } from "@/components/game/boutReplay/boutCanvas/math";
 import { BOUT_FIGURE_COLORS } from "@/constants/ui/drawingPalette";
 
 /** Computed limb/body offsets for one rikishi pose. */

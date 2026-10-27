@@ -9,28 +9,28 @@
  * domain can't fire on consecutive ticks.
  */
 
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import type { Heya } from "../types/heya";
-import type { Oyakata } from "../types/oyakata";
-import type { StateImpact } from "../core/StateImpact";
-import type { AgentDecisions } from "./types";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import { getHeya, getRikishiAnywhere } from "../queries";
-import { buyMyoseki } from "../myosekiMarket";
-import { hireStaff } from "../staff";
-import type { StaffRole } from "../types/staff";
-import { buildYouthAcademy, upgradeYouthAcademy } from "../systems/recruitment/YouthAcademyService";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { AgentDecisions } from "@/engine/npcAI/types";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getHeya, getRikishiAnywhere } from "@/engine/queries";
+import { buyMyoseki } from "@/engine/myosekiMarket";
+import { hireStaff } from "@/engine/staff";
+import type { StaffRole } from "@/engine/types/staff";
+import { buildYouthAcademy, upgradeYouthAcademy } from "@/engine/systems/recruitment/YouthAcademyService";
 import {
   PoliticalFavorsService,
   POLITICAL_FAVORS,
-} from "../systems/governance/PoliticalFavorsService";
-import { narrativeEventMap } from "../bard/narrativeEventMap";
-import { BardEngine } from "../bard/BardEngine";
-import { rngForWorld } from "../rng";
-import { getMemory } from "./MemoryStore";
-import { issueBailoutLoanIfNeeded } from "../loans";
-import { FACTION_BAILOUT_AMOUNT } from "../../constants/engine/economic";
+} from "@/engine/systems/governance/PoliticalFavorsService";
+import { narrativeEventMap } from "@/engine/bard/narrativeEventMap";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngForWorld } from "@/engine/rng";
+import { getMemory } from "@/engine/npcAI/MemoryStore";
+import { issueBailoutLoanIfNeeded } from "@/engine/loans";
+import { FACTION_BAILOUT_AMOUNT } from "@/constants/engine/economic";
 
 /** Minimum weeks between executions of the same domain for one heya. */
 const DOMAIN_COOLDOWN_WEEKS: Record<string, number> = {

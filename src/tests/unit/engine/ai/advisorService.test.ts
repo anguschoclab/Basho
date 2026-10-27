@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, mockRikishi, makeMockHeya, makeMockBasho } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya, makeMockBasho } from "@/tests/unit/engine/utils";
 import { generateRecommendations } from "@/engine/advisor/AdvisorService";
 
 const PLAYER_HEYA_ID = "player-heya";
@@ -40,7 +40,7 @@ describe("generateRecommendations", () => {
       pairs: {
         "r1-x": { aId: "r1", bId: "x", key: "r1-x", heat: 70, tone: "heated" },
       },
-    } as unknown as import("@/engine/rivalries").RivalriesState;
+    } as unknown as import("@/constants/engine/rivalry").RivalriesState;
     const recs = generateRecommendations(world);
     expect(recs.some((r) => r.id === "rivalry-heated")).toBe(true);
   });

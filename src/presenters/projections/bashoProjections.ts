@@ -5,23 +5,23 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
-import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "../uiDigestTypes";
-import { projectRikishi } from "../rikishi";
-import { generateH2HCommentary } from "../../engine/h2h";
-import { getRivalry } from "../../engine/rivalries";
-import { toRivalryHeatBand } from "../../engine/descriptorBands";
-import { compareRanks } from "../../engine/banzuke";
-import { toRankPosition } from "../../engine/types/banzuke";
-import { sortStandings } from "../../engine/utils/sort";
-import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "../../engine/calendar";
-import { isNakabiDay } from "../../engine/systems/basho/NakabiService";
-import { getRikishiByDivision, getPlayerHeya } from "../../engine/queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "@/presenters/uiDigestTypes";
+import { projectRikishi } from "@/presenters/rikishi/index";
+import { generateH2HCommentary } from "@/engine/h2h";
+import { getRivalry } from "@/engine/narrative/rivalry/rivalriesState";
+import { toRivalryHeatBand } from "@/engine/descriptorBands";
+import { compareRanks } from "@/engine/banzuke/banzukeHelpers";
+import { toRankPosition } from "@/engine/types/banzuke";
+import { sortStandings } from "@/engine/utils/sort";
+import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "@/engine/calendar";
+import { isNakabiDay } from "@/engine/systems/basho/NakabiService";
+import { getRikishiByDivision, getPlayerHeya } from "@/engine/queries";
 import {
   isSanyakuBout,
   KORE_YORI_SANYAKU_ANNOUNCEMENT,
-} from "../../constants/engine/koreYoriSanyaku";
+} from "@/constants/engine/koreYoriSanyaku";
 
 /**
  * Project tournament live data for BashoPage.

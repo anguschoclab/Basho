@@ -5,7 +5,7 @@ import {
   checkYaocho,
   type YaochoIndicators,
 } from "@/engine/bout/yaocho";
-import { mockRikishi, makeMockWorld, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 

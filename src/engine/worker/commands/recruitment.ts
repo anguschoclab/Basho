@@ -5,20 +5,20 @@
  * and academy construction/management commands.
  */
 
-import * as talentpool from "../../systems/generation/TalentPoolService";
-import { poachCandidate } from "../../systems/generation/CandidatePoolService";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import { setScoutingInvestment } from "../../scoutingStore";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import { poachCandidate } from "@/engine/systems/generation/CandidatePoolService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { setScoutingInvestment } from "@/engine/scoutingStore";
 import {
   buildYouthAcademy,
   upgradeYouthAcademy,
   investInAcademy,
   hireAcademyStaff,
   promoteIntake,
-} from "../../systems/recruitment/YouthAcademyService";
-import { WorldCircuitService, manageAcademy } from "../../systems/worldCircuit/WorldCircuitService";
-import type { WorkerRuntime } from "../runtime";
-import type { CommandHandlerMap } from "./types";
+} from "@/engine/systems/recruitment/YouthAcademyService";
+import { WorldCircuitService, manageAcademy } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import type { WorkerRuntime } from "@/engine/worker/runtime";
+import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
 export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
   return {

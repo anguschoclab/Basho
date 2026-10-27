@@ -7,13 +7,13 @@
  * `TacticalCoordinator` and stored in oyakata memory.
  */
 
-import type { AIContext, AIPlan, AIGoal, AIConstraint } from "../ai/types";
-import type { PerceptionSnapshot } from "../perception";
-import type { LeaguePerception } from "../ai/types";
-import { getHeya } from "../queries";
-import { computePlanBaseline, computeStallPenalty } from "./planOutcomes";
-import { factionPlanBonus } from "./factions";
-import { LEGACY_PLAN_BONUS, GRUDGE_PLAN_BONUS } from "../../constants/engine/succession";
+import type { AIContext, AIPlan, AIGoal, AIConstraint } from "@/engine/ai/types";
+import type { PerceptionSnapshot } from "@/engine/perception";
+import type { LeaguePerception } from "@/engine/ai/types";
+import { getHeya } from "@/engine/queries";
+import { computePlanBaseline, computeStallPenalty } from "@/engine/npcAI/planOutcomes";
+import { factionPlanBonus } from "@/engine/npcAI/factions";
+import { LEGACY_PLAN_BONUS, GRUDGE_PLAN_BONUS } from "@/constants/engine/succession";
 
 interface PlanTemplate {
   planId: string;

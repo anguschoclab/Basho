@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout } from "@/engine/bout/boutResolver";
-import { mockRikishi, makeMockBasho, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockBasho, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { BoutContext } from "@/engine/bout/boutPhysics";
 import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
 import type { WorldState } from "@/engine/types/world";

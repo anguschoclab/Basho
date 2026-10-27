@@ -8,9 +8,9 @@
  * 2. Log overload events when staff are overworked.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { tickStaffWeek } from "../../staff";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { tickStaffWeek } from "@/engine/staff";
 
 export function phase01_week_staff(world: WorldState): StateImpact {
   return tickStaffWeek(world);

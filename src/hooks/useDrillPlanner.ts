@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import type { DrillType } from "@/engine/types/training";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 
 export const DAYS = [
   { id: 1, label: "Mon", short: "M" },

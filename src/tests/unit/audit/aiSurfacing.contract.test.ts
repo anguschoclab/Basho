@@ -20,7 +20,7 @@ import { fillVacanciesForNPCWithBidding } from "@/engine/systems/generation/Tale
 import { executeAgentDecisions } from "@/engine/npcAI/execution";
 import type { AgentDecisions } from "@/engine/npcAI/types";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { makeMockWorld, makeMockHeya } from "../engine/utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 const ROOT = join(__dirname, "../../../..");

@@ -5,17 +5,17 @@
  * Extracted from phase05_monthly_boundary.ts for modularity.
  */
 
-import type { WorldState } from "../../../../types/world";
-import type { Heya } from "../../../../types/heya";
-import type { Rikishi } from "../../../../types/rikishi";
-import type { HeyaUpdates } from "../types";
-import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
-import { RANK_HIERARCHY } from "../../../../banzuke";
-import { getRikishi } from "../../../../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { getRikishi } from "@/engine/queries";
 import {
   SEKITORI_OVERHEAD_MONTHLY,
   NON_SEKITORI_OVERHEAD_MONTHLY,
-} from "../../../../../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 /**
  * Process monthly heya economics:

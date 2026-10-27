@@ -7,15 +7,15 @@
  */
 
 import React, { useMemo } from "react";
-import { UIRikishi } from "../../presenters/uiModels";
-import { Card, CardContent } from "../ui/card";
-import { Badge } from "../ui/badge";
+import { UIRikishi } from "@/presenters/uiModels";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   RikishiCardHeader,
   CitizenshipSection,
   PrestigeSection,
   SalarySection,
-} from "./RikishiCardSections";
+} from "@/components/game/RikishiCardSections";
 
 interface RikishiCardProps {
   rikishi: UIRikishi;

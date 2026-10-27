@@ -14,11 +14,11 @@
  * - 7 total bouts instead of 15
  */
 
-import type { BashoState } from "../types/basho";
-import type { Division } from "../types/banzuke";
-import type { Rikishi } from "../types/rikishi";
-import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
-import { toIdMap } from "../utils";
+import type { BashoState } from "@/engine/types/basho";
+import type { Division } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { scorePairing, type MatchPairing, type MatchmakingRules } from "@/engine/matchmaking/MatchmakingPhases";
+import { toIdMap } from "@/engine/utils/index";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 

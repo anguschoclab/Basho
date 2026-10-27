@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculateHansokuChance, tryHansoku } from "@/engine/bout/kinjite";
-import { mockRikishi, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { BoutContext } from "@/engine/bout/boutUtils";
 

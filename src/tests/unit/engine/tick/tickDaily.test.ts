@@ -6,7 +6,7 @@ import {
   enterPostBasho,
   enterInterim,
 } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import * as pipelineRunner from "@/engine/tick/pipelineRunner";
 import { logger } from "@/engine/utils/Logger";
 

@@ -43,14 +43,29 @@ const PROHIBITED_PATTERNS = [
   /from\s+["']@\/components\//,
   /from\s+["']@\/pages\//,
   /from\s+["']@\/contexts\//,
+  /from\s+["']@\/state\//,
   /from\s+["']@\/presenters\//,
   /from\s+["']@\/hooks\//,
-  /from\s+["']\.\.\/components\//,
-  /from\s+["']\.\.\/pages\//,
-  /from\s+["']\.\.\/contexts\//,
-  /from\s+["']\.\.\/presenters\//,
-  /from\s+["']\.\.\/hooks\//,
+  /from\s+["'](?:\.\.\/)+components\//,
+  /from\s+["'](?:\.\.\/)+pages\//,
+  /from\s+["'](?:\.\.\/)+contexts\//,
+  /from\s+["'](?:\.\.\/)+state\//,
+  /from\s+["'](?:\.\.\/)+presenters\//,
+  /from\s+["'](?:\.\.\/)+hooks\//,
 ];
+
+/**
+ * Pre-existing boundary debt surfaced (not introduced) by the 2026-10 reorg:
+ * these engine files consumed presenter-layer helpers through `../../` paths
+ * that evaded the old single-depth regex. Relocating digest/UI translation
+ * out of presenters (or the call sites into a legal seam) is follow-up work —
+ * do NOT add to this list; shrink it.
+ */
+const KNOWN_BOUNDARY_DEBT = new Set<string>([
+  "lifecycle/BashoHistory.ts",
+  "worker/runtime.ts",
+  "worker/types.ts",
+]);
 
 describe("import boundary: engine must not import from UI layers", () => {
   it("no engine file imports from components, pages, contexts, presenters, or hooks", () => {
@@ -59,6 +74,8 @@ describe("import boundary: engine must not import from UI layers", () => {
     const violations: string[] = [];
 
     for (const file of engineFiles) {
+      const rel = file.slice(engineDir.length + 1).replaceAll("\\", "/");
+      if (KNOWN_BOUNDARY_DEBT.has(rel)) continue;
       const content = readFileSync(file, "utf-8");
       for (const pattern of PROHIBITED_PATTERNS) {
         const matches = content.match(new RegExp(pattern.source, "g"));

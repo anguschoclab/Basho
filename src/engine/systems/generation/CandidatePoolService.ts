@@ -16,19 +16,19 @@
  *   listNPCWatchedCandidates — read operator for UI
  */
 
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import type { Id } from "../../types/common";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { Id } from "@/engine/types/common";
 import type {
   TalentPoolWorldState,
   TalentCandidate,
   SuitorInterestBand,
   SuitorOfferType,
-} from "../../types/talent";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { candidateConsumesForeignSlot, foreignSlotOccupied } from "../../npcAI/ForeignSlotPolicy";
+} from "@/engine/types/talent";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { candidateConsumesForeignSlot, foreignSlotOccupied } from "@/engine/npcAI/ForeignSlotPolicy";
 
 // ── Pool Initialization ───────────────────────────────────────────────────
 

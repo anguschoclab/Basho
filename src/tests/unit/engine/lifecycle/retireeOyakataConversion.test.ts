@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { HEYA_COUNT_CAP } from "@/constants/engine/economic";
 
 describe("processRetireeOyakataConversion — guard conditions", () => {

@@ -12,7 +12,7 @@ import {
   FacilityUpgradeToast,
   FacilityAxisCard,
   FacilitiesInfoCard,
-} from "./FacilitiesManagementPanelSections";
+} from "@/components/game/FacilitiesManagementPanelSections";
 
 /** Defines the structure for facilities management panel props. */
 interface FacilitiesManagementPanelProps {

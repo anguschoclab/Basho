@@ -4,7 +4,7 @@
  * House styles for shikona generation system.
  */
 
-import type { HouseStyle } from "./types";
+import type { HouseStyle } from "@/engine/shikona/types";
 
 export const HOUSE_STYLES: HouseStyle[] = [
   {

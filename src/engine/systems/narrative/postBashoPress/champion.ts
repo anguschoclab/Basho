@@ -1,8 +1,8 @@
-import type { Rikishi } from "../../../types/rikishi";
-import type { PbpLine } from "../../../bout/boutNarrative";
-import { BardEngine } from "../../../bard/BardEngine";
-import type { rngFromSeed } from "../../../rng";
-import { emitLine } from "./emit";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { PbpLine } from "@/engine/bout/boutNarrative";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import type { rngFromSeed } from "@/engine/rng";
+import { emitLine } from "@/engine/systems/narrative/postBashoPress/emit";
 
 /**
  * Champion press conference lines: persona opener, walking wounded,

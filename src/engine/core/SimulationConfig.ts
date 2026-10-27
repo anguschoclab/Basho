@@ -3,7 +3,7 @@
  * All magic numbers and business rules are externalized here.
  */
 
-import type { Division } from "../types/banzuke";
+import type { Division } from "@/engine/types/banzuke";
 
 export const SIMULATION_CONFIG = {
   /** Prize amounts (2027 JSA revision) */

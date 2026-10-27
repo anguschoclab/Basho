@@ -10,54 +10,54 @@
  * 4. Apply management decisions purely to the world state.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { Heya } from "../../types/heya";
-import type { Oyakata } from "../../types/oyakata";
-import type { MetaAdaptation } from "../../npcAI/ArchetypeAdaptation";
-import type { NPCWeeklyDecision } from "../../npcAI/types";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { getAvailableStables } from "../../selectors";
-import { buildPerceptionSnapshot } from "../../perception";
-import { buildLeaguePerception } from "../../npcAI/LeaguePerception";
-import { buildAIContext } from "../../npcAI/contextBuilder";
-import { createPlan, shouldReplan } from "../../npcAI/StrategicPlanner";
-import { makeNPCWeeklyDecision } from "../../npcAI";
-import { enforceHardCapRosterOverflow } from "../../overflow";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { MetaAdaptation } from "@/engine/npcAI/ArchetypeAdaptation";
+import type { NPCWeeklyDecision } from "@/engine/npcAI/types";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getAvailableStables } from "@/engine/selectors";
+import { buildPerceptionSnapshot } from "@/engine/perception";
+import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
+import { buildAIContext } from "@/engine/npcAI/contextBuilder";
+import { createPlan, shouldReplan } from "@/engine/npcAI/StrategicPlanner";
+import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
+import { enforceHardCapRosterOverflow } from "@/engine/overflow";
 import {
   getMemory,
   setActivePlan,
   archiveActivePlan,
   recordDecision,
-} from "../../npcAI/MemoryStore";
-import { evaluatePlanOutcome, planPrimaryMetricOrdinal } from "../../npcAI/planOutcomes";
-import { evaluateAdaptation } from "../../npcAI/ArchetypeAdaptation";
-import type { AIContext, AIPlan } from "../../ai/types";
-import { handleNPCMediaEvent, resolveNPCCrisis } from "../../npcAI/handlers";
+} from "@/engine/npcAI/MemoryStore";
+import { evaluatePlanOutcome, planPrimaryMetricOrdinal } from "@/engine/npcAI/planOutcomes";
+import { evaluateAdaptation } from "@/engine/npcAI/ArchetypeAdaptation";
+import type { AIContext, AIPlan } from "@/engine/ai/types";
+import { handleNPCMediaEvent, resolveNPCCrisis } from "@/engine/npcAI/handlers";
 import {
   processOyakataMood,
   consolidateOyakataMemoryPure,
   applyNPCDecisionPure,
   collectManagementDecisionEvents,
   collectStrategyShiftEvents,
-} from "./npc_ai";
-import { ensurePersonaForOyakata } from "../../systems/NPCPersonaService";
-import { getRikishi } from "../../queries";
-import { assignMentor } from "../../lineage";
-import { MentorshipService } from "../../systems/training/MentorshipService";
-import { RANK_HIERARCHY } from "../../types/banzuke";
-import { SparringService } from "../../systems/training/SparringService";
-import type { Rikishi } from "../../types/rikishi";
-import type { SparringChemistry, SparringPair, SparringState } from "../../types/training";
+} from "@/engine/tick/phases/npc_ai/index";
+import { ensurePersonaForOyakata } from "@/engine/systems/NPCPersonaService";
+import { getRikishi } from "@/engine/queries";
+import { assignMentor } from "@/engine/lineage";
+import { MentorshipService } from "@/engine/systems/training/MentorshipService";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { SparringService } from "@/engine/systems/training/SparringService";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { SparringChemistry, SparringPair, SparringState } from "@/engine/types/training";
 import {
   NPC_AI_ROTATION_DIVISOR,
   NPC_AI_ROTATION_MIN_FULL_SWEEP,
-} from "../../../constants/engine/npcStrategy";
-import { resolveNPCRequest, applyRequestOutcome } from "../../rikishiAgency/requests";
-import type { RikishiRequest } from "../../rikishiAgency/types";
-import { electFactionPostures } from "../../npcAI/factions";
-import type { IchimonName, FactionPosture } from "../../types/economy";
+} from "@/constants/engine/npcStrategy";
+import { resolveNPCRequest, applyRequestOutcome } from "@/engine/rikishiAgency/requests";
+import type { RikishiRequest } from "@/engine/rikishiAgency/types";
+import { electFactionPostures } from "@/engine/npcAI/factions";
+import type { IchimonName, FactionPosture } from "@/engine/types/economy";
 
 /**
  * Selects which NPC heyas should make decisions this week.

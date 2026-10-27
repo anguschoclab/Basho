@@ -4,10 +4,10 @@
  * Transforms rikishi rank and division fields.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import { resolveRegistryLabel, resolveRegistryLabelJa } from "../../uiUtilities";
-import type { RikishiRankDTO, RikishiStyleDTO } from "../types";
-import type { CombatArchetype } from "../../../engine/types/combat";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { resolveRegistryLabel, resolveRegistryLabelJa } from "@/presenters/uiUtilities";
+import type { RikishiRankDTO, RikishiStyleDTO } from "@/presenters/rikishi/types";
+import type { CombatArchetype } from "@/engine/types/combat";
 
 /**
  * Transform rank-related fields.

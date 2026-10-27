@@ -5,18 +5,18 @@
  * Uses NPCStrategyFramework to eliminate duplication.
  */
 
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import { buyMyoseki } from "../myosekiMarket";
-import { stableSort } from "../utils/sort";
-import type { OyakataArchetype } from "../types/oyakata";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { buyMyoseki } from "@/engine/myosekiMarket";
+import { stableSort } from "@/engine/utils/sort";
+import type { OyakataArchetype } from "@/engine/types/oyakata";
 import {
   StrategyContext,
   StrategyRule,
   evaluateRulesExclusive,
   TraitChecks,
-} from "./NPCStrategyFramework";
-import { getOyakataStyleProfile } from "../oyakataStylePreferences";
+} from "@/engine/strategy/NPCStrategyFramework";
+import { getOyakataStyleProfile } from "@/engine/oyakataStylePreferences";
 import {
   AMBITIOUS_TRAIT_THRESHOLD,
   RISK_TAKER_TRAIT_THRESHOLD,
@@ -25,9 +25,9 @@ import {
   RUNWAY_MONTHS_STANDARD_STRATEGY,
   MYOSEKI_MAX_FUNDS_RATIO,
   STYLE_ALIGNMENT_SCORE,
-} from "../../constants/engine/economy";
-import { WEIGHT_JOURNEY_STALL_THRESHOLD } from "../training/WeightJourney";
-import { getRikishi } from "../queries";
+} from "@/constants/engine/economy";
+import { WEIGHT_JOURNEY_STALL_THRESHOLD } from "@/engine/training/WeightJourney";
+import { getRikishi } from "@/engine/queries";
 
 function getSortedMyosekiStocks(world: StrategyContext["world"]) {
   if (!world.myosekiMarket) return [];

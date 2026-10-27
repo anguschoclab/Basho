@@ -3,8 +3,8 @@
  * This prevents "Perception Logic Leakage" into React components.
  */
 
-import { Rikishi } from "../engine/types/rikishi";
-import { MediaTone } from "../engine/types/media";
+import { Rikishi } from "@/engine/types/rikishi";
+import { MediaTone } from "@/engine/types/media";
 import { HEAT_BANDS, PERCEPTION_TICKS } from "@/constants/ui/drawingPalette";
 
 export type HealthBadge = "Fresh" | "Worn" | "Struggling" | "Critical" | "Recovering";

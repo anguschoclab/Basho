@@ -7,16 +7,16 @@
  * both the NPC path (weekly phase) and the player path (LoopDecisionEngine).
  */
 
-import type { WorldState } from "../types/world";
-import type { Heya } from "../types/heya";
-import type { Oyakata } from "../types/oyakata";
-import type { Rikishi } from "../types/rikishi";
-import type { ImpactBuilder } from "../core/ImpactBuilder";
-import type { RikishiRequest } from "./types";
-import { clamp } from "../utils/math";
-import { assignMentor } from "../lineage";
-import { MentorshipService } from "../systems/training/MentorshipService";
-import { getRikishi } from "../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { RikishiRequest } from "@/engine/rikishiAgency/types";
+import { clamp } from "@/engine/utils/math";
+import { assignMentor } from "@/engine/lineage";
+import { MentorshipService } from "@/engine/systems/training/MentorshipService";
+import { getRikishi } from "@/engine/queries";
 import {
   DENY_STRESS_DELTA,
   DENY_RESTLESSNESS_DELTA,
@@ -25,7 +25,7 @@ import {
   GRANT_MOTIVATION_DELTA,
   GRANT_STRESS_RELIEF,
   GRANT_SATISFACTION_DELTA,
-} from "../../constants/engine/rikishiAgency";
+} from "@/constants/engine/rikishiAgency";
 
 /** Deterministic archetype/trait answer to a pending request. */
 export function resolveNPCRequest(

@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MentionText } from "./MentionText";
+import { MentionText } from "@/components/MentionText";
 import type { EngineEvent } from "@/engine/types/events";
-import { getEventRoute } from "./layout/eventLogHelpers";
+import { getEventRoute } from "@/components/layout/eventLogHelpers";
 import { Link } from "@tanstack/react-router";
 import {
   Trophy,

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { generateShikona, generateOyakataName, generateRikishiName } from "@/engine/shikona";
+import { generateShikona, generateRikishiName } from "@/engine/shikona/generateShikona";
+import { generateOyakataName } from "@/engine/shikona/oyakataNames";
 
 describe("Shikona Generation System", () => {
   describe("generateShikona Determinism", () => {

@@ -3,9 +3,9 @@
 // Barrel / thin-wrapper — delegates to the B+ spatial engine.
 // =======================================================
 
-import type { Rikishi } from "../types/rikishi";
-import type { BoutResult, BashoState } from "../types/basho";
-import { resolveBoutPhysicsImpl } from "./boutPhaseLoop";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoState } from "@/engine/types/basho";
+import { resolveBoutPhysicsImpl } from "@/engine/bout/boutPhaseLoop";
 import {
   stat,
   jitter,
@@ -16,7 +16,7 @@ import {
   edgeCrisisRecoveryChance,
   conditionMultiplier,
   type BoutContext,
-} from "./boutUtils";
+} from "@/engine/bout/boutUtils";
 
 /** Re-export BoutContext so existing importers still work */
 export type { BoutContext };

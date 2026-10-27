@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
 import type { PerceptionSnapshot } from "@/engine/perception";
 import { createPlan } from "@/engine/npcAI/StrategicPlanner";

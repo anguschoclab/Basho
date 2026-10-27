@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { deriveRecentAchievements } from "@/engine/tick/phases/phase06_narrative";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { EngineEvent } from "@/engine/types/events";
 import type { BashoResult, BoutResult, KeyBoutEntry } from "@/engine/types/basho";
 

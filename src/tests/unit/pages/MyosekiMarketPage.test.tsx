@@ -16,7 +16,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: () => <div data-testid="page-header" />,
 }));
 

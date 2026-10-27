@@ -10,8 +10,8 @@
  * around whatever attrition rate exists.
  */
 
-import type { WorldState } from "../../types/world";
-import { TARGET_ROSTER_SIZE } from "../../../constants/engine/recruitmentExtended";
+import type { WorldState } from "@/engine/types/world";
+import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 
 /**
  * Returns the number of replacements needed this tick to hold the active

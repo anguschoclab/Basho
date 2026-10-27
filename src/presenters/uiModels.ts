@@ -6,9 +6,9 @@
  * compatibility with existing imports while enforcing strict typing.
  */
 
-export * from "./rikishi";
-export * from "./heyaUI";
-export * from "./bashoUI";
-export * from "./banzukeUI";
-export * from "./boutPreviewUI";
-export * from "./uiDigestTypes";
+export * from "@/presenters/rikishi/index";
+export * from "@/presenters/heyaUI";
+export * from "@/presenters/bashoUI";
+export * from "@/presenters/banzukeUI";
+export * from "@/presenters/boutPreviewUI";
+export * from "@/presenters/uiDigestTypes";

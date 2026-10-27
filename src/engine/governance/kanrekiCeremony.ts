@@ -7,10 +7,10 @@
  * In real sumo, this has only happened a handful of times.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { WorldState } from "../types/world";
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 /** Age at which kanreki occurs */
 export const KANREKI_AGE = 60;

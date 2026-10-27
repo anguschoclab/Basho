@@ -10,14 +10,14 @@
  * - Log renewal events
  */
 
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import type { Sponsor } from "../../types/sponsors";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Sponsor } from "@/engine/types/sponsors";
 import {
   SPONSOR_CONTRACT_DURATION_WEEKS,
   SPONSOR_LOYALTY_INCREASE,
-} from "../../../constants/engine/sponsors";
+} from "@/constants/engine/sponsors";
 
 /**
  * Renews a sponsor contract.

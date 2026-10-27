@@ -9,7 +9,7 @@ import {
 } from "@/engine/systems/governance/GomenfudaService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { withdrawRikishi } from "@/engine/systems/health/HealthActions";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Heya } from "@/engine/types/heya";
 
 function makeHeya(id: string): Partial<Heya> {

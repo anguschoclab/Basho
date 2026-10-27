@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { TalentPoolWorldState } from "@/engine/types/talent";
 import type { Id } from "@/engine/types/common";

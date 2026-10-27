@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { phase01_week_staff } from "@/engine/tick/phases/phase01_week_staff";
 import { generateStaff } from "@/engine/staff";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Staff } from "@/engine/types/staff";
 

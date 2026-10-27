@@ -11,8 +11,8 @@
 import { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { StateImpact } from "@/engine/core/StateImpact";
-import { checkRetirement } from "@/engine/lifecycle";
-import { processAllRetirements } from "./processRetirements";
+import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 
 export const CareerService = {
   /**

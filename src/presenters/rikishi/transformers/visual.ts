@@ -4,10 +4,10 @@
  * Transforms avatar, kesho-mawashi, and visual customization.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import type { WorldState } from "../../../engine/types/world";
-import type { RikishiVisualDTO, RikishiH2HDTO } from "../types";
-import { resolveAvatar, rikishiStageInput } from "../../../engine/avatarGenerator";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { RikishiVisualDTO, RikishiH2HDTO } from "@/presenters/rikishi/types";
+import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
 
 /**
  * Transform visual/appearance fields.

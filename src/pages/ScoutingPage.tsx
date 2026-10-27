@@ -9,7 +9,7 @@ import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Eye, UserPlus, Shield } from "lucide-react";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
 
 export default function ScoutingPage() {

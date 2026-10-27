@@ -2,13 +2,14 @@
 // Handles updateMediaFromBout and its private helpers:
 // applyHeadlineEffects, determineBoutTone, getRankImpact, processStreak.
 
-import type { WorldState } from "../../types/world";
-import { MediaState, MediaHeadline, MediaTone, MediaBeat } from "../../types/media";
-import { BoutResult, BashoName } from "../../types/basho";
-import { Division } from "../../types/banzuke";
-import { rngForWorld, SeededRNG } from "../../rng";
-import { getRivalryBoutModifiers, RivalriesState } from "../../rivalries";
-import { clampInt } from "../../utils/math";
+import type { WorldState } from "@/engine/types/world";
+import { MediaState, MediaHeadline, MediaTone, MediaBeat } from "@/engine/types/media";
+import { BoutResult, BashoName } from "@/engine/types/basho";
+import { Division } from "@/engine/types/banzuke";
+import { rngForWorld, SeededRNG } from "@/engine/rng";
+import { getRivalryBoutModifiers } from "@/engine/systems/narrative/RivalryHeatService";
+import { RivalriesState } from "@/constants/engine/rivalry";
+import { clampInt } from "@/engine/utils/math";
 import {
   MAX_MEDIA_HEAT,
   MAX_HEYA_PRESSURE,
@@ -22,25 +23,25 @@ import {
   STREAK_IMPACT_BASE,
   STREAK_IMPACT_MULTIPLIER,
   STREAK_MAIN_EVENT_THRESHOLD,
-} from "../../../constants/engine/media";
+} from "@/constants/engine/media";
 import {
   RIVALRY_TENSION_BEAT_THRESHOLD,
   CONTROVERSY_PROBABILITY_THRESHOLD,
   CONTROVERSY_RANK_IMPACT_THRESHOLD,
   RIVALRY_TENSION_HYPE_THRESHOLD,
   HYPE_PROBABILITY_THRESHOLD,
-} from "../../../constants/engine/mediaImpact";
+} from "@/constants/engine/mediaImpact";
 
 import {
   calculateBoutImpact,
   determineTier,
   calculateHeatBump,
   calculatePressureBump,
-} from "./MediaImpactService";
-import { generateBoutHeadline, generateStreakHeadline } from "./HeadlineGenerator";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { getRikishi } from "../../queries";
+} from "@/engine/systems/media/MediaImpactService";
+import { generateBoutHeadline, generateStreakHeadline } from "@/engine/systems/media/HeadlineGenerator";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getRikishi } from "@/engine/queries";
 
 /**
  * Main entry point for updating media state from a bout.

@@ -4,19 +4,19 @@
  * Governance, media, and political-capital commands.
  */
 
-import * as governance from "../../systems/governance/GovernanceService";
-import { resolveLoopDecision } from "../../loop/LoopDecisionEngine";
-import { issueGovernanceRuling } from "../../systems/governance/ScandalService";
-import { handleMediaEvent } from "../../systems/media/MediaEventService";
-import { spendPoliticalCapital } from "../../systems/governance/ScandalService";
+import * as governance from "@/engine/systems/governance/GovernanceService";
+import { resolveLoopDecision } from "@/engine/loop/LoopDecisionEngine";
+import { issueGovernanceRuling } from "@/engine/systems/governance/ScandalService";
+import { handleMediaEvent } from "@/engine/systems/media/MediaEventService";
+import { spendPoliticalCapital } from "@/engine/systems/governance/ScandalService";
 import {
   PoliticalFavorsService,
   type FavorType,
-} from "../../systems/governance/PoliticalFavorsService";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import { updateHeyaInWorld } from "../../queries";
-import type { WorkerRuntime } from "../runtime";
-import type { CommandHandlerMap } from "./types";
+} from "@/engine/systems/governance/PoliticalFavorsService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { updateHeyaInWorld } from "@/engine/queries";
+import type { WorkerRuntime } from "@/engine/worker/runtime";
+import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
 export function governanceCommands(rt: WorkerRuntime): CommandHandlerMap {
   return {

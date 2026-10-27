@@ -8,7 +8,7 @@
  * after the intentional change lands.
  */
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { clearQueryCaches } from "@/engine/queries";
 import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_boundary";
 import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
@@ -364,7 +364,7 @@ describe("v7 behavior — #962 boutNarrative directional streak paths", () => {
 
   it("east winning streak resolves pre_bout.h2h_winning_streak", async () => {
     const { generateBoutNarrative } = await import("@/engine/bout/boutNarrative");
-    const { mockRikishi, makeMockWorld } = await import("./utils");
+    const { mockRikishi, makeMockWorld } = await import("@/tests/unit/engine/utils");
     const paths = spyResolve();
     const east = mockRikishi("e", {
       shikona: "East",
@@ -385,7 +385,7 @@ describe("v7 behavior — #962 boutNarrative directional streak paths", () => {
 
   it("east losing streak resolves pre_bout.h2h_losing_streak", async () => {
     const { generateBoutNarrative } = await import("@/engine/bout/boutNarrative");
-    const { mockRikishi, makeMockWorld } = await import("./utils");
+    const { mockRikishi, makeMockWorld } = await import("@/tests/unit/engine/utils");
     const paths = spyResolve();
     const east = mockRikishi("e", {
       shikona: "East",

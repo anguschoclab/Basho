@@ -6,11 +6,11 @@
  * recommendations instead of state impacts.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { BoutTactic, TacticalFamily } from "../types/combat";
-import type { AIRecommendation } from "../ai/types";
-import { buildOpponentModel, type OpponentTacticModel } from "../npcAI/OpponentModel";
-import { TACTIC_TO_FAMILY, TACTICAL_MATRIX } from "../types/combat";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutTactic, TacticalFamily } from "@/engine/types/combat";
+import type { AIRecommendation } from "@/engine/ai/types";
+import { buildOpponentModel, type OpponentTacticModel } from "@/engine/npcAI/OpponentModel";
+import { TACTIC_TO_FAMILY, TACTICAL_MATRIX } from "@/engine/types/combat";
 
 export interface CornerAdviceContext {
   playerRikishi: Rikishi;

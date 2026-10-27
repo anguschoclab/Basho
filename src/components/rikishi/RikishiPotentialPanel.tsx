@@ -8,7 +8,7 @@
  * the scouting views instead.
  */
 
-import type { Rikishi, NumericStat } from "@/engine/types";
+import type { Rikishi, NumericStat } from "@/engine/types/index";
 import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";

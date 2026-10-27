@@ -2,7 +2,7 @@
  * Media & Scandal Engine Types
  */
 
-import type { Id } from "./common";
+import type { Id } from "@/engine/types/common";
 
 /** Press persona for interview tone selection. */
 export type PressPersona = "stoic" | "villain" | "celebrity" | "firebrand" | "neutral";

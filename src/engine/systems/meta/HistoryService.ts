@@ -5,12 +5,12 @@
  * (Phase 3: Global Circuit & Rivalry Dynamics)
  */
 
-import { WorldState } from "../../types/world";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import type { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import type { RecordEntry, WorldRecords } from "../../types/records";
+import { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import type { RecordEntry, WorldRecords } from "@/engine/types/records";
 
 export const HistoryService = {
   /**

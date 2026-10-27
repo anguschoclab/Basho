@@ -9,9 +9,9 @@
  * Goal: Clean UI bridge and separation of concerns.
  */
 
-import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../../types/training";
-import { BardEngine } from "../../bard/BardEngine";
-import { SeededRNG } from "../../rng";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/types/training";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { SeededRNG } from "@/engine/rng";
 
 /**
  * Labels must be deterministic per template key and must not consume a

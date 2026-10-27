@@ -4,7 +4,7 @@
  *
  * @param fn - The function to call safely.
  */
-import { warn } from "./Logger";
+import { warn } from "@/engine/utils/Logger";
 
 export function safeCall(fn: () => void): void {
   try {

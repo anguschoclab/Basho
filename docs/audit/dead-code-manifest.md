@@ -1,5 +1,9 @@
 # Dead-Code Audit — Reorg Phase 0 (2026-10-27)
 
+> **STALENESS NOTICE:** This audit's grep/regex findings are a point-in-time
+> snapshot superseded by the reorg's own move history; the file is retained
+> for historical/audit context.
+
 Audit methodology per the reorg plan's safety protocols: every candidate was
 checked for (a) zero production importers (all specifier depths, incl. `../../`
 deep relatives), (b) `git log --follow` history, (c) unique logic not found

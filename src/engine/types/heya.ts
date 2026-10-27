@@ -2,26 +2,26 @@
  * Heya (Stable) Types
  */
 
-import type { Id } from "./common";
+import type { Id } from "@/engine/types/common";
 import type {
   StatureBand,
   PrestigeBand,
   FacilitiesBand,
   KoenkaiBandType,
   RunwayBand,
-} from "./narrative";
+} from "@/engine/types/narrative";
 import type {
   GovernanceStatus,
   GovernanceRuling,
   WelfareState,
   Loan,
   IchimonName,
-} from "./economy";
-import type { HeyaTrainingState } from "./training";
-import type { HistoricalOyakata } from "./history";
-import type { ActiveCrisis } from "./crises";
-import type { InfrastructureState } from "./infrastructure";
-import type { DynastyRecord, TrainingPhilosophy } from "./dynasty";
+} from "@/engine/types/economy";
+import type { HeyaTrainingState } from "@/engine/types/training";
+import type { HistoricalOyakata } from "@/engine/types/history";
+import type { ActiveCrisis } from "@/engine/types/crises";
+import type { InfrastructureState } from "@/engine/types/infrastructure";
+import type { DynastyRecord, TrainingPhilosophy } from "@/engine/types/dynasty";
 
 /** Defines the structure for heya. */
 export interface Heya {

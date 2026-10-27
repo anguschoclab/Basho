@@ -5,7 +5,7 @@ import {
   calculateTorque,
   computeNetTorque,
 } from "@/engine/bout/boutGrip";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { SeededRNG } from "@/engine/rng";
 
 describe("initBeltBattle", () => {

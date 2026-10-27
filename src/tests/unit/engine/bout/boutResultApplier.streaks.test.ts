@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho";

@@ -5,7 +5,7 @@
  * Composed facade over the domain modules in ./eventBus/ — all factories
  * delegate to logEngineEvent with the appropriate type/category/tags.
  */
-import { medicalReportBase, lifecycleEvent, lifecycleAction } from "./eventBus/medical";
+import { medicalReportBase, lifecycleEvent, lifecycleAction } from "@/engine/events/domains/medical";
 import {
   governanceRuling,
   welfareCompliance,
@@ -15,10 +15,10 @@ import {
   facilityUpdate,
   rosterEvent,
   prestigeEvent,
-} from "./eventBus/stable";
-import { bashoStatus, boutResolved, awardConferred, rivalryHeatSpike } from "./eventBus/basho";
-import { financialAlert, monthlyFinanceReport, financialAction } from "./eventBus/economy";
-import { trainingUpdate, recruitDiscovered } from "./eventBus/development";
+} from "@/engine/events/domains/stable";
+import { bashoStatus, boutResolved, awardConferred, rivalryHeatSpike } from "@/engine/events/domains/basho";
+import { financialAlert, monthlyFinanceReport, financialAction } from "@/engine/events/domains/economy";
+import { trainingUpdate, recruitDiscovered } from "@/engine/events/domains/development";
 
 export const EventBus = {
   medicalReportBase,

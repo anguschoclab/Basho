@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { SeededRNG } from "@/engine/rng";
 import { determineCPUTactic } from "@/engine/h2h";
-import { mockRikishi } from "./utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("determineCPUTactic determinism", () => {
   it("returns the same tactic for the same seed and rikishi", () => {

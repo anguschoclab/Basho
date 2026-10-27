@@ -4,7 +4,7 @@ import {
   getCohortMembers,
   getCohortSummary,
 } from "@/engine/systems/generation/CohortTracking";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("Cohort Tracking System (B10)", () => {
   it("assignRecruitmentCohort sets recruitmentCohortId on rikishi", () => {

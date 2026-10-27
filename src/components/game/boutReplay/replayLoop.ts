@@ -15,8 +15,8 @@ import {
   computeArcProgress,
   computeArcHeight,
   type ReplayPhase,
-} from "./boutCanvas";
-import type { ReplayRuntime } from "./replayFx";
+} from "@/components/game/boutReplay/boutCanvas";
+import type { ReplayRuntime } from "@/components/game/boutReplay/replayFx";
 
 /** Extra setters the tick needs beyond the shared runtime bag. */
 export interface ReplayTickCtx extends ReplayRuntime {

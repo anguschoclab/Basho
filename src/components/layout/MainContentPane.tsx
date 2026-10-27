@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { SubNavTabs } from "./SubNavTabs";
+import { SubNavTabs } from "@/components/layout/SubNavTabs";
 
 interface MainContentPaneProps {
   children: ReactNode;

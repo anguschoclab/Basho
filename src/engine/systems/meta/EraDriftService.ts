@@ -5,11 +5,11 @@
  * (Phase M: Era Drift & Global Meta)
  */
 
-import { WorldState, MetaHistoryEntry } from "../../types/world";
-import type { MediaHeadline } from "../../types/media";
-import { KIMARITE_REGISTRY, getKimarite } from "../../kimarite";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
+import { WorldState, MetaHistoryEntry } from "@/engine/types/world";
+import type { MediaHeadline } from "@/engine/types/media";
+import { KIMARITE_REGISTRY, getKimarite } from "@/engine/kimariteRegistry";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
 import {
   ERA_DRIFT_MIN_MOVES,
   DOMINANCE_RATIO_THRESHOLD,
@@ -19,7 +19,7 @@ import {
   MIN_DRIFT_CLAMP,
   MAX_DRIFT_CLAMP,
   META_HISTORY_WINDOW,
-} from "../../../constants/engine/calendarExtended";
+} from "@/constants/engine/calendarExtended";
 
 export type EraTone = "classic" | "explosive" | "technical" | "defensive";
 

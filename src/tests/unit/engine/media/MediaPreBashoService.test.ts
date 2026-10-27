@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { MediaHeadline } from "@/engine/types/media";
 
 function makeHeadline(overrides: Partial<MediaHeadline> = {}): MediaHeadline {

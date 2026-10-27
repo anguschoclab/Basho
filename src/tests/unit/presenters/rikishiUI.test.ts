@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { rankScore, projectRosterEntry } from "@/presenters/rikishi";
-import { mockRikishi } from "../engine/utils";
-import type { WorldState } from "../../../engine/types/world";
-import { projectRikishi } from "@/presenters/rikishi";
+import { rankScore, projectRosterEntry } from "@/presenters/rikishi/index";
+import { mockRikishi } from "@/tests/unit/engine/utils";
+import type { WorldState } from "@/engine/types/world";
+import { projectRikishi } from "@/presenters/rikishi/index";
 
 describe("rikishiUI - rankScore", () => {
   it("should calculate correct score for yokozuna 1 east", () => {

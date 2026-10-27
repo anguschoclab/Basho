@@ -11,12 +11,12 @@
  * Goal: Decouple business rules from state management.
  */
 
-import type { Rikishi, RikishiStats } from "../../types/rikishi";
-import type { Heya } from "../../types/heya";
-import type { WorldState, ActiveModifiers, StyleDriftMults } from "../../types/world";
-import type { IchimonName } from "../../types/economy";
-import type { TrainingProfile, IndividualFocus } from "../../types/training";
-import type { CombatArchetype } from "../../types/combat";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import type { WorldState, ActiveModifiers, StyleDriftMults } from "@/engine/types/world";
+import type { IchimonName } from "@/engine/types/economy";
+import type { TrainingProfile, IndividualFocus } from "@/engine/types/training";
+import type { CombatArchetype } from "@/engine/types/combat";
 import {
   INTENSITY_MULTIPLIERS,
   RECOVERY_MULTIPLIERS,
@@ -38,17 +38,17 @@ import {
   BASE_GROWTH,
   DEGEIKO_PENALTY_MULTIPLIER,
   type TrainingAttribute,
-} from "../../../constants/engine/training";
+} from "@/constants/engine/training";
 import {
   TRAINING_MULTIPLIERS,
   NUTRITION_MULTIPLIERS,
   MORALE_BOOST_MULTIPLIER,
   FINANCIAL_PENALTY_MULTIPLIER,
-} from "../../../constants/engine/multipliers";
-import { DEFAULT_FACILITY_LEVEL } from "../../../constants/engine/rikishi";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import { clamp } from "../../utils/math";
-import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/engine/development";
+} from "@/constants/engine/multipliers";
+import { DEFAULT_FACILITY_LEVEL } from "@/constants/engine/rikishi";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { clamp } from "@/engine/utils/math";
+import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "@/constants/engine/development";
 
 /** Extracted training modifiers from heya/world context. */
 interface TrainingModifiers {

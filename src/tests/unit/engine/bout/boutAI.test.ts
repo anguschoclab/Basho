@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { chooseTactic, chooseTacticForCPU } from "@/engine/bout/BoutAI";
 import { SeededRNG } from "@/engine/rng";
 import type { BoutAIContext } from "@/engine/bout/BoutAI";

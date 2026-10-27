@@ -24,7 +24,7 @@ import type { BashoName } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { getHeya } from "@/presenters/worldAccess";
 import type { WorldState } from "@/presenters/uiDigest";
-import type { HistoryRecord } from "./historySort";
+import type { HistoryRecord } from "@/components/history/historySort";
 
 /**
  * Safe millions.

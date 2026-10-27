@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld } from "../../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 

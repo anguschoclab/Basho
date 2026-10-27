@@ -6,9 +6,9 @@
  * and YokozunaTsuna objects.
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { WorldState } from "../../types/world";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type {
   KeshoMawashi,
   KeshoTier,
@@ -23,17 +23,17 @@ import type {
   MawashiDesignPalette,
   YokozunaTsuna,
   Season,
-} from "../../types/keshoMawashi";
-import { getSeasonFromBasho, SEASONAL_PALETTES, SEASONAL_MOTIFS } from "../../types/keshoMawashi";
+} from "@/engine/types/keshoMawashi";
+import { getSeasonFromBasho, SEASONAL_PALETTES, SEASONAL_MOTIFS } from "@/engine/types/keshoMawashi";
 import {
   DEFAULT_KESHO_WEIGHTS,
   NATIONAL_FLAG_PALETTES,
   MOTIF_COLOR_ASSOCIATIONS,
   CORPORATE_INDUSTRY_PALETTES,
-} from "../../types/keshoMawashi";
-import { rngFromSeed } from "../../rng";
-import type { SeededRNG } from "../../rng";
-import { getHeya, getRikishi } from "../../queries";
+} from "@/engine/types/keshoMawashi";
+import { rngFromSeed } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/rng";
+import { getHeya, getRikishi } from "@/engine/queries";
 
 /** Generate a new kesho-mawashi for a rikishi */
 export function generateKeshoMawashi(

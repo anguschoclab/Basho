@@ -4,10 +4,10 @@
  * Groups rikishi by recruitmentCohortId and returns cohort summaries
  * using CohortTracking.getCohortSummary.
  */
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
-import { getAllRikishi } from "../worldAccess";
-import { getCohortSummary, getCohortMembers } from "../../engine/systems/generation/CohortTracking";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { getAllRikishi } from "@/presenters/worldAccess";
+import { getCohortSummary, getCohortMembers } from "@/engine/systems/generation/CohortTracking";
 
 export interface CohortDTO {
   cohortId: string;

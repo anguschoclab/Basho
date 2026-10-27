@@ -4,12 +4,12 @@
  * Pipeline Phase 1 (Weekly) — Weekly finances (salaries, koenkai, facilities, staff).
  */
 
-import type { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { calculateHeyaWeeklyFinances } from "../../systems/economy/FinanceCalculator";
-import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "../../../constants/engine/economy";
-import type { RunwayBand } from "../../types/narrative";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
+import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "@/constants/engine/economy";
+import type { RunwayBand } from "@/engine/types/narrative";
 
 function runwayMonthsToBand(runwayMonths: number): RunwayBand {
   if (runwayMonths >= RUNWAY_THRESHOLDS.SECURE) return RUNWAY_BANDS.SECURE;

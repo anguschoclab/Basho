@@ -1,5 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useState } from "react";

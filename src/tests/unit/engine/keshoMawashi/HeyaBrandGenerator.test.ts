@@ -7,7 +7,7 @@ import {
   generateHeyaBrandIdentities,
   getHeyaBrand,
 } from "@/engine/systems/keshoMawashi/HeyaBrandGenerator";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 
 describe("HeyaBrandGenerator", () => {
   describe("generateHeyaBrandIdentities", () => {

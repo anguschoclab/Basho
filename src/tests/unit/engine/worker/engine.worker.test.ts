@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterAll, type Mock } from "vitest";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 import type { UIDigest } from "@/presenters/uiDigest";
 import { logger } from "@/engine/utils/Logger";

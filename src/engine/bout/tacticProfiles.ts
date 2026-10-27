@@ -11,7 +11,7 @@
  * - momentumOnWin / momentumOnLoss: momentum delta applied post-bout
  */
 
-import type { BoutTactic, TacticalFamily } from "../types/combat";
+import type { BoutTactic, TacticalFamily } from "@/engine/types/combat";
 import {
   KIMARITE_BIAS_BELT_YOTSU,
   KIMARITE_BIAS_PUSH_YOTSU,
@@ -45,7 +45,7 @@ import {
   MOMENTUM_LOSS_HENKA,
   MOMENTUM_WIN_ALL_OUT,
   MOMENTUM_LOSS_ALL_OUT,
-} from "../../constants/engine/bout";
+} from "@/constants/engine/bout";
 
 export interface TacticProfile {
   id: BoutTactic;

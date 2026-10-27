@@ -7,7 +7,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { RankInline } from "@/components/rikishi/RankBadge";
 import { getActiveRikishi } from "@/presenters/engineAccess";
 

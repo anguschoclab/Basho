@@ -2,9 +2,9 @@
 // No phase-loop dependencies; fully unit-testable in isolation.
 // Consumed by boutPhaseLoop.ts and re-exported from boutPhysics.ts.
 
-import type { Rikishi } from "../types/rikishi";
-import type { Side } from "../types/banzuke";
-import { SeededRNG } from "../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Side } from "@/engine/types/banzuke";
+import { SeededRNG } from "@/engine/rng";
 import {
   FORCE_POWER_MULTIPLIER,
   FORCE_SPEED_MULTIPLIER,
@@ -20,7 +20,7 @@ import {
   EDGE_CRISIS_BALANCE_FACTOR,
   STAMINA_FATIGUE_MULTIPLIER,
   STAMINA_FATIGUE_FLOOR,
-} from "../../constants/engine/physics";
+} from "@/constants/engine/physics";
 
 // ---------------------------------------------------------------------------
 // Shared interface (defined here to avoid circular imports)

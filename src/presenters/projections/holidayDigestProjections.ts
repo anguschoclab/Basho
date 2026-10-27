@@ -4,7 +4,7 @@
  * Reads HOLIDAY_RETURN events from the event log to surface a digest
  * of what happened while the player was on holiday.
  */
-import type { WorldState } from "../../engine/types/world";
+import type { WorldState } from "@/engine/types/world";
 
 export interface HolidayDigestDTO {
   returnEventId: string;

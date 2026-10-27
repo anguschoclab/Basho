@@ -4,8 +4,8 @@
  * Entry points for tick execution used by the UI slices and the web worker.
  */
 
-import type { WorldState } from "../types/world";
-import { advanceOneDay, advanceDaysFast } from "./tickDaily";
+import type { WorldState } from "@/engine/types/world";
+import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
 
 /**
  * Deep-clones a WorldState. Retained for bashoSlice and other callers that

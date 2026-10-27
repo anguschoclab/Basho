@@ -13,7 +13,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Utensils, Shield, Heart, Activity } from "lucide-react";
 import type { DietRegimen } from "@/engine/types/economy";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
-import { MAX_RISK_PERCENTAGE, RISK_PERCENTAGE_MULTIPLIER } from "../../constants/ui/dashboard";
+import { MAX_RISK_PERCENTAGE, RISK_PERCENTAGE_MULTIPLIER } from "@/constants/ui/dashboard";
 import { HEALTH_COLOR } from "@/constants/ui/perception";
 import {
   COMPLIANCE_DISPLAY,

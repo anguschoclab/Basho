@@ -5,7 +5,7 @@ import {
   makeBashoKey,
   type HistoryIndex,
 } from "@/engine/historyIndex";
-import { makeMockWorld, mockRikishi } from "./utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoResult } from "@/engine/types/basho";
 

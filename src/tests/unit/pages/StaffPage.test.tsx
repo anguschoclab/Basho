@@ -18,7 +18,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 

@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import * as dashboard from "@/components/dashboard";
+import * as dashboard from "@/components/dashboard/index";
 
 describe("dashboard barrel exports", () => {
   it("exports StableHealthWidget (renamed from InstitutionWidget)", () => {

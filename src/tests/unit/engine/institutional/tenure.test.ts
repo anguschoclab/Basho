@@ -21,7 +21,7 @@ import { applyBashoTenure } from "@/engine/systems/legacy/tenure";
 import { issueBailoutLoanIfNeeded } from "@/engine/loans";
 import { reportScandal } from "@/engine/systems/governance/ScandalService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 import type { Oyakata } from "@/engine/types/oyakata";

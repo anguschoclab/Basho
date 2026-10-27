@@ -6,9 +6,9 @@
  * applying the change via ImpactBuilder.
  */
 
-import type { Oyakata } from "../types/oyakata";
-import type { Id } from "../types/common";
-import type { AIPlan, OpponentTacticModel, OyakataMemory, OyakataObservation } from "../ai/types";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Id } from "@/engine/types/common";
+import type { AIPlan, OpponentTacticModel, OyakataMemory, OyakataObservation } from "@/engine/ai/types";
 
 /**
  * Build an empty memory object for a freshly generated oyakata.

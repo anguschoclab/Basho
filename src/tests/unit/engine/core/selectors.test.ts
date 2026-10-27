@@ -5,7 +5,7 @@ import {
   getAvailableStables,
   getStableFinances,
 } from "@/engine/selectors";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("selectors", () => {

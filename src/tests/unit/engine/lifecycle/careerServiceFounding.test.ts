@@ -11,7 +11,7 @@
 import { describe, it, expect } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("CareerService.processRetirements — oyakata conversion + founding", () => {
   it("an accomplished retirement-age retiree is converted to oyakata even with an empty myoseki market", () => {

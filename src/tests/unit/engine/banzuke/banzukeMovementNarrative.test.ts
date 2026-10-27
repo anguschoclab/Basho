@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateBanzukeMovementNarrative } from "@/engine/banzuke/banzukeMovementNarrative";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { MovementEvent } from "@/engine/types/banzuke";
 
 function makeMovement(overrides: Partial<MovementEvent> = {}): MovementEvent {

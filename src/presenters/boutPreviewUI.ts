@@ -7,8 +7,8 @@
  * and rivalry heat value, ready for the BoutPreMatchOverlay component.
  */
 
-import type { UIRikishi } from "./rikishi";
-import type { H2HReport } from "../engine/types/records";
+import type { UIRikishi } from "@/presenters/rikishi/index";
+import type { H2HReport } from "@/engine/types/records";
 
 export interface BoutPreviewUI {
   boutId: string;

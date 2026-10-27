@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho";

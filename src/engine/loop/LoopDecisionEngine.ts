@@ -3,21 +3,21 @@
  * Generates pending decisions based on world state, blocking progression until resolved.
  */
 
-import type { WorldState } from "../types/world";
-import { createImpactBuilder, type ImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { issueBailoutLoanIfNeeded } from "../loans";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { issueBailoutLoanIfNeeded } from "@/engine/loans";
 import type {
   TrainingIntensity,
   TrainingFocus,
   StyleBias,
   RecoveryEmphasis,
-} from "../types/training";
-import type { DietRegimen } from "../types/economy";
-import { getPlayerHeya } from "../queries";
-import { generateKyujoNarrative } from "../bout/boutNarrative";
-import { applyRequestOutcome } from "../rikishiAgency/requests";
-import type { RikishiRequestType } from "../rikishiAgency/types";
+} from "@/engine/types/training";
+import type { DietRegimen } from "@/engine/types/economy";
+import { getPlayerHeya } from "@/engine/queries";
+import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
+import { applyRequestOutcome } from "@/engine/rikishiAgency/requests";
+import type { RikishiRequestType } from "@/engine/rikishiAgency/types";
 
 export interface LoopDecision {
   id: string;

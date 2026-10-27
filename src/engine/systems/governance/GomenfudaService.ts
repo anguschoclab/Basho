@@ -6,12 +6,12 @@
  * reduce the heya's reputation and can trigger JSA sanctions.
  */
 
-import type { Id } from "../../types/common";
-import type { Heya } from "../../types/heya";
-import type { Rikishi } from "../../types/rikishi";
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 /** Reputation penalty per gomenfuda */
 export const GOMENFUDA_REPUTATION_PENALTY = 5;

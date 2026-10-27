@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * P4.14: ImpactResolver performance tests.

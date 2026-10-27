@@ -20,7 +20,7 @@ import { renderHook } from "@testing-library/react";
 import { useFlowActions } from "@/contexts/provider/useFlowActions";
 import { useGameStore } from "@/store/gameStore";
 import type { GameState, GameAction } from "@/contexts/gameTypes";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 function renderFlowActions() {
   const dispatch = vi.fn<(a: GameAction) => void>();

@@ -1,6 +1,6 @@
-import type { Id } from "../engine/types/common";
-import type { MatchSchedule, BashoState, BashoResult } from "../engine/types/basho";
-import type { WorldState } from "../engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { MatchSchedule, BashoState, BashoResult } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
 
 export interface UIBoutRow {
   boutId: string;

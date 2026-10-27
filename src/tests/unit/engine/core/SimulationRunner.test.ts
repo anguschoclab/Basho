@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 // ── Module mocks (vi.mock is hoisted before all imports) ──────────────────
 

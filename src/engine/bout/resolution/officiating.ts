@@ -6,15 +6,15 @@
  * Only active for player bouts to keep long-term sims deterministic.
  */
 
-import type { BoutContext } from "../boutPhysics";
-import type { Rikishi } from "../../types/rikishi";
-import type { BashoState, BoutResult } from "../../types/basho";
-import type { WorldState } from "../../types/world";
-import type { BoutTactic } from "../../types/combat";
-import type { ImpactBuilder } from "../../core/ImpactBuilder";
-import { tryHansoku } from "../kinjite";
-import { checkYaocho } from "../yaocho";
-import { reportScandal } from "../../systems/governance/ScandalService";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoState, BoutResult } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { BoutTactic } from "@/engine/types/combat";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { tryHansoku } from "@/engine/bout/kinjite";
+import { checkYaocho } from "@/engine/bout/yaocho";
+import { reportScandal } from "@/engine/systems/governance/ScandalService";
 
 interface OfficiatingOutcome {
   result: BoutResult;

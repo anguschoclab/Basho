@@ -1,7 +1,7 @@
 // Game Reducer — pure state transitions using Slice Pattern
-import type { GameState, GameAction } from "./gameTypes";
-import { combineReducers } from "./gameHelpers";
-import { bashoSlice } from "./bashoSlice";
+import type { GameState, GameAction } from "@/contexts/gameTypes";
+import { combineReducers } from "@/contexts/gameHelpers";
+import { bashoSlice } from "@/contexts/bashoSlice";
 
 /**
  * Core generic actions that don't fit cleanly into a domain slice.

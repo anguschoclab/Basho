@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { spawnNarrativeAgent } from "@/engine/agents/NarrativeAgent";
 import type { Oyakata } from "@/engine/types/oyakata";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 function makeOyakata(overrides: Partial<Oyakata> = {}): Oyakata {
   return {

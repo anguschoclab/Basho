@@ -11,15 +11,15 @@
  * Goal: Decouple business rules from state management.
  */
 
-import { clamp } from "../../utils/math";
-import { type SeededRNG } from "../../rng";
-import type { Id } from "../../types/common";
+import { clamp } from "@/engine/utils/math";
+import { type SeededRNG } from "@/engine/rng";
+import type { Id } from "@/engine/types/common";
 import type {
   RivalryPairState,
   RivalriesState,
   RivalryTone,
   RivalryTrigger,
-} from "../../../constants/engine/rivalry";
+} from "@/constants/engine/rivalry";
 import {
   RIVALRY_STATE_DIVISOR,
   SAME_HEYA_RESPECT_HEAT_THRESHOLD,
@@ -55,8 +55,8 @@ import {
   UPSET_TRIGGER_BONUS,
   KINBOSHI_TRIGGER_BONUS,
   TITLE_STAKES_TRIGGER_BONUS,
-} from "../../../constants/engine/narrative";
-import { RIVALRY_HEAT_SPICE_CHANCE } from "../../../constants/engine/rivalry";
+} from "@/constants/engine/narrative";
+import { RIVALRY_HEAT_SPICE_CHANCE } from "@/constants/engine/rivalry";
 
 /**
  * Determine the narrative tone from current state.

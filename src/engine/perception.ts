@@ -5,23 +5,23 @@
 // No raw weights, injury probabilities, or secret thresholds.
 // =======================================================
 
-import type { WorldState } from "./types/world";
-import type { Id } from "./types/common";
-import type { Heya } from "./types/heya";
-import type { Rikishi } from "./types/rikishi";
-import type { Style } from "./types/combat";
-import type { Rank } from "./types/banzuke";
-import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "./types/narrative";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Style } from "@/engine/types/combat";
+import type { Rank } from "@/engine/types/banzuke";
+import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
 import type {
   AgeBand,
   ExperienceBand,
   WeightBand,
   HeightBand,
-} from "./systems/narrative/NarrativeBands";
-import { NarrativeService } from "./systems/narrative/NarrativeService";
-import type { ComplianceState } from "./types/economy";
-import type { RivalriesState } from "./rivalries";
-import { getHeyaRoster, getHeya } from "./queries";
+} from "@/engine/systems/narrative/NarrativeBands";
+import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import type { ComplianceState } from "@/engine/types/economy";
+import type { RivalriesState } from "@/constants/engine/rivalry";
+import { getHeyaRoster, getHeya } from "@/engine/queries";
 import {
   CONDITION_PEAK_THRESHOLD,
   CONDITION_GOOD_THRESHOLD,
@@ -58,7 +58,7 @@ import {
   MOMENTUM_RISING_THRESHOLD,
   MOMENTUM_DECLINING_THRESHOLD,
   MOMENTUM_NORMALIZATION_OFFSET,
-} from "../constants/engine/perception";
+} from "@/constants/engine/perception";
 
 // === Band types for perception ===
 

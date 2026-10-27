@@ -1,14 +1,14 @@
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import { TalentPoolType, TalentCandidate, TalentPoolState } from "../../types/talent";
-import { convertCandidateToRikishi } from "./CandidateBuilder";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { getHeya } from "../../queries";
-import { assessMaezumo } from "./MaezumoService";
-import { countsAsForeign } from "../../utils/citizenshipUtils";
-import { candidateConsumesForeignSlot } from "./talentPoolReads";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import { TalentPoolType, TalentCandidate, TalentPoolState } from "@/engine/types/talent";
+import { convertCandidateToRikishi } from "@/engine/systems/generation/CandidateBuilder";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { getHeya } from "@/engine/queries";
+import { assessMaezumo } from "@/engine/systems/generation/MaezumoService";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { candidateConsumesForeignSlot } from "@/engine/systems/generation/talentPoolReads";
 
 /**
  * Internal helper for materialization that tracks state updates during a loop.

@@ -8,15 +8,15 @@
  * - Duration distribution: within expected bounds
  */
 
-import { resolveBoutPhysics } from "../src/engine/bout/boutPhysics";
-import { mockRikishi, makeMockBasho } from "../src/tests/unit/engine/utils";
-import { SeededRNG } from "../src/engine/rng";
+import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
+import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
+import { SeededRNG } from "@/engine/rng";
 import type {
   CombatArchetype,
   GripPreference,
   GripDepthPreference,
   TacticalFamily,
-} from "../src/engine/types/combat";
+} from "@/engine/types/combat";
 
 interface ComparisonStats {
   totalBouts: number;

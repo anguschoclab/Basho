@@ -1,4 +1,4 @@
-import type { WorldState } from "../types/world";
+import type { WorldState } from "@/engine/types/world";
 import type {
   BashoName,
   BoutResult,
@@ -6,17 +6,17 @@ import type {
   BanzukeUpdateHook,
   MatchSchedule,
   BashoState,
-} from "../types/basho";
-import type { PromotionEvent, DemotionEvent } from "../types/banzuke";
-import { simulateBout } from "../bout/boutResolver";
-import { RANK_HIERARCHY } from "../banzuke";
-import { initializeBasho } from "../systems/generation/WorldFactory";
-import { scheduleAllDivisionsDay } from "../schedule";
-import { stableTieBreak, sortStandings } from "../utils/sort";
-import { resolveImpacts } from "../core/ImpactResolver";
+} from "@/engine/types/basho";
+import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
+import { simulateBout } from "@/engine/bout/boutResolver";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { initializeBasho } from "@/engine/systems/generation/WorldFactory";
+import { scheduleAllDivisionsDay } from "@/engine/schedule";
+import { stableTieBreak, sortStandings } from "@/engine/utils/sort";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { getRikishi } from "../queries";
-import { resolvePlayoffs } from "../lifecycle/PlayoffResolver";
+import { getRikishi } from "@/engine/queries";
+import { resolvePlayoffs } from "@/engine/lifecycle/PlayoffResolver";
 
 interface StandingEntry {
   id: string;

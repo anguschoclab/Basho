@@ -6,13 +6,13 @@
  * (Phase 5: The World Circuit)
  */
 
-import { WorldState } from "../../types/world";
-import type { Rank } from "../../types/banzuke";
-import type { AcademyConfig } from "../../types/academy";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { getHeya, getRikishi } from "../../queries";
+import { WorldState } from "@/engine/types/world";
+import type { Rank } from "@/engine/types/banzuke";
+import type { AcademyConfig } from "@/engine/types/academy";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { getHeya, getRikishi } from "@/engine/queries";
 
 export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | "East_Asia";
 

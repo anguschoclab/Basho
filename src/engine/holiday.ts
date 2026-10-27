@@ -11,12 +11,12 @@
  * =======================================================
  */
 
-import type { WorldState, CyclePhase } from "./types/world";
-import type { Heya } from "./types/heya";
-import { INSOLVENCY_WARNING_THRESHOLD } from "../constants/engine/economic";
-import { advanceWithGates } from "./tick/advanceWithGates";
-import { queryEvents } from "./events";
-import { getHeya, getRikishi } from "./queries";
+import type { WorldState, CyclePhase } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import { INSOLVENCY_WARNING_THRESHOLD } from "@/constants/engine/economic";
+import { advanceWithGates } from "@/engine/tick/advanceWithGates";
+import { queryEvents } from "@/engine/events/events";
+import { getHeya, getRikishi } from "@/engine/queries";
 
 // ============================================================================
 // TYPES

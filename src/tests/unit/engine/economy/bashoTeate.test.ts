@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { payBashoTeate } from "@/engine/lifecycle/PrizeDistribution";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { NON_SEKITORI_BASHO_ALLOWANCE } from "@/constants/engine/economic";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("payBashoTeate — centralized allowances", () => {
   it("makushita receives ¥180K", () => {

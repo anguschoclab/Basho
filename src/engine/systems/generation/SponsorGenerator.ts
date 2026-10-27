@@ -1,11 +1,11 @@
-import { SeededRNG, rngFromSeed } from "../../rng";
+import { SeededRNG, rngFromSeed } from "@/engine/rng";
 import type {
   Sponsor,
   SponsorTier,
   SponsorCategory,
   SponsorTone,
   SponsorPool,
-} from "../../types/sponsors";
+} from "@/engine/types/sponsors";
 import {
   SPONSOR_CATEGORY_LOCAL_BUSINESS,
   SPONSOR_CATEGORY_REGIONAL_CORP,
@@ -13,7 +13,7 @@ import {
   SPONSOR_CATEGORY_ALUMNI,
   SPONSOR_CATEGORY_CULTURAL,
   SPONSOR_CATEGORY_PRIVATE_BENEFACTOR,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 // === CONSTANTS & COMPONENTS ===
 

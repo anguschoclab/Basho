@@ -5,9 +5,9 @@
  * Extracted from phase05_monthly_boundary.ts for modularity.
  */
 
-import type { WorldState } from "../../../../types/world";
-import type { Rikishi } from "../../../../types/rikishi";
-import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function processArchetypeDrift(
   _world: WorldState,

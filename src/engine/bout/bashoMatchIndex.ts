@@ -7,7 +7,7 @@
  * in phase01_basho_bouts, bashoSlice, and gameHelpers.getMatchesForDay.
  */
 
-import type { BashoState, MatchSchedule } from "../types/basho";
+import type { BashoState, MatchSchedule } from "@/engine/types/basho";
 
 /**
  * Build a Map<day, MatchSchedule[]> from a basho's matches array.

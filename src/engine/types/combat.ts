@@ -1,4 +1,4 @@
-import { RikishiStats } from "./rikishi";
+import { RikishiStats } from "@/engine/types/rikishi";
 
 /**
  * Combat / Style Types

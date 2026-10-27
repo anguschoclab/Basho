@@ -7,15 +7,15 @@
  * - Provides 'generateH2HCommentary' for Pre-Bout and UI display.
  */
 
-import { rngFromSeed, SeededRNG } from "./rng";
-import { Rikishi } from "./types/rikishi";
-import { H2HRecord, H2HReport, H2HRecentMeeting } from "./types/records";
-import { BoutResult } from "./types/basho";
-import type { BoutTactic, TacticalResult } from "./types/combat";
-import { BardEngine } from "./bard/BardEngine";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { chooseTacticForCPU } from "./bout/BoutAI";
+import { rngFromSeed, SeededRNG } from "@/engine/rng";
+import { Rikishi } from "@/engine/types/rikishi";
+import { H2HRecord, H2HReport, H2HRecentMeeting } from "@/engine/types/records";
+import { BoutResult } from "@/engine/types/basho";
+import type { BoutTactic, TacticalResult } from "@/engine/types/combat";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { chooseTacticForCPU } from "@/engine/bout/BoutAI";
 import {
   H2H_DOMINATION_MIN_MATCHES,
   H2H_DOMINATION_WIN_RATE_THRESHOLD,
@@ -24,7 +24,7 @@ import {
   H2H_STREAK_THRESHOLD,
   H2H_MAX_RECENT_MEETINGS,
   TACTICAL_ADVANTAGE_SHIFT,
-} from "../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 /**
  * Updates the Head-to-Head records for two rikishi after a bout.

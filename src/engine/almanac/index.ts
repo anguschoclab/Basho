@@ -10,7 +10,7 @@ export type {
   NotableBoutEntry,
   NarrativeHighlight,
   PromotionHistoryEntry,
-} from "./types";
+} from "@/engine/almanac/types";
 
 export {
   NOTABLE_NARRATIVE_TAGS,
@@ -18,15 +18,15 @@ export {
   MAX_NOTABLE_BOUTS,
   MAX_NARRATIVE_HIGHLIGHTS,
   MAX_PROMOTION_HISTORY,
-} from "./types";
+} from "@/engine/almanac/types";
 
-export { generateCareerRecord } from "./career";
-export { generateHeyaRecord } from "./heyaRecord";
-export { buildAlmanacSnapshot } from "./snapshot";
-export { getRikishiCareerSummary } from "./summary";
+export { generateCareerRecord } from "@/engine/almanac/career";
+export { generateHeyaRecord } from "@/engine/almanac/heyaRecord";
+export { buildAlmanacSnapshot } from "@/engine/almanac/snapshot";
+export { getRikishiCareerSummary } from "@/engine/almanac/summary";
 export {
   createEmptyAlmanacRecord,
   buildNotableBoutEntry,
   enrichAlmanacRecord,
   runAlmanacNarrativeUpdate,
-} from "./narrativeEnrichment";
+} from "@/engine/almanac/narrativeEnrichment";

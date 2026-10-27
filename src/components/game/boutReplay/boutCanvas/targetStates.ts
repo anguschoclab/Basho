@@ -6,10 +6,10 @@
  * ReplayPhase. Extracted from getTargetState — geometry values are verbatim.
  */
 
-import type { RikishiState } from "./types";
+import type { RikishiState } from "@/components/game/boutReplay/boutCanvas/types";
 import type { BoutScript } from "@/presenters/engineAccess";
-import { lerp } from "./math";
-import { getLoserBodyPhase, getWinnerBodyPhase } from "./animation";
+import { lerp } from "@/components/game/boutReplay/boutCanvas/math";
+import { getLoserBodyPhase, getWinnerBodyPhase } from "@/components/game/boutReplay/boutCanvas/animation";
 
 type Pair = { east: RikishiState; west: RikishiState };
 

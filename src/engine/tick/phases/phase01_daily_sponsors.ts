@@ -7,15 +7,15 @@
  * heya activity and reputation.
  */
 
-import type { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { RNGRegistry } from "../../core/RNGRegistry";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import {
   MAX_SPONSOR_SATISFACTION,
   MIN_SPONSOR_SATISFACTION,
   DEFAULT_SPONSOR_SATISFACTION,
-} from "../../../constants/engine/sponsors";
+} from "@/constants/engine/sponsors";
 
 export function phase01_daily_sponsors(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_sponsors");

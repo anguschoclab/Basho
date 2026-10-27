@@ -7,9 +7,9 @@
  * by the heya and remains fixed for the yokozuna's career.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { Rank } from "../types/banzuke";
-import { rngFromSeed } from "../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Rank } from "@/engine/types/banzuke";
+import { rngFromSeed } from "@/engine/rng";
 
 /**
  * Assigns a dohyo-iri ceremony style to a rikishi upon yokozuna promotion.

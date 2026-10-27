@@ -2,19 +2,19 @@
  * bout/narrative/postbout2.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
 import {
   FIRST_WIN_MENTION_MIN_DAY,
   MOMENTUM_NARRATIVE_THRESHOLD,
   WEIGHT_DIFF_THRESHOLD,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 import {
   NARRATIVE_CALL_REVERSED_CHANCE,
   NARRATIVE_GYOJI_CONFUSED_CHANCE,
   NARRATIVE_REMATCH_CHANCE,
-} from "../../../constants/engine/narrative";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed } from "../../rng";
+} from "@/constants/engine/narrative";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/rng";
 
 function beatPostBoutYushoRace(p: PbpPipeline): void {
   const { postBoutRng, push, result, winnerRikishi, winnerWins } = p;

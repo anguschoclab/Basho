@@ -8,9 +8,9 @@
  * 2. Keep fog-of-war meaningful between observation windows.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { tickWeekScouting } from "../../scoutingStore";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { tickWeekScouting } from "@/engine/scoutingStore";
 
 export function phase01_week_scouting(world: WorldState): StateImpact {
   return tickWeekScouting(world);

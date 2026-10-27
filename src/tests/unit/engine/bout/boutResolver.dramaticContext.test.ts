@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout } from "@/engine/bout/boutResolver";
-import { mockRikishi, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { BoutContext } from "@/engine/bout/boutUtils";
 import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
 

@@ -5,9 +5,9 @@
  * Defines physical body state, grip mechanics, and phase-based combat state machine.
  */
 
-import type { Side } from "../types/banzuke";
-import type { KimariteId } from "./combat";
-import type { GrappleState } from "./combat";
+import type { Side } from "@/engine/types/banzuke";
+import type { KimariteId } from "@/engine/types/combat";
+import type { GrappleState } from "@/engine/types/combat";
 
 // ---------------------------------------------------------------------------
 // Spatial Constants

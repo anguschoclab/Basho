@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { logEngineEvent } from "@/engine/events";
-import { makeMockWorld } from "./utils";
+import { logEngineEvent } from "@/engine/events/events";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("events year source of truth", () => {
   it("logEngineEvent uses world.year even when calendar.year differs", () => {

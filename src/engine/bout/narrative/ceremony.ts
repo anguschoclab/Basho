@@ -2,10 +2,10 @@
  * bout/narrative/ceremony.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
-import { RITUAL_SALT_CHANCE_UNDERSTATED } from "../../../constants/engine/generation";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed } from "../../rng";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import { RITUAL_SALT_CHANCE_UNDERSTATED } from "@/constants/engine/generation";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/rng";
 
 function beatRingEntrances(p: PbpPipeline): void {
   const { ctx, east, intensity, push, result, rng, seed, west } = p;

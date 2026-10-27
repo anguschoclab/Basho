@@ -1,13 +1,13 @@
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import { getHeya, getRikishi } from "../../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import { getHeya, getRikishi } from "@/engine/queries";
 import {
   RISK_CONDITION_WEIGHT,
   RISK_FATIGUE_WEIGHT,
   HIGH_RISK_THRESHOLD,
   HIGH_RISK_RATIO_THRESHOLD,
-} from "../../../constants/engine/npcStrategy";
-import type { NPCWeeklyDecision } from "../types";
+} from "@/constants/engine/npcStrategy";
+import type { NPCWeeklyDecision } from "@/engine/npcAI/types";
 
 export function applyPromotionAwareness(
   world: WorldState,

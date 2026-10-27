@@ -3,16 +3,16 @@
  * All templates are sourced from archive.json via BardEngine.
  */
 
-import { SeededRNG } from "../../rng";
-import { WorldState } from "../../types/world";
-import { HeadlineTier } from "../../types/media";
-import { BardEngine } from "../../bard/BardEngine";
-import { getRikishi } from "../../queries";
+import { SeededRNG } from "@/engine/rng";
+import { WorldState } from "@/engine/types/world";
+import { HeadlineTier } from "@/engine/types/media";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { getRikishi } from "@/engine/queries";
 import {
   MAIN_EVENT_HEADLINE_CHANCE,
   STREAK_HEADLINE_THRESHOLD,
   STREAK_SECONDARY_THRESHOLD,
-} from "../../../constants/engine/media";
+} from "@/constants/engine/media";
 
 export function generateBoutHeadline(args: {
   rng: SeededRNG;

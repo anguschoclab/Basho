@@ -8,9 +8,9 @@
  * EventBus factory methods live in ./EventBus.ts
  */
 
-import { rngForWorld } from "./rng";
-import { DEFAULT_START_YEAR } from "../constants/engine/calendar";
-import type { WorldState } from "./types/world";
+import { rngForWorld } from "@/engine/rng";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { WorldState } from "@/engine/types/world";
 import {
   type EngineEvent,
   type EventsState,
@@ -20,7 +20,7 @@ import {
   type EventScope,
   type EngineEventType,
   type NarrativeContext,
-} from "./types/events";
+} from "@/engine/types/events";
 export type {
   EngineEvent,
   EventsState,
@@ -28,10 +28,10 @@ export type {
   EventPhase,
   EventImportance,
   EventScope,
-} from "./types/events";
-import type { Id } from "./types/common";
+} from "@/engine/types/events";
+import type { Id } from "@/engine/types/common";
 
-export { EventBus } from "./EventBus";
+export { EventBus } from "@/engine/events/EventBus";
 
 /**
  * Ensure events state exists on the world object, initializing it if needed.

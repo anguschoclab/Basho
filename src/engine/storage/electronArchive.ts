@@ -6,12 +6,12 @@
 // file system via IPC for storing bout logs, gazettes, awards, etc.
 // =======================================================
 
-import type { ArchiveService } from "./opfsArchive";
-import { type BoutResult, type BashoResult } from "../types/basho";
-import { type AlmanacSnapshot } from "../almanac";
-import type { Rikishi } from "../types/rikishi";
+import type { ArchiveService } from "@/engine/storage/opfsArchive";
+import { type BoutResult, type BashoResult } from "@/engine/types/basho";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { destr } from "destr";
-import { warn, error } from "../utils/Logger";
+import { warn, error } from "@/engine/utils/Logger";
 
 /**
  * ElectronArchiveService — file system-based archive service for Electron.

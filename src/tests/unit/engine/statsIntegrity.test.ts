@@ -4,7 +4,7 @@ import { applyWeeklyTraining } from "@/engine/systems/training/TrainingService";
 import { applyMentorshipBonuses } from "@/engine/systems/training/MentorshipService";
 import { applyWeeklySparring } from "@/engine/systems/training/SparringService";
 import { SimTuningService } from "@/engine/simulation/SimTuningService";
-import { makeMockWorld, makeMockBasho, mockRikishi } from "./utils";
+import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { RikishiStats } from "@/engine/types/rikishi";
 

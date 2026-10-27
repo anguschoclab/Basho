@@ -6,22 +6,22 @@
  * `updates` bag and logs through the shared impact builder.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
-import type { Rikishi, RikishiStats } from "../../types/rikishi";
-import type { CombatArchetype } from "../../types/combat";
-import type { ImpactBuilder } from "../../core/ImpactBuilder";
-import { EntityCollection } from "../../core/EntityCollection";
-import { STAT_GROUP } from "../../../constants/engine/development";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { HeyaTrainingState, IndividualFocus } from "@/engine/types/training";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import type { CombatArchetype } from "@/engine/types/combat";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { STAT_GROUP } from "@/constants/engine/development";
 import {
   calculateFatigueDelta,
   calculateGains,
   calculateGrowthVector,
   calculateAgeDecay,
   getEffectiveCeiling,
-} from "./TrainingMath";
-import { getHeyaStaffBonuses } from "../../staff";
+} from "@/engine/systems/training/TrainingMath";
+import { getHeyaStaffBonuses } from "@/engine/staff";
 import {
   DRILL_EFFECTS,
   EXPERIENCE_GROWTH_MULTIPLIER,
@@ -36,10 +36,10 @@ import {
   TRAINING_MILESTONE_THRESHOLD,
   BURNOUT_PROB_WEEK_1,
   BURNOUT_PROB_WEEK_2,
-} from "../../../constants/engine/training";
-import { InfrastructureService } from "../economy/InfrastructureService";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { ensureHeyaTrainingState } from "./TrainingService";
+} from "@/constants/engine/training";
+import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { ensureHeyaTrainingState } from "@/engine/systems/training/TrainingService";
 
 type RikishiUpdates = Partial<Rikishi>;
 type FocusMapCache = Map<Id, Map<Id, IndividualFocus>>;

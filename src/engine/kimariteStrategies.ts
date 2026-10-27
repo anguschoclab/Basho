@@ -1,5 +1,5 @@
-import type { Rikishi } from "./types/rikishi";
-import type { SpatialBoutContext, EngineStateV2 } from "./types/combat-spatial";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { SpatialBoutContext, EngineStateV2 } from "@/engine/types/combat-spatial";
 
 /**
  * src/engine/bout/KimariteStrategyData.ts

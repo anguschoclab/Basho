@@ -1,10 +1,10 @@
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
-import type { Oyakata, OyakataArchetype } from "./types/oyakata";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { perceivedTalentSeed } from "./systems/recruitment/perceivedTalent";
-import { MONTHS_PER_YEAR } from "../constants/engine/calendar";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata, OyakataArchetype } from "@/engine/types/oyakata";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { perceivedTalentSeed } from "@/engine/systems/recruitment/perceivedTalent";
+import { MONTHS_PER_YEAR } from "@/constants/engine/calendar";
 import {
   MONTHLY_BURN_PER_RIKISHI,
   RECRUITMENT_BASE_RISK_MODIFIER,
@@ -19,7 +19,7 @@ import {
   RECRUITMENT_BASE_MULTIPLIER,
   RECRUITMENT_SPITE_PREMIUM_MULTIPLIER,
   RECRUITMENT_MIN_BID,
-} from "../constants/engine/economy";
+} from "@/constants/engine/economy";
 
 interface RecruitmentStrategy {
   evaluateVacancies: (

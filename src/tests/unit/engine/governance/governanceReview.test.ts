@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { runGovernanceReview } from "@/engine/systems/governance/governanceReview";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 import { PRESTIGE_ORDER } from "@/engine/prestige/prestigeSystem";

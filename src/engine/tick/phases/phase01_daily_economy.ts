@@ -4,12 +4,12 @@
  * Pipeline Phase 1 (Daily) — Daily overheads (Food).
  */
 
-import type { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { WelfareService } from "../../systems/welfare/WelfareService";
-import { DIET_COSTS, DEBT_LIMIT } from "../../../constants/engine/economic";
-import { DIET_COST_STANDARD } from "../../../constants/engine/economyExtended";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { WelfareService } from "@/engine/systems/welfare/WelfareService";
+import { DIET_COSTS, DEBT_LIMIT } from "@/constants/engine/economic";
+import { DIET_COST_STANDARD } from "@/constants/engine/economyExtended";
 
 export function phase01_daily_economy(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_economy");

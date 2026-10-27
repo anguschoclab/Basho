@@ -4,7 +4,7 @@ import {
   hasPoorEyesight,
   applyGlasses,
 } from "@/engine/systems/generation/QuirkAssignment";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { SeededRNG } from "@/engine/rng";
 
 describe("Poor Eyesight Quirk (B5)", () => {

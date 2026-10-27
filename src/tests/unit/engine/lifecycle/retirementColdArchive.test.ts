@@ -1,15 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import { opfsArchiveService } from "@/engine/storage/opfsArchive";
-import { resetMockFileSystem } from "@/tests/setup";
+import { resetMockFileSystem } from "@/tests/setup/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 // Mock checkRetirement to force retirement for our test rikishi
-vi.mock("@/engine/lifecycle", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/engine/lifecycle")>();
+vi.mock("@/engine/lifecycle/retirementCheck", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/engine/lifecycle/retirementCheck")>();
   return {
     ...actual,
     checkRetirement: vi.fn((rikishi: Rikishi, year: number, seed: string) => {

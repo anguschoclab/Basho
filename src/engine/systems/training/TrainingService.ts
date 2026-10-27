@@ -11,17 +11,17 @@
  * Goal: Service-oriented architecture with clear dependencies.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
-import { EntityCollection } from "../../core/EntityCollection";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { processRikishiWeekly } from "./weeklyTraining";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { HeyaTrainingState, IndividualFocus } from "@/engine/types/training";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { processRikishiWeekly } from "@/engine/systems/training/weeklyTraining";
 
 // Re-exports for UI consumption
-export * from "../../../constants/engine/training";
-export * from "./TrainingNarrative";
+export * from "@/constants/engine/training";
+export * from "@/engine/systems/training/TrainingNarrative";
 
 /**
  * Factory for default training state.
@@ -123,8 +123,8 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
  * Compatibility object for any legacy callers using TrainingService.*
  * Provides a namespace for all training-related functions and constants.
  */
-import * as Constants from "../../../constants/engine/training";
-import * as Narrative from "./TrainingNarrative";
+import * as Constants from "@/constants/engine/training";
+import * as Narrative from "@/engine/systems/training/TrainingNarrative";
 
 /**
  * Training Service namespace.

@@ -2,13 +2,13 @@
  * bout/narrative/postbout.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
 import {
   CAREER_BOUT_MILESTONES,
   CAREER_WIN_MILESTONES,
-} from "../../../constants/engine/generation";
-import { isKachiKoshi, isMakeKoshi } from "../../banzuke/banzukeHelpers";
-import { BardEngine } from "../../bard/BardEngine";
+} from "@/constants/engine/generation";
+import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { BardEngine } from "@/engine/bard/BardEngine";
 
 function beatPostBoutReaction(p: PbpPipeline): void {
   const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;

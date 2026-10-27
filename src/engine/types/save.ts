@@ -2,30 +2,30 @@
  * JSON-Safe Serialized & Save Format Types
  */
 
-import type { Id, IdMap } from "./common";
-import type { EventsState } from "./events";
-import type { BanzukeSnapshot } from "./banzuke";
-import type { BashoName, MatchSchedule, StandingsTable } from "./basho";
-import type { Oyakata } from "./oyakata";
-import type { Rikishi } from "./rikishi";
-import type { Heya } from "./heya";
-import type { TalentPoolWorldState } from "./talent";
-import type { CyclePhase, WorldState } from "./world";
-import type { BashoResult } from "./basho";
-import type { Sponsor, Koenkai } from "./sponsors";
-import type { ClosedHeyaRecord, PreBashoAssessment } from "./world";
-import type { Staff } from "./staff";
-import type { HistoryIndex } from "../historyIndex";
-import type { RetiredRikishiSummary } from "./history";
-import type { LineageEdge } from "../lineage";
-import type { WorldRecords } from "./records";
-import type { HallOfFameState } from "../hallOfFame";
-import type { RivalriesState } from "../rivalries";
-import type { MyosekiMarket } from "./myoseki";
-import type { OzekiKadobanMap } from "../banzuke";
-import type { MediaState } from "./media";
-import type { AlmanacSnapshot } from "../almanac";
-import type { HeyaTrainingState } from "./training";
+import type { Id, IdMap } from "@/engine/types/common";
+import type { EventsState } from "@/engine/types/events";
+import type { BanzukeSnapshot } from "@/engine/types/banzuke";
+import type { BashoName, MatchSchedule, StandingsTable } from "@/engine/types/basho";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import type { TalentPoolWorldState } from "@/engine/types/talent";
+import type { CyclePhase, WorldState } from "@/engine/types/world";
+import type { BashoResult } from "@/engine/types/basho";
+import type { Sponsor, Koenkai } from "@/engine/types/sponsors";
+import type { ClosedHeyaRecord, PreBashoAssessment } from "@/engine/types/world";
+import type { Staff } from "@/engine/types/staff";
+import type { HistoryIndex } from "@/engine/historyIndex";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import type { LineageEdge } from "@/engine/lineage";
+import type { WorldRecords } from "@/engine/types/records";
+import type { HallOfFameState } from "@/engine/hallOfFame";
+import type { RivalriesState } from "@/constants/engine/rivalry";
+import type { MyosekiMarket } from "@/engine/types/myoseki";
+import type { OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
+import type { MediaState } from "@/engine/types/media";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
+import type { HeyaTrainingState } from "@/engine/types/training";
 
 /** Element type of PreBashoAssessment.rikishiAssessments. */
 export type RikishiAssessmentEntry =

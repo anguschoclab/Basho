@@ -5,9 +5,9 @@
  * Extracted from uiDigest.ts to separate concerns.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { MediaState } from "../../engine/types/media";
-import { projectRikishi } from "../rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { MediaState } from "@/engine/types/media";
+import { projectRikishi } from "@/presenters/rikishi/index";
 
 /**
  * Project a list of recent headlines for the Media Page.

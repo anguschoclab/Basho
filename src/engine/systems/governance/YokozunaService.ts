@@ -5,14 +5,14 @@
  * (Phase Q: Promotion Politics)
  */
 
-import { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import type { BashoPerformance } from "../../types/banzuke";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { getRikishi } from "../../queries";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed, type SeededRNG } from "../../rng";
+import { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoPerformance } from "@/engine/types/banzuke";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { getRikishi } from "@/engine/queries";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed, type SeededRNG } from "@/engine/rng";
 
 const YDC_CHAIRMAN_SURNAMES = [
   "Hanzawa",

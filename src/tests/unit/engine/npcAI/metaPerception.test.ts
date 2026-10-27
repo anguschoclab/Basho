@@ -15,7 +15,7 @@ import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { toIdMap } from "@/engine/utils";
+import { toIdMap } from "@/engine/utils/index";
 
 // Registry families: oshidashi → push; uwatenage/shitatenage → belt.
 const PUSH_HEAVY_STATS = {

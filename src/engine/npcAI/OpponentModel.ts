@@ -8,12 +8,12 @@
  * than exposing hidden physics state.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { Id } from "../types/common";
-import type { OpponentTacticModel } from "../ai/types";
-import type { TacticalFamily } from "../types/combat";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Id } from "@/engine/types/common";
+import type { OpponentTacticModel } from "@/engine/ai/types";
+import type { TacticalFamily } from "@/engine/types/combat";
 
-export type { OpponentTacticModel } from "../ai/types";
+export type { OpponentTacticModel } from "@/engine/ai/types";
 
 const FAMILY_BY_KIMARITE: Record<string, TacticalFamily> = {
   // Push / thrust family

@@ -1,18 +1,18 @@
-import { stableTieBreak } from "../utils/sort";
-import { phase02_context } from "../tick/phases/phase02_context";
-import { resolveImpacts } from "../core/ImpactResolver";
-import type { WorldState } from "../types/world";
-import type { BashoState } from "../types/basho";
-import type { SerializedBashoState, RikishiAssessmentEntry } from "../types/save";
-import type { SponsorPool } from "../types/sponsors";
-import type { SerializedSponsorPool } from "../types/save";
-import type { SerializedWorldState } from "../types/save";
-import type { Rikishi } from "../types/rikishi";
-import type { Heya } from "../types/heya";
-import { resetImpactTimestampCounter } from "../core/StateImpact";
-import { RANK_HIERARCHY } from "../banzuke";
-import { warn } from "../utils/Logger";
-import { ensureAvatarIdentities } from "../avatarGenerator";
+import { stableTieBreak } from "@/engine/utils/sort";
+import { phase02_context } from "@/engine/tick/phases/phase02_context";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { SerializedBashoState, RikishiAssessmentEntry } from "@/engine/types/save";
+import type { SponsorPool } from "@/engine/types/sponsors";
+import type { SerializedSponsorPool } from "@/engine/types/save";
+import type { SerializedWorldState } from "@/engine/types/save";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import { resetImpactTimestampCounter } from "@/engine/core/StateImpact";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { warn } from "@/engine/utils/Logger";
+import { ensureAvatarIdentities } from "@/engine/avatarGenerator";
 
 /**
  * Serialization Service handles the transformation between runtime Maps

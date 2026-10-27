@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,

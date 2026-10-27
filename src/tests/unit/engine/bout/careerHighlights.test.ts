@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { recordCareerHighlight, getFavoriteHighlight } from "@/engine/bout/CareerHighlights";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("Career Highlights System (B7)", () => {

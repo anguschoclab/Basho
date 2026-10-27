@@ -6,17 +6,17 @@
 // by the pipeline at src/engine/tick/phases/phase01_week_economy.ts,
 // which uses FinanceCalculator.ts for the pure math.
 
-import { RNGRegistry } from "./core/RNGRegistry";
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
-import type { BoutResult, MatchSchedule } from "./types/basho";
-import type { Rikishi } from "./types/rikishi";
-import { reportScandal } from "./systems/governance/ScandalService";
-import { calculateKenshoEnvelopes } from "./systems/economy/KenshoService";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { reportScandal } from "@/engine/systems/governance/ScandalService";
+import { calculateKenshoEnvelopes } from "@/engine/systems/economy/KenshoService";
 import {
   processSponsorChurn as runSponsorChurnService,
   selectBenefactor,
-} from "./systems/economy/SponsorshipService";
+} from "@/engine/systems/economy/SponsorshipService";
 import {
   DEBT_LIMIT,
   BENEFACTOR_BAILOUT_AMOUNT,
@@ -25,10 +25,10 @@ import {
   KINBOSHI_MARKETABILITY_BOOST,
   GINBOSHI_MARKETABILITY_BOOST,
   MARKETABILITY_POPULARITY_MULTIPLIER,
-} from "../constants/engine/economic";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { getHeya } from "./queries";
+} from "@/constants/engine/economic";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya } from "@/engine/queries";
 
 // === INSOLVENCY HANDLER ===
 

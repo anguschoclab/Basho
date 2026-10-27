@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { adjustKoenkaiBandToPrestige } from "@/engine/systems/economy/SponsorshipService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
-import { toKeyedMap } from "@/engine/utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import type { Sponsor, SponsorPool, Koenkai, SponsorRelationship } from "@/engine/types/sponsors";
 
 function makeSponsor(id: string, tier: "T1" | "T2" | "T3" = "T2", active = false): Sponsor {

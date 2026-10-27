@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { BoutResult, BoutLogEntry } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
 import { JSA_PER_WRESTLER_SUBSIDY_MONTHLY } from "@/constants/engine/economic";
-import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
+import { makeMockHeya, makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("JSA per-wrestler subsidy — rank-based", () => {
   it("yokozuna subsidy > ozeki subsidy > sekiwake > komusubi > maegashira > juryo", () => {

@@ -1,24 +1,24 @@
 import { describe, it, expect, vi } from "vitest";
 // @ts-expect-error -- Test file global mock: calculatePerceivedStats is not typed on global
 global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
-vi.mock("@/engine/events", () => ({
+vi.mock("@/engine/events/events", () => ({
   queryEvents: vi.fn(
     (world: any) => world.events?.log?.map((e: any) => ({ ...e, type: e.type || "GENERIC" })) || []
   ),
 }));
-import type { StandingsTableRuntime } from "../../../engine/types/basho";
+import type { StandingsTableRuntime } from "@/engine/types/basho";
 import {
   enrichRikishiForUI,
   getOzekiRunCandidates,
   buildWeeklyDigest,
   getKadobanDrama,
 } from "@/presenters/uiDigest";
-import { mockRikishi as generateMockRikishi } from "../engine/utils";
-import type { RikishiStats } from "../../../engine/types/rikishi";
-import type { WorldState } from "../../../engine/types/world";
+import { mockRikishi as generateMockRikishi } from "@/tests/unit/engine/utils";
+import type { RikishiStats } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 
 // Mock calculatePerceivedStats properly
-vi.mock("@/presenters/rikishi", () => ({
+vi.mock("@/presenters/rikishi/index", () => ({
   calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
   toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
   projectRikishi: vi.fn((r: { id: string; shikona: string }) => ({

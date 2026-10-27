@@ -16,9 +16,9 @@ import { StableName } from "@/components/ClickableName";
 import { activationKeyHandler } from "@/lib/a11y";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { HEYA_STATS } from "../../constants/ui/heyaPreview";
+import { HEYA_STATS } from "@/constants/ui/heyaPreview";
 
-import type { STATURE_CONFIG } from "./statureConfig";
+import type { STATURE_CONFIG } from "@/components/menu/statureConfig";
 
 type StatureConfig = (typeof STATURE_CONFIG)[keyof typeof STATURE_CONFIG];
 export type RosterEntry = { rikishi: UIRikishi; age: number };

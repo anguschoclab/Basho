@@ -9,13 +9,13 @@
  * They receive a small fatigue penalty but gain mental toughness.
  */
 
-import type { Id } from "../../types/common";
-import type { Rikishi } from "../../types/rikishi";
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { rngForWorld } from "../../rng";
-import { finiteOr } from "../../utils/math";
+import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { rngForWorld } from "@/engine/rng";
+import { finiteOr } from "@/engine/utils/math";
 
 /** Minimum rank number to be eligible for tsukebito (sekiwake and above = rankNum <= 3) */
 export const TSUKEBITO_SENIOR_RANK_THRESHOLD = 3;

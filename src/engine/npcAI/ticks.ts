@@ -1,19 +1,19 @@
-import type { WorldState } from "../types/world";
-import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
-import type { Id } from "../types/common";
-import { getAvailableStables } from "../selectors";
-import { stableSort } from "../utils/sort";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { getManagerPersona } from "../systems/NPCPersonaService";
-import { evaluateFinanceStrategy } from "../strategy/NPCFinanceCalculator";
-import { getRecruitmentStrategy } from "../npcRecruitmentStrategy";
-import { getRetirementStrategy } from "../npcRetirementStrategy";
-import { getSponsorStrategy } from "../npcSponsorStrategy";
-import { evaluateGovernanceStrategy } from "../strategy/NPCGovernanceCalculator";
-import * as talentpool from "../systems/generation/TalentPoolService";
-import { getRikishi } from "../queries";
-import { WEIGHT_JOURNEY_STALL_THRESHOLD } from "../training/WeightJourney";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { Id } from "@/engine/types/common";
+import { getAvailableStables } from "@/engine/selectors";
+import { stableSort } from "@/engine/utils/sort";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getManagerPersona } from "@/engine/systems/NPCPersonaService";
+import { evaluateFinanceStrategy } from "@/engine/strategy/NPCFinanceCalculator";
+import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
+import { getRetirementStrategy } from "@/engine/npcRetirementStrategy";
+import { getSponsorStrategy } from "@/engine/npcSponsorStrategy";
+import { evaluateGovernanceStrategy } from "@/engine/strategy/NPCGovernanceCalculator";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import { getRikishi } from "@/engine/queries";
+import { WEIGHT_JOURNEY_STALL_THRESHOLD } from "@/engine/training/WeightJourney";
 
 export function tickMonthlyNPC(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickMonthlyNPC");

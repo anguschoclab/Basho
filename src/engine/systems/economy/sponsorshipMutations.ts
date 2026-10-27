@@ -1,20 +1,20 @@
-import { SeededRNG } from "../../rng";
-import type { Rikishi } from "../../types/rikishi";
-import type { Sponsor, KoenkaiBandType, SponsorRelationship } from "../../types/sponsors";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import { Id } from "../../types/common";
-import { getHeya } from "../../queries";
+import { SeededRNG } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Sponsor, KoenkaiBandType, SponsorRelationship } from "@/engine/types/sponsors";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import { Id } from "@/engine/types/common";
+import { getHeya } from "@/engine/queries";
 import {
   computeHeyaPrestigeScore,
   computeStarPower,
   recalculateKoenkaiBand,
   targetKoenkaiBandFromPrestige,
-} from "./sponsorshipQueries";
-import { KOENKAI_MEMBER_STRENGTH } from "../../../constants/engine/economyExtended";
-import { SPONSOR_RECRUITMENT_COSTS } from "../../../constants/engine/economic";
-import { STAR_POWER_SATISFACTION_WEIGHT } from "../../../constants/engine/sponsors";
+} from "@/engine/systems/economy/sponsorshipQueries";
+import { KOENKAI_MEMBER_STRENGTH } from "@/constants/engine/economyExtended";
+import { SPONSOR_RECRUITMENT_COSTS } from "@/constants/engine/economic";
+import { STAR_POWER_SATISFACTION_WEIGHT } from "@/constants/engine/sponsors";
 
 const BAND_ORDER: KoenkaiBandType[] = ["none", "weak", "moderate", "strong", "powerful"];
 

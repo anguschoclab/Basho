@@ -6,10 +6,10 @@
  * the optimization to ensure the contract is captured correctly.
  */
 import { describe, it, expect } from "vitest";
-import { updateBanzuke } from "@/engine/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import type { BanzukeEntry, BashoPerformance, RankPosition } from "@/engine/types/banzuke";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 // ── Helpers ────────────────────────────────────────────────────────────────

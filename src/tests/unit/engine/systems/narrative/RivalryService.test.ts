@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { RivalryService } from "@/engine/systems/narrative/RivalryService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
+import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BoutResult } from "@/engine/types/basho";
 

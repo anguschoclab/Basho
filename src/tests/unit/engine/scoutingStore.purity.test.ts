@@ -15,7 +15,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { getOrCreateScouted } from "@/engine/scoutingStore";
-import { makeMockWorld, mockRikishi } from "./utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("scoutingStore read-path purity", () => {
   it("getOrCreateScouted does not create world.playerKnowledge on a world that lacks it", () => {

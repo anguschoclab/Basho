@@ -5,11 +5,11 @@
  * (Phase 4: Media, Narratives & Faction Power)
  */
 
-import { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { getHeya } from "../../queries";
-import { POLITICAL_FAVOR_ADVANCE_PAYOUT } from "../../../constants/engine/economic";
+import { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya } from "@/engine/queries";
+import { POLITICAL_FAVOR_ADVANCE_PAYOUT } from "@/constants/engine/economic";
 
 export type FavorType = "matchmaking_avoid" | "advance_payout" | "governance_pardon";
 

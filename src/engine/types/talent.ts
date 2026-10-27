@@ -10,9 +10,9 @@
  * @see TalentPoolScouting for candidate generation
  */
 
-import type { Id } from "./common";
-import type { CombatArchetype, Style, CombatProfile } from "./combat";
-import type { ScoutingBias } from "../systems/recruitment/FogOfWarService";
+import type { Id } from "@/engine/types/common";
+import type { CombatArchetype, Style, CombatProfile } from "@/engine/types/combat";
+import type { ScoutingBias } from "@/engine/systems/recruitment/FogOfWarService";
 
 /**
  * Type representing talent pool type.

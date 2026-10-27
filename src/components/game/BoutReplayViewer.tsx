@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { REPLAY_PHASE_LABELS, CROWD_TEXT } from "./boutReplay/boutCanvas";
-import { useBoutReplay } from "./boutReplay/useBoutReplay";
-import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
-import { BoutControls } from "./boutReplay/BoutControls";
+import { REPLAY_PHASE_LABELS, CROWD_TEXT } from "@/components/game/boutReplay/boutCanvas";
+import { useBoutReplay } from "@/components/game/boutReplay/useBoutReplay";
+import type { BoutReplayProgress } from "@/components/game/boutReplay/useBoutReplay";
+import { BoutControls } from "@/components/game/boutReplay/BoutControls";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
 export interface BoutReplayViewerHandle {

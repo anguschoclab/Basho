@@ -6,7 +6,7 @@
  */
 
 import { Trophy, Users, Calendar, MapPin, BarChart3 } from "lucide-react";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { GlobalCupBracket } from "@/components/game/GlobalCupBracket";
 import { GlobalCupParticipantCard } from "@/components/game/GlobalCupParticipant";
 import { ProgressArc } from "@/components/charts/ProgressArc";

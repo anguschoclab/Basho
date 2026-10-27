@@ -7,7 +7,7 @@
 import { describe, it, expect } from "vitest";
 import { runRetirements } from "@/engine/systems/governance/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("founding reliability with exhausted myoseki", () => {
   it("an accomplished retiree founds a stable / becomes oyakata even when no myoseki stock is available", () => {

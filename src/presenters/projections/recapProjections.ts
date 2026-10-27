@@ -6,11 +6,11 @@
  * biggest upset, kinboshi) from the current basho's completed matches.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { BashoName, BoutResult, KeyBoutEntry, MatchSchedule } from "../../engine/types/basho";
-import type { Rikishi } from "../../engine/types/rikishi";
-import { RANK_HIERARCHY } from "../../engine/types/banzuke";
-import { BASHO_FINAL_DAY } from "../../constants/engine/calendar";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoName, BoutResult, KeyBoutEntry, MatchSchedule } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-import type { WorldState } from "../types/world";
+import type { WorldState } from "@/engine/types/world";
 
 /**
  * True when a multi-day fast-advance loop must stop and hand control back to

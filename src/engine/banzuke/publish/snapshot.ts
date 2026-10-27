@@ -1,12 +1,12 @@
-import type { WorldState } from "../../types/world";
-import type { BashoState } from "../../types/basho";
-import type { BanzukeEntry } from "../../banzuke";
-import { updateBanzuke } from "../../banzuke";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { buildBanzukeSnapshot } from "../banzukeSnapshot";
-import { createEmptyHistoryIndex, indexBashoResult, makeBashoKey } from "../../historyIndex";
-import { enterInterim } from "../../tick/tickDaily";
-import { getNextBasho, getBashoNumber } from "../../calendar";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { BanzukeEntry } from "@/engine/types/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { buildBanzukeSnapshot } from "@/engine/banzuke/banzukeSnapshot";
+import { createEmptyHistoryIndex, indexBashoResult, makeBashoKey } from "@/engine/historyIndex";
+import { enterInterim } from "@/engine/tick/tickDaily";
+import { getNextBasho, getBashoNumber } from "@/engine/calendar";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;

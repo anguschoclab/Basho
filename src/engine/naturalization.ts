@@ -1,16 +1,16 @@
-import type { WorldState } from "./types/world";
-import { generateGovernanceHeadline } from "./systems/media/MediaService";
-import { stableSort } from "./utils/sort";
-import { rngFromSeed } from "./rng";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { getHeya, getRikishi } from "./queries";
+import type { WorldState } from "@/engine/types/world";
+import { generateGovernanceHeadline } from "@/engine/systems/media/MediaService";
+import { stableSort } from "@/engine/utils/sort";
+import { rngFromSeed } from "@/engine/rng";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya, getRikishi } from "@/engine/queries";
 import {
   NATURALIZATION_CAREER_WINS_THRESHOLD,
   NATURALIZATION_YOKOZUNA_AGE_THRESHOLD,
   NATURALIZATION_OZEKI_CAREER_WINS_THRESHOLD,
   NATURALIZATION_CHANCE_PERCENTAGE,
-} from "../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 
 const originalSelf = globalThis.self;

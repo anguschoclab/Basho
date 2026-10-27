@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { handleInvestigationTransition } from "@/engine/tick/phases/welfare/transitions";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { WelfareState } from "@/engine/types/economy";
 import type { Heya } from "@/engine/types/heya";

@@ -1,11 +1,11 @@
-import { rngForWorld } from "./rng";
-import type { WorldState } from "./types/world";
-import type { Rikishi } from "./types/rikishi";
-import { generateShikona } from "./shikona";
-import type { CareerSnapshot } from "./types/history";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { getHeya, getRikishi } from "./queries";
+import { rngForWorld } from "@/engine/rng";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { generateShikona } from "@/engine/shikona/generateShikona";
+import type { CareerSnapshot } from "@/engine/types/history";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya, getRikishi } from "@/engine/queries";
 import {
   CAREER_WIN_MILESTONE_THRESHOLDS,
   SHIKONA_CHANGE_BASE_PROBABILITY,
@@ -14,7 +14,7 @@ import {
   SHIKONA_CHANGE_PROBABILITY_NURTURER,
   SHIKONA_CHANGE_PROBABILITY_SCIENTIST,
   SHIKONA_CHANGE_SANYAKU_BONUS,
-} from "../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 /**
  * Generates a career snapshot for a Rikishi based on their current state and the last basho's results.

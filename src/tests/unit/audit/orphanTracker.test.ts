@@ -14,7 +14,7 @@ import {
   type PriorTrackerRow,
   type TrackedEntry,
 } from "../../../../scripts/orphanTracker";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 
 function entry(file: string, symbol: string): TrackedEntry {
   return { id: "", file, symbol, status: "candidate" };

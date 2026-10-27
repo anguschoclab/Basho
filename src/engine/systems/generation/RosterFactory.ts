@@ -5,19 +5,19 @@
  * Extracted from WorldFactory.ts for SRP separation.
  */
 
-import { SeededRNG } from "../../rng";
-import { Heya } from "../../types/heya";
-import { Oyakata } from "../../types/oyakata";
-import { Rikishi } from "../../types/rikishi";
-import { generateFullRikishi } from "./CandidateBuilder";
-import { countsAsForeign } from "../../utils/citizenshipUtils";
-import { Division, Rank, Side } from "../../types/banzuke";
+import { SeededRNG } from "@/engine/rng";
+import { Heya } from "@/engine/types/heya";
+import { Oyakata } from "@/engine/types/oyakata";
+import { Rikishi } from "@/engine/types/rikishi";
+import { generateFullRikishi } from "@/engine/systems/generation/CandidateBuilder";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { Division, Rank, Side } from "@/engine/types/banzuke";
 import {
   YOKOZUNA_COUNT_MIN,
   YOKOZUNA_COUNT_MAX,
   ROSTER_TIER_FALLBACK_CHANCE,
-} from "../../../constants/engine/generation";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
+} from "@/constants/engine/generation";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 export function createRosters(
   worldRng: SeededRNG,

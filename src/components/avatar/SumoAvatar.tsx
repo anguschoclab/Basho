@@ -12,7 +12,7 @@ import type {
   AvatarExpression,
 } from "@/engine/types/avatar";
 import { deriveAvatarStage } from "@/presenters/avatarProjections";
-import { composeAvatar } from "./pixelCompose";
+import { composeAvatar } from "@/components/avatar/pixelCompose";
 import { cn } from "@/lib/utils";
 
 interface SumoAvatarProps {

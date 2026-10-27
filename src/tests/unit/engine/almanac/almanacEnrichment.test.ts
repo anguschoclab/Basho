@@ -4,7 +4,7 @@ import {
   enrichAlmanacRecord,
   createEmptyAlmanacRecord,
 } from "@/engine/almanac/narrativeEnrichment";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { BoutResult, BashoResult, KeyBoutEntry } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RikishiCareerRecord } from "@/engine/almanac/types";

@@ -11,7 +11,7 @@ import {
 import { join } from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 
 const execAsync = promisify(exec);
 

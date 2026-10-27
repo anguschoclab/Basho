@@ -8,29 +8,29 @@
  * Extracted from CompetitionService.ts (function-length decomposition).
  */
 
-import { createImpactBuilder, ImpactBuilder } from "../core/ImpactBuilder";
-import { mergeImpacts } from "../core/ImpactResolver";
-import { accumulateMochikyukinPoints } from "../systems/economy/MochikyukinService";
-import { calculateKachiNokori } from "../systems/economy/KachiNokoriService";
-import type { WorldState } from "../types/world";
-import type { StateImpact } from "../core/StateImpact";
+import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { mergeImpacts } from "@/engine/core/ImpactResolver";
+import { accumulateMochikyukinPoints } from "@/engine/systems/economy/MochikyukinService";
+import { calculateKachiNokori } from "@/engine/systems/economy/KachiNokoriService";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   resolvePlayoffs,
   calculateStandings,
   calculateDivisionStandings,
   resolveDivisionPlayoffs,
-} from "./PlayoffResolver";
-import { distributePrizes, payBashoTeate } from "./PrizeDistribution";
-import { recordBashoHistory } from "./BashoHistory";
-import { getRikishi } from "../queries";
-import { BardEngine } from "../bard/BardEngine";
-import { rngFromSeed } from "../rng";
-import type { PbpLine } from "../bout/boutNarrative";
-import type { Milestone } from "../types/history";
-import type { Id } from "../types/common";
-import type { BashoState, MatchSchedule } from "../types/basho";
-import { BASHO_CALENDAR } from "../calendar";
-import { PostBashoPressService } from "../systems/narrative/PostBashoPressService";
+} from "@/engine/lifecycle/PlayoffResolver";
+import { distributePrizes, payBashoTeate } from "@/engine/lifecycle/PrizeDistribution";
+import { recordBashoHistory } from "@/engine/lifecycle/BashoHistory";
+import { getRikishi } from "@/engine/queries";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/rng";
+import type { PbpLine } from "@/engine/bout/boutNarrative";
+import type { Milestone } from "@/engine/types/history";
+import type { Id } from "@/engine/types/common";
+import type { BashoState, MatchSchedule } from "@/engine/types/basho";
+import { BASHO_CALENDAR } from "@/engine/calendar";
+import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
 
 /**
  * Conclude Tournament Competition — handles yusho, prizes, and playoffs.

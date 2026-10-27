@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { processOyakataMood } from "@/engine/tick/phases/npc_ai/mood";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { Oyakata } from "@/engine/types/oyakata";
-import type { NPCWeeklyDecision } from "@/engine/npcAI";
+import type { NPCWeeklyDecision } from "@/engine/npcAI/types";
 
 function makeOyakata(mood: string = "content"): Oyakata {
   return {

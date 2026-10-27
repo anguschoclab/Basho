@@ -1,14 +1,15 @@
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import type { WorldState } from "./types/world";
-import type { Rikishi } from "./types/rikishi";
-import type { Id } from "./types/common";
-import { getRivalry, makeRivalryKey } from "./rivalries";
-import { getHeya, getRikishi } from "./queries";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Id } from "@/engine/types/common";
+import { getRivalry } from "@/engine/narrative/rivalry/rivalriesState";
+import { makeRivalryKey } from "@/engine/systems/narrative/rivalry/state";
+import { getHeya, getRikishi } from "@/engine/queries";
 import { isSekitoriRank } from "@/constants/engine/rankDisplay";
-import type { Heya } from "./types/heya";
-import { MentorshipService } from "./systems/training/MentorshipService";
-import type { HistoricalOyakata, OyakataAchievements } from "./types/history";
+import type { Heya } from "@/engine/types/heya";
+import { MentorshipService } from "@/engine/systems/training/MentorshipService";
+import type { HistoricalOyakata, OyakataAchievements } from "@/engine/types/history";
 
 export interface LineageEdge {
   mentorId: Id;

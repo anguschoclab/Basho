@@ -1,5 +1,5 @@
-import { generateInitialWorld } from "../src/engine/systems/generation/WorldFactory";
-import { runAutoSim, type AutoSimConfig } from "../src/engine/simulation/AutoSimService";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { runAutoSim, type AutoSimConfig } from "@/engine/simulation/AutoSimService";
 
 async function runSim() {
   const seed = "baseline-sim-" + Date.now();

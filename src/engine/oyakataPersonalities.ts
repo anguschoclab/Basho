@@ -2,8 +2,8 @@
 // Defines the archetypes and traits for NPC Managers.
 // Used to generate diverse and believing opponents.
 
-import { rngFromSeed, SeededRNG } from "./rng";
-import type { Oyakata, OyakataArchetype, OyakataTraits, OyakataMood } from "./types/oyakata";
+import { rngFromSeed, SeededRNG } from "@/engine/rng";
+import type { Oyakata, OyakataArchetype, OyakataTraits, OyakataMood } from "@/engine/types/oyakata";
 import {
   TRAIT_VARIANCE_RANGE,
   TRAIT_VARIANCE_HALF_RANGE,
@@ -28,7 +28,7 @@ import {
   SAN_YAKU_BOOL_CHANCE,
   ADAPTABILITY_TRADITION_INVERSE,
   DEFAULT_HEYA_TIER,
-} from "../constants/engine/npcStrategy";
+} from "@/constants/engine/npcStrategy";
 
 /** o y a k a t a_ a r c h e t y p e s. */
 export const OYAKATA_ARCHETYPES: Record<OyakataArchetype, OyakataTraits> = {

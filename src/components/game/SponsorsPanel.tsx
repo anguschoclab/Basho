@@ -5,7 +5,7 @@
 import { useGame } from "@/contexts/useGame";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSponsorsDerived } from "@/hooks/useSponsorsDerived";
-import { KoenkaiCard, ActiveSponsorsCard, ChurnedSponsorsCard } from "./SponsorsPanelSections";
+import { KoenkaiCard, ActiveSponsorsCard, ChurnedSponsorsCard } from "@/components/game/SponsorsPanelSections";
 
 /** sponsors panel. */
 export function SponsorsPanel() {

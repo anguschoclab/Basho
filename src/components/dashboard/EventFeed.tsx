@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
 import { useEventReadStore } from "@/store/eventReadStore";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";

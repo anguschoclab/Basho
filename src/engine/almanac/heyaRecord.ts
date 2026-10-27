@@ -1,7 +1,7 @@
-import type { WorldState } from "../types/world";
-import type { Heya } from "../types/heya";
-import type { HeyaRecord } from "./types";
-import { getRikishi } from "../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { HeyaRecord } from "@/engine/almanac/types";
+import { getRikishi } from "@/engine/queries";
 
 export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = [];

@@ -8,13 +8,13 @@
  * weekly trigger roll and the pendingCrisis hand-off to the UI.
  */
 
-import { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { getCrisisRegistry } from "./crisisRegistry";
+import { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { getCrisisRegistry } from "@/engine/systems/narrative/crisisRegistry";
 
-import { ActiveCrisis } from "../../types/crises";
+import { ActiveCrisis } from "@/engine/types/crises";
 
 /**
  * Probability of a crisis event triggering per week.

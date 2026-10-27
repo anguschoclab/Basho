@@ -5,8 +5,8 @@
  * at bout resolution and consumed at retirement for narrative reflection.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { Id } from "../types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Id } from "@/engine/types/common";
 
 type CareerHighlightType =
   | "debut_win"

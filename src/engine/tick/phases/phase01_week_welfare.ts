@@ -9,27 +9,27 @@
  * 3. Apply financial sanctions and media pressure.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import type { WelfareState } from "../../types/economy";
-import type { MediaHeadline } from "../../types/media";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import type { StateImpact } from "../../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { WelfareState } from "@/engine/types/economy";
+import type { MediaHeadline } from "@/engine/types/media";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   calculateWeeklyWelfareDelta,
   computeInjuryPressure,
-} from "../../systems/welfare/WelfareCalculations";
-import { clamp } from "../../utils/math";
-import { WelfareService } from "../../systems/welfare/WelfareService";
-import { getHeyaRoster } from "../../queries";
-import { canEncourage, provideEncouragement } from "../../actions/InjuredEncouragement";
+} from "@/engine/systems/welfare/WelfareCalculations";
+import { clamp } from "@/engine/utils/math";
+import { WelfareService } from "@/engine/systems/welfare/WelfareService";
+import { getHeyaRoster } from "@/engine/queries";
+import { canEncourage, provideEncouragement } from "@/engine/actions/InjuredEncouragement";
 import {
   handleCompliantTransition,
   handleWatchTransition,
   handleInvestigationTransition,
   handleSanctionedTransition,
-} from "./welfare";
+} from "@/engine/tick/phases/welfare/index";
 import {
   WELFARE_RISK_THRESHOLD,
   WELFARE_RISK_SHIFT_LOG_THRESHOLD,
@@ -42,7 +42,7 @@ import {
   MORALE_INVESTIGATION_PENALTY,
   MORALE_WATCH_PENALTY,
   MAX_MORALE,
-} from "../../../constants/engine/welfare";
+} from "@/constants/engine/welfare";
 
 interface HeyaRiskIndicators {
   financial: boolean;

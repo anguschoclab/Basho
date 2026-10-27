@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { toKihakuDTO } from "@/presenters/rikishi/transformers/kihaku";
-import { mockRikishi } from "../../../engine/utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("toKihakuDTO", () => {

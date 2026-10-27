@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { DefaultRetirementStrategy } from "@/engine/npcRetirementStrategy";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld, makeMockHeya } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 

@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { CREST_MOTIF_RENDERERS } from "./crestMotifPaths";
+import { CREST_MOTIF_RENDERERS } from "@/components/stable/crestMotifPaths";
 
 /**
  * Render the crest motif as SVG

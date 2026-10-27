@@ -35,4 +35,4 @@ export function simpleHashToIndex(s: string, mod: number): number {
   return (h >>> 0) % mod;
 }
 
-export { formatCurrency } from "./formatters";
+export { formatCurrency } from "@/engine/utils/formatters";

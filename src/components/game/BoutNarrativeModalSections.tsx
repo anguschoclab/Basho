@@ -10,20 +10,20 @@ import { useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BoutReplayViewer } from "./BoutReplayViewer";
-import type { BoutReplayViewerHandle } from "./BoutReplayViewer";
-import { BoutLog } from "./BoutLog";
+import { BoutReplayViewer } from "@/components/game/BoutReplayViewer";
+import type { BoutReplayViewerHandle } from "@/components/game/BoutReplayViewer";
+import { BoutLog } from "@/components/game/BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult } from "@/engine/types/basho";
 import type { PbpLine } from "@/presenters/engineAccess";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
-import { PbpLineText } from "./PbpLineText";
-import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
+import { PbpLineText } from "@/components/game/PbpLineText";
+import type { BoutReplayProgress } from "@/components/game/boutReplay/useBoutReplay";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { cn } from "@/lib/utils";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
-import { PHASE_STYLE, TAG_ICONS } from "./boutModalConstants";
+import { PHASE_STYLE, TAG_ICONS } from "@/components/game/boutModalConstants";
 
 /** VS header — east/west bar, names, gyoji/shimpan badges, replay viewer. */
 export function BoutModalHeader({

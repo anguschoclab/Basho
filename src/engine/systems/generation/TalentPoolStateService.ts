@@ -4,18 +4,18 @@
  * reinsertion of released/injected rikishi back into the pool.
  */
 
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import type { Id } from "../../types/common";
-import type { Rikishi } from "../../types/rikishi";
-import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "../../types/talent";
-import { generateCandidate } from "./CandidateGenerator";
-import { deriveStyle } from "./CandidateBuilder";
-import { isForeign, isCollegeRecruit } from "../../utils/identity";
-import { buildCombatProfile } from "../../archetype";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "@/engine/types/talent";
+import { generateCandidate } from "@/engine/systems/generation/CandidateGenerator";
+import { deriveStyle } from "@/engine/systems/generation/CandidateBuilder";
+import { isForeign, isCollegeRecruit } from "@/engine/utils/identity";
+import { buildCombatProfile } from "@/engine/archetype";
 
 /**
  * Ensures the talent pool state is initialized.

@@ -4,7 +4,7 @@ import {
   getRetirementNarrative,
   type PostRetirementPath,
 } from "@/engine/lifecycle/PostRetirementPath";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { SeededRNG } from "@/engine/rng";
 
 function mockRng(seed: string): SeededRNG {

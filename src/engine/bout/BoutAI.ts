@@ -6,12 +6,12 @@
  * adjustments without disturbing the tactical clash rules.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { BoutTactic } from "../types/combat";
-import type { SeededRNG } from "../rng";
-import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
-import type { OpponentTacticModel } from "../ai/types";
-import { getOpponentDominantFamily } from "../npcAI/OpponentModel";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutTactic } from "@/engine/types/combat";
+import type { SeededRNG } from "@/engine/rng";
+import { decideBoutTacticOverride } from "@/engine/strategy/NPCStrategyService";
+import type { OpponentTacticModel } from "@/engine/ai/types";
+import { getOpponentDominantFamily } from "@/engine/npcAI/OpponentModel";
 import {
   TACTIC_YOTSU_BELT_THRESHOLD,
   TACTIC_YOTSU_STANDARD_THRESHOLD,
@@ -22,7 +22,7 @@ import {
   TACTIC_HYBRID_YOTSU_THRESHOLD,
   TACTIC_HYBRID_OSHI_THRESHOLD,
   TACTIC_HYBRID_STANDARD_THRESHOLD,
-} from "../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 export interface BoutAIContext {
   bashoDay?: number;

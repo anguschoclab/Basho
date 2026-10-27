@@ -6,7 +6,7 @@ import {
   WelfareMoraleCard,
   DietCard,
   HealthOverviewCard,
-} from "./WelfarePanelSections";
+} from "@/components/game/WelfarePanelSections";
 
 /** Defines the structure for welfare panel props. */
 interface WelfarePanelProps {

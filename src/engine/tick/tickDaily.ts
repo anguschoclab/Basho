@@ -15,22 +15,22 @@
  * ============
  */
 
-import type { WorldState, CyclePhase } from "../types/world";
+import type { WorldState, CyclePhase } from "@/engine/types/world";
 import {
   WEEKLY_TICK_THRESHOLD,
   MAX_DAYS_ADVANCE,
   POST_BASHO_DAYS,
-} from "../../constants/engine/npcStrategy";
+} from "@/constants/engine/npcStrategy";
 import {
   DAYS_IN_MONTH,
   DEFAULT_MAX_DAY,
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
-} from "../../constants/engine/calendarExtended";
-import { DEFAULT_START_YEAR, INTERIM_DAYS, BASHO_FINAL_DAY } from "../../constants/engine/calendar";
-import { warn } from "../utils/Logger";
-import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
-import { clearQueryCaches } from "../queries";
+} from "@/constants/engine/calendarExtended";
+import { DEFAULT_START_YEAR, INTERIM_DAYS, BASHO_FINAL_DAY } from "@/constants/engine/calendar";
+import { warn } from "@/engine/utils/Logger";
+import { shouldHaltAdvance } from "@/engine/loop/shouldHaltAdvance";
+import { clearQueryCaches } from "@/engine/queries";
 
 // ====
 // TYPES
@@ -71,10 +71,10 @@ export interface AdvanceOptions {
 // MAIN PIPELINE: AdvanceOneDay()
 // ====
 
-import { runPipeline } from "./pipelineRunner";
-import * as phases from "./phases";
-import { bashoPipeline } from "./pipelines/bashoPipeline";
-import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
+import { runPipeline } from "@/engine/tick/pipelineRunner";
+import * as phases from "@/engine/tick/phases/index";
+import { bashoPipeline } from "@/engine/tick/pipelines/bashoPipeline";
+import { offSeasonPipeline } from "@/engine/tick/pipelines/offSeasonPipeline";
 
 /**
  * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.

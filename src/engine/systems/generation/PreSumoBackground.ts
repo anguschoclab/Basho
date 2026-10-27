@@ -6,9 +6,9 @@
  * and create narrative flavor.
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { SeededRNG } from "../../rng";
-import { clampInt } from "../../utils/math";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { SeededRNG } from "@/engine/rng";
+import { clampInt } from "@/engine/utils/math";
 
 type PreSumoBackgroundId =
   "gymnast" | "judoka" | "baseball" | "soccer" | "wrestler" | "track" | "none";

@@ -1,16 +1,16 @@
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { Heya } from "../../types/heya";
-import { TalentCandidate } from "../../types/talent";
-import { rngFromSeed } from "../../rng";
-import { BardEngine } from "../../bard/BardEngine";
-import { ensureTalentPoolState } from "./TalentPoolStateService";
-import { getForeignCountInHeya, candidateConsumesForeignSlot } from "./TalentPoolScouting";
-import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../../constants/engine/recruitment";
-import { getHeya } from "../../queries";
-import { EventBus } from "../../events";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import { TalentCandidate } from "@/engine/types/talent";
+import { rngFromSeed } from "@/engine/rng";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { ensureTalentPoolState } from "@/engine/systems/generation/TalentPoolStateService";
+import { getForeignCountInHeya, candidateConsumesForeignSlot } from "@/engine/systems/generation/TalentPoolScouting";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
+import { getHeya } from "@/engine/queries";
+import { EventBus } from "@/engine/events/events";
 
 /**
  * Submits an offer to a candidate from the player's stable.

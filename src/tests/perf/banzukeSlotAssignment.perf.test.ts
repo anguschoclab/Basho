@@ -9,10 +9,10 @@
  * Run via: npm run test:perf
  */
 import { describe, it, expect } from "vitest";
-import { updateBanzuke } from "@/engine/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 import { toRankPosition } from "@/engine/types/banzuke";
-import { makeMockWorld } from "../unit/engine/utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 function makeLargeField(n: number): {
   world: ReturnType<typeof makeMockWorld>;

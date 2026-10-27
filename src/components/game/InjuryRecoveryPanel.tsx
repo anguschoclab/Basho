@@ -12,7 +12,7 @@ import {
   RecoveryFacilityCard,
   InjuredRikishiCard,
   WithdrawalDialog,
-} from "./InjuryRecoveryPanelSections";
+} from "@/components/game/InjuryRecoveryPanelSections";
 
 interface InjuryRecoveryPanelProps {
   digest: NonNullable<ReturnType<typeof projectMedicalUIDigest>>;

@@ -12,8 +12,8 @@ import { getHeyaCount } from "@/presenters/worldAccess";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 
-import { PageHeader } from "@/components/layout/page-shell";
-import { FinancesWidget, EventFeed, ActionQueueWidget } from "@/components/dashboard";
+import { PageHeader } from "@/components/layout/page-shell/index";
+import { FinancesWidget, EventFeed, ActionQueueWidget } from "@/components/dashboard/index";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { useGameStore } from "@/store/gameStore";
 import { useSuccessionDismissal } from "@/hooks/useSuccessionDismissal";

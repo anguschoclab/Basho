@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { checkStopCondition, type AutoSimConfig } from "@/engine/simulation/AutoSimService";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { BashoSimResult } from "@/engine/types/basho";
 
 describe("checkStopCondition", () => {

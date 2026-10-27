@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
 import { formatYenToMan } from "@/utils/engineUtils";
-import { OYAKATA_BACKSTORIES } from "../../constants/ui/wizard";
+import { OYAKATA_BACKSTORIES } from "@/constants/ui/wizard";
 
 /** Maps the pure-data `iconName` identifiers from the constants layer to lucide icon components. */
 const BACKSTORY_ICONS: Record<string, LucideIcon> = {

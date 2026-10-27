@@ -3,17 +3,17 @@ import { Toaster } from "@/components/ui/toaster";
 import { SonnerToaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RouterProvider } from "@tanstack/react-router";
-import { GameProvider } from "./contexts/GameContext";
-import { OpfsQuotaListener } from "./components/OpfsQuotaListener";
-import { ThemeProvider } from "./components/ThemeProvider";
-import { TitleBar } from "./components/TitleBar";
-import { router } from "./routes";
-import { WorkerInitializer } from "./components/worker/WorkerInitializer";
-import { InboxNewsTicker } from "./components/game/InboxNewsTicker";
-import { CrisisModal } from "./components/game/CrisisModal";
-import { GlobalErrorBanner } from "./components/layout/GlobalErrorBanner";
+import { GameProvider } from "@/contexts/GameContext";
+import { OpfsQuotaListener } from "@/components/OpfsQuotaListener";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { TitleBar } from "@/components/TitleBar";
+import { router } from "@/routes";
+import { WorkerInitializer } from "@/components/worker/WorkerInitializer";
+import { InboxNewsTicker } from "@/components/game/InboxNewsTicker";
+import { CrisisModal } from "@/components/game/CrisisModal";
+import { GlobalErrorBanner } from "@/components/layout/GlobalErrorBanner";
 
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const App = () => {
   useEffect(() => {

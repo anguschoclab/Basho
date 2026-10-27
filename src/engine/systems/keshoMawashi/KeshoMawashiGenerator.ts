@@ -13,6 +13,6 @@ export {
   upgradeKeshoMawashi,
   generateYokozunaTsuna,
   buildDesignPalette,
-} from "./KeshoMawashiFactory";
+} from "@/engine/systems/keshoMawashi/KeshoMawashiFactory";
 
-export { generateKeshoForPromotions } from "./KeshoMawashiPipeline";
+export { generateKeshoForPromotions } from "@/engine/systems/keshoMawashi/KeshoMawashiPipeline";

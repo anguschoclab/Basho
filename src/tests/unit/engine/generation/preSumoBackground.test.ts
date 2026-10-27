@@ -4,7 +4,7 @@ import {
   applyBackgroundStatModifiers,
   PRE_SUMO_BACKGROUNDS,
 } from "@/engine/systems/generation/PreSumoBackground";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { SeededRNG } from "@/engine/rng";
 
 describe("Pre-Sumo Background (B4)", () => {

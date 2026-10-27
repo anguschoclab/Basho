@@ -1,20 +1,20 @@
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { TalentPoolType } from "../../types/talent";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { TalentPoolType } from "@/engine/types/talent";
 import {
   getConfidenceLevel,
   resolveScoutedAttribute,
   applyBias,
   decayBias,
   type ScoutingBias,
-} from "../recruitment/FogOfWarService";
-import { clampInt } from "../../utils/math";
-import { isForeign } from "../../utils/identity";
-import { ensureTalentPoolState } from "./TalentPoolStateService";
-import { getHeya } from "../../queries";
+} from "@/engine/systems/recruitment/FogOfWarService";
+import { clampInt } from "@/engine/utils/math";
+import { isForeign } from "@/engine/utils/identity";
+import { ensureTalentPoolState } from "@/engine/systems/generation/TalentPoolStateService";
+import { getHeya } from "@/engine/queries";
 
 // ============================================
 // MUTATION OPERATORS — SCOUTING

@@ -14,14 +14,14 @@
  * @see MentorshipService for similar mentor-apprentice pattern
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { WorldState } from "../../types/world";
-import type { SparringPair, SparringState, SparringChemistry } from "../../types/training";
-import type { CombatArchetype } from "../../types/combat";
-import { clamp, finiteOr } from "../../utils/math";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { RivalryService } from "../narrative/RivalryService";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { SparringPair, SparringState, SparringChemistry } from "@/engine/types/training";
+import type { CombatArchetype } from "@/engine/types/combat";
+import { clamp, finiteOr } from "@/engine/utils/math";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { RivalryService } from "@/engine/systems/narrative/RivalryService";
 import {
   SPARRING_MAX_BLEED,
   SPARRING_BLEED_THRESHOLD,
@@ -29,8 +29,8 @@ import {
   SPARRING_CHEMISTRY_FRICTION_MULTIPLIER,
   SPARRING_CHEMISTRY_RUT_MULTIPLIER,
   SPARRING_CHEMISTRY_NEUTRAL_MULTIPLIER,
-} from "../../../constants/engine/sparring";
-import { getRikishi } from "../../queries";
+} from "@/constants/engine/sparring";
+import { getRikishi } from "@/engine/queries";
 
 /**
  * Archetype categories for chemistry calculation.

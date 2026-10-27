@@ -21,7 +21,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => <div data-testid="app-layout">{children}</div>,
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: ({ title }: any) => <div>{title}</div>,
 }));
 

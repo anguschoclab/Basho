@@ -1,9 +1,9 @@
-import registryData from "./registry.json";
-import vocabularyData from "./vocabulary.json";
-import { SeededRNG } from "../rng";
-import type { NarrativeContext } from "../types/events";
-import { warn } from "../utils/Logger";
-import { formatCurrency as formatCurrencyEnUS } from "../utils/formatters";
+import registryData from "@/engine/bard/registry.json";
+import vocabularyData from "@/engine/bard/vocabulary.json";
+import { SeededRNG } from "@/engine/rng";
+import type { NarrativeContext } from "@/engine/types/events";
+import { warn } from "@/engine/utils/Logger";
+import { formatCurrency as formatCurrencyEnUS } from "@/engine/utils/formatters";
 
 type ResolutionPath = string; // e.g., 'combat.phases.tachiai'
 

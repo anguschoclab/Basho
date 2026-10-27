@@ -8,7 +8,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { autosaveWithSignal } from "@/contexts/gameHelpers";
 import { autosave } from "@/engine/saveload";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 vi.mock("@/engine/saveload", () => ({
   autosave: vi.fn(() => true),

@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { processNpcAutoInvestment } from "../../../../../../../engine/tick/phases/monthly/facilities/npcInvestment";
-import { MockFactory } from "../../../../../../helpers/utils/MockFactory";
-import { createImpactBuilder } from "../../../../../../../engine/core/ImpactBuilder";
+import { processNpcAutoInvestment } from "@/engine/tick/phases/monthly/facilities/npcInvestment";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import {
   NPC_INVESTMENT_RUNWAY_THRESHOLD,
   MAX_FACILITY_LEVEL,
-} from "../../../../../../../constants/engine/facilities";
-import type { HeyaUpdates } from "../../../../../../../engine/tick/phases/monthly/types";
+} from "@/constants/engine/facilities";
+import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 
 describe("processNpcAutoInvestment", () => {
   it("should not invest for player heya", () => {

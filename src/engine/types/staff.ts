@@ -2,8 +2,8 @@
  * Staff Types
  */
 
-import type { Id } from "./common";
-import type { AvatarIdentity } from "./avatar";
+import type { Id } from "@/engine/types/common";
+import type { AvatarIdentity } from "@/engine/types/avatar";
 
 /** Type representing a staff role. */
 export type StaffRole =

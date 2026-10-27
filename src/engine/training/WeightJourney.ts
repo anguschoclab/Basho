@@ -7,14 +7,14 @@
  * Breakthrough at targetKg grants +3 power, +2 balance and a milestone event.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { Heya } from "../types/heya";
-import type { WorldState } from "../types/world";
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import { NUTRITION_MULTIPLIERS } from "../../constants/engine/multipliers";
-import { DEFAULT_FACILITY_LEVEL } from "../../constants/engine/rikishi";
-import { clamp, finiteOr } from "../utils/math";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { NUTRITION_MULTIPLIERS } from "@/constants/engine/multipliers";
+import { DEFAULT_FACILITY_LEVEL } from "@/constants/engine/rikishi";
+import { clamp, finiteOr } from "@/engine/utils/math";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 

@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
-import { consolidateOyakataMemory, makeNPCWeeklyDecision } from "@/engine/npcAI";
+import { consolidateOyakataMemory } from "@/engine/npcAI/handlers";
+import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import * as PersonaService from "@/engine/systems/NPCPersonaService";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Id } from "@/engine/types/common";
 
 vi.mock("@/engine/systems/NPCPersonaService", () => ({

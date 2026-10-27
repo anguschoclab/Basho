@@ -1,13 +1,13 @@
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
-import type { Oyakata } from "./types/oyakata";
-import type { OyakataArchetype } from "./types/oyakata";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { OyakataArchetype } from "@/engine/types/oyakata";
 import {
   evaluateSponsorRecruitmentCommon,
   type SponsorRecruitmentConfig,
   type SponsorFilterOptions,
-} from "./npcSponsorStrategyHelpers";
-import type { StateImpact } from "./core/StateImpact";
+} from "@/engine/npcSponsorStrategyHelpers";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   TRAIT_AMBITION_HIGH_THRESHOLD,
   TRAIT_RISK_HIGH_THRESHOLD,
@@ -23,14 +23,14 @@ import {
   RECRUITMENT_THRESHOLD_TRADITIONALIST,
   RECRUITMENT_THRESHOLD_NEPOSTIST,
   RECRUITMENT_THRESHOLD_SCIENTIST,
-} from "../constants/engine/npcStrategy";
+} from "@/constants/engine/npcStrategy";
 import {
   RUNWAY_THRESHOLD_DEFAULT,
   RUNWAY_THRESHOLD_PUBLICITY_HAWK,
   RUNWAY_THRESHOLD_GAMBLER,
   RUNWAY_THRESHOLD_TRADITIONALIST,
   RUNWAY_THRESHOLD_NEPOSTIST,
-} from "../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 interface SponsorStrategy {
   evaluateSponsorRecruitment: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;

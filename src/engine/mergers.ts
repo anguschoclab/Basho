@@ -1,21 +1,21 @@
-import type { Id } from "./types/common";
-import { getHeyaRoster, getHeya, getRikishi } from "./queries";
-import type { WorldState, ClosedHeyaRecord } from "./types/world";
-import { generateGovernanceHeadline } from "./systems/media/MediaService";
-import { updateFacilitiesBand } from "./facilities";
-import { rngForWorld } from "./rng";
-import { stableTieBreak } from "./utils/sort";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { bumpTenure } from "./systems/legacy/tenure";
+import type { Id } from "@/engine/types/common";
+import { getHeyaRoster, getHeya, getRikishi } from "@/engine/queries";
+import type { WorldState, ClosedHeyaRecord } from "@/engine/types/world";
+import { generateGovernanceHeadline } from "@/engine/systems/media/MediaService";
+import { updateFacilitiesBand } from "@/engine/facilities";
+import { rngForWorld } from "@/engine/rng";
+import { stableTieBreak } from "@/engine/utils/sort";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { bumpTenure } from "@/engine/systems/legacy/tenure";
 import {
   TRANSFER_RATIO_STANDARD,
   TRANSFER_RATIO_SCANDAL,
   ROSTER_CAPACITY_STANDARD,
   ROSTER_CAPACITY_MERGER,
   FACILITY_MERGER_RATIO,
-} from "../constants/engine/roster";
-import { countsAsForeign } from "./utils/citizenshipUtils";
+} from "@/constants/engine/roster";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 
 /**
  * Execute a stable merger.

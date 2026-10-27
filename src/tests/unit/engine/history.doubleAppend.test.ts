@@ -8,7 +8,7 @@
 import { describe, it, expect } from "vitest";
 import { runHistoryUpdates } from "@/engine/history";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, mockRikishi } from "./utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("careerHistory double-append fix", () => {
   it("runHistoryUpdates does NOT append to careerHistory (publishBanzukeUpdate is sole appender)", () => {

@@ -5,8 +5,8 @@
  * fallback harsh/cover-up footer for non-optioned crises.
  */
 
-import { Button } from "../ui/button";
-import { DialogFooter } from "../ui/dialog";
+import { Button } from "@/components/ui/button";
+import { DialogFooter } from "@/components/ui/dialog";
 import type { CrisisOption } from "@/engine/types/crises";
 
 /** Crisis option buttons — one per world-defined option. */

@@ -26,8 +26,8 @@
  *     off-season-only concerns.
  */
 
-import type { PipelinePhase } from "../pipelineRunner";
-import * as phases from "../phases";
+import type { PipelinePhase } from "@/engine/tick/pipelineRunner";
+import * as phases from "@/engine/tick/phases/index";
 
 export const bashoPipeline: PipelinePhase[] = [
   phases.phase01_week_economy, // Weekly finances (income/upkeep) apply during basho weeks

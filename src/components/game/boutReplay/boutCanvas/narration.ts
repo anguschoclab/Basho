@@ -1,8 +1,8 @@
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
-import type { ReplayPhase } from "./types";
-import { PHASES } from "./constants";
-import { clamp } from "./math";
+import type { ReplayPhase } from "@/components/game/boutReplay/boutCanvas/types";
+import { PHASES } from "@/components/game/boutReplay/boutCanvas/constants";
+import { clamp } from "@/components/game/boutReplay/boutCanvas/math";
 import { warn } from "@/presenters/engineAccess";
 
 export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIRikishi): string[] {

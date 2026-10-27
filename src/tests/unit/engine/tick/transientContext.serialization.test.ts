@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { SerializationService } from "@/engine/persistence/SerializationService";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * P4.18: TransientContext serialization tests.

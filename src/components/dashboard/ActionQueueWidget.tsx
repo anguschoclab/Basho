@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Inbox } from "lucide-react";
 import type { ActionItem } from "@/presenters/projections/actionQueue";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { useGameStore } from "@/store/gameStore";
 import { toast } from "sonner";
 import { decisionToastMessage } from "@/components/game/decisionFeedback";
-import { SEVERITY_CONFIG } from "./actionQueueConfig";
-import { ActionNavigateRow, ActionResolveRow } from "./ActionQueueSections";
+import { SEVERITY_CONFIG } from "@/components/dashboard/actionQueueConfig";
+import { ActionNavigateRow, ActionResolveRow } from "@/components/dashboard/ActionQueueSections";
 
 interface ActionQueueWidgetProps {
   items: ActionItem[];

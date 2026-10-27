@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoBadge } from "@/components/kesho/KeshoBadge";
-import { RankBadge } from "./RankBadge";
+import { RankBadge } from "@/components/rikishi/RankBadge";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { Input } from "@/components/ui/input";
 import type { SortDirection } from "@/lib/sortUtils";

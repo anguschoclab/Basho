@@ -1,10 +1,10 @@
 /**
  * officialsProjections.ts — projects gyoji and shimpan pool data for UI.
  */
-import type { WorldState } from "../engine/types/world";
-import type { Gyoji } from "../engine/types/gyoji";
-import type { AvatarRenderData } from "../engine/types/avatar";
-import { resolveAvatar, gyojiStageInput, shimpanStageInput } from "../engine/avatarGenerator";
+import type { WorldState } from "@/engine/types/world";
+import type { Gyoji } from "@/engine/types/gyoji";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, gyojiStageInput, shimpanStageInput } from "@/engine/avatarGenerator";
 
 export interface GyojiDTO {
   id: string;

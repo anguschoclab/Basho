@@ -10,24 +10,24 @@
  * @see scheduleHelpers for scheduling utilities
  */
 
-import type { BashoState, MatchSchedule } from "./types/basho";
-import type { Division } from "./types/banzuke";
-import type { Rikishi } from "./types/rikishi";
-import type { WorldState } from "./types/world";
+import type { BashoState, MatchSchedule } from "@/engine/types/basho";
+import type { Division } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 import {
   buildSwissTorikumi,
   buildLowerDivisionSwiss,
   type MatchPairing,
-} from "./matchmaking/index";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
+} from "@/engine/matchmaking/index";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   getDivisionExpectedSize,
   activeDivisionRoster,
   needsScheduleForDay,
-} from "./scheduleHelpers";
-import type { DramaContext, DramaLabel } from "./matchmaking/DramaMatchmaker";
-import { toKeyedMap } from "./utils";
+} from "@/engine/scheduleHelpers";
+import type { DramaContext, DramaLabel } from "@/engine/matchmaking/DramaMatchmaker";
+import { toKeyedMap } from "@/engine/utils/index";
 
 // === DRAMA CONTEXT EXTRACTION ===
 

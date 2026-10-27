@@ -1,14 +1,14 @@
-import { rngFromSeed, rngForWorld } from "./rng";
-import type { WorldState } from "./types/world";
-import type { Id, IdMapRuntime } from "./types/common";
-import type { MyosekiStock, MyosekiMarket, MyosekiTransaction } from "./types/myoseki";
-import type { Oyakata } from "./types/oyakata";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { stableSort } from "./utils/sort";
-import { isMyosekiPlayerRelevant } from "./npcAI/eventSurfacing";
-import { getHeya } from "./queries";
-import type { Heya } from "./types/heya";
+import { rngFromSeed, rngForWorld } from "@/engine/rng";
+import type { WorldState } from "@/engine/types/world";
+import type { Id, IdMapRuntime } from "@/engine/types/common";
+import type { MyosekiStock, MyosekiMarket, MyosekiTransaction } from "@/engine/types/myoseki";
+import type { Oyakata } from "@/engine/types/oyakata";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { stableSort } from "@/engine/utils/sort";
+import { isMyosekiPlayerRelevant } from "@/engine/npcAI/eventSurfacing";
+import { getHeya } from "@/engine/queries";
+import type { Heya } from "@/engine/types/heya";
 import {
   MYOSEKI_TOTAL_COUNT,
   MYOSEKI_BASE_ASKING_PRICE,
@@ -17,7 +17,7 @@ import {
   MYOSEKI_PRICE_JITTER,
   MYOSEKI_PRICE_ADJUSTMENT_RANGE,
   MYOSEKI_GENERATION_BASE_PRICES,
-} from "../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 // Constants imported from constants/engine/economic.ts
 

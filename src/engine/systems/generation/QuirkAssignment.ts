@@ -6,9 +6,9 @@
  * with glasses via applyGlasses.
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { SeededRNG } from "../../rng";
-import { POOR_EYESIGHT_CHANCE } from "../../../constants/engine/generation";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { SeededRNG } from "@/engine/rng";
+import { POOR_EYESIGHT_CHANCE } from "@/constants/engine/generation";
 
 /**
  * Assigns quirks to a rikishi during generation.

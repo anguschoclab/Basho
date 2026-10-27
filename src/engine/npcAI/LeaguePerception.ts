@@ -6,18 +6,18 @@
  * be used by NPC and player strategic planners without leaking cheat information.
  */
 
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
-import { NPC_FALLBACK_MONTHLY_BURN_ESTIMATE } from "../../constants/engine/economic";
-import type { Id } from "../types/common";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { NPC_FALLBACK_MONTHLY_BURN_ESTIMATE } from "@/constants/engine/economic";
+import type { Id } from "@/engine/types/common";
 import type {
   DivisionPressure,
   LeaguePerception,
   YushoRaceSnapshot,
   RivalryCluster,
-} from "../ai/types";
-import { getRikishi } from "../queries";
-import { buildMetaPerception } from "./MetaPerception";
+} from "@/engine/ai/types";
+import { getRikishi } from "@/engine/queries";
+import { buildMetaPerception } from "@/engine/npcAI/MetaPerception";
 
 const ACTIVE_DIVISIONS = [
   "makuuchi",

@@ -9,20 +9,20 @@
  * 3. Handle bi-annual JSA Board Elections.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import type { GovernanceStatus } from "../../types/economy";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import { mergeImpacts, resolveImpacts } from "../../core/ImpactResolver";
-import type { StateImpact } from "../../core/StateImpact";
-import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
-import { YokozunaService } from "../../systems/governance/YokozunaService";
-import { processAllRetirements } from "../../lifecycle/processRetirements";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { GovernanceStatus } from "@/engine/types/economy";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { mergeImpacts, resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { generateGovernanceHeadline, evaluateScandals } from "@/engine/systems/media/MediaService";
+import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import {
   MAX_POLITICAL_CAPITAL,
   DEFAULT_POLITICAL_CAPITAL,
   ELECTION_POLITICAL_CAPITAL_GAIN,
-} from "../../../constants/engine/governance";
+} from "@/constants/engine/governance";
 import {
   ELECTION_WEEK,
   ELECTION_YEAR_INTERVAL,
@@ -30,15 +30,15 @@ import {
   SCANDAL_SCORE_HIGH_THRESHOLD,
   SCANDAL_SCORE_MEDIUM_THRESHOLD,
   SCANDAL_SCORE_LOW_THRESHOLD,
-} from "../../../constants/engine/governanceExtended";
+} from "@/constants/engine/governanceExtended";
 import {
   purchaseMyoseki,
   findAvailableStock,
-} from "../../systems/governance/MyosekiTradingService";
-import { tickMyosekiMarket } from "../../myosekiMarket";
-import { assignYokozunaAttendants } from "../../governance/yokozunaAttendants";
-import { rngForWorld } from "../../rng";
-import { getRikishi } from "../../queries";
+} from "@/engine/systems/governance/MyosekiTradingService";
+import { tickMyosekiMarket } from "@/engine/myosekiMarket";
+import { assignYokozunaAttendants } from "@/engine/governance/yokozunaAttendants";
+import { rngForWorld } from "@/engine/rng";
+import { getRikishi } from "@/engine/queries";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");

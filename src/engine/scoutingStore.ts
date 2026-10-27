@@ -3,16 +3,16 @@
 // Keeps fog-of-war meaningful by persisting observations, investment, and decay.
 // Designed to be engine-only (UI reads via accessors).
 
-import type { WorldState } from "./types/world";
-import type { Id } from "./types/common";
-import type { Rikishi } from "./types/rikishi";
-import type { MatchSchedule, BoutResult } from "./types/basho";
-import { type ScoutedRikishi, ScoutingService } from "./systems/recruitment/ScoutingService";
-import { type ScoutingInvestment } from "../constants/engine/recruitment";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { getRikishi } from "./queries";
-import { warn } from "./utils/Logger";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
+import { type ScoutedRikishi, ScoutingService } from "@/engine/systems/recruitment/ScoutingService";
+import { type ScoutingInvestment } from "@/constants/engine/recruitment";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getRikishi } from "@/engine/queries";
+import { warn } from "@/engine/utils/Logger";
 
 // Local implementations for missing scouting functions
 /**

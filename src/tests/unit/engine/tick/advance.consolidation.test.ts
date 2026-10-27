@@ -5,7 +5,7 @@ import {
   advanceDays,
   type AdvanceOptions,
 } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * P4.15: Advance consolidation tests.

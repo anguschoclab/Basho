@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { isYushoContention, isPlayoffScenario } from "@/engine/bout/boutContention";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { makeMockBasho } from "../utils";
+import { makeMockBasho } from "@/tests/unit/engine/utils";
 
 function makeRikishi(id: string, rank: string = "maegashira"): Rikishi {
   return {

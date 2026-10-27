@@ -15,20 +15,20 @@
  * @see BloodlineService for heritage-based bonuses
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { WorldState } from "../../types/world";
-import { clamp, finiteOr } from "../../utils/math";
-import { EntityCollection } from "../../core/EntityCollection";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import { clamp, finiteOr } from "@/engine/utils/math";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   MENTORSHIP_MAX_BLEED,
   MENTORSHIP_BLEED_THRESHOLD,
   MENTORSHIP_BLEED_SCALE,
   MAX_STAT_CEILING,
-} from "../../../constants/engine/training";
-import { getRikishi } from "../../queries";
-import { RANK_HIERARCHY } from "../../types/banzuke";
+} from "@/constants/engine/training";
+import { getRikishi } from "@/engine/queries";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 
 /**
  * Maximum technique points that can bleed from mentor to apprentice per week.

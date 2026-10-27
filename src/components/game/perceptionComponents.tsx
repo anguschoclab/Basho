@@ -28,7 +28,7 @@ import {
   WELFARE_COLOR,
   HEALTH_COLOR,
   MOMENTUM_COLOR,
-} from "../../constants/ui/perception";
+} from "@/constants/ui/perception";
 
 export const RikishiSelectorItem = React.memo(
   ({

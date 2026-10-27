@@ -4,11 +4,11 @@
  * Uses KachiNokoriService.buildPostBashoPayload to compute win margins
  * for sekitori post-basho.
  */
-import type { WorldState } from "../../engine/types/world";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
-import { getAllRikishi } from "../worldAccess";
-import { buildPostBashoPayload } from "../../engine/systems/economy/KachiNokoriService";
+import type { WorldState } from "@/engine/types/world";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { getAllRikishi } from "@/presenters/worldAccess";
+import { buildPostBashoPayload } from "@/engine/systems/economy/KachiNokoriService";
 
 export interface KachiNokoriDTO {
   rikishiId: string;

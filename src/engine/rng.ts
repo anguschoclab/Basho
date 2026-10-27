@@ -13,8 +13,8 @@
 // =======================================================
 
 import seedrandom from "seedrandom";
-import type { WorldState } from "./types/world";
-import { simpleHashToIndex } from "./utils/math";
+import type { WorldState } from "@/engine/types/world";
+import { simpleHashToIndex } from "@/engine/utils/math";
 
 /**
  * A lightweight seeded RNG wrapper with a common interface.

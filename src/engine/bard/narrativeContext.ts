@@ -1,14 +1,14 @@
-import { SeededRNG } from "../rng";
-import type { Rikishi } from "../types/rikishi";
-import type { BoutResult, BashoName } from "../types/basho";
-import { BASHO_CALENDAR } from "../calendar";
-import { RANK_HIERARCHY } from "../banzuke";
+import { SeededRNG } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoName } from "@/engine/types/basho";
+import { BASHO_CALENDAR } from "@/engine/calendar";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import {
   HIGH_STAKES_TIER_THRESHOLD,
   KENSHO_DAY_THRESHOLD,
   VOICE_DRAMATIC_DAY_THRESHOLD,
   VOICE_UNDERSTATED_DAY_THRESHOLD,
-} from "../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 export type VoiceStyle = "formal" | "dramatic" | "understated";
 type CrowdStyle = "restrained" | "responsive" | "intimate";

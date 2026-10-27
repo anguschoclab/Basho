@@ -5,9 +5,9 @@
  * Kachi-koshi = "majority wins" (8+ for makuuchi, threshold varies by rank).
  * Kachi-nokori = threshold - currentWins, clamped to 0.
  */
-import type { Rikishi } from "../engine/types/rikishi";
-import type { Rank } from "../engine/types/banzuke";
-import { kachiKoshiThreshold, isKachiKoshi, isMakeKoshi } from "../engine/banzuke/banzukeHelpers";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Rank } from "@/engine/types/banzuke";
+import { kachiKoshiThreshold, isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
 
 /**
  * Compute wins remaining to kachi-koshi for a rikishi.

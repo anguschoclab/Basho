@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { phase01_daily_economy } from "../../../../../engine/tick/phases/phase01_daily_economy";
-import { MockFactory } from "../../../../helpers/utils/MockFactory";
-import { DIET_COSTS, DEBT_LIMIT } from "../../../../../constants/engine/economic";
-import { resolveImpacts } from "../../../../../engine/core/ImpactResolver";
+import { phase01_daily_economy } from "@/engine/tick/phases/phase01_daily_economy";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { DIET_COSTS, DEBT_LIMIT } from "@/constants/engine/economic";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 describe("phase01_daily_economy", () => {
   it("deducts food costs for heyas with rikishi based on active diet", () => {

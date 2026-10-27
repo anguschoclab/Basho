@@ -13,22 +13,22 @@
  */
 
 import { useReducer, useMemo, useTransition, ReactNode } from "react";
-import { registerElectronStorage } from "./electronStorageProvider";
+import { registerElectronStorage } from "@/contexts/electronStorageProvider";
 
 // Register electron-store as the engine's storage backend (falls back to localStorage for web builds)
 registerElectronStorage();
 
-import { initialGameState } from "./gameTypes";
-import { gameReducer } from "./gameReducer";
+import { initialGameState } from "@/contexts/gameTypes";
+import { gameReducer } from "@/contexts/gameReducer";
 
 // Re-export types so existing imports from GameContext still work
-export type { GamePhase, GameState } from "./gameTypes";
+export type { GamePhase, GameState } from "@/contexts/gameTypes";
 
-import { GameContext, type GameContextValue } from "./gameContextInstance";
-import { useWorkerSync } from "./provider/useWorkerSync";
-import { useFlowActions } from "./provider/useFlowActions";
-import { useCommandActions } from "./provider/useCommandActions";
-import { useSaveQueryActions } from "./provider/useSaveQueryActions";
+import { GameContext, type GameContextValue } from "@/contexts/gameContextInstance";
+import { useWorkerSync } from "@/contexts/provider/useWorkerSync";
+import { useFlowActions } from "@/contexts/provider/useFlowActions";
+import { useCommandActions } from "@/contexts/provider/useCommandActions";
+import { useSaveQueryActions } from "@/contexts/provider/useSaveQueryActions";
 
 // === PROVIDER ===
 

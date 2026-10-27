@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { phase01_week_recruitment } from "@/engine/tick/phases/phase01_week_recruitment";
 import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { TalentPoolWorldState } from "@/engine/types/talent";

@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { processFacilitiesMaintenance } from "../../../../../../../engine/tick/phases/monthly/facilities/maintenance";
-import { MockFactory } from "../../../../../../helpers/utils/MockFactory";
-import { createImpactBuilder } from "../../../../../../../engine/core/ImpactBuilder";
+import { processFacilitiesMaintenance } from "@/engine/tick/phases/monthly/facilities/maintenance";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import {
   MAINTENANCE_COST_PER_POINT,
   MIN_FACILITY_LEVEL,
   FACILITY_DECAY_AMOUNT,
-} from "../../../../../../../constants/engine/facilities";
-import type { HeyaUpdates } from "../../../../../../../engine/tick/phases/monthly/types";
+} from "@/constants/engine/facilities";
+import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 
 describe("processFacilitiesMaintenance", () => {
   it("should deduct maintenance from funds when funds are sufficient", () => {

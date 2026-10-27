@@ -9,4 +9,4 @@ export {
   rikishiStageInput,
   shimpanStageInput,
   staffStageInput,
-} from "../engine/avatarGenerator";
+} from "@/engine/avatarGenerator";

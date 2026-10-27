@@ -5,12 +5,12 @@
  * Extracted from uiDigest.ts to separate concerns.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
-import { getHallOfFame } from "../../engine/hallOfFame";
-import type { HoFInductee } from "../../engine/hallOfFame";
-import type { UIRikishi } from "../uiModels";
-import { projectRikishi } from "../rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { getHallOfFame } from "@/engine/hallOfFame";
+import type { HoFInductee } from "@/engine/hallOfFame";
+import type { UIRikishi } from "@/presenters/uiModels";
+import { projectRikishi } from "@/presenters/rikishi/index";
 
 export interface UIHofInductee extends HoFInductee {
   rikishi: UIRikishi | null;

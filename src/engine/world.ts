@@ -10,23 +10,23 @@
  * - FTUE state is updated after first basho completion.
  */
 
-import type { WorldState } from "./types/world";
-import type { BashoName, BoutResult, BashoState, MatchSchedule } from "./types/basho";
-import type { Id } from "./types/common";
-import type { Side } from "./types/index";
-import { resolveBout } from "./bout/boutResolver";
-import { advanceOneDay, advanceDaysFast } from "./tick/tickDaily";
-import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
-import { applyBoutResult } from "./bout/boutResultApplier";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import { resolveImpacts } from "./core/ImpactResolver";
-import { getActiveRikishi, getHeyaRoster } from "./queries";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoName, BoutResult, BashoState, MatchSchedule } from "@/engine/types/basho";
+import type { Id } from "@/engine/types/common";
+import type { Side } from "@/engine/types/index";
+import { resolveBout } from "@/engine/bout/boutResolver";
+import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
+import { resetBashoMediaTracking, handleMediaEvent } from "@/engine/systems/media/MediaService";
+import { applyBoutResult } from "@/engine/bout/boutResultApplier";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { getActiveRikishi, getHeyaRoster } from "@/engine/queries";
 
 // New Lifecycle Services
-import * as bashoManager from "./lifecycle/BashoManager";
-import * as competition from "./lifecycle/CompetitionService";
-import { ensureDaySchedule } from "./schedule";
-import { runPostBashoResolution } from "./core/SimulationRunner";
+import * as bashoManager from "@/engine/lifecycle/BashoManager";
+import * as competition from "@/engine/lifecycle/CompetitionService";
+import { ensureDaySchedule } from "@/engine/schedule";
+import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
 
 export { getActiveRikishi, getHeyaRoster, applyBoutResult, handleMediaEvent };
 
@@ -41,7 +41,7 @@ function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
 }
 
-export { issueGovernanceRuling } from "./systems/governance/ScandalService";
+export { issueGovernanceRuling } from "@/engine/systems/governance/ScandalService";
 
 /**
  * Initializes and starts a new basho (tournament).
@@ -331,7 +331,7 @@ export function endBasho(world: WorldState): WorldState {
  * Player gets a recruitment window event with duration tracking.
  */
 
-export { publishBanzukeUpdate } from "./banzuke/BanzukePublisher";
+export { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 
 /**
  * Advances the world state through the interim period (between tournaments).

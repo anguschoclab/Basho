@@ -4,4 +4,4 @@
  * Monthly training module exports.
  */
 
-export { processArchetypeDrift } from "./archetypeDrift";
+export { processArchetypeDrift } from "@/engine/tick/phases/monthly/training/archetypeDrift";

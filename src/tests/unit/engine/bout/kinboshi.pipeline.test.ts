@@ -17,7 +17,7 @@ import { describe, it, expect } from "vitest";
 import { simulateBoutForToday } from "@/engine/world";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
 import { applyImpact, resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule } from "@/engine/types/basho";

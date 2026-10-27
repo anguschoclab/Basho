@@ -8,11 +8,11 @@
  * to eliminate systemic code duplication and O(N log N) overhead from redundant sorts.
  */
 
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
-import type { Heya } from "../types/heya";
-import { stableSort } from "../utils/sort";
-import { getHeya, getRikishi, getHeyaRoster as queryGetHeyaRoster } from "../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import { stableSort } from "@/engine/utils/sort";
+import { getHeya, getRikishi, getHeyaRoster as queryGetHeyaRoster } from "@/engine/queries";
 
 /**
  * Options for entity retrieval.

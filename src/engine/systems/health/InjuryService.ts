@@ -14,16 +14,16 @@
  * @see BodyDefinitions for injury type definitions
  */
 
-import { SeededRNG } from "../../rng";
-import { WorldState } from "../../types/world";
-import { Rikishi } from "../../types/rikishi";
-import type { MatchSchedule, BoutResult } from "../../types/basho";
-import { SIMULATION_CONFIG } from "../../core/SimulationConfig";
-import { clamp, clampInt } from "../../utils/math";
-import { InjurySeverity, InjuryBodyArea, InjuryType, getBaseWeeksOut } from "./BodyDefinitions";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
+import { SeededRNG } from "@/engine/rng";
+import { WorldState } from "@/engine/types/world";
+import { Rikishi } from "@/engine/types/rikishi";
+import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
+import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import { clamp, clampInt } from "@/engine/utils/math";
+import { InjurySeverity, InjuryBodyArea, InjuryType, getBaseWeeksOut } from "@/engine/systems/health/BodyDefinitions";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   INJURY_FATIGUE_DIVISOR,
   DEFAULT_DURABILITY,
@@ -34,7 +34,7 @@ import {
   MIN_WEEKS_OUT,
   POST_BOUT_INJURY_WEEKS_MAX,
   POST_BOUT_INJURY_WEEKS_MIN,
-} from "../../../constants/engine/condition";
+} from "@/constants/engine/condition";
 import {
   INJURY_SEVERITY_MINOR_THRESHOLD,
   INJURY_SEVERITY_MODERATE_THRESHOLD,
@@ -46,7 +46,7 @@ import {
   BOUT_INJURY_VIOLENT_CHANCE,
   BOUT_INJURY_NORMAL_CHANCE,
   WINNER_INJURY_CHANCE_MULTIPLIER,
-} from "../../../constants/engine/health";
+} from "@/constants/engine/health";
 
 /**
  * Calculates a weekly injury chance for a rikishi.

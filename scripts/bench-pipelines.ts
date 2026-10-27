@@ -12,9 +12,9 @@
  *   S4 — 25-year sim: determinism + long-run performance
  */
 
-import { generateInitialWorld } from "../src/engine/systems/generation/WorldFactory";
-import { advanceOneDay, advanceDaysFast } from "../src/engine/tick/tickDaily";
-import type { WorldState } from "../src/engine/types/world";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
+import type { WorldState } from "@/engine/types/world";
 import { performance } from "node:perf_hooks";
 import { cpus, platform, arch } from "node:os";
 import { createHash } from "node:crypto";
@@ -154,7 +154,7 @@ export function writeResults(path: string, run: BenchmarkRun): void {
 }
 
 if (import.meta.main) {
-  const { BardEngine } = await import("../src/engine/bard/BardEngine");
+  const { BardEngine } = await import("@/engine/bard/BardEngine");
   await BardEngine.loadDomains();
   const outputPath = join(__dirname, "..", "docs", "audit", "perf-current.json");
   const run = runBenchmark();

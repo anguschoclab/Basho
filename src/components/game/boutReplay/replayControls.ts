@@ -13,8 +13,8 @@ import {
   type ReplayPhase,
   type RikishiState,
   type Particle,
-} from "./boutCanvas";
-import type { BoutReplayProgress } from "./useBoutReplay";
+} from "@/components/game/boutReplay/boutCanvas";
+import type { BoutReplayProgress } from "@/components/game/boutReplay/useBoutReplay";
 
 /** Refs + setters the controls need. */
 export interface ReplayControlsCtx {

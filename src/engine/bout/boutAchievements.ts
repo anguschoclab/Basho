@@ -10,8 +10,8 @@
  * awardLog) so each counter is written exactly once.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { BoutAward, BoutResult } from "../types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutAward, BoutResult } from "@/engine/types/basho";
 
 interface DetectKinboshiOptions {
   /**

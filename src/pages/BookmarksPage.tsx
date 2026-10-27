@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
 import { RikishiCard } from "@/components/game/RikishiCard";
-import { projectRikishi } from "@/presenters/rikishi";
+import { projectRikishi } from "@/presenters/rikishi/index";
 import { getRikishi, getHeya, getOyakata, getAllBookmarks, getBookmarksByType } from "@/presenters/worldAccess";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";

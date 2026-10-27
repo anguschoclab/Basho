@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildBanzukeRows, buildPrevRankScores } from "@/presenters/banzukeUI";
-import { UIRosterEntry } from "@/presenters/rikishi";
+import { UIRosterEntry } from "@/presenters/rikishi/index";
 
 describe("banzukeUI", () => {
   describe("buildBanzukeRows", () => {

@@ -11,12 +11,12 @@
  * plan whose primary metric hasn't moved across a long weekly run.
  */
 
-import type { AIPlan, OyakataMemory, PlanBaseline } from "../ai/types";
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import type { RunwayBand } from "../types/narrative";
-import { getHeya } from "../queries";
-import { RANK_HIERARCHY } from "../types/banzuke";
+import type { AIPlan, OyakataMemory, PlanBaseline } from "@/engine/ai/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { RunwayBand } from "@/engine/types/narrative";
+import { getHeya } from "@/engine/queries";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 
 interface PlanOutcome {
   outcome: "success" | "partial" | "abandoned";

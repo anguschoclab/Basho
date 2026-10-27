@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { offSeasonPipeline } from "@/engine/tick/pipelines/offSeasonPipeline";
-import * as phases from "@/engine/tick/phases";
+import * as phases from "@/engine/tick/phases/index";
 
 describe("offSeasonPipeline", () => {
   it("includes phase02_context after economy", () => {

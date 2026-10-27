@@ -5,19 +5,19 @@
  * global kimarite tallies (era drift), and kensho banner/envelope award.
  */
 
-import type { BoutContext } from "../boutPhysics";
-import type { Rikishi } from "../../types/rikishi";
-import type { BashoState, BoutResult } from "../../types/basho";
-import type { WorldState } from "../../types/world";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import { RivalryService } from "../../systems/narrative/RivalryService";
-import { RNGRegistry } from "../../core/RNGRegistry";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoState, BoutResult } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import {
   calculateKenshoEnvelopes,
   assignKenshoBanners,
   determineBoutImportance,
-} from "../../systems/economy/KenshoService";
-import { isYushoContention, isPlayoffScenario } from "../boutContention";
+} from "@/engine/systems/economy/KenshoService";
+import { isYushoContention, isPlayoffScenario } from "@/engine/bout/boutContention";
 import {
   KENSHO_BASE_COUNT_LOW,
   KENSHO_BASE_COUNT_MID,
@@ -25,7 +25,7 @@ import {
   KENSHO_BASE_COUNT_PEAK,
   KENSHO_RNG_MIN,
   KENSHO_RNG_RANGE,
-} from "../../../constants/engine/physics";
+} from "@/constants/engine/physics";
 
 /** 5. Kensho (Prize Banners) — banner draw + envelope payout to the winner. */
 function applyKensho(

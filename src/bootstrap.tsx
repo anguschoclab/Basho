@@ -1,8 +1,8 @@
 import { createRoot } from "react-dom/client";
-import App from "./App";
-import { SplashScreen } from "./components/SplashScreen";
-import { error as logError } from "./engine/utils/Logger";
-import { storageReady } from "./contexts/electronStorageProvider";
+import App from "@/App";
+import { SplashScreen } from "@/components/SplashScreen";
+import { error as logError } from "@/engine/utils/Logger";
+import { storageReady } from "@/contexts/electronStorageProvider";
 
 /**
  * Initializes the application:
@@ -28,7 +28,7 @@ export async function initializeApp(rootElement: HTMLElement | null): Promise<vo
   //    Menu's save list is populated on first render — both covered by
   //    the splash screen.
   try {
-    const { BardEngine } = await import("./engine/bard/BardEngine");
+    const { BardEngine } = await import("@/engine/bard/BardEngine");
     await Promise.all([BardEngine.loadDomains(), storageReady()]);
   } catch (e) {
     logError(`Failed to load narrative domains: ${e}`, "Main");

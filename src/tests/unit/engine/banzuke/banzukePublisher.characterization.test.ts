@@ -7,8 +7,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { toIdMap } from "@/engine/utils";
-import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
+import { toIdMap } from "@/engine/utils/index";
+import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 /** Deterministic digest — Maps serialize sorted, preserving field order. */

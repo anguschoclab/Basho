@@ -16,7 +16,7 @@ import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
-import { STATURE_CONFIG } from "./statureConfig";
+import { STATURE_CONFIG } from "@/components/menu/statureConfig";
 import { activationKeyHandler } from "@/lib/a11y";
 
 interface HeyaCardProps {

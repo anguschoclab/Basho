@@ -1,4 +1,4 @@
-import { warn, error } from "../utils/Logger";
+import { warn, error } from "@/engine/utils/Logger";
 
 export class OPFSFileSystem {
   private dirCache = new Map<string, FileSystemDirectoryHandle>();

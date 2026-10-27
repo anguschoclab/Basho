@@ -31,7 +31,7 @@ import {
   RosterWidget,
   AdvisorPanel,
   AcademyWidget,
-} from "./index";
+} from "@/components/dashboard/index";
 import type { DashboardDerived } from "@/hooks/useDashboardDerived";
 
 export function DashboardExhibitionSection({

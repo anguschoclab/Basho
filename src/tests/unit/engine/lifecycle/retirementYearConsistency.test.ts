@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
 import { runRetirements } from "@/engine/systems/governance/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld, makeMockHeya } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("retirementYearConsistency — all paths stamp world.year", () => {

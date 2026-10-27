@@ -6,11 +6,11 @@
  * breakdown.
  */
 
-import { UIRikishi } from "../../presenters/uiModels";
-import { CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Progress } from "../ui/progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { UIRikishi } from "@/presenters/uiModels";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Globe } from "lucide-react";

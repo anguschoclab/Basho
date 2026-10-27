@@ -1,10 +1,10 @@
-import { SerializationService } from "./persistence/SerializationService";
-import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotService";
-import { MigrationService } from "./persistence/MigrationService";
-import { parseSave, stringifySave } from "./persistence/collectionCodec";
-import { error } from "./utils/Logger";
-import type { WorldState, SaveGame } from "./types/index";
-import { CURRENT_SAVE_VERSION } from "./types/index";
+import { SerializationService } from "@/engine/persistence/SerializationService";
+import { SaveSlotService, type SaveSlotInfo } from "@/engine/persistence/SaveSlotService";
+import { MigrationService } from "@/engine/persistence/MigrationService";
+import { parseSave, stringifySave } from "@/engine/persistence/collectionCodec";
+import { error } from "@/engine/utils/Logger";
+import type { WorldState, SaveGame } from "@/engine/types/index";
+import { CURRENT_SAVE_VERSION } from "@/engine/types/index";
 
 export type { SaveSlotInfo };
 

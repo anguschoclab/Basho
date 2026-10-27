@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { checkRetirement } from "@/engine/lifecycle";
-import { mockRikishi } from "../utils";
+import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import * as rngModule from "@/engine/rng";
 
 vi.mock("@/engine/rng", () => ({

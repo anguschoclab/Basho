@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { recordBashoHistory } from "@/engine/lifecycle/BashoHistory";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
-import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 
 function makeEconomics() {
   return {

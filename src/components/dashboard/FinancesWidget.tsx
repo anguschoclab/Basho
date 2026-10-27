@@ -1,6 +1,6 @@
 import { Coins, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { AreaChart, Area, ResponsiveContainer, Tooltip, ReferenceLine, XAxis } from "recharts";
 import { useFinancesData } from "@/hooks/useFinancesData";
 

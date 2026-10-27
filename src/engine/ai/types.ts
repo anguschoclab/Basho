@@ -6,10 +6,10 @@
  * no logic lives here.
  */
 
-import type { Id } from "../types/common";
-import type { OyakataArchetype } from "../types/oyakata";
-import type { WorldState } from "../types/world";
-import type { PerceptionSnapshot } from "../perception";
+import type { Id } from "@/engine/types/common";
+import type { OyakataArchetype } from "@/engine/types/oyakata";
+import type { WorldState } from "@/engine/types/world";
+import type { PerceptionSnapshot } from "@/engine/perception";
 
 export type AIGoalDomain =
   "rank" | "finance" | "rivalry" | "recruitment" | "reputation" | "training" | "governance";

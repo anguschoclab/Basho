@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
 import type { PerceptionSnapshot } from "@/engine/perception";
 import { createPlan, shouldReplan } from "@/engine/npcAI/StrategicPlanner";
@@ -115,7 +115,7 @@ describe("createPlan", () => {
       pairs: {
         "r1-x": { aId: "r1", bId: "x", key: "r1-x", heat: 65, tone: "heated" },
       },
-    } as unknown as import("@/engine/rivalries").RivalriesState;
+    } as unknown as import("@/constants/engine/rivalry").RivalriesState;
 
     const ctx = buildCtx({ world, heyaId }, { rivalryPressureBand: "fierce" });
     ctx.oyakata!.archetype = "tyrant";

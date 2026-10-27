@@ -1,16 +1,16 @@
-import type { WorldState } from "../../../types/world";
-import type { Rikishi } from "../../../types/rikishi";
-import type { RivalryTone } from "../../../../constants/engine/rivalry";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RivalryTone } from "@/constants/engine/rivalry";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { EntityCollection } from "../../../core/EntityCollection";
-import { RNGRegistry } from "../../../core/RNGRegistry";
-import { createImpactBuilder } from "../../../core/ImpactBuilder";
-import type { StateImpact } from "../../../core/StateImpact";
-import type { SparringChemistry } from "../../../types/training";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { SparringChemistry } from "@/engine/types/training";
 import {
   TOP_RIVALRY_PAIRS_TO_SEED,
   NATIONALITY_RIVALRY_BONUS,
-} from "../../../../constants/engine/narrative";
+} from "@/constants/engine/narrative";
 import {
   RANK_DIFF_BONUS_BASE,
   RANK_DIFF_BONUS_MULTIPLIER,
@@ -26,9 +26,9 @@ import {
   SPARRING_RIVALRY_WEEKS_THRESHOLD,
   SPARRING_INITIAL_HEAT_MIN,
   SPARRING_INITIAL_HEAT_MAX,
-} from "../../../../constants/engine/rivalry";
-import { getRikishi } from "../../../queries";
-import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "./state";
+} from "@/constants/engine/rivalry";
+import { getRikishi } from "@/engine/queries";
+import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "@/engine/systems/narrative/rivalry/state";
 
 /**
  * Seed Initial Rivalries (P0-C1).

@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { usePlayerHeya } from "@/hooks/usePlayerHeya";
 import { Progress } from "@/components/ui/progress";
 import { Building, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { getFacilityLevelColor, getMonthlyMaintenanceCost } from "@/presenters/uiDigest";
 import { formatYen } from "@/utils/engineUtils";
 

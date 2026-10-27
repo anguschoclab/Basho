@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { runRetiredRikishiSummarization } from "@/engine/archival";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, mockRikishi } from "../utils";
-import { toIdMap } from "@/engine/utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
+import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";

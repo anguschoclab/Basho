@@ -36,24 +36,24 @@ export type {
   UIRikishi,
   UIRosterEntry,
   UIRankDelta,
-} from "./types";
+} from "@/presenters/rikishi/types";
 
 // ============================================================================
 // Transformers
 // ============================================================================
-export * from "./transformers";
+export * from "@/presenters/rikishi/transformers/index";
 
 // Re-export projectRosterEntry at top level for convenience
-export { projectRosterEntry } from "./transformers/roster";
+export { projectRosterEntry } from "@/presenters/rikishi/transformers/roster";
 
 // ============================================================================
 // Main Composition Function
 // ============================================================================
 
-import type { Rikishi } from "../../engine/types/rikishi";
-import type { WorldState } from "../../engine/types/world";
-import { SeededRNG } from "../../engine/rng";
-import type { UIRikishiDTO } from "./types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import { SeededRNG } from "@/engine/rng";
+import type { UIRikishiDTO } from "@/presenters/rikishi/types";
 
 import {
   toIdentityDTO,
@@ -74,7 +74,7 @@ import {
   toLineageDTO,
   toH2HDTO,
   toKihakuDTO,
-} from "./transformers";
+} from "@/presenters/rikishi/transformers/index";
 
 /**
  * Transform a Rikishi engine entity to a complete UI DTO.

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { phase01_daily_drama } from "@/engine/tick/phases/phase01_daily_drama";
-import { makeMockWorld } from "../../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("phase01_daily_drama", () => {
   it("returns a truthy StateImpact for a basic mock world", () => {

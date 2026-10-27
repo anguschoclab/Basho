@@ -7,10 +7,10 @@
  * types and the pre-computed script — it never touches BoutLogEntry directly.
  */
 
-import type { BoutResult } from "../types/basho";
-import type { Side } from "../types/banzuke";
-import type { KimariteClass } from "../types/kimarite";
-import { getKimarite } from "../kimarite";
+import type { BoutResult } from "@/engine/types/basho";
+import type { Side } from "@/engine/types/banzuke";
+import type { KimariteClass } from "@/engine/types/kimarite";
+import { getKimarite } from "@/engine/kimariteRegistry";
 
 export type ReplayPhase =
   "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";

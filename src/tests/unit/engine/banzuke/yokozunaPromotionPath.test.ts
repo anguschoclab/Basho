@@ -24,7 +24,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 describe("Yokozuna promotion path", () => {

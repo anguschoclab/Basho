@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
 import { runPipeline } from "@/engine/tick/pipelineRunner";
-import * as phases from "@/engine/tick/phases";
-import { makeMockWorld } from "../utils";
+import * as phases from "@/engine/tick/phases/index";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 /**

@@ -3,7 +3,7 @@ import { StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

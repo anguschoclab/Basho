@@ -1,4 +1,4 @@
-import { clamp } from "./math";
+import { clamp } from "@/components/game/boutReplay/boutCanvas/math";
 
 export interface SeekTarget {
   phaseIndex: number;

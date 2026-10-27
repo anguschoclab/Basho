@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { makeMockWorld, makeMockBasho, mockRikishi, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockBasho, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";

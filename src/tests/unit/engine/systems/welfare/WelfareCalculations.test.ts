@@ -5,8 +5,8 @@ import {
   calculateWeeklyWelfareDelta,
 } from "@/engine/systems/welfare/WelfareCalculations";
 import { clearQueryCaches } from "@/engine/queries";
-import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
-import { toIdMap } from "@/engine/utils";
+import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
+import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { WelfareState } from "@/engine/types/economy";

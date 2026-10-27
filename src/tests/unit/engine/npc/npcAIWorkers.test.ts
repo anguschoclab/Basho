@@ -9,7 +9,7 @@ import {
   type PersonnelWorkerContext,
   type GlobalWorkerContext,
 } from "@/engine/npcAIWorkers";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import type { PerceptionSnapshot, RikishiPerception } from "@/engine/perception";
 import type { OyakataStyleProfile } from "@/engine/oyakataStylePreferences";
 

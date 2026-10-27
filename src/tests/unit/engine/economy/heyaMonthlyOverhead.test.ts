@@ -6,8 +6,8 @@ import {
   SEKITORI_OVERHEAD_MONTHLY,
   NON_SEKITORI_OVERHEAD_MONTHLY,
 } from "@/constants/engine/economic";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
-import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { makeMockHeya, makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";

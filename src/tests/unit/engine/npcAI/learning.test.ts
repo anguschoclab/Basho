@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { buildAIContext } from "@/engine/npcAI/contextBuilder";
 import { createPlan } from "@/engine/npcAI/StrategicPlanner";
 import { emptyOyakataMemory } from "@/engine/npcAI/MemoryStore";

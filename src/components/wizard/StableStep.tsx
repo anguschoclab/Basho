@@ -7,7 +7,7 @@
 import { Building, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { StableCard } from "./StableStepSections";
+import { StableCard } from "@/components/wizard/StableStepSections";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/presenters/uiDigest";
 

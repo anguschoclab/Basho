@@ -11,7 +11,7 @@
  * (wins - losses) for mochikyukin accumulation.
  */
 
-import type { Rikishi } from "../../types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 /** Minimum wins for kachi-nokori to be positive (kachikoshi threshold for sekitori) */
 export const KACHI_NOKORI_THRESHOLD = 8;

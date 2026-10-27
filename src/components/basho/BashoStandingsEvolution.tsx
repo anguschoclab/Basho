@@ -23,7 +23,7 @@ import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { BoutResult } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { computeStandingsEvolution } from "./computeStandingsEvolution";
+import { computeStandingsEvolution } from "@/components/basho/computeStandingsEvolution";
 import { CHART_SERIES } from "@/constants/ui/drawingPalette";
 
 /** Color palette cycling through primary + 7 accent colors */

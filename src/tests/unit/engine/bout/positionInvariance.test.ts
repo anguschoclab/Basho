@@ -6,7 +6,7 @@
  * no mocks of KIMARITE_STRATEGIES here.
  */
 import { describe, it, expect } from "vitest";
-import { mockRikishi, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
 import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 
 describe("east/west position invariance", () => {

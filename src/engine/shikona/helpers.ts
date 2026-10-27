@@ -4,10 +4,10 @@
  * Helper functions for shikona generation system.
  */
 
-import { clamp, pick, weightedPick, simpleHashToIndex } from "../utils";
-import type { HouseStyle, PatternId, Connector, ShikonaGenerationConfig } from "./types";
-import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, NATIONALITY_PREFIXES } from "./constants";
-import { HOUSE_STYLES } from "./houseStyles";
+import { clamp, pick, weightedPick, simpleHashToIndex } from "@/engine/utils/index";
+import type { HouseStyle, PatternId, Connector, ShikonaGenerationConfig } from "@/engine/shikona/types";
+import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, NATIONALITY_PREFIXES } from "@/engine/shikona/constants";
+import { HOUSE_STYLES } from "@/engine/shikona/houseStyles";
 
 export function getHouseStyle(heyaId?: string): HouseStyle {
   const defaultStyle = HOUSE_STYLES[HOUSE_STYLES.length - 1]; // Fallback to last (balanced_classic)

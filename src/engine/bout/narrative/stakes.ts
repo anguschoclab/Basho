@@ -2,17 +2,17 @@
  * bout/narrative/stakes.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
-import type { PbpTag } from "./pbpTypes";
-import { BASHO_DAYS } from "../../../constants/engine/calendar";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
+import { BASHO_DAYS } from "@/constants/engine/calendar";
 import {
   BIRTHDAY_WINDOW_DAYS,
   FIRST_WIN_MENTION_MIN_DAY,
   LEADERBOARD_MIN_LEADER_WINS,
   WINLESS_MENTION_MIN_DAY,
-} from "../../../constants/engine/generation";
-import { BardEngine } from "../../bard/BardEngine";
-import { isPlayoffScenario, isYushoContention } from "../boutContention";
+} from "@/constants/engine/generation";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
 
 function beatHometown(p: PbpPipeline): void {
   const { bashoInfo, east, preBoutRng, push, west } = p;

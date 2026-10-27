@@ -9,11 +9,11 @@
  * in desperate positions, creating dramatic upset losses and scandal events.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { BoutResult, BashoState } from "../types/basho";
-import type { Side } from "../types/banzuke";
-import type { BoutContext } from "./boutUtils";
-import { rngFromSeed } from "../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoState } from "@/engine/types/basho";
+import type { Side } from "@/engine/types/banzuke";
+import type { BoutContext } from "@/engine/bout/boutUtils";
+import { rngFromSeed } from "@/engine/rng";
 import {
   KINJITE_MIN_RATIO_FOR_FOUL_RISK,
   KINJITE_BASE_DQ_CHANCE,
@@ -26,7 +26,7 @@ import {
   KINJITE_KADOBAN_WIN_THRESHOLD,
   KINJITE_RATIO_SUBTRACTION,
   KINJITE_RATIO_DIVISOR,
-} from "../../constants/engine/bout";
+} from "@/constants/engine/bout";
 
 /**
  * Calculates the probability that the winner of a bout commits a foul

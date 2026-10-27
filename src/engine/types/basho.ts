@@ -11,14 +11,14 @@
  * @see SwissAlgorithm for match scheduling
  */
 
-import type { Id } from "./common";
-import type { Side, BanzukeSnapshot } from "./banzuke";
-import type { KimariteId, Stance, CombatArchetype } from "./combat";
-import type { InjuryBodyArea, InjurySeverity } from "../systems/health/BodyDefinitions";
-import type { PbpLine } from "../bout/boutNarrative";
-import type { PromotionEvent, DemotionEvent } from "./banzuke";
-import type { WorldState } from "./world";
-import type { DramaContext } from "../matchmaking/DramaMatchmaker";
+import type { Id } from "@/engine/types/common";
+import type { Side, BanzukeSnapshot } from "@/engine/types/banzuke";
+import type { KimariteId, Stance, CombatArchetype } from "@/engine/types/combat";
+import type { InjuryBodyArea, InjurySeverity } from "@/engine/systems/health/BodyDefinitions";
+import type { PbpLine } from "@/engine/bout/boutNarrative";
+import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
+import type { WorldState } from "@/engine/types/world";
+import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
 
 /**
  * Type representing basho name (6 annual tournaments).

@@ -11,13 +11,13 @@
  * @see Oyakata types for personality structure
  */
 
-import { WorldState } from "../types/world";
-import { StyleBias } from "../types/training";
-import { OyakataArchetype, Oyakata, OyakataMood } from "../types/oyakata";
-import { rngForWorld } from "../rng";
-import { getHeyaStyleBias, getOyakataForHeya, getHeya } from "../queries";
-import { getCachedPerception, PerceptionSnapshot } from "../perception";
-import { BardEngine } from "../bard/BardEngine";
+import { WorldState } from "@/engine/types/world";
+import { StyleBias } from "@/engine/types/training";
+import { OyakataArchetype, Oyakata, OyakataMood } from "@/engine/types/oyakata";
+import { rngForWorld } from "@/engine/rng";
+import { getHeyaStyleBias, getOyakataForHeya, getHeya } from "@/engine/queries";
+import { getCachedPerception, PerceptionSnapshot } from "@/engine/perception";
+import { BardEngine } from "@/engine/bard/BardEngine";
 import {
   DEFAULT_WELFARE_DISCIPLINE,
   DEFAULT_RISK_APPETITE,
@@ -31,7 +31,7 @@ import {
   PUBLICITY_HAWK_AMBITION_THRESHOLD,
   QUIRK_COUNT_HIGH,
   QUIRK_COUNT_BASE,
-} from "../../constants/engine/npcStrategy";
+} from "@/constants/engine/npcStrategy";
 
 /**
  * NPC Persona structure for decision making.

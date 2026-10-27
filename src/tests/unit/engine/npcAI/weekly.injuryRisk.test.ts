@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
-import { makeNPCWeeklyDecision } from "@/engine/npcAI";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
+import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
 
 function setupWorld(archetype = "traditionalist") {
   const world = makeMockWorld();

@@ -4,8 +4,8 @@
  * Designed to be imported by both the simulation tick and UI rendering layers.
  */
 
-import { SIMULATION_CONFIG } from "./core/SimulationConfig";
-import { MOCHIKYUKIN_POINT_VALUE, MOCHIKYUKIN_RANK_FLOORS } from "../constants/engine/economic";
+import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import { MOCHIKYUKIN_POINT_VALUE, MOCHIKYUKIN_RANK_FLOORS } from "@/constants/engine/economic";
 
 // Assumptions based on canonical world logic
 // Note: Constants now centralized in SimulationConfig.ts

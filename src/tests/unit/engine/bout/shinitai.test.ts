@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { tryShinitai, SHINITAI_INSTABILITY_DIFF_THRESHOLD } from "@/engine/bout/shinitai";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("Shini-tai (dead body determination)", () => {
   it("returns null when instability difference is large (non-simultaneous)", () => {

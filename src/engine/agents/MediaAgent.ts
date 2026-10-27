@@ -5,9 +5,9 @@
  * Decides how NPC oyakata respond to media events based on personality traits.
  */
 
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import type { Oyakata } from "../types/oyakata";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Oyakata } from "@/engine/types/oyakata";
 
 export interface MediaAgentContext {
   eventId: string;

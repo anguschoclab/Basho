@@ -5,12 +5,12 @@
  * Highlights events that have direct interest or impact on the player's world state.
  */
 
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import type { EventImportance } from "../types/events";
-import type { TalentCandidate } from "../types/talent";
-import type { MyosekiStock } from "../types/myoseki";
-import { getHeya } from "../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { EventImportance } from "@/engine/types/events";
+import type { TalentCandidate } from "@/engine/types/talent";
+import type { MyosekiStock } from "@/engine/types/myoseki";
+import { getHeya } from "@/engine/queries";
 
 /**
  * Checks if a recruitment decision is relevant to the player.

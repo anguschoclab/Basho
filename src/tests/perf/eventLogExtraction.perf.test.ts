@@ -10,7 +10,7 @@
  * algorithmic delta, not a mock.
  */
 import { describe, it, expect } from "vitest";
-import { scanRecentEvents } from "@/engine/events";
+import { scanRecentEvents } from "@/engine/events/events";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 
 const IMP: Record<EventImportance, number> = {

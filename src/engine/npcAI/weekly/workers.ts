@@ -1,6 +1,6 @@
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { PerceptionSnapshot } from "../../perception";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { PerceptionSnapshot } from "@/engine/perception";
 import {
   spawnTrainingWorker,
   spawnScoutingWorker,
@@ -11,8 +11,8 @@ import {
   type ScoutingWorkerContext,
   type PersonnelWorkerContext,
   type GlobalWorkerContext,
-} from "../../npcAIWorkers";
-import type { WeeklyContext } from "./context";
+} from "@/engine/npcAIWorkers";
+import type { WeeklyContext } from "@/engine/npcAI/weekly/context";
 
 export interface WorkerProposals {
   trainingProposal: ReturnType<typeof spawnTrainingWorker>;

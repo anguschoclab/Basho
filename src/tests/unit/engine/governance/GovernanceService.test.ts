@@ -14,7 +14,7 @@ import { describe, it, expect } from "vitest";
 import { reportScandal } from "@/engine/systems/governance/ScandalService";
 import { phase01_week_governance } from "@/engine/tick/phases/phase01_week_governance";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 // ── Setup ──────────────────────────────────────────────────────────────────

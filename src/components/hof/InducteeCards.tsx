@@ -14,7 +14,7 @@ import type { HoFCategory } from "@/presenters/engineAccess";
 import { HOF_CATEGORY_LABELS } from "@/presenters/uiDigest";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { CATEGORY_ICONS, CATEGORY_SURFACE, CATEGORY_ACCENT, RANK_JA } from "./hofMeta";
+import { CATEGORY_ICONS, CATEGORY_SURFACE, CATEGORY_ACCENT, RANK_JA } from "@/components/hof/hofMeta";
 
 // === Portrait Avatar ===
 

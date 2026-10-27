@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { bashoPipeline } from "@/engine/tick/pipelines/bashoPipeline";
-import * as phases from "@/engine/tick/phases";
+import * as phases from "@/engine/tick/phases/index";
 
 describe("bashoPipeline", () => {
   it("includes phase02_context after economy (recoveryMultiplier needed by health)", () => {

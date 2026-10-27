@@ -7,14 +7,14 @@
  * Goal: No monoliths, 100% de-duplication.
  */
 
-import { NarrativeService } from "./systems/narrative/NarrativeService";
-import { SeededRNG } from "./rng";
-import type { Rikishi } from "./types/rikishi";
+import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import { SeededRNG } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 // --- AUTHORITATIVE DELEGATION ---
-export * from "./systems/narrative/NarrativeBands";
-export * from "./systems/narrative/NarrativeProse";
-export * from "./systems/narrative/NarrativeService";
+export * from "@/engine/systems/narrative/NarrativeBands";
+export * from "@/engine/systems/narrative/NarrativeProse";
+export * from "@/engine/systems/narrative/NarrativeService";
 
 /**
  * Public helper for resolving stats to bands with hysteresis (Backward compatible).

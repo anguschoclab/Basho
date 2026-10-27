@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
-import { useGame } from "../../contexts/useGame";
-import { getLineageTree } from "../../engine/lineage";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
+import { useGame } from "@/contexts/useGame";
+import { getLineageTree } from "@/presenters/engineAccess";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Crown, ChevronDown } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar } from "@/presenters/avatarProjections";

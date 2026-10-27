@@ -9,7 +9,7 @@ import {
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { rngFromSeed, SeededRNG } from "@/engine/rng";
-import { mockRikishi, makeMockWorld } from "../../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import type { MatchSchedule, BoutResult } from "@/engine/types/basho";

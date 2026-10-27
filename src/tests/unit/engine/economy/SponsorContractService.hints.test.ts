@@ -9,7 +9,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { renewSponsorContract } from "@/engine/systems/economy/SponsorContractService";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Sponsor, SponsorRelationship, SponsorPool } from "@/engine/types/sponsors";
 

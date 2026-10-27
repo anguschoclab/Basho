@@ -7,7 +7,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
-import type { ReplaySpeed } from "./useBoutReplay";
+import type { ReplaySpeed } from "@/components/game/boutReplay/useBoutReplay";
 
 interface BoutControlsProps {
   isPlaying: boolean;

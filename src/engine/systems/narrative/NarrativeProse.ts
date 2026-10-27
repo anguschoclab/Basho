@@ -7,9 +7,9 @@
  * All functions require a SeededRNG to ensure simulation determinism.
  */
 
-import { BardEngine } from "../../bard/BardEngine";
-import { SeededRNG } from "../../rng";
-import type { CombatArchetype } from "../../types/combat";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { SeededRNG } from "@/engine/rng";
+import type { CombatArchetype } from "@/engine/types/combat";
 import type {
   StatBand,
   FatigueBand,
@@ -26,7 +26,7 @@ import type {
   InjurySeverityBand,
   WinRateBand,
   HeightBand,
-} from "./NarrativeBands";
+} from "@/engine/systems/narrative/NarrativeBands";
 
 // === Attribute Labels (Short) ===
 export function getStatLabel(rng: SeededRNG, band: StatBand): string {

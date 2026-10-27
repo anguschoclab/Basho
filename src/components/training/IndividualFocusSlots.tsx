@@ -14,7 +14,7 @@ import { FATIGUE_LABELS, toFatigueBand, getCareerPhase } from "@/presenters/uiDi
 import { FOCUS_MODE_OPTIONS } from "@/constants/ui/training";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { IndividualFocusType } from "@/engine/types/training";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 import { toKeyedMap } from "@/presenters/engineAccess";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 

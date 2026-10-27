@@ -1,5 +1,5 @@
-import type { PbpLine } from "../../../bout/boutNarrative";
-import type { BardResult } from "../../../bard/BardEngine";
+import type { PbpLine } from "@/engine/bout/boutNarrative";
+import type { BardResult } from "@/engine/bard/BardEngine";
 
 /**
  * Appends a resolved Bard line as a post-basho-press PbpLine when the

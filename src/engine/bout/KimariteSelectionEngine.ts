@@ -1,11 +1,12 @@
-import type { Rikishi } from "../types/rikishi";
-import type { Division } from "../types/banzuke";
-import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../types/combat-spatial";
-import type { KimariteId } from "../types/combat";
-import { KIMARITE_STRATEGIES, getKimarite } from "../kimarite";
-import { KIMARITE_FREQUENCY_TARGETS } from "../../constants/engine/kimariteFrequencies";
-import { getTacticProfile } from "./tacticProfiles";
-import { SeededRNG } from "../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Division } from "@/engine/types/banzuke";
+import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "@/engine/types/combat-spatial";
+import type { KimariteId } from "@/engine/types/combat";
+import { KIMARITE_STRATEGIES } from "@/engine/kimariteStrategies";
+import { getKimarite } from "@/engine/kimariteRegistry";
+import { KIMARITE_FREQUENCY_TARGETS } from "@/constants/engine/kimariteFrequencies";
+import { getTacticProfile } from "@/engine/bout/tacticProfiles";
+import { SeededRNG } from "@/engine/rng";
 import {
   KIMARITE_NAGE_HINERI_BOOST,
   KIMARITE_KIHON_PENALTY,
@@ -31,7 +32,7 @@ import {
   DEFAULT_DIFFICULTY,
   DIFFICULTY_SCALE,
   KIMARITE_MIDFIGHT_ATTEMPT_RATE,
-} from "../../constants/engine/kimarite";
+} from "@/constants/engine/kimarite";
 
 type KimariteMeta = { tone: string; drift: Record<string, number> };
 type SideTactics = import("./boutUtils").SideTactics;

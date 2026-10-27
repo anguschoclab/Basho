@@ -1,4 +1,4 @@
-import type { ReplayPhase } from "./types";
+import type { ReplayPhase } from "@/components/game/boutReplay/boutCanvas/types";
 import type { PbpPhase } from "@/presenters/engineAccess";
 
 export const PHASES: ReplayPhase[] = [

@@ -3,24 +3,24 @@
  * Close/Open recruitment windows, automate NPC recruitment, maintain talent pool.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import * as talentpool from "../../systems/generation/TalentPoolService";
-import { assignMentor } from "../../lineage";
-import { rngFromSeed } from "../../rng";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import { assignMentor } from "@/engine/lineage";
+import { rngFromSeed } from "@/engine/rng";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   INTERIM_DURATION_DAYS,
   RECRUITMENT_WINDOW_CLOSES_WEEKS,
-} from "../../../constants/engine/recruitmentExtended";
-import { DAYS_PER_WEEK } from "../../../constants/engine/calendar";
-import { getHeya, getRikishi } from "../../queries";
+} from "@/constants/engine/recruitmentExtended";
+import { DAYS_PER_WEEK } from "@/constants/engine/calendar";
+import { getHeya, getRikishi } from "@/engine/queries";
 import {
   computeReplacementGap,
   allocateVacancies,
-} from "../../systems/generation/RecruitmentController";
+} from "@/engine/systems/generation/RecruitmentController";
 
 export function phase01_week_recruitment(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_recruitment");

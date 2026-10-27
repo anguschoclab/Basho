@@ -4,18 +4,18 @@
  * Helper functions for NPC sponsor strategy.
  */
 
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
-import type { Oyakata } from "./types/oyakata";
-import type { SponsorRelationship, SponsorRole } from "./types/sponsors";
-import { rngForWorld } from "./rng";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { isSponsorPlayerRelevant } from "./npcAI/eventSurfacing";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { SponsorRelationship, SponsorRole } from "@/engine/types/sponsors";
+import { rngForWorld } from "@/engine/rng";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { isSponsorPlayerRelevant } from "@/engine/npcAI/eventSurfacing";
 import {
   NPC_RIKISHI_BURN_ESTIMATE_MONTHLY,
   NPC_FACILITY_BURN_MULTIPLIER,
-} from "../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 export function calculateRunwayMonths(heya: Heya): number {
   const avgFacility =

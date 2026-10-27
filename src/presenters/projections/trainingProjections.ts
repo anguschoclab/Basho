@@ -5,13 +5,13 @@
  * Also includes tsukebito (attendant) projections for player assignment.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import type { FatigueBand } from "../../engine/systems/narrative/NarrativeBands";
-import { ensureHeyaTrainingState } from "../../presenters/uiDigest";
-import { toFatigueBand } from "../../engine/descriptorBands";
-import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
-import { FATIGUE_LABELS } from "../../constants/ui/labels";
+import type { WorldState } from "@/engine/types/world";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import type { FatigueBand } from "@/engine/systems/narrative/NarrativeBands";
+import { ensureHeyaTrainingState } from "@/presenters/uiDigest";
+import { toFatigueBand } from "@/engine/descriptorBands";
+import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { FATIGUE_LABELS } from "@/constants/ui/labels";
 
 export interface TrainingRikishiStatus {
   id: string;

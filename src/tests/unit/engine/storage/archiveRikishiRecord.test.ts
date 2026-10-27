@@ -1,8 +1,8 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { opfsArchiveService } from "@/engine/storage/opfsArchive";
-import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "@/tests/setup";
-import { mockRikishi } from "../utils";
+import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "@/tests/setup/index";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("Cold-storage archive: archiveFullRikishiRecord / retrieveFullRikishiRecord (OPFS)", () => {

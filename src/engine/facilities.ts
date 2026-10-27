@@ -16,14 +16,14 @@
  *   - FacilitiesBand is recalculated after every change
  */
 
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
-import type { Id } from "./types/common";
-import type { FacilitiesBand } from "./types/narrative";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { calculateHeyaWeeklyFinances } from "./systems/economy/FinanceCalculator";
-import { getHeya } from "./queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Id } from "@/engine/types/common";
+import type { FacilitiesBand } from "@/engine/types/narrative";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
+import { getHeya } from "@/engine/queries";
 import {
   FACILITY_UPGRADE_BASE_COST,
   MAINTENANCE_COST_PER_POINT,
@@ -31,7 +31,7 @@ import {
   MAX_FACILITY_LEVEL,
   MIN_FACILITY_LEVEL,
   FACILITY_UPGRADE_COST_MULTIPLIERS,
-} from "../constants/engine/facilities";
+} from "@/constants/engine/facilities";
 
 // === CONSTANTS (imported from constants/engine/facilities.ts) ===
 

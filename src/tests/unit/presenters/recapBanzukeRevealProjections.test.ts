@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { buildBanzukeRevealEntries } from "@/presenters/projections/recapBanzukeRevealProjections";
-import { makeMockWorld, mockRikishi } from "../engine/utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import { createEmptyHistoryIndex } from "@/engine/historyIndex";
-import { toIdMap, toKeyedMap } from "@/engine/utils";
+import { toIdMap, toKeyedMap } from "@/engine/utils/index";
 import type { BashoResult } from "@/engine/types/basho";
 import type { BanzukeSnapshot, Division, RankPosition } from "@/engine/types/banzuke";
 

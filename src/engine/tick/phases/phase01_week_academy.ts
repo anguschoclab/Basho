@@ -4,13 +4,13 @@
  * Calls applyWeeklyDevelopment for each heya that has a youth academy.
  * Runs during the off-season weekly pipeline.
  */
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import {
   applyWeeklyDevelopment,
   getYouthAcademy,
-} from "../../systems/recruitment/YouthAcademyService";
+} from "@/engine/systems/recruitment/YouthAcademyService";
 
 export function phase01_week_academy(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_academy");

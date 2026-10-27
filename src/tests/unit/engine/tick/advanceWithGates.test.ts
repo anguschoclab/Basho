@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { advanceWithGates } from "@/engine/tick/advanceWithGates";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * P4.19: Advance With Gates tests (for P3.6).

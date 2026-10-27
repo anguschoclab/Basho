@@ -4,8 +4,8 @@ import {
   observeBoutResult,
   getOpponentDominantFamily,
   suggestCounterTactic,
-} from "../../../../engine/npcAI/OpponentModel";
-import type { Rikishi } from "../../../../engine/types/rikishi";
+} from "@/engine/npcAI/OpponentModel";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("OpponentModel", () => {
   it("buildOpponentModel constructs model from history", () => {

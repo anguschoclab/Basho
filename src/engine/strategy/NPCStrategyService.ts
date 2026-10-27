@@ -1,13 +1,13 @@
-import { PerceptionSnapshot, RikishiPerception } from "../perception";
-import { OyakataMood } from "../types/oyakata";
-import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../types/training";
-import { RecruitmentPhilosophy } from "../oyakataStylePreferences";
-import { Style, BoutTactic } from "../types/combat";
-import { Id } from "../types/common";
-import { BardEngine } from "../bard/BardEngine";
-import { SeededRNG } from "../rng";
+import { PerceptionSnapshot, RikishiPerception } from "@/engine/perception";
+import { OyakataMood } from "@/engine/types/oyakata";
+import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/types/training";
+import { RecruitmentPhilosophy } from "@/engine/oyakataStylePreferences";
+import { Style, BoutTactic } from "@/engine/types/combat";
+import { Id } from "@/engine/types/common";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { SeededRNG } from "@/engine/rng";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
-import { BASHO_FINAL_DAY } from "../../constants/engine/calendar";
+import { BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 import {
   WELFARE_DISCIPLINE_ELEVATED_THRESHOLD,
   FRAGILE_RATIO_CRITICAL_THRESHOLD,
@@ -19,7 +19,7 @@ import {
   KACHIKOSHI_PRECIPICE_WINS,
   ROSTER_SIZE_WEAK_THRESHOLD,
   WELFARE_DISCIPLINE_BALANCED_THRESHOLD,
-} from "../../constants/engine/npcStrategy";
+} from "@/constants/engine/npcStrategy";
 
 /** Observation interface for scouting decisions. */
 interface OyakataScoutingObservation {

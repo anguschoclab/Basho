@@ -3,8 +3,8 @@ import {
   perceivedTalentSeed,
   scoutingNoiseSpread,
 } from "@/engine/systems/recruitment/perceivedTalent";
-import { makeMockWorld, makeMockHeya } from "../utils";
-import { toKeyedMap } from "@/engine/utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import {
   PERCEPTION_NOISE_BASE,
   PERCEPTION_NOISE_FLOOR,

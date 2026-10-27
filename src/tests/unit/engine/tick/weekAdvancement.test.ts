@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * Regression coverage for the frozen-week defect: advanceCalendarDay must

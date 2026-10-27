@@ -6,7 +6,7 @@ import {
   kachiNokoriToMochikyukinPoints,
   KACHI_NOKORI_THRESHOLD,
 } from "@/engine/systems/economy/KachiNokoriService";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("calculateKachiNokori", () => {
   it("returns 0 when wins <= 8", () => {

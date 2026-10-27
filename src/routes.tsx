@@ -8,49 +8,49 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import { lazy } from "react";
-import { warn, error } from "./engine/utils/Logger";
-import { SaveSlotService } from "./engine/persistence/SaveSlotService";
-const MainMenu = lazy(() => import("./pages/MainMenu"));
-const NewGameWizard = lazy(() => import("./pages/NewGameWizard"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-import { withSuspense, withWorldGuard } from "./routes-helpers";
+import { warn, error } from "@/engine/utils/Logger";
+import { SaveSlotService } from "@/engine/persistence/SaveSlotService";
+const MainMenu = lazy(() => import("@/pages/MainMenu"));
+const NewGameWizard = lazy(() => import("@/pages/NewGameWizard"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+import { withSuspense, withWorldGuard } from "@/routes-helpers";
 
-const StablePage = lazy(() => import("./pages/StablePage"));
-const TrainingPage = lazy(() => import("./pages/TrainingPage"));
-const OyakataPage = lazy(() => import("./pages/OyakataPage"));
-const RikishiPage = lazy(() => import("./pages/RikishiPage"));
-const BashoPage = lazy(() => import("./pages/BashoPage"));
-const SchedulePage = lazy(() => import("./pages/SchedulePage"));
-const BanzukePage = lazy(() => import("./pages/BanzukePage"));
-const RivalriesPage = lazy(() => import("./pages/RivalriesPage"));
-const EconomyPage = lazy(() => import("./pages/EconomyPage"));
-const TalentPoolPage = lazy(() => import("./pages/TalentPoolPage"));
-const CandidatePoolPage = lazy(() => import("./pages/CandidatePoolPage"));
-const FacilitiesPage = lazy(() => import("./pages/FacilitiesPage"));
-const RecapPage = lazy(() => import("./pages/RecapPage"));
-const WeeklyDigestPage = lazy(() => import("./pages/WeeklyDigestPage"));
-const HistoryPage = lazy(() => import("./pages/HistoryPage"));
-const AlmanacPage = lazy(() => import("./pages/AlmanacPage"));
-const MediaPage = lazy(() => import("./pages/MediaPage"));
-const HallOfFamePage = lazy(() => import("./pages/HallOfFamePage"));
-const InjuryRecoveryPage = lazy(() => import("./pages/InjuryRecoveryPage"));
-const BookmarksPage = lazy(() => import("./pages/BookmarksPage"));
-const SponsorManagementPage = lazy(() => import("./pages/SponsorManagementPage"));
-const SettingsPage = lazy(() => import("./pages/SettingsPage"));
-const StaffPage = lazy(() => import("./pages/StaffPage"));
-const TrendsPage = lazy(() => import("./pages/TrendsPage"));
-const ScoutingPage = lazy(() => import("./pages/ScoutingPage"));
-const GovernancePage = lazy(() => import("./pages/GovernancePage"));
-const MyosekiMarketPage = lazy(() => import("./pages/MyosekiMarketPage"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const StablePage = lazy(() => import("@/pages/StablePage"));
+const TrainingPage = lazy(() => import("@/pages/TrainingPage"));
+const OyakataPage = lazy(() => import("@/pages/OyakataPage"));
+const RikishiPage = lazy(() => import("@/pages/RikishiPage"));
+const BashoPage = lazy(() => import("@/pages/BashoPage"));
+const SchedulePage = lazy(() => import("@/pages/SchedulePage"));
+const BanzukePage = lazy(() => import("@/pages/BanzukePage"));
+const RivalriesPage = lazy(() => import("@/pages/RivalriesPage"));
+const EconomyPage = lazy(() => import("@/pages/EconomyPage"));
+const TalentPoolPage = lazy(() => import("@/pages/TalentPoolPage"));
+const CandidatePoolPage = lazy(() => import("@/pages/CandidatePoolPage"));
+const FacilitiesPage = lazy(() => import("@/pages/FacilitiesPage"));
+const RecapPage = lazy(() => import("@/pages/RecapPage"));
+const WeeklyDigestPage = lazy(() => import("@/pages/WeeklyDigestPage"));
+const HistoryPage = lazy(() => import("@/pages/HistoryPage"));
+const AlmanacPage = lazy(() => import("@/pages/AlmanacPage"));
+const MediaPage = lazy(() => import("@/pages/MediaPage"));
+const HallOfFamePage = lazy(() => import("@/pages/HallOfFamePage"));
+const InjuryRecoveryPage = lazy(() => import("@/pages/InjuryRecoveryPage"));
+const BookmarksPage = lazy(() => import("@/pages/BookmarksPage"));
+const SponsorManagementPage = lazy(() => import("@/pages/SponsorManagementPage"));
+const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
+const StaffPage = lazy(() => import("@/pages/StaffPage"));
+const TrendsPage = lazy(() => import("@/pages/TrendsPage"));
+const ScoutingPage = lazy(() => import("@/pages/ScoutingPage"));
+const GovernancePage = lazy(() => import("@/pages/GovernancePage"));
+const MyosekiMarketPage = lazy(() => import("@/pages/MyosekiMarketPage"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 const HistoryDashboard = lazy(() =>
-  import("./pages/HistoryDashboard").then((m) => ({ default: m.HistoryDashboard }))
+  import("@/pages/HistoryDashboard").then((m) => ({ default: m.HistoryDashboard }))
 );
-const GlobalCupPage = lazy(() => import("./pages/GlobalCupPage"));
-const RegionalHubPage = lazy(() => import("./pages/RegionalHubPage"));
-const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
-const RivalStablesPage = lazy(() => import("./pages/RivalStablesPage"));
-const YouthAcademyPage = lazy(() => import("./pages/YouthAcademyPage"));
+const GlobalCupPage = lazy(() => import("@/pages/GlobalCupPage"));
+const RegionalHubPage = lazy(() => import("@/pages/RegionalHubPage"));
+const GlossaryPage = lazy(() => import("@/pages/GlossaryPage"));
+const RivalStablesPage = lazy(() => import("@/pages/RivalStablesPage"));
+const YouthAcademyPage = lazy(() => import("@/pages/YouthAcademyPage"));
 
 // In Electron production the app loads from file://, where browser history
 // path traversal fails (e.g. /dashboard → file:///dashboard — not found).

@@ -10,24 +10,24 @@
  * - "Dynasty" legacyTier grants +5% training multiplier
  */
 
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import type { DynastyRecord } from "../../types/dynasty";
-import type { OyakataArchetype, SuccessionReadiness } from "../../types/oyakata";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { DynastyRecord } from "@/engine/types/dynasty";
+import type { OyakataArchetype, SuccessionReadiness } from "@/engine/types/oyakata";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { RANK_HIERARCHY } from "../../types/banzuke";
-import type { Rank } from "../../types/banzuke";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { TrainingPhilosophyService } from "./TrainingPhilosophyService";
-import { getHeya, getRikishi } from "../../queries";
-import type { RetiredRikishiSummary } from "../../types/history";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import type { Rank } from "@/engine/types/banzuke";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { TrainingPhilosophyService } from "@/engine/systems/legacy/TrainingPhilosophyService";
+import { getHeya, getRikishi } from "@/engine/queries";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
 import {
   SUCCESSION_INSOLVENCY_EVENTS,
   SUCCESSION_MAJOR_SCANDALS,
   SUCCESSION_UNDERPERFORMANCE_BASHO,
   LEGACY_MODIFIER_DURATION_BASHO,
-} from "../../../constants/engine/succession";
+} from "@/constants/engine/succession";
 
 function isSummary(entry: unknown): entry is RetiredRikishiSummary {
   return (

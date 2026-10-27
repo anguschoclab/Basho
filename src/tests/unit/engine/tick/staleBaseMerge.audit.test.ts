@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_boundary";
 import { phase01_week_candidate_pool } from "@/engine/tick/phases/phase01_week_candidate_pool";
@@ -8,7 +8,7 @@ import { phase01_week_health } from "@/engine/tick/phases/phase01_week_health";
 import { purchaseMyoseki } from "@/engine/systems/governance/MyosekiTradingService";
 import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
 import { withdrawRikishi } from "@/engine/systems/health/HealthActions";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { TRAVEL_ALLOWANCE_YEARLY, TSUKEBITO_COSTS_MONTHLY } from "@/constants/engine/economic";
 import { MONTHLY_DIVISOR, TRAVEL_ALLOWANCE_CASH_SPLIT } from "@/constants/engine/economyExtended";
 import type { WorldState } from "@/engine/types/world";

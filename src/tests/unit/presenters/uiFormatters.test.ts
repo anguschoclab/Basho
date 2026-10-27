@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { formatRadarData, formatMetaTrends } from "@/presenters/uiFormatters";
-import { mockRikishi } from "../engine/utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * P4.3: AutoSim year boundary tests.

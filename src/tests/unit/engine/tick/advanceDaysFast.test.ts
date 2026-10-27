@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { advanceDaysFast } from "@/engine/tick/tickDaily";
-import { makeMockWorld, makeMockBasho } from "../utils";
+import { makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";
 
 /**
  * P4.10: advanceDaysFast tests.

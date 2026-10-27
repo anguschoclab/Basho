@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { SimTuningService } from "@/engine/simulation/SimTuningService";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("SimTuningService — retirement age metric filters impossible ages", () => {

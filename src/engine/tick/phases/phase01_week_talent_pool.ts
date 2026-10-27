@@ -11,9 +11,9 @@
  * Must run BEFORE phase01_week_recruitment so recruitment sees visible candidates.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import * as talentpool from "../../systems/generation/TalentPoolService";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 
 export function phase01_week_talent_pool(world: WorldState): StateImpact {
   return talentpool.tickWeekTalentPool(world);

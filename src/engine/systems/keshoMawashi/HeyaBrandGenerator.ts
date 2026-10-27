@@ -5,12 +5,12 @@
  * These identities influence kesho-mawashi designs for all sekitori from that stable.
  */
 
-import type { Id } from "../../types/common";
-import type { Heya } from "../../types/heya";
-import type { HeyaBrandIdentity, CrestMotif } from "../../types/keshoMawashi";
-import type { SeededRNG } from "../../rng";
-import { rngFromSeed } from "../../rng";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { HeyaBrandIdentity, CrestMotif } from "@/engine/types/keshoMawashi";
+import type { SeededRNG } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/rng";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 /** Heya names and their traditional color associations (when applicable) */
 const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: CrestMotif[] }> = {

@@ -11,7 +11,7 @@ import { RikishiRadarChart } from "@/components/rikishi/RikishiRadarChart";
 import { RikishiPotentialPanel } from "@/components/rikishi/RikishiPotentialPanel";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 import { RIVALRY_HEAT_HIGH_THRESHOLD } from "@/constants/ui/animation";
 import type { UIRivalEntry } from "@/presenters/rikishi/types";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";

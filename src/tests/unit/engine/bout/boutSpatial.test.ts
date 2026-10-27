@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { initPhysicalBody, isBodyFalling, tawaraBounceResistance } from "@/engine/bout/boutSpatial";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { TAWARA_RADIUS } from "@/engine/types/combat-spatial";
 
 describe("boutSpatial", () => {

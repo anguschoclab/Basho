@@ -9,7 +9,7 @@ import { ElectronArchiveService } from "@/engine/storage/electronArchive";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
 import { logger } from "@/engine/utils/Logger";
 import type { BoutResult, BashoResult } from "@/engine/types/basho";
-import type { AlmanacSnapshot } from "@/engine/almanac";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
 
 describe("ElectronArchiveService", () => {
   let service: ElectronArchiveService;

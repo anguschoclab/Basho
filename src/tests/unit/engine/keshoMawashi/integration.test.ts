@@ -6,7 +6,7 @@ import { describe, it, expect } from "vitest";
 import { generateKeshoForPromotions } from "@/engine/systems/keshoMawashi/KeshoMawashiGenerator";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { makeMockWorldWithBrands, mockRikishi } from "../utils";
+import { makeMockWorldWithBrands, mockRikishi } from "@/tests/unit/engine/utils";
 import type { MovementEvent } from "@/engine/types/banzuke";
 import type { KeshoMawashi } from "@/engine/types/keshoMawashi";
 

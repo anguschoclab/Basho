@@ -9,14 +9,14 @@
  */
 
 import type { DrillType } from "@/engine/types/training";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 import { useDrillPlanner } from "@/hooks/useDrillPlanner";
 import {
   PlannerHeader,
   BatchToolbar,
   DrillGrid,
   RegimenFooter,
-} from "./WeeklyDrillPlannerSections";
+} from "@/components/training/WeeklyDrillPlannerSections";
 
 interface WeeklyDrillPlannerProps {
   rikishiList: Rikishi[];

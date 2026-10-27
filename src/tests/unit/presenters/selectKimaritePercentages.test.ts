@@ -4,7 +4,7 @@ import {
   selectKimariteObservedShare,
   selectKimaritePercentages,
 } from "@/presenters/selectors";
-import { makeMockWorld } from "../engine/utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { KIMARITE_FREQUENCY_TARGETS } from "@/constants/engine/kimariteFrequencies";
 import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
 

@@ -3,8 +3,8 @@
  * Implements retirement based on Age, Injury, and Rank performance.
  */
 
-import { rngFromSeed } from "../rng";
-import type { Rikishi } from "../types/rikishi";
+import { rngFromSeed } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
 import {
   RETIREMENT_MIN_AGE,
   RETIREMENT_MANDATORY_AGE,
@@ -28,7 +28,7 @@ import {
   RETIREMENT_STAT_CRITICAL_POWER,
   RETIREMENT_STAT_DIMINISHING_POWER,
   RETIREMENT_DEFAULT_POWER,
-} from "../../constants/engine/career";
+} from "@/constants/engine/career";
 
 /**
  * Evaluates whether a rikishi should retire based on age, injuries, rank pressure, and performance.

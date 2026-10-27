@@ -5,13 +5,13 @@
  * generators that resolve each option, and the shared delta helpers.
  */
 
-import { WorldState } from "../../types/world";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { getHeya } from "../../queries";
-import { clamp } from "../../utils/math";
+import { WorldState } from "@/engine/types/world";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { getHeya } from "@/engine/queries";
+import { clamp } from "@/engine/utils/math";
 
-import { ActiveCrisis } from "../../types/crises";
+import { ActiveCrisis } from "@/engine/types/crises";
 
 /**
  * Bounded ±delta on a 0–100 scale — welfareRisk, scandalScore, reputation,

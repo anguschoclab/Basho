@@ -14,7 +14,7 @@ import {
   AcademyIntakeCard,
   AcademyStaffList,
   AcademyInvestmentControl,
-} from "@/components/academy";
+} from "@/components/academy/index";
 import type { AcademyStaffRole } from "@/engine/types/academy";
 
 export default function YouthAcademyPage() {

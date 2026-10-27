@@ -12,8 +12,8 @@ import { CrisisService } from "@/engine/systems/narrative/CrisisService";
 import { DynastyService } from "@/engine/systems/legacy/DynastyService";
 import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
 import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
-import { toIdMap } from "@/engine/utils";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { toIdMap } from "@/engine/utils/index";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Oyakata } from "@/engine/types/oyakata";
 
 function mockOyakata(id: string, overrides: Partial<Oyakata> = {}): Oyakata {

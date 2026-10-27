@@ -1,7 +1,7 @@
-import type { WorldState } from "./types/world";
-import type { Rikishi } from "./types/rikishi";
-import type { Heya } from "./types/heya";
-import type { Id } from "./types/common";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import type { Id } from "@/engine/types/common";
 
 /** Cache to avoid recalculating heavy queries during the same tick */
 interface SelectorCache {

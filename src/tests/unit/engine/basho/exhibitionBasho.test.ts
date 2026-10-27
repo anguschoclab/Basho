@@ -11,7 +11,7 @@ import {
 } from "@/engine/systems/basho/ExhibitionBashoService";
 import { EXHIBITION_INJURY_FATIGUE_PENALTY } from "@/constants/engine/exhibitionBasho";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("isExhibitionBasho", () => {
   it("returns true for names ending in -jungyo", () => {

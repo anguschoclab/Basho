@@ -1,7 +1,7 @@
-import { SeededRNG } from "../rng";
-import type { Rikishi } from "../types/rikishi";
-import type { Side } from "../types/banzuke";
-import type { HandGrip, BeltBattleState } from "../types/combat-spatial";
+import { SeededRNG } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Side } from "@/engine/types/banzuke";
+import type { HandGrip, BeltBattleState } from "@/engine/types/combat-spatial";
 import {
   LEVER_ARM_BASE,
   LEVER_ARM_TACHIAI_WIN,
@@ -26,9 +26,9 @@ import {
   GRIP_BREAK_THRESHOLD,
   GRIP_BREAK_CHANCE,
   GRIP_BREAK_REACH_REDUCTION,
-} from "../../constants/engine/physics";
-import { deriveGripClass } from "./boutSpatial";
-import { stat } from "./boutUtils";
+} from "@/constants/engine/physics";
+import { deriveGripClass } from "@/engine/bout/boutSpatial";
+import { stat } from "@/engine/bout/boutUtils";
 
 /** Tachiai winner gets inside arm advantage on their preferred side. */
 function applyTachiaiGripAdvantage(

@@ -1,13 +1,13 @@
-import type { WorldState } from "./types/world";
+import type { WorldState } from "@/engine/types/world";
 import {
   countsAsForeignFromRikishi,
   reinjectToTalentPool,
-} from "./systems/generation/TalentPoolService";
-import { stableTieBreak } from "./utils/sort";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { EntityCollection } from "./core/EntityCollection";
-import { getRikishi } from "./queries";
+} from "@/engine/systems/generation/TalentPoolService";
+import { stableTieBreak } from "@/engine/utils/sort";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { getRikishi } from "@/engine/queries";
 
 // Hard cap constants
 /** h a r d_ c a p_ r o s t e r_ s i z e. */

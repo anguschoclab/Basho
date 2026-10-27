@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
-import { updateBanzuke } from "@/engine/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import type { BanzukeEntry, BashoPerformance, RankPosition } from "@/engine/types/banzuke";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

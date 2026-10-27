@@ -10,7 +10,7 @@ import {
   QuotaFilterRow,
   CandidateCard,
   RecruitingDialogs,
-} from "./RecruitingTabSections";
+} from "@/components/scouting/RecruitingTabSections";
 
 export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const state = useRecruitingState(playerHeyaId);

@@ -5,7 +5,7 @@ import {
   resetStorageProvider,
   type IStorageProvider,
 } from "@/engine/storageProvider";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { MigrationService } from "@/engine/persistence/MigrationService";
 import { CURRENT_SAVE_VERSION } from "@/engine/types/save";

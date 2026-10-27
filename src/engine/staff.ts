@@ -5,14 +5,14 @@ import type {
   CompetenceBand,
   StaffReputationBand,
   StaffLoyaltyBand,
-} from "./types/staff";
-import { type SeededRNG, rngFromSeed } from "./rng";
-import { generateAvatarIdentity } from "./avatarGenerator";
-import type { Id } from "./types/common";
-import type { WorldState } from "./types/world";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { getHeya } from "./queries";
+} from "@/engine/types/staff";
+import { type SeededRNG, rngFromSeed } from "@/engine/rng";
+import { generateAvatarIdentity } from "@/engine/avatarGenerator";
+import type { Id } from "@/engine/types/common";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya } from "@/engine/queries";
 import {
   STAFF_BASE_AGE,
   STAFF_AGE_RANGE,
@@ -54,8 +54,8 @@ import {
   STAFF_MORALE_LOW_MULTIPLIER,
   STAFF_MIN_AGE_FOR_YEARS_CALC,
   STAFF_BASE_BONUS_VALUE,
-} from "../constants/engine/economy";
-import { STAFF_NAME_RANDOM_RANGE } from "../constants/engine/generation";
+} from "@/constants/engine/economy";
+import { STAFF_NAME_RANDOM_RANGE } from "@/constants/engine/generation";
 
 /**
  * Helper to roll a random band from a list of bands.

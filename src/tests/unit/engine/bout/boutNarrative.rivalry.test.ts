@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { RivalriesState } from "@/constants/engine/rivalry";

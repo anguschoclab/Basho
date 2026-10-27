@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "../utils";
-import * as phases from "@/engine/tick/phases";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
+import * as phases from "@/engine/tick/phases/index";
 
 /**
  * P4.20: Monthly market placement tests.

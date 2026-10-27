@@ -11,16 +11,16 @@
  * Goal: Decouple business rules from state management.
  */
 
-import { clamp, clampInt } from "../../utils/math";
-import { rngFromSeed, SeededRNG } from "../../rng";
-import { NarrativeService } from "../narrative/NarrativeService";
-import { BardEngine } from "../../bard/BardEngine";
+import { clamp, clampInt } from "@/engine/utils/math";
+import { rngFromSeed, SeededRNG } from "@/engine/rng";
+import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import { BardEngine } from "@/engine/bard/BardEngine";
 import {
   type ConfidenceLevel,
   type ScoutingInvestment,
   type ScoutingAttributeType,
   INVESTMENT_BONUS,
-} from "../../../constants/engine/recruitment";
+} from "@/constants/engine/recruitment";
 import {
   MAX_SCOUTING_LEVEL,
   PASSIVE_SCOUTING_MAX_BASE,
@@ -41,7 +41,7 @@ import {
   SCOUTING_BIAS_MAX,
   SCOUTING_BIAS_DECAY_OBSERVATIONS,
   FULL_BIAS_FACTOR,
-} from "../../../constants/engine/recruitmentExtended";
+} from "@/constants/engine/recruitmentExtended";
 
 /**
  * Calculate numerical scouting level (0-100).

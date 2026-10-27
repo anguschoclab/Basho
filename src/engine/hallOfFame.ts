@@ -14,12 +14,12 @@
 //   - Snapshots stored in world.hallOfFame (persisted across saves)
 // =======================================================
 
-import type { WorldState } from "./types/world";
-import type { BashoResult } from "./types/basho";
-import type { Id } from "./types/common";
-import type { Rank } from "./types/banzuke";
-import type { Rikishi } from "./types/rikishi";
-import { getRikishi } from "./queries";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoResult } from "@/engine/types/basho";
+import type { Id } from "@/engine/types/common";
+import type { Rank } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { getRikishi } from "@/engine/queries";
 
 // === TYPES ===
 

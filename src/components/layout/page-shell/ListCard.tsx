@@ -9,7 +9,7 @@
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { CardEyebrow } from "./CardEyebrow";
+import { CardEyebrow } from "@/components/layout/page-shell/CardEyebrow";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { activationKeyHandler } from "@/lib/a11y";
 

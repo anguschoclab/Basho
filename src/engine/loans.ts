@@ -1,17 +1,17 @@
-import type { Id } from "./types/common";
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
-import type { Loan, LoanType } from "./types/economy";
-import { generateGovernanceHeadline } from "./systems/media/MediaService";
-import { rngForWorld } from "./rng";
-import type { SeededRNG } from "./rng";
-import { stableSort } from "./utils/sort";
-import { selectBenefactor } from "./systems/economy/SponsorshipService";
-import { LOAN_ISSUANCE_THRESHOLD, FACTION_BAILOUT_AMOUNT } from "../constants/engine/economic";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { getHeya } from "./queries";
-import { bumpTenure } from "./systems/legacy/tenure";
+import type { Id } from "@/engine/types/common";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Loan, LoanType } from "@/engine/types/economy";
+import { generateGovernanceHeadline } from "@/engine/systems/media/MediaService";
+import { rngForWorld } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/rng";
+import { stableSort } from "@/engine/utils/sort";
+import { selectBenefactor } from "@/engine/systems/economy/SponsorshipService";
+import { LOAN_ISSUANCE_THRESHOLD, FACTION_BAILOUT_AMOUNT } from "@/constants/engine/economic";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya } from "@/engine/queries";
+import { bumpTenure } from "@/engine/systems/legacy/tenure";
 
 export interface LoanTerms {
   loanType: LoanType;

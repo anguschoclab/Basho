@@ -2,16 +2,16 @@
 // Handles triggerPreBashoJournalism, buildMediaDigest, and the
 // private helper generateInterviewPrompt.
 
-import type { WorldState } from "../../types/world";
-import type { RivalryPairState } from "../../../constants/engine/rivalry";
-import type { MediaHeadline } from "../../types/media";
-import type { Rikishi } from "../../types/rikishi";
-import { rngForWorld, SeededRNG } from "../../rng";
-import { generatePreBashoHeadline } from "./HeadlineGenerator";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { getHeya, getRikishi } from "../../queries";
-import { MAX_HEADLINES } from "../../../constants/engine/media";
+import type { WorldState } from "@/engine/types/world";
+import type { RivalryPairState } from "@/constants/engine/rivalry";
+import type { MediaHeadline } from "@/engine/types/media";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { rngForWorld, SeededRNG } from "@/engine/rng";
+import { generatePreBashoHeadline } from "@/engine/systems/media/HeadlineGenerator";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya, getRikishi } from "@/engine/queries";
+import { MAX_HEADLINES } from "@/constants/engine/media";
 
 /**
  * Trigger pre-basho journalism hype.

@@ -1,9 +1,9 @@
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
-import type { BashoName } from "../types/basho";
-import type { Division, Rank } from "../types/banzuke";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoName } from "@/engine/types/basho";
+import type { Division, Rank } from "@/engine/types/banzuke";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import type { AlmanacBashoPerformance, RikishiCareerRecord } from "./types";
+import type { AlmanacBashoPerformance, RikishiCareerRecord } from "@/engine/almanac/types";
 import {
   CAREER_BASHO_BASE,
   CAREER_BASHO_RANK_MULTIPLIER,
@@ -33,7 +33,7 @@ import {
   RANK_PROGRESSION_NUMBER_MARGIN,
   RANK_PROGRESSION_DOUBLE_DEMOTE_MARGIN,
   RANK_PROGRESSION_DEMOTE_MARGIN,
-} from "../../constants/engine/career";
+} from "@/constants/engine/career";
 
 export function generateCareerRecord(
   rikishi: Rikishi,

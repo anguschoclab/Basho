@@ -16,7 +16,7 @@ import {
   GlobalCupCard,
   GlobalCupLegacyCard,
   AcademiesCard,
-} from "./GlobalStrategicHubSections";
+} from "@/components/stable/GlobalStrategicHubSections";
 
 interface GlobalStrategicHubProps {
   world: WorldState;

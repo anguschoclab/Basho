@@ -2,31 +2,31 @@
 // Rikishi assembly: builds complete Rikishi objects from stats, career records,
 // and candidate data. Includes base-info, combat-stats, and career-history helpers.
 
-import { SeededRNG } from "../../rng";
-import { RikishiStats, Rikishi } from "../../types/rikishi";
-import { Rank, Division, Side } from "../../types/banzuke";
-import { CombatProfile, Style, CombatArchetype } from "../../types/combat";
-import { clamp } from "../../utils/math";
-import { isForeign } from "../../utils/identity";
-import { generateShikona } from "../../shikona";
-import { rollArchetype, buildCombatProfile, deriveWeakAgainstStyles } from "../../archetype";
-import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
-import type { TalentCandidate } from "../../types/talent";
-import { generateAvatarIdentity } from "../../avatarGenerator";
+import { SeededRNG } from "@/engine/rng";
+import { RikishiStats, Rikishi } from "@/engine/types/rikishi";
+import { Rank, Division, Side } from "@/engine/types/banzuke";
+import { CombatProfile, Style, CombatArchetype } from "@/engine/types/combat";
+import { clamp } from "@/engine/utils/math";
+import { isForeign } from "@/engine/utils/identity";
+import { generateShikona } from "@/engine/shikona/generateShikona";
+import { rollArchetype, buildCombatProfile, deriveWeakAgainstStyles } from "@/engine/archetype";
+import type { InjurySeverity } from "@/engine/systems/health/BodyDefinitions";
+import type { TalentCandidate } from "@/engine/types/talent";
+import { generateAvatarIdentity } from "@/engine/avatarGenerator";
 import {
   rollAgeForRank,
   rollDevelopmentProfile,
   rollPotential,
   deriveCurrentAbility,
   generateRikishiStats,
-} from "./CandidateStats";
-import { generateSyntheticCareer, type DivisionRecords } from "./CandidateCareer";
-import { MOCHIKYUKIN_INITIAL_POINTS } from "../../../constants/engine/economic";
-import { applyPersonaAssignment } from "./PersonaAssignment";
-import { assignPreSumoBackground, applyBackgroundStatModifiers } from "./PreSumoBackground";
-import { assignQuirk } from "./QuirkAssignment";
-import { maybeAssignEarlyShikona } from "./FightingNameEarly";
-import { assignRecruitmentCohort } from "./CohortTracking";
+} from "@/engine/systems/generation/CandidateStats";
+import { generateSyntheticCareer, type DivisionRecords } from "@/engine/systems/generation/CandidateCareer";
+import { MOCHIKYUKIN_INITIAL_POINTS } from "@/constants/engine/economic";
+import { applyPersonaAssignment } from "@/engine/systems/generation/PersonaAssignment";
+import { assignPreSumoBackground, applyBackgroundStatModifiers } from "@/engine/systems/generation/PreSumoBackground";
+import { assignQuirk } from "@/engine/systems/generation/QuirkAssignment";
+import { maybeAssignEarlyShikona } from "@/engine/systems/generation/FightingNameEarly";
+import { assignRecruitmentCohort } from "@/engine/systems/generation/CohortTracking";
 import {
   FOREIGN_RECRUIT_CHANCE,
   MONGOLIAN_SHARE,
@@ -36,8 +36,8 @@ import {
   PROFILE_BOOST_PRODIGY,
   PROFILE_BOOST_LATE_BLOOMER,
   PROFILE_BOOST_JOURNEYMAN,
-} from "../../../constants/engine/generation";
-import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitment";
+} from "@/constants/engine/generation";
+import { DUAL_CITIZEN_RECRUIT_SHARE } from "@/constants/engine/recruitment";
 
 export function createBaseInfo(
   id: string,

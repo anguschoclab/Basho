@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { TACTIC_PROFILES, getTacticProfile } from "@/engine/bout/tacticProfiles";
 import { TACTIC_TO_FAMILY, resolveCounterTacticBonus } from "@/engine/types/combat";
 import { resolveTacticalClash, determineCPUTactic } from "@/engine/h2h";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { rngFromSeed } from "@/engine/rng";
 
 describe("Nekodamashi tactic — profile", () => {

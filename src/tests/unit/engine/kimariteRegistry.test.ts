@@ -193,9 +193,9 @@ describe("registry/strategy parity", () => {
   });
 });
 
-describe("kimarite barrel re-export", () => {
-  it("re-exports all registry functions from kimarite.ts", async () => {
-    const barrel = await import("@/engine/kimarite");
+describe("kimarite module surface (post-barrel)", () => {
+  it("registry module exports all registry functions", async () => {
+    const barrel = await import("@/engine/kimariteRegistry");
     expect(barrel.KIMARITE_REGISTRY).toBeDefined();
     expect(barrel.getKimarite).toBeDefined();
     expect(barrel.getKimariteByJsaCategory).toBeDefined();
@@ -204,8 +204,8 @@ describe("kimarite barrel re-export", () => {
     expect(barrel.getKimariteForFamily).toBeDefined();
   });
 
-  it("re-exports KIMARITE_STRATEGIES from kimarite.ts", async () => {
-    const barrel = await import("@/engine/kimarite");
+  it("strategies module exports KIMARITE_STRATEGIES", async () => {
+    const barrel = await import("@/engine/kimariteStrategies");
     expect(barrel.KIMARITE_STRATEGIES).toBeDefined();
     expect(barrel.KIMARITE_STRATEGIES.length).toBeGreaterThanOrEqual(80);
   });

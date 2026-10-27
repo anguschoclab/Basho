@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from "vitest";
 import { resolveNPCRequest } from "@/engine/rikishiAgency/requests";
-import { phase01_week_npc_ai } from "@/engine/tick/phases";
+import { phase01_week_npc_ai } from "@/engine/tick/phases/index";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";

@@ -1,12 +1,12 @@
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import type { NPCWeeklyDecision } from "./types";
-import type { AIPlan } from "../ai/types";
-import { coordinateDecision } from "./TacticalCoordinator";
-import { buildWeeklyContext } from "./weekly/context";
-import { runWeeklyWorkers } from "./weekly/workers";
-import { runAgentLayer, buildWeeklyImpact } from "./weekly/agents";
-import { applyPromotionAwareness, applyInjuryRiskReduction } from "./weekly/postPasses";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { NPCWeeklyDecision } from "@/engine/npcAI/types";
+import type { AIPlan } from "@/engine/ai/types";
+import { coordinateDecision } from "@/engine/npcAI/TacticalCoordinator";
+import { buildWeeklyContext } from "@/engine/npcAI/weekly/context";
+import { runWeeklyWorkers } from "@/engine/npcAI/weekly/workers";
+import { runAgentLayer, buildWeeklyImpact } from "@/engine/npcAI/weekly/agents";
+import { applyPromotionAwareness, applyInjuryRiskReduction } from "@/engine/npcAI/weekly/postPasses";
 
 export function makeNPCWeeklyDecision(
   world: WorldState,

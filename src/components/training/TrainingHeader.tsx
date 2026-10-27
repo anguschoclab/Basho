@@ -9,7 +9,7 @@ import { StableName } from "@/components/ClickableName";
 import { getIntensityLabel } from "@/presenters/uiDigest";
 import type { TrainingIntensity } from "@/engine/types/training";
 import type { Heya } from "@/engine/types/heya";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 
 interface TrainingHeaderProps {
   heya: Heya;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { checkRetirement } from "@/engine/lifecycle";
-import { mockRikishi } from "../utils";
+import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("checkRetirement — no debug logging, young guard", () => {
   it("does not call console.error when blocking a young rikishi", () => {

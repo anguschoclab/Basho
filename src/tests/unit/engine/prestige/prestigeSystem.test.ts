@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { bandIndex, computeStatureBand, runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { clearQueryCaches } from "@/engine/queries";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 

@@ -5,7 +5,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar } from "@/presenters/avatarProjections";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/presenters/engineAccess";
-import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
+import { NarrativeCeremonyDialog } from "@/components/game/NarrativeCeremonyDialog";
 
 const CATEGORY_CEREMONY: Record<
   HoFCategory,

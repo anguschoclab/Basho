@@ -15,8 +15,8 @@ import type { HoFCategory } from "@/presenters/engineAccess";
 import { HOF_CATEGORY_LABELS } from "@/presenters/uiDigest";
 import type { SortDirection } from "@/lib/sortUtils";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
-import { CATEGORY_ICONS, sortInductees } from "./hofMeta";
-import { InducteeFullCard } from "./InducteeCards";
+import { CATEGORY_ICONS, sortInductees } from "@/components/hof/hofMeta";
+import { InducteeFullCard } from "@/components/hof/InducteeCards";
 
 /** Group sorted inductees by induction year (desc/asc per sort order). */
 function useInducteeGroups(inductees: UIHofInductee[], sortKey: string, sortOrder: SortDirection) {

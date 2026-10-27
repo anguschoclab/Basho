@@ -1,21 +1,21 @@
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { Oyakata } from "../../types/oyakata";
-import { TalentPoolType, TalentCandidate } from "../../types/talent";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { getRecruitmentStrategy } from "../../npcRecruitmentStrategy";
-import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
-import { isRecruitmentPlayerRelevant } from "../../npcAI/eventSurfacing";
-import { getHeya } from "../../queries";
-import { recruitmentBalanceMultipliers } from "./competitiveBalance";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Oyakata } from "@/engine/types/oyakata";
+import { TalentPoolType, TalentCandidate } from "@/engine/types/talent";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
+import { materializeCandidateToRikishiInternal } from "@/engine/systems/generation/TalentPoolMaterialization";
+import { isRecruitmentPlayerRelevant } from "@/engine/npcAI/eventSurfacing";
+import { getHeya } from "@/engine/queries";
+import { recruitmentBalanceMultipliers } from "@/engine/systems/generation/competitiveBalance";
 import { error } from "@/engine/utils/Logger";
-import { perceivedTalentSeed } from "../recruitment/perceivedTalent";
-import { isForeign } from "../../utils/identity";
-import { candidateConsumesForeignSlot } from "./talentPoolReads";
-import { foreignSlotBidAggression, foreignSlotOccupied } from "../../npcAI/ForeignSlotPolicy";
-import { DUAL_CITIZEN_BID_PREFERENCE } from "../../../constants/engine/recruitment";
+import { perceivedTalentSeed } from "@/engine/systems/recruitment/perceivedTalent";
+import { isForeign } from "@/engine/utils/identity";
+import { candidateConsumesForeignSlot } from "@/engine/systems/generation/talentPoolReads";
+import { foreignSlotBidAggression, foreignSlotOccupied } from "@/engine/npcAI/ForeignSlotPolicy";
+import { DUAL_CITIZEN_BID_PREFERENCE } from "@/constants/engine/recruitment";
 
 /**
  * Automates recruitment for NPC stables.

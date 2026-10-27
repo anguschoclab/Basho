@@ -1,8 +1,8 @@
-import { SeededRNG } from "../rng";
-import type { Rikishi } from "../types/rikishi";
-import type { Side } from "../types/banzuke";
-import type { KimariteId } from "../types/combat";
-import { TAWARA_RADIUS, SHIKIRISEN_OFFSET } from "../types/combat-spatial";
+import { SeededRNG } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Side } from "@/engine/types/banzuke";
+import type { KimariteId } from "@/engine/types/combat";
+import { TAWARA_RADIUS, SHIKIRISEN_OFFSET } from "@/engine/types/combat-spatial";
 import type {
   PhysicalBody,
   HandGrip,
@@ -11,14 +11,14 @@ import type {
   BeltBattleState,
   EdgeCrisisState,
   EngineStateV2,
-} from "../types/combat-spatial";
-import { stat } from "./boutUtils";
+} from "@/engine/types/combat-spatial";
+import { stat } from "@/engine/bout/boutUtils";
 import {
   classifyPushFallKimarite,
   classifyBeltFallKimariteV2,
   classifyBeltExitKimarite,
   classifyPushExitKimarite,
-} from "./terminalKimarite";
+} from "@/engine/bout/terminalKimarite";
 import {
   MASS_BASE_OFFSET,
   MASS_WEIGHT_MULTIPLIER,
@@ -39,7 +39,7 @@ import {
   OKURIDASHI_PRESSURE_Z_THRESHOLD,
   OKURITAOSHI_PRESSURE_Z_THRESHOLD,
   BOUT_FATIGUE_INSTABILITY_FACTOR,
-} from "../../constants/engine/physics";
+} from "@/constants/engine/physics";
 
 export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
   const x = side === "east" ? SHIKIRISEN_OFFSET : -SHIKIRISEN_OFFSET;

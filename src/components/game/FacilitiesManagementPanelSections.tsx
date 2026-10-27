@@ -23,7 +23,7 @@ import {
   BAND_LABELS,
   getLevelBand,
   getEffectPercent,
-} from "./facilityMeta";
+} from "@/components/game/facilityMeta";
 
 /** Toast shown after an upgrade lands via WORLD_UPDATED. */
 export interface UpgradeToast {

@@ -4,8 +4,8 @@ import {
   applyDramaBudget,
   isMakuuchiDebut,
 } from "@/engine/matchmaking/DramaMatchmaker";
-import { toIdMap, toKeyedMap } from "@/engine/utils";
-import { mockRikishi } from "../utils";
+import { toIdMap, toKeyedMap } from "@/engine/utils/index";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { MatchPairing } from "@/engine/matchmaking/MatchmakingPhases";
 
 describe("DramaMatchmaker", () => {

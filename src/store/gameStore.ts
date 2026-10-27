@@ -6,10 +6,10 @@
  */
 
 import { create } from "zustand";
-import type { UIDigest } from "../presenters/uiDigest";
-import type { WorldState } from "../engine/types/world";
-import type { EngineCommand, WorkerEvent } from "../engine/worker/types";
-import { warn } from "../engine/utils/Logger";
+import type { UIDigest } from "@/presenters/uiDigest";
+import type { WorldState } from "@/engine/types/world";
+import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
+import { warn } from "@/engine/utils/Logger";
 
 /**
  * Represents the state and actions available in the global Game Store.

@@ -8,11 +8,11 @@
  * Pure + deterministic — callers commit via ImpactBuilder.
  */
 
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
-import type { RikishiAgencyState, RikishiRequest, RikishiRequestType } from "./types";
-import { RANK_HIERARCHY } from "../types/banzuke";
-import { clamp } from "../utils/math";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RikishiAgencyState, RikishiRequest, RikishiRequestType } from "@/engine/rikishiAgency/types";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { clamp } from "@/engine/utils/math";
 import {
   REQUEST_COOLDOWN_WEEKS,
   REST_FATIGUE_THRESHOLD,
@@ -27,8 +27,8 @@ import {
   DISPUTE_RESTLESSNESS_THRESHOLD,
   INCIDENT_RESTLESSNESS_THRESHOLD,
   INCIDENT_STRESS_THRESHOLD,
-} from "../../constants/engine/rikishiAgency";
-import { getEarlyShikonaMotivationBoost } from "../systems/generation/FightingNameEarly";
+} from "@/constants/engine/rikishiAgency";
+import { getEarlyShikonaMotivationBoost } from "@/engine/systems/generation/FightingNameEarly";
 
 export { REQUEST_COOLDOWN_WEEKS };
 

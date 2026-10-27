@@ -15,15 +15,15 @@
  *  - Idempotent: entries already marked isSummary are skipped.
  */
 
-import type { WorldState } from "./types/world";
-import type { Rikishi } from "./types/rikishi";
-import type { RetiredRikishiSummary } from "./types/history";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { buildRetiredRikishiSummary } from "./lifecycle/buildRetiredRikishiSummary";
-import { opfsArchiveService } from "./storage/opfsArchive";
-import { electronArchiveService } from "./storage/electronArchive";
-import { warn } from "./utils/Logger";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { buildRetiredRikishiSummary } from "@/engine/lifecycle/buildRetiredRikishiSummary";
+import { opfsArchiveService } from "@/engine/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/storage/electronArchive";
+import { warn } from "@/engine/utils/Logger";
 
 /**
  * Returns the active archive service (OPFS or Electron) based on environment.
@@ -113,4 +113,4 @@ function isFullRikishi(entry: unknown): entry is Rikishi {
 }
 
 // Re-export for consumers that imported the old symbol name.
-export { buildRetiredRikishiSummary } from "./lifecycle/buildRetiredRikishiSummary";
+export { buildRetiredRikishiSummary } from "@/engine/lifecycle/buildRetiredRikishiSummary";

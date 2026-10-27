@@ -5,13 +5,13 @@
  * Extracts the inline useMemo calculations from EconomyPage into a reusable presenter.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import { calculateHeyaWeeklyFinances } from "../../engine/systems/economy/FinanceCalculator";
-import { calculateKoenkaiIncome } from "../../engine/systems/economy/SponsorshipService";
-import { getPlayerHeya } from "../../engine/queries";
-import { KOENKAI_INCOME_SPLIT } from "../../constants/engine/economic";
-import { formatYen } from "../../utils/engineUtils";
-import type { RunwayBand } from "../../engine/types/narrative";
+import type { WorldState } from "@/engine/types/world";
+import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
+import { calculateKoenkaiIncome } from "@/engine/systems/economy/SponsorshipService";
+import { getPlayerHeya } from "@/engine/queries";
+import { KOENKAI_INCOME_SPLIT } from "@/constants/engine/economic";
+import { formatYen } from "@/utils/engineUtils";
+import type { RunwayBand } from "@/engine/types/narrative";
 export type { RunwayBand };
 
 export interface FinanceSummary {

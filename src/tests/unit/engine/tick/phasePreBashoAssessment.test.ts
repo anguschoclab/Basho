@@ -5,7 +5,7 @@ vi.mock("@/engine/systems/media/MediaService", () => ({
 }));
 
 import { phase_pre_basho_assessment } from "@/engine/tick/phases/phase_pre_basho_assessment";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * P1.1: Boundary gate tests — month/year boundary phases must only run on weekly ticks.

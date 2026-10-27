@@ -7,17 +7,17 @@
  * events, major scandals, sekitori produced, forced mergers).
  */
 
-import type { WorldState } from "../../types/world";
-import type { BashoState } from "../../types/basho";
-import type { Heya } from "../../types/heya";
-import type { Oyakata } from "../../types/oyakata";
-import type { ImpactBuilder } from "../../core/ImpactBuilder";
-import type { Division } from "../../types/banzuke";
-import { isSekitoriDivision } from "../../../constants/engine/rankDisplay";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { Division } from "@/engine/types/banzuke";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   SEKITORI_KACHI_KOSHI_WINS,
   UNDERPERFORMANCE_MIN_BOUTS,
-} from "../../../constants/engine/succession";
+} from "@/constants/engine/succession";
 
 type Tenure = NonNullable<Oyakata["tenure"]>;
 type TenureCounter = Exclude<keyof Tenure, "startedYear">;

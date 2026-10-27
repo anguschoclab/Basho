@@ -79,14 +79,14 @@ vi.mock("@/components/layout/AppLayout", () => ({
   ),
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: () => <div data-testid="page-header" />,
   StatCard: () => <div data-testid="stat-card" />,
   ListCard: () => <div data-testid="list-card" />,
   ProgressRow: () => <div data-testid="progress-row" />,
 }));
 
-vi.mock("@/components/dashboard", () => ({
+vi.mock("@/components/dashboard/index", () => ({
   FinancesWidget: () => <div data-testid="finances-widget" />,
   BashoWidget: () => <div data-testid="basho-widget" />,
   TrendsWidget: () => <div data-testid="trends-widget" />,

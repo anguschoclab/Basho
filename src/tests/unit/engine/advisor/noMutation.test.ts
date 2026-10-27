@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya } from "../../engine/utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { generateRecommendations } from "@/engine/advisor/AdvisorService";
 
 const PLAYER_HEYA_ID = "player-heya";

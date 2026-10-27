@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { processDramaTick } from "@/engine/bard/dramaGenerator";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 
 describe("Bug A: generateRandomDrama return value is merged", () => {
   it("processDramaTick returns a valid StateImpact (not discarded)", () => {

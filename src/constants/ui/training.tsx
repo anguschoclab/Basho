@@ -4,7 +4,7 @@
  * Constants for training page UI.
  */
 
-import type { IndividualFocusType } from "../../engine/types/training";
+import type { IndividualFocusType } from "@/engine/types/training";
 import { Activity, Users, Shield, HeartPulse } from "lucide-react";
 
 export const FOCUS_MODE_OPTIONS: {

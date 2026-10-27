@@ -12,14 +12,14 @@
  * and drama may read state updated by prior phases.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { mergeImpacts, resolveImpacts } from "../../core/ImpactResolver";
-import { phase01_daily_economy } from "./phase01_daily_economy";
-import { phase01_daily_welfare } from "./phase01_daily_welfare";
-import { phase01_daily_sponsors } from "./phase01_daily_sponsors";
-import { phase01_daily_drama } from "./phase01_daily_drama";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { mergeImpacts, resolveImpacts } from "@/engine/core/ImpactResolver";
+import { phase01_daily_economy } from "@/engine/tick/phases/phase01_daily_economy";
+import { phase01_daily_welfare } from "@/engine/tick/phases/phase01_daily_welfare";
+import { phase01_daily_sponsors } from "@/engine/tick/phases/phase01_daily_sponsors";
+import { phase01_daily_drama } from "@/engine/tick/phases/phase01_daily_drama";
 
 export function phase01_daily_micro(world: WorldState): StateImpact {
   // Run each sub-phase in sequence, accumulating impacts.

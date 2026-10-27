@@ -23,7 +23,7 @@ import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
 import { projectTsukebito } from "@/presenters/tsukebitoProjections";
 import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
 import type { WorldState } from "@/presenters/uiDigest";
-import type { projectRikishi } from "@/presenters/rikishi";
+import type { projectRikishi } from "@/presenters/rikishi/index";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import { activationKeyHandler } from "@/lib/a11y";

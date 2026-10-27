@@ -28,7 +28,7 @@ describe("conditionMultiplier", () => {
 });
 
 import { tickCondition } from "@/engine/tick/conditionTick";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("tickCondition — basho decay", () => {
   it("decays condition during active_basho when fatigue is high", () => {

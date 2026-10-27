@@ -6,20 +6,20 @@
  * and public data; no hidden AI state is exposed.
  */
 
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import type { AIRecommendation, AIGoalDomain } from "../ai/types";
-import { buildPerceptionSnapshot } from "../perception";
-import { buildLeaguePerception } from "../npcAI/LeaguePerception";
-import { getAdvice } from "../bout/CornerAdvice";
-import { getRikishi, getHeya, getOyakataForHeya } from "../queries";
-import { getOpponentModel } from "../npcAI/MemoryStore";
-import { getOpponentDominantFamily, suggestCounterTactic } from "../npcAI/OpponentModel";
-import { buildMetaPerception } from "../npcAI/MetaPerception";
-import { candidateConsumesForeignSlot } from "../systems/generation/talentPoolReads";
-import { isAtForeignLimit } from "../utils/citizenshipUtils";
-import { scanRecentEvents } from "../events";
-import { HEYA_ROSTER_HARD_CAP } from "../../constants/engine/roster";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { AIRecommendation, AIGoalDomain } from "@/engine/ai/types";
+import { buildPerceptionSnapshot } from "@/engine/perception";
+import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
+import { getAdvice } from "@/engine/bout/CornerAdvice";
+import { getRikishi, getHeya, getOyakataForHeya } from "@/engine/queries";
+import { getOpponentModel } from "@/engine/npcAI/MemoryStore";
+import { getOpponentDominantFamily, suggestCounterTactic } from "@/engine/npcAI/OpponentModel";
+import { buildMetaPerception } from "@/engine/npcAI/MetaPerception";
+import { candidateConsumesForeignSlot } from "@/engine/systems/generation/talentPoolReads";
+import { isAtForeignLimit } from "@/engine/utils/citizenshipUtils";
+import { scanRecentEvents } from "@/engine/events/events";
+import { HEYA_ROSTER_HARD_CAP } from "@/constants/engine/roster";
 
 const ROSTER_LOW_THRESHOLD = 10;
 

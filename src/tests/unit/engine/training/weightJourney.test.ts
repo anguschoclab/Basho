@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { applyWeightJourneyTick, shouldEnterWeightJourney } from "@/engine/training/WeightJourney";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 

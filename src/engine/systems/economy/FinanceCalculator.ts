@@ -8,11 +8,11 @@
  * No side effects — returns computed values only.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import { getRikishi } from "../../queries";
-import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "./SponsorshipService";
-import { getHeyaStaffBonuses } from "../../staff";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import { getRikishi } from "@/engine/queries";
+import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "@/engine/systems/economy/SponsorshipService";
+import { getHeyaStaffBonuses } from "@/engine/staff";
 import {
   RECRUITMENT_BUDGET_WEEKLY,
   FACILITY_UPKEEP,
@@ -24,7 +24,7 @@ import {
   DEBT_LIMIT,
   RUNWAY_INFINITE_SENTINEL,
   FIXED_OPERATING_OVERHEAD_WEEKLY,
-} from "../../../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 interface HeyaFinanceResult {
   /** Effective weekly income after survival floor. */

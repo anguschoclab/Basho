@@ -3,7 +3,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2, AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { useGame } from "@/contexts/useGame";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { StableHealthPanel } from "@/components/game/StableHealthPanel";

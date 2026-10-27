@@ -5,25 +5,25 @@
  * Provides a fluent API for building impacts without manually constructing the structure.
  */
 
-import type { Id } from "../types/common";
-import type { Heya } from "../types/heya";
-import type { Rikishi } from "../types/rikishi";
-import type { RetiredRikishiSummary } from "../types/history";
-import type { Oyakata } from "../types/oyakata";
-import type { WorldState } from "../types/world";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { WorldState } from "@/engine/types/world";
 import type {
   EngineEventType,
   EventCategory,
   EventImportance,
   NarrativeContext,
-} from "../types/events";
-import type { HeyaTrainingState } from "../types/training";
-import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
-import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
-import type { Staff } from "../types/staff";
-import type { StateImpact, WritableWorldFields } from "./StateImpact";
-import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
-import { deepMerge, setNestedField } from "../utils/objectMerge";
+} from "@/engine/types/events";
+import type { HeyaTrainingState } from "@/engine/types/training";
+import type { MyosekiStock, MyosekiTransaction } from "@/engine/types/myoseki";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { Staff } from "@/engine/types/staff";
+import type { StateImpact, WritableWorldFields } from "@/engine/core/StateImpact";
+import { createEmptyImpact, getNextTimestamp } from "@/engine/core/StateImpact";
+import { deepMerge, setNestedField } from "@/engine/utils/objectMerge";
 
 type ArrayAppendItem<K extends string> = K extends "history"
   ? import("../types/basho").BashoResult[]

@@ -7,15 +7,15 @@
  * Run: bun scripts/determinism-double-run.ts [basho|year]
  */
 
-import { generateInitialWorld } from "../src/engine/systems/generation/WorldFactory";
-import { runAutoSim } from "../src/engine/simulation/AutoSimService";
-import { SerializationService } from "../src/engine/persistence/SerializationService";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { runAutoSim } from "@/engine/simulation/AutoSimService";
+import { SerializationService } from "@/engine/persistence/SerializationService";
 
 const horizon = process.argv[2] === "year" ? "year" : "basho";
 const SEED = `determinism-double-run-${horizon}`;
 const RUNS = 2;
 
-const { BardEngine } = await import("../src/engine/bard/BardEngine");
+const { BardEngine } = await import("@/engine/bard/BardEngine");
 await BardEngine.loadDomains();
 
 function runOnce(): string {

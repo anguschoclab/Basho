@@ -5,13 +5,13 @@
  * Extracted from InfrastructureService for SRP separation.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import type { Id } from "../../types/common";
-import type { FacilityId, FacilityDefinition } from "../../types/infrastructure";
-import { FACILITY_REGISTRY } from "../../types/infrastructure";
-import { getHeya } from "../../queries";
-import { CONSTRUCTION_COST_LEVEL_MULTIPLIER } from "../../../constants/engine/economyExtended";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Id } from "@/engine/types/common";
+import type { FacilityId, FacilityDefinition } from "@/engine/types/infrastructure";
+import { FACILITY_REGISTRY } from "@/engine/types/infrastructure";
+import { getHeya } from "@/engine/queries";
+import { CONSTRUCTION_COST_LEVEL_MULTIPLIER } from "@/constants/engine/economyExtended";
 
 const KNOWN_FAILURE_REASONS = new Set([
   "heya_not_found",

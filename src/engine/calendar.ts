@@ -10,14 +10,14 @@
 // NOTE:
 // If you want to override a specific basho start day, set `startDay` in BASHO_CALENDAR[name].
 
-import type { BashoName, BashoInfo } from "./types/basho";
-import { simpleHashToIndex } from "./utils/math";
+import type { BashoName, BashoInfo } from "@/engine/types/basho";
+import { simpleHashToIndex } from "@/engine/utils/math";
 import {
   INTERIM_WEEKS,
   DEFAULT_YEAR,
   KEY_DAYS,
   DAYS_TO_SECOND_SUNDAY,
-} from "../constants/engine/calendar";
+} from "@/constants/engine/calendar";
 
 // === BASHO CALENDAR ===
 //

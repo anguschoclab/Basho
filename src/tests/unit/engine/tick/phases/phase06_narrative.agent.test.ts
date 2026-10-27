@@ -3,7 +3,7 @@ import { phase06_narrative } from "@/engine/tick/phases/phase06_narrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
-import { mockRikishi, makeMockHeya } from "../../utils";
+import { mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { BashoResult, BoutResult } from "@/engine/types/basho";
 
 function makeOyakata(overrides: Partial<Oyakata> = {}): Oyakata {

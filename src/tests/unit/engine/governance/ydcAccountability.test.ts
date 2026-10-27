@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { KihakuService } from "@/engine/systems/governance/KihakuService";
 import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("KihakuService — Fighting Spirit Score", () => {
   it("returns 50 (neutral default) when hasMetrics is false", () => {

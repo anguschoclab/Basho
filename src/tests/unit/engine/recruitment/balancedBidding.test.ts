@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { recruitmentBalanceMultiplier } from "@/engine/systems/generation/competitiveBalance";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 
 // This is a focused unit check on the multiplier ordering that the bid loop relies on.
 describe("balanced bidding ordering", () => {

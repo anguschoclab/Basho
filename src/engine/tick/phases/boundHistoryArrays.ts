@@ -10,7 +10,7 @@
  * not lose data — it only bounds the in-memory / in-save window.
  */
 
-import type { WorldState } from "../../types/world";
+import type { WorldState } from "@/engine/types/world";
 
 /** Maximum number of basho results to retain in world.history. */
 export const HISTORY_MAX_ENTRIES = 500;

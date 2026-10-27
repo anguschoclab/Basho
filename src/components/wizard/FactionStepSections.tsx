@@ -8,7 +8,7 @@
 import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
-import { ICHIMON_FACTIONS } from "../../constants/ui/wizard";
+import { ICHIMON_FACTIONS } from "@/constants/ui/wizard";
 
 const ICHIMON_MECHANICS: Record<string, { bonus: string; politics: string }> = {
   Dewanoumi: { bonus: "+5% Power training", politics: "High (300)" },

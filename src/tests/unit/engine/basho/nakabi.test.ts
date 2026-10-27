@@ -5,7 +5,7 @@ import {
   isNakabiDay,
   NAKABI_DAY,
 } from "@/engine/systems/basho/NakabiService";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeRikishi(id: string, wins: number, losses: number, rankNum: number): Rikishi {

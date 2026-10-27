@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ChronicleService } from "@/engine/simulation/ChronicleService";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("ChronicleService.finalizeReport", () => {
   it("populates biggestScandals from discipline scandal events", () => {

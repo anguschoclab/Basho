@@ -9,10 +9,10 @@ import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 import { useLocation } from "@tanstack/react-router";
 import { useRef, useEffect } from "react";
 import { useGame } from "@/contexts/useGame";
-import { getMenuGroups } from "./sidebarConfig";
+import { getMenuGroups } from "@/components/layout/sidebarConfig";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
-import { SidebarBrand, SidebarNav, SidebarStatusFooter } from "./AppSidebarSections";
+import { SidebarBrand, SidebarNav, SidebarStatusFooter } from "@/components/layout/AppSidebarSections";
 
 export function AppSidebar() {
   const { state } = useGame();

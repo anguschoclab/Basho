@@ -1,20 +1,20 @@
-import type { InjuryType, InjurySeverity, InjuryBodyArea } from "../systems/health/BodyDefinitions";
+import type { InjuryType, InjurySeverity, InjuryBodyArea } from "@/engine/systems/health/BodyDefinitions";
 /**
  * Rikishi Types
  */
 
-import type { Id } from "./common";
-import type { AvatarConfig } from "./avatar";
-import type { Style, KimariteId, CombatProfile, CombatArchetype } from "./combat";
-export type { Style, KimariteId } from "./combat";
+import type { Id } from "@/engine/types/common";
+import type { AvatarConfig } from "@/engine/types/avatar";
+import type { Style, KimariteId, CombatProfile, CombatArchetype } from "@/engine/types/combat";
+export type { Style, KimariteId } from "@/engine/types/combat";
 
-import type { RikishiDescriptor } from "../descriptorBands";
-import type { Division, Rank, Side } from "./banzuke";
-import type { H2HRecord, MatchResultLog } from "./records";
-import type { RikishiEconomics } from "./economy";
-import type { RikishiBehavior, PressPersona } from "./media";
-import type { CareerSnapshot, Milestone } from "./history";
-import type { RikishiCareerRecord } from "../almanac/types";
+import type { RikishiDescriptor } from "@/engine/descriptorBands";
+import type { Division, Rank, Side } from "@/engine/types/banzuke";
+import type { H2HRecord, MatchResultLog } from "@/engine/types/records";
+import type { RikishiEconomics } from "@/engine/types/economy";
+import type { RikishiBehavior, PressPersona } from "@/engine/types/media";
+import type { CareerSnapshot, Milestone } from "@/engine/types/history";
+import type { RikishiCareerRecord } from "@/engine/almanac/types";
 
 /** Log of tactical success/failure during a basho. */
 export type AttributeKey = "power" | "speed" | "balance" | "technique";

@@ -4,8 +4,8 @@
  * A persistent, unobtrusive ticker for minor drama and engine updates.
  */
 
-import { useGame } from "../../contexts/useGame";
-import { Badge } from "../ui/badge";
+import { useGame } from "@/contexts/useGame";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { MentionText } from "@/components/MentionText";
 

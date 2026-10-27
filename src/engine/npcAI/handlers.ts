@@ -1,21 +1,21 @@
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import { getHeya, getOyakataForHeya } from "../queries";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import { getHeya, getOyakataForHeya } from "@/engine/queries";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 import {
   spawnCrisisAgent,
   spawnMediaAgent,
   type CrisisAgentContext,
   type MediaAgentContext,
-} from "../agents";
+} from "@/engine/agents/index";
 
-import type { PerceptionSnapshot } from "../perception";
-import type { ActiveCrisis } from "../types/crises";
-import { storedCrisisOptionEffect } from "../bard/dramaGenerator";
-import { handleMediaEventForHeya } from "../systems/media/MediaEventService";
-import { isCrisisPlayerRelevant } from "./eventSurfacing";
+import type { PerceptionSnapshot } from "@/engine/perception";
+import type { ActiveCrisis } from "@/engine/types/crises";
+import { storedCrisisOptionEffect } from "@/engine/bard/dramaGenerator";
+import { handleMediaEventForHeya } from "@/engine/systems/media/MediaEventService";
+import { isCrisisPlayerRelevant } from "@/engine/npcAI/eventSurfacing";
 
 /**
  * Resolve an NPC heya's active crisis end-to-end: CrisisAgent picks an

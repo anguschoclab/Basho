@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { calculateTopRivals } from "@/presenters/rikishi/transformers/rivals";
-import type { WorldState, Rikishi } from "@/engine/types";
+import type { WorldState, Rikishi } from "@/engine/types/index";
 
 describe("calculateTopRivals", () => {
     it("should return the correct top rivals with streak mapped", () => {

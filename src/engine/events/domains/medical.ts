@@ -1,10 +1,10 @@
-import type { WorldState } from "../types/world";
-import type { EventImportance, NarrativeContext } from "../types/events";
-import { BardEngine } from "../bard/BardEngine";
-import { rngFromSeed } from "../rng";
-import { createRngForEvent } from "../eventHelpers";
-import { logEngineEvent } from "../events";
-import { enrichEventContext } from "./context";
+import type { WorldState } from "@/engine/types/world";
+import type { EventImportance, NarrativeContext } from "@/engine/types/events";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/rng";
+import { createRngForEvent } from "@/engine/events/helpers";
+import { logEngineEvent } from "@/engine/events/events";
+import { enrichEventContext } from "@/engine/events/domains/context";
 
 /**
  * Creates a medical report event for a rikishi.

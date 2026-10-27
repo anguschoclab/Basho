@@ -10,10 +10,10 @@
 import { useMemo, useEffect, useRef } from "react";
 import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
-import { autosaveWithSignal } from "../gameHelpers";
+import { autosaveWithSignal } from "@/contexts/gameHelpers";
 import { buildWeeklyDigest } from "@/presenters/uiDigest";
-import type { GameState } from "../gameTypes";
-import * as actions from "../gameActions";
+import type { GameState } from "@/contexts/gameTypes";
+import * as actions from "@/contexts/gameActions";
 import { useGameStore } from "@/store/gameStore";
 
 export function useWorkerSync(

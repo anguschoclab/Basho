@@ -4,10 +4,10 @@
  * Transforms kimarite (winning technique) statistics.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import { SeededRNG } from "../../../engine/rng";
-import { BardEngine } from "../../../engine/bard/BardEngine";
-import type { RikishiKimariteDTO } from "../types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { SeededRNG } from "@/engine/rng";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import type { RikishiKimariteDTO } from "@/presenters/rikishi/types";
 
 interface MatchHistoryEntry {
   win?: boolean;

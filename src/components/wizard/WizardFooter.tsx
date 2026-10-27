@@ -5,7 +5,7 @@
  */
 
 import { formatYenToMan } from "@/utils/engineUtils";
-import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "../../constants/ui/wizard";
+import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/constants/ui/wizard";
 
 interface WizardFooterProps {
   oyakataName: string;

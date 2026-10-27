@@ -9,7 +9,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
-import { CardEyebrow } from "./CardEyebrow";
+import { CardEyebrow } from "@/components/layout/page-shell/CardEyebrow";
 
 export interface StatItem {
   label: string;

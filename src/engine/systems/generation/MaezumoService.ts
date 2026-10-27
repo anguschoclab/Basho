@@ -7,8 +7,8 @@
  * The assessment determines their initial jonokuchi rankNumber.
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import { rngFromSeed } from "../../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { rngFromSeed } from "@/engine/rng";
 import {
   MAEZUMO_STAT_COUNT,
   MAEZUMO_DEFAULT_STAT,
@@ -18,7 +18,7 @@ import {
   MAEZUMO_JITTER_MAX,
   MAEZUMO_RANK_MIN,
   MAEZUMO_RANK_MAX,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 /**
  * Assesses a new recruit's maezumo performance and determines their

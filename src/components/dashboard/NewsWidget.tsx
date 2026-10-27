@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Newspaper,

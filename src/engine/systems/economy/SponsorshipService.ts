@@ -20,11 +20,11 @@ export {
   calculateKoenkaiIncome,
   selectBenefactor,
   computeStarPower,
-} from "./sponsorshipQueries";
+} from "@/engine/systems/economy/sponsorshipQueries";
 
 export {
   recruitSponsor,
   applyAchievementImpact,
   processSponsorChurn,
   adjustKoenkaiBandToPrestige,
-} from "./sponsorshipMutations";
+} from "@/engine/systems/economy/sponsorshipMutations";

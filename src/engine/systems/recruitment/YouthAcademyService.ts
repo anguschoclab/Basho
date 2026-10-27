@@ -6,36 +6,36 @@
  * system that adds a long-term development pipeline.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import type { StateImpact } from "../../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import type {
   AcademyLevel,
   AcademyStaff,
   AcademyStaffRole,
   YouthProspect,
   YouthAcademyState,
-} from "../../types/academy";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { getHeya } from "../../queries";
-import { rngFromSeed } from "../../rng";
-import { generateAvatarIdentity } from "../../avatarGenerator";
-import type { Rikishi, RikishiStats } from "../../types/rikishi";
-import type { Rank, Division } from "../../types/banzuke";
-import { clamp, clampInt } from "../../utils/math";
-import { rollArchetype, rollArchetypeWithBias, buildCombatProfile } from "../../archetype";
+} from "@/engine/types/academy";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getHeya } from "@/engine/queries";
+import { rngFromSeed } from "@/engine/rng";
+import { generateAvatarIdentity } from "@/engine/avatarGenerator";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import type { Rank, Division } from "@/engine/types/banzuke";
+import { clamp, clampInt } from "@/engine/utils/math";
+import { rollArchetype, rollArchetypeWithBias, buildCombatProfile } from "@/engine/archetype";
 import {
   rollDevelopmentProfile,
   rollPotential,
   generateRikishiStats,
-} from "../generation/CandidateStats";
+} from "@/engine/systems/generation/CandidateStats";
 import {
   createBaseInfo,
   createCombatStats,
   createCareerHistory,
-} from "../generation/CandidateBuilder";
-import { applyPersonaAssignment } from "../generation/PersonaAssignment";
-import { MOCHIKYUKIN_INITIAL_POINTS } from "../../../constants/engine/economic";
+} from "@/engine/systems/generation/CandidateBuilder";
+import { applyPersonaAssignment } from "@/engine/systems/generation/PersonaAssignment";
+import { MOCHIKYUKIN_INITIAL_POINTS } from "@/constants/engine/economic";
 
 /** Re-export types for convenience. */
 export type { AcademyLevel, AcademyStaff, AcademyStaffRole, YouthProspect };

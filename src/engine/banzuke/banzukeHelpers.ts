@@ -4,9 +4,9 @@ import {
   type RankPosition,
   type BanzukeEntry,
   type BashoPerformance,
-} from "../types/banzuke";
-import type { WorldState } from "../types/world";
-import { getRikishi } from "../queries";
+} from "@/engine/types/banzuke";
+import type { WorldState } from "@/engine/types/world";
+import { getRikishi } from "@/engine/queries";
 
 /**
  * Interface representing a candidate in the banzuke assignment sort.

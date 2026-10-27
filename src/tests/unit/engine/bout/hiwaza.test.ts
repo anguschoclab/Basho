@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { classifyHiwaza, maybeClassifyHiwaza } from "@/engine/bout/hiwaza";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { EngineStateV2, PhysicalBody, PushBattleState } from "@/engine/types/combat-spatial";
 
 /**

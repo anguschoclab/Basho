@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { listVisibleCandidates } from "@/engine/systems/generation/TalentPoolScouting";
-import { makeMockWorld, makeMockHeya } from "../../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { TalentCandidate, TalentPoolWorldState, TalentPoolType } from "@/engine/types/talent";
 
 function makeCandidate(id: string, overrides: Partial<TalentCandidate> = {}): TalentCandidate {

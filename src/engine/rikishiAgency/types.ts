@@ -2,7 +2,7 @@
  * types.ts — WS4 rikishi-level agency.
  */
 
-import type { Id } from "../types/common";
+import type { Id } from "@/engine/types/common";
 
 export type RikishiRequestType =
   | "request_rest"

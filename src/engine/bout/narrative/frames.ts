@@ -2,20 +2,20 @@
  * bout/narrative/frames.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
-import type { PbpPhase } from "./pbpTypes";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import type { PbpPhase } from "@/engine/bout/narrative/pbpTypes";
 import {
   NARRATIVE_DEPTH_CHANGE_CHANCE,
   NARRATIVE_LOW_RECOVERY_THRESHOLD,
   NARRATIVE_STAMINA_CHANCE,
   NARRATIVE_TAWARA_TOE_THRESHOLD,
-} from "../../../constants/engine/narrative";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed } from "../../rng";
-import type { BoutLogEntry } from "../../types/basho";
-import type { Stance } from "../../types/combat";
+} from "@/constants/engine/narrative";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/rng";
+import type { BoutLogEntry } from "@/engine/types/basho";
+import type { Stance } from "@/engine/types/combat";
 
-import type { SeededRNG } from "../../rng";
+import type { SeededRNG } from "@/engine/rng";
 
 /** Mutable per-bout narration state shared by frame handlers. */
 interface FrameState {

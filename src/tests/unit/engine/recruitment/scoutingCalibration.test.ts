@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
 import { recruitmentBalanceMultiplier } from "@/engine/systems/generation/competitiveBalance";
 import { clearQueryCaches } from "@/engine/queries";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
-import { toKeyedMap } from "@/engine/utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import {
   PERCEPTION_NOISE_BASE,
   PERCEPTION_NOISE_FLOOR,

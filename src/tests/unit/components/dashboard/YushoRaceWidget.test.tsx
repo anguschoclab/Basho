@@ -14,7 +14,7 @@ vi.mock("@/contexts/useGame", () => ({
 
 import { YushoRaceWidget } from "@/components/dashboard/YushoRaceWidget";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 

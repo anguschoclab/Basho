@@ -7,7 +7,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { Swords, Flame } from "lucide-react";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { selectTopRivals } from "@/presenters/selectors";
 import type { WorldState } from "@/presenters/uiDigest";

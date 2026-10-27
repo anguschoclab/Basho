@@ -3,7 +3,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { useGame } from "@/contexts/useGame";
 import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";
 import { WelfarePanel } from "@/components/game/WelfarePanel";

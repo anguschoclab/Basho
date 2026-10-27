@@ -6,8 +6,8 @@
  * who form the mono-ii panel.
  */
 
-import type { Id } from "./common";
-import type { AvatarIdentity } from "./avatar";
+import type { Id } from "@/engine/types/common";
+import type { AvatarIdentity } from "@/engine/types/avatar";
 
 /** Gyoji rank — tate-gyoji (top) down to lower ranks. */
 export type GyojiRank = "tate" | "fuku-tate" | "sanyaku" | "makuuchi" | "juryo" | "makushita";

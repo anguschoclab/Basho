@@ -1,18 +1,18 @@
-import { determineSpecialPrizes } from "../banzuke";
-import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
-import type { WorldState } from "../types/world";
-import type { BashoState } from "../types/basho";
-import { createImpactBuilder, type ImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
-import { SIMULATION_CONFIG } from "../core/SimulationConfig";
-import type { Id } from "../types/common";
-import { getRikishi } from "../queries";
-import { NON_SEKITORI_BASHO_ALLOWANCE } from "../../constants/engine/economic";
+import { determineSpecialPrizes } from "@/engine/banzuke/specialPrizes";
+import type { SpecialPrizesResult } from "@/engine/banzuke/specialPrizes";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { applyAchievementImpact } from "@/engine/systems/economy/SponsorshipService";
+import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import type { Id } from "@/engine/types/common";
+import { getRikishi } from "@/engine/queries";
+import { NON_SEKITORI_BASHO_ALLOWANCE } from "@/constants/engine/economic";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { BardEngine } from "../bard/BardEngine";
-import { rngFromSeed } from "../rng";
-import type { PbpLine } from "../bout/boutNarrative";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/rng";
+import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 /**
  * Distributes special prizes (Sansho) and tournament bonuses at the end of a basho.

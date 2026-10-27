@@ -9,13 +9,13 @@
  * happens upstream so quirks/flags are visible to it.
  */
 
-import type { Id } from "../types/common";
-import type { WorldState } from "../types/world";
-import type { Oyakata } from "../types/oyakata";
-import type { AIContext, LeaguePerception } from "../ai/types";
-import type { PerceptionSnapshot } from "../perception";
-import { buildPerceptionSnapshot } from "../perception";
-import { buildLeaguePerception } from "../npcAI/LeaguePerception";
+import type { Id } from "@/engine/types/common";
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { AIContext, LeaguePerception } from "@/engine/ai/types";
+import type { PerceptionSnapshot } from "@/engine/perception";
+import { buildPerceptionSnapshot } from "@/engine/perception";
+import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
 
 /** Build an AI context for a single heya, optionally reusing precomputed views. */
 export function buildAIContext(

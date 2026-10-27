@@ -5,7 +5,7 @@ import {
   ATTENDANT_POPULARITY_BOOST,
 } from "@/engine/governance/yokozunaAttendants";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeYokozuna(): Rikishi {

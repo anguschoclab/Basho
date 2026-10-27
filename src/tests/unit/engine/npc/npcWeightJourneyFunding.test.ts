@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { evaluateFinanceStrategy } from "@/engine/strategy/NPCFinanceCalculator";
 import { tickMonthlyNPC } from "@/engine/npcAI/ticks";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Id } from "@/engine/types/common";
 
 describe("NPC Weight Journey Funding Awareness", () => {

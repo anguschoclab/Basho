@@ -5,13 +5,13 @@
  * Extracted from phase01_week_welfare.ts for modularity.
  */
 
-import type { WorldState } from "../../../types/world";
-import type { Heya } from "../../../types/heya";
-import type { WelfareState, ComplianceState } from "../../../types/economy";
-import type { ImpactBuilder } from "../../../core/ImpactBuilder";
-import { generateGovernanceHeadline } from "../../../systems/media/MediaService";
-import type { MediaHeadline } from "../../../types/media";
-import { clamp } from "../../../utils/math";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { WelfareState, ComplianceState } from "@/engine/types/economy";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { generateGovernanceHeadline } from "@/engine/systems/media/MediaService";
+import type { MediaHeadline } from "@/engine/types/media";
+import { clamp } from "@/engine/utils/math";
 import {
   WATCH_THRESHOLD_WITH_NEGLECT,
   WATCH_THRESHOLD_WITHOUT_NEGLECT,
@@ -39,7 +39,7 @@ import {
   MEDIA_PRESSURE_SANCTION,
   SANCTION_LIFT_RISK_THRESHOLD,
   SANCTION_LIFT_WEEKS_THRESHOLD,
-} from "../../../../constants/engine/welfare";
+} from "@/constants/engine/welfare";
 
 function applyGovernanceHeadlineAndPressure(
   world: WorldState,

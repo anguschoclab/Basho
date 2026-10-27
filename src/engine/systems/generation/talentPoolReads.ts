@@ -3,12 +3,12 @@
  * Covers candidate visibility queries and foreign rikishi counts.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { TalentPoolType, TalentCandidate } from "../../types/talent";
-import { isForeign } from "../../utils/identity";
-import { countsAsForeign } from "../../utils/citizenshipUtils";
-import { getHeya, getRikishi } from "../../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { TalentPoolType, TalentCandidate } from "@/engine/types/talent";
+import { isForeign } from "@/engine/utils/identity";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { getHeya, getRikishi } from "@/engine/queries";
 
 // ============================================
 // READ OPERATORS

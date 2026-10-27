@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 
 function makeSummary(

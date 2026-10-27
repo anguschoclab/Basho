@@ -1,9 +1,9 @@
-import type { SeededRNG } from "../../rng";
-import type { Rikishi } from "../../types/rikishi";
-import type { BoutLogEntry } from "../../types/basho";
-import type { Division } from "../../types/banzuke";
-import type { KimariteId } from "../../types/combat";
-import type { Side } from "../../types/banzuke";
+import type { SeededRNG } from "@/engine/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutLogEntry } from "@/engine/types/basho";
+import type { Division } from "@/engine/types/banzuke";
+import type { KimariteId } from "@/engine/types/combat";
+import type { Side } from "@/engine/types/banzuke";
 import {
   ANGULAR_TORQUE_SCALE,
   ANGULAR_MAX_VELOCITY,
@@ -21,14 +21,14 @@ import {
   TORQUE_EDGE_CRISIS_THRESHOLD,
   COUNTER_TORQUE_REDUCTION,
   TORQUE_BONUS_FACTOR,
-} from "../../../constants/engine/physics";
-import { EDGE_THRESHOLD } from "../../types/combat-spatial";
-import type { EngineStateV2 } from "../../types/combat-spatial";
-import { isBodyFalling, classifyBeltFallKimarite } from "../boutSpatial";
-import { evolveGripGeometry } from "../boutGrip";
-import { evaluateKimariteAttempt } from "../kimariteClassifier";
-import { stat, boutFatigueIncrement, type SideTactics } from "../boutUtils";
-import { buildEdgeCrisis } from "./edgeCrisis";
+} from "@/constants/engine/physics";
+import { EDGE_THRESHOLD } from "@/engine/types/combat-spatial";
+import type { EngineStateV2 } from "@/engine/types/combat-spatial";
+import { isBodyFalling, classifyBeltFallKimarite } from "@/engine/bout/boutSpatial";
+import { evolveGripGeometry } from "@/engine/bout/boutGrip";
+import { evaluateKimariteAttempt } from "@/engine/bout/kimariteClassifier";
+import { stat, boutFatigueIncrement, type SideTactics } from "@/engine/bout/boutUtils";
+import { buildEdgeCrisis } from "@/engine/bout/physics/edgeCrisis";
 
 type BeltState = EngineStateV2["phase"] extends infer P
   ? P extends { tag: "belt_battle"; state: infer S; push: infer Pu }

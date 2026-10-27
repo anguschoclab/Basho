@@ -10,7 +10,7 @@ import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {

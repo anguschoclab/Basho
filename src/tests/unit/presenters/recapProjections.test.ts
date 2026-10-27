@@ -3,7 +3,7 @@ import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoResult, BoutResult, KeyBoutEntry, MatchSchedule } from "@/engine/types/basho";
 import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
-import { makeMockWorld, mockRikishi, makeMockBasho } from "../engine/utils";
+import { makeMockWorld, mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
 
 function makeResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {

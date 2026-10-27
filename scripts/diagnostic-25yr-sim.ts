@@ -10,13 +10,13 @@
  * Replaces: headless-sim-25yr.ts, run-25year-sim.ts
  */
 
-import { generateInitialWorld } from "../src/engine/systems/generation/WorldFactory";
-import { runAutoSim } from "../src/engine/simulation/AutoSimService";
-import type { WorldState } from "../src/engine/types/world";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { runAutoSim } from "@/engine/simulation/AutoSimService";
+import type { WorldState } from "@/engine/types/world";
 import { writeFileSync } from "fs";
 import { join } from "path";
-import { countsAsForeign } from "../src/engine/utils/citizenshipUtils";
-import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../src/constants/engine/recruitment";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 
 const SEED = "sim-25yr-diagnostic-v1";
 const DEFAULT_YEARS = 25;
@@ -189,7 +189,7 @@ console.error = (...args: unknown[]) => {
 
 // Preload narrative domains — BardEngine.resolve() warns and returns empty
 // text when domain JSON hasn't been loaded (headless scripts never bootstrap).
-const { BardEngine } = await import("../src/engine/bard/BardEngine");
+const { BardEngine } = await import("@/engine/bard/BardEngine");
 await BardEngine.loadDomains();
 
 let world = generateInitialWorld(SEED);

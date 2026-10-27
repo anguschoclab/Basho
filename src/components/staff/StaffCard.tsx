@@ -29,7 +29,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, staffStageInput } from "@/presenters/avatarProjections";
 import { toFatigueBand, toScandalBand } from "@/presenters/engineAccess";
 import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
-import { STAFF_BAND_COLORS, ROLE_LABELS, staffBonusText } from "./staffMeta";
+import { STAFF_BAND_COLORS, ROLE_LABELS, staffBonusText } from "@/components/staff/staffMeta";
 
 /** Fire button + permanent-removal confirmation dialog. */
 function FireButton({ staff, onFire }: { staff: Staff; onFire: (id: string) => void }) {

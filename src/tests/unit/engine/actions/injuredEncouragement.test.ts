@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { provideEncouragement, canEncourage } from "@/engine/actions/InjuredEncouragement";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(): WorldState {

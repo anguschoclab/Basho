@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { phase01_week_rikishi_agency } from "@/engine/tick/phases";
+import { phase01_week_rikishi_agency } from "@/engine/tick/phases/index";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";

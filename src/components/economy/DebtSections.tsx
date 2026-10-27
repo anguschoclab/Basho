@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Banknote } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { Button } from "@/components/ui/button";
-import type { LoanRow } from "./debtMeta";
+import type { LoanRow } from "@/components/economy/debtMeta";
 
 /** Payoff progress bar + estimated weeks remaining. */
 function PayoffProgress({ loan }: { loan: LoanRow }) {

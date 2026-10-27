@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 vi.mock("@/engine/prestige/prestigeSystem", () => ({
   runPrestigeDecay: vi.fn(() => ({ metadata: { source: "prestige" } })),

@@ -11,11 +11,11 @@
  * Goal: Decouple business rules from state management.
  */
 
-import { clamp } from "../../utils/math";
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import type { WelfareState } from "../../types/economy";
-import { EntityCollection } from "../../core/EntityCollection";
+import { clamp } from "@/engine/utils/math";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { WelfareState } from "@/engine/types/economy";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import {
   INJURY_PRESSURE_SERIOUS,
   INJURY_PRESSURE_MODERATE,
@@ -37,7 +37,7 @@ import {
   SCANDAL_WELFARE_THRESHOLD,
   WELFARE_SCANDAL_SYNERGY_BONUS,
   WELFARE_HEALTHY_DRIFT_REDUCTION,
-} from "../../../constants/engine/welfare";
+} from "@/constants/engine/welfare";
 
 /**
  * Weights injury severity for welfare pressure.

@@ -4,7 +4,7 @@ import {
   recruitmentBalanceMultipliers,
 } from "@/engine/systems/generation/competitiveBalance";
 import { clearQueryCaches } from "@/engine/queries";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 function worldWithStables(spec: Record<string, number>): WorldState {

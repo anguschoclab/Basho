@@ -5,22 +5,22 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { Rank } from "../../engine/types/banzuke";
-import type { TalentCandidate, TalentPoolType } from "../../engine/types/talent";
-import { RANK_HIERARCHY } from "../../engine/banzuke";
-import type { BoutPreviewUI } from "../boutPreviewUI";
-import type { UIRikishi } from "../rikishi";
-import { getH2HReport } from "../../engine/h2h";
-import { RivalryService } from "../../engine/systems/narrative/RivalryService";
-import { projectRikishi } from "../rikishi";
-import * as talentpool from "../../engine/systems/generation/TalentPoolService";
-import { getOrCreateScouted, getScoutingLevel } from "../../engine/scoutingStore";
-import { getScoutedAttributes } from "../../engine/systems/recruitment/ScoutingService";
-import { EntityCollection } from "../../engine/core/EntityCollection";
-import type { Rikishi } from "../../engine/types/rikishi";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import { resolveAvatar, rikishiStageInput, candidateStageInput } from "../../engine/avatarGenerator";
+import type { WorldState } from "@/engine/types/world";
+import type { Rank } from "@/engine/types/banzuke";
+import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
+import type { UIRikishi } from "@/presenters/rikishi/index";
+import { getH2HReport } from "@/engine/h2h";
+import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { projectRikishi } from "@/presenters/rikishi/index";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import { getOrCreateScouted, getScoutingLevel } from "@/engine/scoutingStore";
+import { getScoutedAttributes } from "@/engine/systems/recruitment/ScoutingService";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, rikishiStageInput, candidateStageInput } from "@/engine/avatarGenerator";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.

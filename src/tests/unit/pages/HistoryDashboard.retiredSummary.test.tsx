@@ -7,7 +7,7 @@ import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
-import { toIdMap } from "@/engine/utils";
+import { toIdMap } from "@/engine/utils/index";
 
 // Mock AppLayout to avoid layout complexity
 vi.mock("@/components/layout/AppLayout", () => ({
@@ -16,7 +16,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   ),
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: ({ title }: { title: string }) => <div>{title}</div>,
 }));
 

@@ -7,7 +7,7 @@
 
 import { CircleUser, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NameInputRow, BackstoryGrid } from "./IdentityStepSections";
+import { NameInputRow, BackstoryGrid } from "@/components/wizard/IdentityStepSections";
 
 interface IdentityStepProps {
   oyakataName: string;

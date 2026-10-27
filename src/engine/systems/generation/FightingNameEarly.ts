@@ -6,8 +6,8 @@
  * desire. Small motivation boost while in lower divisions.
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { SeededRNG } from "../../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { SeededRNG } from "@/engine/rng";
 
 /** Chance of early shikona for lower-division rikishi */
 export const EARLY_SHIKONA_CHANCE = 0.15;

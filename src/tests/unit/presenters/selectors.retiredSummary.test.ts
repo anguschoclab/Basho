@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { selectRetiredRikishi } from "@/presenters/selectors";
-import { makeMockWorld, mockRikishi } from "../engine/utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Rikishi } from "@/engine/types/rikishi";
 

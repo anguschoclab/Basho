@@ -1,8 +1,8 @@
 /**
  * exhibitionProjections.ts — projects pending exhibition invitations for UI.
  */
-import type { WorldState } from "../engine/types/world";
-import type { PendingExhibition } from "../engine/types/world";
+import type { WorldState } from "@/engine/types/world";
+import type { PendingExhibition } from "@/engine/types/world";
 
 export interface ExhibitionInvitationDTO {
   id: string;

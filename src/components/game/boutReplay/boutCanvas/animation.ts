@@ -1,6 +1,6 @@
-import type { ReplayPhase, RikishiState, BodyPhase } from "./types";
+import type { ReplayPhase, RikishiState, BodyPhase } from "@/components/game/boutReplay/boutCanvas/types";
 import type { BoutScript, BoutAnimationFamily } from "@/presenters/engineAccess";
-import { lerp, easeOut, easeInOut } from "./math";
+import { lerp, easeOut, easeInOut } from "@/components/game/boutReplay/boutCanvas/math";
 import {
   ritualTarget,
   tachiaiTarget,
@@ -9,7 +9,7 @@ import {
   finishTarget,
   ceremonyTarget,
   defaultTarget,
-} from "./targetStates";
+} from "@/components/game/boutReplay/boutCanvas/targetStates";
 
 export function computeArcProgress(finishProgress: number, family: BoutAnimationFamily): number {
   if (family !== "throw" && family !== "lift") return 0;

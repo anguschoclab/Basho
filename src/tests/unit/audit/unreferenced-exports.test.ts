@@ -15,7 +15,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 
 const ROOT = join(__dirname, "../../../..");
 const AUDIT_JSON = join(ROOT, ".windsurf", "audit", "baseline-orphans.json");

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import * as Logger from "@/engine/utils/Logger";
 
 describe("P1.5: Phase transition logging", () => {

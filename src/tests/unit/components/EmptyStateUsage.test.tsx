@@ -9,7 +9,7 @@ vi.mock("@/contexts/useGame", () => ({
   useGame: vi.fn(),
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   WidgetCard: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   WidgetHeader: ({ title }: { title: string }) => <div>{title}</div>,
 }));

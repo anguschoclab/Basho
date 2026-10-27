@@ -3,7 +3,7 @@ import {
   maybeAssignEarlyShikona,
   getEarlyShikonaMotivationBoost,
 } from "@/engine/systems/generation/FightingNameEarly";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { SeededRNG } from "@/engine/rng";
 
 function mockRng(seed: string): SeededRNG {

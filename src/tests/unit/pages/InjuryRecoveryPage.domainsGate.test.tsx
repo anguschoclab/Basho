@@ -58,7 +58,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   ),
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: () => <div data-testid="page-header" />,
 }));
 

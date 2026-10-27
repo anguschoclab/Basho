@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { generateBoutNarrative, generateKyujoNarrative } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { mockRikishi, makeMockWorld, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";
 import { resolvePlayoffs } from "@/engine/lifecycle/PlayoffResolver";
 import { distributePrizes } from "@/engine/lifecycle/PrizeDistribution";
 import { withdrawRikishi } from "@/engine/systems/health/HealthActions";

@@ -19,9 +19,9 @@
  * - Clamped to 0-100
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { BashoState, MatchSchedule } from "../../types/basho";
-import type { Id } from "../../types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoState, MatchSchedule } from "@/engine/types/basho";
+import type { Id } from "@/engine/types/common";
 
 interface KihakuInput {
   comebackWins: number;

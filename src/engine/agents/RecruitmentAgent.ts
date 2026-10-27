@@ -5,9 +5,9 @@
  * Decides on max bid calculations and target candidate selection.
  */
 
-import type { WorldState } from "../types/world";
-import type { Oyakata } from "../types/oyakata";
-import { getHeya } from "../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
+import { getHeya } from "@/engine/queries";
 
 export interface RecruitmentAgentContext {
   oyakata: Oyakata;

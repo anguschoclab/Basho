@@ -8,11 +8,11 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { phase01_basho_npc_tactics } from "@/engine/tick/phases";
+import { phase01_basho_npc_tactics } from "@/engine/tick/phases/index";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { readSrcFile } from "@/tests/helpers/fsScan";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 import type { Oyakata } from "@/engine/types/oyakata";

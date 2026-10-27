@@ -5,8 +5,8 @@
  * Decides on rivalry escalation, de-escalation, and strategic targeting.
  */
 
-import type { Oyakata } from "../types/oyakata";
-import type { RivalryPairState } from "../../constants/engine/rivalry";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { RivalryPairState } from "@/constants/engine/rivalry";
 
 export interface RivalryAgentContext {
   oyakata: Oyakata;

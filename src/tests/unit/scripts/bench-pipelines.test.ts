@@ -6,7 +6,7 @@ import {
   runBenchmark,
   runScenario,
 } from "../../../../scripts/bench-pipelines";
-import type { WorldState } from "../../../../src/engine/types/world";
+import type { WorldState } from "@/engine/types/world";
 import { readFileSync, rmSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";

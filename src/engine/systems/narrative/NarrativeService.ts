@@ -14,9 +14,9 @@
  * @see BardEngine for narrative archive resolution
  */
 
-import { clamp } from "../../utils/math";
-import { SeededRNG } from "../../rng";
-import { BardEngine } from "../../bard/BardEngine";
+import { clamp } from "@/engine/utils/math";
+import { SeededRNG } from "@/engine/rng";
+import { BardEngine } from "@/engine/bard/BardEngine";
 import type {
   BandDef,
   StatBand,
@@ -35,7 +35,7 @@ import type {
   InjurySeverityBand,
   WinRateBand,
   HeightBand,
-} from "./NarrativeBands";
+} from "@/engine/systems/narrative/NarrativeBands";
 import {
   STAT_BANDS,
   FATIGUE_BANDS,
@@ -54,7 +54,7 @@ import {
   REPUTATION_BANDS,
   INJURY_SEVERITY_BANDS,
   WIN_RATE_BANDS,
-} from "./NarrativeBands";
+} from "@/engine/systems/narrative/NarrativeBands";
 import {
   getStatLabel,
   getStatProse,
@@ -73,8 +73,8 @@ import {
   getReputationLabel,
   getInjurySeverityLabel,
   getWinRateLabel,
-} from "./NarrativeProse";
-import type { CombatArchetype } from "../../types/combat";
+} from "@/engine/systems/narrative/NarrativeProse";
+import type { CombatArchetype } from "@/engine/types/combat";
 
 const HYSTERESIS_DELTA = 5;
 

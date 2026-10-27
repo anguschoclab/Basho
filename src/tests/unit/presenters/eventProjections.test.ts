@@ -3,10 +3,10 @@ import {
   projectBashoResults,
   projectPressConferenceData,
 } from "@/presenters/projections/eventProjections";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../engine/utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { BashoResult, MatchSchedule, BoutResult } from "@/engine/types/basho";
 
-vi.mock("@/presenters/rikishi", () => ({
+vi.mock("@/presenters/rikishi/index", () => ({
   projectRikishi: vi.fn((r: { id: string; shikona: string; heyaId?: string }) => ({
     id: r.id,
     shikona: r.shikona,

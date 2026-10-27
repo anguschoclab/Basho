@@ -4,10 +4,10 @@
  * Reads the nakabi_checkpoint event from the event log, which is emitted
  * by NakabiService.logNakabiCheckpoint on day 8 of each honbasho.
  */
-import type { WorldState } from "../engine/types/world";
-import type { NakabiSummary } from "../engine/systems/basho/NakabiService";
-import type { AvatarRenderData } from "../engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "../engine/avatarGenerator";
+import type { WorldState } from "@/engine/types/world";
+import type { NakabiSummary } from "@/engine/systems/basho/NakabiService";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
 
 export interface NakabiProjection {
   summary:

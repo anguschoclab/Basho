@@ -5,25 +5,25 @@
  * and succession.
  */
 
-import type { EngineCommand } from "../types";
-import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
-import { runHoliday } from "../../holiday";
-import * as legacy from "../../systems/legacy/DynastyService";
+import type { EngineCommand } from "@/engine/worker/types";
+import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { runHoliday } from "@/engine/holiday";
+import * as legacy from "@/engine/systems/legacy/DynastyService";
 import {
   addBookmark,
   removeBookmark,
   updateBookmarkNote,
-} from "../../systems/bookmark/BookmarkService";
+} from "@/engine/systems/bookmark/BookmarkService";
 import {
   advanceTutorialStep as svcAdvanceTutorialStep,
   setTutorialFlag as svcSetTutorialFlag,
   finishExhibition as svcFinishExhibition,
   completeTutorial as svcCompleteTutorial,
-} from "../../systems/tutorial/TutorialService";
-import { logEventImpact } from "../../core/ImpactBuilder";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import type { WorkerRuntime } from "../runtime";
-import type { CommandHandlerMap } from "./types";
+} from "@/engine/systems/tutorial/TutorialService";
+import { logEventImpact } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { WorkerRuntime } from "@/engine/worker/runtime";
+import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
 type Cmd<T extends EngineCommand["type"]> = Extract<EngineCommand, { type: T }>;
 

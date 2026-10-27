@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";

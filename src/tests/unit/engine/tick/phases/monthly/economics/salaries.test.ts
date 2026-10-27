@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { processHeyaEconomics } from "../../../../../../../engine/tick/phases/monthly/economics/salaries";
-import { MockFactory } from "../../../../../../helpers/utils/MockFactory";
-import { createImpactBuilder } from "../../../../../../../engine/core/ImpactBuilder";
-import { RANK_HIERARCHY } from "../../../../../../../engine/banzuke";
+import { processHeyaEconomics } from "@/engine/tick/phases/monthly/economics/salaries";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import {
   SEKITORI_OVERHEAD_MONTHLY,
   NON_SEKITORI_OVERHEAD_MONTHLY,
-} from "../../../../../../../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 describe("processHeyaEconomics", () => {
   it("credits sekitori JSA salaries and deducts heya overhead for sekitori and non-sekitori", () => {

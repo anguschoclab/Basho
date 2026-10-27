@@ -2,17 +2,17 @@
  * bout/narrative/context.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
-import { countMakuuchiTournaments, generateKyujoNarrative } from "./helpers";
-import { BASHO_DAYS } from "../../../constants/engine/calendar";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import { countMakuuchiTournaments, generateKyujoNarrative } from "@/engine/bout/narrative/helpers";
+import { BASHO_DAYS } from "@/constants/engine/calendar";
 import {
   H2H_STREAK_THRESHOLD,
   HEIGHT_DIFF_THRESHOLD,
   INJURY_MENTION_CHANCE,
   STYLE_DESC_CHANCE,
   WEIGHT_DIFF_THRESHOLD,
-} from "../../../constants/engine/generation";
-import { BardEngine } from "../../bard/BardEngine";
+} from "@/constants/engine/generation";
+import { BardEngine } from "@/engine/bard/BardEngine";
 
 function beatCurrentRecords(p: PbpPipeline): void {
   const { day, east, eastLosses, eastWins, preBoutRng, push, west, westLosses, westWins } = p;

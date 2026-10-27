@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import { makeMinimalBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BashoName } from "@/engine/types/basho";
 

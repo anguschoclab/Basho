@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts, mergeImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 
 describe("addHeya impact op", () => {
   it("adds a new heya to the world via resolveImpacts", () => {

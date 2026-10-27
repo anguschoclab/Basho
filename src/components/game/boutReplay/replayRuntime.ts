@@ -10,12 +10,12 @@ import { useEffect, useRef, useMemo, type MutableRefObject } from "react";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutScript, SeededRNG } from "@/presenters/engineAccess";
-import { PHASES, type ReplayPhase, type RikishiState, type Particle } from "./boutCanvas";
-import type { ReplayRuntime } from "./replayFx";
-import type { ReplayTickCtx } from "./replayLoop";
-import { replayTick, beginReplaySession, scheduleNextFrame, cancelReplayLoop } from "./replayLoop";
-import type { ReplayControlsCtx } from "./replayControls";
-import type { BoutReplayProgress, ReplaySpeed } from "./useBoutReplay";
+import { PHASES, type ReplayPhase, type RikishiState, type Particle } from "@/components/game/boutReplay/boutCanvas";
+import type { ReplayRuntime } from "@/components/game/boutReplay/replayFx";
+import type { ReplayTickCtx } from "@/components/game/boutReplay/replayLoop";
+import { replayTick, beginReplaySession, scheduleNextFrame, cancelReplayLoop } from "@/components/game/boutReplay/replayLoop";
+import type { ReplayControlsCtx } from "@/components/game/boutReplay/replayControls";
+import type { BoutReplayProgress, ReplaySpeed } from "@/components/game/boutReplay/useBoutReplay";
 
 /** Ref bag for animation state (no re-render needed for canvas). */
 export interface ReplayRefs {

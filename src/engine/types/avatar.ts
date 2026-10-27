@@ -10,9 +10,9 @@
  *    and weight gain flow through automatically.
  */
 
-import type { Division, Rank } from "./banzuke";
-import type { StaffRole } from "./staff";
-import type { GyojiRank } from "./gyoji";
+import type { Division, Rank } from "@/engine/types/banzuke";
+import type { StaffRole } from "@/engine/types/staff";
+import type { GyojiRank } from "@/engine/types/gyoji";
 
 export const AVATAR_VERSION = 2;
 

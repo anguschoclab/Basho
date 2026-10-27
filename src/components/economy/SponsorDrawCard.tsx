@@ -11,8 +11,8 @@ import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
-import { kenshoTierLabel } from "./economyUtils";
-import type { Rikishi } from "@/engine/types";
+import { kenshoTierLabel } from "@/components/economy/economyUtils";
+import type { Rikishi } from "@/engine/types/index";
 
 interface SponsorDrawCardProps {
   topEarners: Rikishi[];

@@ -10,7 +10,7 @@
  * Test-first methodology: these snapshots are the source of truth.
  */
 import { describe, it, expect } from "vitest";
-import { updateBanzuke } from "@/engine/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import type {
   BanzukeEntry,
   BashoPerformance,
@@ -19,7 +19,7 @@ import type {
   Rank,
 } from "@/engine/types/banzuke";
 import { toRankPosition, RANK_HIERARCHY } from "@/engine/types/banzuke";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 // ── Helpers ────────────────────────────────────────────────────────────────

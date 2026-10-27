@@ -7,7 +7,7 @@
 import { describe, it, expect } from "vitest";
 import { setTsukebito, clearTsukebito } from "@/engine/systems/training/TsukebitoService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("Tsukebito worker commands", () => {
   it("SET_TSUKEBITO command type is defined", () => {

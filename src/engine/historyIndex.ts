@@ -4,11 +4,11 @@
 // Deterministic, JSON-safe searchable index over Basho history + snapshots
 // =======================================================
 
-import type { Id } from "./types/common";
-import type { WorldState } from "./types/world";
-import type { Division, RankPosition, BanzukeSnapshot } from "./types/banzuke";
-import type { BashoName, BashoResult } from "./types/basho";
-import { getRikishi } from "./queries";
+import type { Id } from "@/engine/types/common";
+import type { WorldState } from "@/engine/types/world";
+import type { Division, RankPosition, BanzukeSnapshot } from "@/engine/types/banzuke";
+import type { BashoName, BashoResult } from "@/engine/types/basho";
+import { getRikishi } from "@/engine/queries";
 
 /** Canon key for a basho (unique) */
 export type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;

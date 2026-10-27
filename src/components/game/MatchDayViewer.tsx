@@ -2,16 +2,16 @@
 // east/west color coding, and immersive bout cards
 
 import { useMemo, useState } from "react";
-import { BoutCard } from "./BoutCard";
+import { BoutCard } from "@/components/game/BoutCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CircleDot, Swords } from "lucide-react";
 import { compareRanks, buildBoutPreviewUI, toRankPosition } from "@/presenters/uiDigest";
-import { BoutPreMatchOverlay } from "./BoutPreMatchOverlay";
+import { BoutPreMatchOverlay } from "@/components/game/BoutPreMatchOverlay";
 import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
-import type { UIRikishi } from "@/presenters/rikishi";
+import type { UIRikishi } from "@/presenters/rikishi/index";
 import type { WorldState } from "@/presenters/uiDigest";
-import type { MatchRowData } from "./boutCardTypes";
+import type { MatchRowData } from "@/components/game/boutCardTypes";
 
 // ── Types ──────────────────────────────────────────────
 

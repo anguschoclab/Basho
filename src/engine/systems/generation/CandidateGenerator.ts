@@ -17,21 +17,21 @@
  * @see FogOfWarService for scouting bias
  */
 
-import { seededPick } from "../../utils/random";
-import { SeededRNG } from "../../rng";
-import { clampInt } from "../../utils/math";
-import { generateShikona } from "../../shikona";
-import { rollArchetype, rollArchetypeWithBias, buildCombatProfile } from "../../archetype";
-import { DEVELOPMENT_PROFILE_WEIGHTS } from "../../../constants/engine/development";
-import type { DevelopmentProfile } from "../../../constants/engine/development";
-import type { TalentCandidate, TalentPoolType } from "../../types/talent";
-import { rollPotential } from "./CandidateStats";
-import { LegacyService } from "../legacy/LegacyService";
-import type { WorldState } from "../../types/world";
-import type { RikishiStats } from "../../types/rikishi";
-import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "../../data/sumo_geography";
-import { generateScoutingBias } from "../recruitment/FogOfWarService";
-import { generateAvatarIdentity } from "../../avatarGenerator";
+import { seededPick } from "@/engine/utils/random";
+import { SeededRNG } from "@/engine/rng";
+import { clampInt } from "@/engine/utils/math";
+import { generateShikona } from "@/engine/shikona/generateShikona";
+import { rollArchetype, rollArchetypeWithBias, buildCombatProfile } from "@/engine/archetype";
+import { DEVELOPMENT_PROFILE_WEIGHTS } from "@/constants/engine/development";
+import type { DevelopmentProfile } from "@/constants/engine/development";
+import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
+import { rollPotential } from "@/engine/systems/generation/CandidateStats";
+import { LegacyService } from "@/engine/systems/legacy/LegacyService";
+import type { WorldState } from "@/engine/types/world";
+import type { RikishiStats } from "@/engine/types/rikishi";
+import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "@/engine/data/sumo_geography";
+import { generateScoutingBias } from "@/engine/systems/recruitment/FogOfWarService";
+import { generateAvatarIdentity } from "@/engine/avatarGenerator";
 import {
   EMERGENT_PRODIGY_CHANCE,
   PRODIGY_STAT_BONUS,
@@ -50,8 +50,8 @@ import {
   TEMPERAMENT_MAX,
   AMATEUR_STAR_TAG_CHANCE,
   JAPANESE_PREFECTURES_COUNT,
-} from "../../../constants/engine/generation";
-import { DUAL_CITIZEN_RECRUIT_SHARE } from "../../../constants/engine/recruitment";
+} from "@/constants/engine/generation";
+import { DUAL_CITIZEN_RECRUIT_SHARE } from "@/constants/engine/recruitment";
 
 function rollDevelopmentProfile(rng: SeededRNG): DevelopmentProfile {
   const roll = rng.next();

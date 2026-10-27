@@ -13,7 +13,7 @@ import { saveGame, autosave, quickSave } from "@/engine/saveload";
 import { setStorageProvider, resetStorageProvider } from "@/engine/storageProvider";
 import { SaveSlotService } from "@/engine/persistence/SaveSlotService";
 import type { IStorageProvider } from "@/engine/storageProvider";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 vi.mock("@/engine/persistence/SerializationService", () => ({
   SerializationService: {

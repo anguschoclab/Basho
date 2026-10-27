@@ -2,10 +2,10 @@
  * Gyoji Service — manages gyoji assignment, career tracking, and shimpan panels.
  */
 
-import type { Gyoji, Shimpan, ShimpanPanel } from "../../types/gyoji";
-import type { Id } from "../../types/common";
-import { SeededRNG } from "../../rng";
-import { generateAvatarIdentity } from "../../avatarGenerator";
+import type { Gyoji, Shimpan, ShimpanPanel } from "@/engine/types/gyoji";
+import type { Id } from "@/engine/types/common";
+import { SeededRNG } from "@/engine/rng";
+import { generateAvatarIdentity } from "@/engine/avatarGenerator";
 
 /** Generate a gyoji with deterministic stats from a seed. */
 export function generateGyoji(seed: string, rank: Gyoji["rank"], index: number): Gyoji {

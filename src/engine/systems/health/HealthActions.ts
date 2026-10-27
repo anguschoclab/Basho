@@ -1,8 +1,8 @@
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { TREATMENT_COST_PER_WEEK } from "../../../constants/engine/health";
-import { generateKyujoNarrative } from "../../bout/boutNarrative";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { TREATMENT_COST_PER_WEEK } from "@/constants/engine/health";
+import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
 
 /** Withdraw a rikishi from competition (kyūjō) due to injury. */
 export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpact {

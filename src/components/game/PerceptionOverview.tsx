@@ -17,7 +17,7 @@ import {
   RikishiComparisonGrid,
   H2HPanel,
   StablePerceptionCard,
-} from "./perceptionComponents";
+} from "@/components/game/perceptionComponents";
 
 export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | null }) {
   const navigate = useNavigate();

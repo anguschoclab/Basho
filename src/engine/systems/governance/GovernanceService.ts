@@ -4,12 +4,12 @@
  * Handles governance rulings and crisis resolution.
  */
 
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
 
-import { CrisisService } from "../narrative/CrisisService";
-import { getHeya } from "../../queries";
+import { CrisisService } from "@/engine/systems/narrative/CrisisService";
+import { getHeya } from "@/engine/queries";
 
 export function resolveCrisis(world: WorldState, crisisId: string, choiceId: string): StateImpact {
   const builder = createImpactBuilder("resolveCrisis");

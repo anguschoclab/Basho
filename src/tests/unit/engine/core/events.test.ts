@@ -7,8 +7,8 @@ import {
   MAX_LIVE_EVENT_LOG,
   EVENT_LOG_TRIM_SLACK,
   isDurableEvent,
-} from "@/engine/events";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+} from "@/engine/events/events";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { EngineEventType, EventsState } from "@/engine/types/events";
 import type { WorldState } from "@/engine/types/world";
 

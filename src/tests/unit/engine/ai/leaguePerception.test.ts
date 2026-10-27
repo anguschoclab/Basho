@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, mockRikishi, makeMockHeya, makeMockBasho } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya, makeMockBasho } from "@/tests/unit/engine/utils";
 import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
-import type { RivalriesState } from "@/engine/rivalries";
+import type { RivalriesState } from "@/constants/engine/rivalry";
 
 describe("buildLeaguePerception", () => {
   it("returns empty pressure data outside active basho", () => {

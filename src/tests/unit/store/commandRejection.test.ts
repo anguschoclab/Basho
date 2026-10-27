@@ -12,7 +12,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useGameStore } from "@/store/gameStore";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("sendCommand rejection feedback", () => {
   beforeEach(() => {

@@ -11,11 +11,11 @@ import {
   type BashoPerformance,
   type MovementEvent,
   type BanzukeSnapshot,
-} from "./types/banzuke";
+} from "@/engine/types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
-import type { Rikishi } from "./types/rikishi";
-import type { Heya } from "./types/heya";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
 
 interface BanzukeChange {
   rikishiId: string;
@@ -25,19 +25,13 @@ interface BanzukeChange {
 }
 
 // Re-export helpers and local logic
-export * from "./banzuke/banzukeHelpers";
-export * from "./banzuke/ozekiLogic";
-export * from "./banzuke/specialPrizes";
-export { RANK_HIERARCHY };
-export { generateSanshoLedgerEntry } from "./economics_awards";
-export { generateKeshoForPromotions } from "./systems/keshoMawashi/KeshoMawashiGenerator";
 
-import { formatRank, resolveBanzukeTie, type BanzukeCandidate } from "./banzuke/banzukeHelpers";
-import type { WorldState } from "./types/world";
-import { getOzekiStatus, type OzekiKadobanMap } from "./banzuke/ozekiLogic";
-import { computeMovementUnits, bestTierAllowed } from "./banzuke/promotionLogic";
-import { buildFullSlotTemplate } from "./banzuke/banzukeTemplate";
-import { toKeyedMap } from "./utils";
+import { formatRank, resolveBanzukeTie, type BanzukeCandidate } from "@/engine/banzuke/banzukeHelpers";
+import type { WorldState } from "@/engine/types/world";
+import { getOzekiStatus, type OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
+import { computeMovementUnits, bestTierAllowed } from "@/engine/banzuke/promotionLogic";
+import { buildFullSlotTemplate } from "@/engine/banzuke/banzukeTemplate";
+import { toKeyedMap } from "@/engine/utils/index";
 
 /** Defines the structure for banzuke update result. */
 interface BanzukeUpdateResult {

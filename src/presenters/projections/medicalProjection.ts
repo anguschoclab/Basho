@@ -5,13 +5,13 @@
  * Extracted from uiDigest.ts to separate concerns.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import { getHeyaRoster } from "../../engine/queries";
-import { getCachedPerception } from "../../engine/perception";
-import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
-import { getFacilityLevelLabel } from "./facilityProjections";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { getHeyaRoster } from "@/engine/queries";
+import { getCachedPerception } from "@/engine/perception";
+import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { getFacilityLevelLabel } from "@/presenters/projections/facilityProjections";
 
 /**
  * Project medical and injury recovery data.

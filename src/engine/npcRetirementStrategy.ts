@@ -1,20 +1,20 @@
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
-import type { Oyakata } from "./types/oyakata";
-import type { OyakataArchetype } from "./types/oyakata";
-import { checkRetirement } from "./lifecycle";
-import { retireRikishiFully } from "./lifecycle/processRetirements";
-import type { Rikishi } from "./types/rikishi";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { OyakataArchetype } from "@/engine/types/oyakata";
+import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
+import { retireRikishiFully } from "@/engine/lifecycle/processRetirements";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   StrategyContext,
   StrategyRule,
   evaluateRulesCumulative,
   TraitChecks,
-} from "./strategy/NPCStrategyFramework";
-import { getRikishi } from "./queries";
-import { foreignRetentionMultiplier } from "./npcAI/ForeignSlotPolicy";
+} from "@/engine/strategy/NPCStrategyFramework";
+import { getRikishi } from "@/engine/queries";
+import { foreignRetentionMultiplier } from "@/engine/npcAI/ForeignSlotPolicy";
 
 interface RetirementStrategy {
   evaluateRetirements: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;

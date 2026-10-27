@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
-import { rankScore as monolithRankScore } from "@/presenters/rikishi";
+import { rankScore as monolithRankScore } from "@/presenters/rikishi/index";
 import { rankScore as decomposedRankScore } from "@/presenters/rikishi/transformers/career";
 import type { Rank } from "@/engine/types/banzuke";
 

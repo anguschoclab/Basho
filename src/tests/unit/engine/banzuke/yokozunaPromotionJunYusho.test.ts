@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 function makeBashoWorldForPromotion(opts: {

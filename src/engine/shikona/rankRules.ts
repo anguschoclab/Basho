@@ -4,7 +4,7 @@
  * Rank rules for shikona generation system.
  */
 
-import type { RankRule, RankTier } from "./types";
+import type { RankRule, RankTier } from "@/engine/shikona/types";
 
 export const RANK_RULES: RankRule[] = [
   {

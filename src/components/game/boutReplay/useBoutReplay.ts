@@ -13,16 +13,16 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import { getReplayPhaseDurations, buildBoutScript } from "@/presenters/engineAccess";
 import type { BoutScript } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
-import { getNarrationLines, type ReplayPhase } from "./boutCanvas";
-import { makeSpawnParticles, drawReplayFrame } from "./replayFx";
-import { replayReset, replayUpdateProgress, replaySeekTo } from "./replayControls";
+import { getNarrationLines, type ReplayPhase } from "@/components/game/boutReplay/boutCanvas";
+import { makeSpawnParticles, drawReplayFrame } from "@/components/game/boutReplay/replayFx";
+import { replayReset, replayUpdateProgress, replaySeekTo } from "@/components/game/boutReplay/replayControls";
 import {
   useReplayCanvas,
   useReplayRefs,
   useReplayLoop,
   buildReplayRuntime,
   buildReplayControls,
-} from "./replayRuntime";
+} from "@/components/game/boutReplay/replayRuntime";
 
 export interface BoutReplayProgress {
   phaseIndex: number;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { CombatProfile, TacticalFamily } from "@/engine/types/combat";
 

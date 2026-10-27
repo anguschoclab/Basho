@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { SerializationService } from "@/engine/persistence/SerializationService";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Rikishi } from "@/engine/types/rikishi";
 

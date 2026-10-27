@@ -1,5 +1,5 @@
-import type { Rikishi } from "../types/rikishi";
-import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../constants/engine/recruitment";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 
 export const NATURALIZATION_YEARS = 5;
 

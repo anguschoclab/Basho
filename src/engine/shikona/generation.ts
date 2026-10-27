@@ -4,14 +4,14 @@
  * Shikona generation functions.
  */
 
-import { pick } from "../utils";
-import type { ShikonaGenerationConfig, HouseStyle, PatternId, RankRule } from "./types";
+import { pick } from "@/engine/utils/index";
+import type { ShikonaGenerationConfig, HouseStyle, PatternId, RankRule } from "@/engine/shikona/types";
 import {
   SHIKONA_PREFIXES,
   SHIKONA_SUFFIXES,
   PRESTIGIOUS_FULL_NAMES,
   BASE_PATTERN_WEIGHTS,
-} from "./constants";
+} from "@/engine/shikona/constants";
 import {
   pickPrefixByCategoryBias,
   pickSuffixByCategoryBias,
@@ -19,7 +19,7 @@ import {
   mergePatternWeights,
   choosePattern,
   nationalityPool,
-} from "./helpers";
+} from "@/engine/shikona/helpers";
 
 /**
  * Generates a candidate shikona (wrestler name) based on nationality, house style, and rank rules.

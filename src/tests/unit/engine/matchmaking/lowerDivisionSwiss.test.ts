@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { buildLowerDivisionSwiss } from "@/engine/matchmaking";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { buildLowerDivisionSwiss } from "@/engine/matchmaking/index";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { BashoState } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 

@@ -10,14 +10,14 @@
  * Export: buildSwissTorikumi
  */
 
-import { clamp, toIdMap } from "../utils";
-import type { BashoState } from "../types/basho";
-import type { Division } from "../types/banzuke";
-import type { Rikishi } from "../types/rikishi";
-import type { RivalriesState } from "../../constants/engine/rivalry";
-import { getRivalryBoutModifiers } from "../systems/narrative/RivalryHeatService";
-import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
-import { applyDramaBudget } from "./DramaMatchmaker";
+import { clamp, toIdMap } from "@/engine/utils/index";
+import type { BashoState } from "@/engine/types/basho";
+import type { Division } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RivalriesState } from "@/constants/engine/rivalry";
+import { getRivalryBoutModifiers } from "@/engine/systems/narrative/RivalryHeatService";
+import { scorePairing, type MatchPairing, type MatchmakingRules } from "@/engine/matchmaking/MatchmakingPhases";
+import { applyDramaBudget } from "@/engine/matchmaking/DramaMatchmaker";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
   SWISS_RANK_YOKOZUNA,
@@ -46,7 +46,7 @@ import {
   SCORE_CLAMP_MAX,
   UNPAIRED_INCREMENT,
   FINALE_INDEX,
-} from "../../constants/engine/matchmaking";
+} from "@/constants/engine/matchmaking";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 

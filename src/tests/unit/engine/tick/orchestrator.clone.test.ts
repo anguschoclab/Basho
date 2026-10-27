@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { tickOrchestrator, advanceDaysFastOrchestrator } from "@/engine/tick/tickOrchestrator";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 /**
  * P2.1: Orchestrators must not clone the input world — the pipeline is already immutable.

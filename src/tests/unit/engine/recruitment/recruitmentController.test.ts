@@ -3,7 +3,7 @@ import {
   computeReplacementGap,
   allocateVacancies,
 } from "@/engine/systems/generation/RecruitmentController";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import { TARGET_ROSTER_SIZE, TOTAL_ACTIVE_THRESHOLD } from "@/constants/engine/recruitmentExtended";

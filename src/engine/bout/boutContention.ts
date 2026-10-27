@@ -5,9 +5,9 @@
  * Extracted from boutResolver.ts for SRP separation.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { BashoState } from "../types/basho";
-import { CONTENTION_WINDOW, FINAL_DAY } from "../../constants/engine/physics";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoState } from "@/engine/types/basho";
+import { CONTENTION_WINDOW, FINAL_DAY } from "@/constants/engine/physics";
 
 export function getLeaderWins(basho: BashoState): number {
   const standings = basho.standings;

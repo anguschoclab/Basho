@@ -1,4 +1,4 @@
-import type { RikishiCareerRecord } from "./types";
+import type { RikishiCareerRecord } from "@/engine/almanac/types";
 
 export function getRikishiCareerSummary(record: RikishiCareerRecord): string {
   const parts: string[] = [];

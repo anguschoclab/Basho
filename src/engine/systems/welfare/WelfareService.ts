@@ -7,10 +7,10 @@
  * `engine/tick/phases/welfare/transitions.ts` (pure functions).
  */
 
-import type { Heya } from "../../types/heya";
-import type { WelfareState } from "../../types/economy";
-import { DEFAULT_WELFARE_RISK } from "../../../constants/engine/welfareTransitions";
-import { DEFAULT_MORALE } from "../../../constants/engine/welfare";
+import type { Heya } from "@/engine/types/heya";
+import type { WelfareState } from "@/engine/types/economy";
+import { DEFAULT_WELFARE_RISK } from "@/constants/engine/welfareTransitions";
+import { DEFAULT_MORALE } from "@/constants/engine/welfare";
 
 /**
  * Fresh default WelfareState for a heya that has none.

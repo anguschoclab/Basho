@@ -1,11 +1,11 @@
-import type { WorldState } from "./types/world";
-import { DEFAULT_START_YEAR } from "../constants/engine/calendar";
-import type { RecordEntry } from "./types/records";
-import type { Id } from "./types/common";
-import type { Rikishi } from "./types/rikishi";
-import { createImpactBuilder } from "./core/ImpactBuilder";
-import type { StateImpact } from "./core/StateImpact";
-import { getRikishi } from "./queries";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { RecordEntry } from "@/engine/types/records";
+import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getRikishi } from "@/engine/queries";
 
 /**
  * Updates a specific leaderboard with a new entry if it qualifies for the Top 10.

@@ -8,9 +8,9 @@
  * WS6: also surfaces plan shifts (ai_plan_change), crisis responses,
  * rival postures, and NPC media responses.
  */
-import type { WorldState } from "../engine/types/world";
-import type { AvatarRenderData } from "../engine/types/avatar";
-import { resolveAvatar, oyakataStageInput } from "../engine/avatarGenerator";
+import type { WorldState } from "@/engine/types/world";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, oyakataStageInput } from "@/engine/avatarGenerator";
 
 export interface NPCDecisionDTO {
   heyaId: string;

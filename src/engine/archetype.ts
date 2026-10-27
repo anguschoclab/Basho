@@ -1,6 +1,6 @@
-import { CombatArchetype, CombatProfile, Style } from "./types/combat";
-import { SeededRNG } from "./rng";
-import type { TrainingPhilosophy } from "./types/dynasty";
+import { CombatArchetype, CombatProfile, Style } from "@/engine/types/combat";
+import { SeededRNG } from "@/engine/rng";
+import type { TrainingPhilosophy } from "@/engine/types/dynasty";
 import {
   ARCHETYPE_OSHI_THRESHOLD,
   ARCHETYPE_YOTSU_THRESHOLD,
@@ -9,7 +9,7 @@ import {
   ARCHETYPE_TSUPPARI_THRESHOLD,
   ARCHETYPE_DEFENSIVE_THRESHOLD,
   ARCHETYPE_GIANT_THRESHOLD,
-} from "../constants/engine/archetype";
+} from "@/constants/engine/archetype";
 
 const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archetype">> = {
   trickster: {

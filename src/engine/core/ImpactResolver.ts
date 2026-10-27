@@ -1,9 +1,9 @@
-import type { WorldState } from "../types/world";
-import type { NarrativeContext } from "../types/events";
-import type { StateImpact } from "./StateImpact";
-import { logEngineEvent } from "../events";
-import { getNextTimestamp } from "./StateImpact";
-import { error } from "../utils/Logger";
+import type { WorldState } from "@/engine/types/world";
+import type { NarrativeContext } from "@/engine/types/events";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { logEngineEvent } from "@/engine/events/events";
+import { getNextTimestamp } from "@/engine/core/StateImpact";
+import { error } from "@/engine/utils/Logger";
 
 /**
  * Registry of entity update configurations for generic application.

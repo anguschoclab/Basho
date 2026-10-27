@@ -2,14 +2,14 @@
 // Handles handleMediaEvent, evaluateScandals, generateGovernanceHeadline,
 // and processMediaDecision.
 
-import type { WorldState } from "../../types/world";
-import { MediaHeadline, HeadlineTier } from "../../types/media";
-import type { GovernanceRuling } from "../../types/economy";
-import { rngForWorld } from "../../rng";
-import { BardEngine } from "../../bard/BardEngine";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { getHeya } from "../../queries";
+import type { WorldState } from "@/engine/types/world";
+import { MediaHeadline, HeadlineTier } from "@/engine/types/media";
+import type { GovernanceRuling } from "@/engine/types/economy";
+import { rngForWorld } from "@/engine/rng";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getHeya } from "@/engine/queries";
 
 /**
  * Generates a headline for a governance or welfare event using the BardEngine.

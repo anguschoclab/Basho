@@ -1,12 +1,12 @@
 /**
  * academyManagementProjections.ts — projects foreign academy state for UI.
  */
-import type { WorldState } from "../engine/types/world";
-import type { AcademyManagementProjection } from "../components/stable/AcademyManagementPanel";
+import type { WorldState } from "@/engine/types/world";
+import type { AcademyManagementProjection } from "@/components/stable/AcademyManagementPanel";
 import {
   WorldCircuitService,
   type ExhibitionRegion,
-} from "../engine/systems/worldCircuit/WorldCircuitService";
+} from "@/engine/systems/worldCircuit/WorldCircuitService";
 
 export type { ExhibitionRegion };
 

@@ -14,7 +14,7 @@ import { KeshoMawashi, TraditionalMotif } from "@/engine/types/keshoMawashi";
 import type { AvatarIdentity } from "@/engine/types/avatar";
 import { resolveAvatar } from "@/presenters/avatarProjections";
 import { cn } from "@/lib/utils";
-import { MOTIFS, PRESET_PALETTES } from "./keshoEditorData";
+import { MOTIFS, PRESET_PALETTES } from "@/components/game/keshoEditorData";
 import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 /** Left pane — live avatar preview plus design-summary badges. */

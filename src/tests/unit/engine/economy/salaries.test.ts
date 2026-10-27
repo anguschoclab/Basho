@@ -4,7 +4,7 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import {
   SEKITORI_OVERHEAD_MONTHLY,
   NON_SEKITORI_OVERHEAD_MONTHLY,

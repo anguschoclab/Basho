@@ -13,7 +13,7 @@ import {
   JunYushoCard,
   KinboshiCard,
   SpecialPrizesSection,
-} from "./TournamentCeremonySections";
+} from "@/components/recap/TournamentCeremonySections";
 
 interface TournamentCeremonyProps {
   lastBasho: BashoResult;

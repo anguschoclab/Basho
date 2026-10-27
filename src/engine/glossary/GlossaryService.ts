@@ -4,7 +4,7 @@
  * Provides sumo terminology definitions for the glossary page and in-game tooltips.
  */
 
-import { GLOSSARY_TERMS } from "./terms";
+import { GLOSSARY_TERMS } from "@/engine/glossary/terms";
 
 export interface GlossaryTerm {
   id: string;

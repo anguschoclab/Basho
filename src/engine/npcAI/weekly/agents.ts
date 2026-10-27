@@ -1,15 +1,15 @@
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import type { Id } from "../../types/common";
-import type { Heya } from "../../types/heya";
-import type { Oyakata } from "../../types/oyakata";
-import type { RecruitmentAgentResult } from "../../agents/RecruitmentAgent";
-import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
-import { getRikishi } from "../../queries";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { RecruitmentAgentResult } from "@/engine/agents/RecruitmentAgent";
+import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { getRikishi } from "@/engine/queries";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { MONTHLY_BURN_PER_RIKISHI } from "../../../constants/engine/economy";
-import { TOP_RIKISHI_COUNT, MAX_ROSTER_SIZE } from "../../../constants/engine/npcStrategy";
+import { MONTHLY_BURN_PER_RIKISHI } from "@/constants/engine/economy";
+import { TOP_RIKISHI_COUNT, MAX_ROSTER_SIZE } from "@/constants/engine/npcStrategy";
 import {
   spawnFinanceAgent,
   spawnGovernanceAgent,
@@ -21,14 +21,14 @@ import {
   type RecruitmentAgentContext,
   type RivalryAgentContext,
   type NarrativeAgentContext,
-} from "../../agents";
-import type { AgentDecisions } from "../types";
-import type { AIPlan } from "../../ai/types";
-import { applyPlanConstraints } from "../TacticalCoordinator";
-import { executeAgentDecisions } from "../execution";
-import type { WeeklyContext } from "./context";
-import type { WorkerProposals } from "./workers";
-import type { StateImpact } from "../../core/StateImpact";
+} from "@/engine/agents/index";
+import type { AgentDecisions } from "@/engine/npcAI/types";
+import type { AIPlan } from "@/engine/ai/types";
+import { applyPlanConstraints } from "@/engine/npcAI/TacticalCoordinator";
+import { executeAgentDecisions } from "@/engine/npcAI/execution";
+import type { WeeklyContext } from "@/engine/npcAI/weekly/context";
+import type { WorkerProposals } from "@/engine/npcAI/weekly/workers";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 /**
  * Runs the five agent spawns, assembles AgentDecisions, applies agent-review

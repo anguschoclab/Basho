@@ -1,9 +1,9 @@
-import type { TacticalFamily } from "./types/combat";
-import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
-import { KIMARITE_FREQUENCY_TARGETS, rarityFromShare } from "../constants/engine/kimariteTargets";
+import type { TacticalFamily } from "@/engine/types/combat";
+import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "@/engine/types/kimarite";
+import { KIMARITE_FREQUENCY_TARGETS, rarityFromShare } from "@/constants/engine/kimariteTargets";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
-import { KIMARITE_ENRICHMENT } from "./kimariteEnrichment";
-import { toIdMap } from "./utils";
+import { KIMARITE_ENRICHMENT } from "@/engine/kimariteEnrichment";
+import { toIdMap } from "@/engine/utils/index";
 
 // --- Domain Models & Defaults ---
 

@@ -10,7 +10,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { buildWeeklyDigest } from "@/presenters/projections/digestProjections";
-import { makeMockWorld } from "../engine/utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { EngineEvent } from "@/engine/types/events";
 import type { WorldState } from "@/engine/types/world";
 

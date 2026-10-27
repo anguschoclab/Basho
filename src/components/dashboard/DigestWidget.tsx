@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MentionText } from "@/components/MentionText";
 import {
@@ -11,7 +11,7 @@ import {
   type DigestItem,
   type UIDigest,
 } from "@/presenters/projections/digestProjections";
-import { DIGEST_WIDGET_MAX_ITEMS, DIGEST_SECTIONS_MAX_ITEMS } from "../../constants/ui/display";
+import { DIGEST_WIDGET_MAX_ITEMS, DIGEST_SECTIONS_MAX_ITEMS } from "@/constants/ui/display";
 import {
   AlertTriangle,
   TrendingUp,

@@ -11,13 +11,13 @@
  * Goal: Service-oriented architecture with clear dependencies.
  */
 
-import type { Rikishi } from "../../types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 import {
   calculateScoutingLevel,
   getConfidenceLevel,
   resolveScoutedAttribute,
-} from "./FogOfWarService";
-import { type ScoutingInvestment } from "../../../constants/engine/recruitment";
+} from "@/engine/systems/recruitment/FogOfWarService";
+import { type ScoutingInvestment } from "@/constants/engine/recruitment";
 
 /** Defines the structure for public rikishi info. */
 interface PublicRikishiInfo {

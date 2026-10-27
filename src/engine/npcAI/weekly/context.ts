@@ -1,12 +1,12 @@
-import type { WorldState } from "../../types/world";
-import type { Id } from "../../types/common";
-import type { Heya } from "../../types/heya";
-import type { Oyakata } from "../../types/oyakata";
-import type { TrainingIntensity } from "../../types/training";
-import type { PerceptionSnapshot } from "../../perception";
-import { getOyakataStyleProfile, type OyakataStyleProfile } from "../../oyakataStylePreferences";
-import { getOyakataForHeya, getHeya } from "../../queries";
-import { getManagerPersona, type NPCPersona } from "../../systems/NPCPersonaService";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { TrainingIntensity } from "@/engine/types/training";
+import type { PerceptionSnapshot } from "@/engine/perception";
+import { getOyakataStyleProfile, type OyakataStyleProfile } from "@/engine/oyakataStylePreferences";
+import { getOyakataForHeya, getHeya } from "@/engine/queries";
+import { getManagerPersona, type NPCPersona } from "@/engine/systems/NPCPersonaService";
 
 /** Everything the weekly pipeline derives once from (world, heyaId). */
 export interface WeeklyContext {

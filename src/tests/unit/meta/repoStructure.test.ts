@@ -58,7 +58,7 @@ describe("repo structure — harmonized layout contract", () => {
     expect(remaining, `Dirs still present: ${remaining.join(", ")}`).toEqual([]);
   });
 
-  it.fails("no import specifier references a deleted compat barrel", () => {
+  it("no import specifier references a deleted compat barrel", () => {
     // Exact module specifiers that only resolve to the deleted root barrels.
     const deadSpecs = new Set([
       "@/engine/lifecycle",

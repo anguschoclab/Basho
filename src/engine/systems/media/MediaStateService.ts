@@ -2,11 +2,11 @@
 // Handles createDefaultMediaState, resetBashoMediaTracking,
 // snapshotMediaHeatForBasho, and processWeeklyMediaBoundary.
 
-import type { WorldState } from "../../types/world";
-import { MediaState } from "../../types/media";
-import { decayHeat, decayPressure } from "./MediaImpactService";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import { MediaState } from "@/engine/types/media";
+import { decayHeat, decayPressure } from "@/engine/systems/media/MediaImpactService";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 /**
  * Creates a default media state.

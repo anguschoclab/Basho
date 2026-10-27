@@ -1,5 +1,5 @@
-import { SeededRNG } from "../rng";
-import { seededRandom } from "./seededRandom";
+import { SeededRNG } from "@/engine/rng";
+import { seededRandom } from "@/engine/shikona/seededRandom";
 
 const OYAKATA_NAMES = [
   "Miyagino",

@@ -19,7 +19,7 @@ import {
   type ReplayPhase,
   type RikishiState,
   type Particle,
-} from "./boutCanvas";
+} from "@/components/game/boutReplay/boutCanvas";
 import type { SeededRNG } from "@/presenters/engineAccess";
 import { BOUT_HUD_COLORS, FX_PARTICLES, withAlpha } from "@/constants/ui/drawingPalette";
 import type { BoutResult } from "@/engine/types/basho";

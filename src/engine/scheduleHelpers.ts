@@ -4,12 +4,12 @@
  * Helper functions for schedule generation.
  */
 
-import type { Division } from "./types/banzuke";
-import type { Rikishi } from "./types/rikishi";
-import type { WorldState } from "./types/world";
-import { getActiveRikishi } from "./selectors";
-import { stableSort } from "./utils/sort";
-import type { MatchPairing } from "./matchmaking/index";
+import type { Division } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import { getActiveRikishi } from "@/engine/selectors";
+import { stableSort } from "@/engine/utils/sort";
+import type { MatchPairing } from "@/engine/matchmaking/index";
 
 /** Default bout days per division (sekitori = 15, lower = 7) */
 export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {

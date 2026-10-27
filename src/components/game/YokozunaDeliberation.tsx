@@ -4,7 +4,7 @@ import { RikishiName, StableName } from "@/components/ClickableName";
 import { Crown, Users } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
+import { NarrativeCeremonyDialog } from "@/components/game/NarrativeCeremonyDialog";
 
 /** Defines the structure for deliberation props. */
 interface DeliberationProps {

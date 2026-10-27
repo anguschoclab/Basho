@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { runGovernanceReview } from "@/engine/systems/governance/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import {
   CHRONIC_UNDERPERFORMANCE_BASHO,
   PRESTIGE_COLLAPSE_BAND,

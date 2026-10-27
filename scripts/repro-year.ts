@@ -6,12 +6,12 @@
  *
  * Run: bun scripts/repro-year.ts
  */
-import { generateInitialWorld } from "../src/engine/systems/generation/WorldFactory";
-import { advanceDaysFast } from "../src/engine/tick/tickDaily";
-import { endBasho, publishBanzukeUpdate } from "../src/engine/world";
-import { resolveImpacts } from "../src/engine/core/ImpactResolver";
-import { BardEngine } from "../src/engine/bard/BardEngine";
-import { SerializationService } from "../src/engine/persistence/SerializationService";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { advanceDaysFast } from "@/engine/tick/tickDaily";
+import { endBasho, publishBanzukeUpdate } from "@/engine/world";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { SerializationService } from "@/engine/persistence/SerializationService";
 
 const SEED = "e2e-year-of-bashos-v1";
 

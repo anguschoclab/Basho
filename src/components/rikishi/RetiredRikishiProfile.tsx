@@ -8,7 +8,7 @@
 
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

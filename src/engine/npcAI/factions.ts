@@ -11,10 +11,10 @@
  * mandate.
  */
 
-import type { WorldState } from "../types/world";
-import type { IchimonName, FactionPosture } from "../types/economy";
-import type { LeaguePerception } from "../ai/types";
-import { stableSort } from "../utils/sort";
+import type { WorldState } from "@/engine/types/world";
+import type { IchimonName, FactionPosture } from "@/engine/types/economy";
+import type { LeaguePerception } from "@/engine/ai/types";
+import { stableSort } from "@/engine/utils/sort";
 
 /**
  * Pick the strongest heya NOT in this ichimon — the pressure target. Strength

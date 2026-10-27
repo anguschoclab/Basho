@@ -1,8 +1,8 @@
-import { getStorageProvider, type IStorageProvider } from "../storageProvider";
-import { stableTieBreak } from "../utils/sort";
-import { parseSave } from "./collectionCodec";
-import type { SaveGame, SaveVersion, BashoName } from "../types/index";
-import { KNOWN_SAVE_VERSIONS } from "../types/index";
+import { getStorageProvider, type IStorageProvider } from "@/engine/storageProvider";
+import { stableTieBreak } from "@/engine/utils/sort";
+import { parseSave } from "@/engine/persistence/collectionCodec";
+import type { SaveGame, SaveVersion, BashoName } from "@/engine/types/index";
+import { KNOWN_SAVE_VERSIONS } from "@/engine/types/index";
 
 const SAVE_KEY_PREFIX = "basho_save_";
 const AUTOSAVE_SLOT_NAME = "autosave";

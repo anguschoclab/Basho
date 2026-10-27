@@ -6,8 +6,8 @@ import {
   applyWeeklySparring,
 } from "@/engine/systems/training/SparringService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
-import { toIdMap } from "@/engine/utils";
+import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
+import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { SparringPair, SparringState } from "@/engine/types/training";
 import { SPARRING_MAX_BLEED } from "@/constants/engine/sparring";

@@ -4,11 +4,11 @@
  * Worker logic for NPC AI decision making.
  */
 
-import type { WorldState, PendingExhibition } from "./types/world";
-import type { Rikishi } from "./types/rikishi";
-import type { Id } from "./types/common";
-import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
-import { getRikishi } from "./queries";
+import type { WorldState, PendingExhibition } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Id } from "@/engine/types/common";
+import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/types/training";
+import { getRikishi } from "@/engine/queries";
 import {
   decideTrainingIntensity,
   decideTrainingFocus,
@@ -20,13 +20,13 @@ import {
   type RecoveryResult,
   type ScoutingPriorityResult,
   type ProtectResult,
-} from "./strategy/NPCStrategyService";
-import { PerceptionSnapshot, RikishiPerception } from "./perception";
+} from "@/engine/strategy/NPCStrategyService";
+import { PerceptionSnapshot, RikishiPerception } from "@/engine/perception";
 import { destr } from "destr";
-import { OyakataStyleProfile, RecruitmentPhilosophy } from "./oyakataStylePreferences";
-import { OyakataMood } from "./types/oyakata";
-import { Style } from "./types/combat";
-import { RNGRegistry } from "./core/RNGRegistry";
+import { OyakataStyleProfile, RecruitmentPhilosophy } from "@/engine/oyakataStylePreferences";
+import { OyakataMood } from "@/engine/types/oyakata";
+import { Style } from "@/engine/types/combat";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
 
 export interface TrainingWorkerContext {
   perception: PerceptionSnapshot;

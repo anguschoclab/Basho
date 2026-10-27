@@ -1,14 +1,14 @@
 import { createContext } from "react";
-import type { GamePhase, GameState } from "./gameTypes";
+import type { GamePhase, GameState } from "@/contexts/gameTypes";
 import type { UIDigest } from "@/presenters/uiDigest";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import { type SaveSlotInfo } from "@/engine/saveload";
 import { type HolidayConfig } from "@/engine/holiday";
-import { getMatchesForDay } from "./gameHelpers";
+import { getMatchesForDay } from "@/contexts/gameHelpers";
 
-export type { GamePhase, GameState } from "./gameTypes";
+export type { GamePhase, GameState } from "@/contexts/gameTypes";
 
 export interface GameContextValue {
   state: GameState;

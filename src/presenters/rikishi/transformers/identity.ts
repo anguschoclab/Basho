@@ -4,9 +4,9 @@
  * Transforms rikishi identity fields (name, heya, age, etc.)
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import type { WorldState } from "../../../engine/types/world";
-import type { RikishiIdentityDTO } from "../types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { RikishiIdentityDTO } from "@/presenters/rikishi/types";
 
 /**
  * Transform rikishi identity fields.

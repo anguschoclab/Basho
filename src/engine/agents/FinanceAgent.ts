@@ -5,10 +5,10 @@
  * Decides on investments, myoseki purchases, and financial risk management.
  */
 
-import type { WorldState } from "../types/world";
-import type { Oyakata } from "../types/oyakata";
-import type { MyosekiStock } from "../types/myoseki";
-import { stableSort } from "../utils/sort";
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { MyosekiStock } from "@/engine/types/myoseki";
+import { stableSort } from "@/engine/utils/sort";
 
 export interface FinanceAgentContext {
   oyakata: Oyakata;

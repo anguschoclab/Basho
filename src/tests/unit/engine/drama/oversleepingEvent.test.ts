@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { processDramaTick, checkBashoDayDrama } from "@/engine/bard/dramaGenerator";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { OVERSLEEP_CHANCE } from "@/constants/engine/generation";

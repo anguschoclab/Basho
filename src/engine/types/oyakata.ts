@@ -2,9 +2,9 @@
  * AI / Oyakata Personality Types
  */
 
-import type { Id } from "./common";
-import type { AvatarConfig } from "./avatar";
-import type { OyakataMemory } from "../ai/types";
+import type { Id } from "@/engine/types/common";
+import type { AvatarConfig } from "@/engine/types/avatar";
+import type { OyakataMemory } from "@/engine/ai/types";
 
 /** Mood state for an Oyakata — affects training intensity and decision risk. */
 export type OyakataMood =

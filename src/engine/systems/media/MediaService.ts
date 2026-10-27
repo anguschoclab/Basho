@@ -8,20 +8,20 @@
  *   MediaPreBashoService  — pre-basho journalism (triggerPreBashoJournalism, buildMediaDigest)
  */
 
-export { updateMediaFromBout } from "./MediaBoutService";
+export { updateMediaFromBout } from "@/engine/systems/media/MediaBoutService";
 
 export {
   createDefaultMediaState,
   resetBashoMediaTracking,
   snapshotMediaHeatForBasho,
   processWeeklyMediaBoundary,
-} from "./MediaStateService";
+} from "@/engine/systems/media/MediaStateService";
 
 export {
   generateGovernanceHeadline,
   handleMediaEvent,
   evaluateScandals,
   processMediaDecision,
-} from "./MediaEventService";
+} from "@/engine/systems/media/MediaEventService";
 
-export { triggerPreBashoJournalism, buildMediaDigest } from "./MediaPreBashoService";
+export { triggerPreBashoJournalism, buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";

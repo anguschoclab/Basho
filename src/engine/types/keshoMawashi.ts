@@ -6,9 +6,9 @@
  * inspired by heya branding, traditional motifs, corporate sponsors, or national heritage.
  */
 
-import type { Id } from "./common";
-import type { Rank, Division } from "./banzuke";
-import type { Season } from "./basho";
+import type { Id } from "@/engine/types/common";
+import type { Rank, Division } from "@/engine/types/banzuke";
+import type { Season } from "@/engine/types/basho";
 
 /** Design tier based on rikishi rank - affects ornamentation level */
 export type KeshoTier = "juryo" | "makuuchi" | "sanyaku" | "yokozuna";

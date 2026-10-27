@@ -3,7 +3,7 @@ import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_b
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { DEBT_LIMIT } from "@/constants/engine/economic";
 import { RUNWAY_BANDS } from "@/constants/engine/economy";
-import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
+import { makeMockHeya, makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 describe("phase05_monthly_boundary — debt limit clamping", () => {

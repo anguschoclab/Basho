@@ -1,4 +1,4 @@
-import type { Division, RankPosition } from "../types/banzuke";
+import type { Division, RankPosition } from "@/engine/types/banzuke";
 
 /** Build the full slot template for all divisions. */
 export function buildFullSlotTemplate(

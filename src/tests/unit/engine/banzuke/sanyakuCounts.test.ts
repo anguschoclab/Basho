@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeVariableSanyakuCounts } from "@/engine/banzuke";
+import { computeVariableSanyakuCounts } from "@/engine/banzuke/banzukeOps";
 import type { BanzukeEntry, BashoPerformance, RankPosition } from "@/engine/types/banzuke";
 
 function makeEntry(

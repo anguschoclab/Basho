@@ -7,10 +7,10 @@
  * Initialization happens in phase06_yearly_boundary on the Jan 1 year boundary.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { GlobalCupService } from "../../systems/economy/GlobalCupService";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function phase_global_cup_advance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase_global_cup_advance");

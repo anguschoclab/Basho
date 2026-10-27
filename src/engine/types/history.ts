@@ -1,5 +1,5 @@
-import type { Rank, Division } from "./banzuke";
-import type { Id } from "./common";
+import type { Rank, Division } from "@/engine/types/banzuke";
+import type { Id } from "@/engine/types/common";
 
 /** One cell of a rikishi's hoshitori (star chart) for a single day. */
 export interface DayResult {

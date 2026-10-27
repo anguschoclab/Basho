@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { RikishiCombatTab } from "@/components/rikishi/RikishiCombatTab";
 import type { UIRikishi } from "@/presenters/uiModels";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 import type { UIRivalEntry } from "@/presenters/rikishi/types";
 
 vi.mock("@/components/rikishi/RikishiRadarChart", () => ({

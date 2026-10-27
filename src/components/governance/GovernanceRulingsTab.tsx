@@ -9,12 +9,12 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ListCard } from "@/components/layout/page-shell";
+import { ListCard } from "@/components/layout/page-shell/index";
 import { TabsContent } from "@/components/ui/tabs";
 import { AlertTriangle } from "lucide-react";
 import { useGame } from "@/contexts/useGame";
 import { formatFinePenalty } from "@/presenters/uiDigest";
-import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived.tsx";
+import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived";
 
 interface Props {
   derived: GovernanceDerivedData;

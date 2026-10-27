@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { SimTuningService } from "@/engine/simulation/SimTuningService";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("SimTuningService.topKimarite (for...in optimization)", () => {
   it("correctly sorts by count descending", () => {

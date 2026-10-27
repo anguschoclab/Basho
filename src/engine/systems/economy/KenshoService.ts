@@ -1,7 +1,7 @@
-import { SeededRNG } from "../../rng";
-import type { Sponsor, SponsorPool, KenshoBannerSlot } from "../../types/sponsors";
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
+import { SeededRNG } from "@/engine/rng";
+import type { Sponsor, SponsorPool, KenshoBannerSlot } from "@/engine/types/sponsors";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 import {
   KENSHO_LOW_MAX_T4_PLUS,
   KENSHO_LOW_MAX_T3,
@@ -23,7 +23,7 @@ import {
   ADDITIONAL_KINBOSHI_BANNER_MAX,
   MIN_GINBOSHI_BANNER_COUNT,
   ADDITIONAL_GINBOSHI_BANNER_MAX,
-} from "../../../constants/engine/economyExtended";
+} from "@/constants/engine/economyExtended";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /** Type representing bout importance bucket. */

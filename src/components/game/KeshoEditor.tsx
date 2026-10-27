@@ -12,7 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Palette, X, ShieldCheck } from "lucide-react";
 import { useGame } from "@/contexts/useGame";
 import { KeshoMawashi, TraditionalMotif } from "@/engine/types/keshoMawashi";
-import { KeshoPreview, KeshoEditorControls } from "./KeshoEditorSections";
+import { KeshoPreview, KeshoEditorControls } from "@/components/game/KeshoEditorSections";
 import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
 interface KeshoEditorProps {

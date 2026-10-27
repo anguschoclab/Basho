@@ -6,7 +6,7 @@ import {
   type BoutScript,
 } from "@/engine/bout/ReplayMetadata";
 import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
-import { mockRikishi, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { BoutResult, BoutLogEntry } from "@/engine/types/basho";
 
 // ---------------------------------------------------------------------------

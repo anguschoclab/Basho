@@ -5,15 +5,15 @@
  * This demonstrates that the agents work and can be used
  */
 
-import { spawnCrisisAgent } from "../src/engine/agents/CrisisAgent";
-import { spawnFinanceAgent } from "../src/engine/agents/FinanceAgent";
-import { spawnGovernanceAgent } from "../src/engine/agents/GovernanceAgent";
-import { spawnMediaAgent } from "../src/engine/agents/MediaAgent";
-import { spawnNarrativeAgent } from "../src/engine/agents/NarrativeAgent";
-import { spawnRecruitmentAgent } from "../src/engine/agents/RecruitmentAgent";
-import { spawnRivalryAgent } from "../src/engine/agents/RivalryAgent";
-import { generateInitialWorld } from "../src/engine/systems/generation/WorldFactory";
-import type { ActiveCrisis } from "../src/engine/types/crises";
+import { spawnCrisisAgent } from "@/engine/agents/CrisisAgent";
+import { spawnFinanceAgent } from "@/engine/agents/FinanceAgent";
+import { spawnGovernanceAgent } from "@/engine/agents/GovernanceAgent";
+import { spawnMediaAgent } from "@/engine/agents/MediaAgent";
+import { spawnNarrativeAgent } from "@/engine/agents/NarrativeAgent";
+import { spawnRecruitmentAgent } from "@/engine/agents/RecruitmentAgent";
+import { spawnRivalryAgent } from "@/engine/agents/RivalryAgent";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import type { ActiveCrisis } from "@/engine/types/crises";
 
 console.log("=== Testing All 7 NPC Agents ===\n");
 

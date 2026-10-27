@@ -5,16 +5,16 @@
  * Uses NPCStrategyFramework to eliminate duplication.
  */
 
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { OyakataArchetype } from "../types/oyakata";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { OyakataArchetype } from "@/engine/types/oyakata";
 import {
   StrategyContext,
   StrategyRule,
   evaluateRulesCumulative,
   TraitChecks,
-} from "./NPCStrategyFramework";
-import { getAvailableStables } from "../selectors";
+} from "@/engine/strategy/NPCStrategyFramework";
+import { getAvailableStables } from "@/engine/selectors";
 
 const REDUCE_SCANDAL_RULE: StrategyRule = {
   id: "gov_reduce_scandal",

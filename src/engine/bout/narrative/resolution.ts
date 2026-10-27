@@ -2,10 +2,10 @@
  * bout/narrative/resolution.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
-import type { PbpTag } from "./pbpTypes";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed } from "../../rng";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/rng";
 
 function beatFinishTechnique(p: PbpPipeline): void {
   const { east, push, result, seed, west } = p;

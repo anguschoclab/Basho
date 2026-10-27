@@ -8,13 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
-import { BoutResultDisplay } from "./BoutResultDisplay";
+import { BoutResultDisplay } from "@/components/game/BoutResultDisplay";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { PbpLine } from "@/presenters/engineAccess";
-import { computeActiveLineIndices } from "./boutReplay/boutCanvas";
-import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
-import { BoutModalHeader, BoutModalTabs } from "./BoutNarrativeModalSections";
+import { computeActiveLineIndices } from "@/components/game/boutReplay/boutCanvas";
+import type { BoutReplayProgress } from "@/components/game/boutReplay/useBoutReplay";
+import { BoutModalHeader, BoutModalTabs } from "@/components/game/BoutNarrativeModalSections";
 
 /** Defines the structure for bout narrative modal props. */
 interface BoutNarrativeModalProps {

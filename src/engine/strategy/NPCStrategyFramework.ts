@@ -5,12 +5,12 @@
  * Eliminates duplication in strategy pattern: condition → threshold → action → event
  */
 
-import type { WorldState } from "../types/world";
-import type { Heya } from "../types/heya";
-import type { Oyakata } from "../types/oyakata";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
 
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import {
   THRESHOLD_BOOST_HIGH,
   THRESHOLD_BOOST_MODERATE,
@@ -28,7 +28,7 @@ import {
   TRAIT_GREEDY_RISK_THRESHOLD,
   TRAIT_VINDICTIVE_AMBITION_THRESHOLD,
   TRAIT_VINDICTIVE_RISK_THRESHOLD,
-} from "../../constants/engine/npcStrategy";
+} from "@/constants/engine/npcStrategy";
 
 /** Base context for all strategy evaluations */
 export interface StrategyContext {

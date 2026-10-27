@@ -11,7 +11,7 @@ import { TrendingUp, AlertTriangle, Users, Trophy } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import type { MatchRowData, HEAT_CONFIG } from "./boutCardTypes.tsx";
+import type { MatchRowData, HEAT_CONFIG } from "@/components/game/boutCardTypes";
 
 export function RikishiSide({
   rikishi,

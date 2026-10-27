@@ -6,12 +6,12 @@
  * and price negotiation based on prestige tier.
  */
 
-import type { Id } from "../../types/common";
-import type { MyosekiMarket, MyosekiStock, MyosekiTransaction } from "../../types/myoseki";
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { rngForWorld } from "../../rng";
+import type { Id } from "@/engine/types/common";
+import type { MyosekiMarket, MyosekiStock, MyosekiTransaction } from "@/engine/types/myoseki";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { rngForWorld } from "@/engine/rng";
 
 /** Base asking prices by prestige tier (in yen). */
 const MYOSEKI_BASE_PRICES: Record<MyosekiStock["prestigeTier"], number> = {

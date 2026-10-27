@@ -14,7 +14,7 @@ import type {
 import { OYAKATA_ARCHETYPES } from "@/engine/oyakataPersonalities";
 import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
 import { SeededRNG } from "@/engine/rng";
-import { getHeya } from "../../queries";
+import { getHeya } from "@/engine/queries";
 import { warn } from "@/engine/utils/Logger";
 import { clamp } from "@/engine/utils/math";
 import { BACKSTORY_STARTING_FUNDS } from "@/constants/engine/economic";

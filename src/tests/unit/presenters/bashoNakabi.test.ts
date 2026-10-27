@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { projectBashoUIDigest } from "@/presenters/projections/bashoProjections";
 import { NAKABI_DAY } from "@/engine/systems/basho/NakabiService";
-import { mockRikishi, makeMockWorld } from "../engine/utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { BashoState } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 

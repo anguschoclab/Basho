@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Id } from "@/engine/types/common";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";

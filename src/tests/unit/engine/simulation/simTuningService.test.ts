@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import { SimTuningService } from "@/engine/simulation/SimTuningService";
 import type { Oyakata } from "@/engine/types/oyakata";
 

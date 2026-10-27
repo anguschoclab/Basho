@@ -15,10 +15,10 @@
  * Rank floors ensure higher-ranked sekitori receive minimum payouts.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { Id } from "../../types/common";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { Id } from "@/engine/types/common";
 import {
   MOCHIKYUKIN_POINT_VALUE,
   MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT,
@@ -27,9 +27,9 @@ import {
   MOCHIKYUKIN_POINTS_JUN_YUSHO,
   MOCHIKYUKIN_POINTS_ZENSHO_YUSHO,
   MOCHIKYUKIN_RANK_FLOORS,
-} from "../../../constants/engine/economic";
-import { getRikishi } from "../../queries";
-import { kachiNokoriToMochikyukinPoints } from "./KachiNokoriService";
+} from "@/constants/engine/economic";
+import { getRikishi } from "@/engine/queries";
+import { kachiNokoriToMochikyukinPoints } from "@/engine/systems/economy/KachiNokoriService";
 
 /**
  * Accumulate mochikyukin points for a rikishi based on basho results.

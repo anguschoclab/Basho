@@ -1,16 +1,16 @@
-import type { WorldState } from "../../../types/world";
-import { clamp } from "../../../utils/math";
-import { type RivalryPairState } from "../../../../constants/engine/rivalry";
-import { deriveTone } from "../RivalryHeatService";
-import { createImpactBuilder } from "../../../core/ImpactBuilder";
-import type { StateImpact } from "../../../core/StateImpact";
-import { CLOSENESS_DECAY_RATE, SPITE_DECAY_RATE } from "../../../../constants/engine/narrative";
+import type { WorldState } from "@/engine/types/world";
+import { clamp } from "@/engine/utils/math";
+import { type RivalryPairState } from "@/constants/engine/rivalry";
+import { deriveTone } from "@/engine/systems/narrative/RivalryHeatService";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { CLOSENESS_DECAY_RATE, SPITE_DECAY_RATE } from "@/constants/engine/narrative";
 import {
   RIVALRY_DECAY_WEEKS_LONG,
   RIVALRY_HEAT_MIN,
   RIVALRY_MEETINGS_MIN,
-} from "../../../../constants/engine/rivalry";
-import { ensureRivalriesState, getDecayRate } from "./state";
+} from "@/constants/engine/rivalry";
+import { ensureRivalriesState, getDecayRate } from "@/engine/systems/narrative/rivalry/state";
 
 /**
  * Weekly Decay Tick.

@@ -6,7 +6,7 @@
  */
 
 import { motion } from "framer-motion";
-import { Badge } from "../ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { ArrowUp, ArrowDown, Minus, Star, ArrowRight } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";

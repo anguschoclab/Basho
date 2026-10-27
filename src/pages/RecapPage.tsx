@@ -15,7 +15,7 @@ import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 
 import { TournamentCeremony } from "@/components/recap/TournamentCeremony";
 import { NarrativeSummary } from "@/components/recap/NarrativeSummary";

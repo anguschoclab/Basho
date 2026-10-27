@@ -10,7 +10,7 @@
  * @see gameTypes for action type definitions
  */
 
-import type { GameAction, GamePhase } from "./gameTypes";
+import type { GameAction, GamePhase } from "@/contexts/gameTypes";
 import type { WorldState } from "@/engine/types/world";
 
 /**

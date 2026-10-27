@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import type { ArchiveService } from "@/engine/storage/opfsArchive";
 import type { BoutResult, BashoResult } from "@/engine/types/basho";
-import type { AlmanacSnapshot } from "@/engine/almanac";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
 import type { ArchivedYear } from "@/engine/historyCache";
 import { logger } from "@/engine/utils/Logger";
 

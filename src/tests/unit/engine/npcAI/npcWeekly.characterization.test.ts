@@ -7,8 +7,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { toIdMap } from "@/engine/utils";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { toIdMap } from "@/engine/utils/index";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
 

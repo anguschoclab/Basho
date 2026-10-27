@@ -3,7 +3,7 @@ import {
   MentorshipService,
   checkMentorMenteeBout,
 } from "@/engine/systems/training/MentorshipService";
-import { mockRikishi } from "../../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("MentorshipService.canMentor", () => {
   it("returns true for a sekitori mentor and non-sekitori apprentice in the same heya", () => {

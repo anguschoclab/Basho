@@ -16,7 +16,7 @@ import type {
   RivalryHeatBand,
   WeightBand,
   HeightBand,
-} from "../../engine/systems/narrative/NarrativeBands";
+} from "@/engine/systems/narrative/NarrativeBands";
 
 export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   fresh: "Fresh",

@@ -1,10 +1,10 @@
 // oyakataStylePreferences.ts — Oyakata recruitment & management style biases
 // Some owners favor specific wrestling styles, some chase the meta, some are stubborn traditionalists
 
-import type { WorldState } from "./types/world";
-import type { Oyakata, OyakataArchetype } from "./types/oyakata";
-import type { CombatArchetype, Style, CombatProfile } from "./types/combat";
-import { rngForWorld } from "./rng";
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata, OyakataArchetype } from "@/engine/types/oyakata";
+import type { CombatArchetype, Style, CombatProfile } from "@/engine/types/combat";
+import { rngForWorld } from "@/engine/rng";
 
 /** Type representing recruitment philosophy. */
 export type RecruitmentPhilosophy =

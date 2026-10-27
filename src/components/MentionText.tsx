@@ -1,4 +1,4 @@
-import { ClickableName } from "./ClickableName";
+import { ClickableName } from "@/components/ClickableName";
 
 interface MentionTextProps {
   text: string;

@@ -1,4 +1,4 @@
-import type { EngineEventType, EventImportance } from "../types/events";
+import type { EngineEventType, EventImportance } from "@/engine/types/events";
 
 interface NarrativeEventMapEntry {
   eventType: EngineEventType;

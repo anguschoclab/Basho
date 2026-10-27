@@ -5,19 +5,19 @@
 // Eliminates duplicated state traversal/filtering across modules.
 // =======================================================
 
-import type { WorldState } from "./types/world";
-import type { Rikishi } from "./types/rikishi";
-import type { RetiredRikishiSummary } from "./types/history";
-import type { Heya } from "./types/heya";
-import type { Oyakata } from "./types/oyakata";
-import type { Division } from "./types/banzuke";
-import type { StyleBias } from "./types/training";
-import type { Staff } from "./types/staff";
-import type { Id } from "./types/common";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Division } from "@/engine/types/banzuke";
+import type { StyleBias } from "@/engine/types/training";
+import type { Staff } from "@/engine/types/staff";
+import type { Id } from "@/engine/types/common";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "./selectors";
-import { opfsArchiveService } from "./storage/opfsArchive";
-import { electronArchiveService } from "./storage/electronArchive";
+import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "@/engine/selectors";
+import { opfsArchiveService } from "@/engine/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/storage/electronArchive";
 
 // ─── Single-Entity Lookups ──────────────────────────────
 

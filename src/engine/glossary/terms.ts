@@ -1,4 +1,4 @@
-import type { GlossaryTerm } from "./GlossaryService";
+import type { GlossaryTerm } from "@/engine/glossary/GlossaryService";
 
 // refactor-budget-waiver: static data registry — intentionally large, not logic
 export const GLOSSARY_TERMS: GlossaryTerm[] = [

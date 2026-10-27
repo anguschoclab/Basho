@@ -4,7 +4,7 @@ import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrat
 import { computeMovementUnits } from "@/engine/banzuke/promotionLogic";
 import { tickRikishiRecovery } from "@/engine/systems/health/RecoveryService";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import { MOMENTUM_NARRATIVE_THRESHOLD } from "@/constants/engine/generation";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";

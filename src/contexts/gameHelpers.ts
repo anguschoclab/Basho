@@ -6,7 +6,7 @@ import { getAutosaveEnabled } from "@/pages/settingsHelpers";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { buildBashoMatchIndex } from "@/engine/bout/bashoMatchIndex";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import type { GameState } from "./gameTypes";
+import type { GameState } from "@/contexts/gameTypes";
 
 // Module-level state to track autosave progress and prevent overlaps
 let saveInProgress = false;

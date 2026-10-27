@@ -5,7 +5,7 @@ import {
   deductTsukebitoCosts,
 } from "@/engine/systems/economy/TravelAllowanceService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import {
   KOENKAI_INCOME_SPLIT,
   TRAVEL_ALLOWANCE_YEARLY,

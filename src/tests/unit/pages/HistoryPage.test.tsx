@@ -20,7 +20,7 @@ vi.mock("@/components/ClickableName", () => ({
   StableName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: ({ title }: { title: string }) => <div>{title}</div>,
 }));
 

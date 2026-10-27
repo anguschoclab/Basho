@@ -2,11 +2,11 @@
 // Stat-generation logic: age rolling, development profiles, potential packages,
 // and current-ability derivation from age-based maturity curves.
 
-import { SeededRNG } from "../../rng";
-import { RikishiStats } from "../../types/rikishi";
-import { Rank } from "../../types/banzuke";
-import { CombatProfile } from "../../types/combat";
-import { clamp, clampInt } from "../../utils/math";
+import { SeededRNG } from "@/engine/rng";
+import { RikishiStats } from "@/engine/types/rikishi";
+import { Rank } from "@/engine/types/banzuke";
+import { CombatProfile } from "@/engine/types/combat";
+import { clamp, clampInt } from "@/engine/utils/math";
 import {
   AGE_BY_RANK,
   PA_BY_RANK,
@@ -16,7 +16,7 @@ import {
   DEVELOPMENT_PROFILE_WEIGHTS,
   maturityFactor,
   type DevelopmentProfile,
-} from "../../../constants/engine/development";
+} from "@/constants/engine/development";
 import {
   PRODIGY_EARLY_PEAKER_CHANCE,
   JOURNEYMAN_LATE_BLOOMER_CHANCE,
@@ -53,7 +53,7 @@ import {
   HEIGHT_GEN_STD_DEV,
   HEIGHT_GEN_MIN,
   HEIGHT_GEN_MAX,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 interface GeneratedStats extends RikishiStats {
   height: number;

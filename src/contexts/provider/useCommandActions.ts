@@ -8,7 +8,7 @@
 
 import { useCallback, useMemo } from "react";
 import { type HolidayConfig } from "@/engine/holiday";
-import type { GameState } from "../gameTypes";
+import type { GameState } from "@/contexts/gameTypes";
 import { useGameStore } from "@/store/gameStore";
 
 /** Economy + governance worker commands. */

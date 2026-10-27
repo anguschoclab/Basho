@@ -5,10 +5,10 @@
  * Facade composing the domain modules in ./rivalry/:
  * state hydration, bout hooks, weekly decay, and seeding.
  */
-import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "./rivalry/state";
-import { onBoutResolved } from "./rivalry/bout";
-import { applyWeeklyDecay } from "./rivalry/decay";
-import { seedInitialRivalries, maybeSeedSparringRivalry } from "./rivalry/seeding";
+import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "@/engine/systems/narrative/rivalry/state";
+import { onBoutResolved } from "@/engine/systems/narrative/rivalry/bout";
+import { applyWeeklyDecay } from "@/engine/systems/narrative/rivalry/decay";
+import { seedInitialRivalries, maybeSeedSparringRivalry } from "@/engine/systems/narrative/rivalry/seeding";
 
 /**
  * Unified Rivalry Service.

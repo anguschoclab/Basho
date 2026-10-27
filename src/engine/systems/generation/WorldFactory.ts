@@ -17,31 +17,31 @@
  * @see RivalryService for rivalry seeding
  */
 
-import { rngFromSeed, type SeededRNG } from "../../rng";
-import { WorldState } from "../../types/world";
-import * as talentpool from "./TalentPoolService";
-import { generateInitialSponsorPool } from "./SponsorGenerator";
-import { createKoenkai } from "../economy/SponsorshipService";
-import { generateHeyaBrandIdentities } from "../keshoMawashi/HeyaBrandGenerator";
-import type { BashoName, BashoState } from "../../types/basho";
-import type { Faction, IchimonName } from "../../types/economy";
-import { TARGET_ROSTER_SIZE } from "../../../constants/engine/recruitmentExtended";
-import { getBashoNumber } from "../../calendar";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import { RivalryService } from "../narrative/RivalryService";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import { resetImpactTimestampCounter } from "../../core/StateImpact";
-import { createStables } from "./HeyaFactory";
-import { createRosters } from "./RosterFactory";
-import { ensureCandidatePoolState } from "./CandidatePoolService";
-import { generateGyoji, generateShimpan } from "../officials/GyojiService";
-import { ensureAvatarIdentities } from "../../avatarGenerator";
-import { generateMyosekiMarket } from "../../myosekiMarket";
-import type { Gyoji, Shimpan } from "../../types/gyoji";
+import { rngFromSeed, type SeededRNG } from "@/engine/rng";
+import { WorldState } from "@/engine/types/world";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import { generateInitialSponsorPool } from "@/engine/systems/generation/SponsorGenerator";
+import { createKoenkai } from "@/engine/systems/economy/SponsorshipService";
+import { generateHeyaBrandIdentities } from "@/engine/systems/keshoMawashi/HeyaBrandGenerator";
+import type { BashoName, BashoState } from "@/engine/types/basho";
+import type { Faction, IchimonName } from "@/engine/types/economy";
+import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
+import { getBashoNumber } from "@/engine/calendar";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { resetImpactTimestampCounter } from "@/engine/core/StateImpact";
+import { createStables } from "@/engine/systems/generation/HeyaFactory";
+import { createRosters } from "@/engine/systems/generation/RosterFactory";
+import { ensureCandidatePoolState } from "@/engine/systems/generation/CandidatePoolService";
+import { generateGyoji, generateShimpan } from "@/engine/systems/officials/GyojiService";
+import { ensureAvatarIdentities } from "@/engine/avatarGenerator";
+import { generateMyosekiMarket } from "@/engine/myosekiMarket";
+import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
 
 // Re-export factory functions for backward compatibility
-export { createHeyaWithOyakata, foundStable, createStables } from "./HeyaFactory";
-export { createRosters } from "./RosterFactory";
+export { createHeyaWithOyakata, foundStable, createStables } from "@/engine/systems/generation/HeyaFactory";
+export { createRosters } from "@/engine/systems/generation/RosterFactory";
 
 /**
  * Main orchestrator for world generation.

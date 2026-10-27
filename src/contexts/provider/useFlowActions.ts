@@ -7,8 +7,8 @@
 
 import { useCallback, useMemo } from "react";
 import type { WorldState } from "@/engine/types/world";
-import type { GameState, GamePhase, GameAction } from "../gameTypes";
-import * as actions from "../gameActions";
+import type { GameState, GamePhase, GameAction } from "@/contexts/gameTypes";
+import * as actions from "@/contexts/gameActions";
 import { useGameStore } from "@/store/gameStore";
 import { warn } from "@/engine/utils/Logger";
 

@@ -2,12 +2,12 @@
  * RecoveryService.ts — Logic for weekly recovery ticks.
  */
 
-import { Rikishi } from "../../types/rikishi";
+import { Rikishi } from "@/engine/types/rikishi";
 import {
   RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD,
   DOUBLE_WEEK_REDUCTION,
   SINGLE_WEEK_REDUCTION,
-} from "../../../constants/engine/condition";
+} from "@/constants/engine/condition";
 
 /**
  * Ticks recovery for a single rikishi.

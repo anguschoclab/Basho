@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld } from "../utils";
-import { applyNPCDecisionPure } from "@/engine/tick/phases/npc_ai";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
+import { applyNPCDecisionPure } from "@/engine/tick/phases/npc_ai/index";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { TrainingService } from "@/engine/systems/training/TrainingService";
 import type { NPCWeeklyDecision } from "@/engine/npcAI/types";

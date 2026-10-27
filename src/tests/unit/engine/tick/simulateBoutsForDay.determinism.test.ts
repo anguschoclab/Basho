@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 import type { MatchSchedule } from "@/engine/types/basho";
 
 function world() {

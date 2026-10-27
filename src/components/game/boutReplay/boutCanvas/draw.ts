@@ -1,14 +1,14 @@
 import type { UIRikishi } from "@/presenters/uiModels";
-import type { RikishiState, Particle, ReplayPhase } from "./types";
+import type { RikishiState, Particle, ReplayPhase } from "@/components/game/boutReplay/boutCanvas/types";
 import type { BoutAnimationFamily } from "@/presenters/engineAccess";
-import { clamp } from "./math";
+import { clamp } from "@/components/game/boutReplay/boutCanvas/math";
 import {
   BOUT_FIGURE_COLORS,
   BOUT_HUD_COLORS,
   DOHYO_COLORS,
   withAlpha,
 } from "@/constants/ui/drawingPalette";
-import { computePose, drawBody, drawArms, drawHead, drawRankLabel } from "./drawRikishiParts";
+import { computePose, drawBody, drawArms, drawHead, drawRankLabel } from "@/components/game/boutReplay/boutCanvas/drawRikishiParts";
 
 export function drawDohyo(
   ctx: CanvasRenderingContext2D,

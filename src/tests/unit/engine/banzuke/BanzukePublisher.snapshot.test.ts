@@ -18,8 +18,8 @@ import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { buildBanzukeSnapshot } from "@/engine/banzuke/banzukeSnapshot";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeBashoKey } from "@/engine/historyIndex";
-import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
-import { toIdMap } from "@/engine/utils";
+import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
+import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { BanzukeEntry, Division } from "@/engine/types/banzuke";
 

@@ -5,13 +5,13 @@
  * Wired to digest events and welfare state for comprehensive crisis detection.
  */
 
-import { useGameStore } from "../../store/gameStore";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
+import { useGameStore } from "@/store/gameStore";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
-import { decisionToastMessage } from "./decisionFeedback";
+import { decisionToastMessage } from "@/components/game/decisionFeedback";
 import { useCrisisDetection } from "@/hooks/useCrisisDetection";
-import { CrisisOptionButtons, CrisisFallbackActions } from "./CrisisModalSections";
+import { CrisisOptionButtons, CrisisFallbackActions } from "@/components/game/CrisisModalSections";
 
 export function CrisisModal() {
   const sendCommand = useGameStore((state) => state.sendCommand);

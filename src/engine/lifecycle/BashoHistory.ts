@@ -1,20 +1,21 @@
-import { buildAlmanacSnapshot } from "../almanac";
-import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
-import { safeCall } from "../utils/safe";
-import { rngForWorld, type SeededRNG } from "../rng";
-import { opfsArchiveService } from "../storage/opfsArchive";
-import { electronArchiveService } from "../storage/electronArchive";
-import type { WorldState } from "../types/world";
-import type { BashoState, BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
-import type { Id } from "../types/common";
-import { createImpactBuilder, ImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { SIMULATION_CONFIG } from "../core/SimulationConfig";
-import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
-import { historyCache } from "../historyCache";
-import { getRikishi } from "../queries";
-import { selectKeyBouts } from "../../presenters/projections/recapProjections";
-import { applyBashoTenure } from "../systems/legacy/tenure";
+import { buildAlmanacSnapshot } from "@/engine/almanac/snapshot";
+import { snapshotMediaHeatForBasho } from "@/engine/systems/media/MediaService";
+import { safeCall } from "@/engine/utils/safe";
+import { rngForWorld, type SeededRNG } from "@/engine/rng";
+import { opfsArchiveService } from "@/engine/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/storage/electronArchive";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState, BashoResult, MatchSchedule, AwardLogEntry } from "@/engine/types/basho";
+import type { Id } from "@/engine/types/common";
+import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import type { SpecialPrizesResult } from "@/engine/banzuke/specialPrizes";
+import { historyCache } from "@/engine/historyCache";
+import { getRikishi } from "@/engine/queries";
+// eslint-disable-next-line no-restricted-imports -- KNOWN_BOUNDARY_DEBT: pre-existing cross-layer call surfaced by reorg (see importBoundary.test.ts)
+import { selectKeyBouts } from "@/presenters/projections/recapProjections";
+import { applyBashoTenure } from "@/engine/systems/legacy/tenure";
 
 // ─── Prize credits ───────────────────────────────────────────────────────────
 

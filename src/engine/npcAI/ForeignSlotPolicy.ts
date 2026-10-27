@@ -13,21 +13,21 @@
  *   - `foreignRetentionMultiplier` — §9.3 sunk-cost reluctance: foreign-slot
  *     rikishi are held measurably longer than equivalent natives.
  */
-import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
-import type { Oyakata } from "../types/oyakata";
-import type { Rikishi } from "../types/rikishi";
-import { countsAsForeign } from "../utils/citizenshipUtils";
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import {
   getForeignCountsByHeya,
   candidateConsumesForeignSlot,
-} from "../systems/generation/talentPoolReads";
+} from "@/engine/systems/generation/talentPoolReads";
 import {
   FOREIGN_SLOT_BASE_AGGRESSION,
   FOREIGN_SLOT_AGGRESSION_TRAIT_WEIGHT,
   FOREIGN_SLOT_BELIEVER_QUIRK_BONUS,
   FOREIGN_SUNK_COST_RETENTION_MULT,
-} from "../../constants/engine/recruitment";
+} from "@/constants/engine/recruitment";
 
 export { candidateConsumesForeignSlot };
 

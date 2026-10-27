@@ -4,5 +4,5 @@
  * Monthly economics module exports.
  */
 
-export { processHeyaEconomics } from "./salaries";
-export { processLoanRepayments } from "./loans";
+export { processHeyaEconomics } from "@/engine/tick/phases/monthly/economics/salaries";
+export { processLoanRepayments } from "@/engine/tick/phases/monthly/economics/loans";

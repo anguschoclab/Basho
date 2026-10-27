@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { opfsArchiveService, ArchiveConflictError } from "@/engine/storage/opfsArchive";
-import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "@/tests/setup";
+import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "@/tests/setup/index";
 
 describe("Stable Lords: OPFS Archival System", () => {
   beforeEach(() => {

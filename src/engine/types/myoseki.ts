@@ -1,4 +1,4 @@
-import type { Id } from "./common";
+import type { Id } from "@/engine/types/common";
 
 /** Type representing myoseki status. */
 export type MyosekiStatus = "held" | "leased" | "available";

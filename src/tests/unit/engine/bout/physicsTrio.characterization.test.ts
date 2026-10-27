@@ -20,7 +20,7 @@ import type { BoutContext } from "@/engine/bout/boutUtils";
 import type { EngineStateV2 } from "@/engine/types/combat-spatial";
 import type { BoutLogEntry } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 function makeBout(overrides: Partial<BoutContext> = {}): BoutContext {
   return {

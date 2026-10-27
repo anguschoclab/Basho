@@ -5,9 +5,9 @@
  * Decides on scandal management, political favor usage, and political maneuvering.
  */
 
-import type { WorldState } from "../types/world";
-import type { Oyakata } from "../types/oyakata";
-import type { Heya } from "../types/heya";
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Heya } from "@/engine/types/heya";
 
 export interface GovernanceAgentContext {
   heya: Heya;

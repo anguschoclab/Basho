@@ -2,10 +2,10 @@
 // Career simulation logic: synthetic win/loss records and yusho counts generated
 // from division progression rates for worldgen rikishi.
 
-import { SeededRNG } from "../../rng";
-import { Rank, Division } from "../../types/banzuke";
-import { clamp } from "../../utils/math";
-import { isForeign } from "../../utils/identity";
+import { SeededRNG } from "@/engine/rng";
+import { Rank, Division } from "@/engine/types/banzuke";
+import { clamp } from "@/engine/utils/math";
+import { isForeign } from "@/engine/utils/identity";
 import {
   DEBUT_AGE_BASE,
   DEBUT_AGE_RANGE,
@@ -36,7 +36,7 @@ import {
   YUSHO_CHANCE_SEKIWAKE,
   YUSHO_CHANCE_KOMUSUBI,
   YUSHO_CHANCE_MAEGASHIRA,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 export interface DivisionRecords {
   makuuchi: { wins: number; losses: number };

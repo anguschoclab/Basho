@@ -6,17 +6,17 @@
  * Clears frozeUp flag, boosts motivation, sets interventionUsedThisBasho.
  */
 
-import type { WorldState } from "../types/world";
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import { getRikishi } from "../queries";
-import { isGovernancePlayerRelevant } from "../npcAI/eventSurfacing";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getRikishi } from "@/engine/queries";
+import { isGovernancePlayerRelevant } from "@/engine/npcAI/eventSurfacing";
 import {
   INTERVENTION_MOTIVATION_BOOST,
   INTERVENTION_MIN_LOSSES,
   INTERVENTION_DAY_MIN,
   INTERVENTION_DAY_MAX,
-} from "../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 interface InterventionResult {
   success: boolean;

@@ -5,9 +5,9 @@
  * Decides on triggering narrative events and generating storylines.
  */
 
-import type { Oyakata } from "../types/oyakata";
-import type { Rikishi } from "../types/rikishi";
-import type { CyclePhase } from "../types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { CyclePhase } from "@/engine/types/world";
 
 export interface NarrativeAgentContext {
   oyakata: Oyakata;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { SerializationService } from "@/engine/persistence/SerializationService";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import * as Logger from "@/engine/utils/Logger";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";

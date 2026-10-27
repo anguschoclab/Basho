@@ -17,7 +17,7 @@ import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { executeMerger } from "@/engine/mergers";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
-import { makeMockWorld, makeMockHeya } from "../../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { TalentCandidate } from "@/engine/types/talent";
 import type { Id } from "@/engine/types/common";

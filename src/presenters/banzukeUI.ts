@@ -1,4 +1,4 @@
-import { UIRosterEntry, rankScore } from "./rikishi";
+import { UIRosterEntry, rankScore } from "@/presenters/rikishi/index";
 import { isSanyakuRank, getRankDisplayEntry } from "@/constants/engine/rankDisplay";
 import { getRankTitleJa } from "@/engine/banzuke/banzukeHelpers";
 import { RANK_HIERARCHY, toRankPosition } from "@/engine/types/banzuke";

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { applyRivalryToRikishi } from "@/engine/bout/boutResolver";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("applyRivalryToRikishi — falsy zero stat handling", () => {
   it("zero stats are preserved (not defaulted to 50)", () => {

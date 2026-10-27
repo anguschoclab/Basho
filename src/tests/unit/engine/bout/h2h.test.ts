@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, beforeAll } from "vitest";
 import { updateH2H, generateH2HCommentary, getH2HReport } from "@/engine/h2h";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { MatchResultLog } from "@/engine/types/records";
 import type { BoutResult } from "@/engine/types/basho";
 import type { H2HRecord } from "@/engine/types/records";
 import { applyImpact } from "@/engine/core/ImpactResolver";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { resetImpactTimestampCounter } from "@/engine/core/StateImpact";
 
 // ---------------------------------------------------------------------------

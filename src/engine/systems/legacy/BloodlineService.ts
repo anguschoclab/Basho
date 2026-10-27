@@ -12,12 +12,12 @@
  * @see SparringService for sparring-based stat bonuses
  */
 
-import type { WorldState } from "../../types/world";
-import type { Rikishi, RikishiStats } from "../../types/rikishi";
-import { EntityCollection } from "../../core/EntityCollection";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { clampInt } from "../../utils/math";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { clampInt } from "@/engine/utils/math";
 
 /**
  * Weekly heritage bonus points per stat floor key.

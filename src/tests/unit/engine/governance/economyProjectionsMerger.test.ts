@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { projectMergerWarnings } from "@/presenters/projections/economyProjections";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import {
   CHRONIC_UNDERPERFORMANCE_BASHO,
   PRESTIGE_COLLAPSE_BAND,

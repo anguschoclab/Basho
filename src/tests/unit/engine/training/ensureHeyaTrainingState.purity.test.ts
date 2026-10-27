@@ -10,7 +10,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { ensureHeyaTrainingState } from "@/engine/systems/training/TrainingService";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("ensureHeyaTrainingState purity", () => {
   it("does not mutate an existing partial entry in world.trainingState", () => {

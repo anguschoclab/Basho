@@ -1,15 +1,15 @@
 /**
  * tsukebitoProjections.ts — projects tsukebito assignments for UI.
  */
-import type { WorldState } from "../engine/types/world";
-import type { Rikishi } from "../engine/types/rikishi";
-import type { AvatarRenderData } from "../engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "../engine/avatarGenerator";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
 import {
   isEligibleForTsukebito,
   isJuniorTsukebitoEligible,
   MAX_TSUKEBITO_PER_SENIOR,
-} from "../engine/systems/training/TsukebitoService";
+} from "@/engine/systems/training/TsukebitoService";
 
 export interface TsukebitoAssignmentDTO {
   seniorId: string;

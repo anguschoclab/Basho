@@ -4,7 +4,7 @@ import {
   WEIGHT_JOURNEY_WEEKLY_GAIN,
 } from "@/engine/training/WeightJourney";
 import { NUTRITION_MULTIPLIERS } from "@/constants/engine/multipliers";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Heya } from "@/engine/types/heya";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 

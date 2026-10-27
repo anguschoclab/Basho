@@ -24,7 +24,7 @@ import {
   SearchInputIcon,
   SearchClearButton,
   type FlatOption,
-} from "./GlobalEntitySearchSections";
+} from "@/components/layout/GlobalEntitySearchSections";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

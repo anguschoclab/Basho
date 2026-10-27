@@ -8,12 +8,12 @@
  * row.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { BashoResult } from "../../engine/types/basho";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import { compareBanzuke, formatRankPosition, RANK_HIERARCHY, makeBashoKey } from "../engineAccess";
-import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
-import { getRikishiMap } from "../worldAccess";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoResult } from "@/engine/types/basho";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { compareBanzuke, formatRankPosition, RANK_HIERARCHY, makeBashoKey } from "@/presenters/engineAccess";
+import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { getRikishiMap } from "@/presenters/worldAccess";
 
 /** One row of the reveal sequence — a rikishi's old → new position. */
 export interface BanzukeRevealEntry {

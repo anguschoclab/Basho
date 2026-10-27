@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { getRikishiCareerSummary } from "../../../../engine/almanac/summary";
-import type { RikishiCareerRecord } from "../../../../engine/almanac/types";
+import { getRikishiCareerSummary } from "@/engine/almanac/summary";
+import type { RikishiCareerRecord } from "@/engine/almanac/types";
 
 describe("getRikishiCareerSummary", () => {
   const baseRecord: RikishiCareerRecord = {

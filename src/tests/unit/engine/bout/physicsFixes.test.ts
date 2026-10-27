@@ -9,7 +9,7 @@
  *  5. mid-fight kimarite argmax always favored the better technician
  */
 import { describe, it, expect, vi } from "vitest";
-import { mockRikishi, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
 import { buildBoutResultV2 } from "@/engine/bout/physics/resultBuilders";
 import { initEngineStateV2 } from "@/engine/bout/physics/initState";
 import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
@@ -29,8 +29,9 @@ import type { CombatProfile } from "@/engine/types/combat";
 // with none (zero selection weight). Both have always-true conditions.
 // (Defined inside the hoisted factory — see vitest vi.mock docs.) ────────────
 
-vi.mock("@/engine/kimarite", async (importOriginal) => {
-  const orig = await importOriginal<typeof import("@/engine/kimarite")>();
+vi.mock("@/engine/kimariteStrategies", async (importOriginal) => {
+  const orig =
+    await importOriginal<typeof import("@/engine/kimariteStrategies")>();
   const TESTWAZA = {
     id: "testwaza",
     name: "Test Waza",

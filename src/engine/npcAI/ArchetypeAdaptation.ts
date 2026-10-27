@@ -10,20 +10,20 @@
  * on oyakata.memory.metaAdaptation so reaction lag persists across saves.
  */
 
-import type { WorldState, MetaHistoryEntry } from "../types/world";
-import type { OyakataArchetype } from "../types/oyakata";
-import type { MetaPerception, OyakataMemory } from "../ai/types";
-import type { Id } from "../types/common";
-import { getHeya } from "../queries";
-import { buildMetaPerception } from "./MetaPerception";
-import { rngFromSeed } from "../rng";
+import type { WorldState, MetaHistoryEntry } from "@/engine/types/world";
+import type { OyakataArchetype } from "@/engine/types/oyakata";
+import type { MetaPerception, OyakataMemory } from "@/engine/ai/types";
+import type { Id } from "@/engine/types/common";
+import { getHeya } from "@/engine/queries";
+import { buildMetaPerception } from "@/engine/npcAI/MetaPerception";
+import { rngFromSeed } from "@/engine/rng";
 import {
   META_LAG_WEEKS,
   META_CONFIRMATIONS_REQUIRED,
   META_COUNTER_RIGIDITY_TRADITION,
   META_COUNTER_QUIRKS,
   META_BID_FAMILY_BONUS,
-} from "../../constants/engine/perception";
+} from "@/constants/engine/perception";
 
 type MetaFamily = keyof MetaHistoryEntry["familyShares"];
 type MetaPosture = "none" | "embrace_meta" | "counter_meta";

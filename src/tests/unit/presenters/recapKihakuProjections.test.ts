@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { selectTopKihakuPerformers } from "@/presenters/projections/recapKihakuProjections";
-import { toIdMap } from "@/engine/utils";
+import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(rikishi: any[]): WorldState {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { checkYokozunaPromotions } from "@/engine/lifecycle/BashoHistory";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { mockRikishi } from "../utils";
+import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 describe("checkYokozunaPromotions", () => {

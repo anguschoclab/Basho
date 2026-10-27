@@ -5,16 +5,16 @@
  * Extracted from WorldFactory.ts for SRP separation.
  */
 
-import { SeededRNG } from "../../rng";
-import { Heya } from "../../types/heya";
-import { Oyakata, OyakataArchetype } from "../../types/oyakata";
-import { generateOyakataName } from "../../shikona";
-import { seededPick } from "../../utils/random";
-import { generateOyakata } from "../../oyakataPersonalities";
-import { generateAvatarIdentity } from "../../avatarGenerator";
-import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "../../shikona/heyaPrefixes";
-import { WorldState } from "../../types/world";
-import { FOUNDING_SEED_FUNDS, HEYA_COUNT_CAP } from "../../../constants/engine/economic";
+import { SeededRNG } from "@/engine/rng";
+import { Heya } from "@/engine/types/heya";
+import { Oyakata, OyakataArchetype } from "@/engine/types/oyakata";
+import { generateOyakataName } from "@/engine/shikona/oyakataNames";
+import { seededPick } from "@/engine/utils/random";
+import { generateOyakata } from "@/engine/oyakataPersonalities";
+import { generateAvatarIdentity } from "@/engine/avatarGenerator";
+import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "@/engine/shikona/heyaPrefixes";
+import { WorldState } from "@/engine/types/world";
+import { FOUNDING_SEED_FUNDS, HEYA_COUNT_CAP } from "@/constants/engine/economic";
 import {
   OYAKATA_BASE_AGE,
   OYAKATA_AGE_RANGE,
@@ -33,7 +33,7 @@ import {
   HEYA_STATURE_TIER_REBUILDING,
   HEYA_STATURE_TIER_FRAGILE,
   HEYA_ELITE_TIER_THRESHOLD,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 export function createHeyaWithOyakata(args: {
   id: string;

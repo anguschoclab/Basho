@@ -1,4 +1,4 @@
-import type { TacticalFamily } from "./combat";
+import type { TacticalFamily } from "@/engine/types/combat";
 
 /** Defines the JSA official categories for kimarite. */
 export type JsaCategory =

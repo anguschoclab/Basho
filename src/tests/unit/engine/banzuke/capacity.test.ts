@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { updateBanzuke } from "@/engine/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 import type { WorldState } from "@/engine/types/world";
 import { toRankPosition } from "@/engine/types/banzuke";

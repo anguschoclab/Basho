@@ -6,7 +6,7 @@
  * comparisons (e.g., "the last of the 2025-hatsu cohort").
  */
 
-import type { Rikishi } from "../../types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 /** Sekitori divisions (juryo and above) */
 const SEKITORI_DIVISIONS = new Set<string>(["juryo", "makuuchi"]);

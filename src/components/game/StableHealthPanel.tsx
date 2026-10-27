@@ -13,7 +13,7 @@ import {
   GovernanceSection,
   PersonaSection,
   type WelfarePanelState,
-} from "./StableHealthPanelSections";
+} from "@/components/game/StableHealthPanelSections";
 
 /**
  * stable health panel.

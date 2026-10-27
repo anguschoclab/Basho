@@ -78,7 +78,7 @@ vi.mock("@/components/ui/SortMenu", () => ({
   SortMenu: () => null,
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: () => null,
   StatCard: () => null,
   ListCard: () => null,

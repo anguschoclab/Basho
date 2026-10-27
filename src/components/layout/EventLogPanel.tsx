@@ -2,8 +2,8 @@ import { useState, useMemo, useCallback } from "react";
 import type { EngineEvent } from "@/engine/types/events";
 import { scanRecentEvents } from "@/presenters/selectors";
 import { useEventReadStore } from "@/store/eventReadStore";
-import { EventDetailDialog } from "../EventDetailDialog";
-import { EventLogHeader, EventLogList, type EventGroup } from "./EventLogSections";
+import { EventDetailDialog } from "@/components/EventDetailDialog";
+import { EventLogHeader, EventLogList, type EventGroup } from "@/components/layout/EventLogSections";
 
 /** Defines the structure for event log panel props. */
 interface EventLogPanelProps {

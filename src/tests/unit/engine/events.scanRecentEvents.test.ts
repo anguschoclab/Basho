@@ -12,7 +12,7 @@
  *   - a defensively-sorted result tolerates out-of-order log entries
  */
 import { describe, it, expect } from "vitest";
-import { scanRecentEvents } from "@/engine/events";
+import { scanRecentEvents } from "@/engine/events/events";
 import type { EngineEvent } from "@/engine/types/events";
 
 function ev(id: string, year: number, week: number, day = 0, overrides?: Partial<EngineEvent>): EngineEvent {

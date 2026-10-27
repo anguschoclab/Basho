@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("CareerService.evaluateRetirement", () => {
   it("returns false for an already-retired rikishi even when age would trigger mandatory retirement", () => {

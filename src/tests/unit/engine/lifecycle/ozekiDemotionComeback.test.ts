@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 

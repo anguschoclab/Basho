@@ -10,7 +10,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
 }));
 
-vi.mock("@/components/layout/page-shell", () => ({
+vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 
@@ -35,7 +35,7 @@ vi.mock("@/components/rivalries/HeatLegend", () => ({
   HeatLegend: () => React.createElement("div", null, "Legend"),
 }));
 
-vi.mock("@/engine/rivalries", () => ({
+vi.mock("@/engine/narrative/rivalry/rivalriesState", () => ({
   createDefaultRivalriesState: () => ({ pairs: {} }),
 }));
 

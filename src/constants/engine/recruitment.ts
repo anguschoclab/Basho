@@ -7,9 +7,9 @@
  * Goal: Domain-driven design.
  */
 
-import { RANK_NAMES } from "./rankDisplay";
+import { RANK_NAMES } from "@/constants/engine/rankDisplay";
 
-export type { RankLabel } from "./rankDisplay";
+export type { RankLabel } from "@/constants/engine/rankDisplay";
 export { RANK_NAMES };
 
 /** Scouting Confidence Levels */

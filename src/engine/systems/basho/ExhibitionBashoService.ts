@@ -6,11 +6,11 @@
  * risk, award partial stipends, and can seed/advance rivalries.
  */
 
-import type { Rikishi } from "../../types/rikishi";
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { rngForWorld } from "../../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { rngForWorld } from "@/engine/rng";
 import {
   EXHIBITION_INJURY_RISK_MULTIPLIER,
   EXHIBITION_STIPEND_MULTIPLIER,
@@ -18,12 +18,12 @@ import {
   EXHIBITION_BASE_STIPEND,
   EXHIBITION_INJURY_BASE_CHANCE,
   EXHIBITION_INJURY_FATIGUE_PENALTY,
-} from "../../../constants/engine/exhibitionBasho";
+} from "@/constants/engine/exhibitionBasho";
 import {
   ensureRivalriesState,
   makeRivalryKey,
   createFreshPair,
-} from "../narrative/rivalry/state";
+} from "@/engine/systems/narrative/rivalry/state";
 
 /** Exhibition basho type — extends the 6 honbasho with jungyo events */
 type ExhibitionBashoName = `${string}-jungyo`;

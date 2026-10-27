@@ -1,23 +1,23 @@
-import type { WorldState } from "../../../types/world";
-import { EntityCollection } from "../../../core/EntityCollection";
-import { RNGRegistry } from "../../../core/RNGRegistry";
-import { applyBoutToPairState } from "../RivalryHeatService";
-import { createImpactBuilder } from "../../../core/ImpactBuilder";
-import type { StateImpact } from "../../../core/StateImpact";
-import type { BoutResult } from "../../../types/basho";
+import type { WorldState } from "@/engine/types/world";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { applyBoutToPairState } from "@/engine/systems/narrative/RivalryHeatService";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { BoutResult } from "@/engine/types/basho";
 import {
   BOUT_DURATION_CLOSENESS_DIVISOR,
   BOUT_DURATION_DOMINATION_DIVISOR,
   HEAT_SPIKE_THRESHOLDS,
-} from "../../../../constants/engine/narrative";
-import { BASHO_FINAL_DAY } from "../../../../constants/engine/calendar";
+} from "@/constants/engine/narrative";
+import { BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 import {
   RIVALRY_CLOSENESS_DEFAULT,
   RIVALRY_DOMINATION_DEFAULT,
   HEYA_HEAT_GAIN_TITLE_STAKES,
   HEYA_HEAT_GAIN_NORMAL,
-} from "../../../../constants/engine/rivalry";
-import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "./state";
+} from "@/constants/engine/rivalry";
+import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "@/engine/systems/narrative/rivalry/state";
 
 /**
  * Authoritative Bout Hook.

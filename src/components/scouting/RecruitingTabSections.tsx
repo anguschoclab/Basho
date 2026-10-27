@@ -24,7 +24,7 @@ import {
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import { resolveRegistryLabel } from "@/presenters/uiDigest";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
-import { CompareModePanel } from "./CompareModePanel";
+import { CompareModePanel } from "@/components/scouting/CompareModePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Layers } from "lucide-react";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";

@@ -13,21 +13,21 @@
  * oyakata slot has no AI memory).
  */
 
-import type { WorldState } from "../types/world";
-import type { BoutResult, MatchSchedule } from "../types/basho";
-import type { Rikishi } from "../types/rikishi";
-import type { Id } from "../types/common";
-import { TACTIC_TO_FAMILY, type BoutTactic, type TacticalFamily } from "../types/combat";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { getMemory, getOpponentModel, recordOpponentModel } from "./MemoryStore";
+import type { WorldState } from "@/engine/types/world";
+import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Id } from "@/engine/types/common";
+import { TACTIC_TO_FAMILY, type BoutTactic, type TacticalFamily } from "@/engine/types/combat";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getMemory, getOpponentModel, recordOpponentModel } from "@/engine/npcAI/MemoryStore";
 import {
   buildOpponentModel,
   familyFromStyle,
   observeBoutResult,
   observeOpponentFamily,
-} from "./OpponentModel";
-import type { OpponentTacticModel } from "../ai/types";
+} from "@/engine/npcAI/OpponentModel";
+import type { OpponentTacticModel } from "@/engine/ai/types";
 
 /** Cap on learned models per oyakata; stalest entries are evicted. */
 export const MAX_OPPONENT_MODELS = 40;

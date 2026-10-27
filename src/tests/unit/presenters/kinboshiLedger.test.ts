@@ -3,7 +3,7 @@ import {
   selectKinboshiLedger,
   selectLatestKinboshiDates,
 } from "@/presenters/projections/kinboshiLedger";
-import { makeMockWorld } from "../engine/utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("kinboshiLedger projections", () => {
   it("extracts kinboshi entries from awardLog with month resolution", () => {

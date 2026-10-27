@@ -1,11 +1,11 @@
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorldState } from "../../types/world";
-import { ensureTalentPoolState, refreshAllPools } from "./TalentPoolStateService";
-import { resolveCandidateSuitor } from "./TalentPoolOffers";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { computeReplacementGap } from "./RecruitmentController";
-import { TOTAL_ACTIVE_THRESHOLD } from "../../../constants/engine/recruitmentExtended";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import { ensureTalentPoolState, refreshAllPools } from "@/engine/systems/generation/TalentPoolStateService";
+import { resolveCandidateSuitor } from "@/engine/systems/generation/TalentPoolOffers";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { computeReplacementGap } from "@/engine/systems/generation/RecruitmentController";
+import { TOTAL_ACTIVE_THRESHOLD } from "@/constants/engine/recruitmentExtended";
 import { warn } from "@/engine/utils/Logger";
 
 /**

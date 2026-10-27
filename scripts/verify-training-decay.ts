@@ -1,7 +1,7 @@
-import type { WorldState } from "../src/engine/types/world";
-import type { Rikishi } from "../src/engine/types/rikishi";
-import { phase01_week_training } from "../src/engine/tick/phases/phase01_week_training";
-import { resolveImpacts } from "../src/engine/core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { phase01_week_training } from "@/engine/tick/phases/phase01_week_training";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 async function verifyTrainingDecay() {
   console.log("--- Verifying Training Decay ---");

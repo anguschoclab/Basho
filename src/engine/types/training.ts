@@ -2,7 +2,7 @@
  * Training Types
  */
 
-import type { Id } from "./common";
+import type { Id } from "@/engine/types/common";
 
 /** Type representing training intensity. */
 export type TrainingIntensity = "conservative" | "balanced" | "intensive" | "punishing";

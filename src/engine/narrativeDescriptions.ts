@@ -8,9 +8,9 @@
  */
 
 // --- AUTHORITATIVE DELEGATION ---
-export * from "./systems/narrative/NarrativeBands";
-export * from "./systems/narrative/NarrativeProse";
-export * from "./systems/narrative/NarrativeService";
+export * from "@/engine/systems/narrative/NarrativeBands";
+export * from "@/engine/systems/narrative/NarrativeProse";
+export * from "@/engine/systems/narrative/NarrativeService";
 
 /**
  * Describe training effect (Legacy helper).
@@ -27,4 +27,4 @@ export function describeTrainingEffect(multiplier: number): string {
 }
 
 // Re-export type definitions
-export type { AttributeKey } from "./types/rikishi";
+export type { AttributeKey } from "@/engine/types/rikishi";

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { KIMARITE_REGISTRY } from "@/engine/kimarite";
+import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
 import { buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";
 
 describe("EraDriftService tactical-family grouping", () => {

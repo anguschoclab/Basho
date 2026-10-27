@@ -5,17 +5,17 @@
  * (Phase 5: The Legacy Engine)
  */
 
-import type { Rikishi, RikishiStats } from "../../types/rikishi";
-import { isNumericStat, type NumericStat } from "../../types/rikishi";
-import type { BloodlineTrait, BloodlineRegistry } from "../../types/dynasty";
-import type { WorldState } from "../../types/world";
-import type { TalentCandidate } from "../../types/talent";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { clampInt } from "../../utils/math";
-import { BardEngine } from "../../bard/BardEngine";
-import type { SeededRNG } from "../../rng";
-import { rngForWorld } from "../../rng";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import { isNumericStat, type NumericStat } from "@/engine/types/rikishi";
+import type { BloodlineTrait, BloodlineRegistry } from "@/engine/types/dynasty";
+import type { WorldState } from "@/engine/types/world";
+import type { TalentCandidate } from "@/engine/types/talent";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { clampInt } from "@/engine/utils/math";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import type { SeededRNG } from "@/engine/rng";
+import { rngForWorld } from "@/engine/rng";
 
 /** Minimum thresholds for a rikishi to leave a bloodline trait on retirement. */
 const REGISTER_THRESHOLDS = {

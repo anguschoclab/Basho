@@ -5,9 +5,9 @@
  * Projects player, hot, and cool rivalries with heat stats.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { RivalryPairState } from "../../engine/rivalries";
-import { getPlayerHeya } from "../../engine/queries";
+import type { WorldState } from "@/engine/types/world";
+import type { RivalryPairState } from "@/constants/engine/rivalry";
+import { getPlayerHeya } from "@/engine/queries";
 
 export interface RivalriesPageData {
   playerRivalries: RivalryPairState[];

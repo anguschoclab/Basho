@@ -9,7 +9,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { makeMockBasho } from "../utils";
+import { makeMockBasho } from "@/tests/unit/engine/utils";
 
 function makeWorld(overrides: Record<string, unknown> = {}): WorldState {
   return {

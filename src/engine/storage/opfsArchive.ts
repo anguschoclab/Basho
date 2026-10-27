@@ -1,8 +1,8 @@
-import { type BoutResult, type BashoResult } from "../types/basho";
-import { type AlmanacSnapshot } from "../almanac";
-import type { Rikishi } from "../types/rikishi";
-import { OPFSFileSystem } from "./OPFSFileSystem";
-import { warn, error } from "../utils/Logger";
+import { type BoutResult, type BashoResult } from "@/engine/types/basho";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { OPFSFileSystem } from "@/engine/storage/OPFSFileSystem";
+import { warn, error } from "@/engine/utils/Logger";
 import { destr } from "destr";
 
 // Type guards to ensure parsed JSON matches the expected structure.

@@ -10,30 +10,30 @@
  * 4. Record era shifts and decade boundaries.
  */
 
-import type { WorldState } from "../../types/world";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { processYearEndInduction, createEmptyHallOfFame } from "../../hallOfFame";
-import * as npcAI from "../../npcAI";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { processYearEndInduction, createEmptyHallOfFame } from "@/engine/hallOfFame";
+import { tickYear } from "@/engine/npcAI/ticks";
 // Avatar aging/promotion is derived at render time — see avatarGenerator.deriveAvatarStage.
-import { processYearlyEraDrift } from "../../systems/meta/EraDriftService";
-import { InfrastructureService } from "../../systems/economy/InfrastructureService";
-import { GlobalCupService } from "../../systems/economy/GlobalCupService";
-import { HistoryService } from "../../systems/meta/HistoryService";
-import { runElections } from "../../systems/governance/ScandalService";
-import { DynastyService } from "../../systems/legacy/DynastyService";
-import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
+import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
+import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
+import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
+import { HistoryService } from "@/engine/systems/meta/HistoryService";
+import { runElections } from "@/engine/systems/governance/ScandalService";
+import { DynastyService } from "@/engine/systems/legacy/DynastyService";
+import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
 import {
   generateYearlyIntake,
   getYouthAcademy,
-} from "../../systems/recruitment/YouthAcademyService";
-import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
-import { TalentPoolService } from "../../systems/generation/TalentPoolService";
-import { performKanrekiCeremony, isEligibleForKanreki } from "../../governance/kanrekiCeremony";
-import { getRikishi } from "../../queries";
-import { boundHistoryArrays } from "./boundHistoryArrays";
-import { runRetiredRikishiSummarization } from "../../archival";
+} from "@/engine/systems/recruitment/YouthAcademyService";
+import { TrainingPhilosophyService } from "@/engine/systems/legacy/TrainingPhilosophyService";
+import { TalentPoolService } from "@/engine/systems/generation/TalentPoolService";
+import { performKanrekiCeremony, isEligibleForKanreki } from "@/engine/governance/kanrekiCeremony";
+import { getRikishi } from "@/engine/queries";
+import { boundHistoryArrays } from "@/engine/tick/phases/boundHistoryArrays";
+import { runRetiredRikishiSummarization } from "@/engine/archival";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -87,7 +87,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   }
 
   // 3. NPC Yearly Logic
-  builder.merge(npcAI.tickYear(world));
+  builder.merge(tickYear(world));
 
   // 4. Staff Aging
   ageStaff(builder, world);

@@ -5,9 +5,9 @@
  * object and the world event log are snapshotted byte-exact.
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { EventBus } from "@/engine/EventBus";
+import { EventBus } from "@/engine/events/EventBus";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
 

@@ -11,9 +11,9 @@
  * reaction (canon §8 reaction lag).
  */
 
-import type { WorldState, MetaHistoryEntry } from "../types/world";
-import type { MetaPerception } from "../ai/types";
-import { getRikishi } from "../queries";
+import type { WorldState, MetaHistoryEntry } from "@/engine/types/world";
+import type { MetaPerception } from "@/engine/ai/types";
+import { getRikishi } from "@/engine/queries";
 import {
   META_DOMINANCE_ESTABLISHED_SHARE,
   META_DOMINANCE_EMERGING_SHARE,
@@ -23,7 +23,7 @@ import {
   META_TREND_DELTA,
   META_INJURY_ELEVATED_FRACTION,
   META_INJURY_NORMAL_FRACTION,
-} from "../../constants/engine/perception";
+} from "@/constants/engine/perception";
 
 type Family = "push" | "belt" | "speed" | "trick";
 const FAMILIES: Family[] = ["push", "belt", "speed", "trick"];

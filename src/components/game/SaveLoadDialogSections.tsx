@@ -22,7 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Save, FolderOpen, Download, Upload, HardDrive, Loader2 } from "lucide-react";
-import { SaveSlotItem, EmptySlotItem } from "./SaveLoadDialogComponents";
+import { SaveSlotItem, EmptySlotItem } from "@/components/game/SaveLoadDialogComponents";
 import type { useSaveLoadState } from "@/hooks/useSaveLoadState";
 
 type State = ReturnType<typeof useSaveLoadState>;

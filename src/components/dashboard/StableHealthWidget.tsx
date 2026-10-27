@@ -5,7 +5,7 @@
 
 import { useGame } from "@/contexts/useGame";
 import { StableHealthPanel } from "@/components/game/StableHealthPanel";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Building2 } from "lucide-react";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";

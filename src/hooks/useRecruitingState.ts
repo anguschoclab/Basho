@@ -13,7 +13,7 @@ import { projectRecruitmentUIDigest } from "@/presenters/uiDigest";
 import { getHeyaForeignUsage, getHeyaRoster } from "@/presenters/engineAccess";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
-import { toKeyedMap } from "@/engine/utils";
+import { toKeyedMap } from "@/engine/utils/index";
 
 export function useRecruitingState(playerHeyaId: string | null) {
   const { state } = useGame();

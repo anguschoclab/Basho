@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { buildSwissTorikumi } from "@/engine/matchmaking";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { buildSwissTorikumi } from "@/engine/matchmaking/index";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("sortChronologically — partition ordering", () => {
   it("regular pairings come before elite pairings", () => {

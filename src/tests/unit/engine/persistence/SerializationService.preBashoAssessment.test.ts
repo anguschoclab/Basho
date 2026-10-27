@@ -13,7 +13,7 @@
 import { describe, it, expect } from "vitest";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { SaveSlotService } from "@/engine/persistence/SaveSlotService";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { CURRENT_SAVE_VERSION } from "@/engine/types/save";
 import type { PreBashoAssessment } from "@/engine/types/world";
 

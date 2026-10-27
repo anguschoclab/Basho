@@ -1,10 +1,10 @@
-import type { GameState, GameAction } from "./gameTypes";
-import type { BoutResult } from "../engine/types/basho";
-import type { BoutTactic } from "../engine/types/combat";
-import type { WorldState } from "../engine/types/world";
-import * as worldEngine from "../engine/world";
-import { resolveImpacts } from "../engine/core/ImpactResolver";
-import { BASHO_FINAL_DAY } from "../constants/engine/calendar";
+import type { GameState, GameAction } from "@/contexts/gameTypes";
+import type { BoutResult } from "@/engine/types/basho";
+import type { BoutTactic } from "@/engine/types/combat";
+import type { WorldState } from "@/engine/types/world";
+import * as worldEngine from "@/engine/world";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 
 /**
  * P3.4: bashoSlice is now fully immutable — no cloneWorldForTick needed.

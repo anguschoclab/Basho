@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { phase01_week_npc_ai } from "@/engine/tick/phases/phase01_week_npc_ai";
 import type { GovernanceRuling } from "@/engine/types/economy";
 import type { MediaState } from "@/engine/types/media";

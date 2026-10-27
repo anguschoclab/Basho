@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { assignMentor } from "@/engine/lineage";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { mockRikishi, makeMockWorld, makeMockHeya } from "./utils";
+import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 
 function makeWorldWithRikishi(
   menteeId: string,

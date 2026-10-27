@@ -5,7 +5,7 @@ import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOya
 import { generateGovernanceHeadline } from "@/engine/systems/media/MediaEventService";
 import { advanceDays } from "@/engine/tick/tickDaily";
 import { interpolate } from "@/engine/bard/BardEngine";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 
 describe("logging migration to Logger", () => {

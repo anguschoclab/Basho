@@ -22,22 +22,22 @@
  * source for all downstream phase calculations.
  */
 
-import type { WorldState, ActiveModifiers } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { emptyDeltas } from "../pipelineRunner";
-import { clamp } from "../../utils";
+import type { WorldState, ActiveModifiers } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { emptyDeltas } from "@/engine/tick/pipelineRunner";
+import { clamp } from "@/engine/utils/index";
 import {
   FACILITY_RECOVERY_MULTIPLIERS,
   RECOVERY_MULTIPLIER_BOUNDS,
-} from "../../../constants/engine/multipliers";
+} from "@/constants/engine/multipliers";
 import {
   MAX_STAT_VALUE,
   MIN_STAT_VALUE,
   DEFAULT_FACILITY_LEVEL,
-} from "../../../constants/engine/rikishi";
-import { getHeya } from "../../queries";
-import { extractTrainingModifiers } from "../../systems/training/TrainingMath";
+} from "@/constants/engine/rikishi";
+import { getHeya } from "@/engine/queries";
+import { extractTrainingModifiers } from "@/engine/systems/training/TrainingMath";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("PostBashoPressService — Champion Press Conference", () => {
   it("generates press lines for a yusho champion", () => {

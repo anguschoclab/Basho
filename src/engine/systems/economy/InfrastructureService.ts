@@ -12,14 +12,14 @@
  * @see FACILITY_REGISTRY for facility definitions
  */
 
-import { WorldState } from "../../types/world";
-import { Heya } from "../../types/heya";
-import { Id } from "../../types/common";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
-import { CONSTRUCTION_BUILD_TIME_THRESHOLD } from "../../../constants/engine/economyExtended";
-import { validateConstruction, isUnexpectedFailureReason } from "./infrastructureValidation";
+import { WorldState } from "@/engine/types/world";
+import { Heya } from "@/engine/types/heya";
+import { Id } from "@/engine/types/common";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
+import { CONSTRUCTION_BUILD_TIME_THRESHOLD } from "@/constants/engine/economyExtended";
+import { validateConstruction, isUnexpectedFailureReason } from "@/engine/systems/economy/infrastructureValidation";
 
 /**
  * Infrastructure Service namespace.

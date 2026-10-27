@@ -6,12 +6,12 @@
  * as an attendant boosts the rikishi's popularity.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { WorldState } from "../types/world";
-import type { StateImpact } from "../core/StateImpact";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import { EntityCollection } from "../core/EntityCollection";
-import { rngFromSeed } from "../rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { rngFromSeed } from "@/engine/rng";
 
 /** Popularity boost for being selected as an attendant */
 export const ATTENDANT_POPULARITY_BOOST = 5;

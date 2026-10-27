@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { phase01_week_rivalries } from "../../../../../engine/tick/phases/phase01_week_rivalries";
-import { MockFactory } from "../../../../helpers/utils/MockFactory";
-import { resolveImpacts } from "../../../../../engine/core/ImpactResolver";
+import { phase01_week_rivalries } from "@/engine/tick/phases/phase01_week_rivalries";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import {
   RIVALRY_DECAY_RATES,
   WEEKS_PER_YEAR,
   MAX_EVENT_AGE_WEEKS,
   RIVALRY_DECAY_THRESHOLDS,
   RIVALRY_PRUNING,
-} from "../../../../../constants/engine/time";
-import { type EngineEvent } from "../../../../../engine/types/events";
+} from "@/constants/engine/time";
+import { type EngineEvent } from "@/engine/types/events";
 
 // Mock deriveTone to return a constant since we're testing the decay pipeline
-vi.mock("../../../../../engine/systems/narrative/RivalryHeatService", () => ({
+vi.mock("@/engine/systems/narrative/RivalryHeatService", () => ({
   deriveTone: vi.fn().mockReturnValue("respect"),
 }));
 

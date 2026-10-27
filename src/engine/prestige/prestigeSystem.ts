@@ -5,12 +5,12 @@
  * Based on Constitution A3.4.
  */
 
-import type { WorldState } from "../types/world";
-import type { Heya } from "../types/heya";
-import type { PrestigeBand } from "../types/narrative";
-import { getHeyaRoster } from "../queries";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { PrestigeBand } from "@/engine/types/narrative";
+import { getHeyaRoster } from "@/engine/queries";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 export const PRESTIGE_ORDER: PrestigeBand[] = [

@@ -5,17 +5,17 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { OzekiKadobanState } from "../../engine/banzuke/ozekiLogic";
-import { BardEngine } from "../../engine/bard/BardEngine";
-import { SeededRNG } from "../../engine/rng";
+import type { WorldState } from "@/engine/types/world";
+import type { OzekiKadobanState } from "@/engine/banzuke/ozekiLogic";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { SeededRNG } from "@/engine/rng";
 import {
   selectPromotionCandidates,
   selectYokozunaCandidates,
   selectKadobanRikishi,
-} from "../selectors";
-import { projectRikishi } from "../rikishi";
-import type { UIRikishi } from "../rikishi";
+} from "@/presenters/selectors";
+import { projectRikishi } from "@/presenters/rikishi/index";
+import type { UIRikishi } from "@/presenters/rikishi/index";
 
 /** Defines the structure for ozeki run candidate. */
 export interface OzekiRunCandidate {

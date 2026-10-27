@@ -2,8 +2,8 @@
  * MediaImpactService.ts — Pure logic for calculating media heat, pressure, and impact.
  */
 
-import { MediaTone, HeadlineTier } from "../../types/media";
-import { clampInt } from "../../utils/math";
+import { MediaTone, HeadlineTier } from "@/engine/types/media";
+import { clampInt } from "@/engine/utils/math";
 import {
   BASE_MEDIA_IMPACT,
   UPSET_IMPACT_BONUS,
@@ -23,7 +23,7 @@ import {
   MAX_HEAT,
   PRESSURE_DECAY_RATE,
   MAX_PRESSURE,
-} from "../../../constants/engine/mediaImpact";
+} from "@/constants/engine/mediaImpact";
 
 export function calculateBoutImpact(args: {
   upset: boolean;

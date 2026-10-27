@@ -5,7 +5,7 @@ import {
 } from "@/engine/lifecycle/PlayoffResolver";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
 import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { BashoState } from "@/engine/types/basho";
 
 describe("calculateDivisionStandings", () => {

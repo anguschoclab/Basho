@@ -6,17 +6,17 @@
  * factory functions.
  */
 
-import type { WorldState } from "../../types/world";
-import type { MovementEvent } from "../../types/banzuke";
-import type { KeshoTier } from "../../types/keshoMawashi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { MovementEvent } from "@/engine/types/banzuke";
+import type { KeshoTier } from "@/engine/types/keshoMawashi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   generateKeshoMawashi,
   upgradeKeshoMawashi,
   generateYokozunaTsuna,
-} from "./KeshoMawashiFactory";
-import { getRikishi } from "../../queries";
+} from "@/engine/systems/keshoMawashi/KeshoMawashiFactory";
+import { getRikishi } from "@/engine/queries";
 
 /** Generate kesho-mawashi for all promotions detected in banzuke update */
 export function generateKeshoForPromotions(

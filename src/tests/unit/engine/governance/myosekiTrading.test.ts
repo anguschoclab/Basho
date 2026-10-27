@@ -7,7 +7,7 @@ import {
   findAvailableStock,
 } from "@/engine/systems/governance/MyosekiTradingService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { MyosekiMarket } from "@/engine/types/myoseki";
 
 /** Deterministic two-stock market fixture (JSA-owned, available). */

@@ -5,10 +5,10 @@
  * Extracted from phase01_week_npc_ai.ts for modularity.
  */
 
-import type { WorldState } from "../../../types/world";
-import type { Oyakata } from "../../../types/oyakata";
-import type { PerceptionSnapshot } from "../../../perception";
-import { getMemory, addObservation } from "../../../npcAI/MemoryStore";
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { PerceptionSnapshot } from "@/engine/perception";
+import { getMemory, addObservation } from "@/engine/npcAI/MemoryStore";
 
 export function consolidateOyakataMemoryPure(
   world: WorldState,

@@ -13,7 +13,7 @@ import {
   MOCHIKYUKIN_POINTS_ZENSHO_YUSHO,
   MOCHIKYUKIN_RANK_FLOORS,
 } from "@/constants/engine/economic";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 function makeSekitori(id: string, overrides: Partial<any> = {}) {
   return mockRikishi(id, {

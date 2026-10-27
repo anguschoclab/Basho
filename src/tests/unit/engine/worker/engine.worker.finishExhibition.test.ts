@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 import type { WorldState } from "@/engine/types/world";
 import { createDefaultTutorialState } from "@/engine/types/tutorial";

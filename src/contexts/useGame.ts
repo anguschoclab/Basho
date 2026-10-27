@@ -1,5 +1,5 @@
 import { use } from "react";
-import { GameContext } from "./gameContextInstance";
+import { GameContext } from "@/contexts/gameContextInstance";
 
 /** Use game. */
 export function useGame() {

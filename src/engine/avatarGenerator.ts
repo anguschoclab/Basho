@@ -10,7 +10,7 @@
  * promotion, retirement, and oyakata conversion.
  */
 
-import { SeededRNG } from "./rng";
+import { SeededRNG } from "@/engine/rng";
 import {
   AVATAR_VERSION,
   type AvatarIdentity,
@@ -24,13 +24,13 @@ import {
   type Hairstyle,
   NATIONALITY_SKIN_TONES,
   HAIR_COLORS,
-} from "./types/avatar";
-import type { Rikishi } from "./types/rikishi";
-import type { Oyakata } from "./types/oyakata";
-import type { Staff } from "./types/staff";
-import type { Gyoji, Shimpan } from "./types/gyoji";
-import type { AcademyStaff, YouthProspect } from "./types/academy";
-import type { TalentCandidate } from "./types/talent";
+} from "@/engine/types/avatar";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Staff } from "@/engine/types/staff";
+import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
+import type { AcademyStaff, YouthProspect } from "@/engine/types/academy";
+import type { TalentCandidate } from "@/engine/types/talent";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 // ---------------------------------------------------------------------------

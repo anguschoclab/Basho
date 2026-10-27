@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { makeNPCWeeklyDecision } from "@/engine/npcAI";
+import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
 import * as PersonaService from "@/engine/systems/NPCPersonaService";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Id } from "@/engine/types/common";
 
 vi.mock("@/engine/systems/NPCPersonaService", () => ({

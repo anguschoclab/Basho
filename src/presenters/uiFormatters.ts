@@ -5,12 +5,12 @@
  * Extracted from uiDigest.ts to separate concerns.
  */
 
-import { SeededRNG } from "../engine/rng";
-import { BardEngine } from "../engine/bard/BardEngine";
-import { getKimarite } from "../engine/kimarite";
-import type { Rikishi } from "../engine/types/rikishi";
-import type { WorldState } from "../engine/types/world";
-import type { EraTone } from "../engine/systems/meta/EraDriftService";
+import { SeededRNG } from "@/engine/rng";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { getKimarite } from "@/engine/kimariteRegistry";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { EraTone } from "@/engine/systems/meta/EraDriftService";
 
 /**
  * FM v2.0: Formats Rikishi attribute data for Radar Charts (C5 compliant).

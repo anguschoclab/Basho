@@ -6,7 +6,7 @@ import {
   type HoFInductee,
   type HallOfFameState,
 } from "@/engine/hallOfFame";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 

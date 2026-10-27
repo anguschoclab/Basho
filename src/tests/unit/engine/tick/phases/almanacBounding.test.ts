@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { boundHistoryArrays, ALMANAC_SNAPSHOTS_MAX } from "@/engine/tick/phases/boundHistoryArrays";
-import { makeMockWorld } from "../../utils";
-import type { AlmanacSnapshot } from "@/engine/almanac";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
 
 function makeAlmanacSnapshot(year: number, bashoNumber: number): AlmanacSnapshot {
   return {

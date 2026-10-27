@@ -13,7 +13,7 @@ vi.mock("@/engine/systems/media/MediaService", () => ({
 import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
-import { makeMockHeya } from "../../utils";
+import { makeMockHeya } from "@/tests/unit/engine/utils";
 import {
   calculateWeeklyWelfareDelta,
   computeInjuryPressure,

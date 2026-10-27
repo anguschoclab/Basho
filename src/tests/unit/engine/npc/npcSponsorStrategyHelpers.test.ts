@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { countSponsors } from "@/engine/npcSponsorStrategyHelpers";
-import { makeMockWorld } from "../utils";
+import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Sponsor, SponsorPool } from "@/engine/types/sponsors";
 
 describe("countSponsors", () => {
