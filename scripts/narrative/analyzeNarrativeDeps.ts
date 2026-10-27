@@ -10,7 +10,7 @@ import { fileURLToPath } from "url";
 import { join } from "path";
 import ts from "typescript";
 
-const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
+const ROOT = join(fileURLToPath(import.meta.url), "..", "..", "..");
 const FILE = join(ROOT, "src/engine/bout/boutNarrative.ts");
 const lines = readFileSync(FILE, "utf8").split("\n");
 

@@ -7,13 +7,14 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@tests": fileURLToPath(new URL("./tests", import.meta.url)),
     },
   },
   test: {
     environment: "jsdom",
     setupFiles: ["./tests/setup/setup.ts"],
-    include: ["src/tests/perf/**"],
-    exclude: [...configDefaults.exclude, "e2e/**", ".claude/**", "**/*.e2e.test.ts"],
+    include: ["tests/perf/**"],
+    exclude: [...configDefaults.exclude, "tests/e2e/**", ".claude/**", "**/*.e2e.test.ts"],
     testTimeout: 300000,
     pool: "vmThreads",
     server: {

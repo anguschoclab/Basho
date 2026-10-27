@@ -329,6 +329,19 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/shikona/generateShikona.ts:generateRikishiName":
     "Live module surface — referenced outside its file (2 consumer(s) via deep path or type-position import the auditor cannot resolve)",
+
+  // ── Unticked-service findings: consumed outside the engine/state/pages scan
+  // scope (presenters, components) or intentional domain barrels ──
+  "src/engine/almanac/index.ts:index":
+    "Domain barrel retained as public API surface — deep-import policy leaves it unconsumed",
+  "src/engine/bout/kimarite/index.ts:index":
+    "Domain barrel retained as public API surface — deep-import policy leaves it unconsumed",
+  "src/engine/bout/ReplayMetadata.ts:ReplayMetadata":
+    "Consumed by src/presenters/engineAccess.ts — presenters are outside the unticked scan scope",
+  "src/engine/economy/awards.ts:awards":
+    "Consumed by components (HoshitoriChart, HoFInductionCeremony, KenshoManagementWidget) — components are outside the unticked scan scope",
+  "src/engine/narrative/narrativeDescriptions.ts:narrativeDescriptions":
+    "Consumed by src/presenters/uiDigest.ts — presenters are outside the unticked scan scope",
 };
 
 /**
@@ -488,6 +501,34 @@ const GENUINE_ORPHANS: Record<string, string> = {
     "ORPH-0458: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/persistence/storageProvider.ts:hasStorageProvider":
     "ORPH-0464: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+
+  // ── Post-reorg baseline regen (audit-orphans ROOT/scope fixes surfaced
+  // these) — zero live references, retained per dead-code policy ──
+  "src/engine/lifecycle/keyBouts.ts:KeyBoutLabel":
+    "ORPH-0479: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/worker/digestProjections.ts:buildAdvisorSection":
+    "ORPH-0537: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/worker/digestProjections.ts:buildEventSections":
+    "ORPH-0538: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/worker/digestProjections.ts:buildHeadline":
+    "ORPH-0539: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/worker/digestProjections.ts:buildInjurySection":
+    "ORPH-0540: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/worker/digestProjections.ts:buildMatchupItems":
+    "ORPH-0541: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/worker/digestProjections.ts:buildTrainingReportSection":
+    "ORPH-0542: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/worker/digestProjections.ts:labelForWorld":
+    "ORPH-0543: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+
+  // ── Unticked-service findings: referenced only by their own tests or
+  // comment mentions — retained per dead-code policy ──
+  "src/engine/keshoMawashi/KeshoMawashiGenerator.ts:KeshoMawashiGenerator":
+    "ORPH-0477: consumed only by its own tests — retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/lifecycle/CareerService.ts:CareerService":
+    "ORPH-0478: zero live references (comment mentions + own tests only) — retained per reorg dead-code policy (archive candidate, not deleted)",
+  "src/engine/lifecycle/rookieFactory.ts:rookieFactory":
+    "ORPH-0480: consumed only by its own tests — retained per reorg dead-code policy (archive candidate, not deleted)",
 };
 
 function loadAuditEntries(): AuditEntry[] {

@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/generation/RosterFactory.ts
+ * src/engine/generation/RosterFactory.ts
  * ===============================================
  * Rikishi roster generation logic.
  * Extracted from WorldFactory.ts for SRP separation.

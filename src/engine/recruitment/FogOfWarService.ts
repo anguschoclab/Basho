@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/recruitment/FogOfWarService.ts
+ * src/engine/recruitment/FogOfWarService.ts
  * =================================================
  * Pure fog of war calculation logic for Basho.
  *

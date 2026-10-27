@@ -156,7 +156,7 @@ export function writeResults(path: string, run: BenchmarkRun): void {
 if (import.meta.main) {
   const { BardEngine } = await import("@/engine/bard/BardEngine");
   await BardEngine.loadDomains();
-  const outputPath = join(__dirname, "..", "docs", "audit", "perf-current.json");
+  const outputPath = join(__dirname, "..", "..", "docs", "audit", "perf-current.json");
   const run = runBenchmark();
   writeResults(outputPath, run);
   console.log(`\nCurrent results written to: ${outputPath}`);

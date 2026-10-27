@@ -653,9 +653,9 @@ rather than hardcoded Tailwind color classes like `text-yellow-400`.
 
 ## 16. Mechanical Enforcement
 
-`scripts/designScan.ts` scans `src/components/**`, `src/pages/**`, and
-`src/contexts/**` and writes `docs/audit/design-violations.csv`.
-`src/tests/unit/audit/designBible.test.ts` gates the suite on zero
+`scripts/audit/designScan.ts` scans `src/components/**`, `src/pages/**`, and
+`src/state/**` and writes `docs/audit/design-violations.csv`.
+`tests/unit/audit/designBible.test.ts` gates the suite on zero
 violations. Enforced rules:
 
 | Rule                         | Severity | Catches                                                        |

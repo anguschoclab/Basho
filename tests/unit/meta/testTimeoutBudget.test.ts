@@ -9,7 +9,7 @@ describe("L2.2: test timeout budget — no excessive per-test timeouts", () => {
     // suite, 600s cap). Two forms are checked: `it("x", 60000)` (numeric second
     // arg) and `}, 60000);` (the trailing third-arg form — the pattern the
     // demoted sim harnesses used to escape this gate).
-    const testFiles = findFiles(join(SRC_DIR, "tests", "unit"));
+    const testFiles = findFiles(join(SRC_DIR, "..", "tests", "unit"));
     const violations: string[] = [];
 
     for (const file of testFiles) {
@@ -32,7 +32,7 @@ describe("L2.2: test timeout budget — no excessive per-test timeouts", () => {
   });
 
   it("no test file uses vitest.setTimeout with >30000ms", () => {
-    const testFiles = findFiles(join(SRC_DIR, "tests"));
+    const testFiles = findFiles(join(SRC_DIR, "..", "tests"));
     const violations: string[] = [];
 
     for (const file of testFiles) {

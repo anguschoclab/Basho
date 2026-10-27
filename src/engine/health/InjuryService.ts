@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/health/InjuryService.ts
+ * src/engine/health/InjuryService.ts
  * ==========================================
  * Injury Service
  *

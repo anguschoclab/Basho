@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/narrative/NarrativeProse.ts
+ * src/engine/narrative/NarrativeProse.ts
  * ==============================================
  * Data-driven labels and flavor text for Basho.
  *

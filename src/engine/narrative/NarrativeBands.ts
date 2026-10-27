@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/narrative/NarrativeBands.ts
+ * src/engine/narrative/NarrativeBands.ts
  * ==============================================
  * Declarative band definitions for Basho.
  *

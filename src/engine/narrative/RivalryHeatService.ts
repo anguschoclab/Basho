@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/narrative/RivalryHeatService.ts
+ * src/engine/narrative/RivalryHeatService.ts
  * =================================================
  * Pure math logic for Rivalry evolution.
  *

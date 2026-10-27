@@ -24,7 +24,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative } from "node:path";
 
-const ROOT = join(import.meta.dirname, "..");
+const ROOT = join(import.meta.dirname, "..", "..");
 const DEFAULT_OUT = join(ROOT, "docs/audit/test-timings.json");
 
 const SUITE_CONFIGS: Record<string, { kind: "vitest" | "playwright"; target: string }> = {

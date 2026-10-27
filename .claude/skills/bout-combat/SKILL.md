@@ -11,7 +11,7 @@ description: Work on the bout/combat engine — physics phases, tactics, kimarit
 // Production: returns { result, impact } — impact applied via resolveImpacts
 resolveBout(bout, east, west, basho, playerTactic?, world?)
 
-// One-off helper (tests/scripts): wraps resolveBout over a fake basho
+// One-off helper (src/engine/bout/boutResolver.ts): wraps resolveBout over a fake basho
 simulateBout(east, west, seed) → { result }
 ```
 
@@ -41,4 +41,4 @@ Pbp pipeline: `prelude` → `frames` → `resolution` → `postbout`/`postbout2`
 
 ## Tuning & verification
 
-Constants: `src/constants/engine/bout.ts`, `archetype.ts`, `kimarite.ts`, `kimariteFrequencies.ts` (real-world distribution targets), `kimariteTargets.ts`, `matchmaking.ts`. Validate: `bun scripts/compare-engines.ts --count=100 --seed=X` and `bun run measure:kimarite` (see `sim-diagnostics`); unit gates `kimariteFrequencies`, `kimariteRegistry`, `h2h.tacticDeterminism` tests. Recent-history caution: east-win-bias and skill-vs-position outcome bugs were fixed in the tick order — keep bouts order-independent and resolve ambiguity on stats, not position.
+Constants: `src/constants/engine/bout.ts`, `archetype.ts`, `kimarite.ts`, `kimariteFrequencies.ts` (real-world distribution targets), `kimariteTargets.ts`, `matchmaking.ts`. Validate: `bun scripts/measure/compare-engines.ts --count=100 --seed=X` and `bun run measure:kimarite` (see `sim-diagnostics`); unit gates `kimariteFrequencies`, `kimariteRegistry`, `h2h.tacticDeterminism` tests. Recent-history caution: east-win-bias and skill-vs-position outcome bugs were fixed in the tick order — keep bouts order-independent and resolve ambiguity on stats, not position.

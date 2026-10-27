@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/narrative/NarrativeService.ts
+ * src/engine/narrative/NarrativeService.ts
  * ================================================
  * Data-driven Narrative Service for Basho.
  *

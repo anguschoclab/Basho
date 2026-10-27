@@ -3,7 +3,7 @@
  *  1. @param tags whose name doesn't match any real parameter
  *  2. Auto-generated boilerplate docs (@returns The result., "@param x - The X.", etc.)
  *  3. @param tags with redundant type annotations that contradict TS types
- * Run: bun scripts/check-jsdoc.ts
+ * Run: bun scripts/audit/check-jsdoc.ts
  */
 import { Project, SyntaxKind, type JSDocableNode } from "ts-morph";
 
@@ -12,8 +12,8 @@ const project = new Project({
   skipAddingFilesFromTsConfig: false,
 });
 
-// Also include scripts/e2e/electron files not in tsconfig.app.json
-project.addSourceFilesAtPaths(["scripts/**/*.ts", "e2e/**/*.ts", "electron/**/*.ts"]);
+// Also include scripts/tests/e2e/electron files not in tsconfig.app.json
+project.addSourceFilesAtPaths(["scripts/**/*.ts", "tests/e2e/**/*.ts", "electron/**/*.ts"]);
 
 interface Issue {
   file: string;

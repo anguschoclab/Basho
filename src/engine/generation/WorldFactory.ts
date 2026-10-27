@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/generation/WorldFactory.ts
+ * src/engine/generation/WorldFactory.ts
  * =================================================
  * World Factory (Thin Orchestrator)
  *

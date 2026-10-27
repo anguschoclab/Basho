@@ -2,8 +2,8 @@
  * designScan.ts
  * =============
  * Mechanical design-bible violation scan, shared between:
- *   - CLI inventory output (bun scripts/designScan.ts -> docs/audit/design-violations.csv)
- *   - the future src/tests/unit/audit/designBible.test.ts gate
+ *   - CLI inventory output (bun scripts/audit/designScan.ts -> docs/audit/design-violations.csv)
+ *   - the tests/unit/audit/designBible.test.ts gate
  *
  * Each rule is a named RegExp scan over production source lines. Rules map to
  * design-bible sections; severity drives Phase 5 fix ordering.
@@ -49,7 +49,7 @@ const RULES: Rule[] = [
     severity: "P0",
     bibleRef: "§1.1 colors — tokens only",
     pattern: /#[0-9a-fA-F]{3,8}\b/,
-    scopes: ["pages", "components", "contexts", "hooks", "presenters"],
+    scopes: ["pages", "components", "state", "hooks", "presenters"],
     skip: /^\s*(\/\/|\*|text-\[10px)/,
   },
   {
@@ -57,7 +57,7 @@ const RULES: Rule[] = [
     severity: "P0",
     bibleRef: "§1.1 colors — tokens only",
     pattern: /\brgba?\s*\(/,
-    scopes: ["pages", "components", "contexts", "hooks", "presenters"],
+    scopes: ["pages", "components", "state", "hooks", "presenters"],
     skip: /^\s*(\/\/|\*)|rgba?\(\s*var\(--/,
   },
   {
@@ -66,21 +66,21 @@ const RULES: Rule[] = [
     bibleRef: "§1.3/§3.3 anti-patterns — no decorative gradients",
     pattern:
       /bg-gradient|from-(purple|violet|fuchsia|indigo-5)|via-(purple|violet|fuchsia)|to-(purple|violet|fuchsia)/,
-    scopes: ["pages", "components", "contexts", "hooks", "presenters"],
+    scopes: ["pages", "components", "state", "hooks", "presenters"],
   },
   {
     id: "glassmorphism",
     severity: "P1",
     bibleRef: "§3.3 anti-patterns — no glassmorphism",
     pattern: /backdrop-blur|bg-white\/[0-9]|bg-black\/[0-9].*blur/,
-    scopes: ["pages", "components", "contexts"],
+    scopes: ["pages", "components", "state"],
   },
   {
     id: "banned-font",
     severity: "P0",
     bibleRef: "§2.1 typography — Shippori/Spectral/JetBrains only",
     pattern: /font-sans\b|\bInter\b|\bRoboto\b|system-ui|ui-sans/,
-    scopes: ["pages", "components", "contexts", "hooks"],
+    scopes: ["pages", "components", "state", "hooks"],
     skip: /font-serif-jp|font-display|font-body|font-mono|import |require\(/,
   },
   {
@@ -89,7 +89,7 @@ const RULES: Rule[] = [
     bibleRef: "§1.1 colors — tokens only, no raw palette classes",
     pattern:
       /\b(?:text|bg|border|ring|fill|stroke|from|via|to)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d/,
-    scopes: ["pages", "components", "contexts"],
+    scopes: ["pages", "components", "state"],
   },
   {
     id: "italic-numerals",
@@ -139,7 +139,7 @@ const RULES: Rule[] = [
     bibleRef: "§2 colors — tokens only, no hardcoded HSL",
     // hsl(222 32% 5%) is a violation; hsl(var(--gold) / 0.4) is not.
     pattern: /\bhsl\(\s*(?!var\s*\()\d/,
-    scopes: ["pages", "components", "contexts", "hooks", "presenters", "constants"],
+    scopes: ["pages", "components", "state", "hooks", "presenters", "constants"],
     skip: /^\s*(\/\/|\/\*|\*)/,
     // drawingPalette is the sanctioned single source of canvas/SVG literals
     exempt: /constants\/ui\/drawingPalette\.ts$/,
@@ -151,7 +151,7 @@ const RULES: Rule[] = [
     // text-white, bg-black/80, border-white/20, from-black, ring-white/10, etc.
     pattern:
       /\b(?:text|bg|border|ring|fill|stroke|divide|placeholder|accent|caret|shadow|outline|decoration|from|via|to)-(?:white|black)(?:\/\d+)?\b/,
-    scopes: ["pages", "components", "contexts"],
+    scopes: ["pages", "components", "state"],
     skip: /^\s*(\/\/|\/\*|\*)/,
   },
   {
@@ -160,7 +160,7 @@ const RULES: Rule[] = [
     bibleRef: "§2 colors — tokens only, no raw rgb()/rgba() shadows",
     // no \b — arbitrary classes like shadow-[..._rgba(0,0,0,.5)] are preceded by "_"
     pattern: /[^a-zA-Z]rgba?\(\s*\d|\brgba?\(\s*\d/,
-    scopes: ["pages", "components", "contexts", "hooks", "presenters", "constants"],
+    scopes: ["pages", "components", "state", "hooks", "presenters", "constants"],
     skip: /^\s*(\/\/|\/\*|\*)/,
     exempt: /constants\/ui\/drawingPalette\.ts$/,
   },
@@ -203,7 +203,7 @@ function* walk(dir: string): Generator<string> {
 export function scanDesignViolations(): DesignViolation[] {
   const out: DesignViolation[] = [];
   for (const file of walk(SRC)) {
-    const rel = relative(ROOT, file);
+    const rel = relative(ROOT, file).replaceAll("\\", "/");
     const top = rel.split("/")[1]; // src/<top>/...
     const src = readFileSync(file, "utf8");
     const lines = src.split("\n");

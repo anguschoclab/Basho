@@ -13,9 +13,9 @@ description: Work on heya (stable) management systems — finances, sponsors, lo
 - **Weekly** (`phase01_economy`, every 7 days): financial settlement.
 - **Monthly** (`phase05_monthly_*`, every 30 days): salaries, rent, loan payments.
 - **Canonical breakdown:** `FinanceCalculator.calculateHeyaWeeklyFinances(heya, world)` is the *only* income/expense source of truth — UI (e.g. `IncomeExpensesCards`) must bind to it, never hand-sum.
-- **Removed, do not reintroduce:** `processHeyaFinances()` / `tickWeekEconomics()` — `scripts/engine-reviewer.ts` flags any new call site.
+- **Removed, do not reintroduce:** `processHeyaFinances()` / `tickWeekEconomics()` — `scripts/audit/engine-reviewer.ts` flags any new call site.
 
-## Subsystems (`src/engine/systems/economy/`)
+## Subsystems (`src/engine/economy/`)
 
 `SponsorshipService`/`SponsorContractService` (sponsor relationships + contracts), `KenshoService` (kensho envelopes on bouts), `MochikyukinService` (sekitori bonus points), `KachiNokoriService`, `InfrastructureService` + `infrastructureValidation` (buildings), `GlobalCupService`, `TravelAllowanceService`.
 
@@ -29,12 +29,12 @@ Facilities' three axes feed `ActiveModifiers` in `phase02_context`, which multip
 
 ## Governance & welfare
 
-`governanceStatus`: `"good_standing" | "warning" | "probation" | "sanctioned"`. `welfareState`: `{ welfareRisk (0–100), complianceState, weeksInState, morale, activeDiet }`. Services in `systems/governance/` (`GovernanceService`, `ScandalService`, `PoliticalFavorsService`) and `systems/welfare/`; risk scoring + compliance transitions run in `phase04_welfare`.
+`governanceStatus`: `"good_standing" | "warning" | "probation" | "sanctioned"`. `welfareState`: `{ welfareRisk (0–100), complianceState, weeksInState, morale, activeDiet }`. Services in `src/engine/governance/` (`GovernanceService`, `ScandalService`, `PoliticalFavorsService`) and `src/engine/welfare/`; risk scoring + compliance transitions run in `phase04_welfare`.
 
 ## Recruitment
 
-`systems/recruitment/` — `ScoutingService` and `FogOfWarService` (candidates start fogged; scouting reveals info). Commands: `SCOUT_POOL`, `SCOUT_CANDIDATE`, `OFFER_CONTRACT`, `POACH_CANDIDATE`. Hard rule: `FOREIGN_RIKISHI_LIMIT_PER_HEYA` in `src/constants/engine/recruitment` (enforced + checked by the 25-yr diagnostic).
+`src/engine/recruitment/` — `ScoutingService` and `FogOfWarService` (candidates start fogged; scouting reveals info). Commands: `SCOUT_POOL`, `SCOUT_CANDIDATE`, `OFFER_CONTRACT`, `POACH_CANDIDATE`. Hard rule: `FOREIGN_RIKISHI_LIMIT_PER_HEYA` in `src/constants/engine/recruitment` (enforced + checked by the 25-yr diagnostic).
 
 ## Tuning knobs
 
-`src/constants/engine/`: `economic.ts`, `economy.ts`, `economyExtended.ts`, `facilities.ts`, `governance.ts`, `governanceExtended.ts`, `recruitment*`. Long-horizon balance check: `bun scripts/diagnostic-25yr-sim.ts` (see `sim-diagnostics`).
+`src/constants/engine/`: `economic.ts`, `economy.ts`, `economyExtended.ts`, `facilities.ts`, `governance.ts`, `governanceExtended.ts`, `recruitment*`. Long-horizon balance check: `bun scripts/sim/diagnostic-25yr-sim.ts` (see `sim-diagnostics`).

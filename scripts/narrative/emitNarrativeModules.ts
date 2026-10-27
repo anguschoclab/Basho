@@ -14,7 +14,7 @@ import { fileURLToPath } from "url";
 import { join } from "path";
 import ts from "typescript";
 
-const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
+const ROOT = join(fileURLToPath(import.meta.url), "..", "..", "..");
 const SRC_FILE = join(ROOT, "src/engine/bout/boutNarrative.ts");
 const OUT_DIR = join(ROOT, "src/engine/bout/narrative");
 const source = readFileSync(SRC_FILE, "utf8");

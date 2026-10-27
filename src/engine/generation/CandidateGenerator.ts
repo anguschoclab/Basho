@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/generation/CandidateGenerator.ts
+ * src/engine/generation/CandidateGenerator.ts
  * =================================================
  * Candidate Generator
  *

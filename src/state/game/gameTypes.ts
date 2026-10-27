@@ -1,5 +1,5 @@
 /**
- * src/contexts/gameTypes.ts
+ * src/state/game/gameTypes.ts
  * =======================
  * Game state types and initial state for the GameContext.
  *

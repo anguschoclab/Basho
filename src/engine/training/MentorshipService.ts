@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/training/MentorshipService.ts
+ * src/engine/training/MentorshipService.ts
  * ===================================================
  * Mentor-Apprentice Training Bonds System
  *

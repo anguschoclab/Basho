@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/recruitment/RecruitmentConstants.ts
+ * src/constants/engine/recruitment.ts
  * =====================================================
  * Authoritative constants for the Scouting & Recruitment System.
  *

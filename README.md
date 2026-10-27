@@ -23,11 +23,14 @@ This project is a modern web application built with:
 
 ## Project Structure
 
-- `src/engine/` - The core deterministic simulation engine containing all business logic, game state, and sumo domain rules (banzuke, basho, matchmaking, scouting, etc.).
+- `src/app/` - Application entry point (`main.tsx`, `bootstrap.tsx`, `App.tsx`, `routes.tsx`).
+- `src/engine/` - The core deterministic simulation engine containing all business logic, game state, and sumo domain rules, organized into uniform domain directories (banzuke, bout, lifecycle, matchmaking, recruitment, etc.).
 - `src/pages/` - React pages corresponding to different views in the game (Dashboard, Stable, Rikishi, Basho, etc.).
-- `src/components/` - Reusable UI components, primarily built with shadcn/ui and Tailwind.
-- `src/contexts/` - Global React contexts, such as `GameContext` which bridges the UI with the simulation engine.
+- `src/components/` - Reusable UI components organized by domain, primarily built with shadcn/ui and Tailwind.
+- `src/state/` - Client state: `game/` holds `GameContext` and reducer slices bridging the UI with the simulation engine; `stores/` holds zustand stores.
 - `src/lib/` - Utility functions.
+- `tests/` - All test suites: `unit/`, `slow/`, `perf/`, `e2e/`, `helpers/`, `setup/`.
+- `scripts/` - Dev and audit tooling grouped into `audit/`, `measure/`, `narrative/`, and `sim/`.
 
 ## Getting Started
 
@@ -66,7 +69,7 @@ The application will be available at `http://localhost:5173` (or the port specif
 
 ## Testing and Verification
 
-The core engine is strictly deterministic to ensure that simulations are reproducible. Direct use of `Math.random()` is prohibited in the engine, utilizing `src/engine/rng.ts` instead.
+The core engine is strictly deterministic to ensure that simulations are reproducible. Direct use of `Math.random()` is prohibited in the engine, utilizing `src/engine/core/rng.ts` instead.
 
 **Run tests:**
 
@@ -74,7 +77,7 @@ The unit suite is split so the default run stays fast. During development,
 prefer the fast suite or target specific files directly:
 
 ```bash
-bun run test                   # fast unit tests (src/tests/unit/**)
+bun run test                   # fast unit tests (tests/unit/**)
 bun x vitest run <filepath>    # single file
 ```
 
@@ -82,8 +85,8 @@ Slow and long-horizon suites run adhoc — they spawn subprocesses
 (eslint/knip/madge), need a production build, or simulate full game years:
 
 ```bash
-bun run test:slow              # slow gates (src/tests/slow/**); run `bun run build` first
-bun run test:perf              # perf benchmarks (src/tests/perf/**)
+bun run test:slow              # slow gates (tests/slow/**); run `bun run build` first
+bun run test:perf              # perf benchmarks (tests/perf/**)
 bun run test:all               # fast + slow + perf
 bun run test:timings -- fast   # regenerate per-file timing baseline (docs/audit/test-timings.json)
 ```
@@ -103,7 +106,7 @@ the full tier matrix and membership rules.
 **Verify determinism (static analysis for RNG & mutable state violations):**
 
 ```bash
-bun scripts/engine-reviewer.ts
+bun scripts/audit/engine-reviewer.ts
 ```
 
 ## Building for Production
@@ -120,7 +123,7 @@ The built assets will be located in the `dist/` directory.
 
 When contributing to the codebase, especially within the `src/engine/` directory:
 
-- Always use the provided RNG utility (`src/engine/rng.ts`) instead of `Math.random()`.
+- Always use the provided RNG utility (`src/engine/core/rng.ts`) instead of `Math.random()`.
 - Ensure new engine logic includes appropriate tests and maintains deterministic behavior.
 - Avoid introducing browser-specific APIs (like `localStorage`) into core engine files to maintain testability in CLI environments.
 

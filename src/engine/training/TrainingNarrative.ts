@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/training/TrainingNarrative.ts
+ * src/engine/training/TrainingNarrative.ts
  * =================================================
  * UI Narrative and Label helpers for the Training system.
  *

@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { findFiles, SRC } from "@tests/helpers/fsScan";
 
-const TESTS_DIR = join(SRC, "tests");
+const TESTS_DIR = join(SRC, "..", "tests");
 
 function findTestFiles(dir: string): string[] {
   return findFiles(dir, { exts: [".test.ts", ".test.tsx"] });

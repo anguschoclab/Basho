@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/generation/MaezumoService.ts
+ * src/engine/generation/MaezumoService.ts
  *
  * Maezumo (前相撲) assessment stage for new recruits.
  * In real sumo, new recruits participate in maezumo — a preliminary

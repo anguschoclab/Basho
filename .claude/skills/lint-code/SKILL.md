@@ -12,4 +12,4 @@ bun run lint:fix      # autofix what's fixable
 bun run lint          # report-only: script ends with `|| true`, so it NEVER exits non-zero
 ```
 
-Note: `bun run lint` always exits 0 regardless of findings — use `lint:strict` when you need a pass/fail signal. Slow-suite `lintStrictGate` enforces the strict variant in `src/tests/slow/`.
+Note: `bun run lint` always exits 0 regardless of findings — use `lint:strict` when you need a pass/fail signal. Slow-suite `lintStrictGate` enforces the strict variant in `tests/slow/`.

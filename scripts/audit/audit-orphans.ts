@@ -50,7 +50,7 @@ interface AuditReport {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, "..");
-const ROOT = join(__dirname, "..");
+const ROOT = join(__dirname, "..", "..");
 const SRC = join(ROOT, "src");
 const ENGINE_DIR = join(SRC, "engine");
 const COMPONENTS_DIR = join(SRC, "components");
@@ -270,7 +270,7 @@ function classifyPriority(filePath: string): "P0" | "P1" | "P2" | "P3" {
 
 function findOrphanRoutes(): OrphanEntry[] {
   const entries: OrphanEntry[] = [];
-  const routesFile = join(SRC, "routes.tsx");
+  const routesFile = join(SRC, "app", "routes.tsx");
   if (!existsSync(routesFile)) return entries;
 
   const routesContent = readContent(routesFile);
@@ -326,7 +326,7 @@ function findOrphanRoutes(): OrphanEntry[] {
     if (!isReferenced) {
       entries.push({
         id: nextId(),
-        file: "src/routes.tsx",
+        file: "src/app/routes.tsx",
         symbol: route,
         orphanType: "orphan-route",
         priority: "P1",
@@ -377,8 +377,9 @@ function parseImports(filePath: string): ParsedImport[] {
   const content = readContent(filePath);
   const imports: ParsedImport[] = [];
 
-  // import { foo, bar } from "./path"
-  const namedImportPattern = /import\s+\{([^}]+)\}\s+from\s+["']([^"']+)["']/g;
+  // import { foo, bar } from "./path"  (incl. `import type { ... }` —
+  // a type-only import still consumes the module's exports)
+  const namedImportPattern = /import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+["']([^"']+)["']/g;
   let m: RegExpExecArray | null;
   while ((m = namedImportPattern.exec(content)) !== null) {
     const symbols = m[1]
@@ -397,8 +398,8 @@ function parseImports(filePath: string): ParsedImport[] {
     });
   }
 
-  // import * as X from "./path"
-  const namespacePattern = /import\s+\*\s+as\s+(\w+)\s+from\s+["']([^"']+)["']/g;
+  // import * as X from "./path"  (incl. `import type * as X`)
+  const namespacePattern = /import\s+(?:type\s+)?\*\s+as\s+(\w+)\s+from\s+["']([^"']+)["']/g;
   while ((m = namespacePattern.exec(content)) !== null) {
     imports.push({
       resolvedPath: resolveImportPath(m[2], filePath),
@@ -407,8 +408,8 @@ function parseImports(filePath: string): ParsedImport[] {
     });
   }
 
-  // import DefaultName from "./path"
-  const defaultImportPattern = /import\s+(\w+)\s+from\s+["']([^"']+)["']/g;
+  // import DefaultName from "./path"  (incl. `import type Foo from`)
+  const defaultImportPattern = /import\s+(?:type\s+)?(\w+)\s+from\s+["']([^"']+)["']/g;
   while ((m = defaultImportPattern.exec(content)) !== null) {
     imports.push({
       resolvedPath: resolveImportPath(m[2], filePath),
@@ -424,6 +425,17 @@ function parseImports(filePath: string): ParsedImport[] {
       resolvedPath: resolveImportPath(m[1], filePath),
       symbols: [],
       isNamespace: false,
+    });
+  }
+
+  // export * from "./path" — re-exports every symbol; counts the module as
+  // consumed the same way a namespace import does
+  const starExportPattern = /export\s+\*\s+from\s+["']([^"']+)["']/g;
+  while ((m = starExportPattern.exec(content)) !== null) {
+    imports.push({
+      resolvedPath: resolveImportPath(m[1], filePath),
+      symbols: [],
+      isNamespace: true,
     });
   }
 
@@ -458,14 +470,14 @@ function findUntickedServices(): OrphanEntry[] {
   );
 
   // Build import map: resolvedModulePath → Set<importedSymbolNames>
-  // across all runtime (non-test) files — engine, contexts, and pages.
-  // Including contexts/pages avoids false positives for services consumed
+  // across all runtime (non-test) files — engine, state, and pages.
+  // Including state/pages avoids false positives for services consumed
   // by the UI layer (e.g. applyOyakataConfig in gameReducer.ts).
-  const CONTEXTS_DIR = join(SRC, "contexts");
+  const STATE_DIR = join(SRC, "state");
   const PAGES_DIR = join(SRC, "pages");
   const engineRuntimeFiles = [
     ...collectFiles(ENGINE_DIR).filter((f) => !isTestFile(f)),
-    ...collectFiles(CONTEXTS_DIR).filter((f) => !isTestFile(f)),
+    ...collectFiles(STATE_DIR).filter((f) => !isTestFile(f)),
     ...collectFiles(PAGES_DIR).filter((f) => !isTestFile(f)),
   ];
 

@@ -7,13 +7,14 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@tests": fileURLToPath(new URL("./tests", import.meta.url)),
     },
   },
   test: {
     environment: "jsdom",
     setupFiles: ["./tests/setup/setup.ts"],
-    include: ["src/tests/slow/**"],
-    exclude: [...configDefaults.exclude, "e2e/**", ".claude/**", "**/*.e2e.test.ts"],
+    include: ["tests/slow/**"],
+    exclude: [...configDefaults.exclude, "tests/e2e/**", ".claude/**", "**/*.e2e.test.ts"],
     // simulationInvariants runs multi-year sims (~100-150s each, worse under
     // CI contention); 600s gives headroom above the prior 300s failures.
     testTimeout: 600000,

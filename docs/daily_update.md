@@ -12,6 +12,6 @@ Current focus appears to be migrating and solidifying daily tick pipelines (e.g.
 📄 Proposed Documentation Updates:
 docs/architecture.md: Add summary of the Strict Pipeline Architecture, StateImpact builder, and narrative hysteresis implementation.
 
-Code Paths Covered: `src/engine/tick/*`, `src/engine/systems/narrative/*`, `src/engine/descriptorBands.ts`, `src/presenters/*`
+Code Paths Covered: `src/engine/tick/*`, `src/engine/narrative/*`, `src/presenters/*`
 
 Key Knowledge Gaps Addressed: Validated UI projection constraints against engine truths and updated injury perception logic to fully align with C5.4 of the constitution.

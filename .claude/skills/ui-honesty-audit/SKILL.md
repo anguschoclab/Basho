@@ -104,7 +104,7 @@ If the project has a UI/style guide, **add the rule you just enforced** so it
 doesn't regress — e.g. a "Data Integrity — no fabricated chrome" section, a "no
 underscores in display copy" rule, "numbers are upright/tabular", "cap tracking at
 0.15em". A fix that isn't written down comes back. (Example precedent: this
-project's `docs/UI_UX_Design_Bible.md` §16.5 "Data Integrity — No Fabricated
+project's `docs/design-bible.md` §16.5 "Data Integrity — No Fabricated
 Chrome".)
 
 ## Worked examples (from real remediation)

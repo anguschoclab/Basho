@@ -28,7 +28,7 @@ jobs:
       - name: Run benchmark
         run: bun scripts/measure/bench-pipelines.ts 2>&1 | tee bench-output.txt
       - name: Check performance regression
-        run: bun scripts/measure/perf-gate-check.ts
+        run: bun scripts/audit/perf-gate-check.ts
       - name: Update baseline on main/develop
         # always(): the baseline must roll forward on main even when the
         # regression check fails — otherwise a stale baseline fails every run
@@ -47,7 +47,7 @@ jobs:
           fi
 
   # Fast unit suite only — slow gates (subprocess audits, year-long sims,
-  # bundle budget) moved to src/tests/slow and run in the nightly
+  # bundle budget) moved to tests/slow and run in the nightly
   # slow-tests.yml workflow. No build step needed: nothing in the fast
   # suite reads dist/.
   unit-tests:

@@ -1,5 +1,5 @@
 /**
- * File Name: src/engine/world.ts
+ * File Name: src/engine/core/world.ts
  * Notes:
  * - Orchestrates the game simulation using high-fidelity types.
  * - 'advanceDay' runs bouts for the current day using 'resolveBout' (which handles H2H).

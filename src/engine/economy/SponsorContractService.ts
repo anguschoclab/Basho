@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/economy/SponsorContractService.ts
+ * src/engine/economy/SponsorContractService.ts
  * ======================================================
  * Sponsor Contract Service
  *

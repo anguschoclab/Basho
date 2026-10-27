@@ -19,7 +19,7 @@ const ROOT = join(__dirname, "../../../");
 const AUDIT_DIR = join(ROOT, ".windsurf", "audit");
 const BASELINE_PATH = join(AUDIT_DIR, "baseline-orphans.json");
 const TRACKER_PATH = join(AUDIT_DIR, "orphan-tracker.csv");
-const SYSTEMS_DIR = join(ROOT, "src", "engine", "systems");
+const FIXTURE_DIR = join(ROOT, "src", "engine", "utils");
 
 let uniqueCounter = 0;
 function uniqueJsonPath(): string {
@@ -38,10 +38,10 @@ async function runAudit(): Promise<AuditReport> {
 }
 
 function cleanFixtures() {
-  if (existsSync(SYSTEMS_DIR)) {
-    for (const entry of readdirSync(SYSTEMS_DIR)) {
+  if (existsSync(FIXTURE_DIR)) {
+    for (const entry of readdirSync(FIXTURE_DIR)) {
       if (entry.startsWith("__audit_")) {
-        rmSync(join(SYSTEMS_DIR, entry), { recursive: true, force: true });
+        rmSync(join(FIXTURE_DIR, entry), { recursive: true, force: true });
       }
     }
   }
@@ -168,9 +168,9 @@ describe("Audit runner fixtures — injected files", () => {
   // run (was 3 separate runs — the audit scans the whole tree each time, and
   // the scenarios assert disjoint symbols, so they share one scan).
   const stamp = Date.now();
-  const injectDir = join(SYSTEMS_DIR, `__audit_injection_${stamp}__`);
-  const nsDir = join(SYSTEMS_DIR, `__audit_ns_${stamp}__`);
-  const collDir = join(SYSTEMS_DIR, `__audit_coll_${stamp}__`);
+  const injectDir = join(FIXTURE_DIR, `__audit_injection_${stamp}__`);
+  const nsDir = join(FIXTURE_DIR, `__audit_ns_${stamp}__`);
+  const collDir = join(FIXTURE_DIR, `__audit_coll_${stamp}__`);
   const probeName = `__auditProbeOrphanFn_${stamp}__`;
   const nsProbeName = `__nsProbeFn_${stamp}__`;
   const collisionName = `__collisionFn_${stamp}__`;
@@ -255,7 +255,7 @@ describe("Audit runner — tracker id stability", () => {
     "keeps existing entry ids stable when a new orphan appears mid-list",
     { timeout: 480000 },
     async () => {
-      const probeDir = join(SYSTEMS_DIR, `__audit_idprobe_${Date.now()}__`);
+      const probeDir = join(FIXTURE_DIR, `__audit_idprobe_${Date.now()}__`);
       const probeName = "__idProbeOrphanFn_" + Date.now() + "__";
       try {
         cleanFixtures();
@@ -294,8 +294,8 @@ describe("Audit runner — tracker id stability", () => {
 
 describe("Audit fixture cleanup", () => {
   it("leaves no __audit_* directories after fixture tests", () => {
-    if (existsSync(SYSTEMS_DIR)) {
-      const leftover = readdirSync(SYSTEMS_DIR).filter((e: string) => e.startsWith("__audit_"));
+    if (existsSync(FIXTURE_DIR)) {
+      const leftover = readdirSync(FIXTURE_DIR).filter((e: string) => e.startsWith("__audit_"));
       expect(leftover, "Temp injection directories should be cleaned up").toEqual([]);
     }
   });

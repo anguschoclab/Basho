@@ -9,16 +9,16 @@ description: Write a test that survives this repo's meta-gates and lands in the 
 
 | Tier | Location | Runs via | Belongs here |
 |------|----------|----------|--------------|
-| Fast unit | `src/tests/unit/**` (mirrors `src/engine/`) | `bun run test` — every change | Pure logic, single-day ticks, UI components |
-| Slow gates | `src/tests/slow/**` | `bun run test:slow` (needs `bun run build` first) | Subprocess audits (eslint/knip/madge/tsx), build-dependent tests, months/years of simulated time |
-| Perf | `src/tests/perf/**` | `bun run test:perf` | Benchmarks |
+| Fast unit | `tests/unit/**` (mirrors `src/engine/`) | `bun run test` — every change | Pure logic, single-day ticks, UI components |
+| Slow gates | `tests/slow/**` | `bun run test:slow` (needs `bun run build` first) | Subprocess audits (eslint/knip/madge/tsx), build-dependent tests, months/years of simulated time |
+| Perf | `tests/perf/**` | `bun run test:perf` | Benchmarks |
 
 **The line that matters:** anything spawning a subprocess, requiring a prior `bun run build`, or simulating months+ of game time does NOT belong in `unit/` — `noSubprocessInUnitTests` and the timings budget will reject it. Full matrix: `docs/TESTING.md`.
 
-## 2. Meta-gates your test must pass (`src/tests/unit/meta/`)
+## 2. Meta-gates your test must pass (`tests/unit/meta/`)
 
 - `noSubprocessInUnitTests` — no `child_process`, no `runAutoSim`/`generateInitialWorld`+`simulateEntireBasho` pairing in unit/.
-- `factoryDiscipline` — only allowlisted factories. Use `src/tests/helpers/utils/MockFactory.ts` (primary, ~118 consumers) or `mockRikishi(id, overrides?)`/`makeMockBasho` from `src/tests/unit/engine/utils.ts`. Don't hand-roll entity literals.
+- `factoryDiscipline` — only allowlisted factories. Use `tests/helpers/utils/MockFactory.ts` (primary, ~118 consumers) or `mockRikishi(id, overrides?)`/`makeMockBasho` from `tests/unit/engine/utils.ts`. Don't hand-roll entity literals.
 - `testTimingsBudget` — per-file duration budget vs `docs/audit/test-timings.json`. After legit suite reorgs, regenerate: `bun run test:timings -- fast` (suites: `fast`|`slow`|`perf`|`all`).
 - `testTimeoutBudget` — no >5s per-test timeouts in unit/; no `vitest.setTimeout` >30s anywhere. A slow test is a misplaced test — move it, don't raise its timeout.
 - `weakAssertionAudit` — assertions must observe real outcomes.

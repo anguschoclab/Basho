@@ -21,7 +21,7 @@ These are the real defects this repo has shipped behind green suites. Look for e
 
 3. **Determinism violations.** `Math.random()` or `Date.now()` anywhere in `src/engine`, or a player/tactic choice folded into an RNG seed string. These silently break replay and save/load — the engine's core guarantee — and the suite stays green. **Counter:** grep (below). Choices must modulate weights/probabilities *within* the existing seeded RNG sequence, never change the seed.
 
-4. **Dual-command-path stranding.** This repo has two command paths: the legacy reducer slices (`src/contexts/*Slice.ts`) and the canonical Web Worker (`src/engine/worker/engine.worker.ts` `COMMAND_HANDLERS`, dispatched via `useGameStore(s => s.sendCommand)`). A handler that exists only in the legacy path, with no UI dispatch, is dead. **Counter:** confirm the live path is the worker; treat reducer-only engine mutations as suspect.
+4. **Dual-command-path stranding.** This repo has two command paths: the legacy reducer slices (`src/state/game/*Slice.ts`) and the canonical Web Worker (`src/engine/worker/engine.worker.ts` `COMMAND_HANDLERS`, dispatched via `useGameStore(s => s.sendCommand)`). A handler that exists only in the legacy path, with no UI dispatch, is dead. **Counter:** confirm the live path is the worker; treat reducer-only engine mutations as suspect.
 
 5. **Hidden regressions.** A change can pass its own targeted tests while breaking a long-horizon integration test (e.g. the 12-basho AutoSim yokozuna test). **Counter:** always run the FULL suite, never just the files the author touched.
 
@@ -53,7 +53,7 @@ grep -n "<COMMAND>" src/engine/worker/engine.worker.ts                          
 ```
 
 ### 3. Run independent empirical checks (don't trust the author's assertions)
-If a feature claims to *change behavior* (win-rate, growth, risk, money), measure it yourself over a seeded sample rather than reading the table. Write a throwaway test in `src/tests/unit/...`, **call the function exactly how production calls it**, and observe the distribution. Example that caught a real bug class:
+If a feature claims to *change behavior* (win-rate, growth, risk, money), measure it yourself over a seeded sample rather than reading the table. Write a throwaway test in `tests/unit/...`, **call the function exactly how production calls it**, and observe the distribution. Example that caught a real bug class:
 ```ts
 // Pass the tactic the way the real caller does — resolveBout overwrites bout.playerTactic
 // from the 5th positional arg (boutResolver.ts), so ctx.playerTactic alone is ignored.
@@ -93,8 +93,8 @@ Be brutally honest and specific. Structure:
 Quote evidence verbatim (`expected 0.48 to be greater than 0.48`, `1291/1291 pass`, `grep ... → no output`). Vague praise and vague criticism are equally useless.
 
 ## This repo's quick reference
-- Tests: `bun run test` (vitest, jsdom). Mock factories: `src/tests/helpers/utils/MockFactory.ts` (primary) and `src/tests/unit/engine/utils.ts` (`mockRikishi`, `makeMockBasho`).
+- Tests: `bun run test` (vitest, jsdom). Mock factories: `tests/helpers/utils/MockFactory.ts` (primary) and `tests/unit/engine/utils.ts` (`mockRikishi`, `makeMockBasho`).
 - Canonical command path: worker (`src/engine/worker/engine.worker.ts` + `types.ts`), dispatched via `useGameStore(s => s.sendCommand)`. Reducer slices are legacy/UI-state + the synchronous bout path.
-- Mutations go through `ImpactBuilder` (`src/engine/core/ImpactBuilder.ts`) + `resolveImpacts`. RNG: `rngForWorld` / `rngFromSeed` / `RNGRegistry` (`src/engine/rng.ts`) — never `Math.random`.
+- Mutations go through `ImpactBuilder` (`src/engine/core/ImpactBuilder.ts`) + `resolveImpacts`. RNG: `rngForWorld` / `rngFromSeed` / `RNGRegistry` (`src/engine/core/rng.ts`) — never `Math.random`.
 - Autonomous runs (`runAutoSim`, `runHoliday`) set `world._autonomousSim`; behavior there can diverge from interactive play — verify both modes when a change touches the tick/decision loop.
 - Known pre-existing failures may exist (see `.claude/CLAUDE.md`); distinguish those from regressions you introduced by comparing against the baseline commit, not against zero failures.

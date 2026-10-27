@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/economy/InfrastructureService.ts
+ * src/engine/economy/InfrastructureService.ts
  * =====================================================
  * Infrastructure Service
  *

@@ -1,5 +1,5 @@
 /**
- * File Name: src/engine/descriptorBands.ts
+ * File Name: src/engine/narrative/descriptorBands.ts
  * Status: REFACTORED / SERVICE-ORIENTED
  *
  * This is now a barrel file that delegates to the centralized NarrativeEngine.

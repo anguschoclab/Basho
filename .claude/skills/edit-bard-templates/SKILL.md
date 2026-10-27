@@ -7,7 +7,7 @@ description: Add or edit BardEngine narrative templates safely. Use whenever tou
 
 ## Layout
 
-Templates live in `src/engine/bard/domains/*.json` (25 files: `kyujo`, `rikishi`, `media`, `institutional`, `post_bout`, etc.). Paths follow a `domain.subdomain.type` hierarchy — e.g. `kyujo.*` paths live in `kyujo.json`. There is **no `archive.json`** — generated/enriched content merges into `src/engine/bard/registry.json` via `bun scripts/bard-orchestrator.ts`.
+Templates live in `src/engine/bard/domains/*.json` (25 files: `kyujo`, `rikishi`, `media`, `institutional`, `post_bout`, etc.). Paths follow a `domain.subdomain.type` hierarchy — e.g. `kyujo.*` paths live in `kyujo.json`. There is **no `archive.json`** — generated/enriched content merges into `src/engine/bard/registry.json` via `bun scripts/narrative/bard-orchestrator.ts`.
 
 ## Resolution contract
 
@@ -34,7 +34,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 After adding/editing templates, run the integrity gate — it resolves **every production path with its real context keys**, so it catches token/context mismatches:
 
 ```bash
-bun run test -- src/tests/unit/engine/bard/templateTokenIntegrity.test.ts
+bun run test -- tests/unit/engine/bard/templateTokenIntegrity.test.ts
 ```
 
 For bulk narrative expansion there's the Gemini-backed orchestrator (see `orchestrate-narrative` skill), which writes to `registry.json` — but hand edits to `domains/*.json` need only the integrity test.

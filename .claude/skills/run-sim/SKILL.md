@@ -8,14 +8,14 @@ Quick engine simulation sanity checks (from the repository root):
 
 ```bash
 # Byte-identical determinism gate: same seed twice, compare serialized world
-bun scripts/determinism-double-run.ts basho   # 2-basho horizon
-bun scripts/determinism-double-run.ts year    # 1-year horizon
+bun scripts/sim/determinism-double-run.ts basho   # 2-basho horizon
+bun scripts/sim/determinism-double-run.ts year    # 1-year horizon
 
 # Headless autosim entry point (WorldFactory → runAutoSim)
 bun run simulate -- --seed myseed --basho 3
 
 # Targeted core-loop tests
-bun run test -- src/tests/unit/engine/lifecycle src/tests/unit/engine/matchmaking src/tests/unit/engine/worker
+bun run test -- tests/unit/engine/lifecycle tests/unit/engine/matchmaking tests/unit/engine/worker
 
 # Whole fast unit suite
 bun run test

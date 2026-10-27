@@ -1,7 +1,7 @@
 /**
  * eraTone.ts — presenter-layer re-export of the EraTone type.
  *
- * UI components cannot import directly from src/engine/systems/* (architectural
+ * UI components cannot import directly from src/engine/* (architectural
  * boundary enforced by eslint no-restricted-imports). This file re-exports the
  * EraTone type and label helpers so UI layers can consume them.
  */

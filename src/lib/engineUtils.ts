@@ -1,5 +1,5 @@
 /**
- * src/utils/engineUtils.ts
+ * src/lib/engineUtils.ts
  *
  * Centralized utility functions for engine-related UI logic.
  * Ensures consistent seed generation, rank sorting, and data formatting.

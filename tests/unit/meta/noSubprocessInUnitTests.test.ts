@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { findFiles, SRC } from "@tests/helpers/fsScan";
 
-const UNIT_TESTS_DIR = join(SRC, "tests", "unit");
+const UNIT_TESTS_DIR = join(SRC, "..", "tests", "unit");
 
 // The default `bun run test` suite must stay fast. Tests that shell out to
 // external tools (eslint, knip, madge, tsx) or drive long-horizon

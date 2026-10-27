@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/welfare/WelfareService.ts
+ * src/engine/welfare/WelfareService.ts
  * ============================================
  * State hydration for the Welfare System.
  *

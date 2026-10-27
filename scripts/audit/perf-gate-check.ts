@@ -17,8 +17,8 @@ import type { BenchmarkRun } from "../measure/bench-pipelines";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const BASELINE_PATH = join(__dirname, "..", "docs", "audit", "perf-baseline.json");
-const CURRENT_PATH = join(__dirname, "..", "docs", "audit", "perf-current.json");
+const BASELINE_PATH = join(__dirname, "..", "..", "docs", "audit", "perf-baseline.json");
+const CURRENT_PATH = join(__dirname, "..", "..", "docs", "audit", "perf-current.json");
 const THRESHOLD = 0.15;
 const SCENARIO = "S3_year";
 

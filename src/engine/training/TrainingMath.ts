@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/training/TrainingMath.ts
+ * src/engine/training/TrainingMath.ts
  * ===========================================
  * Pure simulation math for Rikishi development.
  *

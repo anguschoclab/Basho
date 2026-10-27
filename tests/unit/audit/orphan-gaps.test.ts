@@ -57,7 +57,7 @@ describe("Write-only state fields — surface to UI", () => {
       it("is read by a presenter or selector", () => {
         const presenterFiles = findFiles(join(SRC, "presenters")).filter((f) => !isTestFile(f));
         const selectorFiles = [
-          join(SRC, "engine", "selectors.ts"),
+          join(SRC, "engine", "core", "selectors.ts"),
           join(SRC, "presenters", "selectors.ts"),
         ].filter((f) => existsSync(f));
         const blob = [...presenterFiles, ...selectorFiles]
@@ -75,9 +75,9 @@ describe("Write-only state fields — surface to UI", () => {
 describe("MyosekiTradingService — tick phase wiring", () => {
   it("is imported by a tick phase or NPC AI file", () => {
     const tickDir = join(SRC, "engine", "tick", "phases");
-    const npcDir = join(SRC, "engine", "npcAI");
-    const agentsDir = join(SRC, "engine", "agents");
-    const strategyDir = join(SRC, "engine", "strategy");
+    const npcDir = join(SRC, "engine", "npc");
+    const agentsDir = join(SRC, "engine", "npc", "agents");
+    const strategyDir = join(SRC, "engine", "npc", "strategy");
 
     const candidateDirs = [tickDir, npcDir, agentsDir, strategyDir];
     let found = false;

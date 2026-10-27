@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/training/TrainingService.ts
+ * src/engine/training/TrainingService.ts
  * ==============================================
  * Stateful orchestration for the Training System.
  *

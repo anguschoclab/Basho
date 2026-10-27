@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/narrative/RivalryConstants.ts
+ * src/constants/engine/rivalry.ts
  * ================================================
  * Authoritative constants for the Rivalry System.
  *

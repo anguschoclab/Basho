@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/generation/HeyaFactory.ts
+ * src/engine/generation/HeyaFactory.ts
  * =============================================
  * Heya and oyakata creation logic.
  * Extracted from WorldFactory.ts for SRP separation.

@@ -17,7 +17,7 @@ Add a variant to the `EngineCommand` union:
 
 ## 2. Write the engine service
 
-Domain logic lives in `src/engine/systems/<domain>/`. Services take `world` and return an **impact** (built with `ImpactBuilder` from `src/engine/core/ImpactBuilder.ts`) — they don't mutate in place.
+Domain logic lives in `src/engine/<domain>/`. Services take `world` and return an **impact** (built with `ImpactBuilder` from `src/engine/core/ImpactBuilder.ts`) — they don't mutate in place.
 
 **RNG is non-negotiable:** use `rngForWorld(world, "subsystem", "label")` (tick code) or `rngFromSeed(seedString, "subsystem", "label")`. Never `Math.random()`/`Date.now()`, and never fold player choices into the seed string — choices modulate probabilities *within* the seeded sequence.
 
@@ -40,7 +40,7 @@ For a targeted heya update instead of an impact, `updateHeyaInWorld(world, heyaI
 ## 4. Dispatch from the UI
 
 ```ts
-const sendCommand = useGameStore((s) => s.sendCommand);   // src/store/gameStore.ts (zustand)
+const sendCommand = useGameStore((s) => s.sendCommand);   // src/state/stores/gameStore.ts (zustand)
 sendCommand({ type: "MY_ACTION", heyaId, targetId, amount });
 ```
 
@@ -48,7 +48,7 @@ If the action needs a `GameContext` convenience method, add it like `issueRuling
 
 ## What NOT to do
 
-- **Don't add engine-mutating actions to `src/contexts/*Slice.ts`.** Slices are for transient UI state (`setPhase`) and the synchronous bout-animation path (`bashoSlice`) only — a reducer-only engine mutation is unreachable from the canonical path and effectively dead code.
+- **Don't add engine-mutating actions to `src/state/game/*Slice.ts`.** Slices are for transient UI state (`setPhase`) and the synchronous bout-animation path (`bashoSlice`) only — a reducer-only engine mutation is unreachable from the canonical path and effectively dead code.
 - **Don't skip `rt.syncAndDigest()`** — without it the UI never sees the result.
 - **If a slice case *does* legitimately touch `world`** (bout animation only), it must bump `state.uiWorldRevision` so GameContext syncs back to the worker via `LOAD_WORLD`.
 - **Don't bypass the slice-tracing check** — before declaring done, grep that something clickable actually dispatches the command (see the `verify-implementation` skill).

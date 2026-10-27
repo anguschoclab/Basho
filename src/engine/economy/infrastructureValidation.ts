@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/economy/infrastructureValidation.ts
+ * src/engine/economy/infrastructureValidation.ts
  * ========================================================
  * Validation logic for infrastructure construction.
  * Extracted from InfrastructureService for SRP separation.

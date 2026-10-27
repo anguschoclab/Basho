@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/NPCPersonaService.ts
+ * src/engine/npc/personas/NPCPersonaService.ts
  * ==========================================
  * NPC Persona Service
  *

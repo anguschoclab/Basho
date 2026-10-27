@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/narrative/RivalryService.ts
+ * src/engine/narrative/RivalryService.ts
  * ==============================================
  * Stateful orchestration for the Rivalry System.
  * Facade composing the domain modules in ./rivalry/:

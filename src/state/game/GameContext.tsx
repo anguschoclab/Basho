@@ -1,5 +1,5 @@
 /**
- * src/contexts/GameContext.tsx
+ * src/state/game/GameContext.tsx
  * ===========================
  * Game State Context Provider
  *

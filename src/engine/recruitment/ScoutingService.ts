@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/recruitment/ScoutingService.ts
+ * src/engine/recruitment/ScoutingService.ts
  * =================================================
  * Stateful orchestration for the Scouting System.
  *

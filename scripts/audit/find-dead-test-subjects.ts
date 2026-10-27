@@ -1,7 +1,7 @@
 /**
  * find-dead-test-subjects.ts — flags test files whose subjects may no longer exist.
  *
- * Two kinds of subject references in every *.test.ts(x) under src/tests:
+ * Two kinds of subject references in every *.test.ts(x) under tests/:
  *   1. Real import specifiers (template-literal contents stripped first, so
  *      fixture code embedded in writeFileSync templates isn't misread) —
  *      relative and "@/" imports are resolved with extension probing.
@@ -14,14 +14,14 @@
  * every flagged entry needs human review (a missing literal can be an
  * intentional regression pin asserting a file was deleted, e.g. menu-core.tsx).
  *
- * Usage: bunx tsx scripts/find-dead-test-subjects.ts [--out path]
+ * Usage: bunx tsx scripts/audit/find-dead-test-subjects.ts [--out path]
  */
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 
-const ROOT = join(import.meta.dirname, "..");
+const ROOT = join(import.meta.dirname, "..", "..");
 const SRC = join(ROOT, "src");
-const TESTS_DIR = join(SRC, "tests");
+const TESTS_DIR = join(ROOT, "tests");
 const DEFAULT_OUT = join(ROOT, "docs/audit/test-audit-findings.md");
 const RESOLVABLE = [".ts", ".tsx", ".d.ts", ".js", ".jsx", ".mts", ".cts"];
 const KNOWN_BASES: Record<string, string> = {
@@ -50,7 +50,11 @@ function stripTemplates(src: string): string {
 }
 
 function resolveImport(spec: string, fromFile: string): boolean {
-  const base = spec.startsWith("@/") ? join(SRC, spec.slice(2)) : resolve(dirname(fromFile), spec);
+  const base = spec.startsWith("@/")
+    ? join(SRC, spec.slice(2))
+    : spec.startsWith("@tests/")
+      ? join(ROOT, "tests", spec.slice(7))
+      : resolve(dirname(fromFile), spec);
   if (existsSync(base) && statSync(base).isFile()) return true;
   for (const ext of RESOLVABLE) if (existsSync(base + ext)) return true;
   for (const ext of RESOLVABLE) if (existsSync(join(base, `index${ext}`))) return true;
@@ -79,7 +83,7 @@ function scanFile(file: string): Finding[] {
     .join("\n");
   for (const m of codeLines.matchAll(/(?:from|import)\s*\(?\s*["']([^"']+)["']/g)) {
     const spec = m[1];
-    if (!spec.startsWith(".") && !spec.startsWith("@/")) continue;
+    if (!spec.startsWith(".") && !spec.startsWith("@/") && !spec.startsWith("@tests/")) continue;
     if (!resolveImport(spec, file)) {
       findings.push({ file: rel, kind: "import", subject: spec, detail: "unresolvable import" });
     }
@@ -167,7 +171,7 @@ function resolveJoinArgs(argsSrc: string, bases: Map<string, string>): string | 
   if (args.length === 0) return null;
   // First arg must be an absolute base (or a literal containing a path sep
   // that turns out absolute); otherwise this join isn't repo-anchored.
-  return args[0].startsWith("/") ? join(...args) : null;
+  return isAbsolute(args[0]) ? join(...args) : null;
 }
 
 function main() {

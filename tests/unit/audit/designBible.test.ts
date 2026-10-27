@@ -2,7 +2,7 @@
  * designBible.test.ts
  * ===================
  * Phase 5 gate: mechanical design-bible conformance.
- * Runs scripts/designScan.ts RULES over production source and asserts zero
+ * Runs scripts/audit/designScan.ts RULES over production source and asserts zero
  * violations. Fix the source, not this test.
  */
 import { describe, it, expect } from "vitest";

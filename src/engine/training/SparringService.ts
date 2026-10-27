@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/training/SparringService.ts
+ * src/engine/training/SparringService.ts
  * ===================================================
  * Sparring Partnership System
  *

@@ -1,5 +1,5 @@
 /**
- * src/contexts/gameActions.ts
+ * src/state/game/gameActions.ts
  * ============================
  * Action creators for the GameContext reducer.
  *

@@ -1,9 +1,9 @@
 /**
- * File Name: src/engine/rivalries.ts
+ * File Name: src/engine/narrative/rivalry/rivalriesState.ts
  * Status: REFACTORED / SERVICE-ORIENTED
  *
  * This is now a barrel file that orchestrates the Rivalry system.
- * Delegated to specialized sub-services in src/engine/systems/narrative/.
+ * Delegated to specialized sub-services in src/engine/narrative/.
  *
  * Goal: No monoliths, high-fidelity modularity.
  */

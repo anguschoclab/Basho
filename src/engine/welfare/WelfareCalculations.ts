@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/welfare/WelfareCalculations.ts
+ * src/engine/welfare/WelfareCalculations.ts
  * =================================================
  * Pure simulation math for Welfare & Compliance.
  *

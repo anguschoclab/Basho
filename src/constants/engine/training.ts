@@ -1,5 +1,5 @@
 /**
- * src/engine/systems/training/TrainingConstants.ts
+ * src/constants/engine/training.ts
  * ===============================================
  * Authoritative constants for the Training System.
  *

@@ -1,5 +1,5 @@
 /**
- * Unit tests for scripts/orphanTracker.ts — the pure merge module that keeps
+ * Unit tests for scripts/audit/orphanTracker.ts — the pure merge module that keeps
  * ORPH-XXXX tracker ids and triage statuses stable across audit regenerations.
  *
  * Contract: ids are append-only. A prior row matched by file|symbol keeps its

@@ -17,11 +17,11 @@ description: Work on rikishi training, stats, and development systems — traini
 - `focusSlots: IndividualFocus[]` — per-rikishi `FocusMode: develop|push|protect|rebuild`
 - Weekly drill plans — `DaySchedule` maps days 1–6 (Mon–Sat) to `DrillType: asageiko|butsukari|teppo|moushi-ai|shindo|shiko|none`. A drill plan overrides/augments passive `activeProfile` growth.
 
-## Services (`src/engine/systems/training/`)
+## Services (`src/engine/training/`)
 
 `TrainingService` (`applyWeeklyTraining(world)` → StateImpact, `ensureHeyaTrainingState`, `createDefaultTrainingState`) · `weeklyTraining.processRikishiWeekly` · `MentorshipService` (`applyMentorshipBonuses`, `checkMentorMenteeBout`) · `SparringService` · `TsukebitoService` (junior attendant duty) · `TrainingMath` (gain formulas) · `TrainingNarrative` · `src/engine/training/WeightJourney.ts` (weight drift).
 
-Health side (`src/engine/systems/health/`): `InjuryService`, `RecoveryService`, `HealthActions`, `BodyDefinitions`.
+Health side (`src/engine/health/`): `InjuryService`, `RecoveryService`, `HealthActions`, `BodyDefinitions`.
 
 ## Tick order
 
@@ -33,4 +33,4 @@ Health side (`src/engine/systems/health/`): `InjuryService`, `RecoveryService`, 
 
 ## Tuning knobs & verification
 
-Constants: `src/constants/engine/development.ts`, `condition.ts`, `health.ts`, `healthAssessment.ts`. Diagnostics: `bun scripts/verify-training-decay.ts` (decay check), `bun scripts/measure-growth.ts` (stat progression over 6 bashos). UI surface: `InjuryRiskHeatmap` (condition/fatigue/risk grid).
+Constants: `src/constants/engine/development.ts`, `condition.ts`, `health.ts`, `healthAssessment.ts`. Diagnostics: `bun scripts/measure/verify-training-decay.ts` (decay check), `bun scripts/measure/measure-growth.ts` (stat progression over 6 bashos). UI surface: `InjuryRiskHeatmap` (condition/fatigue/risk grid).
