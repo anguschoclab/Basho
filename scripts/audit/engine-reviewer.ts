@@ -15,7 +15,7 @@ export interface Violation {
   description: string;
 }
 
-const ENGINE_DIR = join(__dirname, "../src/engine");
+const ENGINE_DIR = join(__dirname, "../../src/engine");
 
 /** Strip string/comment contents so they don't trigger heuristic checks. */
 function stripLiteralAndComments(raw: string): string {

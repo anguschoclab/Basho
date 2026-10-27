@@ -29,7 +29,7 @@ describe("CI Gate: Audit baseline files exist", () => {
   });
 
   it("audit-orphans.ts script exists", () => {
-    const path = join(ROOT, "scripts", "audit-orphans.ts");
+    const path = join(ROOT, "scripts", "audit", "audit-orphans.ts");
     expect(existsSync(path)).toBe(true);
   });
 });

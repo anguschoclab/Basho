@@ -10,7 +10,7 @@
  * const. Intentional splits must be renamed; identical values must be merged.
  */
 import { describe, expect, it } from "vitest";
-import { scanConstDuplicates, scanDuplicateExports } from "../../../scripts/duplicateExports";
+import { scanConstDuplicates, scanDuplicateExports } from "../../../scripts/audit/duplicateExports";
 
 /**
  * Intentional same-name exports (layered APIs / deliberate domain synonyms).

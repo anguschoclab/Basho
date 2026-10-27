@@ -16,7 +16,7 @@ describe("engine-reviewer — production gate", () => {
     let stdout = "";
     let exitCode = 0;
     try {
-      stdout = execSync("bun scripts/engine-reviewer.ts", {
+      stdout = execSync("bun scripts/audit/engine-reviewer.ts", {
         cwd: PROJECT_ROOT,
         encoding: "utf-8",
         stdio: ["pipe", "pipe", "pipe"],

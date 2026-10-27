@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { checkRegression, seedBaseline } from "../../../scripts/perf-gate-check";
-import type { BenchmarkRun } from "../../../scripts/bench-pipelines";
+import { checkRegression, seedBaseline } from "../../../scripts/audit/perf-gate-check";
+import type { BenchmarkRun } from "../../../scripts/measure/bench-pipelines";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { rmSync, existsSync, readFileSync } from "node:fs";

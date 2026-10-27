@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { reviewSource } from "../../../scripts/engine-reviewer";
+import { reviewSource } from "../../../scripts/audit/engine-reviewer";
 
 describe("F3: engine-reviewer self-test — known-good and known-bad samples", () => {
   it("flags Math.random() usage", () => {

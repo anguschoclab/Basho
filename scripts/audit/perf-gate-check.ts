@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { BenchmarkRun } from "./bench-pipelines";
+import type { BenchmarkRun } from "../measure/bench-pipelines";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

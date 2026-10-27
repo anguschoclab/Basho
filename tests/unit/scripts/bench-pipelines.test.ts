@@ -5,7 +5,7 @@ import {
   writeResults,
   runBenchmark,
   runScenario,
-} from "../../../scripts/bench-pipelines";
+} from "../../../scripts/measure/bench-pipelines";
 import type { WorldState } from "@/engine/types/world";
 import { readFileSync, rmSync, existsSync } from "node:fs";
 import { join } from "node:path";

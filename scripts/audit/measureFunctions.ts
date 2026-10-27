@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import ts from "typescript";
 
 const __filename = fileURLToPath(import.meta.url);
-const ROOT = join(__filename, "..", "..");
+const ROOT = join(__filename, "..", "..", "..");
 const SRC = join(ROOT, "src");
 const DEFAULT_OUT = join(ROOT, "docs", "audit", "function-lengths.csv");
 

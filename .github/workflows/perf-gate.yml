@@ -24,11 +24,11 @@ jobs:
           bun-version: 1.3.14
       - run: bun install
       - name: Phase purity lint
-        run: bash scripts/purity-lint.sh
+        run: bash scripts/audit/purity-lint.sh
       - name: Run benchmark
-        run: bun scripts/bench-pipelines.ts 2>&1 | tee bench-output.txt
+        run: bun scripts/measure/bench-pipelines.ts 2>&1 | tee bench-output.txt
       - name: Check performance regression
-        run: bun scripts/perf-gate-check.ts
+        run: bun scripts/measure/perf-gate-check.ts
       - name: Update baseline on main/develop
         # always(): the baseline must roll forward on main even when the
         # regression check fails — otherwise a stale baseline fails every run

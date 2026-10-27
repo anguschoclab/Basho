@@ -110,11 +110,11 @@ vi.mock("electron-store", () => ({
   },
 }));
 
-vi.mock("../../../src/lib/validatePath", () => ({
+vi.mock("@/lib/validatePath", () => ({
   validatePath: vi.fn(() => true),
 }));
 
-vi.mock("../../../src/lib/storageKeyValidation", () => ({
+vi.mock("@/lib/storageKeyValidation", () => ({
   isValidStorageKey: vi.fn(() => true),
 }));
 

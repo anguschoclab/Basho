@@ -13,7 +13,7 @@ import {
   parseTrackerCsv,
   type PriorTrackerRow,
   type TrackedEntry,
-} from "../../../scripts/orphanTracker";
+} from "../../../scripts/audit/orphanTracker";
 import { toKeyedMap } from "@/engine/utils/index";
 
 function entry(file: string, symbol: string): TrackedEntry {

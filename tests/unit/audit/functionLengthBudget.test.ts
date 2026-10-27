@@ -20,7 +20,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { scanFunctions, type Measurement } from "../../../scripts/measureFunctions";
+import { scanFunctions, type Measurement } from "../../../scripts/audit/measureFunctions";
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = join(__filename, "..", "..", "..", "..");

@@ -113,7 +113,7 @@ const narrativeCtx = {
   topRikishi: Array.from(world.rikishi.values()).slice(0, 5),
   recentAchievements: ["yusho"],
   currentBashoPhase: "post_basho",
-} as import("../src/engine/npc/agents/NarrativeAgent").NarrativeAgentContext;
+} as import("../../src/engine/npc/agents/NarrativeAgent").NarrativeAgentContext;
 const narrativeResult = spawnNarrativeAgent(narrativeCtx);
 console.log(`Trigger Event: ${narrativeResult.shouldTriggerEvent}`);
 console.log(`Event Type: ${narrativeResult.eventType}`);
@@ -146,7 +146,7 @@ console.log();
 console.log("--- RivalryAgent ---");
 const rivalryCtx = {
   oyakata,
-  activeRivalries: {} as Record<string, import("../src/constants/engine/rivalry").RivalryPairState>,
+  activeRivalries: {} as Record<string, import("../../src/constants/engine/rivalry").RivalryPairState>,
   currentMood: "content",
 };
 const rivalryResult = spawnRivalryAgent(rivalryCtx);

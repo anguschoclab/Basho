@@ -6,7 +6,7 @@
  * violations. Fix the source, not this test.
  */
 import { describe, it, expect } from "vitest";
-import { scanDesignViolations } from "../../../scripts/designScan";
+import { scanDesignViolations } from "../../../scripts/audit/designScan";
 
 describe("Design bible — mechanical conformance gate", () => {
   const violations = scanDesignViolations();

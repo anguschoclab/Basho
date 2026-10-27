@@ -28,7 +28,7 @@ function uniqueJsonPath(): string {
 
 async function runAudit(): Promise<AuditReport> {
   const tmpJson = uniqueJsonPath();
-  await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
+  await execAsync(`npx tsx scripts/audit/audit-orphans.ts --json "${tmpJson}"`, {
     cwd: ROOT,
     timeout: 180000,
   });

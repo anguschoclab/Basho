@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { reviewSource } from "../../../scripts/engine-reviewer";
+import { reviewSource } from "../../../scripts/audit/engine-reviewer";
 
 describe("engine-reviewer heuristics", () => {
   it("does not flag safe reads, comparisons, or nullish coalescing on world.*", () => {

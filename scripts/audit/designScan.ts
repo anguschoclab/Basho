@@ -14,7 +14,7 @@ import { join, relative, extname } from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
-const ROOT = join(__filename, "..", "..");
+const ROOT = join(__filename, "..", "..", "..");
 const SRC = join(ROOT, "src");
 
 export interface DesignViolation {
