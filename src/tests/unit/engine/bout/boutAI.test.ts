@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 import { chooseTactic, chooseTacticForCPU } from "@/engine/bout/BoutAI";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { BoutAIContext } from "@/engine/bout/BoutAI";
 
 describe("chooseTactic", () => {

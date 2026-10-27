@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TrainingService } from "@/engine/systems/training/TrainingService";
+import { TrainingService } from "@/engine/training/TrainingService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";

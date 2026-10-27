@@ -3,8 +3,8 @@ import {
   deriveTone,
   applyBoutToPairState,
   getRivalryBoutModifiers,
-} from "@/engine/systems/narrative/RivalryHeatService";
-import { SeededRNG } from "@/engine/rng";
+} from "@/engine/narrative/RivalryHeatService";
+import { SeededRNG } from "@/engine/core/rng";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
 
 function makePair(overrides: Partial<RivalryPairState> = {}): RivalryPairState {

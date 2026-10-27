@@ -6,7 +6,7 @@
  */
 
 import type { Id } from "@/engine/types/common";
-import type { NPCWeeklyDecision } from "@/engine/npcAI/types";
+import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function collectManagementDecisionEvents(

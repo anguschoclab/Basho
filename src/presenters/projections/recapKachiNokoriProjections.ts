@@ -6,9 +6,9 @@
  */
 import type { WorldState } from "@/engine/types/world";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 import { getAllRikishi } from "@/presenters/worldAccess";
-import { buildPostBashoPayload } from "@/engine/systems/economy/KachiNokoriService";
+import { buildPostBashoPayload } from "@/engine/economy/KachiNokoriService";
 
 export interface KachiNokoriDTO {
   rikishiId: string;

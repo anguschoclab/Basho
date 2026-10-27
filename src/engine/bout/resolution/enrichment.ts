@@ -13,7 +13,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { BoutTactic } from "@/engine/types/combat";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
-import { getKimarite } from "@/engine/kimariteRegistry";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { detectKinboshi } from "@/engine/bout/boutAchievements";
 import { recordCareerHighlight, type CareerHighlight } from "@/engine/bout/CareerHighlights";

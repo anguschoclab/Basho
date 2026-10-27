@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { simulateBoutForToday } from "@/engine/world";
+import { simulateBoutForToday } from "@/engine/core/world";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { WorldState } from "@/engine/types/world";

@@ -4,7 +4,7 @@ import {
   assignSparringPair,
   removeSparringPair,
   applyWeeklySparring,
-} from "@/engine/systems/training/SparringService";
+} from "@/engine/training/SparringService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { toIdMap } from "@/engine/utils/index";

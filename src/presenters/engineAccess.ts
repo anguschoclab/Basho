@@ -1,10 +1,10 @@
-export type { AIRecommendation } from "@/engine/ai/types";
+export type { AIRecommendation } from "@/engine/npc/types";
 export type {
   NotableBoutEntry,
   NarrativeHighlight,
   PromotionHistoryEntry,
 } from "@/engine/almanac/types";
-export { getCombatArchetypeDescription } from "@/engine/archetype";
+export { getCombatArchetypeDescription } from "@/engine/bout/archetype";
 export { compareBanzuke } from "@/engine/banzuke/banzukeOps";
 export { formatRankPosition } from "@/engine/banzuke/banzukeHelpers";
 export { RANK_HIERARCHY } from "@/engine/types/banzuke";
@@ -30,13 +30,18 @@ export {
   toRivalryHeatBand,
   toStatBand,
   type PotentialBand,
-} from "@/engine/descriptorBands";
-export type { FacilityAxis } from "@/engine/facilities";
-export { GlossaryService, type GlossaryTerm } from "@/engine/glossary/GlossaryService";
-export type { HoFCategory, HoFInductee } from "@/engine/hallOfFame";
-export { makeBashoKey } from "@/engine/historyIndex";
-export { getMentor, menteesOf, getLineageTree } from "@/engine/lineage";
-export type { PerceptionSnapshot } from "@/engine/perception";
+} from "@/engine/narrative/descriptorBands";
+export type { FacilityAxis } from "@/engine/economy/facilities";
+export { GlossaryService, type GlossaryTerm } from "@/engine/narrative/glossary/GlossaryService";
+export type { HoFCategory, HoFInductee } from "@/engine/history/hallOfFame";
+export { makeBashoKey } from "@/engine/history/historyIndex";
+export { getMentor, menteesOf, getLineageTree } from "@/engine/legacy/lineage";
+export type {
+  HolidayTarget,
+  SafetyGate,
+  DelegationPolicy,
+} from "@/engine/calendar/holiday";
+export type { PerceptionSnapshot } from "@/engine/npc/perception";
 export {
   getPlayerHeya,
   getHeya,
@@ -45,38 +50,38 @@ export {
   getSekitoriInHeya,
   getActiveRikishi,
   getRikishiByDivision,
-} from "@/engine/queries";
+} from "@/engine/core/queries";
 export { createDefaultRivalriesState } from "@/engine/narrative/rivalry/rivalriesState";
 export type {
   RivalriesState,
   RivalryPairState,
   RivalryTrigger,
 } from "@/constants/engine/rivalry";
-export type { RivalryHeatBand } from "@/engine/systems/narrative/NarrativeBands";
-export { SeededRNG, rngFromSeed, type SeededRNG as SeededRNGType } from "@/engine/rng";
+export type { RivalryHeatBand } from "@/engine/narrative/NarrativeBands";
+export { SeededRNG, rngFromSeed, type SeededRNG as SeededRNGType } from "@/engine/core/rng";
 export { makeDeterministicSeed } from "@/engine/utils/seed";
 export { toIdMap, toKeyedMap } from "@/engine/utils/collections";
-export { deleteSave, exportSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
-export { getActiveRikishi as selectActiveRikishi } from "@/engine/selectors";
+export { deleteSave, exportSave, importSave, type SaveSlotInfo } from "@/engine/persistence/saveload";
+export { getActiveRikishi as selectActiveRikishi } from "@/engine/core/selectors";
 export { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
-export { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
-export { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
+export { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
+export { InfrastructureService } from "@/engine/economy/InfrastructureService";
 export {
   listNPCWatchedCandidates,
   getTopSuitor,
-} from "@/engine/systems/generation/CandidatePoolService";
+} from "@/engine/generation/CandidatePoolService";
 export {
   listVisibleCandidates,
   getCandidateScoutingLevel,
   getForeignCountInHeya,
-} from "@/engine/systems/generation/TalentPoolScouting";
-export { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/TalentPoolService";
-export * as talentpool from "@/engine/systems/generation/TalentPoolService";
-export { DynastyService } from "@/engine/systems/legacy/DynastyService";
-export { MentorshipService } from "@/engine/systems/training/MentorshipService";
-export { SparringService } from "@/engine/systems/training/SparringService";
-export { computeDisplayTrainingMultiplier } from "@/engine/systems/training/TrainingMath";
-export { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+} from "@/engine/generation/TalentPoolScouting";
+export { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/generation/TalentPoolService";
+export * as talentpool from "@/engine/generation/TalentPoolService";
+export { DynastyService } from "@/engine/legacy/DynastyService";
+export { MentorshipService } from "@/engine/training/MentorshipService";
+export { SparringService } from "@/engine/training/SparringService";
+export { computeDisplayTrainingMultiplier } from "@/engine/training/TrainingMath";
+export { NarrativeService } from "@/engine/narrative/NarrativeService";
 export { error, warn } from "@/engine/utils/Logger";
 export { getHeyaForeignUsage, NATURALIZATION_YEARS } from "@/engine/utils/citizenshipUtils";
 export { formatSaveDate } from "@/engine/utils/formatters";

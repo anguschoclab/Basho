@@ -7,7 +7,7 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Rank } from "@/engine/types/banzuke";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
-import { getSalaryBreakdown } from "@/engine/economics_awards";
+import { getSalaryBreakdown } from "@/engine/economy/awards";
 import type { RikishiEconomicsDTO } from "@/presenters/rikishi/types";
 
 /**

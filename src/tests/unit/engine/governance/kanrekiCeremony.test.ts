@@ -5,7 +5,7 @@ import {
   performKanrekiCeremony,
   KANREKI_AGE,
   KANREKI_POPULARITY_BOOST,
-} from "@/engine/governance/kanrekiCeremony";
+} from "@/engine/governance/ceremonies/kanrekiCeremony";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";

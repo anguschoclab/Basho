@@ -10,7 +10,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { tickStaffWeek } from "@/engine/staff";
+import { tickStaffWeek } from "@/engine/economy/staff";
 
 export function phase01_week_staff(world: WorldState): StateImpact {
   return tickStaffWeek(world);

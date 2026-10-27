@@ -1,8 +1,8 @@
 // @vitest-environment node
 import { describe, it, expect } from "vitest";
-import { toRikishiDescriptor } from "@/engine/descriptorBands";
+import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("toRikishiDescriptor", () => {

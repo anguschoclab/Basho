@@ -14,7 +14,7 @@ import { _generateRookie } from "@/engine/lifecycle/rookieFactory";
 import { generateShikona, generateRikishiName } from "@/engine/shikona/generateShikona";
 import { generateOyakataName } from "@/engine/shikona/oyakataNames";
 import { compareBanzuke, computeVariableSanyakuCounts } from "@/engine/banzuke/banzukeOps";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";

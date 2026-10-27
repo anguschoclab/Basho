@@ -5,9 +5,9 @@ import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_b
 import { phase01_week_candidate_pool } from "@/engine/tick/phases/phase01_week_candidate_pool";
 import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
 import { phase01_week_health } from "@/engine/tick/phases/phase01_week_health";
-import { purchaseMyoseki } from "@/engine/systems/governance/MyosekiTradingService";
-import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
-import { withdrawRikishi } from "@/engine/systems/health/HealthActions";
+import { purchaseMyoseki } from "@/engine/governance/services/MyosekiTradingService";
+import { tickWeekTalentPool } from "@/engine/generation/TalentPoolMaintenance";
+import { withdrawRikishi } from "@/engine/health/HealthActions";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { TRAVEL_ALLOWANCE_YEARLY, TSUKEBITO_COSTS_MONTHLY } from "@/constants/engine/economic";
 import { MONTHLY_DIVISOR, TRAVEL_ALLOWANCE_CASH_SPLIT } from "@/constants/engine/economyExtended";

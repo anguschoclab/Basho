@@ -4,13 +4,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SuccessionModal } from "@/components/stable/SuccessionModal";
 import type { WorldState } from "@/engine/types/world";
 
-vi.mock("@/engine/systems/legacy/DynastyService", () => ({
+vi.mock("@/engine/legacy/DynastyService", () => ({
   DynastyService: {
     findEligibleSuccessors: vi.fn(() => []),
   },
 }));
 
-import { DynastyService } from "@/engine/systems/legacy/DynastyService";
+import { DynastyService } from "@/engine/legacy/DynastyService";
 
 function renderWithProvider(ui: React.ReactElement) {
   return render(<TooltipProvider>{ui}</TooltipProvider>);

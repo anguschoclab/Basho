@@ -20,16 +20,16 @@ import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { mergeImpacts, resolveImpacts, sequenceImpacts } from "@/engine/core/ImpactResolver";
-import { isBashoMonth } from "@/engine/calendar";
+import { isBashoMonth } from "@/engine/calendar/calendar";
 import {
   payTravelAllowance,
   deductTsukebitoCosts,
   distributeKoenkaiToSekitori,
-} from "@/engine/systems/economy/TravelAllowanceService";
-import { tickMonthlyNPC } from "@/engine/npcAI/ticks";
-import { payMochikyukinBonuses } from "@/engine/systems/economy/MochikyukinService";
-import { getKachiNokoriForRikishi } from "@/engine/systems/economy/KachiNokoriService";
-import { renewSponsorContract } from "@/engine/systems/economy/SponsorContractService";
+} from "@/engine/economy/TravelAllowanceService";
+import { tickMonthlyNPC } from "@/engine/npc/ticks";
+import { payMochikyukinBonuses } from "@/engine/economy/MochikyukinService";
+import { getKachiNokoriForRikishi } from "@/engine/economy/KachiNokoriService";
+import { renewSponsorContract } from "@/engine/economy/SponsorContractService";
 import type { Sponsor } from "@/engine/types/sponsors";
 import { processHeyaEconomics, processLoanRepayments } from "@/engine/tick/phases/monthly/economics/index";
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "@/engine/tick/phases/monthly/facilities/index";
@@ -42,11 +42,11 @@ import {
 } from "@/constants/engine/time";
 import { clampFundsToDebtLimit } from "@/constants/engine/economic";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import {
   getExhibitionBashoSchedule,
   simulateExhibitionBasho,
-} from "@/engine/systems/basho/ExhibitionBashoService";
+} from "@/engine/basho/ExhibitionBashoService";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase05_monthly_boundary");

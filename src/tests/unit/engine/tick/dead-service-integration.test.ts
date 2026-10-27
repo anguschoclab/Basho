@@ -10,13 +10,13 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld, makeMockHeya, makeMockBasho } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { generateGyoji } from "@/engine/systems/officials/GyojiService";
+import { generateGyoji } from "@/engine/officials/GyojiService";
 import { resolveBout } from "@/engine/bout/boutResolver";
 import { phase01_week_health } from "@/engine/tick/phases/phase01_week_health";
 import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
 import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_boundary";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
-import { calculateKachiNokori } from "@/engine/systems/economy/KachiNokoriService";
+import { calculateKachiNokori } from "@/engine/economy/KachiNokoriService";
 
 // ─── GyojiService ────────────────────────────────────────────────────────────
 

@@ -7,7 +7,7 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import type { RikishiVisualDTO, RikishiH2HDTO } from "@/presenters/rikishi/types";
-import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 
 /**
  * Transform visual/appearance fields.

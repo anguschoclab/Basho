@@ -4,15 +4,15 @@
  * Economy commands: myoseki trades, sponsors, loans, and staff hiring.
  */
 
-import * as myoseki from "@/engine/myosekiMarket";
-import * as myosekiTrading from "@/engine/systems/governance/MyosekiTradingService";
+import * as myoseki from "@/engine/governance/myosekiMarket";
+import * as myosekiTrading from "@/engine/governance/services/MyosekiTradingService";
 import { MYOSEKI_BASE_ASKING_PRICE } from "@/constants/engine/economic";
-import * as sponsorService from "@/engine/systems/economy/SponsorContractService";
-import * as staffService from "@/engine/staff";
-import * as loans from "@/engine/loans";
+import * as sponsorService from "@/engine/economy/SponsorContractService";
+import * as staffService from "@/engine/economy/staff";
+import * as loans from "@/engine/economy/loans";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { recruitSponsor } from "@/engine/systems/economy/sponsorshipMutations";
-import { rngForWorld } from "@/engine/rng";
+import { recruitSponsor } from "@/engine/economy/sponsorshipMutations";
+import { rngForWorld } from "@/engine/core/rng";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
 import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 

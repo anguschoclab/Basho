@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { TACTIC_PROFILES, getTacticProfile } from "@/engine/bout/tacticProfiles";
 import { TACTIC_TO_FAMILY, resolveCounterTacticBonus } from "@/engine/types/combat";
-import { resolveTacticalClash, determineCPUTactic } from "@/engine/h2h";
+import { resolveTacticalClash, determineCPUTactic } from "@/engine/bout/h2h";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 
 describe("Nekodamashi tactic — profile", () => {
   it("is present in TACTIC_PROFILES", () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 
 describe("New Event Narrative Templates", () => {
   let rng: ReturnType<typeof rngFromSeed>;

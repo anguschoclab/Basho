@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { generateRecommendations } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 import type { WorldState } from "@/engine/types/world";
 
 /**

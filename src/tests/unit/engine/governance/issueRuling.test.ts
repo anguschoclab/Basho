@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { issueGovernanceRuling } from "@/engine/systems/governance/ScandalService";
+import { issueGovernanceRuling } from "@/engine/governance/services/ScandalService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 

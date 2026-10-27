@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   recruitmentBalanceMultiplier,
   recruitmentBalanceMultipliers,
-} from "@/engine/systems/generation/competitiveBalance";
-import { clearQueryCaches } from "@/engine/queries";
+} from "@/engine/generation/competitiveBalance";
+import { clearQueryCaches } from "@/engine/core/queries";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 

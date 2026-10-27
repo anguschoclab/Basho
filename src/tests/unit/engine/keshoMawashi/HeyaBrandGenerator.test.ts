@@ -6,7 +6,7 @@ import { describe, it, expect } from "vitest";
 import {
   generateHeyaBrandIdentities,
   getHeyaBrand,
-} from "@/engine/systems/keshoMawashi/HeyaBrandGenerator";
+} from "@/engine/keshoMawashi/HeyaBrandGenerator";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 
 describe("HeyaBrandGenerator", () => {

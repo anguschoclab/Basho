@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import {
   applyOyakataCreationConfig,
   PLAYER_BACKSTORIES,
-} from "@/engine/systems/generation/applyOyakataConfig";
+} from "@/engine/generation/applyOyakataConfig";
 import { logger } from "@/engine/utils/Logger";
 
 describe("applyOyakataCreationConfig", () => {

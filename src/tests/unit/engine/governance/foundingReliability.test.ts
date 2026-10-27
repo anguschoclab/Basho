@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { runRetirements } from "@/engine/systems/governance/governanceReview";
+import { runRetirements } from "@/engine/governance/services/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 

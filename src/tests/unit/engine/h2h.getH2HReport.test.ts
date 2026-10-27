@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getH2HReport } from "@/engine/h2h";
+import { getH2HReport } from "@/engine/bout/h2h";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { H2H_MAX_RECENT_MEETINGS } from "@/constants/engine/generation";
 

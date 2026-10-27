@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { tickEdgeCrisis, buildEdgeCrisis } from "@/engine/bout/physics/edgeCrisis";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { EDGE_THRESHOLD } from "@/engine/types/combat-spatial";
 import type { EngineStateV2, PushBattleState, CombatPhase } from "@/engine/types/combat-spatial";
 import type { Rikishi } from "@/engine/types/rikishi";

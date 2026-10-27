@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import { getHeyaRoster, clearQueryCaches } from "@/engine/queries";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import { getHeyaRoster, clearQueryCaches } from "@/engine/core/queries";
 
 describe("clearQueryCaches weekly cadence (B1.2)", () => {
   it("does not clear roster cache on non-weekly daily ticks", () => {

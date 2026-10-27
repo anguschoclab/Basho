@@ -5,8 +5,8 @@ import {
   rarityFromShare,
   getKimariteTargetShare,
 } from "@/constants/engine/kimariteFrequencies";
-import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
-import { KIMARITE_STRATEGIES } from "@/engine/kimariteStrategies";
+import { KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
+import { KIMARITE_STRATEGIES } from "@/engine/bout/kimarite/kimariteStrategies";
 
 /**
  * Real-world kimarite frequency targets (makuuchi, sourced from SumoFans

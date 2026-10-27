@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
-import { buildAIContext } from "@/engine/npcAI/contextBuilder";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
-import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
+import { buildAIContext } from "@/engine/npc/contextBuilder";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
+import { makeNPCWeeklyDecision } from "@/engine/npc/weekly";
 
 describe("NPC AI integration", () => {
   it("runs a full weekly decision pipeline for each archetype without crashing", () => {

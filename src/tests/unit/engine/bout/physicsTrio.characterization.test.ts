@@ -11,7 +11,7 @@
  * (archetype pairs × stat spreads × seeds).
  */
 import { describe, it, expect } from "vitest";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { resolveTachiaiV2 } from "@/engine/bout/physics/tachiai";
 import { tickBeltBattle } from "@/engine/bout/physics/tickBeltBattle";
 import { tickPushBattle } from "@/engine/bout/physics/tickPushBattle";

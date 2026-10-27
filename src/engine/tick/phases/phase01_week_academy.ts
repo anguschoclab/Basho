@@ -10,7 +10,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import {
   applyWeeklyDevelopment,
   getYouthAcademy,
-} from "@/engine/systems/recruitment/YouthAcademyService";
+} from "@/engine/recruitment/YouthAcademyService";
 
 export function phase01_week_academy(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_academy");

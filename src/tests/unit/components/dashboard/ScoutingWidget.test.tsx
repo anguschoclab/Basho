@@ -14,7 +14,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 vi.mock("@/contexts/useGame");
 
-vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
+vi.mock("@/engine/generation/TalentPoolService", () => ({
   listVisibleCandidates: vi.fn(() => []),
   getCandidateScoutingLevel: vi.fn(() => 0),
   getTalentPool: vi.fn(() => ({ candidates: [], lastRefreshWeek: 0 })),

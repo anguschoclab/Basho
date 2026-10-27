@@ -10,7 +10,7 @@ export type {
   ReputationBand,
   InjurySeverityBand,
   WinRateBand,
-} from "@/engine/systems/narrative/NarrativeBands";
+} from "@/engine/narrative/NarrativeBands";
 
 export type StatureBand =
   "legendary" | "powerful" | "established" | "rebuilding" | "fragile" | "new";

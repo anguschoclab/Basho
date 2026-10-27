@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { spawnRivalryAgent } from "@/engine/agents/RivalryAgent";
+import { spawnRivalryAgent } from "@/engine/npc/agents/RivalryAgent";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
 

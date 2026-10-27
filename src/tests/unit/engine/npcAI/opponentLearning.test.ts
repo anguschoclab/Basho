@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { onBoutResolvedOpponentModels } from "@/engine/npcAI/opponentLearning";
+import { onBoutResolvedOpponentModels } from "@/engine/npc/opponentLearning";
 import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
-import type { OpponentTacticModel } from "@/engine/ai/types";
+import type { OpponentTacticModel } from "@/engine/npc/types";
 
 /**
  * WS2 contract tests — opponent-model learning.

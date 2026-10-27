@@ -1,4 +1,4 @@
-import type { InjuryType, InjurySeverity, InjuryBodyArea } from "@/engine/systems/health/BodyDefinitions";
+import type { InjuryType, InjurySeverity, InjuryBodyArea } from "@/engine/health/BodyDefinitions";
 /**
  * Rikishi Types
  */
@@ -8,7 +8,7 @@ import type { AvatarConfig } from "@/engine/types/avatar";
 import type { Style, KimariteId, CombatProfile, CombatArchetype } from "@/engine/types/combat";
 export type { Style, KimariteId } from "@/engine/types/combat";
 
-import type { RikishiDescriptor } from "@/engine/descriptorBands";
+import type { RikishiDescriptor } from "@/engine/narrative/descriptorBands";
 import type { Division, Rank, Side } from "@/engine/types/banzuke";
 import type { H2HRecord, MatchResultLog } from "@/engine/types/records";
 import type { RikishiEconomics } from "@/engine/types/economy";
@@ -220,7 +220,7 @@ export interface Rikishi {
   pressPersona?: PressPersona;
 
   /** WS4 — weekly derived agency disposition (satisfaction/restlessness/loyalty). */
-  agency?: import("../rikishiAgency/types").RikishiAgencyState;
+  agency?: import("@/engine/npc/agency/types").RikishiAgencyState;
   /** Set when a granted seek_transfer request marks the rikishi as available for transfer. */
   transferListed?: boolean;
   /** Set when a retirement_consideration request was granted — lifecycle may honor it. */
@@ -295,10 +295,10 @@ export interface Rikishi {
   marketability?: number;
 
   // Ceremonial kesho-mawashi (worn by sekitori during dohyo-iri)
-  keshoMawashi?: import("./keshoMawashi").KeshoMawashi;
+  keshoMawashi?: import("@/engine/types/keshoMawashi").KeshoMawashi;
 
   // Yokozuna ceremonial rope belt (only for yokozuna rank)
-  yokozunaTsuna?: import("./keshoMawashi").YokozunaTsuna;
+  yokozunaTsuna?: import("@/engine/types/keshoMawashi").YokozunaTsuna;
 
   // Citizenship & Tenure (J1)
   joinedHeyaDate?: string; // ISO year string e.g. "2025"

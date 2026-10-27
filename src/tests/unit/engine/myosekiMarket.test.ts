@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buyMyoseki, leaseMyoseki } from "@/engine/myosekiMarket";
+import { buyMyoseki, leaseMyoseki } from "@/engine/governance/myosekiMarket";
 import type { WorldState, MyosekiMarket } from "@/engine/types/index";
 import { MYOSEKI_LEASE_RATE_PERCENT } from "@/constants/engine/economic";
 import { IdMapRuntime, Id } from "@/engine/types/index";

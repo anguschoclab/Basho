@@ -9,7 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { computeFacilitiesBand } from "@/engine/facilities";
+import { computeFacilitiesBand } from "@/engine/economy/facilities";
 import {
   MAINTENANCE_COST_PER_POINT,
   MIN_FACILITY_LEVEL,

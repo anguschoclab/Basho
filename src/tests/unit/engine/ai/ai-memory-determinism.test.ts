@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
-import { buildAIContext } from "@/engine/npcAI/contextBuilder";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
+import { buildAIContext } from "@/engine/npc/contextBuilder";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
 import { chooseTactic } from "@/engine/bout/BoutAI";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("AI memory and decision determinism", () => {
   it("StrategicPlanner.createPlan returns the same plan for identical contexts", () => {

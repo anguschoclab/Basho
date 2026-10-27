@@ -12,17 +12,17 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { rollWeeklyInjury } from "@/engine/systems/health/InjuryService";
-import { tickRikishiRecovery } from "@/engine/systems/health/RecoveryService";
+import { rollWeeklyInjury } from "@/engine/health/InjuryService";
+import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
-import { getHeyaStaffBonuses } from "@/engine/staff";
+import { getHeyaStaffBonuses } from "@/engine/economy/staff";
 import type {
   InjurySeverity,
   InjuryBodyArea,
   InjuryType,
-} from "@/engine/systems/health/BodyDefinitions";
-import { getRikishi } from "@/engine/queries";
-import { recordGomenfuda } from "@/engine/systems/governance/GomenfudaService";
+} from "@/engine/health/BodyDefinitions";
+import { getRikishi } from "@/engine/core/queries";
+import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
 
 interface CurrentInjury {
   id: string;

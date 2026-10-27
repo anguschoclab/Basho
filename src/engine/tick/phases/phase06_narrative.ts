@@ -19,19 +19,19 @@ import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { CrisisService } from "@/engine/systems/narrative/CrisisService";
+import { CrisisService } from "@/engine/narrative/CrisisService";
 import {
   getHeya,
   getRikishi,
   getRikishiAnywhere,
   getHeyaRoster,
   getOyakataForHeya,
-} from "@/engine/queries";
-import { spawnNarrativeAgent } from "@/engine/agents/NarrativeAgent";
+} from "@/engine/core/queries";
+import { spawnNarrativeAgent } from "@/engine/npc/agents/NarrativeAgent";
 import { scanRecentEvents } from "@/engine/events/events";
 import { narrativeEventMap } from "@/engine/bard/narrativeEventMap";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngForWorld } from "@/engine/rng";
+import { rngForWorld } from "@/engine/core/rng";
 import type { NarrativeContext } from "@/engine/types/events";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────

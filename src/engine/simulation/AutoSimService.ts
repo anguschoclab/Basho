@@ -2,7 +2,7 @@ import type { WorldState } from "@/engine/types/world";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoSimResult, BanzukeUpdateHook, BashoName } from "@/engine/types/basho";
-import { getBashoNumber } from "@/engine/calendar";
+import { getBashoNumber } from "@/engine/calendar/calendar";
 import { enterPostBasho, enterInterim } from "@/engine/tick/tickDaily";
 import { advanceWithGates } from "@/engine/tick/advanceWithGates";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -13,7 +13,7 @@ import { SimTuningService, type TuningMetrics } from "@/engine/simulation/SimTun
 import type { ChronicleReport } from "@/engine/types/records";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
-import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "@/engine/queries";
+import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 
 // === AUTO-SIM CONFIGURATION ===

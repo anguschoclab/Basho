@@ -5,7 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { projectNPCAgentActivity } from "@/presenters/npcAgentProjections";
 import { projectRivalStables } from "@/presenters/rivalStablesProjections";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("rival oyakata projection", () => {
   it("projectNPCAgentActivity returns decisions from event log", () => {

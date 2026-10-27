@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 
 describe("playoff.justice_done — archive template", () => {
   it("has template entries for playoff.justice_done", () => {

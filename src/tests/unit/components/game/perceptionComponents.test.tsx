@@ -10,7 +10,7 @@ import {
   H2HPanel,
 } from "@/components/game/perceptionComponents";
 import { Users } from "lucide-react";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
 
 vi.mock("@tanstack/react-router", () => ({

@@ -6,9 +6,9 @@
  *
  * Run: bun scripts/repro-year.ts
  */
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { advanceDaysFast } from "@/engine/tick/tickDaily";
-import { endBasho, publishBanzukeUpdate } from "@/engine/world";
+import { endBasho, publishBanzukeUpdate } from "@/engine/core/world";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SerializationService } from "@/engine/persistence/SerializationService";

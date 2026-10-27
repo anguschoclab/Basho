@@ -25,9 +25,9 @@ export interface CrisisOption {
    * only serializable fields and resolvers re-derive the effect.
    */
   impactGenerator?: (
-    world: import("./world").WorldState,
-    heyaId?: import("./common").Id
-  ) => import("../core/StateImpact").StateImpact;
+    world: import("@/engine/types/world").WorldState,
+    heyaId?: import("@/engine/types/common").Id
+  ) => import("@/engine/core/StateImpact").StateImpact;
 }
 
 export interface ActiveCrisis {

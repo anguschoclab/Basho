@@ -4,7 +4,7 @@
  * Helper functions for event generation.
  */
 
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { WorldState } from "@/engine/types/world";
 
 export function createRngForEvent(world: WorldState, seedPrefix: string) {

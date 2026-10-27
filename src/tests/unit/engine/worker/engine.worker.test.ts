@@ -53,7 +53,7 @@ vi.mock("@/presenters/uiDigest", () => ({
   })),
 }));
 
-vi.mock("@/engine/systems/generation/WorldFactory", () => ({
+vi.mock("@/engine/generation/WorldFactory", () => ({
   generateInitialWorld: vi.fn((seed) => MockFactory.createWorld({ seed })),
 }));
 
@@ -183,7 +183,7 @@ describe("engine.worker", () => {
 
   it("should handle generic errors", async () => {
     // We mock the generateInitialWorld to throw an error for this specific test
-    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory");
+    const { generateInitialWorld } = await import("@/engine/generation/WorldFactory");
     (generateInitialWorld as Mock).mockImplementationOnce(() => {
       throw new Error("Test error message");
     });
@@ -200,7 +200,7 @@ describe("engine.worker", () => {
   });
 
   it("should handle error without message property gracefully", async () => {
-    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory");
+    const { generateInitialWorld } = await import("@/engine/generation/WorldFactory");
     (generateInitialWorld as Mock).mockImplementationOnce(() => {
       throw "String error instead of Error object";
     });

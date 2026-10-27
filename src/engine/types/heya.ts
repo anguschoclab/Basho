@@ -115,7 +115,7 @@ export interface Heya {
   /** Phase 5: Foreign academies built in regions with sufficient presence. */
   foreignAcademies?: ForeignAcademy[];
   /** Player-owned youth academy for developing young prospects. */
-  youthAcademy?: import("./academy").YouthAcademyState;
+  youthAcademy?: import("@/engine/types/academy").YouthAcademyState;
   /** Player opt-out from exhibition (jungyo) basho participation */
   jungyoOptOut?: boolean;
 

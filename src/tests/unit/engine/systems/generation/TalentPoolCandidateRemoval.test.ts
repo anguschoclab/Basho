@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { tickTalentPoolYear } from "@/engine/systems/generation/TalentPoolStateService";
+import { tickTalentPoolYear } from "@/engine/generation/TalentPoolStateService";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";

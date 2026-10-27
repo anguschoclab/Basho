@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { onBoutResolvedEconomics } from "@/engine/economics";
+import { onBoutResolvedEconomics } from "@/engine/economy/economics";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { KENSHO_SPLIT, KENSHO_AMOUNT_PER_ENVELOPE } from "@/constants/engine/economic";
 import { makeMockHeya, makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";

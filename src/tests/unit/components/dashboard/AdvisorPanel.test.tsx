@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AdvisorPanel } from "@/components/dashboard/AdvisorPanel";
-import type { AIRecommendation } from "@/engine/ai/types";
+import type { AIRecommendation } from "@/engine/npc/types";
 
 function renderPanel(recommendations: AIRecommendation[] = []) {
   return render(

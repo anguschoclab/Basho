@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 

@@ -1,9 +1,9 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import type { ArchiveService } from "@/engine/storage/opfsArchive";
+import type { ArchiveService } from "@/engine/persistence/storage/opfsArchive";
 import type { BoutResult, BashoResult } from "@/engine/types/basho";
 import type { AlmanacSnapshot } from "@/engine/almanac/types";
-import type { ArchivedYear } from "@/engine/historyCache";
+import type { ArchivedYear } from "@/engine/history/historyCache";
 import { logger } from "@/engine/utils/Logger";
 
 // --- Fake archive service factory ---
@@ -114,8 +114,8 @@ function makeAlmanacSnapshot(bashoNumber: number): AlmanacSnapshot {
 // The fake is stored on a module-level variable so each test can configure it.
 let fakeArchive: ReturnType<typeof makeFakeArchive>;
 
-vi.mock("@/engine/storage/opfsArchive", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/engine/storage/opfsArchive")>();
+vi.mock("@/engine/persistence/storage/opfsArchive", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/engine/persistence/storage/opfsArchive")>();
   return {
     ...actual,
     get opfsArchiveService() {
@@ -124,8 +124,8 @@ vi.mock("@/engine/storage/opfsArchive", async (importOriginal) => {
   };
 });
 
-vi.mock("@/engine/storage/electronArchive", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/engine/storage/electronArchive")>();
+vi.mock("@/engine/persistence/storage/electronArchive", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/engine/persistence/storage/electronArchive")>();
   return {
     ...actual,
     get electronArchiveService() {
@@ -135,7 +135,7 @@ vi.mock("@/engine/storage/electronArchive", async (importOriginal) => {
 });
 
 // Import after mocks are set up
-const { historyCache } = await import("@/engine/historyCache");
+const { historyCache } = await import("@/engine/history/historyCache");
 
 describe("HistoryLRUCache", () => {
   beforeEach(() => {

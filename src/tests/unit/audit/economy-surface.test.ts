@@ -22,7 +22,7 @@ describe("MochikyukinService — tick phase wiring", () => {
   });
 
   it("accumulateMochikyukinPoints is exported and reachable", () => {
-    const svc = readSrcFile("engine/systems/economy/MochikyukinService.ts");
+    const svc = readSrcFile("engine/economy/MochikyukinService.ts");
     expect(svc).toContain("export function accumulateMochikyukinPoints");
     expect(svc).toContain("export function payMochikyukinBonuses");
   });
@@ -36,7 +36,7 @@ describe("InfrastructureService — tick phase wiring", () => {
   });
 
   it("startConstruction is exported and used by FacilitiesPage", () => {
-    const svc = readSrcFile("engine/systems/economy/InfrastructureService.ts");
+    const svc = readSrcFile("engine/economy/InfrastructureService.ts");
     expect(svc).toContain("startConstruction");
     expect(svc).toContain("processCompletionTick");
     expect(svc).toContain("getHeyaBonuses");
@@ -51,7 +51,7 @@ describe("SponsorContractService — tick phase wiring", () => {
   });
 
   it("renewSponsorContract is exported", () => {
-    const svc = readSrcFile("engine/systems/economy/SponsorContractService.ts");
+    const svc = readSrcFile("engine/economy/SponsorContractService.ts");
     expect(svc).toContain("export function renewSponsorContract");
   });
 });
@@ -114,7 +114,7 @@ describe("FacilitiesPage — renders infrastructure fields", () => {
 
 describe("Economy selectors — state field reachability", () => {
   it("getStableFinances reads heya.funds and economy fields", () => {
-    const selectors = readSrcFile("engine/selectors.ts");
+    const selectors = readSrcFile("engine/core/selectors.ts");
     expect(selectors).toContain("getStableFinances");
     expect(selectors).toMatch(/\.funds/);
   });
@@ -202,7 +202,7 @@ describe("yokozunaAttendants — wiring", () => {
   });
 
   it("has a guard to skip reassignment if attendants already set", () => {
-    const svc = readSrcFile("engine/governance/yokozunaAttendants.ts");
+    const svc = readSrcFile("engine/governance/ceremonies/yokozunaAttendants.ts");
     expect(svc).toContain("tachimochiId");
     expect(svc).toContain("tsuyuharaiId");
   });

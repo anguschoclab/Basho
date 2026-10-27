@@ -11,11 +11,11 @@ import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
 import { RIVALRY_TONE_LABELS } from "@/constants/engine/rivalry";
 import { queryEvents } from "@/engine/events/events";
-import { generateH2HCommentary } from "@/engine/h2h";
+import { generateH2HCommentary } from "@/engine/bout/h2h";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { selectInjuredRikishi, selectRecentEvents } from "@/presenters/selectors";
-import { generateRecommendations } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 
 /** Type representing digest kind. */
 export type DigestKind =

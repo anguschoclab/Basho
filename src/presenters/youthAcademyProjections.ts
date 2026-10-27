@@ -8,7 +8,7 @@ import {
   getMaxStaff,
   getUpgradeCost,
   MAX_ACADEMY_LEVEL,
-} from "@/engine/systems/recruitment/YouthAcademyService";
+} from "@/engine/recruitment/YouthAcademyService";
 import type { AcademyStaff } from "@/engine/types/academy";
 import type { AvatarIdentity } from "@/engine/types/avatar";
 

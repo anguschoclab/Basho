@@ -4,7 +4,7 @@
  * digests and pure helpers across a seeded fixture matrix.
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { RivalryService } from "@/engine/narrative/RivalryService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";

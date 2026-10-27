@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { BloodlineService } from "@/engine/systems/legacy/BloodlineService";
+import { BloodlineService } from "@/engine/legacy/BloodlineService";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { BloodlineTrait } from "@/engine/types/dynasty";
 import type { WorldState } from "@/engine/types/world";

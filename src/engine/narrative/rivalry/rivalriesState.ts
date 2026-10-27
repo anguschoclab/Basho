@@ -14,8 +14,8 @@ import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RivalriesState, RivalryPairState } from "@/constants/engine/rivalry";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { makeRivalryKey } from "@/engine/systems/narrative/rivalry/state";
-import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { makeRivalryKey } from "@/engine/narrative/rivalry/state";
+import { RivalryService } from "@/engine/narrative/RivalryService";
 
 // --- AUTHORITATIVE DELEGATION ---
 

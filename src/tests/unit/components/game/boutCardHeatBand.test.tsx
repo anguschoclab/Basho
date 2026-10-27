@@ -14,7 +14,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { getHeatBand, HEAT_CONFIG } from "@/components/game/boutCardTypes";
-import { toRivalryHeatBand } from "@/engine/descriptorBands";
+import { toRivalryHeatBand } from "@/engine/narrative/descriptorBands";
 
 const CANONICAL_BANDS = ["dormant", "simmering", "heated", "fierce", "legendary"];
 

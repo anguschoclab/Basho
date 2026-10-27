@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { endBasho } from "@/engine/world";
+import { endBasho } from "@/engine/core/world";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 // Mock post-basho resolution to avoid complex setup

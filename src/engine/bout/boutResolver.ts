@@ -24,7 +24,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Side } from "@/engine/types/banzuke";
 // We import the B+ spatial physics runner
 import { resolveBoutPhysics, conditionMultiplier } from "@/engine/bout/boutPhysics";
-import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { RivalryService } from "@/engine/narrative/RivalryService";
 
 import { clamp } from "@/engine/utils/math";
 import type { BoutTactic } from "@/engine/types/combat";
@@ -107,7 +107,7 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
  * @param {Rikishi} east - East rikishi.
  * @param {Rikishi} west - West rikishi.
  * @param {BashoState} basho - Current basho state.
- * @param {import("../types/combat").BoutTactic} [playerTactic] - Player tactic override.
+ * @param {import("@/engine/types/combat").BoutTactic} [playerTactic] - Player tactic override.
  * @param {WorldState} [world] - World state for rivalry and kensho data.
  * @returns {{ result: BoutResult; impact: StateImpact }} Bout result and state impact.
  *

@@ -16,7 +16,7 @@ import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 import { isBodyFalling } from "@/engine/bout/boutSpatial";
 import { skillTieBreak } from "@/engine/bout/boutUtils";
 import { KimariteSelectionEngine } from "@/engine/bout/KimariteSelectionEngine";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type {
   EngineStateV2,
   PushBattleState,
@@ -29,9 +29,9 @@ import type { CombatProfile } from "@/engine/types/combat";
 // with none (zero selection weight). Both have always-true conditions.
 // (Defined inside the hoisted factory — see vitest vi.mock docs.) ────────────
 
-vi.mock("@/engine/kimariteStrategies", async (importOriginal) => {
+vi.mock("@/engine/bout/kimarite/kimariteStrategies", async (importOriginal) => {
   const orig =
-    await importOriginal<typeof import("@/engine/kimariteStrategies")>();
+    await importOriginal<typeof import("@/engine/bout/kimarite/kimariteStrategies")>();
   const TESTWAZA = {
     id: "testwaza",
     name: "Test Waza",

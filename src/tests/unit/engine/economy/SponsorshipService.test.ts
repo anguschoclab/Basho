@@ -11,7 +11,7 @@ import {
   targetKoenkaiBandFromPrestige,
   recalculateKoenkaiBand,
   adjustKoenkaiBandToPrestige,
-} from "@/engine/systems/economy/SponsorshipService";
+} from "@/engine/economy/SponsorshipService";
 import type { WorldState } from "@/engine/types/world";
 import type {
   Sponsor,
@@ -23,7 +23,7 @@ import type {
 import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("SponsorshipService", () => {

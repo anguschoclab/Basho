@@ -3,11 +3,11 @@ import type { BashoState } from "@/engine/types/basho";
 import type { BashoPerformance } from "@/engine/types/banzuke";
 import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { getRikishi } from "@/engine/queries";
-import { KihakuService } from "@/engine/systems/governance/KihakuService";
+import { getRikishi } from "@/engine/core/queries";
+import { KihakuService } from "@/engine/governance/services/KihakuService";
 import { finiteOr } from "@/engine/utils/math";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
-import { BASHO_CALENDAR } from "@/engine/calendar";
+import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,

@@ -7,10 +7,10 @@
  */
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { autosaveWithSignal } from "@/contexts/gameHelpers";
-import { autosave } from "@/engine/saveload";
+import { autosave } from "@/engine/persistence/saveload";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
-vi.mock("@/engine/saveload", () => ({
+vi.mock("@/engine/persistence/saveload", () => ({
   autosave: vi.fn(() => true),
 }));
 

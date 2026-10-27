@@ -30,15 +30,15 @@ vi.mock("@/engine/utils/citizenshipUtils", () => ({
   getHeyaForeignUsage: () => 0,
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getHeyaRoster: () => [],
 }));
 
-vi.mock("@/engine/archetype", () => ({
+vi.mock("@/engine/bout/archetype", () => ({
   getCombatArchetypeDescription: () => "Test archetype",
 }));
 
-vi.mock("@/engine/descriptorBands", () => ({
+vi.mock("@/engine/narrative/descriptorBands", () => ({
   toPotentialBand: (seed: number) => (seed >= 80 ? "elite" : seed >= 60 ? "high" : "moderate"),
 }));
 

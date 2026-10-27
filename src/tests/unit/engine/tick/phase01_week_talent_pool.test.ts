@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { phase01_week_talent_pool } from "@/engine/tick/phases/phase01_week_talent_pool";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import * as talentpool from "@/engine/generation/TalentPoolService";
 
-vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
+vi.mock("@/engine/generation/TalentPoolService", () => ({
   tickWeekTalentPool: vi.fn(() => ({ type: "talent_pool_impact" })),
 }));
 

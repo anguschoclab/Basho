@@ -3,10 +3,10 @@ import type { BashoState } from "@/engine/types/basho";
 import type { MovementEvent } from "@/engine/types/banzuke";
 import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { checkShikonaChange, recordShikonaChange } from "@/engine/history";
-import { getRikishi, getHeya } from "@/engine/queries";
+import { checkShikonaChange, recordShikonaChange } from "@/engine/history/history";
+import { getRikishi, getHeya } from "@/engine/core/queries";
 import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
-import { recordSekitoriPromotion } from "@/engine/systems/legacy/tenure";
+import { recordSekitoriPromotion } from "@/engine/legacy/tenure";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 type Builder = ReturnType<typeof createImpactBuilder>;

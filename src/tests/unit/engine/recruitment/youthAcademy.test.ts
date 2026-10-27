@@ -6,9 +6,9 @@ import {
   getMaxProspects,
   getQualityBonus,
   MAX_ACADEMY_LEVEL,
-} from "@/engine/systems/recruitment/YouthAcademyService";
+} from "@/engine/recruitment/YouthAcademyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { WorldState } from "@/engine/types/world";
 
 function setCash(world: WorldState, heyaId: string, cash: number) {

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect } from "vitest";
-import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
-import { KIMARITE_STRATEGIES } from "@/engine/kimariteStrategies";
+import { KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
+import { KIMARITE_STRATEGIES } from "@/engine/bout/kimarite/kimariteStrategies";
 
 describe("Kimarite descriptions and nameJa", () => {
   it("every KIMARITE_REGISTRY entry has a description that is NOT the placeholder", () => {

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { saveGame, loadGame, importSave } from "@/engine/saveload";
+import { saveGame, loadGame, importSave } from "@/engine/persistence/saveload";
 import {
   setStorageProvider,
   resetStorageProvider,
   type IStorageProvider,
-} from "@/engine/storageProvider";
+} from "@/engine/persistence/storageProvider";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { MigrationService } from "@/engine/persistence/MigrationService";
@@ -13,7 +13,7 @@ import { logger } from "@/engine/utils/Logger";
 
 // Note: runArchivalPruning was removed from the save path.
 // Retired-rikishi summarization now happens at year-end in SimulationRunner.
-vi.mock("@/engine/archival", () => ({
+vi.mock("@/engine/history/archival", () => ({
   runRetiredRikishiSummarization: vi.fn(() => ({
     metadata: { source: "runRetiredRikishiSummarization", timestamp: 0 },
   })),

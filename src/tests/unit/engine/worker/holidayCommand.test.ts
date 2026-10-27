@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { runHoliday } from "@/engine/holiday";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import type { HolidayConfig } from "@/engine/holiday";
+import { runHoliday } from "@/engine/calendar/holiday";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import type { HolidayConfig } from "@/engine/calendar/holiday";
 import type { WorldState } from "@/engine/types/world";
 import { logEventImpact } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

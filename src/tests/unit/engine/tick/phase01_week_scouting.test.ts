@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { phase01_week_scouting } from "@/engine/tick/phases/phase01_week_scouting";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import * as scoutingStore from "@/engine/scoutingStore";
+import * as scoutingStore from "@/engine/recruitment/scoutingStore";
 
-vi.mock("@/engine/scoutingStore", () => ({
+vi.mock("@/engine/recruitment/scoutingStore", () => ({
   tickWeekScouting: vi.fn(() => ({ type: "scouting_impact" })),
 }));
 

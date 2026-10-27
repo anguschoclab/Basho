@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { gameReducer } from "@/contexts/gameReducer";
 import { initialGameState } from "@/contexts/gameTypes";
 import type { GameAction } from "@/contexts/gameTypes";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("Game Reducer Purity", () => {
   it("MUST NOT mutate the previous state object on LOAD_WORLD", () => {

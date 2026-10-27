@@ -5,7 +5,7 @@ import type { BashoName, BoutResult, BashoResult, KeyBoutEntry } from "@/engine/
 import type { RikishiCareerRecord, NotableBoutEntry, NarrativeHighlight } from "@/engine/almanac/types";
 import { MAX_NOTABLE_BOUTS, MAX_NARRATIVE_HIGHLIGHTS } from "@/engine/almanac/types";
 import { extractNotableNarrativeLines, isNotableBout } from "@/engine/bout/boutNarrative";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 

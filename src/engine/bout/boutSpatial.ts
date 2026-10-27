@@ -1,4 +1,4 @@
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Side } from "@/engine/types/banzuke";
 import type { KimariteId } from "@/engine/types/combat";

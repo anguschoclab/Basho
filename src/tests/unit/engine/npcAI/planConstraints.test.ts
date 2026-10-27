@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { applyPlanConstraints, type CoordinationInput } from "@/engine/npcAI/TacticalCoordinator";
-import type { AIPlan } from "@/engine/ai/types";
+import { applyPlanConstraints, type CoordinationInput } from "@/engine/npc/TacticalCoordinator";
+import type { AIPlan } from "@/engine/npc/types";
 
 describe("applyPlanConstraints", () => {
   function makeInput(): CoordinationInput {

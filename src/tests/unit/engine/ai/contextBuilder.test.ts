@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
-import { buildAIContext } from "@/engine/npcAI/contextBuilder";
+import { buildAIContext } from "@/engine/npc/contextBuilder";
 
 const HEYA_ID = "h1";
 const OYAKATA_ID = "o1";

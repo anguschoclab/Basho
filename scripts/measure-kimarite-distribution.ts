@@ -18,12 +18,12 @@
 
 import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import {
   KIMARITE_FREQUENCY_TARGETS,
   KIMARITE_CATEGORY_TARGETS,
 } from "@/constants/engine/kimariteFrequencies";
-import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
+import { KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Style, CombatArchetype } from "@/engine/types/combat";
 

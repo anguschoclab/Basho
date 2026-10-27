@@ -14,13 +14,13 @@ import type { Oyakata } from "@/engine/types/oyakata";
 type Style = "oshi" | "yotsu" | "hybrid";
 
 // Mock query functions
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getOyakataForHeya: vi.fn(),
   getHeyaStaff: vi.fn(),
   getHeyaStyleBias: vi.fn(),
 }));
 
-import { getOyakataForHeya, getHeyaStaff, getHeyaStyleBias } from "@/engine/queries";
+import { getOyakataForHeya, getHeyaStaff, getHeyaStyleBias } from "@/engine/core/queries";
 
 const mockGetOyakataForHeya = getOyakataForHeya as Mock;
 const mockGetHeyaStaff = getHeyaStaff as Mock;

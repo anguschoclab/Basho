@@ -12,7 +12,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { warn } from "@/engine/utils/Logger";
 import { parseSave, stringifySave } from "@/engine/persistence/collectionCodec";
-import { generateGyoji, generateShimpan } from "@/engine/systems/officials/GyojiService";
+import { generateGyoji, generateShimpan } from "@/engine/officials/GyojiService";
 
 export interface MigrationContext {
   fromVersion: SaveVersion;

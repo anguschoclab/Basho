@@ -19,7 +19,7 @@ vi.mock("@/contexts/gameHelpers", () => ({
   combineReducers: vi.fn((slices: unknown[]) => slices[0]),
 }));
 
-vi.mock("@/engine/world", () => ({
+vi.mock("@/engine/core/world", () => ({
   startBasho: vi.fn((world: unknown) => world),
   advanceBashoDay: vi.fn((world: any) => ({
     ...world,

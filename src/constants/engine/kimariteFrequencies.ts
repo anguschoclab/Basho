@@ -8,7 +8,7 @@
  * Kept as the canonical import site so existing consumers do not change.
  */
 
-import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
+import { KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
 import { KIMARITE_FREQUENCY_TARGETS } from "@/constants/engine/kimariteTargets";
 
 export {

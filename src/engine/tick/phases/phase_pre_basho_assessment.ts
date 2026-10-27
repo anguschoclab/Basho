@@ -10,9 +10,9 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { PreBashoAssessment } from "@/engine/types/world";
-import { triggerPreBashoJournalism } from "@/engine/systems/media/MediaService";
+import { triggerPreBashoJournalism } from "@/engine/media/MediaService";
 import { mergeImpacts } from "@/engine/core/ImpactResolver";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import {
   ASSESSMENT_DAYS_MIN,
   ASSESSMENT_DAYS_MAX,

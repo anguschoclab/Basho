@@ -4,7 +4,7 @@ import {
   getEligibleOpponents,
   getAvailableStables,
   getStableFinances,
-} from "@/engine/selectors";
+} from "@/engine/core/selectors";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 

@@ -13,7 +13,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult, BashoState } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";
 import type { BoutContext } from "@/engine/bout/boutUtils";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import {
   KINJITE_MIN_RATIO_FOR_FOUL_RISK,
   KINJITE_BASE_DQ_CHANCE,

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { PA_BY_RANK } from "@/constants/engine/development";
-import { getStatCeiling } from "@/engine/systems/training/TrainingMath";
+import { getStatCeiling } from "@/engine/training/TrainingMath";
 
 describe("lower-division potential", () => {
   it("gives amateur divisions headroom to reach sekitori", () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { tickStaffWeek, generateStaff } from "@/engine/staff";
+import { tickStaffWeek, generateStaff } from "@/engine/economy/staff";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Staff } from "@/engine/types/staff";

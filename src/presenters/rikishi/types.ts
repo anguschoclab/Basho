@@ -8,15 +8,15 @@
 import type { Id } from "@/engine/types/common";
 import type { Rank, Division, Side } from "@/engine/types/banzuke";
 import type { Style, CombatArchetype } from "@/engine/types/combat";
-import type { RikishiDescriptor, PotentialBand } from "@/engine/descriptorBands";
-import type { SalaryBreakdown } from "@/engine/economics_awards";
+import type { RikishiDescriptor, PotentialBand } from "@/engine/narrative/descriptorBands";
+import type { SalaryBreakdown } from "@/engine/economy/awards";
 import type { AvatarConfig, AvatarRenderData } from "@/engine/types/avatar";
 import type { KeshoMawashi, YokozunaTsuna } from "@/engine/types/keshoMawashi";
 import type {
   AgeBand,
   WeightBand,
   HeightBand,
-} from "@/engine/systems/narrative/NarrativeBands";
+} from "@/engine/narrative/NarrativeBands";
 
 // ============================================================================
 // Core DTOs

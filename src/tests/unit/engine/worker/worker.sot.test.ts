@@ -52,7 +52,7 @@ vi.mock("@/presenters/uiDigest", () => ({
   })),
 }));
 
-vi.mock("@/engine/systems/generation/WorldFactory", () => ({
+vi.mock("@/engine/generation/WorldFactory", () => ({
   generateInitialWorld: vi.fn((seed) => MockFactory.createWorld({ seed })),
 }));
 

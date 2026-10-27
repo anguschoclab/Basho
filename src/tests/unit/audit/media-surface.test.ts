@@ -24,7 +24,7 @@ describe("PostBashoPressService — call site wiring", () => {
   });
 
   it("exports generatePressConference", () => {
-    const svc = readSrcFile("engine/systems/narrative/PostBashoPressService.ts");
+    const svc = readSrcFile("engine/narrative/PostBashoPressService.ts");
     expect(svc).toContain("generatePressConference");
   });
 });

@@ -6,15 +6,15 @@
  */
 
 import type { EngineCommand } from "@/engine/worker/types";
-import { withdrawRikishi, treatInjury } from "@/engine/systems/health/HealthActions";
-import { recordGomenfuda } from "@/engine/systems/governance/GomenfudaService";
-import { investInFacility } from "@/engine/facilities";
-import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
-import { assignMentor } from "@/engine/lineage";
-import { removeMentor } from "@/engine/systems/training/MentorshipService";
-import { assignSparringPair, removeSparringPair } from "@/engine/systems/training/SparringService";
-import { setTsukebito, clearTsukebito } from "@/engine/systems/training/TsukebitoService";
-import { updateHeyaInWorld } from "@/engine/queries";
+import { withdrawRikishi, treatInjury } from "@/engine/health/HealthActions";
+import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
+import { investInFacility } from "@/engine/economy/facilities";
+import { InfrastructureService } from "@/engine/economy/InfrastructureService";
+import { assignMentor } from "@/engine/legacy/lineage";
+import { removeMentor } from "@/engine/training/MentorshipService";
+import { assignSparringPair, removeSparringPair } from "@/engine/training/SparringService";
+import { setTsukebito, clearTsukebito } from "@/engine/training/TsukebitoService";
+import { updateHeyaInWorld } from "@/engine/core/queries";
 import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { StateImpact } from "@/engine/core/StateImpact";

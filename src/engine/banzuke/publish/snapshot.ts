@@ -4,9 +4,9 @@ import type { BanzukeEntry } from "@/engine/types/banzuke";
 import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { buildBanzukeSnapshot } from "@/engine/banzuke/banzukeSnapshot";
-import { createEmptyHistoryIndex, indexBashoResult, makeBashoKey } from "@/engine/historyIndex";
+import { createEmptyHistoryIndex, indexBashoResult, makeBashoKey } from "@/engine/history/historyIndex";
 import { enterInterim } from "@/engine/tick/tickDaily";
-import { getNextBasho, getBashoNumber } from "@/engine/calendar";
+import { getNextBasho, getBashoNumber } from "@/engine/calendar/calendar";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   MentorshipService,
   checkMentorMenteeBout,
-} from "@/engine/systems/training/MentorshipService";
+} from "@/engine/training/MentorshipService";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("MentorshipService.canMentor", () => {

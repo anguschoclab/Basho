@@ -9,7 +9,7 @@ import type {
   TrainingProfile,
 } from "@/engine/types/training";
 import { ensureHeyaTrainingState } from "@/presenters/uiDigest";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/engine/core/queries";
 import {
   INTENSITY_OPTIONS,
   FOCUS_OPTIONS,

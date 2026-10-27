@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { resolveTachiaiV2 } from "@/engine/bout/physics/tachiai";
 import { initEngineStateV2 } from "@/engine/bout/physics/initState";
 import { COUNTER_TACTIC_BONUS } from "@/engine/types/combat";

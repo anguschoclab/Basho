@@ -29,20 +29,20 @@ import type { HeyaTrainingState, SparringState } from "@/engine/types/training";
 import type { GovernanceRuling, IchimonName, Faction } from "@/engine/types/economy";
 import type { MyosekiMarket } from "@/engine/types/myoseki";
 import type { Rank } from "@/engine/types/banzuke";
-import type { ExhibitionRegion } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import type { ExhibitionRegion } from "@/engine/worldCircuit/WorldCircuitService";
 import type { AlmanacSnapshot } from "@/engine/almanac/types";
 import type { GlobalCupState, GlobalCupHistoryEntry } from "@/engine/types/globalCup";
 import type { BloodlineRegistry } from "@/engine/types/dynasty";
-import type { LineageEdge } from "@/engine/lineage";
-import type { HallOfFameState } from "@/engine/hallOfFame";
-import type { HistoryIndex } from "@/engine/historyIndex";
+import type { LineageEdge } from "@/engine/legacy/lineage";
+import type { HallOfFameState } from "@/engine/history/hallOfFame";
+import type { HistoryIndex } from "@/engine/history/historyIndex";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
-import type { SeededRNG } from "@/engine/rng";
-import type { ScoutedRikishi } from "@/engine/systems/recruitment/ScoutingService";
+import type { SeededRNG } from "@/engine/core/rng";
+import type { ScoutedRikishi } from "@/engine/recruitment/ScoutingService";
 import type { OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
 import type { SponsorPool } from "@/engine/types/sponsors";
 import type { MediaState } from "@/engine/types/media";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
 import type { RivalriesState } from "@/constants/engine/rivalry";
 import type { TutorialState } from "@/engine/types/tutorial";
 import type { TalentPoolWorldState } from "@/engine/types/talent";
@@ -232,7 +232,7 @@ export interface WorldState {
   factions?: Record<IchimonName, Faction>;
 
   /** WS5 — per-ichimon posture elected weekly by the faction leader heya. */
-  factionPostures?: Partial<Record<IchimonName, import("./economy").FactionPosture>>;
+  factionPostures?: Partial<Record<IchimonName, import("@/engine/types/economy").FactionPosture>>;
 
   almanacSnapshots?: AlmanacSnapshot[];
   tutorialState?: TutorialState;
@@ -330,7 +330,7 @@ export interface WorldState {
    * surface as `rikishi_request` pendingDecisions; NPC requests resolve in
    * the weekly NPC phase.
    */
-  pendingRikishiRequests?: import("../rikishiAgency/types").RikishiRequest[];
+  pendingRikishiRequests?: import("@/engine/npc/agency/types").RikishiRequest[];
 
   /** Chronicle/Historical record browser state */
   chronicle?: {
@@ -401,10 +401,10 @@ export interface WorldState {
   transientContext?: TransientContext;
 
   // Heya brand identities for kesho-mawashi generation
-  heyaBrandIdentities?: IdMapRuntime<import("./keshoMawashi").HeyaBrandIdentity>;
+  heyaBrandIdentities?: IdMapRuntime<import("@/engine/types/keshoMawashi").HeyaBrandIdentity>;
 
   // Player-set custom kesho configs (Phase K)
-  customKeshoConfigs?: Record<string, Partial<import("./keshoMawashi").KeshoMawashi>>;
+  customKeshoConfigs?: Record<string, Partial<import("@/engine/types/keshoMawashi").KeshoMawashi>>;
 
   /** Pending exhibition tour invitations (WorldCircuitService) */
   pendingExhibitions?: PendingExhibition[];

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { buildAIContext } from "@/engine/npcAI/contextBuilder";
+import { buildAIContext } from "@/engine/npc/contextBuilder";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import type { AIContext } from "@/engine/ai/types";
+import type { AIContext } from "@/engine/npc/types";
 
 describe("buildAIContext — return shape (Step 2 regression)", () => {
   it("returns an AIContext with all required fields populated", () => {

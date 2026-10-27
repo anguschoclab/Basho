@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { CrisisService } from "@/engine/systems/narrative/CrisisService";
-import { evaluatePendingDecisions } from "@/engine/loop/LoopDecisionEngine";
+import { CrisisService } from "@/engine/narrative/CrisisService";
+import { evaluatePendingDecisions } from "@/engine/npc/decision/LoopDecisionEngine";
 import { checkTriggeredDrama } from "@/engine/bard/dramaGenerator";
 import { applyImpact } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

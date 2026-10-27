@@ -6,7 +6,7 @@ import type { AcademyManagementProjection } from "@/components/stable/AcademyMan
 import {
   WorldCircuitService,
   type ExhibitionRegion,
-} from "@/engine/systems/worldCircuit/WorldCircuitService";
+} from "@/engine/worldCircuit/WorldCircuitService";
 
 export type { ExhibitionRegion };
 

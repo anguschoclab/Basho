@@ -14,7 +14,7 @@ const ROOT = join(__dirname, "../../../..");
 
 describe("NPC agents — weekly decision wiring", () => {
   // Agent spawns + execution live in the extracted agent-layer module.
-  const weekly = readSrcFile("engine/npcAI/weekly/agents.ts");
+  const weekly = readSrcFile("engine/npc/weekly/agents.ts");
 
   it("imports spawnFinanceAgent", () => {
     expect(weekly).toContain("spawnFinanceAgent");
@@ -47,7 +47,7 @@ describe("NPC agents — weekly decision wiring", () => {
   it("emits NPC_MANAGER_DECISION events for agent results", () => {
     // WS4: execution moved to executeAgentDecisions, which owns the
     // NPC_MANAGER_DECISION emission for each executed domain.
-    const execution = readSrcFile("engine/npcAI/execution.ts");
+    const execution = readSrcFile("engine/npc/execution.ts");
     expect(weekly).toContain("executeAgentDecisions");
     expect(execution).toContain("NPC_MANAGER_DECISION");
   });
@@ -74,7 +74,7 @@ describe("NPC AI tick phase — phase01_week_npc_ai", () => {
 });
 
 describe("Agent exports — all agents are exported from index", () => {
-  const index = readSrcFile("engine/agents/index.ts");
+  const index = readSrcFile("engine/npc/agents/index.ts");
 
   it("exports spawnFinanceAgent", () => {
     expect(index).toContain("FinanceAgent");
@@ -98,7 +98,7 @@ describe("Agent exports — all agents are exported from index", () => {
 });
 
 describe("NPC workers — npcAIWorkers", () => {
-  const workers = readSrcFile("engine/npcAIWorkers.ts");
+  const workers = readSrcFile("engine/npc/npcAIWorkers.ts");
 
   it("exports spawnTrainingWorker", () => {
     expect(workers).toContain("spawnTrainingWorker");

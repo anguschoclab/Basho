@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { logger } from "@/engine/utils/Logger";
 import { safeCall } from "@/engine/utils/safe";
-import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOyakataConfig";
-import { generateGovernanceHeadline } from "@/engine/systems/media/MediaEventService";
+import { applyOyakataCreationConfig } from "@/engine/generation/applyOyakataConfig";
+import { generateGovernanceHeadline } from "@/engine/media/MediaEventService";
 import { advanceDays } from "@/engine/tick/tickDaily";
 import { interpolate } from "@/engine/bard/BardEngine";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";

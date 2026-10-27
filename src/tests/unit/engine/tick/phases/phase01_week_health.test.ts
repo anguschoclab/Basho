@@ -6,7 +6,7 @@ import type { WorldState, ActiveModifiers } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD } from "@/constants/engine/condition";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("phase01_week_health", () => {
   describe("recoveryMultiplier wiring", () => {

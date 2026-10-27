@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { phase01_week_recruitment } from "@/engine/tick/phases/phase01_week_recruitment";
-import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
+import { tickWeekTalentPool } from "@/engine/generation/TalentPoolMaintenance";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";

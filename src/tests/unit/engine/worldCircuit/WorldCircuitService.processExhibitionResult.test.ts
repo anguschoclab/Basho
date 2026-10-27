@@ -3,8 +3,8 @@
  * Plan Feature 11 Test-First Protocol item 1.
  */
 import { describe, it, expect } from "vitest";
-import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("WorldCircuitService.processExhibitionResult", () => {
   it("is a function on WorldCircuitService", () => {

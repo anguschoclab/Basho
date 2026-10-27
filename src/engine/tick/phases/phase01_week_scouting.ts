@@ -10,7 +10,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { tickWeekScouting } from "@/engine/scoutingStore";
+import { tickWeekScouting } from "@/engine/recruitment/scoutingStore";
 
 export function phase01_week_scouting(world: WorldState): StateImpact {
   return tickWeekScouting(world);

@@ -7,8 +7,8 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { getHallOfFame } from "@/engine/hallOfFame";
-import type { HoFInductee } from "@/engine/hallOfFame";
+import { getHallOfFame } from "@/engine/history/hallOfFame";
+import type { HoFInductee } from "@/engine/history/hallOfFame";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { projectRikishi } from "@/presenters/rikishi/index";
 

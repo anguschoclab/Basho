@@ -7,10 +7,10 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import type { FatigueBand } from "@/engine/systems/narrative/NarrativeBands";
+import type { FatigueBand } from "@/engine/narrative/NarrativeBands";
 import { ensureHeyaTrainingState } from "@/presenters/uiDigest";
-import { toFatigueBand } from "@/engine/descriptorBands";
-import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { toFatigueBand } from "@/engine/narrative/descriptorBands";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
 
 export interface TrainingRikishiStatus {

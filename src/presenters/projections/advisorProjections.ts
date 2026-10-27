@@ -6,8 +6,8 @@
  */
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
-import type { AIRecommendation } from "@/engine/ai/types";
-import { generateRecommendations } from "@/engine/advisor/AdvisorService";
+import type { AIRecommendation } from "@/engine/npc/types";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 
 /** Recommendations for the player heya, sorted by priority. */
 export function projectAdvisorRecommendations(

@@ -13,8 +13,8 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NPCDecisionDTO } from "@/presenters/npcAgentProjections";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { getOyakataForHeya } from "@/engine/queries";
-import { resolveAvatar, oyakataStageInput } from "@/engine/avatarGenerator";
+import { getOyakataForHeya } from "@/engine/core/queries";
+import { resolveAvatar, oyakataStageInput } from "@/engine/generation/avatarGenerator";
 
 export interface RivalStableDTO {
   heyaId: string;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { spawnNarrativeAgent, type NarrativeAgentContext } from "@/engine/agents/NarrativeAgent";
+import { spawnNarrativeAgent, type NarrativeAgentContext } from "@/engine/npc/agents/NarrativeAgent";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
 

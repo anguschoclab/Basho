@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { phase06_yearly_boundary } from "@/engine/tick/phases/phase06_yearly_boundary";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("Single-pass yearly iteration (B2.1)", () => {

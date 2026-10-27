@@ -1,9 +1,9 @@
 import { buildAlmanacSnapshot } from "@/engine/almanac/snapshot";
-import { snapshotMediaHeatForBasho } from "@/engine/systems/media/MediaService";
+import { snapshotMediaHeatForBasho } from "@/engine/media/MediaService";
 import { safeCall } from "@/engine/utils/safe";
-import { rngForWorld, type SeededRNG } from "@/engine/rng";
-import { opfsArchiveService } from "@/engine/storage/opfsArchive";
-import { electronArchiveService } from "@/engine/storage/electronArchive";
+import { rngForWorld, type SeededRNG } from "@/engine/core/rng";
+import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/persistence/storage/electronArchive";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState, BashoResult, MatchSchedule, AwardLogEntry } from "@/engine/types/basho";
 import type { Id } from "@/engine/types/common";
@@ -11,11 +11,11 @@ import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder"
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import type { SpecialPrizesResult } from "@/engine/banzuke/specialPrizes";
-import { historyCache } from "@/engine/historyCache";
-import { getRikishi } from "@/engine/queries";
+import { historyCache } from "@/engine/history/historyCache";
+import { getRikishi } from "@/engine/core/queries";
 // eslint-disable-next-line no-restricted-imports -- KNOWN_BOUNDARY_DEBT: pre-existing cross-layer call surfaced by reorg (see importBoundary.test.ts)
 import { selectKeyBouts } from "@/presenters/projections/recapProjections";
-import { applyBashoTenure } from "@/engine/systems/legacy/tenure";
+import { applyBashoTenure } from "@/engine/legacy/tenure";
 
 // ─── Prize credits ───────────────────────────────────────────────────────────
 

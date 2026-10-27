@@ -17,7 +17,7 @@ import { describe, it, expect } from "vitest";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { buildBanzukeSnapshot } from "@/engine/banzuke/banzukeSnapshot";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeBashoKey } from "@/engine/historyIndex";
+import { makeBashoKey } from "@/engine/history/historyIndex";
 import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";

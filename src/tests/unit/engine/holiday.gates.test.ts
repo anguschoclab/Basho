@@ -3,9 +3,9 @@
  * Plan Feature 8 Test-First Protocol item 3.
  */
 import { describe, it, expect } from "vitest";
-import { runHoliday } from "@/engine/holiday";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import type { HolidayConfig, SafetyGate } from "@/engine/holiday";
+import { runHoliday } from "@/engine/calendar/holiday";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import type { HolidayConfig, SafetyGate } from "@/engine/calendar/holiday";
 
 function makeConfig(playerHeyaId: string, gates: SafetyGate[] = []): HolidayConfig {
   return {

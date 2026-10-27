@@ -9,9 +9,9 @@ import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder"
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { info } from "@/engine/utils/Logger";
 import { assertNever } from "@/engine/utils/types";
-import { initializeBasho } from "@/engine/systems/generation/WorldFactory";
-import { resetBashoMediaTracking } from "@/engine/systems/media/MediaService";
-import { getInterimWeeks, getNextBasho } from "@/engine/calendar";
+import { initializeBasho } from "@/engine/generation/WorldFactory";
+import { resetBashoMediaTracking } from "@/engine/media/MediaService";
+import { getInterimWeeks, getNextBasho } from "@/engine/calendar/calendar";
 import { emptyDeltas, defaultActiveModifiers } from "@/engine/tick/pipelineRunner";
 import {
   DAYS_IN_MONTH,
@@ -24,7 +24,7 @@ import {
   evaluatePendingDecisions,
   applyExpiredQueueDefaults,
   autonomouslyResolveDecisions,
-} from "@/engine/loop/LoopDecisionEngine";
+} from "@/engine/npc/decision/LoopDecisionEngine";
 
 export function phase00_preflight(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase00_preflight");

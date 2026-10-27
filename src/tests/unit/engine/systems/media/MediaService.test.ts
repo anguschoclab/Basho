@@ -3,7 +3,7 @@ import {
   createDefaultMediaState,
   resetBashoMediaTracking,
   snapshotMediaHeatForBasho,
-} from "@/engine/systems/media/MediaService";
+} from "@/engine/media/MediaService";
 import type { MediaState } from "@/engine/types/media";
 
 describe("MediaService.createDefaultMediaState", () => {

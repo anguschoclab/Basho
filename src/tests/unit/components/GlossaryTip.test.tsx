@@ -15,7 +15,7 @@ vi.mock("@/components/ui/tooltip-wrap", () => ({
 }));
 
 // Mock GlossaryService
-vi.mock("@/engine/glossary/GlossaryService", () => ({
+vi.mock("@/engine/narrative/glossary/GlossaryService", () => ({
   GlossaryService: {
     byId: (id: string) => {
       if (id === "tachiai") {

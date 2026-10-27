@@ -14,7 +14,7 @@ import type { BoutTactic } from "@/engine/types/combat";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { tryHansoku } from "@/engine/bout/kinjite";
 import { checkYaocho } from "@/engine/bout/yaocho";
-import { reportScandal } from "@/engine/systems/governance/ScandalService";
+import { reportScandal } from "@/engine/governance/services/ScandalService";
 
 interface OfficiatingOutcome {
   result: BoutResult;

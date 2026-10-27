@@ -5,7 +5,7 @@ import {
   buildPostBashoPayload,
   kachiNokoriToMochikyukinPoints,
   KACHI_NOKORI_THRESHOLD,
-} from "@/engine/systems/economy/KachiNokoriService";
+} from "@/engine/economy/KachiNokoriService";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("calculateKachiNokori", () => {

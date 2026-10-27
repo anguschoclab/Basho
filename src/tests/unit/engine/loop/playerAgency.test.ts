@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { resolveBout } from "@/engine/bout/boutResolver";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import { phase01_week_training } from "@/engine/tick/phases/phase01_week_training";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { ensureHeyaTrainingState } from "@/engine/systems/training/TrainingService";
+import { ensureHeyaTrainingState } from "@/engine/training/TrainingService";
 import type { BoutContext } from "@/engine/bout/boutPhysics";
 import type { BashoState } from "@/engine/types/basho";
 

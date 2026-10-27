@@ -20,7 +20,7 @@ describe("Exhibition (Jungyo) worker commands", () => {
 
   it("ACCEPT_EXHIBITION calls processExhibitionResult via service", async () => {
     const { WorldCircuitService } =
-      await import("@/engine/systems/worldCircuit/WorldCircuitService");
+      await import("@/engine/worldCircuit/WorldCircuitService");
     expect(typeof WorldCircuitService.processExhibitionResult).toBe("function");
   });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { listVisibleCandidates } from "@/engine/systems/generation/TalentPoolScouting";
+import { listVisibleCandidates } from "@/engine/generation/TalentPoolScouting";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { TalentCandidate, TalentPoolWorldState, TalentPoolType } from "@/engine/types/talent";
 

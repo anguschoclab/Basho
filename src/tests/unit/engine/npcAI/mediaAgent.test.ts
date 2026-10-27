@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { handleNPCMediaEvent } from "@/engine/npcAI/handlers";
-import { handleMediaEventForHeya } from "@/engine/systems/media/MediaEventService";
+import { handleNPCMediaEvent } from "@/engine/npc/handlers";
+import { handleMediaEventForHeya } from "@/engine/media/MediaEventService";
 import { applyImpact } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 import type { GovernanceRuling } from "@/engine/types/economy";

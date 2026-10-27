@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, beforeAll } from "vitest";
-import { updateH2H, generateH2HCommentary, getH2HReport } from "@/engine/h2h";
+import { updateH2H, generateH2HCommentary, getH2HReport } from "@/engine/bout/h2h";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { MatchResultLog } from "@/engine/types/records";

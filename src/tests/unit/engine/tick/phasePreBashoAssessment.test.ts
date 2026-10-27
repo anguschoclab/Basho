@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 
-vi.mock("@/engine/systems/media/MediaService", () => ({
+vi.mock("@/engine/media/MediaService", () => ({
   triggerPreBashoJournalism: () => ({ source: "mock", entities: {}, events: [] }),
 }));
 

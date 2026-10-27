@@ -9,7 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { computeFacilitiesBand, type FacilityAxis } from "@/engine/facilities";
+import { computeFacilitiesBand, type FacilityAxis } from "@/engine/economy/facilities";
 import {
   NPC_INVESTMENT_RUNWAY_THRESHOLD,
   MAX_FACILITY_LEVEL,

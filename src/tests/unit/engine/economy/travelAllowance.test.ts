@@ -3,7 +3,7 @@ import {
   distributeKoenkaiToSekitori,
   payTravelAllowance,
   deductTsukebitoCosts,
-} from "@/engine/systems/economy/TravelAllowanceService";
+} from "@/engine/economy/TravelAllowanceService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import {

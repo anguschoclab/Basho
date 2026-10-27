@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { phase01_week_staff } from "@/engine/tick/phases/phase01_week_staff";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import * as staff from "@/engine/staff";
+import * as staff from "@/engine/economy/staff";
 
-vi.mock("@/engine/staff", () => ({
+vi.mock("@/engine/economy/staff", () => ({
   tickStaffWeek: vi.fn(() => ({ type: "staff_impact" })),
 }));
 

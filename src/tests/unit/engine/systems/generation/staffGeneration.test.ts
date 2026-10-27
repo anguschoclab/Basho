@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateStaff } from "@/engine/staff";
+import { generateStaff } from "@/engine/economy/staff";
 
 describe("generateStaff", () => {
   it("should generate a staff member deterministically", () => {

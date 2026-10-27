@@ -220,7 +220,7 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
 
 /** Lazily-accumulated heya map shared across collection operations. */
 interface HeyaSync {
-  next: Map<string, import("../types/heya").Heya> | undefined;
+  next: Map<string, import("@/engine/types/heya").Heya> | undefined;
   changed: boolean;
 }
 
@@ -230,7 +230,7 @@ function applyCollections(
   collections: NonNullable<StateImpact["collections"]>
 ): WorldState {
   const sync: HeyaSync = { next: undefined, changed: false };
-  const ensureHeyas = (): Map<string, import("../types/heya").Heya> => {
+  const ensureHeyas = (): Map<string, import("@/engine/types/heya").Heya> => {
     if (!sync.next) sync.next = new Map(result.heyas);
     return sync.next;
   };
@@ -331,7 +331,7 @@ function applyRikishiRemovals(
   result: WorldState,
   collections: NonNullable<StateImpact["collections"]>,
   sync: HeyaSync,
-  ensureHeyas: () => Map<string, import("../types/heya").Heya>
+  ensureHeyas: () => Map<string, import("@/engine/types/heya").Heya>
 ): WorldState {
   const nextRikishi = new Map(result.rikishi);
   const nextHistorical = collections.rikishiToHistorical

@@ -2,7 +2,7 @@
  * helpers.ts — shared helpers for bout narration.
  * Moved verbatim from boutNarrative.ts during the narrative pipeline split.
  */
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Rank } from "@/engine/types/banzuke";
 import type { BoutResult } from "@/engine/types/basho";

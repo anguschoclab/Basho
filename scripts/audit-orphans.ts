@@ -54,9 +54,7 @@ const ROOT = join(__dirname, "..");
 const SRC = join(ROOT, "src");
 const ENGINE_DIR = join(SRC, "engine");
 const COMPONENTS_DIR = join(SRC, "components");
-const SYSTEMS_DIR = join(ENGINE_DIR, "systems");
-const AGENTS_DIR = join(ENGINE_DIR, "agents");
-const NPC_AI_DIR = join(ENGINE_DIR, "npcAI");
+// services live under engine/<domain>/ post-reorg — scan engine root
 
 const FILE_EXTENSIONS = [".ts", ".tsx"];
 const TEST_PATTERNS = [".test.", ".spec.", "__tests__", "/tests/", "/e2e/"];
@@ -202,30 +200,18 @@ function escapeRegex(s: string): string {
 function findUnreferencedExports(): OrphanEntry[] {
   const entries: OrphanEntry[] = [];
 
-  // Only scan engine systems, agents, and key utility files
+  // Scan engine domain dirs (post-reorg layout: systems/* promoted to
+  // top-level domains; npc cluster merged into engine/npc/). Exclusions
+  // preserve the original scan scope: types/ (interface-only exports),
+  // tick/, simulation/, events/ (orchestration), _archive/ (dead code).
   const scanDirs = [
-    SYSTEMS_DIR,
-    AGENTS_DIR,
-    NPC_AI_DIR,
-    join(ENGINE_DIR, "actions"),
-    join(ENGINE_DIR, "advisor"),
-    join(ENGINE_DIR, "ai"),
-    join(ENGINE_DIR, "almanac"),
-    join(ENGINE_DIR, "banzuke"),
-    join(ENGINE_DIR, "bard"),
-    join(ENGINE_DIR, "bout"),
-    join(ENGINE_DIR, "core"),
-    join(ENGINE_DIR, "governance"),
-    join(ENGINE_DIR, "lifecycle"),
-    join(ENGINE_DIR, "matchmaking"),
-    join(ENGINE_DIR, "npcAI"),
-    join(ENGINE_DIR, "prestige"),
-    join(ENGINE_DIR, "shikona"),
-    join(ENGINE_DIR, "strategy"),
-    join(ENGINE_DIR, "training"),
-    join(ENGINE_DIR, "utils"),
-    join(ENGINE_DIR, "worker"),
-  ];
+    "almanac", "banzuke", "bard", "basho", "bookmark", "bout", "core",
+    "economy", "generation", "governance", "health", "history",
+    "keshoMawashi", "legacy", "lifecycle", "matchmaking", "media",
+    "narrative", "npc", "officials", "persistence", "recruitment",
+    "shikona", "training", "tutorial", "utils", "welfare", "worker",
+    "worldCircuit",
+  ].map((d) => join(ENGINE_DIR, d));
 
   const scannedFiles = new Set<string>();
   for (const dir of scanDirs) {
@@ -467,7 +453,7 @@ function findUntickedServices(): OrphanEntry[] {
   const entries: OrphanEntry[] = [];
 
   // Collect all service files
-  const serviceFiles = collectFiles(SYSTEMS_DIR).filter(
+  const serviceFiles = collectFiles(ENGINE_DIR).filter(
     (f) => !isTestFile(f) && extname(f) === ".ts"
   );
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("WorldCircuitService", () => {

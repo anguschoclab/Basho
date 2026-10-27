@@ -6,7 +6,7 @@
  * and contested foreign recruits. All outputs are banded — no raw traits.
  */
 import { describe, it, expect } from "vitest";
-import { generateRecommendations } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 

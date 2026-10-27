@@ -6,7 +6,7 @@ import {
   computeNetTorque,
 } from "@/engine/bout/boutGrip";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("initBeltBattle", () => {
   it("gives tachiai winner inside arm advantage", () => {

@@ -5,9 +5,9 @@ import {
   setTsukebito,
   clearTsukebito,
   MAX_TSUKEBITO_PER_SENIOR,
-} from "@/engine/systems/training/TsukebitoService";
+} from "@/engine/training/TsukebitoService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 

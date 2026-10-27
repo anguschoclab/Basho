@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
-import { opfsArchiveService } from "@/engine/storage/opfsArchive";
+import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
 import { resetMockFileSystem } from "@/tests/setup/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { addBookmark, removeBookmark } from "@/engine/systems/bookmark/BookmarkService";
+import { addBookmark, removeBookmark } from "@/engine/bookmark/BookmarkService";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(): WorldState {

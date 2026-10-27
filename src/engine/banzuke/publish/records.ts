@@ -3,7 +3,7 @@ import type { BashoState } from "@/engine/types/basho";
 import type { BashoPerformance } from "@/engine/types/banzuke";
 import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { createEmptyAlmanacRecord } from "@/engine/almanac/narrativeEnrichment";
 import { MAX_PROMOTION_HISTORY } from "@/engine/almanac/types";
 import type { PromotionHistoryEntry } from "@/engine/almanac/types";

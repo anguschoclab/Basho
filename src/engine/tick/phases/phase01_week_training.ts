@@ -30,19 +30,19 @@ import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { mergeImpacts, resolveImpacts, sequenceImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { TrainingService } from "@/engine/systems/training/TrainingService";
-import { BloodlineService } from "@/engine/systems/legacy/BloodlineService";
-import { applyMentorshipBonuses } from "@/engine/systems/training/MentorshipService";
-import { applyWeeklySparring } from "@/engine/systems/training/SparringService";
+import { TrainingService } from "@/engine/training/TrainingService";
+import { BloodlineService } from "@/engine/legacy/BloodlineService";
+import { applyMentorshipBonuses } from "@/engine/training/MentorshipService";
+import { applyWeeklySparring } from "@/engine/training/SparringService";
 import {
   assignTsukebito,
   applyWeeklyTsukebitoBenefits,
   applyWeeklyOtotodeshiEffects,
   isEligibleForTsukebito,
-} from "@/engine/systems/training/TsukebitoService";
+} from "@/engine/training/TsukebitoService";
 import { applyWeightJourneyTick } from "@/engine/training/WeightJourney";
 import { EntityCollection } from "@/engine/core/EntityCollection";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 
 /**
  * Weekly training tick phase.

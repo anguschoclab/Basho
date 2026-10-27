@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
-import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
+import { processYearlyEraDrift } from "@/engine/history/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
-import { buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";
+import { KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
+import { buildMediaDigest } from "@/engine/media/MediaPreBashoService";
 
 describe("EraDriftService tactical-family grouping", () => {
   it("correctly groups kimarite stats by tactical family and shifts tone", () => {

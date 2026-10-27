@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   buildYouthAcademy,
   getYouthAcademy,
-} from "@/engine/systems/recruitment/YouthAcademyService";
+} from "@/engine/recruitment/YouthAcademyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 
@@ -35,7 +35,7 @@ describe("Academy worker commands (integration)", () => {
     const before = getYouthAcademy(w1.heyas.get("h1")!)!.budget;
 
     // Import the service function directly (worker handler delegates to it)
-    const { investInAcademy } = await import("@/engine/systems/recruitment/YouthAcademyService");
+    const { investInAcademy } = await import("@/engine/recruitment/YouthAcademyService");
     const w2 = resolveImpacts(w1, [investInAcademy(w1, "h1", 100_000)]);
     const after = getYouthAcademy(w2.heyas.get("h1")!)!.budget;
     expect(after).toBeGreaterThan(before);
@@ -44,7 +44,7 @@ describe("Academy worker commands (integration)", () => {
   it("HIRE_ACADEMY_STAFF adds staff to academy", async () => {
     const world = makeWorld();
     const w1 = resolveImpacts(world, [buildYouthAcademy(world, "h1")]);
-    const { hireAcademyStaff } = await import("@/engine/systems/recruitment/YouthAcademyService");
+    const { hireAcademyStaff } = await import("@/engine/recruitment/YouthAcademyService");
     const w2 = resolveImpacts(w1, [hireAcademyStaff(w1, "h1", "head_coach")]);
     const academy = getYouthAcademy(w2.heyas.get("h1")!);
     expect(academy!.staff).toHaveLength(1);
@@ -55,7 +55,7 @@ describe("Academy worker commands (integration)", () => {
     const world = makeWorld();
     const w1 = resolveImpacts(world, [buildYouthAcademy(world, "h1")]);
     const { generateYearlyIntake, promoteIntake } =
-      await import("@/engine/systems/recruitment/YouthAcademyService");
+      await import("@/engine/recruitment/YouthAcademyService");
     const w2 = resolveImpacts(w1, [generateYearlyIntake(w1, "h1")]);
     const prospect = getYouthAcademy(w2.heyas.get("h1")!)!.prospects[0];
     const w3 = resolveImpacts(w2, [promoteIntake(w2, "h1", prospect.id)]);

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { checkTriggeredDrama } from "@/engine/bard/dramaGenerator";
-import { resolveNPCCrisis } from "@/engine/npcAI/handlers";
+import { resolveNPCCrisis } from "@/engine/npc/handlers";
 import { applyImpact } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";

@@ -2,7 +2,7 @@ import type { GameState, GameAction } from "@/contexts/gameTypes";
 import type { BoutResult } from "@/engine/types/basho";
 import type { BoutTactic } from "@/engine/types/combat";
 import type { WorldState } from "@/engine/types/world";
-import * as worldEngine from "@/engine/world";
+import * as worldEngine from "@/engine/core/world";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 

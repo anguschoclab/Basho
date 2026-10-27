@@ -3,9 +3,9 @@
  * Plan Feature 8 Test-First Protocol items 1-2.
  */
 import { describe, it, expect } from "vitest";
-import { runHoliday } from "@/engine/holiday";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import type { HolidayConfig } from "@/engine/holiday";
+import { runHoliday } from "@/engine/calendar/holiday";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import type { HolidayConfig } from "@/engine/calendar/holiday";
 
 describe("GO_ON_HOLIDAY worker command", () => {
   it("GO_ON_HOLIDAY command type is defined", () => {

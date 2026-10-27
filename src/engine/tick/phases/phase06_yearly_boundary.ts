@@ -14,26 +14,26 @@ import type { WorldState } from "@/engine/types/world";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { processYearEndInduction, createEmptyHallOfFame } from "@/engine/hallOfFame";
-import { tickYear } from "@/engine/npcAI/ticks";
+import { processYearEndInduction, createEmptyHallOfFame } from "@/engine/history/hallOfFame";
+import { tickYear } from "@/engine/npc/ticks";
 // Avatar aging/promotion is derived at render time — see avatarGenerator.deriveAvatarStage.
-import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
-import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
-import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
-import { HistoryService } from "@/engine/systems/meta/HistoryService";
-import { runElections } from "@/engine/systems/governance/ScandalService";
-import { DynastyService } from "@/engine/systems/legacy/DynastyService";
-import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { processYearlyEraDrift } from "@/engine/history/EraDriftService";
+import { InfrastructureService } from "@/engine/economy/InfrastructureService";
+import { GlobalCupService } from "@/engine/economy/GlobalCupService";
+import { HistoryService } from "@/engine/history/HistoryService";
+import { runElections } from "@/engine/governance/services/ScandalService";
+import { DynastyService } from "@/engine/legacy/DynastyService";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
 import {
   generateYearlyIntake,
   getYouthAcademy,
-} from "@/engine/systems/recruitment/YouthAcademyService";
-import { TrainingPhilosophyService } from "@/engine/systems/legacy/TrainingPhilosophyService";
-import { TalentPoolService } from "@/engine/systems/generation/TalentPoolService";
-import { performKanrekiCeremony, isEligibleForKanreki } from "@/engine/governance/kanrekiCeremony";
-import { getRikishi } from "@/engine/queries";
+} from "@/engine/recruitment/YouthAcademyService";
+import { TrainingPhilosophyService } from "@/engine/legacy/TrainingPhilosophyService";
+import { TalentPoolService } from "@/engine/generation/TalentPoolService";
+import { performKanrekiCeremony, isEligibleForKanreki } from "@/engine/governance/ceremonies/kanrekiCeremony";
+import { getRikishi } from "@/engine/core/queries";
 import { boundHistoryArrays } from "@/engine/tick/phases/boundHistoryArrays";
-import { runRetiredRikishiSummarization } from "@/engine/archival";
+import { runRetiredRikishiSummarization } from "@/engine/history/archival";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");

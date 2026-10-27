@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildPerceptionSnapshot } from "@/engine/perception";
+import { buildPerceptionSnapshot } from "@/engine/npc/perception";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import {
   HEAT_BLAZING_THRESHOLD,

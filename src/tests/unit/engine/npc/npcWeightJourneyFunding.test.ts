@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { evaluateFinanceStrategy } from "@/engine/strategy/NPCFinanceCalculator";
-import { tickMonthlyNPC } from "@/engine/npcAI/ticks";
+import { evaluateFinanceStrategy } from "@/engine/npc/strategy/NPCFinanceCalculator";
+import { tickMonthlyNPC } from "@/engine/npc/ticks";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Id } from "@/engine/types/common";
 

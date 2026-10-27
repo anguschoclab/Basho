@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { generateBoutNarrative, generateKyujoNarrative } from "@/engine/bout/boutNarrative";
 import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
 import { computeMovementUnits } from "@/engine/banzuke/promotionLogic";
-import { tickRikishiRecovery } from "@/engine/systems/health/RecoveryService";
+import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import { MOMENTUM_NARRATIVE_THRESHOLD } from "@/constants/engine/generation";

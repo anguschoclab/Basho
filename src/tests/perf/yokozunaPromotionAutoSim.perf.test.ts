@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("PERF: yokozuna promotion in AutoSim", () => {
   it(

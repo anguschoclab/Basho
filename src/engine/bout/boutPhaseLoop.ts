@@ -1,7 +1,7 @@
 // boutPhaseLoop.ts — Orchestrator for bout physics engine.
 // Phase tick handlers have been extracted into the physics/ directory.
 
-import { rngFromSeed, type SeededRNG } from "@/engine/rng";
+import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult, BashoState, BoutLogEntry } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";
@@ -89,7 +89,7 @@ function runPhaseLoop(
   west: Rikishi,
   st: EngineStateV2,
   boutLog: BoutLogEntry[],
-  division: import("../types/banzuke").Division,
+  division: import("@/engine/types/banzuke").Division,
   meta: { tone: string; drift: Record<string, number> },
   tactics?: SideTactics
 ): { winner: Side; kimarite: KimariteId; isTimeout: boolean } {

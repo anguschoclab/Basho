@@ -6,7 +6,7 @@
 // it at app startup so the engine can persist saves using electron-store.
 // =======================================================
 
-import { type IStorageProvider, setStorageProvider } from "@/engine/storageProvider";
+import { type IStorageProvider, setStorageProvider } from "@/engine/persistence/storageProvider";
 import { error } from "@/engine/utils/Logger";
 import { isValidStorageKey } from "@/utils/storageKeyValidation";
 import LZString from "lz-string";

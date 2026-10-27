@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { issueBailoutLoanIfNeeded } from "@/engine/loans";
+import { issueBailoutLoanIfNeeded } from "@/engine/economy/loans";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import { FACTION_BAILOUT_AMOUNT, LOAN_ISSUANCE_THRESHOLD } from "@/constants/engine/economic";

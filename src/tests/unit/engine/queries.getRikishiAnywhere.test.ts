@@ -3,9 +3,9 @@ import {
   getRikishiAnywhere,
   getRetiredRikishiSummary,
   loadFullRikishiRecord,
-} from "@/engine/queries";
+} from "@/engine/core/queries";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
-import { opfsArchiveService } from "@/engine/storage/opfsArchive";
+import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
 import { resetMockFileSystem } from "@/tests/setup/index";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Rikishi } from "@/engine/types/rikishi";

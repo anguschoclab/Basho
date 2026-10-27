@@ -17,14 +17,14 @@
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { simulateBoutsForDay, advanceBashoDay } from "@/engine/world";
+import { simulateBoutsForDay, advanceBashoDay } from "@/engine/core/world";
 import {
   generateNakabiSummary,
   logNakabiCheckpoint,
   isNakabiDay,
-} from "@/engine/systems/basho/NakabiService";
+} from "@/engine/basho/NakabiService";
 import { mergeImpacts, applyImpact } from "@/engine/core/ImpactResolver";
-import { applyOyakataIntervention } from "@/engine/actions/OyakataIntervention";
+import { applyOyakataIntervention } from "@/engine/npc/OyakataIntervention";
 
 export function phase01_basho_bouts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_basho_bouts");

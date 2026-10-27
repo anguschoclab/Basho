@@ -3,8 +3,8 @@ import {
   getSeverityWeight,
   computeInjuryPressure,
   calculateWeeklyWelfareDelta,
-} from "@/engine/systems/welfare/WelfareCalculations";
-import { clearQueryCaches } from "@/engine/queries";
+} from "@/engine/welfare/WelfareCalculations";
+import { clearQueryCaches } from "@/engine/core/queries";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";

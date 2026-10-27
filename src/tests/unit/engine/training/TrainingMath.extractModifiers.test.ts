@@ -3,7 +3,7 @@ import {
   extractTrainingModifiers,
   calculateGrowthWithModifiers,
   calculateGrowthVector,
-} from "@/engine/systems/training/TrainingMath";
+} from "@/engine/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { TrainingProfile } from "@/engine/types/training";
 import { DEFAULT_FACILITY_LEVEL } from "@/constants/engine/rikishi";

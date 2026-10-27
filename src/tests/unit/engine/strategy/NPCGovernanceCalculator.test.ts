@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { evaluateGovernanceStrategy } from "@/engine/strategy/NPCGovernanceCalculator";
-import type { StrategyContext } from "@/engine/strategy/NPCStrategyFramework";
+import { evaluateGovernanceStrategy } from "@/engine/npc/strategy/NPCGovernanceCalculator";
+import type { StrategyContext } from "@/engine/npc/strategy/NPCStrategyFramework";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";

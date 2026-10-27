@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { spawnPersonnelWorker } from "@/engine/npcAIWorkers";
-import { SeededRNG } from "@/engine/rng";
+import { spawnPersonnelWorker } from "@/engine/npc/npcAIWorkers";
+import { SeededRNG } from "@/engine/core/rng";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { RikishiPerception } from "@/engine/perception";
+import type { RikishiPerception } from "@/engine/npc/perception";
 import type { Id } from "@/engine/types/common";
 
 function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {

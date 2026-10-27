@@ -8,14 +8,14 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { resolveNPCRequest } from "@/engine/rikishiAgency/requests";
+import { resolveNPCRequest } from "@/engine/npc/agency/requests";
 import { phase01_week_npc_ai } from "@/engine/tick/phases/index";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { RikishiRequest } from "@/engine/rikishiAgency/types";
+import type { RikishiRequest } from "@/engine/npc/agency/types";
 
 const TRAITS = { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 };
 

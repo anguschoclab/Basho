@@ -11,7 +11,7 @@ import {
 import type { EngineStateV2 } from "@/engine/types/combat-spatial";
 import type { BoutContext } from "@/engine/bout/boutUtils";
 import type { CombatArchetype, TacticalFamily } from "@/engine/types/combat";
-import { getKimarite } from "@/engine/kimariteRegistry";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 
 export function buildBoutResultV2(
   bout: BoutContext,

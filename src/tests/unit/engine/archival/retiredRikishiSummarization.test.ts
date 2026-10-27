@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { runRetiredRikishiSummarization } from "@/engine/archival";
+import { runRetiredRikishiSummarization } from "@/engine/history/archival";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
@@ -9,14 +9,14 @@ import type { CareerSnapshot } from "@/engine/types/history";
 import type { Rank, Division } from "@/engine/types/banzuke";
 
 // Mock the archive services so we can assert archival calls.
-vi.mock("@/engine/storage/opfsArchive", () => ({
+vi.mock("@/engine/persistence/storage/opfsArchive", () => ({
   opfsArchiveService: {
     archiveFullRikishiRecord: vi.fn(() => Promise.resolve()),
     retrieveFullRikishiRecord: vi.fn(() => Promise.resolve(null)),
   },
 }));
 
-vi.mock("@/engine/storage/electronArchive", () => ({
+vi.mock("@/engine/persistence/storage/electronArchive", () => ({
   electronArchiveService: {
     archiveFullRikishiRecord: vi.fn(() => Promise.resolve()),
     retrieveFullRikishiRecord: vi.fn(() => Promise.resolve(null)),
@@ -232,7 +232,7 @@ describe("runRetiredRikishiSummarization", () => {
   });
 
   it("archives full Rikishi to cold storage before conversion (safety net)", async () => {
-    const { opfsArchiveService } = await import("@/engine/storage/opfsArchive");
+    const { opfsArchiveService } = await import("@/engine/persistence/storage/opfsArchive");
     const archiveSpy = opfsArchiveService.archiveFullRikishiRecord as ReturnType<typeof vi.fn>;
     archiveSpy.mockClear();
 
@@ -258,7 +258,7 @@ describe("runRetiredRikishiSummarization", () => {
   });
 
   it("does not archive entries that are already summaries", async () => {
-    const { opfsArchiveService } = await import("@/engine/storage/opfsArchive");
+    const { opfsArchiveService } = await import("@/engine/persistence/storage/opfsArchive");
     const archiveSpy = opfsArchiveService.archiveFullRikishiRecord as ReturnType<typeof vi.fn>;
     archiveSpy.mockClear();
 
@@ -276,7 +276,7 @@ describe("runRetiredRikishiSummarization", () => {
   });
 
   it("archival failure does not block conversion", async () => {
-    const { opfsArchiveService } = await import("@/engine/storage/opfsArchive");
+    const { opfsArchiveService } = await import("@/engine/persistence/storage/opfsArchive");
     const archiveSpy = opfsArchiveService.archiveFullRikishiRecord as ReturnType<typeof vi.fn>;
     archiveSpy.mockClear();
     archiveSpy.mockImplementation(() => Promise.reject(new Error("OPFS full")));

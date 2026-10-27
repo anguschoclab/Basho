@@ -4,7 +4,7 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { mockRikishi, makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";
 import { resolvePlayoffs } from "@/engine/lifecycle/PlayoffResolver";
 import { distributePrizes } from "@/engine/lifecycle/PrizeDistribution";
-import { withdrawRikishi } from "@/engine/systems/health/HealthActions";
+import { withdrawRikishi } from "@/engine/health/HealthActions";
 import type { BoutResult, BashoState, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";

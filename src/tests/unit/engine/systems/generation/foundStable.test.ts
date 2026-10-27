@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { foundStable } from "@/engine/systems/generation/WorldFactory";
-import { rngForWorld } from "@/engine/rng";
+import { foundStable } from "@/engine/generation/WorldFactory";
+import { rngForWorld } from "@/engine/core/rng";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { FOUNDING_SEED_FUNDS, HEYA_COUNT_CAP } from "@/constants/engine/economic";
 

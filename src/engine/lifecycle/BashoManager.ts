@@ -13,8 +13,8 @@
  * @see ensureDaySchedule for day schedule management
  */
 
-import { initializeBasho } from "@/engine/systems/generation/WorldFactory";
-import { ensureDaySchedule } from "@/engine/schedule";
+import { initializeBasho } from "@/engine/generation/WorldFactory";
+import { ensureDaySchedule } from "@/engine/calendar/schedule";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoName } from "@/engine/types/basho";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";

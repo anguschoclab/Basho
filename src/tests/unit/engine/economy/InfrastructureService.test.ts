@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
-import { isUnexpectedFailureReason } from "@/engine/systems/economy/infrastructureValidation";
+import { InfrastructureService } from "@/engine/economy/InfrastructureService";
+import { isUnexpectedFailureReason } from "@/engine/economy/infrastructureValidation";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { CONSTRUCTION_COST_LEVEL_MULTIPLIER } from "@/constants/engine/economyExtended";
 

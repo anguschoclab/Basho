@@ -8,9 +8,9 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { getHeyaRoster } from "@/engine/queries";
-import { getCachedPerception } from "@/engine/perception";
-import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { getHeyaRoster } from "@/engine/core/queries";
+import { getCachedPerception } from "@/engine/npc/perception";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 import { getFacilityLevelLabel } from "@/presenters/projections/facilityProjections";
 
 /**

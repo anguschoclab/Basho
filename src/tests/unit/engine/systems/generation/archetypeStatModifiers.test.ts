@@ -4,9 +4,9 @@
  * modifier actually shift the corresponding stats during generation.
  */
 import { describe, it, expect } from "vitest";
-import { generateRikishiStats } from "@/engine/systems/generation/CandidateStats";
-import { buildCombatProfile } from "@/engine/archetype";
-import { rngFromSeed } from "@/engine/rng";
+import { generateRikishiStats } from "@/engine/generation/CandidateStats";
+import { buildCombatProfile } from "@/engine/bout/archetype";
+import { rngFromSeed } from "@/engine/core/rng";
 
 // Run N trials and return the mean of the stat
 function meanStat(

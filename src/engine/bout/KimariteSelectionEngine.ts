@@ -2,11 +2,11 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { Division } from "@/engine/types/banzuke";
 import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "@/engine/types/combat-spatial";
 import type { KimariteId } from "@/engine/types/combat";
-import { KIMARITE_STRATEGIES } from "@/engine/kimariteStrategies";
-import { getKimarite } from "@/engine/kimariteRegistry";
+import { KIMARITE_STRATEGIES } from "@/engine/bout/kimarite/kimariteStrategies";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 import { KIMARITE_FREQUENCY_TARGETS } from "@/constants/engine/kimariteFrequencies";
 import { getTacticProfile } from "@/engine/bout/tacticProfiles";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import {
   KIMARITE_NAGE_HINERI_BOOST,
   KIMARITE_KIHON_PENALTY,
@@ -35,7 +35,7 @@ import {
 } from "@/constants/engine/kimarite";
 
 type KimariteMeta = { tone: string; drift: Record<string, number> };
-type SideTactics = import("./boutUtils").SideTactics;
+type SideTactics = import("@/engine/bout/boutUtils").SideTactics;
 type KimariteStrategy = (typeof KIMARITE_STRATEGIES)[number];
 
 /**

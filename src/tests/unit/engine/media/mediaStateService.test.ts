@@ -3,7 +3,7 @@ import {
   processWeeklyMediaBoundary,
   snapshotMediaHeatForBasho,
   createDefaultMediaState,
-} from "@/engine/systems/media/MediaStateService";
+} from "@/engine/media/MediaStateService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { MediaState } from "@/engine/types/media";

@@ -6,7 +6,7 @@ import {
 } from "@/presenters/selectors";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { KIMARITE_FREQUENCY_TARGETS } from "@/constants/engine/kimariteFrequencies";
-import { KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
+import { KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
 
 /**
  * selectKimaritePercentages joins world.globalKimariteStats with the registry

@@ -6,7 +6,7 @@
 import { describe, it, expect } from "vitest";
 import { initBeltBattle } from "@/engine/bout/boutGrip";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 const rng = new SeededRNG("grip-depth-test");
 

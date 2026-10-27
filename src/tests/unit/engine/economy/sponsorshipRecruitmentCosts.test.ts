@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 const source = readFileSync(
-  join(__dirname, "../../../../engine/systems/economy/sponsorshipMutations.ts"),
+  join(__dirname, "../../../../engine/economy/sponsorshipMutations.ts"),
   "utf-8"
 );
 

@@ -6,7 +6,7 @@
 import { describe, it, expect } from "vitest";
 import { evaluateKimariteAttempt } from "@/engine/bout/kimariteClassifier";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { PushBattleState, EngineStateV2 } from "@/engine/types/combat-spatial";
 import type { Division } from "@/engine/types/banzuke";
 import { initPhysicalBody } from "@/engine/bout/boutSpatial";

@@ -4,7 +4,7 @@ import {
   buildYouthAcademy,
   generateYearlyIntake,
   getYouthAcademy,
-} from "@/engine/systems/recruitment/YouthAcademyService";
+} from "@/engine/recruitment/YouthAcademyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 

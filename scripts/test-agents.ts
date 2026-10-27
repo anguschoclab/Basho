@@ -5,14 +5,14 @@
  * This demonstrates that the agents work and can be used
  */
 
-import { spawnCrisisAgent } from "@/engine/agents/CrisisAgent";
-import { spawnFinanceAgent } from "@/engine/agents/FinanceAgent";
-import { spawnGovernanceAgent } from "@/engine/agents/GovernanceAgent";
-import { spawnMediaAgent } from "@/engine/agents/MediaAgent";
-import { spawnNarrativeAgent } from "@/engine/agents/NarrativeAgent";
-import { spawnRecruitmentAgent } from "@/engine/agents/RecruitmentAgent";
-import { spawnRivalryAgent } from "@/engine/agents/RivalryAgent";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { spawnCrisisAgent } from "@/engine/npc/agents/CrisisAgent";
+import { spawnFinanceAgent } from "@/engine/npc/agents/FinanceAgent";
+import { spawnGovernanceAgent } from "@/engine/npc/agents/GovernanceAgent";
+import { spawnMediaAgent } from "@/engine/npc/agents/MediaAgent";
+import { spawnNarrativeAgent } from "@/engine/npc/agents/NarrativeAgent";
+import { spawnRecruitmentAgent } from "@/engine/npc/agents/RecruitmentAgent";
+import { spawnRivalryAgent } from "@/engine/npc/agents/RivalryAgent";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { ActiveCrisis } from "@/engine/types/crises";
 
 console.log("=== Testing All 7 NPC Agents ===\n");
@@ -113,7 +113,7 @@ const narrativeCtx = {
   topRikishi: Array.from(world.rikishi.values()).slice(0, 5),
   recentAchievements: ["yusho"],
   currentBashoPhase: "post_basho",
-} as import("../src/engine/agents/NarrativeAgent").NarrativeAgentContext;
+} as import("../src/engine/npc/agents/NarrativeAgent").NarrativeAgentContext;
 const narrativeResult = spawnNarrativeAgent(narrativeCtx);
 console.log(`Trigger Event: ${narrativeResult.shouldTriggerEvent}`);
 console.log(`Event Type: ${narrativeResult.eventType}`);

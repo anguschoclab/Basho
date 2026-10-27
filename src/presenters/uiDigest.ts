@@ -85,7 +85,7 @@ export { resolveRegistryLabel, enrichRikishiForUI } from "@/presenters/uiUtiliti
 // Original re-exports from existing modules (preserved for compatibility)
 export { projectRikishi } from "@/presenters/rikishi/index";
 export { formatRadarData, formatMetaTrends } from "@/presenters/uiFormatters";
-export { getHallOfFame } from "@/engine/hallOfFame";
+export { getHallOfFame } from "@/engine/history/hallOfFame";
 // Re-exports re-pointed to current source modules (uiConstants barrel removed)
 export { FATIGUE_LABELS, TRAIT_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
 export { RANK_NAMES } from "@/constants/engine/recruitment";
@@ -94,25 +94,25 @@ export { formatRank, compareRanks } from "@/engine/banzuke/banzukeHelpers";
 export { RANK_HIERARCHY } from "@/engine/types/banzuke";
 export { toRankPosition } from "@/engine/types/banzuke";
 export { formatStance, formatFinePenalty, formatEventTime } from "@/engine/utils/formatters";
-export { HOF_CATEGORY_LABELS } from "@/engine/hallOfFame";
-export { deleteSave, importSave } from "@/engine/saveload";
-export { getArchetypeDescription } from "@/engine/oyakataPersonalities";
-export { getKimarite } from "@/engine/kimariteRegistry";
-export { setScoutingInvestment } from "@/engine/scoutingStore";
+export { HOF_CATEGORY_LABELS } from "@/engine/history/hallOfFame";
+export { deleteSave, importSave } from "@/engine/persistence/saveload";
+export { getArchetypeDescription } from "@/engine/npc/personas/oyakataPersonalities";
+export { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
+export { setScoutingInvestment } from "@/engine/recruitment/scoutingStore";
 export {
   spendPoliticalCapital,
   getStatusLabel,
   getStatusColor,
-} from "@/engine/systems/governance/ScandalService";
+} from "@/engine/governance/services/ScandalService";
 export {
   scoutPool,
   scoutCandidate,
   offerCandidate,
-} from "@/engine/systems/generation/TalentPoolService";
-export { recruitSponsor } from "@/engine/systems/economy/SponsorshipService";
-export { getCachedPerception, buildPerceptionSnapshot } from "@/engine/perception";
+} from "@/engine/generation/TalentPoolService";
+export { recruitSponsor } from "@/engine/economy/SponsorshipService";
+export { getCachedPerception, buildPerceptionSnapshot } from "@/engine/npc/perception";
 export { setHeyaDietAction } from "@/presenters/uiActions";
-export { renewSponsorContract } from "@/engine/systems/economy/SponsorContractService";
+export { renewSponsorContract } from "@/engine/economy/SponsorContractService";
 export {
   projectRikishiWithHeya,
   projectMediaUIDigest,
@@ -125,14 +125,14 @@ export {
 // Re-exports of safe engine constants/utilities for UI
 // The UI layer MUST NOT import from @/engine directly.
 // ─────────────────────────────────────────
-export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "@/engine/facilities";
-export { describeTrainingEffect } from "@/engine/narrativeDescriptions";
+export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "@/engine/economy/facilities";
+export { describeTrainingEffect } from "@/engine/narrative/narrativeDescriptions";
 export { createDefaultRivalriesState, getRivalry } from "@/engine/narrative/rivalry/rivalriesState";
 export {
   createScoutedView,
   describeScoutingLevel,
   getScoutedAttributes,
-} from "@/engine/systems/recruitment/ScoutingService";
+} from "@/engine/recruitment/ScoutingService";
 export {
   FOCUS_BIAS_MATRIX,
   INTENSITY_MULTIPLIERS,
@@ -142,10 +142,10 @@ export {
   getFocusLabel,
   getIntensityLabel,
   getRecoveryLabel,
-} from "@/engine/systems/training/TrainingService";
-export { PHASE_EFFECTS } from "@/engine/systems/training/TrainingService";
-export { getFocusModeLabel } from "@/engine/systems/training/TrainingNarrative";
-export { getCareerPhase } from "@/engine/systems/training/TrainingMath";
+} from "@/engine/training/TrainingService";
+export { PHASE_EFFECTS } from "@/engine/training/TrainingService";
+export { getFocusModeLabel } from "@/engine/training/TrainingNarrative";
+export { getCareerPhase } from "@/engine/training/TrainingMath";
 export {
   BASHO_CALENDAR,
   getBashoByNumber,
@@ -153,13 +153,13 @@ export {
   getDayName,
   getSeasonalFlavor,
   isKeyDay,
-} from "@/engine/calendar";
-export { DEFAULT_CRITICAL_GATES } from "@/engine/holiday";
+} from "@/engine/calendar/calendar";
+export { DEFAULT_CRITICAL_GATES } from "@/engine/calendar/holiday";
 export {
   getTotalBashodays,
   needsScheduleForDay,
   DEFAULT_DIVISION_DAYS,
-} from "@/engine/scheduleHelpers";
+} from "@/engine/calendar/scheduleHelpers";
 export {
   toFatigueBand,
   toScandalBand,
@@ -167,12 +167,12 @@ export {
   toPotentialBand,
   toPrizeBand,
   toRivalryHeatBand,
-} from "@/engine/descriptorBands";
+} from "@/engine/narrative/descriptorBands";
 
 // Type exports for UI layer (re-exported from engine to comply with no-restricted-imports rule)
 export type { WorldState, PreBashoAssessment } from "@/engine/types/world";
 export type { Rikishi } from "@/engine/types/rikishi";
 export type { Heya } from "@/engine/types/heya";
-export type { BashoHistorySummary } from "@/engine/historyIndex";
+export type { BashoHistorySummary } from "@/engine/history/historyIndex";
 export type { RecordEntry } from "@/engine/types/records";
-export type { HoFInductee } from "@/engine/hallOfFame";
+export type { HoFInductee } from "@/engine/history/hallOfFame";

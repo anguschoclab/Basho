@@ -13,7 +13,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import * as talentpool from "@/engine/generation/TalentPoolService";
 
 export function phase01_week_talent_pool(world: WorldState): StateImpact {
   return talentpool.tickWeekTalentPool(world);

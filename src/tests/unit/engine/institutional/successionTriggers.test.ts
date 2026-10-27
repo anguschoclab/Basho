@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { DynastyService } from "@/engine/systems/legacy/DynastyService";
+import { DynastyService } from "@/engine/legacy/DynastyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";

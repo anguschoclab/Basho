@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { simulateBoutForToday } from "@/engine/world";
+import { simulateBoutForToday } from "@/engine/core/world";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
 import { applyImpact, resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld, makeMockBasho } from "@/tests/unit/engine/utils";

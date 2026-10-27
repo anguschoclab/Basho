@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
+import { PostBashoPressService } from "@/engine/narrative/PostBashoPressService";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("PostBashoPressService — Champion Press Conference", () => {

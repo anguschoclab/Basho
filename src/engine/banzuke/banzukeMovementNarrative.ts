@@ -1,5 +1,5 @@
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { MovementEvent } from "@/engine/types/banzuke";
 import type { WorldState } from "@/engine/types/world";
 

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("@/engine/systems/welfare/WelfareCalculations", () => ({
+vi.mock("@/engine/welfare/WelfareCalculations", () => ({
   calculateWeeklyWelfareDelta: vi.fn(() => ({ delta: 0, reasons: [] })),
   computeInjuryPressure: vi.fn(() => ({ pressure: 0, seriousCount: 0, negligenceCount: 0 })),
 }));
 
-vi.mock("@/engine/systems/media/MediaService", () => ({
+vi.mock("@/engine/media/MediaService", () => ({
   generateGovernanceHeadline: vi.fn(() => ({ metadata: { source: "test" } })),
   snapshotMediaHeatForBasho: vi.fn(() => ({ heyaPressure: {}, mediaHeat: {} })),
 }));
@@ -17,7 +17,7 @@ import { makeMockHeya } from "@/tests/unit/engine/utils";
 import {
   calculateWeeklyWelfareDelta,
   computeInjuryPressure,
-} from "@/engine/systems/welfare/WelfareCalculations";
+} from "@/engine/welfare/WelfareCalculations";
 import { MAX_MEDIA_PRESSURE, MEDIA_PRESSURE_WATCH } from "@/constants/engine/welfare";
 
 describe("Phase 01: Week Welfare", () => {

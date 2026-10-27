@@ -1,0 +1,388 @@
+import { rngFromSeed, rngForWorld } from "@/engine/core/rng";
+import type { WorldState } from "@/engine/types/world";
+import type { Id, IdMapRuntime } from "@/engine/types/common";
+import type { MyosekiStock, MyosekiMarket, MyosekiTransaction } from "@/engine/types/myoseki";
+import type { Oyakata } from "@/engine/types/oyakata";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { stableSort } from "@/engine/utils/sort";
+import { isMyosekiPlayerRelevant } from "@/engine/npc/eventSurfacing";
+import { getHeya } from "@/engine/core/queries";
+import type { Heya } from "@/engine/types/heya";
+import {
+  MYOSEKI_TOTAL_COUNT,
+  MYOSEKI_BASE_ASKING_PRICE,
+  MYOSEKI_MAX_ASKING_PRICE,
+  MYOSEKI_LEASE_RATE_PERCENT,
+  MYOSEKI_PRICE_JITTER,
+  MYOSEKI_PRICE_ADJUSTMENT_RANGE,
+  MYOSEKI_GENERATION_BASE_PRICES,
+} from "@/constants/engine/economic";
+
+// Constants imported from constants/engine/economic.ts
+
+// Generated names for Myoseki (authentic-sounding or actual names)
+const MYOSEKI_NAMES = [
+  "Tateyama",
+  "Nishonoseki",
+  "Kokonoe",
+  "Takasago",
+  "Dewanoumi",
+  "Tokitsukaze",
+  "Isegahama",
+  "Kasugano",
+  "Tatsunami",
+  "Sakaigawa",
+  "Sadogatake",
+  "Musashigawa",
+  "Oitekaze",
+  "Miyagino",
+  "Hakkaku",
+  "Oguruma",
+  "Michinoku",
+  "Isenoumi",
+  "Takadagawa",
+  "Shikoroyama",
+  "Tagonoura",
+  "Otake",
+  "Tomozuna",
+  "Kise",
+  "Futagoyama",
+  "Asahiyama",
+  "Arashio",
+  "Oshiogawa",
+  "Takekuma",
+  "Chiganoura",
+  "Hanakago",
+  "Kagamiyama",
+  "Kataonami",
+  "Magaki",
+  "Minato",
+  "Minezaki",
+  "Naruto",
+  "Nishikido",
+  "Onogawa",
+  "Onomatsu",
+  "Shikihide",
+  "Tamanoi",
+  "Tatsutagawa",
+  "Azumazeki",
+  "Irumagawa",
+  "Kiriyama",
+  "Asakayama",
+  "Shiranui",
+  "Otowayama",
+  "Urakaze",
+  "Ikazuchi",
+  "Jinmaku",
+  "Oshiogawa",
+  "Tatsunami",
+  "Minato",
+  "Tatsunami",
+  "Kumagatani",
+  "Irumagawa",
+  "Tatsutagawa",
+  "Edagawa",
+  "Kise",
+  "Kasugayama",
+  "Tatsutayama",
+  "Tatsutayama",
+  "Minato",
+  "Fujishima",
+  "Katsunoura",
+  "Oyamazumi",
+  "Hanakago",
+  "Shiratama",
+  "Onomatsu",
+  "Asahiyama",
+  "Tatsutayama",
+  "Izutsu",
+  "Asakayama",
+  "Irumagawa",
+  "Kumagatani",
+  "Kumagatani",
+  "Edagawa",
+  "Minatogawa",
+  "Sanoyama",
+  "Tatsutayama",
+  "Minatogawa",
+  "Kumagatani",
+  "Izutsu",
+  "Kumagatani",
+  "Tatsutayama",
+  "Shikoroyama",
+  "Kise",
+  "Onogawa",
+  "Kumagatani",
+  "Izutsu",
+  "Onogawa",
+  "Shikoroyama",
+  "Kise",
+  "Izutsu",
+  "Onogawa",
+  "Kumagatani",
+  "Edagawa",
+  "Kise",
+  "Shikoroyama",
+  "Izutsu",
+  "Onogawa",
+  "Kumagatani",
+  "Minatogawa",
+];
+
+// Dedupe and pad just in case
+const uniqueNames = Array.from(new Set(MYOSEKI_NAMES));
+while (uniqueNames.length < MYOSEKI_TOTAL_COUNT) {
+  uniqueNames.push(`Elder_${uniqueNames.length + 1}`);
+}
+
+/**
+ * Generate the initial Myoseki Market.
+ * Ensures exactly 105 exist. Assigns them to existing active oyakata first.
+ * The rest are held by JSA or retired individuals and marked available.
+ */
+export function generateMyosekiMarket(
+  seed: string,
+  oyakataMap: IdMapRuntime<Oyakata>
+): MyosekiMarket {
+  const rng = rngFromSeed(seed, "myoseki", "init");
+  const stocks: Record<Id, MyosekiStock> = {};
+
+  const availableNames = [...uniqueNames].slice(0, MYOSEKI_TOTAL_COUNT);
+
+  let i = 0;
+  // First pass: Assign to every active Oyakata
+  for (const oyakata of stableSort(oyakataMap.values(), (x) => x.id)) {
+    if (i >= MYOSEKI_TOTAL_COUNT) break;
+
+    const name = availableNames[i];
+    const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
+    const id = rng.uuid("MS");
+
+    stocks[id] = {
+      id,
+      name,
+      prestigeTier,
+      ownerId: oyakata.id,
+      holderId: oyakata.id,
+      status: "held",
+    };
+    i++;
+  }
+
+  // Second pass: Remaining stocks are on the market (held by JSA or "retired" npc)
+  for (; i < MYOSEKI_TOTAL_COUNT; i++) {
+    const name = availableNames[i];
+    const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
+
+    const basePrice = MYOSEKI_GENERATION_BASE_PRICES[prestigeTier] ?? MYOSEKI_BASE_ASKING_PRICE;
+    const askingPrice = basePrice + Math.floor(rng.next() * MYOSEKI_PRICE_JITTER);
+    const id = rng.uuid("MS");
+
+    stocks[id] = {
+      id,
+      name,
+      prestigeTier,
+      ownerId: "JSA",
+      holderId: "JSA",
+      status: "available",
+      askingPrice,
+    };
+  }
+
+  return {
+    stocks,
+    history: [],
+  };
+}
+
+/**
+ * Weekly tick for Myoseki Market
+ * Handles lease payments and market fluctuations
+ * Returns StateImpact describing market updates instead of mutating directly.
+ */
+export function tickMyosekiMarket(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("tickMyosekiMarket");
+  if (!world.myosekiMarket) return builder.build();
+
+  const market = world.myosekiMarket;
+  const rng = rngForWorld(world, "myoseki", `tick_${world.year ?? 0}_${world.week ?? 0}`);
+
+  // Only run major logic during specific phases to save CPU? No, run weekly.
+  // Build map of oyakataId to heya for faster lookup
+  const oyakataHeyaMap = new Map();
+  for (const h of stableSort(world.heyas.values(), (x) => x.id)) {
+    if (h.oyakataId) oyakataHeyaMap.set(h.oyakataId, h);
+  }
+
+  const updatedStocks = { ...market.stocks };
+  const heyaUpdates: Record<Id, Partial<Heya>> = {};
+
+  for (const stock of stableSort(Object.values(market.stocks), (x) => x.id)) {
+    const updatedStock = { ...stock };
+
+    // 1. Pay lease fees (if leased)
+    if (stock.status === "leased" && stock.leaseFee) {
+      const weeklyFee = Math.floor(stock.leaseFee / 52); // Approx weekly
+
+      // Try to deduct from lessee's heya
+      if (stock.holderId.startsWith("oyakata_")) {
+        // Find heya owned by this oyakata
+        const lesseeHeya = oyakataHeyaMap.get(stock.holderId);
+        if (lesseeHeya) {
+          const existing = heyaUpdates[lesseeHeya.id];
+          if (!existing) {
+            heyaUpdates[lesseeHeya.id] = { funds: lesseeHeya.funds - weeklyFee };
+          } else {
+            existing.funds = (existing.funds ?? lesseeHeya.funds) - weeklyFee;
+          }
+        }
+      }
+    }
+
+    // 2. Randomly fluctuate available asking prices
+    if (stock.status === "available" && rng.next() < 0.1) {
+      const adjustment =
+        rng.next() * MYOSEKI_PRICE_ADJUSTMENT_RANGE - MYOSEKI_PRICE_ADJUSTMENT_RANGE / 2;
+      updatedStock.askingPrice = Math.max(
+        MYOSEKI_BASE_ASKING_PRICE,
+        Math.min(
+          MYOSEKI_MAX_ASKING_PRICE,
+          (stock.askingPrice || MYOSEKI_BASE_ASKING_PRICE) + adjustment
+        )
+      );
+    }
+
+    updatedStocks[stock.id] = updatedStock;
+  }
+
+  // Apply heya updates
+  for (const heyaId in heyaUpdates) {
+    if (!Object.prototype.hasOwnProperty.call(heyaUpdates, heyaId)) continue;
+    const update = heyaUpdates[heyaId];
+    builder.updateHeya(heyaId, update);
+  }
+
+  builder.updateWorldField("myosekiMarket", { ...market, stocks: updatedStocks });
+
+  return builder.build();
+}
+
+function getAvailableStock(world: WorldState, myosekiId: Id): MyosekiStock | null {
+  if (!world.myosekiMarket) return null;
+  const stock = world.myosekiMarket.stocks[myosekiId];
+  if (!stock || stock.status !== "available" || !stock.askingPrice) return null;
+  return stock;
+}
+
+function getMyosekiTransaction(
+  world: WorldState,
+  myosekiId: string,
+  type: "sale" | "lease" | "return",
+  fromId: string,
+  toId: string,
+  amount: number
+): MyosekiTransaction {
+  const rng = rngForWorld(
+    world,
+    "market",
+    `tx_${myosekiId}_${type}_${fromId}_${toId}_${world.year ?? 0}_${world.week ?? 0}_${amount}`
+  );
+  return {
+    id: rng.uuid("MT"),
+    date: `${world.year}-W${world.week}`,
+    myosekiId,
+    type,
+    fromId,
+    toId,
+    amount,
+  };
+}
+
+/**
+ * Buy a Myoseki stock.
+ * Returns StateImpact describing myoseki purchase instead of mutating directly.
+ */
+export function buyMyoseki(
+  world: WorldState,
+  buyerId: Id,
+  buyerHeyaId: Id,
+  myosekiId: Id
+): StateImpact {
+  const builder = createImpactBuilder("buyMyoseki");
+  const stock = getAvailableStock(world, myosekiId);
+  if (!stock || !stock.askingPrice) return builder.build();
+
+  const heya = getHeya(world, buyerHeyaId);
+  if (!heya || heya.funds < stock.askingPrice) return builder.build();
+
+  const newFunds = heya.funds - stock.askingPrice;
+  const amount = stock.askingPrice;
+
+  builder.updateHeya(buyerHeyaId, { funds: newFunds });
+
+  const importance = isMyosekiPlayerRelevant(world, stock);
+
+  builder.logEvent(
+    "FINANCIAL_ALERT",
+    "economy",
+    {
+      heyaname: heya.name,
+      incident: "myoseki_acquisition",
+      money: amount,
+      status: stock.name,
+    },
+    { heyaId: buyerHeyaId, importance }
+  );
+
+  builder.updateMyosekiStock(myosekiId, {
+    ownerId: buyerId,
+    holderId: buyerId,
+    status: "held" as const,
+    askingPrice: undefined,
+  });
+
+  builder.recordMyosekiTransaction(
+    getMyosekiTransaction(world, myosekiId, "sale", "JSA", buyerId, amount)
+  );
+
+  return builder.build();
+}
+
+/**
+ * Lease a Myoseki stock.
+ * Returns StateImpact describing myoseki lease instead of mutating directly.
+ */
+export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): StateImpact {
+  const builder = createImpactBuilder("leaseMyoseki");
+  const stock = getAvailableStock(world, myosekiId);
+  if (!stock || !stock.askingPrice) return builder.build();
+
+  const leaseFee = Math.floor(stock.askingPrice * MYOSEKI_LEASE_RATE_PERCENT);
+
+  builder.updateMyosekiStock(myosekiId, {
+    holderId: lesseeId,
+    status: "leased" as const,
+    leaseFee,
+  });
+
+  const importance = isMyosekiPlayerRelevant(world, stock);
+
+  builder.logEvent(
+    "FINANCIAL_ALERT",
+    "economy",
+    {
+      incident: "myoseki_lease",
+      money: leaseFee,
+      status: stock.name,
+      lesseeId,
+    },
+    { importance }
+  );
+
+  builder.recordMyosekiTransaction(
+    getMyosekiTransaction(world, myosekiId, "lease", stock.ownerId, lesseeId, leaseFee)
+  );
+
+  return builder.build();
+}

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
-import { computeStallPenalty, planPrimaryMetricOrdinal } from "@/engine/npcAI/planOutcomes";
-import type { AIContext, OyakataMemory } from "@/engine/ai/types";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
+import { computeStallPenalty, planPrimaryMetricOrdinal } from "@/engine/npc/planOutcomes";
+import type { AIContext, OyakataMemory } from "@/engine/npc/types";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
 
 /**
  * WS2 contract tests — decision-history stall detection.

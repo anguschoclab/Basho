@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
+import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 import {
   FIXED_OPERATING_OVERHEAD_WEEKLY,
   FACILITY_UPKEEP,
@@ -12,7 +12,7 @@ import {
   RUNWAY_INFINITE_SENTINEL,
   STAFF_UPKEEP_PER_MEMBER,
 } from "@/constants/engine/economic";
-import { SPONSOR_TIER_INCOME } from "@/engine/systems/economy/SponsorshipService";
+import { SPONSOR_TIER_INCOME } from "@/engine/economy/SponsorshipService";
 import { KOENKAI_INCOME_POWERFUL } from "@/constants/engine/economyExtended";
 import { makeMockHeya, makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";

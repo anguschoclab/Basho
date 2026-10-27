@@ -1,4 +1,4 @@
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 const TOSHIYORI_NAME_POOL: readonly string[] = [
   "Saganoumi",

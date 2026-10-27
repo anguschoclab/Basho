@@ -4,7 +4,7 @@ import {
   applyDecisionEffect,
   resolveLoopDecision,
   autonomouslyResolveDecisions,
-} from "@/engine/loop/LoopDecisionEngine";
+} from "@/engine/npc/decision/LoopDecisionEngine";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";

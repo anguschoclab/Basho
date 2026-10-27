@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   applyWeeklyTraining,
   ensureHeyaTrainingState,
-} from "@/engine/systems/training/TrainingService";
+} from "@/engine/training/TrainingService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState, ActiveModifiers } from "@/engine/types/world";

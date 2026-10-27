@@ -1,7 +1,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import { createRngForEvent } from "@/engine/events/helpers";
 import { logEngineEvent } from "@/engine/events/events";
 import { enrichEventContext } from "@/engine/events/domains/context";

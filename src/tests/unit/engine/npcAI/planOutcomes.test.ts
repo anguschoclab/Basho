@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { evaluatePlanOutcome, computePlanBaseline } from "@/engine/npcAI/planOutcomes";
+import { evaluatePlanOutcome, computePlanBaseline } from "@/engine/npc/planOutcomes";
 import { toKeyedMap } from "@/engine/utils/index";
-import type { AIPlan } from "@/engine/ai/types";
+import type { AIPlan } from "@/engine/npc/types";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoResult } from "@/engine/types/basho";
 import type { RivalriesState } from "@/constants/engine/rivalry";

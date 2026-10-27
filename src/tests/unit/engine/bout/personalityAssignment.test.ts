@@ -3,8 +3,8 @@ import {
   assignPressPersona,
   assignPersonalityTraits,
   rollBirthday,
-} from "@/engine/systems/generation/PersonaAssignment";
-import { SeededRNG } from "@/engine/rng";
+} from "@/engine/generation/PersonaAssignment";
+import { SeededRNG } from "@/engine/core/rng";
 import { PERSONALITY_TRAITS } from "@/constants/engine/generation";
 
 describe("PersonaAssignment — press persona & trait assignment (T22)", () => {

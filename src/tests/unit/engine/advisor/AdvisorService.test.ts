@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { generateRecommendations } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import type { AIRecommendation } from "@/engine/ai/types";
+import type { AIRecommendation } from "@/engine/npc/types";
 
 describe("AdvisorService.generateRecommendations — return shape (Step 2 regression)", () => {
   it("returns an array of AIRecommendation objects with valid shape", () => {

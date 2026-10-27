@@ -3,17 +3,17 @@
  * Creates new recruits with diverse origins and archetypes.
  */
 
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
 import type { Rank } from "@/engine/types/banzuke";
 import { generateShikona } from "@/engine/shikona/generateShikona";
 import type { WorldState } from "@/engine/types/world";
-import type { InjurySeverity } from "@/engine/systems/health/BodyDefinitions";
+import type { InjurySeverity } from "@/engine/health/BodyDefinitions";
 import type { CombatArchetype } from "@/engine/types/combat";
-import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetypeWithBias } from "@/engine/archetype";
-import { rollAgeForRank } from "@/engine/systems/generation/CandidateStats";
+import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetypeWithBias } from "@/engine/bout/archetype";
+import { rollAgeForRank } from "@/engine/generation/CandidateStats";
 import { isCollegeRecruit } from "@/engine/utils/identity";
-import { applyPersonaAssignment } from "@/engine/systems/generation/PersonaAssignment";
+import { applyPersonaAssignment } from "@/engine/generation/PersonaAssignment";
 import {
   ROOKIE_ID_MIN,
   ROOKIE_ID_MAX,
@@ -269,8 +269,8 @@ function buildRookieEntity(p: {
     },
     personalityTraits: [],
     favoredKimarite: (buildCombatProfile(p.archetype).favoredKimarite ??
-      []) as import("../types/rikishi").KimariteId[],
-    weakAgainstStyles: deriveWeakAgainstStyles(p.archetype) as import("../types/rikishi").Style[],
+      []) as import("@/engine/types/rikishi").KimariteId[],
+    weakAgainstStyles: deriveWeakAgainstStyles(p.archetype) as import("@/engine/types/rikishi").Style[],
     // Required Rikishi fields for career tracking
     consecutiveYusho: 0,
     careerHistory: [],

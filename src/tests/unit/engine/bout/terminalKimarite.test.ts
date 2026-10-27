@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import {
   pickTerminalKimarite,
   classifyPushExitKimarite,
@@ -7,7 +7,7 @@ import {
   classifyPushFallKimarite,
   classifyBeltFallKimariteV2,
 } from "@/engine/bout/terminalKimarite";
-import { getKimarite } from "@/engine/kimariteRegistry";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 
 /**
  * Terminal kimarite classification draws a technique label within the

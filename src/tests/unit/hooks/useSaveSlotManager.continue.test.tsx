@@ -12,7 +12,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useSaveSlotManager } from "@/hooks/useSaveSlotManager";
-import type { SaveSlotInfo } from "@/engine/saveload";
+import type { SaveSlotInfo } from "@/engine/persistence/saveload";
 
 vi.mock("@/presenters/uiDigest", () => ({
   BASHO_CALENDAR: { hatsu: { nameEn: "January" } },

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { getHeyaRoster, getHeyaRosterIds, clearQueryCaches } from "@/engine/queries";
+import { getHeyaRoster, getHeyaRosterIds, clearQueryCaches } from "@/engine/core/queries";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";

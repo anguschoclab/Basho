@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   diminishingReturnsMult,
   calculateGrowthVector,
-} from "@/engine/systems/training/TrainingMath";
+} from "@/engine/training/TrainingMath";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { TrainingProfile, IndividualFocus } from "@/engine/types/training";
 

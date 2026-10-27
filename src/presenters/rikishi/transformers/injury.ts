@@ -5,7 +5,7 @@
  */
 
 import type { Rikishi } from "@/engine/types/rikishi";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
 
 /**

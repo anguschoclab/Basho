@@ -10,11 +10,11 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { mergeImpacts } from "@/engine/core/ImpactResolver";
-import { rngForWorld } from "@/engine/rng";
+import { rngForWorld } from "@/engine/core/rng";
 import { stableSort } from "@/engine/utils/sort";
 import type { ActiveCrisis, CrisisType } from "@/engine/types/crises";
-import { isGovernancePlayerRelevant } from "@/engine/npcAI/eventSurfacing";
-import { getRikishi } from "@/engine/queries";
+import { isGovernancePlayerRelevant } from "@/engine/npc/eventSurfacing";
+import { getRikishi } from "@/engine/core/queries";
 import { OVERSLEEP_CHANCE, OVERSLEEP_MOTIVATION_PENALTY } from "@/constants/engine/generation";
 
 /**

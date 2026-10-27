@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
-import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
-import type { AIPlan } from "@/engine/ai/types";
+import { makeNPCWeeklyDecision } from "@/engine/npc/weekly";
+import type { AIPlan } from "@/engine/npc/types";
 
 /**
  * Characterization coverage for the agent-context plumbing inside

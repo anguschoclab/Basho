@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { updateHeyaInWorld } from "@/engine/queries";
+import { updateHeyaInWorld } from "@/engine/core/queries";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 

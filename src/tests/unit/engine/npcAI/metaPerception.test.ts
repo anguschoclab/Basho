@@ -9,9 +9,9 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { buildMetaPerception } from "@/engine/npcAI/MetaPerception";
-import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
-import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
+import { buildMetaPerception } from "@/engine/npc/MetaPerception";
+import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
+import { processYearlyEraDrift } from "@/engine/history/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

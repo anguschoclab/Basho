@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { adjustKoenkaiBandToPrestige } from "@/engine/systems/economy/SponsorshipService";
+import { adjustKoenkaiBandToPrestige } from "@/engine/economy/SponsorshipService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { toKeyedMap } from "@/engine/utils/index";

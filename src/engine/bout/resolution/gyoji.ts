@@ -13,7 +13,7 @@ import {
   assignGyojiToBout,
   recordGyojiBout,
   assembleShimpanPanel,
-} from "@/engine/systems/officials/GyojiService";
+} from "@/engine/officials/GyojiService";
 import { resolveMonoii } from "@/engine/types/gyoji";
 
 /**

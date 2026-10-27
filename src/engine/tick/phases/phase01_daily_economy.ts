@@ -7,7 +7,7 @@
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { WelfareService } from "@/engine/systems/welfare/WelfareService";
+import { WelfareService } from "@/engine/welfare/WelfareService";
 import { DIET_COSTS, DEBT_LIMIT } from "@/constants/engine/economic";
 import { DIET_COST_STANDARD } from "@/constants/engine/economyExtended";
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
+import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 import { JSA_PER_WRESTLER_SUBSIDY_MONTHLY } from "@/constants/engine/economic";
 import { makeMockHeya, makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 

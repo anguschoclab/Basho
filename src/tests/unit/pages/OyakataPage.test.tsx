@@ -23,11 +23,11 @@ vi.mock("@/components/ClickableName", () => ({
   StableName: ({ name }: any) => React.createElement("span", null, name),
 }));
 
-vi.mock("@/engine/lineage", () => ({
+vi.mock("@/engine/legacy/lineage", () => ({
   menteesOf: () => [],
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: () => ({ id: "h1", name: "TestHeya", oyakataId: "o1", rikishiIds: [] }),
 }));
 

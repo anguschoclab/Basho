@@ -6,9 +6,9 @@
  */
 
 import type { WorldState } from "@/engine/types/world";
-import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
-import { calculateKoenkaiIncome } from "@/engine/systems/economy/SponsorshipService";
-import { getPlayerHeya } from "@/engine/queries";
+import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
+import { calculateKoenkaiIncome } from "@/engine/economy/SponsorshipService";
+import { getPlayerHeya } from "@/engine/core/queries";
 import { KOENKAI_INCOME_SPLIT } from "@/constants/engine/economic";
 import { formatYen } from "@/utils/engineUtils";
 import type { RunwayBand } from "@/engine/types/narrative";

@@ -18,9 +18,9 @@ import {
   getInjurySeverityLabel,
   getWinRateLabel,
   hydrateDescriptor,
-} from "@/engine/systems/narrative/NarrativeProse";
+} from "@/engine/narrative/NarrativeProse";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { CombatArchetype } from "@/engine/types/combat";
 
 vi.mock("@/engine/bard/BardEngine", () => ({

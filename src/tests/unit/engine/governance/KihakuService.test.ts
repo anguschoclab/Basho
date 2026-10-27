@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { KihakuService } from "@/engine/systems/governance/KihakuService";
+import { KihakuService } from "@/engine/governance/services/KihakuService";
 import type { MatchSchedule, BashoState } from "@/engine/types/basho";
 
 function makeMatch(

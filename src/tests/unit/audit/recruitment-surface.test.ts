@@ -13,18 +13,18 @@ const ROOT = join(__dirname, "../../../..");
 
 describe("RecruitmentAgent — NPC wiring", () => {
   it("spawnRecruitmentAgent is imported and called by weekly agents module", () => {
-    const weekly = readSrcFile("engine/npcAI/weekly/agents.ts");
+    const weekly = readSrcFile("engine/npc/weekly/agents.ts");
     expect(weekly).toContain("spawnRecruitmentAgent");
     expect(weekly).toMatch(/spawnRecruitmentAgent\s*\(/);
   });
 
   it("is also imported by TacticalCoordinator", () => {
-    const tc = readSrcFile("engine/npcAI/TacticalCoordinator.ts");
+    const tc = readSrcFile("engine/npc/TacticalCoordinator.ts");
     expect(tc).toContain("RecruitmentAgent");
   });
 
   it("exports spawnRecruitmentAgent with reasoning", () => {
-    const agent = readSrcFile("engine/agents/RecruitmentAgent.ts");
+    const agent = readSrcFile("engine/npc/agents/RecruitmentAgent.ts");
     expect(agent).toContain("export function spawnRecruitmentAgent");
     expect(agent).toContain("reasoning");
   });

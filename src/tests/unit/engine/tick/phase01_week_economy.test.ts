@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { phase01_week_economy } from "@/engine/tick/phases/phase01_week_economy";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import * as finance from "@/engine/systems/economy/FinanceCalculator";
+import * as finance from "@/engine/economy/FinanceCalculator";
 import { RUNWAY_BANDS } from "@/constants/engine/economy";
 
-vi.mock("@/engine/systems/economy/FinanceCalculator", () => ({
+vi.mock("@/engine/economy/FinanceCalculator", () => ({
   calculateHeyaWeeklyFinances: vi.fn(),
 }));
 

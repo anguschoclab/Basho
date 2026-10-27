@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { WorldState } from "@/engine/types/world";
 
 describe("Engine Restoration Verification", () => {

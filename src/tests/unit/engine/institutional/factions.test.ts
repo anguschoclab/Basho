@@ -8,13 +8,13 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { electFactionPostures } from "@/engine/npcAI/factions";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
-import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
+import { electFactionPostures } from "@/engine/npc/factions";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
+import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
-import type { AIContext } from "@/engine/ai/types";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import type { AIContext } from "@/engine/npc/types";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
 
 function factionWorld(): WorldState {
   const world = MockFactory.createWorld({ week: 10, year: 5 });

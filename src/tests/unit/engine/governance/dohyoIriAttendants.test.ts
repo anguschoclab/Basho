@@ -3,7 +3,7 @@ import {
   assignYokozunaAttendants,
   isEligibleAttendant,
   ATTENDANT_POPULARITY_BOOST,
-} from "@/engine/governance/yokozunaAttendants";
+} from "@/engine/governance/ceremonies/yokozunaAttendants";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";

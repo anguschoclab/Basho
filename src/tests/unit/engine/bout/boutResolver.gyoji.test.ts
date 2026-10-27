@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { resolveBout } from "@/engine/bout/boutResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutContext } from "@/engine/bout/boutUtils";
 

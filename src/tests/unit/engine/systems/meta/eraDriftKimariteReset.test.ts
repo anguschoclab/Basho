@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
-import { processYearlyEraDrift } from "@/engine/systems/meta/EraDriftService";
+import { processYearlyEraDrift } from "@/engine/history/EraDriftService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 describe("EraDriftService kimarite reset", () => {

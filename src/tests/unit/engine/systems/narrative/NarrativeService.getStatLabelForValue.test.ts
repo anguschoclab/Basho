@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
-import { SeededRNG } from "@/engine/rng";
+import { NarrativeService } from "@/engine/narrative/NarrativeService";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("NarrativeService.getStatLabelForValue", () => {
   const rng = new SeededRNG("test-seed");

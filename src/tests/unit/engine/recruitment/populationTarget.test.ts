@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 
 describe("populationTarget at worldgen", () => {

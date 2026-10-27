@@ -12,7 +12,7 @@ import {
   getMaxStaff,
   getUpgradeCost,
   MAX_ACADEMY_LEVEL,
-} from "@/engine/systems/recruitment/YouthAcademyService";
+} from "@/engine/recruitment/YouthAcademyService";
 import type { WorldState } from "@/engine/types/world";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 

@@ -7,7 +7,7 @@ import type {
   AIContext,
   OyakataMemory,
   OpponentTacticModel,
-} from "@/engine/ai/types";
+} from "@/engine/npc/types";
 
 describe("AI types can be constructed", () => {
   it("AIPlan", () => {

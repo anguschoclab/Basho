@@ -108,7 +108,7 @@ vi.mock("@/components/avatar/SumoAvatar", () => ({
   SumoAvatar: () => <div data-testid="avatar" />,
 }));
 
-vi.mock("@/engine/archetype", () => ({
+vi.mock("@/engine/bout/archetype", () => ({
   getCombatArchetypeDescription: () => "Test archetype",
 }));
 

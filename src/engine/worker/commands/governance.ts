@@ -4,17 +4,17 @@
  * Governance, media, and political-capital commands.
  */
 
-import * as governance from "@/engine/systems/governance/GovernanceService";
-import { resolveLoopDecision } from "@/engine/loop/LoopDecisionEngine";
-import { issueGovernanceRuling } from "@/engine/systems/governance/ScandalService";
-import { handleMediaEvent } from "@/engine/systems/media/MediaEventService";
-import { spendPoliticalCapital } from "@/engine/systems/governance/ScandalService";
+import * as governance from "@/engine/governance/services/GovernanceService";
+import { resolveLoopDecision } from "@/engine/npc/decision/LoopDecisionEngine";
+import { issueGovernanceRuling } from "@/engine/governance/services/ScandalService";
+import { handleMediaEvent } from "@/engine/media/MediaEventService";
+import { spendPoliticalCapital } from "@/engine/governance/services/ScandalService";
 import {
   PoliticalFavorsService,
   type FavorType,
-} from "@/engine/systems/governance/PoliticalFavorsService";
+} from "@/engine/governance/services/PoliticalFavorsService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { updateHeyaInWorld } from "@/engine/queries";
+import { updateHeyaInWorld } from "@/engine/core/queries";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
 import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 

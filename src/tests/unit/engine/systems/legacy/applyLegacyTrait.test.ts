@@ -9,7 +9,7 @@
  * post-refactor code, proving the type tightening is behavior-preserving.
  */
 import { describe, it, expect } from "vitest";
-import { LegacyService } from "@/engine/systems/legacy/LegacyService";
+import { LegacyService } from "@/engine/legacy/LegacyService";
 import type { RikishiStats } from "@/engine/types/rikishi";
 import type { BloodlineTrait } from "@/engine/types/dynasty";
 

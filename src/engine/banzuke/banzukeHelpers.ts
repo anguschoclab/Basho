@@ -6,7 +6,7 @@ import {
   type BashoPerformance,
 } from "@/engine/types/banzuke";
 import type { WorldState } from "@/engine/types/world";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 
 /**
  * Interface representing a candidate in the banzuke assignment sort.

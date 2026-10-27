@@ -7,7 +7,7 @@
  */
 
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { SeededRNG } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/core/rng";
 import { getFavoriteHighlight } from "@/engine/bout/CareerHighlights";
 
 export type PostRetirementPath =

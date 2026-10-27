@@ -6,7 +6,7 @@ import type { MovementEvent } from "@/engine/types/banzuke";
 import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { warn } from "@/engine/utils/Logger";
 import { buildPerformanceList } from "@/engine/banzuke/publish/performance";
 import { applyMovementEvents } from "@/engine/banzuke/publish/movements";

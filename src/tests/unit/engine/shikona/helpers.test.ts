@@ -15,7 +15,7 @@ import {
   BASE_PATTERN_WEIGHTS,
 } from "@/engine/shikona/constants";
 import { HOUSE_STYLES } from "@/engine/shikona/houseStyles";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { PatternId, HouseStyle } from "@/engine/shikona/types";
 
 // ── helpers ────────────────────────────────────────────────────────────────

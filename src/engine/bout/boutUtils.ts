@@ -4,7 +4,7 @@
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Side } from "@/engine/types/banzuke";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import {
   FORCE_POWER_MULTIPLIER,
   FORCE_SPEED_MULTIPLIER,
@@ -32,12 +32,12 @@ export interface BoutContext {
   rikishiEastId: string;
   rikishiWestId: string;
   playerSide?: Side;
-  playerTactic?: import("../types/combat").BoutTactic;
-  cpuTacticOverride?: import("../types/combat").BoutTactic;
+  playerTactic?: import("@/engine/types/combat").BoutTactic;
+  cpuTacticOverride?: import("@/engine/types/combat").BoutTactic;
   /** Resolved tactic for the east rikishi (set by resolveBout or callers). */
-  eastTactic?: import("../types/combat").BoutTactic;
+  eastTactic?: import("@/engine/types/combat").BoutTactic;
   /** Resolved tactic for the west rikishi (set by resolveBout or callers). */
-  westTactic?: import("../types/combat").BoutTactic;
+  westTactic?: import("@/engine/types/combat").BoutTactic;
   /**
    * True for playoff (kettei-sen) bouts. Playoffs decide the yusho but are
    * not honbasho torikumi — no kinboshi, kensho, or record side-effects.
@@ -47,8 +47,8 @@ export interface BoutContext {
 
 /** Resolved tactic for each side of a bout. */
 export interface SideTactics {
-  east?: import("../types/combat").BoutTactic;
-  west?: import("../types/combat").BoutTactic;
+  east?: import("@/engine/types/combat").BoutTactic;
+  west?: import("@/engine/types/combat").BoutTactic;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface SideTactics {
 export function sideTactic(
   bout: BoutContext,
   side: Side
-): import("../types/combat").BoutTactic | undefined {
+): import("@/engine/types/combat").BoutTactic | undefined {
   const explicit = side === "east" ? bout.eastTactic : bout.westTactic;
   if (explicit) return explicit;
   if (bout.playerSide) {

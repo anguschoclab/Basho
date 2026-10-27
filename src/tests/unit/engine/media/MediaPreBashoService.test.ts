@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";
+import { buildMediaDigest } from "@/engine/media/MediaPreBashoService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { MediaHeadline } from "@/engine/types/media";
 

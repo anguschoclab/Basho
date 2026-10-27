@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { opfsArchiveService } from "@/engine/storage/opfsArchive";
+import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
 
 describe("OPFS Archive Validation", () => {
   beforeEach(() => {

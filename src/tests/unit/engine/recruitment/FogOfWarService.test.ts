@@ -9,7 +9,7 @@ import {
   applyBias,
   decayBias,
   type ScoutingBias,
-} from "@/engine/systems/recruitment/FogOfWarService";
+} from "@/engine/recruitment/FogOfWarService";
 import {
   MAX_SCOUTING_LEVEL,
   PASSIVE_SCOUTING_MAX_BASE,

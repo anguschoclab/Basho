@@ -5,7 +5,7 @@ import {
   type PostRetirementPath,
 } from "@/engine/lifecycle/PostRetirementPath";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import type { SeededRNG } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/core/rng";
 
 function mockRng(seed: string): SeededRNG {
   let state = 0;

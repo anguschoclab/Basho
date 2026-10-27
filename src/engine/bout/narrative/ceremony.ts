@@ -5,7 +5,7 @@
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
 import { RITUAL_SALT_CHANCE_UNDERSTATED } from "@/constants/engine/generation";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 
 function beatRingEntrances(p: PbpPipeline): void {
   const { ctx, east, intensity, push, result, rng, seed, west } = p;

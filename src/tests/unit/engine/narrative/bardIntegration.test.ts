@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import * as TalentPoolService from "@/engine/systems/generation/TalentPoolService";
+import * as TalentPoolService from "@/engine/generation/TalentPoolService";
 import * as RegistryService from "@/engine/lifecycle/RegistryService";
-import * as NPCStrategyService from "@/engine/strategy/NPCStrategyService";
-import { SeededRNG } from "@/engine/rng";
+import * as NPCStrategyService from "@/engine/npc/strategy/NPCStrategyService";
+import { SeededRNG } from "@/engine/core/rng";
 import { EventBus } from "@/engine/events/events";
 
 describe("Bard Engine Integration", () => {

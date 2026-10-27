@@ -11,11 +11,11 @@ import {
   NARRATIVE_TAWARA_TOE_THRESHOLD,
 } from "@/constants/engine/narrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { BoutLogEntry } from "@/engine/types/basho";
 import type { Stance } from "@/engine/types/combat";
 
-import type { SeededRNG } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/core/rng";
 
 /** Mutable per-bout narration state shared by frame handlers. */
 interface FrameState {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { assignDohyoIriStyle } from "@/engine/governance/dohyoIri";
+import { assignDohyoIriStyle } from "@/engine/governance/ceremonies/dohyoIri";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeRikishi(id: string, rank: string = "ozeki"): Rikishi {

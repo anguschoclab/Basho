@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { runGovernanceReview } from "@/engine/systems/governance/governanceReview";
+import { runGovernanceReview } from "@/engine/governance/services/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { HEYA_FLOOR } from "@/constants/engine/economic";

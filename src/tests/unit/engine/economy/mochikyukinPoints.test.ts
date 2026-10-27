@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   accumulateMochikyukinPoints,
   payMochikyukinBonuses,
-} from "@/engine/systems/economy/MochikyukinService";
+} from "@/engine/economy/MochikyukinService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import {
   MOCHIKYUKIN_POINT_VALUE,

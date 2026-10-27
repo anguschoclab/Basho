@@ -13,11 +13,11 @@ import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 // ── Module mocks (vi.mock is hoisted before all imports) ──────────────────
 
-vi.mock("@/engine/prestige/prestigeSystem", () => ({
+vi.mock("@/engine/history/prestige", () => ({
   runPrestigeDecay: vi.fn(() => ({ metadata: { source: "prestige", timestamp: 0 } })),
 }));
 
-vi.mock("@/engine/systems/governance/governanceReview", () => ({
+vi.mock("@/engine/governance/services/governanceReview", () => ({
   runGovernanceReview: vi.fn(() => ({ metadata: { source: "governance", timestamp: 0 } })),
   runAIMetaDrift: vi.fn(() => ({ metadata: { source: "aiMeta", timestamp: 0 } })),
 }));
@@ -29,20 +29,20 @@ vi.mock("@/engine/lifecycle/processRetirements", () => ({
   })),
 }));
 
-vi.mock("@/engine/records", () => ({
+vi.mock("@/engine/history/records", () => ({
   onBashoEnded: vi.fn(() => ({ metadata: { source: "records", timestamp: 0 } })),
 }));
 
-vi.mock("@/engine/systems/economy/SponsorshipService", () => ({
+vi.mock("@/engine/economy/SponsorshipService", () => ({
   processSponsorChurn: vi.fn(() => ({ metadata: { source: "sponsors", timestamp: 0 } })),
   adjustKoenkaiBandToPrestige: vi.fn(() => ({ metadata: { source: "koenkaiBand", timestamp: 0 } })),
 }));
 
-vi.mock("@/engine/naturalization", () => ({
+vi.mock("@/engine/lifecycle/naturalization", () => ({
   checkNaturalizations: vi.fn(() => ({ metadata: { source: "naturalization", timestamp: 0 } })),
 }));
 
-vi.mock("@/engine/archival", () => ({
+vi.mock("@/engine/history/archival", () => ({
   runRetiredRikishiSummarization: vi.fn(() => ({
     metadata: { source: "runRetiredRikishiSummarization", timestamp: 0 },
   })),
@@ -53,15 +53,15 @@ vi.mock("@/engine/lifecycle/RegistryService", () => ({
   openRecruitmentWindow: vi.fn(() => ({ metadata: { source: "recruitment", timestamp: 0 } })),
 }));
 
-vi.mock("@/engine/history", () => ({
+vi.mock("@/engine/history/history", () => ({
   runHistoryUpdates: vi.fn(() => ({ metadata: { source: "history", timestamp: 0 } })),
 }));
 
-vi.mock("@/engine/systems/governance/ScandalService", () => ({
+vi.mock("@/engine/governance/services/ScandalService", () => ({
   runElections: vi.fn(() => ({ metadata: { source: "elections", timestamp: 0 } })),
 }));
 
-vi.mock("@/engine/systems/media/MediaService", () => ({
+vi.mock("@/engine/media/MediaService", () => ({
   processWeeklyMediaBoundary: vi.fn(() => ({ metadata: { source: "media", timestamp: 0 } })),
   snapshotMediaHeatForBasho: vi.fn((s: unknown) => s),
 }));
@@ -69,7 +69,7 @@ vi.mock("@/engine/systems/media/MediaService", () => ({
 // NOTE: ImpactResolver is NOT mocked here to avoid polluting other test files
 // We'll spy on it in beforeEach instead
 
-vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
+vi.mock("@/engine/generation/TalentPoolService", () => ({
   fillVacanciesForNPC: vi.fn(),
   finalizeSignedCandidates: vi.fn(),
 }));
@@ -77,16 +77,16 @@ vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
 // ── Import module under test AFTER mocks ──────────────────────────────────
 
 import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
-import { runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
+import { runPrestigeDecay } from "@/engine/history/prestige";
 import {
   runGovernanceReview,
   runAIMetaDrift,
-} from "@/engine/systems/governance/governanceReview";
+} from "@/engine/governance/services/governanceReview";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
-import { onBashoEnded } from "@/engine/records";
+import { onBashoEnded } from "@/engine/history/records";
 import * as ImpactResolver from "@/engine/core/ImpactResolver";
 import { openRecruitmentWindow } from "@/engine/lifecycle/RegistryService";
-import { runRetiredRikishiSummarization } from "@/engine/archival";
+import { runRetiredRikishiSummarization } from "@/engine/history/archival";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 

@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { projectBashoUIDigest } from "@/presenters/projections/bashoProjections";
-import { isNakabiDay } from "@/engine/systems/basho/NakabiService";
+import { isNakabiDay } from "@/engine/basho/NakabiService";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(day: number): WorldState {

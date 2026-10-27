@@ -1,6 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { mergeImpacts } from "@/engine/core/ImpactResolver";
 

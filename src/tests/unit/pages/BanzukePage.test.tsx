@@ -57,7 +57,7 @@ vi.mock("@/presenters/projections/promotionProjections", () => ({
   getYokozunaCandidates: () => [],
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: () => ({ id: "h1", name: "TestHeya" }),
   updateHeyaInWorld: (w: any) => w,
 }));

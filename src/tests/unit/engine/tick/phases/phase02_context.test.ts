@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { phase02_context } from "@/engine/tick/phases/phase02_context";
 import { applyImpact } from "@/engine/core/ImpactResolver";
-import { computeDisplayTrainingMultiplier } from "@/engine/systems/training/TrainingMath";
+import { computeDisplayTrainingMultiplier } from "@/engine/training/TrainingMath";
 import type { WorldState } from "@/engine/types/world";
 
 describe("Phase 2: Context", () => {

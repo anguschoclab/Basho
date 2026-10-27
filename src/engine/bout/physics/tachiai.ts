@@ -1,5 +1,5 @@
-import type { SeededRNG } from "@/engine/rng";
-import { rngFromSeed } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/core/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutLogEntry } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";

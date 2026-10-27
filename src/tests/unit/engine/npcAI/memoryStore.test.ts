@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Oyakata } from "@/engine/types/oyakata";
-import type { AIPlan, OpponentTacticModel } from "@/engine/ai/types";
+import type { AIPlan, OpponentTacticModel } from "@/engine/npc/types";
 import {
   emptyOyakataMemory,
   getMemory,
@@ -10,7 +10,7 @@ import {
   recordDecision,
   recordOpponentModel,
   getOpponentModel,
-} from "@/engine/npcAI/MemoryStore";
+} from "@/engine/npc/MemoryStore";
 
 function makeOyakata(overrides: Partial<Oyakata> = {}): Oyakata {
   return {

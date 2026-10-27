@@ -36,8 +36,8 @@ import {
   MIN_STAT_VALUE,
   DEFAULT_FACILITY_LEVEL,
 } from "@/constants/engine/rikishi";
-import { getHeya } from "@/engine/queries";
-import { extractTrainingModifiers } from "@/engine/systems/training/TrainingMath";
+import { getHeya } from "@/engine/core/queries";
+import { extractTrainingModifiers } from "@/engine/training/TrainingMath";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 

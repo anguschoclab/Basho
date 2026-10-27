@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { KihakuService } from "@/engine/systems/governance/KihakuService";
-import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
+import { KihakuService } from "@/engine/governance/services/KihakuService";
+import { YokozunaService } from "@/engine/governance/services/YokozunaService";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("KihakuService — Fighting Spirit Score", () => {

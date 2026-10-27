@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createHeyaWithOyakata, createStables } from "@/engine/systems/generation/HeyaFactory";
-import { rngFromSeed } from "@/engine/rng";
+import { createHeyaWithOyakata, createStables } from "@/engine/generation/HeyaFactory";
+import { rngFromSeed } from "@/engine/core/rng";
 
 describe("HeyaFactory", () => {
   describe("createHeyaWithOyakata", () => {

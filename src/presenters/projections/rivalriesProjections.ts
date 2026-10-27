@@ -7,7 +7,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/engine/core/queries";
 
 export interface RivalriesPageData {
   playerRivalries: RivalryPairState[];

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getSekitoriInHeya, clearQueryCaches, getHeyaStyleBias } from "@/engine/queries";
+import { getSekitoriInHeya, clearQueryCaches, getHeyaStyleBias } from "@/engine/core/queries";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("Queries", () => {

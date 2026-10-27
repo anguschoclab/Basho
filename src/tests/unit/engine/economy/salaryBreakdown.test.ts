@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getSalaryBreakdown } from "@/engine/economics_awards";
+import { getSalaryBreakdown } from "@/engine/economy/awards";
 import { MOCHIKYUKIN_POINT_VALUE, MOCHIKYUKIN_RANK_FLOORS } from "@/constants/engine/economic";
 
 describe("getSalaryBreakdown — mochikyukin annuity honesty", () => {

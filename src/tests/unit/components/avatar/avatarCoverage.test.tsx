@@ -15,7 +15,7 @@ import { RivalryCard } from "@/components/rivalries/RivalryCard";
 import { ChampionSection } from "@/components/recap/TournamentCeremonySections";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
 import { resolveAvatar, rikishiStageInput, oyakataStageInput } from "@/presenters/avatarProjections";
-import { generateAvatarIdentity } from "@/engine/avatarGenerator";
+import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";

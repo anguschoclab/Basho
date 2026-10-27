@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { narrativeEventMap } from "@/engine/bard/narrativeEventMap";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { EngineEventType, EventImportance } from "@/engine/types/events";
 
 const VALID_EVENT_TYPES: EngineEventType[] = [

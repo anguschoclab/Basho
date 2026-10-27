@@ -19,11 +19,11 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   calculateWeeklyWelfareDelta,
   computeInjuryPressure,
-} from "@/engine/systems/welfare/WelfareCalculations";
+} from "@/engine/welfare/WelfareCalculations";
 import { clamp } from "@/engine/utils/math";
-import { WelfareService } from "@/engine/systems/welfare/WelfareService";
-import { getHeyaRoster } from "@/engine/queries";
-import { canEncourage, provideEncouragement } from "@/engine/actions/InjuredEncouragement";
+import { WelfareService } from "@/engine/welfare/WelfareService";
+import { getHeyaRoster } from "@/engine/core/queries";
+import { canEncourage, provideEncouragement } from "@/engine/health/InjuredEncouragement";
 import {
   handleCompliantTransition,
   handleWatchTransition,

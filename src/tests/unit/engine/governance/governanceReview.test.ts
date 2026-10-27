@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runGovernanceReview } from "@/engine/systems/governance/governanceReview";
+import { runGovernanceReview } from "@/engine/governance/services/governanceReview";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
-import { PRESTIGE_ORDER } from "@/engine/prestige/prestigeSystem";
+import { PRESTIGE_ORDER } from "@/engine/history/prestige";
 import {
   FACTION_BAILOUT_AMOUNT,
   LOAN_ISSUANCE_THRESHOLD,

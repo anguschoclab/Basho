@@ -39,7 +39,7 @@ vi.mock("@/engine/narrative/rivalry/rivalriesState", () => ({
   createDefaultRivalriesState: () => ({ pairs: {} }),
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: () => ({ id: "h1", name: "TestHeya", rikishiIds: ["r1"] }),
 }));
 
@@ -47,7 +47,7 @@ vi.mock("@/presenters/projections/rivalriesProjections", () => ({
   projectRivalriesPage: () => ({ stableRivalries: [] }),
 }));
 
-vi.mock("@/engine/descriptorBands", () => ({
+vi.mock("@/engine/narrative/descriptorBands", () => ({
   toRivalryHeatBand: (v: number) => (v >= 80 ? "inferno" : v >= 55 ? "hot" : "cool"),
 }));
 

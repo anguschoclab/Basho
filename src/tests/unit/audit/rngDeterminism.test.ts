@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { rngFromSeed, SeededRNG, setSeed, random } from "@/engine/rng";
+import { rngFromSeed, SeededRNG, setSeed, random } from "@/engine/core/rng";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import type { WorldState } from "@/engine/types/world";
 

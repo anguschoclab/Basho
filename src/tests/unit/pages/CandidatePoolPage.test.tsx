@@ -21,7 +21,7 @@ vi.mock("@/hooks/use-toast", () => ({
   toast: vi.fn(),
 }));
 
-vi.mock("@/engine/systems/generation/CandidatePoolService", () => ({
+vi.mock("@/engine/generation/CandidatePoolService", () => ({
   listNPCWatchedCandidates: () => mockCandidates,
   getTopSuitor: (_world: any, candidateId: string) => {
     const c = mockCandidates.find((c) => c.candidateId === candidateId);
@@ -29,7 +29,7 @@ vi.mock("@/engine/systems/generation/CandidatePoolService", () => ({
   },
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: () => ({ id: "h1", name: "TestHeya", reputation: 50 }),
   getHeya: () => ({ id: "h2", name: "RivalHeya" }),
 }));

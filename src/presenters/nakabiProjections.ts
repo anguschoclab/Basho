@@ -5,9 +5,9 @@
  * by NakabiService.logNakabiCheckpoint on day 8 of each honbasho.
  */
 import type { WorldState } from "@/engine/types/world";
-import type { NakabiSummary } from "@/engine/systems/basho/NakabiService";
+import type { NakabiSummary } from "@/engine/basho/NakabiService";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 
 export interface NakabiProjection {
   summary:

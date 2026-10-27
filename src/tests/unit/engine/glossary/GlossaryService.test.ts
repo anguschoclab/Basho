@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect } from "vitest";
-import { GlossaryService } from "@/engine/glossary/GlossaryService";
+import { GlossaryService } from "@/engine/narrative/glossary/GlossaryService";
 
 const ALL_CATEGORIES = [
   "rank",

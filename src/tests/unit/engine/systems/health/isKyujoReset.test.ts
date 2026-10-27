@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { tickRikishiRecovery } from "@/engine/systems/health/RecoveryService";
-import { clearInjury } from "@/engine/systems/health/InjuryService";
+import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
+import { clearInjury } from "@/engine/health/InjuryService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";

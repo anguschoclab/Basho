@@ -13,11 +13,11 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { generateOyakata } from "@/engine/oyakataPersonalities";
-import { foundStable } from "@/engine/systems/generation/WorldFactory";
-import { generateAvatarIdentity } from "@/engine/avatarGenerator";
-import { recordOyakataHandover } from "@/engine/lineage";
-import { rngForWorld } from "@/engine/rng";
+import { generateOyakata } from "@/engine/npc/personas/oyakataPersonalities";
+import { foundStable } from "@/engine/generation/WorldFactory";
+import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
+import { recordOyakataHandover } from "@/engine/legacy/lineage";
+import { rngForWorld } from "@/engine/core/rng";
 import { FOUNDING_CHANCE } from "@/constants/engine/economic";
 
 /**

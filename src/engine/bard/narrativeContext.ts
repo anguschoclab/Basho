@@ -1,7 +1,7 @@
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
-import { BASHO_CALENDAR } from "@/engine/calendar";
+import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import {
   HIGH_STAKES_TIER_THRESHOLD,

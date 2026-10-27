@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { scheduleDivisionDay } from "@/engine/schedule";
+import { scheduleDivisionDay } from "@/engine/calendar/schedule";
 import { toKeyedMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, mockRikishi, makeMockHeya, makeMockBasho } from "@/tests/unit/engine/utils";
-import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
+import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import type { RivalriesState } from "@/constants/engine/rivalry";
 
 describe("buildLeaguePerception", () => {
@@ -79,7 +79,7 @@ describe("buildLeaguePerception", () => {
     world.perceptionCache = {
       h1: {
         runwayBand: "critical",
-      } as unknown as import("@/engine/perception").PerceptionSnapshot,
+      } as unknown as import("@/engine/npc/perception").PerceptionSnapshot,
     };
 
     const result = buildLeaguePerception(world);

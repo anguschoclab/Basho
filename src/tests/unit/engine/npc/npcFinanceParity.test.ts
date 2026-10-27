@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { WorldState } from "@/engine/types/world";
 import { Heya } from "@/engine/types/heya";
 import { Oyakata } from "@/engine/types/oyakata";
-import { evaluateFinanceStrategy } from "@/engine/strategy/NPCFinanceCalculator";
+import { evaluateFinanceStrategy } from "@/engine/npc/strategy/NPCFinanceCalculator";
 
 describe("NPC Finance Style Parity", () => {
   let mockWorld: WorldState;

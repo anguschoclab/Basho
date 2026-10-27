@@ -13,7 +13,7 @@ import { readSrcFile } from "@/tests/helpers/fsScan";
 const ROOT = join(__dirname, "../../../..");
 
 describe("FinanceAgent — deterministic decision interface", () => {
-  const agent = readSrcFile("engine/agents/FinanceAgent.ts");
+  const agent = readSrcFile("engine/npc/agents/FinanceAgent.ts");
 
   it("exports spawnFinanceAgent function", () => {
     expect(agent).toContain("export function spawnFinanceAgent");
@@ -34,7 +34,7 @@ describe("FinanceAgent — deterministic decision interface", () => {
 });
 
 describe("GovernanceAgent — deterministic decision interface", () => {
-  const agent = readSrcFile("engine/agents/GovernanceAgent.ts");
+  const agent = readSrcFile("engine/npc/agents/GovernanceAgent.ts");
 
   it("exports spawnGovernanceAgent function", () => {
     expect(agent).toContain("export function spawnGovernanceAgent");
@@ -50,7 +50,7 @@ describe("GovernanceAgent — deterministic decision interface", () => {
 });
 
 describe("RecruitmentAgent — deterministic decision interface", () => {
-  const agent = readSrcFile("engine/agents/RecruitmentAgent.ts");
+  const agent = readSrcFile("engine/npc/agents/RecruitmentAgent.ts");
 
   it("exports spawnRecruitmentAgent function", () => {
     expect(agent).toContain("export function spawnRecruitmentAgent");
@@ -62,7 +62,7 @@ describe("RecruitmentAgent — deterministic decision interface", () => {
 });
 
 describe("RivalryAgent — deterministic decision interface", () => {
-  const agent = readSrcFile("engine/agents/RivalryAgent.ts");
+  const agent = readSrcFile("engine/npc/agents/RivalryAgent.ts");
 
   it("exports spawnRivalryAgent function", () => {
     expect(agent).toContain("export function spawnRivalryAgent");
@@ -78,7 +78,7 @@ describe("RivalryAgent — deterministic decision interface", () => {
 });
 
 describe("CrisisAgent — deterministic decision interface", () => {
-  const agent = readSrcFile("engine/agents/CrisisAgent.ts");
+  const agent = readSrcFile("engine/npc/agents/CrisisAgent.ts");
 
   it("exports spawnCrisisAgent function", () => {
     expect(agent).toContain("export function spawnCrisisAgent");
@@ -90,7 +90,7 @@ describe("CrisisAgent — deterministic decision interface", () => {
 });
 
 describe("NarrativeAgent — deterministic decision interface", () => {
-  const agent = readSrcFile("engine/agents/NarrativeAgent.ts");
+  const agent = readSrcFile("engine/npc/agents/NarrativeAgent.ts");
 
   it("exports spawnNarrativeAgent function", () => {
     expect(agent).toContain("export function spawnNarrativeAgent");
@@ -106,7 +106,7 @@ describe("NarrativeAgent — deterministic decision interface", () => {
 });
 
 describe("Agent barrel export — index.ts", () => {
-  const index = readSrcFile("engine/agents/index.ts");
+  const index = readSrcFile("engine/npc/agents/index.ts");
 
   it("re-exports all six agents", () => {
     expect(index).toContain("CrisisAgent");

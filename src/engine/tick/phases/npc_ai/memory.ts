@@ -7,8 +7,8 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
-import type { PerceptionSnapshot } from "@/engine/perception";
-import { getMemory, addObservation } from "@/engine/npcAI/MemoryStore";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
+import { getMemory, addObservation } from "@/engine/npc/MemoryStore";
 
 export function consolidateOyakataMemoryPure(
   world: WorldState,

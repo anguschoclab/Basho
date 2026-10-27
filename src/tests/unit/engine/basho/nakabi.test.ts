@@ -4,7 +4,7 @@ import {
   logNakabiCheckpoint,
   isNakabiDay,
   NAKABI_DAY,
-} from "@/engine/systems/basho/NakabiService";
+} from "@/engine/basho/NakabiService";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 

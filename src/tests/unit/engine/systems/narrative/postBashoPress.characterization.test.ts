@@ -8,9 +8,9 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   PostBashoPressService,
   type PressConferenceContext,
-} from "@/engine/systems/narrative/PostBashoPressService";
+} from "@/engine/narrative/PostBashoPressService";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import { toIdMap } from "@/engine/utils/index";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";

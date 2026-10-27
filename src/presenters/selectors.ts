@@ -16,7 +16,7 @@ export { scanRecentEvents } from "@/engine/events/events";
 export type { ScanRecentEventsOptions } from "@/engine/events/events";
 import { sortStandings } from "@/engine/utils/sort";
 import { getCachedPerception } from "@/presenters/uiDigest";
-import { getKimarite, KIMARITE_REGISTRY } from "@/engine/kimariteRegistry";
+import { getKimarite, KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
 import {
   getKimariteTargetShare,
   rarityFromShare,

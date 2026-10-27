@@ -8,10 +8,10 @@
 import type { BashoName, MatchSchedule, BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/rikishi/index";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
-import type { RivalryHeatBand } from "@/engine/systems/narrative/NarrativeBands";
+import type { RivalryHeatBand } from "@/engine/narrative/NarrativeBands";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata, OyakataTraits } from "@/engine/types/oyakata";
-import type { HoFInductee } from "@/engine/hallOfFame";
+import type { HoFInductee } from "@/engine/history/hallOfFame";
 import type { Division } from "@/engine/types/banzuke";
 import type { EngineEvent } from "@/engine/types/events";
 import type { GovernanceRuling } from "@/engine/types/economy";

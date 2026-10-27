@@ -1,16 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { applyPlanConstraints, coordinateDecision } from "@/engine/npcAI/TacticalCoordinator";
-import type { AIPlan } from "@/engine/ai/types";
-import type { PerceptionSnapshot } from "@/engine/perception";
-import type { TrainingWorkerResult } from "@/engine/npcAIWorkers";
+import { applyPlanConstraints, coordinateDecision } from "@/engine/npc/TacticalCoordinator";
+import type { AIPlan } from "@/engine/npc/types";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
+import type { TrainingWorkerResult } from "@/engine/npc/npcAIWorkers";
 import type {
   FinanceAgentResult,
   GovernanceAgentResult,
   RecruitmentAgentResult,
   RivalryAgentResult,
-} from "@/engine/agents/index";
-import type { PersonnelWorkerResult } from "@/engine/npcAIWorkers";
-import type { AgentDecisions } from "@/engine/npcAI/types";
+} from "@/engine/npc/agents/index";
+import type { PersonnelWorkerResult } from "@/engine/npc/npcAIWorkers";
+import type { AgentDecisions } from "@/engine/npc/npcTypes";
 
 function makePlan(overrides: Partial<AIPlan> = {}): AIPlan {
   return {
@@ -164,7 +164,7 @@ describe("coordinateDecision", () => {
     const decision = {
       trainingIntensity: "punishing",
       reasoning: [],
-    } as unknown as import("@/engine/npcAI/types").NPCWeeklyDecision;
+    } as unknown as import("@/engine/npc/npcTypes").NPCWeeklyDecision;
     const plan = makePlan();
     coordinateDecision(plan, decision, makePerception());
     expect(decision.trainingIntensity).toBe("balanced");

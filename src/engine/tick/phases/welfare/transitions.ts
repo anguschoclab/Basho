@@ -9,7 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { WelfareState, ComplianceState } from "@/engine/types/economy";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { generateGovernanceHeadline } from "@/engine/systems/media/MediaService";
+import { generateGovernanceHeadline } from "@/engine/media/MediaService";
 import type { MediaHeadline } from "@/engine/types/media";
 import { clamp } from "@/engine/utils/math";
 import {

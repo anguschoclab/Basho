@@ -12,11 +12,11 @@ import {
   updateMetaAdaptation,
   evaluateAdaptation,
   type MetaAdaptationState,
-} from "@/engine/npcAI/ArchetypeAdaptation";
-import type { OyakataMemory } from "@/engine/ai/types";
-import { buildMetaPerception } from "@/engine/npcAI/MetaPerception";
+} from "@/engine/npc/ArchetypeAdaptation";
+import type { OyakataMemory } from "@/engine/npc/types";
+import { buildMetaPerception } from "@/engine/npc/MetaPerception";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import type { MetaPerception } from "@/engine/ai/types";
+import type { MetaPerception } from "@/engine/npc/types";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { WorldState } from "@/engine/types/world";
 

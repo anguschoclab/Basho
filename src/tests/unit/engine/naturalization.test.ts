@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { checkNaturalizations } from "@/engine/naturalization";
+import { checkNaturalizations } from "@/engine/lifecycle/naturalization";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { NATURALIZATION_CAREER_WINS_THRESHOLD } from "@/constants/engine/generation";
 

@@ -36,7 +36,7 @@ function specifiersOf(file: string): string[] {
 }
 
 describe("repo structure — harmonized layout contract", () => {
-  it.fails("no loose .ts/.tsx files at src/engine/ root", () => {
+  it("no loose .ts/.tsx files at src/engine/ root", () => {
     const loose = existsSync(ENGINE)
       ? readdirSync(ENGINE, { withFileTypes: true })
           .filter((e) => e.isFile() && /\.(ts|tsx)$/.test(e.name))

@@ -8,15 +8,15 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { GovernanceRuling, Faction } from "@/engine/types/economy";
-import { POLITICAL_FAVORS } from "@/engine/systems/governance/PoliticalFavorsService";
+import { POLITICAL_FAVORS } from "@/engine/governance/services/PoliticalFavorsService";
 
 // Re-export for UI access (engine imports are restricted in pages)
 export { POLITICAL_FAVORS };
 import type { StatItem } from "@/components/layout/page-shell/index";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presenters/selectors";
 import { scanRecentEvents } from "@/engine/events/events";
-import { toScandalBand } from "@/engine/descriptorBands";
-import type { ScandalBand } from "@/engine/systems/narrative/NarrativeBands";
+import { toScandalBand } from "@/engine/narrative/descriptorBands";
+import type { ScandalBand } from "@/engine/narrative/NarrativeBands";
 
 export type { ScandalBand };
 

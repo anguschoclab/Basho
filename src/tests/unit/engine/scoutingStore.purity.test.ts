@@ -14,7 +14,7 @@
  * (`setScoutingInvestment`, `tickWeekScouting`) may still mutate via impacts.
  */
 import { describe, it, expect } from "vitest";
-import { getOrCreateScouted } from "@/engine/scoutingStore";
+import { getOrCreateScouted } from "@/engine/recruitment/scoutingStore";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("scoutingStore read-path purity", () => {

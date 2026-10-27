@@ -18,7 +18,7 @@ import {
   staffStageInput,
   gyojiStageInput,
   prospectStageInput,
-} from "@/engine/avatarGenerator";
+} from "@/engine/generation/avatarGenerator";
 import type { Staff } from "@/engine/types/staff";
 import type { Gyoji } from "@/engine/types/gyoji";
 

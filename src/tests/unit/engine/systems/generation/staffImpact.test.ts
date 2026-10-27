@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getHeyaStaffBonuses } from "@/engine/staff";
+import { getHeyaStaffBonuses } from "@/engine/economy/staff";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("Staff System Integration", () => {

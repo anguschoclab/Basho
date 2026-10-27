@@ -9,7 +9,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
+import { GlobalCupService } from "@/engine/economy/GlobalCupService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function phase_global_cup_advance(world: WorldState): StateImpact {

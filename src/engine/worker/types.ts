@@ -8,13 +8,13 @@ export type EngineCommand =
       type: "START_WORLD";
       seed: string;
       playerHeyaId?: string;
-      oyakataConfig?: import("../types/oyakata").OyakataCreationConfig;
+      oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig;
     }
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "TICK_DAY" }
   | { type: "TICK_MULTIPLE_DAYS"; days: number }
   | { type: "OFFER_CONTRACT"; candidateId: string; heyaId: string }
-  | { type: "SCOUT_POOL"; pool: import("../types/talent").TalentPoolType; revealCount: number }
+  | { type: "SCOUT_POOL"; pool: import("@/engine/types/talent").TalentPoolType; revealCount: number }
   | { type: "SCOUT_CANDIDATE"; candidateId: string; effort: number }
   | { type: "POACH_CANDIDATE"; candidateId: string; heyaId: string }
   | {
@@ -29,13 +29,13 @@ export type EngineCommand =
   | { type: "RENEW_SPONSOR"; relationshipId: string; sponsorId: string }
   | { type: "REQUEST_BAILOUT"; heyaId: string }
   | { type: "PREPAY_LOAN"; heyaId: string; loanId: string }
-  | { type: "HIRE_STAFF"; heyaId: string; role: import("../types/staff").StaffRole }
+  | { type: "HIRE_STAFF"; heyaId: string; role: import("@/engine/types/staff").StaffRole }
   | { type: "FIRE_STAFF"; heyaId: string; staffId: string }
   | { type: "TRIGGER_SUCCESSION"; heyaId: string; successorId: string }
   | {
       type: "SET_TRAINING_STATE";
       heyaId: string;
-      trainingState: import("../types/training").HeyaTrainingState;
+      trainingState: import("@/engine/types/training").HeyaTrainingState;
     }
   | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
   | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
@@ -48,13 +48,13 @@ export type EngineCommand =
   | {
       type: "INVEST_IN_FACILITY";
       heyaId: string;
-      axis: import("../facilities").FacilityAxis;
+      axis: import("@/engine/economy/facilities").FacilityAxis;
       points: number;
     }
   | {
       type: "BUILD_INFRASTRUCTURE";
       heyaId: string;
-      facilityId: import("../types/infrastructure").FacilityId;
+      facilityId: import("@/engine/types/infrastructure").FacilityId;
     }
   | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
   | { type: "REMOVE_MENTOR"; apprenticeId: string }
@@ -63,12 +63,12 @@ export type EngineCommand =
   | { type: "BOOKMARK_ENTITY"; entityType: string; entityId: string; note?: string }
   | { type: "UNBOOKMARK_ENTITY"; entityType: string; entityId: string }
   | { type: "UPDATE_BOOKMARK_NOTE"; entityType: string; entityId: string; note: string }
-  | { type: "ADVANCE_TUTORIAL_STEP"; step: import("../types/tutorial").TutorialStep }
-  | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("../types/tutorial").TutorialFlags }
+  | { type: "ADVANCE_TUTORIAL_STEP"; step: import("@/engine/types/tutorial").TutorialStep }
+  | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("@/engine/types/tutorial").TutorialFlags }
   | {
       type: "FINISH_EXHIBITION";
-      flag: keyof import("../types/tutorial").TutorialFlags;
-      step: import("../types/tutorial").TutorialStep;
+      flag: keyof import("@/engine/types/tutorial").TutorialFlags;
+      step: import("@/engine/types/tutorial").TutorialStep;
     }
   | { type: "COMPLETE_TUTORIAL" }
   | {
@@ -78,19 +78,19 @@ export type EngineCommand =
       moraleDelta: number;
       mediaHeatDelta: number;
     }
-  | { type: "SET_HEYA_DIET"; heyaId: string; diet: import("../types/economy").DietRegimen }
+  | { type: "SET_HEYA_DIET"; heyaId: string; diet: import("@/engine/types/economy").DietRegimen }
   | { type: "RETIRE_RIKISHI"; rikishiId: string; reason: string }
   | { type: "SPEND_POLITICAL_CAPITAL"; heyaId: string; amount: number }
   | { type: "RECRUIT_SPONSOR"; heyaId: string; sponsorId: string }
   | {
       type: "SET_SCOUTING_INVESTMENT";
       rikishiId: string;
-      investment: import("../types/narrative").ScoutingInvestment;
+      investment: import("@/engine/types/narrative").ScoutingInvestment;
     }
   | {
       type: "SET_KESHO_CONFIG";
       rikishiId: string;
-      config: Partial<import("../types/keshoMawashi").KeshoMawashi>;
+      config: Partial<import("@/engine/types/keshoMawashi").KeshoMawashi>;
     }
   | {
       type: "ACCEPT_EXHIBITION";
@@ -105,7 +105,7 @@ export type EngineCommand =
     }
   | {
       type: "GO_ON_HOLIDAY";
-      config: import("../holiday").HolidayConfig;
+      config: import("@/engine/calendar/holiday").HolidayConfig;
     }
   | {
       type: "SET_TSUKEBITO";
@@ -120,7 +120,7 @@ export type EngineCommand =
   | {
       type: "BUILD_FOREIGN_ACADEMY";
       heyaId: string;
-      region: import("../systems/worldCircuit/WorldCircuitService").ExhibitionRegion;
+      region: import("@/engine/worldCircuit/WorldCircuitService").ExhibitionRegion;
     }
   | {
       type: "BUILD_YOUTH_ACADEMY";
@@ -138,7 +138,7 @@ export type EngineCommand =
   | {
       type: "HIRE_ACADEMY_STAFF";
       heyaId: string;
-      role: import("../types/academy").AcademyStaffRole;
+      role: import("@/engine/types/academy").AcademyStaffRole;
     }
   | {
       type: "PROMOTE_INTAKE";
@@ -148,8 +148,8 @@ export type EngineCommand =
   | {
       type: "MANAGE_ACADEMY";
       heyaId: string;
-      region: import("../systems/worldCircuit/WorldCircuitService").ExhibitionRegion;
-      config: import("../types/academy").AcademyConfig;
+      region: import("@/engine/worldCircuit/WorldCircuitService").ExhibitionRegion;
+      config: import("@/engine/types/academy").AcademyConfig;
     };
 
 /** Worker -> UI Events */

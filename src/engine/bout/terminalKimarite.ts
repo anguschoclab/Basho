@@ -15,7 +15,7 @@
  * hineri/kake/sori techniques live in the collapse contexts).
  */
 
-import type { SeededRNG } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/core/rng";
 import type { KimariteId } from "@/engine/types/combat";
 import { KIMARITE_FREQUENCY_TARGETS } from "@/constants/engine/kimariteFrequencies";
 

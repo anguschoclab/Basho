@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, beforeAll } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("archive.json template path coverage", () => {
   beforeAll(async () => {

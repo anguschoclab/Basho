@@ -2,7 +2,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { AlmanacSnapshot } from "@/engine/almanac/types";
 import type { MovementEvent } from "@/engine/types/banzuke";
 import type { Rank } from "@/engine/types/banzuke";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 
 export function buildAlmanacSnapshot(
   world: WorldState,

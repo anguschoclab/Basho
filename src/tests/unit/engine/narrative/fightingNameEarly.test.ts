@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   maybeAssignEarlyShikona,
   getEarlyShikonaMotivationBoost,
-} from "@/engine/systems/generation/FightingNameEarly";
+} from "@/engine/generation/FightingNameEarly";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import type { SeededRNG } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/core/rng";
 
 function mockRng(seed: string): SeededRNG {
   let state = 0;

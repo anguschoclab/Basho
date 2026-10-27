@@ -5,7 +5,7 @@
  * across representative world shapes.
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
+import { makeNPCWeeklyDecision } from "@/engine/npc/weekly";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { toIdMap } from "@/engine/utils/index";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";

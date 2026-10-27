@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import * as rngModule from "@/engine/rng";
+import * as rngModule from "@/engine/core/rng";
 import {
   isExhibitionBasho,
   isHonbasho,
@@ -8,7 +8,7 @@ import {
   EXHIBITION_INJURY_RISK_MULTIPLIER,
   EXHIBITION_STIPEND_MULTIPLIER,
   EXHIBITION_RIVALRY_SEED_CHANCE,
-} from "@/engine/systems/basho/ExhibitionBashoService";
+} from "@/engine/basho/ExhibitionBashoService";
 import { EXHIBITION_INJURY_FATIGUE_PENALTY } from "@/constants/engine/exhibitionBasho";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";

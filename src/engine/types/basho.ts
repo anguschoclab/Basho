@@ -14,7 +14,7 @@
 import type { Id } from "@/engine/types/common";
 import type { Side, BanzukeSnapshot } from "@/engine/types/banzuke";
 import type { KimariteId, Stance, CombatArchetype } from "@/engine/types/combat";
-import type { InjuryBodyArea, InjurySeverity } from "@/engine/systems/health/BodyDefinitions";
+import type { InjuryBodyArea, InjurySeverity } from "@/engine/health/BodyDefinitions";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
 import type { WorldState } from "@/engine/types/world";
@@ -133,11 +133,11 @@ export interface BoutResult {
   /** Number of kensho envelopes won. */
   kenshoEnvelopes: number;
   /** Kensho banner slots for this bout. */
-  kenshoBanners?: import("./sponsors").KenshoBannerSlot[];
+  kenshoBanners?: import("@/engine/types/sponsors").KenshoBannerSlot[];
   /** Injury risk multiplier from tactics (applied to loser's post-bout injury roll). */
   tacticInjuryRiskMultiplier?: number;
   /** Resolved tactic per side (player choice, NPC AI, or explicit override). */
-  tactics?: { east?: import("./combat").BoutTactic; west?: import("./combat").BoutTactic };
+  tactics?: { east?: import("@/engine/types/combat").BoutTactic; west?: import("@/engine/types/combat").BoutTactic };
   /** Log of key events during the bout. */
   log: BoutLogEntry[];
   /** Play-by-play lines for detailed bout description. */

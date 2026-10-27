@@ -7,9 +7,9 @@ import {
   setTsukebito,
   isEligibleForTsukebito,
   isEligibleTsukebito,
-} from "@/engine/systems/training/TsukebitoService";
+} from "@/engine/training/TsukebitoService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 function getSekitori(world: any) {
   for (const id of world.activeRikishiIds ?? []) {

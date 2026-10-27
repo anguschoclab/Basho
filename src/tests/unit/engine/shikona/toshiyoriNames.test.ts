@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
 
 describe("generateToshiyoriName", () => {

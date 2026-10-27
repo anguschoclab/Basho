@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { ElectronArchiveService } from "@/engine/storage/electronArchive";
+import { ElectronArchiveService } from "@/engine/persistence/storage/electronArchive";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
 import { logger } from "@/engine/utils/Logger";
 import type { BoutResult, BashoResult } from "@/engine/types/basho";

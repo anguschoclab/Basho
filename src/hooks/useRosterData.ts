@@ -4,8 +4,8 @@ import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { projectRosterEntry, type UIRosterEntry, projectRikishi } from "@/presenters/uiModels";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
-import { toFatigueBand } from "@/engine/descriptorBands";
-import { getPlayerHeya } from "@/engine/queries";
+import { toFatigueBand } from "@/engine/narrative/descriptorBands";
+import { getPlayerHeya } from "@/engine/core/queries";
 
 export type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 

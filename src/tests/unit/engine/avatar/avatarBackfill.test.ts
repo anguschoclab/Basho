@@ -5,8 +5,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ensureAvatarIdentities } from "@/engine/avatarGenerator";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import type { WorldState } from "@/engine/types/world";
 

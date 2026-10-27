@@ -21,7 +21,7 @@ vi.mock("@/hooks/use-toast", () => ({
   toast: vi.fn(),
 }));
 
-vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
+vi.mock("@/engine/generation/TalentPoolService", () => ({
   listVisibleCandidates: () => mockCandidates,
   getCandidateScoutingLevel: (_world: any, candidateId: string) => {
     const c = mockCandidates.find((c) => c.candidateId === candidateId);
@@ -31,7 +31,7 @@ vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
   FOREIGN_RIKISHI_LIMIT_PER_HEYA: 2,
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: () => ({ id: "h1", name: "TestHeya", reputation: 50, runwayBand: "stable" }),
 }));
 

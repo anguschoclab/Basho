@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
-import { applyWeeklyTraining } from "@/engine/systems/training/TrainingService";
-import { applyMentorshipBonuses } from "@/engine/systems/training/MentorshipService";
-import { applyWeeklySparring } from "@/engine/systems/training/SparringService";
+import { applyWeeklyTraining } from "@/engine/training/TrainingService";
+import { applyMentorshipBonuses } from "@/engine/training/MentorshipService";
+import { applyWeeklySparring } from "@/engine/training/SparringService";
 import { SimTuningService } from "@/engine/simulation/SimTuningService";
 import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("junYusho ID bug — simulateEntireBasho must return rikishi IDs", () => {
   it("junYusho contains rikishi IDs, not shikona names", () => {

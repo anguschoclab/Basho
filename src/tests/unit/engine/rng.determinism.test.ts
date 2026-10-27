@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join } from "path";
-import { SeededRNG, rngFromSeed, rngForWorld, setSeed, random } from "@/engine/rng";
+import { SeededRNG, rngFromSeed, rngForWorld, setSeed, random } from "@/engine/core/rng";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import type { WorldState } from "@/engine/types/world";
 

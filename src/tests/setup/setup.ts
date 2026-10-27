@@ -1,6 +1,6 @@
 import { vi, afterEach, beforeAll } from "vitest";
 import { cleanup as tlCleanup } from "@testing-library/react";
-import { setSeed } from "@/engine/rng";
+import { setSeed } from "@/engine/core/rng";
 import { resetImpactTimestampCounter } from "@/engine/core/StateImpact";
 import { BardEngine } from "@/engine/bard/BardEngine";
 

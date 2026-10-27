@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
-import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
-import type { PerceptionSnapshot } from "@/engine/perception";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
-import { applyPlanConstraints } from "@/engine/npcAI/TacticalCoordinator";
-import type { AIContext } from "@/engine/ai/types";
-import type { AgentDecisions } from "@/engine/npcAI/types";
-import type { CoordinationInput } from "@/engine/npcAI/TacticalCoordinator";
+import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
+import { applyPlanConstraints } from "@/engine/npc/TacticalCoordinator";
+import type { AIContext } from "@/engine/npc/types";
+import type { AgentDecisions } from "@/engine/npc/npcTypes";
+import type { CoordinationInput } from "@/engine/npc/TacticalCoordinator";
 
 /**
  * WS5 contract tests — new strategic plans (kadoban_survival, yusho_defense,

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { tickRikishiRecovery } from "@/engine/systems/health/RecoveryService";
+import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("RecoveryService", () => {

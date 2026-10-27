@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("TournamentSimulator — yusho and jun-yusho extraction", () => {
   it("yusho winner is the top-ranked by wins", () => {

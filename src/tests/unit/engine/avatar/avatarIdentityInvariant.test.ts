@@ -7,9 +7,9 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import { generateCandidate } from "@/engine/systems/generation/CandidateGenerator";
-import { rngFromSeed } from "@/engine/rng";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import { generateCandidate } from "@/engine/generation/CandidateGenerator";
+import { rngFromSeed } from "@/engine/core/rng";
 
 const UUID_RE = /^[A-Z]+-[0-9A-F]{8}$/;
 

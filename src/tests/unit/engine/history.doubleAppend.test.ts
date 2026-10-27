@@ -6,7 +6,7 @@
  * retained after the slice(-6) truncation.
  */
 import { describe, it, expect } from "vitest";
-import { runHistoryUpdates } from "@/engine/history";
+import { runHistoryUpdates } from "@/engine/history/history";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 

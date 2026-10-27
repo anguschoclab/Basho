@@ -8,7 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { BashoName } from "@/engine/types/basho";
 import type { Id } from "@/engine/types/common";
-import { BASHO_CALENDAR } from "@/engine/calendar";
+import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 
 export interface KinboshiLedgerEntry {
   winnerId: Id;

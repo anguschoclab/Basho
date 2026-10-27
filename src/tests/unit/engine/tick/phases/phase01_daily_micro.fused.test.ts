@@ -5,7 +5,7 @@ import { phase01_daily_welfare } from "@/engine/tick/phases/phase01_daily_welfar
 import { phase01_daily_sponsors } from "@/engine/tick/phases/phase01_daily_sponsors";
 import { phase01_daily_drama } from "@/engine/tick/phases/phase01_daily_drama";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("Fused daily micro-phases (B1.3)", () => {
   it("phase01_daily_micro produces same WorldState as running 4 phases sequentially", () => {

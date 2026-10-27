@@ -3,12 +3,12 @@ import type { BashoState } from "@/engine/types/basho";
 import type { BashoPerformance, BanzukeEntry } from "@/engine/types/banzuke";
 import type { MovementEvent } from "@/engine/types/banzuke";
 import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
-import { generateKeshoForPromotions } from "@/engine/systems/keshoMawashi/KeshoMawashiPipeline";
+import { generateKeshoForPromotions } from "@/engine/keshoMawashi/KeshoMawashiPipeline";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { generateBanzukeMovementNarrative } from "@/engine/banzuke/banzukeMovementNarrative";
-import { assignDohyoIriStyle } from "@/engine/governance/dohyoIri";
-import { assignYokozunaAttendants } from "@/engine/governance/yokozunaAttendants";
+import { assignDohyoIriStyle } from "@/engine/governance/ceremonies/dohyoIri";
+import { assignYokozunaAttendants } from "@/engine/governance/ceremonies/yokozunaAttendants";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;

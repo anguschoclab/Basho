@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { createRosters } from "@/engine/systems/generation/RosterFactory";
-import { createStables } from "@/engine/systems/generation/HeyaFactory";
-import { rngFromSeed } from "@/engine/rng";
+import { createRosters } from "@/engine/generation/RosterFactory";
+import { createStables } from "@/engine/generation/HeyaFactory";
+import { rngFromSeed } from "@/engine/core/rng";
 
 describe("RosterFactory", () => {
   describe("createRosters", () => {

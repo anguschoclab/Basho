@@ -6,7 +6,7 @@ import {
   isBookmarked,
   getBookmarksByType,
   getAllBookmarks,
-} from "@/engine/systems/bookmark/BookmarkService";
+} from "@/engine/bookmark/BookmarkService";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";

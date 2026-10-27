@@ -3,7 +3,7 @@ import {
   assignRecruitmentCohort,
   getCohortMembers,
   getCohortSummary,
-} from "@/engine/systems/generation/CohortTracking";
+} from "@/engine/generation/CohortTracking";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("Cohort Tracking System (B10)", () => {

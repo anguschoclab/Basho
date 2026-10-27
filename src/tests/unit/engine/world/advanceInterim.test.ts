@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { advanceInterim, advanceDay, getRikishiBashoStats } from "@/engine/world";
+import { advanceInterim, advanceDay, getRikishiBashoStats } from "@/engine/core/world";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import * as tickDaily from "@/engine/tick/tickDaily";
 

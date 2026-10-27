@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { issueGovernanceRuling } from "@/engine/systems/governance/ScandalService";
+import { issueGovernanceRuling } from "@/engine/governance/services/ScandalService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { GovernanceRuling } from "@/engine/types/economy";

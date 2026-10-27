@@ -10,7 +10,7 @@
  * Replaces: headless-sim-25yr.ts, run-25year-sim.ts
  */
 
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
 import type { WorldState } from "@/engine/types/world";
 import { writeFileSync } from "fs";

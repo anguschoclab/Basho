@@ -6,9 +6,9 @@ import {
   GOMENFUDA_REPUTATION_PENALTY,
   SANCTION_THRESHOLD,
   CONSECUTIVE_WITHDRAWAL_MULTIPLIER,
-} from "@/engine/systems/governance/GomenfudaService";
+} from "@/engine/governance/services/GomenfudaService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { withdrawRikishi } from "@/engine/systems/health/HealthActions";
+import { withdrawRikishi } from "@/engine/health/HealthActions";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Heya } from "@/engine/types/heya";
 

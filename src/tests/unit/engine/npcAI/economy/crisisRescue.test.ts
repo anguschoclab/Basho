@@ -7,10 +7,10 @@
  * cooldown like every other executed domain.
  */
 import { describe, it, expect } from "vitest";
-import { executeAgentDecisions } from "@/engine/npcAI/execution";
+import { executeAgentDecisions } from "@/engine/npc/execution";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import type { AgentDecisions } from "@/engine/npcAI/types";
+import type { AgentDecisions } from "@/engine/npc/npcTypes";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { WorldState } from "@/engine/types/world";
 

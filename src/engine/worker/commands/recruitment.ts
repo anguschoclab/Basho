@@ -5,18 +5,18 @@
  * and academy construction/management commands.
  */
 
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
-import { poachCandidate } from "@/engine/systems/generation/CandidatePoolService";
+import * as talentpool from "@/engine/generation/TalentPoolService";
+import { poachCandidate } from "@/engine/generation/CandidatePoolService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { setScoutingInvestment } from "@/engine/scoutingStore";
+import { setScoutingInvestment } from "@/engine/recruitment/scoutingStore";
 import {
   buildYouthAcademy,
   upgradeYouthAcademy,
   investInAcademy,
   hireAcademyStaff,
   promoteIntake,
-} from "@/engine/systems/recruitment/YouthAcademyService";
-import { WorldCircuitService, manageAcademy } from "@/engine/systems/worldCircuit/WorldCircuitService";
+} from "@/engine/recruitment/YouthAcademyService";
+import { WorldCircuitService, manageAcademy } from "@/engine/worldCircuit/WorldCircuitService";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
 import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 

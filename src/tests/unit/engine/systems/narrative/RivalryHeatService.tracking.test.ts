@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { applyBoutToPairState } from "@/engine/systems/narrative/RivalryHeatService";
-import { SeededRNG } from "@/engine/rng";
+import { applyBoutToPairState } from "@/engine/narrative/RivalryHeatService";
+import { SeededRNG } from "@/engine/core/rng";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
 
 function makePair(overrides: Partial<RivalryPairState> = {}): RivalryPairState {

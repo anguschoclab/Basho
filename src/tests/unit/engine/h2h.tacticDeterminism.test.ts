@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { SeededRNG } from "@/engine/rng";
-import { determineCPUTactic } from "@/engine/h2h";
+import { SeededRNG } from "@/engine/core/rng";
+import { determineCPUTactic } from "@/engine/bout/h2h";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 
 describe("determineCPUTactic determinism", () => {

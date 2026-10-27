@@ -6,20 +6,20 @@
  */
 
 import type { EngineCommand } from "@/engine/worker/types";
-import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
-import { runHoliday } from "@/engine/holiday";
-import * as legacy from "@/engine/systems/legacy/DynastyService";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
+import { runHoliday } from "@/engine/calendar/holiday";
+import * as legacy from "@/engine/legacy/DynastyService";
 import {
   addBookmark,
   removeBookmark,
   updateBookmarkNote,
-} from "@/engine/systems/bookmark/BookmarkService";
+} from "@/engine/bookmark/BookmarkService";
 import {
   advanceTutorialStep as svcAdvanceTutorialStep,
   setTutorialFlag as svcSetTutorialFlag,
   finishExhibition as svcFinishExhibition,
   completeTutorial as svcCompleteTutorial,
-} from "@/engine/systems/tutorial/TutorialService";
+} from "@/engine/tutorial/TutorialService";
 import { logEventImpact } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorkerRuntime } from "@/engine/worker/runtime";

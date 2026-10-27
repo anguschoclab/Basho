@@ -12,9 +12,9 @@ import type { WorldState } from "@/engine/types/world";
 import type { Side } from "@/engine/types/banzuke";
 import type { BoutTactic } from "@/engine/types/combat";
 import { chooseTactic, type BoutAIContext } from "@/engine/bout/BoutAI";
-import { buildOpponentModel } from "@/engine/npcAI/OpponentModel";
-import { getOpponentModel } from "@/engine/npcAI/MemoryStore";
-import { rngFromSeed } from "@/engine/rng";
+import { buildOpponentModel } from "@/engine/npc/OpponentModel";
+import { getOpponentModel } from "@/engine/npc/MemoryStore";
+import { rngFromSeed } from "@/engine/core/rng";
 
 /**
  * Rank-pressure inference for NPC tactic selection.

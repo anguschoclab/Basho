@@ -7,9 +7,9 @@
 import { describe, it, expect } from "vitest";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoState, BashoResult, BashoName } from "@/engine/types/basho";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import { runHistoryUpdates } from "@/engine/history";
-import { publishBanzukeUpdate } from "@/engine/world";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import { runHistoryUpdates } from "@/engine/history/history";
+import { publishBanzukeUpdate } from "@/engine/core/world";
 import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";
 
 const BASHO_NAME_TO_NUMBER: Record<BashoName, 1 | 2 | 3 | 4 | 5 | 6> = {

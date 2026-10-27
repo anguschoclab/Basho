@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, mockRikishi, makeMockHeya, makeMockBasho } from "@/tests/unit/engine/utils";
-import { generateRecommendations } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 
 const PLAYER_HEYA_ID = "player-heya";
 

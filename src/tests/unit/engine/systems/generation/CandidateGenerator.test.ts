@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { generateSyntheticCareer } from "@/engine/systems/generation/CandidateCareer";
-import { rngFromSeed } from "@/engine/rng";
+import { generateSyntheticCareer } from "@/engine/generation/CandidateCareer";
+import { rngFromSeed } from "@/engine/core/rng";
 
 describe("CandidateGenerator", () => {
   describe("generateSyntheticCareer", () => {

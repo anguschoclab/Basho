@@ -12,7 +12,7 @@ import type { Heya } from "@/engine/types/heya";
 import { resetImpactTimestampCounter } from "@/engine/core/StateImpact";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { warn } from "@/engine/utils/Logger";
-import { ensureAvatarIdentities } from "@/engine/avatarGenerator";
+import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
 
 /**
  * Serialization Service handles the transformation between runtime Maps

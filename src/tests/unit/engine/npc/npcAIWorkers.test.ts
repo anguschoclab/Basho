@@ -8,10 +8,10 @@ import {
   type ScoutingWorkerContext,
   type PersonnelWorkerContext,
   type GlobalWorkerContext,
-} from "@/engine/npcAIWorkers";
+} from "@/engine/npc/npcAIWorkers";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
-import type { PerceptionSnapshot, RikishiPerception } from "@/engine/perception";
-import type { OyakataStyleProfile } from "@/engine/oyakataStylePreferences";
+import type { PerceptionSnapshot, RikishiPerception } from "@/engine/npc/perception";
+import type { OyakataStyleProfile } from "@/engine/npc/personas/oyakataStylePreferences";
 
 function makePerception(overrides: Partial<PerceptionSnapshot> = {}): PerceptionSnapshot {
   return {

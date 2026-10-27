@@ -7,20 +7,20 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
-import { assignMentor } from "@/engine/lineage";
-import { rngFromSeed } from "@/engine/rng";
+import * as talentpool from "@/engine/generation/TalentPoolService";
+import { assignMentor } from "@/engine/legacy/lineage";
+import { rngFromSeed } from "@/engine/core/rng";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   INTERIM_DURATION_DAYS,
   RECRUITMENT_WINDOW_CLOSES_WEEKS,
 } from "@/constants/engine/recruitmentExtended";
 import { DAYS_PER_WEEK } from "@/constants/engine/calendar";
-import { getHeya, getRikishi } from "@/engine/queries";
+import { getHeya, getRikishi } from "@/engine/core/queries";
 import {
   computeReplacementGap,
   allocateVacancies,
-} from "@/engine/systems/generation/RecruitmentController";
+} from "@/engine/generation/RecruitmentController";
 
 export function phase01_week_recruitment(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_recruitment");

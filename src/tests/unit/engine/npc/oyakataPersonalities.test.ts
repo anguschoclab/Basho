@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateOyakata } from "@/engine/oyakataPersonalities";
+import { generateOyakata } from "@/engine/npc/personas/oyakataPersonalities";
 
 describe("Oyakata Generation", () => {
   describe("Tier-based Rank Distribution", () => {

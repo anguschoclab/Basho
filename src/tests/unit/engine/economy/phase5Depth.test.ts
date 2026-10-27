@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
-import * as TalentPoolScouting from "@/engine/systems/generation/TalentPoolScouting";
-import { TrainingPhilosophyService } from "@/engine/systems/legacy/TrainingPhilosophyService";
+import { InfrastructureService } from "@/engine/economy/InfrastructureService";
+import * as TalentPoolScouting from "@/engine/generation/TalentPoolScouting";
+import { TrainingPhilosophyService } from "@/engine/legacy/TrainingPhilosophyService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";

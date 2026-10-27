@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
-import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
-import type { PerceptionSnapshot } from "@/engine/perception";
-import { createPlan, shouldReplan } from "@/engine/npcAI/StrategicPlanner";
-import type { AIContext } from "@/engine/ai/types";
+import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
+import { createPlan, shouldReplan } from "@/engine/npc/StrategicPlanner";
+import type { AIContext } from "@/engine/npc/types";
 
 function buildCtx(
   overrides: Partial<AIContext> = {},

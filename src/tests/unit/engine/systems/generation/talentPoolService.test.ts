@@ -5,7 +5,7 @@ import {
   fillVacanciesForNPCWithBidding,
   materializeCandidateToRikishi,
   finalizeSignedCandidates,
-} from "@/engine/systems/generation/TalentPoolService";
+} from "@/engine/generation/TalentPoolService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { CandidateAvailabilityState, TalentPoolWorldState } from "@/engine/types/talent";
 import type { Id } from "@/engine/types/common";

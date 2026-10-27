@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { applyMentorshipBonuses } from "@/engine/systems/training/MentorshipService";
+import { applyMentorshipBonuses } from "@/engine/training/MentorshipService";
 import { MAX_STAT_CEILING } from "@/constants/engine/training";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { toIdMap } from "@/engine/utils/index";

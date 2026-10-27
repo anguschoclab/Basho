@@ -24,8 +24,8 @@ import type { Id } from "@/engine/types/common";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { getRikishi } from "@/engine/queries";
-import { rngFromSeed } from "@/engine/rng";
+import { getRikishi } from "@/engine/core/queries";
+import { rngFromSeed } from "@/engine/core/rng";
 
 type BashoPosture = "conservative" | "standard" | "aggressive";
 

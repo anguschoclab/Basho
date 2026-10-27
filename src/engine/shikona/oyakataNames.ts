@@ -1,4 +1,4 @@
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { seededRandom } from "@/engine/shikona/seededRandom";
 
 const OYAKATA_NAMES = [

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { initializeBasho } from "@/engine/systems/generation/WorldFactory";
+import { initializeBasho } from "@/engine/generation/WorldFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoName } from "@/engine/types/basho";
 

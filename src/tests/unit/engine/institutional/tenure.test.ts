@@ -17,9 +17,9 @@
 import { describe, it, expect } from "vitest";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { applyBashoTenure } from "@/engine/systems/legacy/tenure";
-import { issueBailoutLoanIfNeeded } from "@/engine/loans";
-import { reportScandal } from "@/engine/systems/governance/ScandalService";
+import { applyBashoTenure } from "@/engine/legacy/tenure";
+import { issueBailoutLoanIfNeeded } from "@/engine/economy/loans";
+import { reportScandal } from "@/engine/governance/services/ScandalService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { toKeyedMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";

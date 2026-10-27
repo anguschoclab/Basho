@@ -24,7 +24,7 @@ describe("SponsorContractService — tick phase wiring", () => {
   });
 
   it("exports renewSponsorContract", () => {
-    const svc = readSrcFile("engine/systems/economy/SponsorContractService.ts");
+    const svc = readSrcFile("engine/economy/SponsorContractService.ts");
     expect(svc).toContain("export function renewSponsorContract");
   });
 });

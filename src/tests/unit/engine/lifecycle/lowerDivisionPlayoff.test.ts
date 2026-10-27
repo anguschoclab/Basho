@@ -4,7 +4,7 @@ import {
   resolveDivisionPlayoffs,
 } from "@/engine/lifecycle/PlayoffResolver";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
-import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
+import { PostBashoPressService } from "@/engine/narrative/PostBashoPressService";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { BashoState } from "@/engine/types/basho";
 

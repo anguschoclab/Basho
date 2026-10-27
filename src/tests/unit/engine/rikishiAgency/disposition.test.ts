@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { deriveDisposition } from "@/engine/rikishiAgency/RikishiAgencyService";
+import { deriveDisposition } from "@/engine/npc/agency/RikishiAgencyService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
 

@@ -1,0 +1,254 @@
+/**
+ * src/engine/systems/economy/InfrastructureService.ts
+ * =====================================================
+ * Infrastructure Service
+ *
+ * Responsibilities:
+ * - Manage construction and activation of stable buildings
+ * - Process construction queue at basho boundaries
+ * - Aggregate infrastructure bonuses for stables
+ * - Validate construction requirements (regional presence, funds)
+ *
+ * @see FACILITY_REGISTRY for facility definitions
+ */
+
+import { WorldState } from "@/engine/types/world";
+import { Heya } from "@/engine/types/heya";
+import { Id } from "@/engine/types/common";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
+import { CONSTRUCTION_BUILD_TIME_THRESHOLD } from "@/constants/engine/economyExtended";
+import { validateConstruction, isUnexpectedFailureReason } from "@/engine/economy/infrastructureValidation";
+
+/**
+ * Infrastructure Service namespace.
+ * Provides construction management and bonus aggregation for stable infrastructure.
+ *
+ * @example
+ * ```ts
+ * const impact = InfrastructureService.startConstruction(world, heyaId, "training_doj");
+ * const bonuses = InfrastructureService.getHeyaBonuses(heya);
+ * ```
+ */
+export const InfrastructureService = {
+  /**
+   * Initiates a construction project for a stable.
+   * Validates requirements, deducts cost, and adds to construction queue.
+   *
+   * Algorithm:
+   * 1. Validate heya and facility exist
+   * 2. Check if already under construction
+   * 3. Calculate cost (scales with level)
+   * 4. Validate funds
+   * 5. Check regional presence requirements
+   * 6. Calculate completion date
+   * 7. Add to construction queue and deduct funds
+   *
+   * @param {WorldState} world - The current world state.
+   * @param {Id} heyaId - The heya ID to build for.
+   * @param {FacilityId} facilityId - The facility ID to build.
+   * @returns {StateImpact} Impact describing construction start (or empty if failed).
+   *
+   * @example
+   * ```ts
+   * const impact = InfrastructureService.startConstruction(world, heyaId, "training_doj");
+   * const updatedWorld = resolveImpacts(world, [impact]);
+   * ```
+   */
+  startConstruction(world: WorldState, heyaId: Id, facilityId: FacilityId): StateImpact {
+    const builder = createImpactBuilder("startConstruction");
+
+    const result = validateConstruction(world, heyaId, facilityId);
+    const isInvalidResult =
+      !result.ok ||
+      !result.heya ||
+      !result.def ||
+      result.cost === undefined ||
+      result.nextLevel === undefined;
+    if (isInvalidResult) {
+      if (isUnexpectedFailureReason(result.reason)) {
+        builder.logEvent(
+          "CONSTRUCTION_STARTED",
+          "facility",
+          {
+            facilityId,
+            status: "failed_requirements",
+            reason: result.reason,
+          },
+          { heyaId }
+        );
+      }
+      return builder.build();
+    }
+
+    const { heya, def, cost, nextLevel } = result as typeof result & {
+      heya: NonNullable<typeof result.heya>;
+      def: NonNullable<typeof result.def>;
+      cost: number;
+      nextLevel: number;
+    };
+
+    const completionYear =
+      world.year + (def.buildTimeBasho > CONSTRUCTION_BUILD_TIME_THRESHOLD ? 1 : 0);
+
+    const queueEntry = {
+      facilityId,
+      level: nextLevel,
+      completionYear: completionYear,
+      // Completions are only evaluated at the yearly boundary
+      // (processCompletionTick), so every project finishes at Hatsu.
+      completionBasho: "hatsu",
+    };
+
+    builder.updateHeya(heyaId, {
+      funds: heya.funds - cost,
+      constructionQueue: [...(heya.constructionQueue || []), queueEntry],
+    });
+
+    builder.logEvent(
+      "CONSTRUCTION_STARTED",
+      "facility",
+      {
+        facilityId,
+        level: nextLevel,
+        cost,
+        eta: `${def.buildTimeBasho} Basho`,
+      },
+      { heyaId }
+    );
+
+    return builder.build();
+  },
+
+  /**
+   * Processes the construction queue at a Basho boundary.
+   * Completes projects whose completion date has been reached.
+   *
+   * Algorithm:
+   * 1. Iterate through all heya
+   * 2. For each heya with construction queue, check each project
+   * 3. If completion year has been reached, activate facility
+   * 4. Remove completed projects from queue
+   * 5. Log completion events
+   *
+   * @param {WorldState} world - The current world state.
+   * @returns {StateImpact} Impact describing completed constructions.
+   *
+   * @example
+   * ```ts
+   * const impact = InfrastructureService.processCompletionTick(world);
+   * const updatedWorld = resolveImpacts(world, [impact]);
+   * ```
+   */
+  processCompletionTick(world: WorldState): StateImpact {
+    const builder = createImpactBuilder("processCompletionTick");
+
+    for (const heya of world.heyas.values()) {
+      if (!heya.constructionQueue || heya.constructionQueue.length === 0) continue;
+
+      const remainingQueue: NonNullable<Heya["constructionQueue"]> = [];
+      const updatedInfra = { ...(heya.infrastructure || {}) };
+
+      for (const project of heya.constructionQueue) {
+        // Simple logic: Project completes after N basho.
+        // For Phase P, we just check if the year matches (simpler logic for initial build)
+        // Ideally we track 'daysRemaining' or 'bashoRemaining'
+
+        // Let's assume projects finish at the start of the next year for now
+        // to simplify the boundary check
+        if (world.year >= project.completionYear) {
+          updatedInfra[project.facilityId] = {
+            level: project.level,
+            status: "active",
+          };
+
+          builder.logEvent(
+            "CONSTRUCTION_COMPLETED",
+            "facility",
+            {
+              facilityId: project.facilityId,
+              level: project.level,
+              status: "completed",
+            },
+            { heyaId: heya.id }
+          );
+        } else {
+          remainingQueue.push(project);
+        }
+      }
+
+      builder.updateHeya(heya.id, {
+        infrastructure: updatedInfra,
+        constructionQueue: remainingQueue,
+      });
+    }
+
+    return builder.build();
+  },
+
+  /**
+   * Aggregates all active infrastructure bonuses for a stable.
+   * Combines stat buffs, injury healing mods, media mods, and fatigue floors from all active facilities.
+   *
+   * @param {Heya | undefined} heya - The heya to aggregate bonuses for.
+   * @returns {{ statBuffs: Record<string, number>; injuryHealMod: number; mediaMod: number; fatigueFloor: number }} The aggregated bonuses.
+   *
+   * @example
+   * ```ts
+   * const bonuses = InfrastructureService.getHeyaBonuses(heya);
+   * console.log(bonuses.statBuffs.power); // Multiplier (e.g., 1.15)
+   * console.log(bonuses.injuryHealMod); // Healing modifier
+   * ```
+   */
+  getHeyaBonuses(heya: Heya | undefined) {
+    const totalBonuses = {
+      statBuffs: {
+        power: 1,
+        speed: 1,
+        technique: 1,
+        balance: 1,
+        stamina: 1,
+        mental: 1,
+        weight: 1,
+        adaptability: 1,
+      },
+      injuryHealMod: 0,
+      mediaMod: 1,
+      fatigueFloor: 0,
+    };
+
+    if (!heya || !heya.infrastructure) return totalBonuses;
+
+    for (const [id, state] of Object.entries(heya.infrastructure)) {
+      if (state.status !== "active") continue;
+
+      const def = FACILITY_REGISTRY[id as FacilityId];
+      if (!def) continue;
+
+      // Apply bonuses scaled by level
+      const lv = state.level;
+
+      if (def.bonuses.statBuffs) {
+        const buffs = def.bonuses.statBuffs;
+        for (const stat in buffs) {
+          (totalBonuses.statBuffs as Record<string, number>)[stat] *= 1 + (buffs[stat] - 1) * lv;
+        }
+      }
+
+      if (def.bonuses.injuryHealMod) {
+        totalBonuses.injuryHealMod += def.bonuses.injuryHealMod * lv;
+      }
+
+      if (def.bonuses.mediaMod) {
+        totalBonuses.mediaMod *= 1 + (def.bonuses.mediaMod - 1) * lv;
+      }
+
+      if (def.bonuses.fatigueFloor) {
+        totalBonuses.fatigueFloor += def.bonuses.fatigueFloor * lv;
+      }
+    }
+
+    return totalBonuses;
+  },
+};

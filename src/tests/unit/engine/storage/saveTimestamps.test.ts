@@ -9,10 +9,10 @@
  * `new Date()`). These tests pin the wire format that lands in storage.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { saveGame, autosave, quickSave } from "@/engine/saveload";
-import { setStorageProvider, resetStorageProvider } from "@/engine/storageProvider";
+import { saveGame, autosave, quickSave } from "@/engine/persistence/saveload";
+import { setStorageProvider, resetStorageProvider } from "@/engine/persistence/storageProvider";
 import { SaveSlotService } from "@/engine/persistence/SaveSlotService";
-import type { IStorageProvider } from "@/engine/storageProvider";
+import type { IStorageProvider } from "@/engine/persistence/storageProvider";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 vi.mock("@/engine/persistence/SerializationService", () => ({

@@ -10,12 +10,12 @@ import type {
 import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
 import { simulateBout } from "@/engine/bout/boutResolver";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
-import { initializeBasho } from "@/engine/systems/generation/WorldFactory";
-import { scheduleAllDivisionsDay } from "@/engine/schedule";
+import { initializeBasho } from "@/engine/generation/WorldFactory";
+import { scheduleAllDivisionsDay } from "@/engine/calendar/schedule";
 import { stableTieBreak, sortStandings } from "@/engine/utils/sort";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { resolvePlayoffs } from "@/engine/lifecycle/PlayoffResolver";
 
 interface StandingEntry {

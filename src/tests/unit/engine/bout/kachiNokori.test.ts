@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateKachiNokori } from "@/engine/systems/economy/KachiNokoriService";
+import { calculateKachiNokori } from "@/engine/economy/KachiNokoriService";
 
 describe("Kachi-nokori — calculateKachiNokori", () => {
   it("returns 0 when wins < 8 (no kachi-koshi yet)", () => {

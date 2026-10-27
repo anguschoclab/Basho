@@ -1,6 +1,6 @@
 import registryData from "@/engine/bard/registry.json";
 import vocabularyData from "@/engine/bard/vocabulary.json";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { NarrativeContext } from "@/engine/types/events";
 import { warn } from "@/engine/utils/Logger";
 import { formatCurrency as formatCurrencyEnUS } from "@/engine/utils/formatters";

@@ -9,7 +9,7 @@ import {
   ElectronStorageProvider,
   registerElectronStorage,
 } from "@/contexts/electronStorageProvider";
-import { getStorageProvider, resetStorageProvider } from "@/engine/storageProvider";
+import { getStorageProvider, resetStorageProvider } from "@/engine/persistence/storageProvider";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
 import { logger } from "@/engine/utils/Logger";
 

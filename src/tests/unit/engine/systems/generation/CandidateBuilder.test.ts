@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   generateFullRikishi,
   convertCandidateToRikishi,
-} from "@/engine/systems/generation/CandidateBuilder";
-import { rngFromSeed } from "@/engine/rng";
-import { buildCombatProfile } from "@/engine/archetype";
+} from "@/engine/generation/CandidateBuilder";
+import { rngFromSeed } from "@/engine/core/rng";
+import { buildCombatProfile } from "@/engine/bout/archetype";
 import type { TalentCandidate } from "@/engine/types/talent";
 
 describe("CandidateBuilder — avatar field migration", () => {

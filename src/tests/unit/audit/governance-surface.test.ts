@@ -40,7 +40,7 @@ describe("KihakuService — call site wiring", () => {
   });
 
   it("exports calculateScore and extractFromBasho", () => {
-    const svc = readSrcFile("engine/systems/governance/KihakuService.ts");
+    const svc = readSrcFile("engine/governance/services/KihakuService.ts");
     expect(svc).toContain("calculateScore");
     expect(svc).toContain("extractFromBasho");
   });
@@ -54,7 +54,7 @@ describe("PoliticalFavorsService — call site wiring", () => {
   });
 
   it("exports requestFavor and POLITICAL_FAVORS", () => {
-    const svc = readSrcFile("engine/systems/governance/PoliticalFavorsService.ts");
+    const svc = readSrcFile("engine/governance/services/PoliticalFavorsService.ts");
     expect(svc).toContain("requestFavor");
     expect(svc).toContain("POLITICAL_FAVORS");
   });
@@ -104,7 +104,7 @@ describe("governanceProjections — state field mapping", () => {
 
 describe("myosekiMarket — tick wiring", () => {
   it("generateMyosekiMarket is called by WorldFactory", () => {
-    const factory = readSrcFile("engine/systems/generation/WorldFactory.ts");
+    const factory = readSrcFile("engine/generation/WorldFactory.ts");
     expect(factory).toContain("generateMyosekiMarket");
   });
 

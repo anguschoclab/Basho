@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { projectOfficials } from "@/presenters/officialsProjections";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("projectOfficials", () => {
   it("returns projection with gyoji and shimpan from world", () => {

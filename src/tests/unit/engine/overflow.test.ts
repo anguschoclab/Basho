@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "@/engine/overflow";
+import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "@/engine/recruitment/overflow";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";

@@ -36,7 +36,7 @@ vi.mock("@/presenters/uiUtilities", () => ({
   resolveRegistryLabel: () => "Yokozuna",
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getHeyaRoster: () => [
     {
       id: "r1",

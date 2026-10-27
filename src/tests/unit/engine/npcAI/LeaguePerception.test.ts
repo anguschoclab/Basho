@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
+import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { NPC_FALLBACK_MONTHLY_BURN_ESTIMATE } from "@/constants/engine/economic";
 

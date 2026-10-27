@@ -12,7 +12,7 @@ import {
   foreignSlotOccupied,
   foreignSlotBidAggression,
   foreignRetentionMultiplier,
-} from "@/engine/npcAI/ForeignSlotPolicy";
+} from "@/engine/npc/ForeignSlotPolicy";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { TalentCandidate } from "@/engine/types/talent";

@@ -8,8 +8,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { spawnFinanceAgent } from "@/engine/agents/FinanceAgent";
-import { applyCrisisRescue } from "@/engine/npcAI/execution";
+import { spawnFinanceAgent } from "@/engine/npc/agents/FinanceAgent";
+import { applyCrisisRescue } from "@/engine/npc/execution";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

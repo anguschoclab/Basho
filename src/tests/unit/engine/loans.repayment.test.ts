@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { processMonthlyLoanRepayments, prepayLoan } from "@/engine/loans";
+import { processMonthlyLoanRepayments, prepayLoan } from "@/engine/economy/loans";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 

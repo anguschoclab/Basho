@@ -29,8 +29,8 @@ import {
 } from "@/constants/engine/calendarExtended";
 import { DEFAULT_START_YEAR, INTERIM_DAYS, BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 import { warn } from "@/engine/utils/Logger";
-import { shouldHaltAdvance } from "@/engine/loop/shouldHaltAdvance";
-import { clearQueryCaches } from "@/engine/queries";
+import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
+import { clearQueryCaches } from "@/engine/core/queries";
 
 // ====
 // TYPES
@@ -143,7 +143,7 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   const isWeeklyTick = daysSinceTick >= WEEKLY_TICK_THRESHOLD;
 
   // 2. Determine which phases to run
-  const activePhases: import("./pipelineRunner").PipelinePhase[] = [];
+  const activePhases: import("@/engine/tick/pipelineRunner").PipelinePhase[] = [];
 
   if (!opts?.skipDailyMicroPhases) {
     activePhases.push(phases.phase01_daily_micro);

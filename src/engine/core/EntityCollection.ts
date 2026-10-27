@@ -12,7 +12,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import { stableSort } from "@/engine/utils/sort";
-import { getHeya, getRikishi, getHeyaRoster as queryGetHeyaRoster } from "@/engine/queries";
+import { getHeya, getRikishi, getHeyaRoster as queryGetHeyaRoster } from "@/engine/core/queries";
 
 /**
  * Options for entity retrieval.

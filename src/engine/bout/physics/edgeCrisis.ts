@@ -1,4 +1,4 @@
-import type { SeededRNG } from "@/engine/rng";
+import type { SeededRNG } from "@/engine/core/rng";
 import type { BoutLogEntry } from "@/engine/types/basho";
 import type { KimariteId } from "@/engine/types/combat";
 import type { Side } from "@/engine/types/banzuke";
@@ -34,7 +34,7 @@ import type {
 } from "@/engine/types/combat-spatial";
 import { tawaraBounceResistance, classifyEdgeExitKimarite } from "@/engine/bout/boutSpatial";
 import { CLOCK_MULTIPLIER } from "@/constants/engine/physics";
-import type { InjuryBodyArea, InjurySeverity } from "@/engine/systems/health/BodyDefinitions";
+import type { InjuryBodyArea, InjurySeverity } from "@/engine/health/BodyDefinitions";
 
 export function buildEdgeCrisis(
   crisisSide: Side,

@@ -1,4 +1,4 @@
-import { getStorageProvider, type IStorageProvider } from "@/engine/storageProvider";
+import { getStorageProvider, type IStorageProvider } from "@/engine/persistence/storageProvider";
 import { stableTieBreak } from "@/engine/utils/sort";
 import { parseSave } from "@/engine/persistence/collectionCodec";
 import type { SaveGame, SaveVersion, BashoName } from "@/engine/types/index";

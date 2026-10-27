@@ -4,26 +4,26 @@
  */
 
 import type { WorldState } from "@/engine/types/world";
-import * as MediaService from "@/engine/systems/media/MediaService";
-import { rngForWorld } from "@/engine/rng";
+import * as MediaService from "@/engine/media/MediaService";
+import { rngForWorld } from "@/engine/core/rng";
 import { resolveImpacts, sequenceImpacts } from "@/engine/core/ImpactResolver";
 
 // Institutional System Imports
-import { runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
+import { runPrestigeDecay } from "@/engine/history/prestige";
 import {
   runGovernanceReview,
   runAIMetaDrift,
-} from "@/engine/systems/governance/governanceReview";
+} from "@/engine/governance/services/governanceReview";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
-import { onBashoEnded } from "@/engine/records";
+import { onBashoEnded } from "@/engine/history/records";
 import {
   processSponsorChurn,
   adjustKoenkaiBandToPrestige,
-} from "@/engine/systems/economy/SponsorshipService";
-import { checkNaturalizations } from "@/engine/naturalization";
+} from "@/engine/economy/SponsorshipService";
+import { checkNaturalizations } from "@/engine/lifecycle/naturalization";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "@/engine/lifecycle/RegistryService";
-import { runHistoryUpdates } from "@/engine/history";
-import { runElections } from "@/engine/systems/governance/ScandalService";
+import { runHistoryUpdates } from "@/engine/history/history";
+import { runElections } from "@/engine/governance/services/ScandalService";
 import { runAlmanacNarrativeUpdate } from "@/engine/almanac/narrativeEnrichment";
 
 /**

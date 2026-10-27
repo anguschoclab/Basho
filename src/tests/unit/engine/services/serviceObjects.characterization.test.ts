@@ -8,10 +8,10 @@
  * Snapshots the exact StateImpact/payload outputs on seeded fixture worlds.
  */
 import { describe, it, expect } from "vitest";
-import { CrisisService } from "@/engine/systems/narrative/CrisisService";
-import { DynastyService } from "@/engine/systems/legacy/DynastyService";
-import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
-import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
+import { CrisisService } from "@/engine/narrative/CrisisService";
+import { DynastyService } from "@/engine/legacy/DynastyService";
+import { GlobalCupService } from "@/engine/economy/GlobalCupService";
+import { YokozunaService } from "@/engine/governance/services/YokozunaService";
 import { toIdMap } from "@/engine/utils/index";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Oyakata } from "@/engine/types/oyakata";

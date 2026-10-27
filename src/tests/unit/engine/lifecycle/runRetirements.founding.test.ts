@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runRetirements } from "@/engine/systems/governance/governanceReview";
+import { runRetirements } from "@/engine/governance/services/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
-import { rngForWorld } from "@/engine/rng";
+import { rngForWorld } from "@/engine/core/rng";
 import type { WorldState } from "@/engine/types/world";
 import { FOUNDING_SEED_FUNDS, HEYA_COUNT_CAP, FOUNDING_CHANCE } from "@/constants/engine/economic";
 

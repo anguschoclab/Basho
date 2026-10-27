@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
-import { buildAIContext } from "@/engine/npcAI/contextBuilder";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
-import { emptyOyakataMemory } from "@/engine/npcAI/MemoryStore";
+import { buildAIContext } from "@/engine/npc/contextBuilder";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
+import { emptyOyakataMemory } from "@/engine/npc/MemoryStore";
 
 describe("StrategicPlanner learning", () => {
   it("avoids reselecting a plan that was recently abandoned", () => {

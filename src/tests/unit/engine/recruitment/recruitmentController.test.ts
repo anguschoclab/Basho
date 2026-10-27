@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   computeReplacementGap,
   allocateVacancies,
-} from "@/engine/systems/generation/RecruitmentController";
+} from "@/engine/generation/RecruitmentController";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";

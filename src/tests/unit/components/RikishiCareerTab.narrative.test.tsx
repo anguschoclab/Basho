@@ -28,7 +28,7 @@ vi.mock("recharts", () => ({
 }));
 
 // Mock NarrativeService
-vi.mock("@/engine/systems/narrative/NarrativeService", () => ({
+vi.mock("@/engine/narrative/NarrativeService", () => ({
   NarrativeService: {
     getWeightBand: () => "heavy",
     getWeightLabel: () => "Heavyweight",
@@ -36,7 +36,7 @@ vi.mock("@/engine/systems/narrative/NarrativeService", () => ({
 }));
 
 // Mock SeededRNG
-vi.mock("@/engine/rng", () => ({
+vi.mock("@/engine/core/rng", () => ({
   SeededRNG: class {
     next() {
       return 0.5;

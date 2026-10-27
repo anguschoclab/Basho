@@ -13,7 +13,7 @@ import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { type RivalryPairState } from "@/constants/engine/rivalry";
-import { deriveTone } from "@/engine/systems/narrative/RivalryHeatService";
+import { deriveTone } from "@/engine/narrative/RivalryHeatService";
 import { clamp } from "@/engine/utils/math";
 import {
   MAX_EVENT_AGE_WEEKS,

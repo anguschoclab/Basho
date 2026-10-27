@@ -1,7 +1,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
 import type { Id } from "@/engine/types/common";
-import { getHeya } from "@/engine/queries";
+import { getHeya } from "@/engine/core/queries";
 
 /**
  * Enriches a caller-supplied NarrativeContext with entity names resolved from

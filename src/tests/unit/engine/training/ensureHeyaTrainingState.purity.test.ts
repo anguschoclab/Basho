@@ -9,7 +9,7 @@
  * that is a silent divergence from the authoritative copy.
  */
 import { describe, it, expect } from "vitest";
-import { ensureHeyaTrainingState } from "@/engine/systems/training/TrainingService";
+import { ensureHeyaTrainingState } from "@/engine/training/TrainingService";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 
 describe("ensureHeyaTrainingState purity", () => {

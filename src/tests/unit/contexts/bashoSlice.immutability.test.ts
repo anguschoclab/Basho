@@ -6,7 +6,7 @@ vi.mock("@/contexts/gameHelpers", () => ({
   autosaveWithSignal: vi.fn(),
 }));
 
-vi.mock("@/engine/world", () => ({
+vi.mock("@/engine/core/world", () => ({
   advanceBashoDay: vi.fn((world: any) => ({
     ...world,
     currentBasho: { ...world.currentBasho, day: world.currentBasho.day + 1 },

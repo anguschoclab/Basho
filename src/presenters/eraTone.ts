@@ -5,9 +5,9 @@
  * boundary enforced by eslint no-restricted-imports). This file re-exports the
  * EraTone type and label helpers so UI layers can consume them.
  */
-export type { EraTone } from "@/engine/systems/meta/EraDriftService";
+export type { EraTone } from "@/engine/history/EraDriftService";
 
-import type { EraTone } from "@/engine/systems/meta/EraDriftService";
+import type { EraTone } from "@/engine/history/EraDriftService";
 
 export const ERA_TONE_LABELS: Record<EraTone, string> = {
   classic: "Classic",

@@ -4,8 +4,8 @@ import type { UIDigest } from "@/presenters/uiDigest";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
-import { type SaveSlotInfo } from "@/engine/saveload";
-import { type HolidayConfig } from "@/engine/holiday";
+import { type SaveSlotInfo } from "@/engine/persistence/saveload";
+import { type HolidayConfig } from "@/engine/calendar/holiday";
 import { getMatchesForDay } from "@/contexts/gameHelpers";
 
 export type { GamePhase, GameState } from "@/contexts/gameTypes";
@@ -82,7 +82,7 @@ export interface GameContextValue {
   ) => void;
   investInFacility: (
     heyaId: string,
-    axis: import("@/engine/facilities").FacilityAxis,
+    axis: import("@/engine/economy/facilities").FacilityAxis,
     points: number
   ) => void;
 }

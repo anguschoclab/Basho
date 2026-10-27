@@ -1,4 +1,4 @@
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { ShikonaGenerationConfig } from "@/engine/shikona/types";
 import { getHouseStyle } from "@/engine/shikona/helpers";
 import { getRankRule } from "@/engine/shikona/rankRules";

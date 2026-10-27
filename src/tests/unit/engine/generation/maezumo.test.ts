@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { assessMaezumo } from "@/engine/systems/generation/MaezumoService";
+import { assessMaezumo } from "@/engine/generation/MaezumoService";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeRecruit(id: string): Rikishi {

@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, basename } from "node:path";
 import ts from "typescript";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 
 /**
  * Exhaustive template-integrity sweep.

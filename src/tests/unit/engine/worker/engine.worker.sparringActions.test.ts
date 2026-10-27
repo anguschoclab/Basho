@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
 import type { WorldState } from "@/engine/types/world";
-import { assignSparringPair } from "@/engine/systems/training/SparringService";
+import { assignSparringPair } from "@/engine/training/SparringService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 const originalSelf = globalThis.self;
@@ -49,7 +49,7 @@ vi.mock("@/presenters/uiDigest", () => ({
   })),
 }));
 
-vi.mock("@/engine/systems/generation/WorldFactory", () => ({
+vi.mock("@/engine/generation/WorldFactory", () => ({
   generateInitialWorld: vi.fn((seed) => makeMockWorld({ seed })),
 }));
 

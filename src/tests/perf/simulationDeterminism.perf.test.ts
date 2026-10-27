@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
 
 const FIXED_SEED = "determinism-test-seed-v1";

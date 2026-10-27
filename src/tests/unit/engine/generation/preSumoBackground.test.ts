@@ -3,9 +3,9 @@ import {
   assignPreSumoBackground,
   applyBackgroundStatModifiers,
   PRE_SUMO_BACKGROUNDS,
-} from "@/engine/systems/generation/PreSumoBackground";
+} from "@/engine/generation/PreSumoBackground";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("Pre-Sumo Background (B4)", () => {
   it("PRE_SUMO_BACKGROUNDS has 7 entries (gymnast, judoka, baseball, soccer, wrestler, track, none)", () => {

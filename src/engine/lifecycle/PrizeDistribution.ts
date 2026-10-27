@@ -4,14 +4,14 @@ import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { applyAchievementImpact } from "@/engine/systems/economy/SponsorshipService";
+import { applyAchievementImpact } from "@/engine/economy/SponsorshipService";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import type { Id } from "@/engine/types/common";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { NON_SEKITORI_BASHO_ALLOWANCE } from "@/constants/engine/economic";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 /**

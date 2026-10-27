@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { fillVacanciesForNPC } from "@/engine/systems/generation/TalentPoolNPCRecruitment";
-import { perceivedTalentSeed } from "@/engine/systems/recruitment/perceivedTalent";
+import { fillVacanciesForNPC } from "@/engine/generation/TalentPoolNPCRecruitment";
+import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

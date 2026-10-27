@@ -3,7 +3,7 @@
  * For use with the engine's SeededRNG only.
  */
 
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 /**
  * Standardizes the 'pick one' pattern.

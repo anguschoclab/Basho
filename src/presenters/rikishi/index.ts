@@ -52,7 +52,7 @@ export { projectRosterEntry } from "@/presenters/rikishi/transformers/roster";
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { UIRikishiDTO } from "@/presenters/rikishi/types";
 
 import {

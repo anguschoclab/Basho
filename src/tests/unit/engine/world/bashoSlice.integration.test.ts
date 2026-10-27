@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { simulateBoutForToday, advanceBashoDay } from "@/engine/world";
+import { simulateBoutForToday, advanceBashoDay } from "@/engine/core/world";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { Rikishi } from "@/engine/types/rikishi";

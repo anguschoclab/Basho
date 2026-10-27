@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { KIMARITE_REGISTRY, getKimariteCount } from "@/engine/kimariteRegistry";
+import { KIMARITE_REGISTRY, getKimariteCount } from "@/engine/bout/kimarite/kimariteRegistry";
 import { projectCohortStats } from "@/presenters/kachiNokori";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { perceivedTalentSeed } from "@/engine/systems/recruitment/perceivedTalent";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
-import type { AIContext } from "@/engine/ai/types";
+import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
+import type { AIContext } from "@/engine/npc/types";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule, BashoState, BoutResult } from "@/engine/types/basho";

@@ -9,7 +9,7 @@
 
 import { clamp } from "@/engine/utils/index";
 import { stableTieBreak } from "@/engine/utils/sort";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
   RECORD_SIMILARITY_DIFF_MULT,

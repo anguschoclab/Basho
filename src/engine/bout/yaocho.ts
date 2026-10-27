@@ -14,11 +14,11 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { BoutResult, BashoState } from "@/engine/types/basho";
-import { getRikishi } from "@/engine/queries";
-import { reportScandal } from "@/engine/systems/governance/ScandalService";
+import { getRikishi } from "@/engine/core/queries";
+import { reportScandal } from "@/engine/governance/services/ScandalService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import {
   YAOCHO_BASE_DETECTION_CHANCE,
   YAOCHO_PER_INDICATOR_CHANCE,

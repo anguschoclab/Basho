@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateH2HCommentary, updateH2H, getH2HReport } from "@/engine/h2h";
+import { generateH2HCommentary, updateH2H, getH2HReport } from "@/engine/bout/h2h";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import {
   H2H_DOMINATION_MIN_MATCHES,

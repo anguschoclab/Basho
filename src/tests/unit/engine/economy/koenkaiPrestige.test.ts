@@ -4,7 +4,7 @@ import {
   targetKoenkaiBandFromPrestige,
   recalculateKoenkaiBand,
   adjustKoenkaiBandToPrestige,
-} from "@/engine/systems/economy/SponsorshipService";
+} from "@/engine/economy/SponsorshipService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockHeya, makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { Koenkai, Sponsor, SponsorPool } from "@/engine/types/sponsors";

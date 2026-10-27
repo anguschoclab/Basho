@@ -7,7 +7,7 @@
 import { describe, it, expect } from "vitest";
 import { projectTsukebito } from "@/presenters/tsukebitoProjections";
 import { projectNakabi } from "@/presenters/nakabiProjections";
-import { generateAvatarIdentity } from "@/engine/avatarGenerator";
+import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
+import { InfrastructureService } from "@/engine/economy/InfrastructureService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Heya } from "@/engine/types/heya";
 import type { InfrastructureState } from "@/engine/types/infrastructure";

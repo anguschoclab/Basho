@@ -6,8 +6,8 @@
  */
 
 import type { WorldState } from "@/engine/types/world";
-import type { NPCWeeklyDecision } from "@/engine/npcAI/types";
-import { TrainingService } from "@/engine/systems/training/TrainingService";
+import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
+import { TrainingService } from "@/engine/training/TrainingService";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function applyNPCDecisionPure(

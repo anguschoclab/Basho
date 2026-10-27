@@ -4,7 +4,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Oyakata } from "@/engine/types/oyakata";
 import { EntityCollection } from "@/engine/core/EntityCollection";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { finiteOr } from "@/engine/utils/math";
 
 export interface TuningMetrics {

@@ -5,7 +5,7 @@ import {
   executeMyosekiLease,
   returnLeasedMyoseki,
   findAvailableStock,
-} from "@/engine/systems/governance/MyosekiTradingService";
+} from "@/engine/governance/services/MyosekiTradingService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { MyosekiMarket } from "@/engine/types/myoseki";

@@ -12,7 +12,7 @@ import {
   TSUKEBITO_TECHNIQUE_EXPOSURE,
   OTOTODESHI_FATIGUE_PENALTY,
   OTOTODESHI_MENTAL_GAIN,
-} from "@/engine/systems/training/TsukebitoService";
+} from "@/engine/training/TsukebitoService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";

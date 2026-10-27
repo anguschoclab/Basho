@@ -6,7 +6,7 @@
 
 import { useCallback, useMemo } from "react";
 import type { WorldState } from "@/engine/types/world";
-import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos } from "@/engine/saveload";
+import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos } from "@/engine/persistence/saveload";
 import { autosaveWithSignal, getMatchesForDay } from "@/contexts/gameHelpers";
 import { selectMakuuchiStandings } from "@/presenters/selectors";
 import type { GameState } from "@/contexts/gameTypes";

@@ -250,7 +250,7 @@ function scoreLowerDivisionDrama(
   b: Rikishi,
   day: number,
   standings: Map<string, { wins: number; losses: number }>
-): import("./DramaMatchmaker").DramaContext | null {
+): import("@/engine/matchmaking/DramaMatchmaker").DramaContext | null {
   const aRecord = standings.get(a.id) ?? { wins: 0, losses: 0 };
   const bRecord = standings.get(b.id) ?? { wins: 0, losses: 0 };
 

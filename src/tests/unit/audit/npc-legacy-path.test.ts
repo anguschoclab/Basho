@@ -18,13 +18,13 @@ import { readSrcFile, findFiles, SRC } from "@/tests/helpers/fsScan";
 
 describe("NPC weekly decision — single canonical path", () => {
   it("npcAI/ticks.ts does not define tickWeekNPC", () => {
-    const ticks = readSrcFile("engine/npcAI/ticks.ts");
+    const ticks = readSrcFile("engine/npc/ticks.ts");
     expect(ticks).not.toMatch(/export function tickWeekNPC/);
   });
 
-  it("npcAI barrel does not re-export tickWeekNPC", () => {
+  it("npcAI barrel no longer exists (dissolved in reorg)", () => {
     const barrel = readSrcFile("engine/npcAI.ts");
-    expect(barrel).not.toContain("tickWeekNPC");
+    expect(barrel).toBe("");
   });
 
   it("no engine source file references tickWeekNPC", () => {

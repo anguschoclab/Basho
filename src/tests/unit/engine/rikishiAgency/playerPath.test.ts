@@ -13,12 +13,12 @@ import {
   detectDueDecisions,
   resolveLoopDecision,
   applyExpiredQueueDefaults,
-} from "@/engine/loop/LoopDecisionEngine";
+} from "@/engine/npc/decision/LoopDecisionEngine";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { RikishiRequest } from "@/engine/rikishiAgency/types";
+import type { RikishiRequest } from "@/engine/npc/agency/types";
 
 function playerWorld(reqs: RikishiRequest[]): WorldState {
   const world = MockFactory.createWorld({ cyclePhase: "interim", week: 10 });

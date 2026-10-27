@@ -11,16 +11,16 @@ import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
 import type { UIRikishi } from "@/presenters/rikishi/index";
-import { getH2HReport } from "@/engine/h2h";
-import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { getH2HReport } from "@/engine/bout/h2h";
+import { RivalryService } from "@/engine/narrative/RivalryService";
 import { projectRikishi } from "@/presenters/rikishi/index";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
-import { getOrCreateScouted, getScoutingLevel } from "@/engine/scoutingStore";
-import { getScoutedAttributes } from "@/engine/systems/recruitment/ScoutingService";
+import * as talentpool from "@/engine/generation/TalentPoolService";
+import { getOrCreateScouted, getScoutingLevel } from "@/engine/recruitment/scoutingStore";
+import { getScoutedAttributes } from "@/engine/recruitment/ScoutingService";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { resolveAvatar, rikishiStageInput, candidateStageInput } from "@/engine/avatarGenerator";
+import { resolveAvatar, rikishiStageInput, candidateStageInput } from "@/engine/generation/avatarGenerator";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.

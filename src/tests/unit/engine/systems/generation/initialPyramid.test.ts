@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("initial pyramid distribution", () => {
   it("jonokuchi is smallest amateur tier (< 20% of active field)", () => {

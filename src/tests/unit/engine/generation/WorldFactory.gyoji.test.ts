@@ -3,7 +3,7 @@
  * Plan Feature 6 Test-First Protocol items 1-2.
  */
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("WorldFactory gyoji/shimpan pool generation", () => {
   it("generates a non-empty gyojiPool at world creation", () => {

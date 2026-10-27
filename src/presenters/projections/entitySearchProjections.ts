@@ -11,7 +11,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { isRetiredRikishiSummaryEntry } from "@/engine/queries";
+import { isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 import {
   getRankDisplayEntry,
   DIVISION_NAMES,

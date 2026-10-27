@@ -5,7 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { composeAvatar } from "@/components/avatar/pixelCompose";
 import { compileArt, ATTIRE_PALETTES } from "@/components/avatar/pixelAtlas";
-import { generateAvatarIdentity, deriveAvatarStage } from "@/engine/avatarGenerator";
+import { generateAvatarIdentity, deriveAvatarStage } from "@/engine/generation/avatarGenerator";
 
 const identity = generateAvatarIdentity({ seed: "compose-1", nationality: "Japan", role: "rikishi" });
 const stage = deriveAvatarStage({ role: "rikishi", division: "makuuchi", age: 27, weight: 150 });

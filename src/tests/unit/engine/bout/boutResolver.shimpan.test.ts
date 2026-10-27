@@ -3,8 +3,8 @@
  * Plan Feature 6 Test-First Protocol items 4-5.
  */
 import { describe, it, expect } from "vitest";
-import { assembleShimpanPanel, recordGyojiBout } from "@/engine/systems/officials/GyojiService";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { assembleShimpanPanel, recordGyojiBout } from "@/engine/officials/GyojiService";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
 
 describe("boutResolver shimpan panel", () => {

@@ -3,7 +3,7 @@
  * Implements retirement based on Age, Injury, and Rank performance.
  */
 
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import {
   RETIREMENT_MIN_AGE,

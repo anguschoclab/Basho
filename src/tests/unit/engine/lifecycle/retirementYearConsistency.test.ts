@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
-import { runRetirements } from "@/engine/systems/governance/governanceReview";
+import { runRetirements } from "@/engine/governance/services/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { bashoSlice } from "@/contexts/bashoSlice";
 import type { GameState, GameAction } from "@/contexts/gameTypes";
 import * as gameHelpers from "@/contexts/gameHelpers";
-import * as worldEngine from "@/engine/world";
+import * as worldEngine from "@/engine/core/world";
 
 // Mock dependencies
 vi.mock("@/contexts/gameHelpers", () => ({
@@ -13,7 +13,7 @@ vi.mock("@/engine/core/ImpactResolver", () => ({
   resolveImpacts: vi.fn((world: any) => world),
 }));
 
-vi.mock("@/engine/world", () => ({
+vi.mock("@/engine/core/world", () => ({
   advanceBashoDay: vi.fn((world: any) => ({
     ...world,
     currentBasho: { ...world.currentBasho, day: world.currentBasho.day + 1 },

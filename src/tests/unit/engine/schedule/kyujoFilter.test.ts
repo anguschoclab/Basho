@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { activeDivisionRoster } from "@/engine/scheduleHelpers";
+import { activeDivisionRoster } from "@/engine/calendar/scheduleHelpers";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 

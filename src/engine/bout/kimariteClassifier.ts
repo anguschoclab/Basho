@@ -1,5 +1,5 @@
 import type { Rikishi } from "@/engine/types/rikishi";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { Division } from "@/engine/types/banzuke";
 import type {
   PushBattleState,
@@ -27,7 +27,7 @@ export function evaluateKimariteAttempt(
   rng: SeededRNG,
   division?: Division,
   meta?: { tone: string; drift: Record<string, number> },
-  tactics?: import("./boutUtils").SideTactics
+  tactics?: import("@/engine/bout/boutUtils").SideTactics
 ): KimariteAttempt | null {
   // Build spatial context
   const torqueDiff = belt ? belt.torqueEast - belt.torqueWest : 0;

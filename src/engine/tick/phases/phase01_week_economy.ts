@@ -7,7 +7,7 @@
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
+import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "@/constants/engine/economy";
 import type { RunwayBand } from "@/engine/types/narrative";
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { fillVacanciesForNPCWithBidding } from "@/engine/systems/generation/TalentPoolNPCRecruitment";
+import { fillVacanciesForNPCWithBidding } from "@/engine/generation/TalentPoolNPCRecruitment";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";

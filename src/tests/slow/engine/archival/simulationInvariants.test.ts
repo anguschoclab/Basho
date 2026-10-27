@@ -12,13 +12,13 @@
  */
 
 import { describe, it, expect, vi, beforeAll } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
 import type { WorldState } from "@/engine/types/world";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 
 // Mock archive services to track archival calls without touching real OPFS.
-vi.mock("@/engine/storage/opfsArchive", () => ({
+vi.mock("@/engine/persistence/storage/opfsArchive", () => ({
   opfsArchiveService: {
     archiveFullRikishiRecord: vi.fn(() => Promise.resolve()),
     retrieveFullRikishiRecord: vi.fn(() => Promise.resolve(null)),
@@ -33,7 +33,7 @@ vi.mock("@/engine/storage/opfsArchive", () => ({
   },
 }));
 
-vi.mock("@/engine/storage/electronArchive", () => ({
+vi.mock("@/engine/persistence/storage/electronArchive", () => ({
   electronArchiveService: {
     archiveFullRikishiRecord: vi.fn(() => Promise.resolve()),
     retrieveFullRikishiRecord: vi.fn(() => Promise.resolve(null)),

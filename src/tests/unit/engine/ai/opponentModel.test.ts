@@ -4,7 +4,7 @@ import {
   buildOpponentModel,
   observeBoutResult,
   suggestCounterTactic,
-} from "@/engine/npcAI/OpponentModel";
+} from "@/engine/npc/OpponentModel";
 
 describe("buildOpponentModel", () => {
   it("builds counts from recent match history kimarite", () => {

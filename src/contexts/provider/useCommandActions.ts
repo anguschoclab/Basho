@@ -7,7 +7,7 @@
  */
 
 import { useCallback, useMemo } from "react";
-import { type HolidayConfig } from "@/engine/holiday";
+import { type HolidayConfig } from "@/engine/calendar/holiday";
 import type { GameState } from "@/contexts/gameTypes";
 import { useGameStore } from "@/store/gameStore";
 
@@ -73,7 +73,7 @@ function useGovernanceEconomyCommands(state: GameState) {
   );
 
   const investInFacility = useCallback(
-    (heyaId: string, axis: import("@/engine/facilities").FacilityAxis, points: number) => {
+    (heyaId: string, axis: import("@/engine/economy/facilities").FacilityAxis, points: number) => {
       sendCommand({ type: "INVEST_IN_FACILITY", heyaId, axis, points });
     },
     [sendCommand]

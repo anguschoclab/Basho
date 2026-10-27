@@ -2,7 +2,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { ChronicleReport, ChampionEntry, ChronicleRecordEntry } from "@/engine/types/records";
 import { stableTieBreak } from "@/engine/utils/sort";
-import { getRikishi, getRikishiAnywhere, isRetiredRikishiSummaryEntry } from "@/engine/queries";
+import { getRikishi, getRikishiAnywhere, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 
 /**
  * Chronicle Service handles historical data aggregation and era detection.

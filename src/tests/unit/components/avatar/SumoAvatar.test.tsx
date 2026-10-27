@@ -6,7 +6,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import React from "react";
 import { render, cleanup } from "@testing-library/react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { generateAvatarIdentity, deriveAvatarStage } from "@/engine/avatarGenerator";
+import { generateAvatarIdentity, deriveAvatarStage } from "@/engine/generation/avatarGenerator";
 
 describe("SumoAvatar", () => {
   afterEach(cleanup);

@@ -19,7 +19,7 @@ import {
 } from "@/constants/engine/narrative";
 import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed, type SeededRNG } from "@/engine/rng";
+import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
 
 interface InterviewSetup {
   questionType: string;

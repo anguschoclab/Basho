@@ -5,7 +5,7 @@ import {
   assignGyojiToBout,
   assembleShimpanPanel,
   recordGyojiBout,
-} from "@/engine/systems/officials/GyojiService";
+} from "@/engine/officials/GyojiService";
 import {
   calculateReversalProbability,
   resolveMonoii,
@@ -13,7 +13,7 @@ import {
   type Shimpan,
   type ShimpanPanel,
 } from "@/engine/types/gyoji";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("Gyoji entity type", () => {
   it("generateGyoji creates a gyoji with accuracy field", () => {

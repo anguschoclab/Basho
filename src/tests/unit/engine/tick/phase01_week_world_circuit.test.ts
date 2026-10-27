@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { phase01_week_world_circuit } from "@/engine/tick/phases/phase01_week_world_circuit";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
 
 describe("phase01_week_world_circuit", () => {
   afterEach(() => {

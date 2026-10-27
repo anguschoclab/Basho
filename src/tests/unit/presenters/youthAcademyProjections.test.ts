@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
 import type { WorldState } from "@/engine/types/world";
-import type { YouthAcademyState } from "@/engine/systems/recruitment/YouthAcademyService";
+import type { YouthAcademyState } from "@/engine/recruitment/YouthAcademyService";
 
 function makeAcademy(overrides: Partial<YouthAcademyState> = {}): YouthAcademyState {
   return {

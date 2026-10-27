@@ -7,7 +7,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { shouldHaltAdvance } from "@/engine/loop/shouldHaltAdvance";
+import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
 
 export interface GateConfig {
   /** Maximum days to advance (safety cap). */

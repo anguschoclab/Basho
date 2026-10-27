@@ -11,7 +11,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaBrandIdentity, KeshoMawashi, YokozunaTsuna } from "@/engine/types/keshoMawashi";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import type { Id } from "@/engine/types/common";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 

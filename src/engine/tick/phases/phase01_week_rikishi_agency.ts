@@ -16,17 +16,17 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import type { RikishiRequest } from "@/engine/rikishiAgency/types";
+import type { RikishiRequest } from "@/engine/npc/agency/types";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { getHeya } from "@/engine/queries";
-import { reportScandal } from "@/engine/systems/governance/ScandalService";
-import { rngForWorld } from "@/engine/rng";
+import { getHeya } from "@/engine/core/queries";
+import { reportScandal } from "@/engine/governance/services/ScandalService";
+import { rngForWorld } from "@/engine/core/rng";
 import { clamp } from "@/engine/utils/math";
 import {
   deriveDisposition,
   generateRequests,
   shouldEscalate,
-} from "@/engine/rikishiAgency/RikishiAgencyService";
+} from "@/engine/npc/agency/RikishiAgencyService";
 import {
   INCIDENT_PROBABILITY,
   INCIDENT_DISCIPLINE_SCANDAL_MAX,

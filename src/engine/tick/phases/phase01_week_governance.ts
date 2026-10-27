@@ -15,8 +15,8 @@ import type { GovernanceStatus } from "@/engine/types/economy";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { mergeImpacts, resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { generateGovernanceHeadline, evaluateScandals } from "@/engine/systems/media/MediaService";
-import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
+import { generateGovernanceHeadline, evaluateScandals } from "@/engine/media/MediaService";
+import { YokozunaService } from "@/engine/governance/services/YokozunaService";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import {
   MAX_POLITICAL_CAPITAL,
@@ -34,11 +34,11 @@ import {
 import {
   purchaseMyoseki,
   findAvailableStock,
-} from "@/engine/systems/governance/MyosekiTradingService";
-import { tickMyosekiMarket } from "@/engine/myosekiMarket";
-import { assignYokozunaAttendants } from "@/engine/governance/yokozunaAttendants";
-import { rngForWorld } from "@/engine/rng";
-import { getRikishi } from "@/engine/queries";
+} from "@/engine/governance/services/MyosekiTradingService";
+import { tickMyosekiMarket } from "@/engine/governance/myosekiMarket";
+import { assignYokozunaAttendants } from "@/engine/governance/ceremonies/yokozunaAttendants";
+import { rngForWorld } from "@/engine/core/rng";
+import { getRikishi } from "@/engine/core/queries";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");

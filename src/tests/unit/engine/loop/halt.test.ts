@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { shouldHaltAdvance } from "@/engine/loop/shouldHaltAdvance";
+import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
 import type { WorldState } from "@/engine/types/world";
 
 function makeWorld(overrides: Partial<WorldState> = {}): WorldState {

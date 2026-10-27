@@ -5,7 +5,7 @@ import {
   processYearEndInduction,
   type HoFInductee,
   type HallOfFameState,
-} from "@/engine/hallOfFame";
+} from "@/engine/history/hallOfFame";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";

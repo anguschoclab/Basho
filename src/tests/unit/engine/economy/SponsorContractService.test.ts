@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renewSponsorContract } from "@/engine/systems/economy/SponsorContractService";
+import { renewSponsorContract } from "@/engine/economy/SponsorContractService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";

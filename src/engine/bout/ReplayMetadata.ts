@@ -10,7 +10,7 @@
 import type { BoutResult } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";
 import type { KimariteClass } from "@/engine/types/kimarite";
-import { getKimarite } from "@/engine/kimariteRegistry";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 
 export type ReplayPhase =
   "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";

@@ -11,7 +11,7 @@ import {
   calculateGrowthWithModifiers,
   extractTrainingModifiers,
   computeDisplayTrainingMultiplier,
-} from "@/engine/systems/training/TrainingMath";
+} from "@/engine/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { TrainingProfile, IndividualFocus } from "@/engine/types/training";
 import type { ActiveModifiers } from "@/engine/types/world";

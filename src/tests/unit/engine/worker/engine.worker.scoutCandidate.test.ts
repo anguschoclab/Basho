@@ -39,14 +39,14 @@ vi.mock("@/presenters/uiDigest", () => ({
   buildWeeklyDigest: vi.fn(() => ({ mockDigest: true })),
 }));
 
-vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
+vi.mock("@/engine/generation/TalentPoolService", () => ({
   offerCandidate: vi.fn(),
   scoutPool: vi.fn(),
   scoutCandidate: vi.fn(),
 }));
 
 await import("@/engine/worker/engine.worker");
-const talentpool = await import("@/engine/systems/generation/TalentPoolService");
+const talentpool = await import("@/engine/generation/TalentPoolService");
 
 describe("engine.worker — recruitment failure signaling", () => {
   beforeEach(() => {

@@ -4,9 +4,9 @@
  * still pass before and after the migration.
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { toRikishiDescriptor } from "@/engine/descriptorBands";
+import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import { determineSpecialPrizes } from "@/engine/banzuke/specialPrizes";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";

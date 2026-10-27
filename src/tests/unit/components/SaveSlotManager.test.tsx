@@ -29,7 +29,7 @@ vi.mock("@/hooks/use-toast", () => ({
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SaveSlotManager } from "@/components/menu/SaveSlotManager";
-import type { SaveSlotInfo } from "@/engine/saveload";
+import type { SaveSlotInfo } from "@/engine/persistence/saveload";
 
 function renderWithProvider(ui: React.ReactElement) {
   return render(<TooltipProvider>{ui}</TooltipProvider>);

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   perceivedTalentSeed,
   scoutingNoiseSpread,
-} from "@/engine/systems/recruitment/perceivedTalent";
+} from "@/engine/recruitment/perceivedTalent";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import { toKeyedMap } from "@/engine/utils/index";
 import {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_boundary";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("Batched impact resolution (B2.2) — validation", () => {
   it("phase05_monthly_boundary returns a single StateImpact (not multiple resolves)", () => {

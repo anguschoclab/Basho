@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { simulateBoutForToday } from "@/engine/world";
+import { simulateBoutForToday } from "@/engine/core/world";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule, BashoState, BashoName } from "@/engine/types/basho";

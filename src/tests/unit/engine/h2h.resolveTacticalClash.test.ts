@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveTacticalClash } from "@/engine/h2h";
+import { resolveTacticalClash } from "@/engine/bout/h2h";
 import { TACTICAL_ADVANTAGE_SHIFT } from "@/constants/engine/generation";
 
 describe("resolveTacticalClash", () => {

@@ -29,7 +29,7 @@ function makeWorldWithInsolventHeya(): { world: WorldState; heya: Heya } {
 
 describe("economics.handleInsolvency — EventBus migration", () => {
   it("handleInsolvency returns StateImpact instead of void", async () => {
-    const { handleInsolvency } = await import("@/engine/economics");
+    const { handleInsolvency } = await import("@/engine/economy/economics");
     const { world, heya } = makeWorldWithInsolventHeya();
     const result = handleInsolvency(heya, world);
 
@@ -41,7 +41,7 @@ describe("economics.handleInsolvency — EventBus migration", () => {
   });
 
   it("with benefactor available, impact includes FINANCIAL_ALERT event and heya funds update", async () => {
-    const { handleInsolvency } = await import("@/engine/economics");
+    const { handleInsolvency } = await import("@/engine/economy/economics");
     const { world, heya } = makeWorldWithInsolventHeya();
     const result = handleInsolvency(heya, world) as any;
 
@@ -59,7 +59,7 @@ describe("economics.handleInsolvency — EventBus migration", () => {
   });
 
   it("no direct EventBus.financialAlert call — world.events is NOT mutated", async () => {
-    const { handleInsolvency } = await import("@/engine/economics");
+    const { handleInsolvency } = await import("@/engine/economy/economics");
     const { world, heya } = makeWorldWithInsolventHeya();
     const initialLogLength = world.events?.log?.length ?? 0;
 

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { LegacyService } from "@/engine/systems/legacy/LegacyService";
+import { LegacyService } from "@/engine/legacy/LegacyService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 
 describe("LegacyService", () => {
   const mockWorld = {

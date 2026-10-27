@@ -3,8 +3,8 @@ import {
   determineBoutImportance,
   assignKenshoBanners,
   calculateKenshoEnvelopes,
-} from "@/engine/systems/economy/KenshoService";
-import { rngFromSeed } from "@/engine/rng";
+} from "@/engine/economy/KenshoService";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { SponsorPool, Sponsor } from "@/engine/types/sponsors";
 import type { WorldState } from "@/engine/types/world";
 import { mockRikishi } from "@/tests/unit/engine/utils";

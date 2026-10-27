@@ -26,7 +26,7 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: () => ({
     id: "h1",
     name: "TestHeya",
@@ -41,7 +41,7 @@ vi.mock("@/presenters/worldAccess", () => ({
   getRikishi: (_world: any, id: string) => mockRikishi.find((r) => r.id === id),
 }));
 
-vi.mock("@/engine/systems/economy/FinanceCalculator", () => ({
+vi.mock("@/engine/economy/FinanceCalculator", () => ({
   calculateHeyaWeeklyFinances: () => ({ income: 100, expenses: 50, net: 50 }),
 }));
 

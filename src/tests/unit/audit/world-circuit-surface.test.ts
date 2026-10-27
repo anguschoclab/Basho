@@ -26,7 +26,7 @@ describe("WorldCircuitService — tick phase wiring", () => {
   });
 
   it("exports applyStyleDrift and generateYearlyInvitations", () => {
-    const svc = readSrcFile("engine/systems/worldCircuit/WorldCircuitService.ts");
+    const svc = readSrcFile("engine/worldCircuit/WorldCircuitService.ts");
     expect(svc).toContain("applyStyleDrift");
     expect(svc).toContain("generateYearlyInvitations");
   });
@@ -34,13 +34,13 @@ describe("WorldCircuitService — tick phase wiring", () => {
 
 describe("NPC GlobalWorker — weekly decision wiring", () => {
   it("spawnGlobalWorker is imported and called by weekly workers module", () => {
-    const weekly = readSrcFile("engine/npcAI/weekly/workers.ts");
+    const weekly = readSrcFile("engine/npc/weekly/workers.ts");
     expect(weekly).toContain("spawnGlobalWorker");
     expect(weekly).toMatch(/spawnGlobalWorker\s*\(/);
   });
 
   it("spawnGlobalWorker is exported from npcAIWorkers.ts", () => {
-    const workers = readSrcFile("engine/npcAIWorkers.ts");
+    const workers = readSrcFile("engine/npc/npcAIWorkers.ts");
     expect(workers).toContain("export function spawnGlobalWorker");
   });
 });

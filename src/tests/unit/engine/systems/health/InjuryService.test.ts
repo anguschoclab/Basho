@@ -5,10 +5,10 @@ import {
   onBoutResolvedInjury,
   clearInjury,
   toInjuryEvent,
-} from "@/engine/systems/health/InjuryService";
+} from "@/engine/health/InjuryService";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
-import { rngFromSeed, SeededRNG } from "@/engine/rng";
+import { rngFromSeed, SeededRNG } from "@/engine/core/rng";
 import { mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";

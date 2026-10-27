@@ -4,7 +4,7 @@
 
 import type { Id } from "@/engine/types/common";
 import type { AvatarConfig } from "@/engine/types/avatar";
-import type { OyakataMemory } from "@/engine/ai/types";
+import type { OyakataMemory } from "@/engine/npc/types";
 
 /** Mood state for an Oyakata — affects training intensity and decision risk. */
 export type OyakataMood =
@@ -109,5 +109,5 @@ export interface OyakataCreationConfig {
   /** ID into OYAKATA_BACKSTORIES constant — e.g. "yokozuna_champion" */
   backstoryId: string;
   /** Optional ichimon (faction) ID selected in wizard step 2 */
-  ichimon?: import("./economy").IchimonName;
+  ichimon?: import("@/engine/types/economy").IchimonName;
 }

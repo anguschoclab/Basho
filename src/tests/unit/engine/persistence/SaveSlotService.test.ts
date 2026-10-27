@@ -9,7 +9,7 @@ const mockStorage = {
   getAllKeys: vi.fn(),
 };
 
-vi.mock("@/engine/storageProvider", () => ({
+vi.mock("@/engine/persistence/storageProvider", () => ({
   getStorageProvider: () => mockStorage,
 }));
 

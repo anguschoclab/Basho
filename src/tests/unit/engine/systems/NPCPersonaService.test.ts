@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ensurePersonaForOyakata, getManagerPersona } from "@/engine/systems/NPCPersonaService";
+import { ensurePersonaForOyakata, getManagerPersona } from "@/engine/npc/personas/NPCPersonaService";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import type { Oyakata } from "@/engine/types/oyakata";
 

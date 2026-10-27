@@ -11,7 +11,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import {
   SEKITORI_OVERHEAD_MONTHLY,
   NON_SEKITORI_OVERHEAD_MONTHLY,

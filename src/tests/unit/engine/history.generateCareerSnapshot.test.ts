@@ -5,7 +5,7 @@
  * rikishi.economics.totalEarnings.
  */
 import { describe, it, expect } from "vitest";
-import { generateCareerSnapshot } from "@/engine/history";
+import { generateCareerSnapshot } from "@/engine/history/history";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import type { RikishiEconomics } from "@/engine/types/economy";
 

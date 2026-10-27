@@ -6,13 +6,13 @@ import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 // Mock the world engine functions used by phase01_basho_bouts
-vi.mock("@/engine/world", () => ({
+vi.mock("@/engine/core/world", () => ({
   simulateBoutsForDay: vi.fn(),
   advanceBashoDay: vi.fn(),
 }));
 
 // Import after mock
-import * as worldEngine from "@/engine/world";
+import * as worldEngine from "@/engine/core/world";
 
 /**
  * P1.2: Basho pipeline migration tests.

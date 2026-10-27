@@ -20,7 +20,7 @@ describe("HistoryService — tick phase wiring", () => {
   });
 
   it("exports updateAllTimeRecords", () => {
-    const svc = readSrcFile("engine/systems/meta/HistoryService.ts");
+    const svc = readSrcFile("engine/history/HistoryService.ts");
     expect(svc).toContain("updateAllTimeRecords");
   });
 });

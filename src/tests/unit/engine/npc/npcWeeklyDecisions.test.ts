@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { makeNPCWeeklyDecision } from "@/engine/npcAI/weekly";
-import * as PersonaService from "@/engine/systems/NPCPersonaService";
+import { makeNPCWeeklyDecision } from "@/engine/npc/weekly";
+import * as PersonaService from "@/engine/npc/personas/NPCPersonaService";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Id } from "@/engine/types/common";
 
-vi.mock("@/engine/systems/NPCPersonaService", () => ({
+vi.mock("@/engine/npc/personas/NPCPersonaService", () => ({
   getManagerPersona: vi.fn(),
 }));
 

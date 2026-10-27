@@ -6,10 +6,10 @@
 import { describe, it, expect } from "vitest";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
-import { RivalryService } from "@/engine/systems/narrative/RivalryService";
-import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import { RivalryService } from "@/engine/narrative/RivalryService";
+import { NarrativeService } from "@/engine/narrative/NarrativeService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import { projectDashboardUIDigest } from "@/presenters/projections/dashboardProjections";
 import { projectRikishiWithHeya } from "@/presenters/projections/rikishiProjection";
 

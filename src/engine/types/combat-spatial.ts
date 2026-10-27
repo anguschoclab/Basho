@@ -167,8 +167,8 @@ export interface EngineStateV2 {
   /** In-bout injury if one occurred */
   inBoutInjury: {
     rikishiId: string;
-    area: import("../systems/health/BodyDefinitions").InjuryBodyArea;
-    severity: import("../systems/health/BodyDefinitions").InjurySeverity;
+    area: import("@/engine/health/BodyDefinitions").InjuryBodyArea;
+    severity: import("@/engine/health/BodyDefinitions").InjurySeverity;
     triggerEvent: string;
   } | null;
 }

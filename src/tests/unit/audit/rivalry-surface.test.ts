@@ -21,12 +21,12 @@ describe("RivalryHeatService — tick phase wiring", () => {
 
 describe("RivalryService — reachability", () => {
   it("RivalryService is exported and used by rivalries.ts", () => {
-    const svc = readSrcFile("engine/systems/narrative/RivalryService.ts");
+    const svc = readSrcFile("engine/narrative/RivalryService.ts");
     expect(svc.length).toBeGreaterThan(0);
   });
 
   it("RivalryHeatService is exported and used by phase01_week_rivalries", () => {
-    const svc = readSrcFile("engine/systems/narrative/RivalryHeatService.ts");
+    const svc = readSrcFile("engine/narrative/RivalryHeatService.ts");
     expect(svc.length).toBeGreaterThan(0);
   });
 });

@@ -3,10 +3,10 @@ import { resolveBout } from "@/engine/bout/boutResolver";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState, MatchSchedule } from "@/engine/types/basho";
 import type { Id } from "@/engine/types/common";
-import { rngForWorld } from "@/engine/rng";
-import { getRikishi } from "@/engine/queries";
+import { rngForWorld } from "@/engine/core/rng";
+import { getRikishi } from "@/engine/core/queries";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 /**

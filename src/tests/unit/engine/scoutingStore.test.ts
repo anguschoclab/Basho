@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getOrCreateScouted, tickWeekScouting } from "@/engine/scoutingStore";
+import { getOrCreateScouted, tickWeekScouting } from "@/engine/recruitment/scoutingStore";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { logger } from "@/engine/utils/Logger";
 

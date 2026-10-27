@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { spawnFinanceAgent, type FinanceAgentContext } from "@/engine/agents/FinanceAgent";
+import { spawnFinanceAgent, type FinanceAgentContext } from "@/engine/npc/agents/FinanceAgent";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { MyosekiStock } from "@/engine/types/myoseki";

@@ -14,7 +14,7 @@ import {
   NARRATIVE_REMATCH_CHANCE,
 } from "@/constants/engine/narrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/core/rng";
 
 function beatPostBoutYushoRace(p: PbpPipeline): void {
   const { postBoutRng, push, result, winnerRikishi, winnerWins } = p;

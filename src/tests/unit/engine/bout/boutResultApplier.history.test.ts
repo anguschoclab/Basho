@@ -14,7 +14,7 @@
 import { describe, it, expect } from "vitest";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { getH2HReport } from "@/engine/h2h";
+import { getH2HReport } from "@/engine/bout/h2h";
 import { makeMockWorld, makeMockBasho, mockRikishi } from "@/tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BoutResult, MatchSchedule } from "@/engine/types/basho";

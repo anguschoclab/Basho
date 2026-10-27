@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { WorldState } from "@/engine/types/world";
 import { Heya } from "@/engine/types/heya";
 import { Oyakata } from "@/engine/types/oyakata";
-import { evaluateGovernanceStrategy } from "@/engine/strategy/NPCGovernanceCalculator";
+import { evaluateGovernanceStrategy } from "@/engine/npc/strategy/NPCGovernanceCalculator";
 
 describe("NPC Sabotage Logic", () => {
   let mockWorld: WorldState;

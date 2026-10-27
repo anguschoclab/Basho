@@ -111,7 +111,7 @@ vi.mock("@/engine/core/ImpactResolver", () => ({
   resolveImpacts: vi.fn(() => []),
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: (world: any) => {
     const id = world?.playerHeyaId;
     return world?.heyas?.[id] ?? null;

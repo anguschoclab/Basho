@@ -28,7 +28,7 @@ describe("ACCEPT_EXHIBITION worker command", () => {
 
   it("processExhibitionResult is callable via WorldCircuitService", async () => {
     const { WorldCircuitService } =
-      await import("@/engine/systems/worldCircuit/WorldCircuitService");
+      await import("@/engine/worldCircuit/WorldCircuitService");
     expect(typeof WorldCircuitService.processExhibitionResult).toBe("function");
   });
 });

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { WorldState } from "@/engine/types/world";
 
 describe("Batch preflight (B1.1)", () => {

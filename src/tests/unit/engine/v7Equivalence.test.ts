@@ -9,16 +9,16 @@
  */
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { clearQueryCaches } from "@/engine/queries";
+import { clearQueryCaches } from "@/engine/core/queries";
 import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_boundary";
 import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
-import { buildAIContext } from "@/engine/npcAI/contextBuilder";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
+import { buildAIContext } from "@/engine/npc/contextBuilder";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
 import { projectTsukebito } from "@/presenters/tsukebitoProjections";
-import { detectDueDecisions } from "@/engine/loop/LoopDecisionEngine";
-import { generateH2HCommentary } from "@/engine/h2h";
+import { detectDueDecisions } from "@/engine/npc/decision/LoopDecisionEngine";
+import { generateH2HCommentary } from "@/engine/bout/h2h";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { generateRecommendations } from "@/engine/advisor/AdvisorService";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
@@ -413,7 +413,7 @@ describe("v7 behavior — #962 boutNarrative directional streak paths", () => {
 // ---------------------------------------------------------------------------
 describe("V7-B13 reproducer — rosterCache cross-world contamination", () => {
   it("a second world at the same week does not inherit the first world's roster", async () => {
-    const { getHeyaRoster } = await import("@/engine/queries");
+    const { getHeyaRoster } = await import("@/engine/core/queries");
     clearQueryCaches();
     const w1 = mkWorld({
       week: 5,

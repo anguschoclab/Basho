@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { spawnGovernanceAgent, type GovernanceAgentContext } from "@/engine/agents/GovernanceAgent";
+import { spawnGovernanceAgent, type GovernanceAgentContext } from "@/engine/npc/agents/GovernanceAgent";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Heya } from "@/engine/types/heya";
 

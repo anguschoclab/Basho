@@ -20,7 +20,7 @@ describe("BloodlineService — tick phase wiring", () => {
   });
 
   it("exports applyHeritageBonus", () => {
-    const svc = readSrcFile("engine/systems/legacy/BloodlineService.ts");
+    const svc = readSrcFile("engine/legacy/BloodlineService.ts");
     expect(svc).toContain("applyHeritageBonus");
   });
 });
@@ -35,18 +35,18 @@ describe("LegacyService — call site wiring", () => {
   it("both legacy retirement call sites delegate to the unified processor", () => {
     const cs = readSrcFile("engine/lifecycle/CareerService.ts");
     expect(cs).toContain("processAllRetirements");
-    const gr = readSrcFile("engine/systems/governance/governanceReview.ts");
+    const gr = readSrcFile("engine/governance/services/governanceReview.ts");
     expect(gr).toContain("processAllRetirements");
   });
 
   it("rollLegacyAncestry is called by CandidateGenerator", () => {
-    const cg = readSrcFile("engine/systems/generation/CandidateGenerator.ts");
+    const cg = readSrcFile("engine/generation/CandidateGenerator.ts");
     expect(cg).toContain("LegacyService");
     expect(cg).toMatch(/LegacyService\.rollLegacyAncestry/);
   });
 
   it("exports registerLegacyTrait and rollLegacyAncestry", () => {
-    const svc = readSrcFile("engine/systems/legacy/LegacyService.ts");
+    const svc = readSrcFile("engine/legacy/LegacyService.ts");
     expect(svc).toContain("registerLegacyTrait");
     expect(svc).toContain("rollLegacyAncestry");
   });
@@ -60,7 +60,7 @@ describe("DynastyService — tick phase wiring", () => {
   });
 
   it("exports tickSuccessionCheck", () => {
-    const svc = readSrcFile("engine/systems/legacy/DynastyService.ts");
+    const svc = readSrcFile("engine/legacy/DynastyService.ts");
     expect(svc).toContain("tickSuccessionCheck");
   });
 });
@@ -73,7 +73,7 @@ describe("TrainingPhilosophyService — tick phase wiring", () => {
   });
 
   it("exports tickPhilosophyDrift", () => {
-    const svc = readSrcFile("engine/systems/legacy/TrainingPhilosophyService.ts");
+    const svc = readSrcFile("engine/legacy/TrainingPhilosophyService.ts");
     expect(svc).toContain("tickPhilosophyDrift");
   });
 });

@@ -8,7 +8,7 @@
  * EventBus factory methods live in ./EventBus.ts
  */
 
-import { rngForWorld } from "@/engine/rng";
+import { rngForWorld } from "@/engine/core/rng";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { WorldState } from "@/engine/types/world";
 import {

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { bandIndex, computeStatureBand, runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
+import { bandIndex, computeStatureBand, runPrestigeDecay } from "@/engine/history/prestige";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "@/tests/unit/engine/utils";
-import { clearQueryCaches } from "@/engine/queries";
+import { clearQueryCaches } from "@/engine/core/queries";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 describe("Prestige System", () => {

@@ -21,7 +21,7 @@ import {
   simulateNPCInterest,
   tickWeekCandidatePool,
   ensureCandidatePoolState,
-} from "@/engine/systems/generation/CandidatePoolService";
+} from "@/engine/generation/CandidatePoolService";
 
 export function phase01_week_candidate_pool(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_candidate_pool");

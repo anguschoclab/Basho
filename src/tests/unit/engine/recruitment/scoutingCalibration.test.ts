@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
-import { recruitmentBalanceMultiplier } from "@/engine/systems/generation/competitiveBalance";
-import { clearQueryCaches } from "@/engine/queries";
+import { getRecruitmentStrategy } from "@/engine/npc/strategy/npcRecruitmentStrategy";
+import { recruitmentBalanceMultiplier } from "@/engine/generation/competitiveBalance";
+import { clearQueryCaches } from "@/engine/core/queries";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@/tests/unit/engine/utils";
 import { toKeyedMap } from "@/engine/utils/index";
 import {

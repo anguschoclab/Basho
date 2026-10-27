@@ -14,37 +14,37 @@ const ROOT = join(__dirname, "../../../..");
 
 describe("ScoutingService — reachability", () => {
   it("is exported and used by scoutingStore", () => {
-    const svc = readSrcFile("engine/systems/recruitment/ScoutingService.ts");
+    const svc = readSrcFile("engine/recruitment/ScoutingService.ts");
     expect(svc.length).toBeGreaterThan(0);
   });
 
   it("scoutingStore bridges ScoutingService to world state", () => {
-    const store = readSrcFile("engine/scoutingStore.ts");
+    const store = readSrcFile("engine/recruitment/scoutingStore.ts");
     expect(store).toContain("ScoutingService");
   });
 });
 
 describe("FogOfWarService — reachability", () => {
   it("is exported and used by CandidateGenerator", () => {
-    const svc = readSrcFile("engine/systems/recruitment/FogOfWarService.ts");
+    const svc = readSrcFile("engine/recruitment/FogOfWarService.ts");
     expect(svc.length).toBeGreaterThan(0);
   });
 
   it("is imported by talentPoolScoutingOps", () => {
-    const ops = readSrcFile("engine/systems/generation/talentPoolScoutingOps.ts");
+    const ops = readSrcFile("engine/generation/talentPoolScoutingOps.ts");
     expect(ops).toContain("FogOfWarService");
   });
 });
 
 describe("NPC ScoutingWorker — weekly decision wiring", () => {
   it("spawnScoutingWorker is imported and called by weekly workers module", () => {
-    const weekly = readSrcFile("engine/npcAI/weekly/workers.ts");
+    const weekly = readSrcFile("engine/npc/weekly/workers.ts");
     expect(weekly).toContain("spawnScoutingWorker");
     expect(weekly).toMatch(/spawnScoutingWorker\s*\(/);
   });
 
   it("spawnScoutingWorker is exported from npcAIWorkers.ts", () => {
-    const workers = readSrcFile("engine/npcAIWorkers.ts");
+    const workers = readSrcFile("engine/npc/npcAIWorkers.ts");
     expect(workers).toContain("export function spawnScoutingWorker");
   });
 });

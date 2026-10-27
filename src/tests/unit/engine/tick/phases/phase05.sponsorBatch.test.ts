@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_boundary";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("Sponsor renewal batch (B2.4) — validation", () => {
   it("phase05_monthly_boundary with monthly boundary produces valid StateImpact", () => {

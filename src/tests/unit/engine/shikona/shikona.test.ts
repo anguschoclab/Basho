@@ -156,7 +156,7 @@ describe("generateShikonaCandidate pattern weighting", () => {
   it("honors rankRule patternBias: dominant bias selects that pattern", async () => {
     const { generateShikonaCandidate } = await import("@/engine/shikona/generation");
     const { SHIKONA_PREFIXES, SHIKONA_SUFFIXES } = await import("@/engine/shikona/constants");
-    const { SeededRNG } = await import("@/engine/rng");
+    const { SeededRNG } = await import("@/engine/core/rng");
     const house = {
       id: "power_mountain" as const,
       name: "Test",

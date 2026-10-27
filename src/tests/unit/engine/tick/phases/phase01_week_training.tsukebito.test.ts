@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { setTsukebito, clearTsukebito } from "@/engine/systems/training/TsukebitoService";
+import { setTsukebito, clearTsukebito } from "@/engine/training/TsukebitoService";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { runRetiredRikishiSummarization } from "@/engine/archival";
+import { runRetiredRikishiSummarization } from "@/engine/history/archival";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, mockRikishi } from "@/tests/unit/engine/utils";
 import { toIdMap } from "@/engine/utils/index";

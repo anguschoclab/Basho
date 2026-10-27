@@ -26,15 +26,15 @@ import { createEmptyImpact, getNextTimestamp } from "@/engine/core/StateImpact";
 import { deepMerge, setNestedField } from "@/engine/utils/objectMerge";
 
 type ArrayAppendItem<K extends string> = K extends "history"
-  ? import("../types/basho").BashoResult[]
+  ? import("@/engine/types/basho").BashoResult[]
   : K extends "almanacSnapshots"
-    ? import("../almanac/types").AlmanacSnapshot[]
+    ? import("@/engine/almanac/types").AlmanacSnapshot[]
     : K extends "basho.matches"
-      ? import("../types/basho").MatchSchedule[]
+      ? import("@/engine/types/basho").MatchSchedule[]
       : K extends "governanceLog"
-        ? import("../types/economy").GovernanceRuling[]
+        ? import("@/engine/types/economy").GovernanceRuling[]
         : K extends "awardLog"
-          ? import("../types/basho").AwardLogEntry[]
+          ? import("@/engine/types/basho").AwardLogEntry[]
           : K extends "myosekiMarket.history"
             ? MyosekiTransaction[]
             : K extends "pendingExhibitions"

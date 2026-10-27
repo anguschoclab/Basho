@@ -57,11 +57,11 @@ vi.mock("@/presenters/worldAccess", () => ({
   getStaffMember: (_world: any, id: string) => mockStaff.find((s) => s.id === id),
 }));
 
-vi.mock("@/engine/queries", () => ({
+vi.mock("@/engine/core/queries", () => ({
   getPlayerHeya: () => ({ id: "h1", name: "TestHeya", staffIds: mockStaff.map((s) => s.id) }),
 }));
 
-vi.mock("@/engine/descriptorBands", () => ({
+vi.mock("@/engine/narrative/descriptorBands", () => ({
   toFatigueBand: (v: number) => (v > 75 ? "exhausted" : "fresh"),
   toScandalBand: (v: number) => (v > 50 ? "elevated" : "clean"),
 }));

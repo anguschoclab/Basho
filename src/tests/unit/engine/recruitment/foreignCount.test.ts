@@ -3,7 +3,7 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import {
   getForeignCountInHeya,
   getForeignCountsByHeya,
-} from "@/engine/systems/generation/TalentPoolScouting";
+} from "@/engine/generation/TalentPoolScouting";
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
 import type { TalentPoolWorldState } from "@/engine/types/talent";

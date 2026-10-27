@@ -1,0 +1,60 @@
+/**
+ * GovernanceService.ts
+ * =====================
+ * Handles governance rulings and crisis resolution.
+ */
+
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+
+import { CrisisService } from "@/engine/narrative/CrisisService";
+import { getHeya } from "@/engine/core/queries";
+
+export function resolveCrisis(world: WorldState, crisisId: string, choiceId: string): StateImpact {
+  const builder = createImpactBuilder("resolveCrisis");
+  const playerHeyaId = world.playerHeyaId;
+  if (!playerHeyaId) return builder.build();
+
+  // 1. Look up the crisis in the registry or world state
+  const registry = CrisisService.getRegistry();
+  const crisis = registry.find((c) => c.id === crisisId) || world.pendingCrisis;
+
+  if (crisis && crisis.id === crisisId) {
+    const option = crisis.options.find((o) => o.id === choiceId);
+    if (option) {
+      // Execute the specific impact generator for this choice. Stored
+      // (serialized) crises carry no generator — registry crises resolve
+      // through the registry lookup above and always have one.
+      const impact = option.impactGenerator?.(world, playerHeyaId);
+      if (impact) builder.merge(impact);
+
+      // Clear the pending crisis from the world state. This must be part
+      // of the returned impact — returning the option's impact directly
+      // would drop the clear and leave the halt/modal active forever.
+      builder.updateWorldField("pendingCrisis", undefined);
+
+      return builder.build();
+    }
+  }
+
+  // Fallback/Legacy logic (if needed for old save files)
+  const heya = getHeya(world, playerHeyaId);
+  if (!heya) return builder.build();
+
+  if (choiceId === "harsh") {
+    // ... legacy logic ...
+    builder.updateHeya(playerHeyaId, {
+      reputation: Math.max(0, (heya.reputation ?? 50) - 15),
+      welfareState: {
+        ...heya.welfareState,
+        activeDiet: heya.welfareState?.activeDiet ?? "maintenance",
+        weeksInState: heya.welfareState?.weeksInState ?? 0,
+        complianceState: "compliant",
+        welfareRisk: Math.max(0, (heya.welfareState?.welfareRisk ?? 0) - 30),
+      },
+    });
+  }
+
+  return builder.build();
+}

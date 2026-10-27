@@ -8,7 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanState } from "@/engine/banzuke/ozekiLogic";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { SeededRNG } from "@/engine/rng";
+import { SeededRNG } from "@/engine/core/rng";
 import {
   selectPromotionCandidates,
   selectYokozunaCandidates,

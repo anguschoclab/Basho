@@ -1,27 +1,27 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 
-vi.mock("@/engine/prestige/prestigeSystem", () => ({
+vi.mock("@/engine/history/prestige", () => ({
   runPrestigeDecay: vi.fn(() => ({ metadata: { source: "prestige" } })),
 }));
-vi.mock("@/engine/systems/governance/governanceReview", () => ({
+vi.mock("@/engine/governance/services/governanceReview", () => ({
   runGovernanceReview: vi.fn(() => ({ metadata: { source: "governance" } })),
   runAIMetaDrift: vi.fn(() => ({ metadata: { source: "aiMeta" } })),
   runRetirements: vi.fn(() => ({
     metadata: { source: "retirements", vacanciesByHeyaId: {} },
   })),
 }));
-vi.mock("@/engine/records", () => ({
+vi.mock("@/engine/history/records", () => ({
   onBashoEnded: vi.fn(() => ({ metadata: { source: "records" } })),
 }));
-vi.mock("@/engine/systems/economy/SponsorshipService", () => ({
+vi.mock("@/engine/economy/SponsorshipService", () => ({
   processSponsorChurn: vi.fn(() => ({ metadata: { source: "sponsors" } })),
   adjustKoenkaiBandToPrestige: vi.fn(() => ({ metadata: { source: "koenkaiBand" } })),
 }));
-vi.mock("@/engine/naturalization", () => ({
+vi.mock("@/engine/lifecycle/naturalization", () => ({
   checkNaturalizations: vi.fn(() => ({ metadata: { source: "naturalization" } })),
 }));
-vi.mock("@/engine/archival", () => ({
+vi.mock("@/engine/history/archival", () => ({
   runRetiredRikishiSummarization: vi.fn(() => ({
     metadata: { source: "runRetiredRikishiSummarization" },
   })),
@@ -30,17 +30,17 @@ vi.mock("@/engine/lifecycle/RegistryService", () => ({
   runCareerJournalUpdates: vi.fn(() => ({ metadata: { source: "careerJournal" } })),
   openRecruitmentWindow: vi.fn(() => ({ metadata: { source: "recruitment" } })),
 }));
-vi.mock("@/engine/history", () => ({
+vi.mock("@/engine/history/history", () => ({
   runHistoryUpdates: vi.fn(() => ({ metadata: { source: "history" } })),
 }));
-vi.mock("@/engine/systems/governance/ScandalService", () => ({
+vi.mock("@/engine/governance/services/ScandalService", () => ({
   runElections: vi.fn(() => ({ metadata: { source: "elections" } })),
 }));
-vi.mock("@/engine/systems/media/MediaService", () => ({
+vi.mock("@/engine/media/MediaService", () => ({
   processWeeklyMediaBoundary: vi.fn(() => ({ metadata: { source: "media" } })),
   snapshotMediaHeatForBasho: vi.fn((s: unknown) => s),
 }));
-vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
+vi.mock("@/engine/generation/TalentPoolService", () => ({
   fillVacanciesForNPC: vi.fn(),
   finalizeSignedCandidates: vi.fn(),
 }));

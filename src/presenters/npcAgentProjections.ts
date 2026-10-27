@@ -10,7 +10,7 @@
  */
 import type { WorldState } from "@/engine/types/world";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { resolveAvatar, oyakataStageInput } from "@/engine/avatarGenerator";
+import { resolveAvatar, oyakataStageInput } from "@/engine/generation/avatarGenerator";
 
 export interface NPCDecisionDTO {
   heyaId: string;

@@ -5,7 +5,7 @@
  * dead command surface with no UI dispatch.
  */
 import { describe, it, expect } from "vitest";
-import { setTsukebito, clearTsukebito } from "@/engine/systems/training/TsukebitoService";
+import { setTsukebito, clearTsukebito } from "@/engine/training/TsukebitoService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 
@@ -33,7 +33,7 @@ describe("Tsukebito worker commands", () => {
   });
 
   it("setTsukebito and clearTsukebito service functions exist", async () => {
-    const mod = await import("@/engine/systems/training/TsukebitoService");
+    const mod = await import("@/engine/training/TsukebitoService");
     expect(typeof mod.setTsukebito).toBe("function");
     expect(typeof mod.clearTsukebito).toBe("function");
   });

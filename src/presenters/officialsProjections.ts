@@ -4,7 +4,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Gyoji } from "@/engine/types/gyoji";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { resolveAvatar, gyojiStageInput, shimpanStageInput } from "@/engine/avatarGenerator";
+import { resolveAvatar, gyojiStageInput, shimpanStageInput } from "@/engine/generation/avatarGenerator";
 
 export interface GyojiDTO {
   id: string;

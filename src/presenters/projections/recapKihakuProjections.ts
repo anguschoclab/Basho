@@ -6,7 +6,7 @@
  */
 import type { WorldState } from "@/engine/types/world";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "@/engine/avatarGenerator";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 import { getAllRikishi } from "@/presenters/worldAccess";
 
 export interface KihakuPerformerDTO {

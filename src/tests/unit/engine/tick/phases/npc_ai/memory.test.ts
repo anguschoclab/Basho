@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { consolidateOyakataMemoryPure } from "@/engine/tick/phases/npc_ai/memory";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Oyakata } from "@/engine/types/oyakata";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
 
 function makeOyakata(): Oyakata {
   return {

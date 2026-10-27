@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { describeTrainingEffect } from "@/engine/narrativeDescriptions";
+import { describeTrainingEffect } from "@/engine/narrative/narrativeDescriptions";
 
 describe("narrativeDescriptions", () => {
   describe("describeTrainingEffect", () => {

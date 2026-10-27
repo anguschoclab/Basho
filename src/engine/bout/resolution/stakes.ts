@@ -10,13 +10,13 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoState, BoutResult } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { RivalryService } from "@/engine/systems/narrative/RivalryService";
+import { RivalryService } from "@/engine/narrative/RivalryService";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import {
   calculateKenshoEnvelopes,
   assignKenshoBanners,
   determineBoutImportance,
-} from "@/engine/systems/economy/KenshoService";
+} from "@/engine/economy/KenshoService";
 import { isYushoContention, isPlayoffScenario } from "@/engine/bout/boutContention";
 import {
   KENSHO_BASE_COUNT_LOW,

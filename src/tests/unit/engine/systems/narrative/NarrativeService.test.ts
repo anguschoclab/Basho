@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
-import { SeededRNG } from "@/engine/rng";
-import type { StatBand } from "@/engine/systems/narrative/NarrativeBands";
+import { NarrativeService } from "@/engine/narrative/NarrativeService";
+import { SeededRNG } from "@/engine/core/rng";
+import type { StatBand } from "@/engine/narrative/NarrativeBands";
 
 describe("NarrativeService", () => {
   const rng = new SeededRNG("narrative-test");

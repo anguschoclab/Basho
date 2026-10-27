@@ -19,36 +19,36 @@ describe("EraDriftService — tick phase wiring", () => {
   });
 
   it("exports processYearlyEraDrift", () => {
-    const svc = readSrcFile("engine/systems/meta/EraDriftService.ts");
+    const svc = readSrcFile("engine/history/EraDriftService.ts");
     expect(svc).toContain("export function processYearlyEraDrift");
   });
 });
 
 describe("EraDriftService — state mutation", () => {
   it("writes world.meta with tone and drift fields", () => {
-    const svc = readSrcFile("engine/systems/meta/EraDriftService.ts");
+    const svc = readSrcFile("engine/history/EraDriftService.ts");
     expect(svc).toContain('updateWorldField("meta"');
     expect(svc).toContain("tone");
     expect(svc).toContain("drift");
   });
 
   it("resets globalKimariteStats after processing", () => {
-    const svc = readSrcFile("engine/systems/meta/EraDriftService.ts");
+    const svc = readSrcFile("engine/history/EraDriftService.ts");
     expect(svc).toContain('updateWorldField("globalKimariteStats"');
   });
 
   it("emits WORLD_META_EVOLUTION event", () => {
-    const svc = readSrcFile("engine/systems/meta/EraDriftService.ts");
+    const svc = readSrcFile("engine/history/EraDriftService.ts");
     expect(svc).toContain("WORLD_META_EVOLUTION");
   });
 
   it("reads world.globalKimariteStats as input", () => {
-    const svc = readSrcFile("engine/systems/meta/EraDriftService.ts");
+    const svc = readSrcFile("engine/history/EraDriftService.ts");
     expect(svc).toContain("globalKimariteStats");
   });
 
   it("reads world.meta.tone for hysteresis", () => {
-    const svc = readSrcFile("engine/systems/meta/EraDriftService.ts");
+    const svc = readSrcFile("engine/history/EraDriftService.ts");
     expect(svc).toContain("meta");
     expect(svc).toContain("tone");
   });

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
+import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 import { processHeyaEconomics } from "@/engine/tick/phases/monthly/economics/salaries";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

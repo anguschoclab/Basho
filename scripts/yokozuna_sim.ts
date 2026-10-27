@@ -1,4 +1,4 @@
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim, type AutoSimConfig } from "@/engine/simulation/AutoSimService";
 
 async function runSim() {

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { handleMediaEvent } from "@/engine/systems/media/MediaEventService";
+import { handleMediaEvent } from "@/engine/media/MediaEventService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 

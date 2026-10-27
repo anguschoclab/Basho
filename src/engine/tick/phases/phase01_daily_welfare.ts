@@ -7,9 +7,9 @@
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { WelfareService } from "@/engine/systems/welfare/WelfareService";
-import { toRikishiDescriptor } from "@/engine/descriptorBands";
-import { rngFromSeed } from "@/engine/rng";
+import { WelfareService } from "@/engine/welfare/WelfareService";
+import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
+import { rngFromSeed } from "@/engine/core/rng";
 import { tickCondition } from "@/engine/tick/conditionTick";
 import {
   MAX_MENTAL_STAT,
@@ -26,7 +26,7 @@ import {
   MENTAL_GAIN_GOOD,
   FATIGUE_RECOVERY_GOOD,
 } from "@/constants/engine/condition";
-import { getRikishi } from "@/engine/queries";
+import { getRikishi } from "@/engine/core/queries";
 import { finiteOr } from "@/engine/utils/math";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {

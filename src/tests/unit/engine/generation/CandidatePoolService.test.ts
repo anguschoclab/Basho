@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { TalentPoolWorldState } from "@/engine/types/talent";
 import {
@@ -16,8 +16,8 @@ import {
   poachCandidate,
   tickWeekCandidatePool,
   listNPCWatchedCandidates,
-} from "@/engine/systems/generation/CandidatePoolService";
-import { refreshAllPools } from "@/engine/systems/generation/TalentPoolStateService";
+} from "@/engine/generation/CandidatePoolService";
+import { refreshAllPools } from "@/engine/generation/TalentPoolStateService";
 
 function makeWorld(seed = "test-candidate-pool"): WorldState {
   return generateInitialWorld(seed);

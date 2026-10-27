@@ -27,11 +27,11 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
 import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
 import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
-import { LegacyService } from "@/engine/systems/legacy/LegacyService";
-import { onRikishiRetired } from "@/engine/records";
-import { getRikishi } from "@/engine/queries";
-import { opfsArchiveService } from "@/engine/storage/opfsArchive";
-import { electronArchiveService } from "@/engine/storage/electronArchive";
+import { LegacyService } from "@/engine/legacy/LegacyService";
+import { onRikishiRetired } from "@/engine/history/records";
+import { getRikishi } from "@/engine/core/queries";
+import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/persistence/storage/electronArchive";
 import { warn } from "@/engine/utils/Logger";
 
 /**

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { updateH2H } from "@/engine/h2h";
+import { updateH2H } from "@/engine/bout/h2h";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { BoutResult } from "@/engine/types/basho";
 

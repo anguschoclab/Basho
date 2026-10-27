@@ -7,17 +7,17 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { convertCandidateToRikishi } from "@/engine/systems/generation/CandidateBuilder";
-import { rngFromSeed } from "@/engine/rng";
-import { buildCombatProfile } from "@/engine/archetype";
-import { generateAvatarIdentity } from "@/engine/avatarGenerator";
+import { convertCandidateToRikishi } from "@/engine/generation/CandidateBuilder";
+import { rngFromSeed } from "@/engine/core/rng";
+import { buildCombatProfile } from "@/engine/bout/archetype";
+import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import type { TalentCandidate } from "@/engine/types/talent";
 import {
   buildYouthAcademy,
   generateYearlyIntake,
   promoteIntake,
   getYouthAcademy,
-} from "@/engine/systems/recruitment/YouthAcademyService";
+} from "@/engine/recruitment/YouthAcademyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";

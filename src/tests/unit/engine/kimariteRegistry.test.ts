@@ -6,9 +6,9 @@ import {
   getKimariteByClass,
   getKimariteCount,
   getKimariteForFamily,
-} from "@/engine/kimariteRegistry";
-import { KIMARITE_STRATEGIES } from "@/engine/kimariteStrategies";
-import type { KimariteStrategy } from "@/engine/kimariteStrategies";
+} from "@/engine/bout/kimarite/kimariteRegistry";
+import { KIMARITE_STRATEGIES } from "@/engine/bout/kimarite/kimariteStrategies";
+import type { KimariteStrategy } from "@/engine/bout/kimarite/kimariteStrategies";
 
 describe("kimariteRegistry", () => {
   describe("KIMARITE_REGISTRY", () => {
@@ -195,7 +195,7 @@ describe("registry/strategy parity", () => {
 
 describe("kimarite module surface (post-barrel)", () => {
   it("registry module exports all registry functions", async () => {
-    const barrel = await import("@/engine/kimariteRegistry");
+    const barrel = await import("@/engine/bout/kimarite/kimariteRegistry");
     expect(barrel.KIMARITE_REGISTRY).toBeDefined();
     expect(barrel.getKimarite).toBeDefined();
     expect(barrel.getKimariteByJsaCategory).toBeDefined();
@@ -205,7 +205,7 @@ describe("kimarite module surface (post-barrel)", () => {
   });
 
   it("strategies module exports KIMARITE_STRATEGIES", async () => {
-    const barrel = await import("@/engine/kimariteStrategies");
+    const barrel = await import("@/engine/bout/kimarite/kimariteStrategies");
     expect(barrel.KIMARITE_STRATEGIES).toBeDefined();
     expect(barrel.KIMARITE_STRATEGIES.length).toBeGreaterThanOrEqual(80);
   });

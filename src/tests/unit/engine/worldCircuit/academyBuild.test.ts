@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import type { WorldState } from "@/engine/types/world";
 
 function setPresence(world: WorldState, heyaId: string, region: string, value: number) {

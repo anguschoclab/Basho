@@ -10,11 +10,11 @@ import { describe, it, expect } from "vitest";
 import {
   fillVacanciesForNPC,
   fillVacanciesForNPCWithBidding,
-} from "@/engine/systems/generation/TalentPoolNPCRecruitment";
+} from "@/engine/generation/TalentPoolNPCRecruitment";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { perceivedTalentSeed } from "@/engine/systems/recruitment/perceivedTalent";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import { executeMerger } from "@/engine/mergers";
+import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import { executeMerger } from "@/engine/economy/mergers";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 import { makeMockWorld, makeMockHeya } from "@/tests/unit/engine/utils";
@@ -259,7 +259,7 @@ describe("worldgen + merger — slot invariant beyond recruitment", () => {
 
 describe("offer path — slot semantics", () => {
   it("offerCandidate never blocks a dual-citizen candidate even with the slot occupied (§5.3)", async () => {
-    const { offerCandidate } = await import("@/engine/systems/generation/TalentPoolOffers");
+    const { offerCandidate } = await import("@/engine/generation/TalentPoolOffers");
     const world = worldWithOccupiedForeignSlot();
     const dual = MockFactory.createCandidate("dc-offer", {
       candidateId: "dc-offer",
@@ -276,7 +276,7 @@ describe("offer path — slot semantics", () => {
 
   it("suitor resolution never signs a slot-consuming foreigner to an occupied heya", async () => {
     const { tickWeekCandidatePool } =
-      await import("@/engine/systems/generation/CandidatePoolService");
+      await import("@/engine/generation/CandidatePoolService");
     const world = worldWithOccupiedForeignSlot();
     const foreignCand = MockFactory.createCandidate("fc-suitors", {
       candidateId: "fc-suitors",
@@ -314,7 +314,7 @@ describe("offer path — slot semantics", () => {
 describe("finalizeSignedCandidates — last-line slot guard", () => {
   it("never materializes a second slot-consuming foreigner onto one heya", async () => {
     const { finalizeSignedCandidates } =
-      await import("@/engine/systems/generation/TalentPoolMaterialization");
+      await import("@/engine/generation/TalentPoolMaterialization");
     const world = makeMockWorld({ week: 1, year: 2030 });
     seedHeyaAndOyakata(world, []);
     world.talentPool = MockFactory.createTalentPool();

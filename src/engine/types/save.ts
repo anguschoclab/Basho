@@ -15,11 +15,11 @@ import type { BashoResult } from "@/engine/types/basho";
 import type { Sponsor, Koenkai } from "@/engine/types/sponsors";
 import type { ClosedHeyaRecord, PreBashoAssessment } from "@/engine/types/world";
 import type { Staff } from "@/engine/types/staff";
-import type { HistoryIndex } from "@/engine/historyIndex";
+import type { HistoryIndex } from "@/engine/history/historyIndex";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
-import type { LineageEdge } from "@/engine/lineage";
+import type { LineageEdge } from "@/engine/legacy/lineage";
 import type { WorldRecords } from "@/engine/types/records";
-import type { HallOfFameState } from "@/engine/hallOfFame";
+import type { HallOfFameState } from "@/engine/history/hallOfFame";
 import type { RivalriesState } from "@/constants/engine/rivalry";
 import type { MyosekiMarket } from "@/engine/types/myoseki";
 import type { OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
@@ -112,7 +112,7 @@ export interface SerializedWorldState {
   candidatePool?: TalentPoolWorldState; // Talent acquisition pool
 
   /** Global Cup tournament state (Phase 5+) */
-  globalCup?: import("./globalCup").GlobalCupState;
+  globalCup?: import("@/engine/types/globalCup").GlobalCupState;
   /** Chronicle records (Phase 5+) */
   chronicle?: WorldState["chronicle"];
 
@@ -148,9 +148,9 @@ export interface SerializedWorldState {
 
   // ── Relationships & assignments ─────────────────────────────────────────
   /** Runtime Map — stored as a record, rehydrated by objectToMap. */
-  sparringPairs?: IdMap<import("./training").SparringState>;
+  sparringPairs?: IdMap<import("@/engine/types/training").SparringState>;
   /** Runtime Map — stored as a record, rehydrated by objectToMap. */
-  heyaBrandIdentities?: IdMap<import("./keshoMawashi").HeyaBrandIdentity>;
+  heyaBrandIdentities?: IdMap<import("@/engine/types/keshoMawashi").HeyaBrandIdentity>;
   customKeshoConfigs?: WorldState["customKeshoConfigs"];
   encouragementLog?: WorldState["encouragementLog"];
 

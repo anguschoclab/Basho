@@ -2,7 +2,7 @@
 import { describe, it, expect } from "vitest";
 import type { WorldState } from "@/engine/types/world";
 import type { EngineEvent, EventsState } from "@/engine/types/events";
-import type { HolidayGateTriggered } from "@/engine/holiday";
+import type { HolidayGateTriggered } from "@/engine/calendar/holiday";
 
 // buildHolidayDigest is not exported, so we test it indirectly via runHoliday.
 // However, runHoliday advances the world day-by-day which is complex to set up.

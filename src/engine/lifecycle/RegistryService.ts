@@ -1,5 +1,5 @@
-import { getActiveRikishi, getHeya } from "@/engine/queries";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import { getActiveRikishi, getHeya } from "@/engine/core/queries";
+import * as talentpool from "@/engine/generation/TalentPoolService";
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";

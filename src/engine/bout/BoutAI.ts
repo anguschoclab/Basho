@@ -8,10 +8,10 @@
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutTactic } from "@/engine/types/combat";
-import type { SeededRNG } from "@/engine/rng";
-import { decideBoutTacticOverride } from "@/engine/strategy/NPCStrategyService";
-import type { OpponentTacticModel } from "@/engine/ai/types";
-import { getOpponentDominantFamily } from "@/engine/npcAI/OpponentModel";
+import type { SeededRNG } from "@/engine/core/rng";
+import { decideBoutTacticOverride } from "@/engine/npc/strategy/NPCStrategyService";
+import type { OpponentTacticModel } from "@/engine/npc/types";
+import { getOpponentDominantFamily } from "@/engine/npc/OpponentModel";
 import {
   TACTIC_YOTSU_BELT_THRESHOLD,
   TACTIC_YOTSU_STANDARD_THRESHOLD,

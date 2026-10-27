@@ -8,19 +8,19 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { DynastyService } from "@/engine/systems/legacy/DynastyService";
-import { applyBashoTenure } from "@/engine/systems/legacy/tenure";
+import { DynastyService } from "@/engine/legacy/DynastyService";
+import { applyBashoTenure } from "@/engine/legacy/tenure";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { createPlan } from "@/engine/npcAI/StrategicPlanner";
-import { buildLeaguePerception } from "@/engine/npcAI/LeaguePerception";
+import { createPlan } from "@/engine/npc/StrategicPlanner";
+import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { AIContext } from "@/engine/ai/types";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import type { AIContext } from "@/engine/npc/types";
+import type { PerceptionSnapshot } from "@/engine/npc/perception";
 
 const TRAITS = { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 };
 
