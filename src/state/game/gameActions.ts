@@ -29,17 +29,8 @@ export const setPhase = (phase: GamePhase): GameAction => ({
  *
  * @returns {GameAction} START_BASHO action.
  */
-export const startBasho = (): GameAction => ({
+export const startBashoAction = (): GameAction => ({
   type: "START_BASHO",
-});
-
-/**
- * Advances to the next day.
- *
- * @returns {GameAction} ADVANCE_DAY action.
- */
-export const advanceDay = (): GameAction => ({
-  type: "ADVANCE_DAY",
 });
 
 /**
@@ -48,7 +39,7 @@ export const advanceDay = (): GameAction => ({
  * @param {number} boutIndex - The index of the bout to simulate.
  * @returns {GameAction} SIMULATE_BOUT action.
  */
-export const simulateBout = (boutIndex: number, boutId?: string): GameAction => ({
+export const simulateBoutAction = (boutIndex: number, boutId?: string): GameAction => ({
   type: "SIMULATE_BOUT",
   boutIndex,
   boutId,
@@ -93,7 +84,7 @@ export const endDay = (): GameAction => ({
  *
  * @returns {GameAction} END_BASHO action.
  */
-export const endBasho = (): GameAction => ({
+export const endBashoAction = (): GameAction => ({
   type: "END_BASHO",
 });
 

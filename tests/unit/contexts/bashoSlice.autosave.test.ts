@@ -15,7 +15,7 @@ const { mockAutosave } = vi.hoisted(() => ({
 vi.mock("@/state/game/gameHelpers", () => ({
   autosaveWithSignal: mockAutosave,
   getMatchesForDay: vi.fn(() => []),
-  applyImpact: vi.fn((state: unknown) => state),
+  applyImpactToGameState: vi.fn((state: unknown) => state),
   combineReducers: vi.fn((slices: unknown[]) => slices[0]),
 }));
 

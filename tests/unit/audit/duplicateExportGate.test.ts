@@ -16,25 +16,20 @@ import { scanConstDuplicates, scanDuplicateExports } from "../../../scripts/audi
  * Intentional same-name exports (layered APIs / deliberate domain synonyms).
  * Key: exported name. Value: justification — the architectural reason the
  * collision is legal. Every entry must cite a reason, not "boilerplate".
+ *
+ * To resolve a collision flagged by this gate: pick the canonical
+ * definition, then rename, re-export, merge, or delete the other side —
+ * and remove the allowlist entry in the same commit. An entry may only be
+ * added here when the same name genuinely denotes different contracts in
+ * different layers.
  */
-const ALLOWED_DUPLICATES: Record<string, string> = {
-  // contexts/gameActions.ts exports action creators returning GameAction
-  // (dispatch layer); engine files export the implementations they dispatch
-  // to. Same name, different layer + contract — not duplicates.
-  startBasho: "action creator (contexts/gameActions) vs engine impl (world/BashoManager)",
-  advanceDay: "action creator (contexts/gameActions) vs engine impl (world)",
-  simulateBout: "action creator (contexts/gameActions) vs engine impl (boutResolver)",
-  endBasho: "action creator (contexts/gameActions) vs engine impl (world)",
-  // contexts/gameHelpers dispatches impacts onto GameState (UI projection);
-  // engine/core/ImpactResolver resolves impacts onto WorldState (engine layer).
-  // Same verb, different state domain + signature — intentional layering.
-  applyImpact:
-    "GameState helper (contexts/gameHelpers) vs WorldState resolver (engine/ImpactResolver)",
-};
+const ALLOWED_DUPLICATES: Record<string, string> = {};
 
 /**
  * Known collisions pending dedupe — each entry must reference a tracking
- * issue/TODO. This map is ratcheted: it may only shrink.
+ * issue/TODO. This map is ratcheted: it may only shrink. Resolve entries
+ * the same way as ALLOWED_DUPLICATES violations (rename/re-export/merge/
+ * delete the non-canonical side) and delete the entry in the same commit.
  */
 const KNOWN_COLLISIONS: Record<string, string> = {};
 

@@ -51,7 +51,7 @@ export { issueGovernanceRuling } from "@/engine/governance/services/ScandalServi
  * @returns {WorldState} The updated world state with the new basho started.
  */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
-  const impact = bashoManager.startBasho(world, bashoName);
+  const impact = bashoManager.buildStartBashoImpact(world, bashoName);
   const updated = resolveImpacts(world, [impact]);
 
   // Reset basho-scoped media tracking (streaks, promo watch) — immutably

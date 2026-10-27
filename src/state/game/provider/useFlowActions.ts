@@ -59,13 +59,13 @@ export function useFlowActions(
   );
 
   const startBasho = useCallback(
-    () => dispatchWorldMutation("START_BASHO", actions.startBasho()),
+    () => dispatchWorldMutation("START_BASHO", actions.startBashoAction()),
     [dispatchWorldMutation]
   );
   const advanceDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
   const simulateBout = useCallback(
     (index: number, boutId?: string) =>
-      dispatchWorldMutation("SIMULATE_BOUT", actions.simulateBout(index, boutId)),
+      dispatchWorldMutation("SIMULATE_BOUT", actions.simulateBoutAction(index, boutId)),
     [dispatchWorldMutation]
   );
   const setBoutTactic = useCallback(
@@ -82,7 +82,7 @@ export function useFlowActions(
   );
   const endDay = useCallback(() => dispatch(actions.endDay()), [dispatch]);
   const endBasho = useCallback(
-    () => dispatchWorldMutation("END_BASHO", actions.endBasho()),
+    () => dispatchWorldMutation("END_BASHO", actions.endBashoAction()),
     [dispatchWorldMutation]
   );
   const simFullBasho = useCallback(() => {

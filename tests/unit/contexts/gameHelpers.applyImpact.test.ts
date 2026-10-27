@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { applyImpact, applyImpacts } from "@/state/game/gameHelpers";
+import { applyImpactToGameState, applyImpacts } from "@/state/game/gameHelpers";
 import type { GameState } from "@/state/game/gameTypes";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
@@ -31,13 +31,13 @@ function makeImpact(field: string, value: unknown): StateImpact {
   return { worldFields: { [field]: value } } as unknown as StateImpact;
 }
 
-describe("applyImpact", () => {
+describe("applyImpactToGameState", () => {
   it("returns new state with world updated", () => {
     const world = makeWorld();
     const state = makeState(world);
     const impact = makeImpact("week", 5);
 
-    const next = applyImpact(state, impact);
+    const next = applyImpactToGameState(state, impact);
 
     expect(next).not.toBe(state);
     expect(next.world).not.toBe(state.world);
@@ -49,7 +49,7 @@ describe("applyImpact", () => {
     const state = makeState(world);
     const impact = makeImpact("week", 10);
 
-    applyImpact(state, impact);
+    applyImpactToGameState(state, impact);
 
     expect(state.world?.week).toBe(1);
   });
@@ -58,7 +58,7 @@ describe("applyImpact", () => {
     const state = makeState(null);
     const impact = makeImpact("week", 5);
 
-    const next = applyImpact(state, impact);
+    const next = applyImpactToGameState(state, impact);
 
     expect(next).toBe(state);
   });

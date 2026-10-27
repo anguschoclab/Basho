@@ -83,7 +83,7 @@ export function combineReducers<S, A>(slices: Array<Reducer<S, A>>): Reducer<S, 
 }
 
 /** Apply a single StateImpact to GameState, returning a new state with updated world. */
-export function applyImpact(state: GameState, impact: StateImpact): GameState {
+export function applyImpactToGameState(state: GameState, impact: StateImpact): GameState {
   if (!state.world) return state;
   return { ...state, world: resolveImpacts(state.world, [impact]) };
 }

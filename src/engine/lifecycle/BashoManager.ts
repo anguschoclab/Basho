@@ -38,13 +38,14 @@ import type { StateImpact } from "@/engine/core/StateImpact";
  *
  * @example
  * ```ts
- * const impact = startBasho(world, "haru");
+ * const impact = buildStartBashoImpact(world, "haru");
  * const resolved = resolveImpacts(world, [impact]);
  * console.log(resolved.cyclePhase); // "active_basho"
  * ```
  */
-export function startBasho(world: WorldState, bashoName?: BashoName): StateImpact {
-  if (world.cyclePhase === "active_basho") return createImpactBuilder("startBasho").build();
+export function buildStartBashoImpact(world: WorldState, bashoName?: BashoName): StateImpact {
+  if (world.cyclePhase === "active_basho")
+    return createImpactBuilder("buildStartBashoImpact").build();
 
   const name: BashoName = bashoName || world.currentBashoName || "hatsu";
 
@@ -55,7 +56,7 @@ export function startBasho(world: WorldState, bashoName?: BashoName): StateImpac
   const scheduleImpact = ensureDaySchedule(world, basho.day);
 
   // Build impact with world field updates and queued event
-  const builder = createImpactBuilder("startBasho")
+  const builder = createImpactBuilder("buildStartBashoImpact")
     .updateWorldField("currentBasho", basho)
     .updateWorldField("cyclePhase", "active_basho")
     .logEvent(
