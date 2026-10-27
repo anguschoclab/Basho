@@ -45,7 +45,7 @@ describe("repo structure — harmonized layout contract", () => {
     expect(loose, `Loose engine files remaining: ${loose.join(", ")}`).toEqual([]);
   });
 
-  it.fails("shadow hierarchies dissolved", () => {
+  it("shadow hierarchies dissolved", () => {
     const remaining = [
       join(ENGINE, "systems"),
       join(ENGINE, "data"),
