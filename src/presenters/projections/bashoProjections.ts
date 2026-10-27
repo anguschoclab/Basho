@@ -31,10 +31,7 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
   if (!basho) return null;
 
   const playerHeya = getPlayerHeya(world);
-  const playerRikishiIds = new Set<string>();
-  if (playerHeya && playerHeya.rikishiIds) {
-    [...new Set(playerHeya.rikishiIds)].forEach((id) => playerRikishiIds.add(id));
-  }
+  const playerRikishiIds = new Set<string>(playerHeya?.rikishiIds ?? []);
 
   const day = basho.day;
   const matches: BoutMatchUI[] = [];
@@ -72,29 +69,33 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
 
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
+  // Sort first on raw fields, then project only the displayed top 10 —
+  // projectRikishi is too expensive to run for the whole division.
   const standings: StandingEntry[] = sortStandings(
     getRikishiByDivision(world, "makuuchi").map((r: Rikishi) => {
       const record = r.currentBashoRecord || { wins: 0, losses: 0 };
-      return {
-        rikishi: projectRikishi(r, world),
-        wins: record.wins,
-        losses: record.losses,
-      };
+      return { r, wins: record.wins, losses: record.losses };
     }),
     (a, b) =>
       compareRanks(
         toRankPosition({
-          rank: a.rikishi.rank,
-          side: a.rikishi.side,
-          rankNumber: a.rikishi.rankNumber,
+          rank: a.r.rank,
+          side: a.r.side,
+          rankNumber: a.r.rankNumber ?? 1,
         }),
         toRankPosition({
-          rank: b.rikishi.rank,
-          side: b.rikishi.side,
-          rankNumber: b.rikishi.rankNumber,
+          rank: b.r.rank,
+          side: b.r.side,
+          rankNumber: b.r.rankNumber ?? 1,
         })
       )
-  ).slice(0, 10);
+  )
+    .slice(0, 10)
+    .map((e) => ({
+      rikishi: projectRikishi(e.r, world),
+      wins: e.wins,
+      losses: e.losses,
+    }));
 
   return {
     bashoName: basho.bashoName,

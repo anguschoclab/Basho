@@ -8,6 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { HeyaDataUI } from "@/presenters/uiDigestTypes";
 import { projectRikishi } from "@/presenters/rikishi/index";
+import { getHeyaRoster } from "@/engine/core/queries";
 import type { UIRikishi } from "@/presenters/rikishi/index";
 
 /**
@@ -37,9 +38,8 @@ export function projectHeyaRosterWithAge(
   if (!heya) return [];
 
   const result: Array<{ rikishi: UIRikishi; age: number }> = [];
-  for (const id of [...new Set(heya.rikishiIds ?? [])]) {
-    const r = world.rikishi.get(id);
-    if (!r) continue;
+  // getHeyaRoster is memoized per world+week and already dedupes/resolves.
+  for (const r of getHeyaRoster(world, heyaId)) {
     result.push({
       rikishi: projectRikishi(r, world),
       age: r.birthYear && world.year ? world.year - r.birthYear : 0,

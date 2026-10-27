@@ -29,7 +29,9 @@ export function projectMergerWarnings(world: WorldState) {
 
   for (const h of EntityCollection.getHeyas(world)) {
     const isInDebt = h.funds < 0;
-    const rosterSize = new Set(h.rikishiIds ?? []).size;
+    // rikishiIds uniqueness is enforced at the write/serialize boundary —
+    // a plain length read is correct here.
+    const rosterSize = h.rikishiIds?.length ?? 0;
 
     // Financial merger warning: debt + small roster
     if (isInDebt && rosterSize <= 3) {

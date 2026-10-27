@@ -6,6 +6,7 @@ import { updateFacilitiesBand } from "@/engine/economy/facilities";
 import { rngForWorld } from "@/engine/core/rng";
 import { stableTieBreak } from "@/engine/utils/sort";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { pushUniqueId } from "@/engine/core/idIntegrity";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { bumpTenure } from "@/engine/legacy/tenure";
 import {
@@ -161,7 +162,7 @@ function transferRosterAcrossMerger(
   // incoming ids per destination and write them back explicitly, or roster
   // reads (getHeyaRoster) would miss the transferred rikishi forever.
   const destRosterAdds = new Map<Id, Id[]>();
-  const transferredRikishiIds: Id[] = [];
+  let transferredRikishiIds: Id[] = [];
   for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
     const rikishi = getRikishi(world, rId);
     if (!rikishi) continue;
@@ -198,7 +199,7 @@ function transferRosterAcrossMerger(
     const bucket = destRosterAdds.get(destId) ?? [];
     bucket.push(rId);
     destRosterAdds.set(destId, bucket);
-    transferredRikishiIds.push(rId);
+    transferredRikishiIds = pushUniqueId(transferredRikishiIds, rId);
 
     builder.logEvent(
       "LIFECYCLE_EVENT",

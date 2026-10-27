@@ -14,6 +14,7 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
+import { assertWorldIdIntegrity } from "@/engine/core/idIntegrity";
 import type { WorldState } from "@/engine/types/world";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 
@@ -110,6 +111,13 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
         expect.fail(`Rikishi ${id} found in both world.rikishi and world.historicalRikishi`);
       }
     }
+  });
+
+  it("world maintains ID integrity after 3 simulated years", async () => {
+    // Audits every entity map, ID-list field, cross-collection membership,
+    // and dangling reference in the evolved world — duplicates or ghosts
+    // introduced by any sim phase surface here.
+    assertWorldIdIntegrity(finalWorld);
   });
 
   it("full records are archived to cold storage at retirement (if any retire)", async () => {

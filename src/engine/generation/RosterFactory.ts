@@ -6,6 +6,7 @@
  */
 
 import { SeededRNG } from "@/engine/core/rng";
+import { pushUniqueId } from "@/engine/core/idIntegrity";
 import { Heya } from "@/engine/types/heya";
 import { Oyakata } from "@/engine/types/oyakata";
 import { Rikishi } from "@/engine/types/rikishi";
@@ -116,7 +117,7 @@ export function createRosters(
       }
 
       r.heyaId = assigned.id;
-      assigned.rikishiIds = [...(assigned.rikishiIds || []), r.id];
+      assigned.rikishiIds = pushUniqueId(assigned.rikishiIds || [], r.id);
       rikishiMap.set(r.id, r);
     }
   });

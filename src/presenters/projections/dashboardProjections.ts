@@ -96,29 +96,32 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
     entriesByDivision[entry.division]?.push(entry);
   }
 
-  const dividerData: BanzukeDivisionData[] = divisions.map((div) => ({
-    division: div,
-    rows: buildBanzukeRows(entriesByDivision[div], div, ""),
-  }));
-
-  const heyaNameMap = new Map<string, string>();
-  for (const h of EntityCollection.getHeyas(world)) {
-    heyaNameMap.set(h.id, h.name);
-  }
-
-  // Precompute counts and O(1) lookup map
-  let totalWrestlerCount = 0;
+  // Single pass: build rows, count filled east/west slots, and index the
+  // division in one iteration — counts are slot-based (a rank+number+side
+  // collision can drop an entry), not entry-based.
+  const dividerData: BanzukeDivisionData[] = [];
   const divisionCounts: Record<string, number> = {};
   const divisionMap = new Map<string, BanzukeDivisionData>();
-  for (const dd of dividerData) {
+  let totalWrestlerCount = 0;
+  for (const div of divisions) {
+    const dd: BanzukeDivisionData = {
+      division: div,
+      rows: buildBanzukeRows(entriesByDivision[div], div, ""),
+    };
     let count = 0;
     for (const r of dd.rows) {
       if (r.east) count++;
       if (r.west) count++;
     }
-    divisionCounts[dd.division] = count;
+    divisionCounts[div] = count;
     totalWrestlerCount += count;
-    divisionMap.set(dd.division, dd);
+    divisionMap.set(div, dd);
+    dividerData.push(dd);
+  }
+
+  const heyaNameMap = new Map<string, string>();
+  for (const h of EntityCollection.getHeyas(world)) {
+    heyaNameMap.set(h.id, h.name);
   }
 
   return {

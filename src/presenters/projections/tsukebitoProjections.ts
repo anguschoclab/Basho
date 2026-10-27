@@ -64,19 +64,16 @@ function avatarOf(r: Rikishi, year: number): AvatarRenderData {
 
 export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoProjection {
   const year = world.year;
-  const heyaRikishi = Array.from(world.rikishi.values()).filter(
-    (r) => r.heyaId === heyaId && !r.isRetired
-  );
 
   const seniors: Rikishi[] = [];
   const juniors: Rikishi[] = [];
   const juniorAssignments: Record<string, string> = {};
   const assignments: TsukebitoAssignmentDTO[] = [];
 
-  // Single pass loop to eliminate intermediate O(N) allocations
-  // replacing multiple .filter() and .map() chains
-  for (let i = 0; i < heyaRikishi.length; i++) {
-    const r = heyaRikishi[i];
+  // Single pass over the map in insertion order — no intermediate
+  // arrayification (iteration order is pinned by the v7 equivalence test).
+  for (const r of world.rikishi.values()) {
+    if (r.heyaId !== heyaId || r.isRetired) continue;
 
     // Seniors: sekitori eligible to have tsukebito
     if (isEligibleForTsukebito(r)) {

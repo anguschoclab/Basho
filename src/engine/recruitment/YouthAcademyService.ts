@@ -18,6 +18,7 @@ import type {
 } from "@/engine/types/academy";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { getHeya } from "@/engine/core/queries";
+import { dedupeIdList, pushUniqueId } from "@/engine/core/idIntegrity";
 import { rngFromSeed } from "@/engine/core/rng";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
@@ -468,9 +469,9 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
   builder.addRikishi(newRikishi);
 
   // Add to heya roster
-  const currentRoster = [...new Set(heya.rikishiIds ?? [])];
+  const currentRoster = dedupeIdList(heya.rikishiIds ?? []) ?? [];
   builder.updateHeya(heyaId, {
-    rikishiIds: [...currentRoster, newRikishiId],
+    rikishiIds: pushUniqueId(currentRoster, newRikishiId),
   } as Partial<Heya>);
 
   builder.logEvent(

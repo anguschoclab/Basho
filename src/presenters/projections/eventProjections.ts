@@ -8,7 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { BashoResult } from "@/engine/types/basho";
 import type { EventLogData, GovernanceSummary } from "@/presenters/uiDigestTypes";
-import { getPlayerHeya } from "@/engine/core/queries";
+import { getPlayerHeya, getHeyaRoster } from "@/engine/core/queries";
 import { projectRikishi } from "@/presenters/rikishi/index";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 
@@ -125,10 +125,10 @@ export function projectPressConferenceData(world: WorldState) {
 
   let totalWins = 0;
   let totalLosses = 0;
-  for (const id of [...new Set(playerHeya.rikishiIds ?? [])]) {
-    const r = world.rikishi.get(id);
-    totalWins += r?.currentBashoWins ?? 0;
-    totalLosses += r?.currentBashoLosses ?? 0;
+  // getHeyaRoster is memoized per world+week and already dedupes/resolves.
+  for (const r of getHeyaRoster(world, playerHeya.id)) {
+    totalWins += r.currentBashoWins ?? 0;
+    totalLosses += r.currentBashoLosses ?? 0;
   }
   const winRate = totalWins + totalLosses > 0 ? totalWins / (totalWins + totalLosses) : 0.5;
 

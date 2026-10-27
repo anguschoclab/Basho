@@ -13,6 +13,7 @@ import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
+import { pushUniqueId } from "@/engine/core/idIntegrity";
 import {
   STAFF_BASE_AGE,
   STAFF_AGE_RANGE,
@@ -252,7 +253,7 @@ export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): State
   const sequence = (heya.staffIds?.length || 0) + 1;
   const staff = generateStaff(world.seed, role, heyaId, sequence);
 
-  const newStaffIds = [...(heya.staffIds || []), staff.id];
+  const newStaffIds = pushUniqueId(heya.staffIds || [], staff.id);
 
   builder.updateHeya(heyaId, { funds: newFunds, staffIds: newStaffIds });
   builder.addStaff(staff);

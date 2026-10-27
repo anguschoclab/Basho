@@ -37,6 +37,7 @@ import { ensureCandidatePoolState } from "@/engine/generation/CandidatePoolServi
 import { generateGyoji, generateShimpan } from "@/engine/officials/GyojiService";
 import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
 import { generateMyosekiMarket } from "@/engine/governance/myosekiMarket";
+import { reportWorldIdIntegrity } from "@/engine/core/idIntegrity";
 import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
 
 // Re-export factory functions for backward compatibility
@@ -172,6 +173,10 @@ export function generateInitialWorld(seed: string): WorldState {
   // Guarantee every person entity carries a v2 avatar identity — the census
   // also catches anything generation sites missed.
   ensureAvatarIdentities(world);
+
+  // ID-integrity audit: report-only — a duplicate or dangling ID produced by
+  // generation is a bug to fix, not a reason to crash world creation.
+  reportWorldIdIntegrity(world, "WorldFactory");
 
   return world;
 }

@@ -193,7 +193,12 @@ describe("SerializationService.deserializeWorld — invalid rank integration", (
     expect(loadedR!.division).toBe("jonokuchi");
     // Should not throw when accessing RANK_HIERARCHY
     expect(RANK_HIERARCHY[loadedR!.rank]).toBeDefined();
-    expect(warnSpy).toHaveBeenCalledTimes(1);
+    // The rank-coercion warning must fire; the ID-integrity audit may also
+    // warn on genuinely dangling refs in this minimal fixture.
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("invalid rank"),
+      "SerializationService"
+    );
   });
 });
 

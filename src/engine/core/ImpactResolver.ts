@@ -4,6 +4,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { logEngineEvent } from "@/engine/events/events";
 import { getNextTimestamp } from "@/engine/core/StateImpact";
 import { error } from "@/engine/utils/Logger";
+import { dedupeIdList } from "@/engine/core/idIntegrity";
 
 /**
  * Registry of entity update configurations for generic application.
@@ -13,12 +14,38 @@ interface EntityUpdateConfig {
   worldField: keyof WorldState;
   nestedField?: string;
   isRecord?: boolean;
+  /** Entity ID-list fields deduplicated after each merge (ID integrity). */
+  idListFields?: string[];
   condition?: (world: WorldState) => boolean;
 }
 
+/**
+ * ID-list fields enforced unique on entities when they are created or
+ * patched. Central list for both the update merge path and collection adds.
+ */
+const HEYA_ID_LIST_FIELDS = ["rikishiIds", "staffIds"];
+const RIKISHI_ID_LIST_FIELDS = ["tsukebitoIds", "menteeIds"];
+
+/**
+ * Return `entity` with the given array fields deduplicated. Returns the same
+ * reference when every field is already unique (dedupeIdList fast path), so
+ * clean merges allocate nothing extra.
+ */
+function sanitizeIdListFields<T>(entity: T, fields: string[]): T {
+  let out = entity;
+  for (const f of fields) {
+    const arr = (entity as Record<string, unknown>)[f];
+    if (Array.isArray(arr)) {
+      const deduped = dedupeIdList(arr as string[]);
+      if (deduped !== arr) out = { ...out, [f]: deduped };
+    }
+  }
+  return out;
+}
+
 const ENTITY_UPDATE_CONFIGS: EntityUpdateConfig[] = [
-  { impactField: "heyaUpdates", worldField: "heyas" },
-  { impactField: "rikishiUpdates", worldField: "rikishi" },
+  { impactField: "heyaUpdates", worldField: "heyas", idListFields: HEYA_ID_LIST_FIELDS },
+  { impactField: "rikishiUpdates", worldField: "rikishi", idListFields: RIKISHI_ID_LIST_FIELDS },
   { impactField: "oyakataUpdates", worldField: "oyakata" },
   { impactField: "trainingStateUpdates", worldField: "trainingState" },
   { impactField: "staffUpdates", worldField: "staff", condition: (w) => !!w.staff },
@@ -80,9 +107,10 @@ function applyEntityUpdates(world: WorldState, entities: StateImpact["entities"]
       const nextMap = new Map((result[config.worldField] as Map<string, unknown>) || new Map());
       for (const [id, update] of updates) {
         const existing = nextMap.get(id);
+        const merged = existing ? { ...existing, ...(update as Record<string, unknown>) } : update;
         nextMap.set(
           id,
-          existing ? { ...existing, ...(update as Record<string, unknown>) } : update
+          config.idListFields ? sanitizeIdListFields(merged, config.idListFields) : merged
         );
       }
       result = { ...result, [config.worldField]: nextMap };
@@ -254,7 +282,7 @@ function applyCollections(
   if (collections.rikishiToAdd) {
     const nextRikishi = new Map(result.rikishi);
     for (const rikishi of collections.rikishiToAdd) {
-      nextRikishi.set(rikishi.id, rikishi);
+      nextRikishi.set(rikishi.id, sanitizeIdListFields(rikishi, RIKISHI_ID_LIST_FIELDS));
 
       // Sync Heya Roster
       const heya = sync.next?.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
@@ -275,7 +303,7 @@ function applyCollections(
   if (collections.heyaToAdd) {
     const nextHeyas = ensureHeyas();
     for (const h of collections.heyaToAdd) {
-      nextHeyas.set(h.id, h);
+      nextHeyas.set(h.id, sanitizeIdListFields(h, HEYA_ID_LIST_FIELDS));
     }
     sync.changed = true;
   }

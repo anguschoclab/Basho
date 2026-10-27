@@ -10,6 +10,7 @@ import type { SerializedWorldState } from "@/engine/types/save";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import { resetImpactTimestampCounter } from "@/engine/core/StateImpact";
+import { reportWorldIdIntegrity } from "@/engine/core/idIntegrity";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { warn } from "@/engine/utils/Logger";
 import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
@@ -319,6 +320,9 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
   // entity missing one) — deterministic, seeded by each entity's stable id.
   ensureAvatarIdentities(liveWorld);
 
+  // Surface ID violations sanitize could not repair.
+  reportWorldIdIntegrity(liveWorld, "SerializationService");
+
   // Rebuild ephemeral transientContext so the UI has valid activeModifiers
   // immediately after a save is loaded, without requiring an advance.
   try {
@@ -377,12 +381,21 @@ function sanitizeRikishi(r: Rikishi): void {
     r.rank = "jonokuchi";
     r.division = RANK_HIERARCHY.jonokuchi.division;
   }
+  if (Array.isArray(r.tsukebitoIds)) {
+    r.tsukebitoIds = [...new Set(r.tsukebitoIds)];
+  }
+  if (Array.isArray(r.menteeIds)) {
+    r.menteeIds = [...new Set(r.menteeIds)];
+  }
 }
 
 function sanitizeHeya(h: Heya): void {
   if (typeof h.funds !== "number") h.funds = 0;
   if (Array.isArray(h.rikishiIds)) {
     h.rikishiIds = [...new Set(h.rikishiIds)];
+  }
+  if (Array.isArray(h.staffIds)) {
+    h.staffIds = [...new Set(h.staffIds)];
   }
 }
 
