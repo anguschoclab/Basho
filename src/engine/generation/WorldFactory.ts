@@ -211,13 +211,14 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
   };
 }
 
-function createInitialFactions(rng: SeededRNG): Record<string, Faction> {
+function createInitialFactions(_rng: SeededRNG): Record<string, Faction> {
   const names: IchimonName[] = ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"];
   const factions: Record<string, Faction> = {};
 
   names.forEach((name) => {
-    const id = rng.uuid("FN");
-    factions[id] = {
+    // Record<IchimonName, Faction> is keyed by the ichimon name — consumers
+    // look up world.factions[heya.ichimon] (e.g. TrainingMath degeiko bonus).
+    factions[name] = {
       id: name, // The type Faction uses IchimonName as ID internally (A6.2 compliance)
       name: `${name} Ichimon`,
       influence: 50,

@@ -42,8 +42,14 @@ export function reportScandal(
     bumpTenure(world, builder, heyaId, { majorScandals: 1 });
   }
 
-  // Record deterministic ruling
-  const rng = rngForWorld(world, "governance", `ruling_${world.dayIndexGlobal}_${heyaId}`);
+  // Record deterministic ruling — SeededRNG.uuid counters are per-instance, so
+  // the label needs the reason (which embeds the subject) to stay unique when a
+  // heya logs several scandals on the same day.
+  const rng = rngForWorld(
+    world,
+    "governance",
+    `ruling_${world.dayIndexGlobal}_${heyaId}_${reason}_${world.governanceLog?.length ?? 0}`
+  );
   const ruling: GovernanceRuling = {
     id: rng.uuid("GR"),
     date: `Year ${world.year}, Day ${world.dayIndexGlobal}`,

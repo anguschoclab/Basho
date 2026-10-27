@@ -279,11 +279,16 @@ function advanceOffSeason(currentWorld: WorldState, bashoName: string): WorldSta
   }).world;
 
   // After kyushu (last basho of the year), ensure the year boundary fires.
+  // Gate on world.year actually rolling — calendar.month hits 1 mid-week,
+  // but the yearly-boundary phase only runs on the weekly tick, so stopping
+  // at month===1 can leave world.year stale and stamp the next hatsu basho's
+  // history record with last year's id (`hatsu-2026` twice).
   if (bashoName === "kyushu") {
+    const startYear = currentWorld.year;
     const yearResult = advanceWithGates(currentWorld, {
-      maxDays: 31,
+      maxDays: 45,
       autonomous: true,
-      isTargetReached: (w) => w.calendar?.month === 1,
+      isTargetReached: (w) => w.year > startYear,
     });
     currentWorld = yearResult.world;
   }

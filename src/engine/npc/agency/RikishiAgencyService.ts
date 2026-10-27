@@ -152,6 +152,10 @@ export function generateRequests(
   const out: RikishiRequest[] = [];
   for (const rule of REQUEST_RULES) {
     if (pending.some((q) => q.rikishiId === r.id && q.type === rule.type)) continue;
+    // Two rules can share a type (e.g. seek_transfer: discontent +
+    // low_satisfaction) — `out` must be consulted too or both fire in one
+    // call and mint the same deterministic id `${r.id}-${type}-w${week}`.
+    if (out.some((q) => q.type === rule.type)) continue;
     if (!rule.when(r, disposition)) continue;
     out.push({
       id: `${r.id}-${rule.type}-w${week}`,

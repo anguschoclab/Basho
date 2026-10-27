@@ -198,7 +198,14 @@ export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): S
 export function refreshAllPools(world: WorldState): StateImpact {
   const builder = createImpactBuilder("refreshAllPools");
   const tp = ensureTalentPoolState(world);
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `refresh_${world.year}`);
+  // dayIndexGlobal must be in the cadence: SeededRNG.uuid counters are
+  // per-instance, so a year-scoped label regenerates identical candidate ids
+  // on every fortnightly refresh — colliding with live candidates.
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "scouting",
+    `refresh_${world.year}_d${world.dayIndexGlobal ?? 0}`
+  );
 
   const nextCandidates = { ...tp.candidates };
   const nextPools = { ...tp.pools };
@@ -267,7 +274,11 @@ export function tickTalentPoolYear(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickYear");
   const tp = ensureTalentPoolState(world);
   const currentYear = world.year ?? DEFAULT_START_YEAR;
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `yearly_refresh_${currentYear}`);
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "scouting",
+    `yearly_refresh_${currentYear}_d${world.dayIndexGlobal ?? 0}`
+  );
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
 

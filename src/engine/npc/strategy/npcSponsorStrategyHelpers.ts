@@ -75,7 +75,13 @@ export function createSponsorRelationship(
   strength: 1 | 2 | 3 | 4 | 5,
   role: SponsorRole = "benefactor"
 ): SponsorRelationship {
-  const rng = rngForWorld(world, "sponsorStrategy", heyaId);
+  // SeededRNG.uuid counters are per-instance — a heya-scoped-only label would
+  // mint the same relId for every relationship this heya ever forms.
+  const rng = rngForWorld(
+    world,
+    "sponsorStrategy",
+    `${heyaId}_${sponsorId}_${world.week ?? 0}`
+  );
   const relId = rng.uuid("SR");
   return {
     relId,

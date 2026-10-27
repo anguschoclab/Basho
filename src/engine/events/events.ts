@@ -127,7 +127,10 @@ export function logEngineEvent(
     return undefined;
   }
 
-  const idRngLabel = `${baseDedupeKey}::${events.log.length}`;
+  // dayIndex belongs in the label: baseDedupeKey is day-blind and
+  // events.log.length saturates at the rolling cap, so a repeat event on a
+  // later day would remint the identical EV id (per-instance uuid counters).
+  const idRngLabel = `${versionedDedupeKey}::${events.log.length}`;
   const rng = rngForWorld(world, "events", idRngLabel);
   const id = rng.uuid("EV");
 

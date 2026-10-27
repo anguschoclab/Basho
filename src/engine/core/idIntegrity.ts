@@ -96,6 +96,7 @@ interface IdSets {
   koenkaiIds: Set<string>;
   myosekiIds: Set<string>;
   personIds: Set<string>;
+  cupIds: Set<string>;
 }
 
 interface AuditCtx {
@@ -133,16 +134,25 @@ function makeAuditCtx(world: WorldState, violations: IdIntegrityViolation[]): Au
     violations.push({ kind, collection, id, detail });
   };
   const rikishiIds = new Set<string>([...world.rikishi.keys(), ...world.historicalRikishi.keys()]);
+  const heyaIds = new Set<string>([...world.heyas.keys(), ...(world.closedHeyas?.keys() ?? [])]);
   const sets: IdSets = {
     rikishiIds,
-    heyaIds: new Set<string>([...world.heyas.keys(), ...(world.closedHeyas?.keys() ?? [])]),
+    heyaIds,
     oyakataIds: new Set<string>(world.oyakata.keys()),
     staffIds: new Set<string>((world.staff ?? new Map()).keys()),
     brandIds: new Set<string>((world.heyaBrandIdentities ?? new Map()).keys()),
     koenkaiIds: new Set<string>((world.sponsorPool?.koenkais ?? new Map()).keys()),
     myosekiIds: new Set<string>(Object.keys(world.myosekiMarket?.stocks ?? {})),
-    // Myoseki owners/holders may be oyakata, (possibly retired) rikishi, or "JSA".
-    personIds: new Set<string>([...rikishiIds, ...world.oyakata.keys(), "JSA"]),
+    // Myoseki owners/holders may be oyakata, (possibly retired) rikishi,
+    // heyas (stable-held elder stock), or "JSA".
+    personIds: new Set<string>([...rikishiIds, ...world.oyakata.keys(), ...heyaIds, "JSA"]),
+    // Global Cup "boss" challengers live as talent-pool candidates
+    // (injectRikishiAsCandidate) rather than world.rikishi entries.
+    cupIds: new Set<string>([
+      ...rikishiIds,
+      ...Object.keys(world.talentPool?.candidates ?? {}),
+      ...Object.keys(world.candidatePool?.candidates ?? {}),
+    ]),
   };
 
   const checkRef: AuditCtx["checkRef"] = (collection, id, into, detail) => {
@@ -431,15 +441,15 @@ function auditTournaments(ctx: AuditCtx): void {
     for (const p of world.globalCup.participants ?? []) {
       if (seen.has(p.rikishiId)) add("duplicate_id", "globalCup.participants", p.rikishiId, "duplicate participant");
       seen.add(p.rikishiId);
-      checkRef("globalCup.participants", p.rikishiId, sets.rikishiIds, "participant rikishiId");
+      checkRef("globalCup.participants", p.rikishiId, sets.cupIds, "participant rikishiId");
       checkRef("globalCup.participants", p.heyaId, sets.heyaIds, "participant heyaId");
     }
     for (const m of world.globalCup.bracket ?? []) {
-      checkRef("globalCup.bracket", m.eastRikishiId, sets.rikishiIds, `match '${m.id}' east`);
-      checkRef("globalCup.bracket", m.westRikishiId, sets.rikishiIds, `match '${m.id}' west`);
-      checkRef("globalCup.bracket", m.winnerRikishiId, sets.rikishiIds, `match '${m.id}' winner`);
+      checkRef("globalCup.bracket", m.eastRikishiId, sets.cupIds, `match '${m.id}' east`);
+      checkRef("globalCup.bracket", m.westRikishiId, sets.cupIds, `match '${m.id}' west`);
+      checkRef("globalCup.bracket", m.winnerRikishiId, sets.cupIds, `match '${m.id}' winner`);
     }
-    checkRef("globalCup", world.globalCup.championId, sets.rikishiIds, "championId");
+    checkRef("globalCup", world.globalCup.championId, sets.cupIds, "championId");
   }
 }
 
@@ -520,28 +530,36 @@ function auditTalentPools(ctx: AuditCtx): void {
 function auditSponsorPool(ctx: AuditCtx): void {
   const { world, sets, add, checkRef } = ctx;
   if (!world.sponsorPool) return;
-  const checkRel = (rel: { relId?: string; targetType?: string; targetId?: string }, seen: Set<string>): void => {
+  const checkRel = (
+    rel: { relId?: string; targetType?: string; targetId?: string },
+    seen: Set<string>,
+    collection: string
+  ): void => {
     if (typeof rel.relId === "string") {
-      if (seen.has(rel.relId)) add("duplicate_id", "sponsorPool.relationships", rel.relId, "duplicate relationship id");
+      if (seen.has(rel.relId)) add("duplicate_id", collection, rel.relId, "duplicate relationship id");
       seen.add(rel.relId);
     }
-    if (rel.targetType === "heya") checkRef("sponsorPool.relationships", rel.targetId, sets.heyaIds, "relationship target");
-    else if (rel.targetType === "rikishi") checkRef("sponsorPool.relationships", rel.targetId, sets.rikishiIds, "relationship target");
+    if (rel.targetType === "heya") checkRef(collection, rel.targetId, sets.heyaIds, "relationship target");
+    else if (rel.targetType === "rikishi") checkRef(collection, rel.targetId, sets.rikishiIds, "relationship target");
     // "league" / "basho" targets have no entity map to resolve against.
   };
+  // relationships and koenkai.members are distinct namespaces: heya-targeted
+  // relationships are deliberately mirrored into koenkai.members, so the same
+  // relId appearing once in each is the intended shape, not a duplicate.
   const relIds = new Set<string>();
   for (const [key, sp] of world.sponsorPool.sponsors ?? new Map()) {
     if (typeof sp.sponsorId === "string" && sp.sponsorId !== key) {
       add("key_mismatch", "sponsorPool.sponsors", key, `sponsorId='${sp.sponsorId}' does not match map key`);
     }
-    for (const rel of sp.relationships ?? []) checkRel(rel, relIds);
+    for (const rel of sp.relationships ?? []) checkRel(rel, relIds, "sponsorPool.relationships");
   }
+  const memberIds = new Set<string>();
   for (const [key, k] of world.sponsorPool.koenkais ?? new Map()) {
     if (typeof k.koenkaiId === "string" && k.koenkaiId !== key) {
       add("key_mismatch", "sponsorPool.koenkais", key, `koenkaiId='${k.koenkaiId}' does not match map key`);
     }
     checkRef("sponsorPool.koenkais", k.heyaId, sets.heyaIds, `koenkai '${key}' heyaId`);
-    for (const rel of k.members ?? []) checkRel(rel, relIds);
+    for (const rel of k.members ?? []) checkRel(rel, memberIds, "sponsorPool.koenkaiMembers");
   }
 }
 
