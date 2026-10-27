@@ -12,13 +12,13 @@
  * governance system (reportScandal).
  */
 
-import type { WorldState } from "../types/world";
-import type { BoutResult, BashoState } from "../types/basho";
-import { getRikishi } from "../queries";
-import { reportScandal } from "../systems/governance/ScandalService";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { rngFromSeed } from "../rng";
+import type { WorldState } from "@/engine/types/world";
+import type { BoutResult, BashoState } from "@/engine/types/basho";
+import { getRikishi } from "@/engine/core/queries";
+import { reportScandal } from "@/engine/governance/services/ScandalService";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { rngFromSeed } from "@/engine/core/rng";
 import {
   YAOCHO_BASE_DETECTION_CHANCE,
   YAOCHO_PER_INDICATOR_CHANCE,
@@ -32,7 +32,7 @@ import {
   YAOCHO_DEFAULT_DURATION,
   YAOCHO_SEVERITY_CRITICAL_INDICATORS,
   YAOCHO_SEVERITY_MAJOR_INDICATORS,
-} from "../../constants/engine/bout";
+} from "@/constants/engine/bout";
 
 export interface YaochoIndicators {
   /** Both rikishi are from the same heya (cross-stable fixing is rare). */

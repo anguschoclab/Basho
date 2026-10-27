@@ -7,9 +7,9 @@
  *          scorePairing, buildCandidatePairs, buildPlayoffPairs, buildExhibitionPairs
  */
 
-import { clamp } from "../utils";
-import { stableTieBreak } from "../utils/sort";
-import { rngFromSeed } from "../rng";
+import { clamp } from "@/engine/utils/index";
+import { stableTieBreak } from "@/engine/utils/sort";
+import { rngFromSeed } from "@/engine/core/rng";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
   RECORD_SIMILARITY_DIFF_MULT,
@@ -41,10 +41,10 @@ import {
   DRAMA_KADOBAN_WIN_THRESHOLD,
   SCORE_CLAMP_MIN,
   SCORE_CLAMP_MAX,
-} from "../../constants/engine/matchmaking";
-import type { BashoState } from "../types/basho";
-import type { Division, Side } from "../types/banzuke";
-import type { Rikishi } from "../types/rikishi";
+} from "@/constants/engine/matchmaking";
+import type { BashoState } from "@/engine/types/basho";
+import type { Division, Side } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

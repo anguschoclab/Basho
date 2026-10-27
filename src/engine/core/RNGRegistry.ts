@@ -9,8 +9,8 @@
  * 3. Eliminates redundant seeding boilerplate in subsystems.
  */
 
-import { rngFromSeed, type SeededRNG } from "../rng";
-import type { WorldState } from "../types/world";
+import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
+import type { WorldState } from "@/engine/types/world";
 
 /**
  * Common system keys for RNG seeding.

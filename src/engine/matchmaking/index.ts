@@ -6,6 +6,6 @@
  * `import { ... } from '@/engine/matchmaking'` continues to work.
  */
 
-export * from "./MatchmakingPhases";
-export * from "./SwissAlgorithm";
-export * from "./LowerDivisionSwiss";
+export * from "@/engine/matchmaking/MatchmakingPhases";
+export * from "@/engine/matchmaking/SwissAlgorithm";
+export * from "@/engine/matchmaking/LowerDivisionSwiss";

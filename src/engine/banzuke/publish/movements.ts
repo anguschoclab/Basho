@@ -1,13 +1,14 @@
-import type { WorldState } from "../../types/world";
-import type { BashoState } from "../../types/basho";
-import type { BashoPerformance, BanzukeEntry } from "../../banzuke";
-import type { MovementEvent } from "../../types/banzuke";
-import { updateBanzuke, generateKeshoForPromotions } from "../../banzuke";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { getRikishi } from "../../queries";
-import { generateBanzukeMovementNarrative } from "../banzukeMovementNarrative";
-import { assignDohyoIriStyle } from "../../governance/dohyoIri";
-import { assignYokozunaAttendants } from "../../governance/yokozunaAttendants";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { BashoPerformance, BanzukeEntry } from "@/engine/types/banzuke";
+import type { MovementEvent } from "@/engine/types/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
+import { generateKeshoForPromotions } from "@/engine/keshoMawashi/KeshoMawashiPipeline";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getRikishi } from "@/engine/core/queries";
+import { generateBanzukeMovementNarrative } from "@/engine/banzuke/banzukeMovementNarrative";
+import { assignDohyoIriStyle } from "@/engine/governance/ceremonies/dohyoIri";
+import { assignYokozunaAttendants } from "@/engine/governance/ceremonies/yokozunaAttendants";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;

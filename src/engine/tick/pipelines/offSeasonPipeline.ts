@@ -17,8 +17,8 @@
  *  11. Narrative   — delta-driven Inbox / news events
  */
 
-import type { PipelinePhase } from "../pipelineRunner";
-import * as phases from "../phases";
+import type { PipelinePhase } from "@/engine/tick/pipelineRunner";
+import * as phases from "@/engine/tick/phases/index";
 
 export const offSeasonPipeline: PipelinePhase[] = [
   phases.phase01_week_economy, // Weekly finances: income, salaries, facility upkeep

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import type {
   TrainingIntensity,
   TrainingFocus,
@@ -9,7 +9,7 @@ import type {
   TrainingProfile,
 } from "@/engine/types/training";
 import { ensureHeyaTrainingState } from "@/presenters/uiDigest";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/engine/core/queries";
 import {
   INTENSITY_OPTIONS,
   FOCUS_OPTIONS,

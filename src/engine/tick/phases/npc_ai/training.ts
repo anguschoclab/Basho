@@ -5,10 +5,10 @@
  * Extracted from phase01_week_npc_ai.ts for modularity.
  */
 
-import type { WorldState } from "../../../types/world";
-import type { NPCWeeklyDecision } from "../../../npcAI";
-import { TrainingService } from "../../../systems/training/TrainingService";
-import type { ImpactBuilder } from "../../../core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
+import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
+import { TrainingService } from "@/engine/training/TrainingService";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function applyNPCDecisionPure(
   world: WorldState,

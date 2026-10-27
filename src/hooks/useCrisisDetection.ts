@@ -8,8 +8,8 @@
  */
 
 import { useState, useMemo, useEffect } from "react";
-import { useGameStore } from "@/store/gameStore";
-import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
+import { useGame } from "@/state/game/useGame";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import type { CrisisOption } from "@/engine/types/crises";
 

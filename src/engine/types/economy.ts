@@ -2,7 +2,7 @@
  * Economics & Governance Types
  */
 
-import type { Id } from "./common";
+import type { Id } from "@/engine/types/common";
 
 /** Defines the structure for rikishi economics. */
 export interface RikishiEconomics {

@@ -6,8 +6,8 @@
  * EraDriftService and updated at each yearly boundary.
  */
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import type { EraTone } from "@/presenters/eraTone";
-import { ERA_TONE_LABELS, ERA_TONE_COLORS } from "@/presenters/eraTone";
+import type { EraTone } from "@/presenters/projections/eraTone";
+import { ERA_TONE_LABELS, ERA_TONE_COLORS } from "@/presenters/projections/eraTone";
 
 export function EraToneBadge({ tone }: { tone: EraTone }) {
   const label = ERA_TONE_LABELS[tone] ?? tone;

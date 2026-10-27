@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Plane, ShieldCheck } from "lucide-react";
-import type { HolidayTarget, SafetyGate, DelegationPolicy } from "@/engine/holiday";
+import type { HolidayTarget, SafetyGate, DelegationPolicy } from "@/presenters/engineAccess";
 import { activationKeyHandler } from "@/lib/a11y";
 
 const TARGETS: { value: HolidayTarget; label: string }[] = [

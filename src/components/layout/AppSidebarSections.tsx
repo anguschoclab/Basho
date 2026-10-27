@@ -18,7 +18,7 @@ import { Building2, AlertTriangle, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import type { getMenuGroups } from "./sidebarConfig";
+import type { getMenuGroups } from "@/components/layout/sidebarConfig";
 import type { getPlayerHeya } from "@/presenters/engineAccess";
 
 type MenuGroups = ReturnType<typeof getMenuGroups>;

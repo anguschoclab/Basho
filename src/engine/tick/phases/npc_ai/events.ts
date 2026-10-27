@@ -5,9 +5,9 @@
  * Extracted from phase01_week_npc_ai.ts for modularity.
  */
 
-import type { Id } from "../../../types/common";
-import type { NPCWeeklyDecision } from "../../../npcAI";
-import type { ImpactBuilder } from "../../../core/ImpactBuilder";
+import type { Id } from "@/engine/types/common";
+import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function collectManagementDecisionEvents(
   heyaId: Id,

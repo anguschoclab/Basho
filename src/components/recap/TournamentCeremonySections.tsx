@@ -11,8 +11,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Star, Medal, Crown, Award, Zap, Building } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { RikishiName } from "@/components/ClickableName";
-import { StableName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
+import { StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 /** Yūshō champion heraldry block. */

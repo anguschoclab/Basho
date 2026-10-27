@@ -1,9 +1,9 @@
-import { BardEngine } from "../bard/BardEngine";
-import { rngFromSeed } from "../rng";
-import type { Rikishi } from "../types/rikishi";
-import type { WorldState } from "../types/world";
-import type { PressPersona } from "../types/media";
-import { determinePostRetirementPath, getRetirementNarrative } from "./PostRetirementPath";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/core/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { PressPersona } from "@/engine/types/media";
+import { determinePostRetirementPath, getRetirementNarrative } from "@/engine/lifecycle/PostRetirementPath";
 
 interface RetirementNarrativeLine {
   text: string;

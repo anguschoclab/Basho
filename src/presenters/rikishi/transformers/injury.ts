@@ -4,9 +4,9 @@
  * Transforms injury data and generates injury summary text.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import { SeededRNG } from "../../../engine/rng";
-import { BardEngine } from "../../../engine/bard/BardEngine";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { SeededRNG } from "@/engine/core/rng";
+import { BardEngine } from "@/engine/bard/BardEngine";
 
 /**
  * Calculate injury summary text for UI display.

@@ -1,0 +1,299 @@
+// scoutingStore.ts
+// Player Knowledge Store — persistent scouting memory across screens/bouts.
+// Keeps fog-of-war meaningful by persisting observations, investment, and decay.
+// Designed to be engine-only (UI reads via accessors).
+
+import type { WorldState } from "@/engine/types/world";
+import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
+import { type ScoutedRikishi, ScoutingService } from "@/engine/recruitment/ScoutingService";
+import { type ScoutingInvestment } from "@/constants/engine/recruitment";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { getRikishi } from "@/engine/core/queries";
+import { warn } from "@/engine/utils/Logger";
+
+// Local implementations for missing scouting functions
+/**
+ * Apply scouting decay.
+ *  * @param entry - The Entry.
+ *  * @param currentWeek - The Current week.
+ *  * @returns The result.
+ */
+function applyScoutingDecay(entry: ScoutedRikishi, currentWeek: number): ScoutedRikishi {
+  const weeksSince = currentWeek - entry.lastObservedWeek;
+  if (weeksSince <= 0 || entry.isOwned) return entry;
+  const decayRate = 0.02;
+  const decay = Math.min(entry.scoutingLevel, weeksSince * decayRate * 100);
+  return { ...entry, scoutingLevel: Math.max(0, entry.scoutingLevel - decay) };
+}
+
+/**
+ * Refresh truth snapshot.
+ *  * @param entry - The Entry.
+ *  * @param truth - The Truth.
+ *  * @returns The result.
+ */
+function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRikishi {
+  return {
+    ...entry,
+    publicInfo: {
+      ...entry.publicInfo,
+      shikona: truth.shikona,
+      rank: truth.rank,
+      height: truth.height,
+      weight: truth.weight,
+    },
+  };
+}
+
+/**
+ * Where scouting data lives in the WorldState.
+ * This is intentionally defensive because your WorldState shape may vary.
+ *
+ * Expected shape (recommended):
+ * world.playerKnowledge = {
+ *   scouting: Record<string, ScoutedRikishi>
+ * }
+ */
+function ensureScoutingTable(world: WorldState): Record<string, ScoutedRikishi> {
+  const w = world;
+  if (!w.playerKnowledge) w.playerKnowledge = {};
+  if (!w.playerKnowledge.scouting) w.playerKnowledge.scouting = {};
+  return w.playerKnowledge.scouting as Record<string, ScoutedRikishi>;
+}
+
+/**
+ * Read-only access to the scouting table. Returns null when the player has
+ * no scouting state — read paths (presenters, projections) must never
+ * materialize world.playerKnowledge as a side effect (WS4-04).
+ */
+function readScoutingTable(world: WorldState): Record<string, ScoutedRikishi> | null {
+  return (world.playerKnowledge?.scouting as Record<string, ScoutedRikishi>) ?? null;
+}
+
+/**
+ * Get world week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
+/**
+ * Get world week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
+function getWorldWeek(world: WorldState): number {
+  return world.week ?? 0;
+}
+
+/**
+ * Get player heya id.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
+function getPlayerHeyaId(world: WorldState): string | null {
+  return world.playerHeyaId ?? null;
+}
+
+/**
+ * Get or create a ScoutedRikishi entry for a given rikishi.
+ * - Owned rikishi are always 100% intel
+ * - Non-owned start at baseline observation=0 + investment=none (unless set)
+ */
+export function getOrCreateScouted(
+  world: WorldState,
+  rikishiId: Id,
+  baselineObservation: number = 0
+): ScoutedRikishi {
+  // Pure read path: never creates world.playerKnowledge, never writes into
+  // the scouting table. Persistence belongs to the explicit write paths
+  // (setScoutingInvestment / warmScoutingForRikishiList / impact writes).
+  const table = readScoutingTable(world);
+  const existing = table?.[rikishiId];
+  const currentWeek = getWorldWeek(world);
+  const playerHeyaId = getPlayerHeyaId(world);
+
+  const truth = getRikishi(world, rikishiId);
+  if (!truth) {
+    if (existing) return existing;
+    warn(
+      `Scouting requested for non-existent rikishi: ${rikishiId}. Returning safety placeholder.`,
+      "ScoutingStore"
+    );
+
+    return {
+      rikishiId,
+      publicInfo: {
+        id: rikishiId,
+        shikona: "Unknown Wrestler",
+        rank: "unknown",
+        height: 0,
+        weight: 0,
+      },
+      isOwned: false,
+      timesObserved: 0,
+      lastObservedWeek: currentWeek,
+      scoutingInvestment: "none",
+      scoutingLevel: 0,
+      attributes: { power: 0, speed: 0, balance: 0, technique: 0, aggression: 0, experience: 0 },
+    };
+  }
+
+  if (existing) {
+    // Return a refreshed snapshot to the caller but do NOT write it back —
+    // this function is called on render paths, and an in-place write would
+    // diverge the main-thread world from the worker-authoritative copy.
+    return refreshTruthSnapshot(existing, truth);
+  }
+
+  const isOwned = truth.heyaId === playerHeyaId;
+  const obs = isOwned ? 100 : Math.max(0, baselineObservation);
+
+  return ScoutingService.createScoutedView(currentWeek, truth, playerHeyaId, obs, "none");
+}
+
+/**
+ * Set scouting investment for a target.
+ * This should typically be driven by UI actions / economy spend.
+ */
+export function setScoutingInvestment(
+  world: WorldState,
+  rikishiId: Id,
+  investment: ScoutingInvestment
+): ScoutedRikishi {
+  const table = ensureScoutingTable(world);
+  const entry = getOrCreateScouted(world, rikishiId);
+
+  // Rebuild with updated investment but preserve observations + timestamps
+  const currentWeek = getWorldWeek(world);
+  const playerHeyaId = getPlayerHeyaId(world);
+
+  const truth = getRikishi(world, rikishiId);
+  if (!truth) return entry;
+
+  const rebuilt = ScoutingService.createScoutedView(
+    currentWeek,
+    truth,
+    playerHeyaId,
+    entry.timesObserved,
+    investment
+  );
+  // Preserve lastObservedWeek if it's newer than currentWeek (shouldn't happen, but safe)
+  rebuilt.lastObservedWeek = Math.max(entry.lastObservedWeek, currentWeek);
+
+  table[rikishiId] = rebuilt;
+  return rebuilt;
+}
+
+/**
+ * Apply scouting decay across all stored entries.
+ * Call once per week tick (between basho weeks, training weeks, etc.).
+ * Returns StateImpact describing scouting decay instead of mutating directly.
+ */
+function applyWeeklyScoutingDecay(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("applyWeeklyScoutingDecay");
+  const table = ensureScoutingTable(world);
+  const currentWeek = getWorldWeek(world);
+
+  const updatedTable: Record<string, ScoutedRikishi> = {};
+  for (const id of Object.keys(table)) {
+    updatedTable[id] = applyScoutingDecay(table[id], currentWeek);
+  }
+
+  const currentKnowledge = world.playerKnowledge || {};
+  builder.updateWorldField("playerKnowledge", {
+    ...currentKnowledge,
+    scouting: updatedTable,
+  });
+
+  return builder.build();
+}
+
+/**
+ * Convenience: get a scouting % level for UI badges.
+ */
+export function getScoutingLevel(
+  world: WorldState,
+  rikishiId: Id,
+  baselineObservation: number = 0
+): number {
+  return getOrCreateScouted(world, rikishiId, baselineObservation).scoutingLevel;
+}
+
+/**
+ * Write path: persist scouting entries for a whole list. Callers that only
+ * want to READ scouting data must use getOrCreateScouted directly — this
+ * function intentionally materializes entries into world.playerKnowledge.
+ */
+export function warmScoutingForRikishiList(
+  world: WorldState,
+  rikishiIds: Id[],
+  baselineObservation: number = 0
+): void {
+  const table = ensureScoutingTable(world);
+  for (const id of rikishiIds) {
+    if (!table[id]) table[id] = getOrCreateScouted(world, id, baselineObservation);
+  }
+}
+
+/** =========================
+ *  World-level hooks (called via safeCall in world.ts / dailyTick.ts)
+ *  ========================= */
+
+/**
+ * Hook called after each bout resolution.
+ * Auto-observes both participants if the player watched (player bouts are always observed).
+ * Returns StateImpact describing scouting updates instead of mutating state directly.
+ */
+export function onBoutResolvedScouting(
+  world: WorldState,
+  context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
+): StateImpact {
+  const builder = createImpactBuilder("onBoutResolvedScouting");
+  const playerHeyaId = getPlayerHeyaId(world);
+  if (!playerHeyaId) return builder.build();
+
+  const eastId = context.east?.id;
+  const westId = context.west?.id;
+  if (!eastId || !westId) return builder.build();
+
+  // Auto-observe if player's rikishi is involved (always watched)
+  const eastRikishi = getRikishi(world, eastId);
+  const westRikishi = getRikishi(world, westId);
+  const isPlayerBout = eastRikishi?.heyaId === playerHeyaId || westRikishi?.heyaId === playerHeyaId;
+
+  if (isPlayerBout) {
+    const table = ensureScoutingTable(world);
+    const currentWeek = getWorldWeek(world);
+
+    const east = getOrCreateScouted(world, eastId);
+    const west = getOrCreateScouted(world, westId);
+
+    const updatedEast = ScoutingService.recordObservation(east, currentWeek);
+    const updatedWest = ScoutingService.recordObservation(west, currentWeek);
+
+    // Update the playerKnowledge.scouting field
+    const updatedTable = {
+      ...table,
+      [eastId]: updatedEast,
+      [westId]: updatedWest,
+    };
+
+    const currentKnowledge = world.playerKnowledge || {};
+    builder.updateWorldField("playerKnowledge", {
+      ...currentKnowledge,
+      scouting: updatedTable,
+    });
+  }
+
+  return builder.build();
+}
+
+/**
+ * Weekly tick: apply scouting decay across all stored entries.
+ * Returns StateImpact describing scouting decay instead of mutating directly.
+ */
+export function tickWeekScouting(world: WorldState): StateImpact {
+  return applyWeeklyScoutingDecay(world);
+}

@@ -8,7 +8,7 @@
 import { useMemo } from "react";
 import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
 import type { Heya } from "@/engine/types/heya";
-import { InfrastructureOverview, FacilityCard } from "./InfrastructureSections";
+import { InfrastructureOverview, FacilityCard } from "@/components/stable/InfrastructureSections";
 import { toKeyedMap } from "@/presenters/engineAccess";
 
 interface InfrastructureDashboardProps {

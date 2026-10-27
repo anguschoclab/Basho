@@ -3,8 +3,8 @@
 
 import { useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
-import { focusGlobalSearch } from "@/components/game/searchFocusSignal";
+import { useGame } from "@/state/game/useGame";
+import { focusGlobalSearch } from "@/components/shared/searchFocusSignal";
 
 /** Defines the structure for shortcut options. */
 interface ShortcutOptions {

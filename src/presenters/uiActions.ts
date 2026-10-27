@@ -5,8 +5,8 @@
  * Extracted from uiDigest.ts to separate concerns.
  */
 
-import type { WorldState } from "../engine/types/world";
-import type { DietRegimen } from "../engine/types/economy";
+import type { WorldState } from "@/engine/types/world";
+import type { DietRegimen } from "@/engine/types/economy";
 
 /**
  * Update heya diet via presenter.

@@ -1,0 +1,37 @@
+import { describe, it, expect, vi } from "vitest";
+import { render } from "@testing-library/react";
+import { GameProvider } from "@/state/game/GameContext";
+import { ThemeProvider } from "@/components/app-shell/ThemeProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import type { ReactNode } from "react";
+
+vi.stubGlobal("Worker", class {
+  onmessage: ((e: MessageEvent) => void) | null = null;
+  postMessage = vi.fn();
+  terminate = vi.fn();
+  addEventListener = vi.fn();
+  removeEventListener = vi.fn();
+});
+
+function AllProviders({ children }: { children: ReactNode }) {
+  return (
+    <ThemeProvider defaultTheme="dark">
+      <TooltipProvider>
+        <GameProvider>{children}</GameProvider>
+      </TooltipProvider>
+    </ThemeProvider>
+  );
+}
+
+describe("App smoke test", () => {
+  it("renders without crashing inside full provider tree", () => {
+    const { container } = render(
+      <AllProviders>
+        <div data-testid="smoke">smoke</div>
+      </AllProviders>
+    );
+    const smokeEl = container.querySelector('[data-testid="smoke"]');
+    expect(smokeEl).not.toBeNull();
+    expect(smokeEl?.textContent).toBe("smoke");
+  });
+});

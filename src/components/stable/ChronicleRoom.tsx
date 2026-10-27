@@ -10,7 +10,7 @@ import {
   ChronicleHeader,
   EraTimeline,
   ChronicleSideColumn,
-} from "./ChronicleRoomSections";
+} from "@/components/stable/ChronicleRoomSections";
 
 interface ChronicleRoomProps {
   world: WorldState;

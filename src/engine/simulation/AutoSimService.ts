@@ -1,20 +1,20 @@
-import type { WorldState } from "../types/world";
-import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
-import type { Rikishi } from "../types/rikishi";
-import type { BashoSimResult, BanzukeUpdateHook, BashoName } from "../types/basho";
-import { getBashoNumber } from "../calendar";
-import { enterPostBasho, enterInterim } from "../tick/tickDaily";
-import { advanceWithGates } from "../tick/advanceWithGates";
-import { resolveImpacts } from "../core/ImpactResolver";
-import { INTERIM_DURATION_DAYS } from "../../constants/engine/recruitmentExtended";
-import { simulateEntireBasho } from "./TournamentSimulator";
-import { ChronicleService } from "./ChronicleService";
-import { SimTuningService, type TuningMetrics } from "./SimTuningService";
-import type { ChronicleReport } from "../types/records";
-import { RANK_HIERARCHY } from "../banzuke";
-import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
-import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "../queries";
-import { SIMULATION_CONFIG } from "../core/SimulationConfig";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoSimResult, BanzukeUpdateHook, BashoName } from "@/engine/types/basho";
+import { getBashoNumber } from "@/engine/calendar/calendar";
+import { enterPostBasho, enterInterim } from "@/engine/tick/tickDaily";
+import { advanceWithGates } from "@/engine/tick/advanceWithGates";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { INTERIM_DURATION_DAYS } from "@/constants/engine/recruitmentExtended";
+import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";
+import { ChronicleService } from "@/engine/simulation/ChronicleService";
+import { SimTuningService, type TuningMetrics } from "@/engine/simulation/SimTuningService";
+import type { ChronicleReport } from "@/engine/types/records";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
+import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
+import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 
 // === AUTO-SIM CONFIGURATION ===
 

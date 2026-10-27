@@ -9,7 +9,7 @@
  * oyakata's former-shikona prefix; fall back to a generic house prefix.
  */
 
-import type { Rank } from "../types/banzuke";
+import type { Rank } from "@/engine/types/banzuke";
 
 /** Canonical heya-name → preferred prefix. Missing entries use fallback logic. */
 export const HEYA_SIGNATURE_PREFIXES: Record<string, string> = {

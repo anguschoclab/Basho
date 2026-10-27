@@ -5,12 +5,12 @@
  * Extracted from uiDigest.ts to separate concerns.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import { SPONSOR_TIER_INCOME } from "../../engine/systems/economy/SponsorshipService";
-import { KOENKAI_MONTHLY_INCOME } from "../../engine/systems/economy/sponsorshipQueries";
-import { SPONSOR_RENEWAL_WINDOW_WEEKS } from "../../constants/engine/time";
-import { KOENKAI_INCOME_SPLIT } from "../../constants/engine/economic";
-import { getPlayerHeya } from "../../engine/queries";
+import type { WorldState } from "@/engine/types/world";
+import { SPONSOR_TIER_INCOME } from "@/engine/economy/SponsorshipService";
+import { KOENKAI_MONTHLY_INCOME } from "@/engine/economy/sponsorshipQueries";
+import { SPONSOR_RENEWAL_WINDOW_WEEKS } from "@/constants/engine/time";
+import { KOENKAI_INCOME_SPLIT } from "@/constants/engine/economic";
+import { getPlayerHeya } from "@/engine/core/queries";
 
 interface SponsorData {
   sponsorId: string;

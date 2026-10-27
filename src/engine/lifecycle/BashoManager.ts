@@ -13,12 +13,12 @@
  * @see ensureDaySchedule for day schedule management
  */
 
-import { initializeBasho } from "../systems/generation/WorldFactory";
-import { ensureDaySchedule } from "../schedule";
-import type { WorldState } from "../types/world";
-import type { BashoName } from "../types/basho";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
+import { initializeBasho } from "@/engine/generation/WorldFactory";
+import { ensureDaySchedule } from "@/engine/calendar/schedule";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoName } from "@/engine/types/basho";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 /**
  * Start basho — handles the transition from pre-basho/interim to active_basho.

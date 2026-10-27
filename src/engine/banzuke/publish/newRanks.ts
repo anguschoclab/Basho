@@ -1,13 +1,13 @@
-import type { WorldState } from "../../types/world";
-import type { BashoState } from "../../types/basho";
-import type { MovementEvent } from "../../types/banzuke";
-import { updateBanzuke } from "../../banzuke";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { checkShikonaChange, recordShikonaChange } from "../../history";
-import { getRikishi, getHeya } from "../../queries";
-import { generateKyujoNarrative } from "../../bout/boutNarrative";
-import { recordSekitoriPromotion } from "../../systems/legacy/tenure";
-import { isSekitoriDivision } from "../../../constants/engine/rankDisplay";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { MovementEvent } from "@/engine/types/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { checkShikonaChange, recordShikonaChange } from "@/engine/history/history";
+import { getRikishi, getHeya } from "@/engine/core/queries";
+import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
+import { recordSekitoriPromotion } from "@/engine/legacy/tenure";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;

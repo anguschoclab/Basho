@@ -2,16 +2,16 @@
  * bout/narrative/context2.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
-import type { PbpTag } from "./pbpTypes";
-import { focusBiasToStyleKey, isSanyakuPromotionByRank, SANYAKU_RANKS } from "./helpers";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
+import { focusBiasToStyleKey, isSanyakuPromotionByRank, SANYAKU_RANKS } from "@/engine/bout/narrative/helpers";
 import {
   AGE_DIFF_THRESHOLD,
   CAREER_BOUT_MILESTONES,
   CAREER_WIN_MILESTONES,
-} from "../../../constants/engine/generation";
-import { BardEngine } from "../../bard/BardEngine";
-import { isYushoContention } from "../boutContention";
+} from "@/constants/engine/generation";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { isYushoContention } from "@/engine/bout/boutContention";
 
 function beatBodyType(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;

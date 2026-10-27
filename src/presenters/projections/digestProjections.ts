@@ -5,17 +5,17 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import type { Id } from "../../engine/types/common";
-import type { WorldState } from "../../engine/types/world";
-import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
-import type { RivalryPairState } from "../../engine/rivalries";
-import { RIVALRY_TONE_LABELS } from "../../constants/engine/rivalry";
-import { queryEvents } from "../../engine/events";
-import { generateH2HCommentary } from "../../engine/h2h";
-import { BardEngine } from "../../engine/bard/BardEngine";
-import { SeededRNG } from "../../engine/rng";
-import { selectInjuredRikishi, selectRecentEvents } from "../selectors";
-import { generateRecommendations } from "../../engine/advisor/AdvisorService";
+import type { Id } from "@/engine/types/common";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { RivalryPairState } from "@/constants/engine/rivalry";
+import { RIVALRY_TONE_LABELS } from "@/constants/engine/rivalry";
+import { queryEvents } from "@/engine/events/events";
+import { generateH2HCommentary } from "@/engine/bout/h2h";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { SeededRNG } from "@/engine/core/rng";
+import { selectInjuredRikishi, selectRecentEvents } from "@/presenters/selectors";
+import { generateRecommendations } from "@/engine/npc/advisor/AdvisorService";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -109,7 +109,7 @@ export function buildInjurySection(world: WorldState): DigestSection | null {
 export function buildEventSections(world: WorldState): DigestSection[] {
   const sections: DigestSection[] = [];
   const eventBuckets = selectRecentEvents(world);
-  const mapEventToItem = (e: import("../../engine/events").EngineEvent): DigestItem => ({
+  const mapEventToItem = (e: import("@/engine/events/events").EngineEvent): DigestItem => ({
     id: e.id,
     kind:
       e.category === "scouting"

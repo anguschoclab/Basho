@@ -1,0 +1,507 @@
+/**
+ */
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { RikishiProfileHeader } from "@/components/rikishi/RikishiProfileHeader";
+import type { UIRikishi } from "@/presenters/uiModels";
+
+function makeUIRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {
+  const base = {
+    id: "r1",
+    shikona: "Test Rikishi",
+    realName: "Test Real",
+    heyaId: "heya1",
+    heyaName: "Test Heya",
+    isPlayerOwned: false,
+    age: 25,
+    nationality: "Japan",
+    origin: "Tokyo",
+    height: 180,
+    weight: 140,
+    rank: "maegashira_1" as any,
+    rankLabel: "M1",
+    rankNumber: 1,
+    division: "makuuchi" as any,
+    side: "east" as any,
+    style: "oshi" as any,
+    styleName: "Oshi",
+    archetypeName: "Pusher",
+    isRetired: false,
+    isInjured: false,
+    injurySummary: "",
+    condition: 80,
+    motivation: 70,
+    fatigue: 20,
+    powerBand: "strong",
+    techniqueBand: "solid",
+    speedBand: "fast",
+    balanceBand: "stable",
+    momentum: 5,
+    careerPhase: "prime" as any,
+    currentBashoWins: 8,
+    currentBashoLosses: 7,
+    currentBashoRecord: "8-7",
+    careerWins: 100,
+    careerLosses: 80,
+    careerAbsences: 0,
+    careerYusho: 2,
+    perceivedStats: {
+      strength: "strong",
+      technique: "solid",
+      speed: "fast",
+      stamina: "good",
+      mental: "sharp",
+      adaptability: "flexible",
+      balance: "stable",
+    },
+    streak: 3,
+    streakLabel: "W3",
+    winPercentage: 55,
+    avgRankLabel: "M1",
+    descriptor: {} as any,
+    potentialBand: "high" as any,
+    conditionDescriptor: "Good",
+    moraleDescriptor: "High",
+    potentialDescriptor: "High",
+    ageBand: "prime" as any,
+    weightBand: "heavy" as any,
+    heightBand: "tall" as any,
+    ageDescriptor: "Prime",
+    weightDescriptor: "Heavy",
+    heightDescriptor: "Tall",
+    topRivals: [],
+    personalityTraits: [],
+    favoredKimarite: [],
+    favoredKimariteDetailed: [],
+    favoredKimariteDisplay: "",
+    preferredGrip: "",
+    preferredGripDepth: "",
+    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+    achievements: {
+      kinboshiEarned: 0,
+      ginboshiEarned: 0,
+      kinboshiConceded: 0,
+      ginboshiConceded: 0,
+      mochikyukinPoints: 0,
+    },
+    combatArchetype: "hybrid" as any,
+    salaryBreakdown: {} as any,
+    careerHistory: [],
+    milestones: [],
+    hasKeshoMawashi: false,
+    consecutiveStrongOzeki: 0,
+    consecutiveStrongSekiwake: 0,
+    ...overrides,
+  } as UIRikishi;
+  base.careerRecord =
+    (base.careerAbsences ?? 0) > 0
+      ? `${base.careerWins}-${base.careerLosses}-${base.careerAbsences}`
+      : `${base.careerWins}-${base.careerLosses}`;
+  return base;
+}
+
+vi.mock("@/components/ui/tooltip-wrap", () => ({
+  TooltipWrap: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+}));
+
+vi.mock("@/components/avatar/SumoAvatar", () => ({
+  SumoAvatar: () => <div data-testid="avatar" />,
+}));
+
+vi.mock("@/engine/bout/archetype", () => ({
+  getCombatArchetypeDescription: () => "Test archetype",
+}));
+
+describe("RikishiProfileHeader", () => {
+  it("renders Kinboshi stat when kinboshiEarned > 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 3,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("3")).toBeTruthy();
+    expect(screen.getByText(/Gold Stars/i)).toBeTruthy();
+  });
+
+  it("hides Kinboshi stat when kinboshiEarned === 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Gold Stars/i)).toBeNull();
+  });
+
+  it("renders Ginboshi stat when ginboshiEarned > 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 4, // use a unique number to avoid multiple match errors with Elite Titles
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("4")).toBeTruthy();
+    expect(screen.getByText(/Silver Stars/i)).toBeTruthy();
+  });
+
+  it("hides Ginboshi stat when ginboshiEarned === 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Silver Stars/i)).toBeNull();
+  });
+
+  it("hides Elite Titles when careerYusho === 0", () => {
+    const rikishi = makeUIRikishi({
+      careerYusho: 0,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Elite Titles/i)).toBeNull();
+  });
+
+  it("renders Mochikyukin stat when mochikyukinPoints > 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 15,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText(/Mochikyukin/i)).toBeTruthy();
+    expect(screen.getByText("15")).toBeTruthy();
+  });
+
+  it("shows the per-basho mochikyukin annuity value next to the points total", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 1,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 15,
+      },
+      salaryBreakdown: { base: 1_400_000, kinboshiBonus: 60_000, total: 1_460_000 } as any,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    // The gold star's real value — ¥60,000 per basho — must be visible, not
+    // hidden behind an unexplained "points" number.
+    expect(screen.getByText(/60,000/)).toBeTruthy();
+    expect(screen.getByText(/per basho/i)).toBeTruthy();
+  });
+
+  it("hides Mochikyukin stat when mochikyukinPoints === 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Mochikyukin/i)).toBeNull();
+  });
+
+  it("displays correct count from rikishi.achievements.kinboshiEarned", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 7,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    const statValues = screen.getAllByText("7");
+    expect(statValues.length).toBeGreaterThan(0);
+  });
+
+  it("existing stats (Career Yusho, Career History) still render", () => {
+    const rikishi = makeUIRikishi({
+      careerYusho: 5,
+      careerWins: 200,
+      careerLosses: 100,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("Elite Titles")).toBeTruthy();
+    expect(screen.getByText("Career History")).toBeTruthy();
+    expect(screen.getByText("200-100")).toBeTruthy();
+  });
+
+  it("renders without crashing for a basic rikishi", () => {
+    const rikishi = makeUIRikishi();
+    const { container } = render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(container).toBeTruthy();
+    expect(screen.getByText("Test Rikishi")).toBeTruthy();
+  });
+
+  it("shows Yokozuna Retirement Pressure section when conditions are met", () => {
+    const rikishi = makeUIRikishi({
+      rank: "yokozuna",
+      consecutiveMakeKoshi: 2,
+      consecutiveKyujo: 1,
+      councilWarnings: 1,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={true}
+        healthBadge="Healthy"
+        onBack={vi.fn()}
+      />
+    );
+    expect(screen.getByText("Retirement Pressure")).toBeTruthy();
+    expect(screen.getByText("Council Warnings")).toBeTruthy();
+    expect(screen.getByText("Consecutive Make-Koshi")).toBeTruthy();
+    expect(screen.getByText("Consecutive Kyujo")).toBeTruthy();
+    expect(screen.queryAllByText("1 / 3").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("2").length).toBeGreaterThan(0);
+  });
+
+  it("shows Ozeki Promotion Watch with / 33 denominator for sekiwake with sekiwakeThreeBashoWins > 0", () => {
+    const rikishi = makeUIRikishi({
+      rank: "sekiwake",
+      sekiwakeThreeBashoWins: 10,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("Ozeki Promotion Watch")).toBeTruthy();
+    expect(screen.getByText("10 / 33 Wins (Last 3 Basho)")).toBeTruthy();
+  });
+
+  it("does not render Ozeki Promotion Watch for maegashira rank", () => {
+    const rikishi = makeUIRikishi({
+      rank: "maegashira",
+      sekiwakeThreeBashoWins: 20,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Ozeki Promotion Watch")).toBeNull();
+  });
+
+  it("shows Kachi-Koshi Streak when consecutiveKachiKoshi >= 2", () => {
+    const rikishi = makeUIRikishi({
+      consecutiveKachiKoshi: 3,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("Kachi-Koshi Streak")).toBeTruthy();
+    expect(screen.getByText("3")).toBeTruthy();
+  });
+
+  it("hides Kachi-Koshi Streak when consecutiveKachiKoshi < 2", () => {
+    const rikishi = makeUIRikishi({
+      consecutiveKachiKoshi: 1,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Kachi-Koshi Streak")).toBeNull();
+  });
+
+  it("hides Retirement Pressure when yokozuna has all zero pressure indicators", () => {
+    const rikishi = makeUIRikishi({
+      rank: "yokozuna",
+      consecutiveMakeKoshi: 0,
+      consecutiveKyujo: 0,
+      councilWarnings: 0,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Retirement Pressure")).toBeNull();
+  });
+
+  it("renders Special Prizes stat when total sansho > 0", () => {
+    const rikishi = makeUIRikishi({
+      specialPrizes: { shukunSho: 2, kantoSho: 1, ginoSho: 0 },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("Special Prizes")).toBeTruthy();
+    expect(screen.getByText("3")).toBeTruthy();
+  });
+
+  it("hides Special Prizes stat when all sansho counts are zero", () => {
+    const rikishi = makeUIRikishi({
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Special Prizes")).toBeNull();
+  });
+
+  it("renders Ozeki Reclaim Watch for demoted ozeki now at sekiwake", () => {
+    const rikishi = makeUIRikishi({
+      rank: "sekiwake" as any,
+      wasDemotedFromOzeki: true,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText(/Ozeki Reclaim Watch/i)).toBeTruthy();
+  });
+
+  it("hides Ozeki Reclaim Watch when rikishi was not demoted from ozeki", () => {
+    const rikishi = makeUIRikishi({
+      rank: "sekiwake" as any,
+      wasDemotedFromOzeki: false,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Ozeki Reclaim Watch/i)).toBeNull();
+  });
+});

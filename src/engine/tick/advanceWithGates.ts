@@ -5,9 +5,9 @@
  * Replaces the duplicated advanceOneDay loop + gate-check pattern.
  */
 
-import type { WorldState } from "../types/world";
-import { advanceOneDay } from "./tickDaily";
-import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
+import type { WorldState } from "@/engine/types/world";
+import { advanceOneDay } from "@/engine/tick/tickDaily";
+import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
 
 export interface GateConfig {
   /** Maximum days to advance (safety cap). */

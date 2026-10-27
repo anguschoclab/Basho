@@ -4,8 +4,8 @@
  * Shared types for monthly boundary phase modules.
  */
 
-import type { Loan } from "../../../types/economy";
-import type { FacilitiesBand } from "../../../types/narrative";
+import type { Loan } from "@/engine/types/economy";
+import type { FacilitiesBand } from "@/engine/types/narrative";
 
 export type HeyaUpdates = Partial<{
   funds: number;

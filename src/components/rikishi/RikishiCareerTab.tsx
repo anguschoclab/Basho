@@ -11,15 +11,15 @@ import type {
   NarrativeHighlight,
   PromotionHistoryEntry,
 } from "@/presenters/engineAccess";
-import { CareerProgressionChart } from "./career/CareerProgressionChart";
-import { CareerEarningsCard, type CareerEconomics } from "./career/CareerEarningsCard";
-import { BashoHistoryTable } from "./career/BashoHistoryTable";
-import { NotableBouts } from "./career/NotableBouts";
+import { CareerProgressionChart } from "@/components/rikishi/career/CareerProgressionChart";
+import { CareerEarningsCard, type CareerEconomics } from "@/components/rikishi/career/CareerEarningsCard";
+import { BashoHistoryTable } from "@/components/rikishi/career/BashoHistoryTable";
+import { NotableBouts } from "@/components/rikishi/career/NotableBouts";
 import {
   NarrativeHighlights,
   PromotionHistory,
   MilestoneTimeline,
-} from "./career/CareerHistorySections";
+} from "@/components/rikishi/career/CareerHistorySections";
 
 interface RikishiCareerTabProps {
   history: CareerSnapshot[];

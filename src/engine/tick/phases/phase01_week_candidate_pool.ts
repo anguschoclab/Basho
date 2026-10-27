@@ -13,15 +13,15 @@
  * has visible candidates for NPC interest simulation.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { resolveImpacts } from "../../core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import {
   simulateNPCInterest,
   tickWeekCandidatePool,
   ensureCandidatePoolState,
-} from "../../systems/generation/CandidatePoolService";
+} from "@/engine/generation/CandidatePoolService";
 
 export function phase01_week_candidate_pool(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_candidate_pool");

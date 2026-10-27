@@ -16,7 +16,7 @@ import {
   YdcSection,
   PressConferenceSection,
   WrapUpFooter,
-} from "./NarrativeSummarySections";
+} from "@/components/recap/NarrativeSummarySections";
 
 interface NarrativeSummaryProps {
   groupedEvents: GroupedNarrativeEvents;

@@ -7,9 +7,9 @@
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { projectRikishi } from "@/presenters/rikishi";
-import type { UIRikishi } from "@/presenters/rikishi";
-import type { SeededRNG } from "@/engine/rng";
+import { projectRikishi } from "@/presenters/rikishi/index";
+import type { UIRikishi } from "@/presenters/rikishi/index";
+import type { SeededRNG } from "@/engine/core/rng";
 
 /** Minimal world state for rikishi projection */
 interface MinimalWorldForProjection {

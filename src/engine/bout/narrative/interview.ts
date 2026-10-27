@@ -3,8 +3,8 @@
  * Code moved verbatim from generateBoutNarrative; split at natural seams:
  * topic selection, the per-question loop, and follow-up questions.
  */
-import type { PbpPipeline } from "./pipeline";
-import { countMakuuchiTournaments } from "./helpers";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import { countMakuuchiTournaments } from "@/engine/bout/narrative/helpers";
 import {
   CAREER_WIN_MILESTONES,
   FIRST_WIN_MENTION_MIN_DAY,
@@ -12,14 +12,14 @@ import {
   MEDIA_SAVVY_POLISHED_THRESHOLD,
   STRESS_TERSE_THRESHOLD,
   TRAIT_MODIFIER_CHANCE,
-} from "../../../constants/engine/generation";
+} from "@/constants/engine/generation";
 import {
   NARRATIVE_MEDIA_SAVVY_CHANCE,
   NARRATIVE_STRESS_TERSE_CHANCE,
-} from "../../../constants/engine/narrative";
-import { isKachiKoshi, isMakeKoshi } from "../../banzuke/banzukeHelpers";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed, type SeededRNG } from "../../rng";
+} from "@/constants/engine/narrative";
+import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
 
 interface InterviewSetup {
   questionType: string;

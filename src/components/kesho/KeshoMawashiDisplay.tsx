@@ -6,11 +6,11 @@
 
 import type { KeshoMawashi } from "@/engine/types/keshoMawashi";
 import { cn } from "@/lib/utils";
-import { renderBasePattern } from "./keshoPatterns";
-import { renderSymbol, renderSecondarySymbol } from "./keshoSymbols";
-import { renderBorder } from "./keshoBorders";
-import { renderEmbroideryEffect, renderFringe } from "./keshoEffects";
-import { TierBadge } from "./keshoComponents";
+import { renderBasePattern } from "@/components/kesho/keshoPatterns";
+import { renderSymbol, renderSecondarySymbol } from "@/components/kesho/keshoSymbols";
+import { renderBorder } from "@/components/kesho/keshoBorders";
+import { renderEmbroideryEffect, renderFringe } from "@/components/kesho/keshoEffects";
+import { TierBadge } from "@/components/kesho/keshoComponents";
 import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 import {
   KESHO_BORDER_X,

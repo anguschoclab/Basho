@@ -7,34 +7,42 @@ When running shell commands or passing file paths, **always wrap paths in double
 
 ## Stack
 - **Vite + React 19 + TypeScript** (NOT Next.js — never add "use client")
-- **TanStack Router** (routes.tsx), **shadcn/ui + Tailwind**, **Recharts**, **Framer Motion**
+- **TanStack Router** (app/routes.tsx), **shadcn/ui + Tailwind**, **Recharts**, **Framer Motion**
 - **Vitest** (unit), **Playwright** (E2E), `bun run test` to run all tests (NOT `bun test` — that invokes Bun's native runner, which doesn't understand vitest)
 - **Python** is installed and available
 
 ## Directory Map
 ```
 src/
-├── engine/          Deterministic simulation core
+├── app/             Entry: App.tsx, main.tsx, bootstrap.tsx, routes.tsx, index.css
+├── engine/          Deterministic simulation core — uniform domain dirs:
 │   ├── types/       All interfaces (WorldState, Rikishi, Heya, BashoState, BoutResult)
-│   ├── tick/        advanceOneDay + phase runners + pipelines
-│   ├── tick/phases/ 20+ phase files (phase0x_*.ts)
-│   ├── systems/     Domain subsystems (bout, economics, health, training, welfare, recruitment, narrative, media)
-│   ├── bout/        Bout simulation (boutPhysics, kimariteStrategy, kimariteEvaluator)
-│   ├── banzuke/     Rank promotion logic
-│   ├── governance/  GovernanceService, governanceReview
-│   ├── bard/        BardEngine + domains/*.json templates
-│   ├── matchmaking/ Swiss pairing algorithm
-│   ├── npcAI/       NPC agent brains (weekly/, strategies/, execution)
-│   ├── storage/     Persistence (OPFS archive, electron archive)
-│   ├── lifecycle/   BashoHistory, yokozuna promotion, retirement
-│   ├── core/        EntityCollection, SimulationRunner, RNGRegistry
-│   └── rng.ts       SeededRNG, rngFromSeed(), rngForWorld()
-├── pages/           React page components
-├── components/      UI components (layout, game, dashboard)
-├── presenters/      uiDigest.ts, selectors.ts, uiModels.ts, projections/ — engine→UI translation
-├── contexts/        GameContext + reducer slices (coreSlice inside gameReducer.ts, bashoSlice)
-├── routes.tsx       TanStack Router route tree
-└── App.tsx          Root with providers
+│   ├── tick/        advanceOneDay + phase runners + pipelines (tick/phases/phase0x_*)
+│   ├── core/        world.ts, queries.ts, selectors.ts, rng.ts, EntityCollection, SimulationRunner
+│   ├── bout/        Bout simulation (physics/, kimarite/, boutNarrative, h2h, archetype)
+│   ├── economy/     economics, awards, facilities, loans, mergers, staff, sponsorship
+│   ├── governance/  GovernanceService, ceremonies/, myosekiMarket
+│   ├── npc/         NPC brains (weekly/, strategies/, execution/, decision/, agency/, personas/)
+│   ├── history/     hallOfFame, history(Cache|Index), archival, records, prestige
+│   ├── narrative/   BardEngine templates + descriptions, descriptorBands, glossary
+│   ├── lifecycle/   BashoHistory, retirement, rookieFactory, succession
+│   ├── persistence/ storage/, saveload, storageProvider, SerializationService
+│   ├── lifecycle, matchmaking, banzuke, bard, calendar, events, generation,
+│   ├── health, keshoMawashi, legacy, media, officials, recruitment, simulation,
+│   ├── tutorial, welfare, worker, worldCircuit, shikona, utils — domain-per-dir
+├── pages/           React page components (one page per route, lazy-loaded)
+├── components/      UI components by domain (basho, banzuke, governance, stable,
+│                    economy, ceremony, menu, kesho, training, scouting, recruitment,
+│                    rikishi, history, media, shared, app-shell, layout, ui, avatar,
+│                    charts, dashboard, academy, almanac, bookmark, exhibition, hof,
+│                    myoseki, npc, officials, onboarding, oyakata, recap, rivalries,
+│                    settings, staff, worker, wizard)
+├── presenters/      engine→UI translation: uiDigest.ts, selectors.ts, uiModels.ts,
+│                    engineAccess.ts, worldAccess.ts, uiActions.ts + projections/
+├── state/           game/ (GameContext + reducer slices) + stores/ (gameStore, eventReadStore)
+└── lib/             engineUtils, storageKeyValidation, validatePath
+
+tests/               All tests: unit/, slow/, perf/, e2e/, helpers/, setup/
 ```
 
 ## Key Types (src/engine/types/)
@@ -73,13 +81,13 @@ src/
 - **`uiModels.ts`** — `UIRikishi` shape + `projectRikishi(rikishi, world)` projection
 
 ## State Management
-- **`GameContext`** (contexts/GameContext.tsx) — single React context with `useReducer`
+- **`GameContext`** (state/game/GameContext.tsx) — single React context with `useReducer`
 - **`GameState`** shape: `{ phase, world, digest, … }`
 - **Slices:** `coreSlice` (inside `gameReducer.ts`) and `bashoSlice` — `timeSlice`/`heyaSlice` were removed in v9 as dead paths; `financeSlice`/`rosterSlice`/`bookmarkSlice` never existed
 
 ### Command path convention
 - **Engine mutations go through the Web Worker** (`src/engine/worker/engine.worker.ts` `COMMAND_HANDLERS` + `src/engine/worker/types.ts`), dispatched from the UI via `useGameStore((s) => s.sendCommand)`.
-- **The reducer (`src/contexts/*Slice.ts`) is only for:** transient UI state (`setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`).
+- **The reducer (`src/state/game/*Slice.ts`) is only for:** transient UI state (`setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`).
 - Do NOT add new engine-mutating actions to the reducer slices — they will not be reachable from the canonical command path.
 - **`gameReducer`** combines slices + calls engine functions
 - **`issueRuling`** is exposed via `GameContext` and sends `ISSUE_RULING` command to the worker (used by GovernancePage).
@@ -128,21 +136,21 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 
 ## Test Setup
 - **Runner:** `bun run test` (Vitest, jsdom environment). Do NOT use `bun test` — that invokes Bun's native test runner, which doesn't understand vitest's jsdom environment or setup files.
-- **Fast-by-default philosophy:** the default `bun run test` suite must stay fast enough to run on every change. Tests that spawn subprocesses (eslint/knip/madge/tsx), require a prior `bun run build`, or simulate months/years of game time do NOT belong in `src/tests/unit/` — put them in `src/tests/slow/` instead.
+- **Fast-by-default philosophy:** the default `bun run test` suite must stay fast enough to run on every change. Tests that spawn subprocesses (eslint/knip/madge/tsx), require a prior `bun run build`, or simulate months/years of game time do NOT belong in `tests/unit/` — put them in `tests/slow/` instead.
 - **Test suites:**
   | Command | Suite | When to run |
   |---------|-------|-------------|
-  | `bun run test` | Fast unit tests (`src/tests/unit/**`) | Every change / every PR |
-  | `bun run test:slow` | Slow gates (`src/tests/slow/**` — subprocess audits: lintStrictGate, knipGuard, circularDependency, orphan-audit, engineReviewerGate; repo-scaling scans: commandSurfaceCoverage; long sims: headless-playthrough, simulationInvariants, advanceCalendarDays, yokozunaPromotionAutoSim, yokozunaPresence, autoSimCoreLoop, junYushoIdBug, TournamentSimulatorJunYusho; build-dependent: bundleBudget) | Adhoc / nightly CI (`slow-tests.yml`); needs `bun run build` first |
-  | `bun run test:perf` | Perf benchmarks (`src/tests/perf/**`) | Adhoc |
+  | `bun run test` | Fast unit tests (`tests/unit/**`) | Every change / every PR |
+  | `bun run test:slow` | Slow gates (`tests/slow/**` — subprocess audits: lintStrictGate, knipGuard, circularDependency, orphan-audit, engineReviewerGate; repo-scaling scans: commandSurfaceCoverage; long sims: headless-playthrough, simulationInvariants, advanceCalendarDays, yokozunaPromotionAutoSim, yokozunaPresence, autoSimCoreLoop, junYushoIdBug, TournamentSimulatorJunYusho; build-dependent: bundleBudget) | Adhoc / nightly CI (`slow-tests.yml`); needs `bun run build` first |
+  | `bun run test:perf` | Perf benchmarks (`tests/perf/**`) | Adhoc |
   | `bun run test:all` | All three vitest suites | Pre-release verification |
   | `bun run test:e2e:smoke` | Playwright smoke (golden-path, reload-restore) | Adhoc, ~2–4 min |
   | `bun run test:e2e:soak` | Playwright soak (full-basho-lifecycle, year-of-bashos) | Adhoc, ~8–10 min |
   | `bun run test:e2e` | All e2e specs | Adhoc |
   | `bun run test:timings -- <suite>` | Regenerate `docs/audit/test-timings.json` baseline | After suite reorgs / perf work |
 - **Runner pool:** all vitest configs use `pool: "vmThreads"` — the jsdom environment is created once per worker (~5x faster suite-wide) while each file still gets an isolated vm context. The fast config also enables `fileParallelism` (no shared-state writers in unit/) and `fsModuleCache` (persistent transform cache — vitest always re-executes tests; it only skips re-transforming unchanged files). Caveat: under vm contexts `globalThis.window` is a non-configurable getter (the jsdom `window.window` self-reference) — tests must never `Object.defineProperty`/`delete`/`stubGlobal` the `window` global itself; set properties *on* the existing window or spy its methods instead.
-- **Meta gates** (`src/tests/unit/meta/`): `noSubprocessInUnitTests` (no `child_process`/`runAutoSim`/`generateInitialWorld`+`simulateEntireBasho` pairing in unit/), `testTimingsBudget` (per-file duration budget vs `test-timings.json`), `factoryDiscipline` (allowlisted local factories only), `testTimeoutBudget` (>5s per-test timeouts in unit/, `vitest.setTimeout` >30s anywhere), `weakAssertionAudit`. See `docs/TESTING.md` for the full tier matrix.
-- **Mock factories:** primary is `src/tests/helpers/utils/MockFactory.ts` (~118 consumers); `src/tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
+- **Meta gates** (`tests/unit/meta/`): `noSubprocessInUnitTests` (no `child_process`/`runAutoSim`/`generateInitialWorld`+`simulateEntireBasho` pairing in unit/), `testTimingsBudget` (per-file duration budget vs `test-timings.json`), `factoryDiscipline` (allowlisted local factories only), `testTimeoutBudget` (>5s per-test timeouts in unit/, `vitest.setTimeout` >30s anywhere), `weakAssertionAudit`. See `docs/TESTING.md` for the full tier matrix.
+- **Mock factories:** primary is `tests/helpers/utils/MockFactory.ts` (~118 consumers); `tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 73%, branches 61%, functions 64%, statements 75% (v8 provider) — ratchet floor re-baselined v10-R06 after `.tsx`/constants were added to `include`; measured run: 74.0/61.96/64.84/75.91
 - **Current status (v13.1 second pass, Oct 2026):** 964 fast files / 8,885 tests, 15 slow, 5 perf — all passing. `bun run type-check` clean. `bun run build` succeeds. E2E smoke: 3/3 specs green. Determinism verified byte-identical (basho + year horizons). Perf gate: baseline re-seeds on every main push (`always()`), so PR comparisons stay fresh. Suite tiers documented in `docs/TESTING.md`.
@@ -155,22 +163,22 @@ Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/fina
 
 ## Known Issues & Gotchas
 1. **`economics.ts`** — `processHeyaFinances()`/`tickWeekEconomics()` were removed (replaced by FinanceCalculator + `tick/phases/monthly/economics/`); `scripts/engine-reviewer.ts` flags any reintroduced call site.
-2. **BardEngine token mismatches** — a `%TOKEN%` is only valid where its context key is supplied by the production `resolve()` call site. `src/tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production path with real context keys — run it when adding templates.
+2. **BardEngine token mismatches** — a `%TOKEN%` is only valid where its context key is supplied by the production `resolve()` call site. `tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production path with real context keys — run it when adding templates.
 3. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
-4. **`FogOfWarService.ts`** lives at `src/engine/systems/recruitment/` and imports BardEngine from `"../../bard/BardEngine"`. There is no `src/engine/narrative/` directory — `systems/narrative/` holds crisis/rivalry/press services, the template engine is `engine/bard/`.
+4. **`FogOfWarService.ts`** lives at `src/engine/recruitment/` and imports BardEngine from `"../bard/BardEngine"`. `src/engine/narrative/` holds crisis/rivalry/press services, descriptions, descriptorBands and glossary; the template engine is `engine/bard/`.
 5. **`rivalriesProjections`** — reads `world.rivalriesState.heyaRivalryPairs` (structured `Record<string, RivalryPairState>`). Do NOT confuse with the old flat `world.heyaRivalryPairs` field which was removed.
-6. **`engine/index.ts` barrel removed** — import directly from subsystem files (e.g. `@/engine/systems/recruitment/ScoutingService`).
+6. **`engine/index.ts` barrel removed** — import directly from subsystem files (e.g. `@/engine/recruitment/ScoutingService`).
 7. **Basho termination is interactive** — the tick pipeline never calls `endBasho`; the player clicks "End Basho" (`bashoSlice`). Multi-day advance halts at `day > 15` (`shouldHaltAdvance`).
 
 ## Refactoring Plan Status
-Plan file: `.claude/plans/encapsulated-herding-origami.md`
+(Original plan file `.claude/plans/encapsulated-herding-origami.md` was removed; all phases below completed.)
 
 | Phase | Items | Status |
 |-------|-------|--------|
 | P0 (bootstrap) | EconomicConstants, FinanceCalculator, remove pbp export | ✅ Done |
 | P1 (critical) | FinanceCalculator integration, BardEngine tokens, dead code, HistoryDashboard route | ✅ Done |
 | P1 (type safety) | `as any` casts, naturalization RNG | ✅ Done — zero `as any` in production code; `naturalization.ts` uses seeded `rngFromSeed` |
-| P1 (tests) | Centralize mocks, banzuke tests, basho lifecycle tests, governance tests, coverage config | ✅ Done — canonical factories in `src/tests/unit/engine/utils.ts` + `src/tests/helpers/`; coverage thresholds configured |
+| P1 (tests) | Centralize mocks, banzuke tests, basho lifecycle tests, governance tests, coverage config | ✅ Done — canonical factories in `tests/unit/engine/utils.ts` + `tests/helpers/`; coverage thresholds configured |
 | P2 (modularization) | matchmaking.ts split, kimariteStrategy split, BoutReplayViewer split, selectors, merger UI | ✅ Done |
 | Dead Code Audit | Engine modules, components, constants, context actions, CSS, barrel cleanup, lazy loading, vendor chunks | ✅ Done |
 

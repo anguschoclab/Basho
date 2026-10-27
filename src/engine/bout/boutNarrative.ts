@@ -6,22 +6,22 @@
  * tag metadata. All public types and helpers live in narrative/ and are
  * re-exported here so existing imports keep working.
  */
-import type { Rikishi } from "../types/rikishi";
-import type { BoutResult, BashoName } from "../types/basho";
-import type { WorldState } from "../types/world";
-import { buildPipeline } from "./narrative/pipeline";
-import { narratePrelude } from "./narrative/prelude";
-import { narrateRecords } from "./narrative/context";
-import { narrateStyle } from "./narrative/context2";
-import { narrateStakes } from "./narrative/stakes";
-import { narrateCeremony } from "./narrative/ceremony";
-import { narrateFrames } from "./narrative/frames";
-import { narrateResolution } from "./narrative/resolution";
-import { narratePostBout } from "./narrative/postbout";
-import { narrateAftermath } from "./narrative/postbout2";
-import { narrateInterview } from "./narrative/interview";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoName } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import { buildPipeline } from "@/engine/bout/narrative/pipeline";
+import { narratePrelude } from "@/engine/bout/narrative/prelude";
+import { narrateRecords } from "@/engine/bout/narrative/context";
+import { narrateStyle } from "@/engine/bout/narrative/context2";
+import { narrateStakes } from "@/engine/bout/narrative/stakes";
+import { narrateCeremony } from "@/engine/bout/narrative/ceremony";
+import { narrateFrames } from "@/engine/bout/narrative/frames";
+import { narrateResolution } from "@/engine/bout/narrative/resolution";
+import { narratePostBout } from "@/engine/bout/narrative/postbout";
+import { narrateAftermath } from "@/engine/bout/narrative/postbout2";
+import { narrateInterview } from "@/engine/bout/narrative/interview";
 
-export type { PbpPhase, PbpVoice, PbpTag, PbpLine } from "./narrative/pbpTypes";
+export type { PbpPhase, PbpVoice, PbpTag, PbpLine } from "@/engine/bout/narrative/pbpTypes";
 export {
   countMakuuchiTournaments,
   focusBiasToStyleKey,
@@ -30,7 +30,7 @@ export {
   generateKyujoNarrative,
   extractNotableNarrativeLines,
   isNotableBout,
-} from "./narrative/helpers";
+} from "@/engine/bout/narrative/helpers";
 
 /**
  * Generate the full play-by-play narrative for a resolved bout.

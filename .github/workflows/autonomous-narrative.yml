@@ -35,7 +35,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL_PRIMARY: ${{ github.event.inputs.model || 'gemini-3-flash-preview' }}
           GEMINI_MODEL_FALLBACK: "gemini-2.5-flash"
-        run: bun run scripts/bard-orchestrator.ts
+        run: bun run scripts/narrative/bard-orchestrator.ts
 
       - name: Validate Bard Content
         run: |

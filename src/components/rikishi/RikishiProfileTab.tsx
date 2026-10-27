@@ -21,10 +21,10 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { rngFromSeed, type SeededRNG } from "@/presenters/engineAccess";
 import type { UIRikishi } from "@/presenters/uiModels";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 import type { WorldState } from "@/presenters/uiDigest";
-import { RankBadge } from "./RankBadge";
-import { KihakuStatRow } from "./KihakuStatRow";
+import { RankBadge } from "@/components/rikishi/RankBadge";
+import { KihakuStatRow } from "@/components/rikishi/KihakuStatRow";
 
 // ── Scout Note Generator ──────────────────────────────────────────────────────
 

@@ -1,7 +1,7 @@
 // SettingsPage.tsx — Game settings with autosave toggle, theme, keybinds reference
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useState } from "react";
-import { getAutosaveEnabled, setAutosaveEnabled } from "./settingsHelpers";
+import { getAutosaveEnabled, setAutosaveEnabled } from "@/pages/settingsHelpers";
 import {
   AppearanceCard,
   SaveLoadCard,

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Plus, X } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import type { TsukebitoProjection } from "@/presenters/tsukebitoProjections";
+import type { TsukebitoProjection } from "@/presenters/projections/tsukebitoProjections";
 
 export function TsukebitoPanel({
   projection,

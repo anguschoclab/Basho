@@ -1,13 +1,13 @@
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
-import type { Id } from "../types/common";
-import type { BashoName, BoutResult, BashoResult, KeyBoutEntry } from "../types/basho";
-import type { RikishiCareerRecord, NotableBoutEntry, NarrativeHighlight } from "./types";
-import { MAX_NOTABLE_BOUTS, MAX_NARRATIVE_HIGHLIGHTS } from "./types";
-import { extractNotableNarrativeLines, isNotableBout } from "../bout/boutNarrative";
-import { getRikishi } from "../queries";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Id } from "@/engine/types/common";
+import type { BashoName, BoutResult, BashoResult, KeyBoutEntry } from "@/engine/types/basho";
+import type { RikishiCareerRecord, NotableBoutEntry, NarrativeHighlight } from "@/engine/almanac/types";
+import { MAX_NOTABLE_BOUTS, MAX_NARRATIVE_HIGHLIGHTS } from "@/engine/almanac/types";
+import { extractNotableNarrativeLines, isNotableBout } from "@/engine/bout/boutNarrative";
+import { getRikishi } from "@/engine/core/queries";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 export function createEmptyAlmanacRecord(rikishi: Rikishi): RikishiCareerRecord {
   return {

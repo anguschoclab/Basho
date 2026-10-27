@@ -8,7 +8,7 @@
  */
 
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { HeyaPreview } from "@/components/menu/HeyaPreview";
 import { MainMenuSelectedFooter } from "@/components/menu/MainMenuSelectedFooter";
 import { MainMenuFooter } from "@/components/menu/MainMenuFooter";

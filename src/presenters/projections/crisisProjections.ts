@@ -6,7 +6,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { ActiveCrisis } from "@/engine/types/crises";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/engine/core/queries";
 
 export interface CrisisProjection {
   isActive: boolean;

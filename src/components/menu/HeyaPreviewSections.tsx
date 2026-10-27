@@ -12,13 +12,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star, ArrowRight, User, Info, Trophy, MapPin, Building } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
-import { StableName } from "@/components/ClickableName";
+import { StableName } from "@/components/shared/ClickableName";
 import { activationKeyHandler } from "@/lib/a11y";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { HEYA_STATS } from "../../constants/ui/heyaPreview";
+import { HEYA_STATS } from "@/constants/ui/heyaPreview";
 
-import type { STATURE_CONFIG } from "./statureConfig";
+import type { STATURE_CONFIG } from "@/components/menu/statureConfig";
 
 type StatureConfig = (typeof STATURE_CONFIG)[keyof typeof STATURE_CONFIG];
 export type RosterEntry = { rikishi: UIRikishi; age: number };

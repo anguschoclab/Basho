@@ -17,15 +17,15 @@ import {
   CheckCircle2,
   Sparkles,
 } from "lucide-react";
-import { useGameStore } from "@/store/gameStore";
-import { useEventReadStore } from "@/store/eventReadStore";
-import { BaseWidget } from "./BaseWidget";
+import { useGameStore } from "@/state/stores/gameStore";
+import { useEventReadStore } from "@/state/stores/eventReadStore";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 import { scanRecentEvents } from "@/presenters/selectors";
-import { MentionText } from "@/components/MentionText";
-import { EventDetailDialog } from "@/components/EventDetailDialog";
+import { MentionText } from "@/components/shared/MentionText";
+import { EventDetailDialog } from "@/components/shared/EventDetailDialog";
 import { activationKeyHandler } from "@/lib/a11y";
 
 interface EventFeedProps {

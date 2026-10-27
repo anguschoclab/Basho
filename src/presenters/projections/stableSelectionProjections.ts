@@ -8,7 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand } from "@/engine/types/narrative";
-import { getSekitoriInHeya } from "@/engine/queries";
+import { getSekitoriInHeya } from "@/engine/core/queries";
 
 const STATURE_BANDS: StatureBand[] = [
   "legendary",

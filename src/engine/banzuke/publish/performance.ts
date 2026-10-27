@@ -1,17 +1,17 @@
-import type { WorldState } from "../../types/world";
-import type { BashoState } from "../../types/basho";
-import type { BashoPerformance } from "../../banzuke";
-import type { Rikishi, RikishiStats } from "../../types/rikishi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { getRikishi } from "../../queries";
-import { KihakuService } from "../../systems/governance/KihakuService";
-import { finiteOr } from "../../utils/math";
-import { isKachiKoshi } from "../banzukeHelpers";
-import { BASHO_CALENDAR } from "../../calendar";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { BashoPerformance } from "@/engine/types/banzuke";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getRikishi } from "@/engine/core/queries";
+import { KihakuService } from "@/engine/governance/services/KihakuService";
+import { finiteOr } from "@/engine/utils/math";
+import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
-} from "../../../constants/engine/governanceExtended";
+} from "@/constants/engine/governanceExtended";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type StandingStats = { wins: number; losses: number; absences: number };

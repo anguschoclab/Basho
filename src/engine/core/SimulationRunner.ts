@@ -3,28 +3,28 @@
  * Delegates to specific systems for business logic.
  */
 
-import type { WorldState } from "../types/world";
-import * as MediaService from "../systems/media/MediaService";
-import { rngForWorld } from "../rng";
-import { resolveImpacts, sequenceImpacts } from "./ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import * as MediaService from "@/engine/media/MediaService";
+import { rngForWorld } from "@/engine/core/rng";
+import { resolveImpacts, sequenceImpacts } from "@/engine/core/ImpactResolver";
 
 // Institutional System Imports
-import { runPrestigeDecay } from "../prestige/prestigeSystem";
+import { runPrestigeDecay } from "@/engine/history/prestige";
 import {
   runGovernanceReview,
   runAIMetaDrift,
-} from "../systems/governance/governanceReview";
-import { processAllRetirements } from "../lifecycle/processRetirements";
-import { onBashoEnded } from "../records";
+} from "@/engine/governance/services/governanceReview";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
+import { onBashoEnded } from "@/engine/history/records";
 import {
   processSponsorChurn,
   adjustKoenkaiBandToPrestige,
-} from "../systems/economy/SponsorshipService";
-import { checkNaturalizations } from "../naturalization";
-import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
-import { runHistoryUpdates } from "../history";
-import { runElections } from "../systems/governance/ScandalService";
-import { runAlmanacNarrativeUpdate } from "../almanac/narrativeEnrichment";
+} from "@/engine/economy/SponsorshipService";
+import { checkNaturalizations } from "@/engine/lifecycle/naturalization";
+import { runCareerJournalUpdates, openRecruitmentWindow } from "@/engine/lifecycle/RegistryService";
+import { runHistoryUpdates } from "@/engine/history/history";
+import { runElections } from "@/engine/governance/services/ScandalService";
+import { runAlmanacNarrativeUpdate } from "@/engine/almanac/narrativeEnrichment";
 
 /**
  * Authoritative post-basho pipeline.

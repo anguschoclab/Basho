@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
+import { BoutNarrativeModal } from "@/components/basho/BoutNarrativeModal";
 import {
   Play,
   FastForward,
@@ -45,7 +45,7 @@ import type { BashoName } from "@/engine/types/basho";
 import type { StandingEntry } from "@/presenters/uiDigestTypes";
 import { selectKimariteObservedShare } from "@/presenters/selectors";
 import type { SelectedBout } from "@/hooks/useBashoPageState";
-import type { projectOfficials } from "@/presenters/officialsProjections";
+import type { projectOfficials } from "@/presenters/projections/officialsProjections";
 
 type OfficialsProjection = ReturnType<typeof projectOfficials>;
 

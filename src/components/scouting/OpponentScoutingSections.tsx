@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Search } from "lucide-react";
 import { RANK_NAMES } from "@/presenters/uiDigest";
-import { AttrChip } from "./AttrChip";
+import { AttrChip } from "@/components/scouting/AttrChip";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import type { SortDirection } from "@/lib/sortUtils";

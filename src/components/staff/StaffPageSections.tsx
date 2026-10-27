@@ -28,7 +28,7 @@ import { UserPlus } from "lucide-react";
 import type { StaffRole } from "@/engine/types/staff";
 import type { SortDirection } from "@/lib/sortUtils";
 import { STAFF_UPKEEP_PER_MEMBER } from "@/constants/engine/economic";
-import { ROLE_LABELS, ROLE_DESCRIPTIONS, STAFF_SORT_OPTIONS } from "./staffMeta";
+import { ROLE_LABELS, ROLE_DESCRIPTIONS, STAFF_SORT_OPTIONS } from "@/components/staff/staffMeta";
 
 /** Header summary — monthly upkeep, staff count, sort menu. */
 export function StaffSummary({

@@ -4,8 +4,8 @@
  * Transforms special prizes and achievements.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import type { RikishiAchievementsDTO, RikishiPersonalityDTO } from "../types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RikishiAchievementsDTO, RikishiPersonalityDTO } from "@/presenters/rikishi/types";
 
 /**
  * Transform special prizes.

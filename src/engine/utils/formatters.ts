@@ -1,9 +1,9 @@
-import type { EngineEvent } from "../types/events";
+import type { EngineEvent } from "@/engine/types/events";
 import {
   FINE_PENALTY_SEVERE_THRESHOLD,
   FINE_PENALTY_SIGNIFICANT_THRESHOLD,
   FINE_PENALTY_MODERATE_THRESHOLD,
-} from "../../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 /** Safely extracts a string or defaults. */
 function safeString(raw: unknown, fallback: string): string {

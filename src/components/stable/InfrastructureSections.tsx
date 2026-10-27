@@ -6,7 +6,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 import {
   Building2,
   HardHat,

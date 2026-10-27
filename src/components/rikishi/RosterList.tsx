@@ -11,8 +11,8 @@ import { Zap, Search } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { SortDirection } from "@/lib/sortUtils";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { sortRoster } from "./rosterSort";
-import { RosterToolbar, RosterCard } from "./RosterListSections";
+import { sortRoster } from "@/components/rikishi/rosterSort";
+import { RosterToolbar, RosterCard } from "@/components/rikishi/RosterListSections";
 
 interface RosterListProps {
   rikishiList: UIRikishi[];

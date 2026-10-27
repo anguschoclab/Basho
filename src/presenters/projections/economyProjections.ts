@@ -5,13 +5,13 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import { EntityCollection } from "../../engine/core/EntityCollection";
+import type { WorldState } from "@/engine/types/world";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import {
   CHRONIC_UNDERPERFORMANCE_BASHO,
   PRESTIGE_COLLAPSE_BAND,
   NON_FINANCIAL_MERGER_MAX_ROSTER,
-} from "../../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 /**
  * Project a list of heyas at risk of merger based on debt + small roster

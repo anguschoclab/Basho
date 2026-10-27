@@ -4,9 +4,9 @@
  * Transforms head-to-head and rival data.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import type { WorldState } from "../../../engine/types/world";
-import type { UIRivalEntry } from "../types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { UIRivalEntry } from "@/presenters/rikishi/types";
 
 /**
  * Calculate top rivals for a rikishi.

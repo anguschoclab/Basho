@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { Dumbbell, Zap, Target, Shield, Activity } from "lucide-react";
 import { INTENSITY_MULTIPLIERS, RECOVERY_MULTIPLIERS } from "@/presenters/uiDigest";
 import { computeDisplayTrainingMultiplier } from "@/presenters/engineAccess";

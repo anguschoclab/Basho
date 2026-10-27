@@ -1,5 +1,5 @@
-import type { Rikishi } from "../types/rikishi";
-import type { MatchSchedule } from "../types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { MatchSchedule } from "@/engine/types/basho";
 
 /** Resulting special prizes for a tournament. */
 export interface SpecialPrizesResult {

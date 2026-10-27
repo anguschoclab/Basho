@@ -2,7 +2,7 @@
  * Constants for new game wizard.
  */
 
-import { BACKSTORY_STARTING_FUNDS } from "../engine/economic";
+import { BACKSTORY_STARTING_FUNDS } from "@/constants/engine/economic";
 import type { IchimonName } from "@/engine/types/economy";
 
 export interface OyakataBackstory {

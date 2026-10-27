@@ -7,7 +7,7 @@
  * State/handlers live in useTrainingState; derived data in useTrainingDerived.
  */
 
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import type { TrainingIntensity } from "@/engine/types/training";
@@ -17,7 +17,7 @@ import { TrainingAnalytics } from "@/components/training/TrainingAnalytics";
 import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots";
 import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
-import { SparringPanel } from "@/components/game/SparringPanel";
+import { SparringPanel } from "@/components/training/SparringPanel";
 import { WeightJourneysSection } from "@/components/training/WeightJourneysSection";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { useTrainingState } from "@/hooks/useTrainingState";

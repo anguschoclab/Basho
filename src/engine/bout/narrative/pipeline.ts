@@ -6,16 +6,16 @@
  * inside the 2,600-line monolith are computed eagerly here; every rng stream
  * is independently seeded, so eager evaluation preserves behavior.
  */
-import { rngFromSeed, type SeededRNG } from "../../rng";
-import type { Rikishi } from "../../types/rikishi";
-import type { BoutResult, BashoName } from "../../types/basho";
-import type { WorldState } from "../../types/world";
-import { BASHO_CALENDAR } from "../../calendar";
-import { RivalryService } from "../../systems/narrative/RivalryService";
-import type { RivalriesState, RivalryKey } from "../../../constants/engine/rivalry";
-import { buildNarrativeContext } from "../../bard/narrativeContext";
-import { getIntensity } from "./helpers";
-import type { PbpLine, PbpPhase, PbpTag } from "./pbpTypes";
+import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoName } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
+import { RivalryService } from "@/engine/narrative/RivalryService";
+import type { RivalriesState, RivalryKey } from "@/constants/engine/rivalry";
+import { buildNarrativeContext } from "@/engine/bard/narrativeContext";
+import { getIntensity } from "@/engine/bout/narrative/helpers";
+import type { PbpLine, PbpPhase, PbpTag } from "@/engine/bout/narrative/pbpTypes";
 
 export interface PbpPipeline {
   lines: PbpLine[];

@@ -10,7 +10,7 @@ export type {
   ReputationBand,
   InjurySeverityBand,
   WinRateBand,
-} from "../systems/narrative/NarrativeBands";
+} from "@/engine/narrative/NarrativeBands";
 
 export type StatureBand =
   "legendary" | "powerful" | "established" | "rebuilding" | "fragile" | "new";
@@ -26,7 +26,7 @@ export type KoenkaiBand = KoenkaiBandType;
 /** Type representing runway band. */
 export type RunwayBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
 
-export type { ConfidenceLevel, ScoutingInvestment } from "../../constants/engine/recruitment";
+export type { ConfidenceLevel, ScoutingInvestment } from "@/constants/engine/recruitment";
 
 export type LeverageClass = "CompactAnchor" | "LongLever" | "TopHeavy" | "MobileLight" | "Standard";
 

@@ -1,7 +1,7 @@
-import type { BashoName } from "../types/basho";
-import type { Division, Rank } from "../types/banzuke";
-import type { Id } from "../types/common";
-import type { PbpTag, PbpPhase } from "../bout/boutNarrative";
+import type { BashoName } from "@/engine/types/basho";
+import type { Division, Rank } from "@/engine/types/banzuke";
+import type { Id } from "@/engine/types/common";
+import type { PbpTag, PbpPhase } from "@/engine/bout/boutNarrative";
 
 /** Tags that mark a narrative line as almanac-worthy. */
 export const NOTABLE_NARRATIVE_TAGS: PbpTag[] = [

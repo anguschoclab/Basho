@@ -7,7 +7,7 @@
 
 import type { AvatarIdentity, AvatarStage, HeadShape } from "@/engine/types/avatar";
 import { AVATAR_COLORS, AVATAR_ATTIRE_COLORS } from "@/constants/ui/drawingPalette";
-import type { PaletteSlot } from "./pixelAtlas";
+import type { PaletteSlot } from "@/components/avatar/pixelAtlas";
 import {
   OICHOMAGE_FAN,
   CHONMAGE_KNOT,
@@ -15,7 +15,7 @@ import {
   GLASSES_FRAME,
   TSUNA_ROPE,
   BANDAGE_PATCH,
-} from "./pixelAtlas";
+} from "@/components/avatar/pixelAtlas";
 
 const W = 24;
 const H = 24;

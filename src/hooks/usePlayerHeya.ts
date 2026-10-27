@@ -1,5 +1,5 @@
-import { useGame } from "@/contexts/useGame";
-import { getPlayerHeya } from "@/engine/queries";
+import { useGame } from "@/state/game/useGame";
+import { getPlayerHeya } from "@/engine/core/queries";
 
 /**
  * Custom hook to retrieve the player's current heya (stable) from the game state.

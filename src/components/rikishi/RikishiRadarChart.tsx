@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { formatRadarData } from "@/presenters/uiDigest";
-import type { Rikishi } from "../../engine/types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 interface RikishiRadarChartProps {
   rikishi: Rikishi;

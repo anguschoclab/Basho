@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Database, History } from "lucide-react";
 import { useSaveSlotManager, type UseSaveSlotManagerProps } from "@/hooks/useSaveSlotManager";
-import { ArchiveDialogContent, DeleteSlotDialog } from "./SaveSlotManagerSections";
+import { ArchiveDialogContent, DeleteSlotDialog } from "@/components/menu/SaveSlotManagerSections";
 
 interface SaveSlotManagerProps extends UseSaveSlotManagerProps {
   hideArchiveButton?: boolean;

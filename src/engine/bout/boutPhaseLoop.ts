@@ -1,35 +1,35 @@
 // boutPhaseLoop.ts — Orchestrator for bout physics engine.
 // Phase tick handlers have been extracted into the physics/ directory.
 
-import { rngFromSeed, type SeededRNG } from "../rng";
-import type { Rikishi } from "../types/rikishi";
-import type { BoutResult, BashoState, BoutLogEntry } from "../types/basho";
-import type { Side } from "../types/banzuke";
-import type { KimariteId } from "../types/combat";
+import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoState, BoutLogEntry } from "@/engine/types/basho";
+import type { Side } from "@/engine/types/banzuke";
+import type { KimariteId } from "@/engine/types/combat";
 import {
   MAX_BOUT_TICKS,
   POST_RESOLUTION_REVERSAL_CHANCE,
   ISAMIASHI_INSTABILITY_THRESHOLD,
   CLOCK_MULTIPLIER,
-} from "../../constants/engine/physics";
+} from "@/constants/engine/physics";
 import {
   MOMENTUM_SCORE_FACTOR,
   MOMENTUM_DOMINANT_THRESHOLD,
   FATIGUE_LOG_TICK_1,
   FATIGUE_LOG_TICK_2,
   INSTABILITY_FLOOR,
-} from "../../constants/engine/bout";
-import type { EngineStateV2 } from "../types/combat-spatial";
-import { sideTactics, skillTieBreak, type BoutContext, type SideTactics } from "./boutUtils";
+} from "@/constants/engine/bout";
+import type { EngineStateV2 } from "@/engine/types/combat-spatial";
+import { sideTactics, skillTieBreak, type BoutContext, type SideTactics } from "@/engine/bout/boutUtils";
 
-import { initEngineStateV2 } from "./physics/initState";
-import { resolveTachiaiV2 } from "./physics/tachiai";
-import { tickPushBattle } from "./physics/tickPushBattle";
-import { tickBeltBattle } from "./physics/tickBeltBattle";
-import { tickEdgeCrisis } from "./physics/edgeCrisis";
-import { buildBoutResultV2 } from "./physics/resultBuilders";
-import { tryShinitai } from "./shinitai";
-import { maybeClassifyHiwaza, HIWAZA_IDS } from "./hiwaza";
+import { initEngineStateV2 } from "@/engine/bout/physics/initState";
+import { resolveTachiaiV2 } from "@/engine/bout/physics/tachiai";
+import { tickPushBattle } from "@/engine/bout/physics/tickPushBattle";
+import { tickBeltBattle } from "@/engine/bout/physics/tickBeltBattle";
+import { tickEdgeCrisis } from "@/engine/bout/physics/edgeCrisis";
+import { buildBoutResultV2 } from "@/engine/bout/physics/resultBuilders";
+import { tryShinitai } from "@/engine/bout/shinitai";
+import { maybeClassifyHiwaza, HIWAZA_IDS } from "@/engine/bout/hiwaza";
 
 const MAX_TICKS = MAX_BOUT_TICKS;
 
@@ -89,7 +89,7 @@ function runPhaseLoop(
   west: Rikishi,
   st: EngineStateV2,
   boutLog: BoutLogEntry[],
-  division: import("../types/banzuke").Division,
+  division: import("@/engine/types/banzuke").Division,
   meta: { tone: string; drift: Record<string, number> },
   tactics?: SideTactics
 ): { winner: Side; kimarite: KimariteId; isTimeout: boolean } {

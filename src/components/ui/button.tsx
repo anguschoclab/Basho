@@ -3,8 +3,8 @@ import { Slot } from "@radix-ui/react-slot";
 import type { VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
-import { TooltipWrap } from "./tooltip-wrap";
-import { buttonVariants } from "./button-variants";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { buttonVariants } from "@/components/ui/button-variants";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {

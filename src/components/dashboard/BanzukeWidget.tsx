@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Badge } from "@/components/ui/badge";
 import { ScrollText } from "lucide-react";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { RankInline } from "@/components/rikishi/RankBadge";
 import { getActiveRikishi } from "@/presenters/engineAccess";
 

@@ -27,7 +27,7 @@ import {
   RIKISHI_QUICK_STATS,
   RIKISHI_BASIC_INFO,
   RIKISHI_ATTRIBUTES,
-} from "../../constants/ui/heyaPreview";
+} from "@/constants/ui/heyaPreview";
 
 /** Primary-colored header band with rank watermark + sekitori badge. */
 export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {

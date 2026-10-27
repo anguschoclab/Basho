@@ -5,16 +5,16 @@
  * advance, and pause/resume control.
  */
 
-import type { WorldState } from "../../types/world";
-import { tickOrchestrator, advanceDaysFastOrchestrator } from "../../tick/tickOrchestrator";
-import { generateInitialWorld } from "../../systems/generation/WorldFactory";
-import { isForeign } from "../../utils/identity";
-import { shouldHaltAdvance } from "../../loop/shouldHaltAdvance";
-import { clearQueryCaches } from "../../queries";
-import { TARGET_ROSTER_SIZE } from "../../../constants/engine/recruitmentExtended";
-import { applyOyakataCreationConfig } from "../../systems/generation/applyOyakataConfig";
-import type { WorkerRuntime } from "../runtime";
-import type { CommandHandlerMap } from "./types";
+import type { WorldState } from "@/engine/types/world";
+import { tickOrchestrator, advanceDaysFastOrchestrator } from "@/engine/tick/tickOrchestrator";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import { isForeign } from "@/engine/utils/identity";
+import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
+import { clearQueryCaches } from "@/engine/core/queries";
+import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
+import { applyOyakataCreationConfig } from "@/engine/generation/applyOyakataConfig";
+import type { WorkerRuntime } from "@/engine/worker/runtime";
+import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -30,7 +30,7 @@ function generateWorld(opts: {
   seed: string;
   playerConfig?: {
     heyaId?: string;
-    oyakataConfig?: import("../../types/oyakata").OyakataCreationConfig;
+    oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig;
   };
 }) {
   let world = generateInitialWorld(opts.seed);

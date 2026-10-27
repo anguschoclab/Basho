@@ -12,4 +12,4 @@
  * (and its deleted KimariteStrategyData/V2 backing modules) has been removed.
  */
 
-export { evaluateKimariteAttempt } from "../kimariteClassifier";
+export { evaluateKimariteAttempt } from "@/engine/bout/kimariteClassifier";

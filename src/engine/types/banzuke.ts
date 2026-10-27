@@ -2,7 +2,7 @@
  * Division / Rank / Banzuke Types
  */
 
-import type { Id } from "./common";
+import type { Id } from "@/engine/types/common";
 
 /** Type representing division. */
 export type Division = "makuuchi" | "juryo" | "makushita" | "sandanme" | "jonidan" | "jonokuchi";

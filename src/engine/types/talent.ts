@@ -10,9 +10,9 @@
  * @see TalentPoolScouting for candidate generation
  */
 
-import type { Id } from "./common";
-import type { CombatArchetype, Style, CombatProfile } from "./combat";
-import type { ScoutingBias } from "../systems/recruitment/FogOfWarService";
+import type { Id } from "@/engine/types/common";
+import type { CombatArchetype, Style, CombatProfile } from "@/engine/types/combat";
+import type { ScoutingBias } from "@/engine/recruitment/FogOfWarService";
 
 /**
  * Type representing talent pool type.
@@ -143,7 +143,7 @@ export interface TalentCandidate {
   /** Fraction of potential ceiling reachable. */
   ceilingFraction?: number;
   /** Optional bloodline trait if inherited. */
-  bloodlineTrait?: import("./dynasty").BloodlineTrait;
+  bloodlineTrait?: import("@/engine/types/dynasty").BloodlineTrait;
   /**
    * Persistent scouting bias that skews initial stat readings.
    * Bias is generated deterministically at candidate creation and decays
@@ -152,7 +152,7 @@ export interface TalentCandidate {
   scoutingBias?: ScoutingBias;
   /** Persistent avatar identity — seeded by personId so the face survives
    *  conversion to a Rikishi record. */
-  avatarConfig?: import("./avatar").AvatarIdentity;
+  avatarConfig?: import("@/engine/types/avatar").AvatarIdentity;
 }
 
 /**

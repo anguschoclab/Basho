@@ -4,22 +4,22 @@
  * Projects a Rikishi into a UIRosterEntry for banzuke/roster views.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import type { WorldState } from "../../../engine/types/world";
-import { SeededRNG } from "../../../engine/rng";
-import { NarrativeService } from "../../../engine/systems/narrative/NarrativeService";
-import { toPotentialBand } from "../../../engine/descriptorBands";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import { SeededRNG } from "@/engine/core/rng";
+import { NarrativeService } from "@/engine/narrative/NarrativeService";
+import { toPotentialBand } from "@/engine/narrative/descriptorBands";
 import {
   getCitizenshipStatus,
   yearsUntilNaturalization,
-} from "../../../engine/utils/citizenshipUtils";
-import { resolveRegistryLabel, resolveRegistryLabelJa } from "../../uiUtilities";
-import type { UIRosterEntry, UIRankDelta } from "../types";
-import { rankScore, calculateStreak } from "./career";
-import type { KeshoMawashi } from "../../../engine/types/keshoMawashi";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import { computeKachiNokori } from "../../kachiNokori";
-import { resolveAvatar, rikishiStageInput } from "../../../engine/avatarGenerator";
+} from "@/engine/utils/citizenshipUtils";
+import { resolveRegistryLabel, resolveRegistryLabelJa } from "@/presenters/uiUtilities";
+import type { UIRosterEntry, UIRankDelta } from "@/presenters/rikishi/types";
+import { rankScore, calculateStreak } from "@/presenters/rikishi/transformers/career";
+import type { KeshoMawashi } from "@/engine/types/keshoMawashi";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { computeKachiNokori } from "@/presenters/projections/kachiNokori";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 
 /**
  * Project a rikishi into a roster entry for banzuke/roster display.

@@ -6,8 +6,8 @@
 
 import { Building2, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ICHIMON_FACTIONS } from "../../constants/ui/wizard";
-import { FactionCard } from "./FactionStepSections";
+import { ICHIMON_FACTIONS } from "@/constants/ui/wizard";
+import { FactionCard } from "@/components/wizard/FactionStepSections";
 import type { IchimonName } from "@/engine/types/economy";
 
 interface FactionStepProps {

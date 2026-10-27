@@ -5,14 +5,14 @@
  * Runs during pre_basho phase to assess rikishi health and recommend withdrawals.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import type { PreBashoAssessment } from "../../types/world";
-import { triggerPreBashoJournalism } from "../../systems/media/MediaService";
-import { mergeImpacts } from "../../core/ImpactResolver";
-import { getRikishi } from "../../queries";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { PreBashoAssessment } from "@/engine/types/world";
+import { triggerPreBashoJournalism } from "@/engine/media/MediaService";
+import { mergeImpacts } from "@/engine/core/ImpactResolver";
+import { getRikishi } from "@/engine/core/queries";
 import {
   ASSESSMENT_DAYS_MIN,
   ASSESSMENT_DAYS_MAX,
@@ -25,7 +25,7 @@ import {
   HEALTH_WARNING_THRESHOLD,
   HEALTH_CAUTION_THRESHOLD,
   HEALTH_MINOR_THRESHOLD,
-} from "../../../constants/engine/healthAssessment";
+} from "@/constants/engine/healthAssessment";
 
 /**
  * Run pre-basho health assessment for all rikishi.

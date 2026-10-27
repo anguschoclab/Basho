@@ -1,11 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { LineageTree } from "@/components/game/LineageTree";
+import { LineageTree } from "@/components/history/LineageTree";
 
 interface RikishiLineageProps {
   mentor: Rikishi | null;

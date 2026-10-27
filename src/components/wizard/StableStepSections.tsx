@@ -8,7 +8,7 @@
 import { CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
 import type { Heya } from "@/engine/types/heya";

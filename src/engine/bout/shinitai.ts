@@ -9,8 +9,8 @@
  * is ruled the loser. This mirrors real sumo mono-ii decisions.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { Side } from "../types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Side } from "@/engine/types/banzuke";
 
 /** Instability difference below which shini-tai is invoked (simultaneous exit). */
 export const SHINITAI_INSTABILITY_DIFF_THRESHOLD = 0.05;

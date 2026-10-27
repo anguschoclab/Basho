@@ -7,7 +7,7 @@
  */
 
 import { useState } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { createDefaultTrainingState } from "@/presenters/uiDigest";
 import type {
   IndividualFocusType,

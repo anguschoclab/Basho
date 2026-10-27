@@ -5,19 +5,19 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import type { WorldState } from "../../engine/types/world";
+import type { WorldState } from "@/engine/types/world";
 import type {
   DashboardUIDigest,
   FinancialStatus,
   BanzukeUIDigest,
   BanzukeDivisionData,
-} from "../uiDigestTypes";
-import { queryEvents } from "../../engine/events";
-import { selectTopRivals } from "../selectors";
-import { getSekitoriInHeya } from "../../engine/queries";
-import { buildPrevRankScores, buildBanzukeRows } from "../banzukeUI";
-import { projectRosterEntry, UIRosterEntry } from "../rikishi";
-import { EntityCollection } from "../../engine/core/EntityCollection";
+} from "@/presenters/uiDigestTypes";
+import { queryEvents } from "@/engine/events/events";
+import { selectTopRivals } from "@/presenters/selectors";
+import { getSekitoriInHeya } from "@/engine/core/queries";
+import { buildPrevRankScores, buildBanzukeRows } from "@/presenters/projections/banzukeUI";
+import { projectRosterEntry, UIRosterEntry } from "@/presenters/rikishi/index";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 
 /**
  * Project dashboard data for the main overview.

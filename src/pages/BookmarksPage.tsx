@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
-import { RikishiCard } from "@/components/game/RikishiCard";
-import { projectRikishi } from "@/presenters/rikishi";
+import { RikishiCard } from "@/components/rikishi/RikishiCard";
+import { projectRikishi } from "@/presenters/rikishi/index";
 import { getRikishi, getHeya, getOyakata, getAllBookmarks, getBookmarksByType } from "@/presenters/worldAccess";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import type { BookmarkEntry } from "@/presenters/worldAccess";
 
 function BookmarkItem({

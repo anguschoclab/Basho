@@ -13,40 +13,40 @@
  * 7. Archetype drift evaluation post-basho.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import type { Heya } from "../../types/heya";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { mergeImpacts, resolveImpacts, sequenceImpacts } from "../../core/ImpactResolver";
-import { isBashoMonth } from "../../calendar";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { mergeImpacts, resolveImpacts, sequenceImpacts } from "@/engine/core/ImpactResolver";
+import { isBashoMonth } from "@/engine/calendar/calendar";
 import {
   payTravelAllowance,
   deductTsukebitoCosts,
   distributeKoenkaiToSekitori,
-} from "../../systems/economy/TravelAllowanceService";
-import { tickMonthlyNPC } from "../../npcAI";
-import { payMochikyukinBonuses } from "../../systems/economy/MochikyukinService";
-import { getKachiNokoriForRikishi } from "../../systems/economy/KachiNokoriService";
-import { renewSponsorContract } from "../../systems/economy/SponsorContractService";
-import type { Sponsor } from "../../types/sponsors";
-import { processHeyaEconomics, processLoanRepayments } from "./monthly/economics";
-import { processFacilitiesMaintenance, processNpcAutoInvestment } from "./monthly/facilities";
-import { processArchetypeDrift } from "./monthly/training";
-import type { HeyaUpdates } from "./monthly/types";
-import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "../../../constants/engine/economy";
+} from "@/engine/economy/TravelAllowanceService";
+import { tickMonthlyNPC } from "@/engine/npc/ticks";
+import { payMochikyukinBonuses } from "@/engine/economy/MochikyukinService";
+import { getKachiNokoriForRikishi } from "@/engine/economy/KachiNokoriService";
+import { renewSponsorContract } from "@/engine/economy/SponsorContractService";
+import type { Sponsor } from "@/engine/types/sponsors";
+import { processHeyaEconomics, processLoanRepayments } from "@/engine/tick/phases/monthly/economics/index";
+import { processFacilitiesMaintenance, processNpcAutoInvestment } from "@/engine/tick/phases/monthly/facilities/index";
+import { processArchetypeDrift } from "@/engine/tick/phases/monthly/training/index";
+import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
+import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "@/constants/engine/economy";
 import {
   SPONSOR_RENEWAL_WINDOW_WEEKS,
   SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
-} from "../../../constants/engine/time";
-import { clampFundsToDebtLimit } from "../../../constants/engine/economic";
-import { isSekitoriDivision } from "../../../constants/engine/rankDisplay";
-import { getRikishi } from "../../queries";
+} from "@/constants/engine/time";
+import { clampFundsToDebtLimit } from "@/constants/engine/economic";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { getRikishi } from "@/engine/core/queries";
 import {
   getExhibitionBashoSchedule,
   simulateExhibitionBasho,
-} from "../../systems/basho/ExhibitionBashoService";
+} from "@/engine/basho/ExhibitionBashoService";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase05_monthly_boundary");

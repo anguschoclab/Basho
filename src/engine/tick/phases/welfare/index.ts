@@ -11,4 +11,4 @@ export {
   handleSanctionedTransition,
   transitionToSanctioned,
   setComplianceStatePure,
-} from "./transitions";
+} from "@/engine/tick/phases/welfare/transitions";

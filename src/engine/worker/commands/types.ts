@@ -4,7 +4,7 @@
  * Shared types for worker command handler modules.
  */
 
-import type { EngineCommand } from "../types";
+import type { EngineCommand } from "@/engine/worker/types";
 
 /** Map of command type -> handler. Handler modules return partial maps. */
 export type CommandHandlerMap = Partial<{

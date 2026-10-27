@@ -10,7 +10,7 @@ import type { WorldState } from "@/presenters/uiDigest";
 import type { EngineEvent } from "@/engine/types/events";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { getHeya } from "@/presenters/worldAccess";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 
 /** Events belonging to the basho wrap-up phase (optionally one basho). */
 export function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {

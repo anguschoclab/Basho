@@ -8,7 +8,7 @@ import type { TalentPoolWorldState } from "@/engine/types/talent";
 import {
   getActiveRikishi as engineGetActiveRikishi,
   getHeyaStaff as engineGetHeyaStaff,
-} from "@/engine/queries";
+} from "@/engine/core/queries";
 
 // Canonical entity accessors — re-exported from engine/queries so the
 // presenter layer has a single import surface. `Id` is `string`, so the
@@ -23,11 +23,11 @@ export {
   getRetiredRikishiSummary,
   isRetiredRikishiSummaryEntry,
   loadFullRikishiRecord,
-} from "@/engine/queries";
+} from "@/engine/core/queries";
 
 // Canonical bookmark accessors — re-exported from the engine service so the
 // page layer never reaches into WorldState.playerKnowledge directly.
-export { getAllBookmarks, getBookmarksByType } from "@/engine/systems/bookmark/BookmarkService";
+export { getAllBookmarks, getBookmarksByType } from "@/engine/bookmark/BookmarkService";
 export type { BookmarkEntry } from "@/engine/types/world";
 
 export function getOyakata(world: WorldState, id: string): Oyakata | undefined {

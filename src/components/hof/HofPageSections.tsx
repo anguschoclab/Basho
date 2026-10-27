@@ -5,20 +5,20 @@
  * dynasty registry card, and the tab strip + sort menu row.
  */
 
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, Shield, Target, Award, Crown } from "lucide-react";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar } from "@/presenters/avatarProjections";
+import { resolveAvatar } from "@/presenters/projections/avatarProjections";
 import type { SortDirection } from "@/lib/sortUtils";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
 import type { BloodlineTrait } from "@/engine/types/dynasty";
-import { HOF_SORT_OPTIONS } from "./hofMeta";
-import { CategoryTab, AllInducteesTab } from "./HofTabs";
+import { HOF_SORT_OPTIONS } from "@/components/hof/hofMeta";
+import { CategoryTab, AllInducteesTab } from "@/components/hof/HofTabs";
 
 /** Hero header — title, lede, and per-category inductee counts. */
 export function HallHero({

@@ -1,8 +1,5 @@
-/**
- * Constants for rivalry page.
- */
-
-import type { RivalryHeatBand, RivalryTone, RivalryTrigger } from "../../engine/rivalries";
+import type { RivalryHeatBand } from "@/engine/narrative/NarrativeBands";
+import type { RivalryTone, RivalryTrigger } from "@/constants/engine/rivalry";
 
 export const HEAT_BAND_CONFIG: Record<
   RivalryHeatBand,

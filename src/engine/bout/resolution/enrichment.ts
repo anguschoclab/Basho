@@ -6,18 +6,18 @@
  * narrative generation, and per-side tactic aftermath.
  */
 
-import type { BoutContext } from "../boutPhysics";
-import type { Rikishi } from "../../types/rikishi";
-import type { BashoState, BoutResult, BashoName } from "../../types/basho";
-import type { WorldState } from "../../types/world";
-import type { BoutTactic } from "../../types/combat";
-import type { ImpactBuilder } from "../../core/ImpactBuilder";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
-import { getKimarite } from "../../kimarite";
-import { generateBoutNarrative } from "../boutNarrative";
-import { detectKinboshi } from "../boutAchievements";
-import { recordCareerHighlight, type CareerHighlight } from "../CareerHighlights";
-import { computeTacticAftermath } from "../boutTacticAftermath";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoState, BoutResult, BashoName } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { BoutTactic } from "@/engine/types/combat";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
+import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import { detectKinboshi } from "@/engine/bout/boutAchievements";
+import { recordCareerHighlight, type CareerHighlight } from "@/engine/bout/CareerHighlights";
+import { computeTacticAftermath } from "@/engine/bout/boutTacticAftermath";
 
 /**
  * 2. Achievement Detection (Gold & Silver Stars - v2)

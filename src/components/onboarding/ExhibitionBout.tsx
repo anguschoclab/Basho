@@ -5,7 +5,7 @@
  * State lives in useExhibitionBout; sections in ./ExhibitionBoutSections.tsx.
  */
 
-import { MentorOverlay } from "./MentorOverlay";
+import { MentorOverlay } from "@/components/onboarding/MentorOverlay";
 import { useExhibitionBout } from "@/hooks/useExhibitionBout";
 import {
   ExhibitionHeader,
@@ -13,7 +13,7 @@ import {
   ExhibitionResultBanner,
   ExhibitionWhatsNext,
   ExhibitionControls,
-} from "./ExhibitionBoutSections";
+} from "@/components/onboarding/ExhibitionBoutSections";
 
 interface ExhibitionBoutProps {
   onComplete: () => void;

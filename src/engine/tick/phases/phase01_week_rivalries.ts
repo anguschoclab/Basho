@@ -9,24 +9,24 @@
  * 3. Trim the global EngineEvent log to prevent memory leaks.
  */
 
-import type { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { type RivalryPairState } from "../../../constants/engine/rivalry";
-import { deriveTone } from "../../systems/narrative/RivalryHeatService";
-import { clamp } from "../../utils/math";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { type RivalryPairState } from "@/constants/engine/rivalry";
+import { deriveTone } from "@/engine/narrative/RivalryHeatService";
+import { clamp } from "@/engine/utils/math";
 import {
   MAX_EVENT_AGE_WEEKS,
   RIVALRY_DECAY_THRESHOLDS,
   RIVALRY_DECAY_RATES,
   RIVALRY_PRUNING,
-} from "../../../constants/engine/time";
-import { isDurableEvent } from "../../events";
+} from "@/constants/engine/time";
+import { isDurableEvent } from "@/engine/events/events";
 import {
   MAX_RIVALRY_HEAT,
   MAX_RIVALRY_CLOSENESS,
   MAX_RIVALRY_SPITE,
-} from "../../../constants/engine/bout";
+} from "@/constants/engine/bout";
 
 export function phase01_week_rivalries(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_rivalries");

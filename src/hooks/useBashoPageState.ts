@@ -7,14 +7,14 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { projectBashoUIDigest } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutTactic } from "@/engine/types/combat";
 import type { BoutResult } from "@/engine/types/basho";
 import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
-import { projectNakabi } from "@/presenters/nakabiProjections";
-import { projectOfficials } from "@/presenters/officialsProjections";
+import { projectNakabi } from "@/presenters/projections/nakabiProjections";
+import { projectOfficials } from "@/presenters/projections/officialsProjections";
 import { projectCornerAdvice } from "@/presenters/projections/cornerAdviceProjection";
 
 /** Defines the structure for selected bout. */

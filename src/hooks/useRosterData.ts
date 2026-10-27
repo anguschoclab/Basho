@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { projectRosterEntry, type UIRosterEntry, projectRikishi } from "@/presenters/uiModels";
-import { getHealthBadge } from "@/presenters/PerceptionPresenter";
-import { toFatigueBand } from "@/engine/descriptorBands";
-import { getPlayerHeya } from "@/engine/queries";
+import { getHealthBadge } from "@/presenters/projections/PerceptionPresenter";
+import { toFatigueBand } from "@/engine/narrative/descriptorBands";
+import { getPlayerHeya } from "@/engine/core/queries";
 
 export type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 

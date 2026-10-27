@@ -8,21 +8,21 @@
  * 2. Advance recovery for already injured rikishi.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { rollWeeklyInjury } from "../../systems/health/InjuryService";
-import { tickRikishiRecovery } from "../../systems/health/RecoveryService";
-import { RNGRegistry } from "../../core/RNGRegistry";
-import { getHeyaStaffBonuses } from "../../staff";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { rollWeeklyInjury } from "@/engine/health/InjuryService";
+import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import { getHeyaStaffBonuses } from "@/engine/economy/staff";
 import type {
   InjurySeverity,
   InjuryBodyArea,
   InjuryType,
-} from "../../systems/health/BodyDefinitions";
-import { getRikishi } from "../../queries";
-import { recordGomenfuda } from "../../systems/governance/GomenfudaService";
+} from "@/engine/health/BodyDefinitions";
+import { getRikishi } from "@/engine/core/queries";
+import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
 
 interface CurrentInjury {
   id: string;

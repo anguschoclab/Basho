@@ -6,8 +6,8 @@
  */
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { makeDeterministicSeed } from "@/presenters/engineAccess";
 import {
   selectStablesByStature,

@@ -9,9 +9,9 @@
  * on BashoState.boutMetrics[rikishiId], not on the rikishi, so it is not
  * exposed here. Use KihakuService.extractFromBasho for full breakdown.
  */
-import type { Rikishi } from "../../../engine/types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 
-import type { RikishiKihakuDTO } from "../types";
+import type { RikishiKihakuDTO } from "@/presenters/rikishi/types";
 export type { RikishiKihakuDTO };
 
 function kihakuLabel(score: number): string {

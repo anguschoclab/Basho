@@ -1,8 +1,8 @@
-import type { SeededRNG } from "../../rng";
-import type { BoutLogEntry } from "../../types/basho";
-import type { KimariteId } from "../../types/combat";
-import type { Side } from "../../types/banzuke";
-import type { Rikishi } from "../../types/rikishi";
+import type { SeededRNG } from "@/engine/core/rng";
+import type { BoutLogEntry } from "@/engine/types/basho";
+import type { KimariteId } from "@/engine/types/combat";
+import type { Side } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
 import {
   TOE_OVERAGE_SCALE,
   TOE_POSITION_NORMALIZED_MAX,
@@ -23,18 +23,18 @@ import {
   EDGE_INJURY_SEVERITY_MODERATE,
   EDGE_CONTROVERSIAL_TOE_MULTIPLIER,
   EDGE_CONTROVERSIAL_MARGIN_FACTOR,
-} from "../../../constants/engine/physics";
-import { EDGE_THRESHOLD } from "../../types/combat-spatial";
+} from "@/constants/engine/physics";
+import { EDGE_THRESHOLD } from "@/engine/types/combat-spatial";
 import type {
   CombatPhase,
   EngineStateV2,
   PushBattleState,
   BeltBattleState,
   EdgeCrisisState,
-} from "../../types/combat-spatial";
-import { tawaraBounceResistance, classifyEdgeExitKimarite } from "../boutSpatial";
-import { CLOCK_MULTIPLIER } from "../../../constants/engine/physics";
-import type { InjuryBodyArea, InjurySeverity } from "../../systems/health/BodyDefinitions";
+} from "@/engine/types/combat-spatial";
+import { tawaraBounceResistance, classifyEdgeExitKimarite } from "@/engine/bout/boutSpatial";
+import { CLOCK_MULTIPLIER } from "@/constants/engine/physics";
+import type { InjuryBodyArea, InjurySeverity } from "@/engine/health/BodyDefinitions";
 
 export function buildEdgeCrisis(
   crisisSide: Side,

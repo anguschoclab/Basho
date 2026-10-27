@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import type { MyosekiStock } from "@/engine/types/myoseki";
 import type { useMyosekiMarket } from "@/hooks/useMyosekiMarket";
 

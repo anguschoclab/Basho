@@ -17,24 +17,24 @@
  * @see RivalryService for rivalry updates
  */
 
-import type { BoutContext } from "../bout/boutPhysics";
-import type { Rikishi } from "../types/rikishi";
-import type { BashoState, BoutResult } from "../types/basho";
-import type { WorldState } from "../types/world";
-import type { Side } from "../types/banzuke";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoState, BoutResult } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { Side } from "@/engine/types/banzuke";
 // We import the B+ spatial physics runner
-import { resolveBoutPhysics, conditionMultiplier } from "./boutPhysics";
-import { RivalryService } from "../systems/narrative/RivalryService";
+import { resolveBoutPhysics, conditionMultiplier } from "@/engine/bout/boutPhysics";
+import { RivalryService } from "@/engine/narrative/RivalryService";
 
-import { clamp } from "../utils/math";
-import type { BoutTactic } from "../types/combat";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { resolveSideTactics } from "./resolution/tactics";
-import { applyOfficiating } from "./resolution/officiating";
-import { enrichResult, applyTacticAftermath } from "./resolution/enrichment";
-import { applyStakesAndKensho } from "./resolution/stakes";
-import { applyGyojiOfficiation } from "./resolution/gyoji";
+import { clamp } from "@/engine/utils/math";
+import type { BoutTactic } from "@/engine/types/combat";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { resolveSideTactics } from "@/engine/bout/resolution/tactics";
+import { applyOfficiating } from "@/engine/bout/resolution/officiating";
+import { enrichResult, applyTacticAftermath } from "@/engine/bout/resolution/enrichment";
+import { applyStakesAndKensho } from "@/engine/bout/resolution/stakes";
+import { applyGyojiOfficiation } from "@/engine/bout/resolution/gyoji";
 import {
   RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
   RIVALRY_SPITE_MENTAL_MULTIPLIER,
@@ -43,9 +43,9 @@ import {
   RIVALRY_NORMALIZATION_DIVISOR,
   STAT_CLAMP_MIN,
   STAT_CLAMP_MAX,
-} from "../../constants/engine/physics";
-import { DEFAULT_YEAR } from "../../constants/engine/calendar";
-import { DEFAULT_STAT_VALUE } from "../../constants/engine/rikishi";
+} from "@/constants/engine/physics";
+import { DEFAULT_YEAR } from "@/constants/engine/calendar";
+import { DEFAULT_STAT_VALUE } from "@/constants/engine/rikishi";
 
 // Phase 8 complete: kimariteClassifier.ts owns all kimarite selection.
 // kimariteEvaluator.ts has been deleted.
@@ -107,7 +107,7 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
  * @param {Rikishi} east - East rikishi.
  * @param {Rikishi} west - West rikishi.
  * @param {BashoState} basho - Current basho state.
- * @param {import("../types/combat").BoutTactic} [playerTactic] - Player tactic override.
+ * @param {import("@/engine/types/combat").BoutTactic} [playerTactic] - Player tactic override.
  * @param {WorldState} [world] - World state for rivalry and kensho data.
  * @returns {{ result: BoutResult; impact: StateImpact }} Bout result and state impact.
  *

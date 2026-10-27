@@ -1,0 +1,88 @@
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { TREATMENT_COST_PER_WEEK } from "@/constants/engine/health";
+import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
+
+/** Withdraw a rikishi from competition (kyūjō) due to injury. */
+export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpact {
+  const builder = createImpactBuilder("withdrawRikishi");
+  const r = world.rikishi.get(rikishiId);
+  if (!r) return builder.build();
+  builder.updateRikishi(rikishiId, { isKyujo: true, kyujoReason: "injury" });
+
+  // In-bout injury: currentInjury.weekOccurred records the global week the
+  // injury happened — compare to world.week, not currentBasho.day (a 1–15
+  // tournament day can never equal a week counter).
+  const currentWeek = world.week ?? 0;
+  const injuryWeek = r.currentInjury?.weekOccurred;
+  const isInBoutInjury = injuryWeek !== undefined && injuryWeek === currentWeek;
+
+  const narrative = generateKyujoNarrative(
+    r,
+    "injury_withdrawal",
+    {
+      area: r.injuryStatus?.location ?? r.currentInjury?.area ?? "leg",
+      day: world.currentBasho?.day ?? 1,
+      reason: isInBoutInjury ? "in-bout injury" : "injury",
+    },
+    `withdraw-${rikishiId}-${world.week ?? 0}`
+  );
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "injury",
+    {
+      rikishiId,
+      heyaId: r.heyaId,
+      status: "withdrawn_kyujo",
+      narrative,
+      isInBoutInjury,
+    },
+    { rikishiId, heyaId: r.heyaId }
+  );
+  return builder.build();
+}
+
+/** Pay to cut `weeks` off a rikishi's injury recovery; charges the heya. */
+export function treatInjury(world: WorldState, rikishiId: string, weeks: number): StateImpact {
+  const builder = createImpactBuilder("treatInjury");
+  const r = world.rikishi.get(rikishiId);
+  if (!r || !r.injured) return builder.build();
+  const heya = world.heyas.get(r.heyaId);
+  if (!heya) return builder.build();
+
+  const cut = Math.min(Math.max(0, weeks), r.injuryWeeksRemaining ?? 0);
+  const cost = cut * TREATMENT_COST_PER_WEEK;
+  if (cut <= 0 || (heya.funds ?? 0) < cost) return builder.build();
+
+  const remaining = (r.injuryWeeksRemaining ?? 0) - cut;
+  if (remaining <= 0) {
+    // Full recovery — apply the canonical RecoveryService clear now rather
+    // than leaving stale injuryStatus/currentInjury/isKyujo/
+    // medicalCertificate until the weekly tick sweeps them.
+    builder.updateRikishi(rikishiId, {
+      injuryWeeksRemaining: 0,
+      injured: false,
+      isKyujo: false,
+      kyujoReason: undefined,
+      injuryStatus: { type: "none", severity: "none", weeksRemaining: 0 },
+      injury: undefined,
+      medicalCertificate: undefined,
+      recentlyReturnedFromInjury: true,
+    });
+    builder.updateRikishiNestedField(rikishiId, "currentInjury", undefined);
+  } else {
+    builder.updateRikishi(rikishiId, {
+      injuryWeeksRemaining: remaining,
+      injured: true,
+    });
+  }
+  builder.updateHeya(heya.id, { funds: (heya.funds ?? 0) - cost });
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "injury",
+    { rikishiId, heyaId: heya.id, status: "treated", weeksCut: cut, cost },
+    { rikishiId, heyaId: heya.id }
+  );
+  return builder.build();
+}

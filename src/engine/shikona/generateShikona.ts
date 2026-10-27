@@ -1,13 +1,13 @@
-import { SeededRNG } from "../rng";
-import type { ShikonaGenerationConfig } from "./types";
-import { getHouseStyle } from "./helpers";
-import { getRankRule } from "./rankRules";
-import { generateLegacyShikona } from "./legacy";
-import { generateShikonaCandidate } from "./generation";
-import { HEYA_PREFIX_PROBABILITY } from "./heyaPrefixes";
-import { pickSuffixByCategoryBias } from "./helpers";
-import { seededRandom } from "./seededRandom";
-import type { Rank } from "../types/banzuke";
+import { SeededRNG } from "@/engine/core/rng";
+import type { ShikonaGenerationConfig } from "@/engine/shikona/types";
+import { getHouseStyle } from "@/engine/shikona/helpers";
+import { getRankRule } from "@/engine/shikona/rankRules";
+import { generateLegacyShikona } from "@/engine/shikona/legacy";
+import { generateShikonaCandidate } from "@/engine/shikona/generation";
+import { HEYA_PREFIX_PROBABILITY } from "@/engine/shikona/heyaPrefixes";
+import { pickSuffixByCategoryBias } from "@/engine/shikona/helpers";
+import { seededRandom } from "@/engine/shikona/seededRandom";
+import type { Rank } from "@/engine/types/banzuke";
 
 /**
  * Public API: Generates a high-fidelity Shikona.

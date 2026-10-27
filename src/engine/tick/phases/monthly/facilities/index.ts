@@ -4,5 +4,5 @@
  * Monthly facilities module exports.
  */
 
-export { processFacilitiesMaintenance } from "./maintenance";
-export { processNpcAutoInvestment } from "./npcInvestment";
+export { processFacilitiesMaintenance } from "@/engine/tick/phases/monthly/facilities/maintenance";
+export { processNpcAutoInvestment } from "@/engine/tick/phases/monthly/facilities/npcInvestment";

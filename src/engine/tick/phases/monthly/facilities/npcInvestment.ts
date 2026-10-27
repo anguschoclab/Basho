@@ -5,18 +5,18 @@
  * Extracted from phase05_monthly_boundary.ts for modularity.
  */
 
-import type { WorldState } from "../../../../types/world";
-import type { Heya } from "../../../../types/heya";
-import type { HeyaUpdates } from "../types";
-import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
-import { computeFacilitiesBand, type FacilityAxis } from "../../../../facilities";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { computeFacilitiesBand, type FacilityAxis } from "@/engine/economy/facilities";
 import {
   NPC_INVESTMENT_RUNWAY_THRESHOLD,
   MAX_FACILITY_LEVEL,
   NPC_MAX_INVESTMENT_POINTS,
   FACILITY_UPGRADE_BASE_COST,
   FACILITY_UPGRADE_COST_MULTIPLIERS,
-} from "../../../../../constants/engine/facilities";
+} from "@/constants/engine/facilities";
 
 export function processNpcAutoInvestment(
   world: WorldState,

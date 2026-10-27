@@ -2,11 +2,11 @@
  * bout/narrative/prelude.ts — extracted beats from generateBoutNarrative.
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
-import type { PbpPipeline } from "./pipeline";
-import type { PbpTag } from "./pbpTypes";
-import { BardEngine } from "../../bard/BardEngine";
-import { rngFromSeed } from "../../rng";
-import { BloodlineService } from "../../systems/legacy/BloodlineService";
+import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { rngFromSeed } from "@/engine/core/rng";
+import { BloodlineService } from "@/engine/legacy/BloodlineService";
 
 function beatOpeningVenue(p: PbpPipeline): void {
   const { ctx, day, east, intensity, push, seed, west } = p;

@@ -1,5 +1,5 @@
-import type { Id } from "./common";
-import type { KoenkaiBandType } from "./narrative";
+import type { Id } from "@/engine/types/common";
+import type { KoenkaiBandType } from "@/engine/types/narrative";
 
 /** Type representing sponsor tier. */
 export type SponsorTier = "T0" | "T1" | "T2" | "T3" | "T4" | "T5";

@@ -5,17 +5,17 @@
  * Triggered during the daily tick.
  */
 
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { mergeImpacts } from "../core/ImpactResolver";
-import { rngForWorld } from "../rng";
-import { stableSort } from "../utils/sort";
-import type { ActiveCrisis, CrisisType } from "../types/crises";
-import { isGovernancePlayerRelevant } from "../npcAI/eventSurfacing";
-import { getRikishi } from "../queries";
-import { OVERSLEEP_CHANCE, OVERSLEEP_MOTIVATION_PENALTY } from "../../constants/engine/generation";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { mergeImpacts } from "@/engine/core/ImpactResolver";
+import { rngForWorld } from "@/engine/core/rng";
+import { stableSort } from "@/engine/utils/sort";
+import type { ActiveCrisis, CrisisType } from "@/engine/types/crises";
+import { isGovernancePlayerRelevant } from "@/engine/npc/eventSurfacing";
+import { getRikishi } from "@/engine/core/queries";
+import { OVERSLEEP_CHANCE, OVERSLEEP_MOTIVATION_PENALTY } from "@/constants/engine/generation";
 
 /**
  * Main entry point for drama generation during a tick.

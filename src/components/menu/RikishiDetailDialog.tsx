@@ -22,7 +22,7 @@ import {
   RankInfoCard,
   AttributesGrid,
   CombatStyleSection,
-} from "./RikishiDetailDialogSections";
+} from "@/components/menu/RikishiDetailDialogSections";
 
 interface RikishiDetailDialogProps {
   selectedRikishi: UIRikishi | null;

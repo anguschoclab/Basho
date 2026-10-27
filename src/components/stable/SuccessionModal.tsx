@@ -16,7 +16,7 @@ import {
   resolveAvatar,
   rikishiStageInput,
   oyakataStageInput,
-} from "@/presenters/avatarProjections";
+} from "@/presenters/projections/avatarProjections";
 import { DynastyService } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";

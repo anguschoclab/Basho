@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { KeshoMawashiDisplay } from "@/components/kesho/KeshoMawashiDisplay";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { Badge } from "@/components/ui/badge";
 import { Palette, Award, ShieldCheck } from "lucide-react";

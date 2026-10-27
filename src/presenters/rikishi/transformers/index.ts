@@ -6,10 +6,10 @@
  */
 
 // Identity
-export { toIdentityDTO } from "./identity";
+export { toIdentityDTO } from "@/presenters/rikishi/transformers/identity";
 
 // Rank & Style
-export { toRankDTO, toStyleDTO } from "./rank";
+export { toRankDTO, toStyleDTO } from "@/presenters/rikishi/transformers/rank";
 
 // Stats & Status
 export {
@@ -18,37 +18,37 @@ export {
   toPerceivedStatsDTO,
   calculatePerceivedStats,
   toDescriptorDTO,
-} from "./stats";
-export { calculateInjurySummary } from "./injury";
+} from "@/presenters/rikishi/transformers/stats";
+export { calculateInjurySummary } from "@/presenters/rikishi/transformers/injury";
 
 // Career
-export { toCareerDTO, calculateStreak, calculateAvgRank, rankScore } from "./career";
+export { toCareerDTO, calculateStreak, calculateAvgRank, rankScore } from "@/presenters/rikishi/transformers/career";
 
 // Kimarite
 export {
   toKimariteDTO,
   calculateMostFrequentKimarite,
   buildFavoredKimariteDisplay,
-} from "./kimarite";
+} from "@/presenters/rikishi/transformers/kimarite";
 
 // Rivals
-export { calculateTopRivals } from "./rivals";
+export { calculateTopRivals } from "@/presenters/rikishi/transformers/rivals";
 
 // Achievements & Personality
-export { toAchievementsDTO, toPersonalityDTO } from "./achievements";
+export { toAchievementsDTO, toPersonalityDTO } from "@/presenters/rikishi/transformers/achievements";
 
 // Economics
-export { toEconomicsDTO } from "./economics";
+export { toEconomicsDTO } from "@/presenters/rikishi/transformers/economics";
 
 // Lineage & Career Data
-export { toLineageDTO, toCareerDataDTO } from "./lineage";
+export { toLineageDTO, toCareerDataDTO } from "@/presenters/rikishi/transformers/lineage";
 
 // Visual
-export { toVisualDTO, toH2HDTO } from "./visual";
+export { toVisualDTO, toH2HDTO } from "@/presenters/rikishi/transformers/visual";
 
 // Roster
-export { projectRosterEntry } from "./roster";
+export { projectRosterEntry } from "@/presenters/rikishi/transformers/roster";
 
 // Kihaku (fighting spirit)
-export { toKihakuDTO } from "./kihaku";
-export type { RikishiKihakuDTO } from "./kihaku";
+export { toKihakuDTO } from "@/presenters/rikishi/transformers/kihaku";
+export type { RikishiKihakuDTO } from "@/presenters/rikishi/transformers/kihaku";

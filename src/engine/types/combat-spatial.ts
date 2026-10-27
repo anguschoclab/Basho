@@ -5,9 +5,9 @@
  * Defines physical body state, grip mechanics, and phase-based combat state machine.
  */
 
-import type { Side } from "../types/banzuke";
-import type { KimariteId } from "./combat";
-import type { GrappleState } from "./combat";
+import type { Side } from "@/engine/types/banzuke";
+import type { KimariteId } from "@/engine/types/combat";
+import type { GrappleState } from "@/engine/types/combat";
 
 // ---------------------------------------------------------------------------
 // Spatial Constants
@@ -167,8 +167,8 @@ export interface EngineStateV2 {
   /** In-bout injury if one occurred */
   inBoutInjury: {
     rikishiId: string;
-    area: import("../systems/health/BodyDefinitions").InjuryBodyArea;
-    severity: import("../systems/health/BodyDefinitions").InjurySeverity;
+    area: import("@/engine/health/BodyDefinitions").InjuryBodyArea;
+    severity: import("@/engine/health/BodyDefinitions").InjurySeverity;
     triggerEvent: string;
   } | null;
 }

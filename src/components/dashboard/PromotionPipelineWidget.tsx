@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Button } from "@/components/ui/button";
 import { TrendingUp } from "lucide-react";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
   getOzekiRunCandidates,
@@ -11,7 +11,7 @@ import {
   getKadobanDrama,
 } from "@/presenters/projections/promotionProjections";
 import { RANK_TIERS } from "@/constants/ui/promotion";
-import { RankDistributionChart, KadobanSection, PromotionWatch } from "./PromotionPipelineSections";
+import { RankDistributionChart, KadobanSection, PromotionWatch } from "@/components/dashboard/PromotionPipelineSections";
 
 export function PromotionPipelineWidget() {
   const { state } = useGame();

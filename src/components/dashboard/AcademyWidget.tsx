@@ -4,10 +4,10 @@
  */
 import { GraduationCap } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, prospectStageInput } from "@/presenters/avatarProjections";
-import { BaseWidget } from "./BaseWidget";
+import { resolveAvatar, prospectStageInput } from "@/presenters/projections/avatarProjections";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
+import type { YouthAcademyProjection } from "@/presenters/projections/youthAcademyProjections";
 
 interface AcademyWidgetProps {
   projection: YouthAcademyProjection;

@@ -6,11 +6,11 @@ import { MyStableTab } from "@/components/scouting/MyStableTab";
 import { RecruitingTab } from "@/components/scouting/RecruitingTab";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Eye, UserPlus, Shield } from "lucide-react";
-import { PageHeader } from "@/components/layout/page-shell";
-import { PerceptionOverview } from "@/components/game/PerceptionOverview";
+import { PageHeader } from "@/components/layout/page-shell/index";
+import { PerceptionOverview } from "@/components/scouting/PerceptionOverview";
 
 export default function ScoutingPage() {
   const { state } = useGame();

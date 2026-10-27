@@ -9,18 +9,18 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatCard, ListCard, SectionHeader } from "@/components/layout/page-shell";
+import { StatCard, ListCard, SectionHeader } from "@/components/layout/page-shell/index";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { TabsContent } from "@/components/ui/tabs";
 import { Globe } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import { getGlobalCupChampion } from "@/presenters/worldAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Heya } from "@/engine/types/heya";
-import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived.tsx";
+import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived";
 
 interface Props {
   world: WorldState;

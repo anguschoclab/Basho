@@ -22,16 +22,16 @@
  *   SideIndicator  — east/west color strip
  */
 
-export { PageHeader } from "./PageHeader";
-export { SectionHeader } from "./SectionHeader";
-export { KanjiTile } from "./KanjiTile";
-export { CardEyebrow } from "./CardEyebrow";
-export type { CardEyebrowProps } from "./CardEyebrow";
-export { StatCard } from "./StatCard";
-export type { StatItem, ProgressItem } from "./StatCard";
-export { ListCard } from "./ListCard";
-export type { ListRow } from "./ListCard";
-export { ProgressRow } from "./ProgressRow";
-export { SimpleRankBadge } from "./RankBadge";
-export { DataTable } from "./DataTable";
-export type { Column } from "./DataTable";
+export { PageHeader } from "@/components/layout/page-shell/PageHeader";
+export { SectionHeader } from "@/components/layout/page-shell/SectionHeader";
+export { KanjiTile } from "@/components/layout/page-shell/KanjiTile";
+export { CardEyebrow } from "@/components/layout/page-shell/CardEyebrow";
+export type { CardEyebrowProps } from "@/components/layout/page-shell/CardEyebrow";
+export { StatCard } from "@/components/layout/page-shell/StatCard";
+export type { StatItem, ProgressItem } from "@/components/layout/page-shell/StatCard";
+export { ListCard } from "@/components/layout/page-shell/ListCard";
+export type { ListRow } from "@/components/layout/page-shell/ListCard";
+export { ProgressRow } from "@/components/layout/page-shell/ProgressRow";
+export { SimpleRankBadge } from "@/components/layout/page-shell/RankBadge";
+export { DataTable } from "@/components/layout/page-shell/DataTable";
+export type { Column } from "@/components/layout/page-shell/DataTable";

@@ -4,7 +4,7 @@
  * Heat legend for rivalry page.
  */
 
-import { HEAT_BAND_CONFIG } from "../../constants/ui/rivalry";
+import { HEAT_BAND_CONFIG } from "@/constants/ui/rivalry";
 import type { RivalryHeatBand } from "@/presenters/engineAccess";
 
 export function HeatLegend() {

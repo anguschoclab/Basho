@@ -5,10 +5,10 @@
  * Extracted from phase05_monthly_boundary.ts for modularity.
  */
 
-import type { WorldState } from "../../../../types/world";
-import type { Heya } from "../../../../types/heya";
-import type { HeyaUpdates } from "../types";
-import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 export function processLoanRepayments(
   _world: WorldState,

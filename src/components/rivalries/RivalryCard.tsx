@@ -7,13 +7,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flame } from "lucide-react";
-import { RikishiName, StableName } from "@/components/ClickableName";
+import { RikishiName, StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { formatRank, clamp } from "@/presenters/uiDigest";
-import { getDisplayHeatBand } from "./rivalryUtils.pure";
-import { H2HBar, HeatGauge } from "./rivalryUtils";
-import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "../../constants/ui/rivalry";
+import { getDisplayHeatBand } from "@/components/rivalries/rivalryUtils.pure";
+import { H2HBar, HeatGauge } from "@/components/rivalries/rivalryUtils";
+import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "@/constants/ui/rivalry";
 import type { RivalryPairState, RivalryTrigger } from "@/presenters/engineAccess";
 import { toRankPosition } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";

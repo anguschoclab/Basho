@@ -7,13 +7,13 @@
  */
 
 import { cn } from "@/lib/utils";
-import { getRankMeta, getRankDivision, formatRankDisplay, formatJapanese } from "./rankBadgeUtils";
+import { getRankMeta, getRankDivision, formatRankDisplay, formatJapanese } from "@/components/rikishi/rankBadgeUtils";
 import {
   CompactRankBadge,
   RosterRankBadge,
   PillRankBadge,
   FullRankBadge,
-} from "./RankBadgeVariants";
+} from "@/components/rikishi/RankBadgeVariants";
 
 export type RankBadgeTier =
   | "yokozuna"

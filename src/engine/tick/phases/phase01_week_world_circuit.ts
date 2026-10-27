@@ -1,8 +1,8 @@
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { mergeImpacts } from "../../core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { mergeImpacts } from "@/engine/core/ImpactResolver";
 
 /**
  * Phase: World Circuit Processing (Weekly)

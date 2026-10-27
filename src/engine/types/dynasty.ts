@@ -5,7 +5,7 @@
  * (Phase 5: Dynasty & World Circuit)
  */
 
-import type { CombatArchetype } from "./combat";
+import type { CombatArchetype } from "@/engine/types/combat";
 
 /** A snapshot of a stable's training identity that persists across Oyakata generations. */
 export interface TrainingPhilosophy {

@@ -11,9 +11,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { onFocusGlobalSearch } from "@/components/game/searchFocusSignal";
+import { onFocusGlobalSearch } from "@/components/shared/searchFocusSignal";
 import {
   searchEntities,
   type RikishiSearchHit,
@@ -24,7 +24,7 @@ import {
   SearchInputIcon,
   SearchClearButton,
   type FlatOption,
-} from "./GlobalEntitySearchSections";
+} from "@/components/layout/GlobalEntitySearchSections";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

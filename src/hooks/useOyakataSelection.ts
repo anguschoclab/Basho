@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { menteesOf } from "@/presenters/engineAccess";

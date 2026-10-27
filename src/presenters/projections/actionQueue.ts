@@ -3,11 +3,11 @@
  * Builds a severity-sorted list of actionable items for the Dashboard.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import { scanRecentEvents } from "../../engine/events";
-import type { Heya } from "../../engine/types/heya";
-import type { TrainingSummary } from "./trainingProjections";
-import type { FinanceSummary } from "./financeProjections";
+import type { WorldState } from "@/engine/types/world";
+import { scanRecentEvents } from "@/engine/events/events";
+import type { Heya } from "@/engine/types/heya";
+import type { TrainingSummary } from "@/presenters/projections/trainingProjections";
+import type { FinanceSummary } from "@/presenters/projections/financeProjections";
 
 export type ActionSeverity = "critical" | "warning" | "info";
 

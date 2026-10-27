@@ -6,25 +6,25 @@
  * and a resolver applies these patches atomically to produce the final state.
  */
 
-import type { WorldState } from "../types/world";
-import type { HeyaTrainingState } from "../types/training";
-import type { Sponsor, Koenkai } from "../types/sponsors";
-import type { Staff } from "../types/staff";
-import type { BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
-import type { GovernanceRuling } from "../types/economy";
-import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
-import type { AlmanacSnapshot } from "../almanac";
+import type { WorldState } from "@/engine/types/world";
+import type { HeyaTrainingState } from "@/engine/types/training";
+import type { Sponsor, Koenkai } from "@/engine/types/sponsors";
+import type { Staff } from "@/engine/types/staff";
+import type { BashoResult, MatchSchedule, AwardLogEntry } from "@/engine/types/basho";
+import type { GovernanceRuling } from "@/engine/types/economy";
+import type { MyosekiStock, MyosekiTransaction } from "@/engine/types/myoseki";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
 import type {
   EngineEventType,
   EventCategory,
   EventImportance,
   NarrativeContext,
-} from "../types/events";
-import type { Id } from "../types/common";
-import type { Heya } from "../types/heya";
-import type { Rikishi } from "../types/rikishi";
-import type { RetiredRikishiSummary } from "../types/history";
-import type { Oyakata } from "../types/oyakata";
+} from "@/engine/types/events";
+import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import type { Oyakata } from "@/engine/types/oyakata";
 
 /**
  * Create a fresh deterministic timestamp generator.

@@ -1,14 +1,14 @@
-export { useSidebar } from "./context";
-export { SidebarProvider } from "./provider";
-export { Sidebar, SidebarTrigger, SidebarRail, SidebarInset } from "./core";
+export { useSidebar } from "@/components/ui/sidebar/context";
+export { SidebarProvider } from "@/components/ui/sidebar/provider";
+export { Sidebar, SidebarTrigger, SidebarRail, SidebarInset } from "@/components/ui/sidebar/core";
 export {
   SidebarInput,
   SidebarHeader,
   SidebarFooter,
   SidebarSeparator,
   SidebarContent,
-} from "./primitives";
-export { SidebarGroup, SidebarGroupLabel, SidebarGroupAction, SidebarGroupContent } from "./group";
+} from "@/components/ui/sidebar/primitives";
+export { SidebarGroup, SidebarGroupLabel, SidebarGroupAction, SidebarGroupContent } from "@/components/ui/sidebar/group";
 export {
   SidebarMenu,
   SidebarMenuItem,
@@ -19,4 +19,4 @@ export {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
-} from "./menu";
+} from "@/components/ui/sidebar/menu";

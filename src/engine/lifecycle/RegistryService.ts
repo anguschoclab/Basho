@@ -1,8 +1,8 @@
-import { getActiveRikishi, getHeya } from "../queries";
-import * as talentpool from "../systems/generation/TalentPoolService";
-import type { WorldState } from "../types/world";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
+import { getActiveRikishi, getHeya } from "@/engine/core/queries";
+import * as talentpool from "@/engine/generation/TalentPoolService";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   RECRUITMENT_WINDOW_WEEKS,
   MOMENTUM_MAX,
@@ -17,7 +17,7 @@ import {
   MOMENTUM_MEDIUM_LOSS,
   HOF_CAREER_WINS_THRESHOLD,
   CAREER_WIN_MILESTONES,
-} from "../../constants/engine/generation";
+} from "@/constants/engine/generation";
 
 /**
  * Recruitment window — per Constitution, recruitment occurs at:

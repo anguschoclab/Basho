@@ -6,9 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
-import type { YouthProspectDTO } from "@/presenters/youthAcademyProjections";
+import type { YouthProspectDTO } from "@/presenters/projections/youthAcademyProjections";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, prospectStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, prospectStageInput } from "@/presenters/projections/avatarProjections";
 
 interface AcademyIntakeCardProps {
   prospect: YouthProspectDTO;

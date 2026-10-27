@@ -13,10 +13,10 @@
  * Zero in-place mutations. Every phase must use spread/clone semantics.
  */
 
-import type { WorldState, ActiveModifiers } from "../types/world";
-import type { StateImpact } from "../core/StateImpact";
-import { resolveImpacts } from "../core/ImpactResolver";
-import { error } from "../utils/Logger";
+import type { WorldState, ActiveModifiers } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { error } from "@/engine/utils/Logger";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

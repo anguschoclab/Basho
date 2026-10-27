@@ -6,7 +6,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import { Skeleton } from "./skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SkeletonCardProps {
   /** Size variant matching WidgetCard */

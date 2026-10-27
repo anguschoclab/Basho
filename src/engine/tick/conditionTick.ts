@@ -7,7 +7,7 @@
  * - interim / off-season: condition recovers at a fixed rate
  */
 
-import type { Rikishi } from "../types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 import {
   DEFAULT_CONDITION,
   MAX_CONDITION,
@@ -16,7 +16,7 @@ import {
   FATIGUE_DECAY_DIVISOR,
   RECOVERY_RATE_NORMAL,
   RECOVERY_RATE_SLOW,
-} from "../../constants/engine/condition";
+} from "@/constants/engine/condition";
 
 type CyclePhase = "active_basho" | "interim" | "pre_basho" | "post_basho" | "banzuke_reveal";
 

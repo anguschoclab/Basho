@@ -30,13 +30,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { FATIGUE_LABELS, toFatigueBand } from "@/presenters/uiDigest";
 import type { DrillType } from "@/engine/types/training";
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/index";
 import { DRILL_METADATA } from "@/constants/engine/training";
 import { DAYS, type useDrillPlanner } from "@/hooks/useDrillPlanner";
 

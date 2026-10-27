@@ -8,7 +8,7 @@
 
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { getRankMeta } from "./rankBadgeUtils";
+import { getRankMeta } from "@/components/rikishi/rankBadgeUtils";
 
 type Division = "sanyaku" | "makuuchi" | "juryo" | "makushita" | "lower";
 

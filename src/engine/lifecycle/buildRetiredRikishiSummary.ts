@@ -5,10 +5,10 @@
  * Called at year-end by runRetiredRikishiSummarization.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { RetiredRikishiSummary, CareerYearAggregate } from "../types/history";
-import type { Rank, Division } from "../types/banzuke";
-import { RANK_HIERARCHY } from "../types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary, CareerYearAggregate } from "@/engine/types/history";
+import type { Rank, Division } from "@/engine/types/banzuke";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 
 /**
  * Build a compact RetiredRikishiSummary from a full Rikishi.

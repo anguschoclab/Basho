@@ -1,12 +1,12 @@
 import { useState, useMemo } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { Division } from "@/engine/types/banzuke";
 import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
 import { getRikishi } from "@/presenters/worldAccess";

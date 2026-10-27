@@ -19,20 +19,20 @@
  *   7. LegacyService bloodline trait for accomplished retirees
  */
 
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
-import type { ImpactBuilder } from "../core/ImpactBuilder";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { checkRetirement } from "./retirementCheck";
-import { generateRetirementNarrative } from "./retirementNarrative";
-import { processRetireeOyakataConversion } from "./retireeOyakataConversion";
-import { LegacyService } from "../systems/legacy/LegacyService";
-import { onRikishiRetired } from "../records";
-import { getRikishi } from "../queries";
-import { opfsArchiveService } from "../storage/opfsArchive";
-import { electronArchiveService } from "../storage/electronArchive";
-import { warn } from "../utils/Logger";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
+import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
+import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
+import { LegacyService } from "@/engine/legacy/LegacyService";
+import { onRikishiRetired } from "@/engine/history/records";
+import { getRikishi } from "@/engine/core/queries";
+import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/persistence/storage/electronArchive";
+import { warn } from "@/engine/utils/Logger";
 
 /**
  * Archive a retiring rikishi's full record to cold storage.

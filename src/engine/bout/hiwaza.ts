@@ -17,9 +17,9 @@
  * edge (the classic over-committed attacker's exit).
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { EngineStateV2, PhysicalBody } from "../types/combat-spatial";
-import type { Side } from "../types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { EngineStateV2, PhysicalBody } from "@/engine/types/combat-spatial";
+import type { Side } from "@/engine/types/banzuke";
 
 /** Minimal RNG surface — matches SeededRNG without importing the class. */
 interface HiwaRng {

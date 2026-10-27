@@ -8,7 +8,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GraduationCap } from "lucide-react";
-import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
+import type { YouthAcademyProjection } from "@/presenters/projections/youthAcademyProjections";
 import type { AcademyStaffRole } from "@/engine/types/academy";
 import {
   BuildAcademyCard,
@@ -16,7 +16,7 @@ import {
   ProspectsSection,
   InvestSection,
   UpgradeSection,
-} from "./YouthAcademyPanelSections";
+} from "@/components/recruitment/YouthAcademyPanelSections";
 
 export function YouthAcademyPanel({
   projection,

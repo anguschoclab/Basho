@@ -4,8 +4,8 @@
  * Transforms career statistics, streaks, and records.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import type { RikishiCareerDTO } from "../types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RikishiCareerDTO } from "@/presenters/rikishi/types";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import {
   RANK_SCORE_TIER_MULTIPLIER,

@@ -5,16 +5,16 @@
  * Extracted from phase05_monthly_boundary.ts for modularity.
  */
 
-import type { WorldState } from "../../../../types/world";
-import type { Heya } from "../../../../types/heya";
-import type { HeyaUpdates } from "../types";
-import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
-import { computeFacilitiesBand } from "../../../../facilities";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { computeFacilitiesBand } from "@/engine/economy/facilities";
 import {
   MAINTENANCE_COST_PER_POINT,
   MIN_FACILITY_LEVEL,
   FACILITY_DECAY_AMOUNT,
-} from "../../../../../constants/engine/facilities";
+} from "@/constants/engine/facilities";
 
 export function processFacilitiesMaintenance(
   _world: WorldState,

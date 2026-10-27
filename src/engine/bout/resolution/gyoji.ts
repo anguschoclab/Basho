@@ -5,16 +5,16 @@
  * and record career stats on the pools.
  */
 
-import type { BashoState, BoutResult } from "../../types/basho";
-import type { WorldState } from "../../types/world";
-import type { ImpactBuilder } from "../../core/ImpactBuilder";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
+import type { BashoState, BoutResult } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import {
   assignGyojiToBout,
   recordGyojiBout,
   assembleShimpanPanel,
-} from "../../systems/officials/GyojiService";
-import { resolveMonoii } from "../../types/gyoji";
+} from "@/engine/officials/GyojiService";
+import { resolveMonoii } from "@/engine/types/gyoji";
 
 /**
  * 6. Gyoji officiation — assign a gyoji to this bout and record career stats.

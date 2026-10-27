@@ -1,7 +1,7 @@
-import type { Rikishi } from "../../types/rikishi";
-import type { BoutContext } from "../boutUtils";
-import type { EngineStateV2 } from "../../types/combat-spatial";
-import { initPhysicalBody } from "../boutSpatial";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutContext } from "@/engine/bout/boutUtils";
+import type { EngineStateV2 } from "@/engine/types/combat-spatial";
+import { initPhysicalBody } from "@/engine/bout/boutSpatial";
 
 export function initEngineStateV2(bout: BoutContext, east: Rikishi, west: Rikishi): EngineStateV2 {
   void bout; // id/day used in seed; kept for signature clarity

@@ -9,13 +9,13 @@
 
 import { useState, useMemo } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { getMentor, menteesOf } from "@/presenters/engineAccess";
-import { getHealthBadge } from "@/presenters/PerceptionPresenter";
+import { getHealthBadge } from "@/presenters/projections/PerceptionPresenter";
 import type { CareerSnapshot } from "@/engine/types/history";
 import type { Rikishi as RawRikishi } from "@/engine/types/rikishi";
 import {

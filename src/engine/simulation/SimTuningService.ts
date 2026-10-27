@@ -1,11 +1,11 @@
-import type { WorldState } from "../types/world";
-import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
-import type { Rikishi } from "../types/rikishi";
-import type { RetiredRikishiSummary } from "../types/history";
-import type { Oyakata } from "../types/oyakata";
-import { EntityCollection } from "../core/EntityCollection";
-import { getRikishi } from "../queries";
-import { finiteOr } from "../utils/math";
+import type { WorldState } from "@/engine/types/world";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import type { Oyakata } from "@/engine/types/oyakata";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { getRikishi } from "@/engine/core/queries";
+import { finiteOr } from "@/engine/utils/math";
 
 export interface TuningMetrics {
   statAverages: {

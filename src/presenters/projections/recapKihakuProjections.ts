@@ -4,10 +4,10 @@
  * Reads rikishi.kihakuIsenScore (written by BanzukePublisher post-basho)
  * and returns the top 5 performers for display.
  */
-import type { WorldState } from "../../engine/types/world";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
-import { getAllRikishi } from "../worldAccess";
+import type { WorldState } from "@/engine/types/world";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
+import { getAllRikishi } from "@/presenters/worldAccess";
 
 export interface KihakuPerformerDTO {
   rikishiId: string;

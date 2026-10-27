@@ -8,12 +8,12 @@
 
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StableName } from "@/components/ClickableName";
+import { StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 import type { WorldState } from "@/presenters/uiDigest";

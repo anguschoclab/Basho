@@ -1,4 +1,4 @@
-import { isMakeKoshi } from "./banzukeHelpers";
+import { isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
 
 /** Defines the structure for ozeki kadoban state. */
 export interface OzekiKadobanState {

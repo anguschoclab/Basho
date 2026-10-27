@@ -3,25 +3,25 @@
 // Performance-Optimized Selectors (P3)
 // =======================================================
 
-import type { WorldState } from "../engine/types/world";
-import type { Rikishi } from "../engine/types/rikishi";
-import type { RetiredRikishiSummary } from "../engine/types/history";
-import type { Heya } from "../engine/types/heya";
-import type { EngineEvent } from "../engine/types/events";
-import { queryEvents } from "../engine/events";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import type { Heya } from "@/engine/types/heya";
+import type { EngineEvent } from "@/engine/types/events";
+import { queryEvents } from "@/engine/events/events";
 
 // Re-export the canonical most-recent-first extractor so UI components can
 // reach it without importing from src/engine/ (ESLint no-restricted-imports).
-export { scanRecentEvents } from "../engine/events";
-export type { ScanRecentEventsOptions } from "../engine/events";
-import { sortStandings } from "../engine/utils/sort";
-import { getCachedPerception } from "./uiDigest";
-import { getKimarite, KIMARITE_REGISTRY } from "../engine/kimariteRegistry";
+export { scanRecentEvents } from "@/engine/events/events";
+export type { ScanRecentEventsOptions } from "@/engine/events/events";
+import { sortStandings } from "@/engine/utils/sort";
+import { getCachedPerception } from "@/presenters/uiDigest";
+import { getKimarite, KIMARITE_REGISTRY } from "@/engine/bout/kimarite/kimariteRegistry";
 import {
   getKimariteTargetShare,
   rarityFromShare,
   type KimariteRarity,
-} from "../constants/engine/kimariteFrequencies";
+} from "@/constants/engine/kimariteFrequencies";
 
 /**
  * Simple memoization helper for selectors that depend only on WorldState.

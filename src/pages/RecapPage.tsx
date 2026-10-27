@@ -10,18 +10,18 @@
 
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 
 import { TournamentCeremony } from "@/components/recap/TournamentCeremony";
 import { NarrativeSummary } from "@/components/recap/NarrativeSummary";
-import { PlayoffBracket } from "@/components/game/PlayoffBracket";
-import { BanzukeReveal } from "@/components/game/BanzukeReveal";
-import { KeyBoutsSection } from "@/components/game/KeyBoutsSection";
+import { PlayoffBracket } from "@/components/basho/PlayoffBracket";
+import { BanzukeReveal } from "@/components/banzuke/BanzukeReveal";
+import { KeyBoutsSection } from "@/components/basho/KeyBoutsSection";
 import {
   RecapHeroActions,
   KihakuSection,

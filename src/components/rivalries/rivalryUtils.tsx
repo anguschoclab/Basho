@@ -6,7 +6,7 @@
 
 import { cn } from "@/lib/utils";
 import type { RivalryHeatBand } from "@/presenters/engineAccess";
-import { HEAT_BAND_CONFIG } from "../../constants/ui/rivalry";
+import { HEAT_BAND_CONFIG } from "@/constants/ui/rivalry";
 
 export function H2HBar({
   aWins,

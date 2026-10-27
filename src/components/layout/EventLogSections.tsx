@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { EngineEvent } from "@/engine/types/events";
 import { formatEventTime } from "@/presenters/uiDigest";
-import { getCategoryMeta } from "./eventLogHelpers";
-import { MentionText } from "../MentionText";
+import { getCategoryMeta } from "@/components/layout/eventLogHelpers";
+import { MentionText } from "@/components/shared/MentionText";
 import { activationKeyHandler } from "@/lib/a11y";
 
 const FILTER_OPTIONS = [

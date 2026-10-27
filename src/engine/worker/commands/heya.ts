@@ -5,21 +5,21 @@
  * mentorship, sparring pairs, diet, tsukebito, and training state.
  */
 
-import type { EngineCommand } from "../types";
-import { withdrawRikishi, treatInjury } from "../../systems/health/HealthActions";
-import { recordGomenfuda } from "../../systems/governance/GomenfudaService";
-import { investInFacility } from "../../facilities";
-import { InfrastructureService } from "../../systems/economy/InfrastructureService";
-import { assignMentor } from "../../lineage";
-import { removeMentor } from "../../systems/training/MentorshipService";
-import { assignSparringPair, removeSparringPair } from "../../systems/training/SparringService";
-import { setTsukebito, clearTsukebito } from "../../systems/training/TsukebitoService";
-import { updateHeyaInWorld } from "../../queries";
-import { retireRikishiImpact } from "../../core/ImpactBuilder";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import type { StateImpact } from "../../core/StateImpact";
-import type { WorkerRuntime } from "../runtime";
-import type { CommandHandlerMap } from "./types";
+import type { EngineCommand } from "@/engine/worker/types";
+import { withdrawRikishi, treatInjury } from "@/engine/health/HealthActions";
+import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
+import { investInFacility } from "@/engine/economy/facilities";
+import { InfrastructureService } from "@/engine/economy/InfrastructureService";
+import { assignMentor } from "@/engine/legacy/lineage";
+import { removeMentor } from "@/engine/training/MentorshipService";
+import { assignSparringPair, removeSparringPair } from "@/engine/training/SparringService";
+import { setTsukebito, clearTsukebito } from "@/engine/training/TsukebitoService";
+import { updateHeyaInWorld } from "@/engine/core/queries";
+import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { WorkerRuntime } from "@/engine/worker/runtime";
+import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
 type Cmd<T extends EngineCommand["type"]> = Extract<EngineCommand, { type: T }>;
 

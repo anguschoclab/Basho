@@ -21,7 +21,7 @@ export interface AcademyStaff {
   hiredAtYear: number;
   /** Approximate age — drives avatar stage. */
   age?: number;
-  avatarConfig?: import("./avatar").AvatarIdentity;
+  avatarConfig?: import("@/engine/types/avatar").AvatarIdentity;
 }
 
 /** Youth academy prospect — a young recruit being developed. */
@@ -36,7 +36,7 @@ export interface YouthProspect {
   enrolledAtYear: number;
   enrolledAtWeek: number;
   developmentHistory: Array<{ week: number; ability: number }>;
-  avatarConfig?: import("./avatar").AvatarIdentity;
+  avatarConfig?: import("@/engine/types/avatar").AvatarIdentity;
 }
 
 /** Youth academy state stored on the heya. */

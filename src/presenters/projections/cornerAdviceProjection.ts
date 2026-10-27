@@ -5,12 +5,12 @@
  * Lives in the presenter layer so UI components do not touch raw engine state.
  */
 
-import { getRikishi } from "../../engine/queries";
-import { getAdvice } from "../../engine/bout/CornerAdvice";
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
+import { getRikishi } from "@/engine/core/queries";
+import { getAdvice } from "@/engine/bout/CornerAdvice";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 
 export interface CornerAdviceItem {
   id: string;

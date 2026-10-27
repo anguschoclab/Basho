@@ -1,0 +1,125 @@
+/**
+ * historyCache.ts
+ * ===============
+ * LRU Cache for Archived Historical Data.
+ * Prevents OOM by limiting the number of historical years held in RAM.
+ */
+
+import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/persistence/storage/electronArchive";
+import { info, error } from "@/engine/utils/Logger";
+import { mapWithConcurrency } from "@/engine/utils/index";
+import type { BoutResult, BashoResult } from "@/engine/types/basho";
+import type { AlmanacSnapshot } from "@/engine/almanac/types";
+
+export interface ArchivedYear {
+  year: number;
+  bouts: BoutResult[];
+  awards: BashoResult[];
+  banzukeSnapshots: AlmanacSnapshot[];
+}
+
+class HistoryLRUCache {
+  private cache: Map<number, ArchivedYear> = new Map();
+  private readonly maxCapacity: number;
+
+  constructor(maxCapacity: number = 3) {
+    this.maxCapacity = maxCapacity;
+  }
+
+  /**
+   * Retrieves a full year of historical data (bouts, awards, banzuke),
+   * checking the LRU RAM cache first before falling back to OPFS load.
+   *
+   * @param year - The simulation year to load.
+   * @returns The archived year data, or null if the year has no data or archive is unavailable.
+   */
+  public async getYear(year: number): Promise<ArchivedYear | null> {
+    if (this.cache.has(year)) {
+      // Move to front (refresh LRU)
+      const data = this.cache.get(year);
+      if (!data) return null;
+      this.cache.delete(year);
+      this.cache.set(year, data);
+      return data;
+    }
+
+    // Cache miss — try to load from OPFS
+    info(`Cache miss for year ${year}, attempting OPFS load...`, "HistoryCache");
+    const data = await this.loadFromOPFS(year);
+    if (data) {
+      this.putYear(year, data);
+      return data;
+    }
+
+    return null;
+  }
+
+  /**
+   * Stores a year in the LRU cache, updating its MRU position if it exists.
+   * If capacity is reached, evicts the oldest (least recently used) year from RAM.
+   *
+   * @param year - The simulation year being cached.
+   * @param data - The full archived dataset for that year.
+   */
+  public putYear(year: number, data: ArchivedYear): void {
+    if (this.cache.has(year)) {
+      this.cache.delete(year);
+    } else if (this.cache.size >= this.maxCapacity) {
+      // Evict oldest (first key in Map iterator)
+      const oldestYear = this.cache.keys().next().value;
+      if (oldestYear !== undefined) {
+        info(`Evicting year ${oldestYear} from RAM.`, "HistoryCache");
+        this.cache.delete(oldestYear);
+      }
+    }
+    this.cache.set(year, data);
+  }
+
+  /**
+   * Loads a full year of historical data from OPFS/Electron FS by aggregating bouts and snapshots.
+   */
+  private async loadFromOPFS(year: number): Promise<ArchivedYear | null> {
+    // Use electronArchiveService in Electron builds, opfsArchiveService in web builds
+    const archiveService =
+      typeof window !== "undefined" && window.__ELECTRON__ === true
+        ? electronArchiveService
+        : opfsArchiveService;
+
+    if (!archiveService.isSupported()) return null;
+
+    try {
+      // 1. Load Bouts
+      const boutIds = await archiveService.getArchivedBoutIdsForSeason(year);
+      if (boutIds.length === 0) return null;
+
+      const bouts = await mapWithConcurrency(boutIds, 8, (id) =>
+        archiveService.retrieveBoutLog(year, id)
+      );
+
+      // 2. Load Awards
+      const awards = await archiveService.retrieveAwards(year);
+
+      // 3. Load Banzuke Snapshots (Standard 6 Bashos)
+      const snapshots = await Promise.all(
+        [1, 3, 5, 7, 9, 11].map((m) => archiveService.retrieveBanzuke(year, m))
+      );
+
+      return {
+        year,
+        bouts: bouts.filter((b): b is BoutResult => b !== null),
+        awards,
+        banzukeSnapshots: snapshots.filter((s): s is AlmanacSnapshot => s !== null),
+      };
+    } catch (err) {
+      error(`Failed to load year ${year} from archive service`, "HistoryCache", err);
+      return null;
+    }
+  }
+
+  public clear(): void {
+    this.cache.clear();
+  }
+}
+
+export const historyCache = new HistoryLRUCache(3);

@@ -6,13 +6,13 @@
  * try/catch so a single corrupt field does not abort the entire migration.
  */
 
-import type { SaveGame, SaveVersion } from "../types/save";
-import { CURRENT_SAVE_VERSION, KNOWN_SAVE_VERSIONS } from "../types/save";
-import type { Heya } from "../types/heya";
-import type { Rikishi } from "../types/rikishi";
-import { warn } from "../utils/Logger";
-import { parseSave, stringifySave } from "./collectionCodec";
-import { generateGyoji, generateShimpan } from "../systems/officials/GyojiService";
+import type { SaveGame, SaveVersion } from "@/engine/types/save";
+import { CURRENT_SAVE_VERSION, KNOWN_SAVE_VERSIONS } from "@/engine/types/save";
+import type { Heya } from "@/engine/types/heya";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { warn } from "@/engine/utils/Logger";
+import { parseSave, stringifySave } from "@/engine/persistence/collectionCodec";
+import { generateGyoji, generateShimpan } from "@/engine/officials/GyojiService";
 
 export interface MigrationContext {
   fromVersion: SaveVersion;

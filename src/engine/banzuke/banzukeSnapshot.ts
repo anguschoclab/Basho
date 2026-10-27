@@ -16,8 +16,8 @@ import type {
   Division,
   DivisionBanzukeSnapshot,
   RankPosition,
-} from "../types/banzuke";
-import { RANK_HIERARCHY } from "../types/banzuke";
+} from "@/engine/types/banzuke";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 
 const DIVISIONS: Division[] = [
   "makuuchi",

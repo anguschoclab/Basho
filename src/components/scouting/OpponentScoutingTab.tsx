@@ -1,14 +1,14 @@
 // OpponentScoutingTab.tsx — Comprehensive opponent lookup & scouting investment
 
 import { useMemo, useState } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/hooks/use-toast";
 import { projectOpponentScoutingUIDigest, RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
-import { ScoutingFilterRow, OpponentCard } from "./OpponentScoutingSections";
+import { ScoutingFilterRow, OpponentCard } from "@/components/scouting/OpponentScoutingSections";
 
 export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const { state, setScoutingInvestment: setScoutingInvestmentAction } = useGame();

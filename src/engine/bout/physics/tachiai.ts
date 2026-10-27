@@ -1,9 +1,9 @@
-import type { SeededRNG } from "../../rng";
-import { rngFromSeed } from "../../rng";
-import type { Rikishi } from "../../types/rikishi";
-import type { BoutLogEntry } from "../../types/basho";
-import type { Side } from "../../types/banzuke";
-import type { TacticalFamily } from "../../types/combat";
+import type { SeededRNG } from "@/engine/core/rng";
+import { rngFromSeed } from "@/engine/core/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutLogEntry } from "@/engine/types/basho";
+import type { Side } from "@/engine/types/banzuke";
+import type { TacticalFamily } from "@/engine/types/combat";
 import {
   TACHIAI_IMPACT_VELOCITY,
   TACHIAI_JITTER_MAGNITUDE,
@@ -26,9 +26,9 @@ import {
   HENKA_POWER_GAP_FACTOR,
   HENKA_TECH_BASE,
   HENKA_TECH_FACTOR,
-} from "../../../constants/engine/physics";
-import type { EngineStateV2, PushBattleState } from "../../types/combat-spatial";
-import { initBeltBattle } from "../boutGrip";
+} from "@/constants/engine/physics";
+import type { EngineStateV2, PushBattleState } from "@/engine/types/combat-spatial";
+import { initBeltBattle } from "@/engine/bout/boutGrip";
 import {
   stat,
   jitter,
@@ -38,9 +38,9 @@ import {
   h2hConfidence,
   sideTactic,
   type BoutContext,
-} from "../boutUtils";
-import { getTacticProfile } from "../tacticProfiles";
-import { resolveCounterTacticBonus } from "../../types/combat";
+} from "@/engine/bout/boutUtils";
+import { getTacticProfile } from "@/engine/bout/tacticProfiles";
+import { resolveCounterTacticBonus } from "@/engine/types/combat";
 
 /**
  * Tactic-driven tachiai power modifiers: resolved tactic modifier plus

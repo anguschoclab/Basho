@@ -5,9 +5,9 @@
  * Extracted from uiDigest.ts to separate concerns.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import { projectRikishi } from "../rikishi";
-import type { UIRikishi } from "../rikishi";
+import type { WorldState } from "@/engine/types/world";
+import { projectRikishi } from "@/presenters/rikishi/index";
+import type { UIRikishi } from "@/presenters/rikishi/index";
 
 /**
  * Project rikishi with heya data for ceremony components.

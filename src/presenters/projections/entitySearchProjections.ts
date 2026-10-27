@@ -11,12 +11,12 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { isRetiredRikishiSummaryEntry } from "@/engine/queries";
+import { isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 import {
   getRankDisplayEntry,
   DIVISION_NAMES,
 } from "@/constants/engine/rankDisplay";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 
 export const RIKISHI_RESULT_CAP = 10;
 export const HEYA_RESULT_CAP = 4;

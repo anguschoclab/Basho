@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar } from "@/presenters/avatarProjections";
+import { resolveAvatar } from "@/presenters/projections/avatarProjections";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { GovernanceRuling } from "@/engine/types/economy";
 

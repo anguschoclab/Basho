@@ -1,0 +1,177 @@
+/**
+ * FinanceAgent.ts
+ * ==============
+ * Worker agent for handling financial decisions.
+ * Decides on investments, myoseki purchases, and financial risk management.
+ */
+
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { MyosekiStock } from "@/engine/types/myoseki";
+import { stableSort } from "@/engine/utils/sort";
+
+export interface FinanceAgentContext {
+  oyakata: Oyakata;
+  world: WorldState;
+  runwayBand: string;
+  funds: number;
+  monthlyBurn: number;
+}
+
+export interface FinanceAgentResult {
+  shouldBuyMyoseki: boolean;
+  myosekiId?: string;
+  shouldInvestInFacilities: boolean;
+  facilityType?: string;
+  shouldBuildReserves: boolean;
+  reserveTarget: number;
+  /** WS5 — desperate stables proactively seek rescue rather than waiting for
+   *  the basho-end governance review. */
+  shouldSeekRescue: boolean;
+  rescueMenu?: "sponsor_drive" | "bailout_loan" | "faction_appeal";
+  reasoning: string[];
+  riskLevel: "conservative" | "moderate" | "aggressive";
+}
+
+/**
+ * Finance Worker: Handles financial investment decisions
+ * Evaluates runway, ambition, and risk appetite to determine financial strategy
+ */
+export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult {
+  const reasoning: string[] = [];
+  const { oyakata, world, runwayBand, funds, monthlyBurn } = ctx;
+
+  const isAmbitious = oyakata.traits.ambition > 60;
+  const isRiskTaker = oyakata.traits.risk > 60;
+  const isTraditionalist = oyakata.traits.tradition > 70;
+  const isScientist = oyakata.archetype === "scientist";
+
+  let riskLevel: "conservative" | "moderate" | "aggressive";
+  let shouldBuyMyoseki = false;
+  let shouldInvestInFacilities = false;
+  let shouldBuildReserves = false;
+  let facilityType: string | undefined;
+  let reserveTarget: number;
+  let prioritized: MyosekiStock[] = [];
+
+  // Determine risk level based on personality and runway
+  if (runwayBand === "desperate" || runwayBand === "critical") {
+    riskLevel = "conservative";
+    reasoning.push("[Finance Agent] Critical runway forces conservative stance");
+  } else if (isRiskTaker && isAmbitious && runwayBand === "comfortable") {
+    riskLevel = "aggressive";
+    reasoning.push("[Finance Agent] High risk appetite with comfortable runway enables aggression");
+  } else if (isTraditionalist || runwayBand === "cautious") {
+    riskLevel = "conservative";
+    reasoning.push("[Finance Agent] Traditionalist/cautious approach selected");
+  } else {
+    riskLevel = "moderate";
+    reasoning.push("[Finance Agent] Balanced financial approach");
+  }
+
+  // Calculate runway in months
+  const runwayMonths = monthlyBurn > 0 ? funds / monthlyBurn : 999;
+
+  // Myoseki purchase decision
+  if (world.myosekiMarket && riskLevel !== "conservative") {
+    const minRunwayMonths = isRiskTaker ? 6 : 12;
+
+    if (runwayMonths > minRunwayMonths && isAmbitious) {
+      const stocks = stableSort(Object.values(world.myosekiMarket.stocks), (x) => x.id);
+
+      // Filter and prioritize stocks
+      const affordableStocks = stocks.filter(
+        (s) => s.status === "available" && s.askingPrice && s.askingPrice < funds * 0.5
+      );
+
+      prioritized = affordableStocks.sort((a, b) => {
+        let scoreA = 0;
+        let scoreB = 0;
+        // Prefer elite stocks for ambitious oyakata
+        if (a.prestigeTier === "elite") scoreA += 30;
+        if (b.prestigeTier === "elite") scoreB += 30;
+        if (a.prestigeTier === "respected") scoreA += 15;
+        if (b.prestigeTier === "respected") scoreB += 15;
+        // Prefer cheaper options for moderate
+        scoreA += (funds - (a.askingPrice || 0)) / 1000000;
+        scoreB += (funds - (b.askingPrice || 0)) / 1000000;
+        return scoreB - scoreA;
+      });
+
+      if (prioritized.length > 0) {
+        shouldBuyMyoseki = true;
+        const selected = prioritized[0];
+        reasoning.push(
+          `[Finance Agent] Targeting myoseki: ${selected.id} (¥${(selected.askingPrice || 0).toLocaleString()})`
+        );
+      } else {
+        reasoning.push("[Finance Agent] No affordable myoseki available");
+      }
+    } else {
+      reasoning.push("[Finance Agent] Insufficient runway or ambition for myoseki purchase");
+    }
+  } else {
+    reasoning.push("[Finance Agent] Conservative stance or no market available - skipping myoseki");
+  }
+
+  // Facility investment decision
+  if (runwayMonths > 12 && (isScientist || isAmbitious)) {
+    shouldInvestInFacilities = true;
+    if (isScientist) {
+      facilityType = "recovery";
+      reasoning.push("[Finance Agent] Scientist archetype prioritizes recovery facilities");
+    } else if (isTraditionalist) {
+      facilityType = "training";
+      reasoning.push("[Finance Agent] Traditionalist prioritizes training facilities");
+    } else {
+      facilityType = "nutrition";
+      reasoning.push("[Finance Agent] Defaulting to nutrition facilities");
+    }
+  }
+
+  // Reserve building decision
+  if (runwayMonths < 6 || riskLevel === "conservative") {
+    shouldBuildReserves = true;
+    reserveTarget = monthlyBurn * 6; // 6 months runway target
+    reasoning.push(
+      `[Finance Agent] Building reserves to ${reserveTarget.toLocaleString()} for safety`
+    );
+  } else {
+    reserveTarget = monthlyBurn * 3; // 3 months runway target
+    reasoning.push(`[Finance Agent] Maintaining ${reserveTarget.toLocaleString()} reserve target`);
+  }
+
+  // WS5 — crisis rescue menu (canon §14.8): a desperate stable chooses how to
+  // beg — persona determines the path. Deterministic, no rng.
+  let shouldSeekRescue = false;
+  let rescueMenu: FinanceAgentResult["rescueMenu"];
+  if (runwayBand === "desperate" || runwayBand === "critical") {
+    shouldSeekRescue = true;
+    if (isAmbitious) {
+      rescueMenu = "sponsor_drive";
+      reasoning.push("[Finance Agent] Rescue: ambitious oyakata drives sponsor recruitment");
+    } else if (isTraditionalist) {
+      rescueMenu = "faction_appeal";
+      reasoning.push("[Finance Agent] Rescue: traditionalist appeals to ichimon benefactors");
+    } else {
+      rescueMenu = "bailout_loan";
+      reasoning.push("[Finance Agent] Rescue: requesting a bailout loan");
+    }
+  }
+
+  reasoning.push(`[Finance Agent] Final strategy: ${riskLevel} risk level`);
+  reasoning.push(`[Finance Agent] Current runway: ${runwayMonths.toFixed(1)} months`);
+
+  return {
+    shouldBuyMyoseki,
+    myosekiId: shouldBuyMyoseki ? prioritized?.[0]?.id : undefined,
+    shouldInvestInFacilities,
+    facilityType,
+    shouldBuildReserves,
+    reserveTarget,
+    shouldSeekRescue,
+    rescueMenu,
+    reasoning,
+    riskLevel,
+  };
+}

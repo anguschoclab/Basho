@@ -14,7 +14,7 @@ import {
   SponsorCard,
   EmptySponsorState,
   SponsorAppealCta,
-} from "./SponsorshipHubSections";
+} from "@/components/economy/SponsorshipHubSections";
 
 interface SponsorshipHubProps {
   data: SponsorshipData | null;

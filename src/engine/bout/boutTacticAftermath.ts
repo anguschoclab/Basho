@@ -9,17 +9,17 @@
  * NPC-vs-NPC bout.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { BoutResult } from "../types/basho";
-import { sideTactics, type BoutContext, type SideTactics } from "./boutUtils";
-import type { BoutTactic } from "../types/combat";
-import { getTacticProfile } from "./tacticProfiles";
-import { clamp } from "../utils/math";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult } from "@/engine/types/basho";
+import { sideTactics, type BoutContext, type SideTactics } from "@/engine/bout/boutUtils";
+import type { BoutTactic } from "@/engine/types/combat";
+import { getTacticProfile } from "@/engine/bout/tacticProfiles";
+import { clamp } from "@/engine/utils/math";
 import {
   HENKA_MOMENTUM_PENALTY,
   STAT_CLAMP_MIN,
   STAT_CLAMP_MAX,
-} from "../../constants/engine/physics";
+} from "@/constants/engine/physics";
 
 function aftermathForSide(
   rikishi: Rikishi,

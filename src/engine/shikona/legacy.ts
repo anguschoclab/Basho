@@ -4,8 +4,8 @@
  * Legacy shikona generation functions.
  */
 
-import type { HouseStyle } from "./types";
-import { pickPrefixByCategoryBias, pickSuffixByCategoryBias } from "./helpers";
+import type { HouseStyle } from "@/engine/shikona/types";
+import { pickPrefixByCategoryBias, pickSuffixByCategoryBias } from "@/engine/shikona/helpers";
 
 export function extractLegacyPrefix(legacyShikona: string): string {
   // Common prefixes to look for

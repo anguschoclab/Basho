@@ -6,15 +6,15 @@
 
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Badge } from "@/components/ui/badge";
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
 import { getRikishiByDivision } from "@/presenters/engineAccess";
 import { sortStandings } from "@/presenters/engineAccess";
-import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishi";
+import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishi/index";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { activationKeyHandler } from "@/lib/a11y";
 

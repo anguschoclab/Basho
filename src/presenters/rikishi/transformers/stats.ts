@@ -4,19 +4,19 @@
  * Transforms rikishi stats, bands, and perceived stats.
  */
 
-import type { Rikishi } from "../../../engine/types/rikishi";
-import type { WorldState } from "../../../engine/types/world";
-import { SeededRNG } from "../../../engine/rng";
-import { NarrativeService } from "../../../engine/systems/narrative/NarrativeService";
-import { getCareerPhase } from "../../../engine/systems/training/TrainingMath";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import { SeededRNG } from "@/engine/core/rng";
+import { NarrativeService } from "@/engine/narrative/NarrativeService";
+import { getCareerPhase } from "@/engine/training/TrainingMath";
 import type {
   RikishiStatusDTO,
   RikishiBandsDTO,
   RikishiPerceivedStatsDTO,
   RikishiDescriptorDTO,
-} from "../types";
-import { toRikishiDescriptor } from "../../../engine/descriptorBands";
-import { calculateInjurySummary } from "./injury";
+} from "@/presenters/rikishi/types";
+import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
+import { calculateInjurySummary } from "@/presenters/rikishi/transformers/injury";
 
 /**
  * Transform status fields (injury, condition, etc.)

@@ -13,7 +13,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { CareerSnapshot } from "@/engine/types/history";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
-import { HoshitoriChart } from "@/components/game/HoshitoriChart";
+import { HoshitoriChart } from "@/components/basho/HoshitoriChart";
 
 function HistoryRow({ snap }: { snap: CareerSnapshot }) {
   return (

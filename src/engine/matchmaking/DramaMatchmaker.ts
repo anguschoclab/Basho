@@ -13,9 +13,9 @@
  * @see MatchmakingPhases for pairing types and structures
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { Division, Rank } from "../types/banzuke";
-import type { MatchPairing } from "./MatchmakingPhases";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Division, Rank } from "@/engine/types/banzuke";
+import type { MatchPairing } from "@/engine/matchmaking/MatchmakingPhases";
 import {
   DRAMA_DAY_SENSHURAKU,
   DRAMA_DAY_KADOBAN_START,
@@ -58,7 +58,7 @@ import {
   DRAMA_SCORE_ORIGIN_MATCHUP,
   DRAMA_MAX_SWAPS_DEFAULT,
   DRAMA_MAX_SWAPS_WITH_RIVALRY,
-} from "../../constants/engine/matchmaking";
+} from "@/constants/engine/matchmaking";
 
 /**
  * Drama labels identifying narrative significance of a matchup.

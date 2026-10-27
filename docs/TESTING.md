@@ -8,9 +8,9 @@ sizes/timings below reflect `docs/audit/test-timings.json` (refresh:
 
 | Tier | Location / selector | Runner | Cadence | Membership rule |
 |---|---|---|---|---|
-| **Fast unit** | `src/tests/unit/**` (plus any `*.test.ts(x)` under `src/`) | `bun run test` (`vitest.config.ts`: jsdom, `vmThreads`, `fileParallelism`, `fsModuleCache`) | every change / PR CI | ~964 files. Must not: import `child_process`, call `runAutoSim`, pair `generateInitialWorld` with `simulateEntireBasho`, require prior `bun run build`, or exceed the 10s per-file budget (target <2s) |
-| **Slow gates** | `src/tests/slow/{audit,engine}/**` | `bun run test:slow` (`vitest.slow.config.ts`: serial, 600s timeout) | adhoc / nightly `slow-tests.yml` (parallel `slow-engine-sims` + `slow-audit-gates` jobs; audit job builds first) | spawns a subprocess (eslint/knip/madge/tsx/engine-reviewer), requires `bun run build` output, simulates months/years of game time, or scans the whole repo in a way that scales with repo growth |
-| **Perf** | `src/tests/perf/**` (`*.perf.test.ts` convention) | `bun run test:perf` (`vitest.perf.config.ts`) | adhoc / nightly `perf-gate` job | timing-asserting benchmarks, not correctness gates |
+| **Fast unit** | `tests/unit/**` (plus any `*.test.ts(x)` under `src/`) | `bun run test` (`vitest.config.ts`: jsdom, `vmThreads`, `fileParallelism`, `fsModuleCache`) | every change / PR CI | ~964 files. Must not: import `child_process`, call `runAutoSim`, pair `generateInitialWorld` with `simulateEntireBasho`, require prior `bun run build`, or exceed the 10s per-file budget (target <2s) |
+| **Slow gates** | `tests/slow/{audit,engine}/**` | `bun run test:slow` (`vitest.slow.config.ts`: serial, 600s timeout) | adhoc / nightly `slow-tests.yml` (parallel `slow-engine-sims` + `slow-audit-gates` jobs; audit job builds first) | spawns a subprocess (eslint/knip/madge/tsx/engine-reviewer), requires `bun run build` output, simulates months/years of game time, or scans the whole repo in a way that scales with repo growth |
+| **Perf** | `tests/perf/**` (`*.perf.test.ts` convention) | `bun run test:perf` (`vitest.perf.config.ts`) | adhoc / nightly `perf-gate` job | timing-asserting benchmarks, not correctness gates |
 | **E2E smoke** | `e2e/` matching `(golden-path\|reload-restore).e2e.test.ts` | `bun run test:e2e:smoke` (Playwright `smoke` project) | PR gate + main pushes (`e2e.yml`, 15-min timeout) | golden-path browser flows, ~30–45s local |
 | **E2E soak** | `e2e/` matching `(full-basho-lifecycle\|year-of-bashos).e2e.test.ts` | `bun run test:e2e:soak` (Playwright `soak` project) | nightly + manual only (`if: schedule \|\| workflow_dispatch`, 25-min timeout) | long-horizon browser lifecycles, ~8–10 min CI (~25 min measured on dev hardware) |
 
@@ -43,7 +43,7 @@ Tier by **execution cost category**, not by what it tests:
 multi-basho sims on generated worlds are slow-tier; bout timing assertions
 belong in `perf/`; browser-rendered lifecycle coverage is the e2e soak.
 
-## Meta gates (`src/tests/unit/meta/`)
+## Meta gates (`tests/unit/meta/`)
 
 The suite polices itself — these run inside the fast suite:
 

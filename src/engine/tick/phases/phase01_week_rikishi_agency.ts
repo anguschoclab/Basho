@@ -14,26 +14,26 @@
  *    (reportScandal / welfare-risk pressure), seeded-rng gated.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import type { RikishiRequest } from "../../rikishiAgency/types";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { getHeya } from "../../queries";
-import { reportScandal } from "../../systems/governance/ScandalService";
-import { rngForWorld } from "../../rng";
-import { clamp } from "../../utils/math";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { RikishiRequest } from "@/engine/npc/agency/types";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getHeya } from "@/engine/core/queries";
+import { reportScandal } from "@/engine/governance/services/ScandalService";
+import { rngForWorld } from "@/engine/core/rng";
+import { clamp } from "@/engine/utils/math";
 import {
   deriveDisposition,
   generateRequests,
   shouldEscalate,
-} from "../../rikishiAgency/RikishiAgencyService";
+} from "@/engine/npc/agency/RikishiAgencyService";
 import {
   INCIDENT_PROBABILITY,
   INCIDENT_DISCIPLINE_SCANDAL_MAX,
   INCIDENT_WELFARE_RISK_DELTA,
   INCIDENT_STRESS_RELIEF,
   INCIDENT_MOTIVATION_DELTA,
-} from "../../../constants/engine/rikishiAgency";
+} from "@/constants/engine/rikishiAgency";
 
 export function phase01_week_rikishi_agency(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_rikishi_agency");

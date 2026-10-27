@@ -2,14 +2,14 @@ import * as React from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { SidebarContext, type SidebarContextValue } from "./context";
+import { SidebarContext, type SidebarContextValue } from "@/components/ui/sidebar/context";
 import {
   SIDEBAR_COOKIE_NAME,
   SIDEBAR_COOKIE_MAX_AGE,
   SIDEBAR_WIDTH,
   SIDEBAR_WIDTH_ICON,
   SIDEBAR_KEYBOARD_SHORTCUT,
-} from "./constants";
+} from "@/components/ui/sidebar/constants";
 
 export function SidebarProvider({
   defaultOpen = true,

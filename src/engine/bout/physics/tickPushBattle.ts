@@ -1,9 +1,9 @@
-import type { SeededRNG } from "../../rng";
-import type { Rikishi } from "../../types/rikishi";
-import type { BoutLogEntry } from "../../types/basho";
-import type { Division } from "../../types/banzuke";
-import type { KimariteId } from "../../types/combat";
-import type { Side } from "../../types/banzuke";
+import type { SeededRNG } from "@/engine/core/rng";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutLogEntry } from "@/engine/types/basho";
+import type { Division } from "@/engine/types/banzuke";
+import type { KimariteId } from "@/engine/types/combat";
+import type { Side } from "@/engine/types/banzuke";
 import {
   COG_OFFSET_PER_FORCE,
   DOMINANT_VELOCITY_SCALE,
@@ -27,14 +27,14 @@ import {
   CLINCH_FORCE_DIFF_MAX,
   CLINCH_BELT_PREF_SCALE,
   DEFAULT_BELT_BIAS,
-} from "../../../constants/engine/physics";
-import { initBeltBattle } from "../boutGrip";
-import { EDGE_THRESHOLD } from "../../types/combat-spatial";
-import type { EngineStateV2, PushBattleState } from "../../types/combat-spatial";
-import { isBodyFalling, classifyFallKimarite } from "../boutSpatial";
-import { evaluateKimariteAttempt } from "../kimariteClassifier";
-import { stat, jitter, boutFatigueIncrement, type SideTactics } from "../boutUtils";
-import { buildEdgeCrisis } from "./edgeCrisis";
+} from "@/constants/engine/physics";
+import { initBeltBattle } from "@/engine/bout/boutGrip";
+import { EDGE_THRESHOLD } from "@/engine/types/combat-spatial";
+import type { EngineStateV2, PushBattleState } from "@/engine/types/combat-spatial";
+import { isBodyFalling, classifyFallKimarite } from "@/engine/bout/boutSpatial";
+import { evaluateKimariteAttempt } from "@/engine/bout/kimariteClassifier";
+import { stat, jitter, boutFatigueIncrement, type SideTactics } from "@/engine/bout/boutUtils";
+import { buildEdgeCrisis } from "@/engine/bout/physics/edgeCrisis";
 
 /**
  * Fatigue-adjusted forces plus in-bout counter-tactic activation (2.2):

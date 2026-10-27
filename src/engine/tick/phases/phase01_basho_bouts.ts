@@ -14,17 +14,17 @@
  *   - Advances the basho day after all bouts are resolved.
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { simulateBoutsForDay, advanceBashoDay } from "../../world";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { simulateBoutsForDay, advanceBashoDay } from "@/engine/core/world";
 import {
   generateNakabiSummary,
   logNakabiCheckpoint,
   isNakabiDay,
-} from "../../systems/basho/NakabiService";
-import { mergeImpacts, applyImpact } from "../../core/ImpactResolver";
-import { applyOyakataIntervention } from "../../actions/OyakataIntervention";
+} from "@/engine/basho/NakabiService";
+import { mergeImpacts, applyImpact } from "@/engine/core/ImpactResolver";
+import { applyOyakataIntervention } from "@/engine/npc/OyakataIntervention";
 
 export function phase01_basho_bouts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_basho_bouts");

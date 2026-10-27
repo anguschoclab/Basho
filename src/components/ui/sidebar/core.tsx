@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { useSidebar } from "./context";
-import { SIDEBAR_WIDTH_MOBILE } from "./constants";
+import { useSidebar } from "@/components/ui/sidebar/context";
+import { SIDEBAR_WIDTH_MOBILE } from "@/components/ui/sidebar/constants";
 
 export function Sidebar({
   ref,

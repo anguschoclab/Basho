@@ -12,7 +12,7 @@ import { Globe, Check, X } from "lucide-react";
 import type {
   ExhibitionProjection,
   ExhibitionInvitationDTO,
-} from "@/presenters/exhibitionProjections";
+} from "@/presenters/projections/exhibitionProjections";
 
 export function ExhibitionInvitationsPanel({
   projection,

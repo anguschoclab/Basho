@@ -4,17 +4,17 @@
  * Economy commands: myoseki trades, sponsors, loans, and staff hiring.
  */
 
-import * as myoseki from "../../myosekiMarket";
-import * as myosekiTrading from "../../systems/governance/MyosekiTradingService";
-import { MYOSEKI_BASE_ASKING_PRICE } from "../../../constants/engine/economic";
-import * as sponsorService from "../../systems/economy/SponsorContractService";
-import * as staffService from "../../staff";
-import * as loans from "../../loans";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import { recruitSponsor } from "../../systems/economy/sponsorshipMutations";
-import { rngForWorld } from "../../rng";
-import type { WorkerRuntime } from "../runtime";
-import type { CommandHandlerMap } from "./types";
+import * as myoseki from "@/engine/governance/myosekiMarket";
+import * as myosekiTrading from "@/engine/governance/services/MyosekiTradingService";
+import { MYOSEKI_BASE_ASKING_PRICE } from "@/constants/engine/economic";
+import * as sponsorService from "@/engine/economy/SponsorContractService";
+import * as staffService from "@/engine/economy/staff";
+import * as loans from "@/engine/economy/loans";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { recruitSponsor } from "@/engine/economy/sponsorshipMutations";
+import { rngForWorld } from "@/engine/core/rng";
+import type { WorkerRuntime } from "@/engine/worker/runtime";
+import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
 export function economyCommands(rt: WorkerRuntime): CommandHandlerMap {
   return {

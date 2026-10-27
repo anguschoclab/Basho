@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Clock } from "lucide-react";
 import type { ActionItem } from "@/presenters/projections/actionQueue";
-import { ACTION_ICON_MAP, SEVERITY_CONFIG } from "./actionQueueConfig";
+import { ACTION_ICON_MAP, SEVERITY_CONFIG } from "@/components/dashboard/actionQueueConfig";
 
 type NavigateItem = Extract<ActionItem, { kind: "navigate" }>;
 type ResolveItem = Extract<ActionItem, { kind: "resolve" }>;

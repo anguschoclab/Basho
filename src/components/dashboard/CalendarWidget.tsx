@@ -1,4 +1,4 @@
-import { BaseWidget } from "./BaseWidget";
+import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { Calendar } from "lucide-react";
 import { PHASE_LABELS } from "@/constants/ui/calendar";
 import { useCalendarActions } from "@/hooks/useCalendarActions";
@@ -7,7 +7,7 @@ import {
   BashoDayProgress,
   NextBashoNote,
   CalendarActions,
-} from "./CalendarWidgetSections";
+} from "@/components/dashboard/CalendarWidgetSections";
 
 /** calendar widget. */
 export function CalendarWidget() {

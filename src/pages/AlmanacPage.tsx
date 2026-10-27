@@ -9,11 +9,11 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { History, Award, Gavel, Swords, Trophy } from "lucide-react";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { useAlmanacDerived } from "@/hooks/useAlmanacDerived";
 import {
   AlmanacIntro,

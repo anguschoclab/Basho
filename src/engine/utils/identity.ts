@@ -1,4 +1,4 @@
-import type { Rikishi } from "../types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 /**
  * Canon check for 'foreign' status (used in naturalization and roster caps).

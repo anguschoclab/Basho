@@ -4,7 +4,7 @@
  * Types for shikona generation system.
  */
 
-import type { SeededRNG } from "../rng";
+import type { SeededRNG } from "@/engine/core/rng";
 
 export interface ShikonaGenerationConfig {
   nationality?: string;

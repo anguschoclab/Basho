@@ -3,9 +3,9 @@
 
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
-import { MatchDayViewer } from "@/components/game/MatchDayViewer";
-import { CornerAdvicePanel } from "@/components/game/CornerAdvicePanel";
+import { PageHeader } from "@/components/layout/page-shell/index";
+import { MatchDayViewer } from "@/components/basho/MatchDayViewer";
+import { CornerAdvicePanel } from "@/components/basho/CornerAdvicePanel";
 import { BashoStandingsEvolution } from "@/components/basho/BashoStandingsEvolution";
 import { BASHO_CALENDAR, getDayName } from "@/presenters/uiDigest";
 import type { BashoName } from "@/engine/types/basho";

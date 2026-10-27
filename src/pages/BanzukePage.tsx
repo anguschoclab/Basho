@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { DivisionTable } from "@/components/banzuke/DivisionTable";
 import { BanzukeControlsRow, MovementLegend } from "@/components/banzuke/BanzukeControls";

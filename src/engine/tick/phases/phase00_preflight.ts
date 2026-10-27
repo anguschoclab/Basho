@@ -4,27 +4,27 @@
  * Pipeline Phase 0 — Calendar advancement and Phase Transitions.
  */
 
-import type { WorldState, CyclePhase } from "../../types/world";
-import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { info } from "../../utils/Logger";
-import { assertNever } from "../../utils/types";
-import { initializeBasho } from "../../systems/generation/WorldFactory";
-import { resetBashoMediaTracking } from "../../systems/media/MediaService";
-import { getInterimWeeks, getNextBasho } from "../../calendar";
-import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
+import type { WorldState, CyclePhase } from "@/engine/types/world";
+import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { info } from "@/engine/utils/Logger";
+import { assertNever } from "@/engine/utils/types";
+import { initializeBasho } from "@/engine/generation/WorldFactory";
+import { resetBashoMediaTracking } from "@/engine/media/MediaService";
+import { getInterimWeeks, getNextBasho } from "@/engine/calendar/calendar";
+import { emptyDeltas, defaultActiveModifiers } from "@/engine/tick/pipelineRunner";
 import {
   DAYS_IN_MONTH,
   DEFAULT_MAX_DAY,
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
-} from "../../../constants/engine/calendarExtended";
-import { WEEKLY_TICK_THRESHOLD } from "../../../constants/engine/npcStrategy";
+} from "@/constants/engine/calendarExtended";
+import { WEEKLY_TICK_THRESHOLD } from "@/constants/engine/npcStrategy";
 import {
   evaluatePendingDecisions,
   applyExpiredQueueDefaults,
   autonomouslyResolveDecisions,
-} from "../../loop/LoopDecisionEngine";
+} from "@/engine/npc/decision/LoopDecisionEngine";
 
 export function phase00_preflight(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase00_preflight");

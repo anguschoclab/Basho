@@ -3,17 +3,17 @@
  * Creates new recruits with diverse origins and archetypes.
  */
 
-import { rngFromSeed } from "../rng";
-import type { Rikishi, RikishiStats } from "../types/rikishi";
-import type { Rank } from "../types/banzuke";
-import { generateShikona } from "../shikona";
-import type { WorldState } from "../types/world";
-import type { InjurySeverity } from "../systems/health/BodyDefinitions";
-import type { CombatArchetype } from "../types/combat";
-import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetypeWithBias } from "../archetype";
-import { rollAgeForRank } from "../systems/generation/CandidateStats";
-import { isCollegeRecruit } from "../utils/identity";
-import { applyPersonaAssignment } from "../systems/generation/PersonaAssignment";
+import { rngFromSeed } from "@/engine/core/rng";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import type { Rank } from "@/engine/types/banzuke";
+import { generateShikona } from "@/engine/shikona/generateShikona";
+import type { WorldState } from "@/engine/types/world";
+import type { InjurySeverity } from "@/engine/health/BodyDefinitions";
+import type { CombatArchetype } from "@/engine/types/combat";
+import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetypeWithBias } from "@/engine/bout/archetype";
+import { rollAgeForRank } from "@/engine/generation/CandidateStats";
+import { isCollegeRecruit } from "@/engine/utils/identity";
+import { applyPersonaAssignment } from "@/engine/generation/PersonaAssignment";
 import {
   ROOKIE_ID_MIN,
   ROOKIE_ID_MAX,
@@ -42,7 +42,7 @@ import {
   ROOKIE_MEDIA_SAVVY_RANGE,
   BODY_TYPE_BEHAVIORS,
   ORIGINS,
-} from "../../constants/engine/career";
+} from "@/constants/engine/career";
 
 /**
  * Internal function to generate a new rookie rikishi.
@@ -269,8 +269,8 @@ function buildRookieEntity(p: {
     },
     personalityTraits: [],
     favoredKimarite: (buildCombatProfile(p.archetype).favoredKimarite ??
-      []) as import("../types/rikishi").KimariteId[],
-    weakAgainstStyles: deriveWeakAgainstStyles(p.archetype) as import("../types/rikishi").Style[],
+      []) as import("@/engine/types/rikishi").KimariteId[],
+    weakAgainstStyles: deriveWeakAgainstStyles(p.archetype) as import("@/engine/types/rikishi").Style[],
     // Required Rikishi fields for career tracking
     consecutiveYusho: 0,
     careerHistory: [],

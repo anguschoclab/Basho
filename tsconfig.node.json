@@ -17,7 +17,8 @@
        src/engine/** resolve @/* correctly instead of producing phantom
        duplicate-project errors. */
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@tests/*": ["./tests/*"]
     },
 
     /* Linting */
@@ -27,5 +28,5 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts", "src/vite-env.d.ts", "scripts/**/*.ts"]
+  "include": ["vite.config.ts", "src/app/vite-env.d.ts", "scripts/**/*.ts"]
 }

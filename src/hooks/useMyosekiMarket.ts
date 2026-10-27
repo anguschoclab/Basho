@@ -6,8 +6,8 @@
  */
 
 import { useState, useMemo } from "react";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { toast } from "sonner";
 import type { MyosekiStock } from "@/engine/types/myoseki";
 import { getPlayerHeya } from "@/presenters/engineAccess";

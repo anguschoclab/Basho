@@ -8,7 +8,7 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageHeader } from "@/components/layout/page-shell";
+import { PageHeader } from "@/components/layout/page-shell/index";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { RikishiProfileHeader } from "@/components/rikishi/RikishiProfileHeader";
@@ -19,18 +19,18 @@ import { RikishiCombatTab } from "@/components/rikishi/RikishiCombatTab";
 import { RikishiCareerTab } from "@/components/rikishi/RikishiCareerTab";
 import { RikishiKeshoMawashi } from "@/components/rikishi/RikishiKeshoMawashi";
 import { RikishiGlobalCup } from "@/components/rikishi/RikishiGlobalCup";
-import { IntaiCeremony } from "@/components/game/IntaiCeremony";
+import { IntaiCeremony } from "@/components/ceremony/IntaiCeremony";
 import { getHeya } from "@/presenters/worldAccess";
 import { Trash2 } from "lucide-react";
 import type { WorldState } from "@/presenters/uiDigest";
-import type { UIRikishi } from "@/presenters/rikishi";
+import type { UIRikishi } from "@/presenters/rikishi/index";
 import type { Rikishi as RawRikishi } from "@/engine/types/rikishi";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
 import type {
   useCareerProgressionData,
   useEarningsProgressionData,
 } from "@/components/rikishi/useRikishiData";
-import type { getHealthBadge } from "@/presenters/PerceptionPresenter";
+import type { getHealthBadge } from "@/presenters/projections/PerceptionPresenter";
 
 /** Stable roster list view — shown when no rikishiId is in the route. */
 export function RosterListView({

@@ -8,7 +8,7 @@
 
 import { useEffect } from "react";
 import { X } from "lucide-react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { toast } from "@/hooks/use-toast";
 
 export function GlobalErrorBanner() {

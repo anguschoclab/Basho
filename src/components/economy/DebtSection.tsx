@@ -9,8 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
-import { LoanCard } from "./DebtSections";
-import { LOAN_SORT_OPTIONS, LOAN_ACCESSOR, type LoanRow } from "./debtMeta";
+import { LoanCard } from "@/components/economy/DebtSections";
+import { LOAN_SORT_OPTIONS, LOAN_ACCESSOR, type LoanRow } from "@/components/economy/debtMeta";
 
 interface DebtSectionProps {
   activeLoans: LoanRow[];

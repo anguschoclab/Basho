@@ -5,16 +5,16 @@
  * NPC BoutAI selection, and the legacy cpuTacticOverride mapping.
  */
 
-import type { BoutContext } from "../boutPhysics";
-import type { Rikishi } from "../../types/rikishi";
-import type { BashoState } from "../../types/basho";
-import type { WorldState } from "../../types/world";
-import type { Side } from "../../types/banzuke";
-import type { BoutTactic } from "../../types/combat";
-import { chooseTactic, type BoutAIContext } from "../BoutAI";
-import { buildOpponentModel } from "../../npcAI/OpponentModel";
-import { getOpponentModel } from "../../npcAI/MemoryStore";
-import { rngFromSeed } from "../../rng";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BashoState } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { Side } from "@/engine/types/banzuke";
+import type { BoutTactic } from "@/engine/types/combat";
+import { chooseTactic, type BoutAIContext } from "@/engine/bout/BoutAI";
+import { buildOpponentModel } from "@/engine/npc/OpponentModel";
+import { getOpponentModel } from "@/engine/npc/MemoryStore";
+import { rngFromSeed } from "@/engine/core/rng";
 
 /**
  * Rank-pressure inference for NPC tactic selection.

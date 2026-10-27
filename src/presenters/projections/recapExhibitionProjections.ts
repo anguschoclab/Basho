@@ -4,9 +4,9 @@
  * Reads exhibition basho events from the event log to surface
  * jungyo results that the player may have participated in.
  */
-import type { WorldState } from "../../engine/types/world";
-import type { AvatarRenderData } from "../../engine/types/avatar";
-import { resolveAvatar, rikishiStageInput } from "../../engine/avatarGenerator";
+import type { WorldState } from "@/engine/types/world";
+import type { AvatarRenderData } from "@/engine/types/avatar";
+import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 
 export interface ExhibitionResultDTO {
   exhibitionId: string;

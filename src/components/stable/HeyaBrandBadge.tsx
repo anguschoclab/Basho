@@ -7,7 +7,7 @@
 
 import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
 import { cn } from "@/lib/utils";
-import { renderCrestMotif } from "./crestMotifs";
+import { renderCrestMotif } from "@/components/stable/crestMotifs";
 
 interface HeyaBrandBadgeProps {
   brand: HeyaBrandIdentity;

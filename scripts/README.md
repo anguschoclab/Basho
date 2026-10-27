@@ -7,12 +7,12 @@ unless noted — they are run ad hoc: `bun scripts/<name>.ts`.
 
 | Script                      | Purpose                                                                                                                                                                                     |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `audit-orphans.ts`          | Regenerates `.windsurf/audit/baseline-orphans.json` (unreferenced exports, orphan routes, unticked services, unused components). Consumed by `unreferenced-exports` / `orphan-audit` tests. |
+| `audit/audit-orphans.ts`          | Regenerates `.windsurf/audit/baseline-orphans.json` (unreferenced exports, orphan routes, unticked services, unused components). Consumed by `unreferenced-exports` / `orphan-audit` tests. |
 | `orphanTracker.ts`          | Renders the orphan baseline as CSV (`.windsurf/audit/orphan-tracker.csv`).                                                                                                                  |
-| `engine-reviewer.ts`        | Static checker for removed-API reintroduction (e.g. `processHeyaFinances`) and unannotated world-builder writes. Wired as `src/tests/slow/audit/engineReviewerGate.test.ts`.                |
+| `audit/engine-reviewer.ts`        | Static checker for removed-API reintroduction (e.g. `processHeyaFinances`) and unannotated world-builder writes. Wired as `tests/slow/audit/engineReviewerGate.test.ts`.                |
 | `bench-pipelines.ts`        | Tick-pipeline benchmarks (S1 day / S2 week / S3 year). Run by `perf-gate.yml` via `bun`.                                                                                                    |
 | `perf-gate-check.ts`        | Compares a perf run against `docs/audit/perf-baseline.json`; fails on >15% regression. Seeds the baseline if missing.                                                                       |
-| `report-test-timings.ts`    | Regenerates the `docs/audit/test-timings.json` budget baseline (`bun run test:timings -- <suite>`).                                                                                         |
+| `audit/report-test-timings.ts`    | Regenerates the `docs/audit/test-timings.json` budget baseline (`bun run test:timings -- <suite>`).                                                                                         |
 | `measureFunctions.ts`       | AST function/const-object length measurement; source data for the `functionLengthBudget` ratchet test.                                                                                      |
 | `purity-lint.sh`            | Greps engine hot paths for `Math.random`/`Date.now` purity violations. Referenced by `perf-gate.yml`.                                                                                       |
 | `check-package-manager.mjs` | `preinstall` hook — blocks non-bun installs.                                                                                                                                                |
@@ -26,7 +26,7 @@ unless noted — they are run ad hoc: `bun scripts/<name>.ts`.
 | `repro-year.ts`                                                                           | Reproduces a specific sim year for debugging.                                                |
 | `yokozuna_sim.ts`                                                                         | Yokozuna promotion-path simulation probe.                                                    |
 | `verify-training-decay.ts`                                                                | Verifies training decay curves against expected values.                                      |
-| `measure-kimarite-distribution.ts`                                                        | Kimarite outcome distribution census (`bun run measure:kimarite`).                           |
+| `measure/measure-kimarite-distribution.ts`                                                        | Kimarite outcome distribution census (`bun run measure:kimarite`).                           |
 | `measure-events.ts` / `measure-growth.ts` / `measure-rikishi.ts` / `measure-breakdown.ts` | One-off simulation metric probes (event rates, stat growth, rikishi census, cost breakdown). |
 | `test-agents.ts`                                                                          | NPC-AI agent decision probe.                                                                 |
 | `list-models.ts`                                                                          | Lists configured LLM models (narrative tooling).                                             |

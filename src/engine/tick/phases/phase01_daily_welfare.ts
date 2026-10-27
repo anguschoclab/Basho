@@ -4,18 +4,18 @@
  * Pipeline Phase 1 (Daily) — Daily rikishi maintenance.
  */
 
-import type { WorldState } from "../../types/world";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import type { StateImpact } from "../../core/StateImpact";
-import { WelfareService } from "../../systems/welfare/WelfareService";
-import { toRikishiDescriptor } from "../../descriptorBands";
-import { rngFromSeed } from "../../rng";
-import { tickCondition } from "../conditionTick";
+import type { WorldState } from "@/engine/types/world";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { WelfareService } from "@/engine/welfare/WelfareService";
+import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
+import { rngFromSeed } from "@/engine/core/rng";
+import { tickCondition } from "@/engine/tick/conditionTick";
 import {
   MAX_MENTAL_STAT,
   MIN_MENTAL_STAT,
   DEFAULT_MENTAL_STAT,
-} from "../../../constants/engine/health";
+} from "@/constants/engine/health";
 import {
   MIN_WEIGHT,
   WEIGHT_LOSS_STARVATION,
@@ -25,9 +25,9 @@ import {
   WEIGHT_GAIN_MODERATE,
   MENTAL_GAIN_GOOD,
   FATIGUE_RECOVERY_GOOD,
-} from "../../../constants/engine/condition";
-import { getRikishi } from "../../queries";
-import { finiteOr } from "../../utils/math";
+} from "@/constants/engine/condition";
+import { getRikishi } from "@/engine/core/queries";
+import { finiteOr } from "@/engine/utils/math";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_welfare");

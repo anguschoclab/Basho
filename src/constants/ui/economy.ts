@@ -2,7 +2,7 @@
  * Constants for economy page narrative descriptions.
  */
 
-import type { RunwayBand, KoenkaiBandType } from "../../engine/types/narrative";
+import type { RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
 import { ShieldCheck, ThumbsUp, AlertTriangle, AlertOctagon, Skull } from "lucide-react";
 
 export const RUNWAY_CONFIG: Record<

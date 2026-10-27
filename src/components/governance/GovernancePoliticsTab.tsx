@@ -10,20 +10,20 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { StatCard, ListCard, SectionHeader } from "@/components/layout/page-shell";
+import { StatCard, ListCard, SectionHeader } from "@/components/layout/page-shell/index";
 import { TabsContent } from "@/components/ui/tabs";
 import { Trophy, ShieldAlert, Coins, Scale } from "lucide-react";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
-import type { StatItem } from "@/components/layout/page-shell";
+import type { StatItem } from "@/components/layout/page-shell/index";
 import { POLITICAL_FAVORS } from "@/presenters/projections/governanceProjections";
 import { getOyakata } from "@/presenters/worldAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Heya } from "@/engine/types/heya";
 import type { Faction } from "@/engine/types/economy";
-import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived.tsx";
+import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived";
 
 const FACTION_SORT_OPTIONS: SortOption[] = [
   { key: "influence", label: "Influence" },

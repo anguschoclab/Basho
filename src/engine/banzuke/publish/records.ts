@@ -1,12 +1,12 @@
-import type { WorldState } from "../../types/world";
-import type { BashoState } from "../../types/basho";
-import type { BashoPerformance } from "../../banzuke";
-import { updateBanzuke } from "../../banzuke";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { getRikishi } from "../../queries";
-import { createEmptyAlmanacRecord } from "../../almanac/narrativeEnrichment";
-import { MAX_PROMOTION_HISTORY } from "../../almanac/types";
-import type { PromotionHistoryEntry } from "../../almanac/types";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { BashoPerformance } from "@/engine/types/banzuke";
+import { updateBanzuke } from "@/engine/banzuke/banzukeOps";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getRikishi } from "@/engine/core/queries";
+import { createEmptyAlmanacRecord } from "@/engine/almanac/narrativeEnrichment";
+import { MAX_PROMOTION_HISTORY } from "@/engine/almanac/types";
+import type { PromotionHistoryEntry } from "@/engine/almanac/types";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;

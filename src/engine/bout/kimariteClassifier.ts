@@ -1,15 +1,15 @@
-import type { Rikishi } from "../types/rikishi";
-import { SeededRNG } from "../rng";
-import type { Division } from "../types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { SeededRNG } from "@/engine/core/rng";
+import type { Division } from "@/engine/types/banzuke";
 import type {
   PushBattleState,
   BeltBattleState,
   EngineStateV2,
   KimariteAttempt,
   SpatialBoutContext,
-} from "../types/combat-spatial";
-import { EDGE_THRESHOLD } from "../types/combat-spatial";
-import { KimariteSelectionEngine } from "./KimariteSelectionEngine";
+} from "@/engine/types/combat-spatial";
+import { EDGE_THRESHOLD } from "@/engine/types/combat-spatial";
+import { KimariteSelectionEngine } from "@/engine/bout/KimariteSelectionEngine";
 
 /**
  * Evaluates whether a kimarite technique can be attempted mid-fight
@@ -27,7 +27,7 @@ export function evaluateKimariteAttempt(
   rng: SeededRNG,
   division?: Division,
   meta?: { tone: string; drift: Record<string, number> },
-  tactics?: import("./boutUtils").SideTactics
+  tactics?: import("@/engine/bout/boutUtils").SideTactics
 ): KimariteAttempt | null {
   // Build spatial context
   const torqueDiff = belt ? belt.torqueEast - belt.torqueWest : 0;

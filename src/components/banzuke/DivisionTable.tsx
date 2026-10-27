@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
-import type { UIRankRow } from "@/presenters/banzukeUI";
+import type { UIRankRow } from "@/presenters/projections/banzukeUI";
 
 interface DivisionTableProps {
   div: string;

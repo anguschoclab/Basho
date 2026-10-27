@@ -5,7 +5,7 @@
  */
 
 import React from "react";
-import "./kesho-effects.css";
+import "@/components/kesho/kesho-effects.css";
 import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 import {
   KESHO_DOT_RADIUS,

@@ -6,9 +6,9 @@
  * career highlights.
  */
 
-import type { Rikishi } from "../types/rikishi";
-import type { SeededRNG } from "../rng";
-import { getFavoriteHighlight } from "../bout/CareerHighlights";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { SeededRNG } from "@/engine/core/rng";
+import { getFavoriteHighlight } from "@/engine/bout/CareerHighlights";
 
 export type PostRetirementPath =
   "oyakata" | "media_pundit" | "sumo_school_coach" | "leave_sumo_world";

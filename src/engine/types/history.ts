@@ -1,5 +1,5 @@
-import type { Rank, Division } from "./banzuke";
-import type { Id } from "./common";
+import type { Rank, Division } from "@/engine/types/banzuke";
+import type { Id } from "@/engine/types/common";
 
 /** One cell of a rikishi's hoshitori (star chart) for a single day. */
 export interface DayResult {
@@ -122,7 +122,7 @@ export interface RetiredRikishiSummary {
   origin?: string;
 
   /** Persistent avatar identity — carried over so archived faces stay stable. */
-  avatarConfig?: import("./avatar").AvatarIdentity;
+  avatarConfig?: import("@/engine/types/avatar").AvatarIdentity;
 
   // Career totals
   careerWins: number;
@@ -147,7 +147,7 @@ export interface RetiredRikishiSummary {
   yearlyAggregates: CareerYearAggregate[];
 
   // Lineage/legacy
-  lineage?: import("./rikishi").Rikishi["lineage"];
+  lineage?: import("@/engine/types/rikishi").Rikishi["lineage"];
   bloodlineTraitId?: string;
 
   // Marker for type narrowing (distinguish from full Rikishi)

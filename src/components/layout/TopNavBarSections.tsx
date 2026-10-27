@@ -7,20 +7,20 @@
 
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
-import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
+import { useGame } from "@/state/game/useGame";
+import { SaveLoadDialog } from "@/components/menu/SaveLoadDialog";
 import { Dialog } from "@/components/ui/dialog";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Sun, Moon, ChevronRight, Settings, Pause, Play } from "lucide-react";
-import { useGameStore } from "@/store/gameStore";
-import { formatYen } from "@/utils/engineUtils";
+import { useGameStore } from "@/state/stores/gameStore";
+import { formatYen } from "@/lib/engineUtils";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { EraToneBadge } from "@/components/layout/EraToneBadge";
 import { HolidayDialog } from "@/components/layout/HolidayDialog";
-import type { EraTone } from "@/presenters/eraTone";
+import type { EraTone } from "@/presenters/projections/eraTone";
 import type { WorldState } from "@/presenters/uiDigest";
 
 const RUNWAY_COLORS: Record<string, string> = {

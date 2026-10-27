@@ -8,16 +8,16 @@
  * owns the runtime, the handler map, and the message dispatch loop.
  */
 
-import type { EngineCommand } from "./types";
-import { warn } from "../utils/Logger";
-import { createWorkerRuntime } from "./runtime";
-import type { CommandHandlerMap } from "./commands/types";
-import { lifecycleCommands } from "./commands/lifecycle";
-import { recruitmentCommands } from "./commands/recruitment";
-import { governanceCommands } from "./commands/governance";
-import { heyaCommands } from "./commands/heya";
-import { economyCommands } from "./commands/economy";
-import { metaCommands } from "./commands/meta";
+import type { EngineCommand } from "@/engine/worker/types";
+import { warn } from "@/engine/utils/Logger";
+import { createWorkerRuntime } from "@/engine/worker/runtime";
+import type { CommandHandlerMap } from "@/engine/worker/commands/types";
+import { lifecycleCommands } from "@/engine/worker/commands/lifecycle";
+import { recruitmentCommands } from "@/engine/worker/commands/recruitment";
+import { governanceCommands } from "@/engine/worker/commands/governance";
+import { heyaCommands } from "@/engine/worker/commands/heya";
+import { economyCommands } from "@/engine/worker/commands/economy";
+import { metaCommands } from "@/engine/worker/commands/meta";
 
 const rt = createWorkerRuntime();
 

@@ -8,13 +8,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Badge } from "@/components/ui/badge";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { Trophy, Shield, Target, Crown, TrendingUp, Calendar, Swords } from "lucide-react";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import { HOF_CATEGORY_LABELS } from "@/presenters/uiDigest";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { CATEGORY_ICONS, CATEGORY_SURFACE, CATEGORY_ACCENT, RANK_JA } from "./hofMeta";
+import { CATEGORY_ICONS, CATEGORY_SURFACE, CATEGORY_ACCENT, RANK_JA } from "@/components/hof/hofMeta";
 
 // === Portrait Avatar ===
 

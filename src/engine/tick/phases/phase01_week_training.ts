@@ -26,23 +26,23 @@
  * @see TsukebitoService for attendant and junior disciple bonuses
  */
 
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
-import { mergeImpacts, resolveImpacts, sequenceImpacts } from "../../core/ImpactResolver";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { TrainingService } from "../../systems/training/TrainingService";
-import { BloodlineService } from "../../systems/legacy/BloodlineService";
-import { applyMentorshipBonuses } from "../../systems/training/MentorshipService";
-import { applyWeeklySparring } from "../../systems/training/SparringService";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import { mergeImpacts, resolveImpacts, sequenceImpacts } from "@/engine/core/ImpactResolver";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { TrainingService } from "@/engine/training/TrainingService";
+import { BloodlineService } from "@/engine/legacy/BloodlineService";
+import { applyMentorshipBonuses } from "@/engine/training/MentorshipService";
+import { applyWeeklySparring } from "@/engine/training/SparringService";
 import {
   assignTsukebito,
   applyWeeklyTsukebitoBenefits,
   applyWeeklyOtotodeshiEffects,
   isEligibleForTsukebito,
-} from "../../systems/training/TsukebitoService";
-import { applyWeightJourneyTick } from "../../training/WeightJourney";
-import { EntityCollection } from "../../core/EntityCollection";
-import { getRikishi } from "../../queries";
+} from "@/engine/training/TsukebitoService";
+import { applyWeightJourneyTick } from "@/engine/training/WeightJourney";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { getRikishi } from "@/engine/core/queries";
 
 /**
  * Weekly training tick phase.

@@ -7,7 +7,7 @@
 
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
-import type { StatItem, ProgressItem } from "@/components/layout/page-shell";
+import type { StatItem, ProgressItem } from "@/components/layout/page-shell/index";
 import { SCANDAL_LABELS, formatFinePenalty, getStatusLabel } from "@/presenters/uiDigest";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";

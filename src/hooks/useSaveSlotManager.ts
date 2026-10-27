@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import type { SaveSlotInfo } from "@/engine/saveload";
+import type { SaveSlotInfo } from "@/engine/persistence/saveload";
 import type { BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
