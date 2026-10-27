@@ -163,7 +163,7 @@ Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/fina
 7. **Basho termination is interactive** — the tick pipeline never calls `endBasho`; the player clicks "End Basho" (`bashoSlice`). Multi-day advance halts at `day > 15` (`shouldHaltAdvance`).
 
 ## Refactoring Plan Status
-Plan file: `.claude/plans/encapsulated-herding-origami.md`
+(Original plan file `.claude/plans/encapsulated-herding-origami.md` was removed; all phases below completed.)
 
 | Phase | Items | Status |
 |-------|-------|--------|
