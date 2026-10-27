@@ -15,7 +15,7 @@ import type {
 import { queryEvents } from "@/engine/events/events";
 import { selectTopRivals } from "@/presenters/selectors";
 import { getSekitoriInHeya } from "@/engine/core/queries";
-import { buildPrevRankScores, buildBanzukeRows } from "@/presenters/banzukeUI";
+import { buildPrevRankScores, buildBanzukeRows } from "@/presenters/projections/banzukeUI";
 import { projectRosterEntry, UIRosterEntry } from "@/presenters/rikishi/index";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 

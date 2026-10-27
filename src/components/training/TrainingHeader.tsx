@@ -5,7 +5,7 @@
  */
 
 import { Dumbbell } from "lucide-react";
-import { StableName } from "@/components/ClickableName";
+import { StableName } from "@/components/shared/ClickableName";
 import { getIntensityLabel } from "@/presenters/uiDigest";
 import type { TrainingIntensity } from "@/engine/types/training";
 import type { Heya } from "@/engine/types/heya";

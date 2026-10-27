@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   CANVAS_PHASE_TO_PBP_PHASE,
   PHASES,
-} from "@/components/game/boutReplay/boutCanvas/constants";
-import type { ReplayPhase } from "@/components/game/boutReplay/boutCanvas/types";
+} from "@/components/basho/boutReplay/boutCanvas/constants";
+import type { ReplayPhase } from "@/components/basho/boutReplay/boutCanvas/types";
 import type { PbpPhase } from "@/engine/bout/boutNarrative";
 
 const VALID_PBP_PHASES: PbpPhase[] = [

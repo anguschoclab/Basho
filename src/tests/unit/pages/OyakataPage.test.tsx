@@ -1,10 +1,10 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import OyakataPage from "@/pages/OyakataPage";
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
@@ -18,7 +18,7 @@ vi.mock("@/components/kesho/keshoComponents", () => ({
   YokozunaTsunaDisplay: () => React.createElement("div", null, "Tsuna"),
 }));
 
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: any) => React.createElement("span", null, name),
   StableName: ({ name }: any) => React.createElement("span", null, name),
 }));

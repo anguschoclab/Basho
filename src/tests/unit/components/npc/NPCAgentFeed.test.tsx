@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { NPCAgentFeed } from "@/components/npc/NPCAgentFeed";
-import type { NPCAgentProjection } from "@/presenters/npcAgentProjections";
+import type { NPCAgentProjection } from "@/presenters/projections/npcAgentProjections";
 
 function makeProjection(decisions: any[] = []): NPCAgentProjection {
   return {

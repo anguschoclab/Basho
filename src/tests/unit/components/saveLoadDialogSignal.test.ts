@@ -5,7 +5,7 @@ describe("saveLoadDialogSignal", () => {
   let openSaveLoadDialog: () => void;
 
   beforeEach(async () => {
-    const mod = await import("@/components/game/saveLoadDialogSignal");
+    const mod = await import("@/components/menu/saveLoadDialogSignal");
     openListeners = mod.openListeners;
     openSaveLoadDialog = mod.openSaveLoadDialog;
     openListeners.clear();

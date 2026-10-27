@@ -24,7 +24,7 @@ vi.mock("@/components/ui/badge", () => ({
   ),
 }));
 
-vi.mock("@/utils/engineUtils", () => ({
+vi.mock("@/lib/engineUtils", () => ({
   formatYen: (n: number) => `¥${n.toLocaleString()}`,
 }));
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectExhibitions } from "@/presenters/exhibitionProjections";
+import { projectExhibitions } from "@/presenters/projections/exhibitionProjections";
 import type { WorldState, PendingExhibition } from "@/engine/types/world";
 
 function makeWorld(pending: PendingExhibition[] = [], playerHeyaId = "h1"): WorldState {

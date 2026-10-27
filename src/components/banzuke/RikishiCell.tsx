@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Badge } from "@/components/ui/badge";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { RankChangeIndicator } from "@/components/banzuke/RankChangeIndicator";
 import type { UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";

@@ -15,7 +15,7 @@ vi.mock("@/components/ui/badge", () => ({
 }));
 
 import { OyakataProfileDrawer } from "@/components/governance/OyakataProfileDrawer";
-import type { RivalStableDTO } from "@/presenters/rivalStablesProjections";
+import type { RivalStableDTO } from "@/presenters/projections/rivalStablesProjections";
 
 function makeRival(overrides: Partial<RivalStableDTO> = {}): RivalStableDTO {
   return {

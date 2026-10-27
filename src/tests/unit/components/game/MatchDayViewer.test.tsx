@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
-import { MatchDayViewer } from "@/components/game/MatchDayViewer";
+import { MatchDayViewer } from "@/components/basho/MatchDayViewer";
 import { buildBoutPreviewUI } from "@/presenters/uiDigest";
 import type { WorldState } from "@/engine/types/world";
 import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
@@ -17,7 +17,7 @@ vi.mock("@/presenters/uiDigest", () => ({
   buildBoutPreviewUI: vi.fn(() => null),
 }));
 
-vi.mock("@/components/game/BoutPreMatchOverlay", () => ({
+vi.mock("@/components/basho/BoutPreMatchOverlay", () => ({
   BoutPreMatchOverlay: ({
     onBegin,
     onDismiss,

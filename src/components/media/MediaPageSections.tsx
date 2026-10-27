@@ -6,15 +6,15 @@
  */
 
 import { useState } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RikishiName, StableName } from "@/components/ClickableName";
+import { RikishiName, StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
-import { useGame } from "@/contexts/useGame";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
+import { useGame } from "@/state/game/useGame";
 import { Flame, TrendingUp, Building2, Zap, Filter, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { MediaHeadline, MediaBeat } from "@/engine/types/media";
-import { getMediaHeatLabel, getMediaToneColor } from "@/presenters/PerceptionPresenter";
+import { getMediaHeatLabel, getMediaToneColor } from "@/presenters/projections/PerceptionPresenter";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { projectMediaUIDigest } from "@/presenters/uiDigest";
 

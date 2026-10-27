@@ -6,8 +6,8 @@
  */
 
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TabsContent } from "@/components/ui/tabs";
@@ -15,13 +15,13 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { AlertTriangle, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { StableHealthPanel } from "@/components/game/StableHealthPanel";
+import { StableHealthPanel } from "@/components/stable/StableHealthPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
-import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
+import { MentorAssignmentPanel } from "@/components/training/MentorAssignmentPanel";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
-import { projectTsukebito } from "@/presenters/tsukebitoProjections";
-import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
+import { projectTsukebito } from "@/presenters/projections/tsukebitoProjections";
+import { projectYouthAcademy } from "@/presenters/projections/youthAcademyProjections";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { projectRikishi } from "@/presenters/rikishi/index";
 import type { Rikishi } from "@/engine/types/rikishi";

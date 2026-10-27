@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, renderHook } from "@testing-library/react";
-import { RequireWorld } from "@/components/RequireWorld";
+import { RequireWorld } from "@/components/app-shell/RequireWorld";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 

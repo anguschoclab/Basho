@@ -6,10 +6,10 @@
 
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Trophy, Users, Calendar } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 

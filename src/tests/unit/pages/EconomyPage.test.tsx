@@ -1,12 +1,12 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import EconomyPage from "@/pages/EconomyPage";
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: () => ({ sendCommand: vi.fn() }),
 }));
 
@@ -70,11 +70,11 @@ vi.mock("@/components/economy/KoenkaiSekitoriCards", () => ({
   KoenkaiSekitoriCards: () => React.createElement("div", null, "Koenkai"),
 }));
 
-vi.mock("@/components/game/SponsorsPanel", () => ({
+vi.mock("@/components/economy/SponsorsPanel", () => ({
   SponsorsPanel: () => React.createElement("div", null, "Sponsors"),
 }));
 
-vi.mock("@/components/game/StableHealthPanel", () => ({
+vi.mock("@/components/stable/StableHealthPanel", () => ({
   StableHealthPanel: () => React.createElement("div", null, "Stable Health"),
 }));
 

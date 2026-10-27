@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { InboxNewsTicker } from "@/components/game/InboxNewsTicker";
+import { InboxNewsTicker } from "@/components/media/InboxNewsTicker";
 import type { UIDigest } from "@/presenters/projections/digestProjections";
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 
 function renderTicker(digest: UIDigest | null) {
   vi.mocked(useGame).mockReturnValue({ digest } as any);

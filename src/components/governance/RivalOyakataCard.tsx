@@ -7,7 +7,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Crown, Brain, Activity } from "lucide-react";
-import type { NPCDecisionDTO } from "@/presenters/npcAgentProjections";
+import type { NPCDecisionDTO } from "@/presenters/projections/npcAgentProjections";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 

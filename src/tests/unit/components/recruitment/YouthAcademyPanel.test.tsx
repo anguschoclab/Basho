@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
-import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
+import type { YouthAcademyProjection } from "@/presenters/projections/youthAcademyProjections";
 
 function makeProjection(overrides: Partial<YouthAcademyProjection> = {}): YouthAcademyProjection {
   return {

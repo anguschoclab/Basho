@@ -3,7 +3,7 @@
  * Plan Feature 6 Test-First Protocol item 6.
  */
 import { describe, it, expect } from "vitest";
-import { projectOfficials } from "@/presenters/officialsProjections";
+import { projectOfficials } from "@/presenters/projections/officialsProjections";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("projectOfficials", () => {

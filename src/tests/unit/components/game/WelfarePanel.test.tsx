@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import { WelfarePanel } from "@/components/game/WelfarePanel";
+import { WelfarePanel } from "@/components/stable/WelfarePanel";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
 function makeDigest(

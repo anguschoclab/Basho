@@ -7,8 +7,8 @@
  */
 
 export * from "@/presenters/rikishi/index";
-export * from "@/presenters/heyaUI";
-export * from "@/presenters/bashoUI";
-export * from "@/presenters/banzukeUI";
-export * from "@/presenters/boutPreviewUI";
+export * from "@/presenters/projections/heyaUI";
+export * from "@/presenters/projections/bashoUI";
+export * from "@/presenters/projections/banzukeUI";
+export * from "@/presenters/projections/boutPreviewUI";
 export * from "@/presenters/uiDigestTypes";

@@ -9,7 +9,7 @@
  * resolve only after hydration completes.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { ElectronStorageProvider } from "@/contexts/electronStorageProvider";
+import { ElectronStorageProvider } from "@/state/game/electronStorageProvider";
 
 function installElectronStore(initial: Record<string, string>) {
   const store = { ...initial };

@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Globe, Check, X } from "lucide-react";
-import type { ExhibitionInvitationDTO } from "@/presenters/exhibitionProjections";
+import type { ExhibitionInvitationDTO } from "@/presenters/projections/exhibitionProjections";
 
 export function JungyoInvitationCard({
   invitation,

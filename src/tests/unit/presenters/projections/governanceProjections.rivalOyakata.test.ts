@@ -3,8 +3,8 @@
  * Plan Feature 9 Test-First Protocol item 1.
  */
 import { describe, it, expect } from "vitest";
-import { projectNPCAgentActivity } from "@/presenters/npcAgentProjections";
-import { projectRivalStables } from "@/presenters/rivalStablesProjections";
+import { projectNPCAgentActivity } from "@/presenters/projections/npcAgentProjections";
+import { projectRivalStables } from "@/presenters/projections/rivalStablesProjections";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("rival oyakata projection", () => {

@@ -1,4 +1,4 @@
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Button } from "@/components/ui/button";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 

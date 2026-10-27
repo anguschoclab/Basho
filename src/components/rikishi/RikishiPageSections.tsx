@@ -19,7 +19,7 @@ import { RikishiCombatTab } from "@/components/rikishi/RikishiCombatTab";
 import { RikishiCareerTab } from "@/components/rikishi/RikishiCareerTab";
 import { RikishiKeshoMawashi } from "@/components/rikishi/RikishiKeshoMawashi";
 import { RikishiGlobalCup } from "@/components/rikishi/RikishiGlobalCup";
-import { IntaiCeremony } from "@/components/game/IntaiCeremony";
+import { IntaiCeremony } from "@/components/ceremony/IntaiCeremony";
 import { getHeya } from "@/presenters/worldAccess";
 import { Trash2 } from "lucide-react";
 import type { WorldState } from "@/presenters/uiDigest";
@@ -30,7 +30,7 @@ import type {
   useCareerProgressionData,
   useEarningsProgressionData,
 } from "@/components/rikishi/useRikishiData";
-import type { getHealthBadge } from "@/presenters/PerceptionPresenter";
+import type { getHealthBadge } from "@/presenters/projections/PerceptionPresenter";
 
 /** Stable roster list view — shown when no rikishiId is in the route. */
 export function RosterListView({

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import React from "react";
 import HistoryPage from "@/pages/HistoryPage";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 
 // Mock dependencies
 vi.mock("@tanstack/react-router", () => ({
@@ -15,7 +15,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   ),
 }));
 
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
   StableName: ({ name }: { name: string }) => <span>{name}</span>,
 }));

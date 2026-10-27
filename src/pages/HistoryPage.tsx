@@ -6,7 +6,7 @@
 
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";

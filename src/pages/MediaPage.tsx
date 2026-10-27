@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { projectMediaUIDigest } from "@/presenters/uiDigest";
 import { EventFeed } from "@/components/dashboard/EventFeed";

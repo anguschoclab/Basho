@@ -16,7 +16,7 @@ import { projectTrainingSummary } from "@/presenters/projections/trainingProject
 import { buildActionQueue } from "@/presenters/projections/actionQueue";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getRikishi } from "@/presenters/worldAccess";
-import { projectExhibitions, type ExhibitionProjection } from "@/presenters/exhibitionProjections";
+import { projectExhibitions, type ExhibitionProjection } from "@/presenters/projections/exhibitionProjections";
 import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
 import { projectAdvisorRecommendations } from "@/presenters/projections/advisorProjections";
 

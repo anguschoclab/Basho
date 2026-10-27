@@ -18,7 +18,7 @@ import type { UIRosterEntry, UIRankDelta } from "@/presenters/rikishi/types";
 import { rankScore, calculateStreak } from "@/presenters/rikishi/transformers/career";
 import type { KeshoMawashi } from "@/engine/types/keshoMawashi";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
-import { computeKachiNokori } from "@/presenters/kachiNokori";
+import { computeKachiNokori } from "@/presenters/projections/kachiNokori";
 import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 
 /**

@@ -18,7 +18,7 @@ vi.mock("@/engine/utils/Logger", () => ({
   error: (msg: string, ctx?: string) => mockError(msg, ctx),
 }));
 
-import { initializeApp } from "@/bootstrap";
+import { initializeApp } from "@/app/bootstrap";
 
 function makeRootElement(): HTMLElement {
   const el = document.createElement("div");

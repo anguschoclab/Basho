@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { usePlayerHeya } from "@/hooks/usePlayerHeya";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 import { FINANCES_RUNWAY_CONFIG } from "@/constants/ui/finances";
 

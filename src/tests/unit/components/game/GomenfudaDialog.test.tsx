@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
-import { GomenfudaStatusBadge } from "@/components/game/GomenfudaStatusBadge";
+import { GomenfudaStatusBadge } from "@/components/governance/GomenfudaStatusBadge";
 import type { GomenfudaProjection } from "@/presenters/projections/governanceProjections";
 
 function makeProjection(overrides: Partial<GomenfudaProjection> = {}): GomenfudaProjection {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeActiveLineIndices } from "@/components/game/boutReplay/boutCanvas/activeLines";
+import { computeActiveLineIndices } from "@/components/basho/boutReplay/boutCanvas/activeLines";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 function makeLine(phase: PbpLine["phase"], text = "test"): PbpLine {

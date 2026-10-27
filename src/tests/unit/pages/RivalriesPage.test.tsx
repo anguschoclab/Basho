@@ -1,10 +1,10 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import RivalriesPage from "@/pages/RivalriesPage";
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),

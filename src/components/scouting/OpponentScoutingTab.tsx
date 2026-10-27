@@ -1,7 +1,7 @@
 // OpponentScoutingTab.tsx — Comprehensive opponent lookup & scouting investment
 
 import { useMemo, useState } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";

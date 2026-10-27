@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { ExhibitionInvitationsPanel } from "@/components/exhibition/ExhibitionInvitationsPanel";
-import type { ExhibitionProjection } from "@/presenters/exhibitionProjections";
+import type { ExhibitionProjection } from "@/presenters/projections/exhibitionProjections";
 
 function makeProjection(invitations: any[] = []): ExhibitionProjection {
   return {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isValidStorageKey } from "@/utils/storageKeyValidation";
+import { isValidStorageKey } from "@/lib/storageKeyValidation";
 
 describe("isValidStorageKey", () => {
   it("rejects __proto__ keys (case-insensitive)", () => {

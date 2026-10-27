@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, waitFor } from "@testing-library/react";
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(() => ({
     state: { world: null, phase: "interim" },
     createWorld: vi.fn(),
@@ -109,7 +109,7 @@ vi.mock("@/components/dashboard/index", () => ({
   AcademyWidget: () => <div data-testid="academy-widget" />,
 }));
 
-vi.mock("@/components/game/ProgressionTracker", () => ({
+vi.mock("@/components/training/ProgressionTracker", () => ({
   ProgressionTracker: () => <div data-testid="progression-tracker" />,
 }));
 
@@ -117,7 +117,7 @@ vi.mock("@/components/onboarding/OnboardingTourDialog", () => ({
   OnboardingTourDialog: () => null,
 }));
 
-vi.mock("@/components/game/CrisisModal", () => ({
+vi.mock("@/components/governance/CrisisModal", () => ({
   CrisisModal: () => null,
 }));
 
@@ -129,11 +129,11 @@ vi.mock("@/components/ui/SkeletonCard", () => ({
   SkeletonCard: () => <div data-testid="skeleton" />,
 }));
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: (selector: (s: unknown) => unknown) => selector({ sendCommand: vi.fn() }),
 }));
 
-import { router } from "@/routes";
+import { router } from "@/app/routes";
 
 describe("routes lazy loading — Suspense fallback for MainMenu, NewGameWizard, Dashboard", () => {
   beforeEach(() => {
@@ -179,7 +179,7 @@ describe("routes lazy loading — Suspense fallback for MainMenu, NewGameWizard,
     const result = route.options.component();
     // Dashboard is world-gated: RequireWorld wraps the lazy Suspense boundary
     // so a cold boot restores the autosave instead of rendering a blank page.
-    const { RequireWorld } = await import("@/components/RequireWorld");
+    const { RequireWorld } = await import("@/components/app-shell/RequireWorld");
     expect(result.type).toBe(RequireWorld);
     expect((result.props as { children: React.ReactElement }).children.type).toBe(
       (await import("react")).Suspense

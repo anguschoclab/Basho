@@ -3,7 +3,7 @@ import {
   getHealthBadge,
   getMediaHeatLabel,
   getMediaToneColor,
-} from "@/presenters/PerceptionPresenter";
+} from "@/presenters/projections/PerceptionPresenter";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("PerceptionPresenter", () => {

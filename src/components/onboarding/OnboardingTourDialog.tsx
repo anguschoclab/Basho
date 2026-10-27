@@ -7,8 +7,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useGameStore } from "@/store/gameStore";
-import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
+import { useGame } from "@/state/game/useGame";
 import { Trophy, Swords, Clock, ChevronRight, Sparkles, PartyPopper } from "lucide-react";
 import { cn } from "@/lib/utils";
 

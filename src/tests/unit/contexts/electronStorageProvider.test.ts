@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   ElectronStorageProvider,
   registerElectronStorage,
-} from "@/contexts/electronStorageProvider";
+} from "@/state/game/electronStorageProvider";
 import { getStorageProvider, resetStorageProvider } from "@/engine/persistence/storageProvider";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
 import { logger } from "@/engine/utils/Logger";

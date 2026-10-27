@@ -7,9 +7,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Award } from "lucide-react";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { kenshoTierLabel } from "@/components/economy/economyUtils";
 import type { Rikishi } from "@/engine/types/index";

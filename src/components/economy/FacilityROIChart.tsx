@@ -19,7 +19,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 
 // === Inline cost formula (mirrors upgradeCost() in facilities.ts) ===
 // Base 200k per point, scaling quadratically past 60.

@@ -10,8 +10,8 @@
  *   - NEVER raw trait numbers
  */
 import { describe, it, expect } from "vitest";
-import { projectRivalStables } from "@/presenters/rivalStablesProjections";
-import type { NPCDecisionDTO } from "@/presenters/npcAgentProjections";
+import { projectRivalStables } from "@/presenters/projections/rivalStablesProjections";
+import type { NPCDecisionDTO } from "@/presenters/projections/npcAgentProjections";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 

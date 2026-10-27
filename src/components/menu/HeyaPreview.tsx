@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Heya } from "@/engine/types/heya";
 import { STATURE_CONFIG } from "@/components/menu/statureConfig";
-import { sortRikishiByRank } from "@/utils/engineUtils";
+import { sortRikishiByRank } from "@/lib/engineUtils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RikishiDetailDialog } from "@/components/menu/RikishiDetailDialog";
 import { PreviewHero, PreviewStats, PreviewRoster, PreviewFooter } from "@/components/menu/HeyaPreviewSections";

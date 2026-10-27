@@ -1,8 +1,8 @@
-// src/contexts/__tests__/gameReducer.test.ts
+// src/state/game/__tests__/gameReducer.test.ts
 import { describe, it, expect } from "vitest";
-import { gameReducer } from "@/contexts/gameReducer";
-import { initialGameState } from "@/contexts/gameTypes";
-import type { GameAction } from "@/contexts/gameTypes";
+import { gameReducer } from "@/state/game/gameReducer";
+import { initialGameState } from "@/state/game/gameTypes";
+import type { GameAction } from "@/state/game/gameTypes";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 describe("Game Reducer Purity", () => {

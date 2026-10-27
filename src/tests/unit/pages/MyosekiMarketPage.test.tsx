@@ -4,11 +4,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import MyosekiMarketPage from "@/pages/MyosekiMarketPage";
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: vi.fn(() => vi.fn()),
 }));
 
@@ -28,8 +28,8 @@ vi.mock("@/components/ui/tooltip-wrap", () => ({
   TooltipWrap: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 
 function makeStock(overrides: Partial<any> = {}): any {
   return {

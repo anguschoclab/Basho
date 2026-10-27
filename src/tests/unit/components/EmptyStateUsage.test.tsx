@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import { EventFeed } from "@/components/dashboard/EventFeed";
 import { StableHealthWidget } from "@/components/dashboard/StableHealthWidget";
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
@@ -14,7 +14,7 @@ vi.mock("@/components/layout/page-shell/index", () => ({
   WidgetHeader: ({ title }: { title: string }) => <div>{title}</div>,
 }));
 
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 
@@ -33,7 +33,7 @@ vi.mock("@/presenters/projections/institutionUI", () => ({
   projectHeyaData: vi.fn(() => null),
 }));
 
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 
 function mockState(state: any) {
   vi.mocked(useGame).mockReturnValue({ state } as any);

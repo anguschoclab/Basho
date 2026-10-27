@@ -8,8 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flag, TrendingUp } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { RikishiName } from "@/components/ClickableName";
-import type { NakabiProjection } from "@/presenters/nakabiProjections";
+import { RikishiName } from "@/components/shared/ClickableName";
+import type { NakabiProjection } from "@/presenters/projections/nakabiProjections";
 
 export function NakabiHighlightCard({ projection }: { projection: NakabiProjection }) {
   const { summary, isNakabiDay } = projection;

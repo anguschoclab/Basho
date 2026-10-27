@@ -7,7 +7,7 @@ import { resolveBout } from "@/engine/bout/boutResolver";
 
 // Mock GameContext
 const mockUseGame = vi.fn();
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 
@@ -39,7 +39,7 @@ vi.mock("@/engine/bout/boutResolver", () => ({
 }));
 
 // Mock PbpLineText
-vi.mock("@/components/game/PbpLineText", () => ({
+vi.mock("@/components/basho/PbpLineText", () => ({
   PbpLineText: ({ text }: { text: string }) => <span>{text}</span>,
 }));
 

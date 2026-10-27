@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
+import { MentorAssignmentPanel } from "@/components/training/MentorAssignmentPanel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Rikishi } from "@/engine/types/rikishi";
 

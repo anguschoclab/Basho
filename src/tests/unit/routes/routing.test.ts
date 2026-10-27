@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { router } from "@/routes";
+import { router } from "@/app/routes";
 
 describe("Route configuration — /stable/roster", () => {
   it("router is defined", () => {

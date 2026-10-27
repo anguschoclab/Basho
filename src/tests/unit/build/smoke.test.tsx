@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
-import { GameProvider } from "@/contexts/GameContext";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import { GameProvider } from "@/state/game/GameContext";
+import { ThemeProvider } from "@/components/app-shell/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { ReactNode } from "react";
 

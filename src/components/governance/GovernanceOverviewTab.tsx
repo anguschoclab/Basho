@@ -14,7 +14,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { TabsContent } from "@/components/ui/tabs";
 import { Globe } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import { getGlobalCupChampion } from "@/presenters/worldAccess";

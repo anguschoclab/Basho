@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
+import { BoutNarrativeModal } from "@/components/basho/BoutNarrativeModal";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import { mockUIRikishi } from "@/tests/helpers/uiTestHelpers";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
@@ -16,7 +16,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 // Mock ClickableName to avoid router dependency
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ children }: { children?: React.ReactNode }) =>
     React.createElement("span", null, children),
   StableName: ({ children }: { children?: React.ReactNode }) =>
@@ -51,7 +51,7 @@ const MockComponent = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/components/game/BoutReplayViewer", () => ({
+vi.mock("@/components/basho/BoutReplayViewer", () => ({
   BoutReplayViewer: MockComponent,
 }));
 

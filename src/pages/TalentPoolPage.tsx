@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { StableName } from "@/components/ClickableName";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { StableName } from "@/components/shared/ClickableName";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
@@ -20,7 +20,7 @@ import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/presenters/engineAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeya, getOyakata, getTalentPool } from "@/presenters/worldAccess";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, candidateStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, candidateStageInput } from "@/presenters/projections/avatarProjections";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 

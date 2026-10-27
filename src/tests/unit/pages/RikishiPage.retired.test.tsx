@@ -26,7 +26,7 @@ vi.mock("@tanstack/react-router", () => ({
 const mockRetireRikishi = vi.fn();
 let mockWorld: WorldState | null = null;
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({
     state: { world: mockWorld, playerHeyaId: "h1" },
     retireRikishi: mockRetireRikishi,
@@ -71,7 +71,7 @@ vi.mock("@/presenters/engineAccess", async (importOriginal) => ({
   EntityCollection: { getHeyaRoster: () => [] },
 }));
 
-vi.mock("@/presenters/PerceptionPresenter", () => ({
+vi.mock("@/presenters/projections/PerceptionPresenter", () => ({
   getHealthBadge: () => null,
 }));
 

@@ -11,7 +11,7 @@
  * user-facing notice so the UI can surface it.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("sendCommand rejection feedback", () => {

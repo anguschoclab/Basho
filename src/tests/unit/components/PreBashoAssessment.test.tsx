@@ -6,7 +6,7 @@ import { render, screen } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { PreBashoAssessmentPanel } from "@/components/dashboard/PreBashoAssessment";
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
@@ -14,11 +14,11 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: vi.fn(() => ({ to: () => {} })),
 }));
 
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 
 function mockState(world: any) {
   vi.mocked(useGame).mockReturnValue({ state: { world } } as any);

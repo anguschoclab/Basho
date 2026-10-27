@@ -1,10 +1,10 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import HallOfFamePage from "@/pages/HallOfFamePage";
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
@@ -23,7 +23,7 @@ vi.mock("@/components/ui/EmptyState", () => ({
   EmptyState: () => React.createElement("div", null, "Empty"),
 }));
 
-vi.mock("@/components/game/HoFTimeline", () => ({
+vi.mock("@/components/ceremony/HoFTimeline", () => ({
   HoFTimeline: () => React.createElement("div", null, "Timeline"),
 }));
 
@@ -47,7 +47,7 @@ vi.mock("@/presenters/selectors", () => ({
   selectAwardLog: () => [],
 }));
 
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name, className }: any) => React.createElement("span", { className }, name),
   StableName: ({ name }: any) => React.createElement("span", null, name),
 }));

@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, fireEvent, cleanup } from "@testing-library/react";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { onFocusGlobalSearch } from "@/components/game/searchFocusSignal";
+import { onFocusGlobalSearch } from "@/components/shared/searchFocusSignal";
 
 const mockNavigate = vi.fn();
 
@@ -16,7 +16,7 @@ vi.mock("@tanstack/react-router", () => ({
   useLocation: () => ({ pathname: "/dashboard" }),
 }));
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({
     state: { world: null, currentBoutIndex: 0 },
     advanceOneDay: vi.fn(),

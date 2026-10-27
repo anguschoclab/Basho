@@ -8,11 +8,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StableName } from "@/components/ClickableName";
+import { StableName } from "@/components/shared/ClickableName";
 import { HeyaBrandBadge } from "@/components/stable/HeyaBrandBadge";
 import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";

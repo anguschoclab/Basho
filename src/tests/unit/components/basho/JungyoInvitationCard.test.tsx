@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { JungyoInvitationCard } from "@/components/basho/JungyoInvitationCard";
-import type { ExhibitionInvitationDTO } from "@/presenters/exhibitionProjections";
+import type { ExhibitionInvitationDTO } from "@/presenters/projections/exhibitionProjections";
 
 function makeInvitation(overrides: Partial<ExhibitionInvitationDTO> = {}): ExhibitionInvitationDTO {
   return {

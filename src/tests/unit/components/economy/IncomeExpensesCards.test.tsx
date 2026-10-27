@@ -2,7 +2,7 @@ import React from "react";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 
 const yen = (n: number) => new RegExp(formatYen(n).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
 

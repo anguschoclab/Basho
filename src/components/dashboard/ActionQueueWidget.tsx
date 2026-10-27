@@ -6,9 +6,9 @@ import { Inbox } from "lucide-react";
 import type { ActionItem } from "@/presenters/projections/actionQueue";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { toast } from "sonner";
-import { decisionToastMessage } from "@/components/game/decisionFeedback";
+import { decisionToastMessage } from "@/components/shared/decisionFeedback";
 import { SEVERITY_CONFIG } from "@/components/dashboard/actionQueueConfig";
 import { ActionNavigateRow, ActionResolveRow } from "@/components/dashboard/ActionQueueSections";
 

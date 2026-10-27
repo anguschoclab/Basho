@@ -4,12 +4,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const mockCompleteTutorial = vi.fn();
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({ completeTutorial: mockCompleteTutorial }),
 }));
 
 const mockDismissTour = vi.fn();
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: (selector: (s: Record<string, unknown>) => unknown) =>
     selector({
       showTour: true,

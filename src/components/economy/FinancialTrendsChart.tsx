@@ -17,7 +17,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 
 export interface LedgerEntry {
   amount: number;

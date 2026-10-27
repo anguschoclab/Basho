@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import type {
   TrainingIntensity,
   TrainingFocus,

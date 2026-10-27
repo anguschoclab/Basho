@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/page-shell/index";
 import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useState } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { RivalriesHeader } from "@/components/rivalries/RivalriesHeader";
 import { RivalriesEmptyState } from "@/components/rivalries/RivalriesEmptyState";
 import { HeatLegend } from "@/components/rivalries/HeatLegend";

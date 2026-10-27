@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { applyImpact, applyImpacts } from "@/contexts/gameHelpers";
-import type { GameState } from "@/contexts/gameTypes";
+import { applyImpact, applyImpacts } from "@/state/game/gameHelpers";
+import type { GameState } from "@/state/game/gameTypes";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 

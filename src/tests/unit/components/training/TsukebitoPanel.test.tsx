@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
-import type { TsukebitoProjection } from "@/presenters/tsukebitoProjections";
+import type { TsukebitoProjection } from "@/presenters/projections/tsukebitoProjections";
 
 function makeProjection(overrides: Partial<TsukebitoProjection> = {}): TsukebitoProjection {
   return {

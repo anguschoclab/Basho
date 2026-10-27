@@ -6,12 +6,12 @@
  */
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { useToast } from "@/hooks/use-toast";
 import type { SaveSlotInfo } from "@/presenters/engineAccess";
 import { deleteSave, exportSave, importSave } from "@/presenters/engineAccess";
-import { openListeners } from "@/components/game/saveLoadDialogSignal";
+import { openListeners } from "@/components/menu/saveLoadDialogSignal";
 
 /** Slot save/load/delete actions with overwrite+delete confirmation state. */
 function useSlotActions(

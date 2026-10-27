@@ -5,7 +5,7 @@
  */
 
 import { useEffect } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 
 export function WorkerInitializer() {
   const initWorker = useGameStore((state) => state.initWorker);

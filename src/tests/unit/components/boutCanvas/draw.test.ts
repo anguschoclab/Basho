@@ -4,8 +4,8 @@
  * values, arc y-offset, and family/isLoser params.
  */
 import { describe, it, expect, vi } from "vitest";
-import { drawRikishi } from "@/components/game/boutReplay/boutCanvas/draw";
-import type { RikishiState, BodyPhase } from "@/components/game/boutReplay/boutCanvas/types";
+import { drawRikishi } from "@/components/basho/boutReplay/boutCanvas/draw";
+import type { RikishiState, BodyPhase } from "@/components/basho/boutReplay/boutCanvas/types";
 import type { UIRikishi } from "@/presenters/uiModels";
 
 // ---------------------------------------------------------------------------

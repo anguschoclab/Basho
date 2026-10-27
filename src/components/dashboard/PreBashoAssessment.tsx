@@ -6,13 +6,13 @@
 
 import React from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";

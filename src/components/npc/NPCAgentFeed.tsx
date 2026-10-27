@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Eye } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import type { NPCAgentProjection, NPCDecisionDTO } from "@/presenters/npcAgentProjections";
+import type { NPCAgentProjection, NPCDecisionDTO } from "@/presenters/projections/npcAgentProjections";
 
 const CATEGORY_LABELS: Record<string, string> = {
   recruitment: "Recruitment",

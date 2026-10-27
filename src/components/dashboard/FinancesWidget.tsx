@@ -1,5 +1,5 @@
 import { Coins, ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { AreaChart, Area, ResponsiveContainer, Tooltip, ReferenceLine, XAxis } from "recharts";
 import { useFinancesData } from "@/hooks/useFinancesData";

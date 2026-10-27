@@ -7,9 +7,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flame } from "lucide-react";
-import { RikishiName, StableName } from "@/components/ClickableName";
+import { RikishiName, StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { formatRank, clamp } from "@/presenters/uiDigest";
 import { getDisplayHeatBand } from "@/components/rivalries/rivalryUtils.pure";
 import { H2HBar, HeatGauge } from "@/components/rivalries/rivalryUtils";

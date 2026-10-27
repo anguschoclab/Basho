@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { EventLogPanel } from "@/components/layout/EventLogPanel";
-import { useEventReadStore } from "@/store/eventReadStore";
+import { useEventReadStore } from "@/state/stores/eventReadStore";
 import type { EngineEvent } from "@/engine/types/events";
 
-vi.mock("@/components/EventDetailDialog", () => ({
+vi.mock("@/components/shared/EventDetailDialog", () => ({
   EventDetailDialog: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="event-detail-dialog" /> : null,
 }));

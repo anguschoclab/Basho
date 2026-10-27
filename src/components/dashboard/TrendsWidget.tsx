@@ -1,13 +1,13 @@
 import { useMemo } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Globe, TrendingUp } from "lucide-react";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "@tanstack/react-router";
 import { formatMetaTrends } from "@/presenters/uiDigest";
-import type { EraTone } from "@/presenters/eraTone";
-import { ERA_TONE_LABELS, ERA_TONE_COLORS } from "@/presenters/eraTone";
+import type { EraTone } from "@/presenters/projections/eraTone";
+import { ERA_TONE_LABELS, ERA_TONE_COLORS } from "@/presenters/projections/eraTone";
 
 export function TrendsWidget() {
   const { state } = useGame();

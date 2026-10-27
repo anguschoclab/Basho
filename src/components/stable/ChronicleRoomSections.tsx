@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Scroll, Trophy, Users, History, Globe } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import type { Heya } from "@/engine/types/heya";
 import type { DynastyRecord } from "@/engine/types/dynasty";
 import type { WorldState } from "@/presenters/uiDigest";

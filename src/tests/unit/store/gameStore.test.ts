@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import type { WorkerEvent } from "@/engine/worker/types";
 import type { WorldState } from "@/engine/types/world";
 

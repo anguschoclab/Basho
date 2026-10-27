@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import CandidatePoolPage from "@/pages/CandidatePoolPage";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -11,9 +11,9 @@ vi.mock("@tanstack/react-router", () => ({
     React.createElement("a", { href: to, ...props }, children),
 }));
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: () => ({ sendCommand: vi.fn() }),
 }));
 

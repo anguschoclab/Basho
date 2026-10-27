@@ -11,7 +11,7 @@ import { KeshoMawashiDisplay } from "@/components/kesho/KeshoMawashiDisplay";
 import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { useState } from "react";
-import { KeshoEditor } from "@/components/game/KeshoEditor";
+import { KeshoEditor } from "@/components/kesho/KeshoEditor";
 
 interface RikishiKeshoMawashiProps {
   rikishi: UIRikishi;

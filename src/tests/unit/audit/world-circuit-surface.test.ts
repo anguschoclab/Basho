@@ -67,13 +67,13 @@ describe("Sidebar reachability — /global-cup and /world-circuit", () => {
 
 describe("Route definitions — /global-cup and /world-circuit", () => {
   it("routes.tsx defines /global-cup route with GlobalCupPage", () => {
-    const routes = readSrcFile("routes.tsx");
+    const routes = readSrcFile("app/routes.tsx");
     expect(routes).toContain("/global-cup");
     expect(routes).toContain("GlobalCupPage");
   });
 
   it("routes.tsx defines /world-circuit route with RegionalHubPage", () => {
-    const routes = readSrcFile("routes.tsx");
+    const routes = readSrcFile("app/routes.tsx");
     expect(routes).toContain("/world-circuit");
     expect(routes).toContain("RegionalHubPage");
   });
@@ -86,7 +86,7 @@ describe("GlobalCupPage — UI surface", () => {
   });
 
   it("renders GlobalCupBracket for tournament bracket", () => {
-    const sections = readSrcFile("components/game/GlobalCupSections.tsx");
+    const sections = readSrcFile("components/economy/GlobalCupSections.tsx");
     expect(sections).toContain("GlobalCupBracket");
   });
 

@@ -16,7 +16,7 @@ import {
   getRankDisplayEntry,
   DIVISION_NAMES,
 } from "@/constants/engine/rankDisplay";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 
 export const RIKISHI_RESULT_CAP = 10;
 export const HEYA_RESULT_CAP = 4;

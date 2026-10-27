@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useGame } from "@/contexts/useGame";
-import { ProgressionTracker } from "@/components/game/ProgressionTracker";
+import { useGame } from "@/state/game/useGame";
+import { ProgressionTracker } from "@/components/training/ProgressionTracker";
 import {
   getOzekiRunCandidates,
   getYokozunaCandidates,
@@ -15,7 +15,7 @@ import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDial
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { FinancesWidget, EventFeed, ActionQueueWidget } from "@/components/dashboard/index";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { useSuccessionDismissal } from "@/hooks/useSuccessionDismissal";
 import { useDashboardDerived } from "@/hooks/useDashboardDerived";
 import {

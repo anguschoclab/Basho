@@ -135,7 +135,7 @@ describe("Electron — security validation", () => {
 });
 
 describe("Routes — Electron/PWA history parity", () => {
-  const routes = readSrc("routes.tsx");
+  const routes = readSrc("app/routes.tsx");
 
   it("detects Electron production mode via __ELECTRON__ flag", () => {
     expect(routes).toContain("__ELECTRON__");

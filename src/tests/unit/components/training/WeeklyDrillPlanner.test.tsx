@@ -7,7 +7,7 @@ import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 

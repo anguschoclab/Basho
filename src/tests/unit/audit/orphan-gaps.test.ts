@@ -136,7 +136,7 @@ describe("Orphan route classification", () => {
 
   for (const route of REDIRECT_ROUTES) {
     it(`${route} is a redirect route (not an orphan)`, () => {
-      const routesContent = readFileSync(join(SRC, "routes.tsx"), "utf-8");
+      const routesContent = readFileSync(join(SRC, "app/routes.tsx"), "utf-8");
       expect(routesContent).toContain(`path: "${route}"`);
       expect(routesContent).toContain("redirect");
     });

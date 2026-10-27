@@ -14,7 +14,7 @@ import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_b
 import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
 import { buildAIContext } from "@/engine/npc/contextBuilder";
 import { createPlan } from "@/engine/npc/StrategicPlanner";
-import { projectTsukebito } from "@/presenters/tsukebitoProjections";
+import { projectTsukebito } from "@/presenters/projections/tsukebitoProjections";
 import { detectDueDecisions } from "@/engine/npc/decision/LoopDecisionEngine";
 import { generateH2HCommentary } from "@/engine/bout/h2h";
 import { BardEngine } from "@/engine/bard/BardEngine";

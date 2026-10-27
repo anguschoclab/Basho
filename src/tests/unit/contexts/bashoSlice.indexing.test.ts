@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { bashoSlice } from "@/contexts/bashoSlice";
-import type { GameState, GameAction } from "@/contexts/gameTypes";
+import { bashoSlice } from "@/state/game/bashoSlice";
+import type { GameState, GameAction } from "@/state/game/gameTypes";
 import type { MatchSchedule, BashoState, BashoName } from "@/engine/types/basho";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
-vi.mock("@/contexts/gameHelpers", () => ({
+vi.mock("@/state/game/gameHelpers", () => ({
   autosaveWithSignal: vi.fn(),
 }));
 

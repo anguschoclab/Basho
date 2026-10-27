@@ -7,9 +7,9 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Activity, Users } from "lucide-react";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { FATIGUE_LABELS, toFatigueBand, getCareerPhase } from "@/presenters/uiDigest";
 import { FOCUS_MODE_OPTIONS } from "@/constants/ui/training";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";

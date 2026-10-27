@@ -2,10 +2,10 @@
  */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";
-import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
+import { InjuryRecoveryPanel } from "@/components/training/InjuryRecoveryPanel";
+import { SponsorContractsPanel } from "@/components/economy/SponsorContractsPanel";
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: vi.fn(() => ({ sendCommand: vi.fn() })),
 }));
 
@@ -13,7 +13,7 @@ vi.mock("@/hooks/use-toast", () => ({
   useToast: vi.fn(() => ({ toast: vi.fn() })),
 }));
 
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 

@@ -8,7 +8,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Badge } from "@/components/ui/badge";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { Trophy, Shield, Target, Crown, TrendingUp, Calendar, Swords } from "lucide-react";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import { HOF_CATEGORY_LABELS } from "@/presenters/uiDigest";

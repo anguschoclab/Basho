@@ -12,7 +12,7 @@ import { readSrcFile } from "@/tests/helpers/fsScan";
 const ROOT = join(__dirname, "../../../..");
 
 describe("routes.tsx — structural integrity", () => {
-  const routes = readSrcFile("routes.tsx");
+  const routes = readSrcFile("app/routes.tsx");
 
   it("exports router", () => {
     expect(routes).toContain("export const router");
@@ -35,7 +35,7 @@ describe("routes.tsx — structural integrity", () => {
 });
 
 describe("Content routes — all page routes have components", () => {
-  const routes = readSrcFile("routes.tsx");
+  const routes = readSrcFile("app/routes.tsx");
 
   // Top-level routes (path is defined directly in createRoute)
   const topLevelRoutes: Array<{ path: string; component: string }> = [
@@ -96,7 +96,7 @@ describe("Content routes — all page routes have components", () => {
 });
 
 describe("Redirect routes — all redirects point to valid targets", () => {
-  const routes = readSrcFile("routes.tsx");
+  const routes = readSrcFile("app/routes.tsx");
 
   const redirects: Array<{ from: string; to: string }> = [
     { from: "/economy", to: "/office/finances" },
@@ -125,7 +125,7 @@ describe("Redirect routes — all redirects point to valid targets", () => {
 
 describe("Sidebar routes — all sidebar entries match defined routes", () => {
   const sidebar = readSrcFile("components/layout/sidebarConfig.ts");
-  const routes = readSrcFile("routes.tsx");
+  const routes = readSrcFile("app/routes.tsx");
 
   // Map sidebar URLs to component names — nested routes won't appear as
   // literal full paths in routes.tsx, so we verify the component is wired.

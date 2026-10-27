@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useKenshoData } from "@/hooks/useKenshoData";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return {

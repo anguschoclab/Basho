@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Badge } from "@/components/ui/badge";
-import { StableName } from "@/components/ClickableName";
+import { StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { Swords, Flame } from "lucide-react";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";

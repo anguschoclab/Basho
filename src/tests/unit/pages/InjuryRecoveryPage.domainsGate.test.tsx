@@ -7,7 +7,7 @@ vi.mock("@tanstack/react-router", () => ({
   useLocation: () => ({ pathname: "/injury-recovery" }),
 }));
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
@@ -62,11 +62,11 @@ vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: () => <div data-testid="page-header" />,
 }));
 
-vi.mock("@/components/game/InjuryRecoveryPanel", () => ({
+vi.mock("@/components/training/InjuryRecoveryPanel", () => ({
   InjuryRecoveryPanel: () => <div data-testid="injury-panel" />,
 }));
 
-vi.mock("@/components/game/WelfarePanel", () => ({
+vi.mock("@/components/stable/WelfarePanel", () => ({
   WelfarePanel: () => <div data-testid="welfare-panel" />,
 }));
 
@@ -74,7 +74,7 @@ vi.mock("@/components/training/InjuryRiskHeatmap", () => ({
   InjuryRiskHeatmap: () => <div data-testid="injury-heatmap" />,
 }));
 
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import InjuryRecoveryPage from "@/pages/InjuryRecoveryPage";
 

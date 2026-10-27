@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { TopNavBar } from "@/components/layout/TopNavBar";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import type { WorldState } from "@/engine/types/world";
@@ -17,7 +17,7 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
@@ -38,7 +38,7 @@ vi.mock("@/presenters/engineAccess", async (importOriginal) => ({
   getPlayerHeya: vi.fn(),
 }));
 
-vi.mock("@/components/game/SaveLoadDialog", () => ({
+vi.mock("@/components/menu/SaveLoadDialog", () => ({
   SaveLoadDialog: () => <div data-testid="save-load-mock" />,
 }));
 

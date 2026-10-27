@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import React from "react";
 import { HistoryDashboard } from "@/pages/HistoryDashboard";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";

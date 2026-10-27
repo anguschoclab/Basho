@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectNPCAgentActivity } from "@/presenters/npcAgentProjections";
+import { projectNPCAgentActivity } from "@/presenters/projections/npcAgentProjections";
 import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 

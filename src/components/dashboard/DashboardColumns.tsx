@@ -12,8 +12,8 @@ import type { WorldState } from "@/presenters/uiDigest";
 import { StatCard, ListCard, ProgressRow } from "@/components/layout/page-shell/index";
 import { StableHealthWidget, TrendsWidget, CalendarWidget, BashoWidget } from "@/components/dashboard/index";
 import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
-import { projectNakabi } from "@/presenters/nakabiProjections";
-import { formatYen } from "@/utils/engineUtils";
+import { projectNakabi } from "@/presenters/projections/nakabiProjections";
+import { formatYen } from "@/lib/engineUtils";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
 import type { DashboardDerived } from "@/hooks/useDashboardDerived";
 

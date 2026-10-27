@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, Shield, Target, Award, Crown } from "lucide-react";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar } from "@/presenters/avatarProjections";
+import { resolveAvatar } from "@/presenters/projections/avatarProjections";
 import type { SortDirection } from "@/lib/sortUtils";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";

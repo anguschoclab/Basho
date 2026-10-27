@@ -6,7 +6,7 @@
  * engine code cannot call `new Date()` (dateArithmeticGuard).
  */
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { autosaveWithSignal } from "@/contexts/gameHelpers";
+import { autosaveWithSignal } from "@/state/game/gameHelpers";
 import { autosave } from "@/engine/persistence/saveload";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 

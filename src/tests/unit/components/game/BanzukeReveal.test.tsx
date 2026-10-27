@@ -1,9 +1,9 @@
 import { render, screen, cleanup, act } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { BanzukeReveal } from "@/components/game/BanzukeReveal";
+import { BanzukeReveal } from "@/components/banzuke/BanzukeReveal";
 
 // RikishiName uses TanStack Router Link — render it as plain text here.
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 

@@ -42,7 +42,7 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
 
 /** Anonymous over-budget functions are tracked as a per-file count (line-keyed names are unstable). */
 const ANON_ALLOWANCE: Record<string, number> = {
-  "src/components/game/BoutCard.tsx": 1,
+  "src/components/basho/BoutCard.tsx": 1,
   "src/engine/bout/boutNarrative.ts": 1,
 
   "src/pages/HistoryPage.tsx": 1,

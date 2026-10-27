@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ListCard } from "@/components/layout/page-shell/index";
 import { TabsContent } from "@/components/ui/tabs";
 import { AlertTriangle } from "lucide-react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { formatFinePenalty } from "@/presenters/uiDigest";
 import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived";
 

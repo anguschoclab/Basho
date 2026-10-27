@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
-import { formatYenToMan } from "@/utils/engineUtils";
+import { formatYenToMan } from "@/lib/engineUtils";
 import { OYAKATA_BACKSTORIES } from "@/constants/ui/wizard";
 
 /** Maps the pure-data `iconName` identifiers from the constants layer to lucide icon components. */

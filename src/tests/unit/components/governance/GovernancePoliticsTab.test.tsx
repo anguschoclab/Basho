@@ -12,11 +12,11 @@ vi.mock("@/components/ui/tabs", () => ({
 const mockSpendPoliticalCapital = vi.fn();
 const mockSendCommand = vi.fn();
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({ spendPoliticalCapital: mockSpendPoliticalCapital }),
 }));
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: (selector: (s: { sendCommand: typeof mockSendCommand }) => unknown) =>
     selector({ sendCommand: mockSendCommand }),
 }));

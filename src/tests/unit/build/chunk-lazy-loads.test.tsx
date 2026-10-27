@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Suspense, isValidElement } from "react";
-import { router } from "@/routes";
-import { RequireWorld } from "@/components/RequireWorld";
+import { router } from "@/app/routes";
+import { RequireWorld } from "@/components/app-shell/RequireWorld";
 
 describe("chunk lazy loads — MainMenu, NewGameWizard, Dashboard", () => {
   it("MainMenu route component is wrapped with Suspense", () => {

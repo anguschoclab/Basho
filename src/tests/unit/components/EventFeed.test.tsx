@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { EventFeed, GlobalCupEventFeed } from "@/components/dashboard/EventFeed";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import type { EngineEvent } from "@/engine/types/events";
 
 function makeEvent(
@@ -26,7 +26,7 @@ function makeEvent(
   } as EngineEvent;
 }
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: vi.fn(),
 }));
 
@@ -38,7 +38,7 @@ vi.mock("@tanstack/react-router", () => ({
   ),
 }));
 
-vi.mock("@/components/EventDetailDialog", () => ({
+vi.mock("@/components/shared/EventDetailDialog", () => ({
   EventDetailDialog: ({ event, isOpen, onClose }: any) => {
     if (!isOpen || !event) return null;
     return (

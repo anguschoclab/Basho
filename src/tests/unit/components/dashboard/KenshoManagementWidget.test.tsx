@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { KenshoManagementWidget } from "@/components/dashboard/KenshoManagementWidget";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
@@ -12,7 +12,7 @@ vi.mock("@tanstack/react-router", () => ({
     React.createElement("a", { href: to, ...props }, children),
 }));
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return {

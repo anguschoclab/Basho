@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getNarrationLines } from "@/components/game/boutReplay/boutCanvas/narration";
+import { getNarrationLines } from "@/components/basho/boutReplay/boutCanvas/narration";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 

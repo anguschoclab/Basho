@@ -8,7 +8,7 @@ import {
   PerceptionChip,
   StablePerceptionCard,
   H2HPanel,
-} from "@/components/game/perceptionComponents";
+} from "@/components/scouting/perceptionComponents";
 import { Users } from "lucide-react";
 import type { PerceptionSnapshot } from "@/engine/npc/perception";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
@@ -20,7 +20,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 const mockUseGame = vi.fn(() => ({ state: { world: {} } }));
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 

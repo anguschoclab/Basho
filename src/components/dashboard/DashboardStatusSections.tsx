@@ -7,15 +7,15 @@
  */
 
 import { Badge } from "@/components/ui/badge";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import type { WorldState } from "@/presenters/uiDigest";
 import { getOyakata } from "@/presenters/worldAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { JungyoInvitationCard } from "@/components/basho/JungyoInvitationCard";
-import { GomenfudaStatusBadge } from "@/components/game/GomenfudaStatusBadge";
+import { GomenfudaStatusBadge } from "@/components/governance/GomenfudaStatusBadge";
 import { SuccessionModal } from "@/components/stable/SuccessionModal";
 import { selectHolidayDigest } from "@/presenters/projections/holidayDigestProjections";
-import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
+import { projectYouthAcademy } from "@/presenters/projections/youthAcademyProjections";
 import {
   BanzukeWidget,
   RivalsWidget,

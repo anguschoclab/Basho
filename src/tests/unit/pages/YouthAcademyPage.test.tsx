@@ -20,7 +20,7 @@ vi.mock("@/components/recruitment/YouthAcademyPanel", () => ({
     ),
 }));
 
-vi.mock("@/presenters/youthAcademyProjections", () => ({
+vi.mock("@/presenters/projections/youthAcademyProjections", () => ({
   projectYouthAcademy: () => ({
     level: 0,
     hasAcademy: false,
@@ -30,12 +30,12 @@ vi.mock("@/presenters/youthAcademyProjections", () => ({
 }));
 
 const mockUseGame = vi.fn();
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 
 const mockSendCommand = vi.fn();
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: () => mockSendCommand,
 }));
 

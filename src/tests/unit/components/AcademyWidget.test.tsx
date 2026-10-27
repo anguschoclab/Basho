@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { AcademyWidget } from "@/components/dashboard/AcademyWidget";
-import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
+import type { YouthAcademyProjection } from "@/presenters/projections/youthAcademyProjections";
 
 /**
  * Coverage for PR #937: AcademyWidget must render a proper EmptyState

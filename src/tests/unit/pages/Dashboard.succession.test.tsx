@@ -6,8 +6,8 @@
  */
 import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import { render } from "@testing-library/react";
-import * as GameContext from "@/contexts/useGame";
-import type { GameState } from "@/contexts/gameTypes";
+import * as GameContext from "@/state/game/useGame";
+import type { GameState } from "@/state/game/gameTypes";
 
 let Dashboard: React.ComponentType;
 beforeAll(async () => {
@@ -54,7 +54,7 @@ vi.mock("@/components/dashboard/index", () => ({
   AdvisorPanel: () => <div data-testid="advisor-panel" />,
 }));
 
-vi.mock("@/components/game/ProgressionTracker", () => ({
+vi.mock("@/components/training/ProgressionTracker", () => ({
   ProgressionTracker: () => <div data-testid="progression-tracker" />,
 }));
 
@@ -62,7 +62,7 @@ vi.mock("@/components/onboarding/OnboardingTourDialog", () => ({
   OnboardingTourDialog: () => null,
 }));
 
-vi.mock("@/components/game/CrisisModal", () => ({
+vi.mock("@/components/governance/CrisisModal", () => ({
   CrisisModal: () => null,
 }));
 
@@ -119,7 +119,7 @@ vi.mock("@/components/stable/SuccessionModal", () => ({
 // sendCommand spy — set per-test
 let sendCommandSpy: ReturnType<typeof vi.fn>;
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: (selector: any) => selector({ sendCommand: sendCommandSpy }),
 }));
 

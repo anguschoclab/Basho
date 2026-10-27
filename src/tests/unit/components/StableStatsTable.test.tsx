@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { StableStatsTable } from "@/components/game/StableStatsTable";
+import { StableStatsTable } from "@/components/stable/StableStatsTable";
 import type { UIRikishi } from "@/presenters/uiModels";
 
 function makeUIRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {

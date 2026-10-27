@@ -2,13 +2,13 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { GlobalCupWidget } from "@/components/dashboard/GlobalCupWidget";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
 }));
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 function renderWidget() {
   return render(

@@ -18,8 +18,8 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { RikishiName } from "@/components/ClickableName";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { RikishiName } from "@/components/shared/ClickableName";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { BoutResult } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";

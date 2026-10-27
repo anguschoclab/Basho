@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { KeyBoutsSection } from "@/components/game/KeyBoutsSection";
+import { KeyBoutsSection } from "@/components/basho/KeyBoutsSection";
 import type { KeyBoutMoment } from "@/presenters/projections/recapProjections";
 import { mockUIRikishi } from "@/tests/helpers/uiTestHelpers";
 import type { BoutResult } from "@/engine/types/basho";
@@ -16,7 +16,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 // Mock ClickableName
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ children }: { children?: React.ReactNode }) =>
     React.createElement("span", null, children),
   StableName: ({ children }: { children?: React.ReactNode }) =>
@@ -43,12 +43,12 @@ vi.mock("@/presenters/uiDigest", () => ({
 }));
 
 // Mock BoutReplayViewer to avoid canvas/RAF in jsdom
-vi.mock("@/components/game/BoutReplayViewer", () => ({
+vi.mock("@/components/basho/BoutReplayViewer", () => ({
   BoutReplayViewer: () => React.createElement("div", { "data-testid": "replay-viewer-mock" }),
 }));
 
 // Mock BoutLog
-vi.mock("@/components/game/BoutLog", () => ({
+vi.mock("@/components/basho/BoutLog", () => ({
   BoutLog: () => React.createElement("div", { "data-testid": "bout-log-mock" }),
 }));
 

@@ -7,13 +7,13 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 let mockWorld: any = null;
 const mockSendCommand = vi.fn();
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({
     state: { world: mockWorld },
   }),
 }));
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: (selector: any) => selector({ sendCommand: mockSendCommand }),
 }));
 

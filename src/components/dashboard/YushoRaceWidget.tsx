@@ -6,7 +6,7 @@
 
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";

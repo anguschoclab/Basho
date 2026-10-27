@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useCalendarActions } from "@/hooks/useCalendarActions";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import * as ToastHook from "@/hooks/use-toast";
 
 const navigateMock = vi.fn();
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 vi.mock("@/hooks/use-toast");
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,

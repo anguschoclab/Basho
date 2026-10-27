@@ -3,7 +3,7 @@ import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { EraToneBadge } from "@/components/layout/EraToneBadge";
-import type { EraTone } from "@/presenters/eraTone";
+import type { EraTone } from "@/presenters/projections/eraTone";
 
 function renderBadge(tone: EraTone) {
   return render(

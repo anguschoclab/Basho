@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectTsukebito } from "@/presenters/tsukebitoProjections";
+import { projectTsukebito } from "@/presenters/projections/tsukebitoProjections";
 import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";

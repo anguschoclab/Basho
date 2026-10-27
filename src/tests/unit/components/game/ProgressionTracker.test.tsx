@@ -3,11 +3,11 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 
 // RikishiName uses the router Link — render plain text for this test
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 
-import { ProgressionTracker } from "@/components/game/ProgressionTracker";
+import { ProgressionTracker } from "@/components/training/ProgressionTracker";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type {
   OzekiRunCandidate,

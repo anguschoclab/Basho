@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/app-shell/ErrorBoundary";
 
 function ThrowOnRender({ message }: { message: string }): null {
   throw new Error(message);

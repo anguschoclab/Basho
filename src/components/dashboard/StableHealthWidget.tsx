@@ -3,8 +3,8 @@
  * Dashboard widget displaying stable health, compliance, and governance status.
  */
 
-import { useGame } from "@/contexts/useGame";
-import { StableHealthPanel } from "@/components/game/StableHealthPanel";
+import { useGame } from "@/state/game/useGame";
+import { StableHealthPanel } from "@/components/stable/StableHealthPanel";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Building2 } from "lucide-react";

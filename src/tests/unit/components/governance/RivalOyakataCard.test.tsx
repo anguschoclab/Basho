@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { RivalOyakataCard } from "@/components/governance/RivalOyakataCard";
-import type { NPCDecisionDTO } from "@/presenters/npcAgentProjections";
+import type { NPCDecisionDTO } from "@/presenters/projections/npcAgentProjections";
 
 function makeDecision(overrides: Partial<NPCDecisionDTO> = {}): NPCDecisionDTO {
   return {

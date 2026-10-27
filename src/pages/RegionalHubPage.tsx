@@ -1,8 +1,8 @@
 import { Building2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
@@ -11,13 +11,13 @@ import { AcademyManagementPanel } from "@/components/stable/AcademyManagementPan
 import {
   projectAcademyManagement,
   type ExhibitionRegion,
-} from "@/presenters/academyManagementProjections";
+} from "@/presenters/projections/academyManagementProjections";
 import { ExhibitionInvitationsPanel } from "@/components/exhibition/ExhibitionInvitationsPanel";
 import {
   GlobalPresenceScore,
   RegionalInfluenceGrid,
 } from "@/components/exhibition/RegionalHubSections";
-import { projectExhibitions } from "@/presenters/exhibitionProjections";
+import { projectExhibitions } from "@/presenters/projections/exhibitionProjections";
 
 export default function RegionalHubPage() {
   const { state } = useGame();

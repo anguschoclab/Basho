@@ -11,7 +11,7 @@ import type {
   AvatarRenderData,
   AvatarExpression,
 } from "@/engine/types/avatar";
-import { deriveAvatarStage } from "@/presenters/avatarProjections";
+import { deriveAvatarStage } from "@/presenters/projections/avatarProjections";
 import { composeAvatar } from "@/components/avatar/pixelCompose";
 import { cn } from "@/lib/utils";
 

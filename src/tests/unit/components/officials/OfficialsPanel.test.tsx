@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
-import type { OfficialsProjection } from "@/presenters/officialsProjections";
+import type { OfficialsProjection } from "@/presenters/projections/officialsProjections";
 
 function makeProjection(overrides: Partial<OfficialsProjection> = {}): OfficialsProjection {
   return {

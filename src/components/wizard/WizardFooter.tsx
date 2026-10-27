@@ -4,7 +4,7 @@
  * Persistence info console for new game wizard.
  */
 
-import { formatYenToMan } from "@/utils/engineUtils";
+import { formatYenToMan } from "@/lib/engineUtils";
 import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/constants/ui/wizard";
 
 interface WizardFooterProps {

@@ -24,8 +24,8 @@ vi.mock("recharts", () => ({
   Tooltip: () => <div />,
 }));
 
-vi.mock("@/contexts/useGame");
-vi.mock("@/store/gameStore", () => ({ useGameStore: vi.fn() }));
+vi.mock("@/state/game/useGame");
+vi.mock("@/state/stores/gameStore", () => ({ useGameStore: vi.fn() }));
 vi.mock("@/hooks/useRequireWorld", () => ({ useRequireWorld: () => true }));
 vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
@@ -34,8 +34,8 @@ vi.mock("@/components/layout/page-shell/index", () => ({
   PageHeader: ({ title }: { title?: string }) => <div>{title}</div>,
 }));
 
-import * as GameContext from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import * as GameContext from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const withProviders = (ui: React.ReactElement) => render(<TooltipProvider>{ui}</TooltipProvider>);

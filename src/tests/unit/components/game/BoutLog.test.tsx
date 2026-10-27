@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import { BoutLog } from "@/components/game/BoutLog";
+import { BoutLog } from "@/components/basho/BoutLog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { BoutLogEntry } from "@/engine/types/basho";
 

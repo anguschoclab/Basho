@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useGame } from "@/contexts/useGame";
-import { GameContext } from "@/contexts/gameContextInstance";
+import { useGame } from "@/state/game/useGame";
+import { GameContext } from "@/state/game/gameContextInstance";
 
 describe("useGame hook", () => {
   it("throws when used outside GameProvider", () => {

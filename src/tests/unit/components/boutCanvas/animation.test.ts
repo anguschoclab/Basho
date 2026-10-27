@@ -11,9 +11,9 @@ import {
   computeArcHeight,
   getLoserBodyPhase,
   getWinnerBodyPhase,
-} from "@/components/game/boutReplay/boutCanvas/animation";
+} from "@/components/basho/boutReplay/boutCanvas/animation";
 import type { BoutScript } from "@/engine/bout/ReplayMetadata";
-import type { RikishiState } from "@/components/game/boutReplay/boutCanvas/types";
+import type { RikishiState } from "@/components/basho/boutReplay/boutCanvas/types";
 
 // ---------------------------------------------------------------------------
 // Helpers

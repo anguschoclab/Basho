@@ -17,9 +17,9 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useFlowActions } from "@/contexts/provider/useFlowActions";
-import { useGameStore } from "@/store/gameStore";
-import type { GameState, GameAction } from "@/contexts/gameTypes";
+import { useFlowActions } from "@/state/game/provider/useFlowActions";
+import { useGameStore } from "@/state/stores/gameStore";
+import type { GameState, GameAction } from "@/state/game/gameTypes";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 function renderFlowActions() {

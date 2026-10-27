@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { initialGameState, type GameState, type GameAction } from "@/contexts/gameTypes";
+import { initialGameState, type GameState, type GameAction } from "@/state/game/gameTypes";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 // Use vi.hoisted to ensure mock is available before module imports
@@ -12,7 +12,7 @@ const { mockAutosave } = vi.hoisted(() => ({
   mockAutosave: vi.fn(),
 }));
 
-vi.mock("@/contexts/gameHelpers", () => ({
+vi.mock("@/state/game/gameHelpers", () => ({
   autosaveWithSignal: mockAutosave,
   getMatchesForDay: vi.fn(() => []),
   applyImpact: vi.fn((state: unknown) => state),
@@ -39,7 +39,7 @@ vi.mock("@/engine/core/ImpactResolver", () => ({
 }));
 
 // Import after mocks are set up
-const { bashoSlice } = await import("@/contexts/bashoSlice");
+const { bashoSlice } = await import("@/state/game/bashoSlice");
 
 function makeState(): GameState {
   const world = MockFactory.createWorld({

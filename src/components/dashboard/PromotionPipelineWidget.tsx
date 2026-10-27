@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Button } from "@/components/ui/button";
 import { TrendingUp } from "lucide-react";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";

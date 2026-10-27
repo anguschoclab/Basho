@@ -29,7 +29,7 @@ function makeUIRikishi(id: string, overrides: Partial<UIRikishi> = {}): UIRikish
 
 const mockState: { world: any } = { world: null };
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({ state: mockState }),
 }));
 

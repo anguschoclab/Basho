@@ -14,7 +14,7 @@ vi.mock("@/hooks/useRequireWorld", () => ({
   useRequireWorld: () => true,
 }));
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({
     state: {
       world: {
@@ -40,7 +40,7 @@ vi.mock("@/contexts/useGame", () => ({
   }),
 }));
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: () => vi.fn(),
 }));
 
@@ -114,31 +114,31 @@ vi.mock("@/presenters/uiModels", () => ({
   projectRikishi: () => null,
 }));
 
-vi.mock("@/components/game/KeyBoutsSection", () => ({
+vi.mock("@/components/basho/KeyBoutsSection", () => ({
   KeyBoutsSection: () => null,
 }));
 
-vi.mock("@/components/game/PressConference", () => ({
+vi.mock("@/components/media/PressConference", () => ({
   PressConference: () => null,
 }));
 
-vi.mock("@/components/game/YokozunaDeliberation", () => ({
+vi.mock("@/components/ceremony/YokozunaDeliberation", () => ({
   YokozunaDeliberation: () => null,
 }));
 
-vi.mock("@/components/game/HoFInductionCeremony", () => ({
+vi.mock("@/components/ceremony/HoFInductionCeremony", () => ({
   HoFInductionCeremony: () => null,
 }));
 
-vi.mock("@/components/game/IntaiCeremony", () => ({
+vi.mock("@/components/ceremony/IntaiCeremony", () => ({
   IntaiCeremony: () => null,
 }));
 
-vi.mock("@/components/game/PlayoffBracket", () => ({
+vi.mock("@/components/basho/PlayoffBracket", () => ({
   PlayoffBracket: () => null,
 }));
 
-vi.mock("@/components/game/BanzukeReveal", () => ({
+vi.mock("@/components/banzuke/BanzukeReveal", () => ({
   BanzukeReveal: () => null,
 }));
 

@@ -25,11 +25,11 @@ vi.mock("@/components/governance/OyakataProfileDrawer", () => ({
     open ? React.createElement("div", { "data-testid": "rival-profile-drawer" }) : null,
 }));
 
-vi.mock("@/presenters/npcAgentProjections", () => ({
+vi.mock("@/presenters/projections/npcAgentProjections", () => ({
   projectNPCAgentActivity: () => ({ decisions: [], decisionsByHeya: {} }),
 }));
 
-vi.mock("@/presenters/rivalStablesProjections", () => ({
+vi.mock("@/presenters/projections/rivalStablesProjections", () => ({
   projectRivalStables: (_w: any, _d: any, _h: any) => ({
     rivals: [
       {
@@ -54,7 +54,7 @@ vi.mock("@/presenters/rivalStablesProjections", () => ({
 }));
 
 const mockUseGame = vi.fn();
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 

@@ -7,7 +7,7 @@
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import { WeightJourneyCard } from "@/components/training/WeightJourneyCard";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 export function WeightJourneysSection({

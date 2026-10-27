@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { KIMARITE_REGISTRY, getKimariteCount } from "@/engine/bout/kimarite/kimariteRegistry";
-import { projectCohortStats } from "@/presenters/kachiNokori";
+import { projectCohortStats } from "@/presenters/projections/kachiNokori";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";

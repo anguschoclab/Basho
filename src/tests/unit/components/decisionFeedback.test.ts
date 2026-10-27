@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { decisionToastMessage } from "@/components/game/decisionFeedback";
+import { decisionToastMessage } from "@/components/shared/decisionFeedback";
 
 describe("decisionToastMessage", () => {
   it("includes the option label in the toast text", () => {

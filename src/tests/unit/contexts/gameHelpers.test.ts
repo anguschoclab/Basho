@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { autosaveWithSignal } from "@/contexts/gameHelpers";
+import { autosaveWithSignal } from "@/state/game/gameHelpers";
 import { getAutosaveEnabled } from "@/pages/settingsHelpers";
 import { autosave, saveGame } from "@/engine/persistence/saveload";
 

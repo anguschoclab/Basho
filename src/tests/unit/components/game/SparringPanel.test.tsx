@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SparringPanel } from "@/components/game/SparringPanel";
+import { SparringPanel } from "@/components/training/SparringPanel";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { SparringPair } from "@/engine/types/training";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

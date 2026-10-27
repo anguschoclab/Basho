@@ -8,7 +8,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Banknote } from "lucide-react";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 import { Button } from "@/components/ui/button";
 import type { LoanRow } from "@/components/economy/debtMeta";
 

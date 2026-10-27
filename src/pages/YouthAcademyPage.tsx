@@ -5,10 +5,10 @@
  * and view their youth academy development pipeline.
  */
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { getPlayerHeya } from "@/presenters/engineAccess";
-import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
+import { projectYouthAcademy } from "@/presenters/projections/youthAcademyProjections";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
 import {
   AcademyIntakeCard,

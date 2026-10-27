@@ -9,9 +9,9 @@ import type { ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Award, Star } from "lucide-react";
-import { RikishiName, StableName } from "@/components/ClickableName";
+import { RikishiName, StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import {
   BASHO_CALENDAR,

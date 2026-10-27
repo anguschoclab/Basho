@@ -1,13 +1,13 @@
 // App Layout - 3-pane FM-inspired layout with persistent Sidebar, Top Nav, and Right Event Log
 import { ReactNode, useState } from "react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { TopNavBar } from "@/components/layout/TopNavBar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { EventLogPanel } from "@/components/layout/EventLogPanel";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { MobileEventLog } from "@/components/layout/MobileEventLog";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { openSaveLoadDialog } from "@/components/game/saveLoadDialogSignal";
+import { openSaveLoadDialog } from "@/components/menu/saveLoadDialogSignal";
 import { MainContentPane } from "@/components/layout/MainContentPane";
 import { FloatingShortcuts } from "@/components/layout/FloatingShortcuts";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";

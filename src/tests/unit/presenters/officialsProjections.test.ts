@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectOfficials } from "@/presenters/officialsProjections";
+import { projectOfficials } from "@/presenters/projections/officialsProjections";
 import type { WorldState } from "@/engine/types/world";
 import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
 

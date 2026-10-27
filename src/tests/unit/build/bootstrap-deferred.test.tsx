@@ -8,11 +8,11 @@ vi.mock("react-dom/client", () => ({
   })),
 }));
 
-vi.mock("@/components/SplashScreen", () => ({
+vi.mock("@/components/app-shell/SplashScreen", () => ({
   SplashScreen: () => null,
 }));
 
-vi.mock("@/App", () => ({
+vi.mock("@/app/App", () => ({
   default: () => null,
 }));
 
@@ -36,7 +36,7 @@ describe("bootstrap deferred BardEngine import", () => {
   });
 
   it("initializeApp calls BardEngine.loadDomains via dynamic import", async () => {
-    const { initializeApp } = await import("@/bootstrap");
+    const { initializeApp } = await import("@/app/bootstrap");
     const fakeEl = document.createElement("div");
     await initializeApp(fakeEl);
 
@@ -45,7 +45,7 @@ describe("bootstrap deferred BardEngine import", () => {
 
   it("initializeApp renders splash before domains load, then app after", async () => {
     const { createRoot } = await import("react-dom/client");
-    const { initializeApp } = await import("@/bootstrap");
+    const { initializeApp } = await import("@/app/bootstrap");
 
     const renderMock = vi.fn();
     vi.mocked(createRoot).mockReturnValue({ render: renderMock } as never);

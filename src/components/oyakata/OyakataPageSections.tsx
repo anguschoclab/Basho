@@ -9,13 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, oyakataStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { WorldState } from "@/presenters/uiDigest";
 import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown, Award } from "lucide-react";
 import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
 import { TRAIT_LABELS, toTraitBand } from "@/presenters/uiDigest";
-import { RikishiName, StableName } from "@/components/ClickableName";
+import { RikishiName, StableName } from "@/components/shared/ClickableName";
 import { getHeya, getAllOyakata } from "@/presenters/worldAccess";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { SortMenu } from "@/components/ui/SortMenu";

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
-import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
+import { FacilitiesManagementPanel } from "@/components/stable/FacilitiesManagementPanel";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Heya } from "@/engine/types/heya";
 

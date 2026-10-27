@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { useEventReadStore } from "@/store/eventReadStore";
+import { useEventReadStore } from "@/state/stores/eventReadStore";
 
 const KEY = "basho.events.readIds";
 

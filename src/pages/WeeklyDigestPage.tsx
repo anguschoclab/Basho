@@ -1,7 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Newspaper } from "lucide-react";
 

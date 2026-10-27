@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectBashoSummary, projectBoutRow } from "@/presenters/bashoUI";
+import { projectBashoSummary, projectBoutRow } from "@/presenters/projections/bashoUI";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { BashoState, BashoResult, MatchSchedule } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";

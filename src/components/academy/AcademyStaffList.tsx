@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
 import type { AcademyStaff } from "@/engine/types/academy";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, academyStaffStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, academyStaffStageInput } from "@/presenters/projections/avatarProjections";
 
 const ROLE_LABELS: Record<string, string> = {
   head_coach: "Head Coach",

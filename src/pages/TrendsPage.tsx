@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/page-shell/index";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AreaChart,
@@ -17,8 +17,8 @@ import {
 import { formatMetaTrends } from "@/presenters/uiDigest";
 import { TrendingUp, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { EraTone } from "@/presenters/eraTone";
-import { ERA_TONE_DESCRIPTIONS } from "@/presenters/eraTone";
+import type { EraTone } from "@/presenters/projections/eraTone";
+import { ERA_TONE_DESCRIPTIONS } from "@/presenters/projections/eraTone";
 
 const TONE_LABELS: Record<EraTone, string> = {
   classic: "CLASSIC (Yotsu)",

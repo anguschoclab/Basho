@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { BoutTags } from "@/components/game/boutCardComponents";
-import { HEAT_CONFIG } from "@/components/game/boutCardTypes";
-import type { MatchRowData } from "@/components/game/boutCardTypes";
+import { BoutTags } from "@/components/basho/boutCardComponents";
+import { HEAT_CONFIG } from "@/components/basho/boutCardTypes";
+import type { MatchRowData } from "@/components/basho/boutCardTypes";
 
 // Mock TooltipWrap to just render its children
 vi.mock("@/components/ui/tooltip-wrap", () => ({

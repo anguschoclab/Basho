@@ -4,7 +4,7 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import GovernancePage from "@/pages/GovernancePage";
 
 let mockWorld: any = null;
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({
     state: { world: mockWorld },
     issueRuling: vi.fn(),
@@ -39,7 +39,7 @@ function setMockWorld(overrides: Record<string, any> = {}) {
   };
 }
 
-vi.mock("@/store/gameStore", () => ({
+vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: () => ({ sendCommand: vi.fn() }),
 }));
 

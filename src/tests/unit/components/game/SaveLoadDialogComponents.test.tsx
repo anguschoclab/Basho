@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SaveSlotItem, EmptySlotItem } from "@/components/game/SaveLoadDialogComponents";
+import { SaveSlotItem, EmptySlotItem } from "@/components/menu/SaveLoadDialogComponents";
 import type { SaveSlotInfo } from "@/presenters/engineAccess";
 
 const slot: SaveSlotInfo = {

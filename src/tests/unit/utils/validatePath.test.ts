@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import path from "path";
-import { validatePath } from "@/utils/validatePath";
+import { validatePath } from "@/lib/validatePath";
 
 const baseDir = path.resolve("/fake/userData/archives");
 

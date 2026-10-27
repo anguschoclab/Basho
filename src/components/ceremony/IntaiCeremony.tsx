@@ -1,0 +1,186 @@
+// IntaiCeremony.tsx — Retirement (引退) ceremony modal
+// Shows a narrative ceremony when a rikishi retires, with career highlights
+
+import { useMemo } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Scissors, Heart } from "lucide-react";
+import { RikishiName, StableName } from "@/components/shared/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import type { UIRikishi } from "@/presenters/uiModels";
+import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+
+/** Defines the structure for intai ceremony props. */
+interface IntaiCeremonyProps {
+  rikishi: UIRikishi;
+  reason: string;
+  heyaName: string;
+  isPlayerRikishi: boolean;
+  open: boolean;
+  onClose: () => void;
+}
+
+/**
+ * Get career narrative.
+ *  * @param r - The R.
+ *  * @param reason - The Reason.
+ *  * @returns The result.
+ */
+function getCareerNarrative(r: UIRikishi, reason: string): string[] {
+  const lines: string[] = [];
+  const rankInfo = RANK_HIERARCHY[r.rank];
+  const rankJa = rankInfo?.nameJa ?? r.rank;
+
+  lines.push(
+    `After a career that reached the rank of ${rankJa}, ${r.shikona} has announced their retirement from professional sumo.`
+  );
+
+  if (reason) {
+    lines.push(`Reason: ${reason}.`);
+  }
+
+  const totalBouts = (r.careerWins || 0) + (r.careerLosses || 0);
+  if (totalBouts > 0) {
+    lines.push(
+      `Career record: ${r.careerRecord} across an estimated ${Math.ceil(totalBouts / 15)} tournaments.`
+    );
+  }
+
+  if (r.careerYusho && r.careerYusho > 0) {
+    lines.push(`Championship titles: ${r.careerYusho} yūshō — a remarkable achievement.`);
+  }
+
+  if (r.achievements?.kinboshiEarned && r.achievements.kinboshiEarned > 0) {
+    lines.push(
+      `Earned ${r.achievements.kinboshiEarned} kinboshi (gold star) victories over yokozuna.`
+    );
+  }
+
+  if (r.achievements?.ginboshiEarned && r.achievements.ginboshiEarned > 0) {
+    lines.push(
+      `Earned ${r.achievements.ginboshiEarned} ginboshi (silver star) victories over ozeki.`
+    );
+  }
+
+  lines.push(
+    `The danpatsu-shiki (断髪式) ceremony marks the final cutting of the topknot — a solemn farewell to the dohyō.`
+  );
+
+  return lines;
+}
+
+/**
+ * intai ceremony.
+ *  * @param { rikishi, reason, heyaName, isPlayerRikishi, open, onClose } - The component props.
+ */
+export function IntaiCeremony({
+  rikishi,
+  reason,
+  heyaName,
+  isPlayerRikishi,
+  open,
+  onClose,
+}: IntaiCeremonyProps) {
+  const narrative = useMemo(() => getCareerNarrative(rikishi, reason), [rikishi, reason]);
+  const rankInfo = RANK_HIERARCHY[rikishi.rank];
+  const isSekitori = rankInfo?.isSekitori ?? false;
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <Scissors className="h-5 w-5 text-muted-foreground" />
+            引退 — Intai Ceremony
+          </DialogTitle>
+          <DialogDescription>
+            <RikishiName id={rikishi.id} name={rikishi.shikona} /> bids farewell to the dohyō
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {/* Rikishi header */}
+          <div
+            className={`p-4 rounded-lg border ${isPlayerRikishi ? "border-primary/30 bg-primary/5" : "border-border bg-muted/30"}`}
+          >
+            <div className="flex items-center gap-4">
+              <SumoAvatar avatar={rikishi.avatar} size="lg" fallback={rikishi.shikona} />
+              <div className="flex-1">
+                <h3 className="text-2xl font-display font-bold">
+                  <RikishiName id={rikishi.id} name={rikishi.shikona} />
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Badge variant="outline" className="capitalize">
+                    {rankInfo?.nameJa ?? rikishi.rank}
+                  </Badge>
+                  <span>
+                    <StableName id={rikishi.heyaId} name={heyaName} />
+                  </span>
+                  {isPlayerRikishi && (
+                    <Badge className="bg-primary/20 text-primary text-xs">Your Rikishi</Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Career highlights */}
+          {isSekitori && (
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-2 rounded bg-muted/50">
+                <div className="text-lg font-bold font-mono">{rikishi.careerWins || 0}</div>
+                <div className="text-[10px] text-muted-foreground uppercase">Career Wins</div>
+              </div>
+              <div className="text-center p-2 rounded bg-muted/50">
+                <div className="text-lg font-bold font-mono">{rikishi.careerYusho || 0}</div>
+                <div className="text-[10px] text-muted-foreground uppercase">Yūshō</div>
+              </div>
+              <div className="text-center p-2 rounded bg-muted/50">
+                <div className="text-lg font-bold font-mono">
+                  {rikishi.achievements?.kinboshiEarned || 0}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase">Kinboshi</div>
+              </div>
+            </div>
+          )}
+
+          <Separator />
+
+          {/* Narrative */}
+          <div className="space-y-2">
+            {narrative.map((line, i) => (
+              <p
+                key={i}
+                className={`text-sm ${i === narrative.length - 1 ? "text-muted-foreground italic" : "text-foreground"}`}
+              >
+                {line}
+              </p>
+            ))}
+          </div>
+
+          {/* Farewell */}
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50 text-sm">
+            <Heart className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="text-muted-foreground">
+              {isPlayerRikishi
+                ? `${rikishi.shikona} leaves your stable. Their legacy will be remembered.`
+                : `The sumo world wishes ${rikishi.shikona} well in their next chapter.`}
+            </span>
+          </div>
+
+          <Button onClick={onClose} className="w-full">
+            Acknowledge Retirement
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
-import type { NakabiProjection } from "@/presenters/nakabiProjections";
+import type { NakabiProjection } from "@/presenters/projections/nakabiProjections";
 
 // The leader name renders via RikishiName → TanStack <Link>; mock it to a
 // plain anchor per ClickableName.test.tsx convention (no RouterProvider needed).

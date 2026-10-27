@@ -10,7 +10,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
 }));
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({
     state: {
       world: {

@@ -6,7 +6,7 @@
 
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { Trophy } from "lucide-react";
 import { projectGlobalCup } from "@/presenters/projections/globalCupProjections";
 import {
@@ -17,7 +17,7 @@ import {
   CupEventFeed,
   CupBracketSection,
   CupChampionBanner,
-} from "@/components/game/GlobalCupSections";
+} from "@/components/economy/GlobalCupSections";
 
 export default function GlobalCupPage() {
   const { state } = useGame();

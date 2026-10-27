@@ -1,10 +1,10 @@
 import { useMemo, useState, useCallback } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { STABLE_TABS } from "@/constants/ui/navigation";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { Briefcase } from "lucide-react";

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 
 vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: { children: React.ReactNode }) => (

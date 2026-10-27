@@ -1,10 +1,10 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import BanzukePage from "@/pages/BanzukePage";
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
@@ -26,7 +26,7 @@ vi.mock("@/components/banzuke/YokozunaTrajectory", () => ({
   YokozunaTrajectory: () => React.createElement("div", null, "Trajectory"),
 }));
 
-vi.mock("@/components/game/PressConference", () => ({
+vi.mock("@/components/media/PressConference", () => ({
   PressConference: () => React.createElement("div", null, "Press"),
 }));
 

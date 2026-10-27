@@ -15,8 +15,8 @@ import path, { join } from "path";
 import { randomBytes, createHash } from "crypto";
 import { is } from "@electron-toolkit/utils";
 import { promises as fs } from "fs";
-import { validatePath as validatePathImpl } from "../src/utils/validatePath";
-import { isValidStorageKey } from "../src/utils/storageKeyValidation";
+import { validatePath as validatePathImpl } from "../src/lib/validatePath";
+import { isValidStorageKey } from "../src/lib/storageKeyValidation";
 import { logger } from "./logger";
 
 // Initialize electron-store for configuration persistence

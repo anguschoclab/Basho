@@ -10,8 +10,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Bell, X } from "lucide-react";
 import { EventFeed } from "@/components/dashboard/EventFeed";
-import { useGameStore } from "@/store/gameStore";
-import { useEventReadStore } from "@/store/eventReadStore";
+import { useGameStore } from "@/state/stores/gameStore";
+import { useEventReadStore } from "@/state/stores/eventReadStore";
 import { cn } from "@/lib/utils";
 
 interface MobileEventLogProps {

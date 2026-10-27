@@ -15,7 +15,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import React from "react";
 import { render, cleanup, fireEvent } from "@testing-library/react";
 import { GlobalErrorBanner } from "@/components/layout/GlobalErrorBanner";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 
 describe("GlobalErrorBanner", () => {
   afterEach(() => {

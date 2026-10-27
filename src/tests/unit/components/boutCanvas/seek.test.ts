@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { seekToPhase, computeGlobalProgress } from "@/components/game/boutReplay/boutCanvas/seek";
+import { seekToPhase, computeGlobalProgress } from "@/components/basho/boutReplay/boutCanvas/seek";
 
 const UNIFORM_DURATIONS = [1000, 1000, 1000, 1000, 1000, 1000, 0];
 const PULL_DURATIONS = [2500, 1200, 1000, 1500, 1200, 2200, 0];

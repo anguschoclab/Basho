@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { projectHeya } from "@/presenters/heyaUI";
+import { projectHeya } from "@/presenters/projections/heyaUI";
 import { makeMockHeya, mockRikishi, makeMockWorld } from "@/tests/unit/engine/utils";
 import type { Staff } from "@/engine/types/staff";
 import type { Oyakata } from "@/engine/types/oyakata";

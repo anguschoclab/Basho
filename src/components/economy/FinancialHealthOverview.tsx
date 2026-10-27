@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 import type { RunwayBand } from "@/engine/types/narrative";
 import { RUNWAY_CONFIG } from "@/constants/ui/economy";
 

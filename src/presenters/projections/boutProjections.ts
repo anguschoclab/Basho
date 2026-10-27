@@ -9,7 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rank } from "@/engine/types/banzuke";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
-import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
+import type { BoutPreviewUI } from "@/presenters/projections/boutPreviewUI";
 import type { UIRikishi } from "@/presenters/rikishi/index";
 import { getH2HReport } from "@/engine/bout/h2h";
 import { RivalryService } from "@/engine/narrative/RivalryService";

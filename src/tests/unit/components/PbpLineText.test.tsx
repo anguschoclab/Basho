@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
-import { PbpLineText } from "@/components/game/PbpLineText";
-import { GameContext } from "@/contexts/gameContextInstance";
+import { PbpLineText } from "@/components/basho/PbpLineText";
+import { GameContext } from "@/state/game/gameContextInstance";
 
 // Mock TanStack Router Link — same pattern as ClickableName.test.tsx
 vi.mock("@tanstack/react-router", () => ({

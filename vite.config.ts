@@ -42,7 +42,7 @@ export default defineConfig({
             return;
           }
           if (id.includes("/src/engine/tick/")) return "engine-tick";
-          if (id.includes("/src/engine/systems/")) return "engine-systems";
+          if (id.match(/\/src\/engine\/(basho|bookmark|economy|generation|governance|health|history|keshoMawashi|legacy|media|officials|recruitment|training|tutorial|welfare|worldCircuit)\//)) return "engine-systems";
           if (id.includes("/src/engine/bout/boutNarrative")) return "engine-bout-narrative";
           if (id.includes("/src/engine/bout/physics/")) return "engine-bout-physics";
           if (
@@ -57,21 +57,21 @@ export default defineConfig({
             return "engine-bout-core";
           if (id.includes("/src/engine/bout/") || id.includes("/src/engine/banzuke/"))
             return "engine-bout-support";
-          if (id.includes("/src/engine/npcAI/") || id.includes("/src/engine/ai/"))
+          if (id.includes("/src/engine/npc/"))
             return "engine-npc";
           if (id.includes("/src/engine/bard/") || id.includes("/src/engine/narrative"))
             return "engine-narrative";
           if (id.includes("/src/engine/")) return "engine-core";
-          if (id.includes("/src/contexts/")) return "game-state";
+          if (id.includes("/src/state/")) return "game-state";
           if (id.includes("/src/components/ui/") || id.includes("/src/components/avatar/"))
             return "ui-primitives";
-          if (id.includes("/src/components/game/")) return "ui-game";
+          if (id.match(/\/src\/components\/(basho|banzuke|governance|stable|economy|ceremony|menu|kesho|training|scouting|recruitment|rikishi|history|media|shared|app-shell)\//)) return "ui-game";
           if (id.includes("/src/components/dashboard/") || id.includes("/src/components/layout/"))
             return "ui-layout";
           if (id.includes("/src/components/")) return "ui-features";
           if (id.includes("/src/presenters/")) return "presenters";
-          if (id.includes("/src/store/")) return "store";
-          if (id.includes("/src/utils/")) return "utils";
+          if (id.includes("/src/state/stores/")) return "store";
+          if (id.includes("/src/lib/")) return "utils";
           if (id.includes("/src/constants/")) return "constants";
           if (id.includes("/src/pages/")) {
             const match = id.match(/\/src\/pages\/([^/]+)\./);

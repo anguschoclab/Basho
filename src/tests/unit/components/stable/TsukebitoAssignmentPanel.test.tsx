@@ -22,7 +22,7 @@ vi.mock("@/components/ui/button", () => ({
 }));
 
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
-import type { TsukebitoProjection } from "@/presenters/tsukebitoProjections";
+import type { TsukebitoProjection } from "@/presenters/projections/tsukebitoProjections";
 
 const mockProjection: TsukebitoProjection = {
   assignments: [

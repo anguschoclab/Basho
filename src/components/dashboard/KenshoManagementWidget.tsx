@@ -3,10 +3,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Coins, TrendingUp, Calendar } from "lucide-react";
-import { formatYen } from "@/utils/engineUtils";
-import { RikishiName } from "@/components/ClickableName";
+import { formatYen } from "@/lib/engineUtils";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { useKenshoData } from "@/hooks/useKenshoData";
 import { KENSHO_AMOUNT_PER_ENVELOPE } from "@/constants/engine/economic";
 

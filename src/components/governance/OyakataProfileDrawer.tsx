@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import type { RivalStableDTO } from "@/presenters/rivalStablesProjections";
+import type { RivalStableDTO } from "@/presenters/projections/rivalStablesProjections";
 
 export function OyakataProfileDrawer({
   open,

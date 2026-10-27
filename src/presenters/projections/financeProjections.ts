@@ -10,7 +10,7 @@ import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator"
 import { calculateKoenkaiIncome } from "@/engine/economy/SponsorshipService";
 import { getPlayerHeya } from "@/engine/core/queries";
 import { KOENKAI_INCOME_SPLIT } from "@/constants/engine/economic";
-import { formatYen } from "@/utils/engineUtils";
+import { formatYen } from "@/lib/engineUtils";
 import type { RunwayBand } from "@/engine/types/narrative";
 export type { RunwayBand };
 

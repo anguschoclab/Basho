@@ -36,12 +36,12 @@ describe("CI Gate: Audit baseline files exist", () => {
 
 describe("CI Gate: Router export", () => {
   it("routes.tsx exports router", () => {
-    const routes = readSrcFile("routes.tsx");
+    const routes = readSrcFile("app/routes.tsx");
     expect(routes).toContain("export const router");
   });
 
   it("routes.tsx defines a route tree", () => {
-    const routes = readSrcFile("routes.tsx");
+    const routes = readSrcFile("app/routes.tsx");
     expect(routes).toContain("routeTree");
   });
 });

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { selectRetiredRikishi } from "@/presenters/selectors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,7 +20,7 @@ import type { WorldState } from "@/presenters/uiDigest";
 import type { Rank } from "@/engine/types/banzuke";
 import { selectCohortSummaries } from "@/presenters/projections/historyCohortProjections";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 
 /**
  * HistoryDashboard - The Museum of Sumo

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { CornerAdvicePanel } from "@/components/game/CornerAdvicePanel";
+import { CornerAdvicePanel } from "@/components/basho/CornerAdvicePanel";
 
 describe("CornerAdvicePanel", () => {
   it("renders nothing when there is no advice", () => {

@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import type { Division } from "@/engine/types/banzuke";
 import { projectBanzukeUIDigest } from "@/presenters/uiDigest";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
-import type { UIRankRow } from "@/presenters/banzukeUI";
+import type { UIRankRow } from "@/presenters/projections/banzukeUI";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import type { WorldState } from "@/presenters/uiDigest";
 

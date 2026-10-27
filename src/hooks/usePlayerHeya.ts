@@ -1,4 +1,4 @@
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { getPlayerHeya } from "@/engine/core/queries";
 
 /**

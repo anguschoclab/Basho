@@ -10,8 +10,8 @@ import { GlobalEntitySearch } from "@/components/layout/GlobalEntitySearch";
 import {
   onFocusGlobalSearch,
   focusGlobalSearch,
-} from "@/components/game/searchFocusSignal";
-import { useGame } from "@/contexts/useGame";
+} from "@/components/shared/searchFocusSignal";
+import { useGame } from "@/state/game/useGame";
 import { searchEntities } from "@/presenters/projections/entitySearchProjections";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
@@ -22,7 +22,7 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 

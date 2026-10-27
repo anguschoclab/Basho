@@ -12,7 +12,7 @@
  * provider, which the sync IStorageProvider interface requires.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { ElectronStorageProvider } from "@/contexts/electronStorageProvider";
+import { ElectronStorageProvider } from "@/state/game/electronStorageProvider";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
 
 describe("ElectronStorageProvider — real async IPC contract", () => {

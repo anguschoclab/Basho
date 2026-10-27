@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { HoshitoriChart } from "@/components/game/HoshitoriChart";
+import { HoshitoriChart } from "@/components/basho/HoshitoriChart";
 import type { MatchSchedule } from "@/engine/types/basho";
 
 function makeMatch(

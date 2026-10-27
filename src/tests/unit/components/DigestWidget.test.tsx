@@ -3,7 +3,7 @@ import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 
 const mockNavigate = vi.fn();
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
@@ -29,7 +29,7 @@ vi.mock("@/components/ui/scroll-area", () => ({
 }));
 
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { buildWeeklyDigest } from "@/presenters/projections/digestProjections";
 
 function makeDigestItem(

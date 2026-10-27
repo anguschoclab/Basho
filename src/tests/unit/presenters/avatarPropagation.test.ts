@@ -5,8 +5,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { projectTsukebito } from "@/presenters/tsukebitoProjections";
-import { projectNakabi } from "@/presenters/nakabiProjections";
+import { projectTsukebito } from "@/presenters/projections/tsukebitoProjections";
+import { projectNakabi } from "@/presenters/projections/nakabiProjections";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Rikishi } from "@/engine/types/rikishi";

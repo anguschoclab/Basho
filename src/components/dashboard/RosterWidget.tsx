@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { Users, HeartPulse, AlertTriangle, Activity, Star, UserMinus, Layers } from "lucide-react";
-import { RikishiName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";

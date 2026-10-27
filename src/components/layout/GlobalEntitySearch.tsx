@@ -11,9 +11,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { onFocusGlobalSearch } from "@/components/game/searchFocusSignal";
+import { onFocusGlobalSearch } from "@/components/shared/searchFocusSignal";
 import {
   searchEntities,
   type RikishiSearchHit,

@@ -5,7 +5,7 @@ import {
   formatYenToMan,
   safeRankSortKey,
   sortRikishiByRank,
-} from "@/utils/engineUtils";
+} from "@/lib/engineUtils";
 
 describe("engineUtils", () => {
   describe("safeShortSeed", () => {

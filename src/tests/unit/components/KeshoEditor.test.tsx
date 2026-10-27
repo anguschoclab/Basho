@@ -4,7 +4,7 @@ import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 
 const mockSetKeshoConfig = vi.fn();
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => ({
     state: { world: { customKeshoConfigs: {} } },
     setKeshoConfig: mockSetKeshoConfig,
@@ -15,7 +15,7 @@ vi.mock("@/components/avatar/SumoAvatar", () => ({
   SumoAvatar: () => React.createElement("div", { "data-testid": "sumo-avatar" }),
 }));
 
-import { KeshoEditor } from "@/components/game/KeshoEditor";
+import { KeshoEditor } from "@/components/kesho/KeshoEditor";
 import type { UIRikishi } from "@/presenters/uiModels";
 
 function makeRikishi(): UIRikishi {

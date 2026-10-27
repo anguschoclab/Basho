@@ -8,10 +8,10 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronRight } from "lucide-react";
-import { PressConference } from "@/components/game/PressConference";
-import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
-import { HoFInductionCeremony } from "@/components/game/HoFInductionCeremony";
-import { IntaiCeremony } from "@/components/game/IntaiCeremony";
+import { PressConference } from "@/components/media/PressConference";
+import { YokozunaDeliberation } from "@/components/ceremony/YokozunaDeliberation";
+import { HoFInductionCeremony } from "@/components/ceremony/HoFInductionCeremony";
+import { IntaiCeremony } from "@/components/ceremony/IntaiCeremony";
 import { selectTopKihakuPerformers } from "@/presenters/projections/recapKihakuProjections";
 import { selectKachiNokoriLeaders } from "@/presenters/projections/recapKachiNokoriProjections";
 import { selectExhibitionResults } from "@/presenters/projections/recapExhibitionProjections";

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { ClickableName, RikishiName, StableName, OyakataName } from "@/components/ClickableName";
+import { ClickableName, RikishiName, StableName, OyakataName } from "@/components/shared/ClickableName";
 
 // ── Mock TanStack Router Link ─────────────────────────────
 // Render a real <a> so we can inspect props and fire events.

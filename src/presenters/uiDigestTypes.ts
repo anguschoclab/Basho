@@ -16,7 +16,7 @@ import type { Division } from "@/engine/types/banzuke";
 import type { EngineEvent } from "@/engine/types/events";
 import type { GovernanceRuling } from "@/engine/types/economy";
 import type { OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
-import type { UIRankRow } from "@/presenters/banzukeUI";
+import type { UIRankRow } from "@/presenters/projections/banzukeUI";
 
 // ── Heat Band Types ───────────────────────────────────────────────────────────
 

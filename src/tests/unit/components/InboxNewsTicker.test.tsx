@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: vi.fn(),
 }));
 
@@ -13,8 +13,8 @@ vi.mock("@tanstack/react-router", () => ({
   ),
 }));
 
-import { InboxNewsTicker } from "@/components/game/InboxNewsTicker";
-import { useGame } from "@/contexts/useGame";
+import { InboxNewsTicker } from "@/components/media/InboxNewsTicker";
+import { useGame } from "@/state/game/useGame";
 
 function makeDigestItem(
   overrides: Partial<{

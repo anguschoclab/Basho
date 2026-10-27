@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
+import { projectYouthAcademy } from "@/presenters/projections/youthAcademyProjections";
 import type { WorldState } from "@/engine/types/world";
 import type { YouthAcademyState } from "@/engine/recruitment/YouthAcademyService";
 

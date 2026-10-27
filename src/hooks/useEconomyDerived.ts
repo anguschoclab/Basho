@@ -6,7 +6,7 @@
  */
 
 import { useMemo, useCallback } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from "@/state/stores/gameStore";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getRikishi } from "@/presenters/worldAccess";
 import { calculateHeyaWeeklyFinances } from "@/presenters/engineAccess";

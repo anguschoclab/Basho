@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Dices, Database } from "lucide-react";
-import { safeShortSeed } from "@/utils/engineUtils";
+import { safeShortSeed } from "@/lib/engineUtils";
 import { COPYRIGHT_YEAR } from "@/constants/engine/calendar";
 
 interface Props {

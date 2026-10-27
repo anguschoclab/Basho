@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useFinancesData } from "@/hooks/useFinancesData";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import * as PlayerHeya from "@/hooks/usePlayerHeya";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 vi.mock("@/hooks/usePlayerHeya");
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),

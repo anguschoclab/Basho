@@ -8,8 +8,8 @@
  */
 
 import { useMemo, useState } from "react";
-import { useGame } from "@/contexts/useGame";
-import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/state/game/useGame";
+import { useGameStore } from "@/state/stores/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -25,7 +25,7 @@ import type { TalentCandidate, SuitorInterestBand } from "@/engine/types/talent"
 import { listNPCWatchedCandidates, getTopSuitor } from "@/presenters/engineAccess";
 import { getPlayerHeya, getHeya } from "@/presenters/engineAccess";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, candidateStageInput } from "@/presenters/avatarProjections";
+import { resolveAvatar, candidateStageInput } from "@/presenters/projections/avatarProjections";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 

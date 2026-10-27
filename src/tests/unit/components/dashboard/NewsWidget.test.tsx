@@ -9,7 +9,7 @@ vi.mock("@/components/ui/scroll-area", () => ({
 }));
 
 const mockUseGame = vi.fn();
-vi.mock("@/contexts/useGame", () => ({
+vi.mock("@/state/game/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 

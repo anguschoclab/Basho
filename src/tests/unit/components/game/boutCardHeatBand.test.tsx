@@ -13,7 +13,7 @@
  * The fix consolidates on the canonical bands; this pins parity.
  */
 import { describe, it, expect } from "vitest";
-import { getHeatBand, HEAT_CONFIG } from "@/components/game/boutCardTypes";
+import { getHeatBand, HEAT_CONFIG } from "@/components/basho/boutCardTypes";
 import { toRivalryHeatBand } from "@/engine/narrative/descriptorBands";
 
 const CANONICAL_BANDS = ["dormant", "simmering", "heated", "fierce", "legendary"];

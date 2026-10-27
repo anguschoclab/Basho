@@ -3,7 +3,7 @@ import React from "react";
 import { render, cleanup } from "@testing-library/react";
 import { StableWidget } from "@/components/dashboard/StableWidget";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import * as GameContext from "@/contexts/useGame";
+import * as GameContext from "@/state/game/useGame";
 import type { WorldState } from "@/engine/types/world";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -12,7 +12,7 @@ vi.mock("@tanstack/react-router", () => ({
     React.createElement("a", { href: to, ...props }, children),
 }));
 
-vi.mock("@/contexts/useGame");
+vi.mock("@/state/game/useGame");
 
 vi.mock("@/presenters/uiDigest", () => ({
   getCachedPerception: vi.fn(() => ({

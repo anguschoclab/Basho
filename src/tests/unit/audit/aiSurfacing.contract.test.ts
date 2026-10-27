@@ -12,7 +12,7 @@
 import { describe, it, expect } from "vitest";
 import { join } from "path";
 import { readSrcFile } from "@/tests/helpers/fsScan";
-import { projectNPCAgentActivity } from "@/presenters/npcAgentProjections";
+import { projectNPCAgentActivity } from "@/presenters/projections/npcAgentProjections";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { phase01_week_npc_ai } from "@/engine/tick/phases/phase01_week_npc_ai";
 import { DynastyService } from "@/engine/legacy/DynastyService";
@@ -163,7 +163,7 @@ describe("WS7 surfacing contract — emitted events reach the feed", () => {
 
 describe("WS7 surfacing contract — static wiring", () => {
   it("surfaceEvent handles every canonical WS1–WS6 event shape", () => {
-    const src = readSrcFile("presenters/npcAgentProjections.ts");
+    const src = readSrcFile("presenters/projections/npcAgentProjections.ts");
     for (const marker of [
       "faction_posture",
       "faction_appeal",

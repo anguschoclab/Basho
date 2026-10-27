@@ -14,8 +14,8 @@ import {
   resolveAvatar,
   academyStaffStageInput,
   prospectStageInput,
-} from "@/presenters/avatarProjections";
-import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
+} from "@/presenters/projections/avatarProjections";
+import type { YouthAcademyProjection } from "@/presenters/projections/youthAcademyProjections";
 import type { AcademyStaffRole } from "@/engine/types/academy";
 
 const STAFF_ROLES: AcademyStaffRole[] = ["head_coach", "conditioning", "nutrition", "technique"];

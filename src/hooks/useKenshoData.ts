@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useGame } from "@/contexts/useGame";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
+import { useGame } from "@/state/game/useGame";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { BoutResult } from "@/engine/types/basho";

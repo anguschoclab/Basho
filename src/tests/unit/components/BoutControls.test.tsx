@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { BoutControls } from "@/components/game/boutReplay/BoutControls";
+import { BoutControls } from "@/components/basho/boutReplay/BoutControls";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function renderWithProvider(ui: React.ReactElement) {

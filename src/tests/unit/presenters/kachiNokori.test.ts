@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeKachiNokori, projectCohortStats } from "@/presenters/kachiNokori";
+import { computeKachiNokori, projectCohortStats } from "@/presenters/projections/kachiNokori";
 import { mockRikishi } from "@/tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Rank } from "@/engine/types/banzuke";

@@ -5,9 +5,9 @@ import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/page-shell/index";
-import { useGame } from "@/contexts/useGame";
+import { useGame } from "@/state/game/useGame";
 import { projectSponsorUIDigest } from "@/presenters/uiDigest";
-import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
+import { SponsorContractsPanel } from "@/components/economy/SponsorContractsPanel";
 import { SponsorSatisfactionChart } from "@/components/economy/SponsorSatisfactionChart";
 
 /** sponsor management page. */

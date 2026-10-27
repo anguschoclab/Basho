@@ -16,9 +16,9 @@ import type { WorldState } from "@/presenters/uiDigest";
 import { Medal, Star, TrendingUp, Trophy, Users, Award, Swords } from "lucide-react";
 import { getRikishi, getHistory } from "@/presenters/worldAccess";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { resolveAvatar, rikishiStageInput } from "@/presenters/avatarProjections";
-import { useGame } from "@/contexts/useGame";
-import { projectOfficials } from "@/presenters/officialsProjections";
+import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
+import { useGame } from "@/state/game/useGame";
+import { projectOfficials } from "@/presenters/projections/officialsProjections";
 import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
 import type { useAlmanacDerived } from "@/hooks/useAlmanacDerived";
 

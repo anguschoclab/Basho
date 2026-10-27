@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { BoutResultDisplay } from "@/components/game/BoutResultDisplay";
+import { BoutResultDisplay } from "@/components/basho/BoutResultDisplay";
 import type { BoutResult } from "@/engine/types/basho";
 import { mockUIRikishi } from "@/tests/helpers/uiTestHelpers";
 
 // Mock ClickableName to avoid router dependency
-vi.mock("@/components/ClickableName", () => ({
+vi.mock("@/components/shared/ClickableName", () => ({
   RikishiName: ({ name }: { name?: string }) => React.createElement("span", null, name),
 }));
 
