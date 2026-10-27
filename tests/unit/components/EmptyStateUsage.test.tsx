@@ -29,7 +29,7 @@ vi.mock("recharts", () => ({
   CartesianGrid: () => <div />,
 }));
 
-vi.mock("@/presenters/projections/institutionUI", () => ({
+vi.mock("@/presenters/projections/heyaProjections", () => ({
   projectHeyaData: vi.fn(() => null),
 }));
 

@@ -2,6 +2,8 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import type { Id } from "@/engine/types/common";
+import type { EngineEvent } from "@/engine/types/events";
+import { queryEvents } from "@/engine/events/events";
 
 /** Cache to avoid recalculating heavy queries during the same tick */
 interface SelectorCache {
@@ -88,3 +90,83 @@ export function getStableFinances(world: WorldState, heyaId: Id): number {
   const h = world.heyas.get(heyaId);
   return h?.funds ?? 0;
 }
+
+/**
+ * Reference-equality memoizer shared by the selectors below. Moved here from
+ * presenters/selectors.ts during the boundary fix so the engine worker digest
+ * path can use the same cached selectors without importing UI code.
+ */
+export function createSelector<T>(fn: (world: WorldState) => T) {
+  let lastWorld: WorldState | null = null;
+  let lastResult: T;
+
+  return (world: WorldState): T => {
+    if (world === lastWorld && lastWorld !== null) {
+      return lastResult;
+    }
+    lastWorld = world;
+    lastResult = fn(world);
+    return lastResult;
+  };
+}
+
+/** All Rikishi as an array. */
+export const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
+  if (!world.rikishi) return [];
+  return Array.from(world.rikishi.values());
+});
+
+/** All currently injured Rikishi. */
+export const selectInjuredRikishi = createSelector((world: WorldState): Rikishi[] => {
+  const all = selectAllRikishi(world);
+  return all.filter((r) => r.injury?.isInjured || r.injured);
+});
+
+/** Events from this week and last week, bucketed by UI category. */
+export const selectRecentEvents = createSelector((world: WorldState) => {
+  const recentEvents = world.events?.log ? queryEvents(world, { limit: 120 }) : [];
+  const thisWeek = world.week ?? 0;
+
+  // Categorized bucket
+  const buckets = {
+    media: [] as EngineEvent[],
+    economy: [] as EngineEvent[],
+    scouting: [] as EngineEvent[],
+    training: [] as EngineEvent[],
+    career: [] as EngineEvent[],
+    rivalry: [] as EngineEvent[],
+    governance: [] as EngineEvent[],
+    welfare: [] as EngineEvent[],
+    basho: [] as EngineEvent[],
+    milestone: [] as EngineEvent[],
+    facility: [] as EngineEvent[],
+    recoveries: [] as EngineEvent[],
+  };
+
+  for (const e of recentEvents) {
+    if (e.week < thisWeek - 1 || e.week > thisWeek) continue;
+
+    const status = typeof e.data?.status === "string" ? e.data.status : "";
+    if (e.category === "injury" && (status === "recovery" || status === "treated"))
+      buckets.recoveries.push(e);
+    else if (e.category === "media" || e.type.includes("SCANDAL")) buckets.media.push(e);
+    else if (e.category === "economy" || e.category === "sponsor") buckets.economy.push(e);
+    else if (e.category === "scouting") buckets.scouting.push(e);
+    else if (e.category === "training") buckets.training.push(e);
+    else if (e.category === "career") buckets.career.push(e);
+    else if (e.category === "rivalry") buckets.rivalry.push(e);
+    else if (e.type.startsWith("GOVERNANCE") || e.category === "discipline")
+      buckets.governance.push(e);
+    else if (
+      e.category === "welfare" ||
+      e.type.startsWith("COMPLIANCE") ||
+      e.type.startsWith("WELFARE")
+    )
+      buckets.welfare.push(e);
+    else if (e.category === "basho" || e.category === "match") buckets.basho.push(e);
+    else if (e.category === "milestone") buckets.milestone.push(e);
+    else if (e.category === "facility") buckets.facility.push(e);
+  }
+
+  return buckets;
+});

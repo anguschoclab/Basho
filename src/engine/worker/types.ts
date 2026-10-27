@@ -1,6 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 // eslint-disable-next-line no-restricted-imports -- KNOWN_BOUNDARY_DEBT: worker digest seam predates reorg (see importBoundary.test.ts)
-import type { UIDigest } from "@/presenters/uiDigest";
+import type { UIDigest } from "./digestProjections";
 
 /** UI -> Worker Commands */
 export type EngineCommand =

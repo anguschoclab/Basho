@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterAll, type Mock } from "vitest";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { EngineCommand, WorkerEvent } from "@/engine/worker/types";
-import type { UIDigest } from "@/presenters/uiDigest";
+import type { UIDigest } from "@/engine/worker/digestProjections";
 import { logger } from "@/engine/utils/Logger";
 
 // Save original globals to restore after tests finish and avoid polluting globals
@@ -46,7 +46,7 @@ afterAll(() => {
 });
 
 // Mock other dependencies
-vi.mock("@/presenters/uiDigest", () => ({
+vi.mock("@/engine/worker/digestProjections", () => ({
   buildWeeklyDigest: vi.fn((world) => ({
     mockDigest: true,
     worldSeed: world?.seed,

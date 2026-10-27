@@ -7,8 +7,6 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Heya } from "@/engine/types/heya";
-import type { EngineEvent } from "@/engine/types/events";
-import { queryEvents } from "@/engine/events/events";
 
 // Re-export the canonical most-recent-first extractor so UI components can
 // reach it without importing from src/engine/ (ESLint no-restricted-imports).
@@ -23,90 +21,12 @@ import {
   type KimariteRarity,
 } from "@/constants/engine/kimariteFrequencies";
 
-/**
- * Simple memoization helper for selectors that depend only on WorldState.
- * Uses reference equality for the world object.
- */
-function createSelector<T>(fn: (world: WorldState) => T) {
-  let lastWorld: WorldState | null = null;
-  let lastResult: T;
+import {
+  createSelector,
+  selectAllRikishi,
+} from "@/engine/core/selectors";
 
-  return (world: WorldState): T => {
-    if (world === lastWorld && lastWorld !== null) {
-      return lastResult;
-    }
-    lastWorld = world;
-    lastResult = fn(world);
-    return lastResult;
-  };
-}
-
-/**
- * Memoized selector for all Rikishi as an array.
- */
-const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
-  if (!world.rikishi) return [];
-  return Array.from(world.rikishi.values());
-});
-
-/**
- * Memoized selector for all injured Rikishi.
- */
-export const selectInjuredRikishi = createSelector((world: WorldState): Rikishi[] => {
-  const all = selectAllRikishi(world);
-  return all.filter((r) => r.injury?.isInjured || r.injured);
-});
-
-/**
- * Memoized selector for events filtered by category and week.
- */
-export const selectRecentEvents = createSelector((world: WorldState) => {
-  const recentEvents = world.events?.log ? queryEvents(world, { limit: 120 }) : [];
-  const thisWeek = world.week ?? 0;
-
-  // Categorized bucket
-  const buckets = {
-    media: [] as EngineEvent[],
-    economy: [] as EngineEvent[],
-    scouting: [] as EngineEvent[],
-    training: [] as EngineEvent[],
-    career: [] as EngineEvent[],
-    rivalry: [] as EngineEvent[],
-    governance: [] as EngineEvent[],
-    welfare: [] as EngineEvent[],
-    basho: [] as EngineEvent[],
-    milestone: [] as EngineEvent[],
-    facility: [] as EngineEvent[],
-    recoveries: [] as EngineEvent[],
-  };
-
-  for (const e of recentEvents) {
-    if (e.week < thisWeek - 1 || e.week > thisWeek) continue;
-
-    const status = typeof e.data?.status === "string" ? e.data.status : "";
-    if (e.category === "injury" && (status === "recovery" || status === "treated"))
-      buckets.recoveries.push(e);
-    else if (e.category === "media" || e.type.includes("SCANDAL")) buckets.media.push(e);
-    else if (e.category === "economy" || e.category === "sponsor") buckets.economy.push(e);
-    else if (e.category === "scouting") buckets.scouting.push(e);
-    else if (e.category === "training") buckets.training.push(e);
-    else if (e.category === "career") buckets.career.push(e);
-    else if (e.category === "rivalry") buckets.rivalry.push(e);
-    else if (e.type.startsWith("GOVERNANCE") || e.category === "discipline")
-      buckets.governance.push(e);
-    else if (
-      e.category === "welfare" ||
-      e.type.startsWith("COMPLIANCE") ||
-      e.type.startsWith("WELFARE")
-    )
-      buckets.welfare.push(e);
-    else if (e.category === "basho" || e.category === "match") buckets.basho.push(e);
-    else if (e.category === "milestone") buckets.milestone.push(e);
-    else if (e.category === "facility") buckets.facility.push(e);
-  }
-
-  return buckets;
-});
+export { selectInjuredRikishi, selectRecentEvents } from "@/engine/core/selectors";
 
 /**
  * Select all Sekiwake and Komusubi for Ozeki promotion tracking.

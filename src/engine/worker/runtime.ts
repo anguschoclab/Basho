@@ -9,7 +9,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { WorkerEvent } from "@/engine/worker/types";
 // eslint-disable-next-line no-restricted-imports -- KNOWN_BOUNDARY_DEBT: worker digest seam predates reorg (see importBoundary.test.ts)
-import { buildWeeklyDigest } from "@/presenters/uiDigest";
+import { buildWeeklyDigest } from "./digestProjections";
 
 export interface WorkerRuntime {
   world: WorldState | null;

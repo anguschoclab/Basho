@@ -55,17 +55,12 @@ const PROHIBITED_PATTERNS = [
 ];
 
 /**
- * Pre-existing boundary debt surfaced (not introduced) by the 2026-10 reorg:
- * these engine files consumed presenter-layer helpers through `../../` paths
- * that evaded the old single-depth regex. Relocating digest/UI translation
- * out of presenters (or the call sites into a legal seam) is follow-up work —
- * do NOT add to this list; shrink it.
+ * Boundary debt register — EMPTY since 2026-10-27.
+ * (BashoHistory/runtime/types violations resolved by moving digestProjections
+ * and keyBouts into the engine layer; selectors moved to core/selectors.)
+ * do NOT add to this list; keep it empty.
  */
-const KNOWN_BOUNDARY_DEBT = new Set<string>([
-  "lifecycle/BashoHistory.ts",
-  "worker/runtime.ts",
-  "worker/types.ts",
-]);
+const KNOWN_BOUNDARY_DEBT = new Set<string>([]);
 
 describe("import boundary: engine must not import from UI layers", () => {
   it("no engine file imports from components, pages, contexts, presenters, or hooks", () => {

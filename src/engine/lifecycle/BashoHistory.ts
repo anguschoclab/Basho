@@ -14,7 +14,7 @@ import type { SpecialPrizesResult } from "@/engine/banzuke/specialPrizes";
 import { historyCache } from "@/engine/history/historyCache";
 import { getRikishi } from "@/engine/core/queries";
 // eslint-disable-next-line no-restricted-imports -- KNOWN_BOUNDARY_DEBT: pre-existing cross-layer call surfaced by reorg (see importBoundary.test.ts)
-import { selectKeyBouts } from "@/presenters/projections/recapProjections";
+import { selectKeyBouts } from "@/engine/lifecycle/keyBouts";
 import { applyBashoTenure } from "@/engine/legacy/tenure";
 
 // ─── Prize credits ───────────────────────────────────────────────────────────
