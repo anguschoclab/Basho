@@ -51,9 +51,11 @@ function applyMap(p: string): string {
   return p;
 }
 
-/** Reverse: find the pre-move path of a file currently at `cur`. */
+/** Reverse: find the pre-move path of a file currently at `cur`.
+ *  Iterates by NEW-prefix length desc so `tests/e2e/` wins over `tests/`. */
+const MAP_BY_NEW = [...MAP].sort((a, b) => b[1].length - a[1].length);
 function preMovePath(cur: string): string | null {
-  for (const [oldP, newP] of MAP) {
+  for (const [oldP, newP] of MAP_BY_NEW) {
     if (cur === newP || cur.startsWith(newP + "/")) return oldP + cur.slice(newP.length);
   }
   return null;

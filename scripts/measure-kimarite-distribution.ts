@@ -17,7 +17,7 @@
  */
 
 import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
-import { mockRikishi, makeMockBasho } from "@/tests/unit/engine/utils";
+import { mockRikishi, makeMockBasho } from "@tests/unit/engine/utils";
 import { SeededRNG } from "@/engine/core/rng";
 import {
   KIMARITE_FREQUENCY_TARGETS,

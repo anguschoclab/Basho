@@ -1,0 +1,61 @@
+/**
+ * Phase 2b: Media surface regression tests.
+ *
+ * Proves that PostBashoPressService is invoked from the basho-conclusion
+ * path (concludeBasho.ts, re-exported through CompetitionService)
+ * and that MediaPage uses projectMediaUIDigest to surface media state.
+ */
+
+import { describe, it, expect } from "vitest";
+import { join } from "path";
+import { readSrcFile } from "@tests/helpers/fsScan";
+
+const ROOT = join(__dirname, "../../../");
+
+describe("PostBashoPressService — call site wiring", () => {
+  it("is imported by the basho-conclusion module", () => {
+    const svc = readSrcFile("engine/lifecycle/concludeBasho.ts");
+    expect(svc).toContain("PostBashoPressService");
+  });
+
+  it("generatePressConference is called during basho conclusion", () => {
+    const svc = readSrcFile("engine/lifecycle/concludeBasho.ts");
+    expect(svc).toMatch(/PostBashoPressService\.generatePressConference/);
+  });
+
+  it("exports generatePressConference", () => {
+    const svc = readSrcFile("engine/narrative/PostBashoPressService.ts");
+    expect(svc).toContain("generatePressConference");
+  });
+});
+
+describe("MediaPage — UI surface", () => {
+  it("uses projectMediaUIDigest for state projection", () => {
+    const page = readSrcFile("pages/MediaPage.tsx");
+    expect(page).toContain("projectMediaUIDigest");
+  });
+
+  it("renders media headlines and beats", () => {
+    const sections = readSrcFile("components/media/MediaPageSections.tsx");
+    expect(sections).toContain("MediaHeadline");
+    expect(sections).toContain("MediaBeat");
+  });
+
+  it("renders media heat label and tone color from PerceptionPresenter", () => {
+    const sections = readSrcFile("components/media/MediaPageSections.tsx");
+    expect(sections).toContain("getMediaHeatLabel");
+    expect(sections).toContain("getMediaToneColor");
+  });
+
+  it("renders EventFeed for event log continuity", () => {
+    const page = readSrcFile("pages/MediaPage.tsx");
+    expect(page).toContain("EventFeed");
+  });
+});
+
+describe("MediaService — governance headline generation", () => {
+  it("generateGovernanceHeadline is imported by phase01_week_governance", () => {
+    const phase = readSrcFile("engine/tick/phases/phase01_week_governance.ts");
+    expect(phase).toContain("generateGovernanceHeadline");
+  });
+});

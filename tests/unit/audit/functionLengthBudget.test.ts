@@ -1,0 +1,121 @@
+/**
+ * CI Gate: function-length budget (ratchet)
+ *
+ * Phase-2 refactoring gate — authored RED before any split lands.
+ *
+ * Budget model:
+ * - No function/arrow/method may exceed 150 LOC.
+ * - No const-object service or data literal may exceed 250 LOC without a
+ *   `// refactor-budget-waiver: <reason>` comment in its file.
+ * - KNOWN_OVERBUDGET lists the current inventory. It is a RATCHET:
+ *   entries may only be removed (as splits land), never added or inflated.
+ * - The gate fails if (a) any over-budget symbol is missing from the list
+ *   (new debt), or (b) a listed symbol got LONGER (drift), or (c) a listed
+ *   symbol no longer exists at all without its removal being committed here
+ *   (stale entries are allowed to linger one wave for bookkeeping, so a
+ *   missing symbol is reported as info — but shrinking it below budget and
+ *   leaving it listed is fine since the check is existence+length only).
+ */
+import { describe, it, expect } from "vitest";
+import { readFileSync, existsSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+import { scanFunctions, type Measurement } from "../../../scripts/measureFunctions";
+
+const __filename = fileURLToPath(import.meta.url);
+const ROOT = join(__filename, "..", "..", "..", "..");
+
+const FUNCTION_BUDGET = 150;
+const OBJECT_BUDGET = 250;
+
+const isObj = (m: Measurement) => m.kind === "const-obj" || m.kind === "const-arr";
+
+/**
+ * Ratchet list — generated from docs/audit/function-lengths.csv (AST scan,
+ * 2026-10-08). Every entry must shrink or be removed as its wave lands.
+ */
+const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
+  // boutNarrative.ts::generateBoutNarrative — split 2026-10 into bout/narrative/ beat modules
+
+  "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 298, kind: "function" },
+};
+
+/** Anonymous over-budget functions are tracked as a per-file count (line-keyed names are unstable). */
+const ANON_ALLOWANCE: Record<string, number> = {
+  "src/components/basho/BoutCard.tsx": 1,
+  "src/engine/bout/boutNarrative.ts": 1,
+
+  "src/pages/HistoryPage.tsx": 1,
+};
+
+const WAIVER = "refactor-budget-waiver";
+
+function hasWaiver(file: string): boolean {
+  const abs = join(ROOT, file);
+  return existsSync(abs) && readFileSync(abs, "utf8").includes(WAIVER);
+}
+
+const all = scanFunctions(30);
+const byKey = new Map<string, Measurement>();
+for (const m of all) byKey.set(`${m.file}::${m.symbol}`, m);
+
+describe("CI Gate: function-length budget (ratchet)", () => {
+  it("no NEW over-budget symbols beyond the known list", () => {
+    const over = all.filter((m) => (isObj(m) ? m.loc > OBJECT_BUDGET : m.loc > FUNCTION_BUDGET));
+    const unknown = over.filter(
+      (m) =>
+        !m.symbol.startsWith("anonymous@") &&
+        !KNOWN_OVERBUDGET[`${m.file}::${m.symbol}`] &&
+        !hasWaiver(m.file)
+    );
+    expect(
+      unknown.map((m) => `${m.file}::${m.symbol} (${m.kind}, ${m.loc} LOC)`),
+      `new over-budget symbols must be split, not listed`
+    ).toEqual([]);
+  });
+
+  it("anonymous over-budget functions stay within per-file allowance", () => {
+    const counts = new Map<string, number>();
+    for (const m of all) {
+      if (!m.symbol.startsWith("anonymous@")) continue;
+      const budget = isObj(m) ? OBJECT_BUDGET : FUNCTION_BUDGET;
+      if (m.loc <= budget) continue;
+      counts.set(m.file, (counts.get(m.file) ?? 0) + 1);
+    }
+    const excess = [...counts].filter(([f, n]) => n > (ANON_ALLOWANCE[f] ?? 0));
+    expect(excess.map(([f, n]) => `${f}: ${n} (allowed ${ANON_ALLOWANCE[f] ?? 0})`)).toEqual([]);
+  });
+
+  it("listed symbols must not exceed their recorded length (no drift up)", () => {
+    const drifted: string[] = [];
+    for (const [key, info] of Object.entries(KNOWN_OVERBUDGET)) {
+      const m = byKey.get(key);
+      if (m && m.loc > info.loc) drifted.push(`${key}: ${info.loc} -> ${m.loc}`);
+    }
+    expect(drifted).toEqual([]);
+  });
+
+  it("listed symbols that still exist must remain in KNOWN_OVERBUDGET only if still over budget", () => {
+    // A symbol that shrank below budget must be removed from the list when its
+    // wave lands — flagging keeps the ratchet honest.
+    const staleOk: string[] = [];
+    for (const [key, info] of Object.entries(KNOWN_OVERBUDGET)) {
+      const m = byKey.get(key);
+      const budget =
+        info.kind === "const-obj" || info.kind === "const-arr" ? OBJECT_BUDGET : FUNCTION_BUDGET;
+      if (m && m.loc <= budget) staleOk.push(`${key} now ${m.loc} LOC — remove from list`);
+    }
+    expect(staleOk).toEqual([]);
+  });
+
+  it("files >250 LOC const-objects without budget waiver are flagged", () => {
+    const unwaived = all.filter(
+      (m) =>
+        isObj(m) &&
+        m.loc > OBJECT_BUDGET &&
+        !KNOWN_OVERBUDGET[`${m.file}::${m.symbol}`] &&
+        !hasWaiver(m.file)
+    );
+    expect(unwaived.map((m) => `${m.file}::${m.symbol}`)).toEqual([]);
+  });
+});

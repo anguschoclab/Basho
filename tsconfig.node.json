@@ -17,7 +17,8 @@
        src/engine/** resolve @/* correctly instead of producing phantom
        duplicate-project errors. */
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@tests/*": ["./tests/*"]
     },
 
     /* Linting */

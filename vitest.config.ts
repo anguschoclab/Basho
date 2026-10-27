@@ -8,18 +8,19 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@tests": fileURLToPath(new URL("./tests", import.meta.url)),
     },
   },
   test: {
     environment: "jsdom",
-    setupFiles: ["./src/tests/setup/setup.ts"],
+    setupFiles: ["./tests/setup/setup.ts"],
     exclude: [
       ...configDefaults.exclude,
-      "e2e/**",
+      "tests/e2e/**",
       ".claude/**",
       "**/*.e2e.test.ts",
-      "src/tests/perf/**",
-      "src/tests/slow/**",
+      "tests/perf/**",
+      "tests/slow/**",
     ],
     testTimeout: 30000,
     // Flag individual tests slower than this in run output — early warning
@@ -54,19 +55,19 @@ export default defineConfig({
         "src/engine/**/*.ts",
         "src/presenters/**/*.ts",
         "src/components/**/*.{ts,tsx}",
-        "src/contexts/**/*.{ts,tsx}",
-        "src/store/**/*.ts",
+        "src/state/**/*.{ts,tsx}",
+        
         "src/hooks/**/*.{ts,tsx}",
         "src/lib/**/*.ts",
-        "src/utils/**/*.ts",
+        
         "src/pages/**/*.tsx",
         "src/constants/**/*.ts",
       ],
       exclude: [
-        "src/tests/**",
+        "tests/**",
         "src/**/*.test.ts",
         "src/**/*.test.tsx",
-        "e2e/**",
+        "tests/e2e/**",
         ".claude/**",
         "**/*.e2e.test.ts",
       ],

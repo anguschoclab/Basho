@@ -11,7 +11,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    setupFiles: ["./src/tests/setup/setup.ts"],
+    setupFiles: ["./tests/setup/setup.ts"],
     include: ["src/tests/slow/**"],
     exclude: [...configDefaults.exclude, "e2e/**", ".claude/**", "**/*.e2e.test.ts"],
     // simulationInvariants runs multi-year sims (~100-150s each, worse under
