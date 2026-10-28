@@ -9,6 +9,7 @@
 
 import { describe, it, expect } from "vitest";
 import {
+  extractKeepExports,
   mergeTrackerState,
   parseTrackerCsv,
   type PriorTrackerRow,
@@ -133,5 +134,26 @@ describe("mergeTrackerState", () => {
         prior
       ).map((m) => `${m.file}:${m.symbol}:${m.id}`);
     expect(run()).toEqual(run());
+  });
+});
+
+describe("extractKeepExports (V14-R03 @keep-export keep-list)", () => {
+  it("collects symbols marked with @keep-export", () => {
+    const src = [
+      "/** @keep-export myHelper intentional public API */",
+      "export function myHelper() {}",
+      "// @keep-export otherSymbol",
+      "export const otherSymbol = 1;",
+      "export function notKept() {}",
+    ].join("\n");
+    const keep = extractKeepExports(src);
+    expect(keep.has("myHelper")).toBe(true);
+    expect(keep.has("otherSymbol")).toBe(true);
+    expect(keep.has("notKept")).toBe(false);
+  });
+
+  it("ignores markers without a symbol name", () => {
+    const keep = extractKeepExports("// @keep-export\nexport const x = 1;");
+    expect(keep.size).toBe(0);
   });
 });

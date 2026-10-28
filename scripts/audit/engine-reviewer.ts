@@ -100,11 +100,52 @@ export function reviewSource(content: string, filePath: string): Violation[] {
       );
     }
 
-    // Check 5: Potential mutable state leaks
+    // @world-builder annotation marks intentional world mutations (world
+    // creation, lazy init); shared by Check 5 and Check 6 below.
+    const hasWorldBuilderAnnotation = rawLine.includes("@world-builder");
+
+    // Check 5: Uuid-label-collision candidates (V14-R01). Seeded-RNG labels
+    // that repeat within one world lifetime mint colliding ids/streams. Flag
+    // labels that are constant literals (no discriminator at all) or that
+    // interpolate ONLY the year — per-tick calls need a day/week/entity
+    // discriminator. `// @rng-fixed` marks an intentional constant label.
+    if (
+      !hasWorldBuilderAnnotation &&
+      !rawLine.includes("@rng-fixed") &&
+      /\b(rngFromSeed|rngForWorld|getSystemRNG)\s*\(/.test(line)
+    ) {
+      const callMatch = line.match(/\b(?:rngFromSeed|rngForWorld|getSystemRNG)\s*\(([^)]*)\)/);
+      const args = callMatch?.[1] ?? "";
+      const parts = args.split(",");
+      const labelArg = parts.length >= 3 ? parts.slice(2).join(",").trim() : parts[1]?.trim() ?? "";
+      const isConstantLabel = /^(""|''|``|"[^"]*"|'[^']*'|`[^`$]*`)$/.test(labelArg);
+      const yearOnlyLabel =
+        /`[^`]*\$\{[^}]*\byear\b[^}]*\}[^`]*`/.test(labelArg) &&
+        !/\$\{[^}]*\b(day|week|dayIndexGlobal|id|heyaId|rikishiId|index|i\b|count|n\b)\b[^}]*\}/.test(
+          labelArg
+        );
+      if (isConstantLabel) {
+        pushViolation(
+          violations,
+          filePath,
+          lineNum,
+          "RNG Label Collision Risk",
+          "Seeded-RNG label is a constant with no discriminator — repeats mint colliding ids. Add a day/week/entity discriminator or mark intentional with // @rng-fixed"
+        );
+      } else if (yearOnlyLabel) {
+        pushViolation(
+          violations,
+          filePath,
+          lineNum,
+          "RNG Label Collision Risk",
+          "Seeded-RNG label is year-scoped only — calls more than once per year collide. Add a day/week/entity discriminator or mark intentional with // @rng-fixed"
+        );
+      }
+    }
+
+    // Check 6: Potential mutable state leaks
     // We look for actual assignment or mutating method calls on a world.* member,
     // not comparisons, destructuring, or safe reads.
-    // @world-builder annotation marks intentional world mutations (world creation, lazy init).
-    const hasWorldBuilderAnnotation = rawLine.includes("@world-builder");
     const hasWorldMutation =
       /\bworld\.[A-Za-z_$][\w$]*(?:\[[^\]]+\])?\s*(?:(?:\+|-|\*|\/)?|\*\*|%)?=(?![=>])/.test(
         line

@@ -188,6 +188,8 @@ export const NON_PERSISTED_WORLD_FIELDS: Record<string, string> = {
   perceptionCache: "Derived cache; repopulated on demand.",
   selectedRikishiId: "UI selection, not simulation state.",
   _autonomousSim: "Run-mode flag for autonomous sims; never part of a player save.",
+  _suppressPhaseTransition:
+    "Transient advance opt; set and stripped within a single tick by advanceOneDay.",
   _autonomousPolicy: "Run-mode policy for autonomous sims; never part of a player save.",
 };
 

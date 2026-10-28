@@ -297,6 +297,13 @@ export interface WorldState {
   /** Delegation policy used to auto-resolve loop decisions during autonomous runs. */
   _autonomousPolicy?: "conservative" | "balanced" | "aggressive";
 
+  /**
+   * Transient flag set by advanceOneDay's `suppressPhaseTransition` option —
+   * while present, `checkPhaseTransition` cannot fire. Stripped from the
+   * world before the tick returns; never persisted.
+   */
+  _suppressPhaseTransition?: boolean;
+
   _recruitmentWindow?: RecruitmentWindow;
 
   _postBashoMeta?: PostBashoMeta;

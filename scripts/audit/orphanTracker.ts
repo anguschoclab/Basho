@@ -132,3 +132,18 @@ export function mergeTrackerState<T extends TrackedEntry>(
     };
   });
 }
+
+/**
+ * V14-R03 — `@keep-export <symbol>` marker support. A `\@keep-export name`
+ * comment in a source file marks that export as an intentional public API so
+ * the orphan audit skips it instead of tracking it as a candidate. This is the
+ * checked-in keep-list companion to the INTENTIONAL_EXPORTS triage ratchet in
+ * tests/unit/audit/unreferenced-exports.test.ts.
+ */
+export function extractKeepExports(source: string): Set<string> {
+  const keep = new Set<string>();
+  const re = /@keep-export[ \t]+([A-Za-z0-9_$]+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(source)) !== null) keep.add(m[1]);
+  return keep;
+}

@@ -59,6 +59,11 @@ export interface AdvanceOptions {
   autonomous?: boolean;
   /** If true, checks `shouldHaltAdvance` after each tick and stops if true. */
   haltOnPendingDecision?: boolean;
+  /** If true, `checkPhaseTransition` cannot fire during this day's tick —
+   *  the world advances calendar/weekly phases but never changes cyclePhase.
+   *  Used by the AutoSim kyushu-tail so the deferred yearly boundary can't
+   *  land inside the upcoming basho's active window (V14-R04). */
+  suppressPhaseTransition?: boolean;
   /** Chunk size for progress reporting (used by multi-day advance). */
   chunkSize?: number;
   /** Optional progress callback invoked after each day. */
@@ -118,6 +123,12 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
     return world;
   }
 
+  // Transient suppression flag — lives only for this tick's pipeline and is
+  // stripped from every returned world below.
+  if (opts?.suppressPhaseTransition && !world._suppressPhaseTransition) {
+    world = { ...world, _suppressPhaseTransition: true };
+  }
+
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
 
@@ -131,6 +142,7 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
     return {
       ...nextWorld,
       _daysSinceLastWeeklyTick: (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1,
+      _suppressPhaseTransition: undefined,
     };
   }
 
@@ -215,7 +227,9 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
     };
   }
 
-  return nextWorld;
+  return opts?.suppressPhaseTransition
+    ? { ...nextWorld, _suppressPhaseTransition: undefined }
+    : nextWorld;
 }
 
 /**

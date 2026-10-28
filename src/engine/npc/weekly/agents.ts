@@ -204,13 +204,19 @@ function assembleAgentDecisions(
   };
 }
 
-const NO_VACANCY_RESULT: RecruitmentAgentResult = {
-  maxBid: 0,
-  shouldBid: false,
-  bidStrategy: "conservative",
-  reasoning: ["[Recruitment Agent] No vacancies - skipping recruitment"],
-  confidence: 0,
-};
+// V14-B10 — must return a FRESH object each call. TacticalCoordinator's
+// boostRecruitment mutates `recruitment.shouldBid` in place; a shared
+// singleton leaks `shouldBid: true` into every later caller in the process,
+// including subsequent worlds in a same-process double-run.
+function noVacancyResult(): RecruitmentAgentResult {
+  return {
+    maxBid: 0,
+    shouldBid: false,
+    bidStrategy: "conservative",
+    reasoning: ["[Recruitment Agent] No vacancies - skipping recruitment"],
+    confidence: 0,
+  };
+}
 
 /**
  * Recruitment pass: picks the strongest available candidate, prices rival
@@ -225,7 +231,7 @@ function runRecruitmentPass(
   const { perception, heya, reasoning } = ctx;
   const rosterSize = new Set(heya?.rikishiIds ?? []).size || 0;
   const vacancies = Math.max(0, MAX_ROSTER_SIZE - rosterSize);
-  if (vacancies <= 0 || !world.talentPool) return NO_VACANCY_RESULT;
+  if (vacancies <= 0 || !world.talentPool) return noVacancyResult();
 
   // Evaluate the strongest available candidate, not an arbitrary key.
   // Track the record key — RecruitmentAgent resolves candidates[candidateId].
@@ -242,7 +248,7 @@ function runRecruitmentPass(
       }
     }
   }
-  if (!bestCandidateId) return NO_VACANCY_RESULT;
+  if (!bestCandidateId) return noVacancyResult();
 
   // Rival pressure: the hottest heya-rivalry pair this stable sits in.
   let rivalHeyaId: string | undefined;

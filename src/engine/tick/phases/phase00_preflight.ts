@@ -124,6 +124,11 @@ function checkPhaseTransition(
   world: WorldState,
   builder: ImpactBuilder
 ): { from: CyclePhase; to: CyclePhase } | undefined {
+  // V14-R04: advanceOneDay's suppressPhaseTransition opt pins the world in its
+  // current phase for this tick — used by the AutoSim kyushu tail so the
+  // deferred yearly boundary can roll without flipping into active_basho.
+  if (world._suppressPhaseTransition) return undefined;
+
   const prev = world.cyclePhase;
 
   switch (world.cyclePhase) {

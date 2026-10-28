@@ -10,12 +10,53 @@ import type { Division, RankPosition, BanzukeSnapshot } from "@/engine/types/ban
 import type { BashoName, BashoResult } from "@/engine/types/basho";
 import { getRikishi } from "@/engine/core/queries";
 
-/** Canon key for a basho (unique) */
-export type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;
+/**
+ * Canon key for a basho (unique).
+ *
+ * V14-R02 — duplicate same-named basho in one calendar year (kyushu drift can
+ * stamp two `hatsu-YYYY` records) would collide on the plain `${year}-${n}`
+ * form. The second and later occurrences carry an occurrence suffix
+ * (`${year}-${n}#2`, `#3`, …) so every basho gets a distinct key.
+ */
+export type BashoKey =
+  | `${number}-${1 | 2 | 3 | 4 | 5 | 6}`
+  | `${number}-${1 | 2 | 3 | 4 | 5 | 6}#${number}`;
 
-/** Helper to make a stable key */
-export function makeBashoKey(year: number, bashoNumber: number): BashoKey {
-  return `${year}-${bashoNumber as 1 | 2 | 3 | 4 | 5 | 6}` as BashoKey;
+/** Helper to make a stable key (occurrence 1 = plain `${year}-${n}` form). */
+export function makeBashoKey(year: number, bashoNumber: number, occurrence = 1): BashoKey {
+  const base = `${year}-${bashoNumber as 1 | 2 | 3 | 4 | 5 | 6}`;
+  return (occurrence > 1 ? `${base}#${occurrence}` : base) as BashoKey;
+}
+
+/**
+ * 1-based occurrence of `br` among same-(year, bashoNumber) records in
+ * `history`, ordered by position. `br` is located by unique record id first,
+ * then by identity; when absent it counts as the next occurrence.
+ */
+function bashoOccurrence(history: BashoResult[], br: BashoResult): number {
+  let pos = br.id ? history.findIndex((h) => h.id === br.id) : -1;
+  if (pos < 0) pos = history.indexOf(br);
+  if (pos < 0) {
+    // Patched clones (persistBanzukeSnapshot) and id-less legacy records:
+    // fall back to the last record sharing (year, bashoNumber).
+    for (let i = history.length - 1; i >= 0; i--) {
+      if (history[i].year === br.year && history[i].bashoNumber === br.bashoNumber) {
+        pos = i;
+        break;
+      }
+    }
+  }
+  let occurrence = 0;
+  for (let i = 0; i < (pos < 0 ? history.length : pos); i++) {
+    const h = history[i];
+    if (h.year === br.year && h.bashoNumber === br.bashoNumber) occurrence++;
+  }
+  return occurrence + 1;
+}
+
+/** Occurrence-aware key for a basho result within its world history. */
+export function bashoKeyForRecord(world: WorldState, br: BashoResult): BashoKey {
+  return makeBashoKey(br.year, br.bashoNumber, bashoOccurrence(world.history ?? [], br));
 }
 
 /** Minimal "what happened this basho" record for a rikishi */
@@ -75,17 +116,20 @@ export function createEmptyHistoryIndex(): HistoryIndex {
   };
 }
 
-/** Stable sort helper (chronological by basho key) */
+/** Stable sort helper (chronological by basho key, occurrence-aware) */
 function compareBashoKey(a: BashoKey, b: BashoKey): number {
-  const [ay, an] = a.split("-").map(Number);
-  const [by, bn] = b.split("-").map(Number);
+  const [aBase, aOcc = "1"] = a.split("#");
+  const [bBase, bOcc = "1"] = b.split("#");
+  const [ay, an] = aBase.split("-").map(Number);
+  const [by, bn] = bBase.split("-").map(Number);
   if (ay !== by) return ay - by;
-  return an - bn;
+  if (an !== bn) return an - bn;
+  return Number(aOcc) - Number(bOcc);
 }
 
-function sortKeyFor(year: number, bashoNumber: number): string {
+function sortKeyFor(year: number, bashoNumber: number, occurrence = 1): string {
   const bn = String(bashoNumber).padStart(2, "0");
-  return `${year}${bn}`;
+  return `${year}${bn}${String(occurrence).padStart(2, "0")}`;
 }
 
 /**
@@ -99,8 +143,14 @@ export function buildHistoryIndex(args: {
   const idx = createEmptyHistoryIndex();
   const history: BashoResult[] = world.history || [];
 
+  // V14-R02 — count prior same-(year, bashoNumber) records so duplicate
+  // same-named basho in one year get distinct `#N` keys.
+  const occurrenceCounts = new Map<string, number>();
   for (const br of history) {
-    const bashoKey = makeBashoKey(br.year, br.bashoNumber);
+    const baseKey = `${br.year}-${br.bashoNumber}`;
+    const occurrence = (occurrenceCounts.get(baseKey) ?? 0) + 1;
+    occurrenceCounts.set(baseKey, occurrence);
+    const bashoKey = makeBashoKey(br.year, br.bashoNumber, occurrence);
     const summary: BashoHistorySummary = {
       bashoKey,
       year: br.year,
@@ -112,7 +162,7 @@ export function buildHistoryIndex(args: {
       kantosho: br.kantosho,
       shukunsho: br.shukunsho,
       hasBanzukeSnapshot: !!br.nextBanzuke,
-      sortKey: sortKeyFor(br.year, br.bashoNumber),
+      sortKey: sortKeyFor(br.year, br.bashoNumber, occurrence),
     };
 
     idx.basho[bashoKey] = summary;
@@ -243,7 +293,8 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
   }
 
   const idx = world.historyIndex;
-  const bashoKey = makeBashoKey(bashoResult.year, bashoResult.bashoNumber);
+  const bashoKey = bashoKeyForRecord(world, bashoResult);
+  const occurrence = bashoOccurrence(world.history ?? [], bashoResult);
 
   if (idx.basho[bashoKey]) return;
 
@@ -258,7 +309,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     kantosho: bashoResult.kantosho,
     shukunsho: bashoResult.shukunsho,
     hasBanzukeSnapshot: !!bashoResult.nextBanzuke,
-    sortKey: `${bashoResult.year}${String(bashoResult.bashoNumber).padStart(2, "0")}`,
+    sortKey: sortKeyFor(bashoResult.year, bashoResult.bashoNumber, occurrence),
   };
 
   idx.basho[bashoKey] = summary;

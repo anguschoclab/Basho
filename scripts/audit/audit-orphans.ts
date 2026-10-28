@@ -12,7 +12,7 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from "fs";
 import { join, relative, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
-import { mergeTrackerState, parseTrackerCsv } from "./orphanTracker";
+import { mergeTrackerState, parseTrackerCsv, extractKeepExports } from "./orphanTracker";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -222,9 +222,14 @@ function findUnreferencedExports(): OrphanEntry[] {
       if (isTestFile(file)) continue;
 
       const exports = extractExports(file);
+      // V14-R03: `// @keep-export <symbol>` marks intentional public API so it
+      // is not reported as an orphan. The ratchet lives in the baseline JSON +
+      // INTENTIONAL_EXPORTS test map; this marker keeps intent beside the code.
+      const keepExports = extractKeepExports(fileContents.get(file) ?? readContent(file));
       for (const exp of exports) {
         // Skip type-only exports and common re-exports
         if (exp.name === "default") continue;
+        if (keepExports.has(exp.name)) continue;
         if (!isReferenced(exp.name, file)) {
           entries.push({
             id: nextId(),

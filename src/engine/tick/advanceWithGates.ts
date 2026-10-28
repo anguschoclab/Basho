@@ -20,6 +20,8 @@ export interface GateConfig {
   autonomous?: boolean;
   /** If true, checks `shouldHaltAdvance` after each tick and breaks if true. */
   haltOnPendingDecision?: boolean;
+  /** If true, phase transitions cannot fire during the advance (kyushu tail). */
+  suppressPhaseTransition?: boolean;
   /** Optional progress callback invoked after each day. */
   onProgress?: (daysAdvanced: number, world: WorldState) => void;
 }
@@ -40,7 +42,10 @@ export function advanceWithGates(world: WorldState, config: GateConfig): Advance
   let daysAdvanced = 0;
 
   for (let i = 0; i < cap; i++) {
-    currentWorld = advanceOneDay(currentWorld);
+    currentWorld = advanceOneDay(
+      currentWorld,
+      config.suppressPhaseTransition ? { suppressPhaseTransition: true } : undefined
+    );
     daysAdvanced++;
     config.onProgress?.(daysAdvanced, currentWorld);
 

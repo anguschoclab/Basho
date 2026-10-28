@@ -7,7 +7,7 @@ import type { PerceptionSnapshot } from "@/presenters/engineAccess";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { getCachedPerception } from "@/presenters/uiDigest";
 import { projectManagerCareer } from "@/presenters/projections/careerProjections";
-import { Building2, Heart, Shield, Users, Handshake, Zap, Landmark } from "lucide-react";
+import { Building2, Heart, Shield, Users, Handshake, Zap, Landmark, AlertTriangle } from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
   inspired: "text-success",
@@ -126,6 +126,11 @@ function CareerLine({ world }: { world: Parameters<typeof projectManagerCareer>[
     : career.election.boardSeat
       ? `JSA Board #${career.election.rank}`
       : `JSA Rank ${career.election.rank}`;
+  const risk = Math.max(
+    career.successionRisk.insolvency,
+    career.successionRisk.scandals,
+    career.successionRisk.underperformance
+  );
   return (
     <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground px-1">
       <Landmark className="h-3 w-3 shrink-0" />
@@ -133,6 +138,11 @@ function CareerLine({ world }: { world: Parameters<typeof projectManagerCareer>[
         {standing}
         {next ? ` · Next: ${next.label} (${Math.round(next.progress * 100)}%)` : " · All milestones achieved"}
       </span>
+      {risk >= 0.5 && (
+        <span className="flex items-center gap-1 text-destructive shrink-0">
+          <AlertTriangle className="h-3 w-3" /> Board confidence wavering
+        </span>
+      )}
     </div>
   );
 }

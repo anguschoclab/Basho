@@ -320,3 +320,35 @@ describe("historyIndex", () => {
     });
   });
 });
+
+describe("V14-R02: duplicate same-named basho in one year", () => {
+  it("assigns distinct occurrence keys when two hatsu basho share a year", async () => {
+    const { buildHistoryIndex } = await import("@/engine/history/historyIndex");
+    const world = makeMockWorld();
+    const first = makeMockBashoResult({ id: "hatsu-2026", year: 2026, yusho: "r-a" });
+    const second = makeMockBashoResult({ id: "hatsu-2026-r2", year: 2026, yusho: "r-b" });
+    world.history = [first, second];
+
+    const idx = buildHistoryIndex({ world });
+    expect(idx.basho[makeBashoKey(2026, 1)]?.yusho).toBe("r-a");
+    expect(idx.basho[makeBashoKey(2026, 1, 2)]?.yusho).toBe("r-b");
+    expect(idx.bashoKeys).toContain(makeBashoKey(2026, 1, 2));
+  });
+
+  it("indexBashoResult keeps both occurrences instead of early-returning", () => {
+    const world = makeMockWorld();
+    const first = makeMockBashoResult({ id: "hatsu-2026", year: 2026, yusho: "r-a" });
+    const second = makeMockBashoResult({ id: "hatsu-2026-r2", year: 2026, yusho: "r-b" });
+    world.history = [first, second];
+
+    indexBashoResult(world, first);
+    indexBashoResult(world, second);
+
+    const idx = world.historyIndex as HistoryIndex;
+    expect(idx.basho[makeBashoKey(2026, 1)]?.yusho).toBe("r-a");
+    expect(idx.basho[makeBashoKey(2026, 1, 2)]?.yusho).toBe("r-b");
+    // Re-indexing the same record stays idempotent.
+    indexBashoResult(world, second);
+    expect(idx.bashoKeys.filter((k) => k === makeBashoKey(2026, 1, 2)).length).toBe(1);
+  });
+});
