@@ -139,6 +139,10 @@ export function clearQueryCaches(): void {
  * Get the resolved Rikishi objects for a heya's roster.
  * Skips any IDs that don't resolve (dangling references).
  * Memoized per heya per week to avoid redundant lookups.
+ *
+ * @contract This returns all resolved rikishi, including retired members,
+ * if their IDs are still present in `heya.rikishiIds`. For strictly active
+ * (non-retired) roster queries, use `EntityCollection.getHeyaRoster(world, heyaId)`.
  */
 export function getHeyaRoster(world: WorldState, heyaId: Id): Rikishi[] {
   const cacheKey = `${heyaId}`;
