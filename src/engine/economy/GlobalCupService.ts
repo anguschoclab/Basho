@@ -55,7 +55,6 @@ function selectParticipants(world: WorldState): GlobalCupParticipant[] {
     seed: i + 1,
   }));
 
-  RNGRegistry.getSystemRNG(world, "global_cup", `challengers_${world.year}`);
   const talentPool = world.talentPool;
   const foreignCandidates = [];
   if (talentPool) {

@@ -106,40 +106,47 @@ export function reviewSource(content: string, filePath: string): Violation[] {
 
     // Check 5: Uuid-label-collision candidates (V14-R01). Seeded-RNG labels
     // that repeat within one world lifetime mint colliding ids/streams. Flag
-    // labels that are constant literals (no discriminator at all) or that
-    // interpolate ONLY the year — per-tick calls need a day/week/entity
-    // discriminator. `// @rng-fixed` marks an intentional constant label.
+    // (a) labels interpolating ONLY the year — a per-tick call then collides —
+    // and (b) constant label literals shared across multiple call sites.
+    // Single-site constant labels are fine (one fresh stream per site).
+    // `// @rng-fixed` marks an intentional repeating label.
     if (
-      !hasWorldBuilderAnnotation &&
       !rawLine.includes("@rng-fixed") &&
-      /\b(rngFromSeed|rngForWorld|getSystemRNG)\s*\(/.test(line)
+      /\b(rngFromSeed|rngForWorld|getSystemRNG)\s*\(/.test(rawLine)
     ) {
-      const callMatch = line.match(/\b(?:rngFromSeed|rngForWorld|getSystemRNG)\s*\(([^)]*)\)/);
-      const args = callMatch?.[1] ?? "";
-      const parts = args.split(",");
-      const labelArg = parts.length >= 3 ? parts.slice(2).join(",").trim() : parts[1]?.trim() ?? "";
-      const isConstantLabel = /^(""|''|``|"[^"]*"|'[^']*'|`[^`$]*`)$/.test(labelArg);
-      const yearOnlyLabel =
-        /`[^`]*\$\{[^}]*\byear\b[^}]*\}[^`]*`/.test(labelArg) &&
-        !/\$\{[^}]*\b(day|week|dayIndexGlobal|id|heyaId|rikishiId|index|i\b|count|n\b)\b[^}]*\}/.test(
-          labelArg
-        );
-      if (isConstantLabel) {
-        pushViolation(
-          violations,
-          filePath,
-          lineNum,
-          "RNG Label Collision Risk",
-          "Seeded-RNG label is a constant with no discriminator — repeats mint colliding ids. Add a day/week/entity discriminator or mark intentional with // @rng-fixed"
-        );
-      } else if (yearOnlyLabel) {
-        pushViolation(
-          violations,
-          filePath,
-          lineNum,
-          "RNG Label Collision Risk",
-          "Seeded-RNG label is year-scoped only — calls more than once per year collide. Add a day/week/entity discriminator or mark intentional with // @rng-fixed"
-        );
+      const callMatch = rawLine.match(
+        /\b(?:rngFromSeed|rngForWorld|getSystemRNG)\s*\(([^)\n]*)\)/
+      );
+      const parts = (callMatch?.[1] ?? "").split(",");
+      if (parts.length >= 3) {
+        const labelArg = parts.slice(2).join(",").trim();
+        const isLit = (s: string) => /^("[^"]*"|'[^']*'|`[^`$]*`|\d+)$/.test(s.trim());
+        // Year-scoped only: every ${...} interpolation in the label mentions
+        // `year` and nothing else — per-tick callers mint the same stream.
+        const hasYearInterp = /\$\{[^}]*\byear\b[^}]*\}/i.test(labelArg);
+        const withoutYear = labelArg.replace(/\$\{[^}]*\byear\b[^}]*\}/gi, "");
+        const yearOnlyLabel = hasYearInterp && !withoutYear.includes("${");
+        // Fully static: seed+subsystem+label all literals — every call replays
+        // the identical stream, so uuid() mints collide by construction.
+        const fullyStatic =
+          isLit(parts[0]) && isLit(parts[1]) && isLit(labelArg);
+        if (yearOnlyLabel) {
+          pushViolation(
+            violations,
+            filePath,
+            lineNum,
+            "RNG Label Collision Risk",
+            "Seeded-RNG label is year-scoped only — calls more than once per year collide. Add a day/week/entity discriminator or mark intentional with // @rng-fixed"
+          );
+        } else if (fullyStatic) {
+          pushViolation(
+            violations,
+            filePath,
+            lineNum,
+            "RNG Label Collision Risk",
+            "Seeded-RNG identity is fully static (constant seed+subsystem+label) — every call replays the same stream. Add a discriminator or mark intentional with // @rng-fixed"
+          );
+        }
       }
     }
 
