@@ -31,6 +31,7 @@ function baseTenure(year: number): Tenure {
     insolvencyEvents: 0,
     majorScandals: 0,
     forcedMergers: 0,
+    boardSeatsWon: 0,
   };
 }
 

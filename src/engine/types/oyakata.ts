@@ -82,6 +82,7 @@ export interface Oyakata {
     insolvencyEvents: number;
     majorScandals: number;
     forcedMergers: number;
+    boardSeatsWon?: number;
   };
 
   /** True when this oyakata is a JSA-appointed caretaker holding the stable temporarily. */

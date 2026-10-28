@@ -18,3 +18,7 @@ export const LEGACY_MODIFIER_DURATION_BASHO = 3;
 export const LEGACY_PLAN_BONUS = 6;
 export const FACTION_PLAN_ALIGNMENT_BONUS = 6;
 export const GRUDGE_PLAN_BONUS = 4;
+
+/** Political-capital bump for elected JSA board members (was hardcoded +20 — reduced to blunt the self-reinforcing incumbency lock). */
+export const ELECTION_INCUMBENCY_BONUS = 8;
+export const ELECTION_BOARD_SIZE = 5;

@@ -11,6 +11,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { bumpTenure } from "@/engine/legacy/tenure";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
+import { ELECTION_INCUMBENCY_BONUS } from "@/constants/engine/succession";
 import {
   SCANDAL_SEVERITY_MULT_LENIENT,
   SCANDAL_SEVERITY_MULT_STANDARD,
@@ -118,9 +119,10 @@ export function runElections(world: WorldState): StateImpact {
       governanceStatus: "good_standing", // Board members are elevated to good standing
       politicalCapital: Math.min(
         100,
-        (getHeya(world, candidate.heyaId)?.politicalCapital ?? 0) + 20
+        (getHeya(world, candidate.heyaId)?.politicalCapital ?? 0) + ELECTION_INCUMBENCY_BONUS
       ),
     });
+    bumpTenure(world, builder, candidate.heyaId, { boardSeatsWon: 1 });
 
     builder.logEvent(
       "GOVERNANCE_RULING",

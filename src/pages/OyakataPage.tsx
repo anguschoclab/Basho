@@ -18,6 +18,7 @@ import {
   OyakataDirectory,
 } from "@/components/oyakata/OyakataPageSections";
 import { useOyakataSelection } from "@/hooks/useOyakataSelection";
+import { ManagerCareerCard } from "@/components/oyakata/ManagerCareerCard";
 
 /** oyakata page. */
 export default function OyakataPage() {
@@ -53,6 +54,7 @@ export default function OyakataPage() {
 
         <TraitsCard oyakata={selectedOyakata} />
         <CareerAsRikishiCard oyakata={selectedOyakata} />
+        <ManagerCareerCard world={sel.world} heyaId={sel.world.playerHeyaId ?? ""} />
         <MentorshipCard sel={sel} />
         <OyakataDirectory sel={sel} />
       </div>

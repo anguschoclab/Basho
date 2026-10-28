@@ -100,7 +100,7 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
 
     // WS5 — canon §16.1 non-age triggers (NPC stables only; the player's
     // own manager is never force-replaced by an AI judgement).
-    if (heya.id !== world.playerHeyaId && !oyakata.retirementYear) {
+    if (!oyakata.retirementYear) {
       const tenure = oyakata.tenure;
       const reason =
         (tenure?.insolvencyEvents ?? 0) >= SUCCESSION_INSOLVENCY_EVENTS
@@ -195,7 +195,7 @@ function findEligibleSuccessors(world: WorldState, heyaId: string): string[] {
  * Retires the current Oyakata and promotes the designated successor.
  * Writes a DynastyRecord and mutates the stable's TrainingPhilosophy.
  */
-function triggerSuccession(
+export function triggerSuccession(
   world: WorldState,
   heyaId: string,
   successorRikishiId: string
@@ -217,17 +217,28 @@ function triggerSuccession(
   const successorRikishi = successorEntry;
 
   // 1. Write the dynasty record for the retiring Oyakata
+  const reignFrom = world.year - (currentOyakata.yearsInCharge ?? 0);
   const record: DynastyRecord = {
     era: (heya.dynasty?.length ?? 0) + 1,
     oyakataId: currentOyakata.id,
     oyakataName: currentOyakata.name,
-    reignFrom: world.year - (currentOyakata.yearsInCharge ?? 0),
+    reignFrom,
     reignTo: world.year,
     achievementsInReign: {
       yushoCount: heya.historicalYusho ?? 0,
-      globalCupWins: 0,
-      hofInductees: [],
-      boardSeatsWon: 0,
+      globalCupWins: (world.chronicle?.globalCups ?? []).filter(
+        (c) => c.championHeya === heya.id && c.year >= reignFrom && c.year <= world.year
+      ).length,
+      hofInductees: (world.hallOfFame?.inductees ?? [])
+        .filter(
+          (i) =>
+            i.inductionYear >= reignFrom &&
+            i.inductionYear <= world.year &&
+            (world.rikishi.get(i.rikishiId)?.heyaId ??
+              world.historicalRikishi.get(i.rikishiId)?.heyaId) === heya.id
+        )
+        .map((i) => i.shikona),
+      boardSeatsWon: currentOyakata.tenure?.boardSeatsWon ?? 0,
     },
     trainingPhilosophyAtReign: heya.trainingPhilosophy ?? TrainingPhilosophyService.getDefault(),
   };
