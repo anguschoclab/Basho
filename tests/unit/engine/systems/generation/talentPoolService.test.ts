@@ -184,6 +184,63 @@ describe("materializeCandidateToRikishi", () => {
   });
 });
 
+// ── duplicate-materialization guard ───────────────────────────────────────
+
+describe("materialization duplicate guard", () => {
+  it("does not mint a second rikishi when the candidate's personId is already materialized", () => {
+    const heyaId = "test-heya" as Id;
+    const heya = MockFactory.createHeya(heyaId, { rikishiIds: ["person-cand-1"] });
+    const existing = MockFactory.createRikishi("person-cand-1" as Id, { heyaId });
+    const world = MockFactory.createWorld({
+      heyas: new Map([[heyaId, heya]]),
+      rikishi: new Map([["person-cand-1" as Id, existing]]),
+      seed: "dup-guard-seed",
+      talentPool: makeTalentPool("cand-1"),
+    });
+
+    const impact = materializeCandidateToRikishi(world, "cand-1" as Id, heyaId);
+
+    // No new rikishi — the personId already exists in the world
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
+    expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
+
+    const nextWorld = resolveImpacts(world, [impact]);
+    expect(nextWorld.rikishi.size).toBe(1);
+    // The stale candidate is still stripped from the pool
+    expect(nextWorld.talentPool?.candidates["cand-1"]).toBeUndefined();
+    // And the roster slot is not re-appended
+    expect(
+      nextWorld.heyas.get(heyaId)?.rikishiIds?.filter((id) => id === "person-cand-1")
+    ).toHaveLength(1);
+  });
+
+  it("skips already-materialized candidates in finalizeSignedCandidates without duplicating roster ids", () => {
+    const heyaId = "test-heya" as Id;
+    const heya = MockFactory.createHeya(heyaId, { rikishiIds: ["person-cand-signed"] });
+    const existing = MockFactory.createRikishi("person-cand-signed" as Id, { heyaId });
+    const world = MockFactory.createWorld({
+      heyas: new Map([[heyaId, heya]]),
+      rikishi: new Map([["person-cand-signed" as Id, existing]]),
+      seed: "dup-guard-finalize-seed",
+    });
+    const talentPool = makeTalentPool("cand-signed", "signed");
+    talentPool.candidates["cand-signed"].competingSuitors = [
+      { heyaId, offerType: "standard" as const, interestBand: "high" as const, deadlineWeek: 1 },
+    ];
+    world.talentPool = talentPool;
+
+    const impact = finalizeSignedCandidates(world);
+
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
+
+    const nextWorld = resolveImpacts(world, [impact]);
+    expect(nextWorld.rikishi.size).toBe(1);
+    expect(
+      nextWorld.heyas.get(heyaId)?.rikishiIds?.filter((id) => id === "person-cand-signed")
+    ).toHaveLength(1);
+  });
+});
+
 // ── finalizeSignedCandidates ───────────────────────────────────────────────
 
 describe("finalizeSignedCandidates", () => {

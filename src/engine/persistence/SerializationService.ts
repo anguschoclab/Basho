@@ -14,6 +14,7 @@ import { reportWorldIdIntegrity } from "@/engine/core/idIntegrity";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { warn } from "@/engine/utils/Logger";
 import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
+import { BardEngine } from "@/engine/bard/BardEngine";
 
 /**
  * Serialization Service handles the transformation between runtime Maps
@@ -187,6 +188,7 @@ function serializeWorld(world: WorldState): SerializedWorldState {
 function deserializeWorld(serialized: SerializedWorldState): WorldState {
   // Reset impact timestamp counter for deterministic simulation when loading saved world
   resetImpactTimestampCounter();
+  BardEngine.resetCache(); // V14-B09: loaded world = new world-lifetime
   const s = serialized;
 
   // Sanitization Pass

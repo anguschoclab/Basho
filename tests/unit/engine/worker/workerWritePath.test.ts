@@ -52,7 +52,6 @@ vi.mock("@/presenters/uiDigest", () => ({
 vi.mock("@/engine/tick/tickOrchestrator", () => ({
   tickOrchestrator: vi.fn((world) => ({ ...world, ticked: true })),
   advanceDaysFastOrchestrator: vi.fn((world) => ({ ...world, ticked: true })),
-  cloneWorldForTick: vi.fn((world) => world),
 }));
 
 await import("@/engine/worker/engine.worker");

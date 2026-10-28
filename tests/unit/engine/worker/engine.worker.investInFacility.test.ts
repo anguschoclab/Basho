@@ -59,7 +59,6 @@ vi.mock("@/engine/tick/tickOrchestrator", () => ({
     ticked: true,
     daysAdvanced: days,
   })),
-  cloneWorldForTick: vi.fn((world) => world),
 }));
 
 // Import the worker script which attaches to globalThis.self.onmessage

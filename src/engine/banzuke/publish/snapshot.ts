@@ -48,10 +48,25 @@ export function persistBanzukeSnapshot(
   builder.updateWorldField("currentBanzuke", newSnapshot);
 
   const idx = structuredClone(world.historyIndex ?? createEmptyHistoryIndex());
-  const lastResult = world.history[world.history.length - 1];
-  if (lastResult) {
-    const patchedResult = { ...lastResult, nextBanzuke: newSnapshot };
-    builder.updateWorldField("history", [...world.history.slice(0, -1), patchedResult]);
+  // Locate the completed basho's record by basho key — not by position.
+  // recordBashoHistory lands last today, but any writer between conclude and
+  // publish must not have its record clobbered (or the patch silently lost).
+  const history = world.history ?? [];
+  let recordIdx = -1;
+  for (let i = history.length - 1; i >= 0; i--) {
+    const r = history[i];
+    if (r && makeBashoKey(r.year, r.bashoNumber) === completedKey) {
+      recordIdx = i;
+      break;
+    }
+  }
+  if (recordIdx >= 0) {
+    const patchedResult = { ...history[recordIdx], nextBanzuke: newSnapshot };
+    builder.updateWorldField("history", [
+      ...history.slice(0, recordIdx),
+      patchedResult,
+      ...history.slice(recordIdx + 1),
+    ]);
     // indexBashoResult mutates the index object in place (basho summary,
     // nextBanzuke registration, per-rikishi entries) — point it at the clone.
     indexBashoResult({ ...world, historyIndex: idx }, patchedResult);

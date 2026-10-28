@@ -28,22 +28,28 @@ export function materializeCandidateToRikishiInternal(
   const candidate = candidates[candidateId];
   if (!candidate) return { impact: builder.build(), nextCandidates: candidates, nextPools: pools };
 
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
-  const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
+  // Already-materialized guard: the rikishi id is the candidate's personId,
+  // so a stale "signed" candidate whose personId is already a live rikishi
+  // must not mint a duplicate entity or re-append the roster slot. The
+  // candidate is still stripped from the pools below.
+  if (!world.rikishi.has(candidate.personId)) {
+    const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
+    const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
 
-  // Apply maezumo assessment to determine initial jonokuchi rankNumber
-  const maezumoResult = assessMaezumo(rikishi, world.seed ?? "default");
-  if (maezumoResult.rankNumber !== undefined) {
-    rikishi.rankNumber = maezumoResult.rankNumber;
-  }
-  if (maezumoResult.maezumoCompleted) {
-    rikishi.maezumoCompleted = true;
-  }
+    // Apply maezumo assessment to determine initial jonokuchi rankNumber
+    const maezumoResult = assessMaezumo(rikishi, world.seed ?? "default");
+    if (maezumoResult.rankNumber !== undefined) {
+      rikishi.rankNumber = maezumoResult.rankNumber;
+    }
+    if (maezumoResult.maezumoCompleted) {
+      rikishi.maezumoCompleted = true;
+    }
 
-  builder.addRikishi(rikishi);
-  const heya = getHeya(world, heyaId);
-  if (heya) {
-    builder.updateHeya(heyaId, { rikishiIds: [...(heya.rikishiIds || []), rikishi.id] });
+    builder.addRikishi(rikishi);
+    const heya = getHeya(world, heyaId);
+    if (heya) {
+      builder.updateHeya(heyaId, { rikishiIds: [...(heya.rikishiIds || []), rikishi.id] });
+    }
   }
 
   // Purely remove candidate from pools/candidates tracking

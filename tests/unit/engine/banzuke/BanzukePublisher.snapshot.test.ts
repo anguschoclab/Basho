@@ -155,6 +155,35 @@ describe("publishBanzukeUpdate — banzuke snapshot persistence", () => {
     expect(last.nextBanzuke!.year).toBe(YEAR);
   });
 
+  it("patches the completed basho's record by basho key, not array position", () => {
+    const world = makePostBashoWorld();
+    // A later writer appended an unrelated record after the completed
+    // basho's — the positional history[last] assumption would patch (and
+    // corrupt) the wrong record while leaving the completed basho's bare.
+    world.history = [
+      ...world.history,
+      {
+        id: "res-2024-6-decoy",
+        year: YEAR - 1,
+        bashoNumber: 6,
+        bashoName: "kyushu",
+        yusho: "r_yoko",
+        junYusho: [],
+        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+      } as never,
+    ];
+
+    const newWorld = resolveImpacts(world, [publishBanzukeUpdate(world)]);
+
+    const completed = newWorld.history.find((r) => r.id === `res-${COMPLETED_KEY}`)!;
+    expect(completed.nextBanzuke).toBeDefined();
+    expect(completed.nextBanzuke).toEqual(newWorld.currentBanzuke);
+
+    const decoy = newWorld.history.at(-1)!;
+    expect(decoy.id).toBe("res-2024-6-decoy");
+    expect(decoy.nextBanzuke).toBeUndefined();
+  });
+
   it("populates historyIndex.banzukeByBasho for the completed basho and self-heals prevKey", () => {
     const world = makePostBashoWorld();
     const newWorld = resolveImpacts(world, [publishBanzukeUpdate(world)]);

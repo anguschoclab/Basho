@@ -33,7 +33,6 @@ vi.mock("@/engine/core/world", () => ({
 }));
 
 vi.mock("@/engine/tick/tickOrchestrator", () => ({
-  cloneWorldForTick: vi.fn((world: any) => ({ ...world })),
 }));
 
 /**

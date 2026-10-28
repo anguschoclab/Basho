@@ -3,7 +3,7 @@ import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoSimResult, BanzukeUpdateHook, BashoName } from "@/engine/types/basho";
 import { getBashoNumber } from "@/engine/calendar/calendar";
-import { enterPostBasho, enterInterim } from "@/engine/tick/tickDaily";
+import { enterPostBasho, enterInterim, advanceOneDay } from "@/engine/tick/tickDaily";
 import { advanceWithGates } from "@/engine/tick/advanceWithGates";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { INTERIM_DURATION_DAYS } from "@/constants/engine/recruitmentExtended";
@@ -284,7 +284,7 @@ function hasActiveYokozuna(world: WorldState): boolean {
  * Advance through off-season phases to trigger yearly boundary & training.
  * P3.6: advanceWithGates for post-basho + interim + year-boundary crossing.
  */
-function advanceOffSeason(currentWorld: WorldState, bashoName: string): WorldState {
+export function advanceOffSeason(currentWorld: WorldState, bashoName: string): WorldState {
   currentWorld = enterPostBasho(currentWorld);
   currentWorld = advanceWithGates(currentWorld, {
     maxDays: 7,
@@ -304,12 +304,22 @@ function advanceOffSeason(currentWorld: WorldState, bashoName: string): WorldSta
   // history record with last year's id (`hatsu-2026` twice).
   if (bashoName === "kyushu") {
     const startYear = currentWorld.year;
-    const yearResult = advanceWithGates(currentWorld, {
-      maxDays: 45,
-      autonomous: true,
-      isTargetReached: (w) => w.year > startYear,
-    });
-    currentWorld = yearResult.world;
+    // The boundary lands inside the upcoming basho's active window (calendar
+    // drift — observed rolling mid-hatsu). Ticking those days as active_basho
+    // resolves real pipeline bout days whose rikishi-level effects (injuries,
+    // fatigue, kimarite, awards) survive into simulateEntireBasho, which
+    // replays the basho from scratch — phantom stat bleed. Hold the world at
+    // the pre_basho threshold so the transition never fires; the deferred
+    // yearly boundary still rolls the year on its weekly tick.
+    for (let i = 0; i < 45 && currentWorld.year <= startYear; i++) {
+      if (
+        currentWorld.cyclePhase === "pre_basho" &&
+        (currentWorld._interimDaysRemaining ?? 0) <= 0
+      ) {
+        currentWorld = { ...currentWorld, _interimDaysRemaining: 1 };
+      }
+      currentWorld = advanceOneDay(currentWorld, { autonomous: true });
+    }
   }
   return currentWorld;
 }

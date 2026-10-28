@@ -38,6 +38,7 @@ import { generateGyoji, generateShimpan } from "@/engine/officials/GyojiService"
 import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
 import { generateMyosekiMarket } from "@/engine/governance/myosekiMarket";
 import { reportWorldIdIntegrity } from "@/engine/core/idIntegrity";
+import { BardEngine } from "@/engine/bard/BardEngine";
 import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
 
 // Re-export factory functions for backward compatibility
@@ -71,6 +72,11 @@ export { createRosters } from "@/engine/generation/RosterFactory";
 export function generateInitialWorld(seed: string): WorldState {
   // Reset impact timestamp counter for deterministic simulation
   resetImpactTimestampCounter();
+  // BardEngine anti-repetition lanes are module-global keyed by rng.seed —
+  // without a boundary reset, a second same-seed world in the same process
+  // inherits the first world's lane, consuming extra rng draws and diverging
+  // whole simulations (determinism-double-run V14-B09).
+  BardEngine.resetCache();
   const worldRng = rngFromSeed(seed, "worldgen", "world");
 
   // 1. Create Stables

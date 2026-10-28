@@ -59,7 +59,6 @@ vi.mock("@/engine/tick/tickOrchestrator", () => ({
     ticked: true,
     daysAdvanced: days,
   })),
-  cloneWorldForTick: vi.fn((world) => world),
 }));
 
 await import("@/engine/worker/engine.worker");

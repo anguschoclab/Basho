@@ -8,15 +8,6 @@ import type { WorldState } from "@/engine/types/world";
 import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
 
 /**
- * Deep-clones a WorldState. Retained for bashoSlice and other callers that
- * still use mutable world-engine functions. The orchestrators no longer clone
- * because the pipeline is immutable (returns new objects via spread/resolveImpacts).
- */
-export function cloneWorldForTick(world: WorldState): WorldState {
-  return structuredClone(world) as WorldState;
-}
-
-/**
  * Advances the world state by one day.
  * Used by the web worker to process ticks off the main thread to avoid UI blocking.
  *
