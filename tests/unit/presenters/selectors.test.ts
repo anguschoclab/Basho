@@ -108,6 +108,15 @@ describe("selectPromotionCandidates", () => {
     expect(result).toEqual([]);
   });
 
+  it("should return an empty array if world.rikishi is missing", () => {
+    const world = {
+      rikishi: undefined,
+    } as unknown as WorldState;
+
+    const result = selectPromotionCandidates(world);
+    expect(result).toEqual([]);
+  });
+
   it("should return only non-retired sekiwake and komusubi", () => {
     const r1 = mockRikishi("r1", { rank: "sekiwake", isRetired: false });
     const r2 = mockRikishi("r2", { rank: "komusubi", isRetired: false });
@@ -152,6 +161,15 @@ describe("selectYokozunaCandidates", () => {
   it("should return an empty array if there are no rikishi", () => {
     const world = {
       rikishi: new Map(),
+    } as unknown as WorldState;
+
+    const result = selectYokozunaCandidates(world);
+    expect(result).toEqual([]);
+  });
+
+  it("should return an empty array if world.rikishi is missing", () => {
+    const world = {
+      rikishi: undefined,
     } as unknown as WorldState;
 
     const result = selectYokozunaCandidates(world);

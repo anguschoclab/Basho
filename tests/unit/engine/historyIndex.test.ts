@@ -3,6 +3,11 @@ import {
   indexBashoResult,
   createEmptyHistoryIndex,
   makeBashoKey,
+  buildHistoryIndex,
+  bashoKeyForRecord,
+  listBashoSummaries,
+  getBashoSummary,
+  getRikishiHistory,
   type HistoryIndex,
 } from "@/engine/history/historyIndex";
 import { makeMockWorld, mockRikishi } from "@tests/unit/engine/utils";
@@ -350,5 +355,150 @@ describe("V14-R02: duplicate same-named basho in one year", () => {
     // Re-indexing the same record stays idempotent.
     indexBashoResult(world, second);
     expect(idx.bashoKeys.filter((k) => k === makeBashoKey(2026, 1, 2)).length).toBe(1);
+  });
+});
+
+describe("makeBashoKey", () => {
+  it("produces the plain year-number key for the first occurrence", () => {
+    expect(makeBashoKey(2026, 1)).toBe("2026-1");
+    expect(makeBashoKey(2026, 6)).toBe("2026-6");
+  });
+
+  it("appends the occurrence suffix for later occurrences", () => {
+    expect(makeBashoKey(2026, 1, 2)).toBe("2026-1#2");
+    expect(makeBashoKey(2026, 1, 3)).toBe("2026-1#3");
+  });
+});
+
+describe("bashoKeyForRecord", () => {
+  it("resolves occurrence by record id", () => {
+    const first = makeMockBashoResult({ id: "hatsu-2026", year: 2026 });
+    const second = makeMockBashoResult({ id: "hatsu-2026-r2", year: 2026 });
+    const world = makeMockWorld({ history: [first, second] });
+    expect(bashoKeyForRecord(world, second)).toBe("2026-1#2");
+  });
+
+  it("resolves occurrence by identity for id-less records", () => {
+    const first = makeMockBashoResult({ year: 2026 });
+    const second = makeMockBashoResult({ year: 2026 });
+    const world = makeMockWorld({ history: [first, second] });
+    expect(bashoKeyForRecord(world, second)).toBe("2026-1#2");
+  });
+
+  it("falls back to the last same-(year, bashoNumber) record for patched clones", () => {
+    // persistBanzukeSnapshot passes a cloned record whose id may not match
+    // history — it must resolve to the last matching record's occurrence.
+    const first = makeMockBashoResult({ id: "hatsu-2026", year: 2026 });
+    const second = makeMockBashoResult({ id: "hatsu-2026-r2", year: 2026 });
+    const world = makeMockWorld({ history: [first, second] });
+    const clone = { ...second, id: "patched-id-not-in-history" } as BashoResult;
+    expect(bashoKeyForRecord(world, clone)).toBe("2026-1#2");
+  });
+
+  it("resolves an absent record to the last same-(year, bashoNumber) occurrence", () => {
+    // Re-indexing a result not locatable in history still lands on the last
+    // matching occurrence — keeps re-runs idempotent.
+    const first = makeMockBashoResult({ id: "hatsu-2026", year: 2026 });
+    const world = makeMockWorld({ history: [first] });
+    const fresh = makeMockBashoResult({ year: 2026 });
+    expect(bashoKeyForRecord(world, fresh)).toBe("2026-1");
+  });
+
+  it("gives occurrence 1 for a record with no same-(year, bashoNumber) in history", () => {
+    const world = makeMockWorld({
+      history: [makeMockBashoResult({ id: "hatsu-2026", year: 2026 })],
+    });
+    const fresh = makeMockBashoResult({ year: 2026, bashoNumber: 3, bashoName: "natsu" });
+    expect(bashoKeyForRecord(world, fresh)).toBe("2026-3");
+  });
+});
+
+describe("listBashoSummaries", () => {
+  it("returns an empty array for an empty index", () => {
+    expect(listBashoSummaries(createEmptyHistoryIndex())).toEqual([]);
+  });
+
+  it("returns summaries in chronological bashoKeys order", () => {
+    const world = makeMockWorld({
+      history: [
+        makeMockBashoResult({ year: 2026, bashoNumber: 3, bashoName: "natsu" }),
+        makeMockBashoResult({ year: 2025, bashoNumber: 6, bashoName: "kyushu" }),
+        makeMockBashoResult({ year: 2026, bashoNumber: 1, bashoName: "hatsu" }),
+      ],
+    });
+    const idx = buildHistoryIndex({ world });
+    const summaries = listBashoSummaries(idx);
+    expect(summaries.map((s) => s.bashoKey)).toEqual(["2025-6", "2026-1", "2026-3"]);
+    expect(summaries.map((s) => s.bashoName)).toEqual(["kyushu", "hatsu", "natsu"]);
+  });
+
+  it("includes occurrence-suffixed entries", () => {
+    const world = makeMockWorld({
+      history: [
+        makeMockBashoResult({ id: "hatsu-2026", year: 2026, yusho: "r-a" }),
+        makeMockBashoResult({ id: "hatsu-2026-r2", year: 2026, yusho: "r-b" }),
+      ],
+    });
+    const idx = buildHistoryIndex({ world });
+    const summaries = listBashoSummaries(idx);
+    expect(summaries.map((s) => s.bashoKey)).toEqual(["2026-1", "2026-1#2"]);
+    expect(summaries.map((s) => s.yusho)).toEqual(["r-a", "r-b"]);
+  });
+});
+
+describe("getBashoSummary", () => {
+  it("returns the summary for an existing basho", () => {
+    const world = makeMockWorld({
+      history: [makeMockBashoResult({ year: 2026, bashoNumber: 1, yusho: "r1" })],
+    });
+    const idx = buildHistoryIndex({ world });
+    const summary = getBashoSummary(idx, 2026, 1);
+    expect(summary).not.toBeNull();
+    expect(summary?.bashoName).toBe("hatsu");
+    expect(summary?.yusho).toBe("r1");
+  });
+
+  it("returns null for a basho that was never indexed", () => {
+    const idx = createEmptyHistoryIndex();
+    expect(getBashoSummary(idx, 2026, 1)).toBeNull();
+  });
+
+  it("only resolves the first occurrence — #2 keys are unreachable by design", () => {
+    const world = makeMockWorld({
+      history: [
+        makeMockBashoResult({ id: "hatsu-2026", year: 2026, yusho: "r-a" }),
+        makeMockBashoResult({ id: "hatsu-2026-r2", year: 2026, yusho: "r-b" }),
+      ],
+    });
+    const idx = buildHistoryIndex({ world });
+    const summary = getBashoSummary(idx, 2026, 1);
+    expect(summary?.yusho).toBe("r-a");
+  });
+});
+
+describe("getRikishiHistory", () => {
+  it("returns an empty array for an unknown rikishi", () => {
+    expect(getRikishiHistory(createEmptyHistoryIndex(), "nope")).toEqual([]);
+  });
+
+  it("returns the indexed entries for a rikishi", () => {
+    const world = makeMockWorld({
+      history: [makeMockBashoResult({ year: 2026, bashoNumber: 1, yusho: "r1" })],
+    });
+    const idx = buildHistoryIndex({ world });
+    const entries = getRikishiHistory(idx, "r1");
+    expect(entries).toHaveLength(1);
+    expect(entries[0].bashoKey).toBe("2026-1");
+    expect(entries[0].yusho).toBe(true);
+  });
+
+  it("returns a copy — mutating the result does not corrupt the index", () => {
+    const world = makeMockWorld({
+      history: [makeMockBashoResult({ year: 2026, bashoNumber: 1, yusho: "r1" })],
+    });
+    const idx = buildHistoryIndex({ world });
+    const entries = getRikishiHistory(idx, "r1");
+    entries.push({ bashoKey: "9999-6", year: 9999, bashoNumber: 6, rikishiId: "r1" });
+    expect(idx.rikishi["r1"]).toHaveLength(1);
   });
 });

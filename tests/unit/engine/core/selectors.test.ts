@@ -4,9 +4,11 @@ import {
   getEligibleOpponents,
   getAvailableStables,
   getStableFinances,
+  selectInjuredRikishi,
 } from "@/engine/core/selectors";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 
 describe("selectors", () => {
   describe("getActiveRikishi", () => {
@@ -124,6 +126,74 @@ describe("selectors", () => {
 
     it("should return 0 if stable not found", () => {
       expect(getStableFinances(makeMockWorld(), "nope")).toBe(0);
+    });
+  });
+
+  describe("selectInjuredRikishi", () => {
+    it("should return an empty array if there are no rikishi", () => {
+      const world = makeMockWorld({ rikishi: new Map() });
+      expect(selectInjuredRikishi(world)).toEqual([]);
+    });
+
+    it("should return an empty array if world.rikishi is missing", () => {
+      const world = { rikishi: undefined } as unknown as WorldState;
+      expect(selectInjuredRikishi(world)).toEqual([]);
+    });
+
+    it("should include rikishi flagged via the flat injured field and exclude healthy ones", () => {
+      const r1 = mockRikishi("r1", { injured: true });
+      const r2 = mockRikishi("r2", { injured: false });
+
+      const world = makeMockWorld({
+        rikishi: new Map([
+          ["r1", r1],
+          ["r2", r2],
+        ]),
+      });
+
+      const result = selectInjuredRikishi(world);
+      expect(result).toEqual([r1]);
+    });
+
+    it("should include rikishi flagged via injury.isInjured even when injured is false", () => {
+      const r1 = mockRikishi("r1", {
+        injured: false,
+        injury: {
+          type: "sprain",
+          severity: "minor",
+          isInjured: true,
+          weeksRemaining: 2,
+        },
+      });
+      const r2 = mockRikishi("r2", {
+        injured: false,
+        injury: {
+          type: "sprain",
+          severity: "minor",
+          isInjured: false,
+          weeksRemaining: 0,
+        },
+      });
+
+      const world = makeMockWorld({
+        rikishi: new Map([
+          ["r1", r1],
+          ["r2", r2],
+        ]),
+      });
+
+      const result = selectInjuredRikishi(world);
+      expect(result).toEqual([r1]);
+    });
+
+    it("should memoize the result if the world object is the same", () => {
+      const r1 = mockRikishi("r1", { injured: true });
+      const world = makeMockWorld({ rikishi: new Map([["r1", r1]]) });
+
+      const result1 = selectInjuredRikishi(world);
+      const result2 = selectInjuredRikishi(world);
+
+      expect(result1).toBe(result2);
     });
   });
 });

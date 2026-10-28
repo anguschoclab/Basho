@@ -111,11 +111,11 @@ export function formatMetaTrends(world: WorldState): MetaTrendPoint[] {
     yotsu: 0,
     hybrid: 0,
   };
-  for (const [id, count] of Object.entries(stats)) {
+  for (const id of Object.keys(stats)) {
     const def = getKimarite(id);
     const family = def?.tacticalFamily;
     const band = family ? FAMILY_TO_BAND[family] : "hybrid";
-    bandTotals[band] += count;
+    bandTotals[band] += stats[id];
   }
 
   const totalMoves = bandTotals.oshi + bandTotals.yotsu + bandTotals.hybrid;
@@ -139,10 +139,10 @@ export function formatMetaTrends(world: WorldState): MetaTrendPoint[] {
   }
 
   // Top-5 drifted kimarite (real drift values, descending)
-  const topDrift = Object.entries(drift)
-    .map(([id, value]) => ({ id, value: value as number }))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 5);
+  const topDrift = Object.keys(drift)
+    .sort((a, b) => drift[b] - drift[a])
+    .slice(0, 5)
+    .map((id) => ({ id, value: drift[id] }));
 
   return world.history.slice(-6).map((h) => ({
     basho: `${h.bashoName.charAt(0).toUpperCase()}${h.year % 100}`,

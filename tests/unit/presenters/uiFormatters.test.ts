@@ -155,6 +155,53 @@ describe("formatMetaTrends", () => {
     expect(result[0].basho).toBe("H24");
   });
 
+  it("caps topDrift at 5 entries sorted descending by value", () => {
+    const mockWorld: Partial<WorldState> = {
+      meta: {
+        tone: "classic",
+        drift: {
+          alpha: 1.0,
+          bravo: 1.5,
+          charlie: 0.5,
+          delta: 2.0,
+          echo: 0.1,
+          foxtrot: 1.2,
+          golf: 0.9,
+        },
+      },
+      globalKimariteStats: {},
+      history: [{ bashoName: "hatsu", year: 2024 } as any],
+    } as any;
+
+    const result = formatMetaTrends(mockWorld as WorldState);
+    expect(result[0].topDrift).toHaveLength(5);
+    expect(result[0].topDrift.map((d) => d.id)).toEqual([
+      "delta",
+      "bravo",
+      "foxtrot",
+      "alpha",
+      "golf",
+    ]);
+    for (let i = 1; i < result[0].topDrift.length; i++) {
+      expect(result[0].topDrift[i].value).toBeLessThanOrEqual(
+        result[0].topDrift[i - 1].value
+      );
+    }
+  });
+
+  it("counts kimarite ids missing from the registry toward the hybrid band", () => {
+    const mockWorld: Partial<WorldState> = {
+      meta: { tone: "classic", drift: {} },
+      globalKimariteStats: { unregistered_technique: 100 },
+      history: [{ bashoName: "hatsu", year: 2024 } as any],
+    } as any;
+
+    const result = formatMetaTrends(mockWorld as WorldState);
+    expect(result[0].hybrid).toBe(100);
+    expect(result[0].oshi).toBe(0);
+    expect(result[0].yotsu).toBe(0);
+  });
+
   it("returns at most 6 data points", () => {
     const history = [];
     for (let i = 0; i < 10; i++) {

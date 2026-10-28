@@ -21,10 +21,7 @@ import {
   type KimariteRarity,
 } from "@/constants/engine/kimariteFrequencies";
 
-import {
-  createSelector,
-  selectAllRikishi,
-} from "@/engine/core/selectors";
+import { createSelector } from "@/engine/core/selectors";
 
 export { selectInjuredRikishi, selectRecentEvents } from "@/engine/core/selectors";
 
@@ -32,16 +29,28 @@ export { selectInjuredRikishi, selectRecentEvents } from "@/engine/core/selector
  * Select all Sekiwake and Komusubi for Ozeki promotion tracking.
  */
 export const selectPromotionCandidates = createSelector((world: WorldState) => {
-  return selectAllRikishi(world).filter(
-    (r) => !r.isRetired && (r.rank === "sekiwake" || r.rank === "komusubi")
-  );
+  const result: Rikishi[] = [];
+  if (!world.rikishi) return result;
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired && (r.rank === "sekiwake" || r.rank === "komusubi")) {
+      result.push(r);
+    }
+  }
+  return result;
 });
 
 /**
  * Select all Ozeki for Yokozuna promotion tracking.
  */
 export const selectYokozunaCandidates = createSelector((world: WorldState) => {
-  return selectAllRikishi(world).filter((r) => !r.isRetired && r.rank === "ozeki");
+  const result: Rikishi[] = [];
+  if (!world.rikishi) return result;
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired && r.rank === "ozeki") {
+      result.push(r);
+    }
+  }
+  return result;
 });
 
 /**

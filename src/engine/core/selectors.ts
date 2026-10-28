@@ -110,16 +110,14 @@ export function createSelector<T>(fn: (world: WorldState) => T) {
   };
 }
 
-/** All Rikishi as an array. */
-export const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
-  if (!world.rikishi) return [];
-  return Array.from(world.rikishi.values());
-});
-
 /** All currently injured Rikishi. */
 export const selectInjuredRikishi = createSelector((world: WorldState): Rikishi[] => {
-  const all = selectAllRikishi(world);
-  return all.filter((r) => r.injury?.isInjured || r.injured);
+  const result: Rikishi[] = [];
+  if (!world.rikishi) return result;
+  for (const r of world.rikishi.values()) {
+    if (r.injury?.isInjured || r.injured) result.push(r);
+  }
+  return result;
 });
 
 /** Events from this week and last week, bucketed by UI category. */
