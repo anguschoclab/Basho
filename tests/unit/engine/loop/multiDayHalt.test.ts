@@ -1,8 +1,23 @@
-import { describe, it, expect } from "vitest";
-import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
+import { describe, it, expect, vi } from "vitest";
+import { shouldBlockTick, shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import { makeMockWorld } from "@tests/unit/engine/utils";
+import { makeMockWorld, makeMockBasho, mockRikishi, makeMockHeya } from "@tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
+import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
+
+// Mock the world engine functions used by phase01_basho_bouts so the
+// regression test can observe whether the tick was swallowed.
+vi.mock("@/engine/core/world", () => ({
+  simulateBoutsForDay: vi.fn((w: WorldState) => ({ world: w, results: [] })),
+  advanceBashoDay: vi.fn((w: WorldState) => ({
+    ...w,
+    currentBasho: w.currentBasho
+      ? { ...w.currentBasho, day: (w.currentBasho.day ?? 0) + 1 }
+      : w.currentBasho,
+  })),
+}));
+import * as worldEngine from "@/engine/core/world";
 
 const base = { pendingCrisis: undefined, pendingDecisions: [] } as unknown as WorldState;
 
@@ -108,5 +123,61 @@ describe("advanceOneDay halt behavior", () => {
     // whatever preflight set it to.
     // The key assertion: the world didn't go through the full pipeline (no transientContext.lastReport).
     expect(result.transientContext?.lastReport).toBeUndefined();
+  });
+
+  /**
+   * Regression (golden-path stall): "advance until interesting" conditions are
+   * loop-break signals for multi-day advances, NOT day-swallowing conditions.
+   * A this-week major/headline world event must not make advanceOneDay return
+   * before the bout-resolution phase — otherwise every world event freezes the
+   * basho for the rest of the week while calendar days burn.
+   */
+  it("a this-week major world event does NOT swallow the basho-day tick", () => {
+    const heya = makeMockHeya("heya-1", { rikishiIds: ["r-east", "r-west"] });
+    const east = mockRikishi("r-east", { heyaId: "heya-1", division: "makuuchi" });
+    const west = mockRikishi("r-west", { heyaId: "heya-1", division: "makuuchi" });
+    const matches: MatchSchedule[] = [
+      { boutId: "d1-b0", day: 1, eastRikishiId: "r-east", westRikishiId: "r-west" } as MatchSchedule,
+    ];
+    const world = makeMockWorld({
+      year: 2030,
+      week: 5,
+      cyclePhase: "active_basho",
+      currentBasho: makeMockBasho({ day: 1, matches, isActive: true }) as never,
+      playerHeyaId: "heya-1",
+      heyas: new Map([["heya-1", heya]]),
+      rikishi: new Map([
+        ["r-east", east as unknown as Rikishi],
+        ["r-west", west as unknown as Rikishi],
+      ]),
+      events: {
+        version: "1.0.0",
+        dedupe: {},
+        log: [
+          {
+            id: "e1",
+            type: "BASHO_RESULT",
+            year: 2030,
+            week: 5,
+            phase: "interim",
+            category: "basho",
+            importance: "headline",
+            scope: "world",
+            title: "t",
+            summary: "s",
+          },
+        ],
+      } as never,
+    });
+
+    // The event still halts multi-day advance loops…
+    expect(shouldHaltAdvance(world)).toBe(true);
+    // …but must not block a single day-tick.
+    expect(shouldBlockTick(world)).toBe(false);
+
+    const result = advanceOneDay(world);
+    expect(worldEngine.simulateBoutsForDay).toHaveBeenCalled();
+    expect(worldEngine.advanceBashoDay).toHaveBeenCalled();
+    expect(result.currentBasho?.day).toBe(2);
   });
 });

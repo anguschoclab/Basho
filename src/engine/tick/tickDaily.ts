@@ -29,7 +29,7 @@ import {
 } from "@/constants/engine/calendarExtended";
 import { DEFAULT_START_YEAR, INTERIM_DAYS, BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 import { warn } from "@/engine/utils/Logger";
-import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
+import { shouldBlockTick, shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
 import { clearQueryCaches } from "@/engine/core/queries";
 
 // ====
@@ -138,7 +138,7 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   // The calendar day was still consumed by preflight, so advance the weekly
   // counter too — otherwise a run of halted days starves the weekly tick
   // forever while days elapse.
-  if (!nextWorld._autonomousSim && shouldHaltAdvance(nextWorld)) {
+  if (!nextWorld._autonomousSim && shouldBlockTick(nextWorld)) {
     return {
       ...nextWorld,
       _daysSinceLastWeeklyTick: (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1,

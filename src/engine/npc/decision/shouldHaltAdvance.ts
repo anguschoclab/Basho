@@ -17,8 +17,18 @@ import type { WorldState } from "@/engine/types/world";
  * (createdWeek), or a major/headline event scoped to the player's stable or
  * the whole world. Only same-week entries halt, so ignored items go stale
  * instead of freezing every subsequent advance.
+ *
+ * IMPORTANT — two consumers, two semantics: the interesting-signal conditions
+ * are LOOP-BREAK signals for multi-day advances (checked between ticks).
+ * They must never reach `advanceOneDay`'s in-tick early return, which runs
+ * after preflight has already consumed the calendar day — gating that path on
+ * "interesting" conditions swallows the tick (bout resolution never runs,
+ * bashoDay freezes while world.day burns, golden-path stalls). The in-tick
+ * path uses `shouldBlockTick` — the blocking subset only.
  */
-export function shouldHaltAdvance(world: WorldState): boolean {
+
+/** Conditions that legitimately swallow the remainder of a single day-tick. */
+export function shouldBlockTick(world: WorldState): boolean {
   if (world.pendingCrisis) return true;
 
   // Basho termination is interactive — "End Basho" in the UI calls `endBasho`
@@ -29,8 +39,13 @@ export function shouldHaltAdvance(world: WorldState): boolean {
     return true;
   }
 
+  return (world.pendingDecisions ?? []).some((d) => d.required);
+}
+
+export function shouldHaltAdvance(world: WorldState): boolean {
+  if (shouldBlockTick(world)) return true;
+
   const decisions = world.pendingDecisions ?? [];
-  if (decisions.some((d) => d.required)) return true;
 
   const weekTag = `-y${world.year}-w${world.week}`;
   if (decisions.some((d) => d.id.endsWith(weekTag))) return true;
