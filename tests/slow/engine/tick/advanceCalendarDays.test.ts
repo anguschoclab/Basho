@@ -16,6 +16,8 @@ describe("Batch preflight (B1.1)", () => {
     let batchWithSkip: WorldState;
     let batchNoSkip: WorldState;
 
+    // Three worldgens + 30 advanced days far exceed the 10s default hook
+    // timeout on a loaded machine — give the hook an explicit budget.
     beforeAll(() => {
       seqWorld = generateInitialWorld("batch-preflight-seed");
       const world2 = generateInitialWorld("batch-preflight-seed");
@@ -26,7 +28,7 @@ describe("Batch preflight (B1.1)", () => {
       }
       batchWithSkip = advanceDaysFast(world2, N, { skipDailyMicroPhases: true });
       batchNoSkip = advanceDaysFast(world3, N);
-    });
+    }, 120_000);
 
     it("advanceDaysFast(N) produces same dayIndexGlobal as N × advanceOneDay with skipDailyMicroPhases", () => {
       expect(batchWithSkip.dayIndexGlobal).toBe(seqWorld.dayIndexGlobal);

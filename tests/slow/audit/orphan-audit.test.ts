@@ -30,7 +30,8 @@ async function runAudit(): Promise<AuditReport> {
   const tmpJson = uniqueJsonPath();
   await execAsync(`npx tsx scripts/audit/audit-orphans.ts --json "${tmpJson}"`, {
     cwd: ROOT,
-    timeout: 180000,
+    // ~60s standalone but the full slow suite contends for CPU — allow headroom.
+    timeout: 300_000,
   });
   const raw = readFileSync(tmpJson, "utf-8");
   unlinkSync(tmpJson);
