@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-27T12:52:53.770Z",
+  "generatedAt": "2026-10-28T16:39:18.771Z",
   "summary": {
-    "total": 230,
-    "unreferencedExports": 222,
+    "total": 234,
+    "unreferencedExports": 226,
     "orphanRoutes": 0,
     "untickedServices": 8,
     "unusedComponents": 0,
@@ -349,6 +349,61 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
+    },
+    {
+      "id": "ORPH-0548",
+      "file": "src/engine/core/idIntegrity.ts",
+      "symbol": "ViolationKind",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0546",
+      "file": "src/engine/core/idIntegrity.ts",
+      "symbol": "IdIntegrityViolation",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0545",
+      "file": "src/engine/core/idIntegrity.ts",
+      "symbol": "findDuplicateIds",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0547",
+      "file": "src/engine/core/idIntegrity.ts",
+      "symbol": "validateWorldIdIntegrity",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0544",
+      "file": "src/engine/core/idIntegrity.ts",
+      "symbol": "assertWorldIdIntegrity",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
     },
     {
       "id": "ORPH-0305",
@@ -739,17 +794,6 @@
       "id": "ORPH-0368",
       "file": "src/engine/generation/TalentPoolMaterialization.ts",
       "symbol": "materializeCandidateToRikishi",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0369",
-      "file": "src/engine/generation/TalentPoolStateService.ts",
-      "symbol": "injectRikishiAsCandidate",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
