@@ -80,8 +80,16 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/generation/SponsorGenerator.ts:getTierTraitRanges":
     "Sponsor tier trait range utility",
   "src/engine/generation/SponsorGenerator.ts:rollTier": "Sponsor tier rolling utility",
-  "src/engine/generation/TalentPoolStateService.ts:injectRikishiAsCandidate":
-    "Utility to inject rikishi as candidate; future recruitment wiring",
+  "src/engine/core/idIntegrity.ts:ViolationKind":
+    "ORPH-0548: idIntegrity audit API type — consumed by simulationInvariants/saveLoadIntegrity tests; test refs don't count as runtime references",
+  "src/engine/core/idIntegrity.ts:IdIntegrityViolation":
+    "ORPH-0546: idIntegrity audit API type — consumed by simulationInvariants/saveLoadIntegrity tests; test refs don't count as runtime references",
+  "src/engine/core/idIntegrity.ts:findDuplicateIds":
+    "ORPH-0545: idIntegrity audit API — consumed by simulationInvariants/saveLoadIntegrity tests; test refs don't count as runtime references",
+  "src/engine/core/idIntegrity.ts:validateWorldIdIntegrity":
+    "ORPH-0547: idIntegrity audit API — consumed by simulationInvariants/saveLoadIntegrity tests; test refs don't count as runtime references",
+  "src/engine/core/idIntegrity.ts:assertWorldIdIntegrity":
+    "ORPH-0544: idIntegrity audit API — consumed by simulationInvariants/saveLoadIntegrity tests; test refs don't count as runtime references",
   "src/engine/narrative/NarrativeProse.ts:hydrateDescriptor":
     "Narrative prose hydration utility",
   "src/engine/narrative/RivalryHeatService.ts:bumpTrigger":

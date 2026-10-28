@@ -959,7 +959,7 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
           "yusho": "r_ozeki",
           "junYusho": [],
           "hasBanzukeSnapshot": true,
-          "sortKey": "202501"
+          "sortKey": "20250101"
         }
       },
       "banzukeByBasho": {
@@ -2007,7 +2007,7 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
           "yusho": "r_m5",
           "junYusho": [],
           "hasBanzukeSnapshot": true,
-          "sortKey": "202501"
+          "sortKey": "20250101"
         }
       },
       "banzukeByBasho": {
@@ -3055,7 +3055,7 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
           "yusho": "r_m5",
           "junYusho": [],
           "hasBanzukeSnapshot": true,
-          "sortKey": "202501"
+          "sortKey": "20250101"
         }
       },
       "banzukeByBasho": {
