@@ -10,6 +10,7 @@ import { useGame } from "@/state/game/useGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Eye, UserPlus, Shield } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-shell/index";
+import { FirstVisitHint } from "@/components/onboarding/FirstVisitHint";
 import { PerceptionOverview } from "@/components/scouting/PerceptionOverview";
 
 export default function ScoutingPage() {
@@ -76,6 +77,7 @@ export default function ScoutingPage() {
           </TabsContent>
         </Tabs>
       </div>
+      <FirstVisitHint hintId="scouting" />
     </AppLayout>
   );
 }

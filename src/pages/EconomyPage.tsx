@@ -4,6 +4,7 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/page-shell/index";
+import { FirstVisitHint } from "@/components/onboarding/FirstVisitHint";
 import { useGame } from "@/state/game/useGame";
 import { SponsorsPanel } from "@/components/economy/SponsorsPanel";
 import { StableHealthPanel } from "@/components/stable/StableHealthPanel";
@@ -175,6 +176,7 @@ export default function EconomyPage() {
         {/* Info Note */}
         <EconomyInfoNote />
       </div>
+      <FirstVisitHint hintId="finances" />
     </AppLayout>
   );
 }

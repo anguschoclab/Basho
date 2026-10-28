@@ -1,6 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
-import { getHeya, getOyakataForHeya } from "@/engine/core/queries";
+import type { Heya } from "@/engine/types/heya";
 import { ELECTION_BOARD_SIZE } from "@/constants/engine/succession";
 import { CAREER_MILESTONES } from "@/constants/ui/career";
 
@@ -63,20 +63,20 @@ function electionScore(heya: { politicalCapital?: number; reputation?: number })
  * apply to the player too).
  */
 export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCareerProjection {
-  const heya = getHeya(world, heyaId);
-  const oyakata = getOyakataForHeya(world, heyaId);
+  const heya: Heya | undefined = world.heyas?.get(heyaId);
+  const oyakata = heya?.oyakataId ? world.oyakata?.get(heya.oyakataId) : undefined;
   const tenure = { ...ZERO_TENURE, ...oyakata?.tenure };
 
   const scores = new Map<Id, number>();
-  for (const h of world.heyas.values()) scores.set(h.id, electionScore(h));
-  const ranked = [...world.heyas.keys()].sort(
+  for (const h of world.heyas?.values() ?? []) scores.set(h.id, electionScore(h));
+  const ranked = [...(world.heyas?.keys() ?? [])].sort(
     (a, b) => (scores.get(b) ?? 0) - (scores.get(a) ?? 0) || (a < b ? -1 : 1)
   );
   const rank = Math.max(1, ranked.indexOf(heyaId) + 1);
   const myScore = scores.get(heyaId) ?? electionScore(heya ?? {});
   const boardCutoff = ranked[ELECTION_BOARD_SIZE - 1];
   const fifthScore = boardCutoff !== undefined ? scores.get(boardCutoff) ?? 0 : null;
-  const boardSeat = rank <= ELECTION_BOARD_SIZE && world.heyas.size >= 1;
+  const boardSeat = rank <= ELECTION_BOARD_SIZE && (world.heyas?.size ?? 0) >= 1;
 
   const values: Record<string, number> = {
     "first-sekitori": tenure.sekitoriProduced,

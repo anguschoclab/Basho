@@ -59,10 +59,12 @@ export function projectCornerAdvice(
   if (!opponent) return null;
 
   const stats = world.currentBasho?.standings?.get?.(playerId);
+  const heya = playerRikishi.heyaId ? world.heyas.get(playerRikishi.heyaId) : undefined;
   const recs = getAdvice({
     playerRikishi,
     opponent,
     bashoDay: day,
+    hasScoutingOffice: heya?.infrastructure?.scouting_office?.status === "active",
     playerRecord: stats ? { wins: stats.wins ?? 0, losses: stats.losses ?? 0 } : undefined,
   });
 

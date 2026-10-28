@@ -9,6 +9,40 @@ import {
 } from "@/constants/engine/generation";
 import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import type { BoutTactic } from "@/engine/types/combat";
+
+const TACTIC_LABELS: Record<BoutTactic, string> = {
+  STANDARD: "standard approach",
+  YOTSU_BELT: "belt game",
+  OSHI_THRUST: "thrusting attack",
+  HENKA: "sidestep gambit",
+  DEFENSIVE_PULL: "pull-and-counter plan",
+  ALL_OUT: "all-out assault",
+  NEKODAMASHI: "nekodamashi feint",
+};
+
+function beatPostBoutTacticVerdict(p: PbpPipeline): void {
+  const { result, east, west, world, push } = p;
+  if (!result.tactics || !world.playerHeyaId) return;
+  const side =
+    east.heyaId === world.playerHeyaId
+      ? "east"
+      : west.heyaId === world.playerHeyaId
+        ? "west"
+        : undefined;
+  if (!side) return;
+  const tactic = result.tactics[side];
+  if (!tactic || tactic === "STANDARD") return;
+  const won = result.winner === side;
+  const label = TACTIC_LABELS[tactic];
+  push(
+    won
+      ? `The ${label} call paid off — the corner's read was right.`
+      : `The ${label} call backfired; the opponent had the answer.`,
+    "post_bout",
+    []
+  );
+}
 
 function beatPostBoutReaction(p: PbpPipeline): void {
   const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
@@ -231,6 +265,7 @@ function beatPostBoutKachi(p: PbpPipeline): void {
 }
 
 export function narratePostBout(p: PbpPipeline): void {
+  beatPostBoutTacticVerdict(p);
   beatPostBoutReaction(p);
   beatPostBoutRecords(p);
   beatBothEven(p);

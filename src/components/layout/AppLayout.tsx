@@ -7,6 +7,7 @@ import { EventLogPanel } from "@/components/layout/EventLogPanel";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { MobileEventLog } from "@/components/layout/MobileEventLog";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useEventSounds } from "@/hooks/useEventSounds";
 import { openSaveLoadDialog } from "@/components/menu/saveLoadDialogSignal";
 import { MainContentPane } from "@/components/layout/MainContentPane";
 import { FloatingShortcuts } from "@/components/layout/FloatingShortcuts";
@@ -43,6 +44,7 @@ export function AppLayout({
     onToggleEventLog: () => setEventLogOpen((v) => !v),
     onOpenSaveLoad: openSaveLoadDialog,
   });
+  useEventSounds();
 
   // Don't show layout on menu screen
   if (state.phase === "menu") {

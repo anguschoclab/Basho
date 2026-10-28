@@ -17,6 +17,12 @@ export interface CornerAdviceContext {
   opponent: Rikishi;
   bashoDay?: number;
   playerRecord?: { wins: number; losses: number };
+  /**
+   * False when the heya lacks an active scouting_office — the corner has no
+   * reliable read on opponent tendencies, so advice degrades to generic
+   * strength-based guidance instead of a trend counter.
+   */
+  hasScoutingOffice?: boolean;
 }
 
 interface CornerRecommendation {
@@ -59,6 +65,17 @@ function pickCounterTactic(opponentFamily: TacticalFamily, player: Rikishi): Bou
 
 function buildRecommendation(ctx: CornerAdviceContext): CornerRecommendation {
   const { playerRikishi, opponent } = ctx;
+
+  if (ctx.hasScoutingOffice === false) {
+    const strongest = (playerRikishi.stats?.power ?? 50) >= 45 ? "OSHI_THRUST" : "STANDARD";
+    return {
+      tactic: strongest,
+      reasoning:
+        "No scouting office — opponent tendencies are unknown. Play to your rikishi's strength rather than a counter.",
+      riskLevel: strongest === "OSHI_THRUST" ? "high" : "low",
+    };
+  }
+
   const model = buildOpponentModel(opponent);
   const opponentFamily = dominantFamily(model);
   const tactic = pickCounterTactic(opponentFamily, playerRikishi);

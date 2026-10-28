@@ -10,6 +10,13 @@ import type { WorldState } from "@/engine/types/world";
  * when `!world.pendingCrisis` — once a crisis is set, subsequent required
  * decisions accumulate in `pendingDecisions` without being promoted. This
  * check ensures those accumulated decisions also halt the loop.
+ *
+ * "Advance until interesting" (career plan backlog #5): also halt when the
+ * world produced something *new* for the player this week — a freshly posted
+ * non-required decision (ids carry -y{year}-w{week}), a new rikishi request
+ * (createdWeek), or a major/headline event scoped to the player's stable or
+ * the whole world. Only same-week entries halt, so ignored items go stale
+ * instead of freezing every subsequent advance.
  */
 export function shouldHaltAdvance(world: WorldState): boolean {
   if (world.pendingCrisis) return true;
@@ -23,5 +30,19 @@ export function shouldHaltAdvance(world: WorldState): boolean {
   }
 
   const decisions = world.pendingDecisions ?? [];
-  return decisions.some((d) => d.required);
+  if (decisions.some((d) => d.required)) return true;
+
+  const weekTag = `-y${world.year}-w${world.week}`;
+  if (decisions.some((d) => d.id.endsWith(weekTag))) return true;
+
+  if ((world.pendingRikishiRequests ?? []).some((q) => q.createdWeek === world.week)) {
+    return true;
+  }
+
+  for (const e of world.events?.log ?? []) {
+    if (e.year !== world.year || e.week !== world.week) continue;
+    if (e.importance !== "major" && e.importance !== "headline") continue;
+    if (e.heyaId === world.playerHeyaId || e.scope === "world") return true;
+  }
+  return false;
 }

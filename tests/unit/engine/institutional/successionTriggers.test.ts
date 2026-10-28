@@ -85,14 +85,14 @@ describe("non-age succession triggers", () => {
     expect(succeeded(world, "h-npc", oya.id)).toBe(true);
   });
 
-  it("does NOT force-succeed the player's oyakata on non-age triggers", () => {
+  it("DOES force-succeed the player's oyakata on non-age triggers (player-stakes fix)", () => {
     const { world, oya } = worldWithHeya({
       heyaId: "h-player",
       isPlayer: true,
       tenure: { insolvencyEvents: 5, majorScandals: 4 },
       underperformanceBasho: 12,
     });
-    expect(succeeded(world, "h-player", oya.id)).toBe(false);
+    expect(succeeded(world, "h-player", oya.id)).toBe(true);
   });
 
   it("healthy NPC tenure triggers nothing", () => {

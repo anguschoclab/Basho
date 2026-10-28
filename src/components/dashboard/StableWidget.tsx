@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import type { PerceptionSnapshot } from "@/presenters/engineAccess";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { getCachedPerception } from "@/presenters/uiDigest";
-import { Building2, Heart, Shield, Users, Handshake, Zap } from "lucide-react";
+import { projectManagerCareer } from "@/presenters/projections/careerProjections";
+import { Building2, Heart, Shield, Users, Handshake, Zap, Landmark } from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
   inspired: "text-success",
@@ -105,8 +106,34 @@ export function StableWidget() {
             value={p.koenkaiBand}
           />
         </div>
+
+        {/* Manager career: JSA standing + next milestone */}
+        <CareerLine world={world} />
       </div>
     </BaseWidget>
+  );
+}
+
+function CareerLine({ world }: { world: Parameters<typeof projectManagerCareer>[0] | null }) {
+  const career = useMemo(
+    () => (world?.playerHeyaId ? projectManagerCareer(world, world.playerHeyaId) : null),
+    [world]
+  );
+  if (!career) return null;
+  const next = career.milestones.find((m) => !m.achieved);
+  const standing = career.election.chairman
+    ? "JSA Chairman"
+    : career.election.boardSeat
+      ? `JSA Board #${career.election.rank}`
+      : `JSA Rank ${career.election.rank}`;
+  return (
+    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground px-1">
+      <Landmark className="h-3 w-3 shrink-0" />
+      <span className="truncate">
+        {standing}
+        {next ? ` · Next: ${next.label} (${Math.round(next.progress * 100)}%)` : " · All milestones achieved"}
+      </span>
+    </div>
   );
 }
 

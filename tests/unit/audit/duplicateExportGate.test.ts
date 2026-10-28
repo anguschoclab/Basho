@@ -9,7 +9,7 @@
  * `src/constants/engine/` — two files may not declare the same exported
  * const. Intentional splits must be renamed; identical values must be merged.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeAll } from "vitest";
 import { scanConstDuplicates, scanDuplicateExports } from "../../../scripts/audit/duplicateExports";
 
 /**
@@ -34,8 +34,14 @@ const ALLOWED_DUPLICATES: Record<string, string> = {};
 const KNOWN_COLLISIONS: Record<string, string> = {};
 
 describe("duplicate-export gate", () => {
+  // Full-repo scan is ~5s — hoist so it runs once instead of per-assertion
+  // (keeps the file under the 10s fast-suite budget).
+  let collisions: ReturnType<typeof scanDuplicateExports>["collisions"];
+  beforeAll(() => {
+    collisions = scanDuplicateExports().collisions;
+  });
+
   it("no exported name is defined in multiple production files without an allowlist entry", () => {
-    const { collisions } = scanDuplicateExports();
     const violations = collisions.filter(
       (c) => !(c.name in ALLOWED_DUPLICATES) && !(c.name in KNOWN_COLLISIONS)
     );
@@ -50,7 +56,6 @@ describe("duplicate-export gate", () => {
   });
 
   it("no stale allowlist entries (resolved collisions must be removed)", () => {
-    const { collisions } = scanDuplicateExports();
     const live = new Set(collisions.map((c) => c.name));
     const stale = [...Object.keys(ALLOWED_DUPLICATES), ...Object.keys(KNOWN_COLLISIONS)].filter(
       (name) => !live.has(name)
