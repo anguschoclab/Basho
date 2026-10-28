@@ -334,6 +334,7 @@ function auditPooledArrayIds(ctx: AuditCtx): void {
   checkIdFieldInArray("pendingExhibitions", world.pendingExhibitions);
   checkIdFieldInArray("governanceLog", world.governanceLog);
   checkIdFieldInArray("myosekiMarket.history", world.myosekiMarket?.history);
+  checkIdFieldInArray("mediaState.headlines", world.mediaState?.headlines);
   checkIdFieldInArray("globalCup.bracket", world.globalCup?.bracket);
 }
 

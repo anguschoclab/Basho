@@ -20,6 +20,7 @@ export function generateGovernanceHeadline(args: {
   heyaId: string;
   templatePath: string; // e.g., 'institutional.welfare.watch_headline'
   severity?: HeadlineTier;
+  salt?: string; // caller discriminator so repeated same-template headlines mint distinct MH ids
 }): StateImpact {
   const { world, heyaId, templatePath, severity = "local" } = args;
   const builder = createImpactBuilder("generateGovernanceHeadline");
@@ -33,7 +34,14 @@ export function generateGovernanceHeadline(args: {
   };
 
   const week = world.week ?? 0;
-  const rng = rngForWorld(world, "media", `gov::${heyaId}::${templatePath}::${week}`);
+  // SeededRNG.uuid counters are per-instance — a heya can emit several
+  // same-template headlines in one day (e.g. repeated scandals), so the label
+  // needs the day and a caller salt or the MH ids collide.
+  const rng = rngForWorld(
+    world,
+    "media",
+    `gov::${heyaId}::${templatePath}::${week}::${world.dayIndexGlobal ?? 0}::${args.salt ?? ""}`
+  );
 
   // Resolve title from archive
   const { text: title } = BardEngine.resolve(rng, templatePath, context);

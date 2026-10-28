@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
 import { makeMockWorld } from "@tests/unit/engine/utils";
+import { nextBashoRecordId } from "@/engine/simulation/AutoSimService";
 
 /**
  * P4.3: AutoSim year boundary tests.
@@ -72,5 +73,30 @@ describe("P1.3: AutoSim year boundary (natural pipeline)", () => {
     expect(result.calendar?.month).toBe(1);
     expect(result.year).toBe(2026);
     expect(result.calendar?.currentDay).toBe(2);
+  });
+});
+
+describe("nextBashoRecordId — unique history record ids", () => {
+  it("returns the canonical id when no clash exists", () => {
+    expect(nextBashoRecordId([], "hatsu", 2026)).toBe("hatsu-2026");
+  });
+
+  it("returns a unique suffixed id when the canonical id is taken", () => {
+    const existing = [
+      { id: "hatsu-2026" },
+      { id: "haru-2026" },
+    ] as any[];
+    const id = nextBashoRecordId(existing, "hatsu", 2026);
+    expect(id).not.toBe("hatsu-2026");
+    expect(existing.some((e) => e.id === id)).toBe(false);
+  });
+
+  it("disambiguates repeatedly without colliding", () => {
+    const existing: any[] = [{ id: "hatsu-2026" }];
+    const id2 = nextBashoRecordId(existing, "hatsu", 2026);
+    existing.push({ id: id2 });
+    const id3 = nextBashoRecordId(existing, "hatsu", 2026);
+    const ids = ["hatsu-2026", id2, id3];
+    expect(new Set(ids).size).toBe(3);
   });
 });

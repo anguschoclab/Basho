@@ -133,6 +133,37 @@ function applyEntityUpdates(world: WorldState, entities: StateImpact["entities"]
   return result;
 }
 
+/**
+ * Appends items to `existing`, reminting any `.id` that collides with an
+ * entry already present (or with an earlier append in the same batch) by
+ * suffixing `-d${n}`. Deterministic: the suffix depends only on append order.
+ * Seeded RNG labels can legitimately mint the same id twice in one batch
+ * (e.g. two identical governance rulings for one heya on one day), and the
+ * world-level ID-integrity invariant forbids duplicates in these arrays.
+ */
+function appendDeduped<T>(existing: readonly T[] | undefined, items: readonly T[]): T[] {
+  const seen = new Set<string>();
+  for (const e of existing ?? []) {
+    const id = (e as { id?: unknown }).id;
+    if (typeof id === "string") seen.add(id);
+  }
+  const out: T[] = [...(existing ?? [])];
+  for (const item of items) {
+    const id = (item as { id?: unknown }).id;
+    if (typeof id !== "string" || !seen.has(id)) {
+      if (typeof id === "string") seen.add(id);
+      out.push(item);
+      continue;
+    }
+    let n = 1;
+    let nextId = `${id}-d${n}`;
+    while (seen.has(nextId)) nextId = `${id}-d${++n}`;
+    seen.add(nextId);
+    out.push({ ...(item as object), id: nextId } as T);
+  }
+  return out;
+}
+
 function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends"]): WorldState {
   if (!appends || appends.length === 0) return world;
 
@@ -151,12 +182,12 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
   for (const [field, items] of fieldItems) {
     switch (field) {
       case "history":
-        result = { ...result, history: [...(result.history || []), ...(items as never[])] };
+        result = { ...result, history: appendDeduped(result.history, items) as never };
         break;
       case "almanacSnapshots":
         result = {
           ...result,
-          almanacSnapshots: [...(result.almanacSnapshots || []), ...(items as never[])],
+          almanacSnapshots: appendDeduped(result.almanacSnapshots, items) as never,
         };
         break;
       case "basho.matches":
@@ -165,7 +196,7 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
             ...result,
             currentBasho: {
               ...result.currentBasho,
-              matches: [...(result.currentBasho.matches || []), ...(items as never[])],
+              matches: appendDeduped(result.currentBasho.matches, items) as never,
             },
           };
         }
@@ -173,11 +204,11 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
       case "governanceLog":
         result = {
           ...result,
-          governanceLog: [...(result.governanceLog || []), ...(items as never[])],
+          governanceLog: appendDeduped(result.governanceLog, items) as never,
         };
         break;
       case "awardLog":
-        result = { ...result, awardLog: [...(result.awardLog || []), ...(items as never[])] };
+        result = { ...result, awardLog: appendDeduped(result.awardLog, items) as never };
         break;
       case "myosekiMarket.history":
         if (result.myosekiMarket) {
@@ -185,7 +216,7 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
             ...result,
             myosekiMarket: {
               ...result.myosekiMarket,
-              history: [...(result.myosekiMarket.history || []), ...(items as never[])],
+              history: appendDeduped(result.myosekiMarket.history, items) as never,
             },
           };
         }
@@ -193,7 +224,7 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
       case "pendingExhibitions":
         result = {
           ...result,
-          pendingExhibitions: [...(result.pendingExhibitions || []), ...(items as never[])],
+          pendingExhibitions: appendDeduped(result.pendingExhibitions, items) as never,
         };
         break;
     }

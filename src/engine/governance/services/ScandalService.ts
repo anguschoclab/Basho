@@ -83,6 +83,7 @@ export function reportScandal(
     heyaId,
     templatePath: "institutional.governance.scandal",
     severity: severity === "critical" ? "national" : severity === "major" ? "national" : "local",
+    salt: reason,
   });
 
   // Merge headline impact safely via standard API

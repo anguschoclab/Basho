@@ -194,6 +194,25 @@ export function runAutoSim(
  * publishBanzukeUpdate (handles yokozuna promotion, careerHistory, council
  * warnings), and return the resolved world.
  */
+/**
+ * Unique id for an injected basho history record. The `${bashoName}-${year}`
+ * namespace is not unique-period-scoped: the calendar rolls `world.year` at
+ * the January boundary which lands mid-hatsu, so two same-named basho can
+ * legitimately run inside one world.year (observed live: hatsu ran twice in
+ * world.year 2026). Deterministically suffix `-r${n}` on collision.
+ */
+export function nextBashoRecordId(
+  history: ReadonlyArray<{ id?: string }>,
+  bashoName: BashoName,
+  year: number
+): string {
+  const base = `${bashoName}-${year}`;
+  if (!history.some((h) => h.id === base)) return base;
+  let n = 2;
+  while (history.some((h) => h.id === `${base}-r${n}`)) n++;
+  return `${base}-r${n}`;
+}
+
 function publishBanzukeForSim(
   currentWorld: WorldState,
   bashoResult: BashoSimResult,
@@ -228,7 +247,7 @@ function publishBanzukeForSim(
     history: [
       ...(currentWorld.history || []),
       {
-        id: `${bashoName}-${currentWorld.year}`,
+        id: nextBashoRecordId(currentWorld.history ?? [], bashoName, currentWorld.year),
         bashoName,
         year: currentWorld.year,
         bashoNumber: getBashoNumber(bashoName),
