@@ -98,8 +98,11 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
       continue;
     }
 
-    // WS5 — canon §16.1 non-age triggers (NPC stables only; the player's
-    // own manager is never force-replaced by an AI judgement).
+    // WS5 — canon §16.1 non-age triggers apply to every heya, including the
+    // player's: repeated insolvency, major scandals, or chronic
+    // underperformance force a board-mandated succession. The player keeps
+    // playing as the successor (dynasty frame); warnings surface via
+    // projectManagerCareer's successionRisk fractions.
     if (!oyakata.retirementYear) {
       const tenure = oyakata.tenure;
       const reason =

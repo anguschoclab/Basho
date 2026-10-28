@@ -5,8 +5,9 @@
  *   - repeated insolvency events (board no-confidence)
  *   - accumulated major scandals
  *   - chronic underperformance (consecutiveUnderperformanceBasho)
- * Non-age triggers apply to NPC heyas only — the player's own manager is
- * never force-replaced by an AI judgement call.
+ * Non-age triggers apply to every heya, including the player's — the
+ * board can force the player's manager to step down; the dynasty continues
+ * under the successor.
  */
 
 import { describe, it, expect } from "vitest";
