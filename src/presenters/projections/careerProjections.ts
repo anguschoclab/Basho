@@ -1,7 +1,12 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
 import type { Heya } from "@/engine/types/heya";
-import { ELECTION_BOARD_SIZE } from "@/constants/engine/succession";
+import {
+  ELECTION_BOARD_SIZE,
+  SUCCESSION_INSOLVENCY_EVENTS,
+  SUCCESSION_MAJOR_SCANDALS,
+  SUCCESSION_UNDERPERFORMANCE_BASHO,
+} from "@/constants/engine/succession";
 import { CAREER_MILESTONES } from "@/constants/ui/career";
 
 export interface CareerMilestone {
@@ -76,7 +81,10 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
   const myScore = scores.get(heyaId) ?? electionScore(heya ?? {});
   const boardCutoff = ranked[ELECTION_BOARD_SIZE - 1];
   const fifthScore = boardCutoff !== undefined ? scores.get(boardCutoff) ?? 0 : null;
-  const boardSeat = rank <= ELECTION_BOARD_SIZE && (world.heyas?.size ?? 0) >= 1;
+  // Mirrors runElections' slice(0, ELECTION_BOARD_SIZE): anyone ranked inside
+  // the board takes a seat, including short fields. A heyaId absent from the
+  // world can't be seated — the old `size >= 1` guard was tautological.
+  const boardSeat = rank <= ELECTION_BOARD_SIZE && ranked.includes(heyaId);
 
   const values: Record<string, number> = {
     "first-sekitori": tenure.sekitoriProduced,
@@ -87,6 +95,8 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
     chairman: rank === 1 ? 1 : 0,
     "legacy-tier": heya?.legacyTier === "dynasty" || heya?.legacyTier === "legend" ? 1 : 0,
   };
+  // Declaration order is presentation-meaningful (career progression), so the
+  // projector honors CAREER_MILESTONES order rather than alphabetical.
   const milestones: CareerMilestone[] = CAREER_MILESTONES.map((def) => {
     const value = values[def.id] ?? 0;
     return {
@@ -95,7 +105,7 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
       achieved: value >= def.target,
       progress: Math.min(1, value / def.target),
     };
-  }).sort((a, b) => a.id.localeCompare(b.id));
+  });
 
   return {
     tenure,
@@ -112,9 +122,10 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
     },
     milestones,
     successionRisk: {
-      insolvency: tenure.insolvencyEvents / 3,
-      scandals: tenure.majorScandals / 2,
-      underperformance: (heya?.consecutiveUnderperformanceBasho ?? 0) / 8,
+      insolvency: tenure.insolvencyEvents / SUCCESSION_INSOLVENCY_EVENTS,
+      scandals: tenure.majorScandals / SUCCESSION_MAJOR_SCANDALS,
+      underperformance:
+        (heya?.consecutiveUnderperformanceBasho ?? 0) / SUCCESSION_UNDERPERFORMANCE_BASHO,
     },
   };
 }

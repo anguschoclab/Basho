@@ -110,8 +110,10 @@ export function runElections(world: WorldState): StateImpact {
     });
   }
 
-  // Sort by score descending to find winners
-  candidates.sort((a, b) => b.score - a.score);
+  // Sort by score descending to find winners. Deterministic id tiebreak on
+  // exact-score ties — mirrors projectManagerCareer's projected standing so
+  // the election outcome can't disagree with the UI projection (V-T2).
+  candidates.sort((a, b) => b.score - a.score || (a.heyaId < b.heyaId ? -1 : 1));
   const elected = candidates.slice(0, 5); // Top 5 form the Board
 
   for (const candidate of elected) {

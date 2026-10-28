@@ -95,4 +95,37 @@ describe("getAdvice", () => {
     const ctx2 = makeCtx();
     expect(getAdvice(ctx1)).toEqual(getAdvice(ctx2));
   });
+
+  // T2-G4: scouting-gated advice — without an active scouting office the
+  // corner has no opponent-model read and must not leak the counter matrix.
+  it("hasScoutingOffice:false → strength-based advice, no counter-matrix read", () => {
+    const ctx = makeCtx({ hasScoutingOffice: false });
+    const advice = getAdvice(ctx);
+    expect(advice[0].suggestedAction).toBe("OSHI_THRUST"); // power 60 ≥ 45
+    expect(advice[0].detail).toContain("scouting office");
+    expect(advice[0].detail).not.toContain("counters it");
+    expect(advice[0].detail).not.toContain("Opponent trends");
+  });
+
+  it("hasScoutingOffice:false with low power → STANDARD, still no counter read", () => {
+    const ctx = makeCtx({
+      hasScoutingOffice: false,
+      playerRikishi: mockRikishi("p1", {
+        stats: {
+          power: 30, speed: 30, technique: 30, balance: 50, weight: 140,
+          stamina: 50, mental: 50, adaptability: 50, experience: 50, aggression: 50,
+        },
+      }),
+    });
+    const advice = getAdvice(ctx);
+    expect(advice[0].suggestedAction).toBe("STANDARD");
+    expect(advice[0].detail).toContain("scouting office");
+    expect(advice[0].detail).not.toContain("counters it");
+  });
+
+  it("hasScoutingOffice:true → counter-matrix recommendation surfaces", () => {
+    const ctx = makeCtx({ hasScoutingOffice: true });
+    const advice = getAdvice(ctx);
+    expect(advice[0].detail).toContain("counters it");
+  });
 });
