@@ -60,6 +60,7 @@ Doc-drift note: CLAUDE.md cites "~8,885 tests"; actual is 9,126. DISPROVED-as-st
 |---|-----|--------|
 | F1 | Day-8 nakabi path had zero characterization coverage — added before the #1152 refactor per test-first protocol (verified green on old code, stayed green on new) | `99acbaa5` |
 | F2 | #1152's inline `import()` type → top-level `import type` (style consistency) | `26d6ad17` |
+| F3 | **BUG (found via e2e console):** `AdvisorService.ts:341` emitted duplicate `"faction-pressure"` rec ids when ≥2 ichimons targeted the player → duplicate React keys (children can be dropped). Ids now `faction-pressure-${ichimon}`; regression test authored red-first | `ca9e01a1` |
 
 No BUG-class defects were found by the defect hunts — the codebase's own meta-gates and prior audit rounds have already burned down that class. The hunts did surface the DEBT list below.
 
@@ -72,6 +73,7 @@ No BUG-class defects were found by the defect hunts — the codebase's own meta-
 5. **CLAUDE.md drift** — test count "~8,885" vs actual 9,126; `tickOrchestrator` clone claim stale.
 6. **`engine/legacy/` naming** — directory name suggests dead code; it's the live dynasty/bloodline engine. Rename or annotate.
 7. **Header-doc gaps** — ~30 files lack header docs (notably `npc/handlers.ts`, `npc/ticks.ts`, `simulation/*`, `banzuke/*`).
+8. **BardEngine warning-spam** — `(NN%)` strings in resolved text trigger false-positive "token leakage or unresolved brackets" warnings (e2e console was flooded). The tokenizer should treat `%)`-adjacent parens as benign or narrow the heuristic.
 
 ## 6. Branch disposition
 
@@ -90,8 +92,8 @@ No BUG-class defects were found by the defect hunts — the codebase's own meta-
 - `bun run build` — PASS (post-merge rebuild).
 - `bun run test` — 986 files / 9,124 pass. One failure observed mid-run: `staleDocs.test.ts` flagged **this document** for missing a staleness annotation — fixed (notice added §header); test now 4/4 green.
 - `bun run test:slow` — **16 files / 77 tests ALL PASS** (19.3 min): knipGuard, orphan-audit, circularDependency, commandSurfaceCoverage, engineReviewerGate, lintStrictGate, determinismDoubleRun, simulationInvariants, headless-playthrough, yokozunaPromotion/presence, autoSimCoreLoop, junYusho, advanceCalendarDays, TournamentSimulator, bundleBudget.
-- `bun run test:perf` — (appended below; required since #1152 touched a perf path).
-- `bun run test:e2e:smoke` — (appended below).
+- `bun run test:perf` — 5 files / 14 tests PASS (272s).
+- `bun run test:e2e:smoke` — **4/4 PASS** (1.4m). Console surfaced F3 (fixed) plus cosmetic BardEngine "token leakage" warning-spam on `(NN%)` percentage strings — recorded as DEBT below.
 - Determinism grep post-merge — clean.
 
 ## 8. Ordering deviation (declared)
