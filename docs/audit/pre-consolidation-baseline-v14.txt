@@ -1,0 +1,47 @@
+PRE-CONSOLIDATION BASELINE — v14
+=================================
+Date: 2026-10-29
+HEAD: e44acaf401cc5fdbaf69f9337624bcc40c55ff5a (main)
+Working tree: clean
+
+--- Measured gates ---
+bun run type-check        : PASS (0 errors)
+bun run build             : PASS (45.68s; only >500kB chunk-size warnings)
+bun run lint:strict       : 0 errors, 37 warnings — ALL react-refresh/only-export-components
+                            in src/app/routes.tsx (pre-existing, single file)
+bun run test              : (full fast suite — see FINAL NUMBERS appended below)
+bun run test:slow         : pending Phase 6
+bun run test:perf         : pending Phase 6
+bun run test:e2e:smoke    : pending Phase 6
+
+--- Determinism / debt greps ---
+rg "Math\.random|Date\.now" src/engine  : 2 hits, both COMMENTS (calendar.ts:5,
+                                        RecruitmentController.ts:39) — engine clean
+rg "as any|as unknown" src              : 20 occurrences across 12 files
+                                        (audio.ts, boutProjections, holidayDigestProjections,
+                                        identity.ts, recapExhibitionProjections,
+                                        RecruitingTabSections, MigrationService,
+                                        collectionCodec, ImpactBuilder, idIntegrity,
+                                        BardEngine, performance.ts)
+rg "TODO|FIXME|HACK|XXX" src            : 11 occurrences
+
+--- PR #1151 snapshot disposition (T5, resolved in Phase 0) ---
+eventBus.characterization.test.ts on CLEAN MAIN: 20/20 PASS
+=> Hypothesis H2 CONFIRMED: snapshot on main is correct. The PR's regenerated
+   .snap (EV-* id churn) is environment noise — EV ids = hash(seed::EV::counter)
+   and a comment-only diff cannot alter them. DISPOSITION: drop the .snap hunk;
+   cherry-pick doc + .jules hunks only.
+
+--- Branch/PR inventory ---
+main @ e44acaf4 — clean
+origin/reorg/harmonize                                  : ancestor of main — DELETE-ONLY
+PR #1148 scribe-document-sequence-impacts               : ImpactResolver.ts JSDoc + .jules/scribe.md  — MERGE (claims verified at ImpactResolver.ts:788-806)
+PR #1149 bard-enrich-decline-narrative                  : post_bout.json +10 variants               — MERGE (LOSER token confirmed at postbout2.ts:305-317)
+PR #1150 mason-tighten-json-import-types                : BardEngine.ts cast removal + .jules/mason.md — MERGE pending branch type-check
+PR #1151 scribe-getheyaroster-contract                  : queries.ts JSDoc + .jules/scribe.md + .snap — CHERRY-PICK doc only (snap = noise, see above)
+PR #1152 bolt/perf-nakabi-loop                          : phase01_basho_bouts.ts loop + .jules/bolt.md — CHERRY-PICK (equivalent; fix inline import type)
+
+--- FINAL NUMBERS (appended after full suite) ---
+bun run test              : PASS — 986 files / 9,126 passed / 1 skipped (95.45s)
+                            (CLAUDE.md cites ~8,885 — doc drifted +241)
+engine size               : 449 .ts/.tsx files / 82,013 LOC
