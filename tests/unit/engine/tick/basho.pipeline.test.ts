@@ -278,3 +278,39 @@ describe("P1.2: Basho pipeline — phase does not run outside active_basho", () 
     expect(worldEngine.simulateBoutsForDay).not.toHaveBeenCalled();
   });
 });
+
+describe("P1.2: Basho pipeline — nakabi checkpoint on day 8", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("advanceOneDay from day 7 to 8 logs a nakabi_checkpoint event built from activeRikishiIds", () => {
+    const world = makeBashoWorld(7);
+
+    (worldEngine.simulateBoutsForDay as any).mockImplementation((w: WorldState) => ({
+      world: w,
+      results: [mockBoutResult],
+    }));
+
+    (worldEngine.advanceBashoDay as any).mockImplementation((w: WorldState) => ({
+      ...w,
+      currentBasho: {
+        ...w.currentBasho!,
+        day: (w.currentBasho?.day ?? 0) + 1,
+        currentDay: (w.currentBasho?.day ?? 0) + 1,
+      },
+    }));
+
+    const result = advanceOneDay(world);
+
+    const nakabi = (result.events?.log ?? []).find(
+      (e) => (e as { data?: { status?: string } }).data?.status === "nakabi_checkpoint"
+    ) as { data?: { day?: number; leaderId?: string; leaderWins?: number } } | undefined;
+
+    expect(nakabi).toBeDefined();
+    expect(nakabi?.data?.day).toBe(8);
+    // Both mock rikishi resolve through activeRikishiIds; r-east leads on wins.
+    expect(nakabi?.data?.leaderId).toBe("r-east");
+    expect(nakabi?.data?.leaderWins).toBe(3);
+  });
+});
