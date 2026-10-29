@@ -204,12 +204,22 @@
   "late_decline": [
     "The end feels near for %LOSER% — each bout is a battle against the clock.",
     "%LOSER% fights on, but the decline is undeniable now — how much longer can he go?",
-    "Once a champion, now a warrior fading — %LOSER% faces the twilight of his career."
+    "Once a champion, now a warrior fading — %LOSER% faces the twilight of his career.",
+    "The veteran %LOSER% looks to be running on empty as the years take their toll.",
+    "%LOSER% is relying on heart over body now, but heart wasn't enough today.",
+    "A performance that suggests %LOSER% may be approaching his final tournaments.",
+    "It's a struggle for %LOSER% to match the physical intensity of his younger self.",
+    "The late-career fade is becoming more apparent for %LOSER% with every defeat."
   ],
   "twilight": [
     "The dohyo may not see %LOSER% much longer — this loss stings of finality.",
     "%LOSER% gave everything, but the twilight years are unforgiving.",
-    "A somber moment for %LOSER% — the career's final chapter may be approaching."
+    "A somber moment for %LOSER% — the career's final chapter may be approaching.",
+    "The sun is setting on %LOSER%'s career — the fighting spirit remains, but the flesh is weak.",
+    "%LOSER% steps off the dohyo looking like a man who knows the end is near.",
+    "It's hard to watch a proud warrior like %LOSER% succumb to the inevitable twilight of his time.",
+    "The curtain is drawing to a close for %LOSER% — a career defined by battles now faces its toughest foe: time.",
+    "One wonders if this is one of the final times we'll see %LOSER% grace the dohyo."
   ],
   "defying_age": [
     "Defying age itself — %WINNER% proves the old warrior still has it!",
