@@ -25,7 +25,7 @@ type DomainMap = Record<string, unknown>;
 
 type VocabLevel = { adjectives: string[]; verbs: string[]; adverbs: string[] };
 type VocabTable = Record<string, VocabLevel>;
-const vocabulary = vocabularyData as unknown as VocabTable;
+const vocabulary = vocabularyData as VocabTable;
 
 function pickVocabWord(
   type: "adjectives" | "verbs" | "adverbs",
@@ -46,7 +46,7 @@ function pickVocabWord(
  * The Bard Engine v2.2: A Data-Driven Reactive Narrative System.
  * Ref: Phase 2 exhaustive refactor.
  */
-const registry = registryData as unknown as Record<string, Record<string, RegistryEntry>>;
+const registry = registryData as Record<string, Record<string, RegistryEntry>>;
 
 let domainsPromise: Promise<DomainMap> | null = null;
 let domainsData: DomainMap | null = null;
