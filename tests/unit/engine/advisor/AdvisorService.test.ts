@@ -124,3 +124,23 @@ describe("AdvisorService.generateRecommendations — duplicate rikishiIds (targe
     expect(injuryWave).toBeUndefined();
   });
 });
+
+describe("AdvisorService.generateRecommendations — recommendation id uniqueness", () => {
+  it("emits unique ids when multiple ichimon factions target the player (React key regression)", () => {
+    const heya = MockFactory.createHeya("h1", {});
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+      playerHeyaId: "h1",
+      factionPostures: {
+        Dewanoumi: { posture: "coordinated_pressure", targetHeyaId: "h1", setWeek: 1 },
+        Nishonoseki: { posture: "coordinated_pressure", targetHeyaId: "h1", setWeek: 1 },
+      },
+    });
+
+    const recs = generateRecommendations(world, "h1");
+    const ids = recs.map((r) => r.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    // Both factions should each produce a recommendation — not collapse into one.
+    expect(recs.filter((r) => r.id.startsWith("faction-pressure")).length).toBe(2);
+  });
+});

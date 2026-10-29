@@ -340,7 +340,7 @@ function intelRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
     if (fp?.posture === "coordinated_pressure" && fp.targetHeyaId === heyaId) {
       recs.push(
         rec(
-          "faction-pressure",
+          `faction-pressure-${ichimon}`,
           "governance",
           "high",
           "Ichimon coordinating pressure",
