@@ -324,7 +324,10 @@ export function interpolate(text: string, context: NarrativeContext): string {
     return result.slice(0, MAX_INTERPOLATED_LENGTH) + "…[truncated]";
   }
 
-  if (result.includes("%") || result.includes("{{") || result.includes("}}")) {
+  // Flag only genuinely-unresolved tokens (%UPPER_SNAKE% pairs or {{...}}) —
+  // a bare '%' like "(44%)" is legitimate output text, not leakage.
+  const UNRESOLVED_TOKEN = /%[A-Z][A-Z0-9_]*%/;
+  if (UNRESOLVED_TOKEN.test(result) || result.includes("{{") || result.includes("}}")) {
     const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
     const isTest =
       typeof process !== "undefined" && (process.env?.NODE_ENV === "test" || process.env?.CI);
