@@ -128,7 +128,7 @@ describe("AdvisorService — WS7 league intel", () => {
     };
 
     const recs = generateRecommendations(world, "h-player");
-    const warn = recs.find((r) => r.id === "faction-pressure");
+    const warn = recs.find((r) => r.id === "faction-pressure-Dewanoumi");
     expect(warn).toBeDefined();
     expect(warn!.priority === "high" || warn!.priority === "critical").toBe(true);
   });
