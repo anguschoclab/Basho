@@ -362,3 +362,30 @@ describe("projectRikishi - agency disposition (loyaltyBand)", () => {
     expect(projected.loyaltyBand).toBeUndefined();
   });
 });
+
+describe("projectRikishi - division records", () => {
+  const baseWorld = {
+    year: 2020,
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    rikishi: new Map(),
+  } as unknown as WorldState;
+
+  it("surfaces the per-division W-L ledger tracked by boutResultApplier", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      divisionRecords: {
+        makuuchi: { wins: 42, losses: 33 },
+        juryo: { wins: 55, losses: 20 },
+        makushita: { wins: 30, losses: 12 },
+        sandanme: { wins: 10, losses: 4 },
+        jonidan: { wins: 6, losses: 1 },
+        jonokuchi: { wins: 7, losses: 0 },
+      },
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.divisionRecords?.makuuchi).toEqual({ wins: 42, losses: 33 });
+    expect(projected.divisionRecords?.jonokuchi).toEqual({ wins: 7, losses: 0 });
+  });
+});

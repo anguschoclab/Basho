@@ -109,5 +109,6 @@ export function toCareerDTO(r: Rikishi): RikishiCareerDTO {
     streakLabel: streakInfo.label,
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
     avgRankLabel: calculateAvgRank(careerHistory),
+    divisionRecords: r.divisionRecords,
   };
 }

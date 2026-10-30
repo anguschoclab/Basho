@@ -6,6 +6,7 @@
  */
 
 import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
 import type { Rank, Division, Side } from "@/engine/types/banzuke";
 import type { Style, CombatArchetype } from "@/engine/types/combat";
 import type { RikishiDescriptor, PotentialBand } from "@/engine/narrative/descriptorBands";
@@ -102,6 +103,8 @@ export interface RikishiCareerDTO {
   streakLabel: string;
   winPercentage: number;
   avgRankLabel: string;
+  /** Per-division career W-L ledger (engine-tracked, all six divisions). */
+  divisionRecords?: Rikishi["divisionRecords"];
 }
 
 /** Perceived stat labels (UI display) */

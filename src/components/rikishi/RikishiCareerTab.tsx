@@ -11,8 +11,10 @@ import type {
   NarrativeHighlight,
   PromotionHistoryEntry,
 } from "@/presenters/engineAccess";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { CareerProgressionChart } from "@/components/rikishi/career/CareerProgressionChart";
 import { CareerEarningsCard, type CareerEconomics } from "@/components/rikishi/career/CareerEarningsCard";
+import { DivisionRecordsCard } from "@/components/rikishi/career/DivisionRecordsCard";
 import { BashoHistoryTable } from "@/components/rikishi/career/BashoHistoryTable";
 import { NotableBouts } from "@/components/rikishi/career/NotableBouts";
 import {
@@ -39,6 +41,7 @@ interface RikishiCareerTabProps {
     cumulativeEarnings: number;
     bashoEarnings: number;
   }>;
+  divisionRecords?: Rikishi["divisionRecords"];
   economics?: CareerEconomics;
 }
 
@@ -50,6 +53,7 @@ export function RikishiCareerTab({
   narrativeHighlights,
   promotionHistory,
   earningsProgressionData,
+  divisionRecords,
   economics,
 }: RikishiCareerTabProps) {
   return (
@@ -59,6 +63,9 @@ export function RikishiCareerTab({
 
       {/* Career Earnings */}
       <CareerEarningsCard earningsProgressionData={earningsProgressionData} economics={economics} />
+
+      {/* Per-division career record */}
+      <DivisionRecordsCard records={divisionRecords} />
 
       <BashoHistoryTable history={history} />
 

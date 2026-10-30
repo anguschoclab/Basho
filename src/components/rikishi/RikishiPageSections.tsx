@@ -196,6 +196,7 @@ export function RikishiProfileBody({
               narrativeHighlights={undefined}
               promotionHistory={undefined}
               earningsProgressionData={earningsProgressionData}
+              divisionRecords={rikishi.divisionRecords}
               economics={{
                 totalEarnings: rikishi.totalEarnings,
                 cash: rikishi.cash,
