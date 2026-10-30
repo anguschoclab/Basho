@@ -74,12 +74,17 @@ describe("phase01_week_health", () => {
       rikishiMap.set("r1", r);
 
       const heyasMap = new Map<string, any>();
-      heyasMap.set("heya-1", makeHeya("heya-1"));
+      heyasMap.set("heya-1", { ...makeHeya("heya-1"), staffIds: ["doc-1"] });
 
       const w = MockFactory.createWorld({
         playerHeyaId: "heya-1",
         rikishi: rikishiMap,
         heyas: heyasMap,
+        // Staffed medical post keeps staffBonuses.medical at baseline —
+        // vacant posts now apply the P2 recovery penalty.
+        staff: new Map([
+          ["doc-1", MockFactory.createStaff("doc-1", { role: "medical_staff", heyaId: "heya-1" })],
+        ]),
         activeRikishiIds: new Set(["r1"]),
         year: 2026,
         week: 1,

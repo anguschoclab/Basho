@@ -20,6 +20,7 @@ import { applyRequestOutcome } from "@/engine/npc/agency/requests";
 import type { RikishiRequestType } from "@/engine/npc/agency/types";
 import { resolveChainStage } from "@/engine/events/chains/chainService";
 import { resolveKoenkaiDemand } from "@/engine/economy/koenkaiDemands";
+import { enqueueDecisions } from "@/engine/npc/decision/decisionQueue";
 
 export interface LoopDecision {
   id: string;
@@ -249,7 +250,7 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
   const newDecisions = detectDueDecisions(world);
 
   if (newDecisions.length > 0) {
-    builder.updateWorldField("pendingDecisions", [...existing, ...newDecisions]);
+    builder.updateWorldField("pendingDecisions", enqueueDecisions(existing, newDecisions));
   }
 
   const blocking = [...existing, ...newDecisions].filter((d) => d.required);

@@ -124,12 +124,12 @@ describe("EventLogPanel AI events", () => {
         }}
       />
     );
-    for (const label of ["All", "Basho", "Match", "Training", "Injury", "Economy", "Career"]) {
+    for (const label of ["All", "My Stable", "World", "Tournament", "Rivals"]) {
       expect(screen.getByLabelText(`Filter by ${label}`)).toBeDefined();
     }
     expect(screen.getByLabelText("Filter by All").getAttribute("aria-pressed")).toBe("true");
-    fireEvent.click(screen.getByLabelText("Filter by Training"));
-    expect(screen.getByLabelText("Filter by Training").getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByLabelText("Filter by Tournament"));
+    expect(screen.getByLabelText("Filter by Tournament").getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByLabelText("Filter by All").getAttribute("aria-pressed")).toBe("false");
   });
 

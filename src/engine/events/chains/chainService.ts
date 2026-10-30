@@ -28,6 +28,8 @@ import { getHeya, getPlayerHeya, getRikishiAnywhere } from "@/engine/core/querie
 const CHAIN_RNG = "narrative" as const;
 import { clamp } from "@/engine/utils/math";
 import { getChainDef, EVENT_CHAIN_REGISTRY } from "@/engine/events/chains/chainRegistry";
+import { enqueueDecisions } from "@/engine/npc/decision/decisionQueue";
+import type { LoopDecision } from "@/engine/npc/decision/LoopDecisionEngine";
 import type {
   ActiveChain,
   ChainEffects,
@@ -146,6 +148,7 @@ export function tickWeekEventChains(world: WorldState): StateImpact {
   }
 
   // ── Surface due stages as chain_stage pendingDecisions ────────────────────
+  const newStageDecisions: LoopDecision[] = [];
   for (const [instanceId, chain] of Object.entries(activeChains)) {
     if (chain.nextStageDueWeek > currentWeek) continue;
     const def = getChainDef(chain.chainId);
@@ -158,13 +161,17 @@ export function tickWeekEventChains(world: WorldState): StateImpact {
       continue;
     }
     const decisionId = chainDecisionId(instanceId);
-    if (pendingDecisions.some((d) => d.id === decisionId)) continue;
+    if (
+      pendingDecisions.some((d) => d.id === decisionId) ||
+      newStageDecisions.some((d) => d.id === decisionId)
+    )
+      continue;
 
     const ctx = chainContext(world, chain);
     const title = resolveText(world, stage.titlePath, ctx, `t_${instanceId}_${chain.stageIdx}`);
     const summary = resolveText(world, stage.summaryPath, ctx, `s_${instanceId}_${chain.stageIdx}`);
     const total = def.stages.length;
-    pendingDecisions.push({
+    newStageDecisions.push({
       id: decisionId,
       type: "chain_stage",
       description: `[Chapter ${chain.stageIdx + 1}/${total}] ${title} — ${summary}`,
@@ -211,7 +218,10 @@ export function tickWeekEventChains(world: WorldState): StateImpact {
   }
 
   builder.updateWorldField("activeChains", activeChains);
-  builder.updateWorldField("pendingDecisions", pendingDecisions);
+  builder.updateWorldField(
+    "pendingDecisions",
+    enqueueDecisions(pendingDecisions, newStageDecisions)
+  );
   return builder.build();
 }
 

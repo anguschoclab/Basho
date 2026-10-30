@@ -13,6 +13,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { StateImpact } from "@/engine/core/StateImpact";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getCrisisRegistry } from "@/engine/narrative/crisisRegistry";
+import { deriveStableHarmony, HARMONY_CRISIS_WEIGHT } from "@/engine/welfare/harmony";
 
 import { ActiveCrisis } from "@/engine/types/crises";
 
@@ -31,7 +32,11 @@ function checkForWeeklyCrisis(world: WorldState): StateImpact {
   if (world._autonomousSim) return builder.build();
   const rng = RNGRegistry.getSystemRNG(world, "narrative", `crisis_roll_${world.week}`);
 
-  if (rng.next() > TRIGGER_PROBABILITY) return builder.build();
+  // P2: stable harmony weights the weekly roll — discord breeds crises.
+  const harmonyWeight = world.playerHeyaId
+    ? HARMONY_CRISIS_WEIGHT[deriveStableHarmony(world, world.playerHeyaId).band]
+    : 1;
+  if (rng.next() > TRIGGER_PROBABILITY * harmonyWeight) return builder.build();
 
   // Select a random event from the registry
   const event = rollEvent(world);

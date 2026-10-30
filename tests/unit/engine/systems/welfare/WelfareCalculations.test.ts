@@ -6,6 +6,7 @@ import {
 } from "@/engine/welfare/WelfareCalculations";
 import { clearQueryCaches } from "@/engine/core/queries";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
+import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
@@ -69,6 +70,7 @@ function setupHeya(
 ): { world: WorldState; heya: Heya } {
   const heya = makeMockHeya(heyaId, {
     rikishiIds: rikishiList.map((r) => r.id),
+    staffIds: ["chef-1"],
     ...heyaOverrides,
   });
   const rikishiMap = toIdMap(rikishiList);
@@ -76,6 +78,11 @@ function setupHeya(
     rikishi: rikishiMap,
     ...worldOverrides,
   });
+  // Staffed nutritionist keeps dietMult ~1.15 — diet expectations unchanged.
+  world.staff.set(
+    "chef-1",
+    MockFactory.createStaff("chef-1", { role: "nutritionist", heyaId })
+  );
   world.heyas.set(heyaId, heya);
   return { world: world as WorldState, heya: heya as Heya };
 }

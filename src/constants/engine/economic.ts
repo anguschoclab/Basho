@@ -127,6 +127,15 @@ export const FACILITY_UPKEEP = {
 export const STAFF_UPKEEP_PER_MEMBER = 6_000;
 
 /**
+ * Vacant-post penalties (P2): a capped staff post with zero filled is worse
+ * than an empty payroll — the stable committed a slot it isn't covering.
+ * Applied as multipliers on the corresponding getHeyaStaffBonuses fields.
+ */
+export const STAFF_VACANT_SCOUT_PENALTY = 0.75;
+export const STAFF_VACANT_NUTRITION_PENALTY = 0.8;
+export const STAFF_VACANT_MEDICAL_PENALTY = 0.75;
+
+/**
  * Fixed weekly operating overhead (¥) — unavoidable heya administrative cost
  * (utilities, groundskeeping, association dues) that is NOT clamped away by the
  * solvency guard. Intentional sink so net can go negative for thin-income stables.

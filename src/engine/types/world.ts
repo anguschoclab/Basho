@@ -82,6 +82,8 @@ export interface ActiveModifiers {
   financialPenalty: boolean;
   /** True when a player heya rikishi won yusho in most recent basho. Adds +0.15 to training gains. */
   moraleBoost: boolean;
+  /** Stable-harmony training multiplier (P2). Defaults to 1 when absent. */
+  harmonyMult?: number;
 }
 
 /** Mutation ledger produced during a single pipeline run. */

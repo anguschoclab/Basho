@@ -19,8 +19,11 @@ import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
 import { SparringPanel } from "@/components/training/SparringPanel";
 import { WeightJourneysSection } from "@/components/training/WeightJourneysSection";
-import { projectAdvisorRecommendations } from "@/presenters/projections/advisorProjections";
-import { getPlayerHeya, calculateGains } from "@/presenters/engineAccess";
+import {
+  CoachAdvisoryPanel,
+  ProjectedGainsPanel,
+} from "@/components/training/TrainingAdvisorySections";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { useTrainingState } from "@/hooks/useTrainingState";
 import { useTrainingDerived } from "@/hooks/useTrainingDerived";
 
@@ -73,30 +76,7 @@ export default function TrainingPage() {
         />
 
         {/* W10/V21 — advisor recommendations surface (coach advisory notes) */}
-        {playerHeyaId && (() => {
-          const notes = projectAdvisorRecommendations(world, playerHeyaId).slice(0, 4);
-          if (notes.length === 0) return null;
-          return (
-            <section className="rounded-md border border-border/50 p-4 space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Coach Advisory
-              </h3>
-              <ul className="space-y-1.5 text-xs">
-                {notes.map((n) => (
-                  <li key={n.id} className="flex gap-2">
-                    <span className="shrink-0 font-semibold text-primary uppercase text-[10px] pt-0.5 w-16">
-                      {n.priority}
-                    </span>
-                    <span>
-                      <span className="font-medium">{n.title}</span>
-                      {n.detail ? ` — ${n.detail}` : ""}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })()}
+        <CoachAdvisoryPanel world={world} playerHeyaId={playerHeyaId} />
 
         {/* P2 Phase O: Weekly Drill Scheduler */}
         <WeeklyDrillPlanner
@@ -126,39 +106,7 @@ export default function TrainingPage() {
         />
 
         {/* P3 — predicted weekly gains preview via production calculateGains */}
-        {(() => {
-          const am = world.transientContext?.activeModifiers;
-          if (!am) return null;
-          const raw = [...rikishiList]
-            .map((r) => {
-              const raw_r = world.rikishi.get(r.id);
-              if (!raw_r) return null;
-              const g = calculateGains(raw_r, am, trainingState.activeProfile, undefined, world.year);
-              const top = Object.entries(g).sort((a, b) => b[1] - a[1])[0];
-              return top ? { name: r.shikona, stat: top[0], gain: top[1] } : null;
-            })
-            .filter((x): x is { name: string; stat: string; gain: number } => !!x && x.gain > 0)
-            .slice(0, 6);
-          if (raw.length === 0) return null;
-          return (
-            <section className="rounded-md border border-border/50 p-4 space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Projected Weekly Gains
-              </h3>
-              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                {raw.map((r) => (
-                  <li key={r.name}>
-                    <span className="font-medium">{r.name}</span>
-                    <span className="text-muted-foreground">
-                      {" "}
-                      · {r.stat} +{r.gain.toFixed(2)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })()}
+        <ProjectedGainsPanel world={world} rikishiList={rikishiList} trainingState={trainingState} />
 
         <ReferenceLegend />
       </div>

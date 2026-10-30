@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
-import { deriveStableHarmony, harmonyBandFor } from "@/engine/welfare/harmony";
+import {
+  deriveStableHarmony,
+  harmonyBandFor,
+  HARMONY_TRAINING_MULT,
+  HARMONY_CRISIS_WEIGHT,
+} from "@/engine/welfare/harmony";
 
 function worldWith(morale: number, welfareRisk: number, scandal: number) {
   const heya = MockFactory.createHeya("h1");
@@ -36,5 +41,19 @@ describe("deriveStableHarmony (P2)", () => {
   it("deterministic — same inputs same score", () => {
     const w = worldWith(55, 40, 20);
     expect(deriveStableHarmony(w, "h1").score).toBe(deriveStableHarmony(w, "h1").score);
+  });
+
+  it("harmony feeds the training context — discord drags, harmony lifts", () => {
+    expect(HARMONY_TRAINING_MULT.hostile).toBeLessThan(1);
+    expect(HARMONY_TRAINING_MULT.uneasy).toBeLessThan(1);
+    expect(HARMONY_TRAINING_MULT.steady).toBe(1);
+    expect(HARMONY_TRAINING_MULT.harmonious).toBeGreaterThan(1);
+  });
+
+  it("harmony weights the crisis roll — discord breeds crises", () => {
+    expect(HARMONY_CRISIS_WEIGHT.hostile).toBeGreaterThan(1);
+    expect(HARMONY_CRISIS_WEIGHT.uneasy).toBeGreaterThan(1);
+    expect(HARMONY_CRISIS_WEIGHT.steady).toBe(1);
+    expect(HARMONY_CRISIS_WEIGHT.harmonious).toBeLessThan(1);
   });
 });

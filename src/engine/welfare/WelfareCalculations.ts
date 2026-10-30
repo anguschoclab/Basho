@@ -16,6 +16,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { WelfareState } from "@/engine/types/economy";
 import { EntityCollection } from "@/engine/core/EntityCollection";
+import { getHeyaStaffBonuses } from "@/engine/economy/staff";
 import {
   INJURY_PRESSURE_SERIOUS,
   INJURY_PRESSURE_MODERATE,
@@ -105,13 +106,18 @@ export function calculateWeeklyWelfareDelta(
     reasons.push("serious_injuries+2");
   }
 
+  // Diet outcomes scale with nutrition-staff quality (getHeyaStaffBonuses.diet);
+  // a vacant nutritionist post drags the multiplier below baseline.
+  const dietMult = getHeyaStaffBonuses(world, heya.id).diet;
   const diet = state.activeDiet || "maintenance";
   if (diet === "austerity") {
-    delta += WELFARE_AUSTERITY_DIET_BONUS;
-    reasons.push("austerity_diet+2");
+    const austerityDelta = Math.round(WELFARE_AUSTERITY_DIET_BONUS / dietMult);
+    delta += austerityDelta;
+    reasons.push(`austerity_diet+${austerityDelta}`);
   } else if (diet === "premium") {
-    delta -= WELFARE_PREMIUM_DIET_REDUCTION;
-    reasons.push("premium_diet-1");
+    const premiumDelta = Math.round(WELFARE_PREMIUM_DIET_REDUCTION * dietMult);
+    delta -= premiumDelta;
+    reasons.push(`premium_diet-${premiumDelta}`);
   }
 
   if (negligenceCount > 0) {

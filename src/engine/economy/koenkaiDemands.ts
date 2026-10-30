@@ -13,6 +13,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getPlayerHeya } from "@/engine/core/queries";
+import { enqueueDecisions } from "@/engine/npc/decision/decisionQueue";
 import { clamp } from "@/engine/utils/math";
 
 export type KoenkaiDemandKind = "gala" | "tickets" | "appearance" | "kesho_fund";
@@ -119,8 +120,7 @@ export function tickMonthlyKoenkaiDemands(world: WorldState): StateImpact {
   if (pending.some((d) => d.id === id || d.type === "koenkai_demand")) return builder.build();
 
   const def = KOENKAI_DEMANDS[kind];
-  builder.updateWorldField("pendingDecisions", [
-    ...pending,
+  builder.updateWorldField("pendingDecisions", enqueueDecisions(pending, [
     {
       id,
       type: "koenkai_demand",
@@ -140,7 +140,7 @@ export function tickMonthlyKoenkaiDemands(world: WorldState): StateImpact {
         },
       ],
     },
-  ]);
+  ]));
   return builder.build();
 }
 

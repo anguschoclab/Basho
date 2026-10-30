@@ -38,6 +38,7 @@ import {
 } from "@/constants/engine/rikishi";
 import { getHeya } from "@/engine/core/queries";
 import { extractTrainingModifiers } from "@/engine/training/TrainingMath";
+import { deriveStableHarmony, HARMONY_TRAINING_MULT } from "@/engine/welfare/harmony";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -48,6 +49,12 @@ export function phase02_context(world: WorldState): StateImpact {
 
   const financialPenalty = (playerHeya?.funds ?? 0) < 0;
   const moraleBoost = checkMoraleBoost(world);
+
+  // P2: stable harmony feeds the training context — discord drags gains,
+  // harmony lifts them.
+  const harmonyMult = playerHeyaId
+    ? HARMONY_TRAINING_MULT[deriveStableHarmony(world, playerHeyaId).band]
+    : 1;
 
   // Extract raw training modifier components (facility, nutrition, degeiko, style drift)
   const { facilityGrowthMult, nutritionMult, degeikoMult, styleDriftMults } =
@@ -64,6 +71,7 @@ export function phase02_context(world: WorldState): StateImpact {
     recoveryMultiplier,
     financialPenalty,
     moraleBoost,
+    harmonyMult,
   };
 
   const deltas = preserveRevenueExpenses(world);

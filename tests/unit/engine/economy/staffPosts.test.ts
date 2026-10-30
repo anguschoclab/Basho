@@ -10,7 +10,12 @@ import {
   tickMonthlyStaffContracts,
   skillFromBands,
 } from "@/engine/economy/staffPosts";
-import { fireStaff } from "@/engine/economy/staff";
+import { fireStaff, getHeyaStaffBonuses } from "@/engine/economy/staff";
+import {
+  STAFF_VACANT_SCOUT_PENALTY,
+  STAFF_VACANT_NUTRITION_PENALTY,
+  STAFF_VACANT_MEDICAL_PENALTY,
+} from "@/constants/engine/economic";
 import type { Staff } from "@/engine/types/staff";
 
 function staff(over: Partial<Staff> = {}): Staff {
@@ -120,5 +125,31 @@ describe("staff posts (P2)", () => {
   it("skillFromBands maps bands to 0-10", () => {
     expect(skillFromBands({ primary: "monstrous" })).toBe(10);
     expect(skillFromBands({ primary: "feeble" })).toBe(1);
+  });
+
+  it("vacant scout/nutritionist/medical posts drag bonuses below baseline", () => {
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", MockFactory.createHeya("h1", { staffIds: [] })]]),
+    });
+    const b = getHeyaStaffBonuses(world, "h1");
+    expect(b.scouting).toBeCloseTo(STAFF_VACANT_SCOUT_PENALTY, 5);
+    expect(b.diet).toBeCloseTo(STAFF_VACANT_NUTRITION_PENALTY, 5);
+    expect(b.medical).toBeCloseTo(STAFF_VACANT_MEDICAL_PENALTY, 5);
+    expect(b.technique).toBe(1);
+    expect(b.conditioning).toBe(1);
+  });
+
+  it("filling a post lifts the vacant-post penalty", () => {
+    const s = staff({ role: "scout" });
+    const heya = MockFactory.createHeya("h1", { staffIds: ["st1"] });
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+      staff: new Map([["st1", s]]),
+    });
+    const b = getHeyaStaffBonuses(world, "h1");
+    // strong-band scout: 1 + 0.15 = 1.15 (no vacant penalty)
+    expect(b.scouting).toBeGreaterThan(1);
+    // medical + diet posts still vacant
+    expect(b.medical).toBeCloseTo(STAFF_VACANT_MEDICAL_PENALTY, 5);
   });
 });

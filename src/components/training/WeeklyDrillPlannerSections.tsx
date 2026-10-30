@@ -37,7 +37,7 @@ import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { FATIGUE_LABELS, toFatigueBand } from "@/presenters/uiDigest";
 import type { DrillType } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types/index";
-import { DRILL_METADATA } from "@/constants/engine/training";
+import { DRILL_METADATA, DRILL_EFFECTS } from "@/constants/engine/training";
 import { DAYS, type useDrillPlanner } from "@/hooks/useDrillPlanner";
 
 type Planner = ReturnType<typeof useDrillPlanner>;
@@ -51,6 +51,18 @@ const DRILL_ICONS: Record<DrillType, ReactNode> = {
   shiko: <Activity className="h-3 w-3" />,
   none: <Coffee className="h-3 w-3" />,
 };
+
+/** Drill→stat hint (P3): compact "+power +stamina · fatigue 4.5" line. */
+function drillStatHint(drill: string): string {
+  const e = DRILL_EFFECTS[drill];
+  if (!e) return "";
+  const stats = Object.entries(e)
+    .filter(([k, v]) => k !== "fatigue" && typeof v === "number" && v > 0)
+    .map(([k]) => `+${k}`);
+  const fatigue = e.fatigue;
+  const fatigueTxt = fatigue < 0 ? `rest ${Math.abs(fatigue)}` : `fatigue ${fatigue}`;
+  return `${stats.length > 0 ? `${stats.join(" ")} · ` : ""}${fatigueTxt}`;
+}
 
 const DRILL_OPTIONS_BATCH: ReactNode[] = [];
 const DRILL_OPTIONS_CELL: ReactNode[] = [];
@@ -67,6 +79,9 @@ for (const key in DRILL_METADATA) {
         <div className="flex items-center gap-2">
           {DRILL_ICONS[key as DrillType]}
           <span>{m.label}</span>
+          <span className="text-[10px] normal-case font-medium text-muted-foreground">
+            {drillStatHint(key)}
+          </span>
         </div>
       </SelectItem>
     );

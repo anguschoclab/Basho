@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { TARGET_ROSTER_SIZE } from "@/presenters/engineAccess";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 
 /** Defines the structure for recruit signing dialog props. */
@@ -168,7 +169,8 @@ export function RecruitSigningDialog({
 
               {rosterSize !== undefined && (
                 <p className="text-[11px] text-muted-foreground bg-muted/30 p-2 rounded">
-                  Stable roster: {rosterSize} rikishi. Negotiation may take 1-2 weeks.
+                  Stable roster: {rosterSize} / {TARGET_ROSTER_SIZE} rikishi. Negotiation may
+                  take 1-2 weeks.
                 </p>
               )}
             </div>

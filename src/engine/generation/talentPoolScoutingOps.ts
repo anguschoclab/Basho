@@ -15,6 +15,7 @@ import { clampInt } from "@/engine/utils/math";
 import { isForeign } from "@/engine/utils/identity";
 import { ensureTalentPoolState } from "@/engine/generation/TalentPoolStateService";
 import { getHeya } from "@/engine/core/queries";
+import { getHeyaStaffBonuses } from "@/engine/economy/staff";
 
 // ============================================
 // MUTATION OPERATORS — SCOUTING
@@ -100,7 +101,12 @@ export function scoutCandidate(
   const record = { ...nextPlayerScouting[candidateId] };
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `intel_${candidateId}_${world.week}`);
 
-  const gain = (10 + rng.int(0, 15)) * options.effort;
+  // Scout-staff quality scales intel gain; a vacant scout post drags it
+  // below baseline via the vacant-post penalty in getHeyaStaffBonuses.
+  const scoutMult = world.playerHeyaId
+    ? getHeyaStaffBonuses(world, world.playerHeyaId).scouting
+    : 1;
+  const gain = Math.round((10 + rng.int(0, 15)) * options.effort * scoutMult);
   record.scoutingLevel = clampInt(record.scoutingLevel + gain, 0, 100);
   record.lastScoutedWeek = world.week;
 

@@ -9,6 +9,7 @@ import type {
 import { type SeededRNG, rngFromSeed } from "@/engine/core/rng";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import type { Id } from "@/engine/types/common";
+import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
@@ -56,6 +57,11 @@ import {
   STAFF_MIN_AGE_FOR_YEARS_CALC,
   STAFF_BASE_BONUS_VALUE,
 } from "@/constants/engine/economy";
+import {
+  STAFF_VACANT_SCOUT_PENALTY,
+  STAFF_VACANT_NUTRITION_PENALTY,
+  STAFF_VACANT_MEDICAL_PENALTY,
+} from "@/constants/engine/economic";
 import { STAFF_NAME_RANDOM_RANGE } from "@/constants/engine/generation";
 
 /**
@@ -314,6 +320,7 @@ export interface StaffBonuses {
   medical: number; // e.g. 1.20
   scouting: number; // e.g. 1.10
   administration: number; // e.g. 0.90 (cost reduction)
+  diet: number; // e.g. 1.15 (diet outcome quality)
 }
 
 const BAND_VALUES: Record<CompetenceBand, number> = {
@@ -340,6 +347,7 @@ const ROLE_HANDLERS: Record<StaffRole, (b: StaffBonuses, val: number) => void> =
   nutritionist: (b, val) => {
     b.medical += val * STAFF_NUTRITIONIST_BONUS_MULTIPLIER;
     b.conditioning += val * STAFF_NUTRITIONIST_BONUS_MULTIPLIER;
+    b.diet += val;
   },
   medical_staff: (b, val) => (b.medical += val),
   scout: (b, val) => (b.scouting += val),
@@ -359,11 +367,12 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
     medical: STAFF_BASE_BONUS_VALUE,
     scouting: STAFF_BASE_BONUS_VALUE,
     administration: STAFF_BASE_BONUS_VALUE,
+    diet: STAFF_BASE_BONUS_VALUE,
   };
 
-  if (!heya || !heya.staffIds || !world.staff) return bonuses;
+  if (!heya) return bonuses;
 
-  for (const staffId of heya.staffIds) {
+  for (const staffId of heya.staffIds ?? []) {
     const staff = world.staff.get(staffId);
     if (!staff || staff.careerPhase === "retired") continue;
 
@@ -399,5 +408,22 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
   // Clamping
   bonuses.administration = Math.max(STAFF_MIN_ADMINISTRATION_DISCOUNT, bonuses.administration); // Max 30% discount
 
+  // P2 vacant-post penalties: a capped post with zero filled performs below
+  // baseline — no scout slows intel gathering, no nutritionist blunts diet
+  // outcomes, no medical staff slows recovery.
+  if (countFilledPosts(world, heya, "scout") === 0)
+    bonuses.scouting *= STAFF_VACANT_SCOUT_PENALTY;
+  if (countFilledPosts(world, heya, "nutritionist") === 0)
+    bonuses.diet *= STAFF_VACANT_NUTRITION_PENALTY;
+  if (countFilledPosts(world, heya, "medical_staff") === 0)
+    bonuses.medical *= STAFF_VACANT_MEDICAL_PENALTY;
+
   return bonuses;
+}
+
+/** Filled count for a post — staffPosts map when present, staffIds fallback. */
+function countFilledPosts(world: WorldState, heya: Heya, role: StaffRole): number {
+  const posts = heya.staffPosts?.[role];
+  if (posts) return posts.filledIds.length;
+  return (heya.staffIds ?? []).filter((id) => world.staff.get(id)?.role === role).length;
 }

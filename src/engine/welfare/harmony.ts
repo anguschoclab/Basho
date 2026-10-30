@@ -33,6 +33,29 @@ export function harmonyBandFor(score: number): HarmonyBand {
   return "harmonious";
 }
 
+/**
+ * Harmony → training context (P2): a harmonious stable trains better,
+ * a hostile one drags gains down. Consumed via ActiveModifiers.harmonyMult
+ * in calculateGains.
+ */
+export const HARMONY_TRAINING_MULT: Record<HarmonyBand, number> = {
+  hostile: 0.9,
+  uneasy: 0.95,
+  steady: 1,
+  harmonious: 1.05,
+};
+
+/**
+ * Harmony → crisis pressure (P2): discord makes the weekly crisis roll more
+ * likely; a harmonious stable is calmer. Scales TRIGGER_PROBABILITY.
+ */
+export const HARMONY_CRISIS_WEIGHT: Record<HarmonyBand, number> = {
+  hostile: 1.6,
+  uneasy: 1.25,
+  steady: 1,
+  harmonious: 0.75,
+};
+
 /** Count intra-heya rivalry pairs (both members in `heyaId`). */
 function intraHeyaRivalryPairs(world: WorldState, heyaId: string): number {
   const pairs = world.rivalriesState?.heyaRivalryPairs;

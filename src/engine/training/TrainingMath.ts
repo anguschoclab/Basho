@@ -378,6 +378,7 @@ export function calculateGains(
   let contextMult = 1.0;
   if (activeModifiers.moraleBoost) contextMult += MORALE_BOOST_MULTIPLIER;
   if (activeModifiers.financialPenalty) contextMult *= FINANCIAL_PENALTY_MULTIPLIER;
+  contextMult *= activeModifiers.harmonyMult ?? 1;
 
   const result = {} as Record<TrainingAttribute, number>;
   for (const key of Object.keys(base) as TrainingAttribute[]) {
