@@ -17,12 +17,10 @@ import { activationKeyHandler } from "@/lib/a11y";
 
 const FILTER_OPTIONS = [
   { value: "all", label: "All" },
-  { value: "basho", label: "Basho" },
-  { value: "match", label: "Match" },
-  { value: "training", label: "Training" },
-  { value: "injury", label: "Injury" },
-  { value: "economy", label: "Economy" },
-  { value: "career", label: "Career" },
+  { value: "stable", label: "My Stable" },
+  { value: "world", label: "World" },
+  { value: "tournament", label: "Tournament" },
+  { value: "rivals", label: "Rivals" },
 ];
 
 /** Header — "Messages" title + category filter pills + unread marker. */

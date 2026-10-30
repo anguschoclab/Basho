@@ -329,3 +329,36 @@ describe("projectRikishi - economics DTO projection", () => {
     expect(projected.retirementFund).toBe(0);
   });
 });
+
+describe("projectRikishi - agency disposition (loyaltyBand)", () => {
+  const baseWorld = {
+    year: 2020,
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    rikishi: new Map(),
+  } as unknown as WorldState;
+
+  it("surfaces the weekly loyalty band written by the agency phase", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      agency: {
+        satisfaction: 20,
+        restlessness: 78,
+        loyaltyBand: "discontent",
+        deniedCount: 2,
+        grantedCount: 0,
+        lastEvaluatedWeek: 30,
+      },
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.loyaltyBand).toBe("discontent");
+  });
+
+  it("leaves loyaltyBand undefined before the first weekly evaluation", () => {
+    const rikishi = mockRikishi("r1", { shikona: "Testyama", heyaId: "h1" });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.loyaltyBand).toBeUndefined();
+  });
+});

@@ -27,14 +27,22 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const markRead = useEventReadStore((s) => s.markRead);
   const markAllRead = useEventReadStore((s) => s.markAllRead);
 
-  const filteredEvents = useMemo(
-    () =>
-      scanRecentEvents(eventLogData?.events, {
-        category: filter === "all" ? undefined : (filter as EngineEvent["category"]),
-        limit: 100,
-      }),
-    [eventLogData?.events, filter]
-  );
+  const filteredEvents = useMemo(() => {
+    const events = scanRecentEvents(eventLogData?.events, { limit: 100 });
+    const me = eventLogData?.playerHeyaId;
+    switch (filter) {
+      case "stable":
+        return events.filter((e) => !!me && e.heyaId === me);
+      case "world":
+        return events.filter((e) => !e.heyaId || (me ? e.heyaId !== me : true));
+      case "tournament":
+        return events.filter((e) => e.category === "basho" || e.category === "match");
+      case "rivals":
+        return events.filter((e) => e.category === "rivalry");
+      default:
+        return events;
+    }
+  }, [eventLogData?.events, eventLogData?.playerHeyaId, filter]);
 
   const grouped = useMemo(() => {
     const groups: EventGroup[] = [];

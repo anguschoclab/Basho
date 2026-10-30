@@ -41,9 +41,12 @@ export interface FacilityDefinition {
   maintenanceCost: number; // Monthly cost
   bonuses: {
     statBuffs?: Record<string, number>; // Multipliers (e.g. 1.1)
+    /** Signed adjustment to the resting fatigue floor (negative = deeper recovery). */
     fatigueFloor?: number;
     injuryHealMod?: number; // Additive (e.g. -2 days)
     mediaMod?: number; // Multiplier
+    /** Flat morale points added in the weekly welfare morale calc, per level. */
+    moraleBonus?: number;
   };
   requirements?: {
     regionalPresence?: Record<string, number>; // Region -> Min Presence
@@ -95,7 +98,7 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     maintenanceCost: FACILITY_MAINTENANCE_COSTS.traditional_kitchen,
     bonuses: {
       statBuffs: { weight: 1.1, stamina: 1.2 },
-      fatigueFloor: 5, // Minimum fatigue floor reduced by 5
+      fatigueFloor: -5, // Resting fatigue floor reduced by 5 per level
     },
   },
   video_lab: {
@@ -131,6 +134,7 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     maintenanceCost: FACILITY_MAINTENANCE_COSTS.dormitory,
     bonuses: {
       fatigueFloor: -4, // lowers the resting fatigue floor per level
+      moraleBonus: 3, // proper quarters lift heya morale per level
       statBuffs: { stamina: 1.03 },
     },
   },

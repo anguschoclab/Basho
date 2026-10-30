@@ -22,6 +22,8 @@ export { deriveSignatureKimarite } from "@/engine/rikishi/signatureKimarite";
 export { PHYSIO_SESSION_COST } from "@/engine/health/physioPurchase";
 export { deriveStableHarmony } from "@/engine/welfare/harmony";
 export { SCOUT_TIERS, type ScoutMissionTier } from "@/engine/recruitment/scoutMissions";
+export { calculateGains } from "@/engine/training/TrainingMath";
+export { DRILL_STAT_HINTS } from "@/constants/engine/training";
 export type { BoutContext } from "@/engine/bout/boutPhysics";
 export { resolveBout, simulateBout } from "@/engine/bout/boutResolver";
 export { TACTIC_PROFILES, type TacticProfile } from "@/engine/bout/tacticProfiles";

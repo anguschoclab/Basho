@@ -22,6 +22,7 @@ import {
 } from "@/engine/welfare/WelfareCalculations";
 import { clamp } from "@/engine/utils/math";
 import { WelfareService } from "@/engine/welfare/WelfareService";
+import { InfrastructureService } from "@/engine/economy/InfrastructureService";
 import { getHeyaRoster } from "@/engine/core/queries";
 import { canEncourage, provideEncouragement } from "@/engine/health/InjuredEncouragement";
 import {
@@ -91,6 +92,8 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     if (nextState.complianceState === "sanctioned") morale -= MORALE_SANCTIONED_PENALTY;
     else if (nextState.complianceState === "investigation") morale -= MORALE_INVESTIGATION_PENALTY;
     else if (nextState.complianceState === "watch") morale -= MORALE_WATCH_PENALTY;
+    // Facility morale bonuses (dormitory quarters lift heya morale)
+    morale += Math.round(InfrastructureService.getHeyaBonuses(heya).moraleBonus);
     nextState.morale = clamp(morale, 0, MAX_MORALE);
 
     // 2. Transition Logic (Inlined/Refactored for purity)

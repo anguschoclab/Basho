@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useSortState } from "@/hooks/useSortState";
 import { compareBy } from "@/lib/sortUtils";
 import { activationKeyHandler } from "@/lib/a11y";
+import { LOYALTY_BAND_META } from "@/components/stable/loyaltyBandMeta";
 
 interface StableStatsTableProps {
   rikishiList: UIRikishi[];
@@ -141,6 +142,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Basho</th>
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Fatigue</th>
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Status</th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Mood</th>
                 <TableHeader
                   label="Avg Rank"
                   id="avgRankLabel"
@@ -155,7 +157,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
               ))}
               {filteredAndSortedRikishi.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="p-0">
+                  <td colSpan={11} className="p-0">
                     <EmptyState
                       icon={Search}
                       title="No rikishi found matching this filter."
@@ -250,6 +252,15 @@ const StableStatsRow = React.memo(function StableStatsRow({ r }: { r: UIRikishi 
       </td>
       <td className="py-3 px-4 text-muted-foreground">
         {r.isInjured ? `Injured — ${r.injurySummary}` : (r.condition ?? 100) < 40 ? "Poor condition" : "Fit"}
+      </td>
+      <td className="py-3 px-4">
+        {r.loyaltyBand ? (
+          <span className={cn("text-xs font-medium", LOYALTY_BAND_META[r.loyaltyBand].className)}>
+            {LOYALTY_BAND_META[r.loyaltyBand].label}
+          </span>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
       </td>
       <td className="py-3 px-4 font-display font-semibold text-primary">{r.avgRankLabel}</td>
     </tr>

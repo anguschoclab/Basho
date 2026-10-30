@@ -36,6 +36,7 @@ import {
   TRAINING_MILESTONE_THRESHOLD,
   BURNOUT_PROB_WEEK_1,
   BURNOUT_PROB_WEEK_2,
+  REST_FATIGUE_FLOOR_BASE,
 } from "@/constants/engine/training";
 import { InfrastructureService } from "@/engine/economy/InfrastructureService";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
@@ -98,28 +99,44 @@ function resolveIndividualFocus(
   return focusMap.get(rikishi.id);
 }
 
+/**
+ * Resting fatigue floor (P3): residual fatigue a rikishi cannot shed during
+ * a training week. Facilities with negative `fatigueFloor` (dormitory,
+ * kitchen) lower it. Never pushes fatigue up — only bounds the descent.
+ */
+export function getRestFatigueFloor(world: WorldState, heyaId: Id): number {
+  const heya = EntityCollection.getHeya(world, heyaId);
+  const infra = InfrastructureService.getHeyaBonuses(heya);
+  return Math.max(0, REST_FATIGUE_FLOOR_BASE + infra.fatigueFloor);
+}
+
+/** Clamp a decreasing fatigue value to the rest floor without raising it. */
+function clampToRestFloor(oldFatigue: number, newFatigue: number, restFloor: number): number {
+  if (newFatigue >= oldFatigue) return Math.min(100, Math.max(0, newFatigue));
+  return Math.max(Math.min(restFloor, oldFatigue), Math.max(0, newFatigue));
+}
+
 /** Step 1: fatigue delta from profile + focus, with the injured-recovery flip. */
 function applyFatigueStep(
   rikishi: Rikishi,
   profile: HeyaTrainingState["activeProfile"],
   individualFocus: IndividualFocus | undefined,
-  updates: RikishiUpdates
+  updates: RikishiUpdates,
+  restFloor: number
 ): boolean {
   const fatigueDelta = calculateFatigueDelta(profile, individualFocus);
   const focusType = individualFocus?.focusType;
   const isOnRecoveryFocus = focusType === "protect" || focusType === "rebuild";
+  const oldFatigue = rikishi.fatigue || 0;
 
   if (rikishi.injured && isOnRecoveryFocus) {
     // Recovery focus flips the delta: injured wrestlers on protect/rebuild shed fatigue
-    updates.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) - Math.abs(fatigueDelta)));
+    updates.fatigue = clampToRestFloor(oldFatigue, oldFatigue - Math.abs(fatigueDelta), restFloor);
   } else {
     // P3: hard effort accrues more fatigue; light accrues less.
     const effortFatigue =
       rikishi.effortLevel === "hard" ? 1.25 : rikishi.effortLevel === "light" ? 0.75 : 1.0;
-    updates.fatigue = Math.max(
-      0,
-      Math.min(100, (rikishi.fatigue || 0) + fatigueDelta * effortFatigue)
-    );
+    updates.fatigue = clampToRestFloor(oldFatigue, oldFatigue + fatigueDelta * effortFatigue, restFloor);
   }
   return isOnRecoveryFocus;
 }
@@ -516,8 +533,15 @@ export function processRikishiWeekly(
   const individualFocus = resolveIndividualFocus(rikishi, beyaState, focusMapCache);
 
   const updates: RikishiUpdates = {};
+  const restFloor = getRestFatigueFloor(world, rikishi.heyaId);
 
-  const isOnRecoveryFocus = applyFatigueStep(rikishi, profile, individualFocus, updates);
+  const isOnRecoveryFocus = applyFatigueStep(
+    rikishi,
+    profile,
+    individualFocus,
+    updates,
+    restFloor
+  );
 
   // Phase 5: Emergent Prodigy Burnout Check
   applyProdigyBurnout(rikishi, profile, world, updates, builder);
@@ -528,7 +552,12 @@ export function processRikishiWeekly(
   // Apply drill fatigue to the running total.
   // Skip for injured rikishi on recovery focus — they rest, not drill.
   if (!(rikishi.injured && isOnRecoveryFocus)) {
-    updates.fatigue = Math.max(0, Math.min(100, (updates.fatigue || 0) + drillVector.fatigue));
+    const oldFatigue = rikishi.fatigue || 0;
+    updates.fatigue = clampToRestFloor(
+      oldFatigue,
+      (updates.fatigue || 0) + drillVector.fatigue,
+      restFloor
+    );
   }
 
   // 3. Growth Logic (Skip if injured - either previously or from a fresh burnout)

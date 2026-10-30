@@ -216,6 +216,7 @@ export const InfrastructureService = {
       injuryHealMod: 0,
       mediaMod: 1,
       fatigueFloor: 0,
+      moraleBonus: 0,
     };
 
     if (!heya || !heya.infrastructure) return totalBonuses;
@@ -246,6 +247,10 @@ export const InfrastructureService = {
 
       if (def.bonuses.fatigueFloor) {
         totalBonuses.fatigueFloor += def.bonuses.fatigueFloor * lv;
+      }
+
+      if (def.bonuses.moraleBonus) {
+        totalBonuses.moraleBonus += def.bonuses.moraleBonus * lv;
       }
     }
 

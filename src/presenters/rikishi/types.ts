@@ -17,6 +17,7 @@ import type {
   WeightBand,
   HeightBand,
 } from "@/engine/narrative/NarrativeBands";
+import type { RikishiLoyaltyBand } from "@/engine/npc/agency/types";
 
 // ============================================================================
 // Core DTOs
@@ -67,6 +68,8 @@ export interface RikishiStatusDTO {
   motivation: number;
   fatigue: number;
   councilWarnings: number;
+  /** Weekly agency disposition band (undefined until first weekly evaluation). */
+  loyaltyBand?: RikishiLoyaltyBand;
 }
 
 /** Performance bands (power, technique, etc.) */

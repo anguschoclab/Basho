@@ -59,7 +59,7 @@ describe("InfrastructureService.getHeyaBonuses", () => {
 
     expect(bonuses.injuryHealMod).toBeCloseTo(-3 * 2, 5);
     expect(bonuses.mediaMod).toBeCloseTo(1 + (1.25 - 1) * 2, 5);
-    expect(bonuses.fatigueFloor).toBe(5);
+    expect(bonuses.fatigueFloor).toBe(-5);
   });
 
   it("returns identity bonuses for heya with no infrastructure", () => {

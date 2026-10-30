@@ -188,6 +188,19 @@ export const DRILL_EFFECTS: Record<
   },
 };
 
+/** P3: drill → primary trained stats hint map (displayed in the drill planner). */
+export const DRILL_STAT_HINTS: Record<string, string> = {
+  butsukari: "Power + Stamina",
+  moushiai: "Technique + Experience",
+  shiko: "Balance + Power",
+  teppo: "Power + Technique",
+  suriashi: "Speed + Balance",
+  matawari: "Balance + Stamina",
+  weight: "Weight + Power",
+  conditioning: "Stamina + Balance",
+  video: "Technique + Mental",
+};
+
 export const DRILL_METADATA: Record<string, { label: string; description: string; color: string }> =
   {
     asageiko: {
@@ -229,6 +242,14 @@ export const DRILL_METADATA: Record<string, { label: string; description: string
 
 /** Experience growth multiplier */
 export const EXPERIENCE_GROWTH_MULTIPLIER = 0.5;
+
+/**
+ * Base resting fatigue floor (P3): residual fatigue a rikishi cannot shed
+ * during a training week — light weeks "rest at N" rather than reaching 0.
+ * Facilities with negative `bonuses.fatigueFloor` (dormitory, kitchen)
+ * lower this floor, enabling deeper recovery.
+ */
+export const REST_FATIGUE_FLOOR_BASE = 8;
 
 /** Crash probability threshold weeks */
 export const CRASH_PROBABILITY_THRESHOLD_WEEKS = 3;

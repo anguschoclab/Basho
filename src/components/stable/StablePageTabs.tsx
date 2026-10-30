@@ -22,6 +22,7 @@ import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
 import { projectTsukebito } from "@/presenters/projections/tsukebitoProjections";
 import { projectYouthAcademy } from "@/presenters/projections/youthAcademyProjections";
+import { LOYALTY_BAND_META } from "@/components/stable/loyaltyBandMeta";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { projectRikishi } from "@/presenters/rikishi/index";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -104,6 +105,19 @@ export function RosterTab({
                             side="top"
                           >
                             <AlertTriangle className="h-3.5 w-3.5 text-gold cursor-help shrink-0" />
+                          </TooltipWrap>
+                        )}
+                        {r.loyaltyBand && r.loyaltyBand !== "loyal" && (
+                          <TooltipWrap
+                            content={`Weekly disposition: ${LOYALTY_BAND_META[r.loyaltyBand].label}`}
+                            side="top"
+                          >
+                            <Badge
+                              variant={LOYALTY_BAND_META[r.loyaltyBand].badgeVariant}
+                              className="text-[10px] px-1.5 h-4 cursor-help"
+                            >
+                              {LOYALTY_BAND_META[r.loyaltyBand].label}
+                            </Badge>
                           </TooltipWrap>
                         )}
                       </div>

@@ -264,6 +264,28 @@ export function CandidateCard({ c, state }: { c: CandidateDigestEntry; state: St
                 )}
               </div>
             )}
+
+            {/* P4 — prospect card enrichment chips */}
+            <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+              {(c.competingSuitors?.length ?? 0) > 0 && (
+                <Badge variant="outline" className="text-[10px]">
+                  {c.competingSuitors.length} rival suitor{c.competingSuitors.length === 1 ? "" : "s"}
+                </Badge>
+              )}
+              {c.nationality && c.nationality !== "Japan" && !c.dualCitizen && (
+                <Badge variant="outline" className="text-[10px]">
+                  Foreign slot
+                </Badge>
+              )}
+              <Badge variant="outline" className="text-[10px]">
+                Style: {c.scoutLevel >= 65 ? `Confirmed ${c.style ?? "—"}` : c.scoutLevel >= 35 ? `Likely ${c.style ?? "—"}` : "Unclear"}
+              </Badge>
+              {c.potentialStats && c.scoutLevel >= 50 && (
+                <Badge variant="outline" className="text-[10px]">
+                  Est. PWR {Math.round(c.potentialStats.power)}±10 · TEC {Math.round(c.potentialStats.technique)}±10
+                </Badge>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">

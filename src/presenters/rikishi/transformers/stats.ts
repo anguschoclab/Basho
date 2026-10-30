@@ -30,6 +30,7 @@ export function toStatusDTO(r: Rikishi, rng: SeededRNG): RikishiStatusDTO {
     motivation: r.motivation,
     fatigue: r.fatigue,
     councilWarnings: r.councilWarnings ?? 0,
+    loyaltyBand: r.agency?.loyaltyBand,
   };
 }
 
