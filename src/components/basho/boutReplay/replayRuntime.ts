@@ -161,6 +161,7 @@ export function buildReplayControls(
     setProgress: (p: BoutReplayProgress) => void;
     setUiPhase: (p: ReplayPhase) => void;
     setNarration: (s: string) => void;
+    setNarIndex: (i: number) => void;
     setIsPlaying: (playing: boolean) => void;
   }
 ): ReplayControlsCtx {
@@ -191,6 +192,7 @@ export function useReplayLoop(
   setters: {
     setUiPhase: (p: ReplayPhase) => void;
     setNarration: (s: string) => void;
+    setNarIndex: (i: number) => void;
     setIsPlaying: (playing: boolean) => void;
   },
   onComplete: (() => void) | undefined,

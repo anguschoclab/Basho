@@ -201,6 +201,13 @@ export interface Rikishi {
   h2h: Record<string, H2HRecord>;
   history: MatchResultLog[];
 
+  /** P3: per-rikishi diet override (falls back to heya activeDiet). */
+  diet?: import("@/engine/types/economy").DietRegimen;
+  /** P3: individual training effort — modifies gains and fatigue ceiling. */
+  effortLevel?: "light" | "standard" | "hard";
+  /** P6: cached kimarite→wins tally derived from `history` (rebuilt on read). */
+  kimariteWins?: Record<string, number>;
+
   favoredKimarite: KimariteId[];
   weakAgainstStyles: Style[];
 

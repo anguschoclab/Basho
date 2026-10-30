@@ -49,6 +49,10 @@ export function ContextCluster({ world }: { world: WorldState | null }) {
 
   const yearLabel = world ? `Year ${world.year}` : "—";
   const weekLabel = world ? `Wk ${world.calendar?.currentWeek ?? world.week}` : "—";
+  // Optional/deferred: Morning / Afternoon / End-of-Day time-of-day chrome,
+  // cycling deterministically with the global day index.
+  const DAY_PHASES = ["Morning", "Afternoon", "End of Day"] as const;
+  const dayPhase = DAY_PHASES[Math.max(0, world?.dayIndexGlobal ?? 0) % 3];
 
   return (
     <div className="hidden lg:flex items-center gap-4 flex-1">
@@ -66,6 +70,12 @@ export function ContextCluster({ world }: { world: WorldState | null }) {
             style={{ fontFamily: "var(--font-mono)" }}
           >
             {yearLabel} · {weekLabel}
+          </span>
+          <span
+            className="text-[10px] text-[hsl(var(--muted-foreground))] leading-tight"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {dayPhase}
           </span>
         </div>
       </div>

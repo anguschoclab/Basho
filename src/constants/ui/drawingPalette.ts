@@ -29,6 +29,8 @@ export const DOHYO_COLORS = {
   tasselRed: "#b91c1c",
   tasselWhite: "#d4d4d4",
   tasselBlack: "#1d1d1d",
+  canopyRoof: "#1f3d2b",
+  canopyEdge: "#14291d",
 } as const;
 
 /** Rikishi figure rendering in the bout replay canvas. */
@@ -49,6 +51,10 @@ export const BOUT_FIGURE_COLORS = {
   crease: withAlpha(40, 20, 5, 0.7),
   creaseFaint: withAlpha(40, 20, 5, 0.5),
   rankLabelText: withAlpha(255, 255, 255, 0.92),
+  /** Gyoji official — navy kimono, black eboshi cap, paper gunbai fan. */
+  gyojiRobe: "#1e3a5f",
+  gyojiCap: "#1a1a1a",
+  gyojiFan: "#f5f0dc",
 } as const;
 
 /** HUD overlays: intensity bar, kimarite banner, upset banner, particles. */
@@ -78,6 +84,8 @@ export const FX_PARTICLES = {
   /** Dohyo dust — fixed hue/sat, lightness varies per particle. */
   dustAt: (lightness: number) => `hsl(38,55%,${lightness}%)`,
   spark: "hsl(50,100%,70%)",
+  /** Ceremony confetti — gold / paper white / festival accents. */
+  confetti: ["#f59e0b", "#fbbf24", "#fef3c7", "#f8fafc", "#fb7185", "#34d399"] as const,
 } as const;
 
 /** SVG avatar anatomy (face outline, hair, expression accents). */

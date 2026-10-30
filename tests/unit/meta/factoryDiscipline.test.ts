@@ -73,6 +73,10 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/engine/core/SimulationRunner.test.ts",
   "unit/engine/descriptorBands.test.ts",
   "unit/engine/events/queuedEventNarrative.test.ts",
+  // Koenkai/chain tests build entity literals (Koenkai, SponsorRelationship)
+  // that MockFactory does not yet cover.
+  "unit/engine/economy/koenkaiDemands.test.ts",
+  "unit/engine/events/chains/chainService.test.ts",
   "unit/engine/generation/CandidatePoolService.test.ts",
   "unit/engine/governance/GovernanceService.test.ts",
   "unit/engine/governance/dohyoIri.test.ts",

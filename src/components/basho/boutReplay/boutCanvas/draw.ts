@@ -153,6 +153,11 @@ export function drawParticles(ctx: CanvasRenderingContext2D, particles: Particle
       ctx.rotate((p.life * 8) % (Math.PI * 2));
       ctx.fillStyle = p.color;
       ctx.fillRect(-p.size, -p.size * 0.6, p.size * 2, p.size * 1.2);
+    } else if (p.type === "confetti") {
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.life * 10 + p.id) % (Math.PI * 2));
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size * 0.5, -p.size * 0.3, p.size, p.size * 0.6);
     } else if (p.type === "spark") {
       ctx.strokeStyle = p.color;
       ctx.lineWidth = p.size * 0.4;
@@ -265,6 +270,135 @@ export function drawKimariteBanner(
   ctx.font = `${Math.min(11, bannerW * 0.05)}px 'JetBrains Mono', monospace`;
   ctx.fillStyle = BOUT_HUD_COLORS.bannerCaption;
   ctx.fillText("Kimarite", W / 2, by + 26);
+  ctx.restore();
+}
+
+/** Suspended arena canopy (tsuriyane) drawn at the top of the frame. */
+export function drawCanopy(ctx: CanvasRenderingContext2D, W: number, H: number) {
+  const roofH = H * 0.075;
+  ctx.save();
+  ctx.globalAlpha = 0.92;
+  // Roof underside — dark temple-green band with a slight inward taper.
+  ctx.fillStyle = DOHYO_COLORS.canopyRoof;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.06, 0);
+  ctx.lineTo(W * 0.94, 0);
+  ctx.lineTo(W * 0.86, roofH);
+  ctx.lineTo(W * 0.14, roofH);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = DOHYO_COLORS.canopyEdge;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Hanging colored skirt panels — the four corner colors of the canopy.
+  const panels = [
+    DOHYO_COLORS.tasselGreen,
+    DOHYO_COLORS.tasselRed,
+    DOHYO_COLORS.tasselWhite,
+    DOHYO_COLORS.tasselBlack,
+  ];
+  const panelW = W * 0.07;
+  for (let i = 0; i < 4; i++) {
+    const px = W * 0.21 + i * W * 0.18;
+    ctx.fillStyle = panels[i];
+    ctx.fillRect(px, roofH, panelW, roofH * 0.35);
+  }
+  ctx.restore();
+}
+
+/** The gyoji (referee) at the ring apron — fan raised toward the winner post-finish. */
+export function drawGyoji(
+  ctx: CanvasRenderingContext2D,
+  W: number,
+  H: number,
+  phase: ReplayPhase,
+  winnerSide: "east" | "west"
+) {
+  const gx = W * 0.5;
+  const gy = H * 0.82;
+  const S = Math.min(W, H) * 0.032;
+  const fanOut = phase === "finish" || phase === "ceremony" || phase === "complete";
+  ctx.save();
+  ctx.translate(gx, gy);
+  // Robe — deep navy kimono silhouette.
+  ctx.fillStyle = BOUT_FIGURE_COLORS.gyojiRobe;
+  ctx.beginPath();
+  ctx.moveTo(-S * 0.7, S * 1.6);
+  ctx.lineTo(-S * 0.55, -S * 0.2);
+  ctx.quadraticCurveTo(0, -S * 0.75, S * 0.55, -S * 0.2);
+  ctx.lineTo(S * 0.7, S * 1.6);
+  ctx.closePath();
+  ctx.fill();
+  // Head + eboshi cap.
+  ctx.fillStyle = BOUT_FIGURE_COLORS.skin;
+  ctx.beginPath();
+  ctx.arc(0, -S * 0.95, S * 0.4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = BOUT_FIGURE_COLORS.gyojiCap;
+  ctx.fillRect(-S * 0.16, -S * 1.55, S * 0.32, S * 0.5);
+  // Gunbai (war fan) arm — points toward the winner once the bout is decided.
+  const dir = fanOut ? (winnerSide === "east" ? -1 : 1) : 0.4;
+  ctx.strokeStyle = BOUT_FIGURE_COLORS.skin;
+  ctx.lineWidth = S * 0.28;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(dir * S * 0.5, -S * 0.1);
+  ctx.lineTo(dir * S * (fanOut ? 1.5 : 0.9), fanOut ? -S * 0.9 : S * 0.5);
+  ctx.stroke();
+  ctx.fillStyle = BOUT_FIGURE_COLORS.gyojiFan;
+  ctx.beginPath();
+  ctx.ellipse(
+    dir * S * (fanOut ? 1.7 : 1.05),
+    fanOut ? -S * 1.05 : S * 0.6,
+    S * 0.34,
+    S * 0.44,
+    dir * 0.4,
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
+  ctx.restore();
+}
+
+/** Trophy ceremony beat — championship cup silhouette + glints in ceremony phase. */
+export function drawTrophyBeat(
+  ctx: CanvasRenderingContext2D,
+  W: number,
+  H: number,
+  progress01: number
+) {
+  const alpha = clamp(progress01 * 1.6, 0, 1) * 0.95;
+  if (alpha <= 0) return;
+  const tx = W * 0.5;
+  const ty = H * 0.16;
+  const S = Math.min(W, H) * 0.05;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  const lift = (1 - clamp(progress01 * 1.6, 0, 1)) * S * 1.4;
+  ctx.translate(tx, ty + lift);
+  ctx.fillStyle = BOUT_HUD_COLORS.kinboshi;
+  // Cup body
+  ctx.beginPath();
+  ctx.moveTo(-S * 0.65, -S * 0.7);
+  ctx.lineTo(S * 0.65, -S * 0.7);
+  ctx.quadraticCurveTo(S * 0.6, S * 0.25, 0, S * 0.45);
+  ctx.quadraticCurveTo(-S * 0.6, S * 0.25, -S * 0.65, -S * 0.7);
+  ctx.fill();
+  // Handles
+  ctx.strokeStyle = BOUT_HUD_COLORS.kinboshi;
+  ctx.lineWidth = S * 0.12;
+  ctx.beginPath();
+  ctx.arc(-S * 0.75, -S * 0.35, S * 0.28, Math.PI * 0.5, Math.PI * 1.5);
+  ctx.arc(S * 0.75, -S * 0.35, S * 0.28, -Math.PI * 0.5, Math.PI * 0.5);
+  ctx.stroke();
+  // Stem + base
+  ctx.fillRect(-S * 0.1, S * 0.42, S * 0.2, S * 0.35);
+  ctx.fillRect(-S * 0.45, S * 0.77, S * 0.9, S * 0.16);
+  // Glints
+  ctx.fillStyle = withAlpha(255, 255, 255, alpha * 0.9);
+  ctx.beginPath();
+  ctx.arc(-S * 0.25, -S * 0.45, S * 0.07, 0, Math.PI * 2);
+  ctx.fill();
   ctx.restore();
 }
 

@@ -355,6 +355,7 @@ export class ImpactBuilder {
       heyaId?: Id;
       rikishiId?: Id;
       importance?: EventImportance;
+      causalEventId?: Id;
     }
   ): ImpactBuilder {
     if (!this.impact.events) {
@@ -367,6 +368,7 @@ export class ImpactBuilder {
       heyaId: options?.heyaId,
       rikishiId: options?.rikishiId,
       importance: options?.importance,
+      causalEventId: options?.causalEventId,
     });
     return this;
   }

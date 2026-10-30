@@ -28,6 +28,19 @@ export function processFacilitiesMaintenance(
   const currentFunds = heyaUpdates.funds ?? heya.funds ?? 0;
   if (currentFunds >= maintenance) {
     heyaUpdates.funds = currentFunds - maintenance;
+    // Paid maintenance also repairs facility wear (optional/deferred item).
+    if (heya.infrastructure) {
+      const next: typeof heya.infrastructure = {};
+      let changed = false;
+      for (const [fid, st] of Object.entries(heya.infrastructure)) {
+        const cond = st.condition ?? 100;
+        if (cond < 100) {
+          next[fid] = { ...st, condition: Math.min(100, cond + 5) };
+          changed = true;
+        } else next[fid] = st;
+      }
+      if (changed) heyaUpdates.infrastructure = next;
+    }
   } else {
     heyaUpdates.facilities = {
       training: Math.max(MIN_FACILITY_LEVEL, heya.facilities.training - FACILITY_DECAY_AMOUNT),
@@ -39,6 +52,20 @@ export function processFacilitiesMaintenance(
       ...heya,
       facilities: heyaUpdates.facilities,
     });
+    // Unpaid maintenance — infrastructure wear decays (optional/deferred item).
+    if (heya.infrastructure) {
+      const next: typeof heya.infrastructure = {};
+      let changed = false;
+      for (const [fid, st] of Object.entries(heya.infrastructure)) {
+        const cond = st.condition ?? 100;
+        const decayed = Math.max(0, cond - 8);
+        if (decayed !== cond) {
+          next[fid] = { ...st, condition: decayed };
+          changed = true;
+        } else next[fid] = st;
+      }
+      if (changed) heyaUpdates.infrastructure = next;
+    }
     builder.logEvent(
       "FACILITY_DEGRADED",
       "facility",

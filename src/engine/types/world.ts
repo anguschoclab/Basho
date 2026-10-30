@@ -322,6 +322,17 @@ export interface WorldState {
   /** Crisis waiting to be presented to player (checked on Dashboard load) */
   pendingCrisis?: ActiveCrisis;
 
+  /** Live event-chain instances (P1) — ids/indices only, re-derived from registry. */
+  activeChains?: Record<Id, import("@/engine/events/chains/types").ActiveChain>;
+  /** chainId → last-completed week (cooldown bookkeeping for event chains). */
+  chainCooldowns?: Record<string, number>;
+
+  /** Active scout missions dispatched to talent pools (P4). */
+  activeScoutMissions?: import("@/engine/recruitment/scoutMissions").ScoutMission[];
+
+  /** Monthly-refreshed pool of staff candidates (P2). */
+  staffCandidatePool?: import("@/engine/types/staff").StaffCandidate[];
+
   /** Player loop decisions that block progress until resolved */
   pendingDecisions?: Array<{
     id: string;

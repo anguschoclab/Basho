@@ -50,4 +50,24 @@ export interface Staff {
   priorAffiliations: Id[];
   successorEligible: boolean;
   avatarConfig?: AvatarIdentity;
+  /** P2: monthly wage in yen (0 for legacy/unpaid staff). */
+  wageYen?: number;
+  /** P2: year the current contract ends (auto-release at expiry). */
+  contractEndYear?: number;
+  /** P2: 0–10 aggregate skill score displayed on staff cards. */
+  skill?: number;
+}
+
+/** A hirable staff candidate in the monthly-refreshed pool (P2). */
+export interface StaffCandidate {
+  id: Id;
+  name: string;
+  role: StaffRole;
+  age: number;
+  skill: number; // 0–10
+  wageYen: number; // asking wage (monthly)
+  contractEndYear: number;
+  competenceBands: StaffCompetenceBands;
+  reputationBand: StaffReputationBand;
+  note?: string;
 }

@@ -87,6 +87,7 @@ const ALL_DOMAIN_NAMES = [
   "post_basho_press",
   "playoff",
   "dohyo_iri",
+  "chains",
 ];
 
 async function loadDomainsInternal(): Promise<DomainMap> {

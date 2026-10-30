@@ -17,6 +17,11 @@ export {
   type ReplayPhase,
 } from "@/engine/bout/ReplayMetadata";
 export type { PbpLine, PbpPhase } from "@/engine/bout/boutNarrative";
+export type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
+export { deriveSignatureKimarite } from "@/engine/rikishi/signatureKimarite";
+export { PHYSIO_SESSION_COST } from "@/engine/health/physioPurchase";
+export { deriveStableHarmony } from "@/engine/welfare/harmony";
+export { SCOUT_TIERS, type ScoutMissionTier } from "@/engine/recruitment/scoutMissions";
 export type { BoutContext } from "@/engine/bout/boutPhysics";
 export { resolveBout, simulateBout } from "@/engine/bout/boutResolver";
 export { TACTIC_PROFILES, type TacticProfile } from "@/engine/bout/tacticProfiles";

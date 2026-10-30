@@ -12,6 +12,7 @@ import { PageHeader } from "@/components/layout/page-shell/index";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { RikishiProfileHeader } from "@/components/rikishi/RikishiProfileHeader";
+import { RikishiCarePanel } from "@/components/rikishi/RikishiCarePanel";
 import { RikishiLineage } from "@/components/rikishi/RikishiLineage";
 import { RikishiNaturalization } from "@/components/rikishi/RikishiNaturalization";
 import { RikishiProfileTab } from "@/components/rikishi/RikishiProfileTab";
@@ -76,6 +77,26 @@ const TAB_TRIGGER_CLASS =
   "bg-transparent px-0 pb-2 rounded-none font-mono font-bold uppercase tracking-[0.15em] text-[10px] data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold transition-all";
 
 /** Individual rikishi profile body — header, tabs, admin actions, ceremony. */
+function ProfilePrelude({
+  rikishi,
+  mentor,
+  mentees,
+  year,
+}: {
+  rikishi: UIRikishi;
+  mentor: RawRikishi | null;
+  mentees: RawRikishi[];
+  year: number;
+}) {
+  return (
+    <>
+      <RikishiLineage mentor={mentor} mentees={mentees} rikishiId={rikishi.id} currentYear={year} />
+      <RikishiKeshoMawashi rikishi={rikishi} />
+      <RikishiNaturalization rikishi={rikishi} />
+    </>
+  );
+}
+
 export function RikishiProfileBody({
   rikishi,
   rawRikishi,
@@ -114,6 +135,7 @@ export function RikishiProfileBody({
 }) {
   const isOwned = rikishi.heyaId === playerHeyaId;
   const history = rikishi.careerHistory;
+  const careHeya = isOwned && !readOnly && playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-700">
@@ -125,10 +147,10 @@ export function RikishiProfileBody({
         onBack={onBack}
       />
 
+      {careHeya && <RikishiCarePanel rawRikishi={rawRikishi} heya={careHeya} />}
+
       <div className="p-8">
-        <RikishiLineage mentor={mentor} mentees={mentees} rikishiId={rikishi.id} currentYear={world.year} />
-        <RikishiKeshoMawashi rikishi={rikishi} />
-        <RikishiNaturalization rikishi={rikishi} />
+        <ProfilePrelude rikishi={rikishi} mentor={mentor} mentees={mentees} year={world.year} />
 
         <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-8">
           <TabsList className="bg-transparent h-10 p-0 gap-8 rounded-none border-b border-border/40 w-full justify-start">

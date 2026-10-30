@@ -220,7 +220,7 @@ describe("StableStatsTable", () => {
     it("clicking Avg Rank header sorts by avgRankLabel descending", () => {
       const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Avg Rank"));
-      const ranks = getCellText(container, 7);
+      const ranks = getCellText(container, 9);
       // desc: "Ms1", "M1", "J1"
       expect(ranks).toEqual(["Ms1", "M1", "J1"]);
     });

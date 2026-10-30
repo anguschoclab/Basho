@@ -15,7 +15,8 @@ import { removeMentor } from "@/engine/training/MentorshipService";
 import { assignSparringPair, removeSparringPair } from "@/engine/training/SparringService";
 import { setTsukebito, clearTsukebito } from "@/engine/training/TsukebitoService";
 import { updateHeyaInWorld } from "@/engine/core/queries";
-import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
+import { retireRikishiImpact, createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { buyPhysioSession } from "@/engine/health/physioPurchase";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
@@ -60,6 +61,33 @@ function retireRikishiCmd(rt: WorkerRuntime, cmd: Cmd<"RETIRE_RIKISHI">) {
     // arg2 as the impact source and defaults year to DEFAULT_START_YEAR.
     const impact = retireRikishiImpact(cmd.rikishiId, rt.world.year, cmd.reason, "RETIRE_RIKISHI");
     rt.world = resolveImpacts(rt.world, [impact]);
+    rt.syncAndDigest();
+  }
+}
+
+function setRikishiDietCmd(rt: WorkerRuntime, cmd: Cmd<"SET_RIKISHI_DIET">) {
+  if (rt.world) {
+    const impact = createImpactBuilder("setRikishiDiet")
+      .updateRikishi(cmd.rikishiId, { diet: cmd.diet ?? undefined })
+      .build();
+    rt.world = resolveImpacts(rt.world, [impact]);
+    rt.syncAndDigest();
+  }
+}
+
+function setRikishiEffortCmd(rt: WorkerRuntime, cmd: Cmd<"SET_RIKISHI_EFFORT">) {
+  if (rt.world) {
+    const impact = createImpactBuilder("setRikishiEffort")
+      .updateRikishi(cmd.rikishiId, { effortLevel: cmd.effort })
+      .build();
+    rt.world = resolveImpacts(rt.world, [impact]);
+    rt.syncAndDigest();
+  }
+}
+
+function buyPhysioCmd(rt: WorkerRuntime, cmd: Cmd<"BUY_PHYSIO">) {
+  if (rt.world) {
+    rt.world = resolveImpacts(rt.world, [buyPhysioSession(rt.world, cmd.rikishiId)]);
     rt.syncAndDigest();
   }
 }
@@ -185,6 +213,9 @@ export function heyaCommands(rt: WorkerRuntime): CommandHandlerMap {
     TREAT_INJURY: (cmd) => treatInjuryCmd(rt, cmd),
     RETIRE_RIKISHI: (cmd) => retireRikishiCmd(rt, cmd),
     SET_HEYA_DIET: (cmd) => setHeyaDietCmd(rt, cmd),
+    SET_RIKISHI_DIET: (cmd) => setRikishiDietCmd(rt, cmd),
+    SET_RIKISHI_EFFORT: (cmd) => setRikishiEffortCmd(rt, cmd),
+    BUY_PHYSIO: (cmd) => buyPhysioCmd(rt, cmd),
     INVEST_IN_FACILITY: (cmd) => investInFacilityCmd(rt, cmd),
     BUILD_INFRASTRUCTURE: (cmd) => buildInfrastructureCmd(rt, cmd),
     ASSIGN_MENTOR: (cmd) => assignMentorCmd(rt, cmd),

@@ -13,7 +13,9 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import { getReplayPhaseDurations, buildBoutScript } from "@/presenters/engineAccess";
 import type { BoutScript } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
-import { getNarrationLines, type ReplayPhase } from "@/components/basho/boutReplay/boutCanvas";
+import type { ReplayPhase } from "@/components/basho/boutReplay/boutCanvas";
+import { getNarrationPbp } from "@/components/basho/boutReplay/feedModel";
+import type { PbpLine } from "@/presenters/engineAccess";
 import { makeSpawnParticles, drawReplayFrame } from "@/components/basho/boutReplay/replayFx";
 import { replayReset, replayUpdateProgress, replaySeekTo } from "@/components/basho/boutReplay/replayControls";
 import {
@@ -42,6 +44,10 @@ export interface UseBoutReplayReturn {
   setSpeed: (s: ReplaySpeed) => void;
   uiPhase: ReplayPhase;
   narration: string;
+  /** Index into `pbpLines` of the currently-spoken narration line. */
+  narIndex: number;
+  /** Structured narration lines (phase/tags/voice preserved). */
+  pbpLines: PbpLine[];
   progress: BoutReplayProgress;
   seekTo: (globalProgress: number) => void;
   reset: () => void;
@@ -61,6 +67,7 @@ export function useBoutReplay(
   const [speed, setSpeed] = useState<ReplaySpeed>(1);
   const [uiPhase, setUiPhase] = useState<ReplayPhase>("ritual");
   const [narration, setNarration] = useState("");
+  const [narIndex, setNarIndex] = useState(0);
   const [progress, setProgress] = useState<BoutReplayProgress>({
     phaseIndex: 0,
     phaseProgress: 0,
@@ -78,10 +85,13 @@ export function useBoutReplay(
     [result, boutScript]
   );
   const rng = useMemo(() => new SeededRNG(result.boutId || "seed"), [result.boutId]);
-  const lines = useMemo(
-    () => getNarrationLines(result, eastRikishi, westRikishi),
+  const pbpLines = useMemo(
+    () => getNarrationPbp(result, eastRikishi, westRikishi),
     [result, eastRikishi, westRikishi]
   );
+  // String view kept for the legacy single-line narration path; indices are
+  // identical because pbpLines is the single source of truth.
+  const lines = useMemo(() => pbpLines.map((l) => l.text), [pbpLines]);
 
   const spawnParticles = useMemo(
     () => makeSpawnParticles(refs.particlesRef, refs.particleId, rng),
@@ -119,7 +129,10 @@ export function useBoutReplay(
     [rt]
   );
 
-  const setters = useMemo(() => ({ setProgress, setUiPhase, setNarration, setIsPlaying }), []);
+  const setters = useMemo(
+    () => ({ setProgress, setUiPhase, setNarration, setNarIndex, setIsPlaying }),
+    []
+  );
 
   const controlsCtx = useMemo(
     () => buildReplayControls(canvasRef, refs, phaseDurations, lines, setters),
@@ -152,6 +165,8 @@ export function useBoutReplay(
     setSpeed,
     uiPhase,
     narration,
+    narIndex,
+    pbpLines,
     progress,
     seekTo,
     reset,

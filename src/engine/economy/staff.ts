@@ -275,9 +275,24 @@ export function fireStaff(world: WorldState, heyaId: Id, staffId: string): State
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
-  // Remove from heya list
+  const staff = world.staff.get(staffId);
+  // P2: severance = 3 months' wage for contracted staff.
+  const severance = staff?.wageYen ? staff.wageYen * 3 : 0;
+
+  // Remove from heya list + posts
   const newStaffIds = (heya.staffIds || []).filter((id) => id !== staffId);
-  builder.updateHeya(heyaId, { staffIds: newStaffIds });
+  const posts = { ...(heya.staffPosts ?? {}) };
+  if (staff?.role && posts[staff.role]) {
+    posts[staff.role] = {
+      ...posts[staff.role],
+      filledIds: posts[staff.role].filledIds.filter((id) => id !== staffId),
+    };
+  }
+  builder.updateHeya(heyaId, {
+    staffIds: newStaffIds,
+    staffPosts: posts,
+    funds: severance > 0 ? Math.round(heya.funds - severance) : heya.funds,
+  });
 
   // Remove from world
   builder.removeStaff(staffId);

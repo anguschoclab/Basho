@@ -1,0 +1,474 @@
+{
+  "bullying": {
+    "s0_title": ["Whispers in the Hallway", "Trouble Behind the Shoji"],
+    "s0_summary": [
+      "Junior rikishi have been avoiding %SHIKONA%. The tsukebito whisper of hazing that has gone too far.",
+      "A junior wrestler came to morning keiko with a split lip and a story that does not add up."
+    ],
+    "s0_opt_intervene": ["Intervene immediately", "Confront the accused"],
+    "s0_opt_observe": ["Watch quietly for now", "Gather more information"],
+    "s0_opt_dismiss": ["Dismiss it as locker-room roughhousing", "Boys will be boys"],
+    "s1_title": ["The Confrontation", "Drawing the Line"],
+    "s1_summary": [
+      "You call the accused seniors into your office. The room goes silent when you lay out what you know.",
+      "Face to face with the seniors involved, the denials are quick — too quick."
+    ],
+    "s1_opt_discipline": ["Hand down formal discipline", "Punish the ringleaders"],
+    "s1_opt_mediate": ["Order mediated reconciliation", "Have the elders broker peace"],
+    "s2_title": ["It Escalates", "Worse Than Feared"],
+    "s2_summary": [
+      "The hazing continues behind your back. %SHIKONA% now refuses to train with the group.",
+      "Another incident — this time in front of a visiting coach. Word will spread."
+    ],
+    "s2_opt_crackdown": ["Crack down hard on everyone involved", "Zero tolerance — punish them all"],
+    "s2_opt_watch": ["Keep watching a little longer", "Give them rope to hang themselves"],
+    "s3_title": ["The Blowup", "Everything Comes Out"],
+    "s3_summary": [
+      "A junior rikishi breaks down in front of the whole stable. The press is already sniffing around.",
+      "The story spills into the open — parents are calling, and a reporter has questions."
+    ],
+    "s3_opt_apology": ["Public apology and restitution (¥200,000)", "Make it right, publicly (¥200,000)"],
+    "s3_opt_stonewall": ["Stonewall the press", "Deny everything"],
+    "s4_title": ["Quiet After the Storm", "A Chastened Stable"],
+    "s4_summary": [
+      "The stable settles into a fragile new normal. The juniors train easier; the seniors keep their heads down.",
+      "Order restored. The air in the keiko-ba is lighter — for now."
+    ],
+    "s4_opt_rebuild": ["Rebuild trust slowly", "Focus on healing the room"]
+  },
+
+  "doping_rumor": {
+    "s0_title": ["A Syringe in the Shadows", "Unholy Whispers"],
+    "s0_summary": [
+      "A laundry attendant swears she found a vial in %SHIKONA%'s kit bag. It could be nothing. It could be everything.",
+      "Someone anonymous tips you off: %SHIKONA% has been seen with a sports-medicine 'consultant'."
+    ],
+    "s0_opt_investigate": ["Commission a private investigation (¥150,000)", "Hire discreet investigators (¥150,000)"],
+    "s0_opt_ignore": ["Ignore the rumor", "Probably nothing — let it die"],
+    "s1_title": ["The Report", "What the Investigators Found"],
+    "s1_summary": [
+      "The report lands on your desk. The 'consultant' is real — but the substances are legal supplements. Barely.",
+      "Findings: no banned substances, but a pattern of injections the Association would frown on."
+    ],
+    "s1_opt_report": ["Report findings to the Association", "Come clean with the committee"],
+    "s1_opt_bury": ["Bury the report", "Shred it and move on"],
+    "s2_title": ["The Leak", "It Hits the Papers"],
+    "s2_summary": [
+      "A tabloid runs the story: 'Doping Den at %HEYA%?' The phones do not stop ringing.",
+      "Sports weekly headline: your stable's name next to the word 'doping'."
+    ],
+    "s2_opt_review": ["Open a transparent review (¥300,000)", "Independent review, books open (¥300,000)"],
+    "s2_opt_deny": ["Flat denial — attack the reporter", "Call it a fabrication"],
+    "s3_title": ["The Association Probe", "Formal Inquiry"],
+    "s3_summary": [
+      "The Association compliance office formally requests your records and interview access to %SHIKONA%.",
+      "Two officials with a clipboard arrive unannounced at morning practice."
+    ],
+    "s3_opt_comply": ["Cooperate fully", "Open every door they ask for"],
+    "s3_opt_obstruct": ["Slow-walk the inquiry", "Give them nothing voluntarily"],
+    "s4_title": ["Cleared", "The Air Clears"],
+    "s4_summary": [
+      "The investigation closes with no charges. %SHIKONA% trains with a chip on his shoulder — and something to prove.",
+      "Officially cleared. The rumor will linger, but the record is clean."
+    ],
+    "s4_opt_moveon": ["Back to work", "Put it behind you"]
+  },
+
+  "sponsor_courtship": {
+    "s0_title": ["An Unlikely Admirer", "A Benefactor Calls"],
+    "s0_summary": [
+      "A regional construction magnate has taken a shine to %HEYA% and requests a private dinner.",
+      "A wealthy industrialist sends word: he wants to talk about 'investing in tradition' — meaning your stable."
+    ],
+    "s0_opt_dine": ["Wine and dine him properly (¥120,000)", "Host an elegant dinner (¥120,000)"],
+    "s0_opt_decline": ["Decline politely", "Send your regrets"],
+    "s1_title": ["The Proposal", "Terms on the Table"],
+    "s1_summary": [
+      "Over dinner he slides a term sheet across: significant annual sponsorship — for naming rights on your practice dohyo.",
+      "He wants his company's name stitched into the heya's daily life. The number is serious."
+    ],
+    "s1_opt_accept": ["Accept the terms (¥1.5M/year)", "Take the deal (¥1.5M/year)"],
+    "s1_opt_negotiate": ["Negotiate harder", "Push for more"],
+    "s2_title": ["Hard Bargain", "The Counter-Offer"],
+    "s2_summary": [
+      "He blinks — but only halfway. The revised offer is smaller, though the naming rights come off the table.",
+      "A tense silence. Then: a lower number, cleaner terms."
+    ],
+    "s2_opt_walk": ["Walk away with dignity", "Thank him and leave"],
+    "s2_opt_take": ["Take the reduced offer (¥900,000)", "Accept ¥900,000"],
+    "s3_title": ["New Money, Old Traditions", "The Partnership Begins"],
+    "s3_summary": [
+      "The first transfer clears. Your accountant confirms it — %HEYA% has a new patron.",
+      "Contracts signed. The koenkai is buzzing with news of the windfall."
+    ],
+    "s3_opt_celebrate": ["Celebrate with the stable", "Share the good news"]
+  },
+
+  "academy_scandal": {
+    "s0_title": ["A Parent's Letter", "Complaint from the Dormitory"],
+    "s0_summary": [
+      "A furious letter arrives from a trainee's parent: unpaid 'fees', harsh treatment, a coach who drinks.",
+      "An academy parent demands answers — and hints a journalist already has her number."
+    ],
+    "s0_opt_review": ["Review the academy records quietly", "Audit the books and logs"],
+    "s0_opt_brush": ["Brush it off as a misunderstanding", "File it away"],
+    "s1_title": ["What the Ledger Shows", "The Evidence"],
+    "s1_summary": [
+      "The records are worse than the letter: skimmed meal stipends and a disciplinary regime that crosses lines.",
+      "Your quiet audit finds missing funds and injuries logged as 'accidents'."
+    ],
+    "s1_opt_dismiss": ["Dismiss the staffer responsible (¥80,000 severance)", "Fire the coach (¥80,000)"],
+    "s1_opt_cover": ["Cover it up", "Make the problem disappear"],
+    "s2_title": ["The Media Storm", "Front Page Trouble"],
+    "s2_summary": [
+      "The story breaks anyway: 'Sumo Stable's Dark Academy.' Every rival oyakata is suddenly concerned for the children.",
+      "Cameras outside the heya gates by morning. The scandal has a life of its own."
+    ],
+    "s2_opt_press": ["Hold a press conference", "Face the cameras directly"],
+    "s2_opt_silence": ["Maintain silence", "No comment, ever"],
+    "s3_title": ["Reform or Rot", "The Academy's Future"],
+    "s3_summary": [
+      "The Association watches closely. Reform the academy properly and this becomes a story about accountability.",
+      "A fork in the road: real reform, or hunker down and wait for memory to fade."
+    ],
+    "s3_opt_reform": ["Fund a proper reform program (¥200,000)", "Rebuild it right (¥200,000)"],
+    "s3_opt_quo": ["Keep things as they are", "Status quo"]
+  },
+
+  "media_persona": {
+    "s0_title": ["Overnight Sensation", "The Clip Everyone Saw"],
+    "s0_summary": [
+      "A clip of %SHIKONA%'s deadpan interview answer has gone viral. Television producers are calling.",
+      "%SHIKONA% is suddenly famous — a 12-second clip, a million views, three talk-show invitations."
+    ],
+    "s0_opt_lean": ["Lean into the spotlight", "Ride the wave"],
+    "s0_opt_shield": ["Shield him from the media", "Protect his focus"],
+    "s1_title": ["The Spotlight Deal", "Television Comes Knocking"],
+    "s1_summary": [
+      "A network offers a recurring variety-show slot. The money is good; the training schedule is not negotiable — or is it?",
+      "Producers promise exposure, sponsors, and a weekly car to the studio — on keiko days."
+    ],
+    "s1_opt_tv": ["Take the TV deal (¥400,000)", "Sign the contract (¥400,000)"],
+    "s1_opt_focus": ["Keep him on sumo", "Politely pass"],
+    "s2_title": ["Fame's Price", "Distraction Sets In"],
+    "s2_summary": [
+      "%SHIKONA%'s ring work is slipping — late nights at the studio show in the morning keiko.",
+      "Coaches report he is practicing catchphrases more than tachiai."
+    ],
+    "s2_opt_plug": ["Pull the plug on the appearances", "End the media circus"],
+    "s2_opt_ride": ["Ride it a little longer (¥300,000)", "One more season (¥300,000)"],
+    "s3_title": ["Burnout", "Running on Empty"],
+    "s3_summary": [
+      "%SHIKONA% collapses mid-keiko — exhaustion, not injury. The fame machine is eating the wrestler.",
+      "Dark circles, a flat tachiai, a forced smile on camera. Something has to give."
+    ],
+    "s3_opt_rest": ["Pull him back to full rest", "Shut it all down"],
+    "s4_title": ["The Quiet Life", "Back to Basics"],
+    "s4_summary": [
+      "The noise fades. %SHIKONA% returns to mornings of sweat and clay — where he belongs.",
+      "The clip still circulates, but the stable is a stable again."
+    ],
+    "s4_opt_work": ["Back to work", "Resume normal training"]
+  },
+
+  "veteran_decline": {
+    "s0_title": ["The Slowing Lion", "Time Catches Everyone"],
+    "s0_summary": [
+      "Veteran %SHIKONA% is losing a step. His body knows it before he will admit it.",
+      "The morning film does not lie: %SHIKONA%'s tachiai arrives a heartbeat late now."
+    ],
+    "s0_opt_talk": ["Have the hard conversation", "Sit him down"],
+    "s0_opt_play": ["Let him play it out", "He's earned the right to try"],
+    "s1_title": ["The Crossroads", "What Comes Next"],
+    "s1_summary": [
+      "%SHIKONA% listens in silence. An elder stock could be arranged — or he can chase one more run.",
+      "Two paths: a graceful transition to coaching, or one final charge at the upper ranks."
+    ],
+    "s1_opt_succession": ["Map the succession path", "Prepare his elder future"],
+    "s1_opt_run": ["One more run at the top", "Give him a final basho"],
+    "s2_title": ["The Hard Fall", "Reality Arrives"],
+    "s2_summary": [
+      "Make-koshi. Then another. The crowd still loves %SHIKONA%, but the banzuke is merciless.",
+      "The results keep sliding. Fans watch through their fingers."
+    ],
+    "s2_opt_retire": ["Ask him to retire with honor", "Time to bow out"],
+    "s2_opt_demote": ["Let him slide down the ranks", "Accept the demotion"],
+    "s3_title": ["The Graceful Exit", "A Gentleman's Farewell"],
+    "s3_summary": [
+      "%SHIKONA% agrees. A proper send-off is the least the sport owes him — and the least you owe him.",
+      "He bows to the dohyo a final time. Now it is your turn to honor him."
+    ],
+    "s3_opt_honor": ["Fund a farewell ceremony (¥150,000)", "A proper danpatsu-shiki (¥150,000)"],
+    "s3_opt_quiet": ["A quiet farewell", "Keep it simple"]
+  },
+
+  "rivalry_escalation": {
+    "s0_title": ["War of Words", "Needles and Insults"],
+    "s0_summary": [
+      "%SHIKONA% and his rival have been trading barbs through the press all week. The feud is turning personal.",
+      "It started with a staredown. Now the tabloids run daily quotes from both camps."
+    ],
+    "s0_opt_stoke": ["Stoke it — rivalry sells", "Let him fire back"],
+    "s0_opt_cool": ["Cool it down privately", "Lower the temperature"],
+    "s1_title": ["Heated", "The Feud Boils"],
+    "s1_summary": [
+      "The rival's stable files a complaint about %SHIKONA%'s 'conduct'. Yours responds in kind.",
+      "Now the oyakatas are involved. This could end well — or very badly."
+    ],
+    "s1_opt_burn": ["Let it burn", "The dohyo will settle it"],
+    "s1_opt_intervene": ["Intervene before it explodes", "Call both sides to order"],
+    "s2_title": ["The Incident", "Words Become Deeds"],
+    "s2_summary": [
+      "An ugly scene at the keiko joint practice — a thrown towel, accusations of a cheap shot. Everyone saw it.",
+      "It went too far: %SHIKONA% and the rival had to be separated by their own stablemates."
+    ],
+    "s2_opt_apologize": ["Apologize and de-escalate", "Offer the olive branch"],
+    "s2_opt_defend": ["Defend your man publicly", "Stand by %SHIKONA%"],
+    "s3_title": ["The Truce", "Smoke Clears"],
+    "s3_summary": [
+      "Tempers finally cool. The rivalry returns to where it belongs — inside the tawara.",
+      "Peace, of a sort. The next meeting on the dohyo will carry extra electricity."
+    ],
+    "s3_opt_settle": ["Settle it on the dohyo", "Let sumo decide"]
+  },
+
+  "koenkai_defection": {
+    "s0_title": ["Restless Benefactors", "Cracks in the Koenkai"],
+    "s0_summary": [
+      "Two of your biggest supporters were seen dining with a rival stable's patrons. Coincidence?",
+      "The koenkai treasurer warns you: donations are drifting, and a rival's fan club is recruiting yours."
+    ],
+    "s0_opt_reach": ["Reach out personally (¥80,000)", "Wine and dine the waverers (¥80,000)"],
+    "s0_opt_wait": ["Wait and see", "Do nothing yet"],
+    "s1_title": ["The Negotiation", "Keeping the Faithful"],
+    "s1_summary": [
+      "The wavering members lay out their grievances: not enough access, not enough results, too little gratitude.",
+      "They want more — more events, more access to the rikishi, more feeling that they matter."
+    ],
+    "s1_opt_gala": ["Promise a supporters' gala (¥250,000)", "A proper koenkai gala (¥250,000)"],
+    "s1_opt_minimal": ["Offer token gestures", "Small promises only"],
+    "s2_title": ["The Defection", "They Walk"],
+    "s2_summary": [
+      "A third of the koenkai formally dissolves and re-forms under a rival stable. The revenue hit is immediate.",
+      "The defection makes the sports pages — public, humiliating, and expensive."
+    ],
+    "s2_opt_winback": ["Win them back at any cost (¥400,000)", "Fight for every member (¥400,000)"],
+    "s2_opt_accept": ["Accept the loss and rebuild", "Start over"],
+    "s3_title": ["Reconciliation", "The Faithful Return"],
+    "s3_summary": [
+      "The gala works its magic. The defectors drift back — and bring a few new faces with them.",
+      "Handshakes and warm sake. The koenkai feels whole again."
+    ],
+    "s3_opt_renew": ["Renew the vows (¥500,000 raised)", "Recommit the supporters (¥500,000)"]
+  },
+
+  "foreign_prospect": {
+    "s0_title": ["A Giant Abroad", "Word from Overseas"],
+    "s0_summary": [
+      "Your scouts report a remarkable amateur overseas — 190cm, 150kg, and nineteen years old.",
+      "A contact abroad sends grainy footage of a young giant dismantling university champions."
+    ],
+    "s0_opt_scout": ["Send a scout to evaluate (¥200,000)", "Fly someone out (¥200,000)"],
+    "s0_opt_pass": ["Pass on him", "Too risky"],
+    "s1_title": ["The Evaluation", "Eyes on the Prize"],
+    "s1_summary": [
+      "The scout's verdict: raw, unpolished, and the most naturally gifted prospect he's seen in a decade.",
+      "Report back: 'Sign him before someone else does.'"
+    ],
+    "s1_opt_offer": ["Make the offer (¥500,000)", "Bid for him (¥500,000)"],
+    "s1_opt_walk": ["Walk away", "It's too much"],
+    "s2_title": ["The Visa Battle", "Paperwork and Politics"],
+    "s2_summary": [
+      "Immigration hurdles and foreign-quota politics stall the signing. Time favors the other suitors.",
+      "The paperwork is a maze — and word is a rival heya has entered the chase."
+    ],
+    "s2_opt_strings": ["Pull political strings (¥300,000)", "Spend favors (¥300,000)"],
+    "s2_opt_process": ["Let the process run", "Be patient"],
+    "s3_title": ["The Rival Swoops", "Last-Minute Competition"],
+    "s3_summary": [
+      "A rival stable tables a bigger offer at the eleventh hour. Match it, or lose him.",
+      "Your prospect hesitates — a counter-offer just arrived."
+    ],
+    "s3_opt_counter": ["Counter-offer (¥400,000)", "Raise the stakes (¥400,000)"],
+    "s3_opt_concede": ["Concede gracefully", "Let him go"],
+    "s4_title": ["Arrival", "The New Recruit"],
+    "s4_summary": [
+      "He steps off the plane into a wall of camera flashes. The newest name at %HEYA% begins.",
+      "A giant silhouette in the heya doorway. The future just got taller."
+    ],
+    "s4_opt_welcome": ["Welcome him properly", "Fold him into the stable"]
+  },
+
+  "succession_tension": {
+    "s0_title": ["The Whisper Campaign", "Knives in the Dark"],
+    "s0_summary": [
+      "Word reaches you: certain elders question your leadership and quietly favor a successor.",
+      "Someone inside the stable is campaigning to replace you — politely, of course."
+    ],
+    "s0_opt_confront": ["Confront the conspirators", "Name names"],
+    "s0_opt_ignore": ["Ignore the noise", "Above such things"],
+    "s1_title": ["The Factions Form", "Choosing Sides"],
+    "s1_summary": [
+      "The stable quietly splits: those who want you to name an heir, and those who want you gone.",
+      "Two camps form around the succession question. The rikishi can feel it."
+    ],
+    "s1_opt_heir": ["Name an heir publicly", "Settle it now"],
+    "s1_opt_silent": ["Stay silent on succession", "No comment"],
+    "s2_title": ["Open Rebellion", "The Challenge"],
+    "s2_summary": [
+      "The insurgency goes public — a rival oyakata openly questions your fitness to lead %HEYA%.",
+      "It comes to a head at the elders' meeting: a direct challenge to your authority."
+    ],
+    "s2_opt_whip": ["Crack the whip — reassert control", "Remind them who is oyakata"],
+    "s2_opt_appease": ["Appease the elders (¥200,000)", "Buy peace (¥200,000)"],
+    "s3_title": ["Stability Restored", "The Dust Settles"],
+    "s3_summary": [
+      "The rebellion folds. Whether won by force or favor, %HEYA% is yours — for now.",
+      "Order returns to the stable. The succession question is answered, at least for today."
+    ],
+    "s3_opt_consolidate": ["Consolidate your position", "Secure the throne"]
+  },
+
+  "injury_coverup": {
+    "s0_title": ["The Hidden Limp", "Limping in Secret"],
+    "s0_summary": [
+      "You catch %SHIKONA% wincing when he thinks nobody is watching. He insists he is fine. He is not.",
+      "%SHIKONA% has been hiding an injury — taping it himself before anyone arrives at keiko."
+    ],
+    "s0_opt_scan": ["Order a full medical scan (¥100,000)", "Get it looked at (¥100,000)"],
+    "s0_opt_away": ["Look the other way", "If he says he's fine…"],
+    "s1_title": ["The Diagnosis", "What the Scan Showed"],
+    "s1_summary": [
+      "The scan confirms it: a stress injury that will only worsen under load. Weeks of rest — or risk something serious.",
+      "The doctor is blunt: compete through this and it becomes a career problem."
+    ],
+    "s1_opt_rest": ["Rest him now", "Shut him down"],
+    "s1_opt_tape": ["Tape it up and send him out", "Patch and pray"],
+    "s2_title": ["The Collapse", "It Gives Way"],
+    "s2_summary": [
+      "Mid-bout, the injury gives. %SHIKONA% cannot stand unaided. The cameras caught everything — including your inaction.",
+      "He collapses on the dohyo. Now everyone is asking who knew, and when."
+    ],
+    "s2_opt_treat": ["Full treatment program (¥350,000)", "Best care money buys (¥350,000)"],
+    "s2_opt_spin": ["Spin the press", "Control the narrative"],
+    "s3_title": ["The Slow Recovery", "The Long Road Back"],
+    "s3_summary": [
+      "%SHIKONA% begins a careful rehab. The lesson is expensive but learned: health is not a rumor to be managed.",
+      "Rehab proceeds. The stable exhales."
+    ],
+    "s3_opt_patient": ["Bring him back patiently", "No rushing this time"]
+  },
+
+  "elder_retirement": {
+    "s0_title": ["The Farewell Hint", "An Elder Considers the Exit"],
+    "s0_summary": [
+      "A loyal coach mentions retirement over tea — not a decision yet, but a door left open.",
+      "Your most experienced hand is weighing whether this is his last year."
+    ],
+    "s0_opt_stay": ["Persuade him to stay", "Talk him into one more year"],
+    "s0_opt_plan": ["Plan for his succession", "Begin the transition"],
+    "s1_title": ["One More Year", "The Last Campaign"],
+    "s1_summary": [
+      "He agrees to stay — for the right reasons and the right recognition.",
+      "One more year, he says. Make it worth his while."
+    ],
+    "s1_opt_raise": ["Give him a raise (¥180,000)", "Show him the money (¥180,000)"],
+    "s1_opt_farewell": ["Accept his farewell", "Let him go with grace"],
+    "s2_title": ["The Transition", "Passing the Torch"],
+    "s2_summary": [
+      "He takes his leave after decades of service. The stable marks the end of an era.",
+      "An era closes. His wisdom walks out the door — how will you honor it?"
+    ],
+    "s2_opt_dinner": ["Memorial dinner in his honor (¥120,000)", "A proper send-off dinner (¥120,000)"],
+    "s2_opt_quiet": ["A quiet send-off", "Simple goodbyes"],
+    "s3_title": ["Renewed", "Back for More"],
+    "s3_summary": [
+      "Reinvigorated, he returns to the keiko-ba with new energy. The young rikishi benefit most.",
+      "The elder stays — and the whole stable breathes easier."
+    ],
+    "s3_opt_work": ["Back to work", "Onward together"]
+  },
+
+  "noren_gift": {
+    "s0_title": ["A Gift from the Past", "The Old Noren"],
+    "s0_summary": [
+      "A retired great of the sport offers %HEYA% his own entrance curtain — a noren bearing his storied name.",
+      "An all-time champion wants to gift your stable his ceremonial noren. Such gifts carry meaning."
+    ],
+    "s0_opt_accept": ["Accept the gift", "Receive it with gratitude"],
+    "s0_opt_decline": ["Decline politely", "Too heavy an honor"],
+    "s1_title": ["The Unveiling", "Hanging History"],
+    "s1_summary": [
+      "The noren arrives — hand-stitched, decades of glory in its weave. It deserves a proper unveiling.",
+      "The curtain hangs at the heya entrance. Old men in the neighborhood stop and stare."
+    ],
+    "s1_opt_ceremony": ["Hold an unveiling ceremony (¥60,000)", "A proper ceremony (¥60,000)"],
+    "s1_opt_quiet": ["Hang it quietly", "No fuss"],
+    "s2_title": ["Legacy", "The Weight of a Name"],
+    "s2_summary": [
+      "The noren sways in the doorway. Every rikishi who passes under it knows what is expected of him now.",
+      "The stable carries a legend's name over its door. The standard is set."
+    ],
+    "s2_opt_carry": ["Carry the name forward", "Live up to it"]
+  },
+
+  "tsukebito_abuse": {
+    "s0_title": ["The Attendants' Complaint", "Servants Who Say Enough"],
+    "s0_summary": [
+      "Two junior tsukebito quietly report that %SHIKONA%'s demands have crossed from tradition into cruelty.",
+      "Attendant duty is hard by design — but what %SHIKONA% demands is something else."
+    ],
+    "s0_opt_interview": ["Interview the juniors privately", "Hear them out"],
+    "s0_opt_side": ["Side with the senior man", "Back your sekitori"],
+    "s1_title": ["The Truth", "What the Juniors Said"],
+    "s1_summary": [
+      "The accounts are consistent and credible: errands at all hours, humiliation dressed up as 'training'.",
+      "Three separate juniors tell the same story. This is real."
+    ],
+    "s1_opt_reassign": ["Reassign the attendants now", "Get them out"],
+    "s1_opt_warn": ["Warn %SHIKONA% and move on", "A word in his ear"],
+    "s2_title": ["The Exposure", "It Gets Out"],
+    "s2_summary": [
+      "The story leaks to a weekly magazine: 'The Stable Where Attendants Serve in Fear.'",
+      "Photos of a junior carrying luggage in the rain while %SHIKONA% walks ahead — the optics are terrible."
+    ],
+    "s2_opt_discipline": ["Discipline him publicly", "Make an example"],
+    "s2_opt_deny": ["Deny and defend", "Circle the wagons"],
+    "s3_title": ["New Norms", "A Kinder Order"],
+    "s3_summary": [
+      "New attendant rules are posted: defined duties, real rest, a line to the oyakata for grievances.",
+      "The juniors stand taller. Duty remains duty — cruelty is out."
+    ],
+    "s3_opt_norms": ["Enshrine the new norms", "Make it permanent"]
+  },
+
+  "weight_spiral": {
+    "s0_title": ["The Ballooning", "Too Much of a Good Thing"],
+    "s0_summary": [
+      "%SHIKONA%'s weight has climbed past usefulness — the bulk that made him strong now slows him down.",
+      "The scale does not lie: %SHIKONA% has out-eaten his own frame."
+    ],
+    "s0_opt_diet": ["Put him on a diet plan", "Cut the chanko down"],
+    "s0_opt_eat": ["Let him eat — mass is power", "Keep feeding the engine"],
+    "s1_title": ["The Grinding Cut", "Hunger and Sweat"],
+    "s1_summary": [
+      "The cut is brutal — smaller portions, extra roadwork. %SHIKONA% hates every morning of it.",
+      "Kilos come off slowly. Tempers shorten faster."
+    ],
+    "s1_opt_hold": ["Hold the course", "Stay the plan"],
+    "s1_opt_ease": ["Ease off before he breaks", "Mercy on the man"],
+    "s2_title": ["Heavy Consequences", "The Bill Arrives"],
+    "s2_summary": [
+      "The extra weight took its toll — knees complaining, stamina gone by the second week of the basho.",
+      "Medical opinion: continue this way and the joints retire before the man does."
+    ],
+    "s2_opt_medical": ["Fund a medical program (¥200,000)", "Professional weight management (¥200,000)"],
+    "s2_opt_accept": ["Accept the bulk", "He is what he is"],
+    "s3_title": ["Fighting Fit Again", "The Right Weight"],
+    "s3_summary": [
+      "%SHIKONA% finds the balance — powerful but mobile. The mornings look different now.",
+      "Leaner, quicker, happier. The experiment ends well."
+    ],
+    "s3_opt_onward": ["Onward", "Back to chasing wins"]
+  }
+}

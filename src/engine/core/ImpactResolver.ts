@@ -570,6 +570,7 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
             rikishiId: eventDef.rikishiId,
             data: eventDef.data,
             importance: eventDef.importance || "notable",
+            causalEventId: eventDef.causalEventId,
             title: data.title || humanizeEventType(eventDef.type),
             summary: data.summary || summarizeEventData(eventDef.type, data),
           });

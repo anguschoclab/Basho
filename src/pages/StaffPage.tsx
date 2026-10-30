@@ -113,6 +113,46 @@ export default function StaffPage() {
             )}
           </div>
         )}
+
+        {/* P2 — monthly-refreshed staff candidate pool */}
+        {(world?.staffCandidatePool?.length ?? 0) > 0 && (
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))]">
+              Candidate Pool
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {(world?.staffCandidatePool ?? []).map((c) => {
+                const signingFee = c.wageYen * 2;
+                const affordable = (heya.funds ?? 0) >= signingFee;
+                return (
+                  <div
+                    key={c.id}
+                    className="flex items-center justify-between rounded-md border border-[hsl(var(--border))] p-3"
+                  >
+                    <div>
+                      <div className="text-sm font-medium">{c.name}</div>
+                      <div className="text-xs text-[hsl(var(--muted-foreground))]">
+                        {ROLE_LABELS[c.role] ?? c.role} · skill {c.skill}/10 · ¥
+                        {c.wageYen.toLocaleString("en-US")}/mo · through {c.contractEndYear}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={!affordable}
+                      onClick={() => {
+                        sendCommand({ type: "HIRE_STAFF_CANDIDATE", heyaId: heya.id, candidateId: c.id });
+                        toast.success(`Signed ${c.name}`);
+                      }}
+                      className="text-xs font-medium px-3 py-1.5 rounded border border-[hsl(var(--border))] disabled:opacity-40"
+                    >
+                      Sign · ¥{signingFee.toLocaleString("en-US")}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </div>
     </AppLayout>
   );

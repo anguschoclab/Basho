@@ -32,6 +32,8 @@ export interface Heya {
   brandIdentityId?: Id; // Reference to HeyaBrandIdentity
   koenkaiId?: Id;
   staffIds?: Id[];
+  /** P2: post-based staffing — slots per role and who fills them. */
+  staffPosts?: Record<string, { slots: number; filledIds: Id[] }>;
   rikishiIds?: Id[];
 
   /** P2: Discrete stable infrastructure */

@@ -23,6 +23,7 @@ export interface ReplayTickCtx extends ReplayRuntime {
   phaseDurations: Record<ReplayPhase, number>;
   setUiPhase: (p: ReplayPhase) => void;
   setNarration: (s: string) => void;
+  setNarIndex: (i: number) => void;
   setIsPlaying: (playing: boolean) => void;
   onComplete?: () => void;
 }
@@ -71,8 +72,20 @@ function emitPhaseTransition(ctx: ReplayTickCtx, next: ReplayPhase, W: number, H
         spawnParticles("dust", W * 0.5, H * 0.6, 8);
     }
   }
-  if (next === "ceremony" && (result.upset || result.isKinboshi)) {
-    spawnParticles("zabuton", W * 0.5, H * 0.35, 14);
+  if (next === "ceremony") {
+    // Cushions fly for giant-killings; confetti rains when the bout decided
+    // something — yusho race / title stakes / kensho on the line.
+    if (result.upset || result.isKinboshi) {
+      spawnParticles("zabuton", W * 0.5, H * 0.35, 14);
+    }
+    if (result.isTitleStakes || result.isYushoRace || result.kenshoEnvelopes > 0) {
+      spawnParticles("confetti", W * 0.5, H * 0.1, 30);
+    }
+  }
+  // Yusho-clinch zabuton the moment the winning technique lands.
+  if (next === "finish" && (result.isTitleStakes || result.isYushoRace)) {
+    spawnParticles("zabuton", W * 0.5, H * 0.15, 12);
+    spawnParticles("confetti", W * 0.5, H * 0.12, 16);
   }
 }
 
@@ -119,6 +132,13 @@ function tickAmbient(ctx: ReplayTickCtx, delta: number, W: number, H: number): v
     rng.next() < 0.05 * (delta / 16)
   ) {
     spawnParticles("spark", W * 0.5, H * 0.5, 5);
+  }
+  if (
+    ctx.phaseRef.current === "ceremony" &&
+    (ctx.result.isTitleStakes || ctx.result.isYushoRace || ctx.result.kenshoEnvelopes > 0) &&
+    rng.next() < 0.03 * (delta / 16)
+  ) {
+    spawnParticles("confetti", W * (0.2 + rng.next() * 0.6), H * 0.05, 2);
   }
 }
 
@@ -218,6 +238,7 @@ export function replayTick(
   if (ni !== ctx.narIndexRef.current) {
     ctx.narIndexRef.current = ni;
     ctx.setNarration(ctx.lines[ni] || "");
+    ctx.setNarIndex(ni);
   }
 
   tickAmbient(ctx, delta, W, H);

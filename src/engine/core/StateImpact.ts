@@ -129,6 +129,10 @@ export type WritableWorldFields = Pick<
   | "meta"
   | "pendingCrisis"
   | "pendingDecisions"
+  | "activeChains"
+  | "chainCooldowns"
+  | "activeScoutMissions"
+  | "staffCandidatePool"
   | "pendingRikishiRequests"
   | "factionPostures"
   | "yokozunaVacancyStreak"
@@ -258,6 +262,7 @@ export interface StateImpact {
     rikishiId?: Id;
     data: NarrativeContext;
     importance?: EventImportance;
+    causalEventId?: Id;
   }>;
 
   /**

@@ -39,5 +39,5 @@ export interface Particle {
   maxLife: number;
   size: number;
   color: string;
-  type: "impact" | "salt" | "dust" | "spark" | "zabuton";
+  type: "impact" | "salt" | "dust" | "spark" | "zabuton" | "confetti";
 }

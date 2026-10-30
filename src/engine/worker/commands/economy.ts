@@ -9,6 +9,7 @@ import * as myosekiTrading from "@/engine/governance/services/MyosekiTradingServ
 import { MYOSEKI_BASE_ASKING_PRICE } from "@/constants/engine/economic";
 import * as sponsorService from "@/engine/economy/SponsorContractService";
 import * as staffService from "@/engine/economy/staff";
+import { hireStaffCandidate } from "@/engine/economy/staffPosts";
 import * as loans from "@/engine/economy/loans";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { recruitSponsor } from "@/engine/economy/sponsorshipMutations";
@@ -107,6 +108,13 @@ export function economyCommands(rt: WorkerRuntime): CommandHandlerMap {
     FIRE_STAFF: (cmd) => {
       if (rt.world) {
         const impact = staffService.fireStaff(rt.world, cmd.heyaId, cmd.staffId);
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+    HIRE_STAFF_CANDIDATE: (cmd) => {
+      if (rt.world) {
+        const impact = hireStaffCandidate(rt.world, cmd.heyaId, cmd.candidateId);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

@@ -139,6 +139,8 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
                   onClick={toggleSort}
                 />
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Basho</th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Fatigue</th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Status</th>
                 <TableHeader
                   label="Avg Rank"
                   id="avgRankLabel"
@@ -243,6 +245,12 @@ const StableStatsRow = React.memo(function StableStatsRow({ r }: { r: UIRikishi 
         <StreakBadge streak={r.streak} label={r.streakLabel} />
       </td>
       <td className="py-3 px-4 font-medium text-primary">{r.currentBashoRecord}</td>
+      <td className="py-3 px-4 font-mono text-muted-foreground">
+        {Number.isFinite(r.fatigue) ? Math.round(r.fatigue) : "—"}
+      </td>
+      <td className="py-3 px-4 text-muted-foreground">
+        {r.isInjured ? `Injured — ${r.injurySummary}` : (r.condition ?? 100) < 40 ? "Poor condition" : "Fit"}
+      </td>
       <td className="py-3 px-4 font-display font-semibold text-primary">{r.avgRankLabel}</td>
     </tr>
   );

@@ -17,6 +17,7 @@ import {
   promoteIntake,
 } from "@/engine/recruitment/YouthAcademyService";
 import { WorldCircuitService, manageAcademy } from "@/engine/worldCircuit/WorldCircuitService";
+import { sendScout } from "@/engine/recruitment/scoutMissions";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
 import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
@@ -28,8 +29,8 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
           rt.world,
           cmd.candidateId,
           cmd.heyaId,
-          "standard",
-          "high"
+          cmd.offerType ?? "standard",
+          cmd.interest ?? "high"
         );
         if (result.ok && result.impact) {
           rt.world = resolveImpacts(rt.world, [result.impact]);
@@ -137,6 +138,13 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     MANAGE_ACADEMY: (cmd) => {
       if (rt.world) {
         const impact = manageAcademy(rt.world, cmd.heyaId, cmd.region, cmd.config);
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+    SEND_SCOUT: (cmd) => {
+      if (rt.world) {
+        const impact = sendScout(rt.world, cmd.heyaId, cmd.scoutStaffId, cmd.tier);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

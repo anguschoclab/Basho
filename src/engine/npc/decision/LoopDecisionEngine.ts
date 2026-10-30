@@ -18,6 +18,8 @@ import { getPlayerHeya } from "@/engine/core/queries";
 import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
 import { applyRequestOutcome } from "@/engine/npc/agency/requests";
 import type { RikishiRequestType } from "@/engine/npc/agency/types";
+import { resolveChainStage } from "@/engine/events/chains/chainService";
+import { resolveKoenkaiDemand } from "@/engine/economy/koenkaiDemands";
 
 export interface LoopDecision {
   id: string;
@@ -402,6 +404,12 @@ export function applyDecisionEffect(
       });
     }
   }
+  if (decisionType === "chain_stage" && decisionId) {
+    resolveChainStage(world, builder, decisionId, optionId);
+  }
+  if (decisionType === "koenkai_demand" && decisionId) {
+    resolveKoenkaiDemand(world, builder, decisionId, optionId);
+  }
   if (decisionType === "rikishi_request" && decisionId) {
     const reqId = decisionId.startsWith("rikreq_") ? decisionId.slice("rikreq_".length) : "";
     const req = (world.pendingRikishiRequests ?? []).find((q) => q.id === reqId);
@@ -450,6 +458,8 @@ function decisionConsequenceSummary(
       return optionId === "grant"
         ? "Granted the wrestler's request — morale improves."
         : "Denied the wrestler's request — stress and restlessness rise.";
+    case "chain_stage":
+      return `Story chapter resolved (${optionId}).`;
     default:
       return "Decision resolved.";
   }
@@ -505,6 +515,8 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     welfare_diet: "premium",
     kyujo_decision: "withdraw",
     rikishi_request: "grant",
+    chain_stage: "first",
+    koenkai_demand: "comply",
   },
   balanced: {
     pre_basho_readiness: "rest",
@@ -513,6 +525,8 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     welfare_diet: "maintenance",
     kyujo_decision: "withdraw",
     rikishi_request: "grant",
+    chain_stage: "first",
+    koenkai_demand: "comply",
   },
   aggressive: {
     pre_basho_readiness: "push",
@@ -521,6 +535,8 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     welfare_diet: "maintenance",
     kyujo_decision: "compete",
     rikishi_request: "deny",
+    chain_stage: "first",
+    koenkai_demand: "decline",
   },
 };
 
@@ -560,6 +576,10 @@ const QUEUE_DEFAULTS: Record<string, string> = {
   welfare_diet: "maintenance",
   // An ignored rikishi request is a denial — the denial consequence applies.
   rikishi_request: "deny",
+  // An ignored chain stage resolves via its first (registry-order) option.
+  chain_stage: "first",
+  // An ignored koenkai demand is a decline — supporters notice.
+  koenkai_demand: "decline",
 } as const;
 
 /**
@@ -582,7 +602,11 @@ export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
     if (!def || !heya) continue;
     if (d.type === "weekly_training_emphasis") {
       setTrainingIntensity(builder, world, heya.id, def);
-    } else if (d.type === "rikishi_request") {
+    } else if (
+      d.type === "rikishi_request" ||
+      d.type === "chain_stage" ||
+      d.type === "koenkai_demand"
+    ) {
       applyDecisionEffect(world, builder, d.type, def, d.id);
     } else if (d.type === "welfare_diet") {
       builder.updateHeya(heya.id, {

@@ -14,20 +14,25 @@ import { getLoserBodyPhase, getWinnerBodyPhase } from "@/components/basho/boutRe
 type Pair = { east: RikishiState; west: RikishiState };
 
 export function ritualTarget(p01: number): Pair {
+  // Entrance walk-in: first 30% of the ritual phase the rikishi enter from
+  // the hanamichi corners (east from the left aisle, west from the right).
+  const walk = Math.min(1, p01 / 0.3);
+  const eastX = lerp(-0.08, 0.27, walk);
+  const westX = lerp(1.08, 0.73, walk);
   return {
     east: {
-      pos: { x: 0.27, y: 0.52 },
+      pos: { x: eastX, y: 0.52 },
       rotation: 0,
       scale: 1,
       bodyPhase: p01 < 0.55 ? "standing" : "bowing",
-      opacity: 1,
+      opacity: walk,
     },
     west: {
-      pos: { x: 0.73, y: 0.52 },
+      pos: { x: westX, y: 0.52 },
       rotation: 0,
       scale: 1,
       bodyPhase: p01 < 0.55 ? "standing" : "bowing",
-      opacity: 1,
+      opacity: walk,
     },
   };
 }

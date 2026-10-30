@@ -21,9 +21,15 @@ export function phase01_daily_economy(world: WorldState): StateImpact {
     if (rikishiCount === 0) continue; // Skip heyas with no rikishi
 
     const welfare = WelfareService.ensureHeyaWelfareState(heya);
-    const diet = welfare.activeDiet || "maintenance";
-    const costPerRikishi = DIET_COSTS[diet] ?? DIET_COST_STANDARD;
-    const dailyFoodCost = rikishiCount * costPerRikishi;
+    const heyaDiet = welfare.activeDiet || "maintenance";
+    // P3: per-rikishi diet override — each rikishi costs by his own regimen,
+    // falling back to the heya default.
+    const rikishiMap = world.rikishi;
+    let dailyFoodCost = 0;
+    for (const rid of new Set(heya.rikishiIds ?? [])) {
+      const diet = rikishiMap.get(rid)?.diet ?? heyaDiet;
+      dailyFoodCost += DIET_COSTS[diet] ?? DIET_COST_STANDARD;
+    }
     const nextFunds = Math.max(DEBT_LIMIT, heya.funds - dailyFoodCost);
 
     totalDailyFoodCost += dailyFoodCost;

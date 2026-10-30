@@ -113,7 +113,13 @@ function applyFatigueStep(
     // Recovery focus flips the delta: injured wrestlers on protect/rebuild shed fatigue
     updates.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) - Math.abs(fatigueDelta)));
   } else {
-    updates.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) + fatigueDelta));
+    // P3: hard effort accrues more fatigue; light accrues less.
+    const effortFatigue =
+      rikishi.effortLevel === "hard" ? 1.25 : rikishi.effortLevel === "light" ? 0.75 : 1.0;
+    updates.fatigue = Math.max(
+      0,
+      Math.min(100, (rikishi.fatigue || 0) + fatigueDelta * effortFatigue)
+    );
   }
   return isOnRecoveryFocus;
 }
@@ -241,7 +247,14 @@ function computeFinalGrowth(
       ? calculateGains(rikishi, activeModifiers, profile, individualFocus, world.year)
       : calculateGrowthVector(profile, individualFocus, rikishi, heya, world);
 
-  // Apply staff bonuses + Drill Vector + Infrastructure Buffs
+  // P3: per-rikishi effort level scales total growth (hard trains harder).
+  const effortMult =
+    rikishi.effortLevel === "hard" ? 1.25 : rikishi.effortLevel === "light" ? 0.8 : 1.0;
+  for (const k of Object.keys(growth) as Array<keyof typeof growth>) {
+    growth[k] *= effortMult;
+  }
+
+  // Apply staff bonuses + Drill Vector + Infrastructure Buffs + effort
   return {
     power: (growth.power + drillVector.power) * staffBonuses.conditioning * infra.statBuffs.power,
     speed: (growth.speed + drillVector.speed) * staffBonuses.conditioning * infra.statBuffs.speed,

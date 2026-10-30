@@ -16,6 +16,9 @@ import {
   drawKimariteBanner,
   drawUpsetBanner,
   drawCrowdAtmosphere,
+  drawCanopy,
+  drawGyoji,
+  drawTrophyBeat,
   type ReplayPhase,
   type RikishiState,
   type Particle,
@@ -69,6 +72,10 @@ export function makeSpawnParticles(
         dust: FX_PARTICLES.dustAt(55 + rng.next() * 20),
         spark: FX_PARTICLES.spark,
         zabuton: BOUT_HUD_COLORS.zabuton[Math.floor(rng.next() * 4)],
+        confetti:
+          FX_PARTICLES.confetti[
+            Math.floor(rng.next() * FX_PARTICLES.confetti.length)
+          ],
       };
       np.push({
         id: particleId.current++,
@@ -83,7 +90,9 @@ export function makeSpawnParticles(
             ? 2 + rng.next() * 3
             : type === "zabuton"
               ? 8 + rng.next() * 8
-              : 3 + rng.next() * 5,
+              : type === "confetti"
+                ? 3 + rng.next() * 4
+                : 3 + rng.next() * 5,
         color: colors[type],
         type,
       });
@@ -102,6 +111,7 @@ export function drawReplayFrame(
   const shake = rt.shakeRef.current;
   ctx.clearRect(0, 0, W, H);
   drawDohyo(ctx, W, H, shake);
+  drawCanopy(ctx, W, H);
   drawParticles(ctx, rt.particlesRef.current);
   drawRikishi(
     ctx,
@@ -126,6 +136,7 @@ export function drawReplayFrame(
     rt.winnerSide !== "east"
   );
   drawImpactFlash(ctx, W, H, rt.flashRef.current);
+  drawGyoji(ctx, W, H, rt.phaseRef.current, rt.winnerSide);
 
   if (rt.phaseRef.current === "finish" || rt.phaseRef.current === "ceremony") {
     const bannerAlpha = rt.phaseRef.current === "finish" ? easeOut(rt.progressRef.current) : 1;
@@ -133,6 +144,12 @@ export function drawReplayFrame(
   }
   if (rt.phaseRef.current === "ceremony" && (rt.result.upset || rt.result.isKinboshi)) {
     drawUpsetBanner(ctx, W, H, easeOut(rt.progressRef.current), !!rt.result.isKinboshi);
+  }
+  if (
+    rt.phaseRef.current === "ceremony" &&
+    (rt.result.isTitleStakes || rt.result.isYushoRace || rt.result.kenshoEnvelopes > 0)
+  ) {
+    drawTrophyBeat(ctx, W, H, rt.progressRef.current);
   }
 
   drawCrowdAtmosphere(

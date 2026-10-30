@@ -11,6 +11,7 @@ import { REPLAY_PHASE_LABELS, CROWD_TEXT } from "@/components/basho/boutReplay/b
 import { useBoutReplay } from "@/components/basho/boutReplay/useBoutReplay";
 import type { BoutReplayProgress } from "@/components/basho/boutReplay/useBoutReplay";
 import { BoutControls } from "@/components/basho/boutReplay/BoutControls";
+import { NarrationFeed } from "@/components/basho/boutReplay/NarrationFeed";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
 export interface BoutReplayViewerHandle {
@@ -44,7 +45,8 @@ export function BoutReplayViewer({
     speed,
     setSpeed,
     uiPhase,
-    narration,
+    narIndex,
+    pbpLines,
     progress,
     seekTo,
     reset,
@@ -142,11 +144,9 @@ export function BoutReplayViewer({
         )}
       </div>
 
-      {/* Narration */}
-      <div className="px-4 py-3 bg-muted/20 border-t border-border min-h-[3.5rem] flex items-center justify-center">
-        <p className="text-sm text-center leading-snug text-foreground/90 italic">
-          {narration || "…"}
-        </p>
+      {/* Broadcast narration feed */}
+      <div className="bg-scrim/95 border-t border-border">
+        <NarrationFeed lines={pbpLines} activeIndex={narIndex} />
       </div>
 
       <BoutControls

@@ -32,6 +32,7 @@ import { scanRecentEvents } from "@/engine/events/events";
 import { narrativeEventMap } from "@/engine/bard/narrativeEventMap";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngForWorld } from "@/engine/core/rng";
+import { tickWeekEventChains } from "@/engine/events/chains/chainService";
 import type { NarrativeContext } from "@/engine/types/events";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
@@ -113,6 +114,9 @@ export function phase06_narrative(world: WorldState): StateImpact {
   // ── Phase 4: Narrative Crises ─────────────────────────────────────────────
   const crisisImpact = CrisisService.checkForWeeklyCrisis(world);
   builder.merge(crisisImpact);
+
+  // ── Event chains (P1): weekly roll + due-stage pendingDecisions ──────────
+  builder.merge(tickWeekEventChains(world));
 
   // ── Narrative Agent (player heya only) ──────────────────────────────────────
   if (world.playerHeyaId && world.oyakata) {

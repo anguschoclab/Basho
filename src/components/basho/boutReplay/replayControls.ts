@@ -34,6 +34,7 @@ export interface ReplayControlsCtx {
   setProgress: (p: BoutReplayProgress) => void;
   setUiPhase: (p: ReplayPhase) => void;
   setNarration: (s: string) => void;
+  setNarIndex: (i: number) => void;
   setIsPlaying: (playing: boolean) => void;
 }
 
@@ -56,6 +57,7 @@ export function replayReset(ctx: ReplayControlsCtx): void {
   ctx.setProgress(zeroProgress);
   ctx.setUiPhase("ritual");
   ctx.setNarration(ctx.lines[0] || "");
+  ctx.setNarIndex(0);
   ctx.setIsPlaying(false);
 }
 
@@ -93,6 +95,7 @@ export function replaySeekTo(
   const ni = getPhaseNarrationIndex(newPhase, target.phaseProgress, ctx.lines.length);
   ctx.narIndexRef.current = ni;
   ctx.setNarration(ctx.lines[ni] || "");
+  ctx.setNarIndex(ni);
 
   const computed = computeGlobalProgress(
     target.phaseIndex,

@@ -156,6 +156,10 @@ function serializeWorld(world: WorldState): SerializedWorldState {
 
     pendingCrisis: world.pendingCrisis,
     pendingDecisions: world.pendingDecisions,
+    activeChains: world.activeChains,
+    chainCooldowns: world.chainCooldowns,
+    activeScoutMissions: world.activeScoutMissions,
+    staffCandidatePool: world.staffCandidatePool,
     pendingRikishiRequests: world.pendingRikishiRequests,
     pendingExhibitions: world.pendingExhibitions,
     matchmakingOverride: world.matchmakingOverride,
@@ -177,6 +181,19 @@ function serializeWorld(world: WorldState): SerializedWorldState {
         }
       : undefined,
     isInitialSeed: world.isInitialSeed,
+  };
+}
+
+/** Pending / in-flight decision + chain + mission state (keeps deserializeWorld under budget). */
+function deserializePendingFields(s: SerializedWorldState): Partial<WorldState> {
+  return {
+    pendingCrisis: s.pendingCrisis,
+    pendingDecisions: s.pendingDecisions,
+    activeChains: s.activeChains,
+    chainCooldowns: s.chainCooldowns,
+    activeScoutMissions: s.activeScoutMissions,
+    staffCandidatePool: s.staffCandidatePool,
+    pendingRikishiRequests: s.pendingRikishiRequests,
   };
 }
 
@@ -285,9 +302,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
     customKeshoConfigs: s.customKeshoConfigs,
     encouragementLog: s.encouragementLog,
 
-    pendingCrisis: s.pendingCrisis,
-    pendingDecisions: s.pendingDecisions,
-    pendingRikishiRequests: s.pendingRikishiRequests,
+    ...deserializePendingFields(s),
     pendingExhibitions: s.pendingExhibitions,
     matchmakingOverride: s.matchmakingOverride,
     lastBoutResult: s.lastBoutResult,

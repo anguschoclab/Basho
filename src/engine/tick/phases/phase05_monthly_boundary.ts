@@ -27,6 +27,11 @@ import {
   distributeKoenkaiToSekitori,
 } from "@/engine/economy/TravelAllowanceService";
 import { tickMonthlyNPC } from "@/engine/npc/ticks";
+import { tickMonthlyKoenkaiDemands } from "@/engine/economy/koenkaiDemands";
+import {
+  tickMonthlyStaffContracts,
+  refreshStaffCandidatePool,
+} from "@/engine/economy/staffPosts";
 import { payMochikyukinBonuses } from "@/engine/economy/MochikyukinService";
 import { getKachiNokoriForRikishi } from "@/engine/economy/KachiNokoriService";
 import { renewSponsorContract } from "@/engine/economy/SponsorContractService";
@@ -115,6 +120,10 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     producers.push((w) => simulateExhibitionBasho(w, jungyoEvent.name, participants));
   }
   producers.push((w) => payMochikyukinBonuses(w, currentMonth));
+  // P2 — monthly koenkai demands + staff contract/wage/candidate-pool cycle.
+  producers.push((w) => tickMonthlyKoenkaiDemands(w));
+  producers.push((w) => tickMonthlyStaffContracts(w));
+  producers.push((w) => refreshStaffCandidatePool(w));
   for (const rn of renewals) {
     producers.push((w) =>
       renewSponsorContract(w, rn.relId, rn.sponsorId, {

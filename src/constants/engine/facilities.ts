@@ -51,6 +51,7 @@ export const FACILITY_BASE_COSTS: Record<string, number> = {
   academy_georgia: 45_000_000,
   academy_europe: 40_000_000,
   academy_americas: 40_000_000,
+  dormitory: 10_000_000,
 } as const;
 
 /** Monthly maintenance cost per facility type (¥). Used by FACILITY_REGISTRY. */
@@ -65,4 +66,5 @@ export const FACILITY_MAINTENANCE_COSTS: Record<string, number> = {
   academy_georgia: 1_800_000,
   academy_europe: 1_500_000,
   academy_americas: 1_500_000,
+  dormitory: 300_000,
 } as const;

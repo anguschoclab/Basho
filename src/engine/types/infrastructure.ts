@@ -17,13 +17,17 @@ export type FacilityId =
   | "academy_georgia"
   | "academy_europe"
   | "academy_americas"
-  | "scouting_office";
+  | "scouting_office"
+  | "dormitory";
 
 export type ConstructionStatus = "active" | "under_construction" | "remodelling";
 
 export interface InfrastructureState {
   level: number;
   status: ConstructionStatus;
+  /** Optional: wear 0–100 — decays monthly when maintenance is unpaid,
+   *  repairs when the heya funds its facilities (deferred-item chrome). */
+  condition?: number;
   completionYear?: number;
   completionBasho?: string;
 }
@@ -115,6 +119,19 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     maintenanceCost: FACILITY_MAINTENANCE_COSTS.scouting_office,
     bonuses: {
       mediaMod: 1.1, // Minor cross-over bonus for networking
+    },
+  },
+  dormitory: {
+    id: "dormitory",
+    label: "Rikishi Dormitory",
+    description:
+      "Proper quarters for the wrestlers — better rest, higher morale, and a selling point when persuading a recruit's family.",
+    baseCost: FACILITY_BASE_COSTS.dormitory,
+    buildTimeBasho: 1,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.dormitory,
+    bonuses: {
+      fatigueFloor: -4, // lowers the resting fatigue floor per level
+      statBuffs: { stamina: 1.03 },
     },
   },
   academy_mongolia: {

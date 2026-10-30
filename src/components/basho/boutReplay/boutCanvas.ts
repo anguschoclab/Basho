@@ -11,6 +11,9 @@ export {
   drawCrowdAtmosphere,
   drawKimariteBanner,
   drawUpsetBanner,
+  drawCanopy,
+  drawGyoji,
+  drawTrophyBeat,
 } from "@/components/basho/boutReplay/boutCanvas/draw";
 export {
   getTargetState,

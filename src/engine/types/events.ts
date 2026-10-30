@@ -68,7 +68,8 @@ export type EngineEventType =
   | "MEDIA_INTERVIEW_COMPLETED" // Media interview completed
   | "PRE_BASHO_JOURNALISM" // Pre-basho journalism cycle
   | "WORLD_META_EVOLUTION" // World meta-narrative evolved
-  | "RECORD_BROKEN"; // A record was broken
+  | "RECORD_BROKEN" // A record was broken
+  | "CHAIN_STAGE_RESOLVED"; // An event-chain stage was resolved
 
 /**
  * Type representing event phase.

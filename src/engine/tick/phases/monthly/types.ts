@@ -6,6 +6,7 @@
 
 import type { Loan } from "@/engine/types/economy";
 import type { FacilitiesBand } from "@/engine/types/narrative";
+import type { Heya } from "@/engine/types/heya";
 
 export type HeyaUpdates = Partial<{
   funds: number;
@@ -13,4 +14,5 @@ export type HeyaUpdates = Partial<{
   activeLoans: Loan[];
   facilities: { training: number; recovery: number; nutrition: number };
   facilitiesBand: FacilitiesBand;
+  infrastructure: Heya["infrastructure"];
 }>;
