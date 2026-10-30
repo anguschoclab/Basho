@@ -85,7 +85,7 @@ describe("StableStatsTable", () => {
     localStorage.clear();
   });
 
-  it("renders table headers for all 11 columns", () => {
+  it("renders table headers for all 13 columns", () => {
     render(<StableStatsTable rikishiList={[makeUIRikishi()]} />);
     expect(screen.getByText("Shikona")).toBeTruthy();
     expect(screen.getByText("Division")).toBeTruthy();
@@ -93,15 +93,17 @@ describe("StableStatsTable", () => {
     expect(screen.getByText("Losses")).toBeTruthy();
     expect(screen.getByText("Win %")).toBeTruthy();
     expect(screen.getByText("Streak")).toBeTruthy();
+    expect(screen.getByText("Training")).toBeTruthy();
+    expect(screen.getByText("Diet")).toBeTruthy();
     expect(screen.getByText("Mood")).toBeTruthy();
     expect(screen.getByText("Avg Rank")).toBeTruthy();
   });
 
-  it("renders empty state with colSpan matching column count (11)", () => {
+  it("renders empty state with colSpan matching column count (13)", () => {
     const { container } = render(<StableStatsTable rikishiList={[]} />);
     const emptyRow = container.querySelector("td[colspan]");
     expect(emptyRow).not.toBeNull();
-    expect(emptyRow?.getAttribute("colspan")).toBe("11");
+    expect(emptyRow?.getAttribute("colspan")).toBe("13");
   });
 
   it("renders the Mood cell from loyaltyBand, with a dash when unevaluated", () => {
@@ -111,8 +113,8 @@ describe("StableStatsTable", () => {
       makeUIRikishi({ id: "r3", shikona: "Charlie" }),
     ];
     const { container } = render(<StableStatsTable rikishiList={roster} />);
-    // cell 9 = mood column
-    const moods = getCellText(container, 9);
+    // cell 11 = mood column
+    const moods = getCellText(container, 11);
     expect(moods).toEqual(["Discontent", "Loyal", "—"]);
   });
 
@@ -233,7 +235,7 @@ describe("StableStatsTable", () => {
     it("clicking Avg Rank header sorts by avgRankLabel descending", () => {
       const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Avg Rank"));
-      const ranks = getCellText(container, 10);
+      const ranks = getCellText(container, 12);
       // desc: "Ms1", "M1", "J1"
       expect(ranks).toEqual(["Ms1", "M1", "J1"]);
     });
@@ -301,7 +303,7 @@ describe("StableStatsTable", () => {
       clickFilterBadge(container, "lower");
       const emptyRow = container.querySelector("td[colspan]");
       expect(emptyRow).not.toBeNull();
-      expect(emptyRow?.getAttribute("colspan")).toBe("11");
+      expect(emptyRow?.getAttribute("colspan")).toBe("13");
       expect(emptyRow?.textContent).toContain("No rikishi");
     });
   });

@@ -28,6 +28,7 @@ import {
 } from "@/engine/economy/TravelAllowanceService";
 import { tickMonthlyNPC } from "@/engine/npc/ticks";
 import { tickMonthlyKoenkaiDemands } from "@/engine/economy/koenkaiDemands";
+import { tickFacilityCondition } from "@/engine/economy/facilityWear";
 import {
   tickMonthlyStaffContracts,
   refreshStaffCandidatePool,
@@ -124,6 +125,8 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   producers.push((w) => tickMonthlyKoenkaiDemands(w));
   producers.push((w) => tickMonthlyStaffContracts(w));
   producers.push((w) => refreshStaffCandidatePool(w));
+  // Named-facility wear — condition decays monthly until repaired.
+  producers.push((w) => tickFacilityCondition(w));
   for (const rn of renewals) {
     producers.push((w) =>
       renewSponsorContract(w, rn.relId, rn.sponsorId, {

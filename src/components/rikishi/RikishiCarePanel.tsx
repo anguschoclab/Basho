@@ -5,11 +5,16 @@
  * physio session (BUY_PHYSIO) while injured.
  */
 import { useGameStore } from "@/state/stores/gameStore";
-import { toast } from "sonner";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
-import type { DietRegimen } from "@/engine/types/economy";
+import type { WorldState } from "@/presenters/uiDigest";
+import type { Style } from "@/engine/types/combat";
 import { deriveSignatureKimarite, PHYSIO_SESSION_COST } from "@/presenters/engineAccess";
+import {
+  InjuryCard,
+  InjuryHistory,
+  CareControls,
+} from "@/components/rikishi/RikishiCarePanelSections";
 
 const OSHI = new Set([
   "oshidashi", "tsukidashi", "hatakikomi", "tsukiotoshi", "hikiotoshi",
@@ -20,15 +25,17 @@ const YOTSU = new Set([
   "sukuinage", "kakenage", "uchigake", "sotogake", "utschari",
 ]);
 
-const DIETS: DietRegimen[] = ["austerity", "maintenance", "heavy_bulk", "premium"];
-const EFFORTS = ["light", "standard", "hard"] as const;
+const ALL_STYLES: Style[] = ["oshi", "yotsu", "hybrid"];
+const STYLE_LABELS: Record<Style, string> = { oshi: "Oshi", yotsu: "Yotsu", hybrid: "Hybrid" };
 
 export function RikishiCarePanel({
   rawRikishi,
   heya,
+  world,
 }: {
   rawRikishi: Rikishi;
   heya: Heya;
+  world?: WorldState;
 }) {
   const sendCommand = useGameStore((s) => s.sendCommand);
   const sig = deriveSignatureKimarite(rawRikishi);
@@ -47,6 +54,24 @@ export function RikishiCarePanel({
 
   const injured = rawRikishi.injured && (rawRikishi.injuryWeeksRemaining ?? 0) > 0;
   const physioAffordable = (heya.funds ?? 0) >= PHYSIO_SESSION_COST;
+  const status = rawRikishi.injuryStatus;
+
+  // "Best with" matchup hint (P6): styles not in the rikishi's
+  // weakAgainstStyles list are the ones he handles best.
+  const weakStyles = new Set(rawRikishi.weakAgainstStyles ?? []);
+  const favoredStyles = ALL_STYLES.filter((s) => !weakStyles.has(s));
+  const matchup =
+    favoredStyles.length === ALL_STYLES.length
+      ? "No exploitable weakness"
+      : favoredStyles.length === 0
+        ? "No favorable matchups"
+        : `Best vs ${favoredStyles.map((s) => STYLE_LABELS[s]).join(" / ")}`;
+
+  // Injury history — engine events of category "injury" scoped to this rikishi.
+  const injuryHistory = (world?.events?.log ?? [])
+    .filter((e) => e.category === "injury" && e.rikishiId === rawRikishi.id)
+    .slice(-4)
+    .reverse();
 
   return (
     <section className="rounded-md border border-[hsl(var(--border))] p-4 space-y-3">
@@ -82,66 +107,24 @@ export function RikishiCarePanel({
               : `Fatigue ${Math.round(rawRikishi.fatigue ?? 0)}`}
           </div>
         </div>
+        <div>
+          <div className="text-[hsl(var(--muted-foreground))]">Matchups</div>
+          <div className="font-medium">{matchup}</div>
+        </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 text-xs">
-        <label className="flex items-center gap-1.5">
-          <span className="text-[hsl(var(--muted-foreground))]">Diet</span>
-          <select
-            value={rawRikishi.diet ?? ""}
-            onChange={(e) =>
-              sendCommand({
-                type: "SET_RIKISHI_DIET",
-                rikishiId: rawRikishi.id,
-                diet: (e.target.value || null) as DietRegimen | null,
-              })
-            }
-            className="bg-transparent border border-[hsl(var(--border))] rounded px-2 py-1"
-          >
-            <option value="">Heya default</option>
-            {DIETS.map((d) => (
-              <option key={d} value={d}>
-                {d.replace("_", " ")}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex items-center gap-1.5">
-          <span className="text-[hsl(var(--muted-foreground))]">Effort</span>
-          <select
-            value={rawRikishi.effortLevel ?? "standard"}
-            onChange={(e) => {
-              sendCommand({
-                type: "SET_RIKISHI_EFFORT",
-                rikishiId: rawRikishi.id,
-                effort: e.target.value as (typeof EFFORTS)[number],
-              });
-              toast.success(`${rawRikishi.shikona}: effort → ${e.target.value}`);
-            }}
-            className="bg-transparent border border-[hsl(var(--border))] rounded px-2 py-1"
-          >
-            {EFFORTS.map((e) => (
-              <option key={e} value={e}>
-                {e}
-              </option>
-            ))}
-          </select>
-        </label>
-        {injured && (
-          <button
-            type="button"
-            disabled={!physioAffordable}
-            onClick={() => {
-              sendCommand({ type: "BUY_PHYSIO", rikishiId: rawRikishi.id });
-              toast.success(`Physio booked for ${rawRikishi.shikona}`);
-            }}
-            className="ml-auto text-xs font-medium px-3 py-1.5 rounded border border-[hsl(var(--border))] disabled:opacity-40"
-            title="Paid physiotherapy session — removes 1 week of recovery"
-          >
-            Physio session · ¥{PHYSIO_SESSION_COST.toLocaleString("en-US")}
-          </button>
-        )}
-      </div>
+      {injured && status && (
+        <InjuryCard status={status} weeksRemaining={rawRikishi.injuryWeeksRemaining ?? 0} />
+      )}
+
+      {injuryHistory.length > 0 && <InjuryHistory events={injuryHistory} />}
+
+      <CareControls
+        rikishi={rawRikishi}
+        injured={injured}
+        physioAffordable={physioAffordable}
+        sendCommand={sendCommand}
+      />
     </section>
   );
 }

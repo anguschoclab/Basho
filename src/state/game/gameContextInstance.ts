@@ -56,6 +56,10 @@ export interface GameContextValue {
     heyaId: string,
     facilityId: import("@/engine/types/infrastructure").FacilityId
   ) => void;
+  repairInfrastructure: (
+    heyaId: string,
+    facilityId: import("@/engine/types/infrastructure").FacilityId
+  ) => void;
   assignMentor: (mentorId: string, apprenticeId: string) => void;
   removeMentor: (apprenticeId: string) => void;
   addSparringPair: (heyaId: string, aId: string, bId: string) => void;

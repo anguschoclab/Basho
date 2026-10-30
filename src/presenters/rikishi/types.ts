@@ -71,6 +71,12 @@ export interface RikishiStatusDTO {
   councilWarnings: number;
   /** Weekly agency disposition band (undefined until first weekly evaluation). */
   loyaltyBand?: RikishiLoyaltyBand;
+  /** Effective diet — per-rikishi override or the heya regimen (P3). */
+  diet?: string;
+  /** Per-rikishi effort level (P3). */
+  effortLevel?: "light" | "standard" | "hard";
+  /** Individual training focus this week, if assigned (P3 dense roster). */
+  trainingFocus?: string;
 }
 
 /** Performance bands (power, technique, etc.) */

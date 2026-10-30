@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { phase01_daily_economy } from "@/engine/tick/phases/phase01_daily_economy";
+import { calculateWeeklyWelfareDelta } from "@/engine/welfare/WelfareCalculations";
 import { DIET_COSTS } from "@/constants/engine/economic";
 
 function mk(diets: Record<string, string | undefined>, heyaDiet: string) {
@@ -39,5 +40,23 @@ describe("per-rikishi diet (P3)", () => {
     const impact = phase01_daily_economy(world);
     const heyaUp = impact.entities?.heyaUpdates?.get("h1") as { funds?: number };
     expect(heyaUp?.funds).toBe(10_000_000 - DIET_COSTS.heavy_bulk * 2);
+  });
+
+  it("pro-rates the weekly welfare delta by roster share on austerity", () => {
+    const contrib = (r: { reasons: string[] }) =>
+      Number(
+        r.reasons.find((x) => x.startsWith("austerity_diet"))?.split("+")[1] ?? 0
+      );
+    const deltaOf = (diets: Record<string, string>) => {
+      const world = mk(diets, "maintenance");
+      const heya = world.heyas.get("h1")!;
+      return calculateWeeklyWelfareDelta(world, heya, heya.welfareState!);
+    };
+    const all = deltaOf({ r1: "austerity", r2: "austerity" });
+    const half = deltaOf({ r1: "austerity", r2: "maintenance" });
+    const none = deltaOf({ r1: "maintenance", r2: "maintenance" });
+    expect(contrib(all)).toBeGreaterThan(contrib(half));
+    expect(contrib(half)).toBeGreaterThan(0);
+    expect(contrib(none)).toBe(0);
   });
 });

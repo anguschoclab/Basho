@@ -22,6 +22,13 @@ function useGovernanceEconomyCommands(state: GameState) {
     [sendCommand]
   );
 
+  const repairInfrastructure = useCallback(
+    (heyaId: string, facilityId: import("@/engine/types/infrastructure").FacilityId) => {
+      sendCommand({ type: "REPAIR_INFRASTRUCTURE", heyaId, facilityId });
+    },
+    [sendCommand]
+  );
+
   const issueRuling = useCallback(
     (rulingId: string, severity: "lenient" | "standard" | "harsh") => {
       sendCommand({ type: "ISSUE_RULING", rulingId, severity });
@@ -82,6 +89,7 @@ function useGovernanceEconomyCommands(state: GameState) {
   return useMemo(
     () => ({
       buildInfrastructure,
+      repairInfrastructure,
       issueRuling,
       recruitSponsor,
       applyPressConference,
@@ -92,6 +100,7 @@ function useGovernanceEconomyCommands(state: GameState) {
     }),
     [
       buildInfrastructure,
+      repairInfrastructure,
       issueRuling,
       recruitSponsor,
       applyPressConference,

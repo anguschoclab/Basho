@@ -14,9 +14,10 @@ import { toKeyedMap } from "@/presenters/engineAccess";
 interface InfrastructureDashboardProps {
   heya: Heya;
   onUpgrade: (facilityId: FacilityId) => void;
+  onRepair?: (facilityId: FacilityId) => void;
 }
 
-export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashboardProps) {
+export function InfrastructureDashboard({ heya, onUpgrade, onRepair }: InfrastructureDashboardProps) {
   const infra = heya.infrastructure || {};
   const queue = useMemo(() => heya.constructionQueue || [], [heya.constructionQueue]);
 
@@ -35,6 +36,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
             state={infra[facility.id]}
             project={projectByFacilityId.get(facility.id)}
             onUpgrade={onUpgrade}
+            onRepair={onRepair}
           />
         ))}
       </div>

@@ -178,6 +178,22 @@ export function tickScoutMissions(world: WorldState): StateImpact {
   return builder.build();
 }
 
+/** Best scout negotiation stat in a heya (0 when no scout is employed). */
+export function bestScoutNegotiation(world: WorldState, heyaId: Id): number {
+  let negotiation = 0;
+  for (const staff of world.staff?.values?.() ?? []) {
+    if (staff.heyaId === heyaId && staff.role === "scout") {
+      negotiation = Math.max(negotiation, deriveScoutStats(staff).negotiation);
+    }
+  }
+  return negotiation;
+}
+
+/** True when the heya has an active dormitory (family-persuasion hook). */
+export function heyaHasDormitory(world: WorldState, heyaId: Id): boolean {
+  return world.heyas.get(heyaId)?.infrastructure?.dormitory?.status === "active";
+}
+
 /**
  * Sign-chance model (P4): suitors + prestige + scout negotiation + dormitory.
  * Returns 0..1 probability. Deterministic — caller supplies the rng.

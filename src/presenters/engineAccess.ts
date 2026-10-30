@@ -20,8 +20,20 @@ export type { PbpLine, PbpPhase } from "@/engine/bout/boutNarrative";
 export type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
 export { deriveSignatureKimarite } from "@/engine/rikishi/signatureKimarite";
 export { PHYSIO_SESSION_COST } from "@/engine/health/physioPurchase";
-export { deriveStableHarmony } from "@/engine/welfare/harmony";
-export { SCOUT_TIERS, type ScoutMissionTier } from "@/engine/recruitment/scoutMissions";
+export { INJURY_TYPE_LABELS, BODY_AREA_LABELS } from "@/engine/health/BodyDefinitions";
+export type { EngineCommand } from "@/engine/worker/types";
+export {
+  deriveStableHarmony,
+  type HarmonyBand,
+  type StableHarmony,
+} from "@/engine/welfare/harmony";
+export { repairCostFor } from "@/engine/economy/facilityWear";
+export {
+  SCOUT_TIERS,
+  type ScoutMissionTier,
+  computeSignChance,
+  deriveScoutStats,
+} from "@/engine/recruitment/scoutMissions";
 export { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 export { calculateGains } from "@/engine/training/TrainingMath";
 export { DRILL_STAT_HINTS } from "@/constants/engine/training";

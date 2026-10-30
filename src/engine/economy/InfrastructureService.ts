@@ -227,30 +227,33 @@ export const InfrastructureService = {
       const def = FACILITY_REGISTRY[id as FacilityId];
       if (!def) continue;
 
-      // Apply bonuses scaled by level
+      // Apply bonuses scaled by level and wear — a dilapidated facility
+      // delivers a fraction of its rated bonuses until repaired.
       const lv = state.level;
+      const wear = Math.max(0, Math.min(100, state.condition ?? 100)) / 100;
 
       if (def.bonuses.statBuffs) {
         const buffs = def.bonuses.statBuffs;
         for (const stat in buffs) {
-          (totalBonuses.statBuffs as Record<string, number>)[stat] *= 1 + (buffs[stat] - 1) * lv;
+          (totalBonuses.statBuffs as Record<string, number>)[stat] *=
+            1 + (buffs[stat] - 1) * lv * wear;
         }
       }
 
       if (def.bonuses.injuryHealMod) {
-        totalBonuses.injuryHealMod += def.bonuses.injuryHealMod * lv;
+        totalBonuses.injuryHealMod += def.bonuses.injuryHealMod * lv * wear;
       }
 
       if (def.bonuses.mediaMod) {
-        totalBonuses.mediaMod *= 1 + (def.bonuses.mediaMod - 1) * lv;
+        totalBonuses.mediaMod *= 1 + (def.bonuses.mediaMod - 1) * lv * wear;
       }
 
       if (def.bonuses.fatigueFloor) {
-        totalBonuses.fatigueFloor += def.bonuses.fatigueFloor * lv;
+        totalBonuses.fatigueFloor += def.bonuses.fatigueFloor * lv * wear;
       }
 
       if (def.bonuses.moraleBonus) {
-        totalBonuses.moraleBonus += def.bonuses.moraleBonus * lv;
+        totalBonuses.moraleBonus += def.bonuses.moraleBonus * lv * wear;
       }
     }
 

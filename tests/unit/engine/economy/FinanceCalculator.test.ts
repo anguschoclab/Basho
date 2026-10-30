@@ -426,7 +426,8 @@ describe("FinanceCalculator — itemized breakdown (income/outgoings)", () => {
       result.outgoings.facilityUpkeep +
         result.outgoings.staffUpkeep +
         result.outgoings.fixedOverhead +
-        result.outgoings.recruitment
+        result.outgoings.recruitment +
+        result.outgoings.infrastructureUpkeep
     );
   });
 });

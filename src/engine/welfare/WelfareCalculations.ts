@@ -109,13 +109,36 @@ export function calculateWeeklyWelfareDelta(
   // Diet outcomes scale with nutrition-staff quality (getHeyaStaffBonuses.diet);
   // a vacant nutritionist post drags the multiplier below baseline.
   const dietMult = getHeyaStaffBonuses(world, heya.id).diet;
-  const diet = state.activeDiet || "maintenance";
-  if (diet === "austerity") {
-    const austerityDelta = Math.round(WELFARE_AUSTERITY_DIET_BONUS / dietMult);
+  const heyaDiet = state.activeDiet || "maintenance";
+  // P3: per-rikishi diet override — welfare pressure is pro-rated by the
+  // share of the active roster actually on each regimen (rikishi.diet
+  // falls back to the heya default).
+  const roster = EntityCollection.getHeyaRoster(world, heya.id);
+  let austerityCount = heyaDiet === "austerity" ? 1 : 0;
+  let premiumCount = heyaDiet === "premium" ? 1 : 0;
+  let dietCount = 1;
+  if (roster.length > 0) {
+    austerityCount = 0;
+    premiumCount = 0;
+    dietCount = 0;
+    for (const r of roster) {
+      const rd = r.diet ?? heyaDiet;
+      dietCount++;
+      if (rd === "austerity") austerityCount++;
+      else if (rd === "premium") premiumCount++;
+    }
+  }
+  const austerityDelta = Math.round(
+    (WELFARE_AUSTERITY_DIET_BONUS / dietMult) * (austerityCount / dietCount)
+  );
+  const premiumDelta = Math.round(
+    WELFARE_PREMIUM_DIET_REDUCTION * dietMult * (premiumCount / dietCount)
+  );
+  if (austerityDelta > 0) {
     delta += austerityDelta;
     reasons.push(`austerity_diet+${austerityDelta}`);
-  } else if (diet === "premium") {
-    const premiumDelta = Math.round(WELFARE_PREMIUM_DIET_REDUCTION * dietMult);
+  }
+  if (premiumDelta > 0) {
     delta -= premiumDelta;
     reasons.push(`premium_diet-${premiumDelta}`);
   }

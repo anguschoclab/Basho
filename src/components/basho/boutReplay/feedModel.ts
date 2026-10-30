@@ -1,254 +1,146 @@
 /**
- * narrationFeed.ts
+ * feedModel.ts
  *
- * Structured play-by-play feed logic for the broadcast-grade replay surface.
- * Keeps PbpLine metadata (phase / tags / voice) intact instead of flattening
- * to strings, classifies each line for display, attaches plain-language
- * explainers and stakes badges, and picks the stakes-led headline.
+ * Pure helpers that turn a BoutResult's structured play-by-play lines into
+ * the scrolling commentary feed rendered under the bout replay canvas.
+ * Keeps phase/tags/voice metadata intact so the UI can style each entry.
  */
 
 import type { BoutResult } from "@/engine/types/basho";
 import type { PbpLine, PbpTag } from "@/presenters/engineAccess";
 import type { UIRikishi } from "@/presenters/uiModels";
 
-/** Display classes for feed lines. */
-export type FeedLineClass = "headline" | "action" | "gyoji" | "setup";
+export type LineClass = "headline" | "gyoji" | "action" | "setup";
+/** Back-compat alias — consumers import `FeedLineClass`. */
+export type FeedLineClass = LineClass;
 
-export interface FeedBadge {
-  tag: PbpTag;
+export interface LineBadge {
   label: string;
+  tag: PbpTag;
 }
 
-/** Gyoji calls and formal announcements get the green "referee" treatment. */
-const GYOKI_PATTERN = /hakkeyoi|nokotta|gyoji|gunbai|shobu ari|matta/i;
-
-const ACTION_PHASES = new Set([
-  "tachiai",
-  "engagement",
-  "clinch",
-  "momentum",
-  "momentum_shift",
-  "edge_crisis",
-  "fatigue",
-  "grip_transition",
-  "counter_tactic",
-  "counter",
-]);
-
-/** Tags that mark a line as part of the bout's headline story. */
-const HEADLINE_TAGS = new Set<PbpTag>([
-  "kinboshi",
-  "ginboshi",
-  "upset",
-  "title_stakes",
-  "yusho_race",
-  "playoff",
-  "kadoban",
-  "kachi_koshi",
-  "make_koshi",
-  "ozeki_demotion",
-  "dynasty",
-  "milestone",
-  "mono_ii",
-]);
-
-/** Badged tags → chip label. Order = display priority (max 3 shown). */
-const BADGE_LABELS: ReadonlyArray<[PbpTag, string]> = [
-  ["kinboshi", "KINBOSHI"],
-  ["ginboshi", "GINBOSHI"],
-  ["upset", "UPSET"],
-  ["playoff", "PLAYOFF"],
-  ["title_stakes", "TITLE STAKES"],
-  ["yusho_race", "YUSHO RACE"],
-  ["kadoban", "KADOBAN"],
-  ["mono_ii", "MONO-II"],
-  ["kensho", "KENSHO"],
-  ["henka", "HENKA"],
-  ["kachi_koshi", "KACHI-KOSHI"],
-  ["make_koshi", "MAKE-KOSHI"],
-  ["milestone", "MILESTONE"],
-  ["streak", "STREAK"],
-  ["debut", "DEBUT"],
-];
-
-/** Return the structured PbpLine[] for a result — never flattened strings. */
-export function getNarrationPbp(
-  result: BoutResult,
-  east: UIRikishi,
-  west: UIRikishi
-): PbpLine[] {
-  if (result.pbpLines && result.pbpLines.length > 0) {
-    return result.pbpLines.filter((l) => l.text && l.text.length > 2);
+/** Structured feed entries — preserves metadata the string[] version dropped. */
+export function getNarrationPbp(result: BoutResult, east: UIRikishi, west: UIRikishi): PbpLine[] {
+  const raw = result.pbpLines;
+  if (raw && raw.length > 0) {
+    return raw.filter((l) => l.text && l.text.length > 2);
   }
 
   const winner = result.winnerRikishiId === east.id ? east : west;
   const loser = result.winnerRikishiId === east.id ? west : east;
+  const mk = (text: string, phase: PbpLine["phase"], tags?: PbpTag[]): PbpLine => ({
+    text,
+    id: `${result.boutId}-fb-${phase}-${text.slice(0, 8)}`,
+    phase,
+    tags,
+  });
 
   const lines: PbpLine[] = [
-    {
-      id: "fb-opening",
-      text: `${east.shikona} (East) faces ${west.shikona} (West).`,
-      phase: "opening",
-      voice: "understated",
-    },
-    {
-      id: "fb-ritual",
-      text: "They crouch at the shikiri-sen. Silence falls.",
-      phase: "ritual",
-      voice: "understated",
-    },
-    {
-      id: "fb-tachiai",
-      text: "TACHIAI! The collision echoes through the hall.",
-      phase: "tachiai",
-      voice: "formal",
-    },
-    {
-      id: "fb-momentum",
-      text: `${winner.shikona} drives forward with relentless pressure.`,
-      phase: "momentum",
-      voice: "dramatic",
-    },
-    {
-      id: "fb-edge",
-      text: `${loser.shikona} cannot find an answer.`,
-      phase: "edge_crisis",
-    },
-    {
-      id: "fb-finish",
-      text: `${winner.shikona} wins by ${result.kimariteName || "yorikiri"}!`,
-      phase: "finish",
-      voice: "dramatic",
-    },
+    mk(`${east.shikona} (East) faces ${west.shikona} (West).`, "opening"),
+    mk(`They crouch at the shikiri-sen. Silence falls.`, "ritual"),
+    mk(`TACHIAI! The collision echoes through the hall.`, "tachiai"),
+    mk(`${winner.shikona} drives forward with relentless pressure.`, "momentum"),
+    mk(`${loser.shikona} cannot find an answer.`, "momentum"),
+    mk(`${winner.shikona} wins by ${result.kimariteName || "yorikiri"}!`, "finish"),
   ];
-  if (result.upset) {
-    lines.push({
-      id: "fb-upset",
-      text: "UPSET! The arena is in disbelief!",
-      phase: "post_bout",
-      voice: "dramatic",
-      tags: ["upset"],
-    });
-  }
-  if (result.isKinboshi) {
-    lines.push({
-      id: "fb-kinboshi",
-      text: "KINBOSHI! The Yokozuna has been toppled!",
-      phase: "post_bout",
-      voice: "dramatic",
-      tags: ["kinboshi", "upset"],
-    });
-  }
+  if (result.upset) lines.push(mk("UPSET! The arena is in disbelief!", "finish", ["upset"]));
+  if (result.isKinboshi)
+    lines.push(mk("KINBOSHI! The Yokozuna has been toppled!", "finish", ["kinboshi"]));
   return lines;
 }
 
-/** Classify a line for feed styling: headline / action / gyoji / setup. */
-export function classifyLine(line: PbpLine): FeedLineClass {
-  if (GYOKI_PATTERN.test(line.text)) return "gyoji";
-  if (line.tags?.some((t) => HEADLINE_TAGS.has(t))) return "headline";
-  if (line.voice === "dramatic" && (line.phase === "finish" || line.phase === "post_bout")) {
+/** Roll the feed back `size` entries ending at `currentIdx` (inclusive). */
+export function feedWindow(lines: PbpLine[], currentIdx: number, size = 3): PbpLine[] {
+  if (lines.length === 0 || currentIdx < 0) return [];
+  const end = Math.min(currentIdx, lines.length - 1);
+  const start = Math.max(0, end - (size - 1));
+  return lines.slice(start, end + 1);
+}
+
+const GYOJI_RE = /hakkeyoi|nokotta|gyoji|gunbai/i;
+const ACTION_PHASES = new Set<PbpLine["phase"]>([
+  "tachiai",
+  "clinch",
+  "engagement",
+  "momentum",
+  "momentum_shift",
+  "edge_crisis",
+  "finish",
+  "grip_transition",
+  "counter_tactic",
+]);
+const HEADLINE_TAGS = new Set<PbpTag>([
+  "kinboshi",
+  "ginboshi",
+  "upset",
+  "yusho_race",
+  "title_stakes",
+  "playoff",
+  "mono_ii",
+  "injury",
+]);
+
+export function classifyLine(line: PbpLine): LineClass {
+  if (GYOJI_RE.test(line.text)) return "gyoji";
+  if (line.tags?.some((t) => HEADLINE_TAGS.has(t)) || (line.voice === "dramatic" && line.phase === "finish"))
     return "headline";
-  }
   if (line.phase && ACTION_PHASES.has(line.phase)) return "action";
   return "setup";
 }
 
-/** Plain-language explainer subline for jargon-bearing lines; null when obvious. */
+/** Plain-language subline for lines a newcomer can't parse. */
 export function explainerFor(line: PbpLine): string | null {
   const tags = line.tags ?? [];
-  for (const tag of tags) {
-    const explainer = TAG_EXPLAINERS[tag];
-    if (explainer) return explainer;
-  }
-  if (line.phase === "ritual") {
-    return "Pre-bout ritual — salt for purification, stamped feet to drive off evil spirits.";
-  }
-  if (line.phase === "edge_crisis") {
-    return "One wrestler is a single step from the straw bales — out of the ring means a loss.";
-  }
-  if (line.phase === "mono_ii") {
-    return "The five judges confer when the referee's decision is in doubt.";
-  }
-  if (line.phase === "bout_timeout") {
-    return "The gyoji calls a pause — the wrestlers reset at the starting lines.";
-  }
-  if (line.phase === "kyujo") {
-    return "A withdrawal — the wrestler sits out and forfeits the remaining bouts.";
-  }
+  if (tags.includes("kinboshi")) return "A top-division rikishi beating a Yokozuna earns a prized gold star.";
+  if (tags.includes("ginboshi")) return "A silver-star win over an Ozeki — nearly as prized as kinboshi.";
+  if (tags.includes("kadoban")) return "An Ozeki below .500 two basho in a row is demoted — every win matters.";
+  if (tags.includes("henka")) return "A sidestep at the charge — legal, but some fans consider it cheap.";
+  if (tags.includes("mono_ii")) return "The ringside judges confer to overturn or confirm the referee's call.";
+  if (tags.includes("yusho_race") || tags.includes("title_stakes"))
+    return "This bout directly affects who takes the tournament title.";
+  if (tags.includes("upset")) return "The heavy favorite just lost — a real shock for the crowd.";
+  if (tags.includes("injury") || tags.includes("bout_injury" as PbpTag))
+    return "An injury sustained in the ring can end a rikishi's tournament.";
+  if (tags.includes("kachi_koshi")) return "Eight or more wins means a winning record — and usually promotion.";
+  if (tags.includes("make_koshi")) return "A losing record — demotion looms on the next banzuke.";
+  if (tags.includes("playoff")) return "Tied records are settled by an extra deciding bout.";
+  if (line.phase === "ritual") return "Pre-bout ritual: salt for purity, a crouch, and a silent stare-down.";
+  if (line.phase === "tachiai") return "The opening charge often decides the bout in under a second.";
   return null;
 }
 
-const TAG_EXPLAINERS: Partial<Record<PbpTag, string>> = {
-  kinboshi: "A maegashira defeating a yokozuna earns a gold-star win (kinboshi).",
-  ginboshi: "A silver-star win — a lower-ranked rikishi defeats an ozeki.",
-  upset: "The lower-ranked wrestler wins against the odds.",
-  kadoban: "An ozeki with a losing record last tournament — another means demotion.",
-  henka: "A sidestep at the initial charge — legal, but frowned on at the top ranks.",
-  mono_ii: "The five judges confer when the referee's decision is in doubt.",
-  kensho: "Sponsor envelopes ride on this bout — the winner takes the prize money.",
-  yusho_race: "This result directly affects the championship race.",
-  title_stakes: "The championship hangs on this bout.",
-  playoff: "A playoff decides the tournament champion — regulation scores were level.",
-  senshuraku: "The final day — every rank and prize is settled today.",
-  kachi_koshi: "A winning record (8+ victories) secures promotion next tournament.",
-  make_koshi: "A losing record means demotion next tournament.",
-  ozeki_demotion: "Two straight losing records strip the ozeki of his rank.",
-  debut: "First top-division appearance.",
-  consecutive_kachi: "Extending a run of winning records.",
+const BADGE_TAGS: Record<string, string> = {
+  kinboshi: "KINBOSHI",
+  ginboshi: "GINBOSHI",
+  upset: "UPSET",
+  kadoban: "KADOBAN",
+  yusho_race: "YUSHO RACE",
+  title_stakes: "TITLE STAKES",
+  playoff: "PLAYOFF",
+  henka: "HENKA",
+  mono_ii: "MONO-II",
+  grudge_match: "GRUDGE",
+  rivalry: "RIVALRY",
+  injury: "INJURY",
+  kachi_koshi: "KACHI-KOSHI",
+  make_koshi: "MAKE-KOSHI",
+  senshuraku: "SENSHURAKU",
 };
 
-/** Badge chips for a line (max 3, ordered by display priority). */
-export function badgesForLine(line: PbpLine): FeedBadge[] {
-  if (!line.tags || line.tags.length === 0) return [];
-  const out: FeedBadge[] = [];
-  for (const [tag, label] of BADGE_LABELS) {
-    if (line.tags.includes(tag)) {
-      out.push({ tag, label });
-      if (out.length >= 3) break;
-    }
-  }
-  return out;
+/** Tags worth surfacing as badge chips under a feed line. */
+export function badgesForLine(line: PbpLine): LineBadge[] {
+  return (line.tags ?? [])
+    .filter((t) => t in BADGE_TAGS)
+    .map((t) => ({ label: BADGE_TAGS[t], tag: t }));
 }
 
-/** Stakes score for headline selection — higher wins; later index breaks ties. */
-function stakesScore(line: PbpLine): number {
-  let score = 0;
-  for (const tag of line.tags ?? []) {
-    if (tag === "kinboshi") score = Math.max(score, 100);
-    else if (tag === "ginboshi") score = Math.max(score, 95);
-    else if (tag === "upset") score = Math.max(score, 90);
-    else if (tag === "playoff") score = Math.max(score, 90);
-    else if (tag === "title_stakes") score = Math.max(score, 85);
-    else if (tag === "yusho_race") score = Math.max(score, 80);
-    else if (tag === "mono_ii") score = Math.max(score, 70);
-    else if (tag === "kadoban") score = Math.max(score, 60);
-    else if (tag === "milestone" || tag === "dynasty") score = Math.max(score, 50);
-    else if (HEADLINE_TAGS.has(tag)) score = Math.max(score, 40);
-  }
-  if (line.voice === "dramatic") score += 10;
-  if (line.phase === "finish") score += 8;
-  if (line.phase === "post_bout" || line.phase === "ceremony" || line.phase === "award") score += 6;
-  return score;
-}
-
-/** Stakes-led headline selection: the index of the line that sells the bout. */
+/** Which line best carries the story of this bout (for a headline slot). */
 export function selectHeadlineIndex(lines: PbpLine[]): number {
   if (lines.length === 0) return -1;
-  let best = lines.length - 1;
-  let bestScore = -1;
-  for (let i = 0; i < lines.length; i++) {
-    const s = stakesScore(lines[i]);
-    if (s > bestScore) {
-      bestScore = s;
-      best = i;
-    }
+  const priority: PbpTag[] = ["kinboshi", "ginboshi", "upset", "title_stakes", "yusho_race", "playoff"];
+  for (const tag of priority) {
+    const idx = lines.findIndex((l) => l.tags?.includes(tag));
+    if (idx >= 0) return idx;
   }
-  return best;
-}
-
-/** The window of feed entries visible at a given narration index (max `size`). */
-export function feedWindow<T>(items: T[], activeIndex: number, size = 3): T[] {
-  if (items.length === 0 || activeIndex < 0) return [];
-  const clamped = Math.min(activeIndex, items.length - 1);
-  return items.slice(Math.max(0, clamped - (size - 1)), clamped + 1);
+  return lines.length - 1;
 }

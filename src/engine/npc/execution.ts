@@ -31,6 +31,9 @@ import { rngForWorld } from "@/engine/core/rng";
 import { getMemory } from "@/engine/npc/MemoryStore";
 import { issueBailoutLoanIfNeeded } from "@/engine/economy/loans";
 import { FACTION_BAILOUT_AMOUNT } from "@/constants/engine/economic";
+import { repairCostFor, repairFacility } from "@/engine/economy/facilityWear";
+import { FACILITY_REGISTRY, type FacilityId } from "@/engine/types/infrastructure";
+import { NPC_FACILITY_REPAIR_THRESHOLD } from "@/constants/engine/facilities";
 
 /** Minimum weeks between executions of the same domain for one heya. */
 const DOMAIN_COOLDOWN_WEEKS: Record<string, number> = {
@@ -317,6 +320,21 @@ function tryInfrastructure(
     if ((impact.entities?.heyaUpdates?.size ?? 0) > 0) {
       builder.merge(impact);
       executedDomains.push("academy");
+    }
+  }
+
+  // Facility wear: NPC stables refurbish a facility once its condition drops
+  // below the repair threshold and they hold the small-spend reserve.
+  if (hasReserveForSmallSpend && heya.infrastructure) {
+    for (const [facilityId, state] of Object.entries(heya.infrastructure)) {
+      const condition = state?.condition ?? 100;
+      if (state?.status !== "active" || condition >= NPC_FACILITY_REPAIR_THRESHOLD) continue;
+      const def = FACILITY_REGISTRY[facilityId as FacilityId];
+      if (!def) continue;
+      const cost = repairCostFor(def, condition);
+      if (heya.funds - cost < MIN_OPERATING_RESERVE) continue;
+      builder.merge(repairFacility(world, heyaId, facilityId as FacilityId));
+      break; // one refurbish per decision pass
     }
   }
 }

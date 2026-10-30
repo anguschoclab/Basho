@@ -4,7 +4,12 @@ import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
 import type { Heya } from "@/engine/types/heya";
 import { TalentCandidate } from "@/engine/types/talent";
-import { rngFromSeed } from "@/engine/core/rng";
+import { rngFromSeed, rngForWorld } from "@/engine/core/rng";
+import {
+  computeSignChance,
+  bestScoutNegotiation,
+  heyaHasDormitory,
+} from "@/engine/recruitment/scoutMissions";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { ensureTalentPoolState } from "@/engine/generation/TalentPoolStateService";
 import { getForeignCountInHeya, candidateConsumesForeignSlot } from "@/engine/generation/TalentPoolScouting";
@@ -97,13 +102,6 @@ export function resolveCandidateSuitor(
     return { signed: false, candidate };
   }
 
-  const bandRank: Record<string, number> = {
-    all_in: 4,
-    high: 3,
-    medium: 2,
-    low: 1,
-  };
-
   // §5.4: a slot-consuming candidate can only be won by a suitor whose heya
   // has a free foreign slot — ineligible suitors are dropped before ranking.
   const consumesSlot = candidateConsumesForeignSlot(candidate);
@@ -119,11 +117,36 @@ export function resolveCandidateSuitor(
     };
   }
 
-  const sortedSuitors = [...eligibleSuitors].sort(
-    (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0)
+  // P4 sign-chance model: a suitor's probability blends declared interest,
+  // offer aggression, heya prestige, scout negotiation skill and the
+  // dormitory family-persuasion hook; a crowded field drags every bid down.
+  // The winner is a seeded weighted draw — deterministic per candidate+week
+  // and honest about long-shot signings.
+  const rng = rngForWorld(
+    world,
+    "recruitment",
+    `suitor-resolve-${candidate.candidateId}-w${world.week ?? 0}`
   );
-
-  const winner = sortedSuitors[0];
+  const weights = eligibleSuitors.map((s) =>
+    computeSignChance({
+      competingSuitors: eligibleSuitors.length - 1,
+      heyaPrestige: getHeya(world, s.heyaId)?.reputation ?? 50,
+      negotiation: bestScoutNegotiation(world, s.heyaId),
+      hasDormitory: heyaHasDormitory(world, s.heyaId),
+      offerType: s.offerType === "aggressive" ? "aggressive" : "standard",
+      interest: s.interestBand,
+    })
+  );
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  let winner = eligibleSuitors[0];
+  if (totalWeight > 0) {
+    let roll = rng.next() * totalWeight;
+    for (let i = 0; i < eligibleSuitors.length; i++) {
+      roll -= weights[i];
+      winner = eligibleSuitors[i];
+      if (roll <= 0) break;
+    }
+  }
   const nextCandidate = {
     ...candidate,
     availabilityState: "signed" as const,

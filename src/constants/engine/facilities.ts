@@ -54,6 +54,15 @@ export const FACILITY_BASE_COSTS: Record<string, number> = {
   dormitory: 10_000_000,
 } as const;
 
+/** Named-facility wear: condition points lost per month while active. */
+export const FACILITY_CONDITION_DECAY_PER_MONTH = 5;
+
+/** Repair cost = this fraction of baseCost per point of missing condition. */
+export const FACILITY_REPAIR_COST_FRACTION = 0.002;
+
+/** NPC stables refurbish a facility once wear drops below this condition. */
+export const NPC_FACILITY_REPAIR_THRESHOLD = 60;
+
 /** Monthly maintenance cost per facility type (¥). Used by FACILITY_REGISTRY. */
 export const FACILITY_MAINTENANCE_COSTS: Record<string, number> = {
   weights_room: 450_000,

@@ -24,6 +24,7 @@ interface WeeklyFinances {
     staffUpkeep: number;
     fixedOverhead: number;
     recruitment: number;
+    infrastructureUpkeep?: number;
   };
 }
 
@@ -73,6 +74,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
         ["Staff Upkeep", weeklyFinances.outgoings.staffUpkeep],
         ["Fixed Operating Overhead", weeklyFinances.outgoings.fixedOverhead],
         ["Recruitment Budget", weeklyFinances.outgoings.recruitment],
+        ["Building Maintenance", weeklyFinances.outgoings.infrastructureUpkeep ?? 0],
       ]
     : [];
   const recruitmentSuspended =

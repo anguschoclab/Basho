@@ -17,11 +17,13 @@ import {
   Clock,
   ArrowUpRight,
   DollarSign,
+  Wrench,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
+import { repairCostFor } from "@/presenters/engineAccess";
 import type { Heya } from "@/engine/types/heya";
 
 type InfraState = NonNullable<Heya["infrastructure"]>[string];
@@ -129,15 +131,20 @@ export function FacilityCard({
   state,
   project,
   onUpgrade,
+  onRepair,
 }: {
   facility: (typeof FACILITY_REGISTRY)[FacilityId];
   state: InfraState | undefined;
   project: ConstructionProject | undefined;
   onUpgrade: (facilityId: FacilityId) => void;
+  onRepair?: (facilityId: FacilityId) => void;
 }) {
   const level = state?.level || 0;
   const isActive = state?.status === "active";
   const isBuilding = !!project;
+  const condition = Math.max(0, Math.min(100, state?.condition ?? 100));
+  const needsRepair = isActive && !isBuilding && condition < 100;
+  const repairCost = repairCostFor(facility, condition);
 
   return (
     <Card
@@ -184,7 +191,52 @@ export function FacilityCard({
           </div>
         )}
 
+        {/* Condition wear — decays monthly; effectiveness scales with it. */}
+        {isActive && (
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <span>Condition</span>
+              <span
+                className={cn(
+                  condition < 50
+                    ? "text-destructive"
+                    : condition < 80
+                      ? "text-warning"
+                      : "text-success"
+                )}
+              >
+                {condition}%
+              </span>
+            </div>
+            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+              <div
+                className={cn(
+                  "h-full transition-all",
+                  condition < 50
+                    ? "bg-destructive"
+                    : condition < 80
+                      ? "bg-warning"
+                      : "bg-success"
+                )}
+                style={{ width: `${condition}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         <BonusList facility={facility} />
+
+        {needsRepair && onRepair && (
+          <Button
+            variant="outline"
+            className="w-full font-black uppercase tracking-widest text-[10px] h-9 gap-2 border-warning/50 text-warning hover:bg-warning/10"
+            onClick={() => onRepair(facility.id)}
+            tooltip={`Restore to 100% — ${formatYen(repairCost)}`}
+            tooltipSide="top"
+          >
+            <Wrench className="h-3 w-3" /> Repair · {formatYen(repairCost)}
+          </Button>
+        )}
 
         <div className="pt-2">
           <Button

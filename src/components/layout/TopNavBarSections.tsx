@@ -17,7 +17,12 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Sun, Moon, ChevronRight, Settings, Pause, Play } from "lucide-react";
 import { useGameStore } from "@/state/stores/gameStore";
 import { formatYen } from "@/lib/engineUtils";
-import { getPlayerHeya } from "@/presenters/engineAccess";
+import {
+  getPlayerHeya,
+  deriveStableHarmony,
+  type HarmonyBand,
+  type StableHarmony,
+} from "@/presenters/engineAccess";
 import { EraToneBadge } from "@/components/layout/EraToneBadge";
 import { HolidayDialog } from "@/components/layout/HolidayDialog";
 import type { EraTone } from "@/presenters/projections/eraTone";
@@ -31,6 +36,20 @@ const RUNWAY_COLORS: Record<string, string> = {
   desperate: "hsl(var(--destructive))",
 };
 
+const HARMONY_COLORS: Record<HarmonyBand, string> = {
+  harmonious: "hsl(var(--success))",
+  steady: "hsl(var(--foreground) / 0.85)",
+  uneasy: "hsl(var(--warning))",
+  hostile: "hsl(var(--destructive))",
+};
+
+const HARMONY_LABELS: Record<HarmonyBand, string> = {
+  harmonious: "Harmonious",
+  steady: "Steady",
+  uneasy: "Uneasy",
+  hostile: "Hostile",
+};
+
 const PHASE_LABELS: Record<string, { label: string; color: string }> = {
   active_basho: { label: "Tournament", color: "hsl(var(--gold))" },
   pre_basho: { label: "Pre-Basho", color: "hsl(var(--west))" },
@@ -42,6 +61,7 @@ const PHASE_LABELS: Record<string, { label: string; color: string }> = {
 /** Left cluster — date, phase, era tone, and player funds. */
 export function ContextCluster({ world }: { world: WorldState | null }) {
   const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
+  const harmony = world && playerHeya ? deriveStableHarmony(world, playerHeya.id) : null;
   const inBasho = world?.cyclePhase === "active_basho";
   const bashoDay = world?.currentBasho?.day ?? 1;
   const cyclePhase = world?.cyclePhase ?? "interim";
@@ -147,7 +167,66 @@ export function ContextCluster({ world }: { world: WorldState | null }) {
           </div>
         </TooltipWrap>
       )}
+
+      {/* Reputation + Harmony headline metrics (Heya header parity) */}
+      {playerHeya && harmony && <MetricsChips reputation={playerHeya.reputation} harmony={harmony} />}
     </div>
+  );
+}
+
+/** Rep + Harmony headline chips — score, band color, factor tooltip. */
+function MetricsChips({
+  reputation,
+  harmony,
+}: {
+  reputation: number | undefined;
+  harmony: StableHarmony;
+}) {
+  return (
+    <>
+      <div className="flex flex-col">
+        <span
+          className="text-[10px] uppercase text-[hsl(var(--muted-foreground))]"
+          style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
+        >
+          Rep
+        </span>
+        <span
+          className="text-[12px] font-semibold leading-tight tabular-nums"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          {Math.round(reputation ?? 50)}
+        </span>
+      </div>
+      <TooltipWrap
+        content={
+          <div className="text-xs space-y-0.5">
+            <p className="font-semibold capitalize">{harmony.band} · {harmony.score}/100</p>
+            <p className="text-[10px] text-muted-foreground">
+              Morale {harmony.factors.morale} · Welfare {harmony.factors.welfare} · Staff{" "}
+              {harmony.factors.staff} · Rivalries {harmony.factors.rivalries} · Scandal{" "}
+              {harmony.factors.scandal}
+            </p>
+          </div>
+        }
+        side="bottom"
+      >
+        <div className="flex flex-col cursor-help">
+          <span
+            className="text-[10px] uppercase text-[hsl(var(--muted-foreground))]"
+            style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
+          >
+            Harmony
+          </span>
+          <span
+            className="text-[12px] font-semibold leading-tight tabular-nums"
+            style={{ fontFamily: "var(--font-mono)", color: HARMONY_COLORS[harmony.band] }}
+          >
+            {HARMONY_LABELS[harmony.band]}
+          </span>
+        </div>
+      </TooltipWrap>
+    </>
   );
 }
 

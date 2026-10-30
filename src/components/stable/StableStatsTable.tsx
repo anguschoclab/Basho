@@ -25,6 +25,16 @@ type SortKey =
   | "streak"
   | "avgRankLabel";
 
+const DIET_LABELS: Record<string, string> = {
+  austerity: "Austerity",
+  maintenance: "Maintenance",
+  heavy_bulk: "Heavy bulk",
+  premium: "Premium",
+};
+
+const dietLabel = (diet?: string) =>
+  diet ? (DIET_LABELS[diet] ?? diet.replaceAll("_", " ")) : "—";
+
 const SORT_ACCESSORS: Record<SortKey, (r: UIRikishi) => string | number> = {
   shikona: (r) => r.shikona,
   division: (r) => r.division,
@@ -142,6 +152,8 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Basho</th>
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Fatigue</th>
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Status</th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Training</th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Diet</th>
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Mood</th>
                 <TableHeader
                   label="Avg Rank"
@@ -157,7 +169,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
               ))}
               {filteredAndSortedRikishi.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="p-0">
+                  <td colSpan={13} className="p-0">
                     <EmptyState
                       icon={Search}
                       title="No rikishi found matching this filter."
@@ -253,6 +265,12 @@ const StableStatsRow = React.memo(function StableStatsRow({ r }: { r: UIRikishi 
       <td className="py-3 px-4 text-muted-foreground">
         {r.isInjured ? `Injured — ${r.injurySummary}` : (r.condition ?? 100) < 40 ? "Poor condition" : "Fit"}
       </td>
+      <td className="py-3 px-4 text-muted-foreground capitalize">
+        {r.trainingFocus
+          ? `${r.trainingFocus}${r.effortLevel && r.effortLevel !== "standard" ? ` · ${r.effortLevel}` : ""}`
+          : "—"}
+      </td>
+      <td className="py-3 px-4 text-muted-foreground">{dietLabel(r.diet)}</td>
       <td className="py-3 px-4">
         {r.loyaltyBand ? (
           <span className={cn("text-xs font-medium", LOYALTY_BAND_META[r.loyaltyBand].className)}>

@@ -21,7 +21,11 @@ import { calculateInjurySummary } from "@/presenters/rikishi/transformers/injury
 /**
  * Transform status fields (injury, condition, etc.)
  */
-export function toStatusDTO(r: Rikishi, rng: SeededRNG): RikishiStatusDTO {
+export function toStatusDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): RikishiStatusDTO {
+  const heya = world?.heyas.get(r.heyaId);
+  const focus = world?.trainingState
+    ?.get(r.heyaId)
+    ?.focusSlots?.find((f) => f.rikishiId === r.id)?.focusType;
   return {
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
@@ -31,6 +35,9 @@ export function toStatusDTO(r: Rikishi, rng: SeededRNG): RikishiStatusDTO {
     fatigue: r.fatigue,
     councilWarnings: r.councilWarnings ?? 0,
     loyaltyBand: r.agency?.loyaltyBand,
+    diet: r.diet ?? heya?.welfareState?.activeDiet,
+    effortLevel: r.effortLevel,
+    trainingFocus: focus,
   };
 }
 

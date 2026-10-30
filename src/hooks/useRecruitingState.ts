@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useGameStore } from "@/state/stores/gameStore";
 import { projectRecruitmentUIDigest } from "@/presenters/uiDigest";
 import { getHeyaForeignUsage, getHeyaRoster } from "@/presenters/engineAccess";
+import { makePlayerSignChance } from "@/presenters/projections/signChanceProjection";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { toKeyedMap } from "@/engine/utils/index";
@@ -60,52 +61,20 @@ export function useRecruitingState(playerHeyaId: string | null) {
 
   const limitReached = foreignUsage >= 2;
 
-  const handleScoutPool = () => {
-    if (!world) return;
-    sendCommand({
-      type: "SCOUT_POOL",
-      pool: activePool,
-      revealCount: 2,
-    });
-    toast({
-      title: "Scouting initiated",
-      description: "Dispatching scouts to the pool...",
-    });
-  };
-
-  const handleScoutCandidate = (candidateId: string) => {
-    if (!world) return;
-    sendCommand({
-      type: "SCOUT_CANDIDATE",
-      candidateId,
-      effort: 1,
-    });
-    toast({
-      title: "Scout report requested",
-      description: "Gathering a deeper scout report on this prospect...",
-    });
-  };
-
-  const handleOfferClick = (candidate: CandidateDigestEntry) => {
-    setSigningCandidate(candidate);
-  };
-
-  const handleConfirmSigning = (_offer: {
-    offerType: "standard" | "aggressive";
-    interest: "low" | "medium" | "high" | "all_in";
-  }) => {
-    if (!world || !playerHeyaId || !signingCandidate) return;
-    sendCommand({
-      type: "OFFER_CONTRACT",
-      candidateId: signingCandidate.candidateId,
-      heyaId: playerHeyaId,
-    });
-    toast({
-      title: "Offer submitted",
-      description: "Decision pending — the prospect is considering offers.",
-    });
-    setSigningCandidate(null);
-  };
+  const {
+    handleScoutPool,
+    handleScoutCandidate,
+    handleOfferClick,
+    handleConfirmSigning,
+  } = useRecruitingCommands({
+    world,
+    sendCommand,
+    toast,
+    activePool,
+    playerHeyaId,
+    signingCandidate,
+    setSigningCandidate,
+  });
 
   const toggleSelection = (id: string) => {
     setSelectedCandidates((prev) =>
@@ -131,6 +100,7 @@ export function useRecruitingState(playerHeyaId: string | null) {
   }, [selectedCandidates, candidateById]);
 
   const playerHeya = playerHeyaId ? world?.heyas?.get(playerHeyaId) : null;
+  const signChanceFor = usePlayerSignChance(world, playerHeya);
 
   return {
     world,
@@ -155,5 +125,82 @@ export function useRecruitingState(playerHeyaId: string | null) {
     toggleSelection,
     comparisonPair,
     playerHeya,
+    signChanceFor,
   };
+}
+
+/** P4 — player-side sign-chance context: the same model the engine uses to
+ *  resolve suitors (prestige + best-scout negotiation + dormitory hook). */
+function usePlayerSignChance(
+  world: ReturnType<typeof useGame>["state"]["world"],
+  playerHeya: import("@/engine/types/heya").Heya | null | undefined
+) {
+  const signChanceBase = useMemo(
+    () => (world ? makePlayerSignChance(world, playerHeya) : null),
+    [world, playerHeya]
+  );
+  return useMemo(
+    () =>
+      signChanceBase
+        ? (c: CandidateDigestEntry) => signChanceBase(c.competingSuitors?.length ?? 0)
+        : null,
+    [signChanceBase]
+  );
+}
+
+/** Scouting + signing command handlers for the recruiting tab. */
+function useRecruitingCommands({
+  world,
+  sendCommand,
+  toast,
+  activePool,
+  playerHeyaId,
+  signingCandidate,
+  setSigningCandidate,
+}: {
+  world: ReturnType<typeof useGame>["state"]["world"];
+  sendCommand: (command: import("@/engine/worker/types").EngineCommand) => boolean;
+  toast: ReturnType<typeof useToast>["toast"];
+  activePool: "high_school" | "university" | "foreign";
+  playerHeyaId: string | null;
+  signingCandidate: CandidateDigestEntry | null;
+  setSigningCandidate: (c: CandidateDigestEntry | null) => void;
+}) {
+  const handleScoutPool = () => {
+    if (!world) return;
+    sendCommand({ type: "SCOUT_POOL", pool: activePool, revealCount: 2 });
+    toast({ title: "Scouting initiated", description: "Dispatching scouts to the pool..." });
+  };
+
+  const handleScoutCandidate = (candidateId: string) => {
+    if (!world) return;
+    sendCommand({ type: "SCOUT_CANDIDATE", candidateId, effort: 1 });
+    toast({
+      title: "Scout report requested",
+      description: "Gathering a deeper scout report on this prospect...",
+    });
+  };
+
+  const handleOfferClick = (candidate: CandidateDigestEntry) => setSigningCandidate(candidate);
+
+  const handleConfirmSigning = (offer: {
+    offerType: "standard" | "aggressive";
+    interest: "low" | "medium" | "high" | "all_in";
+  }) => {
+    if (!world || !playerHeyaId || !signingCandidate) return;
+    sendCommand({
+      type: "OFFER_CONTRACT",
+      candidateId: signingCandidate.candidateId,
+      heyaId: playerHeyaId,
+      offerType: offer.offerType,
+      interest: offer.interest,
+    });
+    toast({
+      title: "Offer submitted",
+      description: "Decision pending — the prospect is considering offers.",
+    });
+    setSigningCandidate(null);
+  };
+
+  return { handleScoutPool, handleScoutCandidate, handleOfferClick, handleConfirmSigning };
 }

@@ -66,6 +66,11 @@ export type EngineCommand =
       heyaId: string;
       facilityId: import("@/engine/types/infrastructure").FacilityId;
     }
+  | {
+      type: "REPAIR_INFRASTRUCTURE";
+      heyaId: string;
+      facilityId: import("@/engine/types/infrastructure").FacilityId;
+    }
   | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
   | { type: "REMOVE_MENTOR"; apprenticeId: string }
   | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }

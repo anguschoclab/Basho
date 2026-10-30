@@ -32,6 +32,7 @@ vi.mock("@/engine/utils/citizenshipUtils", () => ({
 
 vi.mock("@/engine/core/queries", () => ({
   getHeyaRoster: () => [],
+  getHeya: () => undefined,
 }));
 
 vi.mock("@/engine/bout/archetype", () => ({

@@ -44,7 +44,7 @@ describe("NarrationFeed", () => {
 
   it("renders a plain-language explainer under lines that carry one", () => {
     render(<NarrationFeed lines={LINES} activeIndex={4} />);
-    expect(screen.getByText(/maegashira defeating a yokozuna/i)).toBeTruthy();
+    expect(screen.getByText(/beating a yokozuna earns a prized gold star/i)).toBeTruthy();
   });
 
   it("marks the live region for screen readers", () => {

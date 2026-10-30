@@ -147,7 +147,7 @@ export function RikishiProfileBody({
         onBack={onBack}
       />
 
-      {careHeya && <RikishiCarePanel rawRikishi={rawRikishi} heya={careHeya} />}
+      {careHeya && <RikishiCarePanel rawRikishi={rawRikishi} heya={careHeya} world={world} />}
 
       <div className="p-8">
         <ProfilePrelude rikishi={rikishi} mentor={mentor} mentees={mentees} year={world.year} />

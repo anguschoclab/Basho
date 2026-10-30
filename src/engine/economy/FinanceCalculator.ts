@@ -13,6 +13,7 @@ import type { Heya } from "@/engine/types/heya";
 import { getRikishi } from "@/engine/core/queries";
 import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "@/engine/economy/SponsorshipService";
 import { getHeyaStaffBonuses } from "@/engine/economy/staff";
+import { FACILITY_REGISTRY, type FacilityId } from "@/engine/types/infrastructure";
 import {
   RECRUITMENT_BUDGET_WEEKLY,
   FACILITY_UPKEEP,
@@ -60,6 +61,9 @@ interface HeyaFinanceResult {
     fixedOverhead: number;
     /** Discretionary recruitment budget (clamped away when insolvent). */
     recruitment: number;
+    /** Named-facility (infrastructure) maintenance — buildings the heya
+     *  chose to commission; always paid, never clamped. */
+    infrastructureUpkeep: number;
   };
 }
 
@@ -142,6 +146,17 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
 
   const staffUpkeepRaw = (heya.staffIds?.length ?? 0) * STAFF_UPKEEP_PER_MEMBER;
 
+  // Named-facility (infrastructure) maintenance — each commissioned building
+  // bills its registry maintenanceCost monthly; weekly share charged here.
+  let infrastructureUpkeepMonthly = 0;
+  if (heya.infrastructure) {
+    for (const [id, state] of Object.entries(heya.infrastructure)) {
+      if (state?.status !== "active") continue;
+      infrastructureUpkeepMonthly += FACILITY_REGISTRY[id as FacilityId]?.maintenanceCost ?? 0;
+    }
+  }
+  const infrastructureUpkeep = infrastructureUpkeepMonthly / 4;
+
   // Apply administration discount (Administrator role)
   const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
   const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
@@ -149,7 +164,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   // Food is charged daily by phase01_daily_economy — do not double-count here.
   // Fixed operating overhead is an unavoidable heya expense (NOT subject to admin discount)
   // and is exempt from the solvency clamp — net can go negative for thin-income stables.
-  const baseBurn = facilityUpkeep + staffUpkeep + FIXED_OPERATING_OVERHEAD_WEEKLY;
+  const baseBurn = facilityUpkeep + staffUpkeep + infrastructureUpkeep + FIXED_OPERATING_OVERHEAD_WEEKLY;
   const recruitmentCost = heya.funds <= DEBT_LIMIT ? 0 : RECRUITMENT_BUDGET_WEEKLY;
   const totalBurn = baseBurn + recruitmentCost;
 
@@ -193,6 +208,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
       staffUpkeep,
       fixedOverhead: FIXED_OPERATING_OVERHEAD_WEEKLY,
       recruitment: recruitmentCost,
+      infrastructureUpkeep,
     },
   };
 }

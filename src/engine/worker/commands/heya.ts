@@ -10,6 +10,7 @@ import { withdrawRikishi, treatInjury } from "@/engine/health/HealthActions";
 import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
 import { investInFacility } from "@/engine/economy/facilities";
 import { InfrastructureService } from "@/engine/economy/InfrastructureService";
+import { repairFacility } from "@/engine/economy/facilityWear";
 import { assignMentor } from "@/engine/legacy/lineage";
 import { removeMentor } from "@/engine/training/MentorshipService";
 import { assignSparringPair, removeSparringPair } from "@/engine/training/SparringService";
@@ -125,6 +126,14 @@ function buildInfrastructureCmd(rt: WorkerRuntime, cmd: Cmd<"BUILD_INFRASTRUCTUR
   }
 }
 
+function repairInfrastructureCmd(rt: WorkerRuntime, cmd: Cmd<"REPAIR_INFRASTRUCTURE">) {
+  if (rt.world) {
+    const impact = repairFacility(rt.world, cmd.heyaId, cmd.facilityId);
+    rt.world = resolveImpacts(rt.world, [impact]);
+    rt.syncAndDigest();
+  }
+}
+
 function assignMentorCmd(rt: WorkerRuntime, cmd: Cmd<"ASSIGN_MENTOR">) {
   if (rt.world) {
     const { ok, impact } = assignMentor(rt.world, cmd.apprenticeId, cmd.mentorId);
@@ -218,6 +227,7 @@ export function heyaCommands(rt: WorkerRuntime): CommandHandlerMap {
     BUY_PHYSIO: (cmd) => buyPhysioCmd(rt, cmd),
     INVEST_IN_FACILITY: (cmd) => investInFacilityCmd(rt, cmd),
     BUILD_INFRASTRUCTURE: (cmd) => buildInfrastructureCmd(rt, cmd),
+    REPAIR_INFRASTRUCTURE: (cmd) => repairInfrastructureCmd(rt, cmd),
     ASSIGN_MENTOR: (cmd) => assignMentorCmd(rt, cmd),
     REMOVE_MENTOR: (cmd) => removeMentorCmd(rt, cmd),
     ADD_SPARRING_PAIR: (cmd) => addSparringPairCmd(rt, cmd),

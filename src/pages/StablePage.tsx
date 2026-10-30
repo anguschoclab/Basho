@@ -28,7 +28,7 @@ import {
 
 export default function StablePage() {
   const { id: routeId } = useParams({ strict: false });
-  const { state, buildInfrastructure } = useGame();
+  const { state, buildInfrastructure, repairInfrastructure } = useGame();
   const { world, playerHeyaId } = state;
 
   const viewingHeyaId = routeId || playerHeyaId || "";
@@ -68,6 +68,11 @@ export default function StablePage() {
   const handleUpgrade = (facilityId: FacilityId) => {
     if (!world) return;
     buildInfrastructure(viewingHeyaId, facilityId);
+  };
+
+  const handleRepair = (facilityId: FacilityId) => {
+    if (!world) return;
+    repairInfrastructure(viewingHeyaId, facilityId);
   };
 
   return (
@@ -141,7 +146,7 @@ export default function StablePage() {
           </TabsContent>
 
           <TabsContent value="infrastructure">
-            <InfrastructureDashboard heya={heya} onUpgrade={handleUpgrade} />
+            <InfrastructureDashboard heya={heya} onUpgrade={handleUpgrade} onRepair={handleRepair} />
           </TabsContent>
 
           <RosterTab world={world} heya={heya} rikishiList={rikishiList} rawRoster={rawRoster} />
