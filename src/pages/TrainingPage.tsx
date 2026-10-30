@@ -19,6 +19,7 @@ import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
 import { SparringPanel } from "@/components/training/SparringPanel";
 import { WeightJourneysSection } from "@/components/training/WeightJourneysSection";
+import { projectAdvisorRecommendations } from "@/presenters/projections/advisorProjections";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { useTrainingState } from "@/hooks/useTrainingState";
 import { useTrainingDerived } from "@/hooks/useTrainingDerived";
@@ -70,6 +71,32 @@ export default function TrainingPage() {
           trainingEffectivenessData={trainingEffectivenessData}
           focusBiasData={focusBiasData}
         />
+
+        {/* W10/V21 — advisor recommendations surface (coach advisory notes) */}
+        {playerHeyaId && (() => {
+          const notes = projectAdvisorRecommendations(world, playerHeyaId).slice(0, 4);
+          if (notes.length === 0) return null;
+          return (
+            <section className="rounded-md border border-border/50 p-4 space-y-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                Coach Advisory
+              </h3>
+              <ul className="space-y-1.5 text-xs">
+                {notes.map((n) => (
+                  <li key={n.id} className="flex gap-2">
+                    <span className="shrink-0 font-semibold text-primary uppercase text-[10px] pt-0.5 w-16">
+                      {n.priority}
+                    </span>
+                    <span>
+                      <span className="font-medium">{n.title}</span>
+                      {n.detail ? ` — ${n.detail}` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })()}
 
         {/* P2 Phase O: Weekly Drill Scheduler */}
         <WeeklyDrillPlanner
