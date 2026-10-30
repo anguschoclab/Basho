@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
-import { useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/state/game/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { projectRikishi } from "@/presenters/rikishi/index";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/page-shell/index";
-import { Loader2 } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StableStatsTable } from "@/components/stable/StableStatsTable";
 import { InfrastructureDashboard } from "@/components/stable/InfrastructureDashboard";
@@ -31,6 +31,7 @@ export default function StablePage() {
   const { state, buildInfrastructure } = useGame();
   const { world, playerHeyaId } = state;
 
+  const navigate = useNavigate();
   const viewingHeyaId = routeId || playerHeyaId || "";
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
@@ -46,17 +47,21 @@ export default function StablePage() {
     return rawRoster.map((r) => projectRikishi(r, world));
   }, [world, heya, rawRoster]);
 
-  if (!hasWorld || !world || !heya) return null;
+  if (!hasWorld || !world) return null;
 
   if (!heya) {
     return (
       <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <EmptyState
-            icon={Loader2}
-            title="Loading Stable"
-            description="Fetching stable operations..."
-            className="animate-pulse"
+            icon={Building2}
+            title="Stable not found"
+            description="This stable isn't part of the current world — it may have closed, or the link is stale."
+            action={{
+              label: "Return to Dashboard",
+              onClick: () => navigate({ to: "/dashboard" }),
+              variant: "outline",
+            }}
           />
         </div>
       </AppLayout>
