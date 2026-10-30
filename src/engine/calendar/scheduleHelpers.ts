@@ -94,7 +94,17 @@ export function greedySelectPairs(
 }
 
 /**
- * Check if a specific day needs scheduling for a division.
+ * Determines if a given division requires bout scheduling for a specific basho day.
+ *
+ * Contract:
+ * - Days are strictly 1-indexed. Valid range is [1, 15].
+ * - Upper divisions (Makuuchi, Juryo) fight every day.
+ * - Lower divisions (Makushita and below) fight 7 bouts per basho, strictly on odd days (1, 3, 5, 7, 9, 11, 13).
+ * - Pure function. Deterministic and side-effect free.
+ *
+ * @param division - The division to check scheduling for.
+ * @param day - The 1-indexed basho day. Returns false if day > 15.
+ * @returns boolean - True if the division should have matches on this day.
  */
 export function needsScheduleForDay(division: Division, day: number): boolean {
   if (day > 15) return false;
