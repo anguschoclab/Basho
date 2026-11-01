@@ -28,13 +28,6 @@ export const STAFF_POST_SLOTS: Partial<Record<StaffRole, number>> = {
 export const SEVERANCE_MONTHS = 3;
 export const CANDIDATE_POOL_SIZE = 5;
 
-/** Ensure staffPosts exists on a heya, derived from staffIds when absent. */
-export function ensureStaffPosts(heya: Heya): NonNullable<Heya["staffPosts"]> {
-  if (heya.staffPosts) return heya.staffPosts;
-  const posts: NonNullable<Heya["staffPosts"]> = {};
-  return posts;
-}
-
 /** Filled count for a role (from staffIds when posts aren't tracked). */
 export function filledSlots(world: WorldState, heya: Heya, role: StaffRole): number {
   const posts = heya.staffPosts?.[role];
@@ -47,11 +40,6 @@ export function openSlots(world: WorldState, heya: Heya, role: StaffRole): numbe
   const cap = STAFF_POST_SLOTS[role];
   if (cap === undefined) return Infinity;
   return Math.max(0, cap - filledSlots(world, heya, role));
-}
-
-/** Is the post for `role` currently vacant (0 filled)? */
-export function postVacant(world: WorldState, heya: Heya, role: StaffRole): boolean {
-  return filledSlots(world, heya, role) === 0;
 }
 
 export function severanceCost(staff: Staff): number {

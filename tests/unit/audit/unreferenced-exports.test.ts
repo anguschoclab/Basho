@@ -42,10 +42,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   // ── Type exports: public API contracts ──
 
   // ── Constants: retained for future use or external consumers ──
-  "src/engine/health/BodyDefinitions.ts:BODY_AREA_LABELS":
-    "Display labels for body areas; used by UI injury display",
-  "src/engine/health/BodyDefinitions.ts:INJURY_TYPE_LABELS":
-    "Display labels for injury types; used by UI injury display",
   "src/engine/generation/FightingNameEarly.ts:EARLY_SHIKONA_CHANCE":
     "Config constant for early shikona generation",
   "src/engine/generation/FightingNameEarly.ts:EARLY_SHIKONA_MOTIVATION_BOOST":
@@ -227,6 +223,27 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/utils/Logger.ts:logger":
     "Shared singleton backing the live debug/info/warn/error wrappers (consumed by bootstrap, useFlowActions, BanzukePublisher); pinned by logger tests",
 
+  // ── v15 baseline refresh (ORPH-0549..0570) ──
+  "src/engine/economy/koenkaiDemands.ts:KoenkaiDemandKind": "Type export; koenkai demand kind API contract",
+  "src/engine/economy/koenkaiDemands.ts:KoenkaiDemandDef": "Type export; koenkai demand def API contract",
+  "src/engine/economy/koenkaiDemands.ts:KOENKAI_DEMANDS": "Demand table pinned by koenkaiDemands tests",
+  "src/engine/economy/koenkaiDemands.ts:KOENKAI_DEMAND_PROBABILITY": "Internal constant consumed by tickMonthlyKoenkaiDemands; exported for unit testing",
+  "src/engine/economy/koenkaiDemands.ts:koenkaiDemandDecisionId": "Internal helper; pinned by koenkaiDemands tests",
+  "src/engine/economy/koenkaiDemands.ts:applyDemandOutcome": "Internal helper invoked by the resolveKoenkaiDemand path; exported for unit testing",
+  "src/engine/economy/staffPosts.ts:STAFF_POST_SLOTS": "Internal slot table consumed by openSlots; pinned by staffPosts tests",
+  "src/engine/economy/staffPosts.ts:SEVERANCE_MONTHS": "Internal constant consumed by severanceCost; pinned by staffPosts tests",
+  "src/engine/economy/staffPosts.ts:CANDIDATE_POOL_SIZE": "Internal constant consumed by refreshStaffCandidatePool; exported for unit testing",
+  "src/engine/economy/staffPosts.ts:filledSlots": "Internal helper invoked by openSlots; exported for unit testing",
+  "src/engine/economy/staffPosts.ts:severanceCost": "Internal helper; pinned by staffPosts tests",
+  "src/engine/economy/staffPosts.ts:monthlyWageBill": "Internal helper; pinned by staffPosts tests",
+  "src/engine/economy/staffPosts.ts:skillFromBands": "Internal helper; pinned by staffPosts tests",
+  "src/engine/health/physioPurchase.ts:PHYSIO_WEEKS_PER_SESSION": "Internal constant consumed by physio purchase flow; exported for unit testing",
+  "src/engine/npc/decision/decisionQueue.ts:PENDING_DECISION_SOFT_CAP": "Internal constant consumed by decisionQueue; exported for unit testing",
+  "src/engine/recruitment/scoutMissions.ts:ScoutTierDef": "Type export; scout mission tier API contract",
+  "src/engine/recruitment/scoutMissions.ts:ScoutStats": "Type export; scout stats API contract",
+  "src/engine/training/weeklyTraining.ts:getRestFatigueFloor": "Internal helper invoked by weeklyTraining; pinned by dormitory tests",
+  "src/engine/welfare/harmony.ts:harmonyBandFor": "Internal helper invoked by harmony module; pinned by harmony tests",
+  "src/engine/rikishi/signatureKimarite.ts:signatureKimarite": "Unticked service consumed via presenters/engineAccess + RikishiCarePanel; not tick-phase-bound",
   "src/engine/recruitment/YouthAcademyService.ts:getQualityBonus":
     "Public helper exercised directly by youthAcademy.test.ts",
 
@@ -285,8 +302,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/economy/loans.ts:processMonthlyLoanRepayments":
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/economy/staff.ts:generateStaff":
-    "Live module surface — referenced outside its file (3 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/economy/staff.ts:StaffBonuses":
     "Live module surface — referenced outside its file (4 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/history/hallOfFame.ts:tryAddInductee":
@@ -301,12 +316,8 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/lifecycle/rookieFactory.ts:_generateRookie":
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/npc/decision/LoopDecisionEngine.ts:LoopDecision":
-    "Live module surface — referenced outside its file (10 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/npc/decision/LoopDecisionEngine.ts:detectDueDecisions":
     "Live module surface — referenced outside its file (4 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/npc/decision/LoopDecisionEngine.ts:applyDecisionEffect":
-    "Live module surface — referenced outside its file (3 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/npc/handlers.ts:consolidateOyakataMemory":
     "Live module surface — referenced outside its file (5 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/npc/perception.ts:MediaHeatBand":
@@ -443,8 +454,6 @@ const GENUINE_ORPHANS: Record<string, string> = {
     "ORPH-0393: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/narrative/descriptorBands.ts:toDurationBand":
     "ORPH-0396: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/agency/types.ts:RikishiLoyaltyBand":
-    "ORPH-0408: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/npc/handlers.ts:handleNPCCrisis":
     "ORPH-0416: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/npc/npcAIWorkers.ts:GlobalWorkerResult":
