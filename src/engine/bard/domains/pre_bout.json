@@ -194,12 +194,20 @@
   "career_milestone": [
     "%SHIKONA% sits on the cusp of a career milestone — %MILESTONE% career wins.",
     "One more victory brings %SHIKONA% to the %MILESTONE%-win plateau.",
-    "A milestone moment potentially awaits %SHIKONA% today at %MILESTONE% career wins."
+    "A milestone moment potentially awaits %SHIKONA% today at %MILESTONE% career wins.",
+    "With a win today, %SHIKONA% will secure his %MILESTONE%th career victory.",
+    "%SHIKONA% is just one victory away from %MILESTONE% career wins.",
+    "The %MILESTONE%-win mark is well within reach for %SHIKONA% today.",
+    "Expectations are high as %SHIKONA% steps up, needing just one more win to hit %MILESTONE% for his career."
   ],
   "career_bout_milestone": [
     "%SHIKONA% approaches a career landmark — %MILESTONE% total bouts on the dohyo.",
     "One more appearance brings %SHIKONA% to the %MILESTONE%-bout milestone.",
-    "A testament to longevity — %SHIKONA% nears %MILESTONE% career bouts."
+    "A testament to longevity — %SHIKONA% nears %MILESTONE% career bouts.",
+    "Stepping onto the dohyo today, %SHIKONA% officially marks his %MILESTONE%th career bout.",
+    "This match will be %SHIKONA%'s %MILESTONE%th career bout — an incredible feat of endurance.",
+    "A true veteran of the clay, %SHIKONA% prepares for his %MILESTONE%th career appearance.",
+    "The crowd acknowledges %SHIKONA% as he steps up for his %MILESTONE%th bout on the dohyo."
   ],
   "bout_of_the_day": [
     "This is the featured bout of the day — %EAST% versus %WEST% promises drama.",

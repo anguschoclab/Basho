@@ -250,7 +250,10 @@
     "A milestone moment: %SHIKONA% reaches the %MILESTONE%-win mark.",
     "%SHIKONA% enters the history books with his %MILESTONE%th career victory.",
     "A monumental achievement — %SHIKONA% stands tall with %MILESTONE% career wins.",
-    "Win number %MILESTONE% for %SHIKONA% — a testament to his dedication on the dohyo."
+    "Win number %MILESTONE% for %SHIKONA% — a testament to his dedication on the dohyo.",
+    "The crowd erupts as %SHIKONA% officially secures his %MILESTONE%th career win.",
+    "With that hard-fought victory, %SHIKONA% claims the %MILESTONE%-win milestone.",
+    "It's official: %SHIKONA% joins the exclusive %MILESTONE%-win club today."
   ],
   "career_bout_milestone": [
     "That was %SHIKONA%'s %MILESTONE%th career bout — a remarkable milestone of longevity.",
