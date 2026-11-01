@@ -308,6 +308,7 @@ export function isStateImpact(value: unknown): value is StateImpact {
     impact.collections ||
     impact.deletedEntities ||
     impact.worldFields ||
+    impact.arrayAppends ||
     impact.events
   );
 }
