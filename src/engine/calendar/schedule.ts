@@ -335,12 +335,20 @@ function applyMatchmakingAvoid(
 
   // Requester's hottest rival heya.
   const rivalPairs = world.rivalriesState?.heyaRivalryPairs;
-  const rivalHeyaId = rivalPairs
-    ? Object.values(rivalPairs)
-        .filter((p) => p.heyaAId === requesterHeyaId || p.heyaBId === requesterHeyaId)
-        .sort((a, b) => b.heat - a.heat)
-        .map((p) => (p.heyaAId === requesterHeyaId ? p.heyaBId : p.heyaAId))[0]
-    : undefined;
+  // ⚡ Bolt: Replaced chained array methods (.filter().sort().map()[0]) with a single-pass loop
+  // to reduce memory allocations (GC pressure) and algorithmic complexity (O(N log N) -> O(N)).
+  let rivalHeyaId: string | undefined;
+  if (rivalPairs) {
+    let maxHeat = -Infinity;
+    for (const p of Object.values(rivalPairs)) {
+      if (p.heyaAId === requesterHeyaId || p.heyaBId === requesterHeyaId) {
+        if (p.heat > maxHeat) {
+          maxHeat = p.heat;
+          rivalHeyaId = p.heyaAId === requesterHeyaId ? p.heyaBId : p.heyaAId;
+        }
+      }
+    }
+  }
   // Favor is consumed once the requester's division is scheduled on day 1,
   // even if no rival pairing needed repair.
   if (!rivalHeyaId) return { pairings, consumed: true };
