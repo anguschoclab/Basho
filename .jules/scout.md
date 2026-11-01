@@ -1,0 +1,1 @@
+## 2024-05-18 - arrayAppends testing **Gap:** The `StateImpact`'s `arrayAppends` support in `isStateImpact` is untested **Learning:** The type guard `isStateImpact` wasn't verifying `arrayAppends` alongside other main fields. **Pattern:** Test `arrayAppends` the same way we test other fields in `isStateImpact`.

@@ -22,6 +22,14 @@ describe("StateImpact", () => {
       expect(isStateImpact(impact)).toBe(true);
     });
 
+    it("returns true for valid StateImpact with arrayAppends", () => {
+      const impact: StateImpact = {
+        arrayAppends: [],
+        metadata: { source: "test" },
+      };
+      expect(isStateImpact(impact)).toBe(true);
+    });
+
     it("returns true for valid StateImpact with collections", () => {
       const impact: StateImpact = {
         collections: {
