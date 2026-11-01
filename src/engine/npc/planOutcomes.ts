@@ -222,7 +222,14 @@ export function evaluatePlanOutcome(world: WorldState, heyaId: Id, plan: AIPlan)
     }
     case "kadoban_survival": {
       const stillKadoban = kadobanCount(world, ids);
-      const ozekiLeft = [...ids].some((id) => world.rikishi.get(id)?.rank === "ozeki");
+      // Single pass manual loop avoids O(N) allocation overhead of spreading Set to array
+      let ozekiLeft = false;
+      for (const id of ids) {
+        if (world.rikishi.get(id)?.rank === "ozeki") {
+          ozekiLeft = true;
+          break;
+        }
+      }
       if (stillKadoban === 0 && ozekiLeft) {
         return { outcome: "success", summary: "The Ozeki cleared kadoban status." };
       }
