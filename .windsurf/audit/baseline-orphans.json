@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-28T16:44:21.972Z",
+  "generatedAt": "2026-11-01T16:39:35.417Z",
   "summary": {
-    "total": 234,
-    "unreferencedExports": 226,
+    "total": 250,
+    "unreferencedExports": 241,
     "orphanRoutes": 0,
-    "untickedServices": 8,
+    "untickedServices": 9,
     "unusedComponents": 0,
     "writeOnlyState": 0
   },
@@ -538,6 +538,72 @@
       "status": "genuine"
     },
     {
+      "id": "ORPH-0554",
+      "file": "src/engine/economy/koenkaiDemands.ts",
+      "symbol": "KoenkaiDemandKind",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0553",
+      "file": "src/engine/economy/koenkaiDemands.ts",
+      "symbol": "KoenkaiDemandDef",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0551",
+      "file": "src/engine/economy/koenkaiDemands.ts",
+      "symbol": "KOENKAI_DEMANDS",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0550",
+      "file": "src/engine/economy/koenkaiDemands.ts",
+      "symbol": "KOENKAI_DEMAND_PROBABILITY",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0552",
+      "file": "src/engine/economy/koenkaiDemands.ts",
+      "symbol": "koenkaiDemandDecisionId",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0549",
+      "file": "src/engine/economy/koenkaiDemands.ts",
+      "symbol": "applyDemandOutcome",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
       "id": "ORPH-0343",
       "file": "src/engine/economy/loans.ts",
       "symbol": "LoanTerms",
@@ -582,17 +648,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0345",
-      "file": "src/engine/economy/staff.ts",
-      "symbol": "generateStaff",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0347",
       "file": "src/engine/economy/staff.ts",
       "symbol": "tickStaffYear",
@@ -613,6 +668,105 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
+    },
+    {
+      "id": "ORPH-0563",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "STAFF_POST_SLOTS",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0560",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "SEVERANCE_MONTHS",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0555",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "CANDIDATE_POOL_SIZE",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0556",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "ensureStaffPosts",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0557",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "filledSlots",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0559",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "postVacant",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0561",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "severanceCost",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0558",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "monthlyWageBill",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0562",
+      "file": "src/engine/economy/staffPosts.ts",
+      "symbol": "skillFromBands",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
     },
     {
       "id": "ORPH-0352",
@@ -923,28 +1077,6 @@
       "status": "genuine"
     },
     {
-      "id": "ORPH-0370",
-      "file": "src/engine/health/BodyDefinitions.ts",
-      "symbol": "BODY_AREA_LABELS",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0371",
-      "file": "src/engine/health/BodyDefinitions.ts",
-      "symbol": "INJURY_TYPE_LABELS",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0372",
       "file": "src/engine/health/InjuredEncouragement.ts",
       "symbol": "ENCOURAGEMENT_MOTIVATION_BOOST",
@@ -987,6 +1119,17 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
+    },
+    {
+      "id": "ORPH-0564",
+      "file": "src/engine/health/physioPurchase.ts",
+      "symbol": "PHYSIO_WEEKS_PER_SESSION",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
     },
     {
       "id": "ORPH-0378",
@@ -1495,28 +1638,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0408",
-      "file": "src/engine/npc/agency/types.ts",
-      "symbol": "RikishiLoyaltyBand",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "genuine"
-    },
-    {
-      "id": "ORPH-0413",
-      "file": "src/engine/npc/decision/LoopDecisionEngine.ts",
-      "symbol": "LoopDecision",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0412",
       "file": "src/engine/npc/decision/LoopDecisionEngine.ts",
       "symbol": "detectDueDecisions",
@@ -1528,15 +1649,15 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0411",
-      "file": "src/engine/npc/decision/LoopDecisionEngine.ts",
-      "symbol": "applyDecisionEffect",
+      "id": "ORPH-0565",
+      "file": "src/engine/npc/decision/decisionQueue.ts",
+      "symbol": "PENDING_DECISION_SOFT_CAP",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0414",
@@ -2133,6 +2254,28 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0567",
+      "file": "src/engine/recruitment/scoutMissions.ts",
+      "symbol": "ScoutTierDef",
+      "orphanType": "unreferenced-export",
+      "priority": "P1",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0566",
+      "file": "src/engine/recruitment/scoutMissions.ts",
+      "symbol": "ScoutStats",
+      "orphanType": "unreferenced-export",
+      "priority": "P1",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
       "id": "ORPH-0320",
       "file": "src/engine/shikona/generateShikona.ts",
       "symbol": "generateRikishiName",
@@ -2364,6 +2507,17 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0569",
+      "file": "src/engine/training/weeklyTraining.ts",
+      "symbol": "getRestFatigueFloor",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
       "id": "ORPH-0187",
       "file": "src/engine/utils/Logger.ts",
       "symbol": "logger",
@@ -2417,6 +2571,17 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
+    },
+    {
+      "id": "ORPH-0570",
+      "file": "src/engine/welfare/harmony.ts",
+      "symbol": "harmonyBandFor",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
     },
     {
       "id": "ORPH-0543",
@@ -2582,6 +2747,17 @@
       "npcConsumer": "",
       "tickPhase": "",
       "status": "intentional"
+    },
+    {
+      "id": "ORPH-0568",
+      "file": "src/engine/rikishi/signatureKimarite.ts",
+      "symbol": "signatureKimarite",
+      "orphanType": "unticked-service",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
     }
   ]
 }

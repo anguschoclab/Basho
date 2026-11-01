@@ -212,3 +212,25 @@ describe("evaluatePlanOutcome", () => {
     expect(base.yushoWins).toBe(1);
   });
 });
+
+describe("evaluatePlanOutcome — kadoban_survival", () => {
+  it("success when no rikishi remains kadoban and an ozeki is on the roster", () => {
+    const world = makeWorld({ rikishiRanks: ["ozeki", "maegashira"] });
+    world.ozekiKadoban = { r0: { isKadoban: false, consecutiveMakeKoshi: 0 } };
+    const outcome = evaluatePlanOutcome(world, "heya-a", makePlan("kadoban_survival"));
+    expect(outcome.outcome).toBe("success");
+  });
+
+  it("partial while an ozeki remains kadoban", () => {
+    const world = makeWorld({ rikishiRanks: ["ozeki", "maegashira"] });
+    world.ozekiKadoban = { r0: { isKadoban: true, consecutiveMakeKoshi: 1 } };
+    const outcome = evaluatePlanOutcome(world, "heya-a", makePlan("kadoban_survival"));
+    expect(outcome.outcome).toBe("partial");
+  });
+
+  it("abandoned when no ozeki remains on the roster", () => {
+    const world = makeWorld({ rikishiRanks: ["maegashira", "sekiwake"] });
+    const outcome = evaluatePlanOutcome(world, "heya-a", makePlan("kadoban_survival"));
+    expect(outcome.outcome).toBe("abandoned");
+  });
+});

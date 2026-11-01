@@ -272,6 +272,13 @@ describe("needsScheduleForDay", () => {
   it("returns false for juryo day 16+", () => {
     expect(needsScheduleForDay("juryo", 16)).toBe(false);
   });
+
+  it("returns false for day < 1 across all divisions (contract is 1-indexed)", () => {
+    for (const div of ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as const) {
+      expect(needsScheduleForDay(div, 0)).toBe(false);
+      expect(needsScheduleForDay(div, -1)).toBe(false);
+    }
+  });
 });
 
 describe("getTotalBashodays", () => {

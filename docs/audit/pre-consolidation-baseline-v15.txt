@@ -1,0 +1,57 @@
+# Pre-Consolidation Baseline v15
+Date: 2026-11-01 17:36
+HEAD: 7dafc74c17c10bd9440c11182ba80882b3b45e51 (bun updates)
+
+## Working tree (pre-commit)
+## main...origin/main
+?? docs/audit/pre-consolidation-baseline-v15.txt
+
+## Remote branch inventory
+origin/bard-milestone-flavor-8585130335698183879 | ahead=1 behind=1
+origin/bolt-fix-set-allocation-9828947554093910814 | ahead=1 behind=1
+origin/bolt-optimize-npc-deduplication-1893982413178272269 | ahead=2 behind=8
+origin/bolt-optimize-rival-heya-lookup-14437405914909890144 | ahead=1 behind=1
+origin/dependabot/bun/electron-45.1.0 | ahead=1 behind=0
+origin/dependabot/bun/electron-store-12.0.0 | ahead=1 behind=0
+origin/dependabot/bun/electron-vite-6.0.0 | ahead=1 behind=0
+origin/dependabot/bun/lucide-react-1.63.0 | ahead=1 behind=0
+origin/dependabot/bun/tanstack/react-router-1.170.46 | ahead=1 behind=0
+origin/dependabot/bun/three-0.186.1 | ahead=1 behind=0
+origin/dependabot/bun/typescript-eslint/parser-8.72.1 | ahead=1 behind=0
+origin/dependabot/bun/vite-8.3.5 | ahead=1 behind=0
+origin/dependabot/bun/vitest-5.0.5 | ahead=1 behind=0
+origin/main | ahead=0 behind=0
+origin/polish/stable-not-found | ahead=1 behind=3
+origin/scout-test-arrayappends-17166674333072785864 | ahead=1 behind=1
+origin/scout/fix-faction-pressure-id-10201376706612770075 | ahead=1 behind=8
+origin/scribe-document-schedule-helpers-9638841917212221811 | ahead=2 behind=8
+
+## Baseline gates (17:38)
+=== type-check ===
+$ node node_modules/@typescript/native/bin/tsc --build --force
+=== build ===
+✓ built in 7.17s
+[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 6.9s of this 7.2s build (97%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin @tailwindcss/vite:generate:build transform (92%, 6.6s, 3 calls)
+  - plugin @rolldown/plugin-babel transform (87%, 6.2s, 368 calls)
+These rows add up to more than the total. Callbacks can overlap, so the same time counts for more than one row.
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+=== test (fast) ===
+NOTE: first run (17:38) was contaminated — executed while v10 stash was applied mid-recovery
+(src/tests existed -> repoStructure gate tripped). Clean-tree result verified 17:41+:
+Test Files  1003 passed (1003) | Tests  9293 passed | 1 skipped
+(repoStructure re-verified green at 17:41:51 after `rm -rf src/tests` .DS_Store shells.)
+Post-regen caveat: audit-orphans.ts regenerated .windsurf/audit/baseline-orphans.json
+(234->250) exposing 22 unclassified candidates -> unreferenced-exports.test.ts 3 RED.
+Disposition: classify + prune in Phase 5 (V15-B01/B02).
+=== lint:strict ===
+  51:7  warning  Fast refresh only works when a file only exports components. Move your component(s) to a separate file. If all exports are HOCs, add them to the `extraHOCs` option  react-refresh/only-export-components
+  52:7  warning  Fast refresh only works when a file only exports components. Move your component(s) to a separate file. If all exports are HOCs, add them to the `extraHOCs` option  react-refresh/only-export-components
+  53:7  warning  Fast refresh only works when a file only exports components. Move your component(s) to a separate file. If all exports are HOCs, add them to the `extraHOCs` option  react-refresh/only-export-components
+
+✖ 37 problems (0 errors, 37 warnings)
+
+ESLint found too many warnings (maximum: 0).
+error: script "lint:strict" exited with code 1
