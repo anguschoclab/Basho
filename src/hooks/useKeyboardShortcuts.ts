@@ -20,7 +20,7 @@ const QUICK_NAV: Record<string, string> = {
   "3": "/banzuke",
   "4": "/stable",
   "5": "/rikishi",
-  "6": "/training",
+  "6": "/stable/training",
   "7": "/economy",
   "8": "/scouting",
   "9": "/rivalries",

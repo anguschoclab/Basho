@@ -28,7 +28,7 @@ import type { CandidateDigestEntry } from "@/presenters/projections/boutProjecti
 import { CompareModePanel } from "@/components/scouting/CompareModePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Layers } from "lucide-react";
-import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
+import { getCombatArchetypeDescription, FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/presenters/engineAccess";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
 import { toPotentialBand, TARGET_ROSTER_SIZE } from "@/presenters/engineAccess";
@@ -136,7 +136,7 @@ export function QuotaFilterRow({ state }: { state: State }) {
           )}
         >
           <Globe className="h-3.5 w-3.5" />
-          Foreign Quota: {state.foreignUsage}/2
+          Foreign Quota: {state.foreignUsage}/{FOREIGN_RIKISHI_LIMIT_PER_HEYA}
         </div>
         {state.limitReached && (
           <div className="flex items-center gap-1.5 text-[10px] text-destructive font-medium animate-pulse">

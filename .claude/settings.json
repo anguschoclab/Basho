@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'Math\\.random' && echo 'BLOCKED: Use seeded RNG (rngForWorld/rngFromSeed), not Math.random()' && exit 1 || exit 0"
+            "command": "INPUT=$(cat); echo \"$INPUT\" | grep -q 'Math\\.random' && echo 'BLOCKED: Use seeded RNG (rngForWorld/rngFromSeed), not Math.random()' && exit 1 || exit 0"
           }
         ]
       }

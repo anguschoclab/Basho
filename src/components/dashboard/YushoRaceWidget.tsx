@@ -38,11 +38,11 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
   return (
     <div
       className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
-      onClick={() => navigate({ to: "/rikishi", params: { rikishiId: entry.id } })}
+      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: entry.id } })}
       role="button"
       aria-label={`View ${entry.shikona}`}
       tabIndex={0}
-      onKeyDown={activationKeyHandler(() => navigate({ to: "/rikishi", params: { rikishiId: entry.id } }))}
+      onKeyDown={activationKeyHandler(() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: entry.id } }))}
     >
       {/* Avatar with medal */}
       <div className="relative">

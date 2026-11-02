@@ -54,22 +54,22 @@ export const MORALE_DISPLAY: Record<string, { label: string; color: string }> = 
 export const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: string }> = {
   austerity: {
     label: "Austerity",
-    cost: "¥1,000/day",
+    cost: "¥350/day",
     desc: "Minimal portions. High morale penalty, weight loss.",
   },
   maintenance: {
     label: "Maintenance",
-    cost: "¥3,000/day",
+    cost: "¥1,000/day",
     desc: "Standard stew. Balanced weight and morale.",
   },
   heavy_bulk: {
     label: "Heavy Bulk",
-    cost: "¥6,000/day",
+    cost: "¥2,000/day",
     desc: "Force-feeding. Fast weight gain, minor morale drop.",
   },
   premium: {
     label: "Premium Nutrition",
-    cost: "¥10,000/day",
+    cost: "¥3,500/day",
     desc: "High-grade wagyu. Boosts weight, morale, and recovery.",
   },
 };

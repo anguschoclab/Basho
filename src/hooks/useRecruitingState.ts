@@ -10,7 +10,7 @@ import { useGame } from "@/state/game/useGame";
 import { useToast } from "@/hooks/use-toast";
 import { useGameStore } from "@/state/stores/gameStore";
 import { projectRecruitmentUIDigest } from "@/presenters/uiDigest";
-import { getHeyaForeignUsage, getHeyaRoster } from "@/presenters/engineAccess";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA, getHeyaForeignUsage, getHeyaRoster } from "@/presenters/engineAccess";
 import { makePlayerSignChance } from "@/presenters/projections/signChanceProjection";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
@@ -59,7 +59,7 @@ export function useRecruitingState(playerHeyaId: string | null) {
     return getHeyaForeignUsage(rikishi, world.year);
   }, [world, playerHeyaId]);
 
-  const limitReached = foreignUsage >= 2;
+  const limitReached = foreignUsage >= FOREIGN_RIKISHI_LIMIT_PER_HEYA;
 
   const {
     handleScoutPool,
