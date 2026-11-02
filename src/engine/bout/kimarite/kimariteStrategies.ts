@@ -429,7 +429,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 4,
     condition: (_w, _l, ctx, _st, _wSide, lSide) =>
-      atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && forwardMomentum(ctx, lSide) < 0,
+      atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && forwardMomentum(ctx, _wSide) > 0,
   },
   {
     id: "kimedashi",
@@ -825,7 +825,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 30,
     difficulty: 5,
     condition: (_w, l, ctx, _st, _wSide, lSide) =>
-      balance(ctx, lSide) < 40 && l.stats.stamina < 0.5 && nearCenter(ctx, lSide),
+      balance(ctx, lSide) < 40 && l.stats.stamina < 50 && nearCenter(ctx, lSide),
   },
   {
     id: "sotogake",

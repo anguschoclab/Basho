@@ -35,13 +35,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | ID | Sev | Location | Defect |
 |---|---|---|---|
 | B24 | P2 | `SerializationService.ts:54` | `serializeBashoState` drops `boutMetrics`/`isExhibition`/`results`/`schedule`; mid-basho save loses accumulated metrics |
-| B32 | P1 | `lifecycle/BashoHistory.ts:365` | yokozuna deliberation reads pre-index history → lags one basho |
-| B33 | P1 | `legacy/DynastyService.ts:89` | `isSummary` successor → yearly no-op forever (trustee never runs) |
-| B35 | P2 | `lifecycle/retirementNarrative.ts:42` | `highestRank` misses lower divisions → peak = debut rank |
-| B44 | P1 | `matchmaking/DramaMatchmaker.ts:583` | `applyDramaBudget` swap loop no-op (scoreChange always 0) |
-| B46 | P1 | `kimarite/kimariteStrategies.ts:432,828` | `forwardMomentum < 0` / `stamina < 0.5` unreachable predicates |
-| B47 | P1 | `narrative/postbout2.ts:400` | mono-ii narrative rolls independent of `result.monoiiOutcome` |
-| B50 | P2 | `bout/ReplayMetadata.ts:103` | `clamp01(margin)` on raw diff → saturates at 1 |
 | B06 | P1 | `scripts/narrative/bard-orchestrator.ts` + `autonomous-narrative.yml` | stale archive schema → weekly job guaranteed crash; same GH006 protected push; no timeout |
 | B07 | P1 | `package.json`/`electron.vite.config.ts`/`electron/main.ts`/`ELECTRON.md` | 4 mutually inconsistent output names → packaged app can't launch |
 | B23 | P2 | `stable/StablePageTabs.tsx:72` | nested MentorAssignmentPanel inside navigable Card → click navigates AND mutates |
@@ -84,6 +77,13 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B42 | P2 | `kesho/keshoEffects.tsx` + `keshoPatterns.tsx` + `keshoSymbols.tsx` | all 5 def ids unreferenced → consumers wired; missing `mountain` motif added |
 | B26 | P0 | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts` | shallow `economics` overwrite (multi-sansho + cross-impact) → per-rikishi `econCache` + progressively-resolved world for teate/mochikyukin |
 | B31 | P0 | `legacy/DynastyService.ts` | `triggerSuccession` now runs `retireRikishiFully`, `removeOyakata`, and transfers held myoseki `holderId` to the successor |
+| B32 | P1 | `lifecycle/BashoHistory.ts` | yokozuna deliberation read pre-index history → synthesized current-basho entry appended in-check |
+| B33 | P1 | `legacy/DynastyService.ts:89` | `isSummary` successor → yearly no-op; now picks first full candidate else generic trustee |
+| B35 | P2 | `lifecycle/retirementNarrative.ts` | 5-name order array → `RANK_HIERARCHY` tiers (unlisted ranks had indexOf −1, sorting above yokozuna) |
+| B44 | P1 | `matchmaking/DramaMatchmaker.ts:583` | both-id swap was identity → `scoreChange` always 0; now swaps easts only |
+| B46 | P1 | `kimarite/kimariteStrategies.ts:432,828` | `forwardMomentum < 0` unreachable (clamped ≥0 → winner-side `> 0`); `stamina < 0.5` → `< 50` (0-100 scale) |
+| B47 | P1 | `bout/narrative/postbout2.ts` | `gyoji_confused` rolled independently → gated on `monoiiOutcome !== "upheld"` |
+| B50 | P2 | `bout/ReplayMetadata.ts:103` | `clamp01(rawMargin)` saturated → `margin / TACHIAI_MARGIN_DECISIVE` |
 
 ## Registered debt — P3 test-quality / tooling
 

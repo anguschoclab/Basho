@@ -88,9 +88,16 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
     // Forced succession at 65
     if (age >= 65 && !oyakata.retirementYear) {
       const eligible = findEligibleSuccessors(world, heya.id);
-      if (eligible.length > 0) {
-        const successorId = eligible[0]; // Pick the top eligible candidate
-        builder.merge(triggerSuccession(world, heya.id, successorId));
+      // triggerSuccession no-ops on summarized successors — pick the first
+      // FULL candidate, else fall through to the generic trustee path
+      // (V16-B33: previously the oyakata survived past 65 forever).
+      const viable = eligible.find((sid) => {
+        const entry =
+          getRikishi(world, sid) ?? world.historicalRikishi?.get(sid);
+        return entry && !isSummary(entry);
+      });
+      if (viable) {
+        builder.merge(triggerSuccession(world, heya.id, viable));
       } else {
         // Fallback: Generate a generic oyakata if no rikishi is eligible
         const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;

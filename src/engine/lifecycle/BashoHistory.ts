@@ -342,7 +342,7 @@ export function recordBashoHistory(
   emitBashoEndEvents(world, basho, yusho, getRikishi(world, yusho), bestWins, builder);
 
   // Phase L: Institutional Depth - Check for Yokozuna Deliberations
-  checkYokozunaPromotions(world, builder);
+  checkYokozunaPromotions(world, builder, { yusho, junYushoIds });
 
   // WS5 — tenure bookkeeping: bashoServed/championships, the
   // consecutiveUnderperformanceBasho counter the non-financial merger path
@@ -364,7 +364,8 @@ export function recordBashoHistory(
  */
 export function checkYokozunaPromotions(
   world: WorldState,
-  builder: ReturnType<typeof createImpactBuilder>
+  builder: ReturnType<typeof createImpactBuilder>,
+  currentBasho?: { yusho: Id; junYushoIds: Id[] }
 ) {
   if (!world.historyIndex) return;
 
@@ -377,7 +378,16 @@ export function checkYokozunaPromotions(
   }
 
   for (const rid of ozekiIds) {
-    const history = world.historyIndex.rikishi[rid] || [];
+    // historyIndex lags — the just-concluded basho is queued as a world-array
+    // append, not indexed yet. Append a synthesized entry so `last` is THIS
+    // basho, not the previous one (V16-B32).
+    const history = [...(world.historyIndex.rikishi[rid] || [])];
+    if (currentBasho) {
+      history.push({
+        yusho: currentBasho.yusho === rid,
+        junYusho: currentBasho.junYushoIds.includes(rid),
+      } as (typeof history)[number]);
+    }
     const len = history.length;
     if (len < 2) continue;
 

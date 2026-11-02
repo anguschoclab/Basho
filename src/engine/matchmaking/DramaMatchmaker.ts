@@ -589,9 +589,10 @@ export function applyDramaBudget(
         const p1 = bestPairings[i];
         const p2 = bestPairings[j];
 
-        // Create swapped pairings
-        const swapped1: MatchPairing = { ...p1, eastId: p2.eastId, westId: p2.westId };
-        const swapped2: MatchPairing = { ...p2, eastId: p1.eastId, westId: p1.westId };
+        // Swap easts only — exchanging BOTH ids reproduced the identical
+        // pairing, so scoreChange was always 0 and the whole pass was a no-op.
+        const swapped1: MatchPairing = { ...p1, eastId: p2.eastId };
+        const swapped2: MatchPairing = { ...p2, eastId: p1.eastId };
 
         // Check if swaps would create rematches
         const key1 = pairKey(swapped1.eastId, swapped1.westId);

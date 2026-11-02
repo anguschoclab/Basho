@@ -107,21 +107,21 @@ describe("buildBoutScript", () => {
 
   it("reads tachiai margin from first tachiai log entry", () => {
     const result = makeBoutResult({
-      log: [logEntry("tachiai", { tachiaiWinner: "east", margin: 0.8 })],
+      log: [logEntry("tachiai", { tachiaiWinner: "east", margin: 16 })],
     });
     expect(buildBoutScript(result).tachiaiMargin).toBe(0.8);
   });
 
   it("clamps tachiai margin above 1.0", () => {
     const result = makeBoutResult({
-      log: [logEntry("tachiai", { margin: 1.5 })],
+      log: [logEntry("tachiai", { margin: 30 })],
     });
     expect(buildBoutScript(result).tachiaiMargin).toBe(1.0);
   });
 
   it("clamps tachiai margin below 0", () => {
     const result = makeBoutResult({
-      log: [logEntry("tachiai", { margin: -0.3 })],
+      log: [logEntry("tachiai", { margin: -6 })],
     });
     expect(buildBoutScript(result).tachiaiMargin).toBe(0);
   });
@@ -129,7 +129,7 @@ describe("buildBoutScript", () => {
   it("reads margin from first tachiai entry when henka adds a second", () => {
     const result = makeBoutResult({
       log: [
-        logEntry("tachiai", { tachiaiWinner: "east", margin: 0.6 }),
+        logEntry("tachiai", { tachiaiWinner: "east", margin: 12 }),
         logEntry("tachiai", { event: "henka_success", attackerSide: "east" }),
       ],
     });
@@ -139,7 +139,7 @@ describe("buildBoutScript", () => {
   it("detects belt battle from engagement log", () => {
     const result = makeBoutResult({
       log: [
-        logEntry("tachiai", { margin: 0.5 }),
+        logEntry("tachiai", { margin: 40 }),
         logEntry("engagement", { family: "belt", tick: 5 }),
       ],
     });

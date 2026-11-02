@@ -413,8 +413,10 @@ function beatMonoii(p: PbpPipeline): void {
       "mono_ii",
       ["drama", "mono_ii"]
     );
-    // Gyoji confusion (flavor, 40% chance)
-    if (monoiiRng.next() < NARRATIVE_GYOJI_CONFUSED_CHANCE) {
+    // Gyoji confusion — only when the call didn't stand: an upheld decision
+    // means the gyoji was right (V16-B47: previously rolled independently of
+    // the actual outcome).
+    if (result.monoiiOutcome !== "upheld" && monoiiRng.next() < NARRATIVE_GYOJI_CONFUSED_CHANCE) {
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gyoji_confused", {
           WINNER: winnerRikishi.shikona,

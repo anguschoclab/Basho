@@ -102,7 +102,9 @@ export function buildBoutScript(result: BoutResult): BoutScript {
     if (entry.phase === "tachiai") {
       const margin = entry.data?.margin;
       if (typeof margin === "number") {
-        tachiaiMargin = clamp01(margin);
+        // margin is a raw power diff (decisive ≈ 20) — normalize rather
+        // than clamping every bout to 1 (V16-B50).
+        tachiaiMargin = clamp01(margin / 20);
       }
     }
     if (entry.phase === "engagement" && entry.data?.family === "belt") {

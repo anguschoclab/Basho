@@ -93,7 +93,7 @@ describe("Yokozuna Promotion Logic", () => {
   it("should NOT trigger deliberation if stats are insufficient", () => {
     const world = createMockWorld(0, 90); // 0 past yushos, high heat
     world.historyIndex!.rikishi[mockRikishiId] = [
-      { bashoKey: "2025-1", yusho: true, rikishiId: mockRikishiId } as any, // Only 1 total
+      { bashoKey: "2025-1", yusho: false, junYusho: false, rikishiId: mockRikishiId } as any,
     ];
 
     const impact = concludeBashoCompetition(world);

@@ -1,3 +1,5 @@
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import type { Rank } from "@/engine/types/banzuke";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -39,13 +41,14 @@ export function generateRetirementNarrative(
     }
   }
   const kinboshiCount = rikishi.economics?.kinboshiCount ?? 0;
+  // RANK_HIERARCHY covers every rank (the old 5-name order array left
+  // lower-division ranks at indexOf -1, sorting them ABOVE yokozuna).
+  const tierOf = (rank: string) =>
+    RANK_HIERARCHY[rank as Rank]?.tier ?? 99;
   const highestRank =
     rikishi.careerHistory
       ?.map((h) => h.rank)
-      .sort((a, b) => {
-        const order = ["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira"];
-        return order.indexOf(a) - order.indexOf(b);
-      })[0] ?? rikishi.rank;
+      .sort((a, b) => tierOf(a) - tierOf(b))[0] ?? rikishi.rank;
 
   // 1. Ceremony line
   const ceremonyRes = BardEngine.resolve(rng, "events.narrative.retirement_ceremony_summary", {
