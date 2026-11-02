@@ -60,6 +60,13 @@ function serializeBashoState(basho: BashoState): SerializedBashoState {
     matches: basho.matches,
     standings: mapToObject(basho.standings),
     ...(basho.kinboshiThisBasho ? { kinboshiThisBasho: basho.kinboshiThisBasho } : {}),
+    // Mid-basho resume needs the accumulated schedule/results/metrics and
+    // the exhibition flag — previously dropped on save (V16-B24).
+    ...(basho.schedule ? { schedule: basho.schedule } : {}),
+    ...(basho.results ? { results: basho.results } : {}),
+    ...(basho.boutMetrics ? { boutMetrics: basho.boutMetrics } : {}),
+    ...(basho.isExhibition ? { isExhibition: true } : {}),
+    ...(basho.exhibitionName ? { exhibitionName: basho.exhibitionName } : {}),
   };
 }
 
@@ -75,6 +82,11 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
     matches: basho.matches,
     standings: objectToMap(basho.standings),
     ...(basho.kinboshiThisBasho ? { kinboshiThisBasho: basho.kinboshiThisBasho } : {}),
+    schedule: basho.schedule,
+    results: basho.results,
+    boutMetrics: basho.boutMetrics,
+    isExhibition: basho.isExhibition,
+    exhibitionName: basho.exhibitionName,
     isActive: true,
   };
 }

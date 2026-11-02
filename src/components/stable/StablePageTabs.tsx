@@ -133,7 +133,11 @@ export function RosterTab({
                     </Badge>
                   </CardContent>
                   {world && heya && (
-                    <CardContent className="p-4 pt-0">
+                    <CardContent
+                      className="p-4 pt-0"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
                       <MentorAssignmentPanel
                         apprenticeId={r.id}
                         mentorId={r.mentorId}

@@ -101,7 +101,7 @@ async function createWindow(): Promise<void> {
     webPreferences: {
       // electron-vite lib mode emits the CJS preload as
       // out/preload/preload.cjs — sandboxed preload scripts cannot be ESM.
-      preload: join(__dirname, "../preload/preload.cjs"),
+      preload: join(__dirname, "../preload/index.js"),
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,

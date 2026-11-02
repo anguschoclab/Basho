@@ -5,7 +5,7 @@
 import type { Id, IdMap } from "@/engine/types/common";
 import type { EventsState } from "@/engine/types/events";
 import type { BanzukeSnapshot } from "@/engine/types/banzuke";
-import type { BashoName, MatchSchedule, StandingsTable } from "@/engine/types/basho";
+import type { BashoName, BashoState, BoutResult, MatchSchedule, StandingsTable } from "@/engine/types/basho";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
@@ -55,6 +55,17 @@ export interface SerializedBashoState {
   standings: StandingsTable;
   /** Per-basho kinboshi tally (rikishiId → stars earned); survives save/load. */
   kinboshiThisBasho?: Record<Id, number>;
+  /** Per-day match schedules — a mid-basho save must restore them or the
+   *  remaining days can't run. */
+  schedule?: MatchSchedule[][];
+  /** Per-day bout results accumulated so far. */
+  results?: BoutResult[][];
+  /** Per-rikishi mid-basho metrics (see basho.ts boutMetrics). */
+  boutMetrics?: BashoState["boutMetrics"];
+  /** Exhibition/jungyo basho flag — exhibition results must not count toward
+   *  records after reload. */
+  isExhibition?: boolean;
+  exhibitionName?: string;
 }
 
 /** Defines the structure for serialized world state. */

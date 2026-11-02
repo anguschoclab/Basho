@@ -4,7 +4,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "main": "out/main/main.cjs",
+  "main": "out/main/index.js",
   "scripts": {
     "preinstall": "node ./scripts/check-package-manager.mjs",
     "dev": "vite",

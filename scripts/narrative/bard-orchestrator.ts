@@ -171,6 +171,13 @@ async function orchestrate() {
   if (fs.existsSync(ARCHIVE_PATH)) {
     archive = JSON.parse(fs.readFileSync(ARCHIVE_PATH, "utf-8"));
   }
+  // registry.json may lack the domains/map keys the jobs below dereference —
+  // normalize rather than crashing the whole weekly job (V16-B06).
+  archive.domains ??= { events: {} };
+  archive.domains.events ??= {};
+  archive.registry ??= {};
+  archive.matrix ??= {};
+  archive.digests ??= [];
 
   // JOB 1: Domains (Events)
   console.log("\n[Job 1: Events Generation]");
