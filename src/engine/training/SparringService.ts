@@ -447,11 +447,15 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
       // Distribute delta proportionally across stats
       const nextStats = { ...weaker.stats };
 
-      for (const stat of bleedStats) {
+      // Distribute the (already-capped) delta across stats — previously each
+      // stat got ceil(delta/len), multiplying the total bleed by up to 4×.
+      const perStat = Math.floor(growthDelta / bleedStats.length);
+      const remainder = growthDelta % bleedStats.length;
+      bleedStats.forEach((stat, idx) => {
         const current = finiteOr(nextStats[stat], 50);
-        const bonus = Math.ceil(growthDelta / bleedStats.length);
+        const bonus = perStat + (idx < remainder ? 1 : 0);
         nextStats[stat] = clamp(current + bonus, 0, 99);
-      }
+      });
       builder.updateRikishi(weaker.id, { stats: nextStats });
 
       // Check for rivalry seeding after 12+ weeks

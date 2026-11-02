@@ -235,6 +235,7 @@ export function RecapModals({
             const h = r ? getHeya(world, r.heyaId) : null;
             return h?.name || "Independent";
           })()}
+          heyaId={getRikishiAnywhere(world, showHoFCeremony.rikishiId)?.heyaId}
           isPlayerRikishi={
             getRikishi(world, showHoFCeremony.rikishiId)?.heyaId === world.playerHeyaId
           }

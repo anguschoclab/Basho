@@ -4,7 +4,9 @@ import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Staff } from "@/engine/types/staff";
 import type { BashoResult } from "@/engine/types/basho";
-import type { TalentPoolWorldState } from "@/engine/types/talent";
+import type { TalentPoolWorldState, TalentCandidate } from "@/engine/types/talent";
+import { rngFromSeed } from "@/engine/core/rng";
+import { convertCandidateToRikishi } from "@/engine/generation/CandidateBuilder";
 import {
   getActiveRikishi as engineGetActiveRikishi,
   getHeyaStaff as engineGetHeyaStaff,
@@ -76,4 +78,30 @@ export function getGlobalCupChampion(world: WorldState): Rikishi | undefined {
 
 export function getTalentPool(world: WorldState): TalentPoolWorldState | undefined {
   return world.talentPool;
+}
+
+/**
+ * Resolve the sim-side rikishi for a UI compare entry. Roster entries resolve
+ * directly; scouting prospects are TalentCandidates projected as UIRikishi
+ * (their identity is `candidateId`, not `id`) — materialize an honest proxy
+ * from the candidate's real stats + combat profile. Returns undefined when
+ * neither path resolves, so callers can render "unavailable" rather than
+ * fabricate a verdict.
+ */
+export function resolveBoutParticipant(
+  world: WorldState,
+  uiLike: { id: string }
+): Rikishi | undefined {
+  const direct = world.rikishi.get(uiLike.id);
+  if (direct) return direct;
+  const candidateId = (uiLike as unknown as TalentCandidate).candidateId ?? uiLike.id;
+  const candidate = world.talentPool?.candidates?.[candidateId];
+  if (!candidate) return undefined;
+  const rng = rngFromSeed(`compare_${candidateId}_${world.year}`, "scouting", "materialize");
+  return convertCandidateToRikishi({
+    candidate,
+    rng,
+    currentYear: world.year,
+    heyaId: world.playerHeyaId ?? "",
+  });
 }

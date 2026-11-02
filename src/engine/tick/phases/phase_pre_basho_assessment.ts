@@ -14,7 +14,6 @@ import { triggerPreBashoJournalism } from "@/engine/media/MediaService";
 import { mergeImpacts } from "@/engine/core/ImpactResolver";
 import { getRikishi } from "@/engine/core/queries";
 import {
-  ASSESSMENT_DAYS_MIN,
   ASSESSMENT_DAYS_MAX,
   INJURY_SERIOUS_PENALTY,
   INJURY_MINOR_PENALTY,
@@ -46,7 +45,9 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
 
   // Run assessment in the middle of pre_basho phase (interimDaysRemaining around 7-14)
   const daysRemaining = world._interimDaysRemaining ?? 0;
-  if (daysRemaining < ASSESSMENT_DAYS_MIN || daysRemaining > ASSESSMENT_DAYS_MAX) {
+  // The phase is entered at ≤6 days remaining — the previous [MIN, MAX] window
+  // (7–14) was unreachable, so this assessment never ran.
+  if (daysRemaining <= 0 || daysRemaining > ASSESSMENT_DAYS_MAX) {
     return builder.build();
   }
 

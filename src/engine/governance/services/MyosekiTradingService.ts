@@ -11,6 +11,7 @@ import type { MyosekiMarket, MyosekiStock, MyosekiTransaction } from "@/engine/t
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { getHeya } from "@/engine/core/queries";
 import { rngForWorld } from "@/engine/core/rng";
 
 /** Base asking prices by prestige tier (in yen). */
@@ -103,6 +104,13 @@ export function purchaseMyoseki(
   // Debit the buyer — previously NPC purchases transferred the stock but left
   // funds untouched (free elder shares).
   builder.updateHeya(buyerId, { funds: buyerFunds - price });
+
+  // Credit the seller — the sale proceeds were destroyed before: buyer debited
+  // but nobody received the money (stock.ownerId is a heyaId, same as buyerId).
+  const seller = getHeya(world, stock.ownerId);
+  if (seller && stock.ownerId !== buyerId) {
+    builder.updateHeya(stock.ownerId, { funds: seller.funds + price });
+  }
 
   return builder.build();
 }

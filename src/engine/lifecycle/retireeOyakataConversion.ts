@@ -19,6 +19,7 @@ import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import { recordOyakataHandover } from "@/engine/legacy/lineage";
 import { rngForWorld } from "@/engine/core/rng";
 import { FOUNDING_CHANCE } from "@/constants/engine/economic";
+import { getHeya } from "@/engine/core/queries";
 
 /**
  * If `retiree` is accomplished and of eligible age, converts them to an oyakata,
@@ -140,11 +141,16 @@ export function processRetireeOyakataConversion(
     { heyaId: retiree.heyaId, rikishiId: id }
   );
 
-  // Merge handover impact
-  builder.merge(recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name));
+  // Handover only when the old heya's chair is actually vacant — a retiree
+  // previously deposed the sitting oyakata unconditionally, and the later
+  // founding path could leave a stale oyakataId on the old heya.
+  const oldHeya = getHeya(world, retiree.heyaId);
+  const chairVacant =
+    !oldHeya?.oyakataId || !world.oyakata?.has(oldHeya.oyakataId);
 
   // Stable founding: RNG-gated chance for the new oyakata to found a new heya
   // instead of staying in their original stable. Cap check is inside foundStable.
+  let foundedHeya = false;
   if (rng.bool(FOUNDING_CHANCE)) {
     const result = foundStable(
       world,
@@ -166,6 +172,16 @@ export function processRetireeOyakataConversion(
         },
         { heyaId: result.heya.id, rikishiId: id, importance: "headline" }
       );
+      foundedHeya = true;
     }
+  }
+
+  // Take over the old heya only when the chair is vacant and the retiree did
+  // not just found a new stable — previously the handover ran unconditionally,
+  // deposing a sitting oyakata or leaving a stale oyakataId after founding.
+  if (!foundedHeya && chairVacant) {
+    builder.merge(
+      recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name)
+    );
   }
 }

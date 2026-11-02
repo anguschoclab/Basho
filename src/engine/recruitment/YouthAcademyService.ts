@@ -310,7 +310,10 @@ export function applyWeeklyDevelopment(world: WorldState, heyaId: string): State
       rngFromSeed(world.seed, "academy-dev", `${p.id}-${world.week ?? 0}`).next() * 0.5 + 0.5;
     const pointsGained = Math.floor(growthRate * staffMultiplier * levelMultiplier * budgetFactor);
     const newDevPoints = p.developmentPoints + pointsGained;
-    const abilityGain = Math.floor(pointsGained / 10);
+    // Ability rises when accumulated points cross each 10-point boundary —
+    // previously floor(pointsGained/10) on a weekly ~1-4 point slice, so it
+    // never fired.
+    const abilityGain = Math.floor(newDevPoints / 10) - Math.floor(p.developmentPoints / 10);
     const newAbility = Math.min(p.potential, p.currentAbility + abilityGain);
 
     return {

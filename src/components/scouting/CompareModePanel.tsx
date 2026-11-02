@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types/rikishi";
+import { resolveBoutParticipant } from "@/presenters/worldAccess";
 import { Button } from "@/components/ui/button";
 import { simulateBout } from "@/presenters/engineAccess";
 import { useGame } from "@/state/game/useGame";
@@ -16,12 +17,11 @@ interface CompareModePanelProps {
 }
 
 /** Simulates a best-of-3 trial clash; missing rikishi count as no wins. */
-function runBestOfThree(a: Rikishi | undefined, b: Rikishi | undefined) {
+function runBestOfThree(a: Rikishi, b: Rikishi) {
   let winsA = 0;
   let winsB = 0;
-  if (!a || !b) return { winsA, winsB };
   for (let i = 0; i < 3; i++) {
-    const res = simulateBout(a, b, `compare-${Date.now()}-${i}`);
+    const res = simulateBout(a, b, `compare-${a.id}-vs-${b.id}-${i}`);
     if (res.result.winner === "east") winsA++;
     else winsB++;
   }
@@ -32,16 +32,22 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
   const { state } = useGame();
   const [isSimulating, setIsSimulating] = useState(false);
   const [results, setResults] = useState<{ winner: "A" | "B"; score: string } | null>(null);
+  const [simUnavailable, setSimUnavailable] = useState(false);
 
   const runTrialClash = () => {
-    if (!state.world) return;
+    const world = state.world;
+    if (!world) return;
     setIsSimulating(true);
     // Short delay for "simulation feel"
     setTimeout(() => {
-      const { winsA, winsB } = runBestOfThree(
-        state.world?.rikishi.get(rikishiA.id),
-        state.world?.rikishi.get(rikishiB.id)
-      );
+      const a = resolveBoutParticipant(world, rikishiA);
+      const b = resolveBoutParticipant(world, rikishiB);
+      if (!a || !b) {
+        setSimUnavailable(true);
+        setIsSimulating(false);
+        return;
+      }
+      const { winsA, winsB } = runBestOfThree(a, b);
 
       setResults({
         winner: winsA > winsB ? "A" : "B",
@@ -67,6 +73,7 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
         rikishiB={rikishiB}
         isSimulating={isSimulating}
         results={results}
+        unavailable={simUnavailable}
         onRun={runTrialClash}
         onReset={() => setResults(null)}
       />

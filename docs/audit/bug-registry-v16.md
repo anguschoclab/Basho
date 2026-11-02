@@ -40,7 +40,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B31 | P0 | `legacy/DynastyService.ts:201-349` | `triggerSuccession` skips `removeOyakata`, `retireRikishiFully` cascade, myoseki release |
 | B32 | P1 | `lifecycle/BashoHistory.ts:365` | yokozuna deliberation reads pre-index history → lags one basho |
 | B33 | P1 | `legacy/DynastyService.ts:89` | `isSummary` successor → yearly no-op forever (trustee never runs) |
-| B34 | P1 | `legacy/SparringService.ts:452` | `ceil(delta/4)` per-stat → up to 4× weekly cap |
 | B35 | P2 | `lifecycle/retirementNarrative.ts:42` | `highestRank` misses lower divisions → peak = debut rank |
 | B44 | P1 | `matchmaking/DramaMatchmaker.ts:583` | `applyDramaBudget` swap loop no-op (scoreChange always 0) |
 | B46 | P1 | `kimarite/kimariteStrategies.ts:432,828` | `forwardMomentum < 0` / `stamina < 0.5` unreachable predicates |
@@ -59,14 +58,10 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B20 | `stable/facilityMeta.ts:77` | displayed recovery formula ≠ engine (`0.9+l/166` vs `0.8+l·0.004`) — ~2.5× inflated |
 | B21 | `economy/FacilityROIChart.tsx:24` | invented `statGain=1+l/100` efficiency axis (no such engine gain) |
 | B22 | `SponsorshipHub*.tsx` | 3 dead controls (Industry Breakdown, Details, ATTRACT NEW PATRONS — no onClick) |
-| B37 | `ceremony/HoFInductionCeremony.tsx:92` | `StableName id=rikishiId` → `/stable/<rikishiId>` broken nav |
 | B38 | `governance/GovernancePoliticsTab.tsx:54` | "Spend 100" burns capital for zero benefit |
 | B39 | `GovernancePoliticsTab.tsx:29,179` | `rikishiCount` sort → constant 0 |
 | B40 | `recap/RecapSections.tsx:218` | YokozunaDeliberation branch permanently dead + fabricates subject |
-| B41 | `scouting/CompareModePanel.tsx` | prospect compare → 0-0 "B wins" fabricated verdict |
 | B42 | `kesho/keshoEffects.tsx`/`keshoPatterns.tsx` | unreferenced `<defs>` → embroidery/gradient render nothing; "mountain" motif missing |
-| B43 | `history/LineageTree.tsx:102` | "2th/3th Generation Ancestor" |
-| B03 | `tick/phases/phase_pre_basho_assessment.ts` | unreachable gate (`_interimDaysRemaining ∈ [7,14]` but entry is ≤6) |
 
 ## Also fixed (post-verdict follow-up commit)
 
@@ -84,6 +79,14 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B45 | P1 | `calendar/schedule.ts:243` | makushita call-up double-booked same day → `busyToday` filter |
 | B36 | P1 | `history/history.ts:91` | milestone exact-match → threshold-crossing with recorded-title dedupe |
 | — | P0 | `.github/workflows/autonomous-narrative.yml` | protected-branch push (GH006, same class as perf-gate) → `narrative-updates` branch; `git add` now covers `domains/` too |
+| B14 | P1 | `governance/services/MyosekiTradingService.ts` | sale proceeds destroyed — seller (`stock.ownerId`) now credited on purchase |
+| B15 | P1 | `recruitment/YouthAcademyService.ts:313` | `floor(pointsGained/10)` on weekly slice never fired → boundary-crossing on accumulated devPoints |
+| B25 | P0 | `lifecycle/retireeOyakataConversion.ts` | unconditional handover deposed sitting oyakata / stale oyakataId after founding → `chairVacant` + `!foundedHeya` guards |
+| B34 | P1 | `training/SparringService.ts:452` | `ceil(delta/len)` per stat → up to 4× cap → remainder-distributed within delta |
+| B03 | P2 | `tick/phases/phase_pre_basho_assessment.ts` | unreachable [7,14] window at ≤6-day entry → reachable gate, week-dedupe retained |
+| B37 | P2 | `ceremony/HoFInductionCeremony.tsx` | `StableName id=rikishiId` broken nav → `heyaId` prop resolved from world |
+| B41 | P2 | `scouting/CompareModePanel.tsx` | prospect pair = TalentCandidate (no `.id`) → fabricated 0-0 "B wins"; now resolves via `convertCandidateToRikishi`, deterministic seed, honest "unavailable" |
+| B43 | P2 | `history/LineageTree.tsx:102` | "2th/3th Generation Ancestor" → `Generation N Ancestor` |
 
 ## Registered debt — P3 test-quality / tooling
 

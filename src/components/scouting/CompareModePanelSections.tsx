@@ -123,6 +123,7 @@ export function TrialClashSection({
   rikishiB,
   isSimulating,
   results,
+  unavailable,
   onRun,
   onReset,
 }: {
@@ -130,12 +131,19 @@ export function TrialClashSection({
   rikishiB: UIRikishi;
   isSimulating: boolean;
   results: { winner: "A" | "B"; score: string } | null;
+  unavailable?: boolean;
   onRun: () => void;
   onReset: () => void;
 }) {
   return (
     <div className="flex flex-col items-center gap-4 py-4">
-      {!results && !isSimulating && (
+      {!results && !isSimulating && unavailable && (
+        <p className="text-sm text-muted-foreground">
+          Trial clash unavailable — prospect data could not be resolved.
+        </p>
+      )}
+
+      {!results && !isSimulating && !unavailable && (
         <Button
           size="lg"
           className="group h-14 px-12 gap-3 bg-primary hover:bg-primary/90 text-primary-foreground font-display text-xl rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-all"

@@ -99,7 +99,7 @@ export const LineageTree = ({ rikishiId }: LineageTreeProps) => {
                     </Badge>
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
-                    {index === 0 ? "Direct Mentor" : `${index + 1}th Generation Ancestor`}
+                    {index === 0 ? "Direct Mentor" : `Generation ${index + 1} Ancestor`}
                   </p>
                 </div>
               </div>

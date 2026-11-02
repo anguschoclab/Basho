@@ -44,6 +44,7 @@ const CEREMONY_STEPS: Record<HoFCategory, string[]> = {
 interface Props {
   inductee: HoFInductee;
   heyaName: string;
+  heyaId?: string;
   isPlayerRikishi: boolean;
   open: boolean;
   onClose: () => void;
@@ -56,6 +57,7 @@ interface Props {
 export function HoFInductionCeremony({
   inductee,
   heyaName,
+  heyaId,
   isPlayerRikishi,
   open,
   onClose,
@@ -89,7 +91,7 @@ export function HoFInductionCeremony({
               <RikishiName id={inductee.rikishiId} name={inductee.shikona} />
             </p>
             <p className="text-sm text-muted-foreground">
-              <StableName id={inductee.rikishiId} name={heyaName} />
+              <StableName id={heyaId ?? inductee.rikishiId} name={heyaName} />
               {" • "}Inducted {inductee.inductionYear}
             </p>
             <div className="flex gap-2 mt-1">
