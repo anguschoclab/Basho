@@ -283,7 +283,7 @@ exports[`checkRetirement — golden master > age-35 2`] = `null`;
 
 exports[`checkRetirement — golden master > age-40 1`] = `null`;
 
-exports[`checkRetirement — golden master > age-40 2`] = `null`;
+exports[`checkRetirement — golden master > age-40 2`] = `"Age & Fatigue"`;
 
 exports[`checkRetirement — golden master > intai-announced 1`] = `null`;
 
