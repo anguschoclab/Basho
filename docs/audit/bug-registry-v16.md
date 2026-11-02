@@ -35,7 +35,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | ID | Sev | Location | Defect |
 |---|---|---|---|
 | B24 | P2 | `SerializationService.ts:54` | `serializeBashoState` drops `boutMetrics`/`isExhibition`/`results`/`schedule`; mid-basho save loses accumulated metrics |
-| B25 | P0 | `lifecycle/retireeOyakataConversion.ts:144` | retiree unconditionally deposes sitting oyakata; stale `oyakataId` if foundStable fires |
 | B26 | P0 | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts:136` | shallow `economics` merge → sansho+yusho winner loses sansho cash |
 | B31 | P0 | `legacy/DynastyService.ts:201-349` | `triggerSuccession` skips `removeOyakata`, `retireRikishiFully` cascade, myoseki release |
 | B32 | P1 | `lifecycle/BashoHistory.ts:365` | yokozuna deliberation reads pre-index history → lags one basho |
@@ -47,8 +46,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B50 | P2 | `bout/ReplayMetadata.ts:103` | `clamp01(margin)` on raw diff → saturates at 1 |
 | B06 | P1 | `scripts/narrative/bard-orchestrator.ts` + `autonomous-narrative.yml` | stale archive schema → weekly job guaranteed crash; same GH006 protected push; no timeout |
 | B07 | P1 | `package.json`/`electron.vite.config.ts`/`electron/main.ts`/`ELECTRON.md` | 4 mutually inconsistent output names → packaged app can't launch |
-| B14 | P1 | `governance/services/MyosekiTradingService.ts:105` | sale proceeds destroyed (buyer debited, seller never credited); buyerId semantic drift |
-| B15 | P1 | `recruitment/YouthAcademyService.ts:313` | `abilityGain = floor(pointsGained/10)` on weekly points → ability never rises |
 | B23 | P2 | `stable/StablePageTabs.tsx:72` | nested MentorAssignmentPanel inside navigable Card → click navigates AND mutates |
 
 ## Registered debt — P2 UI
