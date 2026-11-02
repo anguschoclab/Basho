@@ -233,10 +233,18 @@ function persistBashoState(
         currentBashoLosses: stats.losses,
       };
 
-      // Update division-specific records
+      // Update division-specific records — clone the nested object: the
+      // { ...r } spread shares divisionRecords with the caller's rikishi, so
+      // in-place += would mutate the input world (V16-B49).
       if (updated.divisionRecords?.[r.division]) {
-        updated.divisionRecords[r.division].wins += stats.wins;
-        updated.divisionRecords[r.division].losses += stats.losses;
+        updated.divisionRecords = {
+          ...r.divisionRecords,
+          [r.division]: {
+            ...r.divisionRecords[r.division],
+            wins: (r.divisionRecords[r.division].wins ?? 0) + stats.wins,
+            losses: (r.divisionRecords[r.division].losses ?? 0) + stats.losses,
+          },
+        };
       }
 
       nextRikishiMap.set(id, updated);

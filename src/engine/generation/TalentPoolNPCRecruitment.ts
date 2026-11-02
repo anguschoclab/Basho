@@ -38,6 +38,7 @@ export function fillVacanciesForNPC(
 
   let currentCandidates = { ...tp.candidates };
   let currentPools = { ...tp.pools };
+  const rosterAdditions = new Map<string, string[]>();
 
   for (const heyaId of sortedHeyas) {
     const vacancyCount = targetHeyas[heyaId];
@@ -113,6 +114,17 @@ export function fillVacanciesForNPC(
           currentPools
         );
         builder.merge(materializeImpact.impact);
+        if (materializeImpact.newRikishiId) {
+          // The per-call rikishiIds write inside materialize reads the
+          // pre-impact heya — re-issue the accumulated roster so multiple
+          // recruits in one batch compose (stale-base, B12b).
+          const prior = rosterAdditions.get(heyaId) ?? [];
+          const next = [...prior, materializeImpact.newRikishiId];
+          rosterAdditions.set(heyaId, next);
+          builder.updateHeya(heyaId, {
+            rikishiIds: [...(heya.rikishiIds ?? []), ...next],
+          });
+        }
         currentCandidates = materializeImpact.nextCandidates;
         currentPools = materializeImpact.nextPools;
       }
@@ -275,6 +287,7 @@ function assignWinningBids(
   builder: ReturnType<typeof createImpactBuilder>
 ): { nextCandidates: Record<string, TalentCandidate>; nextPools: typeof tp.pools } {
   const assignedCandidates = new Set<Id>();
+  const rosterAdditions = new Map<string, string[]>();
   const assignedHeyaSlots = new Map<Id, number>();
   for (const heyaId of Object.keys(targetHeyas)) {
     assignedHeyaSlots.set(heyaId, 0);
@@ -319,6 +332,15 @@ function assignWinningBids(
         currentPools
       );
       builder.merge(materializeImpact.impact);
+      if (materializeImpact.newRikishiId) {
+        // Re-issue the accumulated roster — see fillVacanciesForNPC note.
+        const prior = rosterAdditions.get(bid.heyaId) ?? [];
+        const next = [...prior, materializeImpact.newRikishiId];
+        rosterAdditions.set(bid.heyaId, next);
+        builder.updateHeya(bid.heyaId, {
+          rikishiIds: [...(getHeya(world, bid.heyaId)?.rikishiIds ?? []), ...next],
+        });
+      }
       currentCandidates = materializeImpact.nextCandidates;
       currentPools = materializeImpact.nextPools;
     } catch (err) {

@@ -34,8 +34,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 
 | ID | Sev | Location | Defect |
 |---|---|---|---|
-| B12b | P0 | `generation/TalentPoolMaterialization.ts:51` | Same stale-base class: ≥2 recruits in one batch keeps only last id (invisible to `getHeyaRoster` + subsidy). Fix: accumulate per-heya then write once |
-| B12c | P0 | `governance/services/governanceReview.ts:83` | `funds` written from pre-loan base; multi-insolvent same-ichimon creates money (benefactor charged once) |
 | B24 | P2 | `SerializationService.ts:54` | `serializeBashoState` drops `boutMetrics`/`isExhibition`/`results`/`schedule`; mid-basho save loses accumulated metrics |
 | B25 | P0 | `lifecycle/retireeOyakataConversion.ts:144` | retiree unconditionally deposes sitting oyakata; stale `oyakataId` if foundStable fires |
 | B26 | P0 | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts:136` | shallow `economics` merge → sansho+yusho winner loses sansho cash |
@@ -54,7 +52,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B46 | P1 | `kimarite/kimariteStrategies.ts:432,828` | `forwardMomentum < 0` / `stamina < 0.5` unreachable predicates |
 | B47 | P1 | `narrative/postbout2.ts:400` | mono-ii narrative rolls independent of `result.monoiiOutcome` |
 | B48 | P1 | `bout/physics/resultBuilders.ts:89` | unguarded `combatProfile.archetype` deref → throws |
-| B49 | P0 | `simulation/TournamentSimulator.ts:237` | shallow clone mutates caller's `divisionRecords` → double-count on re-sim |
 | B50 | P2 | `bout/ReplayMetadata.ts:103` | `clamp01(margin)` on raw diff → saturates at 1 |
 | B06 | P1 | `scripts/narrative/bard-orchestrator.ts` + `autonomous-narrative.yml` | stale archive schema → weekly job guaranteed crash; same GH006 protected push; no timeout |
 | B07 | P1 | `package.json`/`electron.vite.config.ts`/`electron/main.ts`/`ELECTRON.md` | 4 mutually inconsistent output names → packaged app can't launch |
@@ -77,6 +74,14 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B42 | `kesho/keshoEffects.tsx`/`keshoPatterns.tsx` | unreferenced `<defs>` → embroidery/gradient render nothing; "mountain" motif missing |
 | B43 | `history/LineageTree.tsx:102` | "2th/3th Generation Ancestor" |
 | B03 | `tick/phases/phase_pre_basho_assessment.ts` | unreachable gate (`_interimDaysRemaining ∈ [7,14]` but entry is ≤6) |
+
+## Also fixed (post-verdict follow-up commit)
+
+| ID | Sev | Location | Defect |
+|---|---|---|---|
+| B12b | P0 | `generation/TalentPoolMaterialization.ts:51` + `TalentPoolNPCRecruitment.ts` | stale-base `rikishiIds` — callers now accumulate `rosterAdditions` and re-issue the composed roster; `resolveImpacts` roster reconciliation already masked the drop, but the queued write was dishonest |
+| B12c | P0 | `governance/services/governanceReview.ts` | gift written from pre-loan base (principal destroyed); benefactor charged once for N gifts (money created) — now composes on queued funds + per-benefactor cumulative charge |
+| B49 | P0 | `simulation/TournamentSimulator.ts:237` | shallow `{...r}` shared `divisionRecords` — now deep-clones the nested record before incrementing |
 
 ## Registered debt — P3 test-quality / tooling
 

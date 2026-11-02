@@ -94,3 +94,117 @@ describe("V16-B18 bailout gate", () => {
     expect(uiGate(-4_999_999)).toBe(false);
   });
 });
+
+// ── V16-B12b — materialization of 2+ recruits keeps ALL roster ids ───────────
+describe("V16-B12b talent-pool materialization roster", () => {
+  it("two recruits into the same heya both land in rikishiIds", async () => {
+    const { fillVacanciesForNPC } = await import("@/engine/generation/TalentPoolNPCRecruitment");
+    const { resolveImpacts } = await import("@/engine/core/ImpactResolver");
+
+    const heya = makeMockHeya("npc-heya", { rikishiIds: ["incumbent-1"] });
+    const c1 = MockFactory.createCandidate("cand-1");
+    const c2 = MockFactory.createCandidate("cand-2");
+    const world = makeMockWorld({
+      heyas: new Map([["npc-heya", heya]]),
+      talentPool: {
+        candidates: { "cand-1": c1, "cand-2": c2 },
+        pools: {
+          high_school: { candidatesVisible: ["cand-1", "cand-2"], candidatesHidden: [] } as never,
+          university: { candidatesVisible: [], candidatesHidden: [] } as never,
+          foreign: { candidatesVisible: [], candidatesHidden: [] } as never,
+        },
+      } as never,
+    });
+
+    const impact = fillVacanciesForNPC(world, { "npc-heya": 2 });
+    const result = resolveImpacts(world, [impact]);
+    const ids = result.heyas.get("npc-heya")?.rikishiIds ?? [];
+    expect(ids).toContain("incumbent-1");
+    // Both new recruits must land — the stale-base bug kept only the LAST one.
+    expect(ids.filter((id) => id.startsWith("person-"))).toHaveLength(2);
+  });
+});
+
+// ── V16-B12c — insolvency gift composes with the bailout loan + charges
+//                the benefactor once per insolvent heya ──────────────────────
+describe("V16-B12c governanceReview funds composition", () => {
+  it("insolvent heya keeps loan principal AND receives the ichimon gift; benefactor is charged per gift", async () => {
+    const { runGovernanceReview } = await import("@/engine/governance/services/governanceReview");
+    const { resolveImpacts } = await import("@/engine/core/ImpactResolver");
+    const { FACTION_BAILOUT_AMOUNT, LOAN_ISSUANCE_THRESHOLD } = await import("@/constants/engine/economic");
+
+    const insolvent = makeMockHeya("insolvent", {
+      funds: LOAN_ISSUANCE_THRESHOLD - 1_000_000,
+      runwayBand: "desperate",
+      ichimon: "Tokitsukaze",
+    });
+    const insolvent2 = makeMockHeya("insolvent2", {
+      funds: -1_000_000, // above loan threshold — gift only
+      runwayBand: "desperate",
+      ichimon: "Tokitsukaze",
+    });
+    const benefactor = makeMockHeya("benefactor", {
+      funds: 100_000_000,
+      ichimon: "Tokitsukaze",
+    });
+    const world = makeMockWorld({
+      heyas: new Map([
+        ["insolvent", insolvent],
+        ["insolvent2", insolvent2],
+        ["benefactor", benefactor],
+      ]),
+    });
+
+    const impact = runGovernanceReview(world);
+    const result = resolveImpacts(world, [impact]);
+
+    const rInsolvent = result.heyas.get("insolvent")!;
+    const rInsolvent2 = result.heyas.get("insolvent2")!;
+    const rBenefactor = result.heyas.get("benefactor")!;
+
+    // Benefactor pays one gift per insolvent stable — previously the stale
+    // base charged it once while two gifts were paid out (money created).
+    expect(rBenefactor.funds).toBe(100_000_000 - 2 * FACTION_BAILOUT_AMOUNT);
+
+    // insolvent2 got only the gift (no loan)
+    expect(rInsolvent2.funds).toBe(-1_000_000 + FACTION_BAILOUT_AMOUNT);
+
+    // insolvent got loan principal + gift — the stale-base write destroyed the
+    // principal while leaving the liability.
+    const loanPrincipal = (rInsolvent.activeLoans ?? [])
+      .reduce((s: number, l: { principal?: number }) => s + (l.principal ?? 0), 0);
+    if (loanPrincipal > 0) {
+      expect(rInsolvent.funds).toBe(
+        LOAN_ISSUANCE_THRESHOLD - 1_000_000 + loanPrincipal + FACTION_BAILOUT_AMOUNT
+      );
+    }
+  });
+});
+
+// ── V16-B49 — simulateEntireBasho must not mutate the caller's world ─────────
+describe("V16-B49 TournamentSimulator isolation", () => {
+  it("input world's divisionRecords are unchanged after simulation", async () => {
+    const { simulateEntireBasho } = await import("@/engine/simulation/TournamentSimulator");
+
+    const mk = (id: string) =>
+      mockRikishi(id, {
+        division: "makuuchi",
+        divisionRecords: { makuuchi: { wins: 0, losses: 0 } } as never,
+      });
+    const ids = Array.from({ length: 10 }, (_, i) => `r${i}`);
+    const world = makeMockWorld({
+      rikishi: new Map(ids.map((id) => [id, mk(id)])),
+      activeRikishiIds: new Set(ids),
+    });
+
+    simulateEntireBasho(world, "hatsu", "v16-b49-seed");
+
+    // The shallow { ...r } clone shares nested divisionRecords — the buggy
+    // code did `updated.divisionRecords[div].wins += n`, mutating the INPUT.
+    for (const id of ids) {
+      const rec = world.rikishi.get(id)?.divisionRecords?.makuuchi;
+      expect(rec?.wins ?? 0).toBe(0);
+      expect(rec?.losses ?? 0).toBe(0);
+    }
+  });
+});

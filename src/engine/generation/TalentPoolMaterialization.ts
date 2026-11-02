@@ -23,10 +23,14 @@ export function materializeCandidateToRikishiInternal(
   impact: StateImpact;
   nextCandidates: Record<Id, TalentCandidate>;
   nextPools: Record<TalentPoolType, TalentPoolState>;
+  /** Set when a new rikishi entity was actually minted (undefined when the
+   *  already-materialized guard short-circuited). */
+  newRikishiId?: string;
 } {
   const builder = createImpactBuilder("materializeCandidateToRikishiInternal");
   const candidate = candidates[candidateId];
   if (!candidate) return { impact: builder.build(), nextCandidates: candidates, nextPools: pools };
+  let newRikishiId: string | undefined;
 
   // Already-materialized guard: the rikishi id is the candidate's personId,
   // so a stale "signed" candidate whose personId is already a live rikishi
@@ -46,6 +50,7 @@ export function materializeCandidateToRikishiInternal(
     }
 
     builder.addRikishi(rikishi);
+    newRikishiId = rikishi.id;
     const heya = getHeya(world, heyaId);
     if (heya) {
       builder.updateHeya(heyaId, { rikishiIds: [...(heya.rikishiIds || []), rikishi.id] });
@@ -67,7 +72,7 @@ export function materializeCandidateToRikishiInternal(
     };
   }
 
-  return { impact: builder.build(), nextCandidates, nextPools };
+  return { impact: builder.build(), nextCandidates, nextPools, newRikishiId };
 }
 
 /**

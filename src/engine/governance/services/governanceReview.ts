@@ -39,7 +39,8 @@ function reviewFinancialInsolvency(
   world: WorldState,
   heya: Heya,
   benefactorsByIchimon: Map<string, Heya[]>,
-  builder: ImpactBuilder
+  builder: ImpactBuilder,
+  benefactorCharges: Map<string, number>
 ): void {
   if (heya.funds < 0 && heya.runwayBand === "desperate") {
     // Queue heya update for riskIndicators
@@ -79,9 +80,18 @@ function reviewFinancialInsolvency(
 
       if (benefactor) {
         const giftAmount = FACTION_BAILOUT_AMOUNT;
-        // Queue heya updates for funds transfer
-        builder.updateHeya(benefactor.id, { funds: benefactor.funds - giftAmount });
-        builder.updateHeya(heya.id, { funds: heya.funds + giftAmount });
+        // Charge the benefactor cumulatively: N insolvent same-ichimon heyas
+        // each cost one gift. Previously each write read the stale pre-impact
+        // funds — the benefactor was charged once while N gifts were paid.
+        const charged = (benefactorCharges.get(benefactor.id) ?? 0) + giftAmount;
+        benefactorCharges.set(benefactor.id, charged);
+        builder.updateHeya(benefactor.id, { funds: benefactor.funds - charged });
+        // Compose with any earlier funds write in this builder (e.g. the
+        // bailout loan merged above) — read the queued value, not the stale
+        // pre-impact base, so the loan principal isn't destroyed.
+        const queuedFunds =
+          builder.build().entities?.heyaUpdates?.get(heya.id)?.funds ?? heya.funds;
+        builder.updateHeya(heya.id, { funds: queuedFunds + giftAmount });
 
         builder.logEvent(
           "GOVERNANCE_RULING",
@@ -292,6 +302,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
 
   // Pre-calculate potential benefactors by ichimon for efficient lookup in loop
   const benefactorsByIchimon = new Map<string, Heya[]>();
+  const benefactorCharges = new Map<string, number>();
   for (const h of world.heyas.values()) {
     if (h.ichimon && h.funds > FACTION_BENEFACTOR_THRESHOLD) {
       if (!benefactorsByIchimon.has(h.ichimon)) {
@@ -305,7 +316,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
   for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
     const scandalScore = heya.scandalScore ?? 0;
 
-    reviewFinancialInsolvency(world, heya, benefactorsByIchimon, builder);
+    reviewFinancialInsolvency(world, heya, benefactorsByIchimon, builder, benefactorCharges);
     reviewNonFinancialMerger(world, heya, builder);
     reviewWelfareSanctions(heya, builder);
 
