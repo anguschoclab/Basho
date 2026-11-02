@@ -262,18 +262,24 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
   const invitation = sortedInvitations[0];
 
   // Evaluate if we have a suitable rikishi
-  const candidates = ctx.perception.rikishiPerceptions
-    .map((rp) => getRikishi(ctx.world, rp.rikishiId))
-    .filter((r): r is Rikishi => !!r && !r.isRetired && !r.injured && !r.isKyujo);
-
-  if (candidates.length === 0) {
-    reasoning.push(`[Global Worker] No healthy rikishi available for exhibition.`);
-    return { reasoning };
+  // Single-pass manual loop replaces .map().filter().sort()[0] — avoids
+  // intermediate arrays and O(N log N) sort in a frequent NPC path.
+  // Semantics preserved: first-max on power ties (stable sort ≡ strict >).
+  let bestRikishi: Rikishi | undefined;
+  let maxPower = -Infinity;
+  for (let i = 0; i < ctx.perception.rikishiPerceptions.length; i++) {
+    const r = getRikishi(ctx.world, ctx.perception.rikishiPerceptions[i].rikishiId);
+    if (r && !r.isRetired && !r.injured && !r.isKyujo) {
+      const power = r.stats.power || 0;
+      if (power > maxPower) {
+        maxPower = power;
+        bestRikishi = r;
+      }
+    }
   }
 
   // NPC accepts if ambition is high enough relative to prestige,
   // or if they have a rikishi who meets the rank requirement.
-  const bestRikishi = candidates.sort((a, b) => (b.stats.power || 0) - (a.stats.power || 0))[0];
   if (!bestRikishi) {
     reasoning.push(`[Global Worker] No healthy rikishi available for exhibition.`);
     return { reasoning };

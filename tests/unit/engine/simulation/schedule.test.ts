@@ -142,6 +142,10 @@ describe("scheduleDivisionDay", () => {
     });
     const r3 = mockRikishi("r3", { division: "makuuchi", heyaId: "other" });
     const r4 = mockRikishi("r4", { division: "makuuchi", heyaId: "other" });
+    world.rikishi.set(r1.id, r1);
+    world.rikishi.set(r2.id, r2);
+    world.rikishi.set(r3.id, r3);
+    world.rikishi.set(r4.id, r4);
 
     const { scheduled } = scheduleDivisionDay({
       world,
