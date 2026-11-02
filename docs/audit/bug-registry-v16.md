@@ -37,10 +37,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B24 | P2 | `SerializationService.ts:54` | `serializeBashoState` drops `boutMetrics`/`isExhibition`/`results`/`schedule`; mid-basho save loses accumulated metrics |
 | B25 | P0 | `lifecycle/retireeOyakataConversion.ts:144` | retiree unconditionally deposes sitting oyakata; stale `oyakataId` if foundStable fires |
 | B26 | P0 | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts:136` | shallow `economics` merge → sansho+yusho winner loses sansho cash |
-| B27 | P1 | `health/InjuryService.ts:225,278` | bout-injury seed per-week → ~4%/week not per-bout; elevated-risk winner path unreachable |
-| B28 | P1 | `lifecycle/retirementCheck.ts:47` | seed lacks year/week → probabilistic checks binary (first-check-or-never) |
-| B29 | P1 | `shikona/rankRules.ts:54` | sekiwake/komusubi/maegashira map to "rookie" tier; `generateShikona:49` same miss |
-| B30 | P1 | `training/harmony.ts:60` | iterates `heyaRivalryPairs` for rikishi fields → rivalries factor always 0 |
 | B31 | P0 | `legacy/DynastyService.ts:201-349` | `triggerSuccession` skips `removeOyakata`, `retireRikishiFully` cascade, myoseki release |
 | B32 | P1 | `lifecycle/BashoHistory.ts:365` | yokozuna deliberation reads pre-index history → lags one basho |
 | B33 | P1 | `legacy/DynastyService.ts:89` | `isSummary` successor → yearly no-op forever (trustee never runs) |
@@ -51,7 +47,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B45 | P1 | `calendar/schedule.ts:223` | makushita call-up double-booked same day (juryo crossover ignores schedule) |
 | B46 | P1 | `kimarite/kimariteStrategies.ts:432,828` | `forwardMomentum < 0` / `stamina < 0.5` unreachable predicates |
 | B47 | P1 | `narrative/postbout2.ts:400` | mono-ii narrative rolls independent of `result.monoiiOutcome` |
-| B48 | P1 | `bout/physics/resultBuilders.ts:89` | unguarded `combatProfile.archetype` deref → throws |
 | B50 | P2 | `bout/ReplayMetadata.ts:103` | `clamp01(margin)` on raw diff → saturates at 1 |
 | B06 | P1 | `scripts/narrative/bard-orchestrator.ts` + `autonomous-narrative.yml` | stale archive schema → weekly job guaranteed crash; same GH006 protected push; no timeout |
 | B07 | P1 | `package.json`/`electron.vite.config.ts`/`electron/main.ts`/`ELECTRON.md` | 4 mutually inconsistent output names → packaged app can't launch |
@@ -82,6 +77,11 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B12b | P0 | `generation/TalentPoolMaterialization.ts:51` + `TalentPoolNPCRecruitment.ts` | stale-base `rikishiIds` — callers now accumulate `rosterAdditions` and re-issue the composed roster; `resolveImpacts` roster reconciliation already masked the drop, but the queued write was dishonest |
 | B12c | P0 | `governance/services/governanceReview.ts` | gift written from pre-loan base (principal destroyed); benefactor charged once for N gifts (money created) — now composes on queued funds + per-benefactor cumulative charge |
 | B49 | P0 | `simulation/TournamentSimulator.ts:237` | shallow `{...r}` shared `divisionRecords` — now deep-clones the nested record before incrementing |
+| B13b | P1 | `governance/ceremonies/yokozunaAttendants.ts:40` | same seed-scope class as B13 — now `::${yokozuna.id}` |
+| B27-partial | P1 | `lifecycle/retirementCheck.ts:47` | probabilistic seed lacked time dimension → `retirement::id::year` — checks now vary per evaluation year |
+| B29 | P1 | `shikona/rankRules.ts:54` + `generateShikona.ts:49` | sekiwake/komusubi/maegashira unmapped → "rookie"; both ladders extended |
+| B30 | P1 | `welfare/harmony.ts:60` | read `heyaRivalryPairs` (heya-level) for rikishi fields → always 0; now reads `pairs` + `sameHeya` |
+| B48 | P1 | `bout/physics/resultBuilders.ts:89` | unguarded `combatProfile.archetype`/`.counterFamily` deref → `?.` |
 
 ## Registered debt — P3 test-quality / tooling
 
