@@ -1,6 +1,7 @@
 import { determineSpecialPrizes } from "@/engine/banzuke/specialPrizes";
 import type { SpecialPrizesResult } from "@/engine/banzuke/specialPrizes";
 import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoState } from "@/engine/types/basho";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
@@ -52,6 +53,7 @@ export function distributePrizes(
 
   // Track multiple prizes per rikishi
   const prizeCounts: Record<string, number> = {};
+  const econCache = new Map<string, NonNullable<Rikishi["economics"]>>();
 
   for (const [key, type] of Object.entries(awardTypes)) {
     const rikishiId = (prizes as Record<string, string | undefined>)[key];
@@ -64,7 +66,8 @@ export function distributePrizes(
       type,
       sanshoRng,
       sanshoNarrativeLines,
-      prizeCounts
+      prizeCounts,
+      econCache
     );
   }
 
@@ -97,7 +100,8 @@ function awardSansho(
   type: "Shukun" | "Kanto" | "Gino",
   sanshoRng: ReturnType<typeof rngFromSeed>,
   sanshoNarrativeLines: PbpLine[],
-  prizeCounts: Record<string, number>
+  prizeCounts: Record<string, number>,
+  econCache: Map<string, NonNullable<Rikishi["economics"]>>
 ): void {
   const r = getRikishi(world, rikishiId);
   if (!r) return;
@@ -177,8 +181,11 @@ function awardSansho(
 
   // Credit sansho prize to rikishi economics (not heya funds under JSA model)
   // Use tempR.economics (with popularity boost) if available, otherwise fall back to r.economics
-  const economics = tempR.economics ||
-    r.economics || {
+  // Read the accumulated economics for this rikishi — each updateRikishi call
+  // writes an absolute economics object, so a second sansho for the same
+  // rikishi must compose on the first award's write, not the stale base.
+  const economics = econCache.get(r.id) ?? tempR.economics ??
+    (r.economics || {
       cash: 0,
       retirementFund: 0,
       careerKenshoWon: 0,
@@ -186,19 +193,19 @@ function awardSansho(
       totalEarnings: 0,
       currentBashoEarnings: 0,
       popularity: 50,
-    };
+    });
   // Split sansho: 50% cash, 50% retirement fund
   const sanshoCash = SANSHO_PRIZE_AMOUNT * 0.5;
   const sanshoRetirement = SANSHO_PRIZE_AMOUNT * 0.5;
 
-  builder.updateRikishi(r.id, {
-    economics: {
-      ...economics,
-      cash: economics.cash + sanshoCash,
-      retirementFund: economics.retirementFund + sanshoRetirement,
-      totalEarnings: economics.totalEarnings + SANSHO_PRIZE_AMOUNT,
-    },
-  });
+  const nextEconomics = {
+    ...economics,
+    cash: economics.cash + sanshoCash,
+    retirementFund: economics.retirementFund + sanshoRetirement,
+    totalEarnings: economics.totalEarnings + SANSHO_PRIZE_AMOUNT,
+  };
+  econCache.set(r.id, nextEconomics);
+  builder.updateRikishi(r.id, { economics: nextEconomics });
 }
 
 /** Appends "multiple prizes" narrative lines for rikishi with 2+ sansho. */

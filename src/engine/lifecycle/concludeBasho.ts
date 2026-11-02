@@ -9,7 +9,7 @@
  */
 
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { mergeImpacts } from "@/engine/core/ImpactResolver";
+import { mergeImpacts, resolveImpacts } from "@/engine/core/ImpactResolver";
 import { accumulateMochikyukinPoints } from "@/engine/economy/MochikyukinService";
 import { calculateKachiNokori } from "@/engine/economy/KachiNokoriService";
 import type { WorldState } from "@/engine/types/world";
@@ -124,13 +124,21 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     builder
   );
 
-  // Pay basho teate to non-sekitori rikishi
-  const teateImpact = payBashoTeate(world);
+  // Pay basho teate to non-sekitori rikishi. Writers emit absolute `economics`
+  // objects — resolve progressively so each composes on the prize credits
+  // rather than overwriting them via mergeImpacts' shallow entity merge.
+  const postPrizeWorld = resolveImpacts(world, [builder.build(), historyImpact]);
+  const teateImpact = payBashoTeate(postPrizeWorld);
 
   // Kinboshi compensation flows exclusively through mochikyukin accumulation
   // below (+10 pts/star at ¥4,000/pt, paid every 2 months while sekitori) —
   // the JSA model has no separate one-time stipend.
-  const mochikyukinImpact = accumulateAllMochikyukin(world, basho, yusho, topCandidates);
+  const mochikyukinImpact = accumulateAllMochikyukin(
+    resolveImpacts(postPrizeWorld, [teateImpact]),
+    basho,
+    yusho,
+    topCandidates
+  );
 
   // Merge impacts together
   return mergeImpacts([builder.build(), historyImpact, teateImpact, mochikyukinImpact]);

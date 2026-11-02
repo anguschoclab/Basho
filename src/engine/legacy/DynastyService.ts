@@ -14,6 +14,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { DynastyRecord } from "@/engine/types/dynasty";
 import type { OyakataArchetype, SuccessionReadiness } from "@/engine/types/oyakata";
+import { retireRikishiFully } from "@/engine/lifecycle/processRetirements";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import type { Rank } from "@/engine/types/banzuke";
@@ -321,9 +322,36 @@ export function triggerSuccession(
     ? { planFamilyBias: predecessorPlanId, bashoRemaining: LEGACY_MODIFIER_DURATION_BASHO }
     : undefined;
 
-  // 5. Retire the rikishi (only if still active) and assign the new Oyakata to the stable
+  // 5. Full retirement cascade for the successor (only if still active):
+  // retireRikishiFully handles archival + career events + roster sync.
   if (successorIsActive) {
-    builder.retireRikishi(successorRikishiId, world.year, "Promoted to Oyakata");
+    retireRikishiFully(world, successorRikishi, "Promoted to Oyakata", builder);
+  }
+
+  // 6. Remove the outgoing oyakata — previously they vanished from the chair
+  // but remained a live oyakata entity.
+  builder.removeOyakata(currentOyakata.id);
+
+  // 7. Elder-stock succession: the retiring oyakata's held myoseki passes to
+  // the new oyakata — a succession without the chair's stock is not a real
+  // handover.
+  const market = world.myosekiMarket;
+  if (market?.stocks) {
+    const nextStocks = { ...market.stocks };
+    let changed = false;
+    for (const [stockId, stock] of Object.entries(market.stocks)) {
+      if (stock.holderId === currentOyakata.id) {
+        nextStocks[stockId] = { ...stock, holderId: newOyakataId };
+        changed = true;
+      }
+    }
+    if (changed) {
+      builder.updateWorldField("myosekiMarket", {
+        ...market,
+        history: market.history ?? [],
+        stocks: nextStocks,
+      });
+    }
   }
   builder.updateHeya(heyaId, {
     dynasty: [...(heya.dynasty ?? []), record],

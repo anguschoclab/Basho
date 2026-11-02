@@ -35,8 +35,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | ID | Sev | Location | Defect |
 |---|---|---|---|
 | B24 | P2 | `SerializationService.ts:54` | `serializeBashoState` drops `boutMetrics`/`isExhibition`/`results`/`schedule`; mid-basho save loses accumulated metrics |
-| B26 | P0 | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts:136` | shallow `economics` merge → sansho+yusho winner loses sansho cash |
-| B31 | P0 | `legacy/DynastyService.ts:201-349` | `triggerSuccession` skips `removeOyakata`, `retireRikishiFully` cascade, myoseki release |
 | B32 | P1 | `lifecycle/BashoHistory.ts:365` | yokozuna deliberation reads pre-index history → lags one basho |
 | B33 | P1 | `legacy/DynastyService.ts:89` | `isSummary` successor → yearly no-op forever (trustee never runs) |
 | B35 | P2 | `lifecycle/retirementNarrative.ts:42` | `highestRank` misses lower divisions → peak = debut rank |
@@ -84,6 +82,8 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B39 | P2 | `governance/GovernancePoliticsTab.tsx` | `rikishiCount: () => 0` sort → real ichimon roster sum |
 | B40 | P2 | `recap/RecapSections.tsx` + `RecapPage` | dead `showYokozunaDelib` branch (fabricated subject + verdict) removed |
 | B42 | P2 | `kesho/keshoEffects.tsx` + `keshoPatterns.tsx` + `keshoSymbols.tsx` | all 5 def ids unreferenced → consumers wired; missing `mountain` motif added |
+| B26 | P0 | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts` | shallow `economics` overwrite (multi-sansho + cross-impact) → per-rikishi `econCache` + progressively-resolved world for teate/mochikyukin |
+| B31 | P0 | `legacy/DynastyService.ts` | `triggerSuccession` now runs `retireRikishiFully`, `removeOyakata`, and transfers held myoseki `holderId` to the successor |
 
 ## Registered debt — P3 test-quality / tooling
 
