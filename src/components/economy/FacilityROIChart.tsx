@@ -50,19 +50,19 @@ function estimateCost(currentLevel: number, points: number): number {
 }
 
 /**
- * Approximate stat gain for upgrading by `points` from `currentLevel`.
- * Mirrors investInFacility behaviour: higher levels yield diminishing returns.
- * Each point gained is worth (1 + currentLevel / 100) where currentLevel
- * advances one step at a time.
+ * Effect-multiplier delta for upgrading by `points`. Uses the real engine
+ * ranges (multipliers.ts): each level point adds RANGE/100 to the axis
+ * multiplier — constant per point, no fabricated curve.
  */
-function statGain(currentLevel: number, points: number): number {
+const AXIS_EFFECT_RANGE: Record<string, number> = {
+  training: 0.35, // TRAINING_MULTIPLIERS.RANGE
+  recovery: 0.4, // FACILITY_RECOVERY_MULTIPLIERS.RANGE
+  nutrition: 0.16, // NUTRITION_MULTIPLIERS.RANGE
+};
+function effectGain(axis: string, currentLevel: number, points: number): number {
   const effective = Math.min(points, MAX_FACILITY - currentLevel);
   if (effective <= 0) return 0;
-  let total = 0;
-  for (let i = 0; i < effective; i++) {
-    total += 1 + (currentLevel + i) / 100;
-  }
-  return total;
+  return effective * ((AXIS_EFFECT_RANGE[axis] ?? 0) / 100);
 }
 
 // ===
@@ -148,9 +148,9 @@ export function FacilityROIChart({ heya }: FacilityROIChartProps) {
       const currentLevel = heya.facilities[key] ?? 0;
       const atMax = currentLevel >= MAX_FACILITY;
       const cost = estimateCost(currentLevel, UPGRADE_POINTS);
-      const gain = statGain(currentLevel, UPGRADE_POINTS);
+      const gain = effectGain(key, currentLevel, UPGRADE_POINTS);
       const costMillion = cost / 1_000_000;
-      // efficiency: gain per ¥1M spent (avoid /0 at max)
+      // efficiency: real effect-multiplier delta per ¥1M spent (avoid /0 at max)
       const efficiencyScore = costMillion > 0 ? gain / costMillion : 0;
       return { axis: label, upgradeCost: cost, costMillion, efficiencyScore, currentLevel, atMax };
     });
@@ -258,7 +258,7 @@ export function FacilityROIChart({ heya }: FacilityROIChartProps) {
                   <Bar
                     yAxisId="right"
                     dataKey="efficiencyScore"
-                    name="Efficiency Score"
+                    name="Δ Effect per ¥M"
                     fill="hsl(var(--success) / 0.7)"
                     radius={[3, 3, 0, 0]}
                   />

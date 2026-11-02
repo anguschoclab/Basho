@@ -52,13 +52,6 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 
 | ID | Location | Defect |
 |---|---|---|
-| B20 | `stable/facilityMeta.ts:77` | displayed recovery formula ≠ engine (`0.9+l/166` vs `0.8+l·0.004`) — ~2.5× inflated |
-| B21 | `economy/FacilityROIChart.tsx:24` | invented `statGain=1+l/100` efficiency axis (no such engine gain) |
-| B22 | `SponsorshipHub*.tsx` | 3 dead controls (Industry Breakdown, Details, ATTRACT NEW PATRONS — no onClick) |
-| B38 | `governance/GovernancePoliticsTab.tsx:54` | "Spend 100" burns capital for zero benefit |
-| B39 | `GovernancePoliticsTab.tsx:29,179` | `rikishiCount` sort → constant 0 |
-| B40 | `recap/RecapSections.tsx:218` | YokozunaDeliberation branch permanently dead + fabricates subject |
-| B42 | `kesho/keshoEffects.tsx`/`keshoPatterns.tsx` | unreferenced `<defs>` → embroidery/gradient render nothing; "mountain" motif missing |
 
 ## Also fixed (post-verdict follow-up commit)
 
@@ -84,6 +77,13 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B37 | P2 | `ceremony/HoFInductionCeremony.tsx` | `StableName id=rikishiId` broken nav → `heyaId` prop resolved from world |
 | B41 | P2 | `scouting/CompareModePanel.tsx` | prospect pair = TalentCandidate (no `.id`) → fabricated 0-0 "B wins"; now resolves via `convertCandidateToRikishi`, deterministic seed, honest "unavailable" |
 | B43 | P2 | `history/LineageTree.tsx:102` | "2th/3th Generation Ancestor" → `Generation N Ancestor` |
+| B20 | P2 | `stable/facilityMeta.ts:77` | recovery formula `0.9+l/166` (≈2.5× inflated) → engine `0.8+(l/100)·0.4` |
+| B21 | P2 | `economy/FacilityROIChart.tsx` | fabricated `statGain=1+l/100` axis → real per-axis `RANGE/100` effect delta |
+| B22 | P2 | `economy/SponsorshipHub*.tsx` | 3 dead controls removed (Industry Breakdown, Details, ATTRACT NEW PATRONS) |
+| B38 | P2 | `governance/GovernancePoliticsTab.tsx` | "Spend 100" was a pure burn (spendPoliticalCapital only decrements) → removed; tests repinned |
+| B39 | P2 | `governance/GovernancePoliticsTab.tsx` | `rikishiCount: () => 0` sort → real ichimon roster sum |
+| B40 | P2 | `recap/RecapSections.tsx` + `RecapPage` | dead `showYokozunaDelib` branch (fabricated subject + verdict) removed |
+| B42 | P2 | `kesho/keshoEffects.tsx` + `keshoPatterns.tsx` + `keshoSymbols.tsx` | all 5 def ids unreferenced → consumers wired; missing `mountain` motif added |
 
 ## Registered debt — P3 test-quality / tooling
 

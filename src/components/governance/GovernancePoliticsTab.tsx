@@ -6,14 +6,12 @@
  */
 
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatCard, ListCard, SectionHeader } from "@/components/layout/page-shell/index";
 import { TabsContent } from "@/components/ui/tabs";
 import { Trophy, ShieldAlert, Coins, Scale } from "lucide-react";
-import { useGame } from "@/state/game/useGame";
 import { useGameStore } from "@/state/stores/gameStore";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
@@ -50,14 +48,6 @@ export function GovernancePoliticsTab({ world, heya, derived }: Props) {
 }
 
 function PoliticalStanding({ heya }: { heya: Heya }) {
-  const { spendPoliticalCapital } = useGame();
-  const handleSpend = () => {
-    if ((heya.politicalCapital ?? 0) >= 100) {
-      spendPoliticalCapital(heya.id, 100);
-      return;
-    }
-    toast.error("Not enough Political Capital (need 100).");
-  };
   return (
     <div className="space-y-4">
       <SectionHeader eyebrow="CAPITAL" title="Your Political Standing" />
@@ -69,24 +59,9 @@ function PoliticalStanding({ heya }: { heya: Heya }) {
             label: "Political Capital",
             value: heya.politicalCapital ?? 0,
             tone: (heya.politicalCapital ?? 0) >= 100 ? "gold" : "default",
-            sub: "Spend capital to fuel political favors",
+            sub: "Spent via the favors below — bare spending has no effect",
           },
         ]}
-        actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSpend}
-            disabled={(heya.politicalCapital ?? 0) < 100}
-            tooltip={
-              (heya.politicalCapital ?? 0) < 100
-                ? "Not enough Political Capital (need 100)"
-                : undefined
-            }
-          >
-            Spend 100
-          </Button>
-        }
       />
     </div>
   );
@@ -176,7 +151,10 @@ function IchimonRankings({
     const accessor: Record<string, (fac: Faction) => string | number | undefined> = {
       influence: (f) => f.influence,
       name: (f) => f.name,
-      rikishiCount: () => 0,
+      rikishiCount: (f) =>
+        [...world.heyas.values()]
+          .filter((h) => h.ichimon === f.id)
+          .reduce((sum, h) => sum + (h.rikishiIds?.length ?? 0), 0),
     };
     const fn = accessor[factionSortKey];
     if (!fn) return derived.factionRows;

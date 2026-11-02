@@ -74,7 +74,8 @@ export function getEffectPercent(axis: FacilityAxis, level: number): string {
     return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
   }
   if (axis === "recovery") {
-    const mult = 0.9 + level / 166;
+    // FACILITY_RECOVERY_MULTIPLIERS: BASE 0.8 + RANGE 0.4 · (level/100)
+    const mult = 0.8 + (level / 100) * 0.4;
     return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
   }
   // nutrition

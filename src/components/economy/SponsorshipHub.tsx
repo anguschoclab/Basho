@@ -6,8 +6,6 @@
  * Sections live in ./SponsorshipHubSections.tsx.
  */
 
-import { PieChart } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   type SponsorshipData,
   SponsorSummaryCards,
@@ -34,13 +32,6 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           <h3 className="text-xl font-display font-black uppercase tracking-tight">
             Active Benefactor Registry
           </h3>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-[10px] font-black uppercase tracking-widest gap-2"
-          >
-            <PieChart className="h-3 w-3" /> Industry Breakdown
-          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">

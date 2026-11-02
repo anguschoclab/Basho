@@ -9,17 +9,14 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { PressConference } from "@/components/media/PressConference";
-import { YokozunaDeliberation } from "@/components/ceremony/YokozunaDeliberation";
 import { HoFInductionCeremony } from "@/components/ceremony/HoFInductionCeremony";
 import { IntaiCeremony } from "@/components/ceremony/IntaiCeremony";
 import { selectTopKihakuPerformers } from "@/presenters/projections/recapKihakuProjections";
 import { selectKachiNokoriLeaders } from "@/presenters/projections/recapKachiNokoriProjections";
 import { selectExhibitionResults } from "@/presenters/projections/recapExhibitionProjections";
-import { EntityCollection } from "@/presenters/engineAccess";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeya, getRikishi, getRikishiAnywhere } from "@/presenters/worldAccess";
-import { projectRikishi } from "@/presenters/uiModels";
 import { projectPressConferenceData } from "@/presenters/uiDigest";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { HoFInductee } from "@/presenters/engineAccess";
@@ -181,18 +178,15 @@ export function ExhibitionSection({ world }: { world: WorldState }) {
 export function RecapModals({
   world,
   showPressConference,
-  showYokozunaDelib,
   showHoFCeremony,
   intaiQueue,
   currentIntaiIndex,
   onPressConferenceClose,
-  onYokozunaDelibClose,
   onHoFCeremonyClose,
   onIntaiAdvance,
 }: {
   world: WorldState;
   showPressConference: boolean;
-  showYokozunaDelib: boolean;
   showHoFCeremony: HoFInductee | null;
   intaiQueue: { rikishi: UIRikishi; reason: string }[];
   currentIntaiIndex: number;
@@ -201,7 +195,6 @@ export function RecapModals({
     morale: number;
     mediaHeat: number;
   }) => void;
-  onYokozunaDelibClose: () => void;
   onHoFCeremonyClose: () => void;
   onIntaiAdvance: () => void;
 }) {
@@ -215,17 +208,7 @@ export function RecapModals({
         />
       )}
 
-      {showYokozunaDelib && (
-        <YokozunaDeliberation
-          open={showYokozunaDelib}
-          rikishi={projectRikishi(EntityCollection.getActiveRikishi(world)[0], world)}
-          heyaName={getPlayerHeya(world)?.name || "Unknown Stable"}
-          isPlayerRikishi={true}
-          verdict="deferred"
-          reasoning={["Continued performance required."]}
-          onClose={onYokozunaDelibClose}
-        />
-      )}
+
 
       {showHoFCeremony && (
         <HoFInductionCeremony

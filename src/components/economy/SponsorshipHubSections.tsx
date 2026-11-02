@@ -15,10 +15,8 @@ import {
   Crown,
   Landmark,
   Calendar,
-  ChevronRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
@@ -163,13 +161,6 @@ export function SponsorCard({ sponsor }: { sponsor: SponsorData }) {
               Strength: {sponsor.power}/5
             </span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 text-[10px] font-black uppercase tracking-widest"
-          >
-            Details <ChevronRight className="h-3 w-3 ml-1" />
-          </Button>
         </div>
       </CardContent>
     </Card>
@@ -210,9 +201,6 @@ export function SponsorAppealCta() {
           absolute loyalty and consistent yūshō contention.
         </p>
         <div className="pt-4 flex flex-wrap gap-4">
-          <Button className="bg-success hover:bg-success/90 text-success-foreground font-black uppercase tracking-widest text-[11px] px-10 h-12 shadow-xl shadow-success/20 transition-all">
-            ATTRACT NEW PATRONS
-          </Button>
           <div className="flex items-center gap-4 border-l border-success/20 pl-4">
             <div className="flex flex-col">
               <span className="text-[10px] font-black text-muted-foreground uppercase opacity-50">

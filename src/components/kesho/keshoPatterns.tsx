@@ -17,12 +17,15 @@ const renderStriped: PatternRenderer = (_p, secondaryColor) => (
 );
 
 const renderGradient: PatternRenderer = (primaryColor, secondaryColor) => (
-  <defs>
-    <linearGradient id="baseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stopColor={primaryColor} />
-      <stop offset="100%" stopColor={secondaryColor} />
-    </linearGradient>
-  </defs>
+  <g>
+    <defs>
+      <linearGradient id="baseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={primaryColor} />
+        <stop offset="100%" stopColor={secondaryColor} />
+      </linearGradient>
+    </defs>
+    <rect x="20" y="20" width="160" height="196" fill="url(#baseGradient)" />
+  </g>
 );
 
 const renderCloud: PatternRenderer = (_p, secondaryColor) => (

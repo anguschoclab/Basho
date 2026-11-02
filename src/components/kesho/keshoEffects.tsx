@@ -44,17 +44,30 @@ export function renderEmbroideryEffect(
   switch (style) {
     case "satin":
       return (
-        <defs>
-          <filter id="satin-glow">
-            <feGaussianBlur stdDeviation="1" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
+        <g>
+          <defs>
+            <filter id="satin-glow">
+              <feGaussianBlur stdDeviation="1" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          <rect
+            x="20"
+            y="20"
+            width="160"
+            height="196"
+            fill={color}
+            opacity={0.15 * density}
+            filter="url(#satin-glow)"
+          />
+        </g>
       );
     case "chain":
       return (
-        <pattern
-          id="chain-pattern"
+        <g>
+          <defs>
+            <pattern
+              id="chain-pattern"
           x="0"
           y="0"
           width={KESHO_DOT_SIZE}
@@ -68,41 +81,50 @@ export function renderEmbroideryEffect(
             fill={color}
             opacity={KESHO_OPACITY_LOW * density}
           />
-        </pattern>
+            </pattern>
+          </defs>
+          <rect x="20" y="20" width="160" height="196" fill="url(#chain-pattern)" />
+        </g>
       );
     case "couching":
       return (
-        <pattern
-          id="couching-pattern"
-          x="0"
-          y="0"
-          width={KESHO_LINE_SIZE}
-          height={KESHO_LINE_SIZE}
-          patternUnits="userSpaceOnUse"
-        >
-          <line
-            x1="0"
-            y1={KESHO_LINE_SIZE / 2}
-            x2={KESHO_LINE_SIZE}
-            y2={KESHO_LINE_SIZE / 2}
-            stroke={color}
-            strokeWidth="2"
-            opacity={KESHO_OPACITY_MEDIUM * density}
-          />
-          <line
-            x1={KESHO_LINE_SIZE / 2}
-            y1="0"
-            x2={KESHO_LINE_SIZE / 2}
-            y2={KESHO_LINE_SIZE}
-            stroke={color}
-            strokeWidth="1"
-            opacity={KESHO_OPACITY_LOW * density}
-          />
-        </pattern>
+        <g>
+          <defs>
+            <pattern
+              id="couching-pattern"
+              x="0"
+              y="0"
+              width={KESHO_LINE_SIZE}
+              height={KESHO_LINE_SIZE}
+              patternUnits="userSpaceOnUse"
+            >
+              <line
+                x1="0"
+                y1={KESHO_LINE_SIZE / 2}
+                x2={KESHO_LINE_SIZE}
+                y2={KESHO_LINE_SIZE / 2}
+                stroke={color}
+                strokeWidth="2"
+                opacity={KESHO_OPACITY_MEDIUM * density}
+              />
+              <line
+                x1={KESHO_LINE_SIZE / 2}
+                y1="0"
+                x2={KESHO_LINE_SIZE / 2}
+                y2={KESHO_LINE_SIZE}
+                stroke={color}
+                strokeWidth="1"
+                opacity={KESHO_OPACITY_LOW * density}
+              />
+            </pattern>
+          </defs>
+          <rect x="20" y="20" width="160" height="196" fill="url(#couching-pattern)" />
+        </g>
       );
     case "goldwork":
       return (
-        <defs>
+        <g>
+          <defs>
           <linearGradient id="goldwork-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop
               offset={`${KESHO_GRADIENT_START}%`}
@@ -121,6 +143,8 @@ export function renderEmbroideryEffect(
             />
           </linearGradient>
         </defs>
+        <rect x="20" y="20" width="160" height="196" fill="url(#goldwork-gradient)" />
+        </g>
       );
     default:
       return null;

@@ -39,19 +39,19 @@ function renderTab(props: Parameters<typeof GovernancePoliticsTab>[0]) {
 describe("GovernancePoliticsTab", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("spends political capital when heya has >= 100", () => {
+  // Bare capital spending was a pure burn with no engine effect — the control
+  // was removed; real spends go through POLITICAL_FAVORS sendCommand.
+  it("does not offer a bare capital-burn control", () => {
     const world = MockFactory.createWorld();
     const heya = MockFactory.createHeya("h1", { politicalCapital: 150 });
     renderTab({ world, heya, derived });
-    fireEvent.click(screen.getByText("Spend 100"));
-    expect(mockSpendPoliticalCapital).toHaveBeenCalledWith("h1", 100);
+    expect(screen.queryByText("Spend 100")).toBeNull();
   });
 
-  it("Spend 100 button is disabled when capital < 100", () => {
+  it("displays political capital value", () => {
     const world = MockFactory.createWorld();
     const heya = MockFactory.createHeya("h1", { politicalCapital: 50 });
     renderTab({ world, heya, derived });
-    const btn = screen.getByText("Spend 100").closest("button");
-    expect(btn?.disabled).toBe(true);
+    expect(screen.getByText("Political Capital")).toBeTruthy();
   });
 });

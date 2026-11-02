@@ -35,6 +35,7 @@ export function renderSymbol(
     lotus: "🪷",
     thunder: "⛈️",
     wind: "💨",
+    mountain: "⛰️",
   };
 
   const content = symbolMap[symbol.value] || "⭕";

@@ -40,7 +40,6 @@ export default function RecapPage() {
   const world = state.world;
 
   const [showPressConference, setShowPressConference] = useState(false);
-  const [showYokozunaDelib, setShowYokozunaDelib] = useState(false);
   const [showHoFCeremony, setShowHoFCeremony] = useState<HoFInductee | null>(null);
   const [showBanzukeReveal, setShowBanzukeReveal] = useState(false);
 
@@ -155,12 +154,10 @@ export default function RecapPage() {
         <RecapModals
           world={world}
           showPressConference={showPressConference}
-          showYokozunaDelib={showYokozunaDelib}
           showHoFCeremony={showHoFCeremony}
           intaiQueue={intaiQueue}
           currentIntaiIndex={currentIntaiIndex}
           onPressConferenceClose={handlePressConferenceClose}
-          onYokozunaDelibClose={() => setShowYokozunaDelib(false)}
           onHoFCeremonyClose={() => setShowHoFCeremony(null)}
           onIntaiAdvance={advanceIntai}
         />
