@@ -222,7 +222,7 @@ export function onBoutResolvedInjury(
     ? BOUT_INJURY_VIOLENT_CHANCE
     : BOUT_INJURY_NORMAL_CHANCE; // 2-4% per bout
   const boutInjuryChance = baseBoutInjuryChance * (injuryRiskMultiplier ?? 1.0);
-  const rngSeed = RNGRegistry.getSystemRNG(world, "health", `bout::${loser.id}::${world.week}`);
+  const rngSeed = RNGRegistry.getSystemRNG(world, "health", `bout::${loser.id}::${world.dayIndexGlobal}`);
   const roll = rngSeed.next();
 
   if (roll < boutInjuryChance) {
@@ -275,7 +275,7 @@ export function onBoutResolvedInjury(
     const winnerRng = RNGRegistry.getSystemRNG(
       world,
       "health",
-      `bout::${winner.id}::${world.week}`
+      `bout::${winner.id}::${world.dayIndexGlobal}`
     );
     const winnerRoll = winnerRng.next();
 

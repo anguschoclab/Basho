@@ -50,6 +50,7 @@ jobs:
         run: |
           git config --global user.name "BardEngine-Bot"
           git config --global user.email "bard-bot@basho.app"
-          git add src/engine/bard/registry.json
+          git add src/engine/bard/
           git commit -m "Auto-generated narrative expansion [skip ci]" || echo "No changes to commit"
-          git push
+          # main is protected (GH006) — push to a dedicated integration branch
+          git push origin HEAD:refs/heads/narrative-updates || echo "push failed — keeping run result"

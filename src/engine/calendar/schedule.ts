@@ -242,8 +242,15 @@ export function scheduleJuryoWithCrossover(
 
   if (oddSlots > 0) {
     // Call up top Makushita (Ms1-Ms5)
+    // Exclude rikishi already scheduled for this day — makushita is
+    // scheduled before juryo, so without this a call-up gets two bouts.
+    const busyToday = new Set(
+      basho.matches
+        .filter((m) => m.day === day)
+        .flatMap((m) => [m.eastRikishiId, m.westRikishiId])
+    );
     const makushitaPool = activeDivisionRoster(world, "makushita")
-      .filter((r) => !r.injured && !r.isKyujo)
+      .filter((r) => !r.injured && !r.isKyujo && !busyToday.has(r.id))
       .sort((a, b) => {
         const aNum = a.rankNumber ?? 99;
         const bNum = b.rankNumber ?? 99;

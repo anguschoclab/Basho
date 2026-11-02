@@ -88,12 +88,17 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
 
   // 2. Career wins milestones (100, 500, etc.)
   const wins = rikishi.careerWins || 0;
-  if (CAREER_WIN_MILESTONE_THRESHOLDS.includes(wins)) {
+  // Crossing-detection: a ~15-win basho can skip an exact threshold (95→110).
+  // Fire for the highest threshold at-or-below wins that isn't recorded yet.
+  const hitThreshold = CAREER_WIN_MILESTONE_THRESHOLDS.find(
+    (t) => wins >= t && !rikishi.milestones?.some((m) => m.title === `${t} Career Wins`)
+  );
+  if (hitThreshold !== undefined) {
     rikishi.milestones.push({
       id: rng.uuid("ML"),
       type: "stats_record",
-      title: `${wins} Career Wins`,
-      description: `Reached the landmark of ${wins} career victories.`,
+      title: `${hitThreshold} Career Wins`,
+      description: `Reached the landmark of ${hitThreshold} career victories.`,
       date: { year, month },
     });
   }

@@ -42,9 +42,7 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B33 | P1 | `legacy/DynastyService.ts:89` | `isSummary` successor → yearly no-op forever (trustee never runs) |
 | B34 | P1 | `legacy/SparringService.ts:452` | `ceil(delta/4)` per-stat → up to 4× weekly cap |
 | B35 | P2 | `lifecycle/retirementNarrative.ts:42` | `highestRank` misses lower divisions → peak = debut rank |
-| B36 | P1 | `lifecycle/RegistryService.ts:149` + `history/history.ts:91,142` | career-win milestones exact-match → skipped on crossing basho |
 | B44 | P1 | `matchmaking/DramaMatchmaker.ts:583` | `applyDramaBudget` swap loop no-op (scoreChange always 0) |
-| B45 | P1 | `calendar/schedule.ts:223` | makushita call-up double-booked same day (juryo crossover ignores schedule) |
 | B46 | P1 | `kimarite/kimariteStrategies.ts:432,828` | `forwardMomentum < 0` / `stamina < 0.5` unreachable predicates |
 | B47 | P1 | `narrative/postbout2.ts:400` | mono-ii narrative rolls independent of `result.monoiiOutcome` |
 | B50 | P2 | `bout/ReplayMetadata.ts:103` | `clamp01(margin)` on raw diff → saturates at 1 |
@@ -82,6 +80,10 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 | B29 | P1 | `shikona/rankRules.ts:54` + `generateShikona.ts:49` | sekiwake/komusubi/maegashira unmapped → "rookie"; both ladders extended |
 | B30 | P1 | `welfare/harmony.ts:60` | read `heyaRivalryPairs` (heya-level) for rikishi fields → always 0; now reads `pairs` + `sameHeya` |
 | B48 | P1 | `bout/physics/resultBuilders.ts:89` | unguarded `combatProfile.archetype`/`.counterFamily` deref → `?.` |
+| B27 | P1 | `health/InjuryService.ts:225,278` | bout-injury seed per-week → per-day `dayIndexGlobal` (~4%/bout, not ~4%/week-cluster) |
+| B45 | P1 | `calendar/schedule.ts:243` | makushita call-up double-booked same day → `busyToday` filter |
+| B36 | P1 | `history/history.ts:91` | milestone exact-match → threshold-crossing with recorded-title dedupe |
+| — | P0 | `.github/workflows/autonomous-narrative.yml` | protected-branch push (GH006, same class as perf-gate) → `narrative-updates` branch; `git add` now covers `domains/` too |
 
 ## Registered debt — P3 test-quality / tooling
 
