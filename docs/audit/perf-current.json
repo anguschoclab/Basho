@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-10-23T13:56:30.820Z",
+  "results": [
+    {
+      "scenario": "S1_single_day",
+      "p50_ms": 11.2,
+      "p99_ms": 15.3,
+      "mean_ms": 10.7,
+      "runs": 50,
+      "total_days": 1
+    },
+    {
+      "scenario": "S2_weekly",
+      "p50_ms": 1009.9,
+      "p99_ms": 1546.5,
+      "mean_ms": 1043.6,
+      "runs": 50,
+      "total_days": 7
+    },
+    {
+      "scenario": "S3_year",
+      "p50_ms": 3688.8,
+      "p99_ms": 4326.3,
+      "mean_ms": 3683.1,
+      "runs": 50,
+      "total_days": 365
+    },
+    {
+      "scenario": "S4_25yr",
+      "p50_ms": 4062.7,
+      "p99_ms": 4438.6,
+      "mean_ms": 4066.2,
+      "runs": 10,
+      "total_days": 9125
+    }
+  ]
+}
