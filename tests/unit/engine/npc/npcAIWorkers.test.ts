@@ -605,6 +605,108 @@ describe("spawnGlobalWorker", () => {
     expect(result.acceptedExhibitionId).toBe("e1");
   });
 
+  it("picks the highest-power healthy rikishi among several candidates", () => {
+    const rWeak = mockRikishi("weak", { heyaId: "h1", power: 40 });
+    const rStrong = mockRikishi("strong", { heyaId: "h1", power: 90 });
+    const rMid = mockRikishi("mid", { heyaId: "h1", power: 70 });
+    const heya = makeMockHeya("h1", { rikishiIds: ["weak", "strong", "mid"] });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["weak", rWeak],
+        ["strong", rStrong],
+        ["mid", rMid],
+      ]),
+      heyas: new Map([["h1", heya]]),
+    });
+    const ctx: GlobalWorkerContext = {
+      heyaId: "h1",
+      ambition: 60,
+      riskAppetite: 50,
+      perception: makePerception({
+        rikishiPerceptions: [
+          makeRikishiPerception({ rikishiId: "weak" }),
+          makeRikishiPerception({ rikishiId: "strong" }),
+          makeRikishiPerception({ rikishiId: "mid" }),
+        ],
+      }),
+      pendingExhibitions: [
+        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", dominantStyle: "oshi", expiresAtWeek: 10 },
+      ],
+      world,
+    };
+    const result = spawnGlobalWorker(ctx);
+    expect(result.acceptedExhibitionId).toBe("e1");
+    expect(result.rikishiId).toBe("strong");
+  });
+
+  it("breaks power ties by first rikishiPerceptions order (first-max wins)", () => {
+    const rA = mockRikishi("a", { heyaId: "h1", power: 90 });
+    const rB = mockRikishi("b", { heyaId: "h1", power: 90 });
+    const heya = makeMockHeya("h1", { rikishiIds: ["a", "b"] });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["a", rA],
+        ["b", rB],
+      ]),
+      heyas: new Map([["h1", heya]]),
+    });
+    const ctx: GlobalWorkerContext = {
+      heyaId: "h1",
+      ambition: 60,
+      riskAppetite: 50,
+      perception: makePerception({
+        rikishiPerceptions: [
+          makeRikishiPerception({ rikishiId: "a" }),
+          makeRikishiPerception({ rikishiId: "b" }),
+        ],
+      }),
+      pendingExhibitions: [
+        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", dominantStyle: "oshi", expiresAtWeek: 10 },
+      ],
+      world,
+    };
+    const result = spawnGlobalWorker(ctx);
+    expect(result.rikishiId).toBe("a");
+  });
+
+  it("skips retired, injured, kyujo, and missing-from-world candidates", () => {
+    const rRet = mockRikishi("ret", { heyaId: "h1", power: 99, isRetired: true });
+    const rInj = mockRikishi("inj", { heyaId: "h1", power: 95, injured: true });
+    const rKyu = mockRikishi("kyu", { heyaId: "h1", power: 93, isKyujo: true });
+    const rOk = mockRikishi("ok", { heyaId: "h1", power: 10 });
+    const heya = makeMockHeya("h1", { rikishiIds: ["ret", "inj", "kyu", "ok"] });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["ret", rRet],
+        ["inj", rInj],
+        ["kyu", rKyu],
+        ["ok", rOk],
+        // "ghost" intentionally absent — perception references a nonexistent rikishi
+      ]),
+      heyas: new Map([["h1", heya]]),
+    });
+    const ctx: GlobalWorkerContext = {
+      heyaId: "h1",
+      ambition: 60,
+      riskAppetite: 50,
+      perception: makePerception({
+        rikishiPerceptions: [
+          makeRikishiPerception({ rikishiId: "ret" }),
+          makeRikishiPerception({ rikishiId: "ghost" }),
+          makeRikishiPerception({ rikishiId: "inj" }),
+          makeRikishiPerception({ rikishiId: "kyu" }),
+          makeRikishiPerception({ rikishiId: "ok" }),
+        ],
+      }),
+      pendingExhibitions: [
+        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", dominantStyle: "oshi", expiresAtWeek: 10 },
+      ],
+      world,
+    };
+    const result = spawnGlobalWorker(ctx);
+    expect(result.rikishiId).toBe("ok");
+  });
+
   it("declines when rank requirement not met", () => {
     const r1 = mockRikishi("r1", { heyaId: "h1", rank: "makushita", power: 80 });
     const heya = makeMockHeya("h1", { rikishiIds: ["r1"] });

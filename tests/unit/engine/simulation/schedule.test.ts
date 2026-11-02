@@ -71,6 +71,40 @@ describe("scheduleDivisionDay", () => {
     }
   });
 
+  it("MatchSchedule contract: scheduled entries carry the projection fields and no internal `reasons`", () => {
+    // MatchSchedule is a deliberate projection of the internal MatchPairing —
+    // the `reasons` array is stripped at the schedule.ts projection site.
+    // Assert the runtime shape instead of the type-level absence.
+    const world = makeMockWorld();
+    const basho = makeMockBasho({ day: 1 });
+    const r1 = mockRikishi("r1", { division: "makuuchi" });
+    const r2 = mockRikishi("r2", { division: "makuuchi" });
+    const r3 = mockRikishi("r3", { division: "makuuchi" });
+    const r4 = mockRikishi("r4", { division: "makuuchi" });
+    world.rikishi.set(r1.id, r1);
+    world.rikishi.set(r2.id, r2);
+    world.rikishi.set(r3.id, r3);
+    world.rikishi.set(r4.id, r4);
+
+    const { scheduled } = scheduleDivisionDay({
+      world,
+      basho,
+      division: "makuuchi",
+      day: 1,
+      seed: "test-contract",
+    });
+
+    expect(scheduled.length).toBeGreaterThan(0);
+    for (const match of scheduled) {
+      expect(match.boutId).toContain("-d1-");
+      expect(match.day).toBe(1);
+      expect(match.eastRikishiId).toBeTruthy();
+      expect(match.westRikishiId).toBeTruthy();
+      expect("reasons" in match).toBe(false);
+      expect(match.result === undefined || match.result === null).toBe(true);
+    }
+  });
+
   it("appends matches to basho.matches", () => {
     const world = makeMockWorld();
     const basho = makeMockBasho({ day: 1 });
