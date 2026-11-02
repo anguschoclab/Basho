@@ -1,0 +1,38 @@
+=== HEAD ===
+2bfc438f665b25176fd0ac7b7482515ceb2b7884
+=== STATUS ===
+## main...origin/main
+?? docs/audit/pre-consolidation-baseline-v16.txt
+=== BRANCHES ===
+* main
+  polish/stable-not-found
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/bard-milestone-flavor-8585130335698183879
+  remotes/origin/bolt-fix-set-allocation-9828947554093910814
+  remotes/origin/bolt-optimize-ai-workers-694684666250201500
+  remotes/origin/bolt-optimize-npc-deduplication-1893982413178272269
+  remotes/origin/bolt-optimize-rival-heya-lookup-14437405914909890144
+  remotes/origin/main
+  remotes/origin/mason-fix-matchschedule-type-965995714403007993
+  remotes/origin/scout/fix-faction-pressure-id-10201376706612770075
+  remotes/origin/scribe-document-schedule-helpers-9638841917212221811
+  remotes/origin/scribe-matchschedule-contract-14062903030723867404
+=== OPEN PRs ===
+1173	📜 Scribe: document MatchSchedule projection contract	scribe-matchschedule-contract-14062903030723867404	OPEN	2026-11-02T00:49:20Z
+1172	⚡ Bolt: Optimize AI worker rikishi selection	bolt-optimize-ai-workers-694684666250201500	OPEN	2026-11-02T00:23:23Z
+1171	🧱 Mason: remove dead reasons type check from match schedule test	mason-fix-matchschedule-type-965995714403007993	OPEN	2026-11-02T00:15:58Z
+=== RECENT MAIN RUNS ===
+2026-11-01T17:02:14Z failure Type Check & Build Gate
+2026-11-01T17:02:14Z success Lint Gate
+2026-11-01T17:02:14Z success E2E
+2026-11-01T17:02:14Z success CodeQL
+2026-11-01T17:02:14Z failure Pipeline Performance Gate
+2026-11-01T16:32:22Z success Dependabot Updates
+2026-11-01T16:32:19Z success Dependabot Updates
+2026-11-01T16:32:19Z success Dependabot Updates
+2026-11-01T16:32:19Z success Dependabot Updates
+2026-11-01T16:32:19Z success Dependabot Updates
+=== FILE COUNTS ===
+2420
+1117
+1054

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T16:58:14.654Z",
+  "generatedAt": "2026-11-02T10:07:56.766Z",
   "summary": {
     "total": 248,
     "unreferencedExports": 239,
@@ -546,7 +546,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0553",
@@ -557,7 +557,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0551",
@@ -568,7 +568,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0550",
@@ -579,7 +579,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0552",
@@ -590,7 +590,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0549",
@@ -601,7 +601,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0343",
@@ -678,7 +678,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0558",
@@ -689,7 +689,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0555",
@@ -700,7 +700,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0556",
@@ -711,7 +711,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0559",
@@ -722,7 +722,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0557",
@@ -733,7 +733,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0560",
@@ -744,7 +744,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0352",
@@ -1107,7 +1107,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0378",
@@ -1635,7 +1635,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0414",
@@ -2240,7 +2240,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0564",
@@ -2251,7 +2251,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0320",
@@ -2493,7 +2493,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0187",
@@ -2559,7 +2559,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     },
     {
       "id": "ORPH-0543",
@@ -2735,7 +2735,7 @@
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
-      "status": "intentional"
+      "status": "candidate"
     }
   ]
 }
