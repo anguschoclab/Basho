@@ -18,7 +18,7 @@ This project is a modern web application built with:
 - **Frontend Framework:** React 19, Vite
 - **Language:** TypeScript
 - **Styling & UI:** Tailwind CSS, shadcn/ui, Radix UI
-- **State Management & Routing:** React Query, React Router DOM
+- **State Management & Routing:** TanStack Router, Zustand + GameContext
 - **Runtime & Package Manager:** [Bun](https://bun.sh/)
 
 ## Project Structure
