@@ -174,6 +174,11 @@ export interface BoutResult {
 /**
  * Defines the structure for match schedule.
  * Represents a single scheduled bout in a basho.
+ *
+ * @contract `MatchSchedule` is a type projection of `MatchPairing` that explicitly
+ * strips the internal matchmaking `reasons` array. Unit tests evaluating scheduling
+ * overrides must assert on observable world impacts or final match-ups, as querying
+ * `reasons` on this object will result in a type error.
  */
 export interface MatchSchedule {
   /** Unique identifier for this bout. */
