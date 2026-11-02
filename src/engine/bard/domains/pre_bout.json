@@ -3,7 +3,7 @@
     "both_contending": [
       "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
       "Both men with winning records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
-      "Two contenders here — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% also at %WEST_WINS% and %WEST_LOSSES%.",
+      "Two contenders here — %EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%, %WEST_NAME% also at %WEST_WINS% and %WEST_LOSSES%.",
       "High stakes here today: %EAST_NAME% (%EAST_WINS%-%EAST_LOSSES%) faces off against %WEST_NAME% (%WEST_WINS%-%WEST_LOSSES%).",
       "Both men come in with momentum. %EAST_NAME% stands at %EAST_WINS% and %EAST_LOSSES%, while %WEST_NAME% is %WEST_WINS% and %WEST_LOSSES%.",
       "We have a battle of winning records today — %EAST_NAME% (%EAST_WINS% wins) meets %WEST_NAME% (%WEST_WINS% wins)."
@@ -11,7 +11,7 @@
     "both_struggling": [
       "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%. A tough basho for both.",
       "Both men looking for answers — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
-      "A difficult tournament for both — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
+      "A difficult tournament for both — %EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
       "Desperation mode for both fighters. %EAST_NAME% is %EAST_WINS%-%EAST_LOSSES%, and %WEST_NAME% sits at %WEST_WINS%-%WEST_LOSSES%.",
       "Neither man has found their rhythm this basho. %EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
       "A vital bout for two struggling rikishi. %EAST_NAME% (%EAST_WINS%-%EAST_LOSSES%) needs a turnaround just as much as %WEST_NAME% (%WEST_WINS%-%WEST_LOSSES%)."

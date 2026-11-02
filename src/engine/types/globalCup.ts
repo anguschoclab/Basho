@@ -55,6 +55,7 @@ export interface GlobalCupHistoryEntry {
   championName: string;
   championHeya?: string;
   participantCount: number;
+  participantIds: string[];
   wasPlayerChampion: boolean;
 }
 

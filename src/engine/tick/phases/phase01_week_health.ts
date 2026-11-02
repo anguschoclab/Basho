@@ -72,8 +72,12 @@ export function phase01_week_health(world: WorldState): StateImpact {
 
 function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder): boolean {
   const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
+  // activeModifiers.recoveryMultiplier is derived from the PLAYER heya's
+  // facilities/nutrition (phase02_context) — apply it to player rikishi only;
+  // NPC heyas heal via their own staff bonuses alone.
   const activeModifiers = world.transientContext?.activeModifiers;
-  const recoveryMultiplier = activeModifiers?.recoveryMultiplier ?? 1.0;
+  const recoveryMultiplier =
+    r.heyaId === world.playerHeyaId ? (activeModifiers?.recoveryMultiplier ?? 1.0) : 1.0;
   // Combine staff medical bonus with facility/nutrition-derived recoveryMultiplier
   const effectiveRecoveryMult = staffBonuses.medical * recoveryMultiplier;
   const recovered = tickRikishiRecovery(r, effectiveRecoveryMult);

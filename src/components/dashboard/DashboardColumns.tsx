@@ -189,7 +189,7 @@ export function DashboardTrainingColumn({ training }: { training: DashboardDeriv
 
       {training && training.rosterStatuses.length > 0 && (
         <div className="paper rounded-lg p-4 space-y-2">
-          <p className="stat-label text-gold tracking-[0.15em] text-[10px]">"FATIGUE LEVELS"</p>
+          <p className="stat-label text-gold tracking-[0.15em] text-[10px]">FATIGUE LEVELS</p>
           {training.rosterStatuses.slice(0, 6).map((rs) => (
             <ProgressRow
               key={rs.id}

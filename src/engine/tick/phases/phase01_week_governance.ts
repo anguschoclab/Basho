@@ -42,7 +42,7 @@ import { getRikishi } from "@/engine/core/queries";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");
-  const isElectionWeek = world.week === ELECTION_WEEK && world.year % ELECTION_YEAR_INTERVAL === 0;
+  const isElectionWeek = (((world.week - 1) % 52) + 1) === ELECTION_WEEK && world.year % ELECTION_YEAR_INTERVAL === 0;
 
   // 0. Council & Career Transitions (Q1 / Q3)
   // Only evaluate these in the post-basho wrap-up phase or yearly boundary

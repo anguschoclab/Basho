@@ -70,9 +70,13 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
 
     const toRelease = scoredCandidates.slice(0, overflowCount);
 
+    const releasedIds = new Set<string>();
     for (const { rikishi } of toRelease) {
-      // Remove from stable and active roster
-      const nextRikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== rikishi.id);
+      // Remove from stable and active roster — accumulate ids so multiple
+      // releases compose (previously each write read the stale pre-impact
+      // rikishiIds, silently keeping all but the last release).
+      releasedIds.add(rikishi.id);
+      const nextRikishiIds = (heya.rikishiIds ?? []).filter((id) => !releasedIds.has(id));
       builder.updateHeya(heya.id, { rikishiIds: nextRikishiIds });
       builder.removeRikishi(rikishi.id);
 

@@ -241,6 +241,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
   for (const h of world.heyas.values()) {
     if (
       h.id !== sourceHeyaId &&
+      h.id !== world.playerHeyaId &&
       getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_STANDARD &&
       (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")
     ) {

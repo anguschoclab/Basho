@@ -19,7 +19,7 @@ import type { BashoResult } from "@/engine/types/basho";
 import type { Id } from "@/engine/types/common";
 import type { Rank } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { getRikishi } from "@/engine/core/queries";
+import { getRikishiAnywhere } from "@/engine/core/queries";
 
 // === TYPES ===
 
@@ -124,15 +124,18 @@ function processChampions(
 
   for (const [rid, count] of yushoCounts) {
     if (count < CHAMPION_YUSHO_MIN) continue;
-    const r = getRikishi(world, rid);
-    if (!r) continue;
+    const r = getRikishiAnywhere(world, rid);
+    if (!r || !("stats" in r)) continue; // summaries lack the fields induction needs
     tryAddInductee(world, hof, newInductees, rid, r, "champion", { yushoCount: count });
   }
 }
 
 function processIronMen(world: WorldState, hof: HallOfFameState, newInductees: HoFInductee[]) {
-  for (const r of world.rikishi.values()) {
-    // Include retired rikishi — Iron Man recognises long careers regardless of active status
+  // Include retired rikishi — Iron Man recognises long careers regardless of
+  // active status. Summaries can't carry careerHistory/careerWins — skip them.
+  const candidates = [...world.rikishi.values(), ...world.historicalRikishi.values()];
+  for (const r of candidates) {
+    if (!("stats" in r)) continue;
     const estimatedBasho =
       r.careerHistory && r.careerHistory.length > 0
         ? r.careerHistory.length
@@ -160,8 +163,8 @@ function processTechnicians(
 
   for (const [rid, count] of ginoCountsStats) {
     if (count < TECHNICIAN_GINO_MIN) continue;
-    const r = getRikishi(world, rid);
-    if (!r) continue;
+    const r = getRikishiAnywhere(world, rid);
+    if (!r || !("stats" in r)) continue; // summaries lack the fields induction needs
     tryAddInductee(world, hof, newInductees, rid, r, "technician", { ginoShoCount: count });
   }
 }

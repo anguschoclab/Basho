@@ -21,7 +21,7 @@ export function RikishiGlobalCup({ rikishiId, world }: RikishiGlobalCupProps) {
 
   // Find all entries where this rikishi participated
   const rikishiEntries = globalCupHistory.filter((entry: GlobalCupHistoryEntry) => {
-    return entry.championId === rikishiId;
+    return entry.participantIds?.includes(rikishiId);
   });
 
   // Find championships

@@ -193,7 +193,8 @@ function finalizeTournament(
   world: WorldState,
   builder: InstanceType<typeof ImpactBuilder>,
   winnerId: string,
-  winnerName: string
+  winnerName: string,
+  participantIds: string[]
 ) {
   builder.logEvent(
     "GLOBAL_CUP_FINALE",
@@ -219,7 +220,8 @@ function finalizeTournament(
     championId: winnerId,
     championName: winnerName,
     participantCount: 8,
-    wasPlayerChampion: winnerId === world.playerHeyaId, // Approximation if winner is player rikishi
+    participantIds,
+    wasPlayerChampion: world.rikishi.get(winnerId)?.heyaId === world.playerHeyaId,
   };
 
   builder.updateWorldField("chronicle", {
@@ -305,7 +307,7 @@ function advanceTournament(world: WorldState): StateImpact {
     const winnerId = getWinner(unresolved[0]);
     const winner = state.participants.find((p) => p.rikishiId === winnerId);
 
-    finalizeTournament(world, builder, winnerId, winner?.shikona || "Unknown");
+    finalizeTournament(world, builder, winnerId, winner?.shikona || "Unknown", state.participants.map((p) => p.rikishiId));
     builder.updateWorldField("globalCup", {
       ...state,
       phase: "complete",

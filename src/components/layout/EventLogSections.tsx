@@ -102,7 +102,7 @@ function EventRow({
         <div
           className={cn(
             "mt-0.5 shrink-0 p-1.5 rounded-lg bg-card",
-            meta.color.replace("text-", "text-opacity-80 ")
+            meta.color
           )}
         >
           <Icon className="h-4 w-4" />

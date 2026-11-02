@@ -19,8 +19,10 @@ describe("triggerSuccession — achievementsInReign population", () => {
     world.rikishi.set("r-succ", successor);
     // Reign window: 2025–2030. One cup win inside, one outside; one HoF inductee inside.
     world.chronicle = { eraLabels: [], topChampions: [], greatestRivalries: [], recordsBroken: [], globalCups: [
-      { year: 2028, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8, wasPlayerChampion: false },
-      { year: 2020, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8, wasPlayerChampion: false },
+      { year: 2028, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8,
+      participantIds: [], wasPlayerChampion: false },
+      { year: 2020, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8,
+      participantIds: [], wasPlayerChampion: false },
     ] };
     (world as any)["hallOfFame"] = {
       inductees: [

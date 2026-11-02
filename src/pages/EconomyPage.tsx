@@ -18,6 +18,7 @@ import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
 import { SponsorDrawCard } from "@/components/economy/SponsorDrawCard";
 import { EconomyInfoNote } from "@/components/economy/EconomyInfoNote";
 import { FinancialTrendsChart } from "@/components/economy/FinancialTrendsChart";
+import { LOAN_ISSUANCE_THRESHOLD } from "@/constants/engine/economic";
 import { SortMenu } from "@/components/ui/SortMenu";
 import type { SortDirection } from "@/lib/sortUtils";
 import { useEconomyDerived } from "@/hooks/useEconomyDerived";
@@ -94,7 +95,7 @@ export default function EconomyPage() {
   const hasFinancialRisk = !!(
     playerHeya as typeof playerHeya & { riskIndicators?: { financial?: boolean } }
   )?.riskIndicators?.financial;
-  const canRequestBailout = playerHeya.funds < 0;
+  const canRequestBailout = playerHeya.funds < LOAN_ISSUANCE_THRESHOLD;
   const stableHealthData = projectHeyaData(world, playerHeya.id);
 
   return (

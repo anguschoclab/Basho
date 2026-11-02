@@ -193,7 +193,7 @@ function ageRikishiAndUpdateRecords(builder: ImpactBuilder, world: WorldState): 
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
     if (!r) continue; // Skip retired rikishi - they don't need age/avatar updates
-    const age = world.year - r.birthYear;
+    const age = (world.year ?? 0) + 1 - r.birthYear;
 
     // Explicitly update rikishi age property for metrics and checks
     builder.updateRikishi(id, { age });

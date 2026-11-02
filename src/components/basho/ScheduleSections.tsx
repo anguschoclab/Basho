@@ -108,7 +108,7 @@ function MatchCard({
       <div className="grid grid-cols-[1fr_auto_1fr] items-center p-4 gap-4">
         <div className="text-right">
           <div className={`font-bold text-lg ${result?.winner === "east" ? "text-primary" : ""}`}>
-            {east?.name || match.eastRikishiId}
+            {east?.shikona || match.eastRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">East</div>
         </div>
@@ -126,7 +126,7 @@ function MatchCard({
 
         <div className="text-left">
           <div className={`font-bold text-lg ${result?.winner === "west" ? "text-primary" : ""}`}>
-            {west?.name || match.westRikishiId}
+            {west?.shikona || match.westRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">West</div>
         </div>

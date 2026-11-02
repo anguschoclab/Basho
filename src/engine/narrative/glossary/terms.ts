@@ -30,7 +30,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     id: "maegashira",
     term: "Maegashira",
-    termJa: "幕下",
+    termJa: "前頭",
     category: "rank",
     definition:
       "The majority of makuuchi rikishi, ranked below the san'yaku. Numbered 1–17 from top to bottom.",

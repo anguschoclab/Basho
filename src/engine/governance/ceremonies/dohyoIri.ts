@@ -35,7 +35,7 @@ export function assignDohyoIriStyle(
     return { dohyoIriStyle: rikishi.dohyoIriStyle };
   }
 
-  const rng = rngFromSeed(`${worldSeed}::dohyo-iri`, "governance", "dohyoIri");
+  const rng = rngFromSeed(`${worldSeed}::dohyo-iri::${rikishi.id}`, "governance", "dohyoIri");
   const style = rng.next() < 0.5 ? "unryu" : "shiranui";
 
   return { dohyoIriStyle: style };

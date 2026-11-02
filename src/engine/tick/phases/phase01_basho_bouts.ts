@@ -116,10 +116,31 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     // boutResultApplier appends kinboshi/award entries via arrayAppends — a
     // new awardLog array on currentWorld that must be re-exported.
     "awardLog",
+    // Officiating (hansoku/yaocho → reportScandal) appends rulings here —
+    // previously dropped silently along with the heya scandalScore writes.
+    "governanceLog",
   ] as const;
   for (const field of PASSTHROUGH_FIELDS) {
     if (currentWorld[field] !== world[field]) {
       builder.updateWorldField(field, currentWorld[field]);
+    }
+  }
+
+  // Heya/staff entity writes inside bout resolution (e.g. scandalScore from
+  // reportScandal) resolve into currentWorld — re-export changed entries by
+  // reference diff like rikishi/oyakata below.
+  if (currentWorld.heyas !== world.heyas) {
+    for (const [id, heya] of currentWorld.heyas) {
+      if (world.heyas.get(id) !== heya) {
+        builder.updateHeya(id, heya);
+      }
+    }
+  }
+  if (currentWorld.staff !== world.staff) {
+    for (const [id, s] of currentWorld.staff) {
+      if (world.staff.get(id) !== s) {
+        builder.updateStaff(id, s);
+      }
     }
   }
 
