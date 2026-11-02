@@ -29,12 +29,22 @@ describe("Dohyo-iri ceremony style assignment", () => {
     expect(result.dohyoIriStyle).toBeOneOf(["unryu", "shiranui"]);
   });
 
-  it("style is deterministic based on seed", () => {
-    const rikishi1 = makeRikishi("r1", "ozeki");
-    const rikishi2 = makeRikishi("r2", "ozeki");
-    const result1 = assignDohyoIriStyle(rikishi1, "yokozuna", "deterministic-seed");
-    const result2 = assignDohyoIriStyle(rikishi2, "yokozuna", "deterministic-seed");
-    expect(result1.dohyoIriStyle).toBe(result2.dohyoIriStyle);
+  it("style is deterministic for the same rikishi and seed", () => {
+    const rikishi = makeRikishi("r1", "ozeki");
+    const a = assignDohyoIriStyle(rikishi, "yokozuna", "deterministic-seed");
+    const b = assignDohyoIriStyle(makeRikishi("r1", "ozeki"), "yokozuna", "deterministic-seed");
+    expect(a.dohyoIriStyle).toBe(b.dohyoIriStyle);
+  });
+
+  it("different yokozuna can receive different styles under one seed", () => {
+    // V16-B13: seed previously lacked the rikishi id, forcing every yokozuna
+    // in a world to share a style. Styles should vary across rikishi ids.
+    const styles = new Set<string>();
+    for (let i = 0; i < 20; i++) {
+      const result = assignDohyoIriStyle(makeRikishi(`r${i}`, "ozeki"), "yokozuna", "one-world-seed");
+      styles.add(result.dohyoIriStyle!);
+    }
+    expect(styles.size).toBe(2);
   });
 
   it("different seeds can produce different styles", () => {

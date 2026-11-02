@@ -1,3 +1,5 @@
+> **STALENESS NOTICE:** grep/regex findings in this document are point-in-time measurements at the cited commits. Re-run the commands before citing them later.
+
 # v16 Consolidation — Review Working Notes
 
 Base HEAD: `2bfc438f`. Convention: each finding gets severity · `file:line` · evidence. Findings are only recorded after personal re-confirmation of agent flags.
@@ -194,3 +196,43 @@ Dominant defect class: **vacuous/name-mismatched assertions** + fixture debt. Ve
 - **V16-F64 (BUG — vacuous)** `counterActivation.test.ts` whole file (never calls tickPushBattle/tickBeltBattle, write-then-readback asserts); `boutResultApplier.absences.test.ts:278-287` (re-implements kyujo predicate, literal tautology); `boutResolver.test.ts:147-163` (asserts INPUT rikishi.momentum — resolveBout doesn't mutate inputs); `tachiaiCounterBonus.test.ts:224-230` (RNG re-created each iteration → 0-or-50 pseudo-distribution); `boutResolver.officials.test.ts:92-97` `if(result.monoii)` guard; `boutNarrative.stats/yusho/careerPhase/unified/rivalryEnrichment` families (name claims trigger, body asserts only pbpLines defined or conditional guards); `forceDifferentialTies` (named claim uninspected); `boutNarrative.postBout` T16.1 no assertions; `preBout.test.ts` filter on rendered text for template paths (always-empty set).
 - **V16-F65 (DEBT)** Static-table tautologies (tacticProfiles, nekodamashi, counterTactic halves); `boutAI` enum-membership asserts; heavyweight snapshots (boutResult 654-line, physicsTrio ~120 float entries, golden narrative) — golden-master intent OK but float noise unreviewable; `boutResultApplier.test.ts` ~700 lines duplicated inline fixtures evading factory gate; h2h shadow merge re-implementation; seeded-outcome-dependent asserts (kinboshi, boutAI:104); `generateInitialWorld` in officials tests (legal but heavy); monoii never forced end-to-end.
 - POSITIVE: all 37 resolveBout call sites audited — correct positional-arg usage everywhere (past false-positive class absent); kinboshi.pipeline exemplary; distribution tests (terminalKimarite, positionInvariance, tacticWinRate) are the right pattern; zero nondeterminism/window-abuse in batch.
+
+## Agent batch: lifecycle+shikona+training+legacy+health+keshoMawashi+welfare (56/56)
+
+- **V16-B25 (BUG)** `retireeOyakataConversion.ts:144` — every accomplished retiree DEPOSES the sitting oyakata unconditionally (no vacancy check/removeOyakata/DynastyRecord); if foundStable fires, old heya keeps oyakataId pointing at departing oyakata; passes stock name as person name.
+- **V16-B26 (BUG)** `PrizeDistribution.ts`+`concludeBasho.ts:136` — shallow `economics` merge: sansho+yusho winner loses sansho cash; multi-sansho winner banks only last prize.
+- **V16-B27 (BUG)** `InjuryService.ts:225,278` — bout-injury seed `bout::id::week` → identical roll per week (2-4%/week not per-bout, biased to first bout of week); early return when loser injured makes winner elevated-risk path unreachable.
+- **V16-B28 (BUG)** `retirementCheck.ts:47` — seed has no year/week → `rng.next()` constant per rikishi → probabilistic retirement checks binary (first check or never), NPC monthly evals identical forever.
+- **V16-B29 (BUG)** `rankRules.ts:54-61` — sekiwake/komusubi/maegashira unmapped → "rookie" tier (wrong maxLen/prestigeChance/bias); `generateShikona.ts:49` same `includes("makuuchi")` miss → sekitori get 0.3 not 0.6 legacy prob.
+- **V16-B30 (BUG)** `harmony.ts:60-81` — iterates `heyaRivalryPairs` looking for rikishi fields → rivalries factor always 0 (+5 constant); intended data in `rivalriesState.pairs`.
+- **V16-B31 (BUG)** `DynastyService.ts:201-349` triggerSuccession: no removeOyata predecessor (accumulate forever), bypasses retireRikishiFully cascade (no events/cold-archive/leaderboard cleanup), no myoseki release.
+- **V16-B32 (BUG)** `BashoHistory.ts:365-416` checkYokozunaPromotions reads historyIndex before current basho indexed → deliberations lag one basho.
+- **V16-B33 (BUG)** `DynastyService.ts:89-97` — summarized (isSummary) successor → empty impact forever; trustee fallback never runs since eligible.length>0.
+- **V16-B34 (BUG)** `SparringService.ts:452` — `ceil(delta/4)` applied to EACH of 4 stats → up to 4× intended cap.
+- **V16-B35 (BUG)** `retirementNarrative.ts:42-48` — highestRank sort order misses lower divisions → peak rank = debut rank for sub-maegashira careers.
+- **V16-B36 (BUG)** `RegistryService.ts:149` — career-win milestones exact-match per basho → 295→310 skips 300 (same class as V16-B10).
+- **V16-F66 (DEBT)** Bonus paths bypass effective ceilings (sparring clamp 99, heritage 99, tsukebito no clamp); retirement leaves dangling mentor/tsukebito refs; `tickRikishRecovery` early-exit + `buyPhysioSession` leave stale injury fields; WeightJourney never writes weight; `assignTsukebito` biased sort-shuffle vs rng.shuffle; injured sparring partners deleted not paused; `BashoHistory.ts:234` award archive lags one basho; `rookieFactory._generateRookie` dead+latent bugs; `getHeyaBrand` dead+broken keying; myoseki "sale" narrative-only (no funds move); DynastyService doc drift (yearly not weekly); awards `isJunYusho` topCandidates[1] order bug.
+
+## Agent batch: components non-excluded (116/116)
+
+- **V16-B37 (BUG)** `ceremony/HoFInductionCeremony.tsx:92` — `StableName id={inductee.rikishiId}` links to `/stable/<rikishiId>` — broken nav.
+- **V16-B38 (BUG)** `governance/GovernancePoliticsTab.tsx:54-60` — "Spend 100" button burns 100 politicalCapital for ZERO benefit (hostile dead control).
+- **V16-B39 (BUG)** `GovernancePoliticsTab.tsx:29,179` — `rikishiCount` sort maps to constant 0 — dead sort option.
+- **V16-B40 (BUG)** `recap/RecapSections.tsx:218-228` — YokozunaDeliberation branch permanently dead (showYokozunaDelib always false) AND fabricates subject (first active rikishi, hardcoded verdict/reasoning).
+- **V16-B41 (BUG)** `scouting/CompareModePanel.tsx:41-49,91-113` — prospect compare re-reads `world.rikishi.get(id)` which prospects aren't in → "Stats unavailable" + `runBestOfThree` returns {0,0} → verdict card always declares rikishi B winner 0-0 (fabricated).
+- **V16-B42 (BUG)** `kesho/keshoEffects.tsx:45-127` + `keshoPatterns.tsx:19-26` — `<defs>`/patterns emitted but never referenced → all 4 embroidery styles + gradient base render nothing; `keshoEditorData` "mountain" motif missing from symbolMap → always ⭕ fallback.
+- **V16-B43 (BUG, minor)** `history/LineageTree.tsx:102` — `${index+1}th` renders "2th/3th/4th Generation Ancestor".
+- **V16-F67 (DEBT)** `MyStableTab.tsx:47-49` sorts band STRINGS alphabetically not strength order; `YouthAcademyPanelSections`/`AcademyInvestmentControl` hardcode 50k/100k + divergent presets; `StaffPageSections` hardcodes ¥500k vs STAFF_HIRE_COST; `RegionalHubSections` hardcodes 5 regions /5; `AlmanacTabs` "Full House" fabricated + dead HoF placeholder while real route exists; `rivalryUtils.pure.ts` duplicates RIVALRY_HEAT_BANDS; `ClickableName` unsafe id → dead `/rikishi/` link; `ExhibitionInvitationsPanel` eligibleRikishiCount counts injured/retired.
+- **V16-F68 (NOTE)** TitleBar 500ms isMaximized poll; `pixelCompose:146` dead `10:10` ternary; `NarrativeCeremonyDialog` step not reset on reopen; `SettingsSections` hardcoded save version; `CrisisModal` isWorldBacked shadow; `PerceptionOverview` query-string nav; `NewGameWizard` step-count mismatch; `CompareModePanel` Date.now seed; `RegionalHubPage` void pendingExhibitions.
+
+## Agent batch: bout+simulation+matchmaking+calendar+banzuke (82/82)
+
+- **V16-B44 (BUG)** `matchmaking/DramaMatchmaker.ts:583-652` — applyDramaBudget swap loop is a TOTAL no-op (swap assigns whole participant sets → scoreChange always 0); only drama_* label tagging survives.
+- **V16-B45 (BUG)** `calendar/schedule.ts:223-283` — makushita scheduled BEFORE juryo; scheduleJuryoWithCrossover injects makushita call-ups with no same-day-bout check → double-booked on odd days.
+- **V16-B46 (BUG)** `kimariteStrategies.ts:432` ushiromotare requires `forwardMomentum < 0` (never — it's max(0,..)); `:828` ashitori requires `stamina < 0.5` on 0-100 scale → both unreachable via mid-fight selection.
+- **V16-B47 (BUG)** `narrative/postbout2.ts:400-491` — mono-ii narrative rolls own outcome independent of `result.monoiiOutcome` → can narrate "reversed" when officials upheld.
+- **V16-B48 (BUG)** `physics/resultBuilders.ts:89-93` — unguarded `east.combatProfile.archetype` deref → throws for rikishi without combatProfile.
+- **V16-B49 (BUG)** `simulation/TournamentSimulator.ts:237-240` — shallow clone + nested `divisionRecords` mutation → caller's world mutated, second sim double-counts.
+- **V16-B50 (BUG)** `ReplayMetadata.ts:103-106` — clamp01 on raw power diff → saturates at 1; <0.35 branch dead, >0.7 always fires. Needs ~margin/30.
+- **V16-F69 (DEBT)** gyoji.ts:40 phantom "reversed" credit when no shimpan panel; juryo runs 7-bout logic (15-day division); narrative context.ts:140-146 M1-M4 get sanyaku career-high line; yaocho.ts:88-89 repeatedKimarite only compares lastMatch; SwissAlgorithm DOES apply rivalry-heat (stale note); dead exports buildCandidatePairs/buildPlayoffPairs/buildExhibitionPairs/greedySelectPairs.
+- POSITIVE: all 4 resolveBout call sites pass tactic positionally correctly; no `.reasons` reads on MatchSchedule; zero Math.random in batch.

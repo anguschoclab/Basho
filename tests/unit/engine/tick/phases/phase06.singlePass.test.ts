@@ -36,12 +36,13 @@ describe("Single-pass yearly iteration (B2.1)", () => {
     const impact = phase06_yearly_boundary(worldWithYearBoundary);
     const result = resolveImpacts(worldWithYearBoundary, [impact]);
 
-    // The phase sets age = world.year - birthYear for all active rikishi
+    // The phase sets age = nextYear - birthYear for all active rikishi
+    // (v16-B04: previously pre-increment year — perpetually one year stale)
     let updatedCount = 0;
     for (const id of world.activeRikishiIds) {
       const updated = result.rikishi.get(id);
       if (updated) {
-        const expectedAge = worldWithYearBoundary.year - updated.birthYear;
+        const expectedAge = worldWithYearBoundary.year + 1 - updated.birthYear;
         if (updated.age === expectedAge) updatedCount++;
       }
     }
@@ -63,11 +64,11 @@ describe("Single-pass yearly iteration (B2.1)", () => {
     const impact = phase06_yearly_boundary(worldWithYearBoundary);
     const result = resolveImpacts(worldWithYearBoundary, [impact]);
 
-    // Verify age = year - birthYear for all active rikishi that were updated
+    // Verify age = nextYear - birthYear for all active rikishi that were updated
     for (const id of result.activeRikishiIds) {
       const r = result.rikishi.get(id);
       if (r && r.age !== undefined) {
-        expect(r.age).toBe(worldWithYearBoundary.year - r.birthYear);
+        expect(r.age).toBe(worldWithYearBoundary.year + 1 - r.birthYear);
       }
     }
   });

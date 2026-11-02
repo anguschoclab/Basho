@@ -126,23 +126,7 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     }
   }
 
-  // Heya/staff entity writes inside bout resolution (e.g. scandalScore from
-  // reportScandal) resolve into currentWorld — re-export changed entries by
-  // reference diff like rikishi/oyakata below.
-  if (currentWorld.heyas !== world.heyas) {
-    for (const [id, heya] of currentWorld.heyas) {
-      if (world.heyas.get(id) !== heya) {
-        builder.updateHeya(id, heya);
-      }
-    }
-  }
-  if (currentWorld.staff !== world.staff) {
-    for (const [id, s] of currentWorld.staff) {
-      if (world.staff.get(id) !== s) {
-        builder.updateStaff(id, s);
-      }
-    }
-  }
+  reexportEntityDiffs(builder, world, currentWorld);
 
   // Collect any rikishi stat changes by diffing — the simulateBoutForToday
   // function resolves impacts internally, so we capture the final rikishi state
@@ -179,4 +163,30 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
   }
 
   return builder.build();
+}
+
+/**
+ * Re-export heya/staff entity writes that resolved into `currentWorld` during
+ * bout simulation (e.g. `scandalScore` from reportScandal). These are Maps, not
+ * worldFields — diff by reference like the rikishi/oyakata re-exports above.
+ */
+function reexportEntityDiffs(
+  builder: ReturnType<typeof createImpactBuilder>,
+  world: WorldState,
+  currentWorld: WorldState
+): void {
+  if (currentWorld.heyas !== world.heyas) {
+    for (const [id, heya] of currentWorld.heyas) {
+      if (world.heyas.get(id) !== heya) {
+        builder.updateHeya(id, heya);
+      }
+    }
+  }
+  if (currentWorld.staff !== world.staff) {
+    for (const [id, s] of currentWorld.staff) {
+      if (world.staff.get(id) !== s) {
+        builder.updateStaff(id, s);
+      }
+    }
+  }
 }
