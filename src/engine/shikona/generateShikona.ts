@@ -44,10 +44,12 @@ export function generateShikona(
   // If legacy shikona is provided, use legacy generation with appropriate probability
   if (config.legacyShikona) {
     // Use legacy pattern with 60% probability for sekitori, 30% for lower ranks
+    const rankLower = (config.rank ?? "").toLowerCase();
     const isSekitori =
       config.rank &&
-      (config.rank.toLowerCase().includes("makuuchi") ||
-        config.rank.toLowerCase().includes("juryo"));
+      ["makuuchi", "maegashira", "sekiwake", "komusubi", "ozeki", "yokozuna", "juryo"].some(
+        (r) => rankLower.includes(r)
+      );
     const legacyProbability = isSekitori ? 0.6 : 0.3;
 
     if (rng() < legacyProbability) {

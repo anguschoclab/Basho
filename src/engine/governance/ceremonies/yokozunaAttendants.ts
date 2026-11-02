@@ -37,7 +37,7 @@ export function assignYokozunaAttendants(yokozuna: Rikishi, world: WorldState): 
 
   if (candidates.length < 2) return builder.build();
 
-  const rng = rngFromSeed(`${world.seed}::attendants`, "governance", "attendants");
+  const rng = rngFromSeed(`${world.seed}::attendants::${yokozuna.id}`, "governance", "attendants");
 
   // Select tachimochi (sword-bearer) — prefer higher-ranked
   const tachiIdx = Math.floor(rng.next() * Math.min(candidates.length, 3));

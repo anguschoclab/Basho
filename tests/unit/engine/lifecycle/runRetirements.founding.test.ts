@@ -41,7 +41,7 @@ describe("runRetirements — stable founding", () => {
     const retiree = mockRikishi("r-ret", {
       heyaId: "heya-1",
       rank: "ozeki",
-      birthYear: 1990,
+      birthYear: 1980,
       careerWins: 300,
       shikona: "TestOzeki",
     });
@@ -89,7 +89,7 @@ describe("runRetirements — stable founding", () => {
     const retiree = mockRikishi("r-ret2", {
       heyaId: "heya-cap",
       rank: "yokozuna",
-      birthYear: 1988,
+      birthYear: 1979,
       careerWins: 500,
       shikona: "TestYokozuna",
     });
@@ -126,7 +126,7 @@ describe("runRetirements — stable founding", () => {
     const retiree = mockRikishi("r-ret3", {
       heyaId: "heya-1",
       rank: "sekiwake",
-      birthYear: 1990,
+      birthYear: 1980,
       careerWins: 250,
       shikona: "TestSekiwake",
     });

@@ -58,23 +58,19 @@ export const HARMONY_CRISIS_WEIGHT: Record<HarmonyBand, number> = {
 
 /** Count intra-heya rivalry pairs (both members in `heyaId`). */
 function intraHeyaRivalryPairs(world: WorldState, heyaId: string): number {
-  const pairs = world.rivalriesState?.heyaRivalryPairs;
+  // Rikishi-level pairs live in rivalriesState.pairs — heyaRivalryPairs holds
+  // heya-level {heyaAId, heyaBId} entries, so reading it here always yielded 0.
+  const pairs = world.rivalriesState?.pairs;
   if (!pairs) return 0;
   let count = 0;
-  const seen = new Set<string>();
   const list = Array.isArray(pairs) ? pairs : Object.values(pairs as Record<string, unknown>);
-  for (const entry of list as Array<{ a?: string; b?: string; rikishiAId?: string; rikishiBId?: string }>) {
-    const a = entry.rikishiAId ?? entry.a;
-    const b = entry.rikishiBId ?? entry.b;
-    if (!a || !b) continue;
-    const ra = world.rikishi.get(a);
-    const rb = world.rikishi.get(b);
+  for (const entry of list as Array<{ aId?: string; bId?: string; sameHeya?: boolean }>) {
+    if (!entry.aId || !entry.bId) continue;
+    if (!entry.sameHeya) continue;
+    const ra = world.rikishi.get(entry.aId);
+    const rb = world.rikishi.get(entry.bId);
     if (ra?.heyaId === heyaId && rb?.heyaId === heyaId) {
-      const key = [a, b].sort().join(":");
-      if (!seen.has(key)) {
-        seen.add(key);
-        count++;
-      }
+      count++;
     }
   }
   return count;

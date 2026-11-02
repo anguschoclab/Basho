@@ -54,7 +54,13 @@ export const RANK_RULES: RankRule[] = [
 export function resolveRankTier(rank?: string): RankTier {
   const r = (rank || "").toLowerCase();
   if (r.includes("yokozuna") || r.includes("ozeki")) return "legend";
-  if (r.includes("makuuchi")) return "top";
+  if (
+    r.includes("makuuchi") ||
+    r.includes("maegashira") ||
+    r.includes("sekiwake") ||
+    r.includes("komusubi")
+  )
+    return "top";
   if (r.includes("juryo")) return "salaried";
   if (r.includes("makushita")) return "upper";
   if (r.includes("sandanme")) return "developing";

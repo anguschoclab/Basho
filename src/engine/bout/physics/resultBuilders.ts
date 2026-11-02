@@ -86,11 +86,11 @@ export function buildBoutResultV2(
   };
   const eastDominant = dominantFamily(east);
   const westDominant = dominantFamily(west);
-  const eastArchetype: CombatArchetype = east.combatProfile.archetype;
-  const westArchetype: CombatArchetype = west.combatProfile.archetype;
+  const eastArchetype: CombatArchetype | undefined = east.combatProfile?.archetype;
+  const westArchetype: CombatArchetype | undefined = west.combatProfile?.archetype;
   const counterActivated =
-    east.combatProfile.counterFamily === westDominant ||
-    west.combatProfile.counterFamily === eastDominant;
+    east.combatProfile?.counterFamily === westDominant ||
+    west.combatProfile?.counterFamily === eastDominant;
 
   return {
     boutId: bout.id,

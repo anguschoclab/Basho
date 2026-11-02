@@ -75,7 +75,7 @@ describe("checkRetirement", () => {
 
     const result = checkRetirement(rikishi, 2025, "test-seed");
 
-    expect(rngModule.rngFromSeed).toHaveBeenCalledWith("test-seed", "lifecycle", "retirement::r4");
+    expect(rngModule.rngFromSeed).toHaveBeenCalledWith("test-seed", "lifecycle", "retirement::r4::2025");
     expect(mockRng.bool).toHaveBeenCalledWith(0.1);
     expect(result).toBe("Lack of Performance");
   });

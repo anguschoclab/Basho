@@ -44,7 +44,7 @@ export function checkRetirement(
   currentYear: number,
   seed: string
 ): string | null {
-  const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}`);
+  const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}::${currentYear}`);
   const age = currentYear - rikishi.birthYear;
 
   // Defensive: block impossible young retirements
