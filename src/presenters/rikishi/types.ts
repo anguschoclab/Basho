@@ -36,6 +36,8 @@ export interface RikishiIdentityDTO {
   nationality: string;
   origin: string;
   height: number;
+  debutYear?: number;
+  yearsActive?: number;
   weight: number;
 }
 

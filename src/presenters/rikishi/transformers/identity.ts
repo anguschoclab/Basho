@@ -15,6 +15,9 @@ export function toIdentityDTO(r: Rikishi, world: WorldState): RikishiIdentityDTO
   const heya = world.heyas.get(r.heyaId);
   const age = world.year - r.birthYear;
 
+  const debutYear = r.debutYear;
+  const yearsActive = debutYear !== undefined ? world.year - debutYear : undefined;
+
   return {
     id: r.id,
     shikona: r.shikona,
@@ -27,5 +30,7 @@ export function toIdentityDTO(r: Rikishi, world: WorldState): RikishiIdentityDTO
     origin: r.origin ?? r.nationality,
     height: r.height,
     weight: r.weight,
+    debutYear,
+    yearsActive,
   };
 }
