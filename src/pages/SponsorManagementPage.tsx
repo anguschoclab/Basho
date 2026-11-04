@@ -26,7 +26,7 @@ export default function SponsorManagementPage() {
             icon={Loader2}
             title="Loading Sponsors"
             description="Fetching sponsor contracts and satisfaction..."
-            className="animate-pulse"
+            iconClassName="animate-spin text-muted-foreground"
           />
         </div>
       </AppLayout>

@@ -1,0 +1,2 @@
+## 2024-11-04 - Initial Setup **Issue:** [N/A] **Learning:** [N/A] **Rule:** [N/A]
+## 2024-11-04 - Fix static loading spinners **Issue:** Several pages used EmptyState with Loader2 but applied animate-pulse to the entire container rather than spinning the icon. **Learning:** EmptyState supports iconClassName which is the proper place to put spinner animations. **Rule:** Use iconClassName="animate-spin text-muted-foreground" instead of pulsing the whole EmptyState container when indicating a loading state with Loader2.
