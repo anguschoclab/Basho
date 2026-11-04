@@ -1,0 +1,1 @@
+## 2024-05-24 - [Kinboshi missing from RikishiCareerTab] **Data:** [kinboshiCount] **Learning:** [RikishiEconomics tracks kinboshiCount but it is absent from the earnings UI] **Pattern:** [Add to the CareerEarningsCard grid]

@@ -53,7 +53,7 @@ export function CareerEarningsCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="space-y-1">
             <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
               Total Earnings
@@ -82,6 +82,14 @@ export function CareerEarningsCard({
             </div>
             <div className="text-lg font-display font-black tabular-nums">
               {economics.careerKenshoWon}
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
+              Kinboshi
+            </div>
+            <div className="text-lg font-display font-black tabular-nums">
+              {economics.kinboshiCount}
             </div>
           </div>
         </div>
