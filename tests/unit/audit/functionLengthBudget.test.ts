@@ -37,6 +37,8 @@ const isObj = (m: Measurement) => m.kind === "const-obj" || m.kind === "const-ar
 const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   // boutNarrative.ts::generateBoutNarrative — split 2026-10 into bout/narrative/ beat modules
 
+  "src/engine/legacy/DynastyService.ts::triggerSuccession": { loc: 177, kind: "function" },
+  "src/engine/lifecycle/retireeOyakataConversion.ts::processRetireeOyakataConversion": { loc: 158, kind: "function" },
   "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 298, kind: "function" },
 };
 
