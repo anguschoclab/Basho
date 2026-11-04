@@ -12,6 +12,7 @@ import type { AIRecommendation, AIGoalDomain } from "@/engine/npc/types";
 import { buildPerceptionSnapshot } from "@/engine/npc/perception";
 import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { getAdvice } from "@/engine/bout/CornerAdvice";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { getRikishi, getHeya, getOyakataForHeya } from "@/engine/core/queries";
 import { getOpponentModel } from "@/engine/npc/MemoryStore";
 import { getOpponentDominantFamily, suggestCounterTactic } from "@/engine/npc/OpponentModel";
@@ -363,9 +364,8 @@ function intelRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
         candidateConsumesForeignSlot(c)
     );
     if (foreignStar) {
-      const playerRikishi = [...(world.activeRikishiIds ?? [])]
-        .map((id) => getRikishi(world, id))
-        .filter((r): r is NonNullable<typeof r> => !!r && r.heyaId === heyaId);
+      // ⚡ Bolt: Using memoized EntityCollection.getHeyaRoster instead of mapping/filtering global activeRikishiIds
+      const playerRikishi = EntityCollection.getHeyaRoster(world, heyaId);
       if (!isAtForeignLimit(playerRikishi, world.year)) {
         recs.push(
           rec(
