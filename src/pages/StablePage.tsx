@@ -10,9 +10,10 @@ import { PageHeader } from "@/components/layout/page-shell/index";
 import { Building2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StableStatsTable } from "@/components/stable/StableStatsTable";
+import { StableFormChart } from "@/components/stable/StableFormChart";
 import { InfrastructureDashboard } from "@/components/stable/InfrastructureDashboard";
 import { SponsorshipHub } from "@/components/economy/SponsorshipHub";
-import { projectSponsorUIDigest } from "@/presenters/projections/index";
+import { projectSponsorUIDigest, projectStableBashoForm } from "@/presenters/projections/index";
 import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
 import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
@@ -46,6 +47,11 @@ export default function StablePage() {
     if (!world || !heya) return [];
     return rawRoster.map((r) => projectRikishi(r, world));
   }, [world, heya, rawRoster]);
+
+  const bashoFormData = useMemo(() => {
+    if (!world || !heya) return [];
+    return projectStableBashoForm(world, heya.id);
+  }, [world, heya]);
 
   if (!hasWorld || !world) return null;
 
@@ -157,7 +163,10 @@ export default function StablePage() {
           <RosterTab world={world} heya={heya} rikishiList={rikishiList} rawRoster={rawRoster} />
 
           <TabsContent value="performance">
-            <StableStatsTable rikishiList={rikishiList} />
+            <div className="space-y-6">
+              <StableFormChart data={bashoFormData} />
+              <StableStatsTable rikishiList={rikishiList} />
+            </div>
           </TabsContent>
 
           <HeyaTab world={world} heya={heya} />

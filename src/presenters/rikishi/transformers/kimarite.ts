@@ -16,25 +16,28 @@ interface MatchHistoryEntry {
 
 /**
  * Calculate most frequent kimarite from history.
+ * Wins only; fusensho (default wins) and empty values are excluded from
+ * both the tally and the denominator since they are not techniques.
  */
 export function calculateMostFrequentKimarite(
   history: MatchHistoryEntry[]
-): { kimarite: string; percentage: number }[] {
+): { kimarite: string; percentage: number; wins: number }[] {
   if (!history || history.length === 0) return [];
   const winCounts: Record<string, number> = {};
   let totalWins = 0;
   for (const match of history) {
-    if (match.win && match.kimarite) {
+    if (match.win && match.kimarite && match.kimarite !== "fusensho") {
       winCounts[match.kimarite] = (winCounts[match.kimarite] ?? 0) + 1;
       totalWins++;
     }
   }
   if (totalWins === 0) return [];
   return Object.keys(winCounts)
-    .sort((a, b) => winCounts[b] - winCounts[a])
+    .sort((a, b) => winCounts[b] - winCounts[a] || a.localeCompare(b))
     .map((kimarite) => ({
       kimarite,
       percentage: Math.round((winCounts[kimarite] / totalWins) * 100),
+      wins: winCounts[kimarite],
     }));
 }
 

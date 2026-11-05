@@ -9,6 +9,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Activity, Shield, Flame } from "lucide-react";
 import { RikishiRadarChart } from "@/components/rikishi/RikishiRadarChart";
 import { RikishiPotentialPanel } from "@/components/rikishi/RikishiPotentialPanel";
+import { KimariteDistributionChart } from "@/components/rikishi/KimariteDistributionChart";
+import { useKimariteDistributionData } from "@/components/rikishi/useRikishiData";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types/index";
@@ -23,6 +25,7 @@ interface RikishiCombatTabProps {
 }
 
 export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: RikishiCombatTabProps) {
+  const { rows: kimariteRows, totalWins } = useKimariteDistributionData(rikishi);
   return (
     <div className="space-y-8">
       <div className="grid md:grid-cols-2 gap-8">
@@ -89,6 +92,9 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
           </div>
         </div>
       </div>
+
+      {/* Wins by technique — recorded kimarite distribution */}
+      <KimariteDistributionChart rows={kimariteRows} totalWins={totalWins} />
 
       {/* Potential / CA vs PA panel — owned rikishi only */}
       <RikishiPotentialPanel rikishi={rawRikishi} isOwned={isOwned} />

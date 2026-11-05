@@ -157,7 +157,7 @@ export interface RikishiRivalsDTO {
 /** Kimarite (winning technique) preferences */
 export interface RikishiKimariteDTO {
   favoredKimarite: string[];
-  favoredKimariteDetailed: { kimarite: string; percentage: number }[];
+  favoredKimariteDetailed: { kimarite: string; percentage: number; wins: number }[];
   favoredKimariteDisplay: string;
 }
 

@@ -39,17 +39,27 @@ export function useCareerProgressionData(history: CareerSnapshot[] | undefined) 
   }, [history]);
 }
 
+/**
+ * Shapes favoredKimariteDetailed into chart rows for the wins-by-technique
+ * distribution. totalWins is summed over the FULL detailed list (not just
+ * the displayed top-8) so captions/tooltips reflect every recorded
+ * technique win in the bout log window.
+ */
 export function useKimariteDistributionData(rikishi: UIRikishi | null) {
   return useMemo(() => {
-    if (!rikishi?.favoredKimariteDetailed || rikishi.favoredKimariteDetailed.length === 0)
-      return [];
-    return (rikishi.favoredKimariteDetailed as { kimarite: string; percentage: number }[])
+    const detailed = rikishi?.favoredKimariteDetailed;
+    if (!detailed || detailed.length === 0) return { rows: [], totalWins: 0 };
+    const totalWins = detailed.reduce((sum, k) => sum + k.wins, 0);
+    const rows = detailed
+      .slice()
+      .sort((a, b) => b.wins - a.wins)
       .slice(0, 8)
       .map((k) => ({
-        kimarite: k.kimarite,
+        name: k.kimarite.charAt(0).toUpperCase() + k.kimarite.slice(1),
+        wins: k.wins,
         percentage: k.percentage,
-      }))
-      .sort((a, b) => b.percentage - a.percentage);
+      }));
+    return { rows, totalWins };
   }, [rikishi?.favoredKimariteDetailed]);
 }
 
