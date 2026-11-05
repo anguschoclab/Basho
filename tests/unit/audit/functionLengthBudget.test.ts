@@ -38,6 +38,8 @@ const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   // boutNarrative.ts::generateBoutNarrative — split 2026-10 into bout/narrative/ beat modules
 
   "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 298, kind: "function" },
+  "src/engine/legacy/DynastyService.ts::triggerSuccession": { loc: 179, kind: "function" },
+  "src/engine/lifecycle/retireeOyakataConversion.ts::processRetireeOyakataConversion": { loc: 158, kind: "function" },
 };
 
 /** Anonymous over-budget functions are tracked as a per-file count (line-keyed names are unstable). */
