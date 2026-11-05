@@ -415,19 +415,31 @@
   "replay": {
     "tachiai_decisive": [
       "The speed of the left hand into the tachi was the winning move for %WINNER%.",
-      "Watch the tachiai again — %WINNER% got the jump and never looked back."
+      "Watch the tachiai again — %WINNER% got the jump and never looked back.",
+      "Textbook timing off the tachiai — %WINNER% wins this bout at the initial charge.",
+      "Freeze the replay right at contact — %WINNER%'s first step beat %LOSER%'s completely.",
+      "The tachiai tells the whole story. %LOSER% was behind from the very first leap."
     ],
     "grip_battle": [
       "Right hand in, left hand out. Bread and butter sumo from %WINNER%.",
-      "The grip battle was key — %WINNER% secured his favorite hold and took control."
+      "The grip battle was key — %WINNER% secured his favorite hold and took control.",
+      "Pause it there — %WINNER% wins the inside position and the bout is effectively over.",
+      "Look at the arm positioning — %WINNER% outwrestles %LOSER% for the dominant grip.",
+      "The hand fight was everything here. %WINNER% refused to surrender his preferred hold."
     ],
     "edge_drama": [
       "%LOSER% almost goes out, but look at his footwork. Stays inside the ring — remarkable balance.",
-      "At the tawara, %LOSER% somehow stays in. The crowd gasps at that footwork."
+      "At the tawara, %LOSER% somehow stays in. The crowd gasps at that footwork.",
+      "Freeze it at the tawara — %LOSER% is centimeters from defeat and somehow survives.",
+      "Watch this recovery at the edge. %LOSER% stays alive on pure balance and nerve.",
+      "The crowd thought it was over — but at the bales %LOSER% somehow keeps his footing."
     ],
     "counter": [
       "Good defense and then good offense from %WINNER%. A great technique sequence.",
-      "%WINNER% absorbs the pressure, then counters beautifully. That's sumo at its finest."
+      "%WINNER% absorbs the pressure, then counters beautifully. That's sumo at its finest.",
+      "Patient sumo from %WINNER% — invite the charge, sidestep, and strike. Watch the feet here.",
+      "Beautiful change of direction — %WINNER% turns %LOSER%'s own momentum against him.",
+      "The counter was flawless. %WINNER% absorbs, pivots, and %LOSER% has nowhere to go."
     ],
     "size_overcame": [
       "Just overpowered. Too big, too strong — %WINNER% used every kilogram to advantage.",
@@ -438,7 +450,10 @@
     ],
     "reversal": [
       "What a reversal move by %WINNER%! Look at that hip shift.",
-      "An incredible reversal — %LOSER% thought he had it, but %WINNER% turned the tables."
+      "An incredible reversal — %LOSER% thought he had it, but %WINNER% turned the tables.",
+      "Heart of the bout right here — %WINNER% was beaten, then snatched it back with one move.",
+      "From defense to attack in a heartbeat — %WINNER%'s %KIMARITE% comes out of nowhere.",
+      "%LOSER% had all the momentum until this instant — watch %WINNER% flip the script entirely."
     ],
     "quick_finish": [
       "This happened oh so quickly — blink and you missed it.",
@@ -457,12 +472,16 @@
     "stamina_issue": [
       "%LOSER% looks like he's bothered with stamina issues in this replay. The energy just wasn't there.",
       "Watch the late stages — %LOSER% fades badly. The conditioning wasn't enough today.",
-      "The replay tells the story — %LOSER% simply ran out of gas against %WINNER%."
+      "The replay tells the story — %LOSER% simply ran out of gas against %WINNER%.",
+      "Conditioning was the difference — %WINNER% kept pressing while %LOSER% ran on empty.",
+      "Every exchange favored %WINNER% the longer this went. %LOSER% needed a quick finish."
     ],
     "generic": [
       "Let's see that again — %WINNER%'s %KIMARITE% in slow motion.",
       "The replay shows the precision of %WINNER%'s winning technique.",
-      "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%."
+      "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%.",
+      "Rewind it one more time — %WINNER% makes the %KIMARITE% look effortless.",
+      "From a different angle you can see exactly how %WINNER% finishes %LOSER%."
     ]
   }
 }
