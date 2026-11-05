@@ -77,6 +77,16 @@ All PR comments were Jules boilerplate; zero human reviews. `.jules/` journals e
 - `commands/lifecycle.ts:102` is the `LOAD_WORLD` handler (world-swap cache clear), not a roster command — advisor cache staleness window is weekly-gate + world-load only.
 - `basho_recap` remains valid in `GameState`/basho-slice types — only the calendar-phase label was phantom.
 
+## Explicit architectural verdicts
+
+- **`KNOWN_OVERBUDGET` ratchet policy: VINDICATED** — both Jules PRs (#1176, #1177) tried to fix the red budget gate by *listing* the over-budget functions, which violates the ratchet contract (entries may only be removed). Both additions rejected; the functions were split instead.
+- **`.jules/` gitignore contract: VIOLATED by Jules** — every substantive PR carried `.jules/<agent>.md` journal hunks despite `docs/agents/README.md` declaring them local agent memory. All hunks excluded from landing; `git ls-files .jules` verified empty post-merge. Flag for playbook hardening.
+- **Memoized `getHeyaRoster` weekly cache: REGISTERED DEBT (V17-D04)** — staleness window confirmed (clears at weekly gate + `LOAD_WORLD` only); mid-week signings read stale rosters. Pre-existing hazard shared by all consumers (welfare, mergers, perception), not introduced by #1176. Follow-up: `clearQueryCaches()` on roster-mutating commands.
+- **Dual foreign-slot semantics: REGISTERED DEBT (V17-D03)** — advisor roster-count vs canonical `getForeignCountsByHeya`/`foreignSlotOccupied` (includes signed-pending candidates). #1176 preserved the simpler semantic intentionally; unify in a future pass.
+- **Dual command paths (worker vs reducer): RE-VERIFIED** — new worker guards mirror the `retireRikishiCmd` pattern; no new mutations bypass `uiWorldRevision` sync; no reducer-slice engine writes added.
+- **Save-format backwards compatibility: OUT OF SCOPE** per directive.
+- **lint:strict warnings (37, `routes.tsx` Fast Refresh): PRE-EXISTING + CI-EXEMPT** — the CI gate is `lint:commit` (tolerates warnings); not conflated with consolidation regressions.
+
 ## Remaining debt
 
 - V17-D01/D02 above; v16 registered debt (slow-audit swallowers etc.) unchanged; foreign-slot counting divergence (advisor roster-only vs canonical `getForeignCountsByHeya` signed-pending semantics) registered for future unification.

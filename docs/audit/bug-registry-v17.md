@@ -44,6 +44,7 @@ Findings from the consolidation v17 deep-dive. Status legend: **FIXED** (landed 
 | V17-D01 | Duplicate `mediaState.headlines` ids after multi-year sim | `simulationInvariants` fails identically on `main` worktree baseline and v17 | Same seeded `MH-*` id appended repeatedly; mechanism unresolved |
 | V17-D02 | Residual myoseki `ownerId`/`holderId` dangle | same test; 26 violations post-fix (was 28) | Merge-ordering race: `phase06_yearly_boundary` merges succession's swept `myosekiMarket` with later producers' absolute writes derived from pre-succession world → `Object.assign` last-wins restores dangling refs. Proper fix needs ordering-aware worldFields merge or a resolve-time ref sweep |
 | V17-D03 | Advisor foreign-slot check diverges from canonical | roster-only count vs `getForeignCountsByHeya` (includes signed-pending) | Richer canonical semantic exists; unify in future pass |
+| V17-D04 | Memoized `getHeyaRoster` staleness window | clears only at weekly gate + `LOAD_WORLD` (`tickDaily.ts`, `commands/lifecycle.ts`) | Mid-week signings read stale roster; shared by all consumers. Follow-up: `clearQueryCaches()` on roster-mutating commands |
 
 ## Non-issues (disproved)
 
