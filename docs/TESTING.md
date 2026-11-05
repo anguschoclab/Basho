@@ -8,11 +8,11 @@ sizes/timings below reflect `docs/audit/test-timings.json` (refresh:
 
 | Tier | Location / selector | Runner | Cadence | Membership rule |
 |---|---|---|---|---|
-| **Fast unit** | `tests/unit/**` (plus any `*.test.ts(x)` under `src/`) | `bun run test` (`vitest.config.ts`: jsdom, `vmThreads`, `fileParallelism`, `fsModuleCache`) | every change / PR CI | ~964 files. Must not: import `child_process`, call `runAutoSim`, pair `generateInitialWorld` with `simulateEntireBasho`, require prior `bun run build`, or exceed the 10s per-file budget (target <2s) |
+| **Fast unit** | `tests/unit/**` (plus any `*.test.ts(x)` under `src/`) | `bun run test` (`vitest.config.ts`: jsdom, `vmThreads`, `fileParallelism`, `fsModuleCache`) | every change / PR CI | ~1,010 files. Must not: import `child_process`, call `runAutoSim`, pair `generateInitialWorld` with `simulateEntireBasho`, require prior `bun run build`, or exceed the 10s per-file budget (target <2s) |
 | **Slow gates** | `tests/slow/{audit,engine}/**` | `bun run test:slow` (`vitest.slow.config.ts`: serial, 600s timeout) | adhoc / nightly `slow-tests.yml` (parallel `slow-engine-sims` + `slow-audit-gates` jobs; audit job builds first) | spawns a subprocess (eslint/knip/madge/tsx/engine-reviewer), requires `bun run build` output, simulates months/years of game time, or scans the whole repo in a way that scales with repo growth |
 | **Perf** | `tests/perf/**` (`*.perf.test.ts` convention) | `bun run test:perf` (`vitest.perf.config.ts`) | adhoc / nightly `perf-gate` job | timing-asserting benchmarks, not correctness gates |
-| **E2E smoke** | `e2e/` matching `(golden-path\|reload-restore).e2e.test.ts` | `bun run test:e2e:smoke` (Playwright `smoke` project) | PR gate + main pushes (`e2e.yml`, 15-min timeout) | golden-path browser flows, ~30–45s local |
-| **E2E soak** | `e2e/` matching `(full-basho-lifecycle\|year-of-bashos).e2e.test.ts` | `bun run test:e2e:soak` (Playwright `soak` project) | nightly + manual only (`if: schedule \|\| workflow_dispatch`, 25-min timeout) | long-horizon browser lifecycles, ~8–10 min CI (~25 min measured on dev hardware) |
+| **E2E smoke** | `tests/e2e/` matching `(golden-path\|reload-restore\|career-surface).e2e.test.ts` | `bun run test:e2e:smoke` (Playwright `smoke` project) | PR gate + main pushes (`e2e.yml`, 15-min timeout) | golden-path browser flows, ~30–45s local |
+| **E2E soak** | `tests/e2e/` matching `(full-basho-lifecycle\|year-of-bashos).e2e.test.ts` | `bun run test:e2e:soak` (Playwright `soak` project) | nightly + manual only (`if: schedule \|\| workflow_dispatch`, 25-min timeout) | long-horizon browser lifecycles, ~8–10 min CI (~25 min measured on dev hardware) |
 
 Vitest configs all exclude `e2e/**` and `**/*.e2e.test.ts`; the two systems
 never overlap.
@@ -35,11 +35,14 @@ Tier by **execution cost category**, not by what it tests:
   e.g. O(commands × files)) → `slow/audit/`. Single-pass fs/AST reads are fine
   in `unit/audit/` (they're how the structural gates work).
 - **Timing assertions** (p50/p99 budgets) → `perf/`.
-- **Browser flows** → `e2e/`; filename decides the project (`golden-path` /
-  `reload-restore` → smoke; `full-basho-lifecycle` / `year-of-bashos` → soak).
+- **Browser flows** → `tests/e2e/`; filename decides the project (`golden-path` /
+  `reload-restore` / `career-surface` → smoke; `full-basho-lifecycle` /
+  `year-of-bashos` → soak). Specs matching neither pattern (e.g.
+  `lens-charts.e2e.test.ts`) run only via a custom Playwright config —
+  see `playwright.lens.config.ts` for the pattern.
 
 **Combat tests** follow the same rule: per-bout sims on mock worlds
-(`unit/engine/bout/`, ~93 files) are legitimately fast; whole-basho or
+(`unit/engine/bout/`, ~98 files) are legitimately fast; whole-basho or
 multi-basho sims on generated worlds are slow-tier; bout timing assertions
 belong in `perf/`; browser-rendered lifecycle coverage is the e2e soak.
 
@@ -58,6 +61,7 @@ The suite polices itself — these run inside the fast suite:
   anywhere.
 - `factoryDiscipline` — new local entity factories outside the grandfathered
   allowlist fail; stale allowlist entries fail.
+- `repoStructure` — target-architecture contract test guarding directory/module placement.
 - `weakAssertionAudit` — bans assertion-free / `expect(true)`-only files.
 
 ## Timing baseline
@@ -78,21 +82,22 @@ merges per-file durations (hook-inclusive — vitest's JSON reporter hides
 - jsdom setup cost is ~60–75% of single-file runs and disappears at suite
   scale — judge files by the committed baseline, not targeted runs.
 
-## Current shape (2026-10-24 baseline)
+## Current shape (Nov 2026 — refresh via `bun run test:timings -- all`)
 
-| Suite | Files | Tests | Measured total |
+| Suite | Files | Tests | Notes |
 |---|---|---|---|
-| fast | 964 | 8,917 | ~54s file-time |
-| slow | 15 | 75 | ~270s (serial) |
-| perf | 5 | 14 | ~154s |
-| e2e-smoke | 2 | 3 | ~40s |
-| e2e-soak | 2 | 2 | ~25 min (`year-of-bashos` dominates at ~24.7m) |
+| fast | 1,010 | ~9,335 | ~54s+ file-time; count from last full `bun run test` |
+| slow | 17 | ~62 | serial; `determinismDoubleRun` + `missionDeterminism` added since Oct baseline |
+| perf | 5 | 14 | |
+| e2e-smoke | 3 | 4 | `career-surface` joined golden-path + reload-restore |
+| e2e-soak | 2 | 2 | `year-of-bashos` dominates at ~24.7m |
 
 Slow-tier inventory: subprocess audits (`lintStrictGate`, `knipGuard`,
-`circularDependency`, `orphan-audit`, `engineReviewerGate`), build-dependent
-(`bundleBudget`), long sims (`simulationInvariants`, `advanceCalendarDays`,
-`yokozunaPromotionAutoSim`, `yokozunaPresence`, `autoSimCoreLoop`,
-`headless-playthrough`, `junYushoIdBug`, `TournamentSimulatorJunYusho`),
+`circularDependency`, `orphan-audit`, `engineReviewerGate`,
+`determinismDoubleRun`), build-dependent (`bundleBudget`), long sims
+(`simulationInvariants`, `advanceCalendarDays`, `yokozunaPromotionAutoSim`,
+`yokozunaPresence`, `autoSimCoreLoop`, `headless-playthrough`,
+`junYushoIdBug`, `TournamentSimulatorJunYusho`, `missionDeterminism`),
 repo-scaling scans (`commandSurfaceCoverage`).
 
 ## Conventions

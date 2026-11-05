@@ -24,12 +24,13 @@ src/
 │   ├── governance/  GovernanceService, ceremonies/, myosekiMarket
 │   ├── npc/         NPC brains (weekly/, strategies/, execution/, decision/, agency/, personas/)
 │   ├── history/     hallOfFame, history(Cache|Index), archival, records, prestige
-│   ├── narrative/   BardEngine templates + descriptions, descriptorBands, glossary
+│   ├── narrative/   crisis/rivalry/press services, descriptions, descriptorBands, glossary
 │   ├── lifecycle/   BashoHistory, retirement, rookieFactory, succession
 │   ├── persistence/ storage/, saveload, storageProvider, SerializationService
-│   ├── lifecycle, matchmaking, banzuke, bard, calendar, events, generation,
-│   ├── health, keshoMawashi, legacy, media, officials, recruitment, simulation,
-│   ├── tutorial, welfare, worker, worldCircuit, shikona, utils — domain-per-dir
+│   ├── almanac, basho, bookmark, banzuke, bard, calendar, events, generation,
+│   ├── health, keshoMawashi, legacy, matchmaking, media, officials, recruitment,
+│   ├── rikishi, shikona, simulation, training, tutorial, welfare, worker,
+│   ├── worldCircuit, utils — domain-per-dir
 ├── pages/           React page components (one page per route, lazy-loaded)
 ├── components/      UI components by domain (basho, banzuke, governance, stable,
 │                    economy, ceremony, menu, kesho, training, scouting, recruitment,
@@ -37,10 +38,12 @@ src/
 │                    charts, dashboard, academy, almanac, bookmark, exhibition, hof,
 │                    myoseki, npc, officials, onboarding, oyakata, recap, rivalries,
 │                    settings, staff, worker, wizard)
-├── presenters/      engine→UI translation: uiDigest.ts, selectors.ts, uiModels.ts,
-│                    engineAccess.ts, worldAccess.ts, uiActions.ts + projections/
-├── state/           game/ (GameContext + reducer slices) + stores/ (gameStore, eventReadStore)
-└── lib/             engineUtils, storageKeyValidation, validatePath
+├── presenters/      engine→UI translation: uiDigest.ts (re-export facade),
+│                    selectors.ts, uiModels.ts, engineAccess.ts, worldAccess.ts,
+│                    uiActions.ts, uiFormatters.ts, uiUtilities.ts, entityLinks.ts,
+│                    uiDigestTypes.ts + projections/ + rikishi/
+├── state/           game/ (GameContext + reducer slices + provider/) + stores/ (gameStore, eventReadStore)
+└── lib/             a11y, audio, engineUtils, sortUtils, storageKeyValidation, utils, validatePath
 
 tests/               All tests: unit/, slow/, perf/, e2e/, helpers/, setup/
 ```
@@ -60,23 +63,24 @@ tests/               All tests: unit/, slow/, perf/, e2e/, helpers/, setup/
 **Basho names:** `"hatsu" | "haru" | "natsu" | "nagoya" | "aki" | "kyushu"` (Jan/Mar/May/Jul/Sep/Nov)
 
 ## Tick Pipeline (src/engine/tick/tickDaily.ts)
-`advanceOneDay(world)` runs in this order:
+`advanceOneDay(world)` runs `phase00_preflight` unconditionally, then pushes the applicable phases onto `activePhases` in this family order (each gated by its cadence — daily / weekly / basho-day / monthly / yearly boundary):
 1. **phase00_preflight** — increment day, check phase transitions
-2. **phase01_daily_*` — economy micro-tick, sponsors, welfare decay (every day)
-3. **phase01_week_*** — training, health, governance, recruitment, rivalries, welfare (every 7 days)
-4. **phase01_economy** — weekly financial settlement (every 7 days)
-5. **phase02_context** — compute ActiveModifiers (multipliers from facilities + oyakata)
-6. **phase03_progression** — apply training gains, injury/recovery
-7. **phase04_welfare** — risk scoring, compliance transitions
-8. **phase05_monthly_*** — salaries, rent, loan payments (every 30 days)
-9. **phase06_yearly_*** — Hall of Fame, era labels (year boundary)
-10. **phase06_narrative** — BardEngine story generation
+2. **phase01_daily_*** — economy micro-tick, sponsors, welfare decay (every day)
+3. **phase01_basho_npc_tactics / phase01_basho_bouts** — NPC bout prep + bout resolution (active_basho days only)
+4. **phase01_week_*** — training, health, governance, recruitment, rivalries, welfare (every 7 days)
+5. **phase01_economy / phase01_monthly_market** — weekly financial settlement; monthly market (gated)
+6. **phase02_context** — compute ActiveModifiers (multipliers from facilities + oyakata)
+7. **phase03_progression** — apply training gains, injury/recovery
+8. **phase04_welfare** — risk scoring, compliance transitions
+9. **phase05_monthly_*** — salaries, rent, loan payments (every 30 days)
+10. **phase06_yearly_*** — Hall of Fame, era labels (year boundary)
+11. **phase06_narrative** — BardEngine story generation
 
 **Specialized pipelines:** `bashoPipeline` (active tournament days), `offSeasonPipeline` (interim)
 **Entry for worker/slices:** `src/engine/tick/tickOrchestrator.ts` — `tickOrchestrator()` / `advanceDaysFastOrchestrator()` pass-throughs to `advanceOneDay`/`advanceDaysFast` (world cloning now happens at the worker boundary)
 
 ## Presenter Layer
-- **`uiDigest.ts`** — `buildWeeklyDigest(world)` → `UIDigest` (news items grouped by category). Also exports helper fns: `formatFinePenalty`, `getStatusColor`, `getStatusLabel`, `spendPoliticalCapital`, `toPrizeBand`, `toScandalBand`, `projectMergerWarnings`
+- **`uiDigest.ts`** — re-export facade (no logic of its own) over `projections/` + utilities; `buildWeeklyDigest(world)` → `UIDigest` (news items grouped by category). Also re-exports helpers: `formatFinePenalty`, `getStatusColor`, `getStatusLabel`, `spendPoliticalCapital`, `toPrizeBand`, `toScandalBand`, `projectMergerWarnings`
 - **`selectors.ts`** — memoized selectors via `createSelector()` wrapper. Key exports: `selectInjuredRikishi`, `selectRecentEvents`, `selectPromotionCandidates`, `selectKadobanRikishi`, `selectTopRivals`, `selectRetiredRikishi`, `selectHeyasWithCriticalWelfare`, `selectMergerCandidates`
 - **`uiModels.ts`** — `UIRikishi` shape + `projectRikishi(rikishi, world)` projection
 
@@ -121,10 +125,10 @@ queryEvents(world, { category: "health", limit: 50 });
 ```
 
 ## BardEngine Narrative
-- Templates live in `src/engine/bard/domains/*.json` (25 domain files; domain.subdomain.type hierarchy — e.g. `kyujo.json` holds `kyujo.*` paths). No `archive.json` exists.
+- Templates live in `src/engine/bard/domains/*.json` (26 domain files; domain.subdomain.type hierarchy — e.g. `kyujo.json` holds `kyujo.*` paths). No `archive.json` exists.
 - `BardEngine.resolve(rng, "path.to.template", { heya, severity, amount })` → `{ text, id, path }`
 - Token format in templates: `%HEYA%`, `%AMOUNT%`, `%INTENSITY_LABEL%`, `%HEYA_NAME%`, `%SHIKONA%` — a token is valid wherever that context key is actually supplied; missing keys warn and render `[MISSING: KEY]`
-- **generateGovernanceHeadline** takes a **named-args object**: `{ world, heyaId, templatePath, severity }` — NOT positional args
+- **generateGovernanceHeadline** (defined in `src/engine/media/MediaEventService.ts`) takes a **named-args object**: `{ world, heyaId, templatePath, severity?, salt? }` — NOT positional args
 
 ## generateGovernanceHeadline — Correct Call Signature
 ```typescript
@@ -150,21 +154,21 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
   | `bun run test:timings -- <suite>` | Regenerate `docs/audit/test-timings.json` baseline | After suite reorgs / perf work |
 - **Runner pool:** all vitest configs use `pool: "vmThreads"` — the jsdom environment is created once per worker (~5x faster suite-wide) while each file still gets an isolated vm context. The fast config also enables `fileParallelism` (no shared-state writers in unit/) and `fsModuleCache` (persistent transform cache — vitest always re-executes tests; it only skips re-transforming unchanged files). Caveat: under vm contexts `globalThis.window` is a non-configurable getter (the jsdom `window.window` self-reference) — tests must never `Object.defineProperty`/`delete`/`stubGlobal` the `window` global itself; set properties *on* the existing window or spy its methods instead.
 - **Meta gates** (`tests/unit/meta/`): `noSubprocessInUnitTests` (no `child_process`/`runAutoSim`/`generateInitialWorld`+`simulateEntireBasho` pairing in unit/), `testTimingsBudget` (per-file duration budget vs `test-timings.json`), `factoryDiscipline` (allowlisted local factories only), `testTimeoutBudget` (>5s per-test timeouts in unit/, `vitest.setTimeout` >30s anywhere), `weakAssertionAudit`. See `docs/TESTING.md` for the full tier matrix.
-- **Mock factories:** primary is `tests/helpers/utils/MockFactory.ts` (~118 consumers); `tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
+- **Mock factories:** primary is `tests/helpers/utils/MockFactory.ts` (~160 consumers); `tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists (~8 consumers)
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 73%, branches 61%, functions 64%, statements 75% (v8 provider) — ratchet floor re-baselined v10-R06 after `.tsx`/constants were added to `include`; measured run: 74.0/61.96/64.84/75.91
-- **Current status (v13.1 second pass, Oct 2026):** 1,006 fast files / 9,312 tests, 17 slow, 5 perf — all passing. `bun run type-check` clean. `bun run build` succeeds. E2E smoke: 3/3 specs green. Determinism verified byte-identical (basho + year horizons). Perf gate: baseline re-seeds on every main push (`always()`), so PR comparisons stay fresh. Suite tiers documented in `docs/TESTING.md`.
+- **Status (Nov 2026):** 1,010 fast files / ~9,335 tests, 17 slow, 5 perf — all passing (last full run this session; 2 pre-existing DynastyService snapshot failures on clean main were noted). `bun run type-check` clean. `bun run build` succeeds. E2E smoke: green. Determinism verified byte-identical (basho + year horizons). Perf gate: baseline re-seeds on every main push (`always()`), so PR comparisons stay fresh. Suite tiers documented in `docs/TESTING.md`. Counts drift — `docs/audit/test-timings.json` is the source of truth.
 - **Command-path note:** engine mutations go through the worker via `sendCommand`. The interactive basho path (`SIMULATE_BOUT` etc.) still resolves on the main thread for match animation, but tactics live on `world.boutTactics` and every world-mutating slice case bumps `state.uiWorldRevision`, which GameContext syncs back to the worker via `LOAD_WORLD`. Never reintroduce a world write that skips this sync.
 
-## Routing (routes.tsx — TanStack Router)
-Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/finances`, `/jsa/governance`, `/history`, `/rikishi/$rikishiId`, `/hall-of-fame`
+## Routing (src/app/routes.tsx — TanStack Router)
+`routes.tsx` is the source of truth (~45 paths). Highlights: `/` Dashboard, `/stable` (+ `/stable/$id`, `/stable/roster|training|medical|staff|oyakata|infrastructure`), `/basho`, `/banzuke`, `/office/finances`, `/jsa/governance`, `/rikishi/$rikishiId`, `/hall-of-fame`, `/records/*` (history/awards namespace). `/history` and `/museum` are redirect routes into `/records/*` — do not link to them directly.
 **Lazy loading:** All page components except `MainMenu`, `NewGameWizard`, and `Dashboard` are lazy-loaded via `React.lazy()` + `Suspense` with a spinner fallback. This splits the bundle into per-route chunks.
 **Vendor chunks:** `vite.config.ts` defines manual chunks for `vendor-react`, `vendor-recharts`, `vendor-framer`, `vendor-lucide`.
 
 ## Known Issues & Gotchas
 1. **`economics.ts`** — `processHeyaFinances()`/`tickWeekEconomics()` were removed (replaced by FinanceCalculator + `tick/phases/monthly/economics/`); `scripts/audit/engine-reviewer.ts` flags any reintroduced call site.
 2. **BardEngine token mismatches** — a `%TOKEN%` is only valid where its context key is supplied by the production `resolve()` call site. `tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production path with real context keys — run it when adding templates.
-3. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
+3. **History pages** — `src/pages/HistoryDashboard.tsx` renders under `/records/history`; `/history` and `/museum` are redirect routes into the `/records/*` namespace — link to the `/records/*` paths, not the redirects.
 4. **`FogOfWarService.ts`** lives at `src/engine/recruitment/` and imports BardEngine from `"../bard/BardEngine"`. `src/engine/narrative/` holds crisis/rivalry/press services, descriptions, descriptorBands and glossary; the template engine is `engine/bard/`.
 5. **`rivalriesProjections`** — reads `world.rivalriesState.heyaRivalryPairs` (structured `Record<string, RivalryPairState>`). Do NOT confuse with the old flat `world.heyaRivalryPairs` field which was removed.
 6. **`engine/index.ts` barrel removed** — import directly from subsystem files (e.g. `@/engine/recruitment/ScoutingService`).
@@ -182,7 +186,8 @@ Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/fina
 | P2 (modularization) | matchmaking.ts split, kimariteStrategy split, BoutReplayViewer split, selectors, merger UI | ✅ Done |
 | Dead Code Audit | Engine modules, components, constants, context actions, CSS, barrel cleanup, lazy loading, vendor chunks | ✅ Done |
 
-## New UI Components Added (May 2026)
+## Notable UI additions (dated snapshots — later additions may not be listed)
+Added May 2026:
 Dashboard widgets: `PromotionPipelineWidget` (rank distribution funnel + Ozeki/Yokozuna/Kadoban lists)
 Economy: `FinancialTrendsChart` (12-week income vs burn), `SponsorSatisfactionChart` (horizontal bars), `FacilityROIChart` (cost vs efficiency per axis), `DebtSection` now has payoff progress bars
 Training: `InjuryRiskHeatmap` (condition/fatigue/risk score grid)

@@ -119,6 +119,8 @@ bun run build
 
 The built assets will be located in the `dist/` directory.
 
+> **Desktop app:** Basho also ships as an Electron desktop app — see `docs/ELECTRON.md`.
+
 ## Contributing
 
 When contributing to the codebase, especially within the `src/engine/` directory:
