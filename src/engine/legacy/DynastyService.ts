@@ -419,8 +419,12 @@ function transferElderStock(
   const nextStocks = { ...market.stocks };
   let changed = false;
   for (const [stockId, stock] of Object.entries(market.stocks)) {
-    if (stock.holderId === fromOyakataId) {
-      nextStocks[stockId] = { ...stock, holderId: toOyakataId };
+    if (stock.holderId === fromOyakataId || stock.ownerId === fromOyakataId) {
+      nextStocks[stockId] = {
+        ...stock,
+        holderId: stock.holderId === fromOyakataId ? toOyakataId : stock.holderId,
+        ownerId: stock.ownerId === fromOyakataId ? toOyakataId : stock.ownerId,
+      };
       changed = true;
     }
   }
@@ -475,6 +479,9 @@ function triggerSuccessionWithGeneric(
   builder.addOyakata(newOyakata);
   builder.updateHeya(heyaId, { oyakataId: dummyId });
   builder.removeOyakata(currentOyakata.id);
+  // The chair's elder stock passes to the trustee — removing the oyakata
+  // without reseating their stock leaves a dangling ownerId/holderId.
+  transferElderStock(builder, world, currentOyakata.id, dummyId);
 
   builder.logEvent(
     "LIFECYCLE_EVENT",

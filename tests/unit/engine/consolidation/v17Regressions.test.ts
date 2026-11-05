@@ -448,6 +448,73 @@ describe("V17-F11 succession successor viability", () => {
     );
     expect(newOyakata).toBeDefined();
   });
+
+  it("reseats a removed oyakata's myoseki stock on the trustee — no dangling ownerId/holderId", async () => {
+    const { DynastyService } = await import("@/engine/legacy/DynastyService");
+    const heya = makeMockHeya("h-succ", {
+      oyakataId: "oya-old",
+      consecutiveUnderperformanceBasho: 8,
+    });
+    const oyakata = {
+      id: "oya-old",
+      heyaId: "h-succ",
+      name: "Old Oya",
+      yearsInCharge: 10,
+      tenure: { insolvencyEvents: 0, majorScandals: 0 },
+      retirementYear: undefined,
+    } as never;
+    const world = makeMockWorld({
+      seed: "succ-stock",
+      year: 2024,
+      week: 1,
+      playerHeyaId: "h-player",
+      heyas: new Map([
+        ["h-succ", heya],
+        ["h-player", makeMockHeya("h-player")],
+      ]),
+      oyakata: new Map([
+        ["oya-old", oyakata],
+        ["oya-other", { id: "oya-other", heyaId: "h-player" } as never],
+      ]),
+      historicalRikishi: new Map(),
+      rikishi: new Map(),
+      activeRikishiIds: new Set(),
+      myosekiMarket: {
+        stocks: {
+          s1: {
+            id: "s1",
+            name: "Chair Stock",
+            ownerId: "oya-old",
+            holderId: "oya-old",
+            status: "held",
+          } as never,
+          s2: {
+            id: "s2",
+            name: "Leased Stock",
+            ownerId: "oya-old",
+            holderId: "oya-other",
+            status: "leased",
+          } as never,
+        },
+        history: [],
+      } as never,
+    });
+    const impact = DynastyService.tickSuccessionCheck(world);
+    const resolved = resolveImpacts(world, [impact]);
+    // Old oyakata is gone; every stock ref must reseat on a live person id.
+    expect(resolved.oyakata?.has("oya-old")).toBe(false);
+    const liveIds = new Set([
+      ...(resolved.oyakata?.keys() ?? []),
+      ...(resolved.rikishi?.keys() ?? []),
+      ...(resolved.heyas?.keys() ?? []),
+      "JSA",
+    ]);
+    for (const stock of Object.values(resolved.myosekiMarket?.stocks ?? {})) {
+      const s = stock as { ownerId?: string; holderId?: string };
+      if (s.ownerId) expect(liveIds.has(s.ownerId)).toBe(true);
+      if (s.holderId) expect(liveIds.has(s.holderId)).toBe(true);
+    }
+  });
 });
 
 // ── V17-F12 — career-win milestones fire on threshold CROSSING ──────────────
