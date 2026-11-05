@@ -162,9 +162,9 @@ function CandidateCard({ candidate }: { candidate: YokozunaCandidate }) {
             <Progress
               value={politicalPressure}
               indicatorClassName={
-                politicalPressure >= 75
+                supportLevel === "strong"
                   ? "bg-success"
-                  : politicalPressure >= 50
+                  : supportLevel === "adequate"
                     ? "bg-gold"
                     : "bg-destructive"
               }

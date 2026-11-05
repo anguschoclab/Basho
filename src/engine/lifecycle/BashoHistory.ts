@@ -15,6 +15,8 @@ import { historyCache } from "@/engine/history/historyCache";
 import { getRikishi } from "@/engine/core/queries";
 import { selectKeyBouts } from "@/engine/lifecycle/keyBouts";
 import { applyBashoTenure } from "@/engine/legacy/tenure";
+import { isYokozunaStrongCase } from "@/engine/banzuke/promotionLogic";
+import { YOKOZUNA_SUPPORT_STRONG_MIN } from "@/constants/engine/generation";
 
 // ─── Prize credits ───────────────────────────────────────────────────────────
 
@@ -402,10 +404,9 @@ export function checkYokozunaPromotions(
 
     // Combo Logic: Stats + Political Pressure
     const heat = world.mediaState?.mediaHeat?.[rid] || 0;
-    const isStatEligible = yushos >= 2 || (yushos >= 1 && junYushos >= 1);
 
-    if (isStatEligible) {
-      const isStrongSupport = heat >= 75;
+    if (isYokozunaStrongCase(yushos, junYushos)) {
+      const isStrongSupport = heat >= YOKOZUNA_SUPPORT_STRONG_MIN;
       const rikishi = getRikishi(world, rid);
 
       builder.logEvent(
@@ -416,7 +417,7 @@ export function checkYokozunaPromotions(
           shikona: rikishi?.shikona || "Unknown",
           status: isStrongSupport ? "favorable" : "controversial",
           incident: "Yokozuna Deliberation Council Convened",
-          threshold: 75,
+          threshold: YOKOZUNA_SUPPORT_STRONG_MIN,
           score: heat,
           intensity: isStrongSupport ? "high" : "extreme",
         },

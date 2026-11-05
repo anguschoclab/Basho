@@ -26,6 +26,21 @@ import {
   RUNWAY_INFINITE_SENTINEL,
   FIXED_OPERATING_OVERHEAD_WEEKLY,
 } from "@/constants/engine/economic";
+import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "@/constants/engine/economy";
+import type { RunwayBand } from "@/engine/types/narrative";
+
+/**
+ * Canonical runway banding (months of burn → RunwayBand).
+ * Single implementation shared by the weekly/monthly tick phases and the
+ * finance presenter — previously triplicated with hardcoded thresholds.
+ */
+export function runwayMonthsToBand(runwayMonths: number): RunwayBand {
+  if (runwayMonths >= RUNWAY_THRESHOLDS.SECURE) return RUNWAY_BANDS.SECURE;
+  if (runwayMonths >= RUNWAY_THRESHOLDS.COMFORTABLE) return RUNWAY_BANDS.COMFORTABLE;
+  if (runwayMonths >= RUNWAY_THRESHOLDS.TIGHT) return RUNWAY_BANDS.TIGHT;
+  if (runwayMonths >= RUNWAY_THRESHOLDS.CRITICAL) return RUNWAY_BANDS.CRITICAL;
+  return RUNWAY_BANDS.DESPERATE;
+}
 
 interface HeyaFinanceResult {
   /** Effective weekly income after survival floor. */

@@ -6,7 +6,10 @@
  */
 
 import type { WorldState } from "@/engine/types/world";
-import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
+import {
+  calculateHeyaWeeklyFinances,
+  runwayMonthsToBand,
+} from "@/engine/economy/FinanceCalculator";
 import { calculateKoenkaiIncome } from "@/engine/economy/SponsorshipService";
 import { getPlayerHeya } from "@/engine/core/queries";
 import { KOENKAI_INCOME_SPLIT } from "@/constants/engine/economic";
@@ -34,21 +37,13 @@ export interface FinanceSummary {
   isInsolventRisk: boolean;
 }
 
-function toRunwayBand(months: number): RunwayBand {
-  if (months >= 12) return "secure";
-  if (months >= 6) return "comfortable";
-  if (months >= 3) return "tight";
-  if (months >= 1) return "critical";
-  return "desperate";
-}
-
 export function projectFinanceSummary(world: WorldState): FinanceSummary | null {
   if (!world.playerHeyaId) return null;
   const heya = getPlayerHeya(world);
   if (!heya) return null;
 
   const fin = calculateHeyaWeeklyFinances(heya, world);
-  const runwayBand = toRunwayBand(fin.runwayMonths);
+  const runwayBand = runwayMonthsToBand(fin.runwayMonths);
 
   // The Loan model has no term/due-date field — "overdue" cannot be derived,
   // so no isOverdue flag is emitted (previously invented 12-month heuristic).

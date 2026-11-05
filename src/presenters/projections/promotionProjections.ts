@@ -7,8 +7,16 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanState } from "@/engine/banzuke/ozekiLogic";
-import { BardEngine } from "@/engine/bard/BardEngine";
+import { PromotionNarrative } from "@/engine/narrative/promotionBands";
+import {
+  getYokozunaRunProse,
+  getKadobanProse,
+} from "@/engine/narrative/NarrativeProse";
+import type { YokozunaSupportBand } from "@/engine/narrative/NarrativeBands";
 import { SeededRNG } from "@/engine/core/rng";
+import { SEKIWAKE_33_WIN_THRESHOLD } from "@/constants/engine/banzuke";
+import { OZEKI_RUN_MIN_WINS } from "@/constants/engine/generation";
+import { isYokozunaStrongCase } from "@/engine/banzuke/promotionLogic";
 import {
   selectPromotionCandidates,
   selectYokozunaCandidates,
@@ -34,7 +42,7 @@ export interface YokozunaCandidate {
   consecutiveYushos: number;
   isStrong: boolean;
   politicalPressure: number; // 1-100 from mediaHeat
-  supportLevel: "strong" | "adequate" | "insufficient";
+  supportLevel: YokozunaSupportBand;
   narrative: string;
 }
 
@@ -69,18 +77,16 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
     }
 
     const rng = world.rng || new SeededRNG(world.seed || "ozeki_run");
-    const threshold = 33;
-    if (recentWins >= 20 || r.heyaId === playerHeyaId) {
-      let runKey = "building";
-      if (recentWins >= 33) runKey = "imminent";
-      else if (recentWins >= 30) runKey = "brink";
-
+    const threshold = SEKIWAKE_33_WIN_THRESHOLD;
+    // Visibility filter (which candidates to list) — narrative state lives in
+    // PromotionNarrative.getOzekiRunBand.
+    if (recentWins >= OZEKI_RUN_MIN_WINS || r.heyaId === playerHeyaId) {
       candidates.push({
         rikishi: projectRikishi(r, world),
         recentWins,
         threshold,
         progress: Math.min(100, (recentWins / threshold) * 100),
-        narrative: BardEngine.resolve(rng, `ui.digest.promotion.ozeki_run.${runKey}`).text,
+        narrative: PromotionNarrative.getOzekiRunNarrative(rng, recentWins),
       });
     }
   }
@@ -113,19 +119,14 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
     let consecutiveYushos = 0;
     for (let i = len - 1; i >= 0 && history[i].yusho; i--) consecutiveYushos++;
 
-    const isStrong = yushos >= 2 || (yushos >= 1 && junYushos >= 1);
-
     const heat = world.mediaState?.mediaHeat?.[r.id] ?? 0;
-    const supportLevel = heat >= 75 ? "strong" : heat >= 50 ? "adequate" : "insufficient";
+    const runBand = PromotionNarrative.getYokozunaRunBand(yushos, junYushos, heat);
+    const supportLevel = PromotionNarrative.getYokozunaSupportBand(heat);
+    const isStrong = isYokozunaStrongCase(yushos, junYushos);
 
     if (yushos >= 1 || junYushos >= 1 || r.heyaId === world.playerHeyaId) {
       const rng = world.rng || new SeededRNG(world.seed || r.id);
-      let runKey = "standard";
-      if (yushos >= 2) runKey = heat >= 75 ? "unanimous" : "borderline";
-      else if (yushos === 1 && junYushos === 1) runKey = "partial";
-      else if (yushos === 1) runKey = "testing";
-
-      const narrative = BardEngine.resolve(rng, `ui.digest.promotion.yokozuna_run.${runKey}`).text;
+      const narrative = getYokozunaRunProse(rng, runBand);
 
       candidates.push({
         rikishi: projectRikishi(r, world),
@@ -170,15 +171,11 @@ export function getKadobanDrama(
         losses = stats.losses;
       }
     }
-    const isDemoted = status.isKadoban && losses >= 8;
+    const runBand = PromotionNarrative.getKadobanDramaBand(status, wins, losses);
+    const isDemoted = runBand === "demoted";
 
     const rng = world.rng || new SeededRNG(world.seed || rid);
-    let runKey = "fighting";
-    if (isDemoted) runKey = "demoted";
-    else if (status.isKadoban && wins >= 8) runKey = "cleared";
-    else if (status.consecutiveMakeKoshi === 1) runKey = "danger";
-
-    const narrative = BardEngine.resolve(rng, `ui.digest.kadoban.${runKey}`).text;
+    const narrative = getKadobanProse(rng, runBand);
 
     entries.push({ rikishi: projectRikishi(r, world), narrative, isDemoted });
   }

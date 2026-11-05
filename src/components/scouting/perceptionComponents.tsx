@@ -101,6 +101,7 @@ const COMPARE_ROWS: Array<{
   label: string;
   icon: React.ElementType;
   get: (s: PerceptionSnapshot) => string;
+  getBand?: (s: PerceptionSnapshot) => string;
   colorMap?: Record<string, string>;
 }> = [
   { label: "Stature", icon: Building2, get: (s) => s.statureBand, colorMap: STATURE_COLOR },
@@ -108,6 +109,7 @@ const COMPARE_ROWS: Array<{
     label: "Roster",
     icon: Users,
     get: (s) => `${s.rosterStrengthBand} (${s.rosterSize})`,
+    getBand: (s) => s.rosterStrengthBand,
     colorMap: ROSTER_COLOR,
   },
   { label: "Morale", icon: Heart, get: (s) => s.moraleBand, colorMap: MORALE_COLOR },
@@ -132,8 +134,8 @@ export const CompareRowItem = React.memo(
   }) => {
     const valA = row.get(snapA);
     const valB = row.get(snapB);
-    const bandA = valA.split(" ")[0];
-    const bandB = valB.split(" ")[0];
+    const bandA = row.getBand?.(snapA) ?? valA;
+    const bandB = row.getBand?.(snapB) ?? valB;
     const colorA = row.colorMap?.[bandA] ?? "";
     const colorB = row.colorMap?.[bandB] ?? "";
     return (
