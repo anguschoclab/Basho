@@ -1,3 +1,13 @@
+/**
+ * run.ts — headless auto-sim CLI.
+ *
+ * Usage: `bun src/engine/simulation/run.ts [--seed <seed>] [--basho <count>]`
+ *
+ * Generates an initial world, runs `runAutoSim` for the requested number of
+ * basho, and prints a JSON summary (seed, basho count, year span, stop reason,
+ * top chronicle highlights) to stdout. Narrative domains are preloaded because
+ * `BardEngine.resolve()` warns and returns empty text without them.
+ */
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
 

@@ -1,3 +1,11 @@
+/**
+ * career.ts — synthetic career-record generation for the Almanac.
+ *
+ * `generateCareerRecord` fabricates a plausible `RikishiCareerRecord` (basho-by-basho
+ * W/L, ranks, awards) for wrestlers whose real bout-level history was never tracked.
+ * This is presentation backfill, NOT recorded simulation data — output is deterministic
+ * only because the caller supplies a seeded `rng: () => number`.
+ */
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName } from "@/engine/types/basho";
@@ -35,6 +43,11 @@ import {
   RANK_PROGRESSION_DEMOTE_MARGIN,
 } from "@/constants/engine/career";
 
+/**
+ * Synthesize a career history for `rikishi` anchored to `debutYear` (or a rolled
+ * career length when no debut year is tracked). Pure function — does not mutate
+ * `rikishi` or `world`; all randomness flows through the `rng` parameter.
+ */
 export function generateCareerRecord(
   rikishi: Rikishi,
   world: WorldState,

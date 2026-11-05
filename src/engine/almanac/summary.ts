@@ -1,5 +1,6 @@
 import type { RikishiCareerRecord } from "@/engine/almanac/types";
 
+/** One-line career summary for Almanac display, derived from a (possibly synthetic) career record. */
 export function getRikishiCareerSummary(record: RikishiCareerRecord): string {
   const parts: string[] = [];
 

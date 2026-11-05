@@ -8,6 +8,16 @@ import { runWeeklyWorkers } from "@/engine/npc/weekly/workers";
 import { runAgentLayer, buildWeeklyImpact } from "@/engine/npc/weekly/agents";
 import { applyPromotionAwareness, applyInjuryRiskReduction } from "@/engine/npc/weekly/postPasses";
 
+/**
+ * Weekly NPC decision orchestrator.
+ *
+ * Pipeline: `buildWeeklyContext` (persona + perception) → `runWeeklyWorkers`
+ * (training/scouting/personnel proposals) → `runAgentLayer` (specialist agents)
+ * → persona overrides → `coordinateDecision` → `buildWeeklyImpact`.
+ *
+ * Returns an `NPCWeeklyDecision` with reasoning trace; the caller applies the
+ * decision's `impact` to the world. Does not mutate `world` directly.
+ */
 export function makeNPCWeeklyDecision(
   world: WorldState,
   heyaId: Id,

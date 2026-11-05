@@ -1,8 +1,19 @@
+/**
+ * heyaRecord.ts — synthetic heya-level Almanac stats.
+ *
+ * `generateHeyaRecord` derives plausible career totals (yusho, sansho, top-division
+ * records) from `heya.statureBand` plus seeded `rng`. Like `career.ts`, this is
+ * presentation backfill — it does not reflect recorded per-basho results.
+ */
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaRecord } from "@/engine/almanac/types";
 import { getRikishi } from "@/engine/core/queries";
 
+/**
+ * Build a synthetic `HeyaRecord` for the Almanac. Counts only wrestlers in
+ * `world.activeRikishiIds` affiliated with `heya.id` — retired members are excluded.
+ */
 export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = [];
   for (const rikishiId of world.activeRikishiIds) {

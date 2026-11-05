@@ -1,3 +1,11 @@
+/**
+ * npcRetirementStrategy.ts — NPC retirement decision strategies.
+ *
+ * Each strategy evaluates whether an NPC stable should retire wrestlers, built
+ * from cumulative `StrategyRule`s (`NPCStrategyFramework`) over a `StrategyContext`.
+ * `getRetirementStrategy(oyakata.archetype)` selects the persona-appropriate rule
+ * set. Returns `StateImpact` — callers apply it; no direct world mutation.
+ */
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";

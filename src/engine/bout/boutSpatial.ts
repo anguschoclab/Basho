@@ -1,4 +1,12 @@
 import { SeededRNG } from "@/engine/core/rng";
+/**
+ * boutSpatial.ts — spatial/physical model for bout physics (V2 engine).
+ *
+ * Pure geometry and classification helpers: body initialization on the dohyo,
+ * fall/edge classification for kimarite resolution, tawara bounce resistance,
+ * and grip-class derivation. All positions are in engine spatial units defined
+ * by `constants/engine/physics.ts` — no RNG, no world mutation.
+ */
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Side } from "@/engine/types/banzuke";
 import type { KimariteId } from "@/engine/types/combat";

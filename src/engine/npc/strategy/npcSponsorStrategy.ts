@@ -1,3 +1,11 @@
+/**
+ * npcSponsorStrategy.ts — per-archetype NPC sponsor recruitment strategies.
+ *
+ * One `SponsorStrategy` per `OyakataArchetype` (traditionalist … indulgent), each
+ * tuning the shared `evaluateSponsorRecruitmentCommon` helper via a
+ * `SponsorRecruitmentConfig`. `getSponsorStrategy(archetype)` is the lookup —
+ * unknown archetypes fall back to `DefaultSponsorStrategy`.
+ */
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";

@@ -1,3 +1,12 @@
+/**
+ * narrativeEventMap.ts — maps narrative scenario keys to BardEngine template
+ * paths and event metadata.
+ *
+ * Each entry binds a scenario (e.g. `championship_celebration`) to an
+ * `EngineEventType`, a title template path, a summary template path, and an
+ * `EventImportance`. Consumed by the narrative phases (e.g. `phase06_narrative`)
+ * and NPC narrative generation — paths must exist in `bard/domains/*.json`.
+ */
 import type { EngineEventType, EventImportance } from "@/engine/types/events";
 
 interface NarrativeEventMapEntry {

@@ -9,6 +9,11 @@ interface BanzukeMovementNarrativeLine {
   movementKind: string;
 }
 
+/**
+ * Generate narrative lines for banzuke promotion/demotion movement events.
+ * Skips non-movement event kinds. Deterministic — randomness derives from the
+ * supplied `seed`, so the same movements always produce the same prose.
+ */
 export function generateBanzukeMovementNarrative(
   movements: MovementEvent[],
   world: WorldState,

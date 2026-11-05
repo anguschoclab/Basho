@@ -15,6 +15,12 @@ import * as talentpool from "@/engine/generation/TalentPoolService";
 import { getRikishi } from "@/engine/core/queries";
 import { WEIGHT_JOURNEY_STALL_THRESHOLD } from "@/engine/training/WeightJourney";
 
+/**
+ * Monthly NPC tick — runs once per in-game month for every non-player stable.
+ * Handles weight-journey stall detection (low funds), vacancy-driven recruitment,
+ * and related monthly NPC maintenance. Returns a `StateImpact` for the caller
+ * to apply; does not mutate `world` in place.
+ */
 export function tickMonthlyNPC(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickMonthlyNPC");
   const playerHeyaId = world.playerHeyaId;
@@ -83,6 +89,11 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
   return builder.build();
 }
 
+/**
+ * Yearly NPC tick — runs at the year boundary for every non-player stable.
+ * Currently surfaces high-ambition/weak-roster rebuild signals as narrative
+ * events; returns a `StateImpact` for the caller to apply.
+ */
 export function tickYear(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickYear");
 

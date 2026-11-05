@@ -13,6 +13,14 @@ import type { BoutContext } from "@/engine/bout/boutUtils";
 import type { CombatArchetype, TacticalFamily } from "@/engine/types/combat";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 
+/**
+ * Assemble the final `BoutResult` from a resolved physics state.
+ *
+ * Derives `duration` from `st.tick` (clamped to `DURATION_MIN_SECONDS`), computes
+ * the composite `excitementScore` from the bout log (edge-crisis escapes,
+ * momentum shifts, reversals), and resolves kimarite display metadata via
+ * `getKimarite`. `isTimeout` marks bouts ended by the clock rather than a finish.
+ */
 export function buildBoutResultV2(
   bout: BoutContext,
   east: Rikishi,

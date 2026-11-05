@@ -1,3 +1,10 @@
+/**
+ * sumo_geography.ts — static geography data for rikishi generation.
+ *
+ * `JAPANESE_PREFECTURES` is the domestic origin pool; `SUMO_HOTBEDS` adds
+ * traditional sumo regions plus foreign powers. `getRandomOrigin(rng)` picks an
+ * origin — caller must supply a seeded `rng: () => number` for determinism.
+ */
 export const JAPANESE_PREFECTURES = [
   "Aichi",
   "Akita",

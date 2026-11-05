@@ -1,9 +1,22 @@
+/**
+ * snapshot.ts — per-basho Almanac snapshots built from live world state.
+ *
+ * Unlike `career.ts`/`heyaRecord.ts` (synthetic backfill), `buildAlmanacSnapshot`
+ * aggregates real recorded values — makuuchi headcount, recorded wins, injuries —
+ * at basho publish time.
+ */
 import type { WorldState } from "@/engine/types/world";
 import type { AlmanacSnapshot } from "@/engine/almanac/types";
 import type { MovementEvent } from "@/engine/types/banzuke";
 import type { Rank } from "@/engine/types/banzuke";
 import { getRikishi } from "@/engine/core/queries";
 
+/**
+ * Aggregate the current basho's state into an `AlmanacSnapshot`.
+ *
+ * @returns `null` when `world.currentBasho` is absent (e.g. called outside an
+ *          active basho) — callers must handle the null case.
+ */
 export function buildAlmanacSnapshot(
   world: WorldState,
   movements?: MovementEvent[]

@@ -19,6 +19,14 @@ interface RetirementNarrativeLine {
     | "favorite_memory";
 }
 
+/**
+ * Generate the multi-section retirement narrative for a departing rikishi.
+ *
+ * Deterministic: all randomness derives from `rngFromSeed(seed, "retirement",
+ * rikishi.id)` — the same seed always produces the same lines. Returns ordered
+ * `RetirementNarrativeLine`s (ceremony, career summary, legacy, press persona,
+ * oyakata conversion, post-retirement path) for the retirement ceremony UI/log.
+ */
 export function generateRetirementNarrative(
   rikishi: Rikishi,
   world: WorldState,
