@@ -35,7 +35,7 @@ afterAll(() => {
   else mockGlobal.self = originalSelf;
 });
 
-vi.mock("@/presenters/uiDigest", () => ({
+vi.mock("@/engine/worker/digestProjections", () => ({
   buildWeeklyDigest: vi.fn(() => ({ mockDigest: true })),
 }));
 

@@ -38,7 +38,7 @@ describe("heyaUI - projectHeya", () => {
         name: "Test Heya",
         isPlayerOwned: true,
       });
-      const world = makeMockWorld();
+      const world = makeMockWorld({ playerHeyaId: "h1" });
 
       mockGetOyakataForHeya.mockReturnValue(undefined);
       mockGetHeyaStaff.mockReturnValue([]);

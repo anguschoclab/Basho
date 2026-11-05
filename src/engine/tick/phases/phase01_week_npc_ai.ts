@@ -127,6 +127,12 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
   const perceptionWrites: Record<Id, ReturnType<typeof buildPerceptionSnapshot>> = {};
 
+  // Sparring pairs accumulate across heyas into ONE working map — written
+  // once after the loop (see below). Reading world.sparringPairs per heya
+  // and writing the whole field back meant last-write-wins per impact.
+  const sparringMap = new Map(world.sparringPairs ?? []);
+  let sparringDirty = false;
+
   for (const heya of heyasToProcess) {
     const perception = buildPerceptionSnapshot(world, heya.id);
     perceptionWrites[heya.id] = perception;
@@ -194,8 +200,15 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       builder.updateOyakata(nextOya.id, nextOya);
 
       maybeAssignNPCMentors(world, heya, builder);
-      maybeAssignNPCSparringPairs(world, heya, builder);
+      sparringDirty = maybeAssignNPCSparringPairs(world, heya, builder, sparringMap) || sparringDirty;
     }
+  }
+
+  // Sparring assignments were accumulated into one map across heyas — a
+  // per-heya updateWorldField wrote from the ORIGINAL base world each time,
+  // so only the last heya's pairs survived. Write the accumulated map once.
+  if (sparringDirty) {
+    builder.updateWorldField("sparringPairs", sparringMap);
   }
 
   if (resolvedRequestIds.size > 0) {
@@ -352,8 +365,9 @@ const CHEMISTRY_SCORE: Record<SparringChemistry, number> = {
 function maybeAssignNPCSparringPairs(
   world: WorldState,
   heya: Heya,
-  builder: ReturnType<typeof createImpactBuilder>
-): void {
+  builder: ReturnType<typeof createImpactBuilder>,
+  sparringMap: Map<Id, SparringState>
+): boolean {
   const members: Rikishi[] = [];
   const heyaIds = heya.rikishiIds ?? [];
   const seenIds = new Set<string>();
@@ -365,8 +379,9 @@ function maybeAssignNPCSparringPairs(
     if (r) members.push(r);
   }
 
-  // Gather already-paired ids
-  const existingState = world.sparringPairs?.get(heya.id);
+  // Gather already-paired ids — read the accumulated map, not the base world,
+  // so pairs assigned earlier this same week are respected.
+  const existingState = sparringMap.get(heya.id);
   const pairedIds = new Set<string>();
   if (existingState) {
     for (const key in existingState.pairs) {
@@ -385,7 +400,7 @@ function maybeAssignNPCSparringPairs(
     if (pairedIds.has(r.id)) continue;
     eligible.push(r);
   }
-  if (eligible.length < 2) return;
+  if (eligible.length < 2) return false;
 
   // Score all potential pairs
   const candidates: { a: Rikishi; b: Rikishi; score: number }[] = [];
@@ -442,10 +457,10 @@ function maybeAssignNPCSparringPairs(
     for (const pair of newPairs) {
       baseState.pairs[pair.key] = pair;
     }
-    const updatedMap = new Map(world.sparringPairs || []);
-    updatedMap.set(heya.id, baseState);
-    builder.updateWorldField("sparringPairs", updatedMap);
+    sparringMap.set(heya.id, baseState);
+    return true;
   }
+  return false;
 }
 
 /**
@@ -606,10 +621,7 @@ function applyPostDecisionBookkeeping(
   decision: NPCWeeklyDecision,
   scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive">,
   builder: ReturnType<typeof createImpactBuilder>,
-  mergeAbsorb: (
-    b: ReturnType<typeof createImpactBuilder>,
-    impact: StateImpact
-  ) => void
+  mergeAbsorb: (b: ReturnType<typeof createImpactBuilder>, impact: StateImpact) => void
 ): void {
   if (currentPlan) {
     nextOya.memory = recordDecision(

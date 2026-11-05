@@ -1,4 +1,5 @@
 import { rngForWorld } from "@/engine/core/rng";
+import { getTotalBashodays } from "@/engine/calendar/scheduleHelpers";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { generateShikona } from "@/engine/shikona/generateShikona";
@@ -46,7 +47,14 @@ export function generateCareerSnapshot(world: WorldState, rikishi: Rikishi): Car
 
     wins: rikishi.currentBashoWins ?? 0,
     losses: rikishi.currentBashoLosses ?? 0,
-    absences: 0, // Engine doesn't track absences yet
+    // Days missed = scheduled bouts not contested (fusenshō + the
+    // unscheduled tail after a withdrawal).
+    absences: Math.max(
+      0,
+      getTotalBashodays(rikishi.division) -
+        (rikishi.currentBashoWins ?? 0) -
+        (rikishi.currentBashoLosses ?? 0)
+    ),
 
     isYusho: lastBasho?.yusho === rikishi.id,
     isJunYusho: lastBasho?.junYusho?.includes(rikishi.id) || false,
@@ -143,13 +151,18 @@ export function runHistoryUpdates(world: WorldState): StateImpact {
     }
 
     // 2. Career wins milestones (100, 500, etc.)
+    // Crossing-detection: a ~15-win basho can skip an exact threshold (95→110).
+    // Fire for the highest threshold at-or-below wins that isn't recorded yet.
     const wins = rikishi.careerWins || 0;
-    if (CAREER_WIN_MILESTONE_THRESHOLDS.includes(wins)) {
+    const hitThreshold = CAREER_WIN_MILESTONE_THRESHOLDS.find(
+      (t) => wins >= t && !updatedMilestones.some((m) => m.title === `${t} Career Wins`)
+    );
+    if (hitThreshold !== undefined) {
       updatedMilestones.push({
         id: rng.uuid("ML"),
         type: "stats_record",
-        title: `${wins} Career Wins`,
-        description: `Reached the landmark of ${wins} career victories.`,
+        title: `${hitThreshold} Career Wins`,
+        description: `Reached the landmark of ${hitThreshold} career victories.`,
         date: { year, month },
       });
     }
@@ -177,8 +190,15 @@ export function checkShikonaChange(
   const currentRank = rikishi.rank.toLowerCase();
   const prevRank = previousRank?.toLowerCase();
 
-  // Check for juryo → makuuchi promotion
-  const promotedToMakuuchi = prevRank?.includes("juryo") && currentRank.includes("makuuchi");
+  // Check for juryo → makuuchi promotion. "makuuchi" is a division, never a
+  // rank name — the debut rank is maegashira, so match makuuchi rank names
+  // (or the division field) instead of a substring that can never appear.
+  const promotedToMakuuchi =
+    prevRank?.includes("juryo") &&
+    (["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira"].some((r) =>
+      currentRank.includes(r)
+    ) ||
+      rikishi.division === "makuuchi");
   // Check for makuuchi → sanyaku promotion
   const promotedToSanyaku =
     (prevRank?.includes("maegashira") || prevRank?.includes("juryo")) &&

@@ -4,9 +4,13 @@ import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import * as finance from "@/engine/economy/FinanceCalculator";
 import { RUNWAY_BANDS } from "@/constants/engine/economy";
 
-vi.mock("@/engine/economy/FinanceCalculator", () => ({
-  calculateHeyaWeeklyFinances: vi.fn(),
-}));
+vi.mock("@/engine/economy/FinanceCalculator", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/engine/economy/FinanceCalculator")>();
+  return {
+    ...actual,
+    calculateHeyaWeeklyFinances: vi.fn(),
+  };
+});
 
 describe("phase01_week_economy", () => {
   it("updates funds and runway band for heyas", () => {

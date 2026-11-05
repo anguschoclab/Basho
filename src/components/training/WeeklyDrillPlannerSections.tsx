@@ -293,7 +293,7 @@ function RikishiRow({
           </div>
           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <span className={cn(isExhausted ? "text-destructive font-bold" : "text-success")}>
-              {FATIGUE_LABELS[fb].split(" ")[0]}
+              {FATIGUE_LABELS[fb]}
             </span>
             <span className="opacity-20">|</span>
             <span>{rikishi.rank}</span>

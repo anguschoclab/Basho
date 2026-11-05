@@ -26,6 +26,9 @@ import type {
   InjurySeverityBand,
   WinRateBand,
   HeightBand,
+  OzekiRunBand,
+  YokozunaRunBand,
+  KadobanBand,
 } from "@/engine/narrative/NarrativeBands";
 
 // === Attribute Labels (Short) ===
@@ -163,6 +166,19 @@ export function getInjurySeverityLabel(rng: SeededRNG, band: InjurySeverityBand)
 // === Win Rate Labels ===
 export function getWinRateLabel(rng: SeededRNG, band: WinRateBand): string {
   return BardEngine.resolve(rng, `system.descriptors.bands.winrate.${band}`).text;
+}
+
+// === Promotion Run Prose (ui.digest.* domain) ===
+export function getOzekiRunProse(rng: SeededRNG, band: OzekiRunBand): string {
+  return BardEngine.resolve(rng, `ui.digest.promotion.ozeki_run.${band}`).text;
+}
+
+export function getYokozunaRunProse(rng: SeededRNG, band: YokozunaRunBand): string {
+  return BardEngine.resolve(rng, `ui.digest.promotion.yokozuna_run.${band}`).text;
+}
+
+export function getKadobanProse(rng: SeededRNG, band: KadobanBand): string {
+  return BardEngine.resolve(rng, `ui.digest.kadoban.${band}`).text;
 }
 
 /**

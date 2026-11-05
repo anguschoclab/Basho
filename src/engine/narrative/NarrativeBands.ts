@@ -79,7 +79,11 @@ import {
   HEIGHT_BAND_AVERAGE_MAX,
   HEIGHT_BAND_TALL_MAX,
   HEIGHT_BAND_GIANT_MAX,
+  OZEKI_RUN_BRINK_MIN,
+  YOKOZUNA_SUPPORT_STRONG_MIN,
+  YOKOZUNA_SUPPORT_ADEQUATE_MIN,
 } from "@/constants/engine/generation";
+import { SEKIWAKE_33_WIN_THRESHOLD } from "@/constants/engine/banzuke";
 
 /** Generic band definition structure */
 export interface BandDef<T extends string> {
@@ -326,3 +330,41 @@ export const HEIGHT_BANDS: BandDef<HeightBand>[] = [
   { band: "giant", min: HEIGHT_BAND_TALL_MAX, max: HEIGHT_BAND_GIANT_MAX }, // 192–200cm
   { band: "towering", min: HEIGHT_BAND_GIANT_MAX, max: Infinity }, // 200cm+
 ];
+
+// === Ozeki Run Bands (recent wins across ~3 basho) ===
+// The "imminent" bound reuses SEKIWAKE_33_WIN_THRESHOLD so the narrative band
+// can never drift from the actual promotion rule in banzuke/promotionLogic.
+// No hysteresis: recentWins is monotonic within a basho, not an oscillating value.
+export type OzekiRunBand = "building" | "brink" | "imminent";
+
+export const OZEKI_RUN_BANDS: BandDef<OzekiRunBand>[] = [
+  { band: "building", min: 0, max: OZEKI_RUN_BRINK_MIN },
+  { band: "brink", min: OZEKI_RUN_BRINK_MIN, max: SEKIWAKE_33_WIN_THRESHOLD },
+  { band: "imminent", min: SEKIWAKE_33_WIN_THRESHOLD, max: Infinity },
+];
+
+// === Yokozuna Run Bands (recent yusho/jun-yusho + council support) ===
+// Multi-input state — no single-value ladder; resolved by NarrativeService.
+export type YokozunaRunBand =
+  | "standard"
+  | "unanimous"
+  | "borderline"
+  | "partial"
+  | "testing";
+
+// === Yokozuna Support Bands (mediaHeat 0-100, council backing) ===
+export type YokozunaSupportBand = "insufficient" | "adequate" | "strong";
+
+export const YOKOZUNA_SUPPORT_BANDS: BandDef<YokozunaSupportBand>[] = [
+  { band: "insufficient", min: 0, max: YOKOZUNA_SUPPORT_ADEQUATE_MIN },
+  {
+    band: "adequate",
+    min: YOKOZUNA_SUPPORT_ADEQUATE_MIN,
+    max: YOKOZUNA_SUPPORT_STRONG_MIN,
+  },
+  { band: "strong", min: YOKOZUNA_SUPPORT_STRONG_MIN, max: Infinity },
+];
+
+// === Kadoban Bands (ozeki make-koshi campaign state) ===
+// Multi-input state — no single-value ladder; resolved by NarrativeService.
+export type KadobanBand = "fighting" | "danger" | "cleared" | "demoted";

@@ -42,7 +42,7 @@ afterAll(() => {
   }
 });
 
-vi.mock("@/presenters/uiDigest", () => ({
+vi.mock("@/engine/worker/digestProjections", () => ({
   buildWeeklyDigest: vi.fn((world) => ({
     mockDigest: true,
     worldSeed: world?.seed,
@@ -75,6 +75,7 @@ function makeWorldWithRikishi(): WorldState {
   return makeMockWorld({
     rikishi,
     heyas: new Map([["h1", heya]]),
+    playerHeyaId: "h1",
     sparringPairs: new Map(),
     week: 5,
   });

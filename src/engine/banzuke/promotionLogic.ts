@@ -53,6 +53,16 @@ import {
   JONOKUCHI_KACHI_TIER,
 } from "@/constants/engine/banzuke";
 
+/**
+ * Whether a Yokozuna candidate's recent yusho/jun-yusho record constitutes a
+ * stat-eligible strong case (2+ yusho, or 1 yusho + 1 jun-yusho). Shared by
+ * lifecycle deliberation records and UI promotion projections so the rule
+ * cannot drift between engine events and displayed narrative.
+ */
+export function isYokozunaStrongCase(yushos: number, junYushos: number): boolean {
+  return yushos >= 2 || (yushos >= 1 && junYushos >= 1);
+}
+
 /** Calculation of absence penalty based on bouts. */
 function calculateAbsencePenalty(absences: number, totalBouts: number): number {
   if (absences === 0) return 0;

@@ -13,6 +13,7 @@ import { Globe, MapPin, Calendar, Ruler, Scale, Moon } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
+import { SEKIWAKE_33_WIN_THRESHOLD } from "@/constants/engine/banzuke";
 
 /** Health/ownership/status badge row. */
 export function HeaderBadges({
@@ -191,14 +192,14 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
                 Ozeki Promotion Watch
               </span>
               <span className="opacity-70">
-                {rikishi.sekiwakeThreeBashoWins} / 33 Wins (Last 3 Basho)
+                {rikishi.sekiwakeThreeBashoWins} / {SEKIWAKE_33_WIN_THRESHOLD} Wins (Last 3 Basho)
               </span>
             </div>
             <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
               <div
                 className="h-full bg-silver transition-all duration-1000 ease-out"
                 style={{
-                  width: `${Math.min(100, Math.max(0, ((rikishi.sekiwakeThreeBashoWins ?? 0) / 33) * 100))}%`,
+                  width: `${Math.min(100, Math.max(0, ((rikishi.sekiwakeThreeBashoWins ?? 0) / SEKIWAKE_33_WIN_THRESHOLD) * 100))}%`,
                 }}
               />
             </div>

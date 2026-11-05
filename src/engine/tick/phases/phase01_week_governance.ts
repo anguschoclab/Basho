@@ -42,7 +42,8 @@ import { getRikishi } from "@/engine/core/queries";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");
-  const isElectionWeek = (((world.week - 1) % 52) + 1) === ELECTION_WEEK && world.year % ELECTION_YEAR_INTERVAL === 0;
+  const isElectionWeek =
+    ((world.week - 1) % 52) + 1 === ELECTION_WEEK && world.year % ELECTION_YEAR_INTERVAL === 0;
 
   // 0. Council & Career Transitions (Q1 / Q3)
   // Only evaluate these in the post-basho wrap-up phase or yearly boundary
@@ -249,7 +250,15 @@ function processNpcMyosekiPurchases(world: WorldState): {
       if (!available) continue;
       const price = available.askingPrice ?? 0;
       if (heya.funds >= price && price > 0) {
-        const impact = purchaseMyoseki(w, m, available.id, heyaId, heya.funds);
+        // buyerId is an oyakata id in the myoseki model — passing heyaId
+        // stamped a heya id onto ownerId/holderId.
+        const impact = purchaseMyoseki(
+          w,
+          m,
+          available.id,
+          heya.oyakataId ?? heyaId,
+          heya.funds
+        );
         myosekiImpacts.push(impact);
         w = resolveImpacts(w, [impact]);
       }

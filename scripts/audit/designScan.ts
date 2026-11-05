@@ -177,10 +177,20 @@ const RULES: Rule[] = [
     id: "cosplay-copy",
     severity: "P2",
     bibleRef: "§11 writing style — no HUD-cosplay institutional language",
+    // Bare "Intelligence"/"Institution" are banned labels per §11; "Institutional"
+    // (JSA/federation domain) is allowed and does not match the \b-word form.
     pattern:
-      /\b(?:Control Center|CONTROL CENTER|Institutional Interface|Institutional Grade|Scout Intel|Scouting Intelligence|intelligence network|Intel requested|Perception Intel|COMMAND CENTER)\b/,
-    scopes: ["pages", "components", "constants", "hooks"],
+      /\b(?:Control Center|CONTROL CENTER|Institutional Interface|Institutional Grade|Scout Intel|Scouting Intelligence|intelligence network|Intel requested|Perception Intel|COMMAND CENTER|Intelligence|Institution)\b/,
+    scopes: ["pages", "components", "constants", "hooks", "engine", "presenters"],
     skip: /^\s*(\/\/|\/\*|\*)|import |from |require\(|templatePath/,
+  },
+  {
+    id: "na-placeholder",
+    severity: "P2",
+    bibleRef: "§11 writing style — never \"N/A\"; use — (em dash) for missing data",
+    pattern: /\bN\/A\b/,
+    scopes: ["pages", "components", "state", "hooks", "presenters"],
+    skip: /^\s*(\/\/|\/\*|\*)|import |from |require\(/,
   },
 ];
 

@@ -45,7 +45,7 @@ afterAll(() => {
   }
 });
 
-vi.mock("@/presenters/uiDigest", () => ({
+vi.mock("@/engine/worker/digestProjections", () => ({
   buildWeeklyDigest: vi.fn((world) => ({
     mockDigest: true,
     worldSeed: world?.seed,

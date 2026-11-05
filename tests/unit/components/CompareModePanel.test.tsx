@@ -50,6 +50,7 @@ describe("CompareModePanel — nested .stats.* access regression (Step 3.3)", ()
 
   it("reads stats from the nested rikishi.stats path, not flat properties", () => {
     const rikishiA = MockFactory.createRikishi("r1", {
+      heyaId: "player_heya",
       stats: {
         power: 80,
         speed: 60,
@@ -64,6 +65,7 @@ describe("CompareModePanel — nested .stats.* access regression (Step 3.3)", ()
       },
     });
     const rikishiB = MockFactory.createRikishi("r2", {
+      heyaId: "player_heya",
       stats: {
         power: 40,
         speed: 90,
@@ -79,6 +81,7 @@ describe("CompareModePanel — nested .stats.* access regression (Step 3.3)", ()
     });
 
     mockState.world = {
+      playerHeyaId: "player_heya",
       rikishi: new Map([
         ["r1", rikishiA],
         ["r2", rikishiB],
@@ -95,5 +98,25 @@ describe("CompareModePanel — nested .stats.* access regression (Step 3.3)", ()
     expect(container.textContent).toContain("40");
     expect(container.textContent).toContain("60");
     expect(container.textContent).toContain("90");
+  });
+
+  it("hides raw stats for rikishi not owned by the player heya (fog-of-war guard)", () => {
+    const own = MockFactory.createRikishi("r1", { heyaId: "player_heya" });
+    const rival = MockFactory.createRikishi("r2", { heyaId: "rival_heya" });
+
+    mockState.world = {
+      playerHeyaId: "player_heya",
+      rikishi: new Map([
+        ["r1", own],
+        ["r2", rival],
+      ]),
+    };
+
+    const { container } = render(
+      <CompareModePanel rikishiA={makeUIRikishi("r1")} rikishiB={makeUIRikishi("r2")} />
+    );
+
+    expect(container.textContent).toContain("Stats unavailable");
+    expect(container.textContent).not.toContain("Strength");
   });
 });

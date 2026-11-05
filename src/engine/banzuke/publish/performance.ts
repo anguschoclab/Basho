@@ -12,6 +12,10 @@ import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
 } from "@/constants/engine/governanceExtended";
+import {
+  SEKIWAKE_33_WIN_THRESHOLD,
+  SEKIWAKE_OZEKI_RECLAIM_WINS,
+} from "@/constants/engine/banzuke";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type StandingStats = { wins: number; losses: number; absences: number };
@@ -317,7 +321,10 @@ function enrichMetrics(
     }
   }
   const sekiwakeThreeBashoWins = recentSanyakuWins + stats.wins;
-  const promoteToOzeki = isSanyakuForOzeki && sekiwakeThreeBashoWins >= 33 && stats.wins >= 10;
+  const promoteToOzeki =
+    isSanyakuForOzeki &&
+    sekiwakeThreeBashoWins >= SEKIWAKE_33_WIN_THRESHOLD &&
+    stats.wins >= SEKIWAKE_OZEKI_RECLAIM_WINS;
 
   return { avgBoutDuration, opponentAvgTier, sekiwakeThreeBashoWins, promoteToOzeki };
 }

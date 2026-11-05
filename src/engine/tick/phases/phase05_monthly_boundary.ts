@@ -41,7 +41,7 @@ import { processHeyaEconomics, processLoanRepayments } from "@/engine/tick/phase
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "@/engine/tick/phases/monthly/facilities/index";
 import { processArchetypeDrift } from "@/engine/tick/phases/monthly/training/index";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
-import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "@/constants/engine/economy";
+import { runwayMonthsToBand } from "@/engine/economy/FinanceCalculator";
 import {
   SPONSOR_RENEWAL_WINDOW_WEEKS,
   SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
@@ -163,16 +163,7 @@ function processHeyaMonth(world: WorldState, heya: Heya, id: string, builder: Im
   // Runway Band Sync (overhead-only burn — JSA salaries don't leave heya.funds)
   const burn = Math.max(1, breakdown.heyaOverhead + maintenance);
   const runway = (heyaUpdates.funds ?? heya.funds ?? 0) / burn;
-  heyaUpdates.runwayBand =
-    runway >= RUNWAY_THRESHOLDS.SECURE
-      ? RUNWAY_BANDS.SECURE
-      : runway >= RUNWAY_THRESHOLDS.COMFORTABLE
-        ? RUNWAY_BANDS.COMFORTABLE
-        : runway >= RUNWAY_THRESHOLDS.TIGHT
-          ? RUNWAY_BANDS.TIGHT
-          : runway >= RUNWAY_THRESHOLDS.CRITICAL
-            ? RUNWAY_BANDS.CRITICAL
-            : RUNWAY_BANDS.DESPERATE;
+  heyaUpdates.runwayBand = runwayMonthsToBand(runway);
 
   // Clamp funds to debt floor after overhead (mirrors weekly FinanceCalculator clamp)
   if (heyaUpdates.funds !== undefined) {

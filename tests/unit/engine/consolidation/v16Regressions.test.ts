@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
+import type { WorldState } from "@/engine/types/world";
 
 /**
  * v16 consolidation regression tests — each test was authored RED-FIRST against
@@ -10,90 +11,119 @@ import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/uti
 
 // ── V16-B02 — bi-annual election fires every 2 years, not once ever ──────────
 describe("V16-B02 election cadence", () => {
-  it("isElectionWeek is true again at week 156 (year ~3), not only at global week 52", async () => {
-    // The buggy check was `world.week === 52 && year % 2 === 0` — a constant vs
-    // a monotonic counter, so it fired exactly once ever. The fix must derive
-    // the election from the global week counter modulo the interval.
-    const ELECTION_YEAR_INTERVAL = 2;
-    const WEEKS_PER_YEAR = 52;
-    // Predicate under test (mirrors production logic in phase01_week_governance):
-    const isElectionWeek = (week: number, year: number) =>
-      week % (WEEKS_PER_YEAR * ELECTION_YEAR_INTERVAL) === ELECTION_WEEK_NUM &&
-      year % ELECTION_YEAR_INTERVAL === 0;
-    const ELECTION_WEEK_NUM = 52;
-    expect(isElectionWeek(52, 2)).toBe(true); // first election (year 2 is even)
-    expect(isElectionWeek(156, 4)).toBe(true); // second election two years later
-    expect(isElectionWeek(104, 3)).toBe(false); // off-year
+  it("phase01_week_governance logs elections at the year-52 boundary of even years across the monotonic week counter", async () => {
+    const { phase01_week_governance } =
+      await import("@/engine/tick/phases/phase01_week_governance");
+    const mkWorld = (week: number, year: number) => {
+      const world = MockFactory.createWorld({ week, year });
+      world.heyas.set("h-elect", MockFactory.createHeya("h-elect", { ichimon: "Dewanoumi" }));
+      world.playerHeyaId = "player-x";
+      return world;
+    };
+    // The buggy check compared world.week === 52 — a constant vs a monotonic
+    // counter — so it fired exactly once ever. Production derives the election
+    // week from the counter modulo 52 plus the even-year gate.
+    expect(JSON.stringify(phase01_week_governance(mkWorld(52, 2024)))).toContain("board elections");
+    // Second election two years later — global week 104 is again week-of-year 52.
+    expect(JSON.stringify(phase01_week_governance(mkWorld(104, 2024)))).toContain(
+      "board elections"
+    );
+    // Odd year — no election even at the week-52 boundary.
+    expect(JSON.stringify(phase01_week_governance(mkWorld(52, 2025)))).not.toContain(
+      "board elections"
+    );
+    // Off-boundary week in an even year — no election.
+    expect(JSON.stringify(phase01_week_governance(mkWorld(100, 2024)))).not.toContain(
+      "board elections"
+    );
   });
 });
 
 // ── V16-B04 — rikishi age uses the NEW year at the yearly boundary ───────────
 describe("V16-B04 yearly-boundary age", () => {
-  it("age reflects nextYear - birthYear at the boundary, not pre-increment year", () => {
-    // Buggy: age = world.year - r.birthYear (input world is always the OLD year).
-    // Corrected formula must use nextYear.
-    const birthYear = 2000;
-    const world = makeMockWorld({ year: 2026 });
-    const nextYear = (world.year ?? 2000) + 1;
-    const correctAge = nextYear - birthYear;
-    const buggyAge = world.year - birthYear;
-    expect(correctAge).toBe(buggyAge + 1);
-    expect(correctAge).toBe(27);
+  it("phase06_yearly_boundary writes age = (year+1) - birthYear to the impact", async () => {
+    const { phase06_yearly_boundary } =
+      await import("@/engine/tick/phases/phase06_yearly_boundary");
+    const r = mockRikishi("r-age", { birthYear: 2000, careerWins: 0 });
+    const world = makeMockWorld({
+      year: 2026,
+      seed: "v16-b04",
+      rikishi: new Map([["r-age", r]]),
+      activeRikishiIds: new Set(["r-age"]),
+      transientContext: { boundaries: { yearBoundary: true } } as never,
+      hallOfFame: { inductees: [], inducted: {} } as never,
+      history: [],
+    });
+    const impact = phase06_yearly_boundary(world);
+    const updates = (impact as { entities?: { rikishiUpdates?: Map<string, { age?: number }> } })
+      .entities?.rikishiUpdates;
+    const age = updates?.get("r-age")?.age;
+    // Buggy: age = world.year - birthYear = 26. Fixed: nextYear - birthYear = 27.
+    expect(age).toBe(27);
   });
 });
 
 // ── V16-B16 — NPC merger must not target the player's stable ─────────────────
 describe("V16-B16 merger excludes player heya", () => {
-  it("candidate/fallback pools exclude world.playerHeyaId", () => {
-    const playerHeya = makeMockHeya("player-heya", { prestigeBand: "elite" });
-    const npcHeya = makeMockHeya("npc-heya", { prestigeBand: "elite" });
-    const world = makeMockWorld({
-      playerHeyaId: "player-heya",
-      heyas: new Map([
-        ["player-heya", playerHeya],
-        ["npc-heya", npcHeya],
-      ]),
-    });
-    // Simulate the fixed selection logic: candidates must exclude playerHeyaId.
-    const candidates = [...world.heyas.values()].filter(
-      (h) => h.id !== world.playerHeyaId && h.id !== "source-heya"
+  it("findMergerTarget never returns the player's heya — even when it is the only fallback candidate", async () => {
+    const { findMergerTarget } = await import("@/engine/economy/mergers");
+    const player = makeMockHeya("h-player", { prestigeBand: "struggling" as never });
+    const npc = makeMockHeya("h-npc", { prestigeBand: "struggling" as never });
+    const src = makeMockHeya("h-src");
+    // Fill the NPC roster to the merger cap so the fallback pool (roster < cap)
+    // contains ONLY the player — the buggy code returned the player here.
+    const npcRikishi = Array.from({ length: 30 }, (_, i) =>
+      mockRikishi(`npc-r${i}`, { heyaId: "h-npc" })
     );
-    expect(candidates.map((c) => c.id)).toEqual(["npc-heya"]);
-    expect(candidates.some((c) => c.id === world.playerHeyaId)).toBe(false);
+    npc.rikishiIds = npcRikishi.map((r) => r.id);
+    const world = makeMockWorld({
+      playerHeyaId: "h-player",
+      seed: "v16-b16",
+      year: 2024,
+      week: 10,
+      heyas: new Map([
+        ["h-src", src],
+        ["h-player", player],
+        ["h-npc", npc],
+      ]),
+      rikishi: new Map(npcRikishi.map((r) => [r.id, r])),
+    });
+    expect(findMergerTarget(world, "h-src")).toBeNull();
   });
 });
 
 // ── V16-B17 — Global Cup player-champion flag compares heyaIds ───────────────
 describe("V16-B17 GlobalCup wasPlayerChampion", () => {
-  it("wasPlayerChampion resolves the winner rikishi's heyaId vs playerHeyaId", () => {
-    const winner = mockRikishi("champ", { heyaId: "player-heya" });
+  it("finalizeTournament emits wasPlayerChampion:true when the winner is player-owned", async () => {
+    const { GlobalCupService } = await import("@/engine/economy/GlobalCupService");
+    const { createImpactBuilder } = await import("@/engine/core/ImpactBuilder");
+    const winner = mockRikishi("champ", { heyaId: "player-heya", shikona: "Champ" });
     const world = makeMockWorld({
       playerHeyaId: "player-heya",
+      seed: "v16-b17",
+      year: 2024,
+      week: 1,
+      heyas: new Map([["player-heya", makeMockHeya("player-heya")]]),
       rikishi: new Map([["champ", winner]]),
+      chronicle: { globalCups: [] } as never,
     });
-    // Buggy comparison: winnerId === world.playerHeyaId (rikishiId vs heyaId) → always false.
-    // Fixed: resolve the rikishi's heyaId.
-    const wasPlayerChampion =
-      world.rikishi.get("champ")?.heyaId === world.playerHeyaId;
-    expect(wasPlayerChampion).toBe(true);
-    // And the buggy comparison was provably always-false:
-    expect("champ" === world.playerHeyaId).toBe(false);
+    const builder = createImpactBuilder("test");
+    // Buggy: winnerId === world.playerHeyaId (rikishiId vs heyaId) → always false.
+    // Fixed: resolve the winner rikishi's heyaId.
+    (GlobalCupService as unknown as { finalizeTournament: (w: WorldState, b: unknown, id: string, name: string, ids: string[]) => void }).finalizeTournament(
+      world,
+      builder,
+      "champ",
+      "Champ",
+      ["champ"]
+    );
+    expect(JSON.stringify(builder.build())).toContain('"wasPlayerChampion":true');
   });
 });
 
 // ── V16-B18 — bailout button gate matches the engine threshold ────────────────
-describe("V16-B18 bailout gate", () => {
-  it("canRequestBailout uses LOAN_ISSUANCE_THRESHOLD (-5M), not funds < 0", async () => {
-    const { LOAN_ISSUANCE_THRESHOLD } = await import("@/constants/engine/economic");
-    // The engine no-ops when funds >= LOAN_ISSUANCE_THRESHOLD. The UI gate must
-    // match so the button isn't enabled-but-dead between -¥1 and -¥5M.
-    const engineWouldAct = (funds: number) => funds < LOAN_ISSUANCE_THRESHOLD;
-    const uiGate = (funds: number) => funds < LOAN_ISSUANCE_THRESHOLD;
-    expect(uiGate(-6_000_000)).toBe(engineWouldAct(-6_000_000));
-    expect(uiGate(-100)).toBe(false); // enabled-but-no-op zone eliminated
-    expect(uiGate(-4_999_999)).toBe(false);
-  });
-});
+// Covered by tests/unit/pages/EconomyPage.test.tsx ("V16-B18" describe) — the
+// gate lives in the page component and can only be observed through its render.
 
 // ── V16-B12b — materialization of 2+ recruits keeps ALL roster ids ───────────
 describe("V16-B12b talent-pool materialization roster", () => {
@@ -117,6 +147,16 @@ describe("V16-B12b talent-pool materialization roster", () => {
     });
 
     const impact = fillVacanciesForNPC(world, { "npc-heya": 2 });
+
+    // Pin the IMPACT layer directly — the stale-base bug dropped all but the
+    // last recruit's roster id before the resolver ever ran.
+    const heyaUpdate = (
+      impact as { entities?: { heyaUpdates?: Map<string, { rikishiIds?: string[] }> } }
+    ).entities?.heyaUpdates?.get("npc-heya");
+    const impactIds = heyaUpdate?.rikishiIds ?? [];
+    expect(impactIds).toContain("incumbent-1");
+    expect(impactIds.filter((id) => id.startsWith("person-"))).toHaveLength(2);
+
     const result = resolveImpacts(world, [impact]);
     const ids = result.heyas.get("npc-heya")?.rikishiIds ?? [];
     expect(ids).toContain("incumbent-1");
@@ -131,7 +171,8 @@ describe("V16-B12c governanceReview funds composition", () => {
   it("insolvent heya keeps loan principal AND receives the ichimon gift; benefactor is charged per gift", async () => {
     const { runGovernanceReview } = await import("@/engine/governance/services/governanceReview");
     const { resolveImpacts } = await import("@/engine/core/ImpactResolver");
-    const { FACTION_BAILOUT_AMOUNT, LOAN_ISSUANCE_THRESHOLD } = await import("@/constants/engine/economic");
+    const { FACTION_BAILOUT_AMOUNT, LOAN_ISSUANCE_THRESHOLD } =
+      await import("@/constants/engine/economic");
 
     const insolvent = makeMockHeya("insolvent", {
       funds: LOAN_ISSUANCE_THRESHOLD - 1_000_000,
@@ -170,14 +211,16 @@ describe("V16-B12c governanceReview funds composition", () => {
     expect(rInsolvent2.funds).toBe(-1_000_000 + FACTION_BAILOUT_AMOUNT);
 
     // insolvent got loan principal + gift — the stale-base write destroyed the
-    // principal while leaving the liability.
-    const loanPrincipal = (rInsolvent.activeLoans ?? [])
-      .reduce((s: number, l: { principal?: number }) => s + (l.principal ?? 0), 0);
-    if (loanPrincipal > 0) {
-      expect(rInsolvent.funds).toBe(
-        LOAN_ISSUANCE_THRESHOLD - 1_000_000 + loanPrincipal + FACTION_BAILOUT_AMOUNT
-      );
-    }
+    // principal while leaving the liability. The fixture sits below the loan
+    // threshold, so the loan MUST exist — assert unconditionally.
+    const loanPrincipal = (rInsolvent.activeLoans ?? []).reduce(
+      (s: number, l: { principal?: number }) => s + (l.principal ?? 0),
+      0
+    );
+    expect(loanPrincipal).toBeGreaterThan(0);
+    expect(rInsolvent.funds).toBe(
+      LOAN_ISSUANCE_THRESHOLD - 1_000_000 + loanPrincipal + FACTION_BAILOUT_AMOUNT
+    );
   });
 });
 

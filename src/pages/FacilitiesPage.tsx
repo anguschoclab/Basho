@@ -45,7 +45,7 @@ export default function FacilitiesPage() {
             icon={Loader2}
             title="Loading Infrastructure"
             description="Fetching facility status..."
-            className="animate-pulse"
+            iconClassName="animate-spin text-muted-foreground"
           />
         </div>
       </AppLayout>

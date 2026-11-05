@@ -57,8 +57,11 @@ function mockState(world: any) {
 describe("MyosekiMarketPage", () => {
   it("shows loading state when no world", () => {
     mockState(null);
-    render(<MyosekiMarketPage />);
+    const { container } = render(<MyosekiMarketPage />);
     expect(screen.getByRole("heading", { name: "Loading Market Records" })).toBeTruthy();
+    // The loader icon spins; the whole container must not pulse.
+    expect(container.querySelector(".animate-spin")).toBeTruthy();
+    expect(container.querySelector(".animate-pulse")).toBeNull();
   });
 
   it("shows loading state when no myosekiMarket", () => {

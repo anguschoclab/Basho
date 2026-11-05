@@ -257,6 +257,87 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
     },
     {
       "type": "LIFECYCLE_EVENT",
+      "category": "career",
+      "data": {
+        "rikishiId": "r-sec",
+        "heyaId": "heya-1",
+        "shikona": "Wrestler-r-sec",
+        "status": "retirement",
+        "reason": "Promoted to Oyakata",
+        "careerWins": 20,
+        "careerLosses": 10,
+        "highestRank": "maegashira",
+        "yushoCount": 0,
+        "kinboshiCount": 0,
+        "yearsActive": 16,
+        "careerPhase": "twilight",
+        "origin": "Japan",
+        "retirementNarrative": [
+          {
+            "text": "The heya gathers to honor [[rikishi:r-sec:Wrestler-r-sec]]'s distinguished career.",
+            "section": "ceremony"
+          },
+          {
+            "text": "A career spanning 0 basho comes to an end — [[rikishi:r-sec:Wrestler-r-sec]] finishes with 20 wins and 0 kinboshi.",
+            "section": "career_summary"
+          },
+          {
+            "text": "[[rikishi:r-sec:Wrestler-r-sec]] reached the rank of maegashira, leaving an indelible mark on the sport.",
+            "section": "legacy"
+          },
+          {
+            "text": "Wrestler-r-sec hangs up his mawashi (0-0) and transitions to a career in media commentary, where his experience will illuminate the sport for fans.",
+            "section": "post_retirement_path"
+          }
+        ]
+      },
+      "heyaId": "heya-1",
+      "rikishiId": "r-sec",
+      "importance": "headline"
+    },
+    {
+      "type": "RETIREMENT_ANNOUNCED",
+      "category": "narrative",
+      "data": {
+        "rikishiId": "r-sec",
+        "incident": "Wrestler-r-sec has announced their retirement (intai).",
+        "rankAtRetirement": "maegashira",
+        "careerWins": 20,
+        "careerLosses": 10,
+        "careerBouts": 30,
+        "bashoCount": 0,
+        "division": "makuuchi",
+        "age": 31,
+        "retirementReason": "Promoted to Oyakata",
+        "yushoCount": 0,
+        "kinboshiCount": 0,
+        "yearsActive": 16,
+        "careerPhase": "twilight",
+        "origin": "Japan",
+        "retirementNarrative": [
+          {
+            "text": "The heya gathers to honor [[rikishi:r-sec:Wrestler-r-sec]]'s distinguished career.",
+            "section": "ceremony"
+          },
+          {
+            "text": "A career spanning 0 basho comes to an end — [[rikishi:r-sec:Wrestler-r-sec]] finishes with 20 wins and 0 kinboshi.",
+            "section": "career_summary"
+          },
+          {
+            "text": "[[rikishi:r-sec:Wrestler-r-sec]] reached the rank of maegashira, leaving an indelible mark on the sport.",
+            "section": "legacy"
+          },
+          {
+            "text": "Wrestler-r-sec hangs up his mawashi (0-0) and transitions to a career in media commentary, where his experience will illuminate the sport for fans.",
+            "section": "post_retirement_path"
+          }
+        ]
+      },
+      "heyaId": "heya-1",
+      "importance": "major"
+    },
+    {
+      "type": "LIFECYCLE_EVENT",
       "category": "narrative",
       "data": {
         "rikishiId": "r-sec",
@@ -306,7 +387,28 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
     ],
     "activeRikishiIdsToRemove": [
       "r-sec"
+    ],
+    "oyakataToRemove": [
+      "oya-1"
     ]
+  },
+  "worldFields": {
+    "records": {
+      "allTime": {
+        "careerWins": [],
+        "makuuchiWins": [],
+        "yusho": [],
+        "consecutiveYusho": [],
+        "kinboshi": []
+      },
+      "active": {
+        "careerWins": [],
+        "makuuchiWins": [],
+        "yusho": [],
+        "consecutiveYusho": [],
+        "kinboshi": []
+      }
+    }
   }
 }"
 `;
@@ -394,6 +496,87 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
     },
     {
       "type": "LIFECYCLE_EVENT",
+      "category": "career",
+      "data": {
+        "rikishiId": "r-mak",
+        "heyaId": "heya-1",
+        "shikona": "Wrestler-r-mak",
+        "status": "retirement",
+        "reason": "Promoted to Oyakata",
+        "careerWins": 20,
+        "careerLosses": 10,
+        "highestRank": "maegashira",
+        "yushoCount": 0,
+        "kinboshiCount": 0,
+        "yearsActive": 16,
+        "careerPhase": "twilight",
+        "origin": "Japan",
+        "retirementNarrative": [
+          {
+            "text": "Supporters and rivals alike gather to pay their respects to the retiring [[rikishi:r-mak:Wrestler-r-mak]].",
+            "section": "ceremony"
+          },
+          {
+            "text": "[[rikishi:r-mak:Wrestler-r-mak]] retires with 20 career wins against 10 losses across 0 basho.",
+            "section": "career_summary"
+          },
+          {
+            "text": "History will remember [[rikishi:r-mak:Wrestler-r-mak]] as a maegashira who gave everything to the sport.",
+            "section": "legacy"
+          },
+          {
+            "text": "Wrestler-r-mak retires (0-0) and steps away from the sumo world, seeking a new path in life beyond the dohyo.",
+            "section": "post_retirement_path"
+          }
+        ]
+      },
+      "heyaId": "heya-1",
+      "rikishiId": "r-mak",
+      "importance": "headline"
+    },
+    {
+      "type": "RETIREMENT_ANNOUNCED",
+      "category": "narrative",
+      "data": {
+        "rikishiId": "r-mak",
+        "incident": "Wrestler-r-mak has announced their retirement (intai).",
+        "rankAtRetirement": "maegashira",
+        "careerWins": 20,
+        "careerLosses": 10,
+        "careerBouts": 30,
+        "bashoCount": 0,
+        "division": "makushita",
+        "age": 31,
+        "retirementReason": "Promoted to Oyakata",
+        "yushoCount": 0,
+        "kinboshiCount": 0,
+        "yearsActive": 16,
+        "careerPhase": "twilight",
+        "origin": "Japan",
+        "retirementNarrative": [
+          {
+            "text": "Supporters and rivals alike gather to pay their respects to the retiring [[rikishi:r-mak:Wrestler-r-mak]].",
+            "section": "ceremony"
+          },
+          {
+            "text": "[[rikishi:r-mak:Wrestler-r-mak]] retires with 20 career wins against 10 losses across 0 basho.",
+            "section": "career_summary"
+          },
+          {
+            "text": "History will remember [[rikishi:r-mak:Wrestler-r-mak]] as a maegashira who gave everything to the sport.",
+            "section": "legacy"
+          },
+          {
+            "text": "Wrestler-r-mak retires (0-0) and steps away from the sumo world, seeking a new path in life beyond the dohyo.",
+            "section": "post_retirement_path"
+          }
+        ]
+      },
+      "heyaId": "heya-1",
+      "importance": "notable"
+    },
+    {
+      "type": "LIFECYCLE_EVENT",
       "category": "narrative",
       "data": {
         "rikishiId": "r-mak",
@@ -443,7 +626,28 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
     ],
     "activeRikishiIdsToRemove": [
       "r-mak"
+    ],
+    "oyakataToRemove": [
+      "oya-1"
     ]
+  },
+  "worldFields": {
+    "records": {
+      "allTime": {
+        "careerWins": [],
+        "makuuchiWins": [],
+        "yusho": [],
+        "consecutiveYusho": [],
+        "kinboshi": []
+      },
+      "active": {
+        "careerWins": [],
+        "makuuchiWins": [],
+        "yusho": [],
+        "consecutiveYusho": [],
+        "kinboshi": []
+      }
+    }
   }
 }"
 `;

@@ -491,6 +491,14 @@ export const HEIGHT_BAND_AVERAGE_MAX = 182;
 export const HEIGHT_BAND_TALL_MAX = 192;
 export const HEIGHT_BAND_GIANT_MAX = 200;
 
+/** Ozeki-run narrative thresholds (recent wins across ~3 basho) */
+export const OZEKI_RUN_MIN_WINS = 20;
+export const OZEKI_RUN_BRINK_MIN = 30;
+
+/** Yokozuna support thresholds (mediaHeat 0-100) */
+export const YOKOZUNA_SUPPORT_STRONG_MIN = 75;
+export const YOKOZUNA_SUPPORT_ADEQUATE_MIN = 50;
+
 // Prodigy constants
 export const PRODIGY_BIRTH_YEAR_MIN = 2000;
 export const PRODIGY_BIRTH_YEAR_MAX = 2010;

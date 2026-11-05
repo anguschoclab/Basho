@@ -504,4 +504,32 @@ describe("RikishiProfileHeader", () => {
     );
     expect(screen.queryByText(/Ozeki Reclaim Watch/i)).toBeNull();
   });
+
+  it("renders Pro Debut vitals when debutYear and yearsActive are set", () => {
+    const debutProps = { debutYear: 2010, yearsActive: 10 };
+    const rikishi = makeUIRikishi(debutProps);
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText(/Pro Debut/)).toBeTruthy();
+    expect(screen.getByText(/10 years active/)).toBeTruthy();
+  });
+
+  it("hides Pro Debut vitals when debutYear is absent", () => {
+    const rikishi = makeUIRikishi();
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Pro Debut/)).toBeNull();
+  });
 });

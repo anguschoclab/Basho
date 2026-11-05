@@ -7,17 +7,10 @@
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
-import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "@/constants/engine/economy";
-import type { RunwayBand } from "@/engine/types/narrative";
-
-function runwayMonthsToBand(runwayMonths: number): RunwayBand {
-  if (runwayMonths >= RUNWAY_THRESHOLDS.SECURE) return RUNWAY_BANDS.SECURE;
-  if (runwayMonths >= RUNWAY_THRESHOLDS.COMFORTABLE) return RUNWAY_BANDS.COMFORTABLE;
-  if (runwayMonths >= RUNWAY_THRESHOLDS.TIGHT) return RUNWAY_BANDS.TIGHT;
-  if (runwayMonths >= RUNWAY_THRESHOLDS.CRITICAL) return RUNWAY_BANDS.CRITICAL;
-  return RUNWAY_BANDS.DESPERATE;
-}
+import {
+  calculateHeyaWeeklyFinances,
+  runwayMonthsToBand,
+} from "@/engine/economy/FinanceCalculator";
 
 export function phase01_week_economy(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_economy");

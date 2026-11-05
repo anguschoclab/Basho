@@ -95,6 +95,7 @@ function buyPhysioCmd(rt: WorkerRuntime, cmd: Cmd<"BUY_PHYSIO">) {
 
 function setHeyaDietCmd(rt: WorkerRuntime, cmd: Cmd<"SET_HEYA_DIET">) {
   if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
     const heya = rt.world.heyas.get(cmd.heyaId);
     if (!heya) return;
     const welfareState = heya.welfareState
@@ -112,6 +113,7 @@ function setHeyaDietCmd(rt: WorkerRuntime, cmd: Cmd<"SET_HEYA_DIET">) {
 
 function investInFacilityCmd(rt: WorkerRuntime, cmd: Cmd<"INVEST_IN_FACILITY">) {
   if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
     const impact = investInFacility(rt.world, cmd.heyaId, cmd.axis, cmd.points);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
@@ -120,6 +122,7 @@ function investInFacilityCmd(rt: WorkerRuntime, cmd: Cmd<"INVEST_IN_FACILITY">) 
 
 function buildInfrastructureCmd(rt: WorkerRuntime, cmd: Cmd<"BUILD_INFRASTRUCTURE">) {
   if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
     const impact = InfrastructureService.startConstruction(rt.world, cmd.heyaId, cmd.facilityId);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
@@ -128,6 +131,7 @@ function buildInfrastructureCmd(rt: WorkerRuntime, cmd: Cmd<"BUILD_INFRASTRUCTUR
 
 function repairInfrastructureCmd(rt: WorkerRuntime, cmd: Cmd<"REPAIR_INFRASTRUCTURE">) {
   if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
     const impact = repairFacility(rt.world, cmd.heyaId, cmd.facilityId);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
@@ -153,6 +157,7 @@ function removeMentorCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_MENTOR">) {
 
 function addSparringPairCmd(rt: WorkerRuntime, cmd: Cmd<"ADD_SPARRING_PAIR">) {
   if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
     const impact = assignSparringPair(rt.world, cmd.heyaId, cmd.aId, cmd.bId, rt.world.week);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
@@ -161,6 +166,7 @@ function addSparringPairCmd(rt: WorkerRuntime, cmd: Cmd<"ADD_SPARRING_PAIR">) {
 
 function removeSparringPairCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_SPARRING_PAIR">) {
   if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
     const impact = removeSparringPair(rt.world, cmd.heyaId, cmd.aId, cmd.bId);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
@@ -193,6 +199,7 @@ function removeTsukebitoCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_TSUKEBITO">) {
 
 function setTrainingStateCmd(rt: WorkerRuntime, cmd: Cmd<"SET_TRAINING_STATE">) {
   if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
     const impact = {
       entities: {
         trainingStateUpdates: new Map([[cmd.heyaId, cmd.trainingState]]),

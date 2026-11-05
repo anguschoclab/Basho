@@ -6,8 +6,10 @@ import StaffPage from "@/pages/StaffPage";
 
 vi.mock("@/state/game/useGame");
 
+const mockSendCommand = vi.fn();
 vi.mock("@/state/stores/gameStore", () => ({
-  useGameStore: () => ({ sendCommand: vi.fn() }),
+  useGameStore: (sel: (s: { sendCommand: typeof mockSendCommand }) => unknown) =>
+    sel({ sendCommand: mockSendCommand }),
 }));
 
 vi.mock("@/hooks/useRequireWorld", () => ({
@@ -23,7 +25,8 @@ vi.mock("@/components/layout/page-shell/index", () => ({
 }));
 
 vi.mock("@/components/ui/tooltip-wrap", () => ({
-  TooltipWrap: ({ children }: any) => React.createElement("div", null, children),
+  TooltipWrap: ({ children, ...rest }: any) =>
+    React.createElement("div", rest, children),
 }));
 
 vi.mock("@/components/ui/alert-dialog", () => ({
@@ -39,26 +42,56 @@ vi.mock("@/components/ui/alert-dialog", () => ({
   AlertDialogCancel: ({ children }: any) => React.createElement("button", null, children),
 }));
 
-vi.mock("@/components/ui/dialog", () => ({
-  Dialog: ({ children, open }: any) => (open ? React.createElement("div", null, children) : null),
-  DialogTrigger: ({ children }: any) => React.createElement("div", null, children),
-  DialogContent: ({ children }: any) => React.createElement("div", null, children),
-  DialogHeader: ({ children }: any) => React.createElement("div", null, children),
-  DialogFooter: ({ children }: any) => React.createElement("div", null, children),
-  DialogTitle: ({ children }: any) => React.createElement("div", null, children),
-  DialogDescription: ({ children }: any) => React.createElement("div", null, children),
-}));
+vi.mock("@/components/ui/dialog", async () => {
+  const React = await import("react");
+  const DialogCtx = React.createContext<{
+    open: boolean;
+    onOpenChange?: (open: boolean) => void;
+  }>({ open: false });
+  return {
+    Dialog: ({ children, open, onOpenChange }: any) =>
+      React.createElement(DialogCtx.Provider, { value: { open: !!open, onOpenChange } }, children),
+    DialogTrigger: ({ children }: any) => {
+      const ctx = React.useContext(DialogCtx);
+      return React.isValidElement(children)
+        ? React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, {
+            onClick: () => ctx.onOpenChange?.(true),
+          })
+        : React.createElement("div", null, children);
+    },
+    DialogContent: ({ children }: any) => {
+      const ctx = React.useContext(DialogCtx);
+      return ctx.open ? React.createElement("div", null, children) : null;
+    },
+    DialogHeader: ({ children }: any) => React.createElement("div", null, children),
+    DialogFooter: ({ children }: any) => React.createElement("div", null, children),
+    DialogTitle: ({ children }: any) => React.createElement("div", null, children),
+    DialogDescription: ({ children }: any) => React.createElement("div", null, children),
+  };
+});
 
+const mockToast = { success: vi.fn(), error: vi.fn(), info: vi.fn() };
 vi.mock("sonner", () => ({
-  toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
+  toast: {
+    success: (...args: unknown[]) => mockToast.success(...args),
+    error: (...args: unknown[]) => mockToast.error(...args),
+    info: (...args: unknown[]) => mockToast.info(...args),
+  },
 }));
 
 vi.mock("@/presenters/worldAccess", () => ({
   getStaffMember: (_world: any, id: string) => mockStaff.find((s) => s.id === id),
 }));
 
+const mockGetPlayerHeya = vi.fn(() => ({
+  id: "h1",
+  name: "TestHeya",
+  staffIds: mockStaff.map((s) => s.id) as string[],
+  funds: 10_000_000,
+}));
+
 vi.mock("@/engine/core/queries", () => ({
-  getPlayerHeya: () => ({ id: "h1", name: "TestHeya", staffIds: mockStaff.map((s) => s.id) }),
+  getPlayerHeya: () => mockGetPlayerHeya(),
 }));
 
 vi.mock("@/engine/narrative/descriptorBands", () => ({
@@ -187,5 +220,42 @@ describe("StaffPage sorting", () => {
     const order = getCardNames();
     // desc name: Charlie, Bravo, Alpha
     expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
+  });
+});
+
+// ── V17-F17 — hire must be gated on STAFF_HIRE_COST affordability ────────────
+describe("StaffPage hire affordability", () => {
+  beforeEach(() => {
+    mockStaff = [makeStaff("s1", { name: "Existing" })];
+    mockGetPlayerHeya.mockReturnValue({
+      id: "h1",
+      name: "TestHeya",
+      staffIds: ["s1"],
+      funds: 0,
+    });
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+    mockStaff = [];
+  });
+
+  it("blocks hire and warns when funds < STAFF_HIRE_COST", async () => {
+    const { STAFF_HIRE_COST } = await import("@/constants/engine/economy");
+    expect(STAFF_HIRE_COST).toBeGreaterThan(0);
+    mockUseGame({ playerHeyaId: "h1" });
+    render(<StaffPage />);
+
+    // Open the recruit dialog via its always-visible trigger.
+    fireEvent.click(screen.getByLabelText("Recruit Specialist"));
+    const hireButton = await screen.findByText(/Confirm Hire/);
+    fireEvent.click(hireButton);
+
+    // The page must not dispatch the command nor claim success — the worker
+    // would reject the hire anyway, but the UI must not lie about it.
+    expect(mockSendCommand).not.toHaveBeenCalled();
+    expect(mockToast.success).not.toHaveBeenCalled();
+    expect(mockToast.error).toHaveBeenCalled();
   });
 });

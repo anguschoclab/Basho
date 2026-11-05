@@ -19,5 +19,5 @@ export const PHASE_LABELS: Record<string, { label: string; dotClass: string }> =
     dotClass: "bg-accent animate-pulse-glow",
   },
   post_basho: { label: "Post-Basho", dotClass: "bg-primary/60" },
-  basho_recap: { label: "Recap", dotClass: "bg-muted-foreground/40" },
+  banzuke_reveal: { label: "Banzuke Reveal", dotClass: "bg-muted-foreground/40" },
 };

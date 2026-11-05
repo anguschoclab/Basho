@@ -406,4 +406,18 @@ describe("RikishiCareerTab earnings tracker", () => {
     );
     expect(screen.queryAllByText(/Career Earnings/i).length).toBe(0);
   });
+
+  it("renders kinboshi count stat from economics.kinboshiCount", () => {
+    render(
+      <RikishiCareerTab
+        history={[]}
+        milestones={emptyMilestones}
+        careerProgressionData={emptyProgressionData}
+        earningsProgressionData={sampleEarningsProgressionData}
+        economics={sampleEconomics}
+      />
+    );
+    expect(screen.getByText("Kinboshi")).toBeTruthy();
+    expect(screen.getByText("2")).toBeTruthy();
+  });
 });

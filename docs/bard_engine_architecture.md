@@ -1,6 +1,6 @@
 # Bard Engine Architecture Audit (Deep-Dive)
 
-> **Status note (updated):** This audit originally described a monolithic `archive.json`. The data layer has since been split into per-domain files under `src/engine/bard/domains/` (24 files, ~313KB) plus `registry.json` and `vocabulary.json`. Sections below reflect the current structure; critique items that have been addressed are marked **[RESOLVED]**.
+> **Status note (updated):** This audit originally described a monolithic `archive.json`. The data layer has since been split into per-domain files under `src/engine/bard/domains/` (26 files) plus `registry.json` and `vocabulary.json`. Sections below reflect the current structure; critique items that have been addressed are marked **[RESOLVED]**.
 
 ## Introduction
 
@@ -14,7 +14,7 @@ The system is organized into four distinct layers:
 
 The "Script" of the game. Narrative content lives in:
 
-- **`domains/*.json`** — 24 domain files (combat, events, medical, scouting, ui, world, etc.) containing narrative templates organized by `domain.subdomain.type` path hierarchy.
+- **`domains/*.json`** — 26 domain files (combat, events, medical, scouting, ui, world, etc.) containing narrative templates organized by `domain.subdomain.type` path hierarchy.
 - **`registry.json`** — enum/label registries resolvable via the `registry.*` path root.
 - **`vocabulary.json`** — shared vocabulary including `intensity_1/2/3` label sets.
 
@@ -60,11 +60,10 @@ The consumer layer that triggers narrative generation.
 ### [DISPROVE] Implementation Critiques
 
 - ~~**Static Global State**~~ **[RESOLVED]** — the cache is now partitioned into per-seed lanes; concurrent world instances no longer share narrative history.
-- ~~**Monolithic Archive Bottleneck**~~ **[RESOLVED]** — the single `archive.json` was split into 24 domain files plus `registry.json`/`vocabulary.json`, removing the version-control and syntax-error bottleneck.
-- **Brittle "String Splitting" Presenters**: some presenters (e.g., `uiDigest.ts`) perform manual `split()` operations on resolved strings to extract labels from full prose sentences.
-  - _Example_: `text.split(" — ")[0].split(".")[0];`
-  - _Critique_: presentation logic should not assume the structure of narrative prose.
-- **Inconsistent Logic Ownership**: promotion logic (`runKey`) is calculated in the UI presenter while band logic lives in the Narrative Service. This fragmentation makes it hard to find where the "story" is actually being decided.
+- ~~**Monolithic Archive Bottleneck**~~ **[RESOLVED]** — the single `archive.json` was split into 26 domain files plus `registry.json`/`vocabulary.json`, removing the version-control and syntax-error bottleneck.
+- ~~**Brittle "String Splitting" Presenters**~~ **[RESOLVED]** — zero `.split()` calls remain in `src/presenters/`; `uiDigest.ts` is a pure re-export facade and digest labels resolve via dedicated Bard paths rather than post-resolution prose parsing.
+  - _Example (removed)_: `text.split(" — ")[0].split(".")[0];`
+- ~~**Inconsistent Logic Ownership**~~ **[RESOLVED]** — promotion narrative-state classification moved out of `promotionProjections.ts` into `NarrativeService` (`getOzekiRunBand` / `getYokozunaRunBand` / `getKadobanDramaBand` / `getYokozunaSupportBand`) with typed band unions in `NarrativeBands.ts` and prose wrappers in `NarrativeProse.ts`; the presenter only projects `world` → service inputs and applies visibility floors. Duplicated literals were also consolidated: `SEKIWAKE_33_WIN_THRESHOLD` / `kachiKoshiThreshold("ozeki")` / `YOKOZUNA_SUPPORT_*` constants and the shared `isYokozunaStrongCase` rule in `promotionLogic.ts`; the runway bander was similarly consolidated to a single `runwayMonthsToBand` in `FinanceCalculator.ts`.
 
 ---
 
