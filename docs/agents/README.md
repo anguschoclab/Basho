@@ -16,6 +16,7 @@ Each file is a self-contained persona + process. To run one, point an agent at t
 | 🛡️ Sentinel | [sentinel.md](sentinel.md) | Fix one security issue or add one security enhancement                                   |
 | 🎨 Palette  | [palette.md](palette.md)   | One micro-UX / accessibility touch of delight                                            |
 | ⚡ Bolt     | [bolt.md](bolt.md)         | One measurable performance improvement                                                   |
+| 📈 Lens     | [lens.md](lens.md)         | One data viz that turns already-tracked state into a chart on a real screen              |
 
 ## Shared conventions
 
