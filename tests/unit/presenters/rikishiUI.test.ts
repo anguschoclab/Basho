@@ -165,6 +165,29 @@ describe("projectRikishi - new band calculations", () => {
     rikishi: new Map(),
   } as unknown as WorldState;
 
+  it("should expose debutYear and calculate yearsActive", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      debutYear: 2010,
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.debutYear).toBe(2010);
+    expect(projected.yearsActive).toBe(10); // baseWorld.year is 2020
+  });
+
+  it("should leave debutYear and yearsActive undefined when debutYear is unset", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.debutYear).toBeUndefined();
+    expect(projected.yearsActive).toBeUndefined();
+  });
+
   it("should calculate age band correctly based on birth year", () => {
     const rikishi = mockRikishi("r1", {
       shikona: "Testyama",
