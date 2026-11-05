@@ -135,7 +135,7 @@ Every wrestler has ten core stats, each rated 0–100:
 
 | Stat             | What It Does                                      |
 | ---------------- | ------------------------------------------------- |
-| **Strength**     | Power in grapples, throws, and force-outs         |
+| **Power**        | Strength in grapples, throws, and force-outs      |
 | **Speed**        | Movement velocity and reaction time               |
 | **Balance**      | Stability and footing recovery after impact       |
 | **Technique**    | Execution precision of winning moves              |
@@ -219,8 +219,8 @@ Professional sumo has six divisions. Only the top two divisions (Makuuchi and Ju
 
 | Division               | Pro Status   | Monthly Salary          |
 | ---------------------- | ------------ | ----------------------- |
-| **Makuuchi** (幕内)    | Professional | ¥1,400,000 – ¥3,000,000 |
-| **Juryo** (十両)       | Professional | ¥1,100,000              |
+| **Makuuchi** (幕内)    | Professional | ¥1,550,000 – ¥3,300,000 |
+| **Juryo** (十両)       | Professional | ¥1,200,000              |
 | **Makushita** (幕下)   | Semi-pro     | None                    |
 | **Sandanme** (三段目)  | Amateur      | None                    |
 | **Jonidan** (序二段)   | Amateur      | None                    |
@@ -254,8 +254,8 @@ Matchups are set by the **torikumi** — a scheduling committee that uses a Swis
 
 ### Win/Loss Records
 
-- **Kachi-koshi** (勝ち越し): 8+ wins — a winning record; key for promotion consideration
-- **Make-koshi** (負け越し): 7 or fewer wins — a losing record; triggers demotion risk
+- **Kachi-koshi** (勝ち越し): a winning record — 8+ wins in the 15-bout Makuuchi/Juryo schedule, 4+ wins in the 7-bout lower divisions; key for promotion consideration
+- **Make-koshi** (負け越し): a losing record — 7 or fewer wins (Makuuchi/Juryo), 3 or fewer (lower divisions); triggers demotion risk
 
 ### Tournament Awards
 
@@ -281,7 +281,7 @@ Matchups are set by the **torikumi** — a scheduling committee that uses a Swis
 
 ### Kenshō Envelopes
 
-Corporate sponsors place **kenshō** envelopes on featured bouts. Each envelope contains **¥50,000** for the winner. High-profile bouts can carry dozens of envelopes — a meaningful income source for top wrestlers and their stables.
+Corporate sponsors place **kenshō** envelopes on featured bouts. Each envelope contains **¥70,000** for the winner. High-profile bouts can carry dozens of envelopes — a meaningful income source for top wrestlers and their stables.
 
 ### Withdrawal — Kyūjō
 
@@ -321,12 +321,12 @@ Rare techniques like **Ipponzeoi** (shoulder throw) or the **Sorite** family (ba
 
 ### Rarity Tiers
 
-| Tier      | Weight Range | Example                            |
-| --------- | ------------ | ---------------------------------- |
-| Common    | > 150        | Yorikiri (1000), Oshidashi (850)   |
-| Uncommon  | 30–150       | Uwatenage (350), Tsukiotoshi (350) |
-| Rare      | 5–30         | Kubinage (15), Tottari (30)        |
-| Legendary | 1            | Sorite family, exotic tricks       |
+| Tier      | Share of Bout Endings | Example                            |
+| --------- | --------------------- | ---------------------------------- |
+| Common    | ≥ 8%                  | Yorikiri (~30%), Oshidashi (~17%)  |
+| Uncommon  | 1.5% – 8%             | Uwatenage, Tsukiotoshi             |
+| Rare      | 0.2% – 1.5%           | Kubinage, Tottari                  |
+| Legendary | < 0.2%                | Sorite family, exotic tricks       |
 
 ---
 
@@ -394,7 +394,8 @@ The advanced training system lets you schedule day-by-day drills each week:
 | **Butsukari** | ぶつかり | Charging practice — strength and aggression      |
 | **Teppo**     | 手っ甲   | Pole thrusting — arm strength and push technique |
 | **Moushi-ai** | 申し合い | Full match practice — competitive experience     |
-| **Shindo**    | 進道     | Advancement training — focused stat development  |
+| **Shindo**    | 進道     | Mental conditioning — boosts Mental, reduces fatigue       |
+| **Shiko**     | 四股     | Leg-lift stomping — builds Balance and Stamina             |
 | **Rest**      | —        | Recovery day — reduces fatigue                   |
 
 ### How Stats Actually Grow
@@ -407,7 +408,7 @@ Each week, a wrestler's stats advance toward their **Potential Ability** ceiling
 4. Age and development profile
 5. Individual focus mode
 
-Gains slow as a stat approaches its PA ceiling. A wrestler rated 85 Strength with a PA of 90 will improve much more slowly than one rated 60 with the same ceiling.
+Gains slow as a stat approaches its PA ceiling. A wrestler rated 85 Power with a PA of 90 will improve much more slowly than one rated 60 with the same ceiling.
 
 ### Archetype Drift
 
@@ -491,37 +492,43 @@ Once promoted, a Yokozuna **never demotes**. However, they face mounting pressur
 
 Running a heya costs money — wrestlers' salaries, facilities, food, travel, staff. Prize money and sponsorships pay the bills. Managing the budget carefully is central to long-term success.
 
-### Monthly Salary Scale
+### Salaries — Paid by the JSA, Not by You
 
-| Division/Rank       | Monthly Salary  |
-| ------------------- | --------------- |
-| Yokozuna            | ¥3,000,000      |
-| Ozeki               | ¥2,500,000      |
-| Sekiwake / Komusubi | ¥1,800,000 each |
-| Maegashira          | ¥1,400,000      |
-| Juryo               | ¥1,100,000      |
-| Makushita and below | ¥0 (no salary)  |
+Under the JSA model, wrestler salaries are paid by the association directly into each rikishi's personal finances — they are **not** a heya expense. The monthly scale by rank:
 
-Sekitori (Makuuchi and Juryo wrestlers) also receive a **travel allowance** each month, variable by rank and tournament location.
+| Rank                | Monthly Salary |
+| ------------------- | -------------- |
+| Yokozuna            | ¥3,300,000     |
+| Ozeki               | ¥2,750,000     |
+| Sekiwake / Komusubi | ¥2,000,000     |
+| Maegashira          | ¥1,550,000     |
+| Juryo               | ¥1,200,000     |
+| Makushita and below | ¥0             |
+
+What your stable actually receives from the JSA each month is a **per-wrestler subsidy** keyed by rank (Yokozuna ¥2,500,000 down to Jonokuchi ¥15,000), plus a fixed weekly operational grant and your oyakata's salary. Sekitori also receive a yearly **travel allowance** (¥450,000–¥1,500,000 by rank) paid personally by the JSA — 70% cash, 30% retirement fund.
 
 ### Income Sources
 
-| Source                | Frequency          | Amount                                                                 |
-| --------------------- | ------------------ | ---------------------------------------------------------------------- |
-| **Prize money**       | Per basho          | Yusho: ~¥2,000,000+; Jun-Yusho: ~¥1,000,000; Special prizes: ~¥200,000 |
-| **Kenshō envelopes**  | Per bout           | ¥50,000 per envelope won                                               |
-| **Koenkai donations** | Monthly            | ¥0 – ¥500,000+ depending on supporter strength                         |
-| **Sponsorships**      | Per contract       | Variable by sponsor tier                                               |
-| **Mochikyukin**       | Career-accumulated | Prize money that converts to stable revenue                            |
+| Source                | Frequency          | Amount                                                                                          |
+| --------------------- | ------------------ | ----------------------------------------------------------------------------------------------- |
+| **JSA subsidy**       | Monthly            | Per-wrestler, rank-keyed: ¥15,000 (Jonokuchi) – ¥2,500,000 (Yokozuna); heya keeps 100%           |
+| **Koenkai donations** | Monthly            | Band-based: ¥0 / ¥500K / ¥1.5M / ¥3.5M / ¥7M — 70% to the heya, 30% to sekitori                  |
+| **Sponsor tiers**     | Monthly            | Per active sponsor in your koenkai, by sponsor tier                                             |
+| **JSA grants**        | Weekly + monthly   | Fixed operational grant plus oyakata salary (paid by JSA to the heya)                           |
+| **Sponsorships**      | Per contract       | Variable by sponsor tier                                                                        |
+
+Prize money, kenshō envelopes, and mochikyukin payouts are credited to the **winning wrestler's personal finances** (50% cash / 50% retirement fund where applicable) — they do not flow into heya funds directly.
 
 ### Expenses
 
 | Expense                   | Frequency                              |
 | ------------------------- | -------------------------------------- |
-| Salaries                  | Monthly                                |
-| Travel allowances         | Monthly                                |
-| Facility maintenance/rent | Monthly                                |
-| Food/nutrition            | Monthly (rate depends on diet regimen) |
+| Staff upkeep              | Weekly (per staff member)              |
+| Facility upkeep           | Weekly (per facility quality point)    |
+| Named-facility upkeep     | Weekly (per commissioned building)     |
+| Fixed operating overhead  | Weekly                                 |
+| Recruitment budget        | Weekly (discretionary — skipped when funds are tight) |
+| Food/nutrition            | Daily (rate depends on diet regimen)   |
 | Medical treatment         | As needed                              |
 | Loan repayments           | Monthly (fixed principal + interest)   |
 | Governance fines          | As imposed                             |
@@ -530,13 +537,13 @@ Sekitori (Makuuchi and Juryo wrestlers) also receive a **travel allowance** each
 
 When funds run low you can take out loans:
 
-| Type           | Notes                                    |
-| -------------- | ---------------------------------------- |
-| **Emergency**  | High interest, fast access               |
-| **Supporter**  | Fan-backed, moderate terms               |
-| **Benefactor** | Wealthy patron, may come with conditions |
+| Type           | Interest | Term   | Strings attached                                             |
+| -------------- | -------- | ------ | ------------------------------------------------------------ |
+| **Emergency**  | 0%       | 12 mo  | Recruitment ban                                              |
+| **Supporter**  | 3%       | 24 mo  | Recruitment ban, facility downgrade risk                     |
+| **Benefactor** | 6%       | 36 mo  | Foreign-slot lock, upgrade lock, merger block                |
 
-Interest rates typically range from **5–15% per payment**. Loans with conditions ("strings attached") — such as a requirement to promote a specific wrestler within a timeframe — can have serious consequences if you fail to meet them.
+The loan type is chosen automatically based on your existing debt and scandal score — deeper trouble unlocks larger but costlier loans. Loans with conditions ("strings attached") — such as recruitment bans or merger blocks — can have serious consequences if you cannot meet them.
 
 ### The Finance Ledger
 
@@ -692,9 +699,9 @@ Separate from governance, the welfare system monitors how your wrestlers are tre
 **WelfareRisk** (0–100) reflects the quality of your training environment. Higher means worse conditions:
 
 - **0–30**: Healthy environment
-- **30–60**: Watch territory — inspection risk
-- **60–80**: High risk — investigation likely
-- **80+**: Critical — sanctions probable
+- **30–55**: Watch territory — inspection risk
+- **55+**: Elevated — the game flags your stable as critical welfare risk at 55+
+- **80+**: Severe — sanctions likely
 
 ### Compliance States
 
@@ -838,8 +845,8 @@ Wrestlers retire for several reasons:
 | **Age**                  | Mandatory retirement at 45; Yokozuna at 40       |
 | **Career-ending injury** | Injury severity beyond the critical threshold    |
 | **Council pressure**     | Yokozuna receiving 3 formal performance warnings |
-| **Performance decline**  | 2+ consecutive make-koshi, or 3+ missed basho    |
-| **Natural aging**        | ~5% chance per year after age 34                 |
+| **Performance decline**  | Yokozuna only: 2+ consecutive make-koshi or 3+ missed basho raises retirement pressure (a chance roll, not automatic) |
+| **Natural aging**        | Chance grows ~10% per year of age beyond 34 (e.g. ~10% at 35, ~20% at 36) |
 | **Voluntary**            | Player-initiated early retirement                |
 
 ### Hall of Fame
@@ -928,7 +935,7 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 | **Basho**                  | Grand sumo tournament; six per year                                               |
 | **Bout of the Basho**      | Most exciting match of a tournament                                               |
 | **Butsukari**              | Charging practice drill                                                           |
-| **Cycleephase**            | Current game phase (pre_basho, active_basho, post_basho, interim, banzuke_reveal) |
+| **Cycle Phase**            | Current game phase (pre_basho, active_basho, post_basho, interim, banzuke_reveal) |
 | **Fusensho**               | Default win — opponent was absent                                                 |
 | **Ginosho**                | Technique Award special prize                                                     |
 | **Ginboshi**               | Silver Star — beating an Ozeki as a lower-ranked wrestler                         |
@@ -941,7 +948,7 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 | **Jonidan**                | Fifth division                                                                    |
 | **Jonokuchi**              | Sixth (lowest) division                                                           |
 | **Juryo**                  | Second division; first paid professional level                                    |
-| **Kachi-koshi**            | Winning record: 8+ wins in a 15-match basho                                       |
+| **Kachi-koshi**            | Winning record: 8+ wins in a 15-match basho (4+ in 7-match lower divisions)        |
 | **Kadoban**                | Ozeki on probation after a losing record                                          |
 | **Kantosho**               | Fighting Spirit Award                                                             |
 | **Kenshō**                 | Prize envelopes placed on featured bouts                                          |
@@ -953,7 +960,7 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 | **Kyushu**                 | November basho, held in Fukuoka                                                   |
 | **Makuuchi**               | Top (first) division                                                              |
 | **Makushita**              | Third division; first below professional                                          |
-| **Make-koshi**             | Losing record: 7 or fewer wins                                                    |
+| **Make-koshi**             | Losing record: 7 or fewer wins (15-match); 3 or fewer (7-match lower divisions)    |
 | **Maegashira**             | Numbered ranks in Makuuchi (1–13+)                                                |
 | **Mochikyukin**            | Career prize money accumulation                                                   |
 | **Moushi-ai**              | Full match practice                                                               |

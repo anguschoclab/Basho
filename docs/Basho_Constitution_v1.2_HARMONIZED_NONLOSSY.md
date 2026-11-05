@@ -4,6 +4,16 @@
 **Status:** HARMONIZED / MOVE-BASED / IMPLEMENTATION-GRADE  
 **Project name:** **Basho** (all legacy naming normalized to “Basho” throughout this edition)
 
+> **Divergence notice (added 2026-11):** This constitution is a point-in-time binding contract. Verified divergences from current code — treat `docs/user-manual.md` and source constants as current truth for values:
+>
+> - **Economy:** Part B describes pre-JSA-model money flows. Current code routes wrestler compensation (salaries, prizes, kenshō, teate, mochikyukin, travel allowances) to **rikishi personal economics**; heya income is koenkai (70% band share), JSA per-wrestler subsidy, sponsor tiers, JSA grants, and oyakata salary (`src/engine/economy/FinanceCalculator.ts`, `src/engine/lifecycle/PrizeDistribution.ts`).
+> - **Rank salaries:** current monthly values are Yokozuna ¥3.3M / Ozeki ¥2.75M / Sekiwake+Komusubi ¥2.0M / Maegashira ¥1.55M / Juryo ¥1.2M (`src/engine/types/banzuke.ts` → `RANK_HIERARCHY`).
+> - **Kimarite weighting:** rarity is now derived from real-world frequency **shares** via `rarityFromShare` (≥8% common, ≥1.5% uncommon, ≥0.2% rare, below legendary) in `src/constants/engine/kimariteTargets.ts`, not the absolute weight tiers this document describes.
+> - **NPC code layout:** all NPC systems consolidated under `src/engine/npc/` (workers, agents, strategies, weekly orchestration).
+> - **Worker commands:** canonical union is `EngineCommand` in `src/engine/worker/types.ts`; see `docs/audit/worker-command-surface.md`.
+>
+> Part B remains verbatim historical canon — do not edit it to "fix" drift; record divergences here instead.
+
 ---
 
 ## What this document is

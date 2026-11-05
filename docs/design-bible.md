@@ -614,7 +614,7 @@ rather than hardcoded Tailwind color classes like `text-yellow-400`.
 
 | File                                        | Purpose                                                                   |
 | ------------------------------------------- | ------------------------------------------------------------------------- |
-| `src/index.css`                             | All CSS variables, design tokens, global styles, component classes        |
+| `src/app/index.css`                           | All CSS variables, design tokens, global styles, component classes        |
 | `tailwind.config.ts`                        | Tailwind color tokens (references CSS vars), font families, border radius |
 | `src/components/layout/AppSidebar.tsx`      | Sidebar shell, navigation groups, logo, footer                            |
 | `src/components/layout/TopNavBar.tsx`       | Global header, phase info, Continue button                                |

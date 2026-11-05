@@ -1,5 +1,7 @@
 # Agent Architecture Plan for Basho
 
+> **Status:** Completed plan. Paths below have been updated to current locations — all NPC code now lives under `src/engine/npc/` (workers in `npc/npcAIWorkers.ts`, weekly orchestration in `npc/weekly.ts`, agents in `npc/agents/`, strategies in `npc/strategy/`). Strategy filenames in the historical analysis section predate later renames (e.g. `npcFinanceStrategy.ts` → `NPCFinanceCalculator.ts`, `npcGovernanceStrategy.ts` → `NPCGovernanceCalculator.ts`).
+
 ## Executive Summary
 
 This document outlines a comprehensive agent architecture for the Basho codebase. Based on exhaustive codebase analysis, I've identified key decision points where specialized agents can enhance NPC AI behavior, simulation realism, and system maintainability.
@@ -8,7 +10,7 @@ This document outlines a comprehensive agent architecture for the Basho codebase
 
 ### Existing Agent Infrastructure
 
-**Location:** `src/engine/npcAIWorkers.ts`
+**Location:** `src/engine/npc/npcAIWorkers.ts`
 
 **Current Workers:**
 
@@ -17,9 +19,9 @@ This document outlines a comprehensive agent architecture for the Basho codebase
 3. **Personnel Worker** - Identifies rikishi to protect, develop, push, or withdraw
 4. **Global Worker** - Evaluates exhibition invitations
 
-**Orchestrator:** `src/engine/npcAI.ts` - `makeNPCWeeklyDecision()` coordinates all workers
+**Orchestrator:** `src/engine/npc/weekly.ts` - `makeNPCWeeklyDecision()` coordinates all workers
 
-**Strategy Service:** `src/engine/strategy/NPCStrategyService.ts` - Contains decision functions called by workers
+**Strategy Service:** `src/engine/npc/strategy/NPCStrategyService.ts` - Contains decision functions called by workers
 
 ### Strategy Files (Not Yet Agentified)
 
@@ -184,13 +186,13 @@ Agents will be integrated into:
 
 ### Completed
 
-1. **Crisis Agent** - `src/engine/agents/CrisisAgent.ts` - Handles crisis responses based on personality traits
-2. **Finance Agent** - `src/engine/agents/FinanceAgent.ts` - Financial investment decisions
-3. **Governance Agent** - `src/engine/agents/GovernanceAgent.ts` - Political maneuvering and scandal management
-4. **Recruitment Agent** - `src/engine/agents/RecruitmentAgent.ts` - Recruitment strategy and bidding
-5. **Rivalry Agent** - `src/engine/agents/RivalryAgent.ts` - Rivalry escalation/de-escalation decisions
-6. **Narrative Agent** - `src/engine/agents/NarrativeAgent.ts` - Story generation and event orchestration
-7. **Agent Index** - `src/engine/agents/index.ts` - Barrel export for all agents
+1. **Crisis Agent** - `src/engine/npc/agents/CrisisAgent.ts` - Handles crisis responses based on personality traits
+2. **Finance Agent** - `src/engine/npc/agents/FinanceAgent.ts` - Financial investment decisions
+3. **Governance Agent** - `src/engine/npc/agents/GovernanceAgent.ts` - Political maneuvering and scandal management
+4. **Recruitment Agent** - `src/engine/npc/agents/RecruitmentAgent.ts` - Recruitment strategy and bidding
+5. **Rivalry Agent** - `src/engine/npc/agents/RivalryAgent.ts` - Rivalry escalation/de-escalation decisions
+6. **Narrative Agent** - `src/engine/npc/agents/NarrativeAgent.ts` - Story generation and event orchestration
+7. **Agent Index** - `src/engine/npc/agents/index.ts` - Barrel export for all agents
 
 ### Integration (Next Steps)
 

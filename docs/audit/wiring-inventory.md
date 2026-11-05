@@ -1,6 +1,8 @@
 # Wiring Inventory — Phase 0
 
 > Generated 2026-10-08. Method: import-graph BFS over 881 production files from entry points `main.tsx`, `bootstrap.tsx`, `engine.worker.ts` (+ `electron/main.ts` verified separately — it lives outside `src/`). 845 files reached, 36 unreachable.
+>
+> **Status:** Point-in-time snapshot. Some DELETE candidates have since been actioned (e.g. `components/ui/colorMaps.ts` and the `components/ui/index.ts` barrel no longer exist); others may have gained importers. Re-run the audit before deleting anything listed here.
 
 ## 1. Unreachable files — classified
 

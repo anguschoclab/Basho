@@ -1,43 +1,49 @@
 # Bard Engine Architecture Audit (Deep-Dive)
 
+> **Status note (updated):** This audit originally described a monolithic `archive.json`. The data layer has since been split into per-domain files under `src/engine/bard/domains/` (24 files, ~313KB) plus `registry.json` and `vocabulary.json`. Sections below reflect the current structure; critique items that have been addressed are marked **[RESOLVED]**.
+
 ## Introduction
 
-The **Bard Engine v2.2** is a centralized, data-driven narrative synthesis system for _Basho_. Its primary mission is to decouple game-state simulation from linguistic presentation, allowing for complex, context-aware storytelling that remains perfectly deterministic.
+The **Bard Engine** is a centralized, data-driven narrative synthesis system for _Basho_. Its primary mission is to decouple game-state simulation from linguistic presentation, allowing for complex, context-aware storytelling that remains perfectly deterministic.
 
 ## System Architecture
 
 The system is organized into four distinct layers:
 
-### 1. Data Layer (`archive.json`)
+### 1. Data Layer (`src/engine/bard/`)
 
-The "Script" of the game. A massive hierarchical registry (~90KB) containing narrative templates, metadata, and kimarite descriptions.
+The "Script" of the game. Narrative content lives in:
 
-- **Organization**: Divided into `registry` (enums/labels), `matrix` (complex phrase mappings), and `domains` (context-specific templates like `combat` or `management`).
-- **Templating**: Supports `%TOKEN%` and `{{token}}` syntax.
+- **`domains/*.json`** — 24 domain files (combat, events, medical, scouting, ui, world, etc.) containing narrative templates organized by `domain.subdomain.type` path hierarchy.
+- **`registry.json`** — enum/label registries resolvable via the `registry.*` path root.
+- **`vocabulary.json`** — shared vocabulary including `intensity_1/2/3` label sets.
+
+- **Templating**: `%TOKEN%` placeholders interpolated at resolve time; a token is valid only where its context key is actually supplied (missing keys render `[MISSING: KEY]`).
+- **Loading**: domain JSONs are lazy-loaded per domain with a bulk-load fallback; resolution paths use dot-notation (e.g., `combat.phases.tachiai`).
 
 ### 2. Resolution Layer (`BardEngine.ts`)
 
-The pure utility core that navigates the archive and performs string interpolation.
+The pure utility core that navigates the domain data and performs string interpolation.
 
-- **Resolving**: Uses dot-notation (e.g., `combat.phases.tachiai`) to locate phrase arrays.
-- **Intensity Mapping**: Translates raw intensity values (1-3) into varying levels of descriptive prose.
-- **Interpolation**: Automatically formats Japanese currency (JPY) and percentages based on token names (`money`, `kensho`, etc.).
-- **LRU Cache**: A static 50-entry cache that prevents immediate repetition of narrative templates.
+- **Resolving**: dot-notation paths locate phrase arrays; legacy paths auto-prefix with `domains`.
+- **Intensity Mapping**: `intensity` values (1–3) select label variants from `vocabulary.json`.
+- **Interpolation**: formats values based on token names (e.g., money/percent tokens get locale formatting).
+- **LRU Cache**: a 50-entry anti-repetition cache, keyed per RNG-seed "lane" so concurrent world instances do not share narrative history.
 
-### 3. Service Layer (`NarrativeService.ts` / `NarrativeBands.ts` / `NarrativeProse.ts`)
+### 3. Service Layer (`src/engine/narrative/`)
 
 The bridge between the mathematical engine and the narrative engine.
 
-- **Banding**: Categorizes floats (0.0 - 1.0) or ints (0 - 100) into qualitative "Bands" (e.g., "Superior", "Exhausted").
-- **Hysteresis**: Implements a 5% buffer zone to prevent labels from flickering between states when a value oscillates around a threshold.
-- **Prose Fetching**: Maps specific bands to paths in the `archive.json` for high-level UI display.
+- **`NarrativeService.ts` / `NarrativeBands.ts` / `NarrativeProse.ts`** — categorize floats (0.0–1.0) or ints (0–100) into qualitative "Bands" (e.g., "Superior", "Exhausted") and map them to narrative paths.
+- **Hysteresis**: a buffer zone prevents labels from flickering between states when a value oscillates around a threshold.
+- **Prose Fetching**: maps bands to template paths for high-level UI display.
 
-### 4. Presentation & Integration Layer (`EventBus.ts` / `uiDigest.ts`)
+### 4. Presentation & Integration Layer (`src/engine/events/EventBus.ts` / `src/presenters/uiDigest.ts`)
 
 The consumer layer that triggers narrative generation.
 
-- **Stable Seeding**: Generates deterministic seeds for every event (e.g., `medical-rikishiId-year-week`) to ensure the narrative is stable across save/load cycles.
-- **UI Projections**: Localizes headers, labels, and complex narrative blocks for promotion drama (Ozeki/Yokozuna runs).
+- **Stable Seeding**: deterministic seeds per event (e.g., `medical-rikishiId-year-week`) keep narratives stable across save/load cycles.
+- **UI Projections**: localizes headers, labels, and narrative blocks for promotion drama (Ozeki/Yokozuna runs).
 
 ---
 
@@ -45,21 +51,20 @@ The consumer layer that triggers narrative generation.
 
 ### [APPROVE] High-Quality Patterns
 
-- **Deterministic Narrative Stability**: By using stable seeds for every event resolution, the system ensures that a "Devastating Charge" doesn't turn into a "Cautious Tachiai" simply by reloading the game.
-- **Hysteresis Implementation**: The use of a history-aware transition buffer in `toBandWithHysteresis` is a professional-grade detail that prevents label "jitter" in UI components.
-- **Content/Logic Decoupling**: Successful isolation of 2000+ lines of text into a single JSON file allows the simulation engine to remain purely mathematical while the narrative can be expanded independently.
-- **Seeded Variety**: The use of a Seeded RNG combined with an LRU cache provides a "best of both worlds" approach: variety in descriptions without the risk of non-deterministic behavior.
+- **Deterministic Narrative Stability**: stable per-event seeds ensure a "Devastating Charge" doesn't turn into a "Cautious Tachiai" simply by reloading the game.
+- **Hysteresis Implementation**: the history-aware transition buffer prevents label "jitter" in UI components.
+- **Content/Logic Decoupling**: narrative text is isolated in JSON domains so the simulation engine stays purely mathematical and content can expand independently.
+- **Seeded Variety**: Seeded RNG plus the LRU cache gives variety without non-deterministic behavior.
+- **Per-seed cache lanes**: anti-repetition state is keyed by seed rather than a single module-global, so concurrent simulations don't contaminate each other.
 
 ### [DISPROVE] Implementation Critiques
 
-- **Static Global State**: The `BardEngine` is implemented as a static class with internal static cache state. This prevents supporting multiple concurrent "World" instances (e.g., in a server context or for AI simulations) because they would share a narrative history.
-- **Monolithic Archive Bottleneck**: Keeping the entire game's script in one `archive.json` file is a maintenance risk. It creates a bottleneck for version control and increases the risk of JSON syntax errors breaking the entire engine.
-- **Brittle "String Splitting" Presenters**: Some presenters (e.g., `uiDigest.ts`) perform manual `split()` operations on resolved strings to extract labels from full prose sentences.
+- ~~**Static Global State**~~ **[RESOLVED]** — the cache is now partitioned into per-seed lanes; concurrent world instances no longer share narrative history.
+- ~~**Monolithic Archive Bottleneck**~~ **[RESOLVED]** — the single `archive.json` was split into 24 domain files plus `registry.json`/`vocabulary.json`, removing the version-control and syntax-error bottleneck.
+- **Brittle "String Splitting" Presenters**: some presenters (e.g., `uiDigest.ts`) perform manual `split()` operations on resolved strings to extract labels from full prose sentences.
   - _Example_: `text.split(" — ")[0].split(".")[0];`
-  - _Critique_: This is a major architectural leak. Presentation logic should not assume the structure of narrative prose.
-- **Hardcoded Localization**: The `ja-JP` JPY formatting is hardwired into the `BardEngine` core. This prevents clean support for alternate locales or currencies.
-- **Implicit Formatting Rules**: Triggering currency formatting via substring matching (e.g., key contains "money") is "magical" and brittle. It should be replaced with explicit type metadata in the archive.
-- **Inconsistent Logic Ownership**: Promotion logic (`runKey`) is calculated in the UI Presenter but Stat logic (`band`) is calculated in the Narrative Service. This fragmentation makes it hard to find where the "story" is actually being decided.
+  - _Critique_: presentation logic should not assume the structure of narrative prose.
+- **Inconsistent Logic Ownership**: promotion logic (`runKey`) is calculated in the UI presenter while band logic lives in the Narrative Service. This fragmentation makes it hard to find where the "story" is actually being decided.
 
 ---
 
@@ -67,5 +72,5 @@ The consumer layer that triggers narrative generation.
 
 1.  **Never Use Hardcoded Strings**: All text displayed to the user MUST go through `BardEngine.resolve`.
 2.  **Maintain Determinism**: Always pass a `SeededRNG` (or a stable seed string) to any resolution function.
-3.  **Path Integrity**: Do not change the structure of `archive.json` without verifying all resolution paths in `EventBus.ts` and `uiDigest.ts`.
+3.  **Path Integrity**: Do not change the structure of `domains/*.json`, `registry.json`, or `vocabulary.json` without verifying all resolution paths in `EventBus.ts` and `uiDigest.ts`. `tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production path with real context keys — run it when adding templates.
 4.  **Avoid Logic in Presenters**: If a narrative choice requires calculating state (e.g., "Is this an upset?"), that calculation should happen in the **Narrative Service**, not the UI layer.

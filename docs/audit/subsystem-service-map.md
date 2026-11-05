@@ -1,5 +1,7 @@
 # Subsystem Service Map (C2)
 
+> **Status:** Point-in-time map from the C2 audit. Caller-phase names verified against `src/engine/tick/phases/`; spot-check individual rows before relying on them — services have been added/moved since (e.g. NPC code consolidated under `src/engine/npc/`).
+
 | Service                   | Called From                                         | Inputs                  | Outputs                        | Determinism            | Reads world.rng |
 | ------------------------- | --------------------------------------------------- | ----------------------- | ------------------------------ | ---------------------- | --------------- |
 | TravelAllowanceService    | phase05_monthly_boundary                            | heya, rikishiIds        | StateImpact (heyas funds)      | Pure                   | No              |

@@ -72,13 +72,13 @@ out/
 bun run electron:build
 ```
 
-Detects the current platform and packages accordingly. Outputs installers to `dist-electron/`.
+Packages for **macOS** (`electron-builder --mac`). Outputs installers to `dist-electron/`. Use `electron:build:win` for Windows or `electron:build:all` for all platforms.
 
 ### Platform-specific builds
 
 ```bash
 # macOS — produces .dmg and .zip for both x64 (Intel) and arm64 (Apple Silicon)
-bun run electron:build:mac
+bun run electron:build
 
 # Windows — produces an NSIS .exe installer for x64
 bun run electron:build:win
@@ -90,7 +90,7 @@ bun run electron:build:win
 
 ## Build Output
 
-After `bun run electron:build:mac`:
+After `bun run electron:build`:
 
 ```
 dist-electron/
@@ -176,7 +176,7 @@ export CSC_KEY_PASSWORD=your-cert-password
 export APPLE_ID=your@apple.id
 export APPLE_APP_SPECIFIC_PASSWORD=xxxx-xxxx-xxxx-xxxx
 export APPLE_TEAM_ID=XXXXXXXXXX
-bun run electron:build:mac
+bun run electron:build
 ```
 
 Windows code signing uses `WIN_CSC_LINK` and `WIN_CSC_KEY_PASSWORD` with a `.pfx` certificate.
