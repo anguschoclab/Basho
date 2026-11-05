@@ -36,7 +36,7 @@ export default function MyosekiMarketPage() {
             icon={Loader2}
             title="Loading Market Records"
             description="Fetching elder stock exchange..."
-            className="animate-pulse"
+            iconClassName="animate-spin text-muted-foreground"
           />
         </div>
       </AppLayout>

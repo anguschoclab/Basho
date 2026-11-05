@@ -32,7 +32,7 @@ export default function GovernancePage() {
             icon={Loader2}
             title="Loading Governance"
             description="Fetching association records..."
-            className="animate-pulse"
+            iconClassName="animate-spin text-muted-foreground"
           />
         </div>
       </AppLayout>

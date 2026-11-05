@@ -15,7 +15,10 @@ import type { StyleBias } from "@/engine/types/training";
 import type { Staff } from "@/engine/types/staff";
 import type { Id } from "@/engine/types/common";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
-import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "@/engine/core/selectors";
+import {
+  getAvailableStables,
+  getActiveRikishi as getSelectorsActiveRikishi,
+} from "@/engine/core/selectors";
 import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
 import { electronArchiveService } from "@/engine/persistence/storage/electronArchive";
 
@@ -33,7 +36,7 @@ export function getRikishi(world: WorldState, id: Id): Rikishi | undefined {
  * Get a rikishi by ID from either active or historical collection.
  * The returned entry may be a full Rikishi (active, or retired-but-not-yet-summarized)
  * or a compact RetiredRikishiSummary (after year-end summarization).
- * Use isRetiredRikishiSummary() to discriminate, or getRetiredRikishiSummary() to
+ * Use isRetiredRikishiSummaryEntry() to discriminate, or getRetiredRikishiSummary() to
  * narrow to summaries only.
  * @returns The Rikishi | RetiredRikishiSummary, or undefined if not found.
  */
