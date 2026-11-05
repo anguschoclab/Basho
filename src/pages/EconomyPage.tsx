@@ -66,7 +66,7 @@ export default function EconomyPage() {
             icon={Loader2}
             title="Loading Finances"
             description="Calculating financial health and projections..."
-            className="animate-pulse"
+            iconClassName="animate-spin text-muted-foreground"
           />
         </div>
       </AppLayout>

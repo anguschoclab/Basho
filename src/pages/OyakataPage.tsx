@@ -32,7 +32,7 @@ export default function OyakataPage() {
             icon={Loader2}
             title="Loading Oyakata"
             description="Fetching elder profile..."
-            className="animate-pulse"
+            iconClassName="animate-spin text-muted-foreground"
           />
         </div>
       </AppLayout>
