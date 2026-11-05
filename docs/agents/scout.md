@@ -17,7 +17,7 @@ Your mission is to identify ONE meaningful gap in test coverage and close it wit
 
 - **Tiers:** `tests/unit/` is fast-by-default — tests that spawn subprocesses, require a prior build, or simulate months of game time belong in `tests/slow/` instead
 - **Meta gates** in `tests/unit/meta/` will reject: `child_process` or `runAutoSim`/`generateInitialWorld`+`simulateEntireBasho` in unit tests (`noSubprocessInUnitTests`), per-file duration over budget vs `docs/audit/test-timings.json` (`testTimingsBudget`), non-allowlisted local factories (`factoryDiscipline`), >5s per-test timeouts in unit/ or `vitest.setTimeout` >30s anywhere (`testTimeoutBudget`), tautological assertions (`weakAssertionAudit`)
-- **Mock factories:** primary is `tests/helpers/utils/MockFactory.ts` (~118 consumers); `tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists. Use them — don't invent parallel ones
+- **Mock factories:** primary is `tests/helpers/utils/MockFactory.ts` (~160 consumers); `tests/unit/engine/utils.ts` → `mockRikishi(id, overrides?)` also exists. Use them — don't invent parallel ones
 - **`trainingState` in mocks must be `new Map([["heyaId", {...}]])`** — it's a Map, not a plain object
 - **vmThreads caveat:** `globalThis.window` is a non-configurable getter under the jsdom pool — never `Object.defineProperty`/`delete`/`stubGlobal` `window` itself; set properties _on_ the existing window or spy its methods
 - All vitest configs use `pool: "vmThreads"` + `fileParallelism` — no shared-state writers in `tests/unit/`

@@ -14,7 +14,7 @@ Your mission is to ship ONE small, complete player-facing feature that exposes e
 ## Repo Pointers
 
 - **Presentation layer is `src/presenters/`** — `selectors.ts` (memoized via `createSelector`), `uiModels.ts` (`projectRikishi`), `projections/`, `uiDigest.ts`. New features must follow this path, not invent a new one.
-- **Components may NOT import `@/engine/npc/**`** (eslint `no-restricted-imports` — only `@/engine/types` is allowed). Derive types in components via e.g. `NonNullable<Rikishi["agency"]>["loyaltyBand"]`. Presenter-layer files may import engine internals freely.
+- **Components/pages may NOT import `@/engine/**` at all** (eslint `no-restricted-imports` blanket deny — only `@/engine/types` and `@/engine/holiday` are exempt, and even the types barrel bans world-state names like `WorldState`, which must come via `@/presenters/uiDigest`). Presenter-layer files may import engine internals freely.
 - `runAutoSim` returns `finalWorld` — it does NOT mutate the passed world; empirical checks must read `result.finalWorld`.
 - Pages are lazy-loaded; entity-detail routes each own a "not found"/empty branch.
 - Curator features are strictly read-only — no worker commands, no reducer slices.

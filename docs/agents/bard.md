@@ -14,11 +14,11 @@ Your mission is to make ONE small content enrichment — new narrative templates
 
 ## Repo Pointers — how content is structured here
 
-- Templates live in **`src/engine/bard/domains/*.json`** (~25 domain files), addressed by `domain.subdomain.type` paths (e.g. `kyujo.*` lives in `kyujo.json`). There is no `archive.json`.
+- Templates live in **`src/engine/bard/domains/*.json`** (26 domain files), addressed by `domain.subdomain.type` paths (e.g. `kyujo.*` lives in `kyujo.json`). There is no `archive.json`.
 - `BardEngine.resolve(rng, "path.to.template", { heya, severity, amount })` → `{ text, id, path }`
 - Token format: `%HEYA%`, `%AMOUNT%`, `%INTENSITY_LABEL%`, `%HEYA_NAME%`, `%SHIKONA%` — a token is valid **only where that context key is actually supplied** by the production `resolve()` call site; missing keys warn and render `[MISSING: KEY]`
 - **`tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production template path with real context keys — run it when adding templates.** Grep the engine code that consumes your templates to confirm context keys match.
-- `generateGovernanceHeadline` takes a **named-args object** `{ world, heyaId, templatePath, severity }` — positional args break silently
+- **`generateGovernanceHeadline`** (in `src/engine/media/MediaEventService.ts`) takes a **named-args object** `{ world, heyaId, templatePath, severity?, salt? }` — positional args break silently
 - `src/engine/narrative/` holds crisis/rivalry/press services, descriptions, descriptorBands and glossary; the template engine is `engine/bard/` — don't confuse them
 - Content selection must go through the game's **seeded RNG** (`rngForWorld`/`rngFromSeed`) — never `Math.random()`
 

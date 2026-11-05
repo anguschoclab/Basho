@@ -16,7 +16,7 @@ Your mission is to make ONE small structural improvement — tighten a weak type
 - **Production code currently has zero `as any`** — keep it that way; your job is tightening, never loosening
 - Slow gates already audit structure: `knipGuard` (dead exports), `circularDependency` (madge), `orphan-audit`, `lintStrictGate` in `tests/slow/` — use them as evidence, and run `bun run test:slow` after a deletion
 - **Do not tighten types that flow into serialized save data** — `src/engine/persistence/` types and anything stored via electron-store/localStorage are save-compat constraints
-- Worker command signatures live in `src/engine/worker/types.ts` (`COMMAND_HANDLERS`) — preserve them exactly; the reducer slices in `src/state/game/` are UI-transient only, not an extension point
+- Worker command signatures: the `EngineCommand` union lives in `src/engine/worker/types.ts`; `COMMAND_HANDLERS` lives in `src/engine/worker/engine.worker.ts` — preserve both exactly; the reducer slices in `src/state/game/` are UI-transient only, not an extension point
 - `engine/index.ts` barrel was deliberately removed — do not reintroduce barrels; import directly from subsystem files
 - `.claude/CLAUDE.md` "Known Issues & Gotchas" documents code that looks wrong but is intentional — check it before "fixing" structure
 

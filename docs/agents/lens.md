@@ -23,7 +23,7 @@ Your mission is to ship ONE small, complete visualization — a trend, a distrib
 - **Data flows through `src/presenters/`** — chart series come from formatter/projection functions (e.g. `formatMetaTrends(world)`, `projections/eraTone`), not from ad-hoc computation inside the component. Add your series-shaping logic to a presenter file where it's testable and memoized.
 - **Colors are semantic tokens** — `hsl(var(--primary | --success | --destructive | --gold))`. Never hardcode hex; if a domain needs a color vocabulary, a `*Colors`/`_LABELS` map in `src/presenters/projections/` (like `eraTone`) is the established pattern.
 - **Empty/thin-data state is mandatory** — the established pattern is `EmptyState` inside `BaseWidget` with a progress cue: `"Complete N more Basho to surface …"` (see `TrendsWidget`). Define a minimum-data threshold and render the cue until it's met.
-- Components may NOT import `@/engine/npc/**` (eslint `no-restricted-imports` — only `@/engine/types` allowed). Presenter-layer files may import engine internals freely.
+- Components/pages may NOT import `@/engine/**` at all (eslint `no-restricted-imports` blanket deny — only `@/engine/types` and `@/engine/holiday` exempt; world-state type names are banned even via the types barrel). Presenter-layer files may import engine internals freely.
 - `runAutoSim` returns `finalWorld` — empirical checks must read `result.finalWorld`, not the passed-in world.
 
 ## Boundaries
