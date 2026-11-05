@@ -95,6 +95,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     BUILD_FOREIGN_ACADEMY: (cmd) => {
       if (rt.world) {
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = WorldCircuitService.buildForeignAcademy(rt.world, cmd.heyaId, cmd.region);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
@@ -102,6 +103,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     BUILD_YOUTH_ACADEMY: (cmd) => {
       if (rt.world) {
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = buildYouthAcademy(rt.world, cmd.heyaId);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
@@ -109,6 +111,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     UPGRADE_YOUTH_ACADEMY: (cmd) => {
       if (rt.world) {
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = upgradeYouthAcademy(rt.world, cmd.heyaId);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
@@ -116,6 +119,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     INVEST_ACADEMY: (cmd) => {
       if (rt.world) {
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = investInAcademy(rt.world, cmd.heyaId, cmd.amount);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
@@ -123,6 +127,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     HIRE_ACADEMY_STAFF: (cmd) => {
       if (rt.world) {
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = hireAcademyStaff(rt.world, cmd.heyaId, cmd.role);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
@@ -130,6 +135,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     PROMOTE_INTAKE: (cmd) => {
       if (rt.world) {
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = promoteIntake(rt.world, cmd.heyaId, cmd.prospectId);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
@@ -137,6 +143,7 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     MANAGE_ACADEMY: (cmd) => {
       if (rt.world) {
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = manageAcademy(rt.world, cmd.heyaId, cmd.region, cmd.config);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();

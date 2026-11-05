@@ -9,6 +9,7 @@ import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import type { WorldState } from "@/engine/types/world";
 
 // ── V17-F01 — isPlayerOwned must derive from world.playerHeyaId ─────────────
 // Heya.isPlayerOwned is declared but never populated in production; every
@@ -113,7 +114,7 @@ describe("V17-F04 election cadence", () => {
     const { phase01_week_governance } =
       await import("@/engine/tick/phases/phase01_week_governance");
     const world = MockFactory.createWorld({ week: 52, year: 2024 });
-    const heya = MockFactory.createHeya("h-elect", { ichimon: "TestIchimon" });
+    const heya = MockFactory.createHeya("h-elect", { ichimon: "Dewanoumi" });
     world.heyas.set("h-elect", heya);
     world.playerHeyaId = "player-x";
     const impact = phase01_week_governance(world);
@@ -125,7 +126,7 @@ describe("V17-F04 election cadence", () => {
     const { phase01_week_governance } =
       await import("@/engine/tick/phases/phase01_week_governance");
     const world = MockFactory.createWorld({ week: 52, year: 2025 });
-    const heya = MockFactory.createHeya("h-elect", { ichimon: "TestIchimon" });
+    const heya = MockFactory.createHeya("h-elect", { ichimon: "Dewanoumi" });
     world.heyas.set("h-elect", heya);
     world.playerHeyaId = "player-x";
     const impact = phase01_week_governance(world);
@@ -175,7 +176,7 @@ describe("V17-F06 Global Cup player champion flag", () => {
     });
     const builder = createImpactBuilder("test");
     // finalizeTournament is exposed on the service namespace.
-    (GlobalCupService as Record<string, unknown>).finalizeTournament(
+    (GlobalCupService as unknown as { finalizeTournament: (w: WorldState, b: unknown, id: string, name: string, ids: string[]) => void }).finalizeTournament(
       world,
       builder,
       "winner-1",
@@ -279,7 +280,7 @@ describe("V17-F08 purchaseMyoseki proceeds", () => {
   it("debits the buyer heya and credits the seller heya resolved via oyakata", async () => {
     const { purchaseMyoseki } = await import("@/engine/governance/services/MyosekiTradingService");
     const { world, market } = purchaseWorld();
-    const impact = purchaseMyoseki(world, market as never, "s1", "oya-buyer", "h-buyer");
+    const impact = purchaseMyoseki(world, market as never, "s1", "oya-buyer", 5_000);
     const resolved = resolveImpacts(world, [impact]);
     expect(resolved.heyas.get("h-buyer")?.funds).toBe(5_000 - 1000);
     expect(resolved.heyas.get("h-seller")?.funds).toBe(5_000 + 1000);

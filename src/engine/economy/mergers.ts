@@ -250,10 +250,14 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
   }
 
   if (candidates.length === 0) {
-    // Fallback: any stable with room
+    // Fallback: any stable with room — still never the player's heya
     const fallback: import("@/engine/types/heya").Heya[] = [];
     for (const h of world.heyas.values()) {
-      if (h.id !== sourceHeyaId && getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_MERGER)
+      if (
+        h.id !== sourceHeyaId &&
+        h.id !== world.playerHeyaId &&
+        getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_MERGER
+      )
         fallback.push(h);
     }
     if (fallback.length === 0) return null;

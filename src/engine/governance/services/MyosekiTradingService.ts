@@ -101,15 +101,17 @@ export function purchaseMyoseki(
     history: [tx, ...market.history],
   });
 
-  // Debit the buyer — previously NPC purchases transferred the stock but left
-  // funds untouched (free elder shares).
-  builder.updateHeya(buyerId, { funds: buyerFunds - price });
+  // Debit the buyer's heya — buyerId is an oyakata id, so resolve its heya;
+  // fall back to treating buyerId as a heya id for callers that pass one.
+  const buyerHeyaId = world.oyakata?.get(buyerId)?.heyaId ?? buyerId;
+  builder.updateHeya(buyerHeyaId, { funds: buyerFunds - price });
 
-  // Credit the seller — the sale proceeds were destroyed before: buyer debited
-  // but nobody received the money (stock.ownerId is a heyaId, same as buyerId).
-  const seller = getHeya(world, stock.ownerId);
-  if (seller && stock.ownerId !== buyerId) {
-    builder.updateHeya(stock.ownerId, { funds: seller.funds + price });
+  // Credit the seller's heya — stock.ownerId is an oyakata id (or "JSA"), so
+  // resolve the owning heya the same way. JSA-owned stock pays no heya.
+  const sellerHeyaId = world.oyakata?.get(stock.ownerId)?.heyaId ?? stock.ownerId;
+  const seller = sellerHeyaId !== "JSA" ? getHeya(world, sellerHeyaId) : undefined;
+  if (seller && seller.id !== buyerHeyaId) {
+    builder.updateHeya(seller.id, { funds: seller.funds + price });
   }
 
   return builder.build();

@@ -20,10 +20,26 @@ vi.mock("@/components/recruitment/YouthAcademyPanel", () => ({
     ),
 }));
 
-const mockProjectYouthAcademy = vi.fn(() => ({
-  level: 0,
+const mockProjectYouthAcademy = vi.fn((): {
+  academy: {
+    level: number;
+    maxLevel: number;
+    prospectCount: number;
+    maxProspects: number;
+    totalGraduated: number;
+    budget: number;
+    staff: { id: string; role: string }[];
+    maxStaff: number;
+    lastIntakeYear: number;
+    prospects: { id: string }[];
+  } | null;
+  hasAcademy: boolean;
+  canUpgrade: boolean;
+  upgradeCost: number;
+} => ({
+  academy: null,
   hasAcademy: false,
-  prospectCapacity: 0,
+  canUpgrade: false,
   upgradeCost: 50000,
 }));
 
@@ -108,16 +124,21 @@ describe("YouthAcademyPage — no duplicate academy controls", () => {
 
   function worldWithAcademy() {
     mockProjectYouthAcademy.mockReturnValue({
-      level: 1,
-      hasAcademy: true,
-      prospectCapacity: 4,
-      upgradeCost: 50000,
       academy: {
-        prospects: [{ id: "prospect-1" }],
+        level: 1,
+        maxLevel: 5,
+        prospectCount: 1,
+        maxProspects: 4,
+        totalGraduated: 0,
+        budget: 100000,
         staff: [{ id: "st-1", role: "coach" }],
         maxStaff: 3,
-        budget: 100000,
+        lastIntakeYear: 2020,
+        prospects: [{ id: "prospect-1" }],
       },
+      hasAcademy: true,
+      canUpgrade: true,
+      upgradeCost: 50000,
     });
     return {
       seed: "test",

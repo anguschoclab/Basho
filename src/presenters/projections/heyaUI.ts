@@ -74,7 +74,7 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
   return {
     id: h.id,
     name: h.name,
-    isPlayerOwned: h.isPlayerOwned ?? false,
+    isPlayerOwned: h.id === world.playerHeyaId,
 
     prestige: h.prestige,
     prestigeBand,

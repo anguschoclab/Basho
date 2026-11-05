@@ -221,22 +221,29 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
   for (const stock of stableSort(Object.values(market.stocks), (x) => x.id)) {
     const updatedStock = { ...stock };
 
-    // 1. Pay lease fees (if leased)
+    // 1. Pay lease fees (if leased) — lessee's heya pays, owner's heya receives.
     if (stock.status === "leased" && stock.leaseFee) {
       const weeklyFee = Math.floor(stock.leaseFee / 52); // Approx weekly
 
-      // Try to deduct from lessee's heya
-      if (stock.holderId.startsWith("oyakata_")) {
-        // Find heya owned by this oyakata
-        const lesseeHeya = oyakataHeyaMap.get(stock.holderId);
-        if (lesseeHeya) {
-          const existing = heyaUpdates[lesseeHeya.id];
-          if (!existing) {
-            heyaUpdates[lesseeHeya.id] = { funds: lesseeHeya.funds - weeklyFee };
-          } else {
-            existing.funds = (existing.funds ?? lesseeHeya.funds) - weeklyFee;
-          }
-        }
+      // Resolve the lessee's heya through the oyakata namespace — holderId is
+      // an oyakata id, not a heya id (id-prefix sniffing previously missed
+      // every oyakata not named "oyakata_*").
+      const lesseeHeyaId =
+        world.oyakata?.get(stock.holderId)?.heyaId ?? oyakataHeyaMap.get(stock.holderId)?.id;
+      const lesseeHeya = lesseeHeyaId ? world.heyas.get(lesseeHeyaId) : undefined;
+      if (lesseeHeya) {
+        const existing = heyaUpdates[lesseeHeya.id];
+        heyaUpdates[lesseeHeya.id] = { funds: (existing?.funds ?? lesseeHeya.funds) - weeklyFee };
+      }
+
+      // Credit the listing owner's heya the same fee — lease income previously
+      // vanished (debited from the lessee but never received).
+      const ownerHeyaId =
+        world.oyakata?.get(stock.ownerId)?.heyaId ?? oyakataHeyaMap.get(stock.ownerId)?.id;
+      const ownerHeya = ownerHeyaId ? world.heyas.get(ownerHeyaId) : undefined;
+      if (ownerHeya && ownerHeya.id !== lesseeHeya?.id) {
+        const existing = heyaUpdates[ownerHeya.id];
+        heyaUpdates[ownerHeya.id] = { funds: (existing?.funds ?? ownerHeya.funds) + weeklyFee };
       }
     }
 
@@ -315,11 +322,23 @@ export function buyMyoseki(
 
   const heya = getHeya(world, buyerHeyaId);
   if (!heya || heya.funds < stock.askingPrice) return builder.build();
+  // Self-purchase is a no-op — re-buying your own listing debited the heya and
+  // shredded the stock's sale terms for nothing.
+  if (stock.ownerId === buyerId) return builder.build();
 
   const newFunds = heya.funds - stock.askingPrice;
   const amount = stock.askingPrice;
 
   builder.updateHeya(buyerHeyaId, { funds: newFunds });
+
+  // Credit the listing owner's heya — the transaction previously recorded the
+  // money as going to "JSA" even when a third party owned the stock, so sale
+  // proceeds vanished.
+  const ownerHeyaId = world.oyakata?.get(stock.ownerId)?.heyaId;
+  const ownerHeya = ownerHeyaId ? getHeya(world, ownerHeyaId) : undefined;
+  if (ownerHeya && ownerHeya.id !== buyerHeyaId) {
+    builder.updateHeya(ownerHeya.id, { funds: ownerHeya.funds + amount });
+  }
 
   const importance = isMyosekiPlayerRelevant(world, stock);
 
@@ -343,7 +362,7 @@ export function buyMyoseki(
   });
 
   builder.recordMyosekiTransaction(
-    getMyosekiTransaction(world, myosekiId, "sale", "JSA", buyerId, amount)
+    getMyosekiTransaction(world, myosekiId, "sale", stock.ownerId, buyerId, amount)
   );
 
   return builder.build();

@@ -10,11 +10,7 @@ import { useGameStore } from "@/state/stores/gameStore";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { projectYouthAcademy } from "@/presenters/projections/youthAcademyProjections";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
-import {
-  AcademyIntakeCard,
-  AcademyStaffList,
-  AcademyInvestmentControl,
-} from "@/components/academy/index";
+import { AcademyIntakeCard } from "@/components/academy/index";
 import type { AcademyStaffRole } from "@/engine/types/academy";
 
 export default function YouthAcademyPage() {
@@ -72,47 +68,11 @@ export default function YouthAcademyPage() {
                 <h3 className="text-sm font-semibold mb-2">Prospect Detail</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {projection.academy.prospects.map((p) => (
-                    <AcademyIntakeCard
-                      key={p.id}
-                      prospect={p}
-                      onPromote={(prospectId) =>
-                        sendCommand({
-                          type: "PROMOTE_INTAKE",
-                          heyaId: playerHeya.id,
-                          prospectId,
-                        })
-                      }
-                    />
+                    <AcademyIntakeCard key={p.id} prospect={p} />
                   ))}
                 </div>
               </div>
             )}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {projection.academy.staff.length > 0 && (
-                <AcademyStaffList
-                  staff={projection.academy.staff}
-                  maxStaff={projection.academy.maxStaff}
-                  onHire={(role) =>
-                    sendCommand({
-                      type: "HIRE_ACADEMY_STAFF",
-                      heyaId: playerHeya.id,
-                      role,
-                    })
-                  }
-                />
-              )}
-              <AcademyInvestmentControl
-                budget={projection.academy.budget}
-                onInvest={(amount) =>
-                  sendCommand({
-                    type: "INVEST_ACADEMY",
-                    heyaId: playerHeya.id,
-                    amount,
-                  })
-                }
-              />
-            </div>
           </div>
         )}
       </div>

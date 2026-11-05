@@ -52,7 +52,11 @@ export function processRetireeOyakataConversion(
   // Use seeded RNG — needed both for merit-stock id and the oyakata/founding logic below.
   const rng = rngForWorld(world, "governance", `retirement_${id}`);
 
-  const existing = Object.values(market.stocks).find((s) => s.status === "available");
+  // Only unclaimed JSA pool stock is eligible — an "available" stock owned by a
+  // player/NPC is a live listing and must never be confiscated by conversion.
+  const existing = Object.values(market.stocks).find(
+    (s) => s.status === "available" && s.ownerId === "JSA"
+  );
 
   // Merit issuance: without this the fixed pool stays fully held and no new stables
   // ever form over a 25-year NPC sim. An accomplished retiree always earns an elder
@@ -97,33 +101,7 @@ export function processRetireeOyakataConversion(
     });
   }
 
-  // Queue Myoseki update
-  const nextStocks = { ...market.stocks };
-  nextStocks[availableStock.id] = {
-    ...availableStock,
-    ownerId: newOyakataId,
-    holderId: newOyakataId,
-    status: "held",
-    askingPrice: undefined,
-  };
-
-  const tx = {
-    id: rng.uuid("MT"),
-    date: `${world.year}-W${world.week || 1}`,
-    myosekiId: availableStock.id,
-    type: "sale" as const,
-    fromId: "JSA",
-    toId: newOyakataId,
-    amount: retiree.economics?.retirementFund || 150000000,
-  };
-
-  const nextHistory = [tx, ...market.history];
-
-  builder.updateWorldField("myosekiMarket", {
-    ...market,
-    stocks: nextStocks,
-    history: nextHistory,
-  });
+  queueMeritStockTransfer(world, market, availableStock, newOyakataId, retiree, rng, builder);
 
   // Queue Oyakata add (newly generated, not an update)
   builder.addOyakata(newOyakata);
@@ -145,43 +123,86 @@ export function processRetireeOyakataConversion(
   // previously deposed the sitting oyakata unconditionally, and the later
   // founding path could leave a stale oyakataId on the old heya.
   const oldHeya = getHeya(world, retiree.heyaId);
-  const chairVacant =
-    !oldHeya?.oyakataId || !world.oyakata?.has(oldHeya.oyakataId);
+  const chairVacant = !oldHeya?.oyakataId || !world.oyakata?.has(oldHeya.oyakataId);
 
-  // Stable founding: RNG-gated chance for the new oyakata to found a new heya
-  // instead of staying in their original stable. Cap check is inside foundStable.
-  let foundedHeya = false;
-  if (rng.bool(FOUNDING_CHANCE)) {
-    const result = foundStable(
-      world,
-      newOyakataId,
-      `${retiree.shikona ?? retiree.name ?? id}-beya`,
-      rng
-    );
-    if (result) {
-      builder.addHeya(result.heya);
-      builder.logEvent(
-        "LIFECYCLE_EVENT",
-        "career",
-        {
-          rikishiId: id,
-          heyaId: result.heya.id,
-          shikona: retiree.shikona ?? retiree.name ?? id,
-          status: "stable_founded",
-          heyaName: result.heya.name,
-        },
-        { heyaId: result.heya.id, rikishiId: id, importance: "headline" }
-      );
-      foundedHeya = true;
-    }
-  }
+  const foundedHeya = maybeFoundStable(world, retiree, newOyakataId, rng, builder);
 
   // Take over the old heya only when the chair is vacant and the retiree did
   // not just found a new stable — previously the handover ran unconditionally,
   // deposing a sitting oyakata or leaving a stale oyakataId after founding.
   if (!foundedHeya && chairVacant) {
-    builder.merge(
-      recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name)
-    );
+    builder.merge(recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name));
   }
+}
+
+type Market = NonNullable<WorldState["myosekiMarket"]>;
+type Rng = ReturnType<typeof rngForWorld>;
+type Stock = Market["stocks"][string];
+
+/** Queue the myoseki transfer + transaction record for the retiree's new stock. */
+function queueMeritStockTransfer(
+  world: WorldState,
+  market: Market,
+  availableStock: Stock,
+  newOyakataId: string,
+  retiree: Rikishi,
+  rng: Rng,
+  builder: ImpactBuilder
+): void {
+  const nextStocks = { ...market.stocks };
+  nextStocks[availableStock.id] = {
+    ...availableStock,
+    ownerId: newOyakataId,
+    holderId: newOyakataId,
+    status: "held",
+    askingPrice: undefined,
+  };
+
+  const tx = {
+    id: rng.uuid("MT"),
+    date: `${world.year}-W${world.week || 1}`,
+    myosekiId: availableStock.id,
+    type: "sale" as const,
+    fromId: "JSA",
+    toId: newOyakataId,
+    amount: retiree.economics?.retirementFund || 150000000,
+  };
+
+  builder.updateWorldField("myosekiMarket", {
+    ...market,
+    stocks: nextStocks,
+    history: [tx, ...market.history],
+  });
+}
+
+/** RNG-gated chance to found a new heya. Returns true when founding succeeded. */
+function maybeFoundStable(
+  world: WorldState,
+  retiree: Rikishi,
+  newOyakataId: string,
+  rng: Rng,
+  builder: ImpactBuilder
+): boolean {
+  if (!rng.bool(FOUNDING_CHANCE)) return false;
+  const result = foundStable(
+    world,
+    newOyakataId,
+    `${retiree.shikona ?? retiree.name ?? retiree.id}-beya`,
+    rng
+  );
+  if (!result) return false;
+  builder.addHeya(result.heya);
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "career",
+    {
+      rikishiId: retiree.id,
+      heyaId: result.heya.id,
+      shikona: retiree.shikona ?? retiree.name ?? retiree.id,
+      status: "stable_founded",
+      heyaName: result.heya.name,
+    },
+    { heyaId: result.heya.id, rikishiId: retiree.id, importance: "headline" }
+  );
+  return true;
 }

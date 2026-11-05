@@ -15,7 +15,7 @@ vi.mock("@/state/stores/gameStore", () => ({
   useGameStore: (sel: (s: { sendCommand: typeof sendCommand }) => unknown) => sel({ sendCommand }),
 }));
 
-function worldWithTraining(heyaId: string, intensity: "low" | "high"): WorldState {
+function worldWithTraining(heyaId: string, intensity: "conservative" | "intensive"): WorldState {
   const ts = createDefaultTrainingState(heyaId);
   ts.activeProfile = { ...ts.activeProfile, intensity };
   return {
@@ -27,21 +27,21 @@ describe("useTrainingState", () => {
   beforeEach(() => sendCommand.mockClear());
 
   it("resyncs when the world instance changes (LOAD_WORLD / engine tick)", () => {
-    const w1 = worldWithTraining("h1", "low");
-    const w2 = worldWithTraining("h1", "high");
+    const w1 = worldWithTraining("h1", "conservative");
+    const w2 = worldWithTraining("h1", "intensive");
     const { result, rerender } = renderHook(({ world }) => useTrainingState(world, "h1"), {
       initialProps: { world: w1 },
     });
-    expect(result.current.trainingState.activeProfile.intensity).toBe("low");
+    expect(result.current.trainingState.activeProfile.intensity).toBe("conservative");
     rerender({ world: w2 });
-    expect(result.current.trainingState.activeProfile.intensity).toBe("high");
+    expect(result.current.trainingState.activeProfile.intensity).toBe("intensive");
   });
 
   it("resyncs when playerHeyaId changes", () => {
     const tsA = createDefaultTrainingState("hA");
-    tsA.activeProfile = { ...tsA.activeProfile, intensity: "low" };
+    tsA.activeProfile = { ...tsA.activeProfile, intensity: "conservative" };
     const tsB = createDefaultTrainingState("hB");
-    tsB.activeProfile = { ...tsB.activeProfile, intensity: "high" };
+    tsB.activeProfile = { ...tsB.activeProfile, intensity: "intensive" };
     const world = {
       trainingState: new Map([
         ["hA", tsA],
@@ -51,8 +51,8 @@ describe("useTrainingState", () => {
     const { result, rerender } = renderHook(({ heyaId }) => useTrainingState(world, heyaId), {
       initialProps: { heyaId: "hA" },
     });
-    expect(result.current.trainingState.activeProfile.intensity).toBe("low");
+    expect(result.current.trainingState.activeProfile.intensity).toBe("conservative");
     rerender({ heyaId: "hB" });
-    expect(result.current.trainingState.activeProfile.intensity).toBe("high");
+    expect(result.current.trainingState.activeProfile.intensity).toBe("intensive");
   });
 });

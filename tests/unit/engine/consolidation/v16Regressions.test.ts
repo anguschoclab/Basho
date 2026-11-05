@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
+import type { WorldState } from "@/engine/types/world";
 
 /**
  * v16 consolidation regression tests — each test was authored RED-FIRST against
@@ -15,7 +16,7 @@ describe("V16-B02 election cadence", () => {
       await import("@/engine/tick/phases/phase01_week_governance");
     const mkWorld = (week: number, year: number) => {
       const world = MockFactory.createWorld({ week, year });
-      world.heyas.set("h-elect", MockFactory.createHeya("h-elect", { ichimon: "TestIchimon" }));
+      world.heyas.set("h-elect", MockFactory.createHeya("h-elect", { ichimon: "Dewanoumi" }));
       world.playerHeyaId = "player-x";
       return world;
     };
@@ -109,7 +110,7 @@ describe("V16-B17 GlobalCup wasPlayerChampion", () => {
     const builder = createImpactBuilder("test");
     // Buggy: winnerId === world.playerHeyaId (rikishiId vs heyaId) → always false.
     // Fixed: resolve the winner rikishi's heyaId.
-    (GlobalCupService as Record<string, unknown>).finalizeTournament(
+    (GlobalCupService as unknown as { finalizeTournament: (w: WorldState, b: unknown, id: string, name: string, ids: string[]) => void }).finalizeTournament(
       world,
       builder,
       "champ",

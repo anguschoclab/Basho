@@ -12,8 +12,15 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
 import type { DynastyRecord } from "@/engine/types/dynasty";
-import type { OyakataArchetype, SuccessionReadiness } from "@/engine/types/oyakata";
+import type {
+  Oyakata,
+  OyakataArchetype,
+  OyakataTraits,
+  SuccessionReadiness,
+} from "@/engine/types/oyakata";
+import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { retireRikishiFully } from "@/engine/lifecycle/processRetirements";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
@@ -92,8 +99,7 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
       // FULL candidate, else fall through to the generic trustee path
       // (V16-B33: previously the oyakata survived past 65 forever).
       const viable = eligible.find((sid) => {
-        const entry =
-          getRikishi(world, sid) ?? world.historicalRikishi?.get(sid);
+        const entry = getRikishi(world, sid) ?? world.historicalRikishi?.get(sid);
         return entry && !isSummary(entry);
       });
       if (viable) {
@@ -135,8 +141,15 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
           },
           { heyaId: heya.id, importance: "major" }
         );
-        if (eligible.length > 0) {
-          builder.merge(triggerSuccession(world, heya.id, eligible[0]));
+        // Same viability filter as the age path: a summary-only successor
+        // makes triggerSuccession a silent no-op — pick the first FULL
+        // candidate, else fall through to the generic trustee.
+        const viable = eligible.find((sid) => {
+          const entry = getRikishi(world, sid) ?? world.historicalRikishi?.get(sid);
+          return entry && !isSummary(entry);
+        });
+        if (viable) {
+          builder.merge(triggerSuccession(world, heya.id, viable));
         } else {
           const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
           builder.merge(triggerSuccessionWithGeneric(world, heya.id, dummyId));
@@ -228,8 +241,84 @@ export function triggerSuccession(
   const successorRikishi = successorEntry;
 
   // 1. Write the dynasty record for the retiring Oyakata
+  const record = buildRetirementDynastyRecord(world, heya, currentOyakata);
+
+  // 2. Evolve the Training Philosophy under the successor's archetype
+  const evolvedPhilosophy = TrainingPhilosophyService.evolveForSuccessor(
+    heya.trainingPhilosophy ?? TrainingPhilosophyService.getDefault(),
+    currentOyakata
+  );
+
+  // 3. Update legacy tier
+  const newEra = record.era;
+  const newTier = deriveLegacyTier(heya, newEra);
+
+  // 4. Create the new Oyakata entity — traits inherit from the successor's
+  // career and the predecessor's reign (canon §16.3), and the predecessor's
+  // plan family leaves a decaying legacyModifier on the heya.
+  const newOyakataId = `oyakata_promoted_${successorRikishiId}`;
+  const newOyakata = buildSuccessorOyakata(
+    world,
+    heyaId,
+    successorRikishiId,
+    successorRikishi,
+    currentOyakata,
+    newOyakataId
+  );
+  builder.addOyakata(newOyakata);
+
+  // The predecessor's active plan biases the successor's early planning.
+  const predecessorPlanId = currentOyakata.memory?.activePlan?.planId;
+  const legacyModifier = predecessorPlanId
+    ? { planFamilyBias: predecessorPlanId, bashoRemaining: LEGACY_MODIFIER_DURATION_BASHO }
+    : undefined;
+
+  // 5. Full retirement cascade for the successor (only if still active):
+  // retireRikishiFully handles archival + career events + roster sync.
+  if (successorIsActive) {
+    retireRikishiFully(world, successorRikishi, "Promoted to Oyakata", builder);
+  }
+
+  // 6. Remove the outgoing oyakata — previously they vanished from the chair
+  // but remained a live oyakata entity.
+  builder.removeOyakata(currentOyakata.id);
+
+  // 7. Elder-stock succession: the retiring oyakata's held myoseki passes to
+  // the new oyakata — a succession without the chair's stock is not a real
+  // handover.
+  transferElderStock(builder, world, currentOyakata.id, newOyakataId);
+  builder.updateHeya(heyaId, {
+    dynasty: [...(heya.dynasty ?? []), record],
+    trainingPhilosophy: evolvedPhilosophy,
+    legacyTier: newTier,
+    oyakataId: newOyakataId,
+    legacyModifier,
+  });
+
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "narrative",
+    {
+      rikishiId: successorRikishiId,
+      shikona: successorRikishi.shikona,
+      status: "oyakata_promotion",
+      reason: `${currentOyakata.name} has reached the JSA retirement age of 65. ${successorRikishi.shikona} takes command.`,
+      incident: `A new era begins at ${heya.name}.`,
+    },
+    { heyaId, importance: "headline" }
+  );
+
+  return builder.build();
+}
+
+/** Writes the DynastyRecord for the retiring Oyakata's completed reign. */
+function buildRetirementDynastyRecord(
+  world: WorldState,
+  heya: Heya,
+  currentOyakata: Oyakata
+): DynastyRecord {
   const reignFrom = world.year - (currentOyakata.yearsInCharge ?? 0);
-  const record: DynastyRecord = {
+  return {
     era: (heya.dynasty?.length ?? 0) + 1,
     oyakataId: currentOyakata.id,
     oyakataName: currentOyakata.name,
@@ -253,21 +342,17 @@ export function triggerSuccession(
     },
     trainingPhilosophyAtReign: heya.trainingPhilosophy ?? TrainingPhilosophyService.getDefault(),
   };
+}
 
-  // 2. Evolve the Training Philosophy under the successor's archetype
-  const evolvedPhilosophy = TrainingPhilosophyService.evolveForSuccessor(
-    heya.trainingPhilosophy ?? TrainingPhilosophyService.getDefault(),
-    currentOyakata
-  );
-
-  // 3. Update legacy tier
-  const newEra = record.era;
-  const newTier = deriveLegacyTier(heya, newEra);
-
-  // 4. Create the new Oyakata entity — traits inherit from the successor's
-  // career and the predecessor's reign (canon §16.3), and the predecessor's
-  // plan family leaves a decaying legacyModifier on the heya.
-  const newOyakataId = `oyakata_promoted_${successorRikishiId}`;
+/** Builds the promoted Oyakata entity; traits inherit career + predecessor reign. */
+function buildSuccessorOyakata(
+  world: WorldState,
+  heyaId: string,
+  successorRikishiId: string,
+  successorRikishi: Rikishi,
+  currentOyakata: Oyakata,
+  newOyakataId: string
+): Oyakata {
   const tenure = currentOyakata.tenure;
   const peak = computeHighestRank(successorRikishi);
   const wasStar = peak === "yokozuna" || peak === "ozeki";
@@ -276,7 +361,7 @@ export function triggerSuccession(
   const injuryProne =
     (successorRikishi.consecutiveKyujo ?? 0) >= 1 ||
     (successorRikishi.injuryWeeksRemaining ?? 0) > 0;
-  const traits = {
+  const traits: OyakataTraits = {
     ambition: 50,
     patience: 50,
     risk: 50,
@@ -296,7 +381,7 @@ export function triggerSuccession(
   if ((tenure?.majorScandals ?? 0) >= 1) traits.tradition += 10;
   if ((tenure?.insolvencyEvents ?? 0) >= 2) traits.patience += 10;
 
-  const newOyakata = {
+  return {
     id: newOyakataId,
     heyaId: heyaId,
     name: `${successorRikishi.shikona} Oyakata`,
@@ -320,68 +405,32 @@ export function triggerSuccession(
     avatarConfig: successorRikishi.avatarConfig,
     formerRikishiId: successorRikishiId,
   };
+}
 
-  builder.addOyakata(newOyakata);
-
-  // The predecessor's active plan biases the successor's early planning.
-  const predecessorPlanId = currentOyakata.memory?.activePlan?.planId;
-  const legacyModifier = predecessorPlanId
-    ? { planFamilyBias: predecessorPlanId, bashoRemaining: LEGACY_MODIFIER_DURATION_BASHO }
-    : undefined;
-
-  // 5. Full retirement cascade for the successor (only if still active):
-  // retireRikishiFully handles archival + career events + roster sync.
-  if (successorIsActive) {
-    retireRikishiFully(world, successorRikishi, "Promoted to Oyakata", builder);
-  }
-
-  // 6. Remove the outgoing oyakata — previously they vanished from the chair
-  // but remained a live oyakata entity.
-  builder.removeOyakata(currentOyakata.id);
-
-  // 7. Elder-stock succession: the retiring oyakata's held myoseki passes to
-  // the new oyakata — a succession without the chair's stock is not a real
-  // handover.
+/** Passes the outgoing oyakata's held myoseki to the new oyakata. */
+function transferElderStock(
+  builder: ImpactBuilder,
+  world: WorldState,
+  fromOyakataId: string,
+  toOyakataId: string
+): void {
   const market = world.myosekiMarket;
-  if (market?.stocks) {
-    const nextStocks = { ...market.stocks };
-    let changed = false;
-    for (const [stockId, stock] of Object.entries(market.stocks)) {
-      if (stock.holderId === currentOyakata.id) {
-        nextStocks[stockId] = { ...stock, holderId: newOyakataId };
-        changed = true;
-      }
-    }
-    if (changed) {
-      builder.updateWorldField("myosekiMarket", {
-        ...market,
-        history: market.history ?? [],
-        stocks: nextStocks,
-      });
+  if (!market?.stocks) return;
+  const nextStocks = { ...market.stocks };
+  let changed = false;
+  for (const [stockId, stock] of Object.entries(market.stocks)) {
+    if (stock.holderId === fromOyakataId) {
+      nextStocks[stockId] = { ...stock, holderId: toOyakataId };
+      changed = true;
     }
   }
-  builder.updateHeya(heyaId, {
-    dynasty: [...(heya.dynasty ?? []), record],
-    trainingPhilosophy: evolvedPhilosophy,
-    legacyTier: newTier,
-    oyakataId: newOyakataId,
-    legacyModifier,
-  });
-
-  builder.logEvent(
-    "LIFECYCLE_EVENT",
-    "narrative",
-    {
-      rikishiId: successorRikishiId,
-      shikona: successorRikishi.shikona,
-      status: "oyakata_promotion",
-      reason: `${currentOyakata.name} has reached the JSA retirement age of 65. ${successorRikishi.shikona} takes command.`,
-      incident: `A new era begins at ${heya.name}.`,
-    },
-    { heyaId, importance: "headline" }
-  );
-
-  return builder.build();
+  if (changed) {
+    builder.updateWorldField("myosekiMarket", {
+      ...market,
+      history: market.history ?? [],
+      stocks: nextStocks,
+    });
+  }
 }
 
 /**

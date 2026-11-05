@@ -34,7 +34,7 @@ describe("constants extraction — calendar.ts", () => {
     expect(PHASE_LABELS.pre_basho.label).toBe("Pre-Basho");
     expect(PHASE_LABELS.active_basho.label).toBe("Tournament");
     expect(PHASE_LABELS.post_basho.label).toBe("Post-Basho");
-    expect(PHASE_LABELS.basho_recap.label).toBe("Recap");
+    expect(PHASE_LABELS.banzuke_reveal.label).toBe("Banzuke Reveal");
     expect(PHASE_LABELS.interim.dotClass).toBeDefined();
   });
 });

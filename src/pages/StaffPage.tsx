@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getStaffMember } from "@/presenters/worldAccess";
 import { ROLE_LABELS, STAFF_ACCESSOR } from "@/components/staff/staffMeta";
+import { STAFF_HIRE_COST } from "@/constants/engine/economy";
 import { StaffCard } from "@/components/staff/StaffCard";
 import { StaffSummary, RecruitSlot } from "@/components/staff/StaffPageSections";
 
@@ -44,6 +45,10 @@ export default function StaffPage() {
 
   const handleHire = useCallback(() => {
     if (!world || !heya) return;
+    if ((heya.funds ?? 0) < STAFF_HIRE_COST) {
+      toast.error(`Insufficient funds — hiring costs ¥${STAFF_HIRE_COST.toLocaleString()}.`);
+      return;
+    }
 
     sendCommand({ type: "HIRE_STAFF", heyaId: heya.id, role: selectedRole });
     setIsRecruitOpen(false);
@@ -140,7 +145,11 @@ export default function StaffPage() {
                       type="button"
                       disabled={!affordable}
                       onClick={() => {
-                        sendCommand({ type: "HIRE_STAFF_CANDIDATE", heyaId: heya.id, candidateId: c.id });
+                        sendCommand({
+                          type: "HIRE_STAFF_CANDIDATE",
+                          heyaId: heya.id,
+                          candidateId: c.id,
+                        });
                         toast.success(`Signed ${c.name}`);
                       }}
                       className="text-xs font-medium px-3 py-1.5 rounded border border-[hsl(var(--border))] disabled:opacity-40"

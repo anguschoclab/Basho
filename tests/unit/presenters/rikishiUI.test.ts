@@ -100,7 +100,8 @@ describe("projectRosterEntry", () => {
 
   it("should resolve heya ownership correctly when world state is provided", () => {
     const world = {
-      heyas: new Map([["h1", { id: "h1", isPlayerOwned: true } as any]]),
+      heyas: new Map([["h1", { id: "h1" } as any]]),
+      playerHeyaId: "h1",
     } as unknown as WorldState;
 
     const entry = projectRosterEntry(baseRikishi, world);
@@ -112,7 +113,8 @@ describe("projectRosterEntry", () => {
     expect(entryWithoutWorld.isPlayerOwned).toBe(false);
 
     const worldWithDifferentHeya = {
-      heyas: new Map([["h2", { id: "h2", isPlayerOwned: true } as any]]),
+      heyas: new Map([["h2", { id: "h2" } as any]]),
+      playerHeyaId: "h2",
     } as unknown as WorldState;
     const entryNotFound = projectRosterEntry(baseRikishi, worldWithDifferentHeya);
     expect(entryNotFound.isPlayerOwned).toBe(false);

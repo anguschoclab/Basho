@@ -9,10 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import { SeededRNG } from "@/engine/core/rng";
 import { NarrativeService } from "@/engine/narrative/NarrativeService";
 import { toPotentialBand } from "@/engine/narrative/descriptorBands";
-import {
-  getCitizenshipStatus,
-  yearsUntilNaturalization,
-} from "@/engine/utils/citizenshipUtils";
+import { getCitizenshipStatus, yearsUntilNaturalization } from "@/engine/utils/citizenshipUtils";
 import { resolveRegistryLabel, resolveRegistryLabelJa } from "@/presenters/uiUtilities";
 import type { UIRosterEntry, UIRankDelta } from "@/presenters/rikishi/types";
 import { rankScore, calculateStreak } from "@/presenters/rikishi/transformers/career";
@@ -48,8 +45,7 @@ export function projectRosterEntry(
     rankDelta = { type: "new", steps: 0 };
   }
 
-  const heya = world ? world.heyas.get(r.heyaId) : null;
-  const isPlayerOwned = heya?.isPlayerOwned ?? false;
+  const isPlayerOwned = r.heyaId === world?.playerHeyaId;
 
   return {
     id: r.id,

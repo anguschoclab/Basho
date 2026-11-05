@@ -6,7 +6,7 @@
  * updates). Each mutation applies locally then posts SET_TRAINING_STATE.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGameStore } from "@/state/stores/gameStore";
 import { createDefaultTrainingState } from "@/presenters/uiDigest";
 import type {
@@ -30,6 +30,16 @@ export function useTrainingState(
     if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");
     return world.trainingState?.get(playerHeyaId) ?? createDefaultTrainingState(playerHeyaId || "");
   });
+
+  // Resync when the world supplies a different state object — after
+  // LOAD_WORLD, engine ticks, or playerHeyaId changes. Committed mutations
+  // round-trip through SET_TRAINING_STATE so a resync of the same value
+  // is a no-op.
+  const worldState =
+    world && playerHeyaId ? world.trainingState?.get(playerHeyaId) : undefined;
+  useEffect(() => {
+    if (worldState) setTrainingState(worldState);
+  }, [worldState]);
 
   // Apply a mutation locally, then persist via the worker command.
   const commit = (mutate: (prev: HeyaTrainingState) => HeyaTrainingState) => {

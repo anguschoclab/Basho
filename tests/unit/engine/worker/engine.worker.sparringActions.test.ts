@@ -75,6 +75,7 @@ function makeWorldWithRikishi(): WorldState {
   return makeMockWorld({
     rikishi,
     heyas: new Map([["h1", heya]]),
+    playerHeyaId: "h1",
     sparringPairs: new Map(),
     week: 5,
   });
