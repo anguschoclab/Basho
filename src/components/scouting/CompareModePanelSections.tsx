@@ -90,11 +90,15 @@ export function CompareStats({
 }) {
   const rawA = world?.rikishi.get(rikishiA.id);
   const rawB = world?.rikishi.get(rikishiB.id);
+  const owned =
+    !!world?.playerHeyaId &&
+    rawA?.heyaId === world.playerHeyaId &&
+    rawB?.heyaId === world.playerHeyaId;
 
   return (
     <Card className="bg-background shadow-xl overflow-hidden border-primary/10">
       <CardContent className="p-6">
-        {!rawA || !rawB ? (
+        {!rawA || !rawB || !owned ? (
           <p className="text-center text-muted-foreground">Stats unavailable</p>
         ) : (
           <div className="space-y-2">

@@ -538,7 +538,7 @@ When in doubt about a decorative element, ask: does this reference the arena, th
 ### Data Labels
 
 - Stat labels above numbers: ALL CAPS, JetBrains Mono, muted foreground
-- Never use "N/A" — use `—` (em dash) for missing data
+- Never use "N/A" — use `—` (em dash) for missing data (enforced by `designBible.test.ts`)
 - Financial values: always prefix `¥` (yen sign), always `.toLocaleString()`
 
 ### Event Log / Narrative
@@ -664,8 +664,9 @@ violations. Enforced rules:
 | `raw-white-black`            | P0       | `text/bg/border/ring-from-to-via-white\|black` utilities       |
 | `rgba-shadow`                | P1       | `rgba(...)` in arbitrary Tailwind shadows and inline styles    |
 | `inline-oversized-tracking`  | P2       | `letterSpacing:` inline values above 0.15em                    |
-| `cosplay-copy`               | P2       | Banned strings (§11 Banned Terms) in source                    |
+| `cosplay-copy`               | P2       | §11 Banned Terms incl. bare `Intelligence`/`Institution` labels — also scans `engine`/`presenters` |
 | `screaming-copy`             | P2       | SNAKE_CASE display copy (plain uppercase eyebrows are allowed) |
+| `na-placeholder`             | P2       | `N/A` display copy — use `—` (em dash) for missing data        |
 
 Exemptions are file-targeted via each rule's `exempt` field — the only
 sanctioned literal-color file is `src/constants/ui/drawingPalette.ts`

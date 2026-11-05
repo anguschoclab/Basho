@@ -141,7 +141,7 @@ export function buildEventSections(world: WorldState): DigestSection[] {
   const sectionTitleText = (text: string, fallback: string) =>
     text && !text.includes("[MISSING") ? text : fallback;
   if (narrativeItems.length)
-    sections.push({ id: "narrative", title: "Internal Intelligence", items: narrativeItems });
+    sections.push({ id: "narrative", title: "Storylines", items: narrativeItems });
   if (eventBuckets.basho.length)
     sections.push({ id: "basho", title: "Basho", items: eventBuckets.basho.map(mapEventToItem) });
   if (eventBuckets.career.length)
