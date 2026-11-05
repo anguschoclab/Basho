@@ -26,15 +26,17 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
+const mockGetPlayerHeya = vi.fn(() => ({
+  id: "h1",
+  name: "TestHeya",
+  funds: 1000000,
+  runwayBand: "stable",
+  rikishiIds: ["r1", "r2", "r3"],
+  oyakataId: "o1",
+}));
+
 vi.mock("@/engine/core/queries", () => ({
-  getPlayerHeya: () => ({
-    id: "h1",
-    name: "TestHeya",
-    funds: 1000000,
-    runwayBand: "stable",
-    rikishiIds: ["r1", "r2", "r3"],
-    oyakataId: "o1",
-  }),
+  getPlayerHeya: () => mockGetPlayerHeya(),
 }));
 
 vi.mock("@/presenters/worldAccess", () => ({
@@ -59,7 +61,11 @@ vi.mock("@/components/economy/FinancialHealthOverview", () => ({
 }));
 
 vi.mock("@/components/economy/BailoutCard", () => ({
-  BailoutCard: () => React.createElement("div", null, "Bailout"),
+  BailoutCard: ({ canRequestBailout }: any) =>
+    React.createElement("div", {
+      "data-testid": "bailout-card",
+      "data-can-request": String(canRequestBailout),
+    }),
 }));
 
 vi.mock("@/components/economy/DebtSection", () => ({
@@ -198,5 +204,41 @@ describe("EconomyPage sorting", () => {
     const order = getEarnerNames();
     // desc name: Charlie, Bravo, Alpha
     expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
+  });
+});
+
+// ── V16-B18 — bailout gate must match LOAN_ISSUANCE_THRESHOLD ────────────────
+describe("V16-B18 bailout gate", () => {
+  beforeEach(() => {
+    mockRikishi = [];
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+
+  function renderWithFunds(funds: number) {
+    cleanup();
+    mockGetPlayerHeya.mockReturnValue({
+      id: "h1",
+      name: "TestHeya",
+      funds,
+      runwayBand: "stable",
+      rikishiIds: [],
+      oyakataId: "o1",
+    });
+    mockUseGame({ year: 2024 });
+    render(<EconomyPage />);
+    return screen.getByTestId("bailout-card");
+  }
+
+  it("enables bailout below LOAN_ISSUANCE_THRESHOLD (-5M) and disables above it", async () => {
+    const { LOAN_ISSUANCE_THRESHOLD } = await import("@/constants/engine/economic");
+    // The engine no-ops when funds >= LOAN_ISSUANCE_THRESHOLD. The page gate
+    // must match exactly so the button is never enabled-but-dead.
+    expect(renderWithFunds(LOAN_ISSUANCE_THRESHOLD - 1).dataset.canRequest).toBe("true");
+    expect(renderWithFunds(-1_000_000).dataset.canRequest).toBe("false");
+    expect(renderWithFunds(0).dataset.canRequest).toBe("false");
   });
 });

@@ -20,13 +20,29 @@ vi.mock("@/components/recruitment/YouthAcademyPanel", () => ({
     ),
 }));
 
+const mockProjectYouthAcademy = vi.fn(() => ({
+  level: 0,
+  hasAcademy: false,
+  prospectCapacity: 0,
+  upgradeCost: 50000,
+}));
+
 vi.mock("@/presenters/projections/youthAcademyProjections", () => ({
-  projectYouthAcademy: () => ({
-    level: 0,
-    hasAcademy: false,
-    prospectCapacity: 0,
-    upgradeCost: 50000,
-  }),
+  projectYouthAcademy: () => mockProjectYouthAcademy(),
+}));
+
+// Detail-section stubs — the panel (mocked above) owns all academy controls;
+// the page must not render a second set of staff/invest/promote controls.
+vi.mock("@/components/academy/index", () => ({
+  AcademyIntakeCard: ({ prospect, onPromote }: any) =>
+    React.createElement(
+      "div",
+      { "data-testid": "intake-card", "data-has-promote": String(!!onPromote) },
+      prospect.id
+    ),
+  AcademyStaffList: () => React.createElement("div", { "data-testid": "academy-staff-list" }),
+  AcademyInvestmentControl: () =>
+    React.createElement("div", { "data-testid": "academy-invest-control" }),
 }));
 
 const mockUseGame = vi.fn();
@@ -81,5 +97,50 @@ describe("YouthAcademyPage", () => {
     });
     render(<YouthAcademyPage />);
     expect(screen.getByTestId("build-youth-academy")).toBeDefined();
+  });
+});
+
+describe("YouthAcademyPage — no duplicate academy controls", () => {
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+
+  function worldWithAcademy() {
+    mockProjectYouthAcademy.mockReturnValue({
+      level: 1,
+      hasAcademy: true,
+      prospectCapacity: 4,
+      upgradeCost: 50000,
+      academy: {
+        prospects: [{ id: "prospect-1" }],
+        staff: [{ id: "st-1", role: "coach" }],
+        maxStaff: 3,
+        budget: 100000,
+      },
+    });
+    return {
+      seed: "test",
+      playerHeyaId: "player",
+      heyas: new Map([
+        ["player", { id: "player", name: "Player", funds: 1000000, economics: { cash: 100000 } }],
+      ]),
+    };
+  }
+
+  it("does not render the duplicate staff/invest control cluster", () => {
+    // V17-F19: the page rendered AcademyStaffList + AcademyInvestmentControl +
+    // promote-enabled intake cards ON TOP of YouthAcademyPanel's own
+    // StaffSection/InvestSection/ProspectsSection — two ungated control sets.
+    mockUseGame.mockReturnValue({ state: { world: worldWithAcademy() } });
+    render(<YouthAcademyPage />);
+
+    // Prospect detail cards stay (they carry per-prospect info)…
+    expect(screen.getAllByTestId("intake-card").length).toBe(1);
+    // …but they must not expose a second promote path.
+    expect(screen.getByTestId("intake-card").dataset.hasPromote).toBe("false");
+    // …and the duplicate staff/invest controls are gone entirely.
+    expect(screen.queryByTestId("academy-staff-list")).toBeNull();
+    expect(screen.queryByTestId("academy-invest-control")).toBeNull();
   });
 });

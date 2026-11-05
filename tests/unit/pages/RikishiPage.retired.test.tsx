@@ -164,6 +164,21 @@ describe("RikishiPage — retired rikishi resolution", () => {
     expect(profileBodyProps.at(-1)?.readOnly).toBe(false);
   });
 
+  it("renders read-only for an ACTIVE rikishi owned by an NPC heya", () => {
+    // V17-F18: the page hardcoded readOnly = isRetired only, so "Declare
+    // Retirement" rendered for NPC wrestlers and the command targeted them.
+    mockWorld = worldFixture({
+      rikishi: new Map([
+        ["r-npc", fullRetired({ id: "r-npc", isRetired: false, heyaId: "h-npc" })],
+      ]),
+      heyas: new Map([["h-npc", { id: "h-npc", name: "NPC Heya" } as never]]),
+    });
+    mockParams = { rikishiId: "r-npc" };
+    render(<RikishiPage />);
+    expect(screen.getByTestId("profile-body")).toBeTruthy();
+    expect(profileBodyProps.at(-1)?.readOnly).toBe(true);
+  });
+
   it("renders RikishiNotFound for an unknown id", () => {
     mockWorld = worldFixture();
     mockParams = { rikishiId: "nope" };

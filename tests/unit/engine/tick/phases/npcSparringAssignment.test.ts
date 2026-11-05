@@ -225,4 +225,41 @@ describe("NPC Sparring Pair Assignment", () => {
     const pairKeys = Object.keys(sparringState!.pairs);
     expect(pairKeys.length).toBe(1); // Only one pair, one rikishi left out
   });
+
+  it("assigns pairs for EVERY NPC heya in the same week (no stale-base overwrite)", () => {
+    // V17-F16: maybeAssignNPCSparringPairs ran per-heya against the ORIGINAL
+    // base world and wrote the whole sparringPairs field — last write won, so
+    // only the final heya's assignments survived.
+    const heyaBId = "heya-spar-2" as Id;
+    const oyakataBId = "oyakata-spar-2" as Id;
+    const heyaB = MockFactory.createHeya(heyaBId, { oyakataId: oyakataBId });
+    const oyakataB = MockFactory.createOyakata(oyakataBId, {
+      heyaId: heyaBId,
+      archetype: "traditionalist",
+    });
+    world.heyas.set(heyaBId, heyaB);
+    world.oyakata.set(oyakataBId, oyakataB);
+
+    // Two eligible rikishi per heya.
+    const a1 = makeRikishi("multi-a1", "oshi");
+    const a2 = makeRikishi("multi-a2", "yotsu");
+    const b1 = makeRikishi("multi-b1", "oshi", { heyaId: heyaBId });
+    const b2 = makeRikishi("multi-b2", "yotsu", { heyaId: heyaBId });
+    world.rikishi.set("multi-a1", a1);
+    world.rikishi.set("multi-a2", a2);
+    world.rikishi.set("multi-b1", b1);
+    world.rikishi.set("multi-b2", b2);
+    heya.rikishiIds = ["multi-a1", "multi-a2"];
+    heyaB.rikishiIds = ["multi-b1", "multi-b2"];
+
+    const impact = phase01_week_npc_ai(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+
+    const stateA = updatedWorld.sparringPairs?.get(heyaId);
+    const stateB = updatedWorld.sparringPairs?.get(heyaBId);
+    expect(stateA).toBeDefined();
+    expect(stateB).toBeDefined();
+    expect(Object.keys(stateA!.pairs).length).toBe(1);
+    expect(Object.keys(stateB!.pairs).length).toBe(1);
+  });
 });
