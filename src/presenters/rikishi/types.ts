@@ -13,11 +13,7 @@ import type { RikishiDescriptor, PotentialBand } from "@/engine/narrative/descri
 import type { SalaryBreakdown } from "@/engine/economy/awards";
 import type { AvatarConfig, AvatarRenderData } from "@/engine/types/avatar";
 import type { KeshoMawashi, YokozunaTsuna } from "@/engine/types/keshoMawashi";
-import type {
-  AgeBand,
-  WeightBand,
-  HeightBand,
-} from "@/engine/narrative/NarrativeBands";
+import type { AgeBand, WeightBand, HeightBand } from "@/engine/narrative/NarrativeBands";
 import type { RikishiLoyaltyBand } from "@/engine/npc/agency/types";
 
 // ============================================================================
@@ -33,6 +29,8 @@ export interface RikishiIdentityDTO {
   heyaName: string;
   isPlayerOwned: boolean;
   age: number;
+  debutYear?: number;
+  yearsActive?: number;
   nationality: string;
   origin: string;
   height: number;

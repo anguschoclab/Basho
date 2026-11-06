@@ -9,7 +9,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Globe, MapPin, Calendar, Ruler, Scale, Moon } from "lucide-react";
+import { Globe, MapPin, Calendar, Flag, Ruler, Scale, Moon } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
@@ -260,6 +260,14 @@ export function HeaderIdentity({ rikishi }: { rikishi: UIRikishi }) {
           <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years{" "}
           <span className="opacity-60">({rikishi.ageDescriptor})</span>
         </span>
+        {rikishi.debutYear !== undefined && (
+          <span className="flex items-center gap-2">
+            <Flag className="h-3.5 w-3.5 text-secondary" /> Pro Debut {rikishi.debutYear}{" "}
+            {rikishi.yearsActive !== undefined && (
+              <span className="opacity-60">({rikishi.yearsActive} years active)</span>
+            )}
+          </span>
+        )}
         <span className="flex items-center gap-2">
           <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm{" "}
           <span className="opacity-60">({rikishi.heightDescriptor})</span>
