@@ -19,6 +19,7 @@ const StablePage = lazy(() => import("@/pages/StablePage"));
 const TrainingPage = lazy(() => import("@/pages/TrainingPage"));
 const OyakataPage = lazy(() => import("@/pages/OyakataPage"));
 const RikishiPage = lazy(() => import("@/pages/RikishiPage"));
+const RikishiComparePage = lazy(() => import("@/pages/RikishiComparePage"));
 const BashoPage = lazy(() => import("@/pages/BashoPage"));
 const SchedulePage = lazy(() => import("@/pages/SchedulePage"));
 const BanzukePage = lazy(() => import("@/pages/BanzukePage"));
@@ -431,6 +432,11 @@ const rikishiIdRoute = createRoute({
   path: "/rikishi/$rikishiId",
   component: () => withWorldGuard(RikishiPage),
 });
+const rikishiCompareRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/rikishi/compare",
+  component: () => withWorldGuard(RikishiComparePage),
+});
 
 const glossaryRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -529,6 +535,7 @@ const routeTree = rootRoute.addChildren([
 
   // Rikishi
   rikishiRoute,
+  rikishiCompareRoute,
   rikishiIdRoute,
 
   // Glossary
