@@ -1,6 +1,11 @@
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim, type AutoSimConfig } from "@/engine/simulation/AutoSimService";
 
+// Headless runs must preload narrative domains or BardEngine.resolve()
+// warns and returns empty text for every path.
+const { BardEngine } = await import("@/engine/bard/BardEngine");
+await BardEngine.loadDomains();
+
 async function runSim() {
   const seed = "baseline-sim-" + Date.now();
   const world = generateInitialWorld(seed);

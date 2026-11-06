@@ -21,6 +21,11 @@ import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 import type { WorldState } from "@/engine/types/world";
 import type { TalentPoolType } from "@/engine/types/talent";
 
+// Headless runs must preload narrative domains or every BardEngine.resolve()
+// warns "No options found" and returns empty text — gigabytes of log spam.
+const { BardEngine } = await import("@/engine/bard/BardEngine");
+await BardEngine.loadDomains();
+
 const YEARS = Number(process.argv.find((a) => a.startsWith("--years="))?.split("=")[1] ?? 15);
 const SEED = "baseline-25yr-a";
 const OUT = process.argv.find((a) => a.startsWith("--out="))?.split("=")[1]

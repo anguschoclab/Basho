@@ -264,6 +264,10 @@ export function runComparison(count: number, seed: string = "comparison-001"): C
 
 // CLI entry point
 if (import.meta.main) {
+  // Preload narrative domains or every resolve() warns and returns empty text.
+  const { BardEngine } = await import("@/engine/bard/BardEngine");
+  await BardEngine.loadDomains();
+
   const args = process.argv.slice(2);
   const count = parseInt(args.find((a) => a.startsWith("--count"))?.split("=")[1] || "100", 10);
   const seed = args.find((a) => a.startsWith("--seed"))?.split("=")[1] || "comparison-001";

@@ -244,4 +244,8 @@ function main() {
   }
 }
 
+// Preload narrative domains or every resolve() warns and returns empty text.
+const { BardEngine } = await import("@/engine/bard/BardEngine");
+await BardEngine.loadDomains();
+
 main();
