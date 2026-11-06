@@ -14,7 +14,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { formatMetaTrends } from "@/presenters/uiDigest";
+import { formatMetaTrends, type WorldState } from "@/presenters/uiDigest";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { TrendingUp, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { EraTone } from "@/presenters/projections/eraTone";
@@ -138,6 +139,9 @@ export default function TrendsPage() {
           </CardContent>
         </Card>
 
+        {/* League leaders — current snapshot, real standings only (T2.3) */}
+        <LeagueLeaders world={world} />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="paper bg-primary/5 border-primary/10">
             <CardHeader>
@@ -174,5 +178,64 @@ export default function TrendsPage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+/** League leaders snapshot — top rikishi by basho wins + top stables (T2.3). */
+function LeagueLeaders({ world }: { world: WorldState }) {
+  const standings = world.currentBasho?.standings;
+  const leaders = standings
+    ? [...standings.entries()]
+        .map(([id, s]) => ({ r: world.rikishi.get(id), ...s }))
+        .filter((x): x is typeof x & { r: Rikishi } => !!x.r && !x.r.isRetired)
+        .sort((a, b) => b.wins - a.wins || a.losses - b.losses)
+        .slice(0, 5)
+    : [];
+
+  const stables = [...world.heyas.values()]
+    .map((h) => ({
+      h,
+      sekitori: [...world.rikishi.values()].filter(
+        (r) => r.heyaId === h.id && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")
+      ).length,
+    }))
+    .sort((a, b) => b.sekitori - a.sekitori)
+    .slice(0, 5);
+
+  if (leaders.length === 0 && stables.every((s) => s.sekitori === 0)) return null;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {leaders.length > 0 && (
+        <Card className="paper">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Basho Leaders</CardTitle>
+            <CardDescription>Top records this tournament.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {leaders.map(({ r, wins, losses }) => (
+              <div key={r.id} className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0">
+                <span className="text-sm">{r.shikona} <span className="text-muted-foreground text-xs">· {r.rank}</span></span>
+                <span className="font-mono text-sm">{wins}–{losses}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+      <Card className="paper">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Top Stables by Sekitori</CardTitle>
+          <CardDescription>Salaried-division strength across the association.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {stables.map(({ h, sekitori }) => (
+            <div key={h.id} className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0">
+              <span className="text-sm capitalize">{h.name ?? h.id}{h.id === world.playerHeyaId ? " (you)" : ""}</span>
+              <span className="font-mono text-sm">{sekitori}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
