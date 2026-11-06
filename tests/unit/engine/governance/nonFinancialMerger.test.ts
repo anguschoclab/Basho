@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { runGovernanceReview } from "@/engine/governance/services/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
+import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import {
   CHRONIC_UNDERPERFORMANCE_BASHO,
   PRESTIGE_COLLAPSE_BAND,
@@ -64,6 +65,70 @@ describe("non-financial merger — chronic underperformance + prestige collapse"
     // Source heya should be removed (merged)
     expect(newWorld.heyas.has("heya-source")).toBe(false);
     expect(newWorld.heyas.size).toBe(initialHeyaCount - 1);
+  });
+
+  it("removes the absorbed stable's oyakata and returns its elder stock to the JSA pool", () => {
+    const world = makeMockWorld();
+
+    const target = makeMockHeya("heya-target", {
+      prestigeBand: "respected",
+      funds: 10_000_000,
+      rikishiIds: ["rt1", "rt2", "rt3"],
+    });
+    world.heyas.set("heya-target", target);
+    world.rikishi.set("rt1", mockRikishi("rt1", { heyaId: "heya-target" }));
+    world.rikishi.set("rt2", mockRikishi("rt2", { heyaId: "heya-target" }));
+    world.rikishi.set("rt3", mockRikishi("rt3", { heyaId: "heya-target" }));
+
+    const source = makeMockHeya("heya-source", {
+      prestigeBand: PRESTIGE_COLLAPSE_BAND as any,
+      funds: 500_000,
+      runwayBand: "secure",
+      consecutiveUnderperformanceBasho: CHRONIC_UNDERPERFORMANCE_BASHO,
+      rikishiIds: ["r1", "r2"],
+      oyakataId: "o-src",
+    });
+    world.heyas.set("heya-source", source);
+    world.rikishi.set("r1", mockRikishi("r1", { heyaId: "heya-source" }));
+    world.rikishi.set("r2", mockRikishi("r2", { heyaId: "heya-source" }));
+    world.oyakata.set(
+      "o-src",
+      MockFactory.createOyakata("o-src", { heyaId: "heya-source" })
+    );
+    world.myosekiMarket = {
+      stocks: {
+        "ms-held": {
+          id: "ms-held",
+          name: "HeldShare",
+          prestigeTier: "modest",
+          ownerId: "o-src",
+          holderId: "o-src",
+          status: "held",
+        },
+      },
+      history: [],
+    } as NonNullable<typeof world.myosekiMarket>;
+
+    world.playerHeyaId = "heya-player";
+    world.heyas.set("heya-player", makeMockHeya("heya-player"));
+    for (let i = 0; i < 8; i++) {
+      const id = `heya-fill-${i}`;
+      world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`rf${i}1`, `rf${i}2`, `rf${i}3`] }));
+      world.rikishi.set(`rf${i}1`, mockRikishi(`rf${i}1`, { heyaId: id }));
+      world.rikishi.set(`rf${i}2`, mockRikishi(`rf${i}2`, { heyaId: id }));
+      world.rikishi.set(`rf${i}3`, mockRikishi(`rf${i}3`, { heyaId: id }));
+    }
+
+    const next = resolveImpacts(world, [runGovernanceReview(world)]);
+
+    expect(next.heyas.has("heya-source")).toBe(false);
+    // No orphaned oyakata pointing at a deleted stable, and the share it
+    // held is back on the open market for the next generation.
+    expect(next.oyakata.has("o-src")).toBe(false);
+    const stock = next.myosekiMarket?.stocks["ms-held"];
+    expect(stock?.status).toBe("available");
+    expect(stock?.ownerId).toBe("JSA");
+    expect(stock?.holderId).toBe("JSA");
   });
 
   it("does NOT trigger non-financial merger when roster is too large", () => {

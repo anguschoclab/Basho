@@ -552,13 +552,8 @@ function closeIfHeirlessAndDying(
     : findMergerTarget(world, heya.id);
   if (!targetId) return false;
 
-  // The departing master retires for real — no dangling oyakata entity, and
-  // their elder stock returns to the JSA pool for the next generation.
-  const oyakata = world.oyakata?.get(heya.oyakataId ?? "");
-  if (oyakata) {
-    builder.removeOyakata(oyakata.id);
-    releaseElderStockToPool(builder, world, oyakata.id);
-  }
+  // The departing master exits for real inside executeMerger — the oyakata
+  // entity is removed and held elder stock returns to the JSA pool.
 
   builder.logEvent(
     "GOVERNANCE_RULING",
@@ -575,37 +570,6 @@ function closeIfHeirlessAndDying(
 
   builder.merge(executeMerger(world, heya.id, targetId, "succession_no_heir"));
   return true;
-}
-
-/** Returns an oyakata's held/owned myoseki to the unclaimed JSA pool. */
-function releaseElderStockToPool(
-  builder: ImpactBuilder,
-  world: WorldState,
-  oyakataId: string
-): void {
-  const market = world.myosekiMarket;
-  if (!market?.stocks) return;
-  const nextStocks = { ...market.stocks };
-  let changed = false;
-  for (const [stockId, stock] of Object.entries(market.stocks)) {
-    if (stock.holderId === oyakataId || stock.ownerId === oyakataId) {
-      nextStocks[stockId] = {
-        ...stock,
-        holderId: "JSA",
-        ownerId: "JSA",
-        status: "available",
-        askingPrice: undefined,
-      };
-      changed = true;
-    }
-  }
-  if (changed) {
-    builder.updateWorldField("myosekiMarket", {
-      ...market,
-      history: market.history ?? [],
-      stocks: nextStocks,
-    });
-  }
 }
 
 function deriveLegacyTier(

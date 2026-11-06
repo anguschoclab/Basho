@@ -10,6 +10,7 @@ import { pushUniqueId } from "@/engine/core/idIntegrity";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { bumpTenure } from "@/engine/legacy/tenure";
 import { retireRikishiFully } from "@/engine/lifecycle/processRetirements";
+import { releaseElderStockToPool } from "@/engine/governance/myosekiMarket";
 import {
   TRANSFER_RATIO_STANDARD,
   TRANSFER_RATIO_SCANDAL,
@@ -43,6 +44,20 @@ export function executeMerger(
 
   // WS5 — the absorbed heya's oyakata records a forced merger on their tenure.
   bumpTenure(world, builder, sourceHeyaId, { forcedMergers: 1 });
+
+  // The absorbed stable's master exits headship with the stable. Associate
+  // elders are not modeled (headship is 1:1 with the heya), so a stableless
+  // oyakata is dead state — it would age forever, surface in UI lists, and
+  // lock its elder stock permanently. Remove the entity and return stock
+  // to the JSA pool. Resolution applies entity updates before deletions,
+  // so the tenure bump above is a harmless dead write.
+  const departingOyakata = source.oyakataId
+    ? world.oyakata?.get(source.oyakataId)
+    : undefined;
+  if (departingOyakata) {
+    builder.removeOyakata(departingOyakata.id);
+    builder.merge(releaseElderStockToPool(world, departingOyakata.id));
+  }
 
   // 1. Transfer rikishi (foreign-slot-aware — §5.1 holds "at any time").
   const transferredRikishiIds = transferRosterAcrossMerger(world, source, target, builder);

@@ -197,6 +197,42 @@ export function generateMyosekiMarket(
 }
 
 /**
+ * Returns every stock held or owned by an oyakata to the unclaimed JSA pool —
+ * clears holder/owner, any asking price, and any lease so a reverted share
+ * pays no phantom income. Used when an oyakata leaves headship for good
+ * (stable merger, heirless closure).
+ */
+export function releaseElderStockToPool(world: WorldState, oyakataId: Id): StateImpact {
+  const builder = createImpactBuilder("releaseElderStockToPool");
+  const market = world.myosekiMarket;
+  if (!market?.stocks) return builder.build();
+
+  const nextStocks = { ...market.stocks };
+  let changed = false;
+  for (const [stockId, stock] of Object.entries(market.stocks)) {
+    if (stock.holderId === oyakataId || stock.ownerId === oyakataId) {
+      nextStocks[stockId] = {
+        ...stock,
+        holderId: "JSA",
+        ownerId: "JSA",
+        status: "available",
+        askingPrice: undefined,
+        leaseFee: undefined,
+      };
+      changed = true;
+    }
+  }
+  if (changed) {
+    builder.updateWorldField("myosekiMarket", {
+      ...market,
+      history: market.history ?? [],
+      stocks: nextStocks,
+    });
+  }
+  return builder.build();
+}
+
+/**
  * Weekly tick for Myoseki Market
  * Handles lease payments and market fluctuations
  * Returns StateImpact describing market updates instead of mutating directly.
