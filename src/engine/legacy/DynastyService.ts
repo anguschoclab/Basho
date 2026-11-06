@@ -28,13 +28,18 @@ import type { Rank } from "@/engine/types/banzuke";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { StateImpact } from "@/engine/core/StateImpact";
 import { TrainingPhilosophyService } from "@/engine/legacy/TrainingPhilosophyService";
-import { getHeya, getRikishi } from "@/engine/core/queries";
+import { getHeya, getRikishi, getHeyaRoster } from "@/engine/core/queries";
+import { executeMerger, findMergerTarget } from "@/engine/economy/mergers";
+import { HEYA_FLOOR, PRESTIGE_COLLAPSE_BAND } from "@/constants/engine/economic";
+import { ROSTER_CAPACITY_MERGER } from "@/constants/engine/roster";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import {
   SUCCESSION_INSOLVENCY_EVENTS,
   SUCCESSION_MAJOR_SCANDALS,
   SUCCESSION_UNDERPERFORMANCE_BASHO,
   LEGACY_MODIFIER_DURATION_BASHO,
+  SUCCESSION_CLOSURE_MAX_ROSTER,
+  SUCCESSION_CLOSURE_SANCTION_WEEKS,
 } from "@/constants/engine/succession";
 
 function isSummary(entry: unknown): entry is RetiredRikishiSummary {
@@ -59,8 +64,10 @@ function computeHighestRank(rikishi: Rikishi | RetiredRikishiSummary): Rank {
 }
 
 /**
- * Weekly check: updates successionReadiness on each Oyakata.
- * Returns warnings for the player as they approach the age 60 retirement cliff.
+ * Yearly-boundary check (phase06_yearly_boundary): updates successionReadiness
+ * on each Oyakata and resolves forced successions — heir promotion when a
+ * successor exists, stable closure for dying heirless stables, trustee
+ * appointment for viable heirless stables.
  */
 function tickSuccessionCheck(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickSuccessionCheck");
@@ -104,6 +111,8 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
       });
       if (viable) {
         builder.merge(triggerSuccession(world, heya.id, viable));
+      } else if (closeIfHeirlessAndDying(world, heya, builder)) {
+        // Stable folded — roster dispersed by the merger.
       } else {
         // Fallback: Generate a generic oyakata if no rikishi is eligible
         const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
@@ -150,7 +159,7 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
         });
         if (viable) {
           builder.merge(triggerSuccession(world, heya.id, viable));
-        } else {
+        } else if (!closeIfHeirlessAndDying(world, heya, builder)) {
           const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
           builder.merge(triggerSuccessionWithGeneric(world, heya.id, dummyId));
         }
@@ -494,6 +503,109 @@ function triggerSuccessionWithGeneric(
   );
 
   return builder.build();
+}
+
+/**
+ * Closure-on-failed-succession (Miyagino precedent): when the master departs
+ * with no heir, the JSA lets an ALREADY-DYING stable fold rather than
+ * appointing a trustee to a corpse. The roster disperses via the standard
+ * merger machinery — wrestlers are redistributed, the stable archives into
+ * closedHeyas, and the master's elder stock returns to the JSA pool.
+ *
+ * Dying means any of:
+ * - persistently sanctioned (>= SUCCESSION_CLOSURE_SANCTION_WEEKS in state),
+ * - prestigeBand collapsed ("struggling"),
+ * - roster too thin to sustain keiko (<= SUCCESSION_CLOSURE_MAX_ROSTER).
+ *
+ * Guards: the player heya always gets a trustee (dynasty frame — the player
+ * keeps playing as the successor), and the league never drops below
+ * HEYA_FLOOR via this path.
+ *
+ * @returns true when the stable was closed (merger merged into `builder`).
+ */
+function closeIfHeirlessAndDying(
+  world: WorldState,
+  heya: Heya,
+  builder: ImpactBuilder
+): boolean {
+  if (heya.id === world.playerHeyaId) return false;
+  if (world.heyas.size <= HEYA_FLOOR) return false;
+
+  const rosterSize = getHeyaRoster(world, heya.id).length;
+  const persistentlySanctioned =
+    heya.welfareState?.complianceState === "sanctioned" &&
+    (heya.welfareState?.weeksInState ?? 0) >= SUCCESSION_CLOSURE_SANCTION_WEEKS;
+  const dying =
+    persistentlySanctioned ||
+    heya.prestigeBand === PRESTIGE_COLLAPSE_BAND ||
+    rosterSize <= SUCCESSION_CLOSURE_MAX_ROSTER;
+  if (!dying) return false;
+
+  // Branches fold back into the mother line when the parent can absorb;
+  // otherwise the standard merger-target search picks a kin stable.
+  const parent = heya.branchedFromHeyaId ? getHeya(world, heya.branchedFromHeyaId) : undefined;
+  const parentCanAbsorb =
+    parent !== undefined &&
+    getHeyaRoster(world, parent.id).length < ROSTER_CAPACITY_MERGER;
+  const targetId = parentCanAbsorb
+    ? parent.id
+    : findMergerTarget(world, heya.id);
+  if (!targetId) return false;
+
+  // The departing master retires for real — no dangling oyakata entity, and
+  // their elder stock returns to the JSA pool for the next generation.
+  const oyakata = world.oyakata?.get(heya.oyakataId ?? "");
+  if (oyakata) {
+    builder.removeOyakata(oyakata.id);
+    releaseElderStockToPool(builder, world, oyakata.id);
+  }
+
+  builder.logEvent(
+    "GOVERNANCE_RULING",
+    "narrative",
+    {
+      incident: "stable_closure",
+      heyaname: heya.name,
+      heya: targetId,
+      reason: "no_successor_dying_stable",
+      score: rosterSize,
+    },
+    { heyaId: heya.id, importance: "headline" }
+  );
+
+  builder.merge(executeMerger(world, heya.id, targetId, "succession_no_heir"));
+  return true;
+}
+
+/** Returns an oyakata's held/owned myoseki to the unclaimed JSA pool. */
+function releaseElderStockToPool(
+  builder: ImpactBuilder,
+  world: WorldState,
+  oyakataId: string
+): void {
+  const market = world.myosekiMarket;
+  if (!market?.stocks) return;
+  const nextStocks = { ...market.stocks };
+  let changed = false;
+  for (const [stockId, stock] of Object.entries(market.stocks)) {
+    if (stock.holderId === oyakataId || stock.ownerId === oyakataId) {
+      nextStocks[stockId] = {
+        ...stock,
+        holderId: "JSA",
+        ownerId: "JSA",
+        status: "available",
+        askingPrice: undefined,
+      };
+      changed = true;
+    }
+  }
+  if (changed) {
+    builder.updateWorldField("myosekiMarket", {
+      ...market,
+      history: market.history ?? [],
+      stocks: nextStocks,
+    });
+  }
 }
 
 function deriveLegacyTier(

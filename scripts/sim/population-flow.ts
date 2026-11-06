@@ -23,7 +23,8 @@ import type { TalentPoolType } from "@/engine/types/talent";
 
 const YEARS = Number(process.argv.find((a) => a.startsWith("--years="))?.split("=")[1] ?? 15);
 const SEED = "baseline-25yr-a";
-const OUT = "scripts/sim/population-flow-results.txt";
+const OUT = process.argv.find((a) => a.startsWith("--out="))?.split("=")[1]
+  ?? "scripts/sim/population-flow-results.txt";
 
 function stateCounts(world: WorldState) {
   const tp = world.talentPool;

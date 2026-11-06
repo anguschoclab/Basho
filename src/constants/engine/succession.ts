@@ -12,6 +12,15 @@ export const SEKITORI_KACHI_KOSHI_WINS = 8;
 /** Minimum bout volume before a bad record counts (tiny samples are noise). */
 export const UNDERPERFORMANCE_MIN_BOUTS = 5;
 
+/** Closure-on-failed-succession gates — the JSA lets an already-dying stable
+ *  fold when the master departs with no heir (Miyagino precedent: scandal,
+ *  prestige collapse, or a roster too thin to sustain keiko), rather than
+ *  keeping it alive under an appointed trustee. */
+export const SUCCESSION_CLOSURE_MAX_ROSTER = 8;
+/** Sanction must persist this many weeks to count as terminal — a transient
+ *  sanction week at the master's 65th birthday does not close a stable. */
+export const SUCCESSION_CLOSURE_SANCTION_WEEKS = 26;
+
 /** The predecessor's plan-family bias persists this many basho. */
 export const LEGACY_MODIFIER_DURATION_BASHO = 3;
 /** Bounded plan-score bonuses — tilt borderline choices, never rescue a 0. */
