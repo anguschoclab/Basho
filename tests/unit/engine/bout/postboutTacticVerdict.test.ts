@@ -67,7 +67,7 @@ describe("beatPostBoutTacticVerdict", () => {
       winner: "east",
     });
     narratePostBout(p);
-    expect(pushed.some((l) => l.includes("paid off"))).toBe(true);
+    expect(pushed.some((l) => l.includes("paid off") || l.includes("worked perfectly") || l.includes("paid dividends") || l.includes("secured the win") || l.includes("proved decisive"))).toBe(true);
     expect(pushed.some((l) => l.includes("all-out assault"))).toBe(true);
   });
 
@@ -78,7 +78,7 @@ describe("beatPostBoutTacticVerdict", () => {
       winner: "east",
     });
     narratePostBout(p);
-    expect(pushed.some((l) => l.includes("backfired"))).toBe(true);
+    expect(pushed.some((l) => l.includes("backfired") || l.includes("fell flat") || l.includes("ineffective against") || l.includes("failed to produce") || l.includes("did not pan out"))).toBe(true);
     expect(pushed.some((l) => l.includes("sidestep gambit"))).toBe(true);
   });
 

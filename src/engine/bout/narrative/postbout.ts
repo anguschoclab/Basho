@@ -22,7 +22,7 @@ const TACTIC_LABELS: Record<BoutTactic, string> = {
 };
 
 function beatPostBoutTacticVerdict(p: PbpPipeline): void {
-  const { result, east, west, world, push } = p;
+  const { result, east, west, world, push, postBoutRng } = p;
   if (!result.tactics || !world.playerHeyaId) return;
   const side =
     east.heyaId === world.playerHeyaId
@@ -36,9 +36,7 @@ function beatPostBoutTacticVerdict(p: PbpPipeline): void {
   const won = result.winner === side;
   const label = TACTIC_LABELS[tactic];
   push(
-    won
-      ? `The ${label} call paid off — the corner's read was right.`
-      : `The ${label} call backfired; the opponent had the answer.`,
+    BardEngine.resolve(postBoutRng, won ? "post_bout.tactic_verdict.success" : "post_bout.tactic_verdict.failure", { LABEL: label }).text,
     "post_bout",
     []
   );

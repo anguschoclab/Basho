@@ -483,5 +483,21 @@
       "Rewind it one more time — %WINNER% makes the %KIMARITE% look effortless.",
       "From a different angle you can see exactly how %WINNER% finishes %LOSER%."
     ]
+  },
+  "tactic_verdict": {
+    "success": [
+      "The %LABEL% call paid off — the corner's read was right.",
+      "A brilliant tactical call from the corner: the %LABEL% worked perfectly.",
+      "The heya's strategy paid dividends — the %LABEL% was exactly the right approach.",
+      "Execution matched the game plan. The %LABEL% tactic secured the win.",
+      "The corner got it right today, as the %LABEL% proved decisive."
+    ],
+    "failure": [
+      "The %LABEL% call backfired; the opponent had the answer.",
+      "The corner's advice fell flat — the %LABEL% was completely scouted.",
+      "A tactical misstep. The %LABEL% proved ineffective against a prepared opponent.",
+      "The %LABEL% gambit failed to produce the desired result.",
+      "Unfortunately, the %LABEL% strategy did not pan out as planned."
+    ]
   }
 }
