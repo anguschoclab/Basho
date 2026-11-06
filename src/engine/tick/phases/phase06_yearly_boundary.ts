@@ -34,6 +34,7 @@ import { performKanrekiCeremony, isEligibleForKanreki } from "@/engine/governanc
 import { getRikishi } from "@/engine/core/queries";
 import { boundHistoryArrays } from "@/engine/tick/phases/boundHistoryArrays";
 import { runRetiredRikishiSummarization } from "@/engine/history/archival";
+import { evaluateObjectives, issueYearlyObjectives } from "@/engine/objectives/ObjectivesService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -88,6 +89,12 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
 
   // 3. NPC Yearly Logic
   builder.merge(tickYear(world));
+
+  // 3a. Player objectives (T1.1): resolve expired objectives against the
+  // closing year, then issue the next year's set. Career mode only —
+  // sandbox clears active objectives (no fail states by design).
+  builder.merge(evaluateObjectives(world));
+  builder.merge(issueYearlyObjectives(world));
 
   // 4. Staff Aging
   ageStaff(builder, world);

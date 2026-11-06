@@ -17,6 +17,7 @@ export * from "@/components/dashboard/GlobalCupWidget";
 export * from "@/components/dashboard/EventFeed";
 export * from "@/components/dashboard/PromotionPipelineWidget";
 export * from "@/components/dashboard/StableHealthWidget";
+export * from "@/components/dashboard/ObjectivesWidget";
 export * from "@/components/dashboard/KenshoManagementWidget";
 export * from "@/components/dashboard/SponsorRecruitmentWidget";
 export * from "@/components/dashboard/YushoRaceWidget";

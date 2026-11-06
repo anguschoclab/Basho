@@ -443,6 +443,9 @@ export interface WorldState {
   planetRating?: number;
   isInitialSeed?: boolean;
 
+  /** Yearly player objectives (T1.1). Active in career mode only. */
+  objectivesState?: import("@/engine/types/objectives").ObjectivesState;
+
   matchmakingOverride?: {
     type: "avoid_rival";
     requesterId: string;

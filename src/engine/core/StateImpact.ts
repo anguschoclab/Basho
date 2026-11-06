@@ -104,6 +104,7 @@ export type WritableWorldFields = Pick<
   | "_preBashoAssessment"
   | "sponsorPool"
   | "myosekiMarket"
+  | "objectivesState"
   | "_daysSinceLastWeeklyTick"
   | "governanceLog"
   | "pendingExhibitions"

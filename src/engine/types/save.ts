@@ -176,6 +176,7 @@ export interface SerializedWorldState {
   pendingRikishiRequests?: WorldState["pendingRikishiRequests"];
   pendingExhibitions?: WorldState["pendingExhibitions"];
   matchmakingOverride?: WorldState["matchmakingOverride"];
+  objectivesState?: WorldState["objectivesState"];
   lastBoutResult?: WorldState["lastBoutResult"];
 
   // ── NPC & scheduling internals ──────────────────────────────────────────

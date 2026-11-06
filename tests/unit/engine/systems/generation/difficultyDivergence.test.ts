@@ -7,12 +7,12 @@
 import { describe, it, expect } from "vitest";
 import { OYAKATA_BACKSTORIES } from "@/constants/ui/wizard";
 
-const ORDER = ["Easy", "Normal", "Hard", "Very Hard"] as const;
+const ORDER = ["Easy", "Normal", "Hard", "Very Hard"] as const satisfies readonly ("Easy" | "Normal" | "Hard" | "Very Hard")[];
 
 describe("backstory difficulty bands diverge (T3.4)", () => {
   it("declares all four difficulty tiers", () => {
     const tiers = new Set(OYAKATA_BACKSTORIES.map((b) => b.difficulty));
-    for (const t of ORDER) expect(tiers.has(t as string)).toBe(true);
+    for (const t of ORDER) expect(tiers.has(t)).toBe(true);
   });
 
   it("no backstory strictly dominates another across the full package (funds normalized)", () => {

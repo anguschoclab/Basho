@@ -53,6 +53,7 @@ export {
 } from "@/engine/narrative/descriptorBands";
 export type { FacilityAxis } from "@/engine/economy/facilities";
 export { GlossaryService, type GlossaryTerm } from "@/engine/narrative/glossary/GlossaryService";
+export { objectiveProgress } from "@/engine/types/objectives";
 export type { HoFCategory, HoFInductee } from "@/engine/history/hallOfFame";
 export { makeBashoKey } from "@/engine/history/historyIndex";
 export { getMentor, menteesOf, getLineageTree } from "@/engine/legacy/lineage";
