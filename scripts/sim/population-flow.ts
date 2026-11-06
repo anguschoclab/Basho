@@ -12,7 +12,11 @@
 import { appendFileSync, writeFileSync } from "node:fs";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
-import { computeReplacementGap, allocateVacancies } from "@/engine/generation/RecruitmentController";
+import {
+  computeReplacementGap,
+  allocateVacancies,
+  computePopulationTarget,
+} from "@/engine/generation/RecruitmentController";
 import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 import type { WorldState } from "@/engine/types/world";
 import type { TalentPoolType } from "@/engine/types/talent";
@@ -43,15 +47,16 @@ function stateCounts(world: WorldState) {
 }
 
 function heyaStats(world: WorldState) {
-  let headroom = 0, sanctioned = 0, rostered = 0;
+  let headroom = 0, sanctioned = 0, rostered = 0, npcCount = 0;
   for (const heya of world.heyas.values()) {
     if (heya.id === world.playerHeyaId) continue;
+    npcCount++;
     if (heya.welfareState?.complianceState === "sanctioned") sanctioned++;
     const size = new Set(heya.rikishiIds ?? []).size;
     rostered += size;
     headroom += Math.max(0, TARGET_ROSTER_SIZE - size);
   }
-  return { headroom, sanctioned, rostered };
+  return { headroom, sanctioned, rostered, npcCount };
 }
 
 writeFileSync(OUT, `# population-flow ${SEED} start=${new Date().toISOString()}\n`);
@@ -87,12 +92,13 @@ for (let b = 0; b < YEARS * 6; b++) {
   const pool = stateCounts(world);
   const hs = heyaStats(world);
   const gap = computeReplacementGap(world);
+  const npcCap = computePopulationTarget(world);
   const alloc = gap > 0 ? Object.values(allocateVacancies(world, gap)).reduce((a, v) => a + v, 0) : 0;
 
   appendFileSync(
     OUT,
     `y${world.year}b${b}: act=${afterAct.size} ret=${retired} deb=${debuted} van=${vanished} | ` +
-      `gap=${gap} alloc=${alloc} headroom=${hs.headroom} sanc=${hs.sanctioned} rost=${hs.rostered} | ` +
+      `heya=${hs.npcCount} cap=${npcCap} gap=${gap} alloc=${alloc} headroom=${hs.headroom} sanc=${hs.sanctioned} rost=${hs.rostered} | ` +
       `pool av=${pool.available} tlk=${pool.in_talks} sgn=${pool.signed} oth=${pool.other} hid=${pool.hidden}\n`
   );
 }

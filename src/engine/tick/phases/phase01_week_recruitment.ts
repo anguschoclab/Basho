@@ -78,7 +78,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
 
   // 4. NPC Replacement Recruitment — runs EVERY weekly tick via gap controller.
   // The controller computes a global replacement target from active population vs
-  // the equilibrium target captured at worldgen (_populationTarget), then allocates
+  // the live equilibrium target (NPC heyas × TARGET_ROSTER_SIZE), then allocates
   // vacancies across eligible NPC stables by depletion. This runs outside interim
   // and above the old 800 emergency floor, closing the erosion band (1084→763).
   const gap = computeReplacementGap(world);

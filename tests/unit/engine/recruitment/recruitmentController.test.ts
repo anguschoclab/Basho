@@ -33,6 +33,63 @@ describe("computeReplacementGap", () => {
     const world = makeMockWorld();
     expect(computeReplacementGap(world)).toBe(0);
   });
+
+  it("tracks live heya count — a new stable raises the floor by TARGET_ROSTER_SIZE", () => {
+    const heyas = new Map<string, Heya>();
+    heyas.set("npc-a", makeMockHeya("npc-a"));
+    heyas.set("npc-b", makeMockHeya("npc-b"));
+    const world = makeMockWorld({ heyas, playerHeyaId: "player-x" } as Partial<WorldState>);
+
+    // 2 NPC heyas × 30 = 60 target, 0 active → gap 60
+    expect(computeReplacementGap(world)).toBe(60);
+
+    // A just-founded empty stable joins the league → floor rises to 90
+    const grown = new Map(world.heyas);
+    grown.set("npc-new", makeMockHeya("npc-new"));
+    world.heyas = grown;
+    expect(computeReplacementGap(world)).toBe(90);
+  });
+
+  it("tracks live heya count — a merger drops the floor by TARGET_ROSTER_SIZE", () => {
+    const heyas = new Map<string, Heya>();
+    heyas.set("npc-a", makeMockHeya("npc-a"));
+    heyas.set("npc-b", makeMockHeya("npc-b"));
+    heyas.set("npc-c", makeMockHeya("npc-c"));
+    const world = makeMockWorld({ heyas, playerHeyaId: "player-x" } as Partial<WorldState>);
+    expect(computeReplacementGap(world)).toBe(90);
+
+    const shrunk = new Map(world.heyas);
+    shrunk.delete("npc-c");
+    world.heyas = shrunk;
+    expect(computeReplacementGap(world)).toBe(60);
+  });
+
+  it("counts sanctioned heyas toward the target (slots exist even when unreachable)", () => {
+    const heyas = new Map<string, Heya>();
+    heyas.set("npc-a", makeMockHeya("npc-a"));
+    heyas.set(
+      "npc-sanc",
+      makeMockHeya("npc-sanc", {
+        welfareState: {
+          welfareRisk: 90,
+          activeDiet: "maintenance",
+          complianceState: "sanctioned",
+          weeksInState: 20,
+          lastReviewedWeek: 0,
+        },
+      })
+    );
+    const world = makeMockWorld({ heyas, playerHeyaId: "player-x" } as Partial<WorldState>);
+    expect(computeReplacementGap(world)).toBe(60);
+  });
+
+  it("excludes the player heya from the target", () => {
+    const heyas = new Map<string, Heya>();
+    heyas.set("player", makeMockHeya("player"));
+    heyas.set("npc-a", makeMockHeya("npc-a"));
+    const world = makeMockWorld({ heyas, playerHeyaId: "player" } as Partial<WorldState>);
+    expect(computeReplacementGap(world)).toBe(30);
+  });
 });
 
 describe("allocateVacancies", () => {

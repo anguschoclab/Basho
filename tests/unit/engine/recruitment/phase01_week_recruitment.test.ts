@@ -90,13 +90,13 @@ function buildWorldWithPool(opts: {
 }
 
 describe("phase01_week_recruitment — controller-driven replacement", () => {
-  it("recruits outside interim when active < _populationTarget (above 800)", () => {
-    // active=900, target=1000, above TOTAL_ACTIVE_THRESHOLD(800), not interim
+  it("recruits outside interim when active < live population target (above 800)", () => {
+    // 34 heyas = 1 player + 33 NPC → live target 990; active 900 > 800 threshold → gap 90
     const world = buildWorldWithPool({
       activeCount: 900,
       populationTarget: 1000,
       visibleCandidates: 50,
-      heyaCount: 3,
+      heyaCount: 34,
       rosterSize: 10,
     });
 
@@ -110,12 +110,13 @@ describe("phase01_week_recruitment — controller-driven replacement", () => {
     expect(resolved.activeRikishiIds.size).toBeGreaterThan(before);
   });
 
-  it("does not recruit when active === _populationTarget", () => {
+  it("does not recruit when active === live population target", () => {
+    // 34 heyas → live target 990; active at exactly 990 → gap 0
     const world = buildWorldWithPool({
-      activeCount: 1000,
+      activeCount: 990,
       populationTarget: 1000,
       visibleCandidates: 50,
-      heyaCount: 3,
+      heyaCount: 34,
       rosterSize: 10,
     });
 

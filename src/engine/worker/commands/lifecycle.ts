@@ -36,9 +36,9 @@ function generateWorld(opts: {
   let world = generateInitialWorld(opts.seed);
   if (opts.playerConfig?.heyaId && opts.playerConfig.heyaId !== world.playerHeyaId) {
     world.playerHeyaId = opts.playerConfig.heyaId; // @world-builder
-    // WorldFactory computed _populationTarget against its placeholder
-    // playerHeyaId (first generated heya) — recompute so the player's actual
-    // stable is the excluded one and the NPC capacity total is right.
+    // WorldFactory computed the _populationTarget seed against its
+    // placeholder playerHeyaId (first generated heya) — recompute so the
+    // player's actual stable is the excluded one in the persisted seed.
     let targetPop = 0;
     for (const h of world.heyas.values()) {
       if (h.id !== world.playerHeyaId) targetPop += TARGET_ROSTER_SIZE;

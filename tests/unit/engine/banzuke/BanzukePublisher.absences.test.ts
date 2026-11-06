@@ -155,7 +155,7 @@ function makeBanzukeSnapshot(ids: string[]): BanzukeSnapshot {
           position: { rank: "maegashira", rankNumber: 5, side: "east" },
         })),
       },
-    } as BanzukeSnapshot["divisions"],
+    } as unknown as BanzukeSnapshot["divisions"],
   };
 }
 

@@ -7,8 +7,9 @@
  * The replacement controller (RecruitmentController.allocateVacancies) uses this
  * as the per-heya ceiling when distributing the global replacement gap. The
  * controller's `Math.max(0, target - active)` clamp prevents over-growth toward
- * 45 × 30 = 1350; intake stops at `_populationTarget` (~1084 at worldgen).
- * Must be >= ceil(1084 / 45) ≈ 25 to ensure total headroom can absorb the gap.
+ * the live demographic floor (current NPC heyas × TARGET_ROSTER_SIZE —
+ * ~1320 at worldgen, tracking heya founding/mergers thereafter).
+ * Must be >= ceil(activePopulation / NPC heyas) so headroom can absorb the gap.
  */
 export const TARGET_ROSTER_SIZE = 30;
 

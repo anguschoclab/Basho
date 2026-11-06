@@ -8,7 +8,9 @@ import type { Heya } from "@/engine/types/heya";
 import type { TalentPoolWorldState } from "@/engine/types/talent";
 import type { Id } from "@/engine/types/common";
 
-const POPULATION_TARGET = 60;
+// Live demographic floor: NPC heyas × TARGET_ROSTER_SIZE (5 × 30 = 150).
+// The controller holds active population at this target across attrition.
+const POPULATION_TARGET = 150;
 const HEYA_COUNT = 6; // 5 NPC + 1 player
 const ATTRACTION_PER_CYCLE = 5; // active rikishi removed per cycle to simulate attrition
 const CYCLES = 12;

@@ -128,4 +128,28 @@ describe("backfill intake vs. organic bid policies", () => {
     const next = resolveImpacts(world, [impact]);
     expect(next.activeRikishiIds.size).toBe(100);
   });
+
+  it("a just-founded empty stable is seeded by backfill (dynamic target raises the floor)", () => {
+    let world = buildStallWorld();
+    // Found a new NPC stable — empty roster, non-sanctioned, headroom 30.
+    const newId = "heya-new" as Id;
+    const newHeya = MockFactory.createHeya(newId, {
+      oyakataId: "oyakata-new" as Id,
+      rikishiIds: [],
+    });
+    const heyas = new Map(world.heyas);
+    heyas.set(newId, newHeya);
+    const oyakata = new Map(world.oyakata);
+    oyakata.set(newHeya.oyakataId, MockFactory.createOyakata(newHeya.oyakataId, { heyaId: newId }));
+    world = { ...world, heyas, oyakata };
+
+    // Live target: 6 NPC × 30 = 180 vs 100 active → gap 80; the empty stable
+    // has the most headroom and must receive a proportional share.
+    const impact = phase01_week_recruitment(world);
+    const next = resolveImpacts(world, [impact]);
+
+    const grown = (next.heyas.get(newId)?.rikishiIds ?? []).length;
+    expect(grown).toBeGreaterThan(0);
+    expect(next.activeRikishiIds.size).toBeGreaterThan(100);
+  });
 });

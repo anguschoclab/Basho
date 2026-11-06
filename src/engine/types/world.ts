@@ -311,9 +311,11 @@ export interface WorldState {
   _postBashoMeta?: PostBashoMeta;
 
   /**
-   * Equilibrium active-rikishi population captured at world generation.
-   * Read-only coupling point for the replacement-rate controller (RecruitmentController)
-   * and the lifecycle plan. Falls back to 0 (no replacement) when unset.
+   * Worldgen seed for the active-rikishi demographic floor
+   * (NPC heyas × TARGET_ROSTER_SIZE at generation time).
+   * RecruitmentController computes the live target from current heyas each
+   * tick; this field is only the fallback for degenerate worlds with no
+   * heyas (and a persisted record of the worldgen seed).
    */
   _populationTarget?: number;
 

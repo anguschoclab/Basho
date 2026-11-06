@@ -2,11 +2,13 @@
  * RecruitmentController — closed-loop replacement-rate controller.
  *
  * Computes the weekly global replacement gap from the active population vs the
- * equilibrium target captured at world generation (`world._populationTarget`).
- * The gap is then allocated across NPC stables by `allocateVacancies`.
+ * live demographic floor (`computePopulationTarget` — all current NPC heyas
+ * × TARGET_ROSTER_SIZE, so the floor breathes with league metabolism: stable
+ * foundings raise it, mergers/closures lower it). The gap is then allocated
+ * across NPC stables by `allocateVacancies`.
  *
- * Read-only consumption of `_populationTarget`: this module never writes it.
- * The lifecycle plan may own `_populationTarget`; this controller self-stabilizes
+ * `_populationTarget` (worldgen seed) is read only as the degenerate-world
+ * fallback; this module never writes it. The controller self-stabilizes
  * around whatever attrition rate exists.
  */
 
@@ -14,13 +16,30 @@ import type { WorldState } from "@/engine/types/world";
 import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 
 /**
+ * Live demographic floor: all NPC stables × TARGET_ROSTER_SIZE, computed
+ * each tick so the target breathes with league metabolism — stable
+ * foundings raise it, mergers/closures lower it. Sanctioned stables count
+ * toward the target (their slots exist even when unreachable; the allocator
+ * caps at eligible headroom and the death pipeline handles hopeless cases).
+ * Falls back to the worldgen `_populationTarget` snapshot for degenerate
+ * worlds with no heya map (bare test fixtures).
+ */
+export function computePopulationTarget(world: WorldState): number {
+  if (world.heyas.size === 0) return world._populationTarget ?? 0;
+  let npcCount = 0;
+  for (const h of world.heyas.values()) {
+    if (h.id !== world.playerHeyaId) npcCount++;
+  }
+  return npcCount * TARGET_ROSTER_SIZE;
+}
+
+/**
  * Returns the number of replacements needed this tick to hold the active
  * population at its equilibrium target. Clamped at 0 so the controller never
  * drives growth above target. Returns 0 when the target is unset.
  */
 export function computeReplacementGap(world: WorldState): number {
-  const target = world._populationTarget;
-  if (target == null) return 0;
+  const target = computePopulationTarget(world);
   return Math.max(0, target - world.activeRikishiIds.size);
 }
 
