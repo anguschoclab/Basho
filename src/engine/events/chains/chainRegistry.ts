@@ -10,13 +10,13 @@
 import type { EventChainDef, ChainGuard } from "@/engine/events/chains/types";
 import type { WorldState } from "@/engine/types/world";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 
 // ── Shared guards ────────────────────────────────────────────────────────────
 
 const rosterOf = (world: WorldState, heyaId: string) =>
-  [...world.activeRikishiIds]
-    .map((id) => world.rikishi.get(id))
-    .filter((r) => !!r && r.heyaId === heyaId && !r.isRetired);
+  // ⚡ Bolt: Use memoized getHeyaRoster instead of manual array iteration
+  EntityCollection.getHeyaRoster(world, heyaId);
 
 const hasRoster =
   (min: number): ChainGuard =>
