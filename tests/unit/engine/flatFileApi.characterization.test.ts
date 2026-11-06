@@ -1,8 +1,7 @@
 /**
  * Golden-master characterization for flat-file exports that Phase-2 moves into
  * their sibling directories (lifecycle.ts → lifecycle/, shikona.ts → shikona/):
- *   checkRetirement, _generateRookie, generateShikona, generateRikishiName,
- *   generateOyakataName
+ *   checkRetirement, generateShikona, generateRikishiName, generateOyakataName
  * Plus banzuke.ts non-barrel exports (compareBanzuke, computeVariableSanyakuCounts).
  *
  * Written BEFORE the moves; must pass unchanged after (import paths will be
@@ -10,12 +9,11 @@
  */
 import { describe, it, expect } from "vitest";
 import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
-import { _generateRookie } from "@/engine/lifecycle/rookieFactory";
 import { generateShikona, generateRikishiName } from "@/engine/shikona/generateShikona";
 import { generateOyakataName } from "@/engine/shikona/oyakataNames";
 import { compareBanzuke, computeVariableSanyakuCounts } from "@/engine/banzuke/banzukeOps";
 import { SeededRNG } from "@/engine/core/rng";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "@tests/unit/engine/utils";
+import { makeMockWorld, mockRikishi } from "@tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 
@@ -41,33 +39,6 @@ describe("checkRetirement — golden master", () => {
       expect(checkRetirement(r, 2026, "seed-B")).toMatchSnapshot();
     });
   }
-});
-
-describe("_generateRookie — golden master", () => {
-  it("across ranks/seeds/heyas", () => {
-    const heya = makeMockHeya("heya-1");
-    const world = makeMockWorld({ heyas: new Map([["heya-1", heya]]) });
-    const out: unknown[] = [];
-    for (const year of [2026, 2027]) {
-      for (const rank of ["jonokuchi", "makushita"] as const) {
-        for (const heyaId of [undefined, "heya-1"]) {
-          const r = _generateRookie(world, year, rank, heyaId);
-          out.push({
-            year,
-            rank,
-            heyaId,
-            id: r.id,
-            shikona: r.shikona,
-            archetype: r.combatProfile?.archetype,
-            division: r.division,
-            stats: r.stats,
-            birthYear: r.birthYear,
-          });
-        }
-      }
-    }
-    expect(out).toMatchSnapshot();
-  });
 });
 
 describe("shikona.ts names — golden master", () => {

@@ -54,6 +54,7 @@ function calculateRunwayAwareMaxBid(heya: Heya, oyakata: Oyakata, baseMultiplier
   return surplus * riskMod * baseMultiplier;
 }
 
+// @keep-export DefaultRecruitmentStrategy — live via same-file/dispatch call or public API contract
 export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(
     _world: WorldState,

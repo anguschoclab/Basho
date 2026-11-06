@@ -97,17 +97,37 @@ function createSaveGame(
 }
 
 export function autosave(world: WorldState, timestampISO?: string): boolean {
-  return saveGame(world, SaveSlotService.getAutosaveSlotName(), timestampISO);
+  const storage = SaveSlotService.getStorage();
+  if (!storage) return false;
+  // Rotate the previous saves first: autosave_1 ← autosave,
+  // autosave_2 ← autosave_1 (oldest position drops off). Copies are raw
+  // strings so rotated snapshots stay byte-identical to when written.
+  const names = SaveSlotService.getAutosaveSlotNames();
+  for (let i = names.length - 1; i >= 1; i--) {
+    const raw = storage.getItem(SaveSlotService.toSlotKey(names[i - 1]));
+    const dstKey = SaveSlotService.toSlotKey(names[i]);
+    if (raw === null) storage.removeItem(dstKey);
+    else storage.setItem(dstKey, raw);
+  }
+  return saveGame(world, names[0], timestampISO);
 }
 
 export function loadAutosave(): WorldState | null {
-  return loadGame(SaveSlotService.getAutosaveSlotName());
+  // Walk the rotation newest → oldest; the first loadable snapshot wins so
+  // a corrupt primary never strands the player without a recovery point.
+  for (const slotName of SaveSlotService.getAutosaveSlotNames()) {
+    const world = loadGame(slotName);
+    if (world) return world;
+  }
+  return null;
 }
 
 export function hasAutosave(): boolean {
   const storage = SaveSlotService.getStorage();
   if (!storage) return false;
-  return storage.getItem(SaveSlotService.getAutosaveKey()) !== null;
+  return SaveSlotService.getAutosaveSlotNames().some(
+    (name) => storage.getItem(SaveSlotService.toSlotKey(name)) !== null
+  );
 }
 
 export function deleteSave(slotNameOrKey: string): boolean {

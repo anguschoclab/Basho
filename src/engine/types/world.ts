@@ -410,9 +410,21 @@ export interface WorldState {
     /**
      * Game mode chosen in the new-game wizard. "sandbox" exempts the player
      * heya from forced succession (age-65 + board-mandated triggers).
+     * "ironman" plays career rules but any forced player succession ends
+     * the run via `gameOver` instead of continuing the dynasty.
      * Absent/undefined behaves as "career".
      */
-    careerMode?: "career" | "sandbox";
+    careerMode?: "career" | "sandbox" | "ironman";
+  };
+
+  /**
+   * Ironman career end state. Set once — the tick pipeline halts while it
+   * is present and the UI surfaces the end-of-career dialog.
+   */
+  gameOver?: {
+    reason: string;
+    oyakataName: string;
+    year: number;
   };
 
   /** First-Time User Experience tracking */

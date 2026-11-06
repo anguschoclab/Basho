@@ -14,6 +14,7 @@ import { StateImpact } from "@/engine/core/StateImpact";
 import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 
+// @keep-export CareerService — live via same-file/dispatch call or public API contract
 export const CareerService = {
   /**
    * Evaluates if a rikishi should retire.

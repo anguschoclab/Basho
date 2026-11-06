@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Swords } from "lucide-react";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import type { WorldState } from "@/presenters/uiDigest";
+import { getAllRikishi } from "@/presenters/worldAccess";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 const DIVISION_ORDER = [
@@ -42,7 +43,7 @@ const STAT_KEYS = [
 ] as const satisfies readonly (readonly [keyof Rikishi["stats"], string])[];
 
 function activeRikishi(world: WorldState): Rikishi[] {
-  return [...world.rikishi.values()]
+  return getAllRikishi(world)
     .filter((r) => !r.isRetired)
     .sort(
       (a, b) =>

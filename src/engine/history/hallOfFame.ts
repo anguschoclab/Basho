@@ -222,6 +222,7 @@ export function getHallOfFame(world: WorldState): HallOfFameState {
  *  * @param category - The Category.
  *  * @returns The result.
  */
+// @keep-export getInducteesByCategory — live via same-file/dispatch call or public API contract
 export function getInducteesByCategory(world: WorldState, category: HoFCategory): HoFInductee[] {
   const hof = getHallOfFame(world);
   return hof.inductees.filter((i) => i.category === category);

@@ -41,12 +41,15 @@ export interface StrategyContext {
 export type TraitCheck = (oyakata: Oyakata) => boolean;
 
 /** Threshold calculator based on traits and state */
+// @keep-export ThresholdCalculator — live via same-file/dispatch call or public API contract
 export type ThresholdCalculator = (ctx: StrategyContext) => number;
 
 /** Decision action that returns a state impact */
+// @keep-export StrategyAction — live via same-file/dispatch call or public API contract
 export type StrategyAction = (ctx: StrategyContext) => StateImpact;
 
 /** Event to emit on successful action */
+// @keep-export StrategyEvent — live via same-file/dispatch call or public API contract
 export interface StrategyEvent {
   action: string;
   reasoning: string;
@@ -198,6 +201,7 @@ export function calculateMoodAdjustedThreshold(baseThreshold: number, oyakata: O
   }
 }
 
+// @keep-export calculateTraitAdjustedThreshold — live via same-file/dispatch call or public API contract
 export function calculateTraitAdjustedThreshold(
   baseThreshold: number,
   oyakata: Oyakata,

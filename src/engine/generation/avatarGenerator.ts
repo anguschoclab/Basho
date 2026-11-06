@@ -282,6 +282,7 @@ export function deriveAvatarStage(
 // Resolver + per-entity stage-input helpers
 // ---------------------------------------------------------------------------
 
+// @keep-export ResolveAvatarArgs — live via same-file/dispatch call or public API contract
 export interface ResolveAvatarArgs extends AvatarStageInput {
   id: string;
   nationality?: string;

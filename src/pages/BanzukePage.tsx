@@ -3,7 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/state/game/useGame";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { DivisionTable } from "@/components/banzuke/DivisionTable";
@@ -60,14 +60,12 @@ export default function BanzukePage() {
         <Tabs defaultValue="makuuchi" className="w-full">
           <TabsList className="bg-muted/50">
             {DIVISION_KEYS.map((d) => (
-              <TooltipWrap key={d} content={`View ${d} division rankings`} side="bottom">
-                <TabsTrigger value={d} className="capitalize font-display text-xs gap-1">
-                  {d}
-                  <span className="text-[10px] text-muted-foreground font-mono">
-                    ({banzukeDigest.divisionCounts[d] ?? 0})
-                  </span>
-                </TabsTrigger>
-              </TooltipWrap>
+              <TabsTrigger key={d} value={d} className="capitalize font-display text-xs gap-1">
+                <GlossaryTip termId={d}>{d}</GlossaryTip>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  ({banzukeDigest.divisionCounts[d] ?? 0})
+                </span>
+              </TabsTrigger>
             ))}
           </TabsList>
 

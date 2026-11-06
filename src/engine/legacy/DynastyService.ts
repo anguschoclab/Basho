@@ -29,6 +29,8 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { StateImpact } from "@/engine/core/StateImpact";
 import { TrainingPhilosophyService } from "@/engine/legacy/TrainingPhilosophyService";
 import { getHeya, getRikishi, getHeyaRoster } from "@/engine/core/queries";
+import { adjustBrandForOyakata } from "@/engine/keshoMawashi/HeyaBrandGenerator";
+import type { Id } from "@/engine/types/common";
 import { executeMerger, findMergerTarget } from "@/engine/economy/mergers";
 import { HEYA_FLOOR, PRESTIGE_COLLAPSE_BAND } from "@/constants/engine/economic";
 import { ROSTER_CAPACITY_MERGER } from "@/constants/engine/roster";
@@ -61,6 +63,39 @@ function computeHighestRank(rikishi: Rikishi | RetiredRikishiSummary): Rank {
     }
   }
   return best;
+}
+
+/**
+ * Ironman end-of-career (T1.2): a forced succession on the player heya under
+ * careerMode "ironman" writes `world.gameOver` instead of continuing the
+ * dynasty — the run is over. Returns true when the path was handled.
+ */
+function endIronmanCareer(
+  world: WorldState,
+  builder: ImpactBuilder,
+  heya: Heya,
+  oyakata: Oyakata,
+  reason: string
+): boolean {
+  if (heya.id !== world.playerHeyaId) return false;
+  if (world.settings?.careerMode !== "ironman") return false;
+  builder.updateWorldField("gameOver", {
+    reason: `${oyakata.name} is forced to step down: ${reason}.`,
+    oyakataName: oyakata.name,
+    year: world.year,
+  });
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "discipline",
+    {
+      incident: "ironman_career_end",
+      status: "retired",
+      reason: `${oyakata.name}'s career is over: ${reason}. Ironman mode — the run ends here.`,
+      heyaId: heya.id,
+    },
+    { heyaId: heya.id, importance: "headline" }
+  );
+  return true;
 }
 
 /**
@@ -105,6 +140,11 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
 
     // Forced succession at 65
     if (age >= 65 && !oyakata.retirementYear) {
+      if (
+        endIronmanCareer(world, builder, heya, oyakata, "mandatory retirement at 65 (JSA)")
+      ) {
+        continue;
+      }
       const eligible = findEligibleSuccessors(world, heya.id);
       // triggerSuccession no-ops on summarized successors — pick the first
       // FULL candidate, else fall through to the generic trustee path
@@ -142,6 +182,7 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
               : undefined;
 
       if (reason) {
+        if (endIronmanCareer(world, builder, heya, oyakata, reason)) continue;
         const eligible = findEligibleSuccessors(world, heya.id);
         builder.logEvent(
           "GOVERNANCE_RULING",
@@ -307,6 +348,20 @@ export function triggerSuccession(
     oyakataId: newOyakataId,
     legacyModifier,
   });
+
+  // 8. The stable's brand identity drifts toward the new master's temperament
+  // — a succession under a traditionalist pulls traditionLevel up, a
+  // scientist/indulgent oyakata pulls it down.
+  const brandId = heya.brandIdentityId;
+  const brand = brandId ? world.heyaBrandIdentities?.get(brandId) : undefined;
+  if (brand && world.heyaBrandIdentities) {
+    const adjusted = adjustBrandForOyakata(brand, newOyakata.archetype);
+    if (adjusted !== brand) {
+      const nextBrands = new Map(world.heyaBrandIdentities as Map<Id, typeof brand>);
+      nextBrands.set(brand.id, adjusted);
+      builder.updateWorldField("heyaBrandIdentities", nextBrands as never);
+    }
+  }
 
   builder.logEvent(
     "LIFECYCLE_EVENT",

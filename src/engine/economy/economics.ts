@@ -13,10 +13,7 @@ import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { reportScandal } from "@/engine/governance/services/ScandalService";
 import { calculateKenshoEnvelopes } from "@/engine/economy/KenshoService";
-import {
-  processSponsorChurn as runSponsorChurnService,
-  selectBenefactor,
-} from "@/engine/economy/SponsorshipService";
+import { selectBenefactor } from "@/engine/economy/SponsorshipService";
 import {
   DEBT_LIMIT,
   BENEFACTOR_BAILOUT_AMOUNT,
@@ -199,10 +196,4 @@ export function onBoutResolvedEconomics(
 /**
  * Executes the post-basho sponsor churn checks according to Constitution Addendum D.
  * Delegates to the `SponsorshipService`.
- *
- * @param {WorldState} world - The current world state.
- * @returns {StateImpact} The state impact describing sponsor churn updates.
  */
-export function runSponsorChurn(world: WorldState): StateImpact {
-  return runSponsorChurnService(world);
-}

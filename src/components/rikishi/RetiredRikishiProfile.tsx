@@ -19,6 +19,9 @@ import { getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisp
 import type { WorldState } from "@/presenters/uiDigest";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { getHeya } from "@/presenters/worldAccess";
+import { isInducted, HOF_CATEGORY_LABELS, type HoFCategory } from "@/presenters/uiDigest";
+
+const HOF_CATEGORIES: HoFCategory[] = ["champion", "iron_man", "technician"];
 
 export function RetiredRikishiProfile({
   summary,
@@ -63,6 +66,17 @@ export function RetiredRikishiProfile({
               <Badge variant="secondary" className="uppercase tracking-widest text-[10px]">
                 Retired {summary.retirementYear}
               </Badge>
+              {HOF_CATEGORIES.filter((cat) => isInducted(world, summary.id, cat)).map(
+                (cat) => (
+                  <Badge
+                    key={cat}
+                    variant="default"
+                    className="uppercase tracking-widest text-[10px]"
+                  >
+                    {HOF_CATEGORY_LABELS[cat].name}
+                  </Badge>
+                )
+              )}
             </div>
             <div className="text-sm text-muted-foreground">
               {peak ? `Peak: ${peak.en}` : `Peak: ${summary.peakRank}`}

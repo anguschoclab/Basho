@@ -178,6 +178,7 @@ function serializeWorld(world: WorldState): SerializedWorldState {
     objectivesState: world.objectivesState,
     achievements: world.achievements,
     lastBoutResult: world.lastBoutResult,
+    gameOver: world.gameOver,
 
     npcScoutingPriorities: world.npcScoutingPriorities,
     npcBidPolicies: world.npcBidPolicies,
@@ -208,6 +209,25 @@ function deserializePendingFields(s: SerializedWorldState): Partial<WorldState> 
     activeScoutMissions: s.activeScoutMissions,
     staffCandidatePool: s.staffCandidatePool,
     pendingRikishiRequests: s.pendingRikishiRequests,
+  };
+}
+
+/** Pre-basho assessment revival — rikishiAssessments may arrive as a live Map, a Record, or a legacy husk. */
+function deserializePreBashoAssessment(
+  s: SerializedWorldState
+): WorldState["_preBashoAssessment"] {
+  if (!s._preBashoAssessment) return undefined;
+  return {
+    ...s._preBashoAssessment,
+    rikishiAssessments:
+      s._preBashoAssessment.rikishiAssessments instanceof Map
+        ? s._preBashoAssessment.rikishiAssessments
+        : objectToMap(
+            (s._preBashoAssessment.rikishiAssessments ?? {}) as Record<
+              string,
+              RikishiAssessmentEntry
+            >
+          ),
   };
 }
 
@@ -322,6 +342,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
     objectivesState: s.objectivesState,
     achievements: s.achievements,
     lastBoutResult: s.lastBoutResult,
+    gameOver: s.gameOver,
 
     npcScoutingPriorities: s.npcScoutingPriorities,
     npcBidPolicies: s.npcBidPolicies,
@@ -330,22 +351,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
     _populationTarget: s._populationTarget,
     _recruitmentWindow: s._recruitmentWindow,
     _postBashoMeta: s._postBashoMeta,
-    // rikishiAssessments arrives as: a live Map (collection-codec reviver),
-    // a Record (explicit mapToObject on serialize), or a legacy {} husk.
-    _preBashoAssessment: s._preBashoAssessment
-      ? {
-          ...s._preBashoAssessment,
-          rikishiAssessments:
-            s._preBashoAssessment.rikishiAssessments instanceof Map
-              ? s._preBashoAssessment.rikishiAssessments
-              : objectToMap(
-                  (s._preBashoAssessment.rikishiAssessments ?? {}) as Record<
-                    string,
-                    RikishiAssessmentEntry
-                  >
-                ),
-        }
-      : undefined,
+    _preBashoAssessment: deserializePreBashoAssessment(s),
     isInitialSeed: s.isInitialSeed,
   };
 

@@ -22,14 +22,11 @@ import type { Id } from "@/engine/types/common";
 import type { FacilitiesBand } from "@/engine/types/narrative";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 import { getHeya } from "@/engine/core/queries";
 import {
   FACILITY_UPGRADE_BASE_COST,
   MAINTENANCE_COST_PER_POINT,
-  FACILITY_DECAY_AMOUNT,
   MAX_FACILITY_LEVEL,
-  MIN_FACILITY_LEVEL,
   FACILITY_UPGRADE_COST_MULTIPLIERS,
 } from "@/constants/engine/facilities";
 
@@ -51,9 +48,7 @@ function maintenanceCost(level: number): number {
   return Math.round(level * MAINTENANCE_COST_PER_POINT);
 }
 
-const DECAY_RATE = FACILITY_DECAY_AMOUNT;
 const MAX_FACILITY = MAX_FACILITY_LEVEL;
-const MIN_FACILITY = MIN_FACILITY_LEVEL;
 
 // === FACILITY BAND CALCULATION ===
 
@@ -153,169 +148,8 @@ export function investInFacility(
 }
 
 // === MONTHLY TICK: DECAY + NPC INVESTMENT ===
-
-/**
- * Called at monthly boundary. For each heya:
- *  1. Apply maintenance cost or decay
- *  2. NPC stables auto-invest if they can afford it
- * Returns StateImpact describing monthly facility updates instead of mutating directly.
- */
-export function tickMonthlyFacilities(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("tickMonthlyFacilities");
-
-  for (const heya of world.heyas.values()) {
-    const decayImpact = applyMonthlyDecayOrMaintenance(world, heya);
-    if (decayImpact.entities?.heyaUpdates) {
-      for (const [id, update] of decayImpact.entities.heyaUpdates) {
-        builder.updateHeya(id, update);
-      }
-    }
-    if (decayImpact.events) {
-      decayImpact.events.forEach((event) => {
-        builder.logEvent(event.type, event.category, event.data, { heyaId: heya.id });
-      });
-    }
-
-    // NPC auto-investment (skip player heya)
-    if (heya.id !== world.playerHeyaId) {
-      const npcImpact = npcFacilityInvestment(world, heya);
-      if (npcImpact.entities?.heyaUpdates) {
-        for (const [id, update] of npcImpact.entities.heyaUpdates) {
-          builder.updateHeya(id, update);
-        }
-      }
-    }
-  }
-
-  return builder.build();
-}
-
-/**
- * Apply monthly decay or maintenance.
- * Returns StateImpact describing decay/maintenance instead of mutating directly.
- */
-function applyMonthlyDecayOrMaintenance(_world: WorldState, heya: Heya): StateImpact {
-  const builder = createImpactBuilder("applyMonthlyDecayOrMaintenance");
-  const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
-  let totalMaintenance = 0;
-  for (const a of axes) {
-    totalMaintenance += maintenanceCost(heya.facilities[a]);
-  }
-
-  if (heya.funds >= totalMaintenance) {
-    // Pay maintenance — no decay
-    builder.updateHeya(heya.id, { funds: heya.funds - totalMaintenance });
-  } else {
-    // Can't afford maintenance — facilities decay
-    const newFacilities = { ...heya.facilities };
-    let decayed = false;
-    for (const axis of axes) {
-      const old = heya.facilities[axis];
-      newFacilities[axis] = Math.max(MIN_FACILITY, old - DECAY_RATE);
-      if (newFacilities[axis] < old) decayed = true;
-    }
-
-    if (decayed) {
-      const oldBand = heya.facilitiesBand;
-      const newFacilitiesBand = computeFacilitiesBand({ ...heya, facilities: newFacilities });
-
-      if (newFacilitiesBand !== oldBand) {
-        builder.logEvent(
-          "FACILITY_DEGRADED",
-          "facility",
-          {
-            oldBand,
-            newBand: newFacilitiesBand,
-            training: newFacilities.training,
-            recovery: newFacilities.recovery,
-            nutrition: newFacilities.nutrition,
-          },
-          { heyaId: heya.id }
-        );
-      }
-    }
-
-    builder.updateHeya(heya.id, {
-      facilities: newFacilities,
-      facilitiesBand: computeFacilitiesBand({ ...heya, facilities: newFacilities }),
-    });
-  }
-
-  return builder.build();
-}
-
-/**
- * NPC oyakata invest in facilities based on personality + funds.
- * - High-ambition oyakata prioritize training
- * - High-compassion oyakata prioritize recovery
- * - Traditionalists spread evenly
- * Returns StateImpact describing NPC investment instead of mutating directly.
- */
-function npcFacilityInvestment(world: WorldState, heya: Heya): StateImpact {
-  const builder = createImpactBuilder("npcFacilityInvestment");
-  const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
-  if (!oyakata) return builder.build();
-
-  // Only invest if funds are healthy (> 6 months runway)
-  // Use actual calculated expenses instead of hardcoded estimate to avoid inflated burn
-  const weeklyFinances = calculateHeyaWeeklyFinances(heya, world);
-  const monthlyBurn = Math.max(1, weeklyFinances.expenses * 4); // Convert weekly to monthly
-
-  const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
-
-  if (runwayMonths < 6) return builder.build(); // Too tight to invest
-
-  // Determine priority axis
-  const traits = oyakata.traits;
-  let priorityAxis: FacilityAxis = "training";
-  let minLevel = heya.facilities.training;
-
-  // Compassionate oyakata prioritize recovery
-  if (traits.compassion > 70 && heya.facilities.recovery < heya.facilities.training) {
-    priorityAxis = "recovery";
-    minLevel = heya.facilities.recovery;
-  }
-  // Ambitious oyakata want training
-  else if (traits.ambition > 70) {
-    priorityAxis = "training";
-    minLevel = heya.facilities.training;
-  }
-  // Otherwise upgrade the weakest
-  else {
-    const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
-    for (const a of axes) {
-      if (heya.facilities[a] < minLevel) {
-        minLevel = heya.facilities[a];
-        priorityAxis = a;
-      }
-    }
-  }
-
-  // Invest 3-5 points if affordable and below 80
-  if (minLevel >= 80) return builder.build();
-
-  const points = minLevel < 40 ? 5 : 3;
-  let cost = 0;
-  for (let i = 0; i < points; i++) cost += upgradeCost(minLevel + i);
-
-  if (heya.funds >= cost * 2) {
-    // Only if they can afford double (conservative)
-    const newFunds = heya.funds - cost;
-    const newFacilities = {
-      ...heya.facilities,
-      [priorityAxis]: Math.min(MAX_FACILITY, heya.facilities[priorityAxis] + points),
-    };
-    const newFacilitiesBand = computeFacilitiesBand({ ...heya, facilities: newFacilities });
-
-    builder.updateHeya(heya.id, {
-      funds: newFunds,
-      facilities: newFacilities,
-      facilitiesBand: newFacilitiesBand,
-    });
-  }
-
-  return builder.build();
-}
+// The canonical monthly path lives in tick/phases/phase05_monthly_boundary.ts
+// (processFacilitiesMaintenance + processNpcAutoInvestment).
 
 // === QUERY HELPERS (for UI) ===
 

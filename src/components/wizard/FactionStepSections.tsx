@@ -59,7 +59,7 @@ export function FactionCard({
       onClick={() => onSelect(faction.id)}
       onKeyDown={activationKeyHandler(() => onSelect(faction.id))}
     >
-      <div className="absolute top-2 right-4 opacity-5 font-display text-4xl font-black">
+      <div className="absolute top-2 right-4 opacity-5 font-display text-4xl font-black pointer-events-none select-none">
         {faction.ja}
       </div>
       <div className="flex items-center gap-3 mb-2">

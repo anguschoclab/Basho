@@ -330,8 +330,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (6 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/keshoMawashi/HeyaBrandGenerator.ts:getHeyaBrand":
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/lifecycle/rookieFactory.ts:_generateRookie":
-    "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/npc/decision/LoopDecisionEngine.ts:detectDueDecisions":
     "Live module surface — referenced outside its file (4 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/npc/handlers.ts:consolidateOyakataMemory":
@@ -379,6 +377,10 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Consumed by src/presenters/uiDigest.ts — presenters are outside the unticked scan scope",
   "src/engine/narrative/promotionBands.ts:promotionBands":
     "Consumed by src/presenters/projections/promotionProjections.ts — presenters are outside the unticked scan scope",
+  "src/engine/keshoMawashi/KeshoMawashiGenerator.ts:KeshoMawashiGenerator":
+    "Compatibility barrel re-exporting the kesho-mawashi generator pipeline — pinned by dedicated tests",
+  "src/engine/lifecycle/CareerService.ts:CareerService":
+    "Compatibility facade delegating to the unified retirement processor — pinned by dedicated tests",
 };
 
 /**
@@ -394,174 +396,10 @@ const GENUINE_ORPHANS: Record<string, string> = {
   //  collectionOperations.ts, jsonParser.ts all removed; each was dead API
   //  superseded by ExhibitionBashoService / queries+EntityCollection /
   //  inline Map helpers / nothing (LLM-era parser).)
-  "src/engine/generation/QuirkAssignment.ts:applyGlasses":
-    "ORPH-0358: glasses quirk is write-only — assignQuirk can set poorEyesight but no avatar layer or mechanic reads quirks.glasses; needs an avatar glasses renderer or quirk effect to wire",
-  "src/engine/generation/QuirkAssignment.ts:hasPoorEyesight":
-    "ORPH-0359: sole caller is the orphaned applyGlasses (ORPH-0359); orphaned together pending a glasses consumer",
-  "src/engine/governance/services/MyosekiTradingService.ts:executeMyosekiLease":
-    "ORPH-0317: private-treaty lease between stock holders — no worker command or NPC initiator negotiates peer leases; market leasing via myosekiMarket.leaseMyoseki is the live path",
-
-  // ── Zero-reference exports found during reorg scan-set widening ──
-  "src/engine/core/queries.ts:getNPCHeyas":
-    "ORPH-0306: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/core/queries.ts:getSelectorsActiveRikishi":
-    "ORPH-0307: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/economy/awards.ts:generateSanshoLedgerEntry":
-    "ORPH-0335: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/economy/economics.ts:runSponsorChurn":
-    "ORPH-0337: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/economy/facilities.ts:tickMonthlyFacilities":
-    "ORPH-0338: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/economy/loans.ts:LoanTerms":
-    "ORPH-0343: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/economy/loans.ts:determineLoanTerms":
-    "ORPH-0342: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/economy/loans.ts:createLoanObject":
-    "ORPH-0341: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/economy/staff.ts:tickStaffYear":
-    "ORPH-0347: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/generation/avatarGenerator.ts:ResolveAvatarArgs":
-    "ORPH-0349: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/generation/data/sumo_geography.ts:getRandomOrigin":
-    "ORPH-0351: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/hallOfFame.ts:getInducteesByCategory":
-    "ORPH-0376: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/hallOfFame.ts:isInducted":
-    "ORPH-0377: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/history.ts:recordMilestones":
-    "ORPH-0380: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/historyIndex.ts:RikishiHistoryEntry":
-    "ORPH-0387: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/historyIndex.ts:buildHistoryIndex":
-    "ORPH-0383: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/historyIndex.ts:listBashoSummaries":
-    "ORPH-0386: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/historyIndex.ts:getBashoSummary":
-    "ORPH-0384: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/history/historyIndex.ts:getRikishiHistory":
-    "ORPH-0385: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/keshoMawashi/HeyaBrandGenerator.ts:adjustBrandForOyakata":
-    "ORPH-0389: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/legacy/lineage.ts:ensureLineage":
-    "ORPH-0391: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/legacy/lineage.ts:LineageTreeNode":
-    "ORPH-0392: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/lifecycle/processRetirements.ts:archiveRikishiToColdStorage":
-    "ORPH-0318: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toAgeBand":
-    "ORPH-0394: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toExperienceBand":
-    "ORPH-0397: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toWeightBand":
-    "ORPH-0403: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toHeightBand":
-    "ORPH-0398: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toReputationBand":
-    "ORPH-0402: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toInjurySeverityBand":
-    "ORPH-0399: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toWinRateBand":
-    "ORPH-0404: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toConditionDescriptor":
-    "ORPH-0395: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toMoraleDescriptor":
-    "ORPH-0400: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toPotentialDescriptor":
-    "ORPH-0401: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:DurationBand":
-    "ORPH-0393: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/narrative/descriptorBands.ts:toDurationBand":
-    "ORPH-0396: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/npcAIWorkers.ts:GlobalWorkerResult":
-    "ORPH-0419: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/perception.ts:HealthBand":
-    "ORPH-0423: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/perception.ts:WelfareRiskBand":
-    "ORPH-0428: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/perception.ts:GovernancePressureBand":
-    "ORPH-0422: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/perception.ts:RivalryPerceptionBand":
-    "ORPH-0426: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/perception.ts:RosterStrengthBand":
-    "ORPH-0427: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/perception.ts:MoraleBand":
-    "ORPH-0425: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/perception.ts:buildAllPerceptionSnapshots":
-    "ORPH-0421: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/NPCStrategyFramework.ts:ThresholdCalculator":
-    "ORPH-0453: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/NPCStrategyFramework.ts:StrategyAction":
-    "ORPH-0451: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/NPCStrategyFramework.ts:StrategyEvent":
-    "ORPH-0452: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/NPCStrategyFramework.ts:calculateTraitAdjustedThreshold":
-    "ORPH-0449: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcRecruitmentStrategy.ts:DefaultRecruitmentStrategy":
-    "ORPH-0432: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:DefaultSponsorStrategy":
-    "ORPH-0434: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:TraditionalistSponsorStrategy":
-    "ORPH-0441: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:ScientistSponsorStrategy":
-    "ORPH-0438: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:GamblerSponsorStrategy":
-    "ORPH-0435: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:NurturerSponsorStrategy":
-    "ORPH-0437: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:TyrantSponsorStrategy":
-    "ORPH-0442: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:StrategistSponsorStrategy":
-    "ORPH-0439: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:StrictSponsorStrategy":
-    "ORPH-0440: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategy.ts:IndulgentSponsorStrategy":
-    "ORPH-0436: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategyHelpers.ts:calculateRunwayMonths":
-    "ORPH-0444: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategyHelpers.ts:createSponsorRelationship":
-    "ORPH-0445: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategyHelpers.ts:addSponsorRelationship":
-    "ORPH-0443: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/strategy/npcSponsorStrategyHelpers.ts:emitSponsorRecruitmentEvent":
-    "ORPH-0446: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/persistence/MigrationService.ts:MigrationContext":
-    "ORPH-0459: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/persistence/MigrationService.ts:MigrationResult":
-    "ORPH-0460: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/persistence/collectionCodec.ts:saveReplacer":
-    "ORPH-0457: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/persistence/collectionCodec.ts:saveReviver":
-    "ORPH-0458: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/persistence/storageProvider.ts:hasStorageProvider":
-    "ORPH-0464: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
 
   // ── Post-reorg baseline regen (audit-orphans ROOT/scope fixes surfaced
   // these) — zero live references, retained per dead-code policy ──
-  "src/engine/lifecycle/keyBouts.ts:KeyBoutLabel":
-    "ORPH-0479: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/worker/digestProjections.ts:buildAdvisorSection":
-    "ORPH-0537: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/worker/digestProjections.ts:buildEventSections":
-    "ORPH-0538: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/worker/digestProjections.ts:buildHeadline":
-    "ORPH-0539: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/worker/digestProjections.ts:buildInjurySection":
-    "ORPH-0540: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/worker/digestProjections.ts:buildMatchupItems":
-    "ORPH-0541: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/worker/digestProjections.ts:buildTrainingReportSection":
-    "ORPH-0542: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/worker/digestProjections.ts:labelForWorld":
-    "ORPH-0543: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
 
-  // ── Unticked-service findings: referenced only by their own tests or
-  // comment mentions — retained per dead-code policy ──
-  "src/engine/keshoMawashi/KeshoMawashiGenerator.ts:KeshoMawashiGenerator":
-    "ORPH-0477: consumed only by its own tests — retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/lifecycle/CareerService.ts:CareerService":
-    "ORPH-0478: zero live references (comment mentions + own tests only) — retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/lifecycle/rookieFactory.ts:rookieFactory":
-    "ORPH-0480: consumed only by its own tests — retained per reorg dead-code policy (archive candidate, not deleted)",
 };
 
 function loadAuditEntries(): AuditEntry[] {

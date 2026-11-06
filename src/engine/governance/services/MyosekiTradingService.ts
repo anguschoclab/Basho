@@ -118,53 +118,6 @@ export function purchaseMyoseki(
 }
 
 /**
- * Lease a myoseki stock — transfers holderId without transferring ownerId.
- */
-export function executeMyosekiLease(
-  world: WorldState,
-  market: MyosekiMarket,
-  myosekiId: Id,
-  lesseeId: Id,
-  annualLeaseFee: number
-): StateImpact {
-  const builder = createImpactBuilder("executeMyosekiLease");
-  const stock = market.stocks[myosekiId];
-
-  if (!stock || stock.status === "available") {
-    return builder.build();
-  }
-
-  const rng = rngForWorld(world, "myoseki", `lease-${myosekiId}`);
-  const tx: MyosekiTransaction = {
-    id: rng.uuid("MT") as Id,
-    date: `${world.year}-W${world.week || 1}`,
-    myosekiId,
-    type: "lease",
-    fromId: stock.ownerId,
-    toId: lesseeId,
-    amount: annualLeaseFee,
-  };
-
-  const updatedStocks = {
-    ...market.stocks,
-    [myosekiId]: {
-      ...stock,
-      holderId: lesseeId,
-      status: "leased" as const,
-      leaseFee: annualLeaseFee,
-    },
-  };
-
-  builder.updateWorldField("myosekiMarket", {
-    ...market,
-    stocks: updatedStocks,
-    history: [tx, ...market.history],
-  });
-
-  return builder.build();
-}
-
-/**
  * Return a leased myoseki stock — holderId reverts to ownerId.
  */
 export function returnLeasedMyoseki(

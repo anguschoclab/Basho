@@ -111,6 +111,8 @@ export interface OyakataCreationConfig {
   backstoryId: string;
   /** Optional ichimon (faction) ID selected in wizard step 2 */
   ichimon?: import("@/engine/types/economy").IchimonName;
-  /** Game mode — "sandbox" disables player forced succession; defaults to "career". */
-  careerMode?: "career" | "sandbox";
+  /** Game mode — "sandbox" disables player forced succession; "ironman" ends
+   *  the run on forced succession instead of continuing the dynasty;
+   *  defaults to "career". */
+  careerMode?: "career" | "sandbox" | "ironman";
 }

@@ -14,12 +14,14 @@ import { warn } from "@/engine/utils/Logger";
 import { parseSave, stringifySave } from "@/engine/persistence/collectionCodec";
 import { generateGyoji, generateShimpan } from "@/engine/officials/GyojiService";
 
+// @keep-export MigrationContext — live via same-file/dispatch call or public API contract
 export interface MigrationContext {
   fromVersion: SaveVersion;
   toVersion: SaveVersion;
   logs: string[];
 }
 
+// @keep-export MigrationResult — live via same-file/dispatch call or public API contract
 export interface MigrationResult {
   save: SaveGame;
   context: MigrationContext;

@@ -12,6 +12,7 @@
 const MAP_TAG = "$$map";
 const SET_TAG = "$$set";
 
+// @keep-export saveReplacer — live via same-file/dispatch call or public API contract
 export function saveReplacer(_key: string, value: unknown): unknown {
   if (value instanceof Map) {
     return { [MAP_TAG]: [...value.entries()] };
@@ -22,6 +23,7 @@ export function saveReplacer(_key: string, value: unknown): unknown {
   return value;
 }
 
+// @keep-export saveReviver — live via same-file/dispatch call or public API contract
 export function saveReviver(_key: string, value: unknown): unknown {
   if (value && typeof value === "object" && !Array.isArray(value)) {
     const obj = value as Record<string, unknown>;

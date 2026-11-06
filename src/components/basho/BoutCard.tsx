@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { Star, Swords, Eye, CircleDot, Flame, Shield, Zap } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 import type { MatchRowData } from "@/components/basho/boutCardTypes";
 import { HEAT_CONFIG } from "@/components/basho/boutCardTypes";
@@ -108,7 +109,13 @@ export const BoutCard = React.memo(
                       : ""
                   }`}
                 >
-                  {match.result?.kimariteName ?? "—"}
+                  {match.result?.kimariteName ? (
+                    <GlossaryTip termId={match.result.kimarite ?? match.result.kimariteName}>
+                      {match.result.kimariteName}
+                    </GlossaryTip>
+                  ) : (
+                    "—"
+                  )}
                 </Badge>
                 <Eye className="h-3.5 w-3.5 text-muted-foreground/60" />
               </div>

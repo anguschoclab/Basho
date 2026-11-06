@@ -311,7 +311,7 @@ describe("BoutNarrativeModal", () => {
         day={1}
       />
     );
-    expect(screen.getByText(/KINBOSHI/i)).toBeTruthy();
+    expect(screen.getAllByText(/KINBOSHI/i).length).toBeGreaterThan(0);
   });
 
   it("shows the kensho envelope stack count when envelopes were sponsored", () => {

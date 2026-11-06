@@ -1254,6 +1254,532 @@ export const EVENT_CHAIN_REGISTRY: EventChainDef[] = [
       },
     ],
   },
+
+  {
+    id: "sponsor_ultimatum",
+    scope: "player_heya",
+    cooldownWeeks: 30,
+    trigger: { weight: 7, guard: hasSekitori },
+    stages: [
+      {
+        id: "demands",
+        titlePath: "chains.sponsor_ultimatum.s0_title",
+        summaryPath: "chains.sponsor_ultimatum.s0_summary",
+        options: [
+          {
+            id: "accept",
+            labelPath: "chains.sponsor_ultimatum.s0_opt_accept",
+            nextStage: { stageId: "terms_met", delayWeeks: 2 },
+            effects: { funds: 3_000_000, reputation: -1 },
+          },
+          {
+            id: "negotiate",
+            labelPath: "chains.sponsor_ultimatum.s0_opt_negotiate",
+            nextStage: { stageId: "counter", delayWeeks: 1 },
+          },
+          {
+            id: "refuse",
+            labelPath: "chains.sponsor_ultimatum.s0_opt_refuse",
+            nextStage: { stageId: "fallout", delayWeeks: 2 },
+          },
+        ],
+      },
+      {
+        id: "counter",
+        titlePath: "chains.sponsor_ultimatum.s1_title",
+        summaryPath: "chains.sponsor_ultimatum.s1_summary",
+        options: [
+          {
+            id: "close_deal",
+            labelPath: "chains.sponsor_ultimatum.s1_opt_close",
+            effects: { funds: 2_000_000, politicalCapital: 1 },
+          },
+          {
+            id: "walk",
+            labelPath: "chains.sponsor_ultimatum.s1_opt_walk",
+            nextStage: { stageId: "fallout", delayWeeks: 1 },
+          },
+        ],
+      },
+      {
+        id: "terms_met",
+        titlePath: "chains.sponsor_ultimatum.s2_title",
+        summaryPath: "chains.sponsor_ultimatum.s2_summary",
+        options: [
+          {
+            id: "fulfill",
+            labelPath: "chains.sponsor_ultimatum.s2_opt_fulfill",
+            effects: { reputation: 2, heyaPressure: -3 },
+          },
+        ],
+      },
+      {
+        id: "fallout",
+        titlePath: "chains.sponsor_ultimatum.s3_title",
+        summaryPath: "chains.sponsor_ultimatum.s3_summary",
+        options: [
+          {
+            id: "damage_control",
+            labelPath: "chains.sponsor_ultimatum.s3_opt_control",
+            feeYen: 300_000,
+            effects: { reputation: -1, heyaPressure: -4 },
+          },
+          {
+            id: "move_on",
+            labelPath: "chains.sponsor_ultimatum.s3_opt_moveon",
+            effects: { funds: -1_500_000, heyaPressure: 3 },
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "recruit_race",
+    scope: "rikishi",
+    cooldownWeeks: 20,
+    trigger: { weight: 7, needsRikishi: true, guard: hasRoster(3) },
+    stages: [
+      {
+        id: "scouted",
+        titlePath: "chains.recruit_race.s0_title",
+        summaryPath: "chains.recruit_race.s0_summary",
+        options: [
+          {
+            id: "wine_dine",
+            labelPath: "chains.recruit_race.s0_opt_woo",
+            feeYen: 500_000,
+            nextStage: { stageId: "verbal", delayWeeks: 1 },
+          },
+          {
+            id: "hard_sell",
+            labelPath: "chains.recruit_race.s0_opt_sell",
+            nextStage: { stageId: "verbal", delayWeeks: 1 },
+          },
+          {
+            id: "pass",
+            labelPath: "chains.recruit_race.s0_opt_pass",
+          },
+        ],
+      },
+      {
+        id: "verbal",
+        titlePath: "chains.recruit_race.s1_title",
+        summaryPath: "chains.recruit_race.s1_summary",
+        options: [
+          {
+            id: "guarantee_slot",
+            labelPath: "chains.recruit_race.s1_opt_guarantee",
+            nextStage: { stageId: "signed", delayWeeks: 2 },
+            effects: { politicalCapital: -1 },
+          },
+          {
+            id: "honest_pitch",
+            labelPath: "chains.recruit_race.s1_opt_honest",
+            nextStage: { stageId: "lost", delayWeeks: 2 },
+          },
+        ],
+      },
+      {
+        id: "signed",
+        titlePath: "chains.recruit_race.s2_title",
+        summaryPath: "chains.recruit_race.s2_summary",
+        options: [
+          {
+            id: "welcome",
+            labelPath: "chains.recruit_race.s2_opt_welcome",
+            effects: { morale: 3, reputation: 1 },
+          },
+        ],
+      },
+      {
+        id: "lost",
+        titlePath: "chains.recruit_race.s3_title",
+        summaryPath: "chains.recruit_race.s3_summary",
+        options: [
+          {
+            id: "accept_loss",
+            labelPath: "chains.recruit_race.s3_opt_accept",
+            effects: { morale: -1 },
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "rehab_crossroads",
+    scope: "rikishi",
+    cooldownWeeks: 26,
+    trigger: { weight: 6, needsRikishi: true, guard: hasSekitori },
+    stages: [
+      {
+        id: "diagnosis",
+        titlePath: "chains.rehab_crossroads.s0_title",
+        summaryPath: "chains.rehab_crossroads.s0_summary",
+        options: [
+          {
+            id: "full_rehab",
+            labelPath: "chains.rehab_crossroads.s0_opt_full",
+            nextStage: { stageId: "patient_path", delayWeeks: 4 },
+            effects: { welfareRisk: -3, morale: 1 },
+          },
+          {
+            id: "rush_back",
+            labelPath: "chains.rehab_crossroads.s0_opt_rush",
+            nextStage: { stageId: "reinjury", delayWeeks: 2 },
+            effects: { momentum: 2, welfareRisk: 4 },
+          },
+        ],
+      },
+      {
+        id: "patient_path",
+        titlePath: "chains.rehab_crossroads.s1_title",
+        summaryPath: "chains.rehab_crossroads.s1_summary",
+        options: [
+          {
+            id: "complete",
+            labelPath: "chains.rehab_crossroads.s1_opt_complete",
+            effects: { momentum: 3, welfareRisk: -4 },
+          },
+        ],
+      },
+      {
+        id: "reinjury",
+        titlePath: "chains.rehab_crossroads.s2_title",
+        summaryPath: "chains.rehab_crossroads.s2_summary",
+        options: [
+          {
+            id: "finally_rest",
+            labelPath: "chains.rehab_crossroads.s2_opt_rest",
+            effects: { morale: -2, welfareRisk: 3, reputation: -1 },
+          },
+          {
+            id: "second_opinion",
+            labelPath: "chains.rehab_crossroads.s2_opt_opinion",
+            feeYen: 400_000,
+            effects: { welfareRisk: -2, morale: 1 },
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "koenkai_gala",
+    scope: "player_heya",
+    cooldownWeeks: 34,
+    trigger: { weight: 6, guard: always },
+    stages: [
+      {
+        id: "invitation",
+        titlePath: "chains.koenkai_gala.s0_title",
+        summaryPath: "chains.koenkai_gala.s0_summary",
+        options: [
+          {
+            id: "host",
+            labelPath: "chains.koenkai_gala.s0_opt_host",
+            feeYen: 800_000,
+            nextStage: { stageId: "the_night", delayWeeks: 2 },
+          },
+          {
+            id: "decline",
+            labelPath: "chains.koenkai_gala.s0_opt_decline",
+            effects: { politicalCapital: -1 },
+          },
+        ],
+      },
+      {
+        id: "the_night",
+        titlePath: "chains.koenkai_gala.s1_title",
+        summaryPath: "chains.koenkai_gala.s1_summary",
+        options: [
+          {
+            id: "press_flesh",
+            labelPath: "chains.koenkai_gala.s1_opt_network",
+            nextStage: { stageId: "windfall", delayWeeks: 1 },
+            effects: { politicalCapital: 2 },
+          },
+          {
+            id: "low_key",
+            labelPath: "chains.koenkai_gala.s1_opt_lowkey",
+            nextStage: { stageId: "windfall", delayWeeks: 1 },
+            effects: { morale: 1 },
+          },
+        ],
+      },
+      {
+        id: "windfall",
+        titlePath: "chains.koenkai_gala.s2_title",
+        summaryPath: "chains.koenkai_gala.s2_summary",
+        options: [
+          {
+            id: "bank_it",
+            labelPath: "chains.koenkai_gala.s2_opt_bank",
+            effects: { funds: 1_500_000, reputation: 1 },
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "tabloid_leak",
+    scope: "player_heya",
+    cooldownWeeks: 28,
+    trigger: { weight: 5, guard: always },
+    stages: [
+      {
+        id: "tipoff",
+        titlePath: "chains.tabloid_leak.s0_title",
+        summaryPath: "chains.tabloid_leak.s0_summary",
+        options: [
+          {
+            id: "buy_silence",
+            labelPath: "chains.tabloid_leak.s0_opt_buy",
+            feeYen: 1_000_000,
+            effects: { scandalScore: -4, heyaPressure: -3 },
+          },
+          {
+            id: "lawyer_up",
+            labelPath: "chains.tabloid_leak.s0_opt_lawyer",
+            feeYen: 600_000,
+            nextStage: { stageId: "litigation", delayWeeks: 2 },
+          },
+          {
+            id: "ignore",
+            labelPath: "chains.tabloid_leak.s0_opt_ignore",
+            nextStage: { stageId: "published", delayWeeks: 1 },
+          },
+        ],
+      },
+      {
+        id: "litigation",
+        titlePath: "chains.tabloid_leak.s1_title",
+        summaryPath: "chains.tabloid_leak.s1_summary",
+        options: [
+          {
+            id: "settle",
+            labelPath: "chains.tabloid_leak.s1_opt_settle",
+            feeYen: 400_000,
+            effects: { scandalScore: -2, heyaPressure: -4 },
+          },
+          {
+            id: "fight",
+            labelPath: "chains.tabloid_leak.s1_opt_fight",
+            effects: { scandalScore: 3, reputation: 1, heyaPressure: 4 },
+          },
+        ],
+      },
+      {
+        id: "published",
+        titlePath: "chains.tabloid_leak.s2_title",
+        summaryPath: "chains.tabloid_leak.s2_summary",
+        options: [
+          {
+            id: "press_conference",
+            labelPath: "chains.tabloid_leak.s2_opt_presser",
+            effects: { scandalScore: -3, reputation: -1, heyaPressure: -5 },
+          },
+          {
+            id: "no_comment",
+            labelPath: "chains.tabloid_leak.s2_opt_nocomment",
+            effects: { scandalScore: 4, morale: -2, heyaPressure: 6 },
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "young_star_ego",
+    scope: "rikishi",
+    cooldownWeeks: 24,
+    trigger: { weight: 7, needsRikishi: true, guard: hasSekitori },
+    stages: [
+      {
+        id: "demands",
+        titlePath: "chains.young_star_ego.s0_title",
+        summaryPath: "chains.young_star_ego.s0_summary",
+        options: [
+          {
+            id: "indulge",
+            labelPath: "chains.young_star_ego.s0_opt_indulge",
+            feeYen: 300_000,
+            nextStage: { stageId: "entitled", delayWeeks: 2 },
+            effects: { momentum: 3, morale: -1 },
+          },
+          {
+            id: "lay_down_law",
+            labelPath: "chains.young_star_ego.s0_opt_law",
+            nextStage: { stageId: "humbled", delayWeeks: 2 },
+            effects: { morale: 2, welfareRisk: -2 },
+          },
+        ],
+      },
+      {
+        id: "entitled",
+        titlePath: "chains.young_star_ego.s1_title",
+        summaryPath: "chains.young_star_ego.s1_summary",
+        options: [
+          {
+            id: "rein_in",
+            labelPath: "chains.young_star_ego.s1_opt_rein",
+            effects: { morale: 2, welfareRisk: -3, momentum: -1 },
+          },
+          {
+            id: "let_ride",
+            labelPath: "chains.young_star_ego.s1_opt_ride",
+            effects: { momentum: 2, welfareRisk: 3 },
+          },
+        ],
+      },
+      {
+        id: "humbled",
+        titlePath: "chains.young_star_ego.s2_title",
+        summaryPath: "chains.young_star_ego.s2_summary",
+        options: [
+          {
+            id: "mentor_him",
+            labelPath: "chains.young_star_ego.s2_opt_mentor",
+            effects: { momentum: 2, morale: 3 },
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "dojo_expansion",
+    scope: "player_heya",
+    cooldownWeeks: 40,
+    trigger: { weight: 4, guard: hasRoster(8) },
+    stages: [
+      {
+        id: "cramped",
+        titlePath: "chains.dojo_expansion.s0_title",
+        summaryPath: "chains.dojo_expansion.s0_summary",
+        options: [
+          {
+            id: "apply_permit",
+            labelPath: "chains.dojo_expansion.s0_opt_permit",
+            feeYen: 2_000_000,
+            nextStage: { stageId: "review", delayWeeks: 3 },
+          },
+          {
+            id: "make_do",
+            labelPath: "chains.dojo_expansion.s0_opt_makedo",
+            effects: { morale: -1, rosterFatigue: 3 },
+          },
+        ],
+      },
+      {
+        id: "review",
+        titlePath: "chains.dojo_expansion.s1_title",
+        summaryPath: "chains.dojo_expansion.s1_summary",
+        options: [
+          {
+            id: "grease_wheels",
+            labelPath: "chains.dojo_expansion.s1_opt_grease",
+            feeYen: 1_000_000,
+            nextStage: { stageId: "built", delayWeeks: 2 },
+            effects: { politicalCapital: -1 },
+          },
+          {
+            id: "wait_it_out",
+            labelPath: "chains.dojo_expansion.s1_opt_wait",
+            nextStage: { stageId: "denied", delayWeeks: 4 },
+          },
+        ],
+      },
+      {
+        id: "built",
+        titlePath: "chains.dojo_expansion.s2_title",
+        summaryPath: "chains.dojo_expansion.s2_summary",
+        options: [
+          {
+            id: "grand_opening",
+            labelPath: "chains.dojo_expansion.s2_opt_open",
+            effects: { reputation: 3, morale: 4, rosterFatigue: -3 },
+          },
+        ],
+      },
+      {
+        id: "denied",
+        titlePath: "chains.dojo_expansion.s3_title",
+        summaryPath: "chains.dojo_expansion.s3_summary",
+        options: [
+          {
+            id: "appeal",
+            labelPath: "chains.dojo_expansion.s3_opt_appeal",
+            feeYen: 500_000,
+            effects: { politicalCapital: 1 },
+          },
+          {
+            id: "shelve",
+            labelPath: "chains.dojo_expansion.s3_opt_shelve",
+            effects: { morale: -1 },
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "myoseki_auction",
+    scope: "player_heya",
+    cooldownWeeks: 48,
+    trigger: { weight: 4, guard: always },
+    stages: [
+      {
+        id: "rare_listing",
+        titlePath: "chains.myoseki_auction.s0_title",
+        summaryPath: "chains.myoseki_auction.s0_summary",
+        options: [
+          {
+            id: "bid_big",
+            labelPath: "chains.myoseki_auction.s0_opt_bigbid",
+            feeYen: 50_000_000,
+            nextStage: { stageId: "won", delayWeeks: 1 },
+          },
+          {
+            id: "bid_cautious",
+            labelPath: "chains.myoseki_auction.s0_opt_cautious",
+            feeYen: 20_000_000,
+            nextStage: { stageId: "outbid", delayWeeks: 1 },
+          },
+          {
+            id: "stay_out",
+            labelPath: "chains.myoseki_auction.s0_opt_stayout",
+          },
+        ],
+      },
+      {
+        id: "won",
+        titlePath: "chains.myoseki_auction.s1_title",
+        summaryPath: "chains.myoseki_auction.s1_summary",
+        options: [
+          {
+            id: "claim",
+            labelPath: "chains.myoseki_auction.s1_opt_claim",
+            effects: { reputation: 4, politicalCapital: 3 },
+          },
+        ],
+      },
+      {
+        id: "outbid",
+        titlePath: "chains.myoseki_auction.s2_title",
+        summaryPath: "chains.myoseki_auction.s2_summary",
+        options: [
+          {
+            id: "next_time",
+            labelPath: "chains.myoseki_auction.s2_opt_next",
+            effects: { politicalCapital: -1 },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const byId = new Map(EVENT_CHAIN_REGISTRY.map((c) => [c.id, c]));

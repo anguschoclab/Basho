@@ -118,8 +118,11 @@ export interface SerializedWorldState {
 
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
-    careerMode?: "career" | "sandbox";
+    careerMode?: "career" | "sandbox" | "ironman";
   };
+
+  /** Ironman career end state (T1.2) — present once the run is over. */
+  gameOver?: WorldState["gameOver"];
   trainingState?: Record<Id, HeyaTrainingState>;
   candidatePool?: TalentPoolWorldState; // Talent acquisition pool
 

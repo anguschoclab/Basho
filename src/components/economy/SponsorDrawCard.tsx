@@ -7,6 +7,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Award } from "lucide-react";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { RikishiName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
@@ -28,9 +29,12 @@ export function SponsorDrawCard({ topEarners, currentYear = DEFAULT_START_YEAR }
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Award className="h-5 w-5 text-gold" />
-          Sponsor Draw
+          <GlossaryTip termId="kensho">Sponsor Draw</GlossaryTip>
         </CardTitle>
-        <CardDescription>Who in your heya attracts the most banner attention</CardDescription>
+        <CardDescription>
+          Who in your heya attracts the most <GlossaryTip termId="kensho">kenshō banner</GlossaryTip>{" "}
+          attention
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

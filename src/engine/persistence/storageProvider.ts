@@ -39,6 +39,7 @@ export function getStorageProvider(): IStorageProvider | null {
 /**
  * Check if a storage provider has been registered.
  */
+// @keep-export hasStorageProvider — live via same-file/dispatch call or public API contract
 export function hasStorageProvider(): boolean {
   return _storageProvider !== null;
 }

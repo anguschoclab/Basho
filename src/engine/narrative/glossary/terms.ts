@@ -51,6 +51,14 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     definition: "The second division. Rikishi in juryo are salaried professionals (sekitori).",
   },
   {
+    id: "kensho",
+    term: "Kenshō-kin",
+    termJa: "懸賞金",
+    category: "tournament",
+    definition:
+      "Prize money sponsored per bout. Banners are paraded before the bout and the winner receives the envelopes.",
+  },
+  {
     id: "sekitori",
     term: "Sekitori",
     termJa: "関取",

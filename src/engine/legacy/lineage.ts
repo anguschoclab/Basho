@@ -18,6 +18,7 @@ export interface LineageEdge {
   sinceWeek: number;
 }
 
+// @keep-export ensureLineage — live via same-file/dispatch call or public API contract
 export function ensureLineage(world: WorldState): LineageEdge[] {
   if (!world.lineage) return [];
   return world.lineage;
@@ -216,6 +217,7 @@ function calculateTenureAchievements(world: WorldState, heya: Heya): OyakataAchi
   };
 }
 
+// @keep-export LineageTreeNode — live via same-file/dispatch call or public API contract
 export interface LineageTreeNode {
   id: Id;
   shikona: string;

@@ -104,7 +104,7 @@ export default tseslint.config(
   },
   {
     /* BARREL/ROUTE FILES: react-refresh doesn't apply to pure re-export or route config files */
-    files: ["src/components/ui/index.ts", "src/components/ui/sidebar.tsx", "src/routes.tsx"],
+    files: ["src/components/ui/index.ts", "src/components/ui/sidebar.tsx", "src/routes.tsx", "src/app/routes.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
     },

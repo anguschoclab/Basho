@@ -44,7 +44,7 @@ export default function NewGameWizard() {
   const [background, setBackground] = useState(OYAKATA_BACKSTORIES[0].id);
   const [ichimon, setIchimon] = useState<IchimonName>(ICHIMON_FACTIONS[0].id);
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(preselectedHeyaId ?? null);
-  const [careerMode, setCareerMode] = useState<"career" | "sandbox">("career");
+  const [careerMode, setCareerMode] = useState<"career" | "sandbox" | "ironman">("career");
 
   const world = state.world;
   const stables = useMemo<Heya[]>(() => (!world ? [] : EntityCollection.getHeyas(world)), [world]);
@@ -99,7 +99,7 @@ export default function NewGameWizard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center hero-gradient scroll-smooth">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center hero-gradient">
       <title>New Career Setup | Basho</title>
 
       <WizardHeader currentStep={step} totalSteps={totalSteps} />

@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import type { UIRankRow } from "@/presenters/projections/banzukeUI";
 
@@ -64,11 +65,15 @@ export const DivisionTable = memo(function DivisionTable({
                   />
                   <td className="p-3 text-center">
                     <div className="font-display text-muted-foreground text-xs font-medium">
-                      {row.rankLabel}
+                      <GlossaryTip termId={row.rank}>{row.rankLabel}</GlossaryTip>
                     </div>
                     <div className="text-[10px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
                       {row.rankTitleJa}
-                      {row.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
+                      {row.isSanyaku && (
+                        <GlossaryTip termId="sanyaku">
+                          <span className="ml-1 text-gold/70">三役</span>
+                        </GlossaryTip>
+                      )}
                     </div>
                   </td>
                   <RikishiCell

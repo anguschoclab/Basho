@@ -98,6 +98,15 @@ describe("applyOyakataCreationConfig", () => {
     expect(result.settings.careerMode).toBe("sandbox");
   });
 
+  it("persists ironman mode to world settings", () => {
+    const result = applyOyakataCreationConfig(world, firstHeyaId, {
+      name: "Testoyama",
+      backstoryId: "ozeki_legend",
+      careerMode: "ironman",
+    });
+    expect(result.settings.careerMode).toBe("ironman");
+  });
+
   it("defaults careerMode to career when not provided", () => {
     const result = applyOyakataCreationConfig(world, firstHeyaId, {
       name: "Testoyama",

@@ -31,3 +31,29 @@ export function setAutosaveEnabled(enabled: boolean): void {
     /* silent */
   }
 }
+
+const LOCALE_KEY = "basho_locale";
+
+/**
+ * Persisted UI locale (T3.2). Defaults to English.
+ * @returns the stored locale, or "en"
+ */
+export function getStoredLocale(): "en" | "ja" {
+  try {
+    return localStorage.getItem(LOCALE_KEY) === "ja" ? "ja" : "en";
+  } catch {
+    return "en";
+  }
+}
+
+/**
+ * Persist the UI locale and update the i18n runtime.
+ * @param locale - locale to activate
+ */
+export function setStoredLocale(locale: "en" | "ja"): void {
+  try {
+    localStorage.setItem(LOCALE_KEY, locale);
+  } catch {
+    /* silent */
+  }
+}

@@ -63,18 +63,24 @@ import {
 // === Band types for perception ===
 
 /** Type representing health band. */
+// @keep-export HealthBand — live via same-file/dispatch call or public API contract
 export type HealthBand = "peak" | "good" | "fair" | "worn" | "fragile";
 /** Type representing welfare risk band. */
+// @keep-export WelfareRiskBand — live via same-file/dispatch call or public API contract
 export type WelfareRiskBand = "safe" | "cautious" | "elevated" | "critical";
 /** Type representing governance pressure band. */
+// @keep-export GovernancePressureBand — live via same-file/dispatch call or public API contract
 export type GovernancePressureBand = "none" | "mild" | "moderate" | "severe";
 /** Type representing media heat band. */
 export type MediaHeatBand = "cold" | "warm" | "hot" | "blazing";
 /** Type representing rivalry perception band. */
+// @keep-export RivalryPerceptionBand — live via same-file/dispatch call or public API contract
 export type RivalryPerceptionBand = "dormant" | "simmering" | "heated" | "fierce";
 /** Type representing roster strength band. */
+// @keep-export RosterStrengthBand — live via same-file/dispatch call or public API contract
 export type RosterStrengthBand = "dominant" | "strong" | "competitive" | "developing" | "weak";
 /** Type representing morale band. */
+// @keep-export MoraleBand — live via same-file/dispatch call or public API contract
 export type MoraleBand = "inspired" | "content" | "neutral" | "disgruntled" | "mutinous";
 
 /** Per-rikishi banded view available to managers */
@@ -452,18 +458,6 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
     alignmentScore: 100, // Default to full alignment, updated by Oyakata memory consolidation
     styleBias,
   };
-}
-
-/**
- * buildAllPerceptionSnapshots
- * Generates snapshots for every heya. Called at weekly boundary per A3.3.
- */
-export function buildAllPerceptionSnapshots(world: WorldState): Map<Id, PerceptionSnapshot> {
-  const snapshots = new Map<Id, PerceptionSnapshot>();
-  for (const heya of world.heyas.values()) {
-    snapshots.set(heya.id, buildPerceptionSnapshot(world, heya.id));
-  }
-  return snapshots;
 }
 
 /**

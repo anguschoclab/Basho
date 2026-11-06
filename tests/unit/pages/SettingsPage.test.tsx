@@ -29,6 +29,7 @@ vi.mock("@/components/layout/AppLayout", () => ({
 
 vi.mock("@/components/settings/SettingsSections", () => ({
   AppearanceCard: () => null,
+  LanguageCard: () => null,
   SaveLoadCard: () => null,
   ShortcutsCard: () => null,
   SimulationCard: () => null,

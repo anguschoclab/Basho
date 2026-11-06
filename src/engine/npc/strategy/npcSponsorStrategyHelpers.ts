@@ -17,6 +17,7 @@ import {
   NPC_FACILITY_BURN_MULTIPLIER,
 } from "@/constants/engine/economic";
 
+// @keep-export calculateRunwayMonths — live via same-file/dispatch call or public API contract
 export function calculateRunwayMonths(heya: Heya): number {
   const avgFacility =
     (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
@@ -68,6 +69,7 @@ export function filterEligibleSponsors(
   );
 }
 
+// @keep-export createSponsorRelationship — live via same-file/dispatch call or public API contract
 export function createSponsorRelationship(
   world: WorldState,
   sponsorId: string,
@@ -94,6 +96,7 @@ export function createSponsorRelationship(
   };
 }
 
+// @keep-export addSponsorRelationship — live via same-file/dispatch call or public API contract
 export function addSponsorRelationship(
   world: WorldState,
   sponsorId: string,
@@ -139,6 +142,7 @@ export function addSponsorRelationship(
   return builder.build();
 }
 
+// @keep-export emitSponsorRecruitmentEvent — live via same-file/dispatch call or public API contract
 export function emitSponsorRecruitmentEvent(
   heyaId: string,
   oyakataArchetype: string,

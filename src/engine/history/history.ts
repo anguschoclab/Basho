@@ -72,47 +72,6 @@ export function generateCareerSnapshot(world: WorldState, rikishi: Rikishi): Car
 }
 
 /**
- * Detects and records milestones for a Rikishi.
- */
-export function recordMilestones(world: WorldState, rikishi: Rikishi) {
-  if (!rikishi.milestones) rikishi.milestones = [];
-
-  const year = world.year;
-  const month = world.calendar?.month ?? 1;
-  const lastBasho = world.history.length > 0 ? world.history[world.history.length - 1] : undefined;
-
-  const rng = rngForWorld(world, "history", `milestone_${rikishi.id}`);
-
-  // 1. Yusho Milestone
-  if (lastBasho?.yusho === rikishi.id) {
-    rikishi.milestones.push({
-      id: rng.uuid("ML"),
-      type: "yusho",
-      title: "Tournament Champion (優勝)",
-      description: `Won the ${world.currentBashoName || "basho"} with a record of ${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}.`,
-      date: { year, month },
-    });
-  }
-
-  // 2. Career wins milestones (100, 500, etc.)
-  const wins = rikishi.careerWins || 0;
-  // Crossing-detection: a ~15-win basho can skip an exact threshold (95→110).
-  // Fire for the highest threshold at-or-below wins that isn't recorded yet.
-  const hitThreshold = CAREER_WIN_MILESTONE_THRESHOLDS.find(
-    (t) => wins >= t && !rikishi.milestones?.some((m) => m.title === `${t} Career Wins`)
-  );
-  if (hitThreshold !== undefined) {
-    rikishi.milestones.push({
-      id: rng.uuid("ML"),
-      type: "stats_record",
-      title: `${hitThreshold} Career Wins`,
-      description: `Reached the landmark of ${hitThreshold} career victories.`,
-      date: { year, month },
-    });
-  }
-}
-
-/**
  * Records milestones for all active Rikishi.
  * Returns StateImpact describing milestone updates instead of mutating state.
  *

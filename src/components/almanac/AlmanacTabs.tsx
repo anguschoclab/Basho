@@ -10,6 +10,7 @@ import type { ComponentType } from "react";
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import type { RecordEntry } from "@/engine/types/records";
 import type { BashoResult } from "@/engine/types/basho";
 import type { WorldState } from "@/presenters/uiDigest";
@@ -329,7 +330,9 @@ export function TechniquesTab({ derived }: { derived: Derived }) {
               <tbody>
                 {kimariteStats.map((row) => (
                   <tr key={row.kimarite} className="border-b last:border-0">
-                    <td className="py-1.5 pr-3 font-display">{row.name}</td>
+                    <td className="py-1.5 pr-3 font-display">
+                      <GlossaryTip termId={row.kimarite}>{row.name}</GlossaryTip>
+                    </td>
                     <td className="py-1.5 pr-3 text-right font-mono tabular-nums">{row.count}</td>
                     <td className="py-1.5 pr-3 text-right font-mono tabular-nums">
                       {row.count > 0 ? `${row.observedPct.toFixed(2)}%` : "—"}

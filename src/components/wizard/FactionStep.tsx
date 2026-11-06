@@ -47,17 +47,17 @@ export function FactionStep({ ichimon, onIchimonChange, onNext, onPrev }: Factio
         </div>
       </div>
 
-      <div className="flex justify-between pt-4">
+      <div className="flex flex-wrap justify-between gap-3 pt-4">
         <Button
           variant="ghost"
           onClick={onPrev}
-          className="h-16 px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground"
+          className="h-16 px-4 sm:px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground"
         >
           <ArrowLeft className="w-5 h-5" /> Back
         </Button>
         <Button
           onClick={onNext}
-          className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-lg hover:scale-105 transition-transform"
+          className="h-16 px-6 sm:px-10 gap-3 font-display font-black uppercase tracking-widest text-base sm:text-lg shadow-2xl rounded-lg hover:scale-105 transition-transform"
         >
           Verify Allegiance <ArrowRight className="w-6 h-6" />
         </Button>

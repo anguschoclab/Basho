@@ -26,6 +26,14 @@ import { Save, Trash2, Upload, Clock, ArrowRight, Star } from "lucide-react";
 import { formatSaveDate, type SaveSlotInfo } from "@/presenters/engineAccess";
 import type { BashoName } from "@/engine/types/basho";
 
+/** Display name for a save slot — autosave backups get their own label. */
+function slotDisplayName(slotName: string): string {
+  if (slotName === "autosave") return "autosave";
+  const backup = /^autosave_(\d+)$/.exec(slotName);
+  if (backup) return `autosave backup ${backup[1]}`;
+  return slotName.replace("slot_", "Slot ");
+}
+
 /** One save-slot card in the archive list. */
 function SaveSlotCard({
   slot,
@@ -54,7 +62,7 @@ function SaveSlotCard({
               {slot.playerHeyaName || "Vagrant Oyakata"}
             </span>
             <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-widest">
-              {slot.slotName === "autosave" ? "Dynamic" : "Stable"}
+              {slot.isAutosave ? "Dynamic" : "Stable"}
             </Badge>
           </div>
           <div className="text-[10px] text-muted-foreground flex items-center gap-3 uppercase font-bold tracking-widest">
@@ -80,16 +88,8 @@ function SaveSlotCard({
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-primary group-hover:scale-110 transition-transform"
-            aria-label={
-              slot.slotName === "autosave"
-                ? "Load autosave"
-                : `Load ${slot.slotName.replace("slot_", "Slot ")}`
-            }
-            tooltip={
-              slot.slotName === "autosave"
-                ? "Load autosave"
-                : `Load ${slot.slotName.replace("slot_", "Slot ")}`
-            }
+            aria-label={`Load ${slotDisplayName(slot.slotName)}`}
+            tooltip={`Load ${slotDisplayName(slot.slotName)}`}
             tooltipSide="top"
           >
             <ArrowRight className="h-4 w-4" />
@@ -103,8 +103,8 @@ function SaveSlotCard({
                 e.stopPropagation();
                 onDelete(slot.slotName);
               }}
-              aria-label={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
-              tooltip={`Delete ${slot.slotName.replace("slot_", "Slot ")} permanently`}
+              aria-label={`Delete ${slotDisplayName(slot.slotName)}`}
+              tooltip={`Delete ${slotDisplayName(slot.slotName)} permanently`}
               tooltipSide="top"
             >
               <Trash2 className="w-4 h-4" />

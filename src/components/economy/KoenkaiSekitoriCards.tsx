@@ -6,6 +6,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { Separator } from "@/components/ui/separator";
 import { Users, Award } from "lucide-react";
 import type { KoenkaiBandType } from "@/engine/types/narrative";
@@ -26,7 +27,7 @@ export function KoenkaiSekitoriCards({ koenkaiBand, sekitoriCount }: KoenkaiSeki
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Kōenkai (Supporters)
+            <GlossaryTip termId="koenkai">Kōenkai</GlossaryTip> (Supporters)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -48,7 +49,7 @@ export function KoenkaiSekitoriCards({ koenkaiBand, sekitoriCount }: KoenkaiSeki
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Award className="h-5 w-5" />
-            Sekitori Presence
+            <GlossaryTip termId="sekitori">Sekitori</GlossaryTip> Presence
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

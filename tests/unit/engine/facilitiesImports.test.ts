@@ -3,6 +3,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 const facilitiesSource = readFileSync(join(__dirname, "../../../src/engine/economy/facilities.ts"), "utf-8");
+const maintenanceSource = readFileSync(join(__dirname, "../../../src/engine/tick/phases/monthly/facilities/maintenance.ts"), "utf-8");
 
 describe("engine/facilities.ts uses imported constants (not hardcoded)", () => {
   it("imports from constants/engine/facilities", () => {
@@ -19,7 +20,8 @@ describe("engine/facilities.ts uses imported constants (not hardcoded)", () => {
   });
 
   it("imports FACILITY_DECAY_AMOUNT", () => {
-    expect(facilitiesSource).toContain("FACILITY_DECAY_AMOUNT");
+    // Decay application lives in the canonical monthly-boundary phase
+    expect(maintenanceSource).toContain("FACILITY_DECAY_AMOUNT");
   });
 
   it("imports MAX_FACILITY_LEVEL", () => {
@@ -27,7 +29,8 @@ describe("engine/facilities.ts uses imported constants (not hardcoded)", () => {
   });
 
   it("imports MIN_FACILITY_LEVEL", () => {
-    expect(facilitiesSource).toContain("MIN_FACILITY_LEVEL");
+    // Floor clamp lives in the canonical monthly-boundary phase
+    expect(maintenanceSource).toContain("MIN_FACILITY_LEVEL");
   });
 
   it("does not hardcode 200_000 as upgrade base", () => {
@@ -41,7 +44,7 @@ describe("engine/facilities.ts uses imported constants (not hardcoded)", () => {
   });
 
   it("does not hardcode DECAY_RATE = 2", () => {
-    expect(facilitiesSource).not.toMatch(/DECAY_RATE\s*=\s*2/);
+    expect(maintenanceSource).not.toMatch(/DECAY_RATE\s*=\s*2/);
   });
 
   it("does not hardcode MAX_FACILITY = 100", () => {
@@ -49,6 +52,6 @@ describe("engine/facilities.ts uses imported constants (not hardcoded)", () => {
   });
 
   it("does not hardcode MIN_FACILITY = 5", () => {
-    expect(facilitiesSource).not.toMatch(/MIN_FACILITY\s*=\s*5/);
+    expect(maintenanceSource).not.toMatch(/MIN_FACILITY\s*=\s*5/);
   });
 });

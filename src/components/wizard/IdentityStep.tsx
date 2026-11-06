@@ -16,10 +16,10 @@ import {
 interface IdentityStepProps {
   oyakataName: string;
   background: string;
-  careerMode: "career" | "sandbox";
+  careerMode: "career" | "sandbox" | "ironman";
   onNameChange: (name: string) => void;
   onBackgroundChange: (background: string) => void;
-  onCareerModeChange: (mode: "career" | "sandbox") => void;
+  onCareerModeChange: (mode: "career" | "sandbox" | "ironman") => void;
   onRandomName: () => void;
   onNext: () => void;
 }

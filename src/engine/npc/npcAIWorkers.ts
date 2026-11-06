@@ -77,6 +77,7 @@ export interface GlobalWorkerContext {
   world: WorldState;
 }
 
+// @keep-export GlobalWorkerResult — live via same-file/dispatch call or public API contract
 export interface GlobalWorkerResult {
   acceptedExhibitionId?: string;
   rikishiId?: string;

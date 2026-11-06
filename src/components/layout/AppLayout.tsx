@@ -12,6 +12,7 @@ import { openSaveLoadDialog } from "@/components/menu/saveLoadDialogSignal";
 import { MainContentPane } from "@/components/layout/MainContentPane";
 import { FloatingShortcuts } from "@/components/layout/FloatingShortcuts";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { GameOverDialog } from "@/components/layout/GameOverDialog";
 import { projectEventLogData } from "@/presenters/uiDigest";
 
 /** Defines the structure for app layout props. */
@@ -96,6 +97,9 @@ export function AppLayout({
           {/* Mobile Event Log FAB */}
           <MobileEventLog />
         </SidebarInset>
+
+        {/* Ironman end-of-career surface (T1.2) */}
+        {world && <GameOverDialog world={world} />}
       </div>
     </SidebarProvider>
   );

@@ -44,6 +44,7 @@ interface SponsorStrategy {
   evaluateSponsorRecruitment: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;
 }
 
+// @keep-export DefaultSponsorStrategy — live via same-file/dispatch call or public API contract
 export const DefaultSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world: WorldState, heya: Heya, oyakata: Oyakata) {
     const isAmbitious = oyakata.traits.ambition > TRAIT_AMBITION_HIGH_THRESHOLD;
@@ -99,6 +100,7 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export TraditionalistSponsorStrategy — live via same-file/dispatch call or public API contract
 export const TraditionalistSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const isPublicityHawk = oyakata.managerFlags?.publicityHawk;
@@ -120,6 +122,7 @@ export const TraditionalistSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export ScientistSponsorStrategy — live via same-file/dispatch call or public API contract
 export const ScientistSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
@@ -136,6 +139,7 @@ export const ScientistSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export GamblerSponsorStrategy — live via same-file/dispatch call or public API contract
 export const GamblerSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const isRiskTaker = oyakata.traits.risk > TRAIT_RISK_HIGH_THRESHOLD;
@@ -162,6 +166,7 @@ export const GamblerSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export NurturerSponsorStrategy — live via same-file/dispatch call or public API contract
 export const NurturerSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
@@ -178,6 +183,7 @@ export const NurturerSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export TyrantSponsorStrategy — live via same-file/dispatch call or public API contract
 export const TyrantSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
@@ -194,6 +200,7 @@ export const TyrantSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export StrategistSponsorStrategy — live via same-file/dispatch call or public API contract
 export const StrategistSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
@@ -210,6 +217,7 @@ export const StrategistSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export StrictSponsorStrategy — live via same-file/dispatch call or public API contract
 export const StrictSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
@@ -226,6 +234,7 @@ export const StrictSponsorStrategy: SponsorStrategy = {
   },
 };
 
+// @keep-export IndulgentSponsorStrategy — live via same-file/dispatch call or public API contract
 export const IndulgentSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {

@@ -2,10 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   listMyosekiForSale,
   purchaseMyoseki,
-  executeMyosekiLease,
   returnLeasedMyoseki,
   findAvailableStock,
 } from "@/engine/governance/services/MyosekiTradingService";
+import { leaseMyoseki } from "@/engine/governance/myosekiMarket";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "@tests/unit/engine/utils";
 import type { MyosekiMarket } from "@/engine/types/myoseki";
@@ -144,25 +144,18 @@ describe("Myoseki lease", () => {
   it("lease transfers holderId without transferring ownerId", () => {
     const market = makeMarket();
     const stockId = Object.keys(market.stocks)[0];
-    market.stocks[stockId].status = "held";
     market.stocks[stockId].ownerId = "oyakata-owner";
     market.stocks[stockId].holderId = "oyakata-owner";
 
     const worldWithMarket = makeWorldWithMarket(market);
-    const impact = executeMyosekiLease(
-      worldWithMarket,
-      market,
-      stockId,
-      "oyakata-lessee",
-      5_000_000
-    );
+    const impact = leaseMyoseki(worldWithMarket, "oyakata-lessee", stockId);
     const updated = resolveImpacts(worldWithMarket, [impact]);
     const updatedMarket = (updated as any).myosekiMarket as MyosekiMarket;
 
     expect(updatedMarket.stocks[stockId].ownerId).toBe("oyakata-owner");
     expect(updatedMarket.stocks[stockId].holderId).toBe("oyakata-lessee");
     expect(updatedMarket.stocks[stockId].status).toBe("leased");
-    expect(updatedMarket.stocks[stockId].leaseFee).toBe(5_000_000);
+    expect(updatedMarket.stocks[stockId].leaseFee).toBe(Math.floor(500_000_000 * 0.05));
     expect(updatedMarket.history.length).toBe(1);
     expect(updatedMarket.history[0].type).toBe("lease");
   });

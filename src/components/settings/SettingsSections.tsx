@@ -13,8 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Keyboard, Palette, Save, Info, Dumbbell } from "lucide-react";
+import { Keyboard, Palette, Save, Info, Dumbbell, Languages } from "lucide-react";
+import { useState } from "react";
 import { SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
+import { t, setLocale, getLocale, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n";
+import { getStoredLocale, setStoredLocale } from "@/pages/settingsHelpers";
 
 /** Appearance card — dark mode toggle. */
 export function AppearanceCard() {
@@ -168,6 +171,53 @@ export function SimulationCard() {
               }
             }}
           />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/** Language card — UI locale picker (T3.2). */
+export function LanguageCard() {
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    const stored = getStoredLocale();
+    if (getLocale() !== stored) setLocale(stored);
+    return stored;
+  });
+
+  const onChange = (next: Locale) => {
+    setLocale(next);
+    setStoredLocale(next);
+    setLocaleState(next);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Languages className="h-5 w-5" /> {t("settings.language", undefined, "Language")}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">
+          {t("settings.language.description", undefined, "Interface language")}
+        </p>
+        <div className="flex gap-2">
+          {SUPPORTED_LOCALES.map((loc) => (
+            <button
+              key={loc}
+              type="button"
+              aria-pressed={locale === loc}
+              onClick={() => onChange(loc)}
+              className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                locale === loc
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border hover:bg-muted"
+              }`}
+            >
+              {t(`settings.language.${loc}`)}
+            </button>
+          ))}
         </div>
       </CardContent>
     </Card>

@@ -61,18 +61,18 @@ export function StableStep({
         </ScrollArea>
       </div>
 
-      <div className="flex justify-between pt-4">
+      <div className="flex flex-wrap justify-between gap-3 pt-4">
         <Button
           variant="ghost"
           onClick={onPrev}
-          className="h-16 px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground"
+          className="h-16 px-4 sm:px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground"
         >
           <ArrowLeft className="w-5 h-5" /> Back
         </Button>
         <Button
           onClick={onFinish}
           disabled={!selectedHeyaId}
-          className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[var(--shadow-lg)] rounded-lg bg-primary text-primary-foreground hover:scale-105 transition-transform"
+          className="h-16 px-6 sm:px-12 gap-3 font-display font-black uppercase tracking-widest text-base sm:text-xl shadow-[var(--shadow-lg)] rounded-lg bg-primary text-primary-foreground hover:scale-105 transition-transform"
           {...(!selectedHeyaId
             ? { tooltip: "Select a stable to continue", tooltipSide: "top" }
             : {})}

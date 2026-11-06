@@ -65,6 +65,7 @@ export interface UIDigest {
 /**
  * Label for world.
  */
+// @keep-export labelForWorld — live via same-file/dispatch call or public API contract
 export function labelForWorld(world: WorldState): string {
   const year = world.year ?? DEFAULT_START_YEAR;
   const week = world.week ?? 0;
@@ -75,6 +76,7 @@ export function labelForWorld(world: WorldState): string {
 /**
  * Build injury section for digest.
  */
+// @keep-export buildInjurySection — live via same-file/dispatch call or public API contract
 export function buildInjurySection(world: WorldState): DigestSection | null {
   const injuryItems: DigestItem[] = selectInjuredRikishi(world).map((r) => {
     // r.injury is only maintained by the weekly roll path — bout-sustained
@@ -106,6 +108,7 @@ export function buildInjurySection(world: WorldState): DigestSection | null {
 /**
  * Build event sections for digest.
  */
+// @keep-export buildEventSections — live via same-file/dispatch call or public API contract
 export function buildEventSections(world: WorldState): DigestSection[] {
   const sections: DigestSection[] = [];
   const eventBuckets = selectRecentEvents(world);
@@ -206,6 +209,7 @@ export function buildEventSections(world: WorldState): DigestSection[] {
 /**
  * Build headline for digest.
  */
+// @keep-export buildHeadline — live via same-file/dispatch call or public API contract
 export function buildHeadline(
   world: WorldState,
   matchupCount: number,
@@ -228,6 +232,7 @@ export function buildHeadline(
 /**
  * Build matchup items for digest.
  */
+// @keep-export buildMatchupItems — live via same-file/dispatch call or public API contract
 export function buildMatchupItems(world: WorldState): {
   items: DigestItem[];
   section?: DigestSection;
@@ -276,6 +281,7 @@ export function buildMatchupItems(world: WorldState): {
  * Build training report section from TRAINING_STAT_DELTA events.
  * Filters to current week and player's heya only.
  */
+// @keep-export buildTrainingReportSection — live via same-file/dispatch call or public API contract
 export function buildTrainingReportSection(world: WorldState): DigestSection | null {
   if (!world.playerHeyaId) return null;
   const thisWeek = world.week ?? 0;
@@ -306,6 +312,7 @@ export function buildTrainingReportSection(world: WorldState): DigestSection | n
  * Build advisor recommendations section for digest.
  * Skipped during autonomous fast-forward to avoid overhead.
  */
+// @keep-export buildAdvisorSection — live via same-file/dispatch call or public API contract
 export function buildAdvisorSection(world: WorldState): DigestSection | null {
   if (world._autonomousSim) return null;
   const recs = generateRecommendations(world);

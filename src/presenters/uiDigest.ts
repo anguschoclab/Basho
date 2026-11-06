@@ -85,7 +85,7 @@ export { resolveRegistryLabel, enrichRikishiForUI } from "@/presenters/uiUtiliti
 // Original re-exports from existing modules (preserved for compatibility)
 export { projectRikishi } from "@/presenters/rikishi/index";
 export { formatRadarData, formatMetaTrends } from "@/presenters/uiFormatters";
-export { getHallOfFame } from "@/engine/history/hallOfFame";
+export { getHallOfFame, isInducted } from "@/engine/history/hallOfFame";
 // Re-exports re-pointed to current source modules (uiConstants barrel removed)
 export { FATIGUE_LABELS, TRAIT_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
 export { RANK_NAMES } from "@/constants/engine/recruitment";

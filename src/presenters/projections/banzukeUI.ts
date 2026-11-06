@@ -7,6 +7,8 @@ import type { Rank } from "@/engine/types/banzuke";
 export interface UIRankRow {
   rankLabel: string;
   rankKey: string;
+  /** Canonical rank id (yokozuna/ozeki/sekiwake/komusubi/maegashira/…) — glossary termId. */
+  rank: string;
   rankTierClass: string;
   rankTitleJa: string;
   isSanyaku: boolean;
@@ -114,6 +116,7 @@ export function buildBanzukeRows(
     result.push({
       rankLabel,
       rankKey: key,
+      rank,
       rankTierClass: rankRowClass(rank),
       rankTitleJa,
       isSanyaku,

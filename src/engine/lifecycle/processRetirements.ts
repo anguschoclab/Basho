@@ -41,6 +41,7 @@ import { warn } from "@/engine/utils/Logger";
  * so a failure here means the summary will still be produced but the full career
  * detail will not be retrievable from cold storage.
  */
+// @keep-export archiveRikishiToColdStorage — live via same-file/dispatch call or public API contract
 export function archiveRikishiToColdStorage(rikishi: Rikishi): void {
   const archiveService =
     typeof window !== "undefined" && window.__ELECTRON__ === true

@@ -14,6 +14,7 @@ import { BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
+// @keep-export KeyBoutLabel — live via same-file/dispatch call or public API contract
 export type KeyBoutLabel = "yusho_decider" | "biggest_upset" | "kinboshi";
 
 export interface KeyBoutMoment {

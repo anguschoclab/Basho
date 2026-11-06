@@ -15,6 +15,7 @@ import {
   Globe,
   Landmark,
   RefreshCw,
+  Swords,
   type LucideIcon,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
+import { t } from "@/lib/i18n";
 import { formatYenToMan } from "@/lib/engineUtils";
 import { OYAKATA_BACKSTORIES } from "@/constants/ui/wizard";
 
@@ -202,6 +204,14 @@ const GAME_MODES = [
     icon: Landmark,
   },
   {
+    id: "ironman" as const,
+    label: "Ironman Mode",
+    labelJa: "不退転",
+    flavor:
+      "Career rules with no second chances. Forced retirement — age 65 or the board losing confidence — ends the run for good.",
+    icon: Swords,
+  },
+  {
     id: "sandbox" as const,
     label: "Sandbox Mode",
     labelJa: "砂場",
@@ -211,18 +221,18 @@ const GAME_MODES = [
   },
 ];
 
-/** Two-card game-mode selector — Career (stakes) vs Sandbox (no fail states). */
+/** Three-card game-mode selector — Career vs Ironman vs Sandbox. */
 export function GameModeSelector({
   careerMode,
   onCareerModeChange,
 }: {
-  careerMode: "career" | "sandbox";
-  onCareerModeChange: (mode: "career" | "sandbox") => void;
+  careerMode: "career" | "sandbox" | "ironman";
+  onCareerModeChange: (mode: "career" | "sandbox" | "ironman") => void;
 }) {
   return (
     <div className="space-y-4">
       <Label className="pro-header">Game Mode</Label>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         {GAME_MODES.map((mode) => {
           const Icon = mode.icon;
           const isSelected = careerMode === mode.id;
@@ -260,7 +270,7 @@ export function GameModeSelector({
                   />
                 </div>
                 <span className="font-display font-black text-base leading-tight">
-                  {mode.label}
+                  {t(`mode.${mode.id}`, undefined, mode.label)}
                 </span>
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed italic">

@@ -150,6 +150,8 @@ export type WritableWorldFields = Pick<
   | "currentBanzuke"
   | "historyIndex"
   | "perceptionCache"
+  | "heyaBrandIdentities"
+  | "gameOver"
 >;
 
 /**

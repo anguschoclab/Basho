@@ -18,7 +18,7 @@ import type { MetaAdaptation } from "@/engine/npc/ArchetypeAdaptation";
 import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { getAvailableStables } from "@/engine/core/selectors";
+import { getRikishi, getNPCHeyas } from "@/engine/core/queries";
 import { buildPerceptionSnapshot } from "@/engine/npc/perception";
 import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { buildAIContext } from "@/engine/npc/contextBuilder";
@@ -43,7 +43,6 @@ import {
   collectStrategyShiftEvents,
 } from "@/engine/tick/phases/npc_ai/index";
 import { ensurePersonaForOyakata } from "@/engine/npc/personas/NPCPersonaService";
-import { getRikishi } from "@/engine/core/queries";
 import { assignMentor } from "@/engine/legacy/lineage";
 import { MentorshipService } from "@/engine/training/MentorshipService";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
@@ -113,10 +112,9 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {
     ...(world.npcScoutingPriorities || {}),
   };
-  const playerHeyaId = world.playerHeyaId;
   const leaguePerception = buildLeaguePerception(world);
 
-  const allNpcHeyas = getAvailableStables(world).filter((h) => h.id !== playerHeyaId);
+  const allNpcHeyas = getNPCHeyas(world);
   const heyasToProcess = selectNPCHeyasForWeek(world, allNpcHeyas);
 
   electAndPublishFactionPostures(world, leaguePerception, builder);

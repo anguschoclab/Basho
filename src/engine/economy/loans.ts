@@ -13,6 +13,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
 import { bumpTenure } from "@/engine/legacy/tenure";
 
+// @keep-export LoanTerms — live via same-file/dispatch call or public API contract
 export interface LoanTerms {
   loanType: LoanType;
   interestRate: number;
@@ -22,6 +23,7 @@ export interface LoanTerms {
   months: number;
 }
 
+// @keep-export determineLoanTerms — live via same-file/dispatch call or public API contract
 export function determineLoanTerms(
   world: WorldState,
   heya: Heya,
@@ -77,6 +79,7 @@ export function determineLoanTerms(
   return { loanType, interestRate, providerName, stringsAttached, principal, months };
 }
 
+// @keep-export createLoanObject — live via same-file/dispatch call or public API contract
 export function createLoanObject(
   world: WorldState,
   _heyaId: Id,

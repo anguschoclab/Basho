@@ -22,6 +22,11 @@ function coreSlice(state: GameState, action: GameAction): GameState {
         playerOyakataId: action.world.playerHeyaId
           ? (action.world.heyas.get(action.world.playerHeyaId)?.oyakataId ?? state.playerOyakataId)
           : state.playerOyakataId,
+        // A world carrying the player's heya means a career is live — leave
+        // the menu phase so AppLayout mounts its chrome. Other phases are
+        // authoritative (basho flow, recap) and must not be clobbered by
+        // routine world ticks.
+        phase: state.phase === "menu" && action.world.playerHeyaId ? "interim" : state.phase,
       };
 
     case "LOAD_WORLD":

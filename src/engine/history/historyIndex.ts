@@ -60,6 +60,7 @@ export function bashoKeyForRecord(world: WorldState, br: BashoResult): BashoKey 
 }
 
 /** Minimal "what happened this basho" record for a rikishi */
+// @keep-export RikishiHistoryEntry — live via same-file/dispatch call or public API contract
 export interface RikishiHistoryEntry {
   bashoKey: BashoKey;
   year: number;
@@ -135,6 +136,7 @@ function sortKeyFor(year: number, bashoNumber: number, occurrence = 1): string {
 /**
  * Build index from world history array.
  */
+// @keep-export buildHistoryIndex — live via same-file/dispatch call or public API contract
 export function buildHistoryIndex(args: {
   world: WorldState;
   performanceByBasho?: Record<BashoKey, RikishiHistoryEntry[]>;
@@ -265,6 +267,7 @@ function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistor
   idx.lastSeenBashoForRikishi[rikishiId] = entry.bashoKey;
 }
 
+// @keep-export listBashoSummaries — live via same-file/dispatch call or public API contract
 export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
   const out: BashoHistorySummary[] = [];
   for (const k of index.bashoKeys) {
@@ -274,6 +277,7 @@ export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
   return out;
 }
 
+// @keep-export getBashoSummary — live via same-file/dispatch call or public API contract
 export function getBashoSummary(
   index: HistoryIndex,
   year: number,

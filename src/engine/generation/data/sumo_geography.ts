@@ -56,18 +56,3 @@ export const JAPANESE_PREFECTURES = [
 ];
 
 export const SUMO_HOTBEDS = ["Aomori", "Hokkaido", "Akita", "Oita", "Mongolia", "Georgia", "Egypt"];
-
-export function getRandomOrigin(rng: () => number): string {
-  const isForeign = rng() < 0.15; // 15% chance of foreign recruit
-  if (isForeign) {
-    const foreigners = ["Mongolia", "Georgia", "Egypt", "USA", "Brazil", "Kazakhstan"];
-    return foreigners[Math.floor(rng() * foreigners.length)];
-  }
-
-  const isHotbed = rng() < 0.3;
-  if (isHotbed) {
-    return SUMO_HOTBEDS[Math.floor(rng() * SUMO_HOTBEDS.length)];
-  }
-
-  return JAPANESE_PREFECTURES[Math.floor(rng() * JAPANESE_PREFECTURES.length)];
-}

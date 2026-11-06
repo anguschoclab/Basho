@@ -7,6 +7,9 @@ import { KNOWN_SAVE_VERSIONS } from "@/engine/types/index";
 const SAVE_KEY_PREFIX = "basho_save_";
 const AUTOSAVE_SLOT_NAME = "autosave";
 const AUTOSAVE_KEY = `${SAVE_KEY_PREFIX}${AUTOSAVE_SLOT_NAME}`;
+/** Rotated autosave backups — autosave_1 is the previous save, autosave_2 the one before. */
+const AUTOSAVE_BACKUP_COUNT = 2;
+const AUTOSAVE_NAME_RE = /^autosave(_\d+)?$/;
 const SAVE_SLOT_COUNT = 10;
 
 export interface SaveSlotInfo {
@@ -60,7 +63,11 @@ export const SaveSlotService = {
         if (!this.isValidSave(parsed)) continue;
 
         const save = parsed as SaveGame;
-        const slotName = save.saveSlotName || key.replace(SAVE_KEY_PREFIX, "");
+        // Slot identity comes from the storage key, not the embedded
+        // saveSlotName — rotated autosave backups are byte-copies of the
+        // primary and still carry `saveSlotName: "autosave"`; loading by the
+        // embedded name would open the wrong snapshot.
+        const slotName = key.replace(SAVE_KEY_PREFIX, "") || save.saveSlotName || key;
         const playerHeya =
           save.world.playerHeyaId && save.world.heyas
             ? save.world.heyas[String(save.world.playerHeyaId)]
@@ -74,7 +81,7 @@ export const SaveSlotService = {
           playerHeyaName: playerHeya?.name,
           savedAt: save.lastSavedAtISO,
           version: save.version,
-          isAutosave: slotName === AUTOSAVE_SLOT_NAME || key === AUTOSAVE_KEY,
+          isAutosave: AUTOSAVE_NAME_RE.test(slotName),
         });
       } catch {
         continue;
@@ -83,6 +90,11 @@ export const SaveSlotService = {
 
     return infos.sort((a, b) => {
       if (a.isAutosave !== b.isAutosave) return a.isAutosave ? -1 : 1;
+      // Autosaves order primary → newest backup → oldest backup.
+      if (a.isAutosave && b.isAutosave) {
+        const idx = (name: string) => (name === AUTOSAVE_SLOT_NAME ? 0 : Number(name.split("_")[1]));
+        return idx(a.slotName) - idx(b.slotName);
+      }
       const aIsSlot = /^slot_\d+$/.test(a.slotName);
       const bIsSlot = /^slot_\d+$/.test(b.slotName);
       if (aIsSlot && bIsSlot) {
@@ -121,6 +133,17 @@ export const SaveSlotService = {
   },
   getAutosaveKey(): string {
     return AUTOSAVE_KEY;
+  },
+  /** Backup slot names oldest-position-last: autosave_1 .. autosave_N. */
+  getAutosaveBackupCount(): number {
+    return AUTOSAVE_BACKUP_COUNT;
+  },
+  /** Autosave slot names in recency order: autosave, autosave_1, ... */
+  getAutosaveSlotNames(): string[] {
+    return [
+      AUTOSAVE_SLOT_NAME,
+      ...Array.from({ length: AUTOSAVE_BACKUP_COUNT }, (_, i) => `${AUTOSAVE_SLOT_NAME}_${i + 1}`),
+    ];
   },
   getSlotCount(): number {
     return SAVE_SLOT_COUNT;

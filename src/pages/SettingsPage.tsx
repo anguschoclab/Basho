@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getAutosaveEnabled, setAutosaveEnabled } from "@/pages/settingsHelpers";
 import {
   AppearanceCard,
+  LanguageCard,
   SaveLoadCard,
   ShortcutsCard,
   SimulationCard,
@@ -26,6 +27,7 @@ export default function SettingsPage() {
 
       <div className="space-y-6 max-w-2xl">
         <AppearanceCard />
+        <LanguageCard />
         <SaveLoadCard autosaveOn={autosaveOn} onToggle={handleAutosaveToggle} />
         <ShortcutsCard />
         <SimulationCard />

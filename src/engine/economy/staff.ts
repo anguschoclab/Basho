@@ -21,7 +21,6 @@ import {
   STAFF_APPRENTICE_AGE_THRESHOLD,
   STAFF_SENIOR_AGE_THRESHOLD,
   STAFF_DECLINING_AGE_THRESHOLD,
-  STAFF_RETIREMENT_AGE_THRESHOLD,
   STAFF_SECONDARY_COMPETENCE_CHANCE,
   STAFF_FATIGUE_RANGE,
   STAFF_BASE_MORALE,
@@ -203,40 +202,8 @@ export function tickStaffWeek(world: WorldState): StateImpact {
   return builder.build();
 }
 
-/**
- * Yearly tick for all staff members.
- * Increments age and updates career phases (apprentice -> established -> senior -> declining -> retired).
- *
- * @param world - The current world state
- * @returns A StateImpact object with staff updates
- */
-export function tickStaffYear(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("tickStaffYear");
-  if (!world.staff) return builder.build();
-
-  for (const staff of world.staff.values()) {
-    const newAge = staff.age + 1;
-    const newYearsAtBeya = staff.yearsAtBeya + 1;
-
-    let newCareerPhase = staff.careerPhase;
-    if (staff.careerPhase === "apprentice" && newAge >= STAFF_APPRENTICE_AGE_THRESHOLD)
-      newCareerPhase = "established";
-    else if (staff.careerPhase === "established" && newAge >= STAFF_SENIOR_AGE_THRESHOLD)
-      newCareerPhase = "senior";
-    else if (staff.careerPhase === "senior" && newAge >= STAFF_DECLINING_AGE_THRESHOLD)
-      newCareerPhase = "declining";
-    else if (staff.careerPhase === "declining" && newAge >= STAFF_RETIREMENT_AGE_THRESHOLD)
-      newCareerPhase = "retired";
-
-    builder.updateStaff(staff.id, {
-      age: newAge,
-      yearsAtBeya: newYearsAtBeya,
-      careerPhase: newCareerPhase,
-    });
-  }
-
-  return builder.build();
-}
+// Yearly staff aging/career-phase progression lives canonically in
+// tick/phases/phase06_yearly_boundary.ts.
 
 /**
  * Hires a new staff member for a heya.

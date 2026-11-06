@@ -14,7 +14,9 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { formatMetaTrends, type WorldState } from "@/presenters/uiDigest";
+import { formatMetaTrends } from "@/presenters/uiDigest";
+import type { WorldState } from "@/presenters/uiDigest";
+import { getAllHeyas, getAllRikishi, getRikishi } from "@/presenters/worldAccess";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { TrendingUp, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -142,42 +144,55 @@ export default function TrendsPage() {
         {/* League leaders — current snapshot, real standings only (T2.3) */}
         <LeagueLeaders world={world} />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="paper bg-primary/5 border-primary/10">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Info className="h-4 w-4 text-primary" />
-                Current Era: {toneLabel}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p
-                className="text-xs text-muted-foreground leading-relaxed"
-                data-testid="era-tone-description"
-              >
-                {toneDescription}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="paper bg-warning/5 border-warning/10">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-warning" />
-                Adapting to Shifts
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Macro trends are determined by the collective success of Yokozuna and Ozeki. If the
-                top ranks are dominated by grappling specialists, the Meta will shift towards Yotsu
-                within 2-3 years.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <EraInfoCards toneLabel={toneLabel} toneDescription={toneDescription} />
       </div>
     </AppLayout>
+  );
+}
+
+/** Current-era description + adaptation hint cards. */
+function EraInfoCards({
+  toneLabel,
+  toneDescription,
+}: {
+  toneLabel: string;
+  toneDescription: string;
+}) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card className="paper bg-primary/5 border-primary/10">
+        <CardHeader>
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
+            <Info className="h-4 w-4 text-primary" />
+            Current Era: {toneLabel}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p
+            className="text-xs text-muted-foreground leading-relaxed"
+            data-testid="era-tone-description"
+          >
+            {toneDescription}
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="paper bg-warning/5 border-warning/10">
+        <CardHeader>
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-warning" />
+            Adapting to Shifts
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Macro trends are determined by the collective success of Yokozuna and Ozeki. If the top
+            ranks are dominated by grappling specialists, the Meta will shift towards Yotsu within
+            2-3 years.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -186,16 +201,17 @@ function LeagueLeaders({ world }: { world: WorldState }) {
   const standings = world.currentBasho?.standings;
   const leaders = standings
     ? [...standings.entries()]
-        .map(([id, s]) => ({ r: world.rikishi.get(id), ...s }))
+        .map(([id, s]) => ({ r: getRikishi(world, id), ...s }))
         .filter((x): x is typeof x & { r: Rikishi } => !!x.r && !x.r.isRetired)
         .sort((a, b) => b.wins - a.wins || a.losses - b.losses)
         .slice(0, 5)
     : [];
 
-  const stables = [...world.heyas.values()]
+  const allRikishi = getAllRikishi(world);
+  const stables = getAllHeyas(world)
     .map((h) => ({
       h,
-      sekitori: [...world.rikishi.values()].filter(
+      sekitori: allRikishi.filter(
         (r) => r.heyaId === h.id && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")
       ).length,
     }))

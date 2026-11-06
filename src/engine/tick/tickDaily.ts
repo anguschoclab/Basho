@@ -105,6 +105,10 @@ import { offSeasonPipeline } from "@/engine/tick/pipelines/offSeasonPipeline";
  * ```
  */
 export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldState {
+  // Ironman end state: the career is over — the world freezes in place so
+  // the player can review it. The day is not consumed.
+  if (world.gameOver) return world;
+
   // P3.2: Apply autonomous flag if specified
   if (opts?.autonomous && !world._autonomousSim) {
     world = { ...world, _autonomousSim: true };

@@ -4,7 +4,6 @@
  * Designed to be imported by both the simulation tick and UI rendering layers.
  */
 
-import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import { MOCHIKYUKIN_POINT_VALUE, MOCHIKYUKIN_RANK_FLOORS } from "@/constants/engine/economic";
 
 // Assumptions based on canonical world logic
@@ -54,22 +53,3 @@ export function getSalaryBreakdown(
   };
 }
 
-/**
- * Generates the financial transaction ledger entry for a Sansho prize.
- */
-export function generateSanshoLedgerEntry(
-  rikishiName: string,
-  prizeType: "Shukun" | "Kanto" | "Gino"
-) {
-  const prizeNames = {
-    Shukun: "Outstanding Performance",
-    Kanto: "Fighting Spirit",
-    Gino: "Technique",
-  };
-
-  return {
-    amount: SIMULATION_CONFIG.prizes.specialPrize,
-    description: `Special Prize (${prizeNames[prizeType]}): ${rikishiName}`,
-    category: "Prize Money",
-  };
-}

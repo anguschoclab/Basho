@@ -25,6 +25,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { BoutNarrativeModal } from "@/components/basho/BoutNarrativeModal";
 import {
@@ -136,7 +137,7 @@ export function BashoHeaderActions({ day, isNakabiDay }: { day: number; isNakabi
           className="bg-primary/20 text-primary border-primary/40 text-xs"
           data-testid="nakabi-badge"
         >
-          Nakabi (Mid-Basho)
+          <GlossaryTip termId="nakabi">Nakabi</GlossaryTip> (Mid-Basho)
         </Badge>
       )}
     </div>

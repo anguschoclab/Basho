@@ -17,6 +17,7 @@ import { SeededRNG } from "@/engine/core/rng";
 import { SEKIWAKE_33_WIN_THRESHOLD } from "@/constants/engine/banzuke";
 import { OZEKI_RUN_MIN_WINS } from "@/constants/engine/generation";
 import { isYokozunaStrongCase } from "@/engine/banzuke/promotionLogic";
+import { getRikishiHistory } from "@/engine/history/historyIndex";
 import {
   selectPromotionCandidates,
   selectYokozunaCandidates,
@@ -57,7 +58,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
   const historyIndex = world.historyIndex;
 
   for (const r of selectPromotionCandidates(world)) {
-    const history = historyIndex.rikishi[r.id] || [];
+    const history = getRikishiHistory(historyIndex, r.id);
     const len = history.length;
 
     let recentWins = 0;
@@ -103,7 +104,7 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   const historyIndex = world.historyIndex;
 
   for (const r of selectYokozunaCandidates(world)) {
-    const history = historyIndex.rikishi[r.id] || [];
+    const history = getRikishiHistory(historyIndex, r.id);
     let yushos = 0;
     let junYushos = 0;
     const len = history.length;

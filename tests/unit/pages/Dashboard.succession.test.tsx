@@ -52,6 +52,8 @@ vi.mock("@/components/dashboard/index", () => ({
   ActionQueueWidget: () => <div data-testid="action-queue-widget" />,
   AcademyWidget: () => <div data-testid="academy-widget" />,
   AdvisorPanel: () => <div data-testid="advisor-panel" />,
+  ObjectivesWidget: () => <div data-testid="objectives-widget" />,
+  AchievementsWidget: () => <div data-testid="achievements-widget" />,
 }));
 
 vi.mock("@/components/training/ProgressionTracker", () => ({

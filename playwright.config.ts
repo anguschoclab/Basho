@@ -24,6 +24,18 @@ export default defineConfig({
       testMatch: /(full-basho-lifecycle|year-of-bashos)\.e2e\.test\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
+    {
+      name: "mobile",
+      testMatch: /mobile-viewport\.e2e\.test\.ts/,
+      // Chromium with mobile emulation — the iPhone descriptor requires
+      // the WebKit binary, which this repo doesn't install.
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
   ],
   webServer: {
     command: "bun run dev",
