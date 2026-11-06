@@ -35,6 +35,7 @@ import { getRikishi } from "@/engine/core/queries";
 import { boundHistoryArrays } from "@/engine/tick/phases/boundHistoryArrays";
 import { runRetiredRikishiSummarization } from "@/engine/history/archival";
 import { evaluateObjectives, issueYearlyObjectives } from "@/engine/objectives/ObjectivesService";
+import { checkYearlyAchievements } from "@/engine/achievements/AchievementService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -95,6 +96,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   // sandbox clears active objectives (no fail states by design).
   builder.merge(evaluateObjectives(world));
   builder.merge(issueYearlyObjectives(world));
+  builder.merge(checkYearlyAchievements(world));
 
   // 4. Staff Aging
   ageStaff(builder, world);

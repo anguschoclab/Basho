@@ -446,6 +446,9 @@ export interface WorldState {
   /** Yearly player objectives (T1.1). Active in career mode only. */
   objectivesState?: import("@/engine/types/objectives").ObjectivesState;
 
+  /** Player achievement cabinet (T1.5) — awarded once, cosmetic. */
+  achievements?: import("@/engine/achievements/AchievementService").PlayerAchievement[];
+
   matchmakingOverride?: {
     type: "avoid_rival";
     requesterId: string;

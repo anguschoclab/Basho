@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Coins, Dumbbell, Users } from "lucide-react";
 import type { WorldState } from "@/presenters/uiDigest";
 import { StatCard, ListCard, ProgressRow } from "@/components/layout/page-shell/index";
-import { StableHealthWidget, TrendsWidget, CalendarWidget, BashoWidget, ObjectivesWidget } from "@/components/dashboard/index";
+import { StableHealthWidget, TrendsWidget, CalendarWidget, BashoWidget, ObjectivesWidget, AchievementsWidget } from "@/components/dashboard/index";
 import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
 import { projectNakabi } from "@/presenters/projections/nakabiProjections";
 import { formatYen } from "@/lib/engineUtils";
@@ -29,6 +29,7 @@ export function DashboardStableColumn({ derived }: { derived: Derived }) {
     <div className="space-y-4">
       <StableHealthWidget />
       <ObjectivesWidget />
+      <AchievementsWidget />
       <StatCard
         eyebrow="MY STABLE"
         title="Roster Status"

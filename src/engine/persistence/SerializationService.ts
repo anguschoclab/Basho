@@ -176,6 +176,7 @@ function serializeWorld(world: WorldState): SerializedWorldState {
     pendingExhibitions: world.pendingExhibitions,
     matchmakingOverride: world.matchmakingOverride,
     objectivesState: world.objectivesState,
+    achievements: world.achievements,
     lastBoutResult: world.lastBoutResult,
 
     npcScoutingPriorities: world.npcScoutingPriorities,
@@ -319,6 +320,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
     pendingExhibitions: s.pendingExhibitions,
     matchmakingOverride: s.matchmakingOverride,
     objectivesState: s.objectivesState,
+    achievements: s.achievements,
     lastBoutResult: s.lastBoutResult,
 
     npcScoutingPriorities: s.npcScoutingPriorities,

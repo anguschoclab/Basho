@@ -177,6 +177,7 @@ export interface SerializedWorldState {
   pendingExhibitions?: WorldState["pendingExhibitions"];
   matchmakingOverride?: WorldState["matchmakingOverride"];
   objectivesState?: WorldState["objectivesState"];
+  achievements?: WorldState["achievements"];
   lastBoutResult?: WorldState["lastBoutResult"];
 
   // ── NPC & scheduling internals ──────────────────────────────────────────
