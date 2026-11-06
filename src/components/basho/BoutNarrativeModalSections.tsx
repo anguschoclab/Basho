@@ -24,6 +24,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { cn } from "@/lib/utils";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { PHASE_STYLE, TAG_ICONS } from "@/components/basho/boutModalConstants";
+import { generateAnnouncerLines } from "@/presenters/projections/commentaryProjections";
 
 /** VS header — east/west bar, names, gyoji/shimpan badges, replay viewer. */
 export function BoutModalHeader({
@@ -254,6 +255,16 @@ export function BoutModalTabs({
 
       {/* ── Commentary ── */}
       <TabsContent value="commentary" className="mt-4 space-y-2">
+        {/* Announcer calls — broadcast lines from real bout facts (T1.3) */}
+        {result && (
+          <div className="mb-3 rounded-lg border border-gold/25 bg-gold/5 px-3 py-2 space-y-1">
+            {generateAnnouncerLines(result).map((line, i) => (
+              <p key={i} className="text-sm italic text-gold/90">
+                {line}
+              </p>
+            ))}
+          </div>
+        )}
         {pbpLines.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">
             No play-by-play data available.

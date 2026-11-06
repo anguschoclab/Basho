@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Swords } from "lucide-react";
-import { TermTooltip } from "@/components/shared/TermTooltip";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Rikishi } from "@/engine/types/rikishi";
 
@@ -103,7 +103,7 @@ function RikishiCard({ rikishi }: { rikishi: Rikishi }) {
         <CardTitle className="flex items-center justify-between">
           <span className="text-xl font-display">{rikishi.shikona}</span>
           <Badge variant="outline" className="capitalize">
-            <TermTooltip term={rikishi.rank}>{rikishi.rank}</TermTooltip> {rikishi.side}
+            <GlossaryTip termId={rikishi.rank}>{rikishi.rank}</GlossaryTip> {rikishi.side}
           </Badge>
         </CardTitle>
       </CardHeader>
