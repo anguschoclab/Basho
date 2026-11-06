@@ -18,6 +18,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { rngForWorld } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -88,13 +89,10 @@ function resolveText(
 
 /** Pick the subject rikishi for a needsRikishi chain (deterministic). */
 function pickSubject(world: WorldState, heyaId: string, chainId: string): string | undefined {
-  const roster = [...world.activeRikishiIds].filter((id) => {
-    const r = world.rikishi.get(id);
-    return !!r && r.heyaId === heyaId && !r.isRetired;
-  });
+  const roster = EntityCollection.getHeyaRoster(world, heyaId);
   if (roster.length === 0) return undefined;
   const rng = RNGRegistry.getSystemRNG(world, CHAIN_RNG, `pick_${chainId}_${world.week ?? 0}`);
-  return roster[rng.int(0, roster.length - 1)];
+  return roster[rng.int(0, roster.length - 1)].id;
 }
 
 /** Is a chain eligible to fire this week? */
