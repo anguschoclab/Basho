@@ -12,7 +12,6 @@ function baseWorld(): WorldState {
   const oyakata = MockFactory.createOyakata("oya-p", { heyaId: "heya-p" });
   const player = MockFactory.createHeya("heya-p", {
     oyakataId: "oya-p",
-    isPlayerOwned: true,
     rikishiIds: [],
     funds: 100_000_000,
     runwayBand: "secure",

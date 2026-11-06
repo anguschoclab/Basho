@@ -36,7 +36,6 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", {
         id: "h1",
         name: "Test Heya",
-        isPlayerOwned: true,
       });
       const world = makeMockWorld({ playerHeyaId: "h1" });
 
@@ -90,9 +89,7 @@ describe("heyaUI - projectHeya", () => {
     });
 
     it("should default isPlayerOwned to false when not set", () => {
-      const heya = makeMockHeya("h1", {
-        isPlayerOwned: undefined,
-      });
+      const heya = makeMockHeya("h1", {});
       const world = makeMockWorld();
 
       mockGetOyakataForHeya.mockReturnValue(undefined);

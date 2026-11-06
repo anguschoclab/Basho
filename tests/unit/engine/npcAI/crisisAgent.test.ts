@@ -40,7 +40,7 @@ function worldWithCrisisHeya(traits?: { risk?: number; tradition?: number; ambit
   const world = MockFactory.createWorld({
     heyas: new Map([
       ["heya-a", heya],
-      ["player-heya", MockFactory.createHeya("player-heya", { isPlayerOwned: true })],
+      ["player-heya", MockFactory.createHeya("player-heya")],
     ]),
     oyakata: new Map([["oya-a", oyakata]]),
     playerHeyaId: "player-heya",

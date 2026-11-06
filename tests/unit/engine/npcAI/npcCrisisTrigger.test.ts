@@ -26,7 +26,6 @@ function worldWithInsolventHeyas(npcIds: string[], playerInsolvent = false): Wor
   heyas.set(
     "player-heya",
     MockFactory.createHeya("player-heya", {
-      isPlayerOwned: true,
       funds: playerInsolvent ? -500 : 1_000_000,
       riskIndicators: { financial: false, governance: false, rivalry: false },
     })

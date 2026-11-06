@@ -81,7 +81,6 @@ export interface Heya {
   activeCrisis?: ActiveCrisis;
 
   descriptor?: string;
-  isPlayerOwned?: boolean;
   ichimon?: IchimonName;
   politicalCapital?: number;
   location?: string;

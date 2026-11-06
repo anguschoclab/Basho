@@ -163,7 +163,7 @@ describe("projectRosterEntry", () => {
 describe("projectRikishi - new band calculations", () => {
   const baseWorld = {
     year: 2020,
-    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya" }]]),
     rikishi: new Map(),
   } as unknown as WorldState;
 
@@ -312,7 +312,7 @@ describe("projectRikishi - new band calculations", () => {
 describe("projectRikishi - economics DTO projection", () => {
   const baseWorld = {
     year: 2020,
-    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya" }]]),
     rikishi: new Map(),
   } as unknown as WorldState;
 
@@ -358,7 +358,7 @@ describe("projectRikishi - economics DTO projection", () => {
 describe("projectRikishi - agency disposition (loyaltyBand)", () => {
   const baseWorld = {
     year: 2020,
-    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya" }]]),
     rikishi: new Map(),
   } as unknown as WorldState;
 
@@ -391,7 +391,7 @@ describe("projectRikishi - agency disposition (loyaltyBand)", () => {
 describe("projectRikishi - division records", () => {
   const baseWorld = {
     year: 2020,
-    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya" }]]),
     rikishi: new Map(),
   } as unknown as WorldState;
 

@@ -11,7 +11,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 describe("TrainingService.applyWeeklyTraining", () => {
   let world: WorldState;
 
-  function makeHeya(id: string, isPlayer: boolean): any {
+  function makeHeya(id: string): any {
     return {
       id,
       name: `${id} name`,
@@ -28,7 +28,6 @@ describe("TrainingService.applyWeeklyTraining", () => {
       koenkaiBand: "mid",
       runwayBand: "mid",
       facilities: { training: 50, recovery: 50, nutrition: 50 },
-      isPlayerOwned: isPlayer,
     };
   }
 
@@ -80,8 +79,8 @@ describe("TrainingService.applyWeeklyTraining", () => {
     rikishiMap.set("r-npc", nr);
 
     const heyasMap = new Map<string, any>();
-    heyasMap.set("heya-player", makeHeya("heya-player", true));
-    heyasMap.set("heya-npc", makeHeya("heya-npc", false));
+    heyasMap.set("heya-player", makeHeya("heya-player"));
+    heyasMap.set("heya-npc", makeHeya("heya-npc"));
 
     const w = MockFactory.createWorld({
       playerHeyaId: "heya-player",

@@ -46,7 +46,6 @@ function buildWorldWithNpcHeyas(
   const playerId = opts.playerHeyaId ?? "player";
   const playerHeya = MockFactory.createHeya(playerId, {
     oyakataId: `oy_${playerId}`,
-    isPlayerOwned: true,
   });
   heyas.set(playerId, playerHeya);
   oyakata.set(`oy_${playerId}`, makeOyakataForHeya(playerId));

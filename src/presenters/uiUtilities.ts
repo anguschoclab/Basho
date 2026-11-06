@@ -14,7 +14,7 @@ import type { SeededRNG } from "@/engine/core/rng";
 /** Minimal world state for rikishi projection */
 interface MinimalWorldForProjection {
   year: number;
-  heyas: Map<string, { name?: string; isPlayerOwned?: boolean }>;
+  heyas: Map<string, { name?: string }>;
   rikishi: Map<string, unknown>;
   rng?: SeededRNG;
   seed?: string;

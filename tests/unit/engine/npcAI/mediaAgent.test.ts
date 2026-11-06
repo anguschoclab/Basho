@@ -39,7 +39,7 @@ function makeWorld(): WorldState {
     heyas: new Map([
       ["heya-a", heyaA],
       ["heya-b", heyaB],
-      ["player-heya", MockFactory.createHeya("player-heya", { isPlayerOwned: true })],
+      ["player-heya", MockFactory.createHeya("player-heya")],
     ]),
     oyakata: new Map([
       ["oya-a", oyaA],
