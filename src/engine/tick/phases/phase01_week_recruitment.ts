@@ -85,7 +85,13 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   if (gap > 0) {
     const vacancies = allocateVacancies(world, gap);
     if (Object.keys(vacancies).length > 0) {
-      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, vacancies));
+      // System backfill: these vacancies are the population backstop, not an
+      // organic recruiting decision — bypass per-heya bid policies so a
+      // "don't recruit" stance can't starve the controller (the persistent-
+      // deficit stall). Organic paths (monthly NPC tick) still honor them.
+      builder.merge(
+        talentpool.fillVacanciesForNPCWithBidding(world, vacancies, { systemBackfill: true })
+      );
     }
   }
 

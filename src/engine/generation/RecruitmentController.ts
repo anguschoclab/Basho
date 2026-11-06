@@ -51,6 +51,9 @@ export function allocateVacancies(world: WorldState, gap: number): Record<string
   for (const heya of world.heyas.values()) {
     if (heya.id === world.playerHeyaId) continue;
     if (heya.welfareState?.complianceState === "sanctioned") continue;
+    // Same freeze check evaluateVacancies applies — a frozen heya can't sign,
+    // so allocating to it wastes the share other heyas could have used.
+    if ((heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0) > 0) continue;
     const currentCount = (heya.rikishiIds ?? []).length;
     const headroom = Math.max(0, TARGET_ROSTER_SIZE - currentCount);
     if (headroom > 0) {

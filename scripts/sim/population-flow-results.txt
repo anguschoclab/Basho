@@ -1,0 +1,9 @@
+# population-flow baseline-25yr-a start=2026-11-06T05:39:46.691Z
+worldgen active=439 target=1320
+y2026b0: act=1320 ret=0 deb=881 van=0 | gap=0 alloc=0 headroom=11 sanc=0 rost=1309 | pool av=215 tlk=0 sgn=0 oth=0 hid=562
+y2026b1: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=0 rost=1309 | pool av=552 tlk=0 sgn=0 oth=0 hid=248
+y2026b2: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=1 rost=1309 | pool av=768 tlk=0 sgn=0 oth=0 hid=32
+y2026b3: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=3 rost=1309 | pool av=800 tlk=0 sgn=0 oth=0 hid=0
+y2026b4: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=4 rost=1309 | pool av=800 tlk=0 sgn=0 oth=0 hid=0
+y2026b5: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=6 rost=1309 | pool av=800 tlk=0 sgn=0 oth=0 hid=0
+y2027b6: act=1320 ret=3 deb=3 van=0 | gap=0 alloc=0 headroom=41 sanc=10 rost=1309 | pool av=941 tlk=0 sgn=0 oth=0 hid=6

@@ -142,10 +142,18 @@ export function fillVacanciesForNPC(
 
 /**
  * Automates recruitment for NPC stables with competitive bidding.
+ *
+ * `opts.systemBackfill` (weekly gap-controller path): bypasses the organic
+ * `npcBidPolicies` gates (`shouldBid`/`maxBid`). Those policies express a
+ * stable's own recruiting appetite; the population backstop is a system-level
+ * allocation the stable cannot opt out of. Without the bypass, every heya
+ * past its organic roster target writes `shouldBid: false` and the controller
+ * starves — this is the persistent-deficit stall observed in long sims.
  */
 export function fillVacanciesForNPCWithBidding(
   world: WorldState,
-  targetHeyas: Record<string, number>
+  targetHeyas: Record<string, number>,
+  opts?: { systemBackfill?: boolean }
 ): StateImpact {
   const builder = createImpactBuilder("fillVacanciesForNPCWithBidding");
   const tp = world.talentPool;
@@ -189,7 +197,7 @@ export function fillVacanciesForNPCWithBidding(
     if (!oyakata) continue;
 
     const bidPolicy = world.npcBidPolicies?.[heyaId as Id];
-    if (bidPolicy && !bidPolicy.shouldBid) continue;
+    if (!opts?.systemBackfill && bidPolicy && !bidPolicy.shouldBid) continue;
     const rivalHeyaId = rivalHeyaMap.get(heyaId as Id);
     const balanceMult = balanceMap.get(heyaId as Id) ?? 1;
     const slotOccupied = foreignOccupied.get(heyaId) ?? false;
@@ -204,7 +212,7 @@ export function fillVacanciesForNPCWithBidding(
         heya,
         oyakata,
         candidate,
-        { rivalHeyaId, balanceMult, slotAggression },
+        { rivalHeyaId, balanceMult, slotAggression, systemBackfill: opts?.systemBackfill },
         bidPolicy,
         recruitmentStrat
       );
@@ -238,7 +246,12 @@ function computeNpcBid(
   heya: NonNullable<ReturnType<typeof getHeya>>,
   oyakata: Oyakata,
   candidate: TalentCandidate,
-  ctx: { rivalHeyaId: Id | undefined; balanceMult: number; slotAggression: number },
+  ctx: {
+    rivalHeyaId: Id | undefined;
+    balanceMult: number;
+    slotAggression: number;
+    systemBackfill?: boolean;
+  },
   bidPolicy: NonNullable<WorldState["npcBidPolicies"]>[Id] | undefined,
   recruitmentStrat: ReturnType<typeof getRecruitmentStrategy>
 ): number {
@@ -268,7 +281,7 @@ function computeNpcBid(
   } else if (candidate.dualCitizen) {
     bidAmount = Math.round(bidAmount * (1 + DUAL_CITIZEN_BID_PREFERENCE));
   }
-  if (bidPolicy && bidPolicy.maxBid > 0) {
+  if (bidPolicy && bidPolicy.maxBid > 0 && !ctx.systemBackfill) {
     bidAmount = Math.min(bidAmount, bidPolicy.maxBid);
   }
   return bidAmount;
