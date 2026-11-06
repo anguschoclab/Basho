@@ -11,6 +11,7 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import { PressConference } from "@/components/media/PressConference";
 import { HoFInductionCeremony } from "@/components/ceremony/HoFInductionCeremony";
 import { IntaiCeremony } from "@/components/ceremony/IntaiCeremony";
+import { YokozunaDeliberation } from "@/components/ceremony/YokozunaDeliberation";
 import { selectTopKihakuPerformers } from "@/presenters/projections/recapKihakuProjections";
 import { selectKachiNokoriLeaders } from "@/presenters/projections/recapKachiNokoriProjections";
 import { selectExhibitionResults } from "@/presenters/projections/recapExhibitionProjections";
@@ -184,6 +185,8 @@ export function RecapModals({
   onPressConferenceClose,
   onHoFCeremonyClose,
   onIntaiAdvance,
+  deliberation,
+  onDeliberationClose,
 }: {
   world: WorldState;
   showPressConference: boolean;
@@ -197,6 +200,14 @@ export function RecapModals({
   }) => void;
   onHoFCeremonyClose: () => void;
   onIntaiAdvance: () => void;
+  deliberation: {
+    rikishi: UIRikishi;
+    heyaName: string;
+    isPlayerRikishi: boolean;
+    verdict: "promoted" | "denied" | "deferred";
+    reasoning: string[];
+  } | null;
+  onDeliberationClose: () => void;
 }) {
   return (
     <>
@@ -224,6 +235,18 @@ export function RecapModals({
           }
           open={!!showHoFCeremony}
           onClose={onHoFCeremonyClose}
+        />
+      )}
+
+      {deliberation && (
+        <YokozunaDeliberation
+          rikishi={deliberation.rikishi}
+          heyaName={deliberation.heyaName}
+          isPlayerRikishi={deliberation.isPlayerRikishi}
+          open={true}
+          onClose={onDeliberationClose}
+          verdict={deliberation.verdict}
+          reasoning={deliberation.reasoning}
         />
       )}
 

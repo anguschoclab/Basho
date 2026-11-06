@@ -12,7 +12,7 @@ import type { BashoResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import { buildBanzukeRevealEntries } from "@/presenters/projections/recapBanzukeRevealProjections";
-import { getRikishi, getRikishiAnywhere } from "@/presenters/worldAccess";
+import { getRikishi, getRikishiAnywhere, getHeya } from "@/presenters/worldAccess";
 import { projectRikishi } from "@/presenters/uiModels";
 import {
   getBashoWrapEvents,
@@ -79,6 +79,44 @@ export function useRecapDerived(
   const prestigeChanges = world ? getPrestigeChanges(world) : [];
   const narrativeGroupedEvents = toNarrativeGroupedEvents(groupedEvents);
 
+  // Yokozuna deliberation ceremony (T0.3 burn-down): surface the council
+  // scene when this basho's wrap events contain a PROMOTION_DELIBERATION.
+  // Verdict is read back from the rikishi's CURRENT rank — promoted iff
+  // they actually made yokozuna; otherwise deferred. The engine's
+  // deliberation flow never produces a hard "denied" — controversial
+  // cases defer instead.
+  const deliberation = useMemo(() => {
+    if (!world) return null;
+    const event = [...bashoEvents]
+      .reverse()
+      .find((e) => (e.type as string) === "PROMOTION_DELIBERATION");
+    const rikishiId = (event?.data as { rikishiId?: string } | undefined)?.rikishiId;
+    if (!event || !rikishiId) return null;
+    const r = getRikishiAnywhere(world, rikishiId);
+    if (!r || !("stats" in r)) return null;
+    const data = event.data as { status?: string; score?: number; threshold?: number };
+    const heya = r.heyaId ? getHeya(world, r.heyaId) : undefined;
+    const verdict =
+      r.rank === "yokozuna" ? ("promoted" as const) : ("deferred" as const);
+    const reasoning = [
+      data.status === "controversial"
+        ? "Public heat fell short of the council's threshold — deliberation deferred."
+        : "Public support met the council's threshold.",
+      `Media heat: ${Math.round(data.score ?? 0)} (threshold ${data.threshold ?? "—"}).`,
+      verdict === "promoted"
+        ? "The candidate's back-to-back tournament results carried the vote."
+        : "The council will re-convene after the next tournament.",
+    ];
+    return {
+      id: `${rikishiId}-${lastBasho?.bashoNumber ?? "x"}`,
+      rikishi: projectRikishi(r, world),
+      heyaName: heya?.name ?? "Independent",
+      isPlayerRikishi: r.heyaId === world.playerHeyaId,
+      verdict,
+      reasoning,
+    };
+  }, [world, bashoEvents, lastBasho]);
+
   return {
     intaiQueue,
     currentIntaiIndex,
@@ -91,5 +129,6 @@ export function useRecapDerived(
     getRikishiForBout,
     prestigeChanges,
     narrativeGroupedEvents,
+    deliberation,
   };
 }

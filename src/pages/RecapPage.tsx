@@ -42,6 +42,7 @@ export default function RecapPage() {
   const [showPressConference, setShowPressConference] = useState(false);
   const [showHoFCeremony, setShowHoFCeremony] = useState<HoFInductee | null>(null);
   const [showBanzukeReveal, setShowBanzukeReveal] = useState(false);
+  const [dismissedDeliberation, setDismissedDeliberation] = useState<string | null>(null);
 
   const handleContinue = () => {
     setPhase("interim");
@@ -73,6 +74,7 @@ export default function RecapPage() {
     getRikishiForBout,
     prestigeChanges,
     narrativeGroupedEvents,
+    deliberation,
   } = useRecapDerived(world, lastBasho);
 
   if (!hasWorld || !world) return null;
@@ -160,6 +162,8 @@ export default function RecapPage() {
           onPressConferenceClose={handlePressConferenceClose}
           onHoFCeremonyClose={() => setShowHoFCeremony(null)}
           onIntaiAdvance={advanceIntai}
+          deliberation={deliberation && deliberation.id !== dismissedDeliberation ? deliberation : null}
+          onDeliberationClose={() => setDismissedDeliberation(deliberation?.id ?? null)}
         />
       </div>
 

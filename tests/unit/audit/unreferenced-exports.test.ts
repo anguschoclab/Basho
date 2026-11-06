@@ -176,8 +176,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Internal drama trigger invoked by processDramaTick; exported for unit testing",
   "src/engine/bard/dramaGenerator.ts:triggerCrisis":
     "Internal crisis factory invoked by checkTriggeredDrama; exported for unit testing",
-  "src/engine/bard/BardEngine.ts:interpolate":
-    "Internal method invoked by BardEngine template rendering; exported for unit testing",
   "src/engine/bout/yaocho.ts:evaluateYaochoIndicators":
     "Internal helper invoked by checkYaocho; exported for unit testing",
   "src/engine/bout/yaocho.ts:calculateYaochoChance":
@@ -246,6 +244,24 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/rikishi/signatureKimarite.ts:signatureKimarite": "Unticked service consumed via presenters/engineAccess + RikishiCarePanel; not tick-phase-bound",
   "src/engine/recruitment/YouthAcademyService.ts:getQualityBonus":
     "Public helper exercised directly by youthAcademy.test.ts",
+
+  // ── v17 wiring-BFS re-run (T0.3): newly surfaced detections ──
+  "src/engine/generation/RecruitmentController.ts:computePopulationTarget":
+    "Internal helper invoked by computeReplacementGap (live NPC-recruitment equilibrium path); exported for unit testing",
+  "src/engine/lifecycle/retireeOyakataConversion.ts:evaluateFoundingEligibility":
+    "Internal helper invoked by maybeFoundStable (live retiree→oyakata founding path); exported for unit testing",
+  "src/engine/narrative/promotionBands.ts:KadobanStatus":
+    "Parameter type of the live promotionBands.kadobanDramaBand API; pinned by promotionBands tests",
+  "src/engine/narrative/promotionBands.ts:resolveOzekiRunBand":
+    "Internal resolver invoked by promotionBands.ozekiRunBand; exported for unit testing",
+  "src/engine/narrative/promotionBands.ts:resolveYokozunaSupportBand":
+    "Internal resolver invoked by resolveYokozunaRunBand and promotionBands; exported for unit testing",
+  "src/engine/narrative/promotionBands.ts:resolveYokozunaRunBand":
+    "Internal resolver invoked by promotionBands.yokozunaRunBand; exported for unit testing",
+  "src/engine/narrative/promotionBands.ts:resolveKadobanDramaBand":
+    "Internal resolver invoked by promotionBands.kadobanDramaBand; exported for unit testing",
+  "src/engine/utils/citizenshipUtils.ts:isAtForeignLimit":
+    "Canonical foreign-limit predicate pinned by the foreign-limit-consistency audit test; runtime callers use getForeignCountInHeya",
 
   // ── Classified in Oct 2026 baseline refresh ──
   "src/engine/bout/hiwaza.ts:classifyHiwaza":
@@ -361,6 +377,8 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Consumed by components (HoshitoriChart, HoFInductionCeremony, KenshoManagementWidget) — components are outside the unticked scan scope",
   "src/engine/narrative/narrativeDescriptions.ts:narrativeDescriptions":
     "Consumed by src/presenters/uiDigest.ts — presenters are outside the unticked scan scope",
+  "src/engine/narrative/promotionBands.ts:promotionBands":
+    "Consumed by src/presenters/projections/promotionProjections.ts — presenters are outside the unticked scan scope",
 };
 
 /**
@@ -454,8 +472,6 @@ const GENUINE_ORPHANS: Record<string, string> = {
     "ORPH-0393: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/narrative/descriptorBands.ts:toDurationBand":
     "ORPH-0396: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
-  "src/engine/npc/handlers.ts:handleNPCCrisis":
-    "ORPH-0416: module-private helper of resolveNPCCrisis — used intra-file only; intentionally not exported",
   "src/engine/npc/npcAIWorkers.ts:GlobalWorkerResult":
     "ORPH-0419: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/npc/perception.ts:HealthBand":
