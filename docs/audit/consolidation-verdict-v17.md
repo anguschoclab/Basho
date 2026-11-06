@@ -1,5 +1,9 @@
 # Consolidation Verdict — v17
 
+> **STALENESS NOTICE:** grep/regex-based findings in this report are a
+> point-in-time methodology snapshot of the tree at the commits listed below;
+> they are not re-evaluated as the codebase evolves.
+
 **Date:** 2026 (post-merge)
 **Branch:** `consolidation/v17` → merged into `main` via `8836a380` (`--no-ff`)
 **Scope:** Exhaustive deep-dive review + consolidation. Zero backwards-compatibility constraints.
