@@ -188,13 +188,25 @@ export const MERGER_THRESHOLD = -15_000_000;
 /** Seed funds for a newly founded stable (¥). */
 export const FOUNDING_SEED_FUNDS = 30_000_000;
 
-/** Maximum number of stables allowed in the world. */
+/** Maximum number of stables allowed in the world — hard backstop only.
+ *  The binding constraint on foundings is HEYA_SOFT_TARGET below: the real
+ *  JSA's ~105-share ceiling far exceeds the practical ~42–46 equilibrium
+ *  because branching requirements, not the cap, restrict new stables. */
 export const HEYA_COUNT_CAP = 50;
+
+/** Soft league-capacity target — founding pressure ramps to zero as the
+ *  stable count approaches it (real-world equilibrium hovers ~42–46). */
+export const HEYA_SOFT_TARGET = 46;
+
+/** Ramp window under HEYA_SOFT_TARGET: full FOUNDING_CHANCE below
+ *  (SOFT_TARGET − RAMP), decaying linearly to 0 at the target. */
+export const HEYA_FOUNDING_RAMP = 8;
 
 /** Minimum number of stables to preserve — mergers are blocked below this count. */
 export const HEYA_FLOOR = 10;
 
-/** Probability that an accomplished retiree with available myoseki founds a new stable. */
+/** Base probability that an accomplished, approved, solvent retiree founds a
+ *  new stable — scaled down by league fullness via HEYA_SOFT_TARGET/RAMP. */
 export const FOUNDING_CHANCE = 0.35;
 
 /** Basho of consecutive make-koshi / underperformance before non-financial merger is considered. */

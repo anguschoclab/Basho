@@ -1,9 +1,19 @@
 import { describe, it, expect } from "vitest";
-import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
+import {
+  processRetireeOyakataConversion,
+  evaluateFoundingEligibility,
+} from "@/engine/lifecycle/retireeOyakataConversion";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
-import { HEYA_COUNT_CAP } from "@/constants/engine/economic";
+import {
+  FOUNDING_CHANCE,
+  FOUNDING_SEED_FUNDS,
+  HEYA_COUNT_CAP,
+  HEYA_SOFT_TARGET,
+  HEYA_FOUNDING_RAMP,
+  MERGER_THRESHOLD,
+} from "@/constants/engine/economic";
 
 describe("processRetireeOyakataConversion — guard conditions", () => {
   it("does nothing for retiree under age 28", () => {
@@ -311,5 +321,117 @@ describe("processRetireeOyakataConversion — stable founding", () => {
 
     // No new heya founded since we're at cap
     expect(next.heyas.size).toBe(beforeHeyaCount);
+  });
+});
+
+describe("evaluateFoundingEligibility — JSA branching gates", () => {
+  const accomplished = (overrides: Record<string, unknown> = {}) =>
+    mockRikishi("candidate", {
+      heyaId: "parent",
+      rank: "ozeki",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 300,
+      ...overrides,
+    });
+
+  function worldWithParent(
+    parentOverrides: Record<string, unknown>,
+    extraHeyaCount = 0
+  ) {
+    const heyas = new Map([["parent", makeMockHeya("parent", parentOverrides)]]);
+    for (let i = 0; i < extraHeyaCount; i++) {
+      heyas.set(`other-${i}`, makeMockHeya(`other-${i}`));
+    }
+    return makeMockWorld({ year: 2025, heyas });
+  }
+
+  it("rejects when the parent stable is missing", () => {
+    const world = makeMockWorld({ year: 2025, heyas: new Map() });
+    expect(evaluateFoundingEligibility(world, accomplished()).canFound).toBe(false);
+  });
+
+  it("rejects when the parent stable is sanctioned", () => {
+    const world = worldWithParent({
+      funds: 100_000_000,
+      welfareState: {
+        welfareRisk: 80,
+        activeDiet: "maintenance",
+        complianceState: "sanctioned",
+        weeksInState: 5,
+        lastReviewedWeek: 0,
+      },
+    });
+    const retiree = accomplished({
+      economics: { retirementFund: 200_000_000 } as any,
+    });
+    expect(evaluateFoundingEligibility(world, retiree).canFound).toBe(false);
+  });
+
+  it("rejects when the parent stable is insolvent (below merger threshold)", () => {
+    const world = worldWithParent({ funds: MERGER_THRESHOLD - 1 });
+    const retiree = accomplished({
+      economics: { retirementFund: 200_000_000 } as any,
+    });
+    expect(evaluateFoundingEligibility(world, retiree).canFound).toBe(false);
+  });
+
+  it("rejects when neither retiree fund nor parent sponsorship covers the seed", () => {
+    const world = worldWithParent({ funds: 10_000_000 });
+    const retiree = accomplished({
+      economics: { retirementFund: 1_000_000 } as any,
+    });
+    expect(evaluateFoundingEligibility(world, retiree).canFound).toBe(false);
+  });
+
+  it("allows a personally solvent retiree (self-funded founding)", () => {
+    const world = worldWithParent({ funds: 10_000_000 });
+    const retiree = accomplished({
+      economics: { retirementFund: FOUNDING_SEED_FUNDS } as any,
+    });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.parentSponsors).toBe(false);
+    expect(e.parentHeyaId).toBe("parent");
+  });
+
+  it("allows a parent-sponsored founding and flags the funding transfer", () => {
+    const world = worldWithParent({ funds: FOUNDING_SEED_FUNDS * 2 });
+    const retiree = accomplished({
+      economics: { retirementFund: 0 } as any,
+    });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.parentSponsors).toBe(true);
+  });
+
+  it("rejects at HEYA_SOFT_TARGET regardless of solvency", () => {
+    const world = worldWithParent(
+      { funds: 100_000_000 },
+      HEYA_SOFT_TARGET - 1 // parent + fillers = SOFT_TARGET
+    );
+    const retiree = accomplished({
+      economics: { retirementFund: 200_000_000 } as any,
+    });
+    expect(evaluateFoundingEligibility(world, retiree).canFound).toBe(false);
+  });
+
+  it("scales effectiveChance down as the league approaches the soft target", () => {
+    // 1 heya → headroom = SOFT_TARGET − 1 ≥ RAMP → full FOUNDING_CHANCE
+    const sparse = worldWithParent({ funds: 100_000_000 });
+    const retiree = accomplished({
+      economics: { retirementFund: 200_000_000 } as any,
+    });
+    expect(evaluateFoundingEligibility(sparse, retiree).effectiveChance).toBe(
+      FOUNDING_CHANCE
+    );
+
+    // headroom = 4 (< RAMP=8) → half chance
+    const crowded = worldWithParent({ funds: 100_000_000 }, HEYA_SOFT_TARGET - 5);
+    const e = evaluateFoundingEligibility(crowded, retiree);
+    expect(e.effectiveChance).toBeCloseTo(
+      FOUNDING_CHANCE * (4 / HEYA_FOUNDING_RAMP),
+      6
+    );
   });
 });

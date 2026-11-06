@@ -90,6 +90,13 @@ export interface Heya {
   historicalYusho: number;
 
   /**
+   * Parent stable this heya branched from (dokuritsu founding only).
+   * Set at founding; worldgen stables have none. Drives stable-history
+   * display and branch-lineage tracing.
+   */
+  branchedFromHeyaId?: string;
+
+  /**
    * Signature shikona prefix for the stable — most wrestlers inherit this
    * (stronger at junior ranks). E.g. "Chiyo" for Kokonoe, "Koto" for Sadogatake.
    */

@@ -129,7 +129,8 @@ export function foundStable(
   world: WorldState,
   oyakataId: string,
   name: string,
-  rng: SeededRNG
+  rng: SeededRNG,
+  opts?: { parentHeyaId?: string }
 ): { heya: Heya } | null {
   if (world.heyas.size >= HEYA_COUNT_CAP) return null;
   const id = rng.uuid("HY");
@@ -139,6 +140,12 @@ export function foundStable(
   heya.statureBand = "new";
   heya.prestigeBand = "modest";
   heya.rikishiIds = [];
+  // JSA branch model: a new stable is a dokuritsu branch of the founder's
+  // parent stable — it inherits the parent's ichimon (mutual-aid + voting
+  // bloc membership follows lineage) and records the branch link.
+  const parent = opts?.parentHeyaId ? world.heyas.get(opts.parentHeyaId) : undefined;
+  if (parent?.ichimon) heya.ichimon = parent.ichimon;
+  if (opts?.parentHeyaId) heya.branchedFromHeyaId = opts.parentHeyaId;
   return { heya };
 }
 

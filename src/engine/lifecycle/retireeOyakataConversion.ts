@@ -18,7 +18,13 @@ import { foundStable } from "@/engine/generation/WorldFactory";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import { recordOyakataHandover } from "@/engine/legacy/lineage";
 import { rngForWorld } from "@/engine/core/rng";
-import { FOUNDING_CHANCE } from "@/constants/engine/economic";
+import {
+  FOUNDING_CHANCE,
+  FOUNDING_SEED_FUNDS,
+  HEYA_SOFT_TARGET,
+  HEYA_FOUNDING_RAMP,
+  MERGER_THRESHOLD,
+} from "@/constants/engine/economic";
 import { getHeya } from "@/engine/core/queries";
 
 /**
@@ -175,6 +181,55 @@ function queueMeritStockTransfer(
   });
 }
 
+/**
+ * Pure eligibility predicate for stable founding — models the real JSA
+ * branching constraints (dokuritsu) with no RNG consumption:
+ * - Parent approval: the retiree's stable must exist and be able to release
+ *   a branch — a sanctioned or insolvent heya cannot approve a founding.
+ * - Financial backing: the retiree's retirement fund must cover the seed,
+ *   or the parent stable must be wealthy enough to sponsor the branch.
+ * - League equilibrium: founding pressure decays to zero as the stable
+ *   count approaches HEYA_SOFT_TARGET; HEYA_COUNT_CAP is only a backstop.
+ *
+ * Exported for tests — the stochastic gate is a single `rng.bool` call in
+ * the caller, so the whole constraint matrix stays deterministic.
+ */
+export function evaluateFoundingEligibility(
+  world: WorldState,
+  retiree: Rikishi
+): {
+  canFound: boolean;
+  effectiveChance: number;
+  parentSponsors: boolean;
+  parentHeyaId?: string;
+} {
+  const none = { canFound: false, effectiveChance: 0, parentSponsors: false };
+  const parentHeya = getHeya(world, retiree.heyaId);
+  if (!parentHeya) return none;
+
+  const parentViable =
+    parentHeya.welfareState?.complianceState !== "sanctioned" &&
+    (parentHeya.funds ?? 0) > MERGER_THRESHOLD;
+  if (!parentViable) return none;
+
+  const personallySolvent =
+    (retiree.economics?.retirementFund ?? 0) >= FOUNDING_SEED_FUNDS;
+  const parentCanSponsor = (parentHeya.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
+  if (!personallySolvent && !parentCanSponsor) return none;
+
+  const headroomToTarget = HEYA_SOFT_TARGET - world.heyas.size;
+  if (headroomToTarget <= 0) return none;
+
+  const effectiveChance =
+    FOUNDING_CHANCE * Math.min(1, headroomToTarget / HEYA_FOUNDING_RAMP);
+  return {
+    canFound: effectiveChance > 0,
+    effectiveChance,
+    parentSponsors: !personallySolvent && parentCanSponsor,
+    parentHeyaId: parentHeya.id,
+  };
+}
+
 /** RNG-gated chance to found a new heya. Returns true when founding succeeded. */
 function maybeFoundStable(
   world: WorldState,
@@ -183,14 +238,28 @@ function maybeFoundStable(
   rng: Rng,
   builder: ImpactBuilder
 ): boolean {
-  if (!rng.bool(FOUNDING_CHANCE)) return false;
+  const eligibility = evaluateFoundingEligibility(world, retiree);
+  if (!eligibility.canFound || !eligibility.parentHeyaId) return false;
+  if (!rng.bool(eligibility.effectiveChance)) return false;
+
   const result = foundStable(
     world,
     newOyakataId,
     `${retiree.shikona ?? retiree.name ?? retiree.id}-beya`,
-    rng
+    rng,
+    { parentHeyaId: eligibility.parentHeyaId }
   );
   if (!result) return false;
+
+  // Parent-sponsored founding: the seed is real wealth, transferred from the
+  // sponsoring stable — not conjured money.
+  if (eligibility.parentSponsors) {
+    const parent = getHeya(world, eligibility.parentHeyaId);
+    builder.updateHeya(eligibility.parentHeyaId, {
+      funds: (parent?.funds ?? 0) - FOUNDING_SEED_FUNDS,
+    });
+  }
+
   builder.addHeya(result.heya);
   builder.logEvent(
     "LIFECYCLE_EVENT",
@@ -201,6 +270,8 @@ function maybeFoundStable(
       shikona: retiree.shikona ?? retiree.name ?? retiree.id,
       status: "stable_founded",
       heyaName: result.heya.name,
+      ichimon: result.heya.ichimon,
+      branchedFromHeyaId: eligibility.parentHeyaId,
     },
     { heyaId: result.heya.id, rikishiId: retiree.id, importance: "headline" }
   );

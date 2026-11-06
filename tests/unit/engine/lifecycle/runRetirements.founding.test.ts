@@ -44,6 +44,9 @@ describe("runRetirements — stable founding", () => {
       birthYear: 1980,
       careerWins: 300,
       shikona: "TestOzeki",
+      // Personally solvent — funds the founding out of the retirement fund,
+      // so only the RNG gate decides (JSA branching model).
+      economics: { retirementFund: 200_000_000 } as any,
     });
     world.rikishi.set("r-ret", retiree);
 
@@ -92,6 +95,7 @@ describe("runRetirements — stable founding", () => {
       birthYear: 1979,
       careerWins: 500,
       shikona: "TestYokozuna",
+      economics: { retirementFund: 200_000_000 } as any,
     });
     world.rikishi.set("r-ret2", retiree);
 
@@ -129,6 +133,7 @@ describe("runRetirements — stable founding", () => {
       birthYear: 1980,
       careerWins: 250,
       shikona: "TestSekiwake",
+      economics: { retirementFund: 200_000_000 } as any,
     });
     world.rikishi.set("r-ret3", retiree);
 

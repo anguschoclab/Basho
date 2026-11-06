@@ -98,7 +98,7 @@ for (let b = 0; b < YEARS * 6; b++) {
   appendFileSync(
     OUT,
     `y${world.year}b${b}: act=${afterAct.size} ret=${retired} deb=${debuted} van=${vanished} | ` +
-      `heya=${hs.npcCount} cap=${npcCap} gap=${gap} alloc=${alloc} headroom=${hs.headroom} sanc=${hs.sanctioned} rost=${hs.rostered} | ` +
+      `heya=${hs.npcCount} cls=${world.closedHeyas?.size ?? 0} cap=${npcCap} gap=${gap} alloc=${alloc} headroom=${hs.headroom} sanc=${hs.sanctioned} rost=${hs.rostered} | ` +
       `pool av=${pool.available} tlk=${pool.in_talks} sgn=${pool.signed} oth=${pool.other} hid=${pool.hidden}\n`
   );
 }

@@ -42,6 +42,41 @@ describe("foundStable", () => {
     expect(a!.heya.name).toBe(b!.heya.name);
   });
 
+  it("inherits the parent stable's ichimon and records the branch link", () => {
+    const parent = makeMockHeya("heya-parent", { ichimon: "Takasago" as const });
+    const world = makeMockWorld({
+      heyas: new Map([["heya-parent", parent]]),
+      oyakata: new Map([["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-parent" } as any]]),
+    });
+
+    const rng = rngForWorld(world, "found", "t");
+    const result = foundStable(world, "oy-1", "Branchbeya", rng, {
+      parentHeyaId: "heya-parent",
+    });
+
+    expect(result).not.toBeNull();
+    expect(result!.heya.ichimon).toBe("Takasago");
+    expect(result!.heya.branchedFromHeyaId).toBe("heya-parent");
+  });
+
+  it("keeps a random ichimon when the parent has none", () => {
+    const parent = makeMockHeya("heya-parent");
+    delete (parent as { ichimon?: string }).ichimon;
+    const world = makeMockWorld({
+      heyas: new Map([["heya-parent", parent]]),
+      oyakata: new Map([["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-parent" } as any]]),
+    });
+
+    const rng = rngForWorld(world, "found", "t");
+    const result = foundStable(world, "oy-1", "Branchbeya", rng, {
+      parentHeyaId: "heya-parent",
+    });
+
+    expect(result).not.toBeNull();
+    expect(result!.heya.ichimon).toBeDefined();
+    expect(result!.heya.branchedFromHeyaId).toBe("heya-parent");
+  });
+
   it("returns null when world.heyas.size >= HEYA_COUNT_CAP", () => {
     const heyas = new Map();
     for (let i = 0; i < HEYA_COUNT_CAP; i++) {
