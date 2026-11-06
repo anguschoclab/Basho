@@ -17,11 +17,11 @@ export function calculateInjurySummary(rng: SeededRNG, r: Rikishi): string {
   }
 
   const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
-  const severityValue = typeof r.injuryStatus.severity === "number" ? r.injuryStatus.severity : 50;
-
-  let sevKey = "moderate";
-  if (severityValue < 30) sevKey = "minor";
-  if (severityValue >= 70) sevKey = "severe";
+  // severity is the string union "minor"|"moderate"|"serious"|"none" — the old
+  // numeric branch was dead (typeof === "number" is never true) and rendered
+  // every injury "Moderate". "serious" maps to the "severe" label.
+  const severity = r.injuryStatus.severity;
+  const sevKey = severity === "serious" ? "severe" : severity === "minor" ? "minor" : "moderate";
 
   const sevLabel = BardEngine.resolve(rng, `ui.labels.injury.severity.${sevKey}`).text;
   const weeks = r.injuryWeeksRemaining?.toString() ?? "?";
