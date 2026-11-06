@@ -7,3 +7,10 @@ y2026b3: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=3 rost=1309
 y2026b4: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=4 rost=1309 | pool av=800 tlk=0 sgn=0 oth=0 hid=0
 y2026b5: act=1320 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=11 sanc=6 rost=1309 | pool av=800 tlk=0 sgn=0 oth=0 hid=0
 y2027b6: act=1320 ret=3 deb=3 van=0 | gap=0 alloc=0 headroom=41 sanc=10 rost=1309 | pool av=941 tlk=0 sgn=0 oth=0 hid=6
+y2027b7: act=1333 ret=0 deb=13 van=0 | gap=0 alloc=0 headroom=28 sanc=7 rost=1322 | pool av=934 tlk=0 sgn=0 oth=0 hid=0
+y2027b8: act=1333 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=28 sanc=8 rost=1322 | pool av=934 tlk=0 sgn=0 oth=0 hid=0
+y2027b9: act=1333 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=28 sanc=8 rost=1322 | pool av=934 tlk=0 sgn=0 oth=0 hid=0
+y2027b10: act=1333 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=28 sanc=10 rost=1322 | pool av=934 tlk=0 sgn=0 oth=0 hid=0
+y2027b11: act=1333 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=28 sanc=11 rost=1322 | pool av=934 tlk=0 sgn=0 oth=0 hid=0
+y2027b12: act=1333 ret=0 deb=0 van=0 | gap=0 alloc=0 headroom=28 sanc=10 rost=1322 | pool av=934 tlk=0 sgn=0 oth=0 hid=0
+y2028b13: act=1331 ret=2 deb=0 van=0 | gap=0 alloc=0 headroom=30 sanc=11 rost=1320 | pool av=950 tlk=0 sgn=0 oth=0 hid=0
