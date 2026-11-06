@@ -13,14 +13,30 @@ import { Badge } from "@/components/ui/badge";
 import { Sword, RotateCcw, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { cn } from "@/lib/utils";
+import type {
+  PublicInjuryAvailability,
+  PublicAvailabilityStatus,
+} from "@/presenters/rikishi/transformers/publicInjury";
 
-/** One side of the versus header — avatar, shikona, rank badge. */
+/** Badge tint per public availability status — always-public information. */
+const AVAILABILITY_BADGE_CLASS: Record<PublicAvailabilityStatus, string> = {
+  healthy: "bg-success/10 text-success border-success/30",
+  injured: "bg-destructive/10 text-destructive border-destructive/30",
+  kyujo: "bg-destructive/10 text-destructive border-destructive/30",
+  returning: "bg-secondary/10 text-secondary border-secondary/30",
+  retired: "bg-muted/40 text-muted-foreground border-muted",
+  no_record: "bg-muted/20 text-muted-foreground border-muted",
+};
+
+/** One side of the versus header — avatar, shikona, heya, rank + status badges. */
 export function CompareRikishiHeader({
   rikishi,
   highlight,
+  availability,
 }: {
   rikishi: UIRikishi;
   highlight: boolean;
+  availability?: PublicInjuryAvailability;
 }) {
   return (
     <div
@@ -33,12 +49,24 @@ export function CompareRikishiHeader({
       <h3 className={cn("font-display font-bold text-lg", highlight && "text-primary")}>
         {rikishi.shikona}
       </h3>
-      <Badge
-        variant="outline"
-        className={highlight ? "bg-primary/10 text-primary border-primary/30" : "bg-primary/5"}
-      >
-        {rikishi.rankLabel}
-      </Badge>
+      {rikishi.heyaName && (
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+          {rikishi.heyaName}
+        </p>
+      )}
+      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+        <Badge
+          variant="outline"
+          className={highlight ? "bg-primary/10 text-primary border-primary/30" : "bg-primary/5"}
+        >
+          {rikishi.rankLabel}
+        </Badge>
+        {availability && (
+          <Badge variant="outline" className={AVAILABILITY_BADGE_CLASS[availability.status]}>
+            {availability.statusLabel}
+          </Badge>
+        )}
+      </div>
     </div>
   );
 }
@@ -116,6 +144,98 @@ export function CompareStats({
             <CompareStatRow label="Height" valA={rawA.height} valB={rawB.height} />
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** One injury/availability row — valA, centered label, valB. "—" = no public record. */
+function CompareAvailabilityRow({
+  label,
+  valA,
+  valB,
+  subA,
+  subB,
+}: {
+  label: string;
+  valA: string;
+  valB: string;
+  subA?: string;
+  subB?: string;
+}) {
+  return (
+    <div className="flex items-start justify-between py-2 border-b border-primary/5 last:border-0">
+      <div className="w-28 text-right">
+        <div className="text-sm font-medium leading-tight">{valA}</div>
+        {subA && <div className="text-[10px] text-muted-foreground">{subA}</div>}
+      </div>
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold text-center flex-1 px-3 pt-1">
+        {label}
+      </span>
+      <div className="w-28 text-left">
+        <div className="text-sm font-medium leading-tight text-primary">{valB}</div>
+        {subB && <div className="text-[10px] text-muted-foreground">{subB}</div>}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Injury & Availability card — the always-public surface (constitution
+ * §42.3.6): presence, duration, public career record. Diagnosis wording is
+ * disclosure-tiered upstream in the projection; this section renders exactly
+ * what public information exists — "No public record" / "—" for prospects.
+ */
+export function CompareInjuryAvailability({
+  availabilityA,
+  availabilityB,
+}: {
+  availabilityA: PublicInjuryAvailability;
+  availabilityB: PublicInjuryAvailability;
+}) {
+  const emDash = "—";
+  return (
+    <Card className="bg-background shadow-xl overflow-hidden border-primary/10">
+      <CardContent className="p-6 space-y-1">
+        <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold text-center pb-2">
+          Injury &amp; Availability
+        </h4>
+        <CompareAvailabilityRow
+          label="Status"
+          valA={availabilityA.statusLabel}
+          valB={availabilityB.statusLabel}
+        />
+        {(availabilityA.episodeLabel || availabilityB.episodeLabel) && (
+          <CompareAvailabilityRow
+            label="Episode"
+            valA={availabilityA.episodeLabel ?? emDash}
+            valB={availabilityB.episodeLabel ?? emDash}
+          />
+        )}
+        <CompareAvailabilityRow
+          label="Weeks out"
+          valA={availabilityA.weeksRemaining !== undefined ? `${availabilityA.weeksRemaining}w` : emDash}
+          valB={availabilityB.weeksRemaining !== undefined ? `${availabilityB.weeksRemaining}w` : emDash}
+        />
+        <CompareAvailabilityRow
+          label="Record"
+          valA={availabilityA.missedDaysLabel ?? emDash}
+          valB={availabilityB.missedDaysLabel ?? emDash}
+          subA={availabilityA.recordedBashoLabel}
+          subB={availabilityB.recordedBashoLabel}
+        />
+        {(availabilityA.bashosMissedEntirely > 0 || availabilityB.bashosMissedEntirely > 0) && (
+          <CompareAvailabilityRow
+            label="Basho missed"
+            valA={String(availabilityA.bashosMissedEntirely)}
+            valB={String(availabilityB.bashosMissedEntirely)}
+          />
+        )}
+        <CompareAvailabilityRow
+          label="Durability"
+          valA={availabilityA.durabilityLabel}
+          valB={availabilityB.durabilityLabel}
+        />
       </CardContent>
     </Card>
   );

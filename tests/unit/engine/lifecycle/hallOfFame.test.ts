@@ -139,4 +139,33 @@ describe("HoF iron man - processYearEndInduction", () => {
     const inductees = processYearEndInduction(world);
     expect(inductees.some((i) => i.rikishiId === "r2" && i.category === "iron_man")).toBe(false);
   });
+
+  it("inducts a long-career veteran despite sparse retained history (window-poisoning regression)", () => {
+    // careerHistory is a 6-row window — a veteran with a 36-basho career can
+    // legitimately hold 1-2 rows (e.g. a synthetic full-kyūjō row). Eligibility
+    // must fall back to the career-bouts estimate, not the window length.
+    const world = makeMockWorld({ year: 2030 });
+    const veteran = mockRikishi("r3", {
+      shikona: "Weathered",
+      rank: "maegashira",
+      isRetired: true,
+      careerWins: 200,
+      careerLosses: 160, // 360 bouts / 10 = 36 estimated basho ≥ 30
+      careerHistory: [
+        {
+          bashoName: "kyushu" as const,
+          year: 2030,
+          wins: 0,
+          losses: 0,
+          absences: 15,
+          isYusho: false,
+          isJunYusho: false,
+        },
+      ] as any,
+    });
+    world.rikishi.set("r3", veteran);
+
+    const inductees = processYearEndInduction(world);
+    expect(inductees.some((i) => i.rikishiId === "r3" && i.category === "iron_man")).toBe(true);
+  });
 });

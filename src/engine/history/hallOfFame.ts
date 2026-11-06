@@ -136,10 +136,10 @@ function processIronMen(world: WorldState, hof: HallOfFameState, newInductees: H
   const candidates = [...world.rikishi.values(), ...world.historicalRikishi.values()];
   for (const r of candidates) {
     if (!("stats" in r)) continue;
-    const estimatedBasho =
-      r.careerHistory && r.careerHistory.length > 0
-        ? r.careerHistory.length
-        : Math.floor(((r.careerWins || 0) + (r.careerLosses || 0)) / 10);
+    const estimatedBasho = Math.max(
+      r.careerHistory?.length ?? 0,
+      Math.floor(((r.careerWins || 0) + (r.careerLosses || 0)) / 10)
+    );
 
     if (estimatedBasho < IRON_MAN_BASHO_MIN) continue;
     tryAddInductee(world, hof, newInductees, r.id, r, "iron_man", {

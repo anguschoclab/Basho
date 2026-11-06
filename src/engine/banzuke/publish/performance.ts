@@ -8,6 +8,8 @@ import { KihakuService } from "@/engine/governance/services/KihakuService";
 import { finiteOr } from "@/engine/utils/math";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
 import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
+import { getTotalBashodays } from "@/engine/calendar/scheduleHelpers";
+import { DIVISIONS } from "@/constants/engine/rankDisplay";
 import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
@@ -109,7 +111,6 @@ function evaluateOzekiYokozunaBid(
 
 interface YokozunaPressure {
   consecutiveMakeKoshi: number;
-  consecutiveKyujo: number;
   pressureScore: number;
   councilWarnings: number;
   statsUpdate: Partial<RikishiStats>;
@@ -124,6 +125,7 @@ interface YokozunaPressure {
 function evaluateYokozunaPressure(
   rikishi: Rikishi,
   stats: StandingStats,
+  divisionDays: number,
   builder: Builder
 ): YokozunaPressure {
   let pressureScore = rikishi.pressureScore ?? 0;
@@ -131,12 +133,10 @@ function evaluateYokozunaPressure(
   let statsUpdate: Partial<RikishiStats> = {};
 
   const isMakeKoshi = stats.wins < 8; // Official make-koshi
-  const isKyujo = stats.absences >= 15; // Full tournament miss
+  const isKyujo = stats.absences >= divisionDays; // Full tournament miss
   const subPar = stats.wins < 10; // Fails to meet "Yokozuna standard"
 
   const consecutiveMakeKoshi = isMakeKoshi || isKyujo ? (rikishi.consecutiveMakeKoshi ?? 0) + 1 : 0;
-
-  const consecutiveKyujo = isKyujo ? (rikishi.consecutiveKyujo ?? 0) + 1 : 0;
 
   // Council Recommendation / Warning Logic
   if (subPar || isKyujo) {
@@ -166,7 +166,7 @@ function evaluateYokozunaPressure(
     }
   }
 
-  return { consecutiveMakeKoshi, consecutiveKyujo, pressureScore, councilWarnings, statsUpdate };
+  return { consecutiveMakeKoshi, pressureScore, councilWarnings, statsUpdate };
 }
 
 /**
@@ -245,9 +245,11 @@ function recordBashoPerformance(
   const updatedHistory = [...(rikishi.careerHistory || []), historyEntry];
   // Keep last 6 basha only — promotion logic only needs recent history
 
-  // Track absentFinalDay: if rikishi has any absences and didn't complete all 15 bouts
+  // Track absentFinalDay: rikishi missed days and didn't complete the
+  // scheduled division program (withdrew before their last scheduled bout).
+  const divisionDays = getTotalBashodays(rikishi.division);
   const totalBouts = stats.wins + stats.losses;
-  const absentFinalDay = stats.absences > 0 && totalBouts < 15;
+  const absentFinalDay = stats.absences > 0 && totalBouts < divisionDays;
 
   // Calculate kihaku isen (fighting spirit) score using KihakuService
   const kihakuInput = KihakuService.extractFromBasho(id, lastBasho, stats.wins, absentFinalDay);
@@ -265,6 +267,7 @@ function recordBashoPerformance(
       ...tracked.statsUpdate,
     } as RikishiStats,
     careerHistory: updatedHistory.slice(-6),
+    careerAbsences: (rikishi.careerAbsences ?? 0) + stats.absences,
     absentFinalDay,
     kihakuIsenScore,
   });
@@ -342,12 +345,55 @@ export function buildPerformanceList(
   builder: Builder
 ): BashoPerformance[] {
   const performanceList: BashoPerformance[] = [];
-  for (const [id, stats_any] of standingEntries) {
-    const stats = stats_any as StandingStats;
+
+  // Missed days are scheduled days not contested — fusenshō plus the
+  // unscheduled withdrawal tail. Standings only carry contested bouts for
+  // partial absences and no row at all for full-kyūjō rikishi, so absences
+  // are derived arithmetically per division rather than trusting the raw
+  // fusenshō count.
+  const normalizedEntries: Array<[string, StandingStats]> = standingEntries.map(
+    ([id, stats_any]) => {
+      const stats = stats_any as StandingStats;
+      const r = getRikishi(world, id);
+      const divisionDays = r ? getTotalBashodays(r.division) : 15;
+      const absences = Math.max(0, divisionDays - stats.wins - stats.losses);
+      return [id, { wins: stats.wins, losses: stats.losses, absences }];
+    }
+  );
+
+  // Synthesize rows for banzuke members who produced no standings entry —
+  // the full-kyūjō population the penalty weights were written for but could
+  // never reach. Eligible set: fought-on banzuke membership ∩ active;
+  // fall back to all actives when no snapshot exists.
+  const standingIds = new Set(normalizedEntries.map(([id]) => id));
+  const eligibleIds: string[] = [];
+  if (world.currentBanzuke) {
+    for (const division of DIVISIONS) {
+      const snap = world.currentBanzuke.divisions[division];
+      if (!snap) continue;
+      for (const a of snap.assignments) {
+        if (world.activeRikishiIds.has(a.rikishiId)) eligibleIds.push(a.rikishiId);
+      }
+    }
+  } else {
+    eligibleIds.push(...world.activeRikishiIds);
+  }
+  for (const id of eligibleIds) {
+    if (standingIds.has(id)) continue;
+    const r = getRikishi(world, id);
+    if (!r) continue;
+    normalizedEntries.push([
+      id,
+      { wins: 0, losses: 0, absences: getTotalBashodays(r.division) },
+    ]);
+  }
+
+  for (const [id, stats] of normalizedEntries) {
     const history = world.history[world.history.length - 1];
     const isYusho = history?.yusho === id;
     const isJunYusho = history?.junYusho?.includes(id) ?? false;
     const rikishi = getRikishi(world, id);
+    const divisionDays = rikishi ? getTotalBashodays(rikishi.division) : 15;
 
     let prizePoints = 0;
     if (history?.ginoSho === id) prizePoints += 1;
@@ -364,20 +410,23 @@ export function buildPerformanceList(
 
     let pressure: YokozunaPressure = {
       consecutiveMakeKoshi: rikishi?.consecutiveMakeKoshi ?? 0,
-      consecutiveKyujo: rikishi?.consecutiveKyujo ?? 0,
       pressureScore: rikishi?.pressureScore ?? 0,
       councilWarnings: rikishi?.councilWarnings ?? 0,
       statsUpdate: {},
     };
     if (rikishi?.rank === "yokozuna") {
-      pressure = evaluateYokozunaPressure(rikishi, stats, builder);
+      pressure = evaluateYokozunaPressure(rikishi, stats, divisionDays, builder);
     }
 
-    // Consecutive kachi-koshi tracking for ALL rikishi (not just yokozuna)
+    // Consecutive kachi-koshi / kyūjō tracking for ALL rikishi (not just
+    // yokozuna) — consecutiveKyujo feeds kyūjō pressure, return narratives
+    // and dynasty traits downstream.
+    const isFullAbsence = stats.absences >= divisionDays;
+    const consecutiveKyujo =
+      rikishi && isFullAbsence ? (rikishi.consecutiveKyujo ?? 0) + 1 : 0;
     let consecutiveKachiKoshi = rikishi?.consecutiveKachiKoshi ?? 0;
     if (rikishi) {
       const isKachi = isKachiKoshi(stats.wins, stats.losses, rikishi.rank);
-      const isFullAbsence = stats.absences >= 15;
       if (isKachi && !isFullAbsence) {
         consecutiveKachiKoshi = (rikishi.consecutiveKachiKoshi ?? 0) + 1;
       } else {
@@ -398,7 +447,7 @@ export function buildPerformanceList(
           consecutiveStrongOzeki,
           consecutiveMakeKoshi: pressure.consecutiveMakeKoshi,
           consecutiveKachiKoshi,
-          consecutiveKyujo: pressure.consecutiveKyujo,
+          consecutiveKyujo,
           pressureScore: pressure.pressureScore,
           councilWarnings: pressure.councilWarnings,
           statsUpdate: pressure.statsUpdate,

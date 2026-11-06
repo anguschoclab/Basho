@@ -25,6 +25,8 @@ import {
   type InjurySeverity,
 } from "@/engine/health/BodyDefinitions";
 import { getScoutingLevel } from "@/engine/recruitment/scoutingStore";
+import { SeededRNG } from "@/engine/core/rng";
+import { BardEngine } from "@/engine/bard/BardEngine";
 
 export type PublicAvailabilityStatus =
   "healthy" | "injured" | "kyujo" | "returning" | "retired" | "no_record";
@@ -46,6 +48,10 @@ export interface PublicInjuryAvailability {
   recordedBasho: number;
   /** Recorded basho missed entirely (0 bouts contested). */
   bashosMissedEntirely: number;
+  /** "N days missed" label — undefined with no recorded history. */
+  missedDaysLabel?: string;
+  /** "across N recorded basho" label — undefined with no recorded history. */
+  recordedBashoLabel?: string;
   /** Public-record-derived durability descriptor — never a raw stat. */
   durability: DurabilityBand;
   durabilityLabel: string;
@@ -67,11 +73,11 @@ const SEVERITY_LABELS: Record<Exclude<InjurySeverity, "none">, string> = {
   serious: "Serious",
 };
 
-const DURABILITY_LABELS: Record<DurabilityBand, string> = {
-  durable: "Durable frame",
-  frequent_absence: "Frequent absence",
-  no_pattern: "No clear pattern",
-};
+const AVAIL = "ui.labels.injury.availability";
+
+function label(rng: SeededRNG, path: string, ctx?: Record<string, string>): string {
+  return BardEngine.resolve(rng, path, ctx).text;
+}
 
 type InjuryStatusLike = NonNullable<Rikishi["injuryStatus"]>;
 
@@ -81,9 +87,9 @@ function isRikishiInjured(r: Rikishi): boolean {
 }
 
 /** Exact diagnosis for confirmed access; area-only for reported; vague otherwise. */
-function injuryEpisodeLabel(r: Rikishi, tier: DiagnosisTier): string {
+function injuryEpisodeLabel(r: Rikishi, tier: DiagnosisTier, rng: SeededRNG): string {
   const status: InjuryStatusLike | undefined = r.injuryStatus ?? r.injury;
-  if (!status) return "Undisclosed injury";
+  if (!status) return label(rng, `${AVAIL}.undisclosed`);
 
   if (tier === "confirmed") {
     const severity = status.severity !== "none" ? SEVERITY_LABELS[status.severity] : undefined;
@@ -92,8 +98,8 @@ function injuryEpisodeLabel(r: Rikishi, tier: DiagnosisTier): string {
       : undefined;
     const type =
       status.type && status.type !== "none"
-        ? (INJURY_TYPE_LABELS[status.type] ?? "Injury")
-        : "Injury";
+        ? (INJURY_TYPE_LABELS[status.type] ?? label(rng, `${AVAIL}.generic`))
+        : label(rng, `${AVAIL}.generic`);
     return [severity, area, type].filter(Boolean).join(" ");
   }
 
@@ -101,10 +107,12 @@ function injuryEpisodeLabel(r: Rikishi, tier: DiagnosisTier): string {
     const area = status.location
       ? (BODY_AREA_LABELS[status.location] ?? status.location)
       : undefined;
-    return area ? `${area} injury` : "Injury";
+    return area
+      ? label(rng, `${AVAIL}.reported_format`, { AREA: area })
+      : label(rng, `${AVAIL}.generic`);
   }
 
-  return "Undisclosed injury";
+  return label(rng, `${AVAIL}.undisclosed`);
 }
 
 function resolveDiagnosisTier(r: Rikishi, world: WorldState): DiagnosisTier {
@@ -118,14 +126,18 @@ export function projectPublicInjuryAvailability(
   rikishi: Rikishi | undefined,
   world: WorldState | null | undefined
 ): PublicInjuryAvailability {
+  // Deterministic per-call rng — the label templates are single-option, so
+  // resolution is stable; fresh each call avoids shared-counter coupling.
+  const rng = new SeededRNG("public-injury-availability");
+
   if (!rikishi || !world) {
     return {
       status: "no_record",
-      statusLabel: "No public record",
+      statusLabel: label(rng, `${AVAIL}.status.no_record`),
       recordedBasho: 0,
       bashosMissedEntirely: 0,
       durability: "no_pattern",
-      durabilityLabel: "No public record",
+      durabilityLabel: label(rng, `${AVAIL}.durability.no_record`),
       diagnosisTier: "none",
     };
   }
@@ -157,35 +169,25 @@ export function projectPublicInjuryAvailability(
         : "no_pattern";
 
   let status: PublicAvailabilityStatus;
-  let statusLabel: string;
-  if (rikishi.isRetired) {
-    status = "retired";
-    statusLabel = "Retired";
-  } else if (rikishi.isKyujo) {
-    status = "kyujo";
-    statusLabel = "Kyūjō";
-  } else if (injured) {
-    status = "injured";
-    statusLabel = "Injured";
-  } else if (rikishi.recentlyReturnedFromInjury) {
-    status = "returning";
-    statusLabel = "Returning";
-  } else {
-    status = "healthy";
-    statusLabel = "Healthy";
-  }
+  if (rikishi.isRetired) status = "retired";
+  else if (rikishi.isKyujo) status = "kyujo";
+  else if (injured) status = "injured";
+  else if (rikishi.recentlyReturnedFromInjury) status = "returning";
+  else status = "healthy";
 
   let episodeLabel: string | undefined;
   if (rikishi.isKyujo) {
     if (rikishi.kyujoReason === "injury" || injured) {
       // A filed medical certificate is the official public diagnosis.
       episodeLabel =
-        rikishi.medicalCertificate?.injury ?? injuryEpisodeLabel(rikishi, diagnosisTier);
+        rikishi.medicalCertificate?.injury ?? injuryEpisodeLabel(rikishi, diagnosisTier, rng);
     } else {
-      episodeLabel = `Kyūjō — ${rikishi.kyujoReason ?? "personal"}`;
+      episodeLabel = label(rng, `${AVAIL}.kyujo_reason_format`, {
+        REASON: rikishi.kyujoReason ?? "personal",
+      });
     }
   } else if (injured) {
-    episodeLabel = injuryEpisodeLabel(rikishi, diagnosisTier);
+    episodeLabel = injuryEpisodeLabel(rikishi, diagnosisTier, rng);
   }
 
   const rawWeeks =
@@ -196,14 +198,22 @@ export function projectPublicInjuryAvailability(
 
   return {
     status,
-    statusLabel,
+    statusLabel: label(rng, `${AVAIL}.status.${status}`),
     episodeLabel,
     weeksRemaining,
     missedDaysRecent,
     recordedBasho,
     bashosMissedEntirely,
+    missedDaysLabel:
+      missedDaysRecent !== undefined
+        ? label(rng, `${AVAIL}.missed_days_format`, { DAYS: String(missedDaysRecent) })
+        : undefined,
+    recordedBashoLabel:
+      recordedBasho > 0
+        ? label(rng, `${AVAIL}.recorded_basho_format`, { N: String(recordedBasho) })
+        : undefined,
     durability,
-    durabilityLabel: DURABILITY_LABELS[durability],
+    durabilityLabel: label(rng, `${AVAIL}.durability.${durability}`),
     diagnosisTier,
   };
 }

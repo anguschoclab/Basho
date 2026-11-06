@@ -131,7 +131,29 @@
         "moderate": "Moderate",
         "severe": "Severe"
       },
-      "summary_format": "%SEV%%LOC% (%WEEKS%w)"
+      "summary_format": "%SEV%%LOC% (%WEEKS%w)",
+      "availability": {
+        "status": {
+          "healthy": "Healthy",
+          "injured": "Injured",
+          "kyujo": "Kyūjō",
+          "returning": "Returning",
+          "retired": "Retired",
+          "no_record": "No public record"
+        },
+        "undisclosed": "Undisclosed injury",
+        "generic": "Injury",
+        "kyujo_reason_format": "Kyūjō — %REASON%",
+        "reported_format": "%AREA% injury",
+        "missed_days_format": "%DAYS% days missed",
+        "recorded_basho_format": "across %N% recorded basho",
+        "durability": {
+          "durable": "Durable frame",
+          "frequent_absence": "Frequent absence",
+          "no_pattern": "No clear pattern",
+          "no_record": "No public record"
+        }
+      }
     },
     "scouting": {
       "reasons": {

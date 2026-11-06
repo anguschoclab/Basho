@@ -20,6 +20,11 @@ export {
   toDescriptorDTO,
 } from "@/presenters/rikishi/transformers/stats";
 export { calculateInjurySummary } from "@/presenters/rikishi/transformers/injury";
+export {
+  projectPublicInjuryAvailability,
+  type PublicInjuryAvailability,
+  type PublicAvailabilityStatus,
+} from "@/presenters/rikishi/transformers/publicInjury";
 
 // Career
 export { toCareerDTO, calculateStreak, calculateAvgRank, rankScore } from "@/presenters/rikishi/transformers/career";

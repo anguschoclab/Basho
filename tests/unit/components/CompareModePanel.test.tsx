@@ -48,6 +48,62 @@ describe("CompareModePanel — nested .stats.* access regression (Step 3.3)", ()
     expect(container).toBeTruthy();
   });
 
+  it("renders the always-public Injury & Availability section", () => {
+    const r1 = MockFactory.createRikishi("r1", { heyaId: "h1" });
+    const r2 = MockFactory.createRikishi("r2", { heyaId: "h2" });
+    mockState.world = {
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+    };
+    const a = makeUIRikishi("r1", { heyaName: "Stable One" } as Partial<UIRikishi>);
+    const b = makeUIRikishi("r2", { heyaName: "Stable Two" } as Partial<UIRikishi>);
+    const { container } = render(<CompareModePanel rikishiA={a} rikishiB={b} />);
+
+    expect(container.textContent).toContain("Injury & Availability");
+    expect(container.textContent).toContain("Stable One");
+    expect(container.textContent).toContain("Healthy");
+  });
+
+  it("shows honest 'No public record' for a prospect outside the world roster", () => {
+    const r1 = MockFactory.createRikishi("r1", { heyaId: "h1" });
+    mockState.world = { rikishi: new Map([["r1", r1]]) };
+    const a = makeUIRikishi("r1");
+    const b = makeUIRikishi("prospect-99"); // not in world.rikishi
+    const { container } = render(<CompareModePanel rikishiA={a} rikishiB={b} />);
+
+    expect(container.textContent).toContain("Injury & Availability");
+    expect(container.textContent).toContain("No public record");
+  });
+
+  it("surfaces injured status publicly in header badge and section", () => {
+    const r1 = MockFactory.createRikishi("r1", {
+      heyaId: "h1",
+      injured: true,
+      injuryWeeksRemaining: 4,
+      injuryStatus: {
+        type: "sprain",
+        location: "knee",
+        severity: "moderate",
+        weeksRemaining: 4,
+      } as any,
+    });
+    const r2 = MockFactory.createRikishi("r2", { heyaId: "h2" });
+    mockState.world = {
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+    };
+    const a = makeUIRikishi("r1");
+    const b = makeUIRikishi("r2");
+    const { container } = render(<CompareModePanel rikishiA={a} rikishiB={b} />);
+
+    expect(container.textContent).toContain("Injured");
+    expect(container.textContent).toContain("4w");
+  });
+
   it("reads stats from the nested rikishi.stats path, not flat properties", () => {
     const rikishiA = MockFactory.createRikishi("r1", {
       heyaId: "player_heya",

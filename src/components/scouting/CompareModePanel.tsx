@@ -8,7 +8,13 @@ import { resolveBoutParticipant } from "@/presenters/worldAccess";
 import { Button } from "@/components/ui/button";
 import { simulateBout } from "@/presenters/engineAccess";
 import { useGame } from "@/state/game/useGame";
-import { CompareRikishiHeader, CompareStats, TrialClashSection } from "@/components/scouting/CompareModePanelSections";
+import { projectPublicInjuryAvailability } from "@/presenters/rikishi/transformers/publicInjury";
+import {
+  CompareRikishiHeader,
+  CompareStats,
+  CompareInjuryAvailability,
+  TrialClashSection,
+} from "@/components/scouting/CompareModePanelSections";
 
 interface CompareModePanelProps {
   rikishiA: UIRikishi;
@@ -57,15 +63,29 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
     }, 600);
   };
 
+  // Public injury/availability — resolved from the raw record (or honest
+  // "No public record" for unscouted prospects); presence is always public.
+  const availabilityA = projectPublicInjuryAvailability(
+    state.world?.rikishi.get(rikishiA.id),
+    state.world
+  );
+  const availabilityB = projectPublicInjuryAvailability(
+    state.world?.rikishi.get(rikishiB.id),
+    state.world
+  );
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="grid grid-cols-2 gap-4">
-        <CompareRikishiHeader rikishi={rikishiA} highlight={false} />
-        <CompareRikishiHeader rikishi={rikishiB} highlight={true} />
+        <CompareRikishiHeader rikishi={rikishiA} highlight={false} availability={availabilityA} />
+        <CompareRikishiHeader rikishi={rikishiB} highlight={true} availability={availabilityB} />
       </div>
 
       {/* Comparison Stats */}
       <CompareStats world={state.world} rikishiA={rikishiA} rikishiB={rikishiB} />
+
+      {/* Injury & Availability — always-public surface */}
+      <CompareInjuryAvailability availabilityA={availabilityA} availabilityB={availabilityB} />
 
       {/* Trial Clash Action */}
       <TrialClashSection

@@ -228,7 +228,6 @@ function persistBashoState(
         ...r,
         careerWins: (r.careerWins ?? 0) + stats.wins,
         careerLosses: (r.careerLosses ?? 0) + stats.losses,
-        careerAbsences: (r.careerAbsences ?? 0) + (stats.absences ?? 0),
         currentBashoWins: stats.wins,
         currentBashoLosses: stats.losses,
       };
