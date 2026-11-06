@@ -118,6 +118,7 @@ export interface SerializedWorldState {
 
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
+    careerMode?: "career" | "sandbox";
   };
   trainingState?: Record<Id, HeyaTrainingState>;
   candidatePool?: TalentPoolWorldState; // Talent acquisition pool

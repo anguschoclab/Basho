@@ -455,7 +455,7 @@ const GENUINE_ORPHANS: Record<string, string> = {
   "src/engine/narrative/descriptorBands.ts:toDurationBand":
     "ORPH-0396: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/npc/handlers.ts:handleNPCCrisis":
-    "ORPH-0416: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
+    "ORPH-0416: module-private helper of resolveNPCCrisis — used intra-file only; intentionally not exported",
   "src/engine/npc/npcAIWorkers.ts:GlobalWorkerResult":
     "ORPH-0419: zero live references — unique export retained per reorg dead-code policy (archive candidate, not deleted)",
   "src/engine/npc/perception.ts:HealthBand":

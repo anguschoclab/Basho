@@ -7,13 +7,19 @@
 
 import { CircleUser, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NameInputRow, BackstoryGrid } from "@/components/wizard/IdentityStepSections";
+import {
+  NameInputRow,
+  BackstoryGrid,
+  GameModeSelector,
+} from "@/components/wizard/IdentityStepSections";
 
 interface IdentityStepProps {
   oyakataName: string;
   background: string;
+  careerMode: "career" | "sandbox";
   onNameChange: (name: string) => void;
   onBackgroundChange: (background: string) => void;
+  onCareerModeChange: (mode: "career" | "sandbox") => void;
   onRandomName: () => void;
   onNext: () => void;
 }
@@ -21,8 +27,10 @@ interface IdentityStepProps {
 export function IdentityStep({
   oyakataName,
   background,
+  careerMode,
   onNameChange,
   onBackgroundChange,
+  onCareerModeChange,
   onRandomName,
   onNext,
 }: IdentityStepProps) {
@@ -49,6 +57,8 @@ export function IdentityStep({
             onNameChange={onNameChange}
             onRandomName={onRandomName}
           />
+
+          <GameModeSelector careerMode={careerMode} onCareerModeChange={onCareerModeChange} />
 
           <BackstoryGrid background={background} onBackgroundChange={onBackgroundChange} />
         </div>

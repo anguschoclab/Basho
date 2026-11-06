@@ -122,7 +122,7 @@ export function checkTriggeredDrama(world: WorldState): StateImpact {
         },
         { heyaId: heya.id }
       );
-      if (heya.isPlayerOwned) {
+      if (heya.id === world.playerHeyaId) {
         // Skip while a crisis is already open — otherwise the daily tick
         // re-fires CrisisModal and resets generatedAtWeek every day until the
         // weekly governance review flags riskIndicators.financial.

@@ -38,7 +38,7 @@ export function resolveNPCCrisis(world: WorldState, heyaId: Id, crisis: ActiveCr
   return builder.build();
 }
 
-export function handleNPCCrisis(
+function handleNPCCrisis(
   world: WorldState,
   heyaId: Id,
   crisis: import("@/engine/types/crises").ActiveCrisis

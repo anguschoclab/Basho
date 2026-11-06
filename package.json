@@ -11,7 +11,7 @@
     "build": "vite build",
     "type-check": "node node_modules/@typescript/native/bin/tsc --build --force",
     "build:dev": "vite build --mode development",
-    "lint": "eslint . || true",
+    "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings 0",
     "lint:commit": "eslint .",
     "lint:fix": "eslint . --fix",

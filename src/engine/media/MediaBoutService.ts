@@ -62,7 +62,7 @@ export function updateMediaFromBout(args: {
   const rng = rngForWorld(
     world,
     "media",
-    `bout::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}`
+    `bout::${result.boutId}::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}`
   );
 
   const winner = getRikishi(world, result.winnerRikishiId);

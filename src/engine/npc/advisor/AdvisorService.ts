@@ -12,15 +12,17 @@ import type { AIRecommendation, AIGoalDomain } from "@/engine/npc/types";
 import { buildPerceptionSnapshot } from "@/engine/npc/perception";
 import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { getAdvice } from "@/engine/bout/CornerAdvice";
-import { EntityCollection } from "@/engine/core/EntityCollection";
 import { getRikishi, getHeya, getOyakataForHeya } from "@/engine/core/queries";
 import { getOpponentModel } from "@/engine/npc/MemoryStore";
 import { getOpponentDominantFamily, suggestCounterTactic } from "@/engine/npc/OpponentModel";
 import { buildMetaPerception } from "@/engine/npc/MetaPerception";
-import { candidateConsumesForeignSlot } from "@/engine/generation/talentPoolReads";
-import { isAtForeignLimit } from "@/engine/utils/citizenshipUtils";
+import {
+  candidateConsumesForeignSlot,
+  getForeignCountInHeya,
+} from "@/engine/generation/talentPoolReads";
 import { scanRecentEvents } from "@/engine/events/events";
 import { HEYA_ROSTER_HARD_CAP } from "@/constants/engine/roster";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 
 const ROSTER_LOW_THRESHOLD = 10;
 
@@ -364,9 +366,10 @@ function intelRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
         candidateConsumesForeignSlot(c)
     );
     if (foreignStar) {
-      // ⚡ Bolt: Using memoized EntityCollection.getHeyaRoster instead of mapping/filtering global activeRikishiIds
-      const playerRikishi = EntityCollection.getHeyaRoster(world, heyaId);
-      if (!isAtForeignLimit(playerRikishi, world.year)) {
+      // V17-D03: canonical foreign-slot usage — includes signed-pending
+      // candidates, not just the roster (a roster-only check recommends
+      // pursuing a foreign star while the slot is already spoken for).
+      if (getForeignCountInHeya(world, heyaId) < FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
         recs.push(
           rec(
             "contested-foreign-recruit",

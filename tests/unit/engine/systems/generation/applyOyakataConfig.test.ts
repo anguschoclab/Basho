@@ -89,6 +89,23 @@ describe("applyOyakataCreationConfig", () => {
     warnSpy.mockRestore();
   });
 
+  it("persists careerMode choice to world settings", () => {
+    const result = applyOyakataCreationConfig(world, firstHeyaId, {
+      name: "Testoyama",
+      backstoryId: "ozeki_legend",
+      careerMode: "sandbox",
+    });
+    expect(result.settings.careerMode).toBe("sandbox");
+  });
+
+  it("defaults careerMode to career when not provided", () => {
+    const result = applyOyakataCreationConfig(world, firstHeyaId, {
+      name: "Testoyama",
+      backstoryId: "ozeki_legend",
+    });
+    expect(result.settings.careerMode).toBe("career");
+  });
+
   it("does not mutate the original world", () => {
     const originalFunds = heya.funds;
     applyOyakataCreationConfig(world, firstHeyaId, {

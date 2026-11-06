@@ -407,6 +407,12 @@ export interface WorldState {
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
     enableStyleDrift?: boolean;
+    /**
+     * Game mode chosen in the new-game wizard. "sandbox" exempts the player
+     * heya from forced succession (age-65 + board-mandated triggers).
+     * Absent/undefined behaves as "career".
+     */
+    careerMode?: "career" | "sandbox";
   };
 
   /** First-Time User Experience tracking */

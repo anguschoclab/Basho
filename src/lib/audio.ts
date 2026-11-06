@@ -4,7 +4,7 @@
  * localStorage "basho:audio" === "off".
  */
 
-import { SOUND_MAP, type ToneSpec } from "@/constants/audio/soundMap";
+import { SOUND_MAP, toneForEvent, type ToneSpec } from "@/constants/audio/soundMap";
 import type { EngineEvent } from "@/engine/types/events";
 
 export function isAudioEnabled(): boolean {
@@ -59,6 +59,6 @@ export function playTone(spec: ToneSpec): void {
 /** Play the mapped tone for an engine event. Silent for minor events and when muted. */
 export function playForEvent(event: EngineEvent): void {
   if (!isAudioEnabled()) return;
-  const spec = SOUND_MAP[event.importance] ?? null;
+  const spec = toneForEvent(event) ?? SOUND_MAP[event.importance] ?? null;
   if (spec) playTone(spec);
 }

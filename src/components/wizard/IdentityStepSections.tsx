@@ -192,6 +192,88 @@ function BackstoryCard({
   );
 }
 
+const GAME_MODES = [
+  {
+    id: "career" as const,
+    label: "Career Mode",
+    labelJa: "経歴",
+    flavor:
+      "The board watches everything. Insolvency, scandal, or chronic losing can force your oyakata to step down — and age 65 is mandatory retirement. Your dynasty continues under a successor.",
+    icon: Landmark,
+  },
+  {
+    id: "sandbox" as const,
+    label: "Sandbox Mode",
+    labelJa: "砂場",
+    flavor:
+      "Pure simulation. Your oyakata is never forced out — no age cliff, no board-mandated succession. Build your stable at your own pace, forever.",
+    icon: Globe,
+  },
+];
+
+/** Two-card game-mode selector — Career (stakes) vs Sandbox (no fail states). */
+export function GameModeSelector({
+  careerMode,
+  onCareerModeChange,
+}: {
+  careerMode: "career" | "sandbox";
+  onCareerModeChange: (mode: "career" | "sandbox") => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <Label className="pro-header">Game Mode</Label>
+      <div className="grid gap-4 md:grid-cols-2">
+        {GAME_MODES.map((mode) => {
+          const Icon = mode.icon;
+          const isSelected = careerMode === mode.id;
+          return (
+            <div
+              key={mode.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`Select ${mode.label}`}
+              aria-pressed={isSelected}
+              className={cn(
+                "relative dossier-paper p-5 rounded-lg cursor-pointer transition-all hover:scale-[1.01] overflow-hidden focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                isSelected
+                  ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl"
+                  : "opacity-70 hover:opacity-100"
+              )}
+              onClick={() => onCareerModeChange(mode.id)}
+              onKeyDown={activationKeyHandler(() => onCareerModeChange(mode.id))}
+            >
+              <div className="absolute -top-2 -right-2 opacity-5 font-display text-3xl font-black pointer-events-none select-none">
+                {mode.labelJa}
+              </div>
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className={cn(
+                    "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                    isSelected ? "bg-primary/20" : "bg-muted/50"
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "w-5 h-5",
+                      isSelected ? "text-primary" : "text-muted-foreground"
+                    )}
+                  />
+                </div>
+                <span className="font-display font-black text-base leading-tight">
+                  {mode.label}
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+                {mode.flavor}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /** Scrollable backstory grid — "Professional History & Background". */
 export function BackstoryGrid({
   background,

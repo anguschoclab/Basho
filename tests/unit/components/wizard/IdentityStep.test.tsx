@@ -11,8 +11,10 @@ describe("IdentityStep", () => {
   const defaultProps = {
     oyakataName: "",
     background: OYAKATA_BACKSTORIES[0].id,
+    careerMode: "career" as const,
     onNameChange: vi.fn(),
     onBackgroundChange: vi.fn(),
+    onCareerModeChange: vi.fn(),
     onRandomName: vi.fn(),
     onNext: vi.fn(),
   };
@@ -42,5 +44,11 @@ describe("IdentityStep", () => {
     const backstoryElement = screen.getByText(secondBackstory.label);
     fireEvent.click(backstoryElement);
     expect(defaultProps.onBackgroundChange).toHaveBeenCalledWith(secondBackstory.id);
+  });
+
+  it("calls onCareerModeChange when a game mode card is clicked", () => {
+    renderWithProviders(<IdentityStep {...defaultProps} />);
+    fireEvent.click(screen.getByRole("button", { name: /Select Sandbox Mode/i }));
+    expect(defaultProps.onCareerModeChange).toHaveBeenCalledWith("sandbox");
   });
 });

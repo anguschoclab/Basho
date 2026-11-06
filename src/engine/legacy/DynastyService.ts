@@ -76,6 +76,10 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
     const oyakata = world.oyakata?.get(heya.oyakataId || "");
     if (!oyakata) continue;
 
+    // Sandbox mode: the player heya is exempt from all succession paths
+    // (age cliff, readiness transitions, and board-mandated triggers).
+    if (heya.id === world.playerHeyaId && world.settings?.careerMode === "sandbox") continue;
+
     const age = oyakata.age;
 
     // 1. Soft Readiness (60-65)

@@ -101,3 +101,42 @@ describe("non-age succession triggers", () => {
     expect(succeeded(world, "h-npc", oya.id)).toBe(false);
   });
 });
+
+describe("careerMode: sandbox vs career", () => {
+  it("sandbox mode exempts the player heya from non-age forced succession", () => {
+    const { world, oya } = worldWithHeya({
+      heyaId: "h-player",
+      isPlayer: true,
+      tenure: { insolvencyEvents: 5, majorScandals: 4 },
+      underperformanceBasho: 12,
+    });
+    world.settings.careerMode = "sandbox";
+    expect(succeeded(world, "h-player", oya.id)).toBe(false);
+  });
+
+  it("sandbox mode exempts the player oyakata from the age-65 cliff", () => {
+    const { world, oya } = worldWithHeya({ heyaId: "h-player", isPlayer: true });
+    oya.age = 66;
+    world.settings.careerMode = "sandbox";
+    expect(succeeded(world, "h-player", oya.id)).toBe(false);
+  });
+
+  it("sandbox mode does not exempt NPC heyas", () => {
+    const { world, oya } = worldWithHeya({
+      heyaId: "h-npc",
+      tenure: { insolvencyEvents: 5 },
+    });
+    world.playerHeyaId = "h-other";
+    world.settings.careerMode = "sandbox";
+    expect(succeeded(world, "h-npc", oya.id)).toBe(true);
+  });
+
+  it("absent careerMode preserves current behavior (player can be forced out)", () => {
+    const { world, oya } = worldWithHeya({
+      heyaId: "h-player",
+      isPlayer: true,
+      tenure: { insolvencyEvents: 5 },
+    });
+    expect(succeeded(world, "h-player", oya.id)).toBe(true);
+  });
+});

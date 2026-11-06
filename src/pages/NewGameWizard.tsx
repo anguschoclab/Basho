@@ -44,6 +44,7 @@ export default function NewGameWizard() {
   const [background, setBackground] = useState(OYAKATA_BACKSTORIES[0].id);
   const [ichimon, setIchimon] = useState<IchimonName>(ICHIMON_FACTIONS[0].id);
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(preselectedHeyaId ?? null);
+  const [careerMode, setCareerMode] = useState<"career" | "sandbox">("career");
 
   const world = state.world;
   const stables = useMemo<Heya[]>(() => (!world ? [] : EntityCollection.getHeyas(world)), [world]);
@@ -74,6 +75,7 @@ export default function NewGameWizard() {
       name: oyakataName.trim(),
       backstoryId: background,
       ichimon,
+      careerMode,
     };
     createWorld(world.seed, selectedHeyaId, config);
     setStep(4);
@@ -107,8 +109,10 @@ export default function NewGameWizard() {
           <IdentityStep
             oyakataName={oyakataName}
             background={background}
+            careerMode={careerMode}
             onNameChange={setOyakataName}
             onBackgroundChange={setBackground}
+            onCareerModeChange={setCareerMode}
             onRandomName={handleRandomName}
             onNext={handleNext}
           />

@@ -5,6 +5,39 @@ import { logEngineEvent } from "@/engine/events/events";
 import { getNextTimestamp } from "@/engine/core/StateImpact";
 import { error } from "@/engine/utils/Logger";
 import { dedupeIdList } from "@/engine/core/idIntegrity";
+import { clearQueryCaches } from "@/engine/core/queries";
+
+/**
+ * V17-D04 — does this impact change anything a roster/bias memoization
+ * could be serving? `getHeyaRoster` caches by (world, week), so any world
+ * that stays referenced after a roster mutation — or is poked in place by
+ * a non-canonical caller — must not keep serving the pre-change roster.
+ * Clearing is a WeakMap reassign — cheap, and idempotent across a batch.
+ */
+function impactAffectsRosterQueries(impact: StateImpact): boolean {
+  const c = impact.collections;
+  if (
+    c?.rikishiToAdd?.length ||
+    c?.rikishiToRemove?.length ||
+    c?.rikishiToHistorical?.length ||
+    c?.rikishiFromHistorical?.length ||
+    c?.heyaToAdd?.length
+  ) {
+    return true;
+  }
+  if (impact.deletedEntities?.rikishiIds?.length || impact.deletedEntities?.heyaIds?.length) {
+    return true;
+  }
+  for (const u of impact.entities?.heyaUpdates?.values() ?? []) {
+    if ("rikishiIds" in u) return true;
+  }
+  for (const u of impact.entities?.rikishiUpdates?.values() ?? []) {
+    if ("heyaId" in u) return true;
+  }
+  const wf = impact.worldFields as { heyas?: unknown; rikishi?: unknown } | undefined;
+  if (wf?.heyas !== undefined || wf?.rikishi !== undefined) return true;
+  return false;
+}
 
 /**
  * Registry of entity update configurations for generic application.
@@ -277,6 +310,51 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
   return result;
 }
 
+/** Entity ids removed from the world by this impact (any collection or deletion op). */
+function collectRemovedIds(impact: StateImpact, into: Set<string>): void {
+  const c = impact.collections;
+  for (const id of c?.rikishiToRemove ?? []) into.add(id);
+  for (const id of c?.oyakataToRemove ?? []) into.add(id);
+  const d = impact.deletedEntities;
+  for (const id of d?.rikishiIds ?? []) into.add(id);
+  for (const id of d?.oyakataIds ?? []) into.add(id);
+  for (const id of d?.heyaIds ?? []) into.add(id);
+}
+
+/**
+ * V17-D02 — resolve-time ref sweep. Producers race on absolute
+ * `worldFields.myosekiMarket` writes (merge last-wins), so a stale write
+ * can resurrect stocks owned by an oyakata a succession/merger removed in
+ * the same batch. Stocks whose ownerId/holderId references an id the batch
+ * actually removed are released to the JSA pool — mirrors
+ * releaseElderStockToPool. Runs once per batch so resurrection by a later
+ * impact is also caught.
+ */
+function sweepMyosekiRefsToRemovedOwners(world: WorldState, removedIds: Set<string>): WorldState {
+  const market = world.myosekiMarket;
+  if (!market?.stocks || removedIds.size === 0) return world;
+
+  let changed = false;
+  const nextStocks: typeof market.stocks = {};
+  for (const [id, stock] of Object.entries(market.stocks)) {
+    if (!removedIds.has(stock.ownerId) && !removedIds.has(stock.holderId)) {
+      nextStocks[id] = stock;
+    } else {
+      nextStocks[id] = {
+        ...stock,
+        ownerId: "JSA",
+        holderId: "JSA",
+        status: "available",
+        askingPrice: undefined,
+        leaseFee: undefined,
+      };
+      changed = true;
+    }
+  }
+  if (!changed) return world;
+  return { ...world, myosekiMarket: { ...market, stocks: nextStocks } };
+}
+
 /** Lazily-accumulated heya map shared across collection operations. */
 interface HeyaSync {
   next: Map<string, import("@/engine/types/heya").Heya> | undefined;
@@ -534,10 +612,13 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
   }
 
   let result = { ...world };
+  const removedPersonIds = new Set<string>();
 
   for (const impact of impacts) {
     try {
       result = _applyImpact(result, impact);
+      if (impactAffectsRosterQueries(impact)) clearQueryCaches();
+      collectRemovedIds(impact, removedPersonIds);
 
       // Log events (side effect isolated to coordinator)
       if (impact.events && impact.events.length > 0) {
@@ -584,6 +665,8 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
       );
     }
   }
+
+  result = sweepMyosekiRefsToRemovedOwners(result, removedPersonIds);
 
   return result;
 }

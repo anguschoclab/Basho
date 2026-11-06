@@ -271,6 +271,7 @@ export function applyOyakataCreationConfig(
 
   return {
     ...world,
+    settings: { ...world.settings, careerMode: config.careerMode ?? "career" },
     oyakata: newOyakataMap,
     heyas: newHeyasMap,
   };

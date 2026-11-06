@@ -362,22 +362,24 @@ export function TechniquesTab({ derived }: { derived: Derived }) {
   );
 }
 
-/** Hall of Fame tab — placeholder card. */
+/** Hall of Fame tab — routes to the canonical /records/hall-of-fame page. */
 export function HallOfFameTab() {
   return (
-    <Card className="paper py-12 text-center border-dashed">
+    <Card className="paper py-12 text-center">
       <div className="flex flex-col items-center gap-4">
         <Award className="h-16 w-16 text-gold/50" />
         <div>
           <h3 className="text-xl font-bold">The Hall of Fame</h3>
           <p className="text-muted-foreground max-w-md mx-auto mt-2">
-            Reserved for the greatest legends of Sumo history. Wrestlers become eligible after
-            retiring with exceptional achievements.
+            Inductees, timelines, and category breakdowns live on the Hall of Fame page.
           </p>
         </div>
-        <Badge variant="secondary" className="mt-4">
-          Expansion in Progress
-        </Badge>
+        <Link
+          to="/records/hall-of-fame"
+          className="mt-4 inline-flex items-center gap-2 rounded border border-primary/40 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
+        >
+          <Trophy className="h-4 w-4" /> Open Hall of Fame
+        </Link>
       </div>
     </Card>
   );
