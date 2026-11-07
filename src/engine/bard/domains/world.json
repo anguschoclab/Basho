@@ -5,7 +5,10 @@
         "Day %DAY% at the Ryogoku Kokugikan \u2014 the capital awaits.",
         "The Tokyo crowd fills the Kokugikan for Day %DAY% of the tournament.",
         "Day %DAY% begins under the suspended roof of the Ryogoku Kokugikan.",
-        "Anticipation builds in Tokyo as Day %DAY% gets underway."
+        "Anticipation builds in Tokyo as Day %DAY% gets underway.",
+        "The Tokyo crowd roars as %EAST% and %WEST% step onto the clay for Day %DAY%.",
+        "Under the suspended roof of the Kokugikan, it's %EAST% against %WEST%.",
+        "The capital watches closely as %EAST% faces %WEST% to begin this bout."
       ],
       "closing": [
         "The sun sets over the Sumida River as the fans depart.",
@@ -21,7 +24,10 @@
         "Day %DAY% at the Edion Arena Osaka \u2014 the spring basho is underway.",
         "The Osaka crowd fills the seats for Day %DAY% of the Haru Basho.",
         "Springtime in Osaka! Day %DAY% begins at the Edion Arena.",
-        "A packed house in Osaka for Day %DAY% of the tournament."
+        "A packed house in Osaka for Day %DAY% of the tournament.",
+        "The spring energy of Osaka surrounds the dohyo as %EAST% prepares to face %WEST%.",
+        "Day %DAY% at the Edion Arena sees %EAST% and %WEST% square off.",
+        "The Osaka crowd buzzes with anticipation for %EAST% versus %WEST%."
       ],
       "closing": [
         "The Osaka crowd files out into the spring evening.",
@@ -36,7 +42,10 @@
         "Day %DAY% at the Aichi Prefectural Gymnasium \u2014 the Nagoya Basho begins.",
         "The Nagoya faithful gather for Day %DAY% of the July tournament.",
         "Summer heat in Nagoya! Day %DAY% kicks off at the Dolphins Arena.",
-        "Aichi Prefectural Gymnasium roars to life for Day %DAY%."
+        "Aichi Prefectural Gymnasium roars to life for Day %DAY%.",
+        "The summer heat of Nagoya is matched by the intensity of %EAST% versus %WEST%.",
+        "Day %DAY% in Nagoya brings %EAST% and %WEST% to the center of the ring.",
+        "The Dolphins Arena faithful are ready for this clash between %EAST% and %WEST%."
       ],
       "closing": [
         "The Nagoya crowd departs into the humid summer night.",
@@ -51,7 +60,10 @@
         "Day %DAY% at the Fukuoka Kokusai Center \u2014 the Kyushu Basho is here.",
         "The Fukuoka crowd settles in for Day %DAY% of the November tournament.",
         "Autumn in Kyushu! Day %DAY% begins at the Kokusai Center.",
-        "A warm welcome in Fukuoka for Day %DAY% of the basho."
+        "A warm welcome in Fukuoka for Day %DAY% of the basho.",
+        "The autumn breeze outside gives way to the heat of the dohyo as %EAST% meets %WEST%.",
+        "Fukuoka braces for impact as %EAST% and %WEST% approach the clay.",
+        "Day %DAY% at the Kokusai Center: %EAST% looks to assert dominance over %WEST%."
       ],
       "closing": [
         "The Fukuoka crowd disperses into the cool November evening.",
