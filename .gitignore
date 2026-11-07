@@ -91,3 +91,4 @@ bun_output.txt
 # Generated test/sim artifacts (V7-B05)
 test-list.txt
 test-results.json
+consistency-check-*
