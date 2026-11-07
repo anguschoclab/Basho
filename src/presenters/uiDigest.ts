@@ -171,4 +171,4 @@ export type { Rikishi } from "@/engine/types/rikishi";
 export type { Heya } from "@/engine/types/heya";
 export type { BashoHistorySummary } from "@/engine/history/historyIndex";
 export type { RecordEntry } from "@/engine/types/records";
-export type { HoFInductee } from "@/engine/history/hallOfFame";
+export type { HoFInductee, HoFCategory } from "@/engine/history/hallOfFame";

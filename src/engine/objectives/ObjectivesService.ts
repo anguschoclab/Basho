@@ -95,7 +95,7 @@ export function issueYearlyObjectives(world: WorldState): StateImpact {
   const existing = world.objectivesState ?? { active: [], history: [] };
   if (existing.active.some((o) => o.issuedYear === world.year)) return builder.build();
 
-  const rng = rngForWorld(world, "objectives", `year_${world.year}`);
+  const rng = rngForWorld(world, "objectives", `year_${world.year}_d${world.dayIndexGlobal ?? 0}`);
   const objectives: PlayerObjective[] = [];
 
   // Sekitori growth target scaled to current roster strength.
