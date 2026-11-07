@@ -194,6 +194,22 @@ function consumeBoutTactic(world: WorldState, boutId: string | undefined): World
   ]);
 }
 
+/**
+ * Simulates a single unplayed bout for the current basho day.
+ *
+ * Contract details:
+ * - `unplayedIndex` is the 0-based index within the array of today's *unplayed* bouts
+ *   (i.e., `basho.matches.filter(m => m.day === basho.day && !m.result)`).
+ *   It is NOT the absolute index of the bout in the `basho.matches` array.
+ * - The function returns a new `WorldState` containing the resolved bout's impacts,
+ *   persists the match result into the world's `currentBasho.matches`, and consumes
+ *   the provided `playerTactic` (removing it from `world.boutTactics`).
+ *
+ * @param world - The current world state.
+ * @param unplayedIndex - 0-based index of the target bout among today's remaining unplayed bouts.
+ * @param playerTactic - Optional combat tactic chosen by the player for this bout.
+ * @returns An object containing the evolved `world` and the generated `result`.
+ */
 export function simulateBoutForToday(
   world: WorldState,
   unplayedIndex: number,
