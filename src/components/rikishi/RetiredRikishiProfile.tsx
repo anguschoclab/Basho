@@ -19,7 +19,8 @@ import { getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisp
 import type { WorldState } from "@/presenters/uiDigest";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { getHeya } from "@/presenters/worldAccess";
-import { isInducted, HOF_CATEGORY_LABELS, type HoFCategory } from "@/presenters/uiDigest";
+import { isInducted, HOF_CATEGORY_LABELS } from "@/presenters/uiDigest";
+import type { HoFCategory } from "@/presenters/engineAccess";
 
 const HOF_CATEGORIES: HoFCategory[] = ["champion", "iron_man", "technician"];
 
