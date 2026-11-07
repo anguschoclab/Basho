@@ -8,7 +8,12 @@
 
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Id } from "@/engine/types/common";
-import type { AIPlan, OpponentTacticModel, OyakataMemory, OyakataObservation } from "@/engine/npc/types";
+import type {
+  AIPlan,
+  OpponentTacticModel,
+  OyakataMemory,
+  OyakataObservation,
+} from "@/engine/npc/types";
 
 /**
  * Build an empty memory object for a freshly generated oyakata.

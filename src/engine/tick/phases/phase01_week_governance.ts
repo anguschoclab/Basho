@@ -252,13 +252,7 @@ function processNpcMyosekiPurchases(world: WorldState): {
       if (heya.funds >= price && price > 0) {
         // buyerId is an oyakata id in the myoseki model — passing heyaId
         // stamped a heya id onto ownerId/holderId.
-        const impact = purchaseMyoseki(
-          w,
-          m,
-          available.id,
-          heya.oyakataId ?? heyaId,
-          heya.funds
-        );
+        const impact = purchaseMyoseki(w, m, available.id, heya.oyakataId ?? heyaId, heya.funds);
         myosekiImpacts.push(impact);
         w = resolveImpacts(w, [impact]);
       }

@@ -101,7 +101,8 @@ export function KenshoManagementWidget() {
             <div className="space-y-2 pr-3">
               {playerRikishi.map((rikishi) => {
                 const economics = rikishi.economics;
-                const kenshoEarnings = (economics?.careerKenshoWon || 0) * KENSHO_AMOUNT_PER_ENVELOPE;
+                const kenshoEarnings =
+                  (economics?.careerKenshoWon || 0) * KENSHO_AMOUNT_PER_ENVELOPE;
                 const rank = rikishi.rank || "unknown";
 
                 return (

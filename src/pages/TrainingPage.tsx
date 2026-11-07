@@ -106,7 +106,11 @@ export default function TrainingPage() {
         />
 
         {/* P3 — predicted weekly gains preview via production calculateGains */}
-        <ProjectedGainsPanel world={world} rikishiList={rikishiList} trainingState={trainingState} />
+        <ProjectedGainsPanel
+          world={world}
+          rikishiList={rikishiList}
+          trainingState={trainingState}
+        />
 
         <ReferenceLegend />
       </div>

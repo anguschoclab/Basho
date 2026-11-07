@@ -167,11 +167,7 @@ export function BashoHistoryCard({
                   .filter((e): e is { rid: string; rikishi: Rikishi } => e.rikishi !== null)
                   .map(({ rid, rikishi }) => (
                     <div key={rid} className="font-display flex items-center gap-2">
-                      <SumoAvatar
-                        avatar={avatarOf(rikishi)}
-                        size="xs"
-                        fallback={rikishi.shikona}
-                      />
+                      <SumoAvatar avatar={avatarOf(rikishi)} size="xs" fallback={rikishi.shikona} />
                       <RikishiName id={rid} name={rikishi.shikona} />
                     </div>
                   ))}

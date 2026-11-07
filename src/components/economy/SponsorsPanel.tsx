@@ -5,7 +5,11 @@
 import { useGame } from "@/state/game/useGame";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSponsorsDerived } from "@/hooks/useSponsorsDerived";
-import { KoenkaiCard, ActiveSponsorsCard, ChurnedSponsorsCard } from "@/components/economy/SponsorsPanelSections";
+import {
+  KoenkaiCard,
+  ActiveSponsorsCard,
+  ChurnedSponsorsCard,
+} from "@/components/economy/SponsorsPanelSections";
 
 /** sponsors panel. */
 export function SponsorsPanel() {

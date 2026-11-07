@@ -44,13 +44,13 @@ export const BoutCard = React.memo(
         role={hasResult ? "button" : undefined}
         tabIndex={hasResult ? 0 : undefined}
         aria-label={
-          hasResult
-            ? `View bout detail: ${match.east.shikona} vs ${match.west.shikona}`
-            : undefined
+          hasResult ? `View bout detail: ${match.east.shikona} vs ${match.west.shikona}` : undefined
         }
         onClick={() => hasResult && onBoutClick?.(match)}
         onKeyDown={
-          hasResult ? activationKeyHandler(() => onBoutClick?.(match), { selfOnly: true }) : undefined
+          hasResult
+            ? activationKeyHandler(() => onBoutClick?.(match), { selfOnly: true })
+            : undefined
         }
         className={`
                   bout-card bout-enter p-3 px-4

@@ -12,7 +12,10 @@ import {
 } from "@/engine/recruitment/scoutMissions";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { ensureTalentPoolState } from "@/engine/generation/TalentPoolStateService";
-import { getForeignCountInHeya, candidateConsumesForeignSlot } from "@/engine/generation/TalentPoolScouting";
+import {
+  getForeignCountInHeya,
+  candidateConsumesForeignSlot,
+} from "@/engine/generation/TalentPoolScouting";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 import { getHeya } from "@/engine/core/queries";
 import { EventBus } from "@/engine/events/events";

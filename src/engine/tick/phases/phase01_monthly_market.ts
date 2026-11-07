@@ -8,11 +8,7 @@ import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
-import {
-  MARKET_DRIFT_RANGE,
-  STOCK_PRICE_ROUNDING,
-  RNG_MIDPOINT,
-} from "@/constants/engine/economy";
+import { MARKET_DRIFT_RANGE, STOCK_PRICE_ROUNDING, RNG_MIDPOINT } from "@/constants/engine/economy";
 
 export function phase01_monthly_market(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_monthly_market");

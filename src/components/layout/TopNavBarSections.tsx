@@ -169,7 +169,9 @@ export function ContextCluster({ world }: { world: WorldState | null }) {
       )}
 
       {/* Reputation + Harmony headline metrics (Heya header parity) */}
-      {playerHeya && harmony && <MetricsChips reputation={playerHeya.reputation} harmony={harmony} />}
+      {playerHeya && harmony && (
+        <MetricsChips reputation={playerHeya.reputation} harmony={harmony} />
+      )}
     </div>
   );
 }
@@ -201,7 +203,9 @@ function MetricsChips({
       <TooltipWrap
         content={
           <div className="text-xs space-y-0.5">
-            <p className="font-semibold capitalize">{harmony.band} · {harmony.score}/100</p>
+            <p className="font-semibold capitalize">
+              {harmony.band} · {harmony.score}/100
+            </p>
             <p className="text-[10px] text-muted-foreground">
               Morale {harmony.factors.morale} · Welfare {harmony.factors.welfare} · Staff{" "}
               {harmony.factors.staff} · Rivalries {harmony.factors.rivalries} · Scandal{" "}

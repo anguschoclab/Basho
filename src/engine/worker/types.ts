@@ -19,12 +19,25 @@ export type EngineCommand =
       offerType?: "standard" | "aggressive";
       interest?: "low" | "medium" | "high" | "all_in";
     }
-  | { type: "SEND_SCOUT"; heyaId: string; scoutStaffId: string; tier: "local" | "national" | "international" }
+  | {
+      type: "SEND_SCOUT";
+      heyaId: string;
+      scoutStaffId: string;
+      tier: "local" | "national" | "international";
+    }
   | { type: "HIRE_STAFF_CANDIDATE"; heyaId: string; candidateId: string }
-  | { type: "SET_RIKISHI_DIET"; rikishiId: string; diet: import("@/engine/types/economy").DietRegimen | null }
+  | {
+      type: "SET_RIKISHI_DIET";
+      rikishiId: string;
+      diet: import("@/engine/types/economy").DietRegimen | null;
+    }
   | { type: "SET_RIKISHI_EFFORT"; rikishiId: string; effort: "light" | "standard" | "hard" }
   | { type: "BUY_PHYSIO"; rikishiId: string }
-  | { type: "SCOUT_POOL"; pool: import("@/engine/types/talent").TalentPoolType; revealCount: number }
+  | {
+      type: "SCOUT_POOL";
+      pool: import("@/engine/types/talent").TalentPoolType;
+      revealCount: number;
+    }
   | { type: "SCOUT_CANDIDATE"; candidateId: string; effort: number }
   | { type: "POACH_CANDIDATE"; candidateId: string; heyaId: string }
   | {

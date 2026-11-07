@@ -156,7 +156,10 @@ export function tickScoutMissions(world: WorldState): StateImpact {
         if (take > 0 && nextPool) {
           nextPool.pools[def.pool] = {
             ...tp,
-            candidatesVisible: [...(tp.candidatesVisible ?? []), ...(tp.candidatesHidden ?? []).slice(0, take)],
+            candidatesVisible: [
+              ...(tp.candidatesVisible ?? []),
+              ...(tp.candidatesHidden ?? []).slice(0, take),
+            ],
             candidatesHidden: (tp.candidatesHidden ?? []).slice(take),
           };
         }

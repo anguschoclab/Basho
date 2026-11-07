@@ -6,12 +6,21 @@
  */
 
 import { useGameStore } from "@/state/stores/gameStore";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { decisionToastMessage } from "@/components/shared/decisionFeedback";
 import { useCrisisDetection } from "@/hooks/useCrisisDetection";
-import { CrisisOptionButtons, CrisisFallbackActions } from "@/components/governance/CrisisModalSections";
+import {
+  CrisisOptionButtons,
+  CrisisFallbackActions,
+} from "@/components/governance/CrisisModalSections";
 
 export function CrisisModal() {
   const sendCommand = useGameStore((state) => state.sendCommand);

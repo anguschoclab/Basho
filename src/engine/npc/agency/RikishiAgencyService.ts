@@ -10,7 +10,11 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { RikishiAgencyState, RikishiRequest, RikishiRequestType } from "@/engine/npc/agency/types";
+import type {
+  RikishiAgencyState,
+  RikishiRequest,
+  RikishiRequestType,
+} from "@/engine/npc/agency/types";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { clamp } from "@/engine/utils/math";
 import {

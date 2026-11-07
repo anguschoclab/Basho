@@ -31,14 +31,22 @@ export interface ObjectivesState {
 }
 
 /** Progress metric for an objective kind against live world state. */
-export function objectiveProgress(world: {
-  rikishi: Map<Id, { heyaId?: string; division?: string; isRetired?: boolean }>;
-  heyas: Map<Id, { funds?: number }>;
-}, heyaId: Id, kind: ObjectiveKind): number {
+export function objectiveProgress(
+  world: {
+    rikishi: Map<Id, { heyaId?: string; division?: string; isRetired?: boolean }>;
+    heyas: Map<Id, { funds?: number }>;
+  },
+  heyaId: Id,
+  kind: ObjectiveKind
+): number {
   if (kind === "funds_growth") return world.heyas.get(heyaId)?.funds ?? 0;
   let sekitori = 0;
   for (const r of world.rikishi.values()) {
-    if (r.heyaId === heyaId && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")) {
+    if (
+      r.heyaId === heyaId &&
+      !r.isRetired &&
+      (r.division === "makuuchi" || r.division === "juryo")
+    ) {
       sekitori++;
     }
   }

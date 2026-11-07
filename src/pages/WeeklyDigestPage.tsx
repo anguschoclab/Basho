@@ -44,10 +44,7 @@ export default function WeeklyDigestPage() {
               <AlertCircle className="h-4 w-4" /> Pending Decisions
             </h2>
             {decisions.map((d) => (
-              <div
-                key={d.id}
-                className="rounded-md border border-border/60 p-4 space-y-3"
-              >
+              <div key={d.id} className="rounded-md border border-border/60 p-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <p className="text-sm">{d.description}</p>
                   <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">

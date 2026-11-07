@@ -345,12 +345,7 @@ export const OZEKI_RUN_BANDS: BandDef<OzekiRunBand>[] = [
 
 // === Yokozuna Run Bands (recent yusho/jun-yusho + council support) ===
 // Multi-input state — no single-value ladder; resolved by NarrativeService.
-export type YokozunaRunBand =
-  | "standard"
-  | "unanimous"
-  | "borderline"
-  | "partial"
-  | "testing";
+export type YokozunaRunBand = "standard" | "unanimous" | "borderline" | "partial" | "testing";
 
 // === Yokozuna Support Bands (mediaHeat 0-100, council backing) ===
 export type YokozunaSupportBand = "insufficient" | "adequate" | "strong";

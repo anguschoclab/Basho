@@ -263,10 +263,7 @@ export function GameModeSelector({
                   )}
                 >
                   <Icon
-                    className={cn(
-                      "w-5 h-5",
-                      isSelected ? "text-primary" : "text-muted-foreground"
-                    )}
+                    className={cn("w-5 h-5", isSelected ? "text-primary" : "text-muted-foreground")}
                   />
                 </div>
                 <span className="font-display font-black text-base leading-tight">

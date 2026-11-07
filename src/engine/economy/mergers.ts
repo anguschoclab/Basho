@@ -51,9 +51,7 @@ export function executeMerger(
   // lock its elder stock permanently. Remove the entity and return stock
   // to the JSA pool. Resolution applies entity updates before deletions,
   // so the tenure bump above is a harmless dead write.
-  const departingOyakata = source.oyakataId
-    ? world.oyakata?.get(source.oyakataId)
-    : undefined;
+  const departingOyakata = source.oyakataId ? world.oyakata?.get(source.oyakataId) : undefined;
   if (departingOyakata) {
     builder.removeOyakata(departingOyakata.id);
     builder.merge(releaseElderStockToPool(world, departingOyakata.id));
@@ -205,9 +203,7 @@ function transferRosterAcrossMerger(
     const consumesSlot = countsAsForeign(rikishi, world.year);
     let destId: Id | undefined;
     if (!consumesSlot) {
-      destId = room(target.id)
-        ? target.id
-        : dispersalCandidates.find((h) => room(h.id))?.id;
+      destId = room(target.id) ? target.id : dispersalCandidates.find((h) => room(h.id))?.id;
     } else if (!foreignOccupied.has(target.id) && room(target.id)) {
       destId = target.id;
     } else {

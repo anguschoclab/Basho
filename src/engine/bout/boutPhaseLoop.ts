@@ -20,7 +20,12 @@ import {
   INSTABILITY_FLOOR,
 } from "@/constants/engine/bout";
 import type { EngineStateV2 } from "@/engine/types/combat-spatial";
-import { sideTactics, skillTieBreak, type BoutContext, type SideTactics } from "@/engine/bout/boutUtils";
+import {
+  sideTactics,
+  skillTieBreak,
+  type BoutContext,
+  type SideTactics,
+} from "@/engine/bout/boutUtils";
 
 import { initEngineStateV2 } from "@/engine/bout/physics/initState";
 import { resolveTachiaiV2 } from "@/engine/bout/physics/tachiai";

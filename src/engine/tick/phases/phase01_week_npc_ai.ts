@@ -198,7 +198,8 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       builder.updateOyakata(nextOya.id, nextOya);
 
       maybeAssignNPCMentors(world, heya, builder);
-      sparringDirty = maybeAssignNPCSparringPairs(world, heya, builder, sparringMap) || sparringDirty;
+      sparringDirty =
+        maybeAssignNPCSparringPairs(world, heya, builder, sparringMap) || sparringDirty;
     }
   }
 

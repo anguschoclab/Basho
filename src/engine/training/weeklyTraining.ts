@@ -136,7 +136,11 @@ function applyFatigueStep(
     // P3: hard effort accrues more fatigue; light accrues less.
     const effortFatigue =
       rikishi.effortLevel === "hard" ? 1.25 : rikishi.effortLevel === "light" ? 0.75 : 1.0;
-    updates.fatigue = clampToRestFloor(oldFatigue, oldFatigue + fatigueDelta * effortFatigue, restFloor);
+    updates.fatigue = clampToRestFloor(
+      oldFatigue,
+      oldFatigue + fatigueDelta * effortFatigue,
+      restFloor
+    );
   }
   return isOnRecoveryFocus;
 }
@@ -535,13 +539,7 @@ export function processRikishiWeekly(
   const updates: RikishiUpdates = {};
   const restFloor = getRestFatigueFloor(world, rikishi.heyaId);
 
-  const isOnRecoveryFocus = applyFatigueStep(
-    rikishi,
-    profile,
-    individualFocus,
-    updates,
-    restFloor
-  );
+  const isOnRecoveryFocus = applyFatigueStep(rikishi, profile, individualFocus, updates, restFloor);
 
   // Phase 5: Emergent Prodigy Burnout Check
   applyProdigyBurnout(rikishi, profile, world, updates, builder);

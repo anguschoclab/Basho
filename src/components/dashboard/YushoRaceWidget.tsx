@@ -42,7 +42,9 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
       role="button"
       aria-label={`View ${entry.shikona}`}
       tabIndex={0}
-      onKeyDown={activationKeyHandler(() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: entry.id } }))}
+      onKeyDown={activationKeyHandler(() =>
+        navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: entry.id } })
+      )}
     >
       {/* Avatar with medal */}
       <div className="relative">

@@ -50,7 +50,11 @@ export function ManagerCareerCard({ world, heyaId }: { world: WorldState; heyaId
           <Badge variant="outline">{p.legacyTier}</Badge>
           <Badge variant="secondary">
             <Landmark className="mr-1 h-3 w-3" />
-            {p.election.chairman ? "Chairman" : p.election.boardSeat ? `Board #${p.election.rank}` : `Rank ${p.election.rank}`}
+            {p.election.chairman
+              ? "Chairman"
+              : p.election.boardSeat
+                ? `Board #${p.election.rank}`
+                : `Rank ${p.election.rank}`}
           </Badge>
         </div>
 

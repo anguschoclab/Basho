@@ -3,7 +3,11 @@ import type { EngineEvent } from "@/engine/types/events";
 import { scanRecentEvents } from "@/presenters/selectors";
 import { useEventReadStore } from "@/state/stores/eventReadStore";
 import { EventDetailDialog } from "@/components/shared/EventDetailDialog";
-import { EventLogHeader, EventLogList, type EventGroup } from "@/components/layout/EventLogSections";
+import {
+  EventLogHeader,
+  EventLogList,
+  type EventGroup,
+} from "@/components/layout/EventLogSections";
 
 /** Defines the structure for event log panel props. */
 interface EventLogPanelProps {

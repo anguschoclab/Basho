@@ -193,7 +193,8 @@ export function tickWeekEventChains(world: WorldState): StateImpact {
       if (eligible.length > 0) {
         const totalWeight = eligible.reduce((s, d) => s + defWeight(d, world), 0);
         let pick =
-          RNGRegistry.getSystemRNG(world, CHAIN_RNG, `pick_def_${currentWeek}`).next() * totalWeight;
+          RNGRegistry.getSystemRNG(world, CHAIN_RNG, `pick_def_${currentWeek}`).next() *
+          totalWeight;
         let chosen = eligible[eligible.length - 1];
         for (const d of eligible) {
           pick -= defWeight(d, world);
@@ -229,7 +230,8 @@ function describeEffects(o: ChainOption): string {
   const e = o.effects;
   if (!e) return "Let events take their course.";
   const parts: string[] = [];
-  if (e.funds) parts.push(`${e.funds > 0 ? "+" : "−"}¥${Math.abs(e.funds).toLocaleString("en-US")}`);
+  if (e.funds)
+    parts.push(`${e.funds > 0 ? "+" : "−"}¥${Math.abs(e.funds).toLocaleString("en-US")}`);
   if (e.reputation) parts.push(`${e.reputation > 0 ? "+" : ""}${e.reputation} reputation`);
   if (e.morale) parts.push(`${e.morale > 0 ? "+" : ""}${e.morale} morale`);
   if (e.welfareRisk) parts.push(`${e.welfareRisk > 0 ? "+" : ""}${e.welfareRisk} welfare risk`);
@@ -274,7 +276,9 @@ function applyEffects(
     for (const rid of world.activeRikishiIds) {
       const r = world.rikishi.get(rid);
       if (!r || r.heyaId !== heyaId || r.isRetired) continue;
-      builder.updateRikishi(rid, { fatigue: Math.max(0, (r.fatigue ?? 0) + effects.rosterFatigue) });
+      builder.updateRikishi(rid, {
+        fatigue: Math.max(0, (r.fatigue ?? 0) + effects.rosterFatigue),
+      });
     }
   }
   if (effects.momentum && chain.rikishiId) {

@@ -66,24 +66,24 @@ export function RevealEntryCard({ entry, isCurrent }: { entry: RevealEntry; isCu
       <div className="flex items-center gap-3">
         <SumoAvatar avatar={entry.avatar} size="md" fallback={entry.shikona} />
         <div className="flex flex-col">
-        <span className="text-xs text-muted-foreground uppercase font-bold tabular-nums">
-          Rank Change
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-bold font-display">
-            <RikishiName id={entry.id} name={entry.shikona} />
+          <span className="text-xs text-muted-foreground uppercase font-bold tabular-nums">
+            Rank Change
           </span>
-          {entry.change === "new" && (
-            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-primary/80 text-primary-foreground">
-              NEW
-            </Badge>
-          )}
-          {entry.change === "division_change" && (
-            <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-accent/80 text-primary-foreground">
-              DIV
-            </Badge>
-          )}
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold font-display">
+              <RikishiName id={entry.id} name={entry.shikona} />
+            </span>
+            {entry.change === "new" && (
+              <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-primary/80 text-primary-foreground">
+                NEW
+              </Badge>
+            )}
+            {entry.change === "division_change" && (
+              <Badge className="text-[10px] font-bold uppercase tracking-widest px-2 h-5 bg-accent/80 text-primary-foreground">
+                DIV
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 

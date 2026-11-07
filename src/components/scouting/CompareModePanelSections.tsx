@@ -214,8 +214,12 @@ export function CompareInjuryAvailability({
         )}
         <CompareAvailabilityRow
           label="Weeks out"
-          valA={availabilityA.weeksRemaining !== undefined ? `${availabilityA.weeksRemaining}w` : emDash}
-          valB={availabilityB.weeksRemaining !== undefined ? `${availabilityB.weeksRemaining}w` : emDash}
+          valA={
+            availabilityA.weeksRemaining !== undefined ? `${availabilityA.weeksRemaining}w` : emDash
+          }
+          valB={
+            availabilityB.weeksRemaining !== undefined ? `${availabilityB.weeksRemaining}w` : emDash
+          }
         />
         <CompareAvailabilityRow
           label="Record"

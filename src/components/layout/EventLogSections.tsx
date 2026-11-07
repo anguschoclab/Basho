@@ -99,12 +99,7 @@ function EventRow({
       )}
     >
       <div className="flex items-start gap-3">
-        <div
-          className={cn(
-            "mt-0.5 shrink-0 p-1.5 rounded-lg bg-card",
-            meta.color
-          )}
-        >
+        <div className={cn("mt-0.5 shrink-0 p-1.5 rounded-lg bg-card", meta.color)}>
           <Icon className="h-4 w-4" />
         </div>
         <div className="flex-1 min-w-0">

@@ -212,7 +212,8 @@ function LeagueLeaders({ world }: { world: WorldState }) {
     .map((h) => ({
       h,
       sekitori: allRikishi.filter(
-        (r) => r.heyaId === h.id && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")
+        (r) =>
+          r.heyaId === h.id && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")
       ).length,
     }))
     .sort((a, b) => b.sekitori - a.sekitori)
@@ -230,9 +231,16 @@ function LeagueLeaders({ world }: { world: WorldState }) {
           </CardHeader>
           <CardContent>
             {leaders.map(({ r, wins, losses }) => (
-              <div key={r.id} className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0">
-                <span className="text-sm">{r.shikona} <span className="text-muted-foreground text-xs">· {r.rank}</span></span>
-                <span className="font-mono text-sm">{wins}–{losses}</span>
+              <div
+                key={r.id}
+                className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0"
+              >
+                <span className="text-sm">
+                  {r.shikona} <span className="text-muted-foreground text-xs">· {r.rank}</span>
+                </span>
+                <span className="font-mono text-sm">
+                  {wins}–{losses}
+                </span>
               </div>
             ))}
           </CardContent>
@@ -245,8 +253,14 @@ function LeagueLeaders({ world }: { world: WorldState }) {
         </CardHeader>
         <CardContent>
           {stables.map(({ h, sekitori }) => (
-            <div key={h.id} className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0">
-              <span className="text-sm capitalize">{h.name ?? h.id}{h.id === world.playerHeyaId ? " (you)" : ""}</span>
+            <div
+              key={h.id}
+              className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0"
+            >
+              <span className="text-sm capitalize">
+                {h.name ?? h.id}
+                {h.id === world.playerHeyaId ? " (you)" : ""}
+              </span>
               <span className="font-mono text-sm">{sekitori}</span>
             </div>
           ))}

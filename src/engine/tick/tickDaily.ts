@@ -186,8 +186,11 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
     }
 
     // Consume deferred boundaries from previous non-weekly days in this cycle
-    const { world: boundaryWorld, effectiveMonthBoundary, effectiveYearBoundary } =
-      applyDeferredBoundaries(nextWorld, boundaries);
+    const {
+      world: boundaryWorld,
+      effectiveMonthBoundary,
+      effectiveYearBoundary,
+    } = applyDeferredBoundaries(nextWorld, boundaries);
     nextWorld = boundaryWorld;
 
     // P3.7: Monthly market runs on month-boundary weekly ticks (not daily micro-phases)

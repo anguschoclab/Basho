@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { ArrowLeft } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { HeaderBadges, HeaderIdentity, CareerStatsColumn } from "@/components/rikishi/RikishiProfileHeaderSections";
+import {
+  HeaderBadges,
+  HeaderIdentity,
+  CareerStatsColumn,
+} from "@/components/rikishi/RikishiProfileHeaderSections";
 
 interface RikishiProfileHeaderProps {
   rikishi: UIRikishi;

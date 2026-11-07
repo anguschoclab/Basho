@@ -7,7 +7,16 @@ import type { PerceptionSnapshot } from "@/presenters/engineAccess";
 import { BaseWidget } from "@/components/dashboard/BaseWidget";
 import { getCachedPerception } from "@/presenters/uiDigest";
 import { projectManagerCareer } from "@/presenters/projections/careerProjections";
-import { Building2, Heart, Shield, Users, Handshake, Zap, Landmark, AlertTriangle } from "lucide-react";
+import {
+  Building2,
+  Heart,
+  Shield,
+  Users,
+  Handshake,
+  Zap,
+  Landmark,
+  AlertTriangle,
+} from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
   inspired: "text-success",
@@ -136,7 +145,9 @@ function CareerLine({ world }: { world: Parameters<typeof projectManagerCareer>[
       <Landmark className="h-3 w-3 shrink-0" />
       <span className="truncate">
         {standing}
-        {next ? ` · Next: ${next.label} (${Math.round(next.progress * 100)}%)` : " · All milestones achieved"}
+        {next
+          ? ` · Next: ${next.label} (${Math.round(next.progress * 100)}%)`
+          : " · All milestones achieved"}
       </span>
       {risk >= 0.5 && (
         <span className="flex items-center gap-1 text-destructive shrink-0">

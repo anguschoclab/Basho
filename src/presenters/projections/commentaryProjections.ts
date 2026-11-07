@@ -17,10 +17,7 @@ const KINBOSHI_CALLS = [
   "Gold star! A kinboshi — the maegashira topples the champion!",
   "The crowd erupts — kinboshi awarded for downing the yokozuna!",
 ];
-const UPSET_CALLS = [
-  "A genuine upset on the dohyo!",
-  "The rankings lied today — upset victory!",
-];
+const UPSET_CALLS = ["A genuine upset on the dohyo!", "The rankings lied today — upset victory!"];
 const FINISH_CALLS: [RegExp, string][] = [
   [/nagete|nage|sukuinage|uwatenage|shitatenage/, "A masterful throw to seal it!"],
   [/hineri|kakenage|kotenage/, "Beautiful twisting finish!"],

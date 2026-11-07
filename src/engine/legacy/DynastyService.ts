@@ -140,9 +140,7 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
 
     // Forced succession at 65
     if (age >= 65 && !oyakata.retirementYear) {
-      if (
-        endIronmanCareer(world, builder, heya, oyakata, "mandatory retirement at 65 (JSA)")
-      ) {
+      if (endIronmanCareer(world, builder, heya, oyakata, "mandatory retirement at 65 (JSA)")) {
         continue;
       }
       const eligible = findEligibleSuccessors(world, heya.id);
@@ -582,11 +580,7 @@ function triggerSuccessionWithGeneric(
  *
  * @returns true when the stable was closed (merger merged into `builder`).
  */
-function closeIfHeirlessAndDying(
-  world: WorldState,
-  heya: Heya,
-  builder: ImpactBuilder
-): boolean {
+function closeIfHeirlessAndDying(world: WorldState, heya: Heya, builder: ImpactBuilder): boolean {
   if (heya.id === world.playerHeyaId) return false;
   if (world.heyas.size <= HEYA_FLOOR) return false;
 
@@ -604,11 +598,8 @@ function closeIfHeirlessAndDying(
   // otherwise the standard merger-target search picks a kin stable.
   const parent = heya.branchedFromHeyaId ? getHeya(world, heya.branchedFromHeyaId) : undefined;
   const parentCanAbsorb =
-    parent !== undefined &&
-    getHeyaRoster(world, parent.id).length < ROSTER_CAPACITY_MERGER;
-  const targetId = parentCanAbsorb
-    ? parent.id
-    : findMergerTarget(world, heya.id);
+    parent !== undefined && getHeyaRoster(world, parent.id).length < ROSTER_CAPACITY_MERGER;
+  const targetId = parentCanAbsorb ? parent.id : findMergerTarget(world, heya.id);
   if (!targetId) return false;
 
   // The departing master exits for real inside executeMerger — the oyakata

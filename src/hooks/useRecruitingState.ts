@@ -10,7 +10,11 @@ import { useGame } from "@/state/game/useGame";
 import { useToast } from "@/hooks/use-toast";
 import { useGameStore } from "@/state/stores/gameStore";
 import { projectRecruitmentUIDigest } from "@/presenters/uiDigest";
-import { FOREIGN_RIKISHI_LIMIT_PER_HEYA, getHeyaForeignUsage, getHeyaRoster } from "@/presenters/engineAccess";
+import {
+  FOREIGN_RIKISHI_LIMIT_PER_HEYA,
+  getHeyaForeignUsage,
+  getHeyaRoster,
+} from "@/presenters/engineAccess";
 import { makePlayerSignChance } from "@/presenters/projections/signChanceProjection";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
@@ -61,20 +65,16 @@ export function useRecruitingState(playerHeyaId: string | null) {
 
   const limitReached = foreignUsage >= FOREIGN_RIKISHI_LIMIT_PER_HEYA;
 
-  const {
-    handleScoutPool,
-    handleScoutCandidate,
-    handleOfferClick,
-    handleConfirmSigning,
-  } = useRecruitingCommands({
-    world,
-    sendCommand,
-    toast,
-    activePool,
-    playerHeyaId,
-    signingCandidate,
-    setSigningCandidate,
-  });
+  const { handleScoutPool, handleScoutCandidate, handleOfferClick, handleConfirmSigning } =
+    useRecruitingCommands({
+      world,
+      sendCommand,
+      toast,
+      activePool,
+      playerHeyaId,
+      signingCandidate,
+      setSigningCandidate,
+    });
 
   const toggleSelection = (id: string) => {
     setSelectedCandidates((prev) =>

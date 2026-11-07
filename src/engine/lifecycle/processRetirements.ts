@@ -76,10 +76,7 @@ export function retireRikishiFully(
   const careerWins = rikishi.careerWins ?? 0;
   const careerLosses = rikishi.careerLosses ?? 0;
   const yearsActive = world.year - rikishi.birthYear - 15;
-  const yushoCount = (rikishi.careerHistory ?? []).reduce(
-    (acc, h) => acc + (h.isYusho ? 1 : 0),
-    0
-  );
+  const yushoCount = (rikishi.careerHistory ?? []).reduce((acc, h) => acc + (h.isYusho ? 1 : 0), 0);
   const kinboshiCount = rikishi.economics?.kinboshiCount ?? 0;
   const retirementNarrative = generateRetirementNarrative(
     rikishi,

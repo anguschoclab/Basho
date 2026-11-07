@@ -212,16 +212,14 @@ export function evaluateFoundingEligibility(
     (parentHeya.funds ?? 0) > MERGER_THRESHOLD;
   if (!parentViable) return none;
 
-  const personallySolvent =
-    (retiree.economics?.retirementFund ?? 0) >= FOUNDING_SEED_FUNDS;
+  const personallySolvent = (retiree.economics?.retirementFund ?? 0) >= FOUNDING_SEED_FUNDS;
   const parentCanSponsor = (parentHeya.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
   if (!personallySolvent && !parentCanSponsor) return none;
 
   const headroomToTarget = HEYA_SOFT_TARGET - world.heyas.size;
   if (headroomToTarget <= 0) return none;
 
-  const effectiveChance =
-    FOUNDING_CHANCE * Math.min(1, headroomToTarget / HEYA_FOUNDING_RAMP);
+  const effectiveChance = FOUNDING_CHANCE * Math.min(1, headroomToTarget / HEYA_FOUNDING_RAMP);
   return {
     canFound: effectiveChance > 0,
     effectiveChance,

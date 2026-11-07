@@ -24,7 +24,11 @@ import type {
   YokozunaTsuna,
   Season,
 } from "@/engine/types/keshoMawashi";
-import { getSeasonFromBasho, SEASONAL_PALETTES, SEASONAL_MOTIFS } from "@/engine/types/keshoMawashi";
+import {
+  getSeasonFromBasho,
+  SEASONAL_PALETTES,
+  SEASONAL_MOTIFS,
+} from "@/engine/types/keshoMawashi";
 import {
   DEFAULT_KESHO_WEIGHTS,
   NATIONAL_FLAG_PALETTES,

@@ -30,7 +30,6 @@ import {
 } from "@/constants/engine/economic";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 
-
 /**
  * Financial insolvency check: scandal report, bailout loans,
  * faction-solidarity gifts, and insolvency-triggered mergers.

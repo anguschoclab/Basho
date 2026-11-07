@@ -1,4 +1,8 @@
-import type { ReplayPhase, RikishiState, BodyPhase } from "@/components/basho/boutReplay/boutCanvas/types";
+import type {
+  ReplayPhase,
+  RikishiState,
+  BodyPhase,
+} from "@/components/basho/boutReplay/boutCanvas/types";
 import type { BoutScript, BoutAnimationFamily } from "@/presenters/engineAccess";
 import { lerp, easeOut, easeInOut } from "@/components/basho/boutReplay/boutCanvas/math";
 import {

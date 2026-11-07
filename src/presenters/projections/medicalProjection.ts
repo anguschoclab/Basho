@@ -30,9 +30,7 @@ export function projectMedicalUIDigest(world: WorldState) {
   // constants/engine/perception) — the same source WelfarePanel and the NPC
   // AI use — so this panel can never disagree with the rest of the UI.
   const snapshot = getCachedPerception(world, playerHeyaId);
-  const perceptionByRikishi = new Map(
-    snapshot.rikishiPerceptions.map((p) => [p.rikishiId, p])
-  );
+  const perceptionByRikishi = new Map(snapshot.rikishiPerceptions.map((p) => [p.rikishiId, p]));
 
   const rikishiHealthPerceptions: Array<{
     rikishiId: string;

@@ -80,7 +80,7 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
   const rank = Math.max(1, ranked.indexOf(heyaId) + 1);
   const myScore = scores.get(heyaId) ?? electionScore(heya ?? {});
   const boardCutoff = ranked[ELECTION_BOARD_SIZE - 1];
-  const fifthScore = boardCutoff !== undefined ? scores.get(boardCutoff) ?? 0 : null;
+  const fifthScore = boardCutoff !== undefined ? (scores.get(boardCutoff) ?? 0) : null;
   // Mirrors runElections' slice(0, ELECTION_BOARD_SIZE): anyone ranked inside
   // the board takes a seat, including short fields. A heyaId absent from the
   // world can't be seated — the old `size >= 1` guard was tautological.

@@ -9,11 +9,7 @@ import type { EngineCommand } from "@/engine/worker/types";
 import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
 import { runHoliday } from "@/engine/calendar/holiday";
 import * as legacy from "@/engine/legacy/DynastyService";
-import {
-  addBookmark,
-  removeBookmark,
-  updateBookmarkNote,
-} from "@/engine/bookmark/BookmarkService";
+import { addBookmark, removeBookmark, updateBookmarkNote } from "@/engine/bookmark/BookmarkService";
 import {
   advanceTutorialStep as svcAdvanceTutorialStep,
   setTutorialFlag as svcSetTutorialFlag,

@@ -36,10 +36,7 @@ export function tickFacilityCondition(world: WorldState): StateImpact {
     const next: typeof infra = { ...infra };
     for (const [id, state] of Object.entries(infra)) {
       if (state?.status !== "active") continue;
-      const condition = Math.max(
-        0,
-        (state.condition ?? 100) - FACILITY_CONDITION_DECAY_PER_MONTH
-      );
+      const condition = Math.max(0, (state.condition ?? 100) - FACILITY_CONDITION_DECAY_PER_MONTH);
       if (condition !== state.condition) {
         next[id] = { ...state, condition };
         dirty = true;
@@ -53,11 +50,7 @@ export function tickFacilityCondition(world: WorldState): StateImpact {
 /**
  * REPAIR_INFRASTRUCTURE — refurbish a worn facility back to 100% condition.
  */
-export function repairFacility(
-  world: WorldState,
-  heyaId: Id,
-  facilityId: FacilityId
-): StateImpact {
+export function repairFacility(world: WorldState, heyaId: Id, facilityId: FacilityId): StateImpact {
   const builder = createImpactBuilder("repairFacility");
   const heya = world.heyas.get(heyaId);
   const state = heya?.infrastructure?.[facilityId];

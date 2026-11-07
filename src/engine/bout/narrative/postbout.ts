@@ -3,10 +3,7 @@
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
-import {
-  CAREER_BOUT_MILESTONES,
-  CAREER_WIN_MILESTONES,
-} from "@/constants/engine/generation";
+import { CAREER_BOUT_MILESTONES, CAREER_WIN_MILESTONES } from "@/constants/engine/generation";
 import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import type { BoutTactic } from "@/engine/types/combat";

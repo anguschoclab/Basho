@@ -35,8 +35,7 @@ export function useTrainingState(
   // LOAD_WORLD, engine ticks, or playerHeyaId changes. Committed mutations
   // round-trip through SET_TRAINING_STATE so a resync of the same value
   // is a no-op.
-  const worldState =
-    world && playerHeyaId ? world.trainingState?.get(playerHeyaId) : undefined;
+  const worldState = world && playerHeyaId ? world.trainingState?.get(playerHeyaId) : undefined;
   useEffect(() => {
     if (worldState) setTrainingState(worldState);
   }, [worldState]);

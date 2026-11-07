@@ -115,7 +115,11 @@ interface AuditCtx {
     into: ReadonlySet<string>,
     detail: string
   ) => void;
-  checkMapKeys: (collection: string, map: Map<string, unknown> | undefined, keyField?: string) => void;
+  checkMapKeys: (
+    collection: string,
+    map: Map<string, unknown> | undefined,
+    keyField?: string
+  ) => void;
   checkRecordKeys: (
     collection: string,
     record: Record<string, unknown> | undefined,
@@ -238,14 +242,20 @@ function auditRikishiCollections(ctx: AuditCtx): void {
   for (const [id, r] of world.rikishi) {
     if (r.isRetired) add("cross_collection", "rikishi", id, "retired rikishi still in active map");
     if (world.historicalRikishi.has(id)) {
-      add("cross_collection", "rikishi_vs_historical", id, "present in both rikishi and historicalRikishi");
+      add(
+        "cross_collection",
+        "rikishi_vs_historical",
+        id,
+        "present in both rikishi and historicalRikishi"
+      );
     }
   }
   const activeIds = world.activeRikishiIds ?? new Set<string>();
   for (const id of activeIds) {
     const r = world.rikishi.get(id);
     if (!r) add("dangling_ref", "activeRikishiIds", id, "index entry resolves to nothing");
-    else if (r.isRetired) add("cross_collection", "activeRikishiIds", id, "retired rikishi still in active index");
+    else if (r.isRetired)
+      add("cross_collection", "activeRikishiIds", id, "retired rikishi still in active index");
     if (world.historicalRikishi.has(id)) {
       add("cross_collection", "activeRikishiIds", id, "active index references a historical entry");
     }
@@ -276,7 +286,12 @@ function auditHeyaCollections(ctx: AuditCtx): void {
         seen.add(id);
         const prev = rosterOwner.get(id);
         if (prev !== undefined && prev !== heya.id) {
-          add("duplicate_id", "heya.rikishiIds", id, `on rosters of both '${prev}' and '${heya.id}'`);
+          add(
+            "duplicate_id",
+            "heya.rikishiIds",
+            id,
+            `on rosters of both '${prev}' and '${heya.id}'`
+          );
         } else {
           rosterOwner.set(id, heya.id);
         }
@@ -285,7 +300,12 @@ function auditHeyaCollections(ctx: AuditCtx): void {
         if (!active && !historical) {
           add("dangling_ref", "heya.rikishiIds", id, `unresolvable on roster of heya '${heya.id}'`);
         } else if (!active) {
-          add("cross_collection", "heya.rikishiIds", id, `retired rikishi still on roster of heya '${heya.id}'`);
+          add(
+            "cross_collection",
+            "heya.rikishiIds",
+            id,
+            `retired rikishi still on roster of heya '${heya.id}'`
+          );
         } else if (active.heyaId !== heya.id) {
           add(
             "cross_collection",
@@ -300,7 +320,12 @@ function auditHeyaCollections(ctx: AuditCtx): void {
     // A set ref pointing at an absent collection is itself a dangling ref —
     // koenkaiIds/brandIds are already empty when the maps don't exist.
     checkRef("heya.koenkaiId", heya.koenkaiId, sets.koenkaiIds, `koenkaiId of heya '${heya.id}'`);
-    checkRef("heya.brandIdentityId", heya.brandIdentityId, sets.brandIds, `brandIdentityId of heya '${heya.id}'`);
+    checkRef(
+      "heya.brandIdentityId",
+      heya.brandIdentityId,
+      sets.brandIds,
+      `brandIdentityId of heya '${heya.id}'`
+    );
   }
   for (const [key, rec] of world.closedHeyas ?? new Map()) {
     checkRef("closedHeyas", rec.mergedInto, sets.heyaIds, `mergedInto of closed heya '${key}'`);
@@ -311,15 +336,40 @@ function auditHeyaCollections(ctx: AuditCtx): void {
 function auditRikishiRefs(ctx: AuditCtx): void {
   const { world, sets, checkRef, checkIdList } = ctx;
   for (const r of world.rikishi.values()) {
-    checkIdList("rikishi.tsukebitoIds", r.tsukebitoIds, sets.rikishiIds, `tsukebitoIds of rikishi '${r.id}'`);
-    checkIdList("rikishi.menteeIds", r.menteeIds, sets.rikishiIds, `menteeIds of rikishi '${r.id}'`);
+    checkIdList(
+      "rikishi.tsukebitoIds",
+      r.tsukebitoIds,
+      sets.rikishiIds,
+      `tsukebitoIds of rikishi '${r.id}'`
+    );
+    checkIdList(
+      "rikishi.menteeIds",
+      r.menteeIds,
+      sets.rikishiIds,
+      `menteeIds of rikishi '${r.id}'`
+    );
     checkRef("rikishi.heyaId", r.heyaId, sets.heyaIds, `heyaId of rikishi '${r.id}'`);
     checkRef("rikishi.mentorId", r.mentorId, sets.rikishiIds, `mentorId of rikishi '${r.id}'`);
-    checkRef("rikishi.tachimochiId", r.tachimochiId, sets.rikishiIds, `tachimochiId of rikishi '${r.id}'`);
-    checkRef("rikishi.tsuyuharaiId", r.tsuyuharaiId, sets.rikishiIds, `tsuyuharaiId of rikishi '${r.id}'`);
+    checkRef(
+      "rikishi.tachimochiId",
+      r.tachimochiId,
+      sets.rikishiIds,
+      `tachimochiId of rikishi '${r.id}'`
+    );
+    checkRef(
+      "rikishi.tsuyuharaiId",
+      r.tsuyuharaiId,
+      sets.rikishiIds,
+      `tsuyuharaiId of rikishi '${r.id}'`
+    );
   }
   checkRef("world.playerHeyaId", world.playerHeyaId, sets.heyaIds, "playerHeyaId");
-  checkRef("world.selectedRikishiId", world.selectedRikishiId, sets.rikishiIds, "selectedRikishiId");
+  checkRef(
+    "world.selectedRikishiId",
+    world.selectedRikishiId,
+    sets.rikishiIds,
+    "selectedRikishiId"
+  );
 }
 
 /** Pooled .id arrays: no duplicates. */
@@ -371,7 +421,8 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
     checkRef("history", b.ginoSho, sets.rikishiIds, `basho '${b.id}' ginoSho`);
     checkRef("history", b.shukunsho, sets.rikishiIds, `basho '${b.id}' shukunsho`);
     checkRef("history", b.kantosho, sets.rikishiIds, `basho '${b.id}' kantosho`);
-    for (const id of b.junYusho ?? []) checkRef("history", id, sets.rikishiIds, `basho '${b.id}' junYusho`);
+    for (const id of b.junYusho ?? [])
+      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' junYusho`);
   }
   for (const snapshot of world.almanacSnapshots ?? []) {
     checkRef(
@@ -382,7 +433,12 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
     );
     for (const section of [snapshot.promotions, snapshot.demotions, snapshot.retirements]) {
       for (const entry of section ?? []) {
-        checkRef("almanacSnapshots", entry.rikishiId, sets.rikishiIds, `snapshot ${snapshot.year}-${snapshot.bashoNumber}`);
+        checkRef(
+          "almanacSnapshots",
+          entry.rikishiId,
+          sets.rikishiIds,
+          `snapshot ${snapshot.year}-${snapshot.bashoNumber}`
+        );
       }
     }
   }
@@ -390,7 +446,8 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
     const seen = new Set<string>();
     for (const snapshot of world.almanacSnapshots ?? []) {
       const key = `${snapshot.year}-${snapshot.bashoNumber}`;
-      if (seen.has(key)) add("duplicate_id", "almanacSnapshots", key, "duplicate snapshot for basho");
+      if (seen.has(key))
+        add("duplicate_id", "almanacSnapshots", key, "duplicate snapshot for basho");
       seen.add(key);
     }
   }
@@ -425,13 +482,24 @@ function auditTournaments(ctx: AuditCtx): void {
     const seenBoutIds = new Set<string>();
     for (const m of basho.matches ?? []) {
       if (typeof m.boutId === "string") {
-        if (seenBoutIds.has(m.boutId)) add("duplicate_id", "currentBasho.matches", m.boutId, "duplicate boutId");
+        if (seenBoutIds.has(m.boutId))
+          add("duplicate_id", "currentBasho.matches", m.boutId, "duplicate boutId");
         seenBoutIds.add(m.boutId);
       }
       checkRef("currentBasho.matches", m.eastRikishiId, sets.rikishiIds, `bout '${m.boutId}' east`);
       checkRef("currentBasho.matches", m.westRikishiId, sets.rikishiIds, `bout '${m.boutId}' west`);
-      checkRef("currentBasho.matches", m.result?.winnerRikishiId, sets.rikishiIds, `bout '${m.boutId}' winner`);
-      checkRef("currentBasho.matches", m.result?.loserRikishiId, sets.rikishiIds, `bout '${m.boutId}' loser`);
+      checkRef(
+        "currentBasho.matches",
+        m.result?.winnerRikishiId,
+        sets.rikishiIds,
+        `bout '${m.boutId}' winner`
+      );
+      checkRef(
+        "currentBasho.matches",
+        m.result?.loserRikishiId,
+        sets.rikishiIds,
+        `bout '${m.boutId}' loser`
+      );
     }
     for (const key of basho.standings?.keys() ?? []) {
       checkRef("currentBasho.standings", key, sets.rikishiIds, "standings key");
@@ -440,7 +508,8 @@ function auditTournaments(ctx: AuditCtx): void {
   if (world.globalCup) {
     const seen = new Set<string>();
     for (const p of world.globalCup.participants ?? []) {
-      if (seen.has(p.rikishiId)) add("duplicate_id", "globalCup.participants", p.rikishiId, "duplicate participant");
+      if (seen.has(p.rikishiId))
+        add("duplicate_id", "globalCup.participants", p.rikishiId, "duplicate participant");
       seen.add(p.rikishiId);
       checkRef("globalCup.participants", p.rikishiId, sets.cupIds, "participant rikishiId");
       checkRef("globalCup.participants", p.heyaId, sets.heyaIds, "participant heyaId");
@@ -473,7 +542,11 @@ function auditRecordKeyed(ctx: AuditCtx): void {
   }
   for (const b of world.playerKnowledge?.bookmarks ?? []) {
     const into =
-      b.entityType === "rikishi" ? sets.rikishiIds : b.entityType === "heya" ? sets.heyaIds : undefined;
+      b.entityType === "rikishi"
+        ? sets.rikishiIds
+        : b.entityType === "heya"
+          ? sets.heyaIds
+          : undefined;
     if (into) checkRef("playerKnowledge.bookmarks", b.entityId, into, `bookmark '${b.entityType}'`);
   }
 }
@@ -493,7 +566,12 @@ function auditTalentPools(ctx: AuditCtx): void {
     for (const [key, c] of Object.entries(candidates)) {
       if (typeof c.personId === "string") {
         if (personIds.has(c.personId)) {
-          add("duplicate_id", `${poolName}.candidates`, c.personId, `personId shared by candidates ('${key}')`);
+          add(
+            "duplicate_id",
+            `${poolName}.candidates`,
+            c.personId,
+            `personId shared by candidates ('${key}')`
+          );
         }
         personIds.add(c.personId);
       }
@@ -513,11 +591,21 @@ function auditTalentPools(ctx: AuditCtx): void {
           checkRef(coll, cid, candidateIds, `in ${poolType} pool`);
           const other = listName === "candidatesVisible" ? "candidatesHidden" : "candidatesVisible";
           if ((pool[other] ?? []).includes(cid)) {
-            add("cross_collection", `${poolName}.pools`, cid, `candidate in both visible and hidden of ${poolType} pool`);
+            add(
+              "cross_collection",
+              `${poolName}.pools`,
+              cid,
+              `candidate in both visible and hidden of ${poolType} pool`
+            );
           }
           const prevPool = poolListings.get(cid);
           if (prevPool !== undefined && prevPool !== poolType) {
-            add("cross_collection", `${poolName}.pools`, cid, `listed in both '${prevPool}' and '${poolType}' pools`);
+            add(
+              "cross_collection",
+              `${poolName}.pools`,
+              cid,
+              `listed in both '${prevPool}' and '${poolType}' pools`
+            );
           } else {
             poolListings.set(cid, poolType);
           }
@@ -537,11 +625,14 @@ function auditSponsorPool(ctx: AuditCtx): void {
     collection: string
   ): void => {
     if (typeof rel.relId === "string") {
-      if (seen.has(rel.relId)) add("duplicate_id", collection, rel.relId, "duplicate relationship id");
+      if (seen.has(rel.relId))
+        add("duplicate_id", collection, rel.relId, "duplicate relationship id");
       seen.add(rel.relId);
     }
-    if (rel.targetType === "heya") checkRef(collection, rel.targetId, sets.heyaIds, "relationship target");
-    else if (rel.targetType === "rikishi") checkRef(collection, rel.targetId, sets.rikishiIds, "relationship target");
+    if (rel.targetType === "heya")
+      checkRef(collection, rel.targetId, sets.heyaIds, "relationship target");
+    else if (rel.targetType === "rikishi")
+      checkRef(collection, rel.targetId, sets.rikishiIds, "relationship target");
     // "league" / "basho" targets have no entity map to resolve against.
   };
   // relationships and koenkai.members are distinct namespaces: heya-targeted
@@ -550,14 +641,24 @@ function auditSponsorPool(ctx: AuditCtx): void {
   const relIds = new Set<string>();
   for (const [key, sp] of world.sponsorPool.sponsors ?? new Map()) {
     if (typeof sp.sponsorId === "string" && sp.sponsorId !== key) {
-      add("key_mismatch", "sponsorPool.sponsors", key, `sponsorId='${sp.sponsorId}' does not match map key`);
+      add(
+        "key_mismatch",
+        "sponsorPool.sponsors",
+        key,
+        `sponsorId='${sp.sponsorId}' does not match map key`
+      );
     }
     for (const rel of sp.relationships ?? []) checkRel(rel, relIds, "sponsorPool.relationships");
   }
   const memberIds = new Set<string>();
   for (const [key, k] of world.sponsorPool.koenkais ?? new Map()) {
     if (typeof k.koenkaiId === "string" && k.koenkaiId !== key) {
-      add("key_mismatch", "sponsorPool.koenkais", key, `koenkaiId='${k.koenkaiId}' does not match map key`);
+      add(
+        "key_mismatch",
+        "sponsorPool.koenkais",
+        key,
+        `koenkaiId='${k.koenkaiId}' does not match map key`
+      );
     }
     checkRef("sponsorPool.koenkais", k.heyaId, sets.heyaIds, `koenkai '${key}' heyaId`);
     for (const rel of k.members ?? []) checkRel(rel, memberIds, "sponsorPool.koenkaiMembers");
@@ -573,7 +674,12 @@ function auditMyosekiMarket(ctx: AuditCtx): void {
     checkRef("myosekiMarket.stocks", stock.holderId, sets.personIds, `stock '${key}' holderId`);
   }
   for (const t of world.myosekiMarket.history ?? []) {
-    checkRef("myosekiMarket.history", t.myosekiId, sets.myosekiIds, `transaction '${t.id}' myosekiId`);
+    checkRef(
+      "myosekiMarket.history",
+      t.myosekiId,
+      sets.myosekiIds,
+      `transaction '${t.id}' myosekiId`
+    );
     checkRef("myosekiMarket.history", t.fromId, sets.personIds, `transaction '${t.id}' fromId`);
     checkRef("myosekiMarket.history", t.toId, sets.personIds, `transaction '${t.id}' toId`);
   }
@@ -614,7 +720,9 @@ export function assertWorldIdIntegrity(world: WorldState): void {
     .map((v) => `[${v.kind}] ${v.collection} '${v.id}' — ${v.detail}`)
     .join("\n");
   const suffix = violations.length > 20 ? `\n… and ${violations.length - 20} more` : "";
-  throw new Error(`World ID integrity violated (${violations.length} issue(s)):\n${listed}${suffix}`);
+  throw new Error(
+    `World ID integrity violated (${violations.length} issue(s)):\n${listed}${suffix}`
+  );
 }
 
 /**

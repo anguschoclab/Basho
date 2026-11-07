@@ -165,11 +165,7 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
               stopColor={KESHO_COLORS.gold}
               stopOpacity={KESHO_OPACITY_HIGH}
             />
-            <stop
-              offset={`${KESHO_GRADIENT_END}%`}
-              stopColor={KESHO_COLORS.gold}
-              stopOpacity="0"
-            />
+            <stop offset={`${KESHO_GRADIENT_END}%`} stopColor={KESHO_COLORS.gold} stopOpacity="0" />
           </linearGradient>
         </defs>
       </svg>

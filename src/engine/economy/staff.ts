@@ -378,8 +378,7 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
   // P2 vacant-post penalties: a capped post with zero filled performs below
   // baseline — no scout slows intel gathering, no nutritionist blunts diet
   // outcomes, no medical staff slows recovery.
-  if (countFilledPosts(world, heya, "scout") === 0)
-    bonuses.scouting *= STAFF_VACANT_SCOUT_PENALTY;
+  if (countFilledPosts(world, heya, "scout") === 0) bonuses.scouting *= STAFF_VACANT_SCOUT_PENALTY;
   if (countFilledPosts(world, heya, "nutritionist") === 0)
     bonuses.diet *= STAFF_VACANT_NUTRITION_PENALTY;
   if (countFilledPosts(world, heya, "medical_staff") === 0)

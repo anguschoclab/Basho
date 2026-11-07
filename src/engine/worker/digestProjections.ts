@@ -156,7 +156,10 @@ export function buildEventSections(world: WorldState): DigestSection[] {
   if (eventBuckets.milestone.length)
     sections.push({
       id: "milestone",
-      title: sectionTitleText(BardEngine.resolve(sectionRng, "ui.digest.sections.milestones").text, "Milestones"),
+      title: sectionTitleText(
+        BardEngine.resolve(sectionRng, "ui.digest.sections.milestones").text,
+        "Milestones"
+      ),
       items: eventBuckets.milestone.map(mapEventToItem),
     });
   if (eventBuckets.rivalry.length)
@@ -168,7 +171,10 @@ export function buildEventSections(world: WorldState): DigestSection[] {
   if (eventBuckets.governance.length)
     sections.push({
       id: "governance",
-      title: sectionTitleText(BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text, "Governance"),
+      title: sectionTitleText(
+        BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text,
+        "Governance"
+      ),
       items: eventBuckets.governance.map(mapEventToItem),
     });
   if (eventBuckets.welfare.length)
@@ -180,7 +186,10 @@ export function buildEventSections(world: WorldState): DigestSection[] {
   if (eventBuckets.media.length)
     sections.push({
       id: "media",
-      title: sectionTitleText(BardEngine.resolve(sectionRng, "ui.digest.sections.media").text, "Media"),
+      title: sectionTitleText(
+        BardEngine.resolve(sectionRng, "ui.digest.sections.media").text,
+        "Media"
+      ),
       items: eventBuckets.media.map(mapEventToItem),
     });
   if (eventBuckets.facility.length)
@@ -192,14 +201,20 @@ export function buildEventSections(world: WorldState): DigestSection[] {
   if (trainingItems.length)
     sections.push({
       id: "training",
-      title: sectionTitleText(BardEngine.resolve(sectionRng, "ui.digest.sections.training").text, "Training"),
+      title: sectionTitleText(
+        BardEngine.resolve(sectionRng, "ui.digest.sections.training").text,
+        "Training"
+      ),
       items: trainingItems,
     });
   if (scoutItems.length) sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
   if (econItems.length)
     sections.push({
       id: "economy",
-      title: sectionTitleText(BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text, "Economy"),
+      title: sectionTitleText(
+        BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text,
+        "Economy"
+      ),
       items: econItems,
     });
 

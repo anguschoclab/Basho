@@ -29,16 +29,19 @@ import {
 import { tickMonthlyNPC } from "@/engine/npc/ticks";
 import { tickMonthlyKoenkaiDemands } from "@/engine/economy/koenkaiDemands";
 import { tickFacilityCondition } from "@/engine/economy/facilityWear";
-import {
-  tickMonthlyStaffContracts,
-  refreshStaffCandidatePool,
-} from "@/engine/economy/staffPosts";
+import { tickMonthlyStaffContracts, refreshStaffCandidatePool } from "@/engine/economy/staffPosts";
 import { payMochikyukinBonuses } from "@/engine/economy/MochikyukinService";
 import { getKachiNokoriForRikishi } from "@/engine/economy/KachiNokoriService";
 import { renewSponsorContract } from "@/engine/economy/SponsorContractService";
 import type { Sponsor } from "@/engine/types/sponsors";
-import { processHeyaEconomics, processLoanRepayments } from "@/engine/tick/phases/monthly/economics/index";
-import { processFacilitiesMaintenance, processNpcAutoInvestment } from "@/engine/tick/phases/monthly/facilities/index";
+import {
+  processHeyaEconomics,
+  processLoanRepayments,
+} from "@/engine/tick/phases/monthly/economics/index";
+import {
+  processFacilitiesMaintenance,
+  processNpcAutoInvestment,
+} from "@/engine/tick/phases/monthly/facilities/index";
 import { processArchetypeDrift } from "@/engine/tick/phases/monthly/training/index";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 import { runwayMonthsToBand } from "@/engine/economy/FinanceCalculator";

@@ -11,11 +11,7 @@ import { WelfareService } from "@/engine/welfare/WelfareService";
 import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
 import { rngFromSeed } from "@/engine/core/rng";
 import { tickCondition } from "@/engine/tick/conditionTick";
-import {
-  MAX_MENTAL_STAT,
-  MIN_MENTAL_STAT,
-  DEFAULT_MENTAL_STAT,
-} from "@/constants/engine/health";
+import { MAX_MENTAL_STAT, MIN_MENTAL_STAT, DEFAULT_MENTAL_STAT } from "@/constants/engine/health";
 import {
   MIN_WEIGHT,
   WEIGHT_LOSS_STARVATION,

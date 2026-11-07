@@ -2,7 +2,11 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Id } from "@/engine/types/common";
 import type { BashoName, BoutResult, BashoResult, KeyBoutEntry } from "@/engine/types/basho";
-import type { RikishiCareerRecord, NotableBoutEntry, NarrativeHighlight } from "@/engine/almanac/types";
+import type {
+  RikishiCareerRecord,
+  NotableBoutEntry,
+  NarrativeHighlight,
+} from "@/engine/almanac/types";
 import { MAX_NOTABLE_BOUTS, MAX_NARRATIVE_HIGHLIGHTS } from "@/engine/almanac/types";
 import { extractNotableNarrativeLines, isNotableBout } from "@/engine/bout/boutNarrative";
 import { getRikishi } from "@/engine/core/queries";

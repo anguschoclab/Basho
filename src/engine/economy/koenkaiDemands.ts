@@ -109,7 +109,11 @@ export function tickMonthlyKoenkaiDemands(world: WorldState): StateImpact {
   const heya = getPlayerHeya(world);
   if (!heya || !heya.koenkaiId) return builder.build();
 
-  const rng = RNGRegistry.getSystemRNG(world, "economics", `koenkai_demand_roll_${world.week ?? 0}`);
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "economics",
+    `koenkai_demand_roll_${world.week ?? 0}`
+  );
   if (rng.next() >= KOENKAI_DEMAND_PROBABILITY) return builder.build();
 
   const kind = pickKind(world);
@@ -120,32 +124,39 @@ export function tickMonthlyKoenkaiDemands(world: WorldState): StateImpact {
   if (pending.some((d) => d.id === id || d.type === "koenkai_demand")) return builder.build();
 
   const def = KOENKAI_DEMANDS[kind];
-  builder.updateWorldField("pendingDecisions", enqueueDecisions(pending, [
-    {
-      id,
-      type: "koenkai_demand",
-      description: `${def.title} — ${def.summary}`,
-      deadlineWeek: (world.week ?? 0) + 2,
-      required: false,
-      options: [
-        {
-          id: "comply",
-          label: def.feeYen > 0 ? `Comply (¥${def.feeYen.toLocaleString("en-US")})` : "Comply",
-          impact: `Koenkai satisfaction +${def.complySatisfaction}`,
-        },
-        {
-          id: "decline",
-          label: "Decline",
-          impact: `Satisfaction ${def.declineSatisfaction}; ~${def.declineChurnPct}% member churn risk`,
-        },
-      ],
-    },
-  ]));
+  builder.updateWorldField(
+    "pendingDecisions",
+    enqueueDecisions(pending, [
+      {
+        id,
+        type: "koenkai_demand",
+        description: `${def.title} — ${def.summary}`,
+        deadlineWeek: (world.week ?? 0) + 2,
+        required: false,
+        options: [
+          {
+            id: "comply",
+            label: def.feeYen > 0 ? `Comply (¥${def.feeYen.toLocaleString("en-US")})` : "Comply",
+            impact: `Koenkai satisfaction +${def.complySatisfaction}`,
+          },
+          {
+            id: "decline",
+            label: "Decline",
+            impact: `Satisfaction ${def.declineSatisfaction}; ~${def.declineChurnPct}% member churn risk`,
+          },
+        ],
+      },
+    ])
+  );
   return builder.build();
 }
 
 function pickKind(world: WorldState): KoenkaiDemandKind | null {
-  const rng = RNGRegistry.getSystemRNG(world, "economics", `koenkai_demand_kind_${world.week ?? 0}`);
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "economics",
+    `koenkai_demand_kind_${world.week ?? 0}`
+  );
   const total = KINDS.reduce((s, k) => s + KOENKAI_DEMANDS[k].weight, 0);
   let pick = rng.next() * total;
   for (const k of KINDS) {

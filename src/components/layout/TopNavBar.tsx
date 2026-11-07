@@ -9,7 +9,12 @@
 import { useGame } from "@/state/game/useGame";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ContextCluster, NavControls, AdvanceButton, BashoProgressRail } from "@/components/layout/TopNavBarSections";
+import {
+  ContextCluster,
+  NavControls,
+  AdvanceButton,
+  BashoProgressRail,
+} from "@/components/layout/TopNavBarSections";
 import { GlobalEntitySearch } from "@/components/layout/GlobalEntitySearch";
 
 export function TopNavBar() {

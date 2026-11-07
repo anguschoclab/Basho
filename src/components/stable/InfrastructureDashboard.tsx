@@ -17,7 +17,11 @@ interface InfrastructureDashboardProps {
   onRepair?: (facilityId: FacilityId) => void;
 }
 
-export function InfrastructureDashboard({ heya, onUpgrade, onRepair }: InfrastructureDashboardProps) {
+export function InfrastructureDashboard({
+  heya,
+  onUpgrade,
+  onRepair,
+}: InfrastructureDashboardProps) {
   const infra = heya.infrastructure || {};
   const queue = useMemo(() => heya.constructionQueue || [], [heya.constructionQueue]);
 

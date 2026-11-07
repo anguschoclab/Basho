@@ -163,8 +163,7 @@ export function GlobalCupCard({
               variant="outline"
               className="text-[10px] border-gold/30 text-gold flex items-center gap-1.5 py-1 pl-1"
             >
-              <SumoAvatar avatar={p.avatar} size="xs" fallback={p.shikona} />
-              #{p.seed} {p.shikona}
+              <SumoAvatar avatar={p.avatar} size="xs" fallback={p.shikona} />#{p.seed} {p.shikona}
             </Badge>
           ))}
         </div>

@@ -27,7 +27,12 @@ export {
 } from "@/presenters/rikishi/transformers/publicInjury";
 
 // Career
-export { toCareerDTO, calculateStreak, calculateAvgRank, rankScore } from "@/presenters/rikishi/transformers/career";
+export {
+  toCareerDTO,
+  calculateStreak,
+  calculateAvgRank,
+  rankScore,
+} from "@/presenters/rikishi/transformers/career";
 
 // Kimarite
 export {
@@ -40,7 +45,10 @@ export {
 export { calculateTopRivals } from "@/presenters/rikishi/transformers/rivals";
 
 // Achievements & Personality
-export { toAchievementsDTO, toPersonalityDTO } from "@/presenters/rikishi/transformers/achievements";
+export {
+  toAchievementsDTO,
+  toPersonalityDTO,
+} from "@/presenters/rikishi/transformers/achievements";
 
 // Economics
 export { toEconomicsDTO } from "@/presenters/rikishi/transformers/economics";

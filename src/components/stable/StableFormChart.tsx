@@ -76,10 +76,7 @@ export function StableFormChart({ data }: { data: StableBashoFormRow[] }) {
                     tickLine={false}
                     allowDecimals={false}
                   />
-                  <Tooltip
-                    content={<FormTooltip />}
-                    cursor={{ fill: "hsl(var(--muted) / 0.3)" }}
-                  />
+                  <Tooltip content={<FormTooltip />} cursor={{ fill: "hsl(var(--muted) / 0.3)" }} />
                   <Legend verticalAlign="top" height={28} iconType="circle" />
                   <Bar
                     name="Wins"

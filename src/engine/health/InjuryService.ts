@@ -20,7 +20,12 @@ import { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import { clamp, clampInt } from "@/engine/utils/math";
-import { InjurySeverity, InjuryBodyArea, InjuryType, getBaseWeeksOut } from "@/engine/health/BodyDefinitions";
+import {
+  InjurySeverity,
+  InjuryBodyArea,
+  InjuryType,
+  getBaseWeeksOut,
+} from "@/engine/health/BodyDefinitions";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
@@ -222,7 +227,11 @@ export function onBoutResolvedInjury(
     ? BOUT_INJURY_VIOLENT_CHANCE
     : BOUT_INJURY_NORMAL_CHANCE; // 2-4% per bout
   const boutInjuryChance = baseBoutInjuryChance * (injuryRiskMultiplier ?? 1.0);
-  const rngSeed = RNGRegistry.getSystemRNG(world, "health", `bout::${loser.id}::${world.dayIndexGlobal}`);
+  const rngSeed = RNGRegistry.getSystemRNG(
+    world,
+    "health",
+    `bout::${loser.id}::${world.dayIndexGlobal}`
+  );
   const roll = rngSeed.next();
 
   if (roll < boutInjuryChance) {

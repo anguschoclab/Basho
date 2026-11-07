@@ -7,12 +7,16 @@
  */
 
 import { Search, X, Building2 } from "lucide-react";
-import type { RikishiSearchHit, HeyaSearchHit } from "@/presenters/projections/entitySearchProjections";
+import type {
+  RikishiSearchHit,
+  HeyaSearchHit,
+} from "@/presenters/projections/entitySearchProjections";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-export type FlatOption = { kind: "heya"; hit: HeyaSearchHit } | { kind: "rikishi"; hit: RikishiSearchHit };
+export type FlatOption =
+  { kind: "heya"; hit: HeyaSearchHit } | { kind: "rikishi"; hit: RikishiSearchHit };
 
 function optionGroup(opt: FlatOption): string {
   if (opt.kind === "heya") return "Stables";
@@ -69,10 +73,7 @@ function SearchOptionRow({
             </Badge>
           )}
           {opt.hit.isPlayerOwned && (
-            <span
-              className="h-1.5 w-1.5 rounded-full bg-primary shrink-0"
-              title="Your stable"
-            />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Your stable" />
           )}
         </>
       )}

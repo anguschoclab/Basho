@@ -12,7 +12,12 @@ import { STATURE_CONFIG } from "@/components/menu/statureConfig";
 import { sortRikishiByRank } from "@/lib/engineUtils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { RikishiDetailDialog } from "@/components/menu/RikishiDetailDialog";
-import { PreviewHero, PreviewStats, PreviewRoster, PreviewFooter } from "@/components/menu/HeyaPreviewSections";
+import {
+  PreviewHero,
+  PreviewStats,
+  PreviewRoster,
+  PreviewFooter,
+} from "@/components/menu/HeyaPreviewSections";
 
 interface HeyaPreviewProps {
   heya: Heya | null;

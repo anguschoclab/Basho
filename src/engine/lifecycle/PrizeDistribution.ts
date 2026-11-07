@@ -184,7 +184,9 @@ function awardSansho(
   // Read the accumulated economics for this rikishi — each updateRikishi call
   // writes an absolute economics object, so a second sansho for the same
   // rikishi must compose on the first award's write, not the stale base.
-  const economics = econCache.get(r.id) ?? tempR.economics ??
+  const economics =
+    econCache.get(r.id) ??
+    tempR.economics ??
     (r.economics || {
       cash: 0,
       retirementFund: 0,

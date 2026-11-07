@@ -11,7 +11,12 @@ import type { Heya } from "@/engine/types/heya";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Style } from "@/engine/types/combat";
 import type { Rank } from "@/engine/types/banzuke";
-import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
+import type {
+  StatureBand,
+  PrestigeBand,
+  RunwayBand,
+  KoenkaiBandType,
+} from "@/engine/types/narrative";
 import type {
   AgeBand,
   ExperienceBand,

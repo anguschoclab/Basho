@@ -16,11 +16,7 @@ import { rollWeeklyInjury } from "@/engine/health/InjuryService";
 import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getHeyaStaffBonuses } from "@/engine/economy/staff";
-import type {
-  InjurySeverity,
-  InjuryBodyArea,
-  InjuryType,
-} from "@/engine/health/BodyDefinitions";
+import type { InjurySeverity, InjuryBodyArea, InjuryType } from "@/engine/health/BodyDefinitions";
 import { getRikishi } from "@/engine/core/queries";
 import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
 

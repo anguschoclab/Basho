@@ -219,8 +219,6 @@ export function RecapModals({
         />
       )}
 
-
-
       {showHoFCeremony && (
         <HoFInductionCeremony
           inductee={showHoFCeremony}

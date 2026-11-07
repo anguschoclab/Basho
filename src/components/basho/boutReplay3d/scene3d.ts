@@ -8,7 +8,12 @@
  */
 
 import * as THREE from "three";
-import type { RikishiState, Particle, BodyPhase, ReplayPhase } from "@/components/basho/boutReplay/boutCanvas/types";
+import type {
+  RikishiState,
+  Particle,
+  BodyPhase,
+  ReplayPhase,
+} from "@/components/basho/boutReplay/boutCanvas/types";
 
 /** World half-extent mapped from normalized 2D pos.x (0..1). */
 const ARENA_X = 4.2;
@@ -186,7 +191,11 @@ function buildArena(scene: THREE.Scene): void {
   for (let i = 0; i < 20; i++) {
     const a = (i / 20) * Math.PI * 2;
     m.makeRotationY(-a);
-    m.setPosition(Math.cos(a) * (DOHYO_R - 0.28), DOHYO_H / 2 + 0.08, Math.sin(a) * (DOHYO_R - 0.28));
+    m.setPosition(
+      Math.cos(a) * (DOHYO_R - 0.28),
+      DOHYO_H / 2 + 0.08,
+      Math.sin(a) * (DOHYO_R - 0.28)
+    );
     bales.setMatrixAt(i, m);
   }
   scene.add(bales);
@@ -298,7 +307,15 @@ const PARTICLE_COLOR: Record<Particle["type"], number> = {
 
 export interface BoutScene3D {
   canvas: HTMLCanvasElement;
-  apply(east: RikishiState, west: RikishiState, particles: Particle[], flash: number, shake: { x: number; y: number }, phase: ReplayPhase, t: number): void;
+  apply(
+    east: RikishiState,
+    west: RikishiState,
+    particles: Particle[],
+    flash: number,
+    shake: { x: number; y: number },
+    phase: ReplayPhase,
+    t: number
+  ): void;
   dispose(): void;
 }
 
@@ -368,10 +385,11 @@ export function createBoutScene(width: number, height: number): BoutScene3D {
         // Canvas px (800x500) → world: x across, y maps to height above dohyo.
         pPos[i * 3] = (p.x / 800 - 0.5) * 8;
         pPos[i * 3 + 1] = Math.max(0.1, (0.62 - p.y / 500) * 7) + 0.3;
-        pPos[i * 3 + 2] = ((p.id * 7919) % 100) / 100 * 1.6 - 0.8;
+        pPos[i * 3 + 2] = (((p.id * 7919) % 100) / 100) * 1.6 - 0.8;
         tmpColor.set(PARTICLE_COLOR[p.type] ?? 0xffffff);
         // zabuton/confetti carry their own palette — use their css color.
-        if (p.type === "zabuton" || p.type === "confetti") tmpColor.set(p.color || PARTICLE_COLOR[p.type]);
+        if (p.type === "zabuton" || p.type === "confetti")
+          tmpColor.set(p.color || PARTICLE_COLOR[p.type]);
         pCol[i * 3] = tmpColor.r;
         pCol[i * 3 + 1] = tmpColor.g;
         pCol[i * 3 + 2] = tmpColor.b;

@@ -108,71 +108,71 @@ export function BashoStandingsEvolution({
           </p>
         ) : (
           <>
-          <div className="flex flex-wrap gap-3 pb-3">
-            {leaderChips.map((chip) => (
-              <div key={chip.id} className="flex items-center gap-1.5 text-xs">
-                <SumoAvatar avatar={chip.avatar} size="xs" fallback={chip.rikishi.shikona} />
-                <RikishiName id={chip.id} name={chip.rikishi.shikona} className="font-medium" />
-                {chip.record && (
-                  <span className="text-muted-foreground tabular-nums">{chip.record}</span>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 16 }}>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis
-                  dataKey="day"
-                  type="number"
-                  domain={[1, 15]}
-                  ticks={[1, 3, 5, 7, 9, 11, 13, 15]}
-                  tick={{ fontSize: 11 }}
-                  label={{ value: "Day", position: "insideBottom", offset: -8, fontSize: 11 }}
-                />
-                <YAxis
-                  domain={[0, 15]}
-                  ticks={[0, 3, 6, 9, 12, 15]}
-                  tick={{ fontSize: 11 }}
-                  label={{
-                    value: "Wins",
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: 10,
-                    fontSize: 11,
-                  }}
-                  width={36}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--popover))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "6px",
-                    fontSize: "12px",
-                  }}
-                  labelFormatter={(label) => `Day ${label}`}
-                />
-                <Legend
-                  wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }}
-                  iconType="circle"
-                  iconSize={8}
-                />
-                {lineLabels.map((label, idx) => (
-                  <Line
-                    key={label}
-                    type="monotone"
-                    dataKey={label}
-                    stroke={LINE_COLORS[idx % LINE_COLORS.length]}
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4 }}
-                    isAnimationActive={false}
+            <div className="flex flex-wrap gap-3 pb-3">
+              {leaderChips.map((chip) => (
+                <div key={chip.id} className="flex items-center gap-1.5 text-xs">
+                  <SumoAvatar avatar={chip.avatar} size="xs" fallback={chip.rikishi.shikona} />
+                  <RikishiName id={chip.id} name={chip.rikishi.shikona} className="font-medium" />
+                  {chip.record && (
+                    <span className="text-muted-foreground tabular-nums">{chip.record}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 16 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <XAxis
+                    dataKey="day"
+                    type="number"
+                    domain={[1, 15]}
+                    ticks={[1, 3, 5, 7, 9, 11, 13, 15]}
+                    tick={{ fontSize: 11 }}
+                    label={{ value: "Day", position: "insideBottom", offset: -8, fontSize: 11 }}
                   />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+                  <YAxis
+                    domain={[0, 15]}
+                    ticks={[0, 3, 6, 9, 12, 15]}
+                    tick={{ fontSize: 11 }}
+                    label={{
+                      value: "Wins",
+                      angle: -90,
+                      position: "insideLeft",
+                      offset: 10,
+                      fontSize: 11,
+                    }}
+                    width={36}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--popover))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                    }}
+                    labelFormatter={(label) => `Day ${label}`}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }}
+                    iconType="circle"
+                    iconSize={8}
+                  />
+                  {lineLabels.map((label, idx) => (
+                    <Line
+                      key={label}
+                      type="monotone"
+                      dataKey={label}
+                      stroke={LINE_COLORS[idx % LINE_COLORS.length]}
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4 }}
+                      isAnimationActive={false}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </>
         )}
       </CardContent>

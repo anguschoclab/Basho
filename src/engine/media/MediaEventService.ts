@@ -118,16 +118,10 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
       if (!Object.prototype.hasOwnProperty.call(mediaHeat, id)) continue;
       updatedMediaHeat[id] = Math.max(0, (mediaHeat[id] as number) - 5);
     }
-    updatedHeyaPressure[targetHeyaId] = Math.max(
-      0,
-      (updatedHeyaPressure[targetHeyaId] ?? 0) - 5
-    );
+    updatedHeyaPressure[targetHeyaId] = Math.max(0, (updatedHeyaPressure[targetHeyaId] ?? 0) - 5);
   } else if (choice === "deny" && targetHeyaId) {
     // Denying may increase pressure on the responding heya
-    updatedHeyaPressure[targetHeyaId] = Math.min(
-      100,
-      (updatedHeyaPressure[targetHeyaId] ?? 0) + 5
-    );
+    updatedHeyaPressure[targetHeyaId] = Math.min(100, (updatedHeyaPressure[targetHeyaId] ?? 0) + 5);
   } else if (choice === "ignore") {
     // Ignoring has no immediate effect but may cause decay
     // Natural decay will happen in weekly boundary

@@ -50,8 +50,7 @@ const RULES: AchievementRule[] = [
     id: "grand_champion",
     title: "Grand Champion Stable",
     description: "Raise a yokozuna — the highest honor in the sport.",
-    check: (w, h) =>
-      [...w.rikishi.values()].some((r) => r.heyaId === h && r.rank === "yokozuna"),
+    check: (w, h) => [...w.rikishi.values()].some((r) => r.heyaId === h && r.rank === "yokozuna"),
   },
   {
     id: "deep_stable",

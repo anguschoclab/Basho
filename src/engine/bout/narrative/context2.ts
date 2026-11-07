@@ -4,7 +4,11 @@
  */
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
 import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
-import { focusBiasToStyleKey, isSanyakuPromotionByRank, SANYAKU_RANKS } from "@/engine/bout/narrative/helpers";
+import {
+  focusBiasToStyleKey,
+  isSanyakuPromotionByRank,
+  SANYAKU_RANKS,
+} from "@/engine/bout/narrative/helpers";
 import {
   AGE_DIFF_THRESHOLD,
   CAREER_BOUT_MILESTONES,

@@ -52,4 +52,3 @@ export function getSalaryBreakdown(
     total: baseSalary + kinboshiBonus,
   };
 }
-

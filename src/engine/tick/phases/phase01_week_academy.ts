@@ -7,10 +7,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
-import {
-  applyWeeklyDevelopment,
-  getYouthAcademy,
-} from "@/engine/recruitment/YouthAcademyService";
+import { applyWeeklyDevelopment, getYouthAcademy } from "@/engine/recruitment/YouthAcademyService";
 
 export function phase01_week_academy(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_academy");

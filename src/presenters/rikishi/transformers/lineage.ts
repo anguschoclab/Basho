@@ -7,10 +7,7 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import type { RikishiLineageDTO, RikishiCareerDataDTO } from "@/presenters/rikishi/types";
-import {
-  getCitizenshipStatus,
-  yearsUntilNaturalization,
-} from "@/engine/utils/citizenshipUtils";
+import { getCitizenshipStatus, yearsUntilNaturalization } from "@/engine/utils/citizenshipUtils";
 
 /**
  * Transform lineage fields.

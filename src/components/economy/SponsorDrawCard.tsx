@@ -21,7 +21,10 @@ interface SponsorDrawCardProps {
   currentYear?: number;
 }
 
-export function SponsorDrawCard({ topEarners, currentYear = DEFAULT_START_YEAR }: SponsorDrawCardProps) {
+export function SponsorDrawCard({
+  topEarners,
+  currentYear = DEFAULT_START_YEAR,
+}: SponsorDrawCardProps) {
   if (topEarners.length === 0) return null;
 
   return (
@@ -32,8 +35,8 @@ export function SponsorDrawCard({ topEarners, currentYear = DEFAULT_START_YEAR }
           <GlossaryTip termId="kensho">Sponsor Draw</GlossaryTip>
         </CardTitle>
         <CardDescription>
-          Who in your heya attracts the most <GlossaryTip termId="kensho">kenshō banner</GlossaryTip>{" "}
-          attention
+          Who in your heya attracts the most{" "}
+          <GlossaryTip termId="kensho">kenshō banner</GlossaryTip> attention
         </CardDescription>
       </CardHeader>
       <CardContent>

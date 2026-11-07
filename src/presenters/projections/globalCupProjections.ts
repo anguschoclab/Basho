@@ -112,5 +112,3 @@ function getFlagForNationality(nationality: string): string {
   };
   return flags[nationality] || "🏳️";
 }
-
-

@@ -82,7 +82,10 @@ const HEADLINE_TAGS = new Set<PbpTag>([
 
 export function classifyLine(line: PbpLine): LineClass {
   if (GYOJI_RE.test(line.text)) return "gyoji";
-  if (line.tags?.some((t) => HEADLINE_TAGS.has(t)) || (line.voice === "dramatic" && line.phase === "finish"))
+  if (
+    line.tags?.some((t) => HEADLINE_TAGS.has(t)) ||
+    (line.voice === "dramatic" && line.phase === "finish")
+  )
     return "headline";
   if (line.phase && ACTION_PHASES.has(line.phase)) return "action";
   return "setup";
@@ -91,21 +94,29 @@ export function classifyLine(line: PbpLine): LineClass {
 /** Plain-language subline for lines a newcomer can't parse. */
 export function explainerFor(line: PbpLine): string | null {
   const tags = line.tags ?? [];
-  if (tags.includes("kinboshi")) return "A top-division rikishi beating a Yokozuna earns a prized gold star.";
-  if (tags.includes("ginboshi")) return "A silver-star win over an Ozeki — nearly as prized as kinboshi.";
-  if (tags.includes("kadoban")) return "An Ozeki below .500 two basho in a row is demoted — every win matters.";
-  if (tags.includes("henka")) return "A sidestep at the charge — legal, but some fans consider it cheap.";
-  if (tags.includes("mono_ii")) return "The ringside judges confer to overturn or confirm the referee's call.";
+  if (tags.includes("kinboshi"))
+    return "A top-division rikishi beating a Yokozuna earns a prized gold star.";
+  if (tags.includes("ginboshi"))
+    return "A silver-star win over an Ozeki — nearly as prized as kinboshi.";
+  if (tags.includes("kadoban"))
+    return "An Ozeki below .500 two basho in a row is demoted — every win matters.";
+  if (tags.includes("henka"))
+    return "A sidestep at the charge — legal, but some fans consider it cheap.";
+  if (tags.includes("mono_ii"))
+    return "The ringside judges confer to overturn or confirm the referee's call.";
   if (tags.includes("yusho_race") || tags.includes("title_stakes"))
     return "This bout directly affects who takes the tournament title.";
   if (tags.includes("upset")) return "The heavy favorite just lost — a real shock for the crowd.";
   if (tags.includes("injury") || tags.includes("bout_injury" as PbpTag))
     return "An injury sustained in the ring can end a rikishi's tournament.";
-  if (tags.includes("kachi_koshi")) return "Eight or more wins means a winning record — and usually promotion.";
+  if (tags.includes("kachi_koshi"))
+    return "Eight or more wins means a winning record — and usually promotion.";
   if (tags.includes("make_koshi")) return "A losing record — demotion looms on the next banzuke.";
   if (tags.includes("playoff")) return "Tied records are settled by an extra deciding bout.";
-  if (line.phase === "ritual") return "Pre-bout ritual: salt for purity, a crouch, and a silent stare-down.";
-  if (line.phase === "tachiai") return "The opening charge often decides the bout in under a second.";
+  if (line.phase === "ritual")
+    return "Pre-bout ritual: salt for purity, a crouch, and a silent stare-down.";
+  if (line.phase === "tachiai")
+    return "The opening charge often decides the bout in under a second.";
   return null;
 }
 
@@ -137,7 +148,14 @@ export function badgesForLine(line: PbpLine): LineBadge[] {
 /** Which line best carries the story of this bout (for a headline slot). */
 export function selectHeadlineIndex(lines: PbpLine[]): number {
   if (lines.length === 0) return -1;
-  const priority: PbpTag[] = ["kinboshi", "ginboshi", "upset", "title_stakes", "yusho_race", "playoff"];
+  const priority: PbpTag[] = [
+    "kinboshi",
+    "ginboshi",
+    "upset",
+    "title_stakes",
+    "yusho_race",
+    "playoff",
+  ];
   for (const tag of priority) {
     const idx = lines.findIndex((l) => l.tags?.includes(tag));
     if (idx >= 0) return idx;

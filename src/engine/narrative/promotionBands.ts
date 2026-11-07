@@ -11,10 +11,7 @@
  * values that oscillate around a threshold.
  */
 
-import {
-  OZEKI_RUN_BANDS,
-  YOKOZUNA_SUPPORT_BANDS,
-} from "@/engine/narrative/NarrativeBands";
+import { OZEKI_RUN_BANDS, YOKOZUNA_SUPPORT_BANDS } from "@/engine/narrative/NarrativeBands";
 import type {
   OzekiRunBand,
   YokozunaRunBand,
@@ -104,11 +101,7 @@ export const PromotionNarrative = {
     return resolveYokozunaSupportBand(mediaHeat);
   },
 
-  getYokozunaRunBand(
-    yushos: number,
-    junYushos: number,
-    mediaHeat: number
-  ): YokozunaRunBand {
+  getYokozunaRunBand(yushos: number, junYushos: number, mediaHeat: number): YokozunaRunBand {
     return resolveYokozunaRunBand(yushos, junYushos, mediaHeat);
   },
 
@@ -129,12 +122,7 @@ export const PromotionNarrative = {
     return getYokozunaRunProse(rng, this.getYokozunaRunBand(yushos, junYushos, mediaHeat));
   },
 
-  getKadobanNarrative(
-    rng: SeededRNG,
-    status: KadobanStatus,
-    wins: number,
-    losses: number
-  ): string {
+  getKadobanNarrative(rng: SeededRNG, status: KadobanStatus, wins: number, losses: number): string {
     return getKadobanProse(rng, this.getKadobanDramaBand(status, wins, losses));
   },
 };

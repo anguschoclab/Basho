@@ -24,14 +24,7 @@ import type { WorldState } from "@/presenters/uiDigest";
 import { getAllRikishi } from "@/presenters/worldAccess";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-const DIVISION_ORDER = [
-  "makuuchi",
-  "juryo",
-  "makushita",
-  "sandanme",
-  "jonidan",
-  "jonokuchi",
-];
+const DIVISION_ORDER = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
 const STAT_KEYS = [
   ["power", "Power"],
@@ -172,9 +165,7 @@ export default function RikishiComparePage() {
                   {a.shikona} {h2h.aWins} — {h2h.bWins} {b.shikona}
                 </p>
               ) : (
-                <p className="text-sm text-muted-foreground text-center">
-                  No recorded meetings.
-                </p>
+                <p className="text-sm text-muted-foreground text-center">No recorded meetings.</p>
               )}
             </CardContent>
           </Card>
@@ -185,12 +176,7 @@ export default function RikishiComparePage() {
             </CardHeader>
             <CardContent>
               {STAT_KEYS.map(([key, label]) => (
-                <StatRow
-                  key={key}
-                  label={label}
-                  a={a.stats[key]}
-                  b={b.stats[key]}
-                />
+                <StatRow key={key} label={label} a={a.stats[key]} b={b.stats[key]} />
               ))}
             </CardContent>
           </Card>

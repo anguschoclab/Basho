@@ -45,8 +45,8 @@ export function GameOverDialog({ world }: { world: WorldState }) {
             {t("gameover.title", { name: world.gameOver.oyakataName })}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-sm leading-relaxed">
-            {world.gameOver.reason} Year {world.gameOver.year}. Ironman mode — your career
-            ends here; the stable moves on without you.
+            {world.gameOver.reason} Year {world.gameOver.year}. Ironman mode — your career ends
+            here; the stable moves on without you.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2">

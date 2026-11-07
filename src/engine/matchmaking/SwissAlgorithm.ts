@@ -16,7 +16,11 @@ import type { Division } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RivalriesState } from "@/constants/engine/rivalry";
 import { getRivalryBoutModifiers } from "@/engine/narrative/RivalryHeatService";
-import { scorePairing, type MatchPairing, type MatchmakingRules } from "@/engine/matchmaking/MatchmakingPhases";
+import {
+  scorePairing,
+  type MatchPairing,
+  type MatchmakingRules,
+} from "@/engine/matchmaking/MatchmakingPhases";
 import { applyDramaBudget } from "@/engine/matchmaking/DramaMatchmaker";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import {

@@ -26,7 +26,11 @@ interface BanzukeChange {
 
 // Re-export helpers and local logic
 
-import { formatRank, resolveBanzukeTie, type BanzukeCandidate } from "@/engine/banzuke/banzukeHelpers";
+import {
+  formatRank,
+  resolveBanzukeTie,
+  type BanzukeCandidate,
+} from "@/engine/banzuke/banzukeHelpers";
 import type { WorldState } from "@/engine/types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
 import { computeMovementUnits, bestTierAllowed } from "@/engine/banzuke/promotionLogic";

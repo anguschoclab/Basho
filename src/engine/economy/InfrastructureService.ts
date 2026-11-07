@@ -19,7 +19,10 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { StateImpact } from "@/engine/core/StateImpact";
 import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
 import { CONSTRUCTION_BUILD_TIME_THRESHOLD } from "@/constants/engine/economyExtended";
-import { validateConstruction, isUnexpectedFailureReason } from "@/engine/economy/infrastructureValidation";
+import {
+  validateConstruction,
+  isUnexpectedFailureReason,
+} from "@/engine/economy/infrastructureValidation";
 
 /**
  * Infrastructure Service namespace.

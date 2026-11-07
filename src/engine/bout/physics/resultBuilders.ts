@@ -88,9 +88,7 @@ export function buildBoutResultV2(
   const dominantFamily = (r: Rikishi): TacticalFamily => {
     const prefs = r.combatProfile?.familyPreferences;
     if (!prefs) return "push";
-    return (Object.entries(prefs) as [TacticalFamily, number][]).sort(
-      (a, b) => b[1] - a[1]
-    )[0][0];
+    return (Object.entries(prefs) as [TacticalFamily, number][]).sort((a, b) => b[1] - a[1])[0][0];
   };
   const eastDominant = dominantFamily(east);
   const westDominant = dominantFamily(west);

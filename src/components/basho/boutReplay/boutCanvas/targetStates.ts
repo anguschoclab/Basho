@@ -9,7 +9,10 @@
 import type { RikishiState } from "@/components/basho/boutReplay/boutCanvas/types";
 import type { BoutScript } from "@/presenters/engineAccess";
 import { lerp } from "@/components/basho/boutReplay/boutCanvas/math";
-import { getLoserBodyPhase, getWinnerBodyPhase } from "@/components/basho/boutReplay/boutCanvas/animation";
+import {
+  getLoserBodyPhase,
+  getWinnerBodyPhase,
+} from "@/components/basho/boutReplay/boutCanvas/animation";
 
 type Pair = { east: RikishiState; west: RikishiState };
 

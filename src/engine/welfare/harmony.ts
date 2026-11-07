@@ -80,7 +80,11 @@ function intraHeyaRivalryPairs(world: WorldState, heyaId: string): number {
 export function deriveStableHarmony(world: WorldState, heyaId: string): StableHarmony {
   const heya = getHeya(world, heyaId);
   if (!heya) {
-    return { score: 50, band: "steady", factors: { morale: 0, welfare: 0, staff: 0, rivalries: 0, scandal: 0 } };
+    return {
+      score: 50,
+      band: "steady",
+      factors: { morale: 0, welfare: 0, staff: 0, rivalries: 0, scandal: 0 },
+    };
   }
 
   const morale = heya.welfareState?.morale ?? 50;

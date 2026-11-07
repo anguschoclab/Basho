@@ -162,7 +162,9 @@ export default function RecapPage() {
           onPressConferenceClose={handlePressConferenceClose}
           onHoFCeremonyClose={() => setShowHoFCeremony(null)}
           onIntaiAdvance={advanceIntai}
-          deliberation={deliberation && deliberation.id !== dismissedDeliberation ? deliberation : null}
+          deliberation={
+            deliberation && deliberation.id !== dismissedDeliberation ? deliberation : null
+          }
           onDeliberationClose={() => setDismissedDeliberation(deliberation?.id ?? null)}
         />
       </div>

@@ -50,14 +50,14 @@ export function severanceCost(staff: Staff): number {
 export function monthlyWageBill(world: WorldState, heyaId: string): number {
   const heya = getHeya(world, heyaId);
   if (!heya) return 0;
-  return (heya.staffIds ?? []).reduce(
-    (sum, id) => sum + (world.staff.get(id)?.wageYen ?? 0),
-    0
-  );
+  return (heya.staffIds ?? []).reduce((sum, id) => sum + (world.staff.get(id)?.wageYen ?? 0), 0);
 }
 
 /** Skill score (0–10) derived from competence bands. */
-export function skillFromBands(bands: { primary: CompetenceBand; secondary?: CompetenceBand }): number {
+export function skillFromBands(bands: {
+  primary: CompetenceBand;
+  secondary?: CompetenceBand;
+}): number {
   const bandVal: Record<CompetenceBand, number> = {
     feeble: 1,
     limited: 3,
@@ -100,12 +100,32 @@ const CANDIDATE_ROLES: StaffRole[] = [
 ];
 
 const SURNAMES = [
-  "Yamaguchi", "Takahashi", "Saito", "Kobayashi", "Endo", "Kuroda",
-  "Matsuda", "Ishihara", "Ogawa", "Fujimori", "Hasebe", "Nakazono",
+  "Yamaguchi",
+  "Takahashi",
+  "Saito",
+  "Kobayashi",
+  "Endo",
+  "Kuroda",
+  "Matsuda",
+  "Ishihara",
+  "Ogawa",
+  "Fujimori",
+  "Hasebe",
+  "Nakazono",
 ];
 const GIVEN = [
-  "Kenji", "Tetsuo", "Saburo", "Yukio", "Mitsuo", "Goro", "Haruki",
-  "Daigo", "Shun", "Kanta", "Masaru", "Osamu",
+  "Kenji",
+  "Tetsuo",
+  "Saburo",
+  "Yukio",
+  "Mitsuo",
+  "Goro",
+  "Haruki",
+  "Daigo",
+  "Shun",
+  "Kanta",
+  "Masaru",
+  "Osamu",
 ];
 
 /** Monthly candidate-pool refresh — deterministic by (seed, year, month). */

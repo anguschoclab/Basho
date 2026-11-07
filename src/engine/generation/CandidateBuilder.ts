@@ -9,7 +9,11 @@ import { CombatProfile, Style, CombatArchetype } from "@/engine/types/combat";
 import { clamp } from "@/engine/utils/math";
 import { isForeign } from "@/engine/utils/identity";
 import { generateShikona } from "@/engine/shikona/generateShikona";
-import { rollArchetype, buildCombatProfile, deriveWeakAgainstStyles } from "@/engine/bout/archetype";
+import {
+  rollArchetype,
+  buildCombatProfile,
+  deriveWeakAgainstStyles,
+} from "@/engine/bout/archetype";
 import type { InjurySeverity } from "@/engine/health/BodyDefinitions";
 import type { TalentCandidate } from "@/engine/types/talent";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
@@ -23,7 +27,10 @@ import {
 import { generateSyntheticCareer, type DivisionRecords } from "@/engine/generation/CandidateCareer";
 import { MOCHIKYUKIN_INITIAL_POINTS } from "@/constants/engine/economic";
 import { applyPersonaAssignment } from "@/engine/generation/PersonaAssignment";
-import { assignPreSumoBackground, applyBackgroundStatModifiers } from "@/engine/generation/PreSumoBackground";
+import {
+  assignPreSumoBackground,
+  applyBackgroundStatModifiers,
+} from "@/engine/generation/PreSumoBackground";
 import { assignQuirk } from "@/engine/generation/QuirkAssignment";
 import { maybeAssignEarlyShikona } from "@/engine/generation/FightingNameEarly";
 import { assignRecruitmentCohort } from "@/engine/generation/CohortTracking";
@@ -128,8 +135,11 @@ export function createCombatStats(
       evade: { success: 0, fail: 0 },
     },
 
-    favoredKimarite: (profile.favoredKimarite ?? []) as import("@/engine/types/rikishi").KimariteId[],
-    weakAgainstStyles: deriveWeakAgainstStyles(archetype) as import("@/engine/types/rikishi").Style[],
+    favoredKimarite: (profile.favoredKimarite ??
+      []) as import("@/engine/types/rikishi").KimariteId[],
+    weakAgainstStyles: deriveWeakAgainstStyles(
+      archetype
+    ) as import("@/engine/types/rikishi").Style[],
   };
 }
 

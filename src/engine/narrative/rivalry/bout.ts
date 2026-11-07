@@ -17,7 +17,11 @@ import {
   HEYA_HEAT_GAIN_TITLE_STAKES,
   HEYA_HEAT_GAIN_NORMAL,
 } from "@/constants/engine/rivalry";
-import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "@/engine/narrative/rivalry/state";
+import {
+  ensureRivalriesState,
+  makeRivalryKey,
+  createFreshPair,
+} from "@/engine/narrative/rivalry/state";
 
 /**
  * Authoritative Bout Hook.

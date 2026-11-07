@@ -26,7 +26,10 @@ function seededRng(templateKey: string): SeededRNG {
  * Get intensity label.
  */
 export function getIntensityLabel(intensity: TrainingIntensity): string {
-  return BardEngine.resolve(seededRng(`training.intensity.${intensity}`), `training.intensity.${intensity}`).text;
+  return BardEngine.resolve(
+    seededRng(`training.intensity.${intensity}`),
+    `training.intensity.${intensity}`
+  ).text;
 }
 
 /**
@@ -40,7 +43,10 @@ export function getFocusLabel(focus: TrainingFocus): string {
  * Get recovery label.
  */
 export function getRecoveryLabel(recovery: RecoveryEmphasis): string {
-  return BardEngine.resolve(seededRng(`training.recovery.${recovery}`), `training.recovery.${recovery}`).text;
+  return BardEngine.resolve(
+    seededRng(`training.recovery.${recovery}`),
+    `training.recovery.${recovery}`
+  ).text;
 }
 
 /**

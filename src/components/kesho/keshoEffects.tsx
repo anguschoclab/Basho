@@ -68,19 +68,19 @@ export function renderEmbroideryEffect(
           <defs>
             <pattern
               id="chain-pattern"
-          x="0"
-          y="0"
-          width={KESHO_DOT_SIZE}
-          height={KESHO_DOT_SIZE}
-          patternUnits="userSpaceOnUse"
-        >
-          <circle
-            cx={KESHO_DOT_SIZE / 2}
-            cy={KESHO_DOT_SIZE / 2}
-            r={KESHO_DOT_RADIUS}
-            fill={color}
-            opacity={KESHO_OPACITY_LOW * density}
-          />
+              x="0"
+              y="0"
+              width={KESHO_DOT_SIZE}
+              height={KESHO_DOT_SIZE}
+              patternUnits="userSpaceOnUse"
+            >
+              <circle
+                cx={KESHO_DOT_SIZE / 2}
+                cy={KESHO_DOT_SIZE / 2}
+                r={KESHO_DOT_RADIUS}
+                fill={color}
+                opacity={KESHO_OPACITY_LOW * density}
+              />
             </pattern>
           </defs>
           <rect x="20" y="20" width="160" height="196" fill="url(#chain-pattern)" />
@@ -125,25 +125,25 @@ export function renderEmbroideryEffect(
       return (
         <g>
           <defs>
-          <linearGradient id="goldwork-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop
-              offset={`${KESHO_GRADIENT_START}%`}
-              stopColor={color}
-              stopOpacity={KESHO_OPACITY_ULTRA_HIGH * density}
-            />
-            <stop
-              offset={`${KESHO_GRADIENT_MID}%`}
-              stopColor={KESHO_COLORS.gold}
-              stopOpacity={KESHO_OPACITY_MAXIMUM * density}
-            />
-            <stop
-              offset={`${KESHO_GRADIENT_END}%`}
-              stopColor={color}
-              stopOpacity={KESHO_OPACITY_ULTRA_HIGH * density}
-            />
-          </linearGradient>
-        </defs>
-        <rect x="20" y="20" width="160" height="196" fill="url(#goldwork-gradient)" />
+            <linearGradient id="goldwork-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop
+                offset={`${KESHO_GRADIENT_START}%`}
+                stopColor={color}
+                stopOpacity={KESHO_OPACITY_ULTRA_HIGH * density}
+              />
+              <stop
+                offset={`${KESHO_GRADIENT_MID}%`}
+                stopColor={KESHO_COLORS.gold}
+                stopOpacity={KESHO_OPACITY_MAXIMUM * density}
+              />
+              <stop
+                offset={`${KESHO_GRADIENT_END}%`}
+                stopColor={color}
+                stopOpacity={KESHO_OPACITY_ULTRA_HIGH * density}
+              />
+            </linearGradient>
+          </defs>
+          <rect x="20" y="20" width="160" height="196" fill="url(#goldwork-gradient)" />
         </g>
       );
     default:

@@ -245,9 +245,7 @@ export function scheduleJuryoWithCrossover(
     // Exclude rikishi already scheduled for this day — makushita is
     // scheduled before juryo, so without this a call-up gets two bouts.
     const busyToday = new Set(
-      basho.matches
-        .filter((m) => m.day === day)
-        .flatMap((m) => [m.eastRikishiId, m.westRikishiId])
+      basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
     );
     const makushitaPool = activeDivisionRoster(world, "makushita")
       .filter((r) => !r.injured && !r.isKyujo && !busyToday.has(r.id))
@@ -336,7 +334,11 @@ function applyMatchmakingAvoid(
   requesterHeyaId: string,
   world: WorldState
 ): { pairings: MatchPairing[]; consumed: boolean } {
-  const heyaOf = toKeyedMap(pool, (r) => r.id, (r) => r.heyaId);
+  const heyaOf = toKeyedMap(
+    pool,
+    (r) => r.id,
+    (r) => r.heyaId
+  );
   const requesterInPool = pool.some((r) => r.heyaId === requesterHeyaId);
   if (!requesterInPool) return { pairings, consumed: false };
 

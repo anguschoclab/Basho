@@ -1,5 +1,10 @@
 import type { TacticalFamily } from "@/engine/types/combat";
-import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "@/engine/types/kimarite";
+import type {
+  Kimarite,
+  KimariteClass,
+  JsaCategory,
+  KimariteRequirements,
+} from "@/engine/types/kimarite";
 import { KIMARITE_FREQUENCY_TARGETS, rarityFromShare } from "@/constants/engine/kimariteTargets";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 import { KIMARITE_ENRICHMENT } from "@/engine/bout/kimarite/kimariteEnrichment";

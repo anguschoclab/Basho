@@ -17,7 +17,11 @@
 import type { BashoState } from "@/engine/types/basho";
 import type { Division } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { scorePairing, type MatchPairing, type MatchmakingRules } from "@/engine/matchmaking/MatchmakingPhases";
+import {
+  scorePairing,
+  type MatchPairing,
+  type MatchmakingRules,
+} from "@/engine/matchmaking/MatchmakingPhases";
 import { toIdMap } from "@/engine/utils/index";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
@@ -360,9 +364,7 @@ function applyLowerDivisionDramaLabels(
     const west = rikishiMap.get(p.westId);
     const drama = east && west ? scoreLowerDivisionDrama(east, west, day, standings) : null;
     out.push(
-      drama && drama.score > 0
-        ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] }
-        : p
+      drama && drama.score > 0 ? { ...p, reasons: [...p.reasons, `drama_${drama.label}`] } : p
     );
   }
   return out;

@@ -17,12 +17,26 @@ import {
 } from "@/components/rikishi/RikishiCarePanelSections";
 
 const OSHI = new Set([
-  "oshidashi", "tsukidashi", "hatakikomi", "tsukiotoshi", "hikiotoshi",
-  "okuridashi", "okuritaoshi", "tsuppari",
+  "oshidashi",
+  "tsukidashi",
+  "hatakikomi",
+  "tsukiotoshi",
+  "hikiotoshi",
+  "okuridashi",
+  "okuritaoshi",
+  "tsuppari",
 ]);
 const YOTSU = new Set([
-  "yorikiri", "yoritaoshi", "uwatenage", "shitatenage", "kotenage",
-  "sukuinage", "kakenage", "uchigake", "sotogake", "utschari",
+  "yorikiri",
+  "yoritaoshi",
+  "uwatenage",
+  "shitatenage",
+  "kotenage",
+  "sukuinage",
+  "kakenage",
+  "uchigake",
+  "sotogake",
+  "utschari",
 ]);
 
 const ALL_STYLES: Style[] = ["oshi", "yotsu", "hybrid"];
@@ -49,8 +63,7 @@ export function RikishiCarePanel({
     if (OSHI.has(k)) oshiWins += n;
     else if (YOTSU.has(k)) yotsuWins += n;
   }
-  const lean =
-    oshiWins + yotsuWins === 0 ? null : oshiWins >= yotsuWins ? "Oshi" : "Yotsu";
+  const lean = oshiWins + yotsuWins === 0 ? null : oshiWins >= yotsuWins ? "Oshi" : "Yotsu";
 
   const injured = rawRikishi.injured && (rawRikishi.injuryWeeksRemaining ?? 0) > 0;
   const physioAffordable = (heya.funds ?? 0) >= PHYSIO_SESSION_COST;
@@ -84,7 +97,9 @@ export function RikishiCarePanel({
           <div className="text-[hsl(var(--muted-foreground))]">Record</div>
           <div className="font-medium">
             {wins}-{losses}
-            {(rawRikishi.consecutiveKyujo ?? 0) > 0 ? ` (${rawRikishi.consecutiveKyujo}× kyūjo)` : ""}
+            {(rawRikishi.consecutiveKyujo ?? 0) > 0
+              ? ` (${rawRikishi.consecutiveKyujo}× kyūjo)`
+              : ""}
           </div>
         </div>
         <div>
@@ -95,9 +110,7 @@ export function RikishiCarePanel({
         </div>
         <div>
           <div className="text-[hsl(var(--muted-foreground))]">Style Lean</div>
-          <div className="font-medium">
-            {lean ? `${lean} (${oshiWins}o/${yotsuWins}y)` : "—"}
-          </div>
+          <div className="font-medium">{lean ? `${lean} (${oshiWins}o/${yotsuWins}y)` : "—"}</div>
         </div>
         <div>
           <div className="text-[hsl(var(--muted-foreground))]">Condition</div>

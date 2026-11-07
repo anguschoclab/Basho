@@ -4,7 +4,10 @@ import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { TrainingIntensity } from "@/engine/types/training";
 import type { PerceptionSnapshot } from "@/engine/npc/perception";
-import { getOyakataStyleProfile, type OyakataStyleProfile } from "@/engine/npc/personas/oyakataStylePreferences";
+import {
+  getOyakataStyleProfile,
+  type OyakataStyleProfile,
+} from "@/engine/npc/personas/oyakataStylePreferences";
 import { getOyakataForHeya, getHeya } from "@/engine/core/queries";
 import { getManagerPersona, type NPCPersona } from "@/engine/npc/personas/NPCPersonaService";
 

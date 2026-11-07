@@ -5,7 +5,10 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HardDrive } from "lucide-react";
 import { useSaveLoadState } from "@/hooks/useSaveLoadState";
-import { SaveLoadDialogContent, SaveLoadConfirmations } from "@/components/menu/SaveLoadDialogSections";
+import {
+  SaveLoadDialogContent,
+  SaveLoadConfirmations,
+} from "@/components/menu/SaveLoadDialogSections";
 
 /** Defines the structure for save load dialog props. */
 interface SaveLoadDialogProps {

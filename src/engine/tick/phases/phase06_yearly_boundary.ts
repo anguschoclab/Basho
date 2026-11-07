@@ -24,13 +24,13 @@ import { HistoryService } from "@/engine/history/HistoryService";
 import { runElections } from "@/engine/governance/services/ScandalService";
 import { DynastyService } from "@/engine/legacy/DynastyService";
 import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
-import {
-  generateYearlyIntake,
-  getYouthAcademy,
-} from "@/engine/recruitment/YouthAcademyService";
+import { generateYearlyIntake, getYouthAcademy } from "@/engine/recruitment/YouthAcademyService";
 import { TrainingPhilosophyService } from "@/engine/legacy/TrainingPhilosophyService";
 import { TalentPoolService } from "@/engine/generation/TalentPoolService";
-import { performKanrekiCeremony, isEligibleForKanreki } from "@/engine/governance/ceremonies/kanrekiCeremony";
+import {
+  performKanrekiCeremony,
+  isEligibleForKanreki,
+} from "@/engine/governance/ceremonies/kanrekiCeremony";
 import { getRikishi } from "@/engine/core/queries";
 import { boundHistoryArrays } from "@/engine/tick/phases/boundHistoryArrays";
 import { runRetiredRikishiSummarization } from "@/engine/history/archival";

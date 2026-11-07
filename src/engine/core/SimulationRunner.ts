@@ -10,10 +10,7 @@ import { resolveImpacts, sequenceImpacts } from "@/engine/core/ImpactResolver";
 
 // Institutional System Imports
 import { runPrestigeDecay } from "@/engine/history/prestige";
-import {
-  runGovernanceReview,
-  runAIMetaDrift,
-} from "@/engine/governance/services/governanceReview";
+import { runGovernanceReview, runAIMetaDrift } from "@/engine/governance/services/governanceReview";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import { onBashoEnded } from "@/engine/history/records";
 import {

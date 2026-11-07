@@ -20,11 +20,7 @@ export interface RikishiPreview {
 /** Heya stat entry with value functions */
 export interface HeyaStatEntry {
   label: string;
-  value: (
-    config: HeyaPreviewConfig,
-    roster: unknown[],
-    sekitoriCount: number
-  ) => string | number;
+  value: (config: HeyaPreviewConfig, roster: unknown[], sekitoriCount: number) => string | number;
   sub: (config: HeyaPreviewConfig, roster: unknown[]) => string;
 }
 

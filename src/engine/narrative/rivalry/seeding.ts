@@ -7,10 +7,7 @@ import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { SparringChemistry } from "@/engine/types/training";
-import {
-  TOP_RIVALRY_PAIRS_TO_SEED,
-  NATIONALITY_RIVALRY_BONUS,
-} from "@/constants/engine/narrative";
+import { TOP_RIVALRY_PAIRS_TO_SEED, NATIONALITY_RIVALRY_BONUS } from "@/constants/engine/narrative";
 import {
   RANK_DIFF_BONUS_BASE,
   RANK_DIFF_BONUS_MULTIPLIER,
@@ -28,7 +25,11 @@ import {
   SPARRING_INITIAL_HEAT_MAX,
 } from "@/constants/engine/rivalry";
 import { getRikishi } from "@/engine/core/queries";
-import { ensureRivalriesState, makeRivalryKey, createFreshPair } from "@/engine/narrative/rivalry/state";
+import {
+  ensureRivalriesState,
+  makeRivalryKey,
+  createFreshPair,
+} from "@/engine/narrative/rivalry/state";
 
 /**
  * Seed Initial Rivalries (P0-C1).

@@ -1,6 +1,10 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Division } from "@/engine/types/banzuke";
-import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "@/engine/types/combat-spatial";
+import type {
+  SpatialBoutContext,
+  KimariteAttempt,
+  EngineStateV2,
+} from "@/engine/types/combat-spatial";
 import type { KimariteId } from "@/engine/types/combat";
 import { KIMARITE_STRATEGIES } from "@/engine/bout/kimarite/kimariteStrategies";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";

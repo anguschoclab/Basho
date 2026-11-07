@@ -307,7 +307,13 @@ function advanceTournament(world: WorldState): StateImpact {
     const winnerId = getWinner(unresolved[0]);
     const winner = state.participants.find((p) => p.rikishiId === winnerId);
 
-    finalizeTournament(world, builder, winnerId, winner?.shikona || "Unknown", state.participants.map((p) => p.rikishiId));
+    finalizeTournament(
+      world,
+      builder,
+      winnerId,
+      winner?.shikona || "Unknown",
+      state.participants.map((p) => p.rikishiId)
+    );
     builder.updateWorldField("globalCup", {
       ...state,
       phase: "complete",

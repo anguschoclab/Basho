@@ -38,28 +38,28 @@ export function RikishiSide({
         className="shrink-0"
       />
       <div className="min-w-0">
-      <Button
-        variant="ghost"
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick();
-        }}
-        className={`
+        <Button
+          variant="ghost"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+          className={`
           font-display text-sm truncate max-w-full h-auto p-0 hover:bg-transparent
           ${isWinner ? "font-bold winner-glow text-success hover:text-success/80" : "text-foreground"}
         `}
-      >
-        {rikishi.shikona}
-      </Button>
-      <div
-        className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5"
-        style={{ justifyContent: isEast ? "flex-end" : "flex-start" }}
-      >
-        <span className="font-mono">
-          {rikishi.currentBashoWins ?? 0}-{rikishi.currentBashoLosses ?? 0}
-        </span>
-        <span className={`h-1.5 w-1.5 rounded-full ${isEast ? "bg-east" : "bg-west"}`} />
-      </div>
+        >
+          {rikishi.shikona}
+        </Button>
+        <div
+          className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5"
+          style={{ justifyContent: isEast ? "flex-end" : "flex-start" }}
+        >
+          <span className="font-mono">
+            {rikishi.currentBashoWins ?? 0}-{rikishi.currentBashoLosses ?? 0}
+          </span>
+          <span className={`h-1.5 w-1.5 rounded-full ${isEast ? "bg-east" : "bg-west"}`} />
+        </div>
       </div>
     </div>
   );

@@ -213,9 +213,7 @@ function deserializePendingFields(s: SerializedWorldState): Partial<WorldState> 
 }
 
 /** Pre-basho assessment revival — rikishiAssessments may arrive as a live Map, a Record, or a legacy husk. */
-function deserializePreBashoAssessment(
-  s: SerializedWorldState
-): WorldState["_preBashoAssessment"] {
+function deserializePreBashoAssessment(s: SerializedWorldState): WorldState["_preBashoAssessment"] {
   if (!s._preBashoAssessment) return undefined;
   return {
     ...s._preBashoAssessment,

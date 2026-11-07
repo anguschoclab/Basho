@@ -59,7 +59,12 @@ const NATIONALITY_BIAS: Record<
   }
 > = {
   mongolia: { heads: ["round", "full"], eyes: ["narrow", "upturned", "narrow"] },
-  georgia: { heads: ["square", "broad"], eyes: ["deepset"], browThickness: 3, facialHairBoost: 0.25 },
+  georgia: {
+    heads: ["square", "broad"],
+    eyes: ["deepset"],
+    browThickness: 3,
+    facialHairBoost: 0.25,
+  },
   russia: { heads: ["square", "long"], eyes: ["deepset"], browThickness: 3, facialHairBoost: 0.2 },
   bulgaria: { heads: ["square"], eyes: ["deepset"], browThickness: 3, facialHairBoost: 0.15 },
   estonia: { heads: ["long"], eyes: ["narrow"] },
@@ -105,8 +110,7 @@ export function generateAvatarIdentity(params: AvatarGenerationParams): AvatarId
       ])
     : rng.pick(["standard", "narrow", "wide", "deepset", "upturned"]);
 
-  const facialHairChance =
-    (CAN_GROW_FACIAL_HAIR[role] ?? 0) + (bias.facialHairBoost ?? 0);
+  const facialHairChance = (CAN_GROW_FACIAL_HAIR[role] ?? 0) + (bias.facialHairBoost ?? 0);
   const facialHair: AvatarIdentity["facialHair"] =
     rng.next() < facialHairChance ? rng.pick(["mustache", "goatee", "full"]) : "none";
 
@@ -133,8 +137,7 @@ export function generateAvatarIdentity(params: AvatarGenerationParams): AvatarId
     headShape,
     eyes,
     brows: rng.pick(["straight", "furrowed", "arched", "sparse"]),
-    browThickness:
-      bias.browThickness ?? ((rng.int(1, 3) as 1 | 2 | 3)),
+    browThickness: bias.browThickness ?? (rng.int(1, 3) as 1 | 2 | 3),
     nose: rng.pick(["small", "medium", "broad", "flat", "hooked"]),
     mouth: rng.pick(["neutral", "smile", "frown", "pursed", "open", "flat"]),
     ears,
@@ -173,7 +176,8 @@ function hairstyleFor(input: AvatarStageInput, identity: AvatarIdentity | undefi
 
   switch (input.role) {
     case "rikishi":
-      if (input.isRetired) return ageStage === "elder" || ageStage === "veteran" ? elderCut : "short";
+      if (input.isRetired)
+        return ageStage === "elder" || ageStage === "veteran" ? elderCut : "short";
       if (input.rank === "yokozuna") return "oichomage";
       if (input.division && isSekitoriDivision(input.division)) return "oichomage";
       if (input.division === "jonokuchi") return "shaved";
@@ -243,17 +247,13 @@ function expressionFor(input: AvatarStageInput): AvatarExpression {
   return "neutral";
 }
 
-export function deriveAvatarStage(
-  input: AvatarStageInput,
-  identity?: AvatarIdentity
-): AvatarStage {
+export function deriveAvatarStage(input: AvatarStageInput, identity?: AvatarIdentity): AvatarStage {
   const age = input.age ?? 30;
   const role = input.role ?? identity?.role ?? "staff";
   const ageStage = ageStageOf(age);
   const resolved = { ...input, role };
 
-  const wrinkleTier: AvatarStage["wrinkleTier"] =
-    age < 30 ? 0 : age < 40 ? 1 : age < 50 ? 2 : 3;
+  const wrinkleTier: AvatarStage["wrinkleTier"] = age < 30 ? 0 : age < 40 ? 1 : age < 50 ? 2 : 3;
   const graying: AvatarStage["graying"] = age < 35 ? 0 : age < 50 ? 1 : 2;
 
   // Sumo-scale girth bands; non-wrestlers stay lean.

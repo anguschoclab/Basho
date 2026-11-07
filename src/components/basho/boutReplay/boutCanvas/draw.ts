@@ -1,5 +1,9 @@
 import type { UIRikishi } from "@/presenters/uiModels";
-import type { RikishiState, Particle, ReplayPhase } from "@/components/basho/boutReplay/boutCanvas/types";
+import type {
+  RikishiState,
+  Particle,
+  ReplayPhase,
+} from "@/components/basho/boutReplay/boutCanvas/types";
 import type { BoutAnimationFamily } from "@/presenters/engineAccess";
 import { clamp } from "@/components/basho/boutReplay/boutCanvas/math";
 import {
@@ -8,7 +12,13 @@ import {
   DOHYO_COLORS,
   withAlpha,
 } from "@/constants/ui/drawingPalette";
-import { computePose, drawBody, drawArms, drawHead, drawRankLabel } from "@/components/basho/boutReplay/boutCanvas/drawRikishiParts";
+import {
+  computePose,
+  drawBody,
+  drawArms,
+  drawHead,
+  drawRankLabel,
+} from "@/components/basho/boutReplay/boutCanvas/drawRikishiParts";
 
 export function drawDohyo(
   ctx: CanvasRenderingContext2D,

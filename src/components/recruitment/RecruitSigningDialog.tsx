@@ -169,8 +169,8 @@ export function RecruitSigningDialog({
 
               {rosterSize !== undefined && (
                 <p className="text-[11px] text-muted-foreground bg-muted/30 p-2 rounded">
-                  Stable roster: {rosterSize} / {TARGET_ROSTER_SIZE} rikishi. Negotiation may
-                  take 1-2 weeks.
+                  Stable roster: {rosterSize} / {TARGET_ROSTER_SIZE} rikishi. Negotiation may take
+                  1-2 weeks.
                 </p>
               )}
             </div>

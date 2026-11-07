@@ -5,7 +5,11 @@ import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { getKimarite } from "@/presenters/uiDigest";
-import { WinnerReveal, KimariteCard, BoutStatsRow } from "@/components/basho/BoutResultDisplaySections";
+import {
+  WinnerReveal,
+  KimariteCard,
+  BoutStatsRow,
+} from "@/components/basho/BoutResultDisplaySections";
 
 /** Defines the structure for bout result display props. */
 interface BoutResultDisplayProps {

@@ -8,10 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanState } from "@/engine/banzuke/ozekiLogic";
 import { PromotionNarrative } from "@/engine/narrative/promotionBands";
-import {
-  getYokozunaRunProse,
-  getKadobanProse,
-} from "@/engine/narrative/NarrativeProse";
+import { getYokozunaRunProse, getKadobanProse } from "@/engine/narrative/NarrativeProse";
 import type { YokozunaSupportBand } from "@/engine/narrative/NarrativeBands";
 import { SeededRNG } from "@/engine/core/rng";
 import { SEKIWAKE_33_WIN_THRESHOLD } from "@/constants/engine/banzuke";

@@ -200,7 +200,11 @@ export function CupChampionBanner({
     <div className="p-6 rounded-lg bg-gold/10 border border-gold/30">
       <div className="flex items-center gap-4">
         <Trophy className="h-12 w-12 text-gold" />
-        <SumoAvatar avatar={championAvatar} size="lg" fallback={rikishiNames.get(cup.championId) || "?"} />
+        <SumoAvatar
+          avatar={championAvatar}
+          size="lg"
+          fallback={rikishiNames.get(cup.championId) || "?"}
+        />
         <div>
           <div className="text-[10px] font-mono uppercase text-muted-foreground">
             {cup.year} Champion

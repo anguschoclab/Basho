@@ -212,11 +212,7 @@ export function FacilityCard({
               <div
                 className={cn(
                   "h-full transition-all",
-                  condition < 50
-                    ? "bg-destructive"
-                    : condition < 80
-                      ? "bg-warning"
-                      : "bg-success"
+                  condition < 50 ? "bg-destructive" : condition < 80 ? "bg-warning" : "bg-success"
                 )}
                 style={{ width: `${condition}%` }}
               />

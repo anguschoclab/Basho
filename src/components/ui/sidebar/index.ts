@@ -8,7 +8,12 @@ export {
   SidebarSeparator,
   SidebarContent,
 } from "@/components/ui/sidebar/primitives";
-export { SidebarGroup, SidebarGroupLabel, SidebarGroupAction, SidebarGroupContent } from "@/components/ui/sidebar/group";
+export {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupAction,
+  SidebarGroupContent,
+} from "@/components/ui/sidebar/group";
 export {
   SidebarMenu,
   SidebarMenuItem,

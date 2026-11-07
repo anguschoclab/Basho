@@ -20,4 +20,8 @@ export {
   candidateConsumesForeignSlot,
 } from "@/engine/generation/talentPoolReads";
 
-export { scoutPool, scoutCandidate, getScoutedCandidateView } from "@/engine/generation/talentPoolScoutingOps";
+export {
+  scoutPool,
+  scoutCandidate,
+  getScoutedCandidateView,
+} from "@/engine/generation/talentPoolScoutingOps";

@@ -9,15 +9,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Swords } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 
 export interface KimariteRow {
   name: string;
@@ -29,7 +21,13 @@ interface KimariteTooltipEntry {
   payload: KimariteRow;
 }
 
-function KimariteTooltip({ active, payload }: { active?: boolean; payload?: KimariteTooltipEntry[] }) {
+function KimariteTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: KimariteTooltipEntry[];
+}) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (

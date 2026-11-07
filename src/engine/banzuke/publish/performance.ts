@@ -14,10 +14,7 @@ import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
 } from "@/constants/engine/governanceExtended";
-import {
-  SEKIWAKE_33_WIN_THRESHOLD,
-  SEKIWAKE_OZEKI_RECLAIM_WINS,
-} from "@/constants/engine/banzuke";
+import { SEKIWAKE_33_WIN_THRESHOLD, SEKIWAKE_OZEKI_RECLAIM_WINS } from "@/constants/engine/banzuke";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type StandingStats = { wins: number; losses: number; absences: number };
@@ -382,10 +379,7 @@ export function buildPerformanceList(
     if (standingIds.has(id)) continue;
     const r = getRikishi(world, id);
     if (!r) continue;
-    normalizedEntries.push([
-      id,
-      { wins: 0, losses: 0, absences: getTotalBashodays(r.division) },
-    ]);
+    normalizedEntries.push([id, { wins: 0, losses: 0, absences: getTotalBashodays(r.division) }]);
   }
 
   for (const [id, stats] of normalizedEntries) {
@@ -422,8 +416,7 @@ export function buildPerformanceList(
     // yokozuna) — consecutiveKyujo feeds kyūjō pressure, return narratives
     // and dynasty traits downstream.
     const isFullAbsence = stats.absences >= divisionDays;
-    const consecutiveKyujo =
-      rikishi && isFullAbsence ? (rikishi.consecutiveKyujo ?? 0) + 1 : 0;
+    const consecutiveKyujo = rikishi && isFullAbsence ? (rikishi.consecutiveKyujo ?? 0) + 1 : 0;
     let consecutiveKachiKoshi = rikishi?.consecutiveKachiKoshi ?? 0;
     if (rikishi) {
       const isKachi = isKachiKoshi(stats.wins, stats.losses, rikishi.rank);

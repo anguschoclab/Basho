@@ -15,11 +15,7 @@ import { sideTactics, type BoutContext, type SideTactics } from "@/engine/bout/b
 import type { BoutTactic } from "@/engine/types/combat";
 import { getTacticProfile } from "@/engine/bout/tacticProfiles";
 import { clamp } from "@/engine/utils/math";
-import {
-  HENKA_MOMENTUM_PENALTY,
-  STAT_CLAMP_MIN,
-  STAT_CLAMP_MAX,
-} from "@/constants/engine/physics";
+import { HENKA_MOMENTUM_PENALTY, STAT_CLAMP_MIN, STAT_CLAMP_MAX } from "@/constants/engine/physics";
 
 function aftermathForSide(
   rikishi: Rikishi,

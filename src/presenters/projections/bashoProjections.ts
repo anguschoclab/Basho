@@ -7,7 +7,12 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "@/presenters/uiDigestTypes";
+import type {
+  BashoUIDigest,
+  BoutMatchUI,
+  HeatBand,
+  StandingEntry,
+} from "@/presenters/uiDigestTypes";
 import { projectRikishi } from "@/presenters/rikishi/index";
 import { generateH2HCommentary } from "@/engine/bout/h2h";
 import { getRivalry } from "@/engine/narrative/rivalry/rivalriesState";
@@ -18,10 +23,7 @@ import { sortStandings } from "@/engine/utils/sort";
 import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "@/engine/calendar/calendar";
 import { isNakabiDay } from "@/engine/basho/NakabiService";
 import { getRikishiByDivision, getPlayerHeya } from "@/engine/core/queries";
-import {
-  isSanyakuBout,
-  KORE_YORI_SANYAKU_ANNOUNCEMENT,
-} from "@/constants/engine/koreYoriSanyaku";
+import { isSanyakuBout, KORE_YORI_SANYAKU_ANNOUNCEMENT } from "@/constants/engine/koreYoriSanyaku";
 
 /**
  * Project tournament live data for BashoPage.

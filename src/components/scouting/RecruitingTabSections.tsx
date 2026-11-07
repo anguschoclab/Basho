@@ -28,7 +28,10 @@ import type { CandidateDigestEntry } from "@/presenters/projections/boutProjecti
 import { CompareModePanel } from "@/components/scouting/CompareModePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Layers } from "lucide-react";
-import { getCombatArchetypeDescription, FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/presenters/engineAccess";
+import {
+  getCombatArchetypeDescription,
+  FOREIGN_RIKISHI_LIMIT_PER_HEYA,
+} from "@/presenters/engineAccess";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
 import { toPotentialBand, TARGET_ROSTER_SIZE } from "@/presenters/engineAccess";
@@ -204,11 +207,17 @@ function ProspectChips({ c, state }: { c: CandidateDigestEntry; state: State }) 
         </Badge>
       )}
       <Badge variant="outline" className="text-[10px]">
-        Style: {c.scoutLevel >= 65 ? `Confirmed ${c.style ?? "—"}` : c.scoutLevel >= 35 ? `Likely ${c.style ?? "—"}` : "Unclear"}
+        Style:{" "}
+        {c.scoutLevel >= 65
+          ? `Confirmed ${c.style ?? "—"}`
+          : c.scoutLevel >= 35
+            ? `Likely ${c.style ?? "—"}`
+            : "Unclear"}
       </Badge>
       {c.potentialStats && c.scoutLevel >= 50 && (
         <Badge variant="outline" className="text-[10px]">
-          Est. PWR {Math.round(c.potentialStats.power)}±10 · TEC {Math.round(c.potentialStats.technique)}±10
+          Est. PWR {Math.round(c.potentialStats.power)}±10 · TEC{" "}
+          {Math.round(c.potentialStats.technique)}±10
         </Badge>
       )}
       {state.signChanceFor && c.availabilityState === "available" && (

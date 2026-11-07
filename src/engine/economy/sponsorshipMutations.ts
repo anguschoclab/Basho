@@ -225,9 +225,7 @@ export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
       const gap = currentIdx - targetIdx;
       const removeCount = Math.min(updatedMembers.length, gap);
       if (removeCount > 0) {
-        const sorted = [...updatedMembers].sort(
-          (a, b) => (a.strength ?? 1) - (b.strength ?? 1)
-        );
+        const sorted = [...updatedMembers].sort((a, b) => (a.strength ?? 1) - (b.strength ?? 1));
         const removed = sorted.slice(0, removeCount);
         for (const m of removed) trimmedSponsorIds.add(m.sponsorId);
         updatedMembers = sorted.slice(removeCount);

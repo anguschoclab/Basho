@@ -204,8 +204,7 @@ function surfaceEvent(e: LogEvent, world?: WorldState): SurfacedRow | null {
     case "RIVAL_POSTURE": {
       // Resolve the rival's heya id to a display name — never render a raw id.
       const rivalName = data.rivalHeyaId
-        ? (world?.heyas.get(String(data.rivalHeyaId))?.name ??
-          `stable ${String(data.rivalHeyaId)}`)
+        ? (world?.heyas.get(String(data.rivalHeyaId))?.name ?? `stable ${String(data.rivalHeyaId)}`)
         : "";
       const vsSuffix = rivalName ? ` vs ${rivalName}` : "";
       if (data.vendetta === true) {

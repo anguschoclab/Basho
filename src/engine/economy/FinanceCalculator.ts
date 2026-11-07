@@ -179,7 +179,8 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   // Food is charged daily by phase01_daily_economy — do not double-count here.
   // Fixed operating overhead is an unavoidable heya expense (NOT subject to admin discount)
   // and is exempt from the solvency clamp — net can go negative for thin-income stables.
-  const baseBurn = facilityUpkeep + staffUpkeep + infrastructureUpkeep + FIXED_OPERATING_OVERHEAD_WEEKLY;
+  const baseBurn =
+    facilityUpkeep + staffUpkeep + infrastructureUpkeep + FIXED_OPERATING_OVERHEAD_WEEKLY;
   const recruitmentCost = heya.funds <= DEBT_LIMIT ? 0 : RECRUITMENT_BUDGET_WEEKLY;
   const totalBurn = baseBurn + recruitmentCost;
 

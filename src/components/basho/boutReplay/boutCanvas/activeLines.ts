@@ -1,5 +1,8 @@
 import type { PbpLine } from "@/presenters/engineAccess";
-import { PHASES, CANVAS_PHASE_TO_PBP_PHASE } from "@/components/basho/boutReplay/boutCanvas/constants";
+import {
+  PHASES,
+  CANVAS_PHASE_TO_PBP_PHASE,
+} from "@/components/basho/boutReplay/boutCanvas/constants";
 
 export function computeActiveLineIndices(phaseIndex: number, pbpLines: PbpLine[]): Set<number> {
   if (pbpLines.length === 0) return new Set();

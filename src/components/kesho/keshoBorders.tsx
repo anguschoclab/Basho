@@ -82,7 +82,9 @@ export function renderBorder(borderStyle: string, color: string): React.ReactNod
             <circle
               key={i}
               cx={2 * KESHO_CIRCLE_BORDER_X_OFFSET + (i % 4) * KESHO_CIRCLE_BORDER_SPACING}
-              cy={2 * KESHO_CIRCLE_BORDER_X_OFFSET + Math.floor(i / 4) * KESHO_CIRCLE_BORDER_Y_SPACING}
+              cy={
+                2 * KESHO_CIRCLE_BORDER_X_OFFSET + Math.floor(i / 4) * KESHO_CIRCLE_BORDER_Y_SPACING
+              }
               r="3"
               fill={color}
               opacity={KESHO_OPACITY_LOW}

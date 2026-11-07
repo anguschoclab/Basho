@@ -5,7 +5,10 @@ import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import type { PressPersona } from "@/engine/types/media";
-import { determinePostRetirementPath, getRetirementNarrative } from "@/engine/lifecycle/PostRetirementPath";
+import {
+  determinePostRetirementPath,
+  getRetirementNarrative,
+} from "@/engine/lifecycle/PostRetirementPath";
 
 interface RetirementNarrativeLine {
   text: string;
@@ -51,12 +54,10 @@ export function generateRetirementNarrative(
   const kinboshiCount = rikishi.economics?.kinboshiCount ?? 0;
   // RANK_HIERARCHY covers every rank (the old 5-name order array left
   // lower-division ranks at indexOf -1, sorting them ABOVE yokozuna).
-  const tierOf = (rank: string) =>
-    RANK_HIERARCHY[rank as Rank]?.tier ?? 99;
+  const tierOf = (rank: string) => RANK_HIERARCHY[rank as Rank]?.tier ?? 99;
   const highestRank =
-    rikishi.careerHistory
-      ?.map((h) => h.rank)
-      .sort((a, b) => tierOf(a) - tierOf(b))[0] ?? rikishi.rank;
+    rikishi.careerHistory?.map((h) => h.rank).sort((a, b) => tierOf(a) - tierOf(b))[0] ??
+    rikishi.rank;
 
   // 1. Ceremony line
   const ceremonyRes = BardEngine.resolve(rng, "events.narrative.retirement_ceremony_summary", {

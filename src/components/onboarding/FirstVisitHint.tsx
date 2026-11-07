@@ -40,7 +40,13 @@ export function FirstVisitHint({ hintId }: { hintId: keyof typeof ONBOARDING_HIN
           <p className="text-sm font-semibold">{hint.title}</p>
           <p className="text-xs text-muted-foreground">{hint.body}</p>
         </div>
-        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={dismiss} aria-label="Dismiss hint">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 shrink-0"
+          onClick={dismiss}
+          aria-label="Dismiss hint"
+        >
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>

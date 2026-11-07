@@ -69,9 +69,7 @@ export function toScandalBand(
 /**
  * Public helper for resolving prize amounts to bands (direct lookup — no 0–100 clamp).
  */
-export function toPrizeBand(
-  amount: number
-): import("./NarrativeBands").PrizeBand {
+export function toPrizeBand(amount: number): import("./NarrativeBands").PrizeBand {
   return NarrativeService.getPrizeBand(amount);
 }
 
@@ -141,4 +139,3 @@ function getInjuryModifier(r: Rikishi): string {
   if (severity === "moderate") return "hampered";
   return "taped_up";
 }
-

@@ -57,11 +57,7 @@ export { objectiveProgress } from "@/engine/types/objectives";
 export type { HoFCategory, HoFInductee } from "@/engine/history/hallOfFame";
 export { makeBashoKey } from "@/engine/history/historyIndex";
 export { getMentor, menteesOf, getLineageTree } from "@/engine/legacy/lineage";
-export type {
-  HolidayTarget,
-  SafetyGate,
-  DelegationPolicy,
-} from "@/engine/calendar/holiday";
+export type { HolidayTarget, SafetyGate, DelegationPolicy } from "@/engine/calendar/holiday";
 export type { PerceptionSnapshot } from "@/engine/npc/perception";
 export {
   getPlayerHeya,
@@ -73,24 +69,22 @@ export {
   getRikishiByDivision,
 } from "@/engine/core/queries";
 export { createDefaultRivalriesState } from "@/engine/narrative/rivalry/rivalriesState";
-export type {
-  RivalriesState,
-  RivalryPairState,
-  RivalryTrigger,
-} from "@/constants/engine/rivalry";
+export type { RivalriesState, RivalryPairState, RivalryTrigger } from "@/constants/engine/rivalry";
 export type { RivalryHeatBand } from "@/engine/narrative/NarrativeBands";
 export { SeededRNG, rngFromSeed, type SeededRNG as SeededRNGType } from "@/engine/core/rng";
 export { makeDeterministicSeed } from "@/engine/utils/seed";
 export { toIdMap, toKeyedMap } from "@/engine/utils/collections";
-export { deleteSave, exportSave, importSave, type SaveSlotInfo } from "@/engine/persistence/saveload";
+export {
+  deleteSave,
+  exportSave,
+  importSave,
+  type SaveSlotInfo,
+} from "@/engine/persistence/saveload";
 export { getActiveRikishi as selectActiveRikishi } from "@/engine/core/selectors";
 export { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
 export { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 export { InfrastructureService } from "@/engine/economy/InfrastructureService";
-export {
-  listNPCWatchedCandidates,
-  getTopSuitor,
-} from "@/engine/generation/CandidatePoolService";
+export { listNPCWatchedCandidates, getTopSuitor } from "@/engine/generation/CandidatePoolService";
 export {
   listVisibleCandidates,
   getCandidateScoutingLevel,

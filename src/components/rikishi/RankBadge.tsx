@@ -7,7 +7,12 @@
  */
 
 import { cn } from "@/lib/utils";
-import { getRankMeta, getRankDivision, formatRankDisplay, formatJapanese } from "@/components/rikishi/rankBadgeUtils";
+import {
+  getRankMeta,
+  getRankDivision,
+  formatRankDisplay,
+  formatJapanese,
+} from "@/components/rikishi/rankBadgeUtils";
 import {
   CompactRankBadge,
   RosterRankBadge,

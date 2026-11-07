@@ -20,12 +20,7 @@ import type { FacilityId } from "@/engine/types/infrastructure";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { getHeyaRoster } from "@/presenters/engineAccess";
 import { deriveStableHarmony } from "@/presenters/engineAccess";
-import {
-  RosterTab,
-  HeyaTab,
-  AttendantsTab,
-  AcademyTab,
-} from "@/components/stable/StablePageTabs";
+import { RosterTab, HeyaTab, AttendantsTab, AcademyTab } from "@/components/stable/StablePageTabs";
 
 export default function StablePage() {
   const { id: routeId } = useParams({ strict: false });
@@ -101,7 +96,8 @@ export default function StablePage() {
           const label = `${h.band[0].toUpperCase()}${h.band.slice(1)} · ${h.score}`;
           return (
             <p className="text-xs text-[hsl(var(--muted-foreground))] -mt-4">
-              Stable harmony: <span className="font-semibold text-[hsl(var(--foreground))]">{label}</span>
+              Stable harmony:{" "}
+              <span className="font-semibold text-[hsl(var(--foreground))]">{label}</span>
             </p>
           );
         })()}
@@ -157,7 +153,11 @@ export default function StablePage() {
           </TabsContent>
 
           <TabsContent value="infrastructure">
-            <InfrastructureDashboard heya={heya} onUpgrade={handleUpgrade} onRepair={handleRepair} />
+            <InfrastructureDashboard
+              heya={heya}
+              onUpgrade={handleUpgrade}
+              onRepair={handleRepair}
+            />
           </TabsContent>
 
           <RosterTab world={world} heya={heya} rikishiList={rikishiList} rawRoster={rawRoster} />

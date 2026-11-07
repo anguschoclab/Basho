@@ -10,10 +10,20 @@ import { useEffect, useRef, useMemo, type MutableRefObject } from "react";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutScript, SeededRNG } from "@/presenters/engineAccess";
-import { PHASES, type ReplayPhase, type RikishiState, type Particle } from "@/components/basho/boutReplay/boutCanvas";
+import {
+  PHASES,
+  type ReplayPhase,
+  type RikishiState,
+  type Particle,
+} from "@/components/basho/boutReplay/boutCanvas";
 import type { ReplayRuntime } from "@/components/basho/boutReplay/replayFx";
 import type { ReplayTickCtx } from "@/components/basho/boutReplay/replayLoop";
-import { replayTick, beginReplaySession, scheduleNextFrame, cancelReplayLoop } from "@/components/basho/boutReplay/replayLoop";
+import {
+  replayTick,
+  beginReplaySession,
+  scheduleNextFrame,
+  cancelReplayLoop,
+} from "@/components/basho/boutReplay/replayLoop";
 import type { ReplayControlsCtx } from "@/components/basho/boutReplay/replayControls";
 import type { BoutReplayProgress, ReplaySpeed } from "@/components/basho/boutReplay/useBoutReplay";
 

@@ -47,8 +47,8 @@ export function generateShikona(
     const rankLower = (config.rank ?? "").toLowerCase();
     const isSekitori =
       config.rank &&
-      ["makuuchi", "maegashira", "sekiwake", "komusubi", "ozeki", "yokozuna", "juryo"].some(
-        (r) => rankLower.includes(r)
+      ["makuuchi", "maegashira", "sekiwake", "komusubi", "ozeki", "yokozuna", "juryo"].some((r) =>
+        rankLower.includes(r)
       );
     const legacyProbability = isSekitori ? 0.6 : 0.3;
 

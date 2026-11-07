@@ -72,10 +72,7 @@ export function makeSpawnParticles(
         dust: FX_PARTICLES.dustAt(55 + rng.next() * 20),
         spark: FX_PARTICLES.spark,
         zabuton: BOUT_HUD_COLORS.zabuton[Math.floor(rng.next() * 4)],
-        confetti:
-          FX_PARTICLES.confetti[
-            Math.floor(rng.next() * FX_PARTICLES.confetti.length)
-          ],
+        confetti: FX_PARTICLES.confetti[Math.floor(rng.next() * FX_PARTICLES.confetti.length)],
       };
       np.push({
         id: particleId.current++,

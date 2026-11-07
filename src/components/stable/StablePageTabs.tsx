@@ -78,8 +78,7 @@ export function RosterTab({
                     navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })
                   }
                   onKeyDown={activationKeyHandler(
-                    () =>
-                      navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } }),
+                    () => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } }),
                     { selfOnly: true }
                   )}
                 >
@@ -87,45 +86,45 @@ export function RosterTab({
                     <div className="flex items-center gap-3 min-w-0">
                       <SumoAvatar avatar={r.avatar} size="sm" fallback={r.shikona} />
                       <div className="min-w-0">
-                      <div className="font-bold flex items-center gap-1.5">
-                        {r.shikona}
-                        {r.isInjured && (
-                          <TooltipWrap content={r.injurySummary ?? "Injured"} side="top">
-                            <Badge
-                              variant="destructive"
-                              className="text-[10px] px-1.5 h-4 cursor-help"
+                        <div className="font-bold flex items-center gap-1.5">
+                          {r.shikona}
+                          {r.isInjured && (
+                            <TooltipWrap content={r.injurySummary ?? "Injured"} side="top">
+                              <Badge
+                                variant="destructive"
+                                className="text-[10px] px-1.5 h-4 cursor-help"
+                              >
+                                INJURED
+                              </Badge>
+                            </TooltipWrap>
+                          )}
+                          {isHighRisk && (
+                            <TooltipWrap
+                              content="High injury risk — low condition or elevated fatigue"
+                              side="top"
                             >
-                              INJURED
-                            </Badge>
-                          </TooltipWrap>
-                        )}
-                        {isHighRisk && (
-                          <TooltipWrap
-                            content="High injury risk — low condition or elevated fatigue"
-                            side="top"
-                          >
-                            <AlertTriangle className="h-3.5 w-3.5 text-gold cursor-help shrink-0" />
-                          </TooltipWrap>
-                        )}
-                        {r.loyaltyBand && r.loyaltyBand !== "loyal" && (
-                          <TooltipWrap
-                            content={`Weekly disposition: ${LOYALTY_BAND_META[r.loyaltyBand].label}`}
-                            side="top"
-                          >
-                            <Badge
-                              variant={LOYALTY_BAND_META[r.loyaltyBand].badgeVariant}
-                              className="text-[10px] px-1.5 h-4 cursor-help"
+                              <AlertTriangle className="h-3.5 w-3.5 text-gold cursor-help shrink-0" />
+                            </TooltipWrap>
+                          )}
+                          {r.loyaltyBand && r.loyaltyBand !== "loyal" && (
+                            <TooltipWrap
+                              content={`Weekly disposition: ${LOYALTY_BAND_META[r.loyaltyBand].label}`}
+                              side="top"
                             >
-                              {LOYALTY_BAND_META[r.loyaltyBand].label}
-                            </Badge>
-                          </TooltipWrap>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground uppercase">
-                        {r.rankLabel}
-                        {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
-                        {r.side ? ` ${r.side === "east" ? "E" : "W"}` : ""}
-                      </div>
+                              <Badge
+                                variant={LOYALTY_BAND_META[r.loyaltyBand].badgeVariant}
+                                className="text-[10px] px-1.5 h-4 cursor-help"
+                              >
+                                {LOYALTY_BAND_META[r.loyaltyBand].label}
+                              </Badge>
+                            </TooltipWrap>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground uppercase">
+                          {r.rankLabel}
+                          {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
+                          {r.side ? ` ${r.side === "east" ? "E" : "W"}` : ""}
+                        </div>
                       </div>
                     </div>
                     <Badge variant="secondary">

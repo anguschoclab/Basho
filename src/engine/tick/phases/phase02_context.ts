@@ -31,11 +31,7 @@ import {
   FACILITY_RECOVERY_MULTIPLIERS,
   RECOVERY_MULTIPLIER_BOUNDS,
 } from "@/constants/engine/multipliers";
-import {
-  MAX_STAT_VALUE,
-  MIN_STAT_VALUE,
-  DEFAULT_FACILITY_LEVEL,
-} from "@/constants/engine/rikishi";
+import { MAX_STAT_VALUE, MIN_STAT_VALUE, DEFAULT_FACILITY_LEVEL } from "@/constants/engine/rikishi";
 import { getHeya } from "@/engine/core/queries";
 import { extractTrainingModifiers } from "@/engine/training/TrainingMath";
 import { deriveStableHarmony, HARMONY_TRAINING_MULT } from "@/engine/welfare/harmony";

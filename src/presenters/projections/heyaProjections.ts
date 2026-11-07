@@ -70,7 +70,15 @@ export interface StableBashoFormRow {
 export function projectStableBashoForm(world: WorldState, heyaId: string): StableBashoFormRow[] {
   const buckets = new Map<
     string,
-    { year: number; month: number; bashoName: string; wins: number; losses: number; kachiKoshi: number; rikishi: number }
+    {
+      year: number;
+      month: number;
+      bashoName: string;
+      wins: number;
+      losses: number;
+      kachiKoshi: number;
+      rikishi: number;
+    }
   >();
 
   for (const r of getHeyaRoster(world, heyaId)) {

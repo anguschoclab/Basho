@@ -17,7 +17,11 @@ import type { ReplayPhase } from "@/components/basho/boutReplay/boutCanvas";
 import { getNarrationPbp } from "@/components/basho/boutReplay/feedModel";
 import type { PbpLine } from "@/presenters/engineAccess";
 import { makeSpawnParticles, drawReplayFrame } from "@/components/basho/boutReplay/replayFx";
-import { replayReset, replayUpdateProgress, replaySeekTo } from "@/components/basho/boutReplay/replayControls";
+import {
+  replayReset,
+  replayUpdateProgress,
+  replaySeekTo,
+} from "@/components/basho/boutReplay/replayControls";
 import {
   useReplayCanvas,
   useReplayRefs,

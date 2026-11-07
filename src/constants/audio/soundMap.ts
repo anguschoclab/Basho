@@ -45,5 +45,7 @@ export function toneForEvent(event: {
   category?: string;
   importance: EventImportance;
 }): ToneSpec | null {
-  return (event.category ? CATEGORY_SOUND_MAP[event.category] : undefined) ?? SOUND_MAP[event.importance];
+  return (
+    (event.category ? CATEGORY_SOUND_MAP[event.category] : undefined) ?? SOUND_MAP[event.importance]
+  );
 }

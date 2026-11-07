@@ -92,7 +92,8 @@ export const SaveSlotService = {
       if (a.isAutosave !== b.isAutosave) return a.isAutosave ? -1 : 1;
       // Autosaves order primary → newest backup → oldest backup.
       if (a.isAutosave && b.isAutosave) {
-        const idx = (name: string) => (name === AUTOSAVE_SLOT_NAME ? 0 : Number(name.split("_")[1]));
+        const idx = (name: string) =>
+          name === AUTOSAVE_SLOT_NAME ? 0 : Number(name.split("_")[1]);
         return idx(a.slotName) - idx(b.slotName);
       }
       const aIsSlot = /^slot_\d+$/.test(a.slotName);

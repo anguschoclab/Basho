@@ -20,7 +20,11 @@ import { getScoutedAttributes } from "@/engine/recruitment/ScoutingService";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { AvatarRenderData } from "@/engine/types/avatar";
-import { resolveAvatar, rikishiStageInput, candidateStageInput } from "@/engine/generation/avatarGenerator";
+import {
+  resolveAvatar,
+  rikishiStageInput,
+  candidateStageInput,
+} from "@/engine/generation/avatarGenerator";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.

@@ -35,8 +35,8 @@ export function InjuryCard({
         ) : null}
       </div>
       <div className="text-[hsl(var(--muted-foreground))]">
-        {status.location ? `${BODY_AREA_LABELS[status.location] ?? status.location} · ` : ""}
-        ~{Math.max(0, weeksRemaining * 7)} days out
+        {status.location ? `${BODY_AREA_LABELS[status.location] ?? status.location} · ` : ""}~
+        {Math.max(0, weeksRemaining * 7)} days out
       </div>
     </div>
   );

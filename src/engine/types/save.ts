@@ -5,7 +5,13 @@
 import type { Id, IdMap } from "@/engine/types/common";
 import type { EventsState } from "@/engine/types/events";
 import type { BanzukeSnapshot } from "@/engine/types/banzuke";
-import type { BashoName, BashoState, BoutResult, MatchSchedule, StandingsTable } from "@/engine/types/basho";
+import type {
+  BashoName,
+  BashoState,
+  BoutResult,
+  MatchSchedule,
+  StandingsTable,
+} from "@/engine/types/basho";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";

@@ -19,8 +19,7 @@ import { getRikishi } from "@/engine/core/queries";
  * (`${year}-${n}#2`, `#3`, …) so every basho gets a distinct key.
  */
 export type BashoKey =
-  | `${number}-${1 | 2 | 3 | 4 | 5 | 6}`
-  | `${number}-${1 | 2 | 3 | 4 | 5 | 6}#${number}`;
+  `${number}-${1 | 2 | 3 | 4 | 5 | 6}` | `${number}-${1 | 2 | 3 | 4 | 5 | 6}#${number}`;
 
 /** Helper to make a stable key (occurrence 1 = plain `${year}-${n}` form). */
 export function makeBashoKey(year: number, bashoNumber: number, occurrence = 1): BashoKey {

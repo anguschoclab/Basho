@@ -96,8 +96,7 @@ export function useRecapDerived(
     if (!r || !("stats" in r)) return null;
     const data = event.data as { status?: string; score?: number; threshold?: number };
     const heya = r.heyaId ? getHeya(world, r.heyaId) : undefined;
-    const verdict =
-      r.rank === "yokozuna" ? ("promoted" as const) : ("deferred" as const);
+    const verdict = r.rank === "yokozuna" ? ("promoted" as const) : ("deferred" as const);
     const reasoning = [
       data.status === "controversial"
         ? "Public heat fell short of the council's threshold — deliberation deferred."

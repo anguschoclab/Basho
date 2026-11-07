@@ -89,7 +89,12 @@ export default function ScoutingPage() {
                       type="button"
                       disabled={busy || !affordable}
                       onClick={() => {
-                        sendCommand({ type: "SEND_SCOUT", heyaId: heya.id, scoutStaffId: scout.id, tier });
+                        sendCommand({
+                          type: "SEND_SCOUT",
+                          heyaId: heya.id,
+                          scoutStaffId: scout.id,
+                          tier,
+                        });
                         toast.success(`${scout.name} dispatched — ${tier}`);
                       }}
                       className="text-xs font-medium px-3 py-1.5 rounded border border-[hsl(var(--border))] disabled:opacity-40"

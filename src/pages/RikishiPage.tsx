@@ -100,10 +100,7 @@ export default function RikishiPage() {
       <RikishiProfileBody
         rikishi={rikishi}
         rawRikishi={rawRikishi}
-        readOnly={
-          rawRikishi.isRetired === true ||
-          rawRikishi.heyaId !== effectiveHeyaId
-        }
+        readOnly={rawRikishi.isRetired === true || rawRikishi.heyaId !== effectiveHeyaId}
         world={world}
         playerHeyaId={playerHeyaId}
         activeTab={activeTab}

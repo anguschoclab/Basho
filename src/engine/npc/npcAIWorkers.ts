@@ -23,7 +23,10 @@ import {
 } from "@/engine/npc/strategy/NPCStrategyService";
 import { PerceptionSnapshot, RikishiPerception } from "@/engine/npc/perception";
 import { destr } from "destr";
-import { OyakataStyleProfile, RecruitmentPhilosophy } from "@/engine/npc/personas/oyakataStylePreferences";
+import {
+  OyakataStyleProfile,
+  RecruitmentPhilosophy,
+} from "@/engine/npc/personas/oyakataStylePreferences";
 import { OyakataMood } from "@/engine/types/oyakata";
 import { Style } from "@/engine/types/combat";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";

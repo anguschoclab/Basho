@@ -70,11 +70,7 @@ export const OICHOMAGE_FAN = compileArt(
 
 /** Standard chonmage topknot (lower divisions). Drawn at y=1. */
 export const CHONMAGE_KNOT = compileArt(
-  [
-    ".........XXXXXX..........",
-    "........XXXXXXXX.........",
-    ".........XXXXXX..........",
-  ],
+  [".........XXXXXX..........", "........XXXXXXXX.........", ".........XXXXXX.........."],
   { X: "hair" }
 );
 
@@ -102,10 +98,9 @@ export const TSUNA_ROPE = compileArt(
 );
 
 /** Forehead bandage patch (injured/kyujo). Drawn at y=5. */
-export const BANDAGE_PATCH = compileArt(
-  ["......BBBBB........", "......BBBBBB......."],
-  { B: "bandage" }
-);
+export const BANDAGE_PATCH = compileArt(["......BBBBB........", "......BBBBBB......."], {
+  B: "bandage",
+});
 
 /** Resolve an attire key to its palette. */
 export const ATTIRE_PALETTES: Record<AvatarAttire, { base: string; accent: string }> = {

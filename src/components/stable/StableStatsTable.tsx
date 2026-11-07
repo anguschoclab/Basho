@@ -150,9 +150,15 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
                   onClick={toggleSort}
                 />
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Basho</th>
-                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Fatigue</th>
-                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Status</th>
-                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Training</th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">
+                  Fatigue
+                </th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">
+                  Status
+                </th>
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">
+                  Training
+                </th>
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Diet</th>
                 <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Mood</th>
                 <TableHeader
@@ -263,7 +269,11 @@ const StableStatsRow = React.memo(function StableStatsRow({ r }: { r: UIRikishi 
         {Number.isFinite(r.fatigue) ? Math.round(r.fatigue) : "—"}
       </td>
       <td className="py-3 px-4 text-muted-foreground">
-        {r.isInjured ? `Injured — ${r.injurySummary}` : (r.condition ?? 100) < 40 ? "Poor condition" : "Fit"}
+        {r.isInjured
+          ? `Injured — ${r.injurySummary}`
+          : (r.condition ?? 100) < 40
+            ? "Poor condition"
+            : "Fit"}
       </td>
       <td className="py-3 px-4 text-muted-foreground capitalize">
         {r.trainingFocus

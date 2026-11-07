@@ -74,9 +74,7 @@ export function ReplayOverlays({
         <div className="absolute top-3 right-3 pointer-events-none">
           <div className="flex items-center gap-1 bg-gold/20 rounded px-2 py-1 border border-gold/40">
             <span className="text-gold text-xs">¥</span>
-            <span className="text-gold text-xs font-semibold">
-              {result.kenshoEnvelopes} kensho
-            </span>
+            <span className="text-gold text-xs font-semibold">{result.kenshoEnvelopes} kensho</span>
           </div>
         </div>
       )}

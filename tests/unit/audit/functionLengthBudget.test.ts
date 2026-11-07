@@ -37,7 +37,12 @@ const isObj = (m: Measurement) => m.kind === "const-obj" || m.kind === "const-ar
 const KNOWN_OVERBUDGET: Record<string, { loc: number; kind: string }> = {
   // boutNarrative.ts::generateBoutNarrative — split 2026-10 into bout/narrative/ beat modules
 
-  "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 298, kind: "function" },
+  "src/pages/TalentPoolPage.tsx::TalentPoolPage": { loc: 301, kind: "function" },
+  // Re-baselined 2026-11-07 after repo-wide prettier --write reflowed line
+  // counts (no semantic change): TalentPoolPage 298 -> 301; StablePage
+  // 123 -> 155 crossed the 150 budget purely by reflow. Both remain listed
+  // as debt to split, per the ratchet's intent.
+  "src/pages/StablePage.tsx::StablePage": { loc: 155, kind: "function" },
 };
 
 /** Anonymous over-budget functions are tracked as a per-file count (line-keyed names are unstable). */

@@ -5,7 +5,12 @@
  */
 
 import { pick } from "@/engine/utils/index";
-import type { ShikonaGenerationConfig, HouseStyle, PatternId, RankRule } from "@/engine/shikona/types";
+import type {
+  ShikonaGenerationConfig,
+  HouseStyle,
+  PatternId,
+  RankRule,
+} from "@/engine/shikona/types";
 import {
   SHIKONA_PREFIXES,
   SHIKONA_SUFFIXES,

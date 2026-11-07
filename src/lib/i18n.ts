@@ -104,7 +104,11 @@ export const SUPPORTED_LOCALES: Locale[] = ["en", "ja"];
  * Translate `key`; falls back to English, then `fallback`, then the key.
  * `{param}` placeholders interpolate from `params`.
  */
-export function t(key: string, params?: Record<string, string | number>, fallback?: string): string {
+export function t(
+  key: string,
+  params?: Record<string, string | number>,
+  fallback?: string
+): string {
   let out = TABLES[currentLocale][key] ?? TABLES.en[key] ?? fallback ?? key;
   if (params) {
     for (const [k, v] of Object.entries(params)) {

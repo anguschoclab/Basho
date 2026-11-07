@@ -61,23 +61,19 @@ export function RetiredRikishiProfile({
           <SumoAvatar size="lg" fallback={summary.shikona} />
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-black tracking-tight">
-                {summary.shikona}
-              </h1>
+              <h1 className="text-3xl font-display font-black tracking-tight">{summary.shikona}</h1>
               <Badge variant="secondary" className="uppercase tracking-widest text-[10px]">
                 Retired {summary.retirementYear}
               </Badge>
-              {HOF_CATEGORIES.filter((cat) => isInducted(world, summary.id, cat)).map(
-                (cat) => (
-                  <Badge
-                    key={cat}
-                    variant="default"
-                    className="uppercase tracking-widest text-[10px]"
-                  >
-                    {HOF_CATEGORY_LABELS[cat].name}
-                  </Badge>
-                )
-              )}
+              {HOF_CATEGORIES.filter((cat) => isInducted(world, summary.id, cat)).map((cat) => (
+                <Badge
+                  key={cat}
+                  variant="default"
+                  className="uppercase tracking-widest text-[10px]"
+                >
+                  {HOF_CATEGORY_LABELS[cat].name}
+                </Badge>
+              ))}
             </div>
             <div className="text-sm text-muted-foreground">
               {peak ? `Peak: ${peak.en}` : `Peak: ${summary.peakRank}`}

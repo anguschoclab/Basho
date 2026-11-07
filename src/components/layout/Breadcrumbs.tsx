@@ -88,11 +88,7 @@ function prettifySegment(segment: string): string {
 }
 
 /** Resolve a dynamic leaf segment to an entity name from world state. */
-function resolveEntityLabel(
-  segments: string[],
-  index: number,
-  world?: WorldState
-): string | null {
+function resolveEntityLabel(segments: string[], index: number, world?: WorldState): string | null {
   if (!world || index === 0) return null;
   const parent = segments[index - 1];
   const id = segments[index];

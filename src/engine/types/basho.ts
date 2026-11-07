@@ -137,7 +137,10 @@ export interface BoutResult {
   /** Injury risk multiplier from tactics (applied to loser's post-bout injury roll). */
   tacticInjuryRiskMultiplier?: number;
   /** Resolved tactic per side (player choice, NPC AI, or explicit override). */
-  tactics?: { east?: import("@/engine/types/combat").BoutTactic; west?: import("@/engine/types/combat").BoutTactic };
+  tactics?: {
+    east?: import("@/engine/types/combat").BoutTactic;
+    west?: import("@/engine/types/combat").BoutTactic;
+  };
   /** Log of key events during the bout. */
   log: BoutLogEntry[];
   /** Play-by-play lines for detailed bout description. */

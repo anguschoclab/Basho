@@ -5,8 +5,17 @@
  */
 
 import { clamp, pick, weightedPick, simpleHashToIndex } from "@/engine/utils/index";
-import type { HouseStyle, PatternId, Connector, ShikonaGenerationConfig } from "@/engine/shikona/types";
-import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, NATIONALITY_PREFIXES } from "@/engine/shikona/constants";
+import type {
+  HouseStyle,
+  PatternId,
+  Connector,
+  ShikonaGenerationConfig,
+} from "@/engine/shikona/types";
+import {
+  SHIKONA_PREFIXES,
+  SHIKONA_SUFFIXES,
+  NATIONALITY_PREFIXES,
+} from "@/engine/shikona/constants";
 import { HOUSE_STYLES } from "@/engine/shikona/houseStyles";
 
 export function getHouseStyle(heyaId?: string): HouseStyle {

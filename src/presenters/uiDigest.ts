@@ -104,11 +104,7 @@ export {
   getStatusLabel,
   getStatusColor,
 } from "@/engine/governance/services/ScandalService";
-export {
-  scoutPool,
-  scoutCandidate,
-  offerCandidate,
-} from "@/engine/generation/TalentPoolService";
+export { scoutPool, scoutCandidate, offerCandidate } from "@/engine/generation/TalentPoolService";
 export { recruitSponsor } from "@/engine/economy/SponsorshipService";
 export { getCachedPerception, buildPerceptionSnapshot } from "@/engine/npc/perception";
 export { setHeyaDietAction } from "@/presenters/uiActions";
