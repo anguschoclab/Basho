@@ -1,7 +1,7 @@
 /**
  * src/engine/events/chains/chainRegistry.ts
  * =========================================
- * The 15 launch event-chain families. All text is bard path data
+ * Event-chain families (31). All text is bard path data
  * (`chains.<family>.<stage>_{title|summary|opt_*}`); all effects are
  * serializable descriptors — never closures — so resolution can re-derive
  * the option purely from ids.
@@ -35,7 +35,7 @@ const always: ChainGuard = () => true;
 
 // ── Registry ─────────────────────────────────────────────────────────────────
 
-// refactor-budget-waiver: 15 authored narrative families (~60 stages) — this
+// refactor-budget-waiver: 31 authored narrative families (~110 stages) — this
 // is authored event content (data), not executable code; splitting it would
 // scatter the content authors edit together.
 export const EVENT_CHAIN_REGISTRY: EventChainDef[] = [
@@ -1775,6 +1775,540 @@ export const EVENT_CHAIN_REGISTRY: EventChainDef[] = [
             id: "next_time",
             labelPath: "chains.myoseki_auction.s2_opt_next",
             effects: { politicalCapital: -1 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "danpatsu_shiki",
+    scope: "player_heya",
+    cooldownWeeks: 52,
+    trigger: { weight: 4, guard: hasVeteran },
+    stages: [
+      {
+        id: "ceremony_offer",
+        titlePath: "chains.danpatsu_shiki.s0_title",
+        summaryPath: "chains.danpatsu_shiki.s0_summary",
+        options: [
+          {
+            id: "fund_arena",
+            labelPath: "chains.danpatsu_shiki.s0_opt_arena",
+            feeYen: 15_000_000,
+            nextStage: { stageId: "packed_house", delayWeeks: 4 },
+          },
+          {
+            id: "modest_hall",
+            labelPath: "chains.danpatsu_shiki.s0_opt_modest",
+            feeYen: 3_000_000,
+            nextStage: { stageId: "quiet_rite", delayWeeks: 4 },
+          },
+          {
+            id: "skip",
+            labelPath: "chains.danpatsu_shiki.s0_opt_skip",
+            nextStage: { stageId: "slighted_veteran", delayWeeks: 2 },
+          },
+        ],
+      },
+      {
+        id: "packed_house",
+        titlePath: "chains.danpatsu_shiki.s1_title",
+        summaryPath: "chains.danpatsu_shiki.s1_summary",
+        options: [
+          {
+            id: "honor",
+            labelPath: "chains.danpatsu_shiki.s1_opt_honor",
+            effects: { reputation: 4, politicalCapital: 3, morale: 4 },
+          },
+        ],
+      },
+      {
+        id: "quiet_rite",
+        titlePath: "chains.danpatsu_shiki.s2_title",
+        summaryPath: "chains.danpatsu_shiki.s2_summary",
+        options: [
+          {
+            id: "attend",
+            labelPath: "chains.danpatsu_shiki.s2_opt_attend",
+            effects: { morale: 3 },
+          },
+        ],
+      },
+      {
+        id: "slighted_veteran",
+        titlePath: "chains.danpatsu_shiki.s3_title",
+        summaryPath: "chains.danpatsu_shiki.s3_summary",
+        options: [
+          {
+            id: "send_gift",
+            labelPath: "chains.danpatsu_shiki.s3_opt_gift",
+            feeYen: 2_000_000,
+            effects: { morale: 2 },
+          },
+          {
+            id: "nothing",
+            labelPath: "chains.danpatsu_shiki.s3_opt_nothing",
+            effects: { reputation: -2, morale: -3 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "fire_safety_order",
+    scope: "player_heya",
+    cooldownWeeks: 40,
+    trigger: { weight: 4, guard: always },
+    stages: [
+      {
+        id: "citation",
+        titlePath: "chains.fire_safety_order.s0_title",
+        summaryPath: "chains.fire_safety_order.s0_summary",
+        options: [
+          {
+            id: "renovate",
+            labelPath: "chains.fire_safety_order.s0_opt_renovate",
+            feeYen: 20_000_000,
+            nextStage: { stageId: "certified", delayWeeks: 3 },
+          },
+          {
+            id: "patch",
+            labelPath: "chains.fire_safety_order.s0_opt_patch",
+            feeYen: 4_000_000,
+            nextStage: { stageId: "patched", delayWeeks: 2 },
+          },
+          {
+            id: "appeal",
+            labelPath: "chains.fire_safety_order.s0_opt_appeal",
+            nextStage: { stageId: "appeal_denied", delayWeeks: 3 },
+          },
+        ],
+      },
+      {
+        id: "certified",
+        titlePath: "chains.fire_safety_order.s1_title",
+        summaryPath: "chains.fire_safety_order.s1_summary",
+        options: [
+          {
+            id: "done",
+            labelPath: "chains.fire_safety_order.s1_opt_done",
+            effects: { welfareRisk: -4, reputation: 2 },
+          },
+        ],
+      },
+      {
+        id: "patched",
+        titlePath: "chains.fire_safety_order.s2_title",
+        summaryPath: "chains.fire_safety_order.s2_summary",
+        options: [
+          {
+            id: "accept_risk",
+            labelPath: "chains.fire_safety_order.s2_opt_accept",
+            effects: { welfareRisk: 2 },
+          },
+        ],
+      },
+      {
+        id: "appeal_denied",
+        titlePath: "chains.fire_safety_order.s3_title",
+        summaryPath: "chains.fire_safety_order.s3_summary",
+        options: [
+          {
+            id: "comply_now",
+            labelPath: "chains.fire_safety_order.s3_opt_comply",
+            feeYen: 22_000_000,
+            effects: { welfareRisk: -4, politicalCapital: -1 },
+          },
+          {
+            id: "pay_only",
+            labelPath: "chains.fire_safety_order.s3_opt_payonly",
+            feeYen: 3_000_000,
+            effects: { welfareRisk: 3, politicalCapital: -2 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ichimon_vote",
+    scope: "player_heya",
+    cooldownWeeks: 26,
+    trigger: { weight: 5, guard: always },
+    stages: [
+      {
+        id: "motion",
+        titlePath: "chains.ichimon_vote.s0_title",
+        summaryPath: "chains.ichimon_vote.s0_summary",
+        options: [
+          {
+            id: "support",
+            labelPath: "chains.ichimon_vote.s0_opt_support",
+            nextStage: { stageId: "bloc_thanks", delayWeeks: 1 },
+          },
+          {
+            id: "abstain",
+            labelPath: "chains.ichimon_vote.s0_opt_abstain",
+            nextStage: { stageId: "ignored", delayWeeks: 1 },
+          },
+          {
+            id: "oppose",
+            labelPath: "chains.ichimon_vote.s0_opt_oppose",
+            nextStage: { stageId: "bloc_anger", delayWeeks: 1 },
+          },
+        ],
+      },
+      {
+        id: "bloc_thanks",
+        titlePath: "chains.ichimon_vote.s1_title",
+        summaryPath: "chains.ichimon_vote.s1_summary",
+        options: [
+          {
+            id: "collect",
+            labelPath: "chains.ichimon_vote.s1_opt_collect",
+            effects: { politicalCapital: 4 },
+          },
+        ],
+      },
+      {
+        id: "ignored",
+        titlePath: "chains.ichimon_vote.s2_title",
+        summaryPath: "chains.ichimon_vote.s2_summary",
+        options: [
+          {
+            id: "accept",
+            labelPath: "chains.ichimon_vote.s2_opt_accept",
+          },
+        ],
+      },
+      {
+        id: "bloc_anger",
+        titlePath: "chains.ichimon_vote.s3_title",
+        summaryPath: "chains.ichimon_vote.s3_summary",
+        options: [
+          {
+            id: "smooth_over",
+            labelPath: "chains.ichimon_vote.s3_opt_smooth",
+            feeYen: 2_000_000,
+            effects: { politicalCapital: 2 },
+          },
+          {
+            id: "stand_ground",
+            labelPath: "chains.ichimon_vote.s3_opt_stand",
+            effects: { politicalCapital: -3, reputation: 2 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "jungyo_invitation",
+    scope: "player_heya",
+    cooldownWeeks: 26,
+    trigger: { weight: 6, phases: ["interim", "post_basho"], guard: hasRoster(3) },
+    stages: [
+      {
+        id: "invitation",
+        titlePath: "chains.jungyo_invitation.s0_title",
+        summaryPath: "chains.jungyo_invitation.s0_summary",
+        options: [
+          {
+            id: "send_squad",
+            labelPath: "chains.jungyo_invitation.s0_opt_squad",
+            nextStage: { stageId: "tour_done", delayWeeks: 3 },
+          },
+          {
+            id: "send_stars",
+            labelPath: "chains.jungyo_invitation.s0_opt_stars",
+            nextStage: { stageId: "star_strain", delayWeeks: 3 },
+          },
+          {
+            id: "decline",
+            labelPath: "chains.jungyo_invitation.s0_opt_decline",
+            effects: { politicalCapital: -1 },
+          },
+        ],
+      },
+      {
+        id: "tour_done",
+        titlePath: "chains.jungyo_invitation.s1_title",
+        summaryPath: "chains.jungyo_invitation.s1_summary",
+        options: [
+          {
+            id: "bank_it",
+            labelPath: "chains.jungyo_invitation.s1_opt_bank",
+            effects: { funds: 3_000_000, reputation: 2, rosterFatigue: 8 },
+          },
+        ],
+      },
+      {
+        id: "star_strain",
+        titlePath: "chains.jungyo_invitation.s2_title",
+        summaryPath: "chains.jungyo_invitation.s2_summary",
+        options: [
+          {
+            id: "rest",
+            labelPath: "chains.jungyo_invitation.s2_opt_rest",
+            effects: { morale: 3, rosterFatigue: -5 },
+          },
+          {
+            id: "push_on",
+            labelPath: "chains.jungyo_invitation.s2_opt_push",
+            effects: { reputation: 2, rosterFatigue: 10, welfareRisk: 3 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "rikishi_marriage",
+    scope: "rikishi",
+    cooldownWeeks: 52,
+    trigger: { weight: 6, needsRikishi: true, guard: hasSekitori },
+    stages: [
+      {
+        id: "proposal",
+        titlePath: "chains.rikishi_marriage.s0_title",
+        summaryPath: "chains.rikishi_marriage.s0_summary",
+        options: [
+          {
+            id: "bless",
+            labelPath: "chains.rikishi_marriage.s0_opt_bless",
+            nextStage: { stageId: "announcement", delayWeeks: 1 },
+          },
+          {
+            id: "delay",
+            labelPath: "chains.rikishi_marriage.s0_opt_delay",
+            nextStage: { stageId: "resentment", delayWeeks: 2 },
+          },
+          {
+            id: "forbid",
+            labelPath: "chains.rikishi_marriage.s0_opt_forbid",
+            effects: { morale: -4, momentum: -2 },
+          },
+        ],
+      },
+      {
+        id: "announcement",
+        titlePath: "chains.rikishi_marriage.s1_title",
+        summaryPath: "chains.rikishi_marriage.s1_summary",
+        options: [
+          {
+            id: "celebrate",
+            labelPath: "chains.rikishi_marriage.s1_opt_celebrate",
+            feeYen: 1_000_000,
+            effects: { morale: 4, reputation: 2, momentum: 2 },
+          },
+          {
+            id: "low_key",
+            labelPath: "chains.rikishi_marriage.s1_opt_lowkey",
+            effects: { morale: 2, momentum: 1 },
+          },
+        ],
+      },
+      {
+        id: "resentment",
+        titlePath: "chains.rikishi_marriage.s2_title",
+        summaryPath: "chains.rikishi_marriage.s2_summary",
+        options: [
+          {
+            id: "apologize",
+            labelPath: "chains.rikishi_marriage.s2_opt_apologize",
+            effects: { morale: 3, momentum: 2 },
+          },
+          {
+            id: "hold_firm",
+            labelPath: "chains.rikishi_marriage.s2_opt_hold",
+            effects: { morale: -2, momentum: -3 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "sandanme_slump",
+    scope: "rikishi",
+    cooldownWeeks: 20,
+    trigger: { weight: 7, needsRikishi: true, guard: hasRoster(3) },
+    stages: [
+      {
+        id: "slump",
+        titlePath: "chains.sandanme_slump.s0_title",
+        summaryPath: "chains.sandanme_slump.s0_summary",
+        options: [
+          {
+            id: "private_coaching",
+            labelPath: "chains.sandanme_slump.s0_opt_coach",
+            nextStage: { stageId: "breakthrough", delayWeeks: 2 },
+          },
+          {
+            id: "leave_him",
+            labelPath: "chains.sandanme_slump.s0_opt_leave",
+            nextStage: { stageId: "drift", delayWeeks: 2 },
+          },
+          {
+            id: "harsh_words",
+            labelPath: "chains.sandanme_slump.s0_opt_harsh",
+            nextStage: { stageId: "shutdown", delayWeeks: 1 },
+          },
+        ],
+      },
+      {
+        id: "breakthrough",
+        titlePath: "chains.sandanme_slump.s1_title",
+        summaryPath: "chains.sandanme_slump.s1_summary",
+        options: [
+          {
+            id: "praise",
+            labelPath: "chains.sandanme_slump.s1_opt_praise",
+            effects: { momentum: 4, morale: 3 },
+          },
+        ],
+      },
+      {
+        id: "drift",
+        titlePath: "chains.sandanme_slump.s2_title",
+        summaryPath: "chains.sandanme_slump.s2_summary",
+        options: [
+          {
+            id: "check_in",
+            labelPath: "chains.sandanme_slump.s2_opt_checkin",
+            effects: { morale: 2, momentum: -1 },
+          },
+        ],
+      },
+      {
+        id: "shutdown",
+        titlePath: "chains.sandanme_slump.s3_title",
+        summaryPath: "chains.sandanme_slump.s3_summary",
+        options: [
+          {
+            id: "apologize",
+            labelPath: "chains.sandanme_slump.s3_opt_apologize",
+            effects: { morale: 2, momentum: 1 },
+          },
+          {
+            id: "double_down",
+            labelPath: "chains.sandanme_slump.s3_opt_double",
+            effects: { momentum: -3, morale: -3, welfareRisk: 1 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "tokoyama_poached",
+    scope: "player_heya",
+    cooldownWeeks: 40,
+    trigger: { weight: 4, guard: hasStaff },
+    stages: [
+      {
+        id: "offer",
+        titlePath: "chains.tokoyama_poached.s0_title",
+        summaryPath: "chains.tokoyama_poached.s0_summary",
+        options: [
+          {
+            id: "match",
+            labelPath: "chains.tokoyama_poached.s0_opt_match",
+            feeYen: 4_000_000,
+            nextStage: { stageId: "retained", delayWeeks: 1 },
+          },
+          {
+            id: "let_go",
+            labelPath: "chains.tokoyama_poached.s0_opt_letgo",
+            nextStage: { stageId: "departure", delayWeeks: 1 },
+          },
+          {
+            id: "guilt_trip",
+            labelPath: "chains.tokoyama_poached.s0_opt_guilt",
+            effects: { morale: -2, welfareRisk: 1 },
+          },
+        ],
+      },
+      {
+        id: "retained",
+        titlePath: "chains.tokoyama_poached.s1_title",
+        summaryPath: "chains.tokoyama_poached.s1_summary",
+        options: [
+          {
+            id: "thank",
+            labelPath: "chains.tokoyama_poached.s1_opt_thank",
+            effects: { morale: 2 },
+          },
+        ],
+      },
+      {
+        id: "departure",
+        titlePath: "chains.tokoyama_poached.s2_title",
+        summaryPath: "chains.tokoyama_poached.s2_summary",
+        options: [
+          {
+            id: "hire_fast",
+            labelPath: "chains.tokoyama_poached.s2_opt_hire",
+            feeYen: 5_000_000,
+            effects: { morale: 1 },
+          },
+          {
+            id: "make_do",
+            labelPath: "chains.tokoyama_poached.s2_opt_makedo",
+            effects: { morale: -3, welfareRisk: 2, reputation: -1 },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "tv_documentary",
+    scope: "player_heya",
+    cooldownWeeks: 40,
+    trigger: { weight: 5, guard: always },
+    stages: [
+      {
+        id: "offer",
+        titlePath: "chains.tv_documentary.s0_title",
+        summaryPath: "chains.tv_documentary.s0_summary",
+        options: [
+          {
+            id: "open_doors",
+            labelPath: "chains.tv_documentary.s0_opt_open",
+            nextStage: { stageId: "airing", delayWeeks: 4 },
+          },
+          {
+            id: "limited_access",
+            labelPath: "chains.tv_documentary.s0_opt_limited",
+            nextStage: { stageId: "bland_cut", delayWeeks: 4 },
+          },
+          {
+            id: "refuse",
+            labelPath: "chains.tv_documentary.s0_opt_refuse",
+          },
+        ],
+      },
+      {
+        id: "airing",
+        titlePath: "chains.tv_documentary.s1_title",
+        summaryPath: "chains.tv_documentary.s1_summary",
+        options: [
+          {
+            id: "lean_in",
+            labelPath: "chains.tv_documentary.s1_opt_leanin",
+            effects: { reputation: 4, heyaPressure: 3, morale: -2 },
+          },
+          {
+            id: "distance",
+            labelPath: "chains.tv_documentary.s1_opt_distance",
+            effects: { reputation: 2, heyaPressure: 1 },
+          },
+        ],
+      },
+      {
+        id: "bland_cut",
+        titlePath: "chains.tv_documentary.s2_title",
+        summaryPath: "chains.tv_documentary.s2_summary",
+        options: [
+          {
+            id: "accept",
+            labelPath: "chains.tv_documentary.s2_opt_accept",
+            effects: { reputation: 1 },
           },
         ],
       },

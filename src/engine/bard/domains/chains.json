@@ -42,6 +42,32 @@
     ],
     "s4_opt_rebuild": ["Rebuild trust slowly", "Focus on healing the room"]
   },
+  "danpatsu_shiki": {
+    "s0_title": ["One Last Ceremony", "The Hair-Cutting Rite"],
+    "s0_summary": [
+      "A beloved veteran's danpatsu-shiki approaches. The koenkai asks whether the stable will fund a proper send-off at the Kokugikan.",
+      "Retirement was hard enough on him. Now the question is the ceremony — an arena full of fans, or a quiet room."
+    ],
+    "s0_opt_arena": ["Fund the Kokugikan ceremony", "Book the big arena"],
+    "s0_opt_modest": ["Hold a modest ceremony", "Keep it small and dignified"],
+    "s0_opt_skip": ["Skip the ceremony entirely", "He doesn't need the fuss"],
+    "s1_title": ["A Packed House Says Goodbye", "The Arena Weeps"],
+    "s1_summary": [
+      "Hundreds line up to snip a strand of his topknot. Sponsors, elders, and fans all saw what your stable stands for."
+    ],
+    "s1_opt_honor": ["Honor him publicly", "Give the speech of his life"],
+    "s2_title": ["A Quiet Rite", "Family Only"],
+    "s2_summary": [
+      "A small hall, a few dozen koenkai, and the scissors. It is dignified — if muted."
+    ],
+    "s2_opt_attend": ["Attend in person", "Be there for every snip"],
+    "s3_title": ["He Leaves Bitter", "No Farewell At All"],
+    "s3_summary": [
+      "He cleans out his locker without a ceremony. The roster notices the silence — so does he."
+    ],
+    "s3_opt_gift": ["Send a generous parting gift", "Try to make it right"],
+    "s3_opt_nothing": ["Let him go quietly", "It's done"]
+  },
   "doping_rumor": {
     "s0_title": ["A Syringe in the Shadows", "Unholy Whispers"],
     "s0_summary": [
@@ -83,6 +109,32 @@
       "Officially cleared. The rumor will linger, but the record is clean."
     ],
     "s4_opt_moveon": ["Back to work", "Put it behind you"]
+  },
+  "sandanme_slump": {
+    "s0_title": ["The Slump Nobody Mentions", "Winless in Weeks"],
+    "s0_summary": [
+      "%SHIKONA% hasn't won a sparring match in weeks. He's started skipping extra reps and eating alone.",
+      "Something is off with %SHIKONA%. The talent is there — the results have vanished, and the light with them."
+    ],
+    "s0_opt_coach": ["Take him aside for private coaching", "Work the problem directly"],
+    "s0_opt_leave": ["Leave him to work it out", "Every rikishi slumps"],
+    "s0_opt_harsh": ["Call him out in front of the stable", "Shame him into shape"],
+    "s1_title": ["The Breakthrough", "It Clicks Again"],
+    "s1_summary": [
+      "Three mornings of one-on-one work and the old form returns. %SHIKONA% beats a senior he hasn't touched in months."
+    ],
+    "s1_opt_praise": ["Praise the comeback publicly", "Let everyone see it"],
+    "s2_title": ["He Drifts", "Still Slumping"],
+    "s2_summary": [
+      "Left alone, the slump deepens. %SHIKONA%'s shoulders slump at the dohyo edge — the fire is going out."
+    ],
+    "s2_opt_checkin": ["Check in on him now", "Better late than never"],
+    "s3_title": ["He Shuts Down", "Wall Goes Up"],
+    "s3_summary": [
+      "The public call-out lands wrong. %SHIKONA% stops meeting anyone's eyes and trains in angry silence."
+    ],
+    "s3_opt_apologize": ["Apologize — privately", "Admit you went too far"],
+    "s3_opt_double": ["Double down on tough love", "He needs to harden up"]
   },
   "sponsor_courtship": {
     "s0_title": ["An Unlikely Admirer", "A Benefactor Calls"],
@@ -181,6 +233,27 @@
     ],
     "s4_opt_work": ["Back to work", "Resume normal training"]
   },
+  "tv_documentary": {
+    "s0_title": ["The Cameras Want In", "A Documentary Offer"],
+    "s0_summary": [
+      "A broadcaster wants three weeks inside %HEYA% — dawn keiko, meals, tears, everything. Exposure like this can't be bought.",
+      "A production company offers to film an inside-the-stable documentary. The money is small; the spotlight is not."
+    ],
+    "s0_opt_open": ["Open the doors fully", "Let them see everything"],
+    "s0_opt_limited": ["Allow limited, supervised access", "Cameras with conditions"],
+    "s0_opt_refuse": ["Refuse — the dohyo is private", "Not a reality show"],
+    "s1_title": ["The Footage Aired", "The Whole Country Saw Keiko"],
+    "s1_summary": [
+      "The raw footage — collapses, blood, 5 a.m. agony — transfixes viewers. Your stable is suddenly famous, and the roster feels exposed."
+    ],
+    "s1_opt_leanin": ["Lean into the attention", "Ride the wave"],
+    "s1_opt_distance": ["Keep the stable focused inward", "Fame fades; training stays"],
+    "s2_title": ["A Sanitized Cut", "Polished and Harmless"],
+    "s2_summary": [
+      "The limited-access cut airs — pleasant, shallow, forgettable. A small bump of goodwill and no disruption."
+    ],
+    "s2_opt_accept": ["Accept the quiet result", "Good enough"]
+  },
   "veteran_decline": {
     "s0_title": ["The Slowing Lion", "Time Catches Everyone"],
     "s0_summary": [
@@ -211,6 +284,28 @@
     "s3_opt_honor": ["Fund a farewell ceremony (¥150,000)", "A proper danpatsu-shiki (¥150,000)"],
     "s3_opt_quiet": ["A quiet farewell", "Keep it simple"]
   },
+  "rikishi_marriage": {
+    "s0_title": ["He Wants to Marry", "The Announcement"],
+    "s0_summary": [
+      "%SHIKONA% asks your blessing to announce his engagement. Sekitori marry late for a reason — the timing could unsettle him.",
+      "%SHIKONA% sits across your desk, nervous for the first time in years. He wants to marry, and he wants your approval first."
+    ],
+    "s0_opt_bless": ["Bless the engagement", "Congratulations are in order"],
+    "s0_opt_delay": ["Ask him to wait until after the basho", "Not yet — timing matters"],
+    "s0_opt_forbid": ["Forbid it outright", "Marriage can wait for retirement"],
+    "s1_title": ["The Engagement Goes Public", "Fans Celebrate"],
+    "s1_summary": [
+      "The announcement charms the press. %SHIKONA% walks taller at keiko — a settled man is a dangerous one."
+    ],
+    "s1_opt_celebrate": ["Host a celebration at the heya", "Make an event of it"],
+    "s1_opt_lowkey": ["Keep it low-key", "Back to work"],
+    "s2_title": ["Resentment in the Ring", "He Trains Angry"],
+    "s2_summary": [
+      "%SHIKONA% agreed to wait — but his keiko has an edge now, and not the good kind. The fiancée's family is unimpressed."
+    ],
+    "s2_opt_apologize": ["Reconsider and apologize", "You misjudged it"],
+    "s2_opt_hold": ["Hold firm on the delay", "He'll get over it"]
+  },
   "rivalry_escalation": {
     "s0_title": ["War of Words", "Needles and Insults"],
     "s0_summary": [
@@ -240,6 +335,27 @@
     ],
     "s3_opt_settle": ["Settle it on the dohyo", "Let sumo decide"]
   },
+  "jungyo_invitation": {
+    "s0_title": ["A Jungyo Invitation", "The Provinces Call"],
+    "s0_summary": [
+      "A regional tour organizer wants %HEYA% rikishi for a week of exhibition sumo. The fee is real — so is the fatigue.",
+      "A town up north is offering good money for your rikishi to headline their jungyo stop. The calendar between basho is tight."
+    ],
+    "s0_opt_squad": ["Send a full squad", "Take the whole troop"],
+    "s0_opt_stars": ["Send only the headliners", "Send the names they asked for"],
+    "s0_opt_decline": ["Decline politely", "The boys need rest"],
+    "s1_title": ["The Tour Pays Off", "Worth the Miles"],
+    "s1_summary": [
+      "Sold-out gymnasiums, happy organizers, and a healthy appearance fee. The rikishi come home tired but proud."
+    ],
+    "s1_opt_bank": ["Bank the fee", "A good week's work"],
+    "s2_title": ["The Headliners Strain", "Too Much Traveling Sumo"],
+    "s2_summary": [
+      "Your stars return sore and drained — one reports a tight knee. The money was good; the timing was not."
+    ],
+    "s2_opt_rest": ["Rest them before training resumes", "Health first"],
+    "s2_opt_push": ["Push through — basho is coming", "No days off"]
+  },
   "koenkai_defection": {
     "s0_title": ["Restless Benefactors", "Cracks in the Koenkai"],
     "s0_summary": [
@@ -268,6 +384,32 @@
       "Handshakes and warm sake. The koenkai feels whole again."
     ],
     "s3_opt_renew": ["Renew the vows (¥500,000 raised)", "Recommit the supporters (¥500,000)"]
+  },
+  "fire_safety_order": {
+    "s0_title": ["The Fire Marshal's Citation", "Red Tag on the Door"],
+    "s0_summary": [
+      "A fire-safety inspection flags aging wiring and a blocked exit in the heya's century-old wing. A compliance order follows.",
+      "The city inspector was polite but firm: the stable's wiring fails code, and the order is already filed."
+    ],
+    "s0_opt_renovate": ["Renovate the wiring properly", "Do it right the first time"],
+    "s0_opt_patch": ["Patch the minimum to pass", "Fix only what they cited"],
+    "s0_opt_appeal": ["Appeal the order", "Fight the citation"],
+    "s1_title": ["Safe and Certified", "Wiring Replaced"],
+    "s1_summary": [
+      "Contractors rewire the old wing. The stable passes re-inspection — and the rikishi sleep easier."
+    ],
+    "s1_opt_done": ["File the completion papers", "Close the matter"],
+    "s2_title": ["A Patch, Not a Fix", "Barely Passing"],
+    "s2_summary": [
+      "The citation items are patched, but the inspector's notes make clear the underlying risk remains."
+    ],
+    "s2_opt_accept": ["Accept the residual risk", "Deal with it later"],
+    "s3_title": ["Appeal Denied", "The Order Stands"],
+    "s3_summary": [
+      "The appeal is rejected and a fine is levied on top. The wiring still needs fixing."
+    ],
+    "s3_opt_comply": ["Comply and renovate now", "Pay it and fix it"],
+    "s3_opt_payonly": ["Pay the fine, delay repairs", "Kick the can"]
   },
   "foreign_prospect": {
     "s0_title": ["A Giant Abroad", "Word from Overseas"],
@@ -333,6 +475,32 @@
       "Order returns to the stable. The succession question is answered, at least for today."
     ],
     "s3_opt_consolidate": ["Consolidate your position", "Secure the throne"]
+  },
+  "ichimon_vote": {
+    "s0_title": ["The Ichimon Council Convenes", "A Vote With Teeth"],
+    "s0_summary": [
+      "Your ichimon puts a contested reform to a faction vote — several elders are watching how %HEYA% leans.",
+      "The council chamber fills. Today's motion divides the faction, and abstaining will be noticed either way."
+    ],
+    "s0_opt_support": ["Vote for the reform", "Stand with the reformers"],
+    "s0_opt_abstain": ["Abstain quietly", "Stay out of it"],
+    "s0_opt_oppose": ["Vote against", "Side with the traditionalists"],
+    "s1_title": ["The Reform Bloc Remembers", "Favors Owed"],
+    "s1_summary": [
+      "Your support helped carry the motion. The reformist elders make a point of thanking you — publicly."
+    ],
+    "s1_opt_collect": ["Accept their gratitude", "Bank the goodwill"],
+    "s2_title": ["Your Abstention Goes Unnoticed", "Neither Loved Nor Hated"],
+    "s2_summary": [
+      "The vote passes without you. Nobody thanks you — but nobody blames you either."
+    ],
+    "s2_opt_accept": ["Move on", "Business as usual"],
+    "s3_title": ["A Costly Stand", "The Old Guard Is Grateful"],
+    "s3_summary": [
+      "Your no-vote earns warm words from the traditionalists and cold silence from the reformers who now run the committee."
+    ],
+    "s3_opt_smooth": ["Smooth it over privately", "Buy back the goodwill"],
+    "s3_opt_stand": ["Stand by the vote", "Let them remember"]
   },
   "injury_coverup": {
     "s0_title": ["The Hidden Limp", "Limping in Secret"],
@@ -416,6 +584,27 @@
       "The stable carries a legend's name over its door. The standard is set."
     ],
     "s2_opt_carry": ["Carry the name forward", "Live up to it"]
+  },
+  "tokoyama_poached": {
+    "s0_title": ["A Rival Comes for Your Tokoyama", "Poached"],
+    "s0_summary": [
+      "Your stable's tokoyama has an offer from a rival heya — better pay, better quarters. He hasn't decided yet.",
+      "Word reaches you that %HEYA%'s hairdresser is being courted by a rival stable. His handiwork keeps your sekitori's mage pristine."
+    ],
+    "s0_opt_match": ["Match the offer", "Pay to keep him"],
+    "s0_opt_letgo": ["Let him go", "No hard feelings"],
+    "s0_opt_guilt": ["Lean on loyalty", "Remind him who trained him"],
+    "s1_title": ["He Stays", "Loyalty Holds"],
+    "s1_summary": [
+      "The matched offer — and the respect it showed — settles it. Your tokoyama unpacks his bag and gets back to work."
+    ],
+    "s1_opt_thank": ["Thank him properly", "Worth every yen"],
+    "s2_title": ["He Leaves Mid-Basho", "The Chair Sits Empty"],
+    "s2_summary": [
+      "He takes the rival's offer, and the timing is cruel — the topknots won't dress themselves during a tournament."
+    ],
+    "s2_opt_hire": ["Hire a replacement fast", "Pay for the best available"],
+    "s2_opt_makedo": ["Make do until the basho ends", "The juniors can improvise"]
   },
   "tsukebito_abuse": {
     "s0_title": ["The Attendants' Complaint", "Servants Who Say Enough"],
