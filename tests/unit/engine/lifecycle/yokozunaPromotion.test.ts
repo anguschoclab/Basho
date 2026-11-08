@@ -55,7 +55,7 @@ describe("Yokozuna Promotion Logic", () => {
       ]),
       oyakata: new Map([["oyakata-1", { id: "oyakata-1", age: 50, name: "Test Oyakata" } as any]]),
       calendar: { month: 1, bashoNumber: 1 },
-      events: [],
+      events: { version: "1.0.0", log: [], dedupe: {} },
     } as any;
   };
 
