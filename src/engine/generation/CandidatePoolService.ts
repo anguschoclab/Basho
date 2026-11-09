@@ -120,13 +120,39 @@ export function simulateNPCInterest(world: WorldState): StateImpact {
   const nextCandidates: Record<Id, TalentCandidate> = {};
   const nextPools = { ...cp.pools };
 
+  // Preserve candidates already in negotiation or signed. The interest
+  // rebuild runs before the deadline-resolution and materialization steps,
+  // so rebuilding from {} would wipe the player suitor poachCandidate
+  // appended (in_talks) and pending signings (signed) those steps must see.
+  for (const [existingId, existing] of Object.entries(cp.candidates)) {
+    if (
+      existing &&
+      (existing.availabilityState === "in_talks" || existing.availabilityState === "signed")
+    ) {
+      nextCandidates[existingId] = existing;
+    }
+  }
+
   // Scan visible candidates in the main talent pool
   for (const pt of ["high_school", "university", "foreign"] as const) {
     const pool = tp.pools[pt];
     if (!pool) continue;
 
     const watchedIds: Id[] = [];
+
+    // Keep preserved candidates listed in the pool bucket they already
+    // occupy — their watchlist presence must survive the rebuild too.
+    for (const cId of nextPools[pt]?.candidatesVisible ?? []) {
+      if (nextCandidates[cId]) watchedIds.push(cId);
+    }
+
     for (const cId of pool.candidatesVisible) {
+      if (nextCandidates[cId]) {
+        // Already tracked (in talks / signed) — do not re-roll suitors or
+        // downgrade the negotiation state with a fresh copy.
+        if (!watchedIds.includes(cId)) watchedIds.push(cId);
+        continue;
+      }
       const candidate = tp.candidates[cId];
       if (!candidate) continue;
       if (candidate.availabilityState !== "available") continue;

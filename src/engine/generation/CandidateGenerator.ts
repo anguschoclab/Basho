@@ -182,6 +182,11 @@ export function generateCandidate(args: {
   const personId = rng.uuid("PS");
   const nationality = poolType === "foreign" ? origin : "Japan";
 
+  // Amateur-star roll — drawn only for non-prodigies, preserving the single
+  // conditional draw the previous inline roll consumed. `rng.next() < CHANCE`
+  // yields the documented 80% tag rate; `> CHANCE` yielded ~20% (S7-42).
+  const amateurStarTag = !isEmergentProdigy && rng.next() < AMATEUR_STAR_TAG_CHANCE;
+
   return {
     candidateId: id,
     personId,
@@ -214,12 +219,11 @@ export function generateCandidate(args: {
     },
 
     competingSuitors: [],
-    tags: isEmergentProdigy
-      ? ["prodigy"]
-      : rng.next() > AMATEUR_STAR_TAG_CHANCE
-        ? ["amateur_star"]
-        : [],
+    tags: isEmergentProdigy ? ["prodigy"] : amateurStarTag ? ["amateur_star"] : [],
     isEmergentProdigy,
+    // The flag its readers check (eventSurfacing, CandidatePoolPage) —
+    // previously never set even when the tag landed (S7-43).
+    isAmateurStar: amateurStarTag || undefined,
     // §5.3 — a small share of foreign-born recruits hold Japanese citizenship.
     dualCitizen: poolType === "foreign" ? rng.next() < DUAL_CITIZEN_RECRUIT_SHARE : undefined,
 

@@ -441,7 +441,46 @@ export function convertCandidateToRikishi(args: {
 
   // Assign recruitment cohort ID (year-heyaId for new recruits)
   const cohortId = `${currentYear}-${heyaId}`;
-  const rikishiWithCohort = assignRecruitmentCohort(rikishiWithShikona, cohortId);
+  let converted = assignRecruitmentCohort(rikishiWithShikona, cohortId);
 
-  return rikishiWithCohort;
+  // Emergent prodigies are tracked on injuryStatus — weekly-training
+  // burnout logic reads `rikishi.injuryStatus?.isEmergentProdigy`.
+  if (candidate.isEmergentProdigy) {
+    converted = {
+      ...converted,
+      injuryStatus: {
+        type: "none",
+        severity: "none",
+        weeksRemaining: 0,
+        ...(converted.injuryStatus ?? {}),
+        isEmergentProdigy: true,
+      },
+    };
+  }
+
+  // Re-signed free agents re-mint as the veteran they were — priorCareer
+  // overrides the jonokuchi-debutant scaffolding the pipeline built above
+  // (career record, stat line, division history, debut year, real potential).
+  const priorCareer = candidate.priorCareer;
+  if (priorCareer) {
+    converted = {
+      ...converted,
+      stats: priorCareer.stats,
+      height: priorCareer.heightCm,
+      careerWins: priorCareer.careerWins,
+      careerLosses: priorCareer.careerLosses,
+      careerAbsences: priorCareer.careerAbsences,
+      makuuchiWins: priorCareer.makuuchiWins,
+      divisionRecords: priorCareer.divisionRecords ?? converted.divisionRecords,
+      careerHistory: priorCareer.careerHistory ?? converted.careerHistory,
+      careerRecord: priorCareer.careerRecord ?? converted.careerRecord,
+      debutYear: priorCareer.debutYear ?? converted.debutYear,
+      joinedHeyaDate: priorCareer.joinedHeyaDate ?? converted.joinedHeyaDate,
+      heyaHistory: priorCareer.heyaHistory ?? converted.heyaHistory,
+      potential: priorCareer.potential ?? converted.potential,
+      citizenshipStatus: candidate.citizenshipStatus ?? converted.citizenshipStatus,
+    };
+  }
+
+  return converted;
 }

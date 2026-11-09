@@ -51,8 +51,10 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
         (r.currentBashoWins ?? 0) / ((r.currentBashoWins ?? 0) + (r.currentBashoLosses ?? 0) || 1);
       score += winRatio * 20;
 
-      // 5. Foreign-slot retention bias
-      if (countsAsForeignFromRikishi(r)) {
+      // 5. Foreign-slot retention bias — citizenship-aware (§5.2): only
+      // rikishi still consuming the slot get the bias; naturalized, dual-
+      // citizen and tenure-complete veterans evaluate as non-foreign.
+      if (countsAsForeignFromRikishi(r, world.year)) {
         score += 30; // Strong retention bias
       }
 

@@ -12,6 +12,7 @@
 
 import type { Id } from "@/engine/types/common";
 import type { CombatArchetype, Style, CombatProfile } from "@/engine/types/combat";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
 import type { ScoutingBias } from "@/engine/recruitment/FogOfWarService";
 
 /**
@@ -86,6 +87,20 @@ export interface TalentCandidate {
    * citizenship; never consumes the heya's foreign slot.
    */
   dualCitizen?: boolean;
+  /**
+   * Citizenship status carried through recruitment — mirrors the Rikishi
+   * field (§5.2–5.3) so a re-entering veteran's slot treatment survives
+   * release → reinjection → re-signing.
+   */
+  citizenshipStatus?: "native" | "foreign" | "naturalized" | "dual";
+  /**
+   * Prior professional career — present only on re-entering free agents
+   * (released rikishi reinjected into the pool). Marks the candidate as a
+   * veteran rather than a prospect: exempt from the yearly pool age-out and
+   * consumed by convertCandidateToRikishi so the re-signed rikishi keeps
+   * their stats and record instead of re-minting as a jonokuchi debutant.
+   */
+  priorCareer?: PriorCareer;
   /** Visibility band (how much info is available). */
   visibilityBand: VisibilityBand;
   /** Reputation seed for random generation. */
@@ -153,6 +168,30 @@ export interface TalentCandidate {
   /** Persistent avatar identity — seeded by personId so the face survives
    *  conversion to a Rikishi record. */
   avatarConfig?: import("@/engine/types/avatar").AvatarIdentity;
+}
+
+/**
+ * Career record carried by a re-entering free agent. Written by
+ * reinjectToTalentPool from the released rikishi and read back by
+ * convertCandidateToRikishi so a re-signed veteran keeps their history.
+ */
+export interface PriorCareer {
+  /** Full stat line at release (includes the weight stat in kg). */
+  stats: RikishiStats;
+  /** Physical height in cm — not part of RikishiStats. */
+  heightCm: number;
+  careerWins: number;
+  careerLosses: number;
+  careerAbsences: number;
+  makuuchiWins: number;
+  divisionRecords: Rikishi["divisionRecords"];
+  careerHistory: Rikishi["careerHistory"];
+  careerRecord?: Rikishi["careerRecord"];
+  debutYear?: number;
+  /** Original heya-join date — preserves naturalization tenure progress. */
+  joinedHeyaDate?: string;
+  heyaHistory?: Rikishi["heyaHistory"];
+  potential?: Rikishi["potential"];
 }
 
 /**

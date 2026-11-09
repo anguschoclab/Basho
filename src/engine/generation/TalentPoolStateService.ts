@@ -14,7 +14,8 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "@/engine/types/talent";
 import { generateCandidate } from "@/engine/generation/CandidateGenerator";
 import { deriveStyle } from "@/engine/generation/CandidateBuilder";
-import { isForeign, isCollegeRecruit } from "@/engine/utils/identity";
+import { isCollegeRecruit } from "@/engine/utils/identity";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { buildCombatProfile } from "@/engine/bout/archetype";
 
 /**
@@ -83,9 +84,11 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): State
   const builder = createImpactBuilder("reinjectToTalentPool");
   const tp = ensureTalentPoolState(world);
 
-  // Create a candidate from the rikishi
+  // Create a candidate from the rikishi — the pool bucket uses the canonical
+  // citizenship-aware check (§5.2): a naturalized/dual/tenure-complete
+  // veteran holds Japanese status and must not re-enter the foreign pool.
   const candidateId = rikishi.id;
-  const poolType: TalentPoolType = isForeign(rikishi)
+  const poolType: TalentPoolType = countsAsForeign(rikishi, world.year)
     ? "foreign"
     : isCollegeRecruit(rikishi)
       ? "university"
@@ -100,6 +103,7 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): State
     [candidateId]: {
       candidateId,
       personId: rikishi.id,
+      poolType,
       name: rikishi.shikona,
       nationality: rikishi.nationality ?? "Japan",
       birthYear: rikishi.birthYear ?? world.year - 20,
@@ -118,6 +122,28 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): State
       temperament: {
         discipline: 50,
         volatility: 50,
+      },
+      // Citizenship travels with the candidate — a naturalized/dual veteran
+      // re-signing must not consume the foreign slot again (S7 talent pool).
+      citizenshipStatus: rikishi.citizenshipStatus,
+      dualCitizen: rikishi.citizenshipStatus === "dual" ? true : undefined,
+      // The released veteran's career — convertCandidateToRikishi reads this
+      // to re-mint the real record instead of a jonokuchi debutant, and the
+      // yearly refresh exempts priorCareer candidates from the age-out.
+      priorCareer: {
+        stats: rikishi.stats,
+        heightCm: rikishi.height,
+        careerWins: rikishi.careerWins ?? 0,
+        careerLosses: rikishi.careerLosses ?? 0,
+        careerAbsences: rikishi.careerAbsences ?? 0,
+        makuuchiWins: rikishi.makuuchiWins ?? 0,
+        divisionRecords: rikishi.divisionRecords,
+        careerHistory: rikishi.careerHistory,
+        careerRecord: rikishi.careerRecord,
+        debutYear: rikishi.debutYear,
+        joinedHeyaDate: rikishi.joinedHeyaDate,
+        heyaHistory: rikishi.heyaHistory,
+        potential: rikishi.potential,
       },
     } as TalentCandidate,
   };
@@ -252,6 +278,10 @@ function filterAgedOutCandidates(
     const candidate = tp.candidates[id];
     // Remove ghost IDs where candidate data is missing
     if (!candidate) return false;
+    // Re-entering free agents carry a real career — they are veterans, not
+    // prospects aging out of a school pool (S7: birthYear-based culling
+    // silently deleted released rikishi at the very next refresh).
+    if (candidate.priorCareer) return true;
 
     const estimatedAge = currentYear - (candidate.birthYear ?? currentYear - 20);
     if (estimatedAge > maxAge) {

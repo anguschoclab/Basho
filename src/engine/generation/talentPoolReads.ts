@@ -5,9 +5,11 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
 import type { TalentPoolType, TalentCandidate } from "@/engine/types/talent";
 import { isForeign } from "@/engine/utils/identity";
-import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { countsAsForeign, NATURALIZATION_YEARS } from "@/engine/utils/citizenshipUtils";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { getHeya, getRikishi } from "@/engine/core/queries";
 
 // ============================================
@@ -108,17 +110,38 @@ export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
 
 /**
  * A candidate consumes the foreign slot iff foreign-born AND not a dual
- * citizen (§5.1–5.3).
+ * citizen (§5.1–5.3). A re-entering veteran's citizenship status travels on
+ * the candidate — naturalized/dual/native statuses never consume the slot.
  */
 export function candidateConsumesForeignSlot(
-  candidate: Pick<TalentCandidate, "nationality" | "dualCitizen">
+  candidate: Pick<TalentCandidate, "nationality" | "dualCitizen" | "citizenshipStatus">
 ): boolean {
-  return isForeign({ nationality: candidate.nationality }) && candidate.dualCitizen !== true;
+  if (!isForeign({ nationality: candidate.nationality })) return false;
+  if (candidate.dualCitizen === true) return false;
+  const status = candidate.citizenshipStatus;
+  return status !== "naturalized" && status !== "dual" && status !== "native";
 }
 
 /**
- * Checks if a rikishi counts as foreign for roster cap purposes.
+ * Checks if a rikishi counts as foreign for roster-cap purposes.
+ * Delegates to the canonical citizenship-aware `countsAsForeign` (§5.2):
+ * naturalized and dual-citizen rikishi — and veterans whose residency
+ * tenure has completed — do not consume the slot.
+ *
+ * `currentYear` should be `world.year` when a world is in scope. When
+ * omitted, tenure is evaluated at the rikishi's naturalization-eligibility
+ * date (joinedHeyaDate + NATURALIZATION_YEARS) — the answer assumes the
+ * residency clock has run out, which is the right read for release-path
+ * callers reasoning about veterans who already served their tenure.
  */
-export function countsAsForeignFromRikishi(rikishi: { nationality?: string }): boolean {
-  return isForeign(rikishi);
+export function countsAsForeignFromRikishi(
+  rikishi: Pick<Rikishi, "nationality" | "citizenshipStatus" | "joinedHeyaDate">,
+  currentYear?: number
+): boolean {
+  const referenceYear =
+    currentYear ??
+    (rikishi.joinedHeyaDate
+      ? parseInt(rikishi.joinedHeyaDate, 10) + NATURALIZATION_YEARS
+      : DEFAULT_START_YEAR);
+  return countsAsForeign(rikishi as Rikishi, referenceYear);
 }
