@@ -53,10 +53,13 @@ function objectToMap<T>(obj: Record<string, T | undefined>): Map<string, T> {
  */
 function serializeBashoState(basho: BashoState): SerializedBashoState {
   return {
+    id: basho.id,
     year: basho.year,
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,
     day: basho.day,
+    currentDay: basho.currentDay,
+    isActive: basho.isActive,
     matches: basho.matches,
     standings: mapToObject(basho.standings),
     ...(basho.kinboshiThisBasho ? { kinboshiThisBasho: basho.kinboshiThisBasho } : {}),
@@ -75,10 +78,12 @@ function serializeBashoState(basho: BashoState): SerializedBashoState {
  */
 function deserializeBashoState(basho: SerializedBashoState): BashoState {
   return {
+    id: basho.id,
     year: basho.year,
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,
     day: basho.day,
+    currentDay: basho.currentDay ?? basho.day,
     matches: basho.matches,
     standings: objectToMap(basho.standings),
     ...(basho.kinboshiThisBasho ? { kinboshiThisBasho: basho.kinboshiThisBasho } : {}),
@@ -87,7 +92,7 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
     boutMetrics: basho.boutMetrics,
     isExhibition: basho.isExhibition,
     exhibitionName: basho.exhibitionName,
-    isActive: true,
+    isActive: basho.isActive ?? true,
   };
 }
 

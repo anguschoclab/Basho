@@ -53,10 +53,15 @@ export interface SerializedSponsorPool {
 
 /** Defines the structure for serialized basho state. */
 export interface SerializedBashoState {
+  /** Basho id — feeds bout-physics/tactic/officiating RNG seeds via
+   *  `?? "basho"` fallbacks; dropping it switches every stream on reload. */
+  id?: string;
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;
   day: number;
+  currentDay?: number;
+  isActive?: boolean;
   matches: MatchSchedule[];
   standings: StandingsTable;
   /** Per-basho kinboshi tally (rikishiId → stars earned); survives save/load. */
