@@ -75,4 +75,26 @@ describe("SaveSlotService.isValidSave", () => {
       })
     ).toBe(true);
   });
+
+  // ── V18-B07 — hollow-world guard must reject non-Map collections ──────────
+  // SaveSlotService.ts:123 checks `typeof world.rikishi === "object"` — an
+  // ARRAY passes, then objectToMap(Object.keys([])) → empty Map → a hollow
+  // world loads instead of failing validation.
+  it("rejects a save whose world.rikishi is an array", () => {
+    expect(
+      SaveSlotService.isValidSave({
+        version: "1.4.0",
+        world: { seed: "s", year: 2025, rikishi: [], heyas: {} },
+      })
+    ).toBe(false);
+  });
+
+  it("rejects a save whose world.heyas is an array", () => {
+    expect(
+      SaveSlotService.isValidSave({
+        version: "1.4.0",
+        world: { seed: "s", year: 2025, rikishi: {}, heyas: [] },
+      })
+    ).toBe(false);
+  });
 });

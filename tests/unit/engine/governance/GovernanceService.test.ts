@@ -13,6 +13,8 @@
 import { describe, it, expect } from "vitest";
 import { reportScandal } from "@/engine/governance/services/ScandalService";
 import { phase01_week_governance } from "@/engine/tick/phases/phase01_week_governance";
+import { PoliticalFavorsService } from "@/engine/governance/services/PoliticalFavorsService";
+import { POLITICAL_FAVOR_ADVANCE_PAYOUT } from "@/constants/engine/economic";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
@@ -177,5 +179,38 @@ describe("phase01_week_governance — status threshold transitions", () => {
 
     expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("probation");
     expect(updatedWorld.heyas.get("h2")!.governanceStatus).toBe("good_standing");
+  });
+});
+
+/**
+ * V18 — advance_payout is a stipend advance, not a gift.
+ *
+ * `requestFavor(…, "advance_payout")` deducts 25 political capital and
+ * credits POLITICAL_FAVOR_ADVANCE_PAYOUT to heya funds, but records no
+ * advance draw and nothing ever docks the monthly stipend — the favor is a
+ * repeatable money printer. Each redemption below goes through the real
+ * command path (requestFavor → resolveImpacts), so the second draw sees the
+ * post-first-redemption world and still pays out.
+ */
+describe("V18 — advance_payout cannot mint repeatable funds", () => {
+  it("a second stipend advance inside the same month credits nothing further", () => {
+    const world = makeWorld("h1");
+    world.heyas.get("h1")!.politicalCapital = 100;
+    const prior = world.heyas.get("h1")!.funds;
+
+    const w1 = resolveImpacts(world, [
+      PoliticalFavorsService.requestFavor(world, "h1", "advance_payout"),
+    ]);
+    const afterFirst = w1.heyas.get("h1")!.funds;
+    // The advance itself is legitimate — control that it pays once.
+    expect(afterFirst).toBe(prior + POLITICAL_FAVOR_ADVANCE_PAYOUT);
+
+    const w2 = resolveImpacts(w1, [
+      PoliticalFavorsService.requestFavor(w1, "h1", "advance_payout"),
+    ]);
+    // An advance on THE monthly stipend can be drawn once per period —
+    // nothing marks the draw today, so the second redemption mints
+    // another payout (repeatable print for 25 political capital each).
+    expect(w2.heyas.get("h1")!.funds).toBe(afterFirst);
   });
 });

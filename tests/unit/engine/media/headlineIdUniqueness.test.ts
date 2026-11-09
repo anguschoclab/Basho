@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { updateMediaFromBout } from "@/engine/media/MediaBoutService";
+import { generateGovernanceHeadline } from "@/engine/media/MediaService";
+import { reportScandal } from "@/engine/governance/services/ScandalService";
 import { createDefaultMediaState } from "@/engine/media/MediaStateService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@tests/unit/engine/utils";
 import type { BoutResult } from "@/engine/types/basho";
 
@@ -102,5 +105,69 @@ describe("media headline id uniqueness (V17-D01)", () => {
     });
 
     expect(headlineIds(i1)[0]).not.toBe(headlineIds(i2)[0]);
+  });
+});
+
+/**
+ * V18 — governance headline id collisions on identical labels.
+ *
+ * `generateGovernanceHeadline` builds the rng label as
+ * `gov::${heyaId}::${templatePath}::${week}::${dayIndexGlobal}::${salt ?? ""}`
+ * on a FRESH SeededRNG — `uuid("MH")` counters are per-instance, so two
+ * calls with the same label on the same day mint the same MH id. Headlines
+ * are written as a whole `mediaState` world-field (not via arrayAppends),
+ * so the resolver-level `appendDeduped` remint does not protect them.
+ */
+describe("governance headline id uniqueness (V18)", () => {
+  it("two same-label governance headlines on one day mint distinct ids", () => {
+    const world = makeMockWorld({
+      year: 2025,
+      week: 10,
+      heyas: new Map([["h1", makeMockHeya("h1")]]),
+      mediaState: createDefaultMediaState(),
+    });
+
+    const w1 = resolveImpacts(world, [
+      generateGovernanceHeadline({
+        world,
+        heyaId: "h1",
+        templatePath: "institutional.governance.scandal",
+        severity: "national",
+      }),
+    ]);
+    const w2 = resolveImpacts(w1, [
+      generateGovernanceHeadline({
+        world: w1,
+        heyaId: "h1",
+        templatePath: "institutional.governance.scandal",
+        severity: "national",
+      }),
+    ]);
+
+    const headlines = w2.mediaState!.headlines;
+    expect(headlines.length).toBe(2);
+    expect(headlines[0].id).not.toBe(headlines[1].id);
+  });
+
+  it("two identical scandals through reportScandal mint distinct headline ids", () => {
+    // The real production caller: reportScandal passes `salt: reason`, so
+    // two identical misconduct reports share the exact same label.
+    const world = makeMockWorld({
+      year: 2025,
+      week: 10,
+      heyas: new Map([["h1", makeMockHeya("h1")]]),
+      mediaState: createDefaultMediaState(),
+    });
+
+    const w1 = resolveImpacts(world, [
+      reportScandal(world, "h1", "minor", "same misconduct"),
+    ]);
+    const w2 = resolveImpacts(w1, [
+      reportScandal(w1, "h1", "minor", "same misconduct"),
+    ]);
+
+    const headlines = w2.mediaState!.headlines;
+    expect(headlines.length).toBe(2);
+    expect(headlines[0].id).not.toBe(headlines[1].id);
   });
 });

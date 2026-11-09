@@ -9,6 +9,7 @@ import {
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
 } from "@/constants/engine/economic";
+import { TRANSFER_RATIO_STANDARD } from "@/constants/engine/roster";
 
 describe("governanceReview", () => {
   let world: WorldState;
@@ -174,6 +175,66 @@ describe("governanceReview", () => {
 
       const updatedHeya = newWorld.heyas.get("heya-good")!;
       expect(updatedHeya.scandalScore).toBe(8); // Decays by 2
+    });
+
+    it("V18 — benefactor debit composes with funds received earlier in the same review", () => {
+      // a-collapsed is force-merged into m-benefactor (the only eligible
+      // merger target), transferring half its positive funds. z-insolvent
+      // later draws an ichimon gift from that same benefactor. The gift debit
+      // is computed as `benefactor.funds - charged` off the INPUT world, so
+      // the merger credit is clobbered — the benefactorCharges map covers
+      // repeated gifts but not an earlier same-batch credit.
+      const absorbed = makeMockHeya("a-collapsed", {
+        funds: 40_000_000,
+        prestigeBand: "struggling" as never,
+        consecutiveUnderperformanceBasho: 6,
+        rikishiIds: ["ra1", "ra2", "ra3"],
+      });
+      const benefactor = makeMockHeya("m-benefactor", {
+        funds: 100_000_000,
+        ichimon: "Dewanoumi",
+        prestigeBand: "respected" as never,
+        rikishiIds: ["rb1", "rb2", "rb3"],
+      });
+      const insolvent = makeMockHeya("z-insolvent", {
+        funds: -1_000_000,
+        runwayBand: "desperate",
+        ichimon: "Dewanoumi",
+        rikishiIds: ["rc1", "rc2", "rc3"],
+      });
+      const player = makeMockHeya("p-player", { rikishiIds: ["rp1", "rp2", "rp3"] });
+      world.playerHeyaId = "p-player";
+
+      for (const h of [absorbed, benefactor, insolvent, player]) {
+        world.heyas.set(h.id, h);
+        for (const rid of h.rikishiIds ?? []) {
+          world.rikishi.set(rid, mockRikishi(rid, { heyaId: h.id, nationality: "Japan" }));
+        }
+      }
+      // HEYA_FLOOR=10 — fillers keep the merger paths unblocked; none are
+      // merger candidates (no eligible prestigeBand) or benefactors (<60M).
+      for (let i = 0; i < 8; i++) {
+        const id = `f-fill-${i}`;
+        world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`rf${i}1`, `rf${i}2`, `rf${i}3`] }));
+        world.rikishi.set(`rf${i}1`, mockRikishi(`rf${i}1`, { heyaId: id, nationality: "Japan" }));
+        world.rikishi.set(`rf${i}2`, mockRikishi(`rf${i}2`, { heyaId: id, nationality: "Japan" }));
+        world.rikishi.set(`rf${i}3`, mockRikishi(`rf${i}3`, { heyaId: id, nationality: "Japan" }));
+      }
+
+      const impact = runGovernanceReview(world);
+      const newWorld = resolveImpacts(world, [impact]);
+
+      // Control: the insolvent heya really did draw the faction gift.
+      expect(newWorld.heyas.get("z-insolvent")!.funds).toBe(
+        -1_000_000 + FACTION_BAILOUT_AMOUNT
+      );
+      // Pin: absorbed funds + gift debit must compose on the benefactor.
+      // Today the debit reads the pre-review 100M base and the 20M merger
+      // credit is destroyed.
+      const transfer = Math.floor(absorbed.funds * TRANSFER_RATIO_STANDARD);
+      expect(newWorld.heyas.get("m-benefactor")!.funds).toBe(
+        benefactor.funds + transfer - FACTION_BAILOUT_AMOUNT
+      );
     });
   });
 });

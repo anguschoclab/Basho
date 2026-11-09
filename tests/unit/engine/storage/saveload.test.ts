@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { saveGame, loadGame, importSave } from "@/engine/persistence/saveload";
+import { saveGame, loadGame, importSave, exportSave } from "@/engine/persistence/saveload";
 import {
   setStorageProvider,
   resetStorageProvider,
@@ -371,6 +371,32 @@ describe("saveload - migration persistence", () => {
 
     const result = loadGame("slot_1");
     expect(result).toBe(null);
+  });
+});
+
+// ── V18-B06 — exportSave must produce a .json filename ──────────────────────
+// saveload.ts:158-167 uses the `filename` param verbatim; the only production
+// caller (useSaveLoadState.ts:120) passes "Manual Save" — the downloaded file
+// is literally named `Manual Save` with no extension.
+describe("saveload - exportSave filename", () => {
+  beforeEach(() => {
+    resetStorageProvider();
+  });
+
+  afterEach(() => {
+    resetStorageProvider();
+  });
+
+  it("appends .json to a caller-provided base name", () => {
+    const world = makeMockWorld();
+    const { filename } = exportSave(world, "Manual Save");
+    expect(filename).toMatch(/\.json$/i);
+  });
+
+  it("keeps the default filename's .json suffix", () => {
+    const world = makeMockWorld();
+    const { filename } = exportSave(world);
+    expect(filename).toMatch(/\.json$/i);
   });
 });
 

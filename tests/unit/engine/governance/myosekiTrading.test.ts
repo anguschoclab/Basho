@@ -5,9 +5,9 @@ import {
   returnLeasedMyoseki,
   findAvailableStock,
 } from "@/engine/governance/services/MyosekiTradingService";
-import { leaseMyoseki } from "@/engine/governance/myosekiMarket";
+import { leaseMyoseki, tickMyosekiMarket } from "@/engine/governance/myosekiMarket";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld } from "@tests/unit/engine/utils";
+import { makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import type { MyosekiMarket } from "@/engine/types/myoseki";
 
 /** Deterministic two-stock market fixture (JSA-owned, available). */
@@ -196,6 +196,138 @@ describe("Merit issuance fallback", () => {
     }
     const available = findAvailableStock(market);
     expect(available).toBeUndefined();
+  });
+});
+
+/**
+ * V18 — self-dealing guards.
+ *
+ * `buyMyoseki` (myosekiMarket.ts) already treats `stock.ownerId === buyerId`
+ * as a no-op; the active TradingService's `purchaseMyoseki` has no such
+ * guard — it debits the buyer's heya, then skips the seller credit when
+ * seller and buyer resolve to the same heya (MyosekiTradingService.ts:113),
+ * destroying the price. `leaseMyoseki` likewise lacks an owner-vs-lessee
+ * guard, and the weekly market tick then drains the "lessee" forever while
+ * its own owner-side credit is suppressed.
+ */
+describe("V18 — purchaseMyoseki self-purchase", () => {
+  it("buying your own listing must not destroy heya funds", () => {
+    const market = makeMarket();
+    const stockId = "myoseki-1";
+    market.stocks[stockId].ownerId = "oya-1";
+    market.stocks[stockId].holderId = "oya-1";
+    // status stays "available" — the stock is listed by its own owner
+
+    const world = makeMockWorld({
+      heyas: new Map([
+        ["h-self", makeMockHeya("h-self", { funds: 600_000_000, oyakataId: "oya-1" })],
+      ]),
+      oyakata: new Map([["oya-1", { id: "oya-1", heyaId: "h-self" } as never]]),
+    });
+    (world as any).myosekiMarket = market;
+
+    const impact = purchaseMyoseki(world, market, stockId, "oya-1", 600_000_000);
+    const resolved = resolveImpacts(world, [impact]);
+    const resolvedMarket = (resolved as any).myosekiMarket as MyosekiMarket;
+
+    // Guard parity with buyMyoseki: self-purchase is a no-op.
+    expect(resolved.heyas.get("h-self")!.funds).toBe(600_000_000);
+    expect(resolvedMarket.stocks[stockId].status).toBe("available");
+    expect(resolvedMarket.history.length).toBe(0);
+  });
+});
+
+describe("V18 — leaseMyoseki self-lease", () => {
+  it("leasing your own stock must not enable a recurring self-drain", () => {
+    const world = makeMockWorld({
+      heyas: new Map([
+        ["h-self", makeMockHeya("h-self", { funds: 10_000, oyakataId: "oya-1" })],
+      ]),
+      oyakata: new Map([["oya-1", { id: "oya-1", heyaId: "h-self" } as never]]),
+      myosekiMarket: {
+        stocks: {
+          s1: {
+            id: "s1",
+            name: "SelfStock",
+            prestigeTier: "respected",
+            ownerId: "oya-1",
+            holderId: "oya-1",
+            status: "available",
+            askingPrice: 520_000,
+          },
+        },
+        history: [],
+      } as never,
+    });
+
+    const afterLease = resolveImpacts(world, [leaseMyoseki(world, "oya-1", "s1")]);
+    // A self-held lease must not drain: the tick debits the lessee
+    // unconditionally while the owner credit is suppressed for same-heya
+    // leases (tickMyosekiMarket) — a weekly leak out of thin air.
+    const afterTick = resolveImpacts(afterLease, [tickMyosekiMarket(afterLease)]);
+    expect(afterTick.heyas.get("h-self")!.funds).toBe(10_000);
+    // Owner-vs-lessee parity with buyMyoseki's self-purchase guard.
+    expect(afterLease.myosekiMarket!.stocks["s1"].status).toBe("available");
+  });
+});
+
+/**
+ * V18 — deterministic transaction ids.
+ *
+ * TradingService mints tx ids from `purchase-${myosekiId}` / `return-${myosekiId}`
+ * labels on a fresh SeededRNG — identical labels mint identical MT-* ids.
+ * Repeating a sale or return on the same stock (real ops, resolved between
+ * steps the way the command path resolves each call) collides. The lower-level
+ * `getMyosekiTransaction` already embeds type/participants/year/week/amount.
+ */
+describe("V18 — myoseki transaction id uniqueness", () => {
+  it("reselling the same stock mints distinct transaction ids", () => {
+    const market = makeMarket();
+    const stockId = "myoseki-1";
+    const price = market.stocks[stockId].askingPrice!;
+    const world = makeWorldWithMarket(market);
+
+    // oya-1 buys from JSA → holds
+    const w1 = resolveImpacts(world, [
+      purchaseMyoseki(world, market, stockId, "oyakata-1", price),
+    ]);
+    const m1 = (w1 as any).myosekiMarket as MyosekiMarket;
+    // oya-1 re-lists → available again
+    const w2 = resolveImpacts(w1, [listMyosekiForSale(w1, m1, stockId, price)]);
+    const m2 = (w2 as any).myosekiMarket as MyosekiMarket;
+    // oya-2 buys the same stock → second "purchase-${id}" label → same MT id
+    const w3 = resolveImpacts(w2, [
+      purchaseMyoseki(w2, m2, stockId, "oyakata-2", price),
+    ]);
+    const history = ((w3 as any).myosekiMarket as MyosekiMarket).history;
+
+    expect(history.length).toBe(2);
+    expect(new Set(history.map((t) => t.id)).size).toBe(2);
+  });
+
+  it("re-leasing then returning the same stock mints distinct return ids", () => {
+    const market = makeMarket();
+    const stockId = "myoseki-1";
+    const world = makeWorldWithMarket(market);
+
+    // lease → return → re-list → lease again → return again
+    const w1 = resolveImpacts(world, [leaseMyoseki(world, "oyakata-a", stockId)]);
+    const m1 = (w1 as any).myosekiMarket as MyosekiMarket;
+    const w2 = resolveImpacts(w1, [returnLeasedMyoseki(w1, m1, stockId)]);
+    const m2 = (w2 as any).myosekiMarket as MyosekiMarket;
+    const w3 = resolveImpacts(w2, [
+      listMyosekiForSale(w2, m2, stockId, 500_000_000),
+    ]);
+    const m3 = (w3 as any).myosekiMarket as MyosekiMarket;
+    const w4 = resolveImpacts(w3, [leaseMyoseki(w3, "oyakata-b", stockId)]);
+    const m4 = (w4 as any).myosekiMarket as MyosekiMarket;
+    const w5 = resolveImpacts(w4, [returnLeasedMyoseki(w4, m4, stockId)]);
+    const history = ((w5 as any).myosekiMarket as MyosekiMarket).history;
+
+    // Both "return-${id}" labels minted the same MT id on identical rng streams.
+    const returnIds = history.filter((t) => t.type === "return").map((t) => t.id);
+    expect(returnIds.length).toBe(2);
+    expect(new Set(returnIds).size).toBe(2);
   });
 });
 

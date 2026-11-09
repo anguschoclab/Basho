@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
-import { scheduleDivisionDay } from "@/engine/calendar/schedule";
+import { scheduleDivisionDay, scheduleAllDivisionsDay } from "@/engine/calendar/schedule";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { toKeyedMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -187,5 +188,79 @@ describe("matchmakingOverride consumer", () => {
       seed: "test-seed",
     });
     expect(scheduled.length).toBeGreaterThan(0);
+  });
+});
+
+// ── V18-B08 — the one-shot favor must be consumed for a juryo-only requester ─
+// schedule.ts:124-131 returns early from the juryo branch, before the day-1
+// consumption at :137-149. A requester whose rikishi are all juryo never hits
+// `applyMatchmakingAvoid` in any division pool, so `world.matchmakingOverride`
+// persists — and it is serialized (SerializationService.ts:177) into the next
+// basho, silently spending a favor meant for day 1 of THIS basho.
+
+function buildJuryoRequesterWorld(): WorldState {
+  // 4 juryo rikishi for the requester + 4 neutral juryo — no makuuchi at all.
+  const rikishi = new Map<string, Rikishi>();
+  const mk = (id: string, heyaId: string) => {
+    rikishi.set(
+      id,
+      MockFactory.createRikishi(id, { heyaId, division: "juryo", rank: "juryo" })
+    );
+  };
+  for (let i = 0; i < 4; i++) mk(`req-${i}`, "heya-req");
+  for (let i = 0; i < 4; i++) mk(`neu-${i}`, "heya-neu");
+
+  const rivalriesState: RivalriesState = {
+    version: "1.0.0",
+    pairs: {},
+    heyaRivalryPairs: {
+      "heya-req|heya-riv": {
+        id: "heya-req|heya-riv",
+        heyaAId: "heya-req",
+        heyaBId: "heya-riv",
+        heat: 90,
+        aWins: 3,
+        bWins: 3,
+      } as never,
+    },
+  };
+
+  const basho = MockFactory.createBasho({
+    day: 1,
+    matches: [],
+    standings: toKeyedMap(
+      [...rikishi.keys()],
+      (id) => id,
+      () => ({ wins: 0, losses: 0 }) as never
+    ),
+  });
+
+  return MockFactory.createWorld({
+    rikishi,
+    heyas: new Map([
+      ["heya-req", MockFactory.createHeya("heya-req", { rikishiIds: ["req-0", "req-1", "req-2", "req-3"] })],
+      ["heya-neu", MockFactory.createHeya("heya-neu", { rikishiIds: ["neu-0", "neu-1", "neu-2", "neu-3"] })],
+      ["heya-riv", MockFactory.createHeya("heya-riv", { rikishiIds: [] })],
+    ]),
+    currentBasho: basho,
+    rivalriesState,
+    matchmakingOverride: { type: "avoid_rival", requesterId: "heya-req" },
+  });
+}
+
+describe("V18-B08 — matchmakingOverride consumption for juryo-only requester", () => {
+  it("day-1 scheduling consumes the one-shot favor even when the requester has no makuuchi", () => {
+    const world = buildJuryoRequesterWorld();
+    const { scheduled, impact } = scheduleAllDivisionsDay({
+      world,
+      basho: world.currentBasho!,
+      day: 1,
+      seed: "test-seed",
+    });
+    expect(scheduled.length).toBeGreaterThan(0);
+    // The favor is one-shot: consumed by the requester's first scheduled day
+    // regardless of division. Today it survives the whole day-1 pipeline.
+    const resolved = resolveImpacts(world, [impact]);
+    expect(resolved.matchmakingOverride).toBeUndefined();
   });
 });

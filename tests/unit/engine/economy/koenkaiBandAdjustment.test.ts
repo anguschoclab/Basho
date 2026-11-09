@@ -128,3 +128,55 @@ describe("adjustKoenkaiBandToPrestige — Set-based sponsor lookup", () => {
     expect(new Set(sponsorIds).size).toBe(2);
   });
 });
+
+/**
+ * V18 — cross-koenkai pick dedup in one adjustment pass.
+ *
+ * `adjustKoenkaiBandToPrestige` re-scans `world.sponsorPool.sponsors` for
+ * every koenkai — the `active: true` marks for already-picked sponsors live
+ * only inside the impact being built, so a second upgrading koenkai picks
+ * the same inactive sponsor, mints an identical `sr_${id}_${day}` rel id,
+ * and its `updateSponsor` write overwrites the first relationship.
+ */
+describe("V18 — one inactive sponsor cannot join two koenkais in one pass", () => {
+  it("two upgrading koenkais must not draft the same sponsor", () => {
+    const k1 = makeKoenkai("h1", "weak", []);
+    const k2 = makeKoenkai("h2", "weak", []);
+    const sponsorPool = {
+      sponsors: toKeyedMap([makeSponsor("s1", "T1", false)], (s) => s.sponsorId),
+      koenkais: new Map([
+        [k1.koenkaiId, k1],
+        [k2.koenkaiId, k2],
+      ]),
+    } as unknown as SponsorPool;
+    // Each heya upgrades weak→moderate (yokozuna prestige=40).
+    const world = makeMockWorld({
+      heyas: new Map([
+        ["h1", makeMockHeya("h1", { koenkaiBand: "weak", rikishiIds: ["r1"] })],
+        ["h2", makeMockHeya("h2", { koenkaiBand: "weak", rikishiIds: ["r2"] })],
+      ]),
+      rikishi: new Map([
+        ["r1", mockRikishi("r1", { heyaId: "h1", rank: "yokozuna" })],
+        ["r2", mockRikishi("r2", { heyaId: "h2", rank: "yokozuna" })],
+      ]),
+      sponsorPool: sponsorPool as never,
+    });
+
+    const resolved = resolveImpacts(world, [adjustKoenkaiBandToPrestige(world)]);
+    const m1 = resolved.sponsorPool!.koenkais.get("k_h1")!.members;
+    const m2 = resolved.sponsorPool!.koenkais.get("k_h2")!.members;
+
+    const s1Memberships = [...m1, ...m2].filter((m) => m.sponsorId === "s1").length;
+    expect(s1Memberships).toBeLessThanOrEqual(1);
+
+    // Rel ids must be unique pool-wide — the second pick re-mints `sr_s1_<day>`.
+    const relIds = [...m1, ...m2].map((m) => m.relId);
+    expect(new Set(relIds).size).toBe(relIds.length);
+
+    // The sponsor's own relationship list must cover every membership it
+    // actually holds — today the second updateSponsor write clobbers the
+    // first, leaving a member the sponsor can't see.
+    const sponsor = resolved.sponsorPool!.sponsors.get("s1")!;
+    expect((sponsor.relationships ?? []).length).toBe(s1Memberships);
+  });
+});
