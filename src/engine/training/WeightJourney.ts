@@ -77,6 +77,7 @@ export function applyWeightJourneyTick(
         progressKg: 0,
         stalled: false,
         phases: ["bulking"],
+        startWeight: rikishi.stats?.weight ?? 0,
       },
     });
     // The first tick applies on the NEXT weekly phase — rikishi.weightJourney
@@ -116,16 +117,32 @@ export function applyWeightJourneyTick(
     (clamp(nutritionFacility, 0, 100) / 100) * NUTRITION_MULTIPLIERS.RANGE;
 
   journeyUpdate.stalled = false;
-  journeyUpdate.progressKg = journey.progressKg + WEIGHT_JOURNEY_WEEKLY_GAIN * nutritionMult;
+  const weeklyGain = WEIGHT_JOURNEY_WEEKLY_GAIN * nutritionMult;
+  journeyUpdate.progressKg = journey.progressKg + weeklyGain;
+
+  // targetKg is the absolute potential weight — the breakthrough gap is
+  // targetKg - startWeight, not progressKg vs targetKg (which demanded a
+  // ~160kg "gain"). Legacy journeys lack startWeight; stats.weight was never
+  // updated under the bug so it still reads the entry weight.
+  const startWeight = journey.startWeight ?? rikishi.stats?.weight ?? 0;
+  // Write the bulk into stats.weight every tick — progressKg alone left the
+  // rikishi gaining on paper while staying at entry weight forever.
+  updates.stats = {
+    ...(rikishi.stats || {}),
+    weight: Math.min(
+      journey.targetKg,
+      finiteOr(rikishi.stats?.weight, startWeight) + weeklyGain
+    ),
+  } as Rikishi["stats"];
 
   // Breakthrough check
-  if (journeyUpdate.progressKg >= journey.targetKg) {
+  if (journeyUpdate.progressKg >= journey.targetKg - startWeight) {
     journeyUpdate.phases = [...journey.phases, "complete"];
     updates.stats = {
-      ...(rikishi.stats || {}),
+      ...updates.stats,
       power: finiteOr(rikishi.stats?.power, 50) + WEIGHT_JOURNEY_POWER_BOOST,
       balance: finiteOr(rikishi.stats?.balance, 50) + WEIGHT_JOURNEY_BALANCE_BOOST,
-    };
+    } as Rikishi["stats"];
     builder.logEvent(
       "NARRATIVE_CRISIS_TRIGGERED",
       "narrative",

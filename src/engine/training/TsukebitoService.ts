@@ -10,6 +10,7 @@
  */
 
 import type { Id } from "@/engine/types/common";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
@@ -50,8 +51,9 @@ interface TsukebitoAssignment {
  */
 export function isEligibleForTsukebito(rikishi: Rikishi): boolean {
   if (rikishi.isRetired) return false;
-  const rankNum = rikishi.rankNumber ?? 99;
-  return rankNum <= TSUKEBITO_SENIOR_RANK_THRESHOLD;
+  // San'yaku (komusubi and above) — rankNumber is the slot WITHIN a rank, so
+  // `rankNumber <= 3` wrongly admitted juryo-1 while excluding sekiwake-5.
+  return rikishi.rank != null && RANK_HIERARCHY[rikishi.rank]?.isSanyaku === true;
 }
 
 /**
@@ -64,8 +66,9 @@ export function isEligibleForTsukebito(rikishi: Rikishi): boolean {
  */
 export function isJuniorTsukebitoEligible(rikishi: Rikishi): boolean {
   if (rikishi.isRetired) return false;
-  const rankNum = rikishi.rankNumber ?? 99;
-  return rankNum > 10;
+  // Junior attendants are non-sekitori (makushita and below) — `rankNumber > 10`
+  // admitted sekitori (maegashira-15, juryo-12) while excluding sandanme-5.
+  return rikishi.rank == null || RANK_HIERARCHY[rikishi.rank]?.isSekitori !== true;
 }
 
 /**

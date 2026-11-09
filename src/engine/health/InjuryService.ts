@@ -358,6 +358,12 @@ export function clearInjury(rikishiId: string): StateImpact {
     isKyujo: false,
     kyujoReason: undefined,
     medicalCertificate: undefined,
+    // Match the canonical recovery path's cleared shape
+    // (RecoveryService.tickRikishiRecovery): a doctor-clearance leaves the
+    // same post-recovery state — without this the cleared wrestler still
+    // read as injured (type "tear", isInjured true) to injuryStatus readers.
+    injuryStatus: { type: "none", severity: "none", weeksRemaining: 0 },
+    injury: undefined,
   });
 
   builder.updateRikishiNestedField(rikishiId, "currentInjury", undefined);

@@ -21,6 +21,7 @@ function makeSenior(id: string, rankNum: number): Rikishi {
   return mockRikishi(id, {
     shikona: `Senior ${id}`,
     heyaId: "heya-1",
+    rank: "sekiwake",
     rankNumber: rankNum,
     stats: {
       power: 60,
@@ -41,6 +42,7 @@ function makeJunior(id: string, rankNum: number): Rikishi {
   return mockRikishi(id, {
     shikona: `Junior ${id}`,
     heyaId: "heya-1",
+    rank: "makushita",
     rankNumber: rankNum,
     stats: {
       power: 40,
@@ -64,7 +66,12 @@ describe("Tsukebito eligibility", () => {
   });
 
   it("maegashira are not eligible for tsukebito", () => {
-    const riki = makeSenior("r-1", 10);
+    const riki = mockRikishi("r-1", {
+      shikona: "Riki r-1",
+      heyaId: "heya-1",
+      rank: "maegashira",
+      rankNumber: 1,
+    });
     expect(isEligibleForTsukebito(riki)).toBe(false);
   });
 
@@ -110,7 +117,12 @@ describe("Tsukebito assignment", () => {
   });
 
   it("returns empty assignment for ineligible senior", () => {
-    const senior = makeSenior("s-1", 10);
+    const senior = mockRikishi("s-1", {
+      shikona: "Senior s-1",
+      heyaId: "heya-1",
+      rank: "maegashira",
+      rankNumber: 1,
+    });
     const juniors = [makeJunior("j-1", 15)];
     const world = makeMockWorld({});
 

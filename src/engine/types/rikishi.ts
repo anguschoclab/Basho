@@ -343,6 +343,10 @@ export interface Rikishi {
     progressKg: number;
     stalled: boolean;
     phases: string[];
+    /** Weight (kg) when the journey began — the breakthrough gap is
+     *  targetKg - startWeight. Optional for pre-fix journeys (backfilled
+     *  from stats.weight, which the bug froze at entry weight). */
+    startWeight?: number;
   };
 
   // B4: Pre-sumo background trait

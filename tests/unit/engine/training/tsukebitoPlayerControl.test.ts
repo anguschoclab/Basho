@@ -13,16 +13,23 @@ import type { WorldState } from "@/engine/types/world";
 
 function findSenior(world: WorldState): Rikishi {
   for (const r of world.rikishi.values()) {
-    if ((r.rankNumber ?? 99) <= 3 && !r.isRetired) return r;
+    if (isEligibleForTsukebito(r)) return r;
   }
   throw new Error("No senior rikishi found");
 }
 
 function findJunior(world: WorldState, senior: Rikishi): Rikishi {
   for (const r of world.rikishi.values()) {
-    if ((r.rankNumber ?? 99) > 10 && !r.isRetired && r.heyaId === senior.heyaId) return r;
+    if (r.id !== senior.id && isEligibleTsukebito(r, senior)) return r;
   }
   throw new Error("No junior rikishi found in same heya");
+}
+
+function findNonSenior(world: WorldState): Rikishi {
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired && !isEligibleForTsukebito(r)) return r;
+  }
+  throw new Error("No non-san'yaku rikishi found");
 }
 
 describe("Tsukebito player control — set/clear", () => {
@@ -41,15 +48,8 @@ describe("Tsukebito player control — set/clear", () => {
 
   it("setTsukebito refuses if senior is not eligible", () => {
     const world = generateInitialWorld("tsukebito-set-2");
-    // Find a junior rikishi (rank > 10) to use as "senior"
-    let fakeSenior: Rikishi | null = null;
-    for (const r of world.rikishi.values()) {
-      if ((r.rankNumber ?? 99) > 10 && !r.isRetired) {
-        fakeSenior = r;
-        break;
-      }
-    }
-    if (!fakeSenior) throw new Error("No junior found");
+    // A non-san'yaku rikishi (e.g. maegashira) is not a valid senior.
+    const fakeSenior = findNonSenior(world);
     const junior = findJunior(world, fakeSenior);
 
     const impact = setTsukebito(world, fakeSenior.id, junior.id);

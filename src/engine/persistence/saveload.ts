@@ -162,9 +162,11 @@ export function exportSave(
 ): { json: string; filename: string } {
   const save = createSaveGame(world, undefined, undefined, timestampISO);
   const json = stringifySave(save, 2);
-  const defaultFilename =
-    filename || `basho_${world.year}_${world.currentBashoName || "save"}.json`;
-  return { json, filename: defaultFilename };
+  const base = filename?.trim() || `basho_${world.year}_${world.currentBashoName || "save"}`;
+  // Callers pass a display name ("Manual Save") — a downloaded file needs the
+  // .json extension or the OS won't associate it (V18-B06).
+  const resolvedFilename = /\.json$/i.test(base) ? base : `${base}.json`;
+  return { json, filename: resolvedFilename };
 }
 
 export async function importSave(file: File): Promise<WorldState | null> {

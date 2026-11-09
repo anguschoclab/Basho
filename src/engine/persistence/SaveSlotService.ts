@@ -118,10 +118,12 @@ export const SaveSlotService = {
     // serialized core shape (WS5-07). A corrupt save that parses but holds
     // no world data must fail here, not mid-game.
     const world = obj.world as Record<string, unknown>;
-    if (typeof world !== "object" || world === null) return false;
+    if (typeof world !== "object" || world === null || Array.isArray(world)) return false;
     if (typeof world.seed !== "string" || world.seed.length === 0) return false;
-    if (typeof world.rikishi !== "object" || world.rikishi === null) return false;
-    if (typeof world.heyas !== "object" || world.heyas === null) return false;
+    // Collections serialize as plain objects — an ARRAY passes typeof but
+    // deserializes to an empty Map (V18-B07 hollow-world guard).
+    if (typeof world.rikishi !== "object" || world.rikishi === null || Array.isArray(world.rikishi)) return false;
+    if (typeof world.heyas !== "object" || world.heyas === null || Array.isArray(world.heyas)) return false;
     return true;
   },
 
