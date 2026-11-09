@@ -4,7 +4,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { generateShikona } from "@/engine/shikona/generateShikona";
 import type { CareerSnapshot } from "@/engine/types/history";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya, getRikishi } from "@/engine/core/queries";
 import {
@@ -213,10 +213,15 @@ export function checkShikonaChange(
 }
 
 /**
- * Records a shikona change milestone for a rikishi.
+ * Records a shikona change milestone for a rikishi — queued onto `builder`,
+ * never mutating the live rikishi (the old in-place pushes leaked into the
+ * pre-resolution world and could not be rolled back — S4-3). Any milestone
+ * or history already queued for this rikishi in the same batch is composed
+ * on, so multiple shikona writes do not last-wins-clobber each other.
  */
 export function recordShikonaChange(
   world: WorldState,
+  builder: ImpactBuilder,
   rikishiId: string,
   oldShikona: string,
   newShikona: string
@@ -224,23 +229,23 @@ export function recordShikonaChange(
   const rikishi = getRikishi(world, rikishiId);
   if (!rikishi) return;
 
-  if (!rikishi.milestones) rikishi.milestones = [];
-  if (!rikishi.shikonaHistory) rikishi.shikonaHistory = [];
-
   const rng = rngForWorld(world, "history", `shikona_milestone_${rikishiId}`);
 
-  // Add to milestones
-  rikishi.milestones.push({
-    id: rng.uuid("ML"),
-    type: "shikona_change",
-    title: "Shikona Change",
-    description: `Changed shikona from ${oldShikona} to ${newShikona}.`,
-    date: { year: world.year, month: world.calendar?.month ?? 1 },
-  });
+  const queued = builder.build().entities?.rikishiUpdates?.get(rikishiId);
+  const milestones = [
+    ...(queued?.milestones ?? rikishi.milestones ?? []),
+    {
+      id: rng.uuid("ML"),
+      type: "shikona_change" as const,
+      title: "Shikona Change",
+      description: `Changed shikona from ${oldShikona} to ${newShikona}.`,
+      date: { year: world.year, month: world.calendar?.month ?? 1 },
+    },
+  ];
+  const shikonaHistory = [
+    ...(queued?.shikonaHistory ?? rikishi.shikonaHistory ?? []),
+    { shikona: oldShikona, fromYear: world.year },
+  ];
 
-  // Add to shikona history
-  rikishi.shikonaHistory.push({
-    shikona: oldShikona,
-    fromYear: world.year,
-  });
+  builder.updateRikishi(rikishiId, { milestones, shikonaHistory });
 }

@@ -533,6 +533,25 @@ export function createImpactBuilder(source: string): ImpactBuilder {
 }
 
 /**
+ * Returns a view of `world` with the builder's already-queued `worldFields`
+ * applied — the read-current-then-write base for producers that snapshot an
+ * absolute world field (`records`, `myosekiMarket`, `bloodlineRegistry`, ...).
+ *
+ * `updateWorldField` stores complete snapshots and `merge` is last-wins per
+ * field, so a producer that snapshots `world.X` must compose on the value
+ * already queued on the builder — otherwise its write silently drops every
+ * earlier same-batch write to `X` (S1 class bugs).
+ *
+ * Only `worldFields` are reflected (they are complete absolute snapshots);
+ * queued entity/collection writes are NOT visible through this view. For
+ * full progressive resolution use `resolveImpacts(world, [builder.build()])`.
+ */
+export function worldWithQueuedFields(world: WorldState, builder: ImpactBuilder): WorldState {
+  const queued = builder.build().worldFields;
+  return queued ? ({ ...world, ...queued } as WorldState) : world;
+}
+
+/**
  * Convenience function to create a simple heya update impact.
  */
 export function updateHeyaImpact(id: string, update: Partial<Heya>, source: string): StateImpact {

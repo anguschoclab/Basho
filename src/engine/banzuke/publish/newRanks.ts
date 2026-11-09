@@ -49,7 +49,7 @@ export function applyNewRanks(
       const isSanyakuPromotion = movementEvent?.isSanyakuPromotion ?? false;
 
       if (newShikona) {
-        recordShikonaChange(world, rikishi.id, oldShikona, newShikona);
+        recordShikonaChange(world, builder, rikishi.id, oldShikona, newShikona);
         builder.updateRikishi(newEntry.rikishiId, {
           division: newEntry.division,
           rank: newEntry.position.rank,

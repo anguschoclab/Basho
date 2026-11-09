@@ -13,6 +13,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
 import { generateOyakata } from "@/engine/npc/personas/oyakataPersonalities";
 import { foundStable } from "@/engine/generation/WorldFactory";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
@@ -53,7 +54,13 @@ export function processRetireeOyakataConversion(
   // The myoseki market is only lazily created by the impact resolver, so a freshly
   // generated (e.g. headless-sim) world may not have one yet. Treat a missing market
   // as empty rather than bailing — otherwise founding never fires in the 25-year sim.
-  const market = world.myosekiMarket ?? { stocks: {}, history: [] };
+  // Read the market already queued on this builder so a same-batch transfer (a
+  // second conversion, or a succession reseat) composes on it instead of
+  // reverting to the pre-batch snapshot under last-wins merge (S1-3/S1-4).
+  const market = worldWithQueuedFields(world, builder).myosekiMarket ?? {
+    stocks: {},
+    history: [],
+  };
 
   // Use seeded RNG — needed both for merit-stock id and the oyakata/founding logic below.
   const rng = rngForWorld(world, "governance", `retirement_${id}`);

@@ -172,9 +172,14 @@ function reviewHeyaGovernance(
     );
 
     if (newStatus === "sanctioned" || newStatus === "probation") {
+      // Build the headline on the builder's staged mediaState — each
+      // generateGovernanceHeadline snapshots mediaState off its input world,
+      // so two heya transitions in one weekly review would otherwise keep
+      // only the last headline under the last-wins worldFields merge.
+      const stagedMedia = builder.build().worldFields?.mediaState ?? world.mediaState;
       builder.merge(
         generateGovernanceHeadline({
-          world,
+          world: { ...world, mediaState: stagedMedia },
           heyaId: heya.id,
           templatePath:
             newStatus === "sanctioned"

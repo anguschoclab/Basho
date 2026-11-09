@@ -22,7 +22,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder, worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
 import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
@@ -138,7 +138,11 @@ export function retireRikishiFully(
   );
 
   // Remove the retiree from the active records leaderboards.
-  builder.merge(onRikishiRetired(world, id));
+  // Each producer below snapshots an absolute world field (records,
+  // myosekiMarket, bloodlineRegistry, lineage) from the world it receives —
+  // read the value already queued on this builder so earlier retirements in
+  // the same batch stay visible under last-wins merge (S1-1..S1-3).
+  builder.merge(onRikishiRetired(worldWithQueuedFields(world, builder), id));
 
   // Archive full record to cold storage (fire-and-forget).
   // The full Rikishi remains in historicalRikishi until year-end summarization,
@@ -146,10 +150,12 @@ export function retireRikishiFully(
   archiveRikishiToColdStorage(rikishi);
 
   // Constitution 2.3 & 61: Oyakata conversion + (RNG-gated) stable founding.
-  processRetireeOyakataConversion(world, rikishi, builder);
+  processRetireeOyakataConversion(worldWithQueuedFields(world, builder), rikishi, builder);
 
   // Register bloodline trait if the retiree was accomplished (yokozuna/ozeki/sekiwake)
-  builder.merge(LegacyService.registerLegacyTrait(world, rikishi));
+  builder.merge(
+    LegacyService.registerLegacyTrait(worldWithQueuedFields(world, builder), rikishi)
+  );
 }
 
 /**

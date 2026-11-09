@@ -25,7 +25,8 @@ import { retireRikishiFully } from "@/engine/lifecycle/processRetirements";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import type { Rank } from "@/engine/types/banzuke";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder, worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { StateImpact } from "@/engine/core/StateImpact";
 import { TrainingPhilosophyService } from "@/engine/legacy/TrainingPhilosophyService";
 import { getHeya, getRikishi, getHeyaRoster } from "@/engine/core/queries";
@@ -107,6 +108,15 @@ function endIronmanCareer(
 function tickSuccessionCheck(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickSuccessionCheck");
 
+  // Succession producers snapshot absolute world fields (myosekiMarket,
+  // records, bloodlineRegistry) from the world they receive. Resolve the
+  // batch accumulated so far so each succession sees the earlier ones —
+  // under last-wins merge the next reseat would otherwise drop every elder
+  // stock transfer but its own (S1-5). It also keeps findEligibleSuccessors
+  // honest: a rikishi promoted earlier in this same check is already retired
+  // in the resolved base and cannot be picked for a second stable.
+  const successionBase = (): WorldState => resolveImpacts(world, [builder.build()]);
+
   for (const [_heyaId, heya] of world.heyas) {
     const oyakata = world.oyakata?.get(heya.oyakataId || "");
     if (!oyakata) continue;
@@ -143,22 +153,23 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
       if (endIronmanCareer(world, builder, heya, oyakata, "mandatory retirement at 65 (JSA)")) {
         continue;
       }
-      const eligible = findEligibleSuccessors(world, heya.id);
+      const base = successionBase();
+      const eligible = findEligibleSuccessors(base, heya.id);
       // triggerSuccession no-ops on summarized successors — pick the first
       // FULL candidate, else fall through to the generic trustee path
       // (V16-B33: previously the oyakata survived past 65 forever).
       const viable = eligible.find((sid) => {
-        const entry = getRikishi(world, sid) ?? world.historicalRikishi?.get(sid);
+        const entry = getRikishi(base, sid) ?? base.historicalRikishi?.get(sid);
         return entry && !isSummary(entry);
       });
       if (viable) {
-        builder.merge(triggerSuccession(world, heya.id, viable));
-      } else if (closeIfHeirlessAndDying(world, heya, builder)) {
+        builder.merge(triggerSuccession(base, heya.id, viable));
+      } else if (closeIfHeirlessAndDying(base, heya, builder)) {
         // Stable folded — roster dispersed by the merger.
       } else {
         // Fallback: Generate a generic oyakata if no rikishi is eligible
         const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
-        builder.merge(triggerSuccessionWithGeneric(world, heya.id, dummyId));
+        builder.merge(triggerSuccessionWithGeneric(base, heya.id, dummyId));
       }
       continue;
     }
@@ -181,7 +192,8 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
 
       if (reason) {
         if (endIronmanCareer(world, builder, heya, oyakata, reason)) continue;
-        const eligible = findEligibleSuccessors(world, heya.id);
+        const base = successionBase();
+        const eligible = findEligibleSuccessors(base, heya.id);
         builder.logEvent(
           "GOVERNANCE_RULING",
           "discipline",
@@ -197,14 +209,14 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
         // makes triggerSuccession a silent no-op — pick the first FULL
         // candidate, else fall through to the generic trustee.
         const viable = eligible.find((sid) => {
-          const entry = getRikishi(world, sid) ?? world.historicalRikishi?.get(sid);
+          const entry = getRikishi(base, sid) ?? base.historicalRikishi?.get(sid);
           return entry && !isSummary(entry);
         });
         if (viable) {
-          builder.merge(triggerSuccession(world, heya.id, viable));
-        } else if (!closeIfHeirlessAndDying(world, heya, builder)) {
+          builder.merge(triggerSuccession(base, heya.id, viable));
+        } else if (!closeIfHeirlessAndDying(base, heya, builder)) {
           const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
-          builder.merge(triggerSuccessionWithGeneric(world, heya.id, dummyId));
+          builder.merge(triggerSuccessionWithGeneric(base, heya.id, dummyId));
         }
       }
     }
@@ -480,7 +492,12 @@ function transferElderStock(
   fromOyakataId: string,
   toOyakataId: string
 ): void {
-  const market = world.myosekiMarket;
+  // A retiree→oyakata conversion earlier in this same batch may already have
+  // queued a myosekiMarket write on this builder (merit-stock mint + sale
+  // transaction). Read the queued snapshot so the reseat composes onto it —
+  // reverting to the pre-batch market erases the minted stock and leaves the
+  // conversion oyakata a ghost with no elder name (S1-4).
+  const market = worldWithQueuedFields(world, builder).myosekiMarket;
   if (!market?.stocks) return;
   const nextStocks = { ...market.stocks };
   let changed = false;
