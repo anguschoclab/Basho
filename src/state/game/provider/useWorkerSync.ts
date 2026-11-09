@@ -19,7 +19,8 @@ import { useGameStore } from "@/state/stores/gameStore";
 export function useWorkerSync(
   state: GameState,
   dispatch: React.Dispatch<import("@/state/game/gameTypes").GameAction>,
-  startTransition: (cb: () => void) => void
+  startTransition: (cb: () => void) => void,
+  isPending: boolean
 ) {
   const sendCommand = useGameStore((s) => s.sendCommand);
   const initWorker = useGameStore((s) => s.initWorker);
@@ -85,6 +86,30 @@ export function useWorkerSync(
     lastSyncedUiRevision.current = rev;
     sendCommand({ type: "LOAD_WORLD", world: state.world });
   }, [state.world, state.uiWorldRevision, pendingTick, sendCommand]);
+
+  // V18: queued day-tick drain. advanceDay/advanceOneDay register a
+  // queuedTick intent instead of posting TICK_DAY directly (V18 worker-sync
+  // race — the tick's own pendingTick flag deferred the LOAD_WORLD sync, so
+  // the worker ticked its stale pre-bout world). The tick may only fire once
+  // every outstanding uiWorldRevision bump has been synced — the LOAD_WORLD
+  // effect above runs earlier in the same effect pass and updates
+  // lastSyncedUiRevision — and no tick is in flight. Worker FIFO then
+  // guarantees LOAD_WORLD lands before TICK_DAY.
+  //
+  // isPending gate: simulateAllBouts wraps its dispatch in startTransition,
+  // so the uiWorldRevision bump commits in a LATER render than the queuedTick
+  // flag set by a same-action advanceDay — the rev gate alone can't see the
+  // uncommitted mutation. Holding the drain until the transition settles
+  // covers that window; a no-op transition still clears isPending, so the
+  // flag can never starve the queue.
+  const queuedTick = useGameStore((s) => s.queuedTick);
+  useEffect(() => {
+    if (!queuedTick) return;
+    const rev = state.uiWorldRevision ?? 0;
+    if (pendingTick || isPending || rev > lastSyncedUiRevision.current) return;
+    useGameStore.setState({ queuedTick: false });
+    sendCommand({ type: "TICK_DAY" });
+  }, [queuedTick, pendingTick, isPending, state.uiWorldRevision, sendCommand]);
 
   return { digest };
 }

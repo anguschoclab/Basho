@@ -6,6 +6,7 @@
  */
 
 import type { EngineCommand } from "@/engine/worker/types";
+import type { WorldState } from "@/engine/types/world";
 import { withdrawRikishi, treatInjury } from "@/engine/health/HealthActions";
 import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
 import { investInFacility } from "@/engine/economy/facilities";
@@ -25,8 +26,27 @@ import type { CommandHandlerMap } from "@/engine/worker/commands/types";
 
 type Cmd<T extends EngineCommand["type"]> = Extract<EngineCommand, { type: T }>;
 
+/**
+ * V18 ownership gate — rikishi-keyed commands must not mutate rikishi
+ * outside the player's stable. Fail-closed once a player heya exists
+ * (missing or foreign targets are rejected); when the world has no player
+ * heya at all there is no ownership context to gate against and the command
+ * applies unguarded (pre-V18 behavior — keeps player-less worker contexts
+ * like save replay/tooling working).
+ */
+function rikishiOwnedByPlayer(world: WorldState, rikishiId: string): boolean {
+  const owner = world.playerHeyaId;
+  if (!owner) return true;
+  const target = world.rikishi.get(rikishiId);
+  return !!target && target.heyaId === owner;
+}
+
 function withdrawRikishiCmd(rt: WorkerRuntime, cmd: Cmd<"WITHDRAW_RIKISHI">) {
   if (rt.world) {
+    // Ownership gate — same pattern as retireRikishiCmd: the UI only renders
+    // withdrawal for the player's stable, but commands can arrive from any
+    // caller and must not mutate NPC rikishi.
+    if (!rikishiOwnedByPlayer(rt.world, cmd.rikishiId)) return;
     const impacts: StateImpact[] = [withdrawRikishi(rt.world, cmd.rikishiId)];
     // Post a gomenfuda (apology notice) when the player withdraws a
     // rikishi mid-basho. Without this, player-initiated withdrawals never
@@ -47,6 +67,9 @@ function withdrawRikishiCmd(rt: WorkerRuntime, cmd: Cmd<"WITHDRAW_RIKISHI">) {
 
 function treatInjuryCmd(rt: WorkerRuntime, cmd: Cmd<"TREAT_INJURY">) {
   if (rt.world) {
+    // Ownership gate — treatment debits the target's heya funds and heals it;
+    // refuse commands aimed at rikishi outside the player's stable.
+    if (!rikishiOwnedByPlayer(rt.world, cmd.rikishiId)) return;
     rt.world = resolveImpacts(rt.world, [treatInjury(rt.world, cmd.rikishiId, cmd.weeks)]);
     rt.syncAndDigest();
   }
@@ -88,6 +111,9 @@ function setRikishiEffortCmd(rt: WorkerRuntime, cmd: Cmd<"SET_RIKISHI_EFFORT">) 
 
 function buyPhysioCmd(rt: WorkerRuntime, cmd: Cmd<"BUY_PHYSIO">) {
   if (rt.world) {
+    // Ownership gate — physio debits the target's heya funds; refuse commands
+    // aimed at rikishi outside the player's stable.
+    if (!rikishiOwnedByPlayer(rt.world, cmd.rikishiId)) return;
     rt.world = resolveImpacts(rt.world, [buyPhysioSession(rt.world, cmd.rikishiId)]);
     rt.syncAndDigest();
   }
@@ -140,6 +166,14 @@ function repairInfrastructureCmd(rt: WorkerRuntime, cmd: Cmd<"REPAIR_INFRASTRUCT
 
 function assignMentorCmd(rt: WorkerRuntime, cmd: Cmd<"ASSIGN_MENTOR">) {
   if (rt.world) {
+    // Ownership gate — the impact writes both records (apprentice.mentorId,
+    // mentor.menteeIds), so both parties must belong to the player's stable.
+    if (
+      !rikishiOwnedByPlayer(rt.world, cmd.mentorId) ||
+      !rikishiOwnedByPlayer(rt.world, cmd.apprenticeId)
+    ) {
+      return;
+    }
     const { ok, impact } = assignMentor(rt.world, cmd.apprenticeId, cmd.mentorId);
     if (!ok || !impact) return;
     rt.world = resolveImpacts(rt.world, [impact]);
@@ -149,6 +183,9 @@ function assignMentorCmd(rt: WorkerRuntime, cmd: Cmd<"ASSIGN_MENTOR">) {
 
 function removeMentorCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_MENTOR">) {
   if (rt.world) {
+    // Ownership gate — clears the apprentice's mentorId (and the linked
+    // mentor's menteeIds); refuse apprentices outside the player's stable.
+    if (!rikishiOwnedByPlayer(rt.world, cmd.apprenticeId)) return;
     const impact = removeMentor(rt.world, cmd.apprenticeId);
     rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
@@ -175,6 +212,10 @@ function removeSparringPairCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_SPARRING_PAIR
 
 function setTsukebitoCmd(rt: WorkerRuntime, cmd: Cmd<"SET_TSUKEBITO">) {
   if (rt.world) {
+    // Ownership gate — tsukebitoIds are written onto the senior's record, so
+    // the senior must belong to the player's stable. Junior eligibility
+    // (same heya, junior rank) is enforced inside setTsukebito.
+    if (!rikishiOwnedByPlayer(rt.world, cmd.seniorId)) return;
     // Apply each tsukebito ID sequentially — setTsukebito validates eligibility per junior
     let world = rt.world;
     for (const juniorId of cmd.tsukebitoIds) {
@@ -188,6 +229,9 @@ function setTsukebitoCmd(rt: WorkerRuntime, cmd: Cmd<"SET_TSUKEBITO">) {
 
 function removeTsukebitoCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_TSUKEBITO">) {
   if (rt.world) {
+    // Ownership gate — the senior's tsukebitoIds list is rewritten; refuse
+    // seniors outside the player's stable.
+    if (!rikishiOwnedByPlayer(rt.world, cmd.seniorId)) return;
     // Remove a single junior from this senior's tsukebito list.
     // SET_TSUKEBITO only appends (early-returns if already present), so it
     // cannot be used to remove — the Remove button must dispatch this.
@@ -212,13 +256,21 @@ function setTrainingStateCmd(rt: WorkerRuntime, cmd: Cmd<"SET_TRAINING_STATE">) 
 
 function setKeshoConfigCmd(rt: WorkerRuntime, cmd: Cmd<"SET_KESHO_CONFIG">) {
   if (rt.world) {
-    rt.world = {
-      ...rt.world,
-      customKeshoConfigs: {
+    // Ownership gate — kesho customization is player-stable only. Reject a
+    // foreign-owned rikishi, but keep the legacy keyed write for ids absent
+    // from the map (customKeshoConfigs is keyed by rikishiId, not gated on
+    // entity existence — a dangling entry is harmless).
+    const target = rt.world.rikishi.get(cmd.rikishiId);
+    if (rt.world.playerHeyaId && target && target.heyaId !== rt.world.playerHeyaId) return;
+    // Canonical write through the impact pipeline — a direct `rt.world = {...}`
+    // spread bypassed resolveImpacts (same non-canonical class fixed in V18).
+    const impact = createImpactBuilder("setKeshoConfig")
+      .updateWorldField("customKeshoConfigs", {
         ...(rt.world.customKeshoConfigs || {}),
         [cmd.rikishiId]: cmd.config,
-      },
-    };
+      })
+      .build();
+    rt.world = resolveImpacts(rt.world, [impact]);
     rt.syncAndDigest();
   }
 }

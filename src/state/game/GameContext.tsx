@@ -43,7 +43,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
   const [isPending, startTransition] = useTransition();
 
-  const { digest } = useWorkerSync(state, dispatch, startTransition);
+  const { digest } = useWorkerSync(state, dispatch, startTransition, isPending);
   const flow = useFlowActions(state, dispatch, startTransition);
   const commands = useCommandActions(state);
   const saves = useSaveQueryActions(state, dispatch);

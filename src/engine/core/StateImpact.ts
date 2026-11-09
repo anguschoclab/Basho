@@ -91,6 +91,7 @@ export type WritableWorldFields = Pick<
   | "closedHeyas"
   | "currentBasho"
   | "currentBashoName"
+  | "customKeshoConfigs"
   | "ozekiKadoban"
   | "_interimDaysRemaining"
   | "_postBashoDays"

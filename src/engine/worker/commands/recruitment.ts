@@ -25,6 +25,9 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
   return {
     OFFER_CONTRACT: (cmd) => {
       if (rt.world) {
+        // Ownership gate — offers register the heya as a competing suitor and
+        // move the candidate to in_talks; only the player's stable may bid.
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const result = talentpool.offerCandidate(
           rt.world,
           cmd.candidateId,
@@ -77,6 +80,9 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     POACH_CANDIDATE: (cmd) => {
       if (rt.world) {
+        // Ownership gate — poaching registers the heya as an aggressive suitor;
+        // only the player's stable may poach.
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const result = poachCandidate(rt.world, cmd.candidateId, cmd.heyaId);
         if (result.ok && result.impact) {
           rt.world = resolveImpacts(rt.world, [result.impact]);
@@ -89,7 +95,12 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     SET_SCOUTING_INVESTMENT: (cmd) => {
       if (rt.world) {
-        setScoutingInvestment(rt.world, cmd.rikishiId, cmd.investment);
+        // Scouting targets NPC rikishi by design, so there is no ownership
+        // gate here — but the write must flow through the canonical impact
+        // pipeline like every sibling command (V18-S7: the old in-place
+        // mutation corrupted the input world shared with pre-command state).
+        const impact = setScoutingInvestment(rt.world, cmd.rikishiId, cmd.investment);
+        rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }
     },
@@ -151,6 +162,9 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
     },
     SEND_SCOUT: (cmd) => {
       if (rt.world) {
+        // Ownership gate — the mission debits the heya's funds; only the
+        // player's stable may dispatch scouts.
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = sendScout(rt.world, cmd.heyaId, cmd.scoutStaffId, cmd.tier);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();

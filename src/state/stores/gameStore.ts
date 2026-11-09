@@ -25,6 +25,14 @@ interface GameStoreState {
   worldVersion: number;
   /** Lock flag to prevent concurrent tick commands. */
   pendingTick: boolean;
+  /**
+   * Queued day-tick intent (V18). advanceDay/advanceOneDay set this flag
+   * instead of posting TICK_DAY directly; useWorkerSync drains it only
+   * after any same-action main-thread world mutation has been pushed to
+   * the worker via LOAD_WORLD and no tick is in flight. Worker FIFO then
+   * guarantees LOAD_WORLD lands before TICK_DAY.
+   */
+  queuedTick: boolean;
   /** Whether the engine is currently busy with a simulation. */
   isSimulating: boolean;
   /** Whether a running multi-day simulation is paused. */
@@ -199,6 +207,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   workerWorld: null,
   worldVersion: 0,
   pendingTick: false,
+  queuedTick: false,
   isSimulating: false,
   simPaused: false,
   progress: null,

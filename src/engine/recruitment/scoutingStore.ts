@@ -156,13 +156,18 @@ export function getOrCreateScouted(
 /**
  * Set scouting investment for a target.
  * This should typically be driven by UI actions / economy spend.
+ *
+ * Returns a StateImpact describing the playerKnowledge write — the previous
+ * in-place `table[rikishiId] = rebuilt` mutation corrupted the input world
+ * (shared with pre-command worker/UI state) and bypassed resolveImpacts
+ * (V18-S7). Callers resolve the returned impact for the next world.
  */
 export function setScoutingInvestment(
   world: WorldState,
   rikishiId: Id,
   investment: ScoutingInvestment
-): ScoutedRikishi {
-  const table = ensureScoutingTable(world);
+): StateImpact {
+  const builder = createImpactBuilder("setScoutingInvestment");
   const entry = getOrCreateScouted(world, rikishiId);
 
   // Rebuild with updated investment but preserve observations + timestamps
@@ -170,7 +175,7 @@ export function setScoutingInvestment(
   const playerHeyaId = getPlayerHeyaId(world);
 
   const truth = getRikishi(world, rikishiId);
-  if (!truth) return entry;
+  if (!truth) return builder.build();
 
   const rebuilt = ScoutingService.createScoutedView(
     currentWeek,
@@ -182,8 +187,15 @@ export function setScoutingInvestment(
   // Preserve lastObservedWeek if it's newer than currentWeek (shouldn't happen, but safe)
   rebuilt.lastObservedWeek = Math.max(entry.lastObservedWeek, currentWeek);
 
-  table[rikishiId] = rebuilt;
-  return rebuilt;
+  // Read-only table access — the rebuilt entry lands via the worldFields
+  // patch, never by poking world.playerKnowledge in place.
+  const table = readScoutingTable(world) ?? {};
+  const currentKnowledge = world.playerKnowledge || {};
+  builder.updateWorldField("playerKnowledge", {
+    ...currentKnowledge,
+    scouting: { ...table, [rikishiId]: rebuilt },
+  });
+  return builder.build();
 }
 
 /**
@@ -193,7 +205,11 @@ export function setScoutingInvestment(
  */
 function applyWeeklyScoutingDecay(world: WorldState): StateImpact {
   const builder = createImpactBuilder("applyWeeklyScoutingDecay");
-  const table = ensureScoutingTable(world);
+  // Read-only access — this is an impact builder, so ensureScoutingTable's
+  // materializing write would leak into the pre-resolution input world.
+  // With no stored entries there is nothing to decay.
+  const table = readScoutingTable(world);
+  if (!table) return builder.build();
   const currentWeek = getWorldWeek(world);
 
   const updatedTable: Record<string, ScoutedRikishi> = {};
@@ -264,7 +280,9 @@ export function onBoutResolvedScouting(
   const isPlayerBout = eastRikishi?.heyaId === playerHeyaId || westRikishi?.heyaId === playerHeyaId;
 
   if (isPlayerBout) {
-    const table = ensureScoutingTable(world);
+    // Read-only access — this is an impact builder, so ensureScoutingTable's
+    // materializing write would leak into the pre-resolution input world.
+    const table = readScoutingTable(world) ?? {};
     const currentWeek = getWorldWeek(world);
 
     const east = getOrCreateScouted(world, eastId);

@@ -62,7 +62,14 @@ export function useFlowActions(
     () => dispatchWorldMutation("START_BASHO", actions.startBashoAction()),
     [dispatchWorldMutation]
   );
-  const advanceDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
+  // V18: TICK_DAY goes through the queuedTick intent, not sendCommand —
+  // posting directly raced the deferred uiWorldRevision→LOAD_WORLD sync, so
+  // the worker ticked its stale pre-mutation world (sim-day bout results
+  // lost). useWorkerSync drains the flag after the sync lands.
+  const queueTick = useCallback(() => {
+    useGameStore.setState({ queuedTick: true });
+  }, []);
+  const advanceDay = queueTick;
   const simulateBout = useCallback(
     (index: number, boutId?: string) =>
       dispatchWorldMutation("SIMULATE_BOUT", actions.simulateBoutAction(index, boutId)),
@@ -101,7 +108,7 @@ export function useFlowActions(
     (weeks: number = 1) => sendCommand({ type: "TICK_MULTIPLE_DAYS", days: weeks * 7 }),
     [sendCommand]
   );
-  const advanceOneDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
+  const advanceOneDay = queueTick;
   const updateWorld = useCallback(
     (world: WorldState) => dispatch(actions.updateWorld(world)),
     [dispatch]
