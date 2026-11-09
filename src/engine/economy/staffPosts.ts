@@ -12,7 +12,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getHeya } from "@/engine/core/queries";
-import { generateStaff } from "@/engine/economy/staff";
+import { mintNextStaff } from "@/engine/economy/staff";
 
 /** Default slot caps per post (P2). Unlisted roles are uncapped. */
 export const STAFF_POST_SLOTS: Partial<Record<StaffRole, number>> = {
@@ -175,7 +175,7 @@ export function hireStaffCandidate(
   const signingFee = candidate.wageYen * 2;
   if ((heya.funds ?? 0) < signingFee) return builder.build();
 
-  const staff = generateStaff(world.seed, candidate.role, heyaId, (heya.staffIds ?? []).length + 1);
+  const { sequence, staff } = mintNextStaff(world, heya, candidate.role);
   staff.name = candidate.name;
   staff.skill = candidate.skill;
   staff.wageYen = candidate.wageYen;
@@ -194,6 +194,7 @@ export function hireStaffCandidate(
     funds: heya.funds - signingFee,
     staffIds: [...(heya.staffIds ?? []), staff.id],
     staffPosts: posts,
+    staffHireSeq: sequence,
   });
   builder.addStaff(staff);
   builder.updateWorldField(
@@ -224,14 +225,29 @@ export function tickMonthlyStaffContracts(world: WorldState): StateImpact {
     if (wages > 0) {
       builder.updateHeya(heyaId, { funds: Math.round(heya.funds - wages) });
     }
+    // Collect all expiries before writing — each staffIds/staffPosts update
+    // must compose off the running set, or a second expiry recomputes from
+    // the input snapshot and the first removal is silently resurrected
+    // (ghost staffIds: entity deleted, id still rostered).
+    const expired: Staff[] = [];
     for (const sid of heya.staffIds ?? []) {
       const s = world.staff.get(sid);
       if (s && s.contractEndYear !== undefined && year > s.contractEndYear) {
-        builder.updateHeya(heyaId, {
-          staffIds: (heya.staffIds ?? []).filter((id) => id !== sid),
-          staffPosts: releaseFromPosts(heya, s),
-        });
-        builder.removeStaff(sid);
+        expired.push(s);
+      }
+    }
+    if (expired.length > 0) {
+      const expiredIds = new Set(expired.map((s) => s.id));
+      let posts = { ...(heya.staffPosts ?? {}) };
+      for (const s of expired) {
+        posts = releaseFromPosts(posts, s);
+      }
+      builder.updateHeya(heyaId, {
+        staffIds: (heya.staffIds ?? []).filter((id) => !expiredIds.has(id)),
+        staffPosts: posts,
+      });
+      for (const s of expired) {
+        builder.removeStaff(s.id);
         builder.logEvent(
           "MANAGEMENT_DECISION",
           "economy",
@@ -247,11 +263,14 @@ export function tickMonthlyStaffContracts(world: WorldState): StateImpact {
   return builder.build();
 }
 
-function releaseFromPosts(heya: Heya, staff: Staff): NonNullable<Heya["staffPosts"]> {
-  const posts = { ...(heya.staffPosts ?? {}) };
-  const post = posts[staff.role];
+function releaseFromPosts(
+  posts: NonNullable<Heya["staffPosts"]>,
+  staff: Staff
+): NonNullable<Heya["staffPosts"]> {
+  const next = { ...posts };
+  const post = next[staff.role];
   if (post) {
-    posts[staff.role] = { ...post, filledIds: post.filledIds.filter((id) => id !== staff.id) };
+    next[staff.role] = { ...post, filledIds: post.filledIds.filter((id) => id !== staff.id) };
   }
-  return posts;
+  return next;
 }

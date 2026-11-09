@@ -19,7 +19,14 @@ import { MAX_HEADLINES } from "@/constants/engine/media";
  */
 export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   const builder = createImpactBuilder("triggerPreBashoJournalism");
-  const rng = rngForWorld(world, "media", `pre_basho_${world.year}_${world.currentBasho?.name}`);
+  // Week + headline count in the label: the assessment phase dedupes by
+  // assessedAtWeek only, so a re-assessment in a later week — or a second
+  // mint after headlines accumulated — must not re-mint identical MH ids.
+  const rng = rngForWorld(
+    world,
+    "media",
+    `pre_basho_${world.year}_${world.currentBasho?.name}_${world.week ?? 0}_${world.mediaState?.headlines.length ?? 0}`
+  );
   const week = world.week ?? 0;
   const headlines: MediaHeadline[] = [];
 

@@ -205,6 +205,17 @@ export function processSponsorChurn(world: WorldState, _rng?: SeededRNG): StateI
 export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
   const builder = createImpactBuilder("adjustKoenkaiBandToPrestige");
 
+  // Sponsors that already hold a koenkai seat — plus every sponsor claimed
+  // during THIS pass. The `active: true` marks for new picks live only in the
+  // queued impact, so without pass-level tracking a second upgrading koenkai
+  // re-picks the same inactive sponsor: duplicate memberships, identical
+  // `sr_${sponsorId}_${day}` rel ids, and a clobbered sponsor.relationships
+  // list (each updateSponsor write replaces the previous one's array).
+  const claimedSponsorIds = new Set<string>();
+  for (const [, koenkai] of world.sponsorPool?.koenkais || []) {
+    for (const m of koenkai.members) claimedSponsorIds.add(m.sponsorId);
+  }
+
   for (const [koenkaiId, koenkai] of world.sponsorPool?.koenkais || []) {
     const heya = getHeya(world, koenkai.heyaId);
     if (!heya) continue;
@@ -243,9 +254,11 @@ export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
         if (
           !s.active &&
           (s.tier === "T1" || s.tier === "T2" || s.tier === "T3") &&
-          !existingSponsorIds.has(s.sponsorId)
+          !existingSponsorIds.has(s.sponsorId) &&
+          !claimedSponsorIds.has(s.sponsorId)
         ) {
           picked.push(s);
+          claimedSponsorIds.add(s.sponsorId);
         }
       }
 

@@ -223,15 +223,39 @@ export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): State
   if (heya.funds < HIRE_COST) return builder.build();
 
   const newFunds = heya.funds - HIRE_COST;
-  const sequence = (heya.staffIds?.length || 0) + 1;
-  const staff = generateStaff(world.seed, role, heyaId, sequence);
+  const { sequence, staff } = mintNextStaff(world, heya, role);
 
   const newStaffIds = pushUniqueId(heya.staffIds || [], staff.id);
 
-  builder.updateHeya(heyaId, { funds: newFunds, staffIds: newStaffIds });
+  builder.updateHeya(heyaId, {
+    funds: newFunds,
+    staffIds: newStaffIds,
+    staffHireSeq: sequence,
+  });
   builder.addStaff(staff);
 
   return builder.build();
+}
+
+/**
+ * Mint the next staff record for a heya. The persistent `staffHireSeq`
+ * high-water mark survives mid-list removals (a length-based sequence would
+ * re-mint the surviving member's id); the collision loop additionally heals
+ * legacy saves where a removal already happened under the old scheme — a
+ * colliding mint is deterministically bumped until free.
+ */
+export function mintNextStaff(
+  world: WorldState,
+  heya: Heya,
+  role: StaffRole
+): { sequence: number; staff: Staff } {
+  let sequence = (heya.staffHireSeq ?? heya.staffIds?.length ?? 0) + 1;
+  let staff = generateStaff(world.seed, role, heya.id, sequence);
+  while (world.staff.has(staff.id) || (heya.staffIds ?? []).includes(staff.id)) {
+    sequence++;
+    staff = generateStaff(world.seed, role, heya.id, sequence);
+  }
+  return { sequence, staff };
 }
 
 /**

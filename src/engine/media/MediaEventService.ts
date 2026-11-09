@@ -36,11 +36,14 @@ export function generateGovernanceHeadline(args: {
   const week = world.week ?? 0;
   // SeededRNG.uuid counters are per-instance — a heya can emit several
   // same-template headlines in one day (e.g. repeated scandals), so the label
-  // needs the day and a caller salt or the MH ids collide.
+  // needs the day, a caller salt, AND the current headline count or the MH
+  // ids collide (precedent: ScandalService salts ruling ids with
+  // governanceLog.length). The count tracks every previously-minted headline,
+  // so sequential same-label calls still produce distinct ids.
   const rng = rngForWorld(
     world,
     "media",
-    `gov::${heyaId}::${templatePath}::${week}::${world.dayIndexGlobal ?? 0}::${args.salt ?? ""}`
+    `gov::${heyaId}::${templatePath}::${week}::${world.dayIndexGlobal ?? 0}::${args.salt ?? ""}::${world.mediaState.headlines.length}`
   );
 
   // Resolve title from archive

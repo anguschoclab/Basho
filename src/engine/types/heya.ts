@@ -34,6 +34,21 @@ export interface Heya {
   staffIds?: Id[];
   /** P2: post-based staffing — slots per role and who fills them. */
   staffPosts?: Record<string, { slots: number; filledIds: Id[] }>;
+  /**
+   * High-water mark for staff id minting (V18). `generateStaff` seeds ids
+   * from (heyaId, role, sequence) — sizing the sequence off `staffIds.length`
+   * reuses slots after a mid-list removal, re-minting a live member's id and
+   * overwriting its entity. The counter only ever increases.
+   */
+  staffHireSeq?: number;
+
+  /**
+   * Month key (year*12+month) of the last `advance_payout` stipend draw
+   * (V18). An advance can be drawn once per calendar month — the favor is a
+   * draw against the next stipend settlement, not a repeatable payout, so a
+   * second redemption inside the same month is rejected outright.
+   */
+  stipendAdvanceMonth?: number;
   rikishiIds?: Id[];
 
   /** P2: Discrete stable infrastructure */

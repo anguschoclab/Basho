@@ -17,7 +17,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder, worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { rngForWorld } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -252,7 +252,15 @@ function applyEffects(
   effects: ChainEffects
 ): void {
   const heyaId = chain.heyaId ?? world.playerHeyaId;
-  const heya = heyaId ? getHeya(world, heyaId) : undefined;
+  const baseHeya = heyaId ? getHeya(world, heyaId) : undefined;
+  // Compose on the builder's staged writes — applyEffects is invoked twice
+  // per resolution (fee debit, then option effects) and again per chain in
+  // multi-due autonomous sweeps, so absolute snapshots computed off the
+  // input world would clobber earlier writes (fee lost, pressure resets).
+  const queued = heyaId
+    ? builder.build().entities?.heyaUpdates?.get(heyaId)
+    : undefined;
+  const heya = baseHeya && queued ? ({ ...baseHeya, ...queued } as typeof baseHeya) : baseHeya;
   if (heya) {
     const update: Partial<typeof heya> = {};
     if (effects.funds !== undefined) update.funds = Math.round(heya.funds + effects.funds);
@@ -289,15 +297,19 @@ function applyEffects(
       });
     }
   }
-  if (effects.heyaPressure && heyaId && world.mediaState) {
-    const ms = world.mediaState;
-    builder.updateWorldField("mediaState", {
-      ...ms,
-      heyaPressure: {
-        ...ms.heyaPressure,
-        [heyaId]: clampStat((ms.heyaPressure?.[heyaId] ?? 0) + effects.heyaPressure),
-      },
-    });
+  if (effects.heyaPressure && heyaId) {
+    // Read the staged mediaState — updateWorldField is last-wins, so basing
+    // the snapshot on world.mediaState drops every earlier same-batch write.
+    const ms = worldWithQueuedFields(world, builder).mediaState;
+    if (ms) {
+      builder.updateWorldField("mediaState", {
+        ...ms,
+        heyaPressure: {
+          ...ms.heyaPressure,
+          [heyaId]: clampStat((ms.heyaPressure?.[heyaId] ?? 0) + effects.heyaPressure),
+        },
+      });
+    }
   }
 }
 

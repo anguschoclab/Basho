@@ -267,17 +267,24 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
       const lesseeHeyaId =
         world.oyakata?.get(stock.holderId)?.heyaId ?? oyakataHeyaMap.get(stock.holderId)?.id;
       const lesseeHeya = lesseeHeyaId ? world.heyas.get(lesseeHeyaId) : undefined;
-      if (lesseeHeya) {
-        const existing = heyaUpdates[lesseeHeya.id];
-        heyaUpdates[lesseeHeya.id] = { funds: (existing?.funds ?? lesseeHeya.funds) - weeklyFee };
-      }
 
       // Credit the listing owner's heya the same fee — lease income previously
       // vanished (debited from the lessee but never received).
       const ownerHeyaId =
         world.oyakata?.get(stock.ownerId)?.heyaId ?? oyakataHeyaMap.get(stock.ownerId)?.id;
       const ownerHeya = ownerHeyaId ? world.heyas.get(ownerHeyaId) : undefined;
-      if (ownerHeya && ownerHeya.id !== lesseeHeya?.id) {
+
+      // Same-heya leases (legacy/self-deal states) skip BOTH sides — debiting
+      // the lessee while suppressing the owner credit is a weekly drain out
+      // of thin air; new self-leases are blocked at leaseMyoseki.
+      const sameHeya = !!lesseeHeya && !!ownerHeya && lesseeHeya.id === ownerHeya.id;
+
+      if (lesseeHeya && !sameHeya) {
+        const existing = heyaUpdates[lesseeHeya.id];
+        heyaUpdates[lesseeHeya.id] = { funds: (existing?.funds ?? lesseeHeya.funds) - weeklyFee };
+      }
+
+      if (ownerHeya && !sameHeya) {
         const existing = heyaUpdates[ownerHeya.id];
         heyaUpdates[ownerHeya.id] = { funds: (existing?.funds ?? ownerHeya.funds) + weeklyFee };
       }
@@ -412,6 +419,12 @@ export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): St
   const builder = createImpactBuilder("leaseMyoseki");
   const stock = getAvailableStock(world, myosekiId);
   if (!stock || !stock.askingPrice) return builder.build();
+
+  // Self-lease is a no-op — parity with buyMyoseki's self-purchase guard.
+  // A lease where owner and lessee resolve to the same heya sets up a
+  // recurring weekly self-drain: tickMyosekiMarket debits the lessee
+  // unconditionally while the owner credit is suppressed same-heya.
+  if (stock.ownerId === lesseeId) return builder.build();
 
   const leaseFee = Math.floor(stock.askingPrice * MYOSEKI_LEASE_RATE_PERCENT);
 

@@ -59,10 +59,12 @@ export function updateMediaFromBout(args: {
   const { state, world, result, day, bashoName, division, rivalries } = args;
   const builder = createImpactBuilder("updateMediaFromBout");
   const week = world.week ?? 0;
+  // The headline-count salt keeps MH ids unique when the same bout label is
+  // minted twice in one day (re-simulated bout, identical playoff pairing).
   const rng = rngForWorld(
     world,
     "media",
-    `bout::${result.boutId}::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}`
+    `bout::${result.boutId}::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}::${state.headlines.length}`
   );
 
   const winner = getRikishi(world, result.winnerRikishiId);

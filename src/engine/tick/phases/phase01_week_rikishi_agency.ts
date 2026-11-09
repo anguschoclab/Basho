@@ -58,9 +58,24 @@ export function phase01_week_rikishi_agency(world: WorldState): StateImpact {
       const rng = rngForWorld(world, "rikishiAgency", `${rid}:${week}`);
       if (rng.next() < INCIDENT_PROBABILITY) {
         if ((r.behavior?.discipline ?? 50) < INCIDENT_DISCIPLINE_SCANDAL_MAX) {
+          // Compose same-heya repeats inside this batch: reportScandal computes
+          // the new scandalScore and rebuilds mediaState.headlines off its
+          // INPUT world, so N escalations would land as one +5 write and one
+          // headline under the last-wins merge. Feed it the builder's queued
+          // values instead (precedent: governanceReview's queued-funds read).
+          const staged = builder.build();
+          const queuedHeya = staged.entities?.heyaUpdates?.get(r.heyaId);
+          const stagedMedia = staged.worldFields?.mediaState ?? world.mediaState;
+          let callWorld = world;
+          if (queuedHeya || stagedMedia !== world.mediaState) {
+            const baseHeya = getHeya(world, r.heyaId);
+            const heyas = new Map(world.heyas);
+            if (baseHeya && queuedHeya) heyas.set(r.heyaId, { ...baseHeya, ...queuedHeya });
+            callWorld = { ...world, heyas, mediaState: stagedMedia };
+          }
           builder.merge(
             reportScandal(
-              world,
+              callWorld,
               r.heyaId,
               "minor",
               `${r.shikona ?? rid} involved in misconduct — repeated grievances ignored`
@@ -69,12 +84,17 @@ export function phase01_week_rikishi_agency(world: WorldState): StateImpact {
         } else {
           const heya = getHeya(world, r.heyaId);
           if (heya) {
-            const ws = heya.welfareState ?? {
-              welfareRisk: 0,
-              activeDiet: "maintenance" as const,
-              complianceState: "compliant" as const,
-              weeksInState: 0,
-            };
+            // Compose same-heya escalations in this batch: read the queued
+            // welfareState (an earlier escalation may already have bumped the
+            // risk), not the stale input snapshot.
+            const queuedWs = builder.build().entities?.heyaUpdates?.get(r.heyaId)?.welfareState;
+            const ws = queuedWs ??
+              heya.welfareState ?? {
+                welfareRisk: 0,
+                activeDiet: "maintenance" as const,
+                complianceState: "compliant" as const,
+                weeksInState: 0,
+              };
             builder.updateHeya(r.heyaId, {
               welfareState: {
                 ...ws,

@@ -68,12 +68,25 @@ export function purchaseMyoseki(
     return builder.build();
   }
 
+  // Self-purchase is a no-op — parity with buyMyoseki (myosekiMarket.ts).
+  // Without the guard the buyer debit lands while the seller credit is
+  // suppressed for same-heya trades, destroying the price outright.
+  if (stock.ownerId === buyerId) {
+    return builder.build();
+  }
+
   const price = stock.askingPrice ?? MYOSEKI_BASE_PRICES[stock.prestigeTier];
   if (buyerFunds < price) {
     return builder.build();
   }
 
-  const rng = rngForWorld(world, "myoseki", `purchase-${myosekiId}`);
+  // Transaction label carries type/participants/time/amount — the bare
+  // `purchase-${id}` label minted identical MT-* ids on repeat sales.
+  const rng = rngForWorld(
+    world,
+    "myoseki",
+    `tx_${myosekiId}_sale_${stock.ownerId}_${buyerId}_${world.year ?? 0}_${world.week ?? 0}_${price}`
+  );
   const tx: MyosekiTransaction = {
     id: rng.uuid("MT") as Id,
     date: `${world.year}-W${world.week || 1}`,
@@ -132,7 +145,13 @@ export function returnLeasedMyoseki(
     return builder.build();
   }
 
-  const rng = rngForWorld(world, "myoseki", `return-${myosekiId}`);
+  // Same tx-label richness as purchases — a second return on the same stock
+  // must mint a distinct MT-* id.
+  const rng = rngForWorld(
+    world,
+    "myoseki",
+    `tx_${myosekiId}_return_${stock.holderId}_${stock.ownerId}_${world.year ?? 0}_${world.week ?? 0}_0`
+  );
   const tx: MyosekiTransaction = {
     id: rng.uuid("MT") as Id,
     date: `${world.year}-W${world.week || 1}`,

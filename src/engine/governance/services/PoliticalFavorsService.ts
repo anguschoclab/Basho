@@ -58,6 +58,17 @@ export const PoliticalFavorsService = {
       return builder.build();
     }
 
+    // advance_payout is a draw against the monthly stipend — once per
+    // calendar month, mirroring how matchmakingOverride is consumed
+    // downstream. The draw month is recorded on the heya, so a second
+    // redemption inside the same month is a no-op (previously it minted a
+    // fresh payout for 25 political capital each time).
+    const monthKey =
+      (world.year ?? 0) * 12 + (world.calendar?.month ?? Math.ceil((world.week ?? 1) / 4));
+    if (favorId === "advance_payout" && heya.stipendAdvanceMonth === monthKey) {
+      return builder.build();
+    }
+
     // Spend political capital
     builder.updateHeya(heyaId, {
       politicalCapital: currentCapital - favor.cost,
@@ -66,7 +77,10 @@ export const PoliticalFavorsService = {
     // Apply specific favor logic
     const FAVOR_HANDLERS: Record<FavorType, () => void> = {
       advance_payout: () => {
-        builder.updateHeya(heyaId, { funds: heya.funds + POLITICAL_FAVOR_ADVANCE_PAYOUT });
+        builder.updateHeya(heyaId, {
+          funds: heya.funds + POLITICAL_FAVOR_ADVANCE_PAYOUT,
+          stipendAdvanceMonth: monthKey,
+        });
         builder.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { newMood: "content" });
       },
       governance_pardon: () => {
