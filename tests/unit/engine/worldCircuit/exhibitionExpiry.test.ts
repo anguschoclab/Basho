@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
 import { spawnGlobalWorker } from "@/engine/npc/npcAIWorkers";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { generateInitialWorld } from "@/engine/generation/WorldFactory";
+import { phase06_yearly_boundary } from "@/engine/tick/phases/phase06_yearly_boundary";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { PendingExhibition } from "@/engine/types/world";
 
@@ -23,19 +25,18 @@ describe("V18-S7-18 exhibition invitation expiry", () => {
     ...overrides,
   });
 
-  const makeWorld = (week: number, pendingExhibitions: PendingExhibition[] = []) => {
-    const heya = MockFactory.createHeya("heya1");
-    const rikishi = MockFactory.createRikishi("r1", { heyaId: "heya1", rank: "sekiwake" });
-    return MockFactory.createWorld({
+  const worldAt = (week: number, pendingExhibitions: PendingExhibition[] = []) =>
+    MockFactory.createWorld({
       week,
-      heyas: new Map([["heya1", heya]]),
-      rikishi: new Map([["r1", rikishi]]),
+      heyas: new Map([["heya1", MockFactory.createHeya("heya1")]]),
+      rikishi: new Map([
+        ["r1", MockFactory.createRikishi("r1", { heyaId: "heya1", rank: "sekiwake" })],
+      ]),
       pendingExhibitions,
     });
-  };
 
   it("refuses to process an expired invitation — no presence gain, no events", () => {
-    const world = makeWorld(10, [invitation()]); // expiresAtWeek 9, week 10 → expired
+    const world = worldAt(10, [invitation()]); // expiresAtWeek 9, week 10 → expired
     const impact = WorldCircuitService.processExhibitionResult(
       world,
       "heya1",
@@ -49,7 +50,7 @@ describe("V18-S7-18 exhibition invitation expiry", () => {
   });
 
   it("processes a live invitation normally (control)", () => {
-    const world = makeWorld(5, [invitation()]); // expiresAtWeek 9, week 5 → live
+    const world = worldAt(5, [invitation()]); // expiresAtWeek 9, week 5 → live
     const impact = WorldCircuitService.processExhibitionResult(
       world,
       "heya1",
@@ -62,7 +63,7 @@ describe("V18-S7-18 exhibition invitation expiry", () => {
   });
 
   it("invitation expiring this week is still processable at the boundary", () => {
-    const world = makeWorld(9, [invitation()]); // expiresAtWeek 9, week 9 → last valid week
+    const world = worldAt(9, [invitation()]); // expiresAtWeek 9, week 9 → last valid week
     const impact = WorldCircuitService.processExhibitionResult(
       world,
       "heya1",
@@ -74,19 +75,24 @@ describe("V18-S7-18 exhibition invitation expiry", () => {
     expect(updated.heyas.get("heya1")?.regionalPresence?.["Mongolia"] ?? 0).toBeGreaterThan(0);
   });
 
-  it("prunes expired invitations when the yearly batch regenerates", () => {
-    const world = makeWorld(10, [invitation({ id: "EX-stale", expiresAtWeek: 3 })]);
-    const impact = WorldCircuitService.generateYearlyInvitations(world, "heya1");
-    const updated = resolveImpacts(world, [impact]);
+  it("prunes expired invitations at the yearly-boundary phase", () => {
+    // The sweep is one absolute worldFields write inside phase06 — per-heya
+    // generation must stay appends-only or merged batches are last-wins (S1).
+    let world = generateInitialWorld("expiry-prune-seed");
+    world.pendingExhibitions = [invitation({ id: "EX-stale", expiresAtWeek: 0 })];
+    world.transientContext = { boundaries: { monthBoundary: true, yearBoundary: true } };
 
-    const pending = updated.pendingExhibitions ?? [];
+    const impact = phase06_yearly_boundary(world);
+    world = resolveImpacts(world, [impact]);
+
+    const pending = world.pendingExhibitions ?? [];
     expect(pending.some((i) => i.id === "EX-stale")).toBe(false);
     expect(pending.length).toBeGreaterThan(0); // fresh invitations still land
-    expect(pending.every((i) => i.expiresAtWeek > (updated.week ?? 0))).toBe(true);
+    expect(pending.every((i) => i.expiresAtWeek >= (world.week ?? 0))).toBe(true);
   });
 
   it("NPC global worker never proposes an expired invitation", () => {
-    const world = makeWorld(10);
+    const world = worldAt(10);
     const perception = {
       styleBias: "neutral",
       rikishiPerceptions: [{ rikishiId: "r1" }],

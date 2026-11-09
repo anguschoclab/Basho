@@ -2,6 +2,10 @@
 
 Source: 9-wave deep-dive of all ~1,099 src files + prior validation pass. Every entry carries wave ID + file:line evidence. Triage: **PIN+FIX** (failing test first, then fix this pass), **DEBT** (registered, not fixed), **DISPROVED**.
 
+> Status note: per-row triage labels are the as-discovered state and are
+> superseded for landed items by the **Resolution Status** section (Phase C
+> closeout), which is the authoritative fix record.
+
 Baseline context (clean main): fast 9,607 ✓ | slow 77/78 (1 known fail: simulationInvariants MH-* dup ids) | type-check ✓ | build ✓ | determinism-basho byte-identical ✓ | lint/perf/e2e/year-determinism: see Phase A.1 log.
 
 ---
@@ -189,6 +193,44 @@ Mitigation precedent verified: `welfare/transitions.ts:52-69` composes one final
 3. `processMediaDecision` — VERIFIED fully dead (def + barrel only, no callers/tests).
 4. Whether a fusensho/bye mechanism exists elsewhere for odd pools (B5 consequence check).
 5. `mediaHeat` vs `heyaPressure` consumer semantics before S3-1 fix direction.
+
+---
+
+## Resolution Status (Phase C closeout — main @ 10383ea8)
+
+**FIXED** (all 260 pin tests green; slow-suite `simulationInvariants` now 5/5 — V17-D01 mechanism dead):
+
+| Items | Fix commits |
+|-------|-------------|
+| S1-1..S1-6 (lifecycle batch-composition) | `worldWithQueuedFields` + DynastyService ordering (lifecycle batch) |
+| S1-7..S1-12 + S6-1..S6-4 + S7-13/14/26/30 | `d2322ab1` (economy/governance/media batch) |
+| S2-1..S2-5 (worker ownership/affordability guards + UI) | worker/sync batch |
+| S3-1 (`APPLY_PRESS_CONFERENCE`→`heyaPressure`), S3-3 (forced same-heya flagged), S7-9/10/11/32/40 (mono-ii announce-not-reroll, gyoji `reversed` default, `same_heya_forced`, double-absent no-contest, yaocho 3+ kimarite scan), S7-22 (juryo override consumption), S7-3 (crossover division filter) | bout/matchmaking batches |
+| S4-1..S4-6 (non-canonical mutations incl. GlobalCup deep-copy, kenshoEnvelopes, shikona, uiActions delete, scouting table, TournamentSimulator aliasing) | economy/sync batches |
+| S5-1..S5-3 (`world.seed` folded into `createRngForEvent` + 7 bare `rngFromSeed` sites) | `d0959929` |
+| S7-1 (stale-world TICK race via `sendCommand`/`pendingTick`) | worker/sync batch |
+| S7-2 (canonical `pendingCrisis` + real `Loan` + fallback resolution) | `2edc3015` |
+| S7-4 (poaching: suitors no longer wiped; signed candidates materialize) | `519e157d`-adjacent generation batch |
+| S7-5/6/7 (`_autonomousSim` leak, `delegationPolicy`/`roleplay` map, `post_basho` publish-at-drain-arm, foreign-limit canonical) | `1f8d019d` |
+| S7-8 (`BashoState.id`/`currentDay`/`isActive` persisted) | kinboshiSerialization batch |
+| S7-12 (kadoban stale-entry normalize + demoted-set event signal) | banzuke batch |
+| S7-15/16 (tsukebito rank/division semantics; weight-journey start/absolute/weight writes) | eligibility batch |
+| S7-17 (in-bout injury recording) | bout batch |
+| S7-18 (exhibition `expiresAtWeek` enforced: processing gate + NPC worker filter + phase-level yearly sweep — per-heya generation stays appends-only to avoid S1 merge-loss) | `830f3a53` + phase06 sweep follow-up |
+| S7-19/20/42/43 (reinject citizenship/career, prodigy propagation, `AMATEUR_STAR` roll+counterpart `isAmateurStar`) | `519e157d` |
+| S7-21 (`EngineEvent.day`/`bashoNumber` canonical stamps) | event-time batch |
+| S7-25 (media unknown-`eventId` reject, no `playerHeyaId` fallback) | `830f3a53` |
+| S7-33 (`clearInjury` clears `injuryStatus` + legacy `injury` alias) | injury-cleanup batch |
+| S7-34 (`countsAsForeignFromRikishi` → canonical `countsAsForeign`) | `519e157d` |
+| S7-46/47 (`.json` export ext; save-slot shape/idx validation) | persistence batch |
+| S7-50 (standings normalize at BanzukePublisher — defensive, preserves empty-Map kyujo path; `currentDay` now persisted+consumed) | `10383ea8` |
+| S8-1/S8-2 (real `projectHeya` fields: yusho/prizes/rivals/burn; cohort merges `historicalRikishi`) | v18Projections batch |
+| S9-1..S9-4 (mock discipline, reviewer regex, timeout budget, weak-assert audit) | meta-gate batch |
+| S10 partial — `processMediaDecision` deleted | `10383ea8` |
+
+**Remaining DEBT** (registered, deferred — none blocking): S5-4/5, S6-5, S7-23/24/27/28/29/31/35/36/37/38/39/41/44/45/48/49, S8-3 (UI honesty batch), S9-5..S9-8, S10 remainder (dead-code pass: archive writers+readers together, migration simplify-to-version-reject decision, almanac test-only fns, DramaMatchmaker dead branches, unused params).
+
+**Perf gate caveat:** `yokozunaPromotionAutoSim` 300s env timeout is hardware-bound (baseline note c).
 
 ---
 

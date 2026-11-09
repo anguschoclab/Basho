@@ -133,7 +133,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "[[rikishi:r-champ:Championmaru]] addresses the press with measured words: 'I prepared well and the results followed.'",
+    "text": "'It was a difficult tournament, but I stayed focused on each bout,' [[rikishi:r-champ:Championmaru]] states evenly.",
   },
   {
     "id": "press-champion-r-champ-hatsu-2026-persevered",
@@ -152,28 +152,12 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "text": "[[rikishi:r-champ:Championmaru]] speaks with newfound maturity: 'This title proves I can win with more than just raw energy.'",
   },
   {
-    "id": "press-champion-r-champ-hatsu-2026-diary",
-    "phase": "post_bout",
-    "tags": [
-      "post_basho_press",
-    ],
-    "text": "[[rikishi:r-champ:Championmaru]] admits filling three notebooks this month alone: 'The thoughts had to go somewhere.'",
-  },
-  {
-    "id": "press-champion-r-champ-hatsu-2026-superstition",
-    "phase": "post_bout",
-    "tags": [
-      "post_basho_press",
-    ],
-    "text": "Fans noticed [[rikishi:r-champ:Championmaru]] tapping the salt basket three times before every bout this basho — a new ritual that clearly paid off.",
-  },
-  {
     "id": "press-champion-r-champ-hatsu-2026-parade",
     "phase": "post_bout",
     "tags": [
       "post_basho_press",
     ],
-    "text": "The champion's car winds through the streets as [[rikishi:r-champ:Championmaru]] waves to supporters from the parade.",
+    "text": "A senior stablemate carries the banner as [[rikishi:r-champ:Championmaru]] celebrates his yusho with a traditional parade.",
   },
   {
     "id": "press-prize-r-prize-hatsu-2026-veteran",
@@ -181,7 +165,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "'I tensed up when I heard of the potential prize,' admits the veteran [[rikishi:r-prize:Prizeman]], eyes glistening.",
+    "text": "[[rikishi:r-prize:Prizeman]], a 30-year veteran, struggles to compose himself: 'I never thought I'd be up for it.'",
   },
   {
     "id": "press-prize-r-prize-hatsu-2026-fought",
@@ -189,7 +173,15 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "[[rikishi:r-prize:Prizeman]] credits his mental approach: 'I focused on the bout, not the stakes.'",
+    "text": "'The pressure was there, but I refused to let it dictate my sumo,' [[rikishi:r-prize:Prizeman]] reflects.",
+  },
+  {
+    "id": "press-prize-r-prize-hatsu-2026-rival",
+    "phase": "post_bout",
+    "tags": [
+      "post_basho_press",
+    ],
+    "text": "Overheard from [[rikishi:r-prize:Prizeman]]'s corner: frustration at once again falling to the champion.",
   },
   {
     "id": "press-ydc-bid-r-champ-hatsu-2026-continuation",
@@ -197,7 +189,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "Despite the solid run, the message for [[rikishi:r-champ:Championmaru]] is clear: only a championship next tournament will elevate him.",
+    "text": "The Yokozuna Deliberation Council is watching closely, stating [[rikishi:r-champ:Championmaru]] remains a candidate if he secures the cup.",
   },
   {
     "id": "press-ydc-bid-r-champ-hatsu-2026-score",
@@ -205,7 +197,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "'A score greater than 12 gives extra credence to his case,' the Chief Judge remarks on [[rikishi:r-champ:Championmaru]].",
+    "text": "'Double-digit wins are expected — 13 and above is what truly moves the needle,' the Chief Judge says.",
   },
   {
     "id": "press-ydc-bid-r-bid-hatsu-2026-continuation",
@@ -213,7 +205,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "Despite the solid run, the message for [[rikishi:r-bid:Biddyama]] is clear: only a championship next tournament will elevate him.",
+    "text": "The YDC acknowledges [[rikishi:r-bid:Biddyama]]'s strong tournament but reaffirms: only a championship will suffice.",
   },
   {
     "id": "press-ydc-bid-r-bid-hatsu-2026-score",
@@ -221,7 +213,7 @@ exports[`PostBashoPressService — golden master > generatePressConference — f
     "tags": [
       "post_basho_press",
     ],
-    "text": "'A score greater than 12 gives extra credence to his case,' the Chief Judge remarks on [[rikishi:r-bid:Biddyama]].",
+    "text": "The committee highlights [[rikishi:r-bid:Biddyama]]'s impressive win count, pointing to 13 victories as the mark of a true Yokozuna candidate.",
   },
 ]
 `;

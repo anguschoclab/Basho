@@ -104,6 +104,23 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
         rt.syncAndDigest();
       }
     },
+    ...academyCommandHandlers(rt),
+    SEND_SCOUT: (cmd) => {
+      if (rt.world) {
+        // Ownership gate — the mission debits the heya's funds; only the
+        // player's stable may dispatch scouts.
+        if (cmd.heyaId !== rt.world.playerHeyaId) return;
+        const impact = sendScout(rt.world, cmd.heyaId, cmd.scoutStaffId, cmd.tier);
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+  };
+}
+
+/** Academy command handlers — all player-heya-gated spend actions. */
+function academyCommandHandlers(rt: WorkerRuntime): CommandHandlerMap {
+  return {
     BUILD_FOREIGN_ACADEMY: (cmd) => {
       if (rt.world) {
         if (cmd.heyaId !== rt.world.playerHeyaId) return;
@@ -156,16 +173,6 @@ export function recruitmentCommands(rt: WorkerRuntime): CommandHandlerMap {
       if (rt.world) {
         if (cmd.heyaId !== rt.world.playerHeyaId) return;
         const impact = manageAcademy(rt.world, cmd.heyaId, cmd.region, cmd.config);
-        rt.world = resolveImpacts(rt.world, [impact]);
-        rt.syncAndDigest();
-      }
-    },
-    SEND_SCOUT: (cmd) => {
-      if (rt.world) {
-        // Ownership gate — the mission debits the heya's funds; only the
-        // player's stable may dispatch scouts.
-        if (cmd.heyaId !== rt.world.playerHeyaId) return;
-        const impact = sendScout(rt.world, cmd.heyaId, cmd.scoutStaffId, cmd.tier);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

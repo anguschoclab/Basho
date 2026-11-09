@@ -79,12 +79,11 @@ function generateYearlyInvitations(world: WorldState, heyaId: string): StateImpa
     { heyaId, importance: "notable" }
   );
 
-  // Store pending invitations in world state — sweeping expired entries first
-  // so the queue stays bounded (V18-S7-18).
-  const live = (world.pendingExhibitions ?? []).filter(
-    (i) => i.expiresAtWeek >= (world.week ?? 0)
-  );
-  builder.updateWorldField("pendingExhibitions", [...live, ...invitations]);
+  // Store pending invitations in world state. Must stay an append — per-heya
+  // calls merge at phase06 and absolute worldFields writes are last-wins,
+  // which would drop every earlier heya's batch (S1 merge-loss class).
+  // The expired-sweep lives as a single absolute write in the phase.
+  builder.appendToWorldArray("pendingExhibitions", invitations);
 
   return builder.build();
 }

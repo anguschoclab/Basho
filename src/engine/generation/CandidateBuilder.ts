@@ -459,28 +459,32 @@ export function convertCandidateToRikishi(args: {
   }
 
   // Re-signed free agents re-mint as the veteran they were — priorCareer
-  // overrides the jonokuchi-debutant scaffolding the pipeline built above
-  // (career record, stat line, division history, debut year, real potential).
-  const priorCareer = candidate.priorCareer;
-  if (priorCareer) {
-    converted = {
-      ...converted,
-      stats: priorCareer.stats,
-      height: priorCareer.heightCm,
-      careerWins: priorCareer.careerWins,
-      careerLosses: priorCareer.careerLosses,
-      careerAbsences: priorCareer.careerAbsences,
-      makuuchiWins: priorCareer.makuuchiWins,
-      divisionRecords: priorCareer.divisionRecords ?? converted.divisionRecords,
-      careerHistory: priorCareer.careerHistory ?? converted.careerHistory,
-      careerRecord: priorCareer.careerRecord ?? converted.careerRecord,
-      debutYear: priorCareer.debutYear ?? converted.debutYear,
-      joinedHeyaDate: priorCareer.joinedHeyaDate ?? converted.joinedHeyaDate,
-      heyaHistory: priorCareer.heyaHistory ?? converted.heyaHistory,
-      potential: priorCareer.potential ?? converted.potential,
-      citizenshipStatus: candidate.citizenshipStatus ?? converted.citizenshipStatus,
-    };
-  }
+  // overrides the jonokuchi-debutant scaffolding the pipeline built above.
+  return applyPriorCareerOverlay(converted, candidate);
+}
 
-  return converted;
+/**
+ * priorCareer overrides the debutant scaffolding (career record, stat line,
+ * division history, debut year, real potential).
+ */
+function applyPriorCareerOverlay(converted: Rikishi, candidate: TalentCandidate): Rikishi {
+  const priorCareer = candidate.priorCareer;
+  if (!priorCareer) return converted;
+  return {
+    ...converted,
+    stats: priorCareer.stats,
+    height: priorCareer.heightCm,
+    careerWins: priorCareer.careerWins,
+    careerLosses: priorCareer.careerLosses,
+    careerAbsences: priorCareer.careerAbsences,
+    makuuchiWins: priorCareer.makuuchiWins,
+    divisionRecords: priorCareer.divisionRecords ?? converted.divisionRecords,
+    careerHistory: priorCareer.careerHistory ?? converted.careerHistory,
+    careerRecord: priorCareer.careerRecord ?? converted.careerRecord,
+    debutYear: priorCareer.debutYear ?? converted.debutYear,
+    joinedHeyaDate: priorCareer.joinedHeyaDate ?? converted.joinedHeyaDate,
+    heyaHistory: priorCareer.heyaHistory ?? converted.heyaHistory,
+    potential: priorCareer.potential ?? converted.potential,
+    citizenshipStatus: candidate.citizenshipStatus ?? converted.citizenshipStatus,
+  };
 }

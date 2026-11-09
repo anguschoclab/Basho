@@ -3,6 +3,7 @@
 exports[`EventBus — golden master > awardConferred 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "basho",
     "causalEventId": undefined,
     "data": {
@@ -24,18 +25,18 @@ exports[`EventBus — golden master > awardConferred 1`] = `
     },
     "day": 1,
     "heyaId": undefined,
-    "id": "EV-26D1C69A",
+    "id": "EV-C61D8B2D",
     "importance": "headline",
     "month": 1,
     "phase": "basho_wrap",
     "rikishiId": "r-east",
     "scope": "rikishi",
-    "summary": "Honors were bestowed on [[rikishi:r-east:Eastho]] in a brief ceremony.",
+    "summary": "The association conferred an award on [[rikishi:r-east:Eastho]].",
     "tags": [
       "basho",
       "award",
     ],
-    "title": "Award Conferred",
+    "title": "[[rikishi:r-east:Eastho]] Honored",
     "type": "AWARD_CONFERRED",
     "week": 5,
     "year": 2026,
@@ -43,6 +44,7 @@ exports[`EventBus — golden master > awardConferred 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "basho",
       "causalEventId": undefined,
       "data": {
@@ -64,18 +66,18 @@ exports[`EventBus — golden master > awardConferred 1`] = `
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-26D1C69A",
+      "id": "EV-C61D8B2D",
       "importance": "headline",
       "month": 1,
       "phase": "basho_wrap",
       "rikishiId": "r-east",
       "scope": "rikishi",
-      "summary": "Honors were bestowed on [[rikishi:r-east:Eastho]] in a brief ceremony.",
+      "summary": "The association conferred an award on [[rikishi:r-east:Eastho]].",
       "tags": [
         "basho",
         "award",
       ],
-      "title": "Award Conferred",
+      "title": "[[rikishi:r-east:Eastho]] Honored",
       "type": "AWARD_CONFERRED",
       "week": 5,
       "year": 2026,
@@ -88,6 +90,7 @@ exports[`EventBus — golden master > bashoStatus (mid-day + headline day-15) 1`
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "basho",
       "causalEventId": undefined,
       "data": {
@@ -109,27 +112,28 @@ exports[`EventBus — golden master > bashoStatus (mid-day + headline day-15) 1`
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-415F9C32",
+      "id": "EV-FFDBCDE8",
       "importance": "notable",
       "month": 1,
       "phase": "basho_day",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "Basho Update: [[rikishi:r-east:Eastho]] is [MISSING: WINS]-[MISSING: LOSSES] after a crucial day of action.",
+      "summary": "Tournament progress: 8 days concluded. Standing: [[rikishi:r-east:Eastho]] ([MISSING: WINS]-[MISSING: LOSSES]).",
       "tags": [
         "basho",
         "day_update",
       ],
-      "title": "Tournament News",
+      "title": "Kokugikan Report",
       "type": "BASHO_STATUS",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "basho",
       "causalEventId": undefined,
       "data": {
-        "day": 8,
+        "day": 15,
         "east": "Eastho",
         "eastRikishiId": "r-east",
         "heat": 80,
@@ -139,7 +143,7 @@ exports[`EventBus — golden master > bashoStatus (mid-day + headline day-15) 1`
         "loserRikishiId": "r-west",
         "rikishiId": "r-east",
         "shikona": "Eastho",
-        "status": "day_update",
+        "status": "ended",
         "west": "Westzan",
         "westRikishiId": "r-west",
         "winner": "Eastho",
@@ -147,16 +151,16 @@ exports[`EventBus — golden master > bashoStatus (mid-day + headline day-15) 1`
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-415F9C32",
-      "importance": "notable",
+      "id": "EV-F14C881B",
+      "importance": "headline",
       "month": 1,
       "phase": "basho_day",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "Basho Update: [[rikishi:r-east:Eastho]] is [MISSING: WINS]-[MISSING: LOSSES] after a crucial day of action.",
+      "summary": "Tournament progress: 15 days concluded. Standing: [[rikishi:r-east:Eastho]] ([MISSING: WINS]-[MISSING: LOSSES]).",
       "tags": [
         "basho",
-        "day_update",
+        "ended",
       ],
       "title": "Tournament News",
       "type": "BASHO_STATUS",
@@ -164,9 +168,10 @@ exports[`EventBus — golden master > bashoStatus (mid-day + headline day-15) 1`
       "year": 2026,
     },
   ],
-  "logLen": 1,
+  "logLen": 2,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "basho",
       "causalEventId": undefined,
       "data": {
@@ -188,16 +193,55 @@ exports[`EventBus — golden master > bashoStatus (mid-day + headline day-15) 1`
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-415F9C32",
+      "id": "EV-FFDBCDE8",
       "importance": "notable",
       "month": 1,
       "phase": "basho_day",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "Basho Update: [[rikishi:r-east:Eastho]] is [MISSING: WINS]-[MISSING: LOSSES] after a crucial day of action.",
+      "summary": "Tournament progress: 8 days concluded. Standing: [[rikishi:r-east:Eastho]] ([MISSING: WINS]-[MISSING: LOSSES]).",
       "tags": [
         "basho",
         "day_update",
+      ],
+      "title": "Kokugikan Report",
+      "type": "BASHO_STATUS",
+      "week": 5,
+      "year": 2026,
+    },
+    {
+      "bashoNumber": undefined,
+      "category": "basho",
+      "causalEventId": undefined,
+      "data": {
+        "day": 15,
+        "east": "Eastho",
+        "eastRikishiId": "r-east",
+        "heat": 80,
+        "heyaname": undefined,
+        "incident": "scandal",
+        "loser": "Westzan",
+        "loserRikishiId": "r-west",
+        "rikishiId": "r-east",
+        "shikona": "Eastho",
+        "status": "ended",
+        "west": "Westzan",
+        "westRikishiId": "r-west",
+        "winner": "Eastho",
+        "winnerRikishiId": "r-east",
+      },
+      "day": 1,
+      "heyaId": undefined,
+      "id": "EV-F14C881B",
+      "importance": "headline",
+      "month": 1,
+      "phase": "basho_day",
+      "rikishiId": undefined,
+      "scope": "world",
+      "summary": "Tournament progress: 15 days concluded. Standing: [[rikishi:r-east:Eastho]] ([MISSING: WINS]-[MISSING: LOSSES]).",
+      "tags": [
+        "basho",
+        "ended",
       ],
       "title": "Tournament News",
       "type": "BASHO_STATUS",
@@ -212,6 +256,7 @@ exports[`EventBus — golden master > boutResolved (normal + kinboshi headline) 
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "basho",
       "causalEventId": undefined,
       "data": {
@@ -235,24 +280,25 @@ exports[`EventBus — golden master > boutResolved (normal + kinboshi headline) 
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-0A463DDD",
+      "id": "EV-3022B393",
       "importance": "notable",
       "month": 1,
       "phase": "basho_day",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "The bout concludes with [[rikishi:r-east:Eastho]] executing a clean [MISSING: KIMARITE].",
+      "summary": "Victory claimed via [MISSING: KIMARITE].",
       "tags": [
         "basho",
         "bout",
         "pbp",
       ],
-      "title": "Victory for [[rikishi:r-east:Eastho]]",
+      "title": "Match Result",
       "type": "BOUT_RESOLVED",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "basho",
       "causalEventId": undefined,
       "data": {
@@ -276,19 +322,19 @@ exports[`EventBus — golden master > boutResolved (normal + kinboshi headline) 
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-0A463DDD",
+      "id": "EV-3022B393",
       "importance": "notable",
       "month": 1,
       "phase": "basho_day",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "The bout concludes with [[rikishi:r-east:Eastho]] executing a clean [MISSING: KIMARITE].",
+      "summary": "Victory claimed via [MISSING: KIMARITE].",
       "tags": [
         "basho",
         "bout",
         "pbp",
       ],
-      "title": "Victory for [[rikishi:r-east:Eastho]]",
+      "title": "Match Result",
       "type": "BOUT_RESOLVED",
       "week": 5,
       "year": 2026,
@@ -297,6 +343,7 @@ exports[`EventBus — golden master > boutResolved (normal + kinboshi headline) 
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "basho",
       "causalEventId": undefined,
       "data": {
@@ -320,19 +367,19 @@ exports[`EventBus — golden master > boutResolved (normal + kinboshi headline) 
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-0A463DDD",
+      "id": "EV-3022B393",
       "importance": "notable",
       "month": 1,
       "phase": "basho_day",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "The bout concludes with [[rikishi:r-east:Eastho]] executing a clean [MISSING: KIMARITE].",
+      "summary": "Victory claimed via [MISSING: KIMARITE].",
       "tags": [
         "basho",
         "bout",
         "pbp",
       ],
-      "title": "Victory for [[rikishi:r-east:Eastho]]",
+      "title": "Match Result",
       "type": "BOUT_RESOLVED",
       "week": 5,
       "year": 2026,
@@ -345,6 +392,7 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "facility",
       "causalEventId": undefined,
       "data": {
@@ -369,7 +417,7 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-12254421",
+      "id": "EV-92FAEC0A",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
@@ -380,12 +428,13 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
         "facility",
         "upgraded",
       ],
-      "title": "Facility Upgraded",
+      "title": "Grounds Improved",
       "type": "FACILITY_UPGRADED",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "facility",
       "causalEventId": undefined,
       "data": {
@@ -416,7 +465,7 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "Upkeep lapsed at East Stable — the training grounds are wearing down.",
+      "summary": "East Stable's facilities have degraded through neglect.",
       "tags": [
         "facility",
         "degraded",
@@ -430,6 +479,7 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
   "logLen": 2,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "facility",
       "causalEventId": undefined,
       "data": {
@@ -454,7 +504,7 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-12254421",
+      "id": "EV-92FAEC0A",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
@@ -465,12 +515,13 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
         "facility",
         "upgraded",
       ],
-      "title": "Facility Upgraded",
+      "title": "Grounds Improved",
       "type": "FACILITY_UPGRADED",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "facility",
       "causalEventId": undefined,
       "data": {
@@ -501,7 +552,7 @@ exports[`EventBus — golden master > facilityUpdate (UPGRADED + DEGRADED) 1`] =
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "Upkeep lapsed at East Stable — the training grounds are wearing down.",
+      "summary": "East Stable's facilities have degraded through neglect.",
       "tags": [
         "facility",
         "degraded",
@@ -519,6 +570,7 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -549,7 +601,7 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "East Stable processed a loan transaction.",
+      "summary": "A loan movement was recorded on East Stable's books.",
       "tags": [
         "economy",
         "loan",
@@ -560,6 +612,7 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -584,18 +637,18 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-1CB26B2E",
+      "id": "EV-B151157A",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "Market dealings were settled at East Stable.",
+      "summary": "East Stable recorded market activity this month.",
       "tags": [
         "economy",
         "market",
       ],
-      "title": "Market Activity",
+      "title": "Market Movement",
       "type": "FINANCIAL_ALERT",
       "week": 5,
       "year": 2026,
@@ -604,6 +657,7 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
   "logLen": 2,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -634,7 +688,7 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "East Stable processed a loan transaction.",
+      "summary": "A loan movement was recorded on East Stable's books.",
       "tags": [
         "economy",
         "loan",
@@ -645,6 +699,7 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -669,18 +724,18 @@ exports[`EventBus — golden master > financialAction (loan + market) 1`] = `
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-1CB26B2E",
+      "id": "EV-B151157A",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "Market dealings were settled at East Stable.",
+      "summary": "East Stable recorded market activity this month.",
       "tags": [
         "economy",
         "market",
       ],
-      "title": "Market Activity",
+      "title": "Market Movement",
       "type": "FINANCIAL_ALERT",
       "week": 5,
       "year": 2026,
@@ -693,6 +748,7 @@ exports[`EventBus — golden master > financialAlert (regular + insolvency) 1`] 
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -717,7 +773,7 @@ exports[`EventBus — golden master > financialAlert (regular + insolvency) 1`] 
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-26E9A1F3",
+      "id": "EV-D371D291",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
@@ -728,12 +784,13 @@ exports[`EventBus — golden master > financialAlert (regular + insolvency) 1`] 
         "economy",
         "scandal",
       ],
-      "title": "Financial Report",
+      "title": "Monthly Ledger Update",
       "type": "FINANCIAL_ALERT",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -778,6 +835,7 @@ exports[`EventBus — golden master > financialAlert (regular + insolvency) 1`] 
   "logLen": 2,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -802,7 +860,7 @@ exports[`EventBus — golden master > financialAlert (regular + insolvency) 1`] 
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-26E9A1F3",
+      "id": "EV-D371D291",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
@@ -813,12 +871,13 @@ exports[`EventBus — golden master > financialAlert (regular + insolvency) 1`] 
         "economy",
         "scandal",
       ],
-      "title": "Financial Report",
+      "title": "Monthly Ledger Update",
       "type": "FINANCIAL_ALERT",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -867,6 +926,7 @@ exports[`EventBus — golden master > governanceRuling (default + explicit impor
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "discipline",
       "causalEventId": undefined,
       "data": {
@@ -891,23 +951,24 @@ exports[`EventBus — golden master > governanceRuling (default + explicit impor
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-5C99AF72",
+      "id": "EV-5601A467",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "The Association has reviewed and responded to a reported matter.",
+      "summary": "Institutional oversight has resulted in a formal decision.",
       "tags": [
         "governance",
         "discipline",
       ],
-      "title": "JSA Ruling Issued",
+      "title": "Association Notice",
       "type": "GOVERNANCE_RULING",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "discipline",
       "causalEventId": undefined,
       "data": {
@@ -932,18 +993,18 @@ exports[`EventBus — golden master > governanceRuling (default + explicit impor
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-5C99AF72",
+      "id": "EV-5601A467",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "The Association has reviewed and responded to a reported matter.",
+      "summary": "Institutional oversight has resulted in a formal decision.",
       "tags": [
         "governance",
         "discipline",
       ],
-      "title": "JSA Ruling Issued",
+      "title": "Association Notice",
       "type": "GOVERNANCE_RULING",
       "week": 5,
       "year": 2026,
@@ -952,6 +1013,7 @@ exports[`EventBus — golden master > governanceRuling (default + explicit impor
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "discipline",
       "causalEventId": undefined,
       "data": {
@@ -976,18 +1038,18 @@ exports[`EventBus — golden master > governanceRuling (default + explicit impor
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-5C99AF72",
+      "id": "EV-5601A467",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "The Association has reviewed and responded to a reported matter.",
+      "summary": "Institutional oversight has resulted in a formal decision.",
       "tags": [
         "governance",
         "discipline",
       ],
-      "title": "JSA Ruling Issued",
+      "title": "Association Notice",
       "type": "GOVERNANCE_RULING",
       "week": 5,
       "year": 2026,
@@ -1000,6 +1062,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -1038,6 +1101,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -1058,7 +1122,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-99A9DE08",
+      "id": "EV-3E8440FA",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
@@ -1069,7 +1133,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
         "lifecycle",
         "merger",
       ],
-      "title": "Heya Reorganization",
+      "title": "Stable Merger",
       "type": "LIFECYCLE_EVENT",
       "week": 5,
       "year": 2026,
@@ -1078,6 +1142,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
   "logLen": 2,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -1116,6 +1181,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -1136,7 +1202,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-99A9DE08",
+      "id": "EV-3E8440FA",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
@@ -1147,7 +1213,7 @@ exports[`EventBus — golden master > lifecycleAction (naturalization + merger) 
         "lifecycle",
         "merger",
       ],
-      "title": "Heya Reorganization",
+      "title": "Stable Merger",
       "type": "LIFECYCLE_EVENT",
       "week": 5,
       "year": 2026,
@@ -1160,6 +1226,7 @@ exports[`EventBus — golden master > lifecycleEvent (injury + retirement import
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -1198,6 +1265,7 @@ exports[`EventBus — golden master > lifecycleEvent (injury + retirement import
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -1239,6 +1307,7 @@ exports[`EventBus — golden master > lifecycleEvent (injury + retirement import
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -1284,6 +1353,7 @@ exports[`EventBus — golden master > managementDecision (default + explicit imp
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "training",
       "causalEventId": undefined,
       "data": {
@@ -1325,6 +1395,7 @@ exports[`EventBus — golden master > managementDecision (default + explicit imp
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "training",
       "causalEventId": undefined,
       "data": {
@@ -1369,6 +1440,7 @@ exports[`EventBus — golden master > managementDecision (default + explicit imp
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "training",
       "causalEventId": undefined,
       "data": {
@@ -1416,6 +1488,7 @@ exports[`EventBus — golden master > managementDecision (default + explicit imp
 exports[`EventBus — golden master > medicalReportBase 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "injury",
     "causalEventId": undefined,
     "data": {
@@ -1437,18 +1510,18 @@ exports[`EventBus — golden master > medicalReportBase 1`] = `
     },
     "day": 1,
     "heyaId": undefined,
-    "id": "EV-69B7C4CA",
+    "id": "EV-334C9DAE",
     "importance": "major",
     "month": 1,
     "phase": "weekly",
     "rikishiId": "r-east",
     "scope": "rikishi",
-    "summary": "[[rikishi:r-east:Eastho]]'s condition was reviewed — status: injured.",
+    "summary": "The heya received a medical report for [[rikishi:r-east:Eastho]] — injured.",
     "tags": [
       "medical",
       "injured",
     ],
-    "title": "Medical Report",
+    "title": "Medical Assessment",
     "type": "MEDICAL_REPORT",
     "week": 5,
     "year": 2026,
@@ -1456,6 +1529,7 @@ exports[`EventBus — golden master > medicalReportBase 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "injury",
       "causalEventId": undefined,
       "data": {
@@ -1477,18 +1551,18 @@ exports[`EventBus — golden master > medicalReportBase 1`] = `
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-69B7C4CA",
+      "id": "EV-334C9DAE",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
       "rikishiId": "r-east",
       "scope": "rikishi",
-      "summary": "[[rikishi:r-east:Eastho]]'s condition was reviewed — status: injured.",
+      "summary": "The heya received a medical report for [[rikishi:r-east:Eastho]] — injured.",
       "tags": [
         "medical",
         "injured",
       ],
-      "title": "Medical Report",
+      "title": "Medical Assessment",
       "type": "MEDICAL_REPORT",
       "week": 5,
       "year": 2026,
@@ -1500,6 +1574,7 @@ exports[`EventBus — golden master > medicalReportBase 1`] = `
 exports[`EventBus — golden master > monthlyFinanceReport 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "economy",
     "causalEventId": undefined,
     "data": {
@@ -1522,7 +1597,7 @@ exports[`EventBus — golden master > monthlyFinanceReport 1`] = `
     },
     "day": 1,
     "heyaId": undefined,
-    "id": "EV-7DDC4E77",
+    "id": "EV-3FC72875",
     "importance": "notable",
     "month": 1,
     "phase": "monthly",
@@ -1533,7 +1608,7 @@ exports[`EventBus — golden master > monthlyFinanceReport 1`] = `
       "economy",
       "finance",
     ],
-    "title": "Financial Report",
+    "title": "Accounts Settled",
     "type": "MONTHLY_FINANCE_REPORT",
     "week": 5,
     "year": 2026,
@@ -1541,6 +1616,7 @@ exports[`EventBus — golden master > monthlyFinanceReport 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "economy",
       "causalEventId": undefined,
       "data": {
@@ -1563,7 +1639,7 @@ exports[`EventBus — golden master > monthlyFinanceReport 1`] = `
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-7DDC4E77",
+      "id": "EV-3FC72875",
       "importance": "notable",
       "month": 1,
       "phase": "monthly",
@@ -1574,7 +1650,7 @@ exports[`EventBus — golden master > monthlyFinanceReport 1`] = `
         "economy",
         "finance",
       ],
-      "title": "Financial Report",
+      "title": "Accounts Settled",
       "type": "MONTHLY_FINANCE_REPORT",
       "week": 5,
       "year": 2026,
@@ -1586,6 +1662,7 @@ exports[`EventBus — golden master > monthlyFinanceReport 1`] = `
 exports[`EventBus — golden master > oyakataMoodShift 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "narrative",
     "causalEventId": undefined,
     "data": {
@@ -1616,7 +1693,7 @@ exports[`EventBus — golden master > oyakataMoodShift 1`] = `
     "phase": "weekly",
     "rikishiId": undefined,
     "scope": "heya",
-    "summary": "Those close to East Stable report its master is in a different frame of mind.",
+    "summary": "The oyakata's mood at East Stable has shifted noticeably.",
     "tags": [
       "narrative",
       "mood",
@@ -1629,6 +1706,7 @@ exports[`EventBus — golden master > oyakataMoodShift 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "narrative",
       "causalEventId": undefined,
       "data": {
@@ -1659,7 +1737,7 @@ exports[`EventBus — golden master > oyakataMoodShift 1`] = `
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "Those close to East Stable report its master is in a different frame of mind.",
+      "summary": "The oyakata's mood at East Stable has shifted noticeably.",
       "tags": [
         "narrative",
         "mood",
@@ -1676,6 +1754,7 @@ exports[`EventBus — golden master > oyakataMoodShift 1`] = `
 exports[`EventBus — golden master > prestigeEvent 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "milestone",
     "causalEventId": undefined,
     "data": {
@@ -1700,7 +1779,7 @@ exports[`EventBus — golden master > prestigeEvent 1`] = `
     },
     "day": 1,
     "heyaId": "heya-1",
-    "id": "EV-BC90BE86",
+    "id": "EV-FF899B62",
     "importance": "notable",
     "month": 1,
     "phase": "weekly",
@@ -1711,7 +1790,7 @@ exports[`EventBus — golden master > prestigeEvent 1`] = `
       "prestige",
       "milestone",
     ],
-    "title": "Standing Shift",
+    "title": "Prestige Update",
     "type": "AWARD_CONFERRED",
     "week": 5,
     "year": 2026,
@@ -1719,6 +1798,7 @@ exports[`EventBus — golden master > prestigeEvent 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "milestone",
       "causalEventId": undefined,
       "data": {
@@ -1743,7 +1823,7 @@ exports[`EventBus — golden master > prestigeEvent 1`] = `
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-BC90BE86",
+      "id": "EV-FF899B62",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
@@ -1754,7 +1834,7 @@ exports[`EventBus — golden master > prestigeEvent 1`] = `
         "prestige",
         "milestone",
       ],
-      "title": "Standing Shift",
+      "title": "Prestige Update",
       "type": "AWARD_CONFERRED",
       "week": 5,
       "year": 2026,
@@ -1766,6 +1846,7 @@ exports[`EventBus — golden master > prestigeEvent 1`] = `
 exports[`EventBus — golden master > recruitDiscovered 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "scouting",
     "causalEventId": undefined,
     "data": {
@@ -1787,7 +1868,7 @@ exports[`EventBus — golden master > recruitDiscovered 1`] = `
     },
     "day": 1,
     "heyaId": undefined,
-    "id": "EV-FEFDDF2E",
+    "id": "EV-8EC8D880",
     "importance": "notable",
     "month": 1,
     "phase": "weekly",
@@ -1798,7 +1879,7 @@ exports[`EventBus — golden master > recruitDiscovered 1`] = `
       "scouting",
       "recruitment",
     ],
-    "title": "Scouting Success",
+    "title": "Recruitment Update",
     "type": "RECRUIT_DISCOVERED",
     "week": 5,
     "year": 2026,
@@ -1806,6 +1887,7 @@ exports[`EventBus — golden master > recruitDiscovered 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "scouting",
       "causalEventId": undefined,
       "data": {
@@ -1827,7 +1909,7 @@ exports[`EventBus — golden master > recruitDiscovered 1`] = `
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-FEFDDF2E",
+      "id": "EV-8EC8D880",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
@@ -1838,7 +1920,7 @@ exports[`EventBus — golden master > recruitDiscovered 1`] = `
         "scouting",
         "recruitment",
       ],
-      "title": "Scouting Success",
+      "title": "Recruitment Update",
       "type": "RECRUIT_DISCOVERED",
       "week": 5,
       "year": 2026,
@@ -1851,6 +1933,7 @@ exports[`EventBus — golden master > rivalryHeatSpike (heat<=75 vs >75 importan
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "rivalry",
       "causalEventId": undefined,
       "data": {
@@ -1874,23 +1957,24 @@ exports[`EventBus — golden master > rivalryHeatSpike (heat<=75 vs >75 importan
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-1DE8FB54",
+      "id": "EV-313CCFB0",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "Whispers in the keiko-ba suggest this rivalry has become intensely personal after [[rikishi:r-east:Eastho]]'s victory.",
+      "summary": "Observers note that [[rikishi:r-east:Eastho]] and [MISSING: RIVAL] refused to acknowledge each other after the bout—the animosity is palpable.",
       "tags": [
         "rivalry",
         "hype",
       ],
-      "title": "Heat Spike: [[rikishi:r-east:Eastho]] Defeats [MISSING: RIVAL]",
+      "title": "Tensions Explode on the Dohyo",
       "type": "RIVALRY_HEAT_SPIKE",
       "week": 5,
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "rivalry",
       "causalEventId": undefined,
       "data": {
@@ -1914,18 +1998,18 @@ exports[`EventBus — golden master > rivalryHeatSpike (heat<=75 vs >75 importan
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-1DE8FB54",
+      "id": "EV-313CCFB0",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "Whispers in the keiko-ba suggest this rivalry has become intensely personal after [[rikishi:r-east:Eastho]]'s victory.",
+      "summary": "Observers note that [[rikishi:r-east:Eastho]] and [MISSING: RIVAL] refused to acknowledge each other after the bout—the animosity is palpable.",
       "tags": [
         "rivalry",
         "hype",
       ],
-      "title": "Heat Spike: [[rikishi:r-east:Eastho]] Defeats [MISSING: RIVAL]",
+      "title": "Tensions Explode on the Dohyo",
       "type": "RIVALRY_HEAT_SPIKE",
       "week": 5,
       "year": 2026,
@@ -1934,6 +2018,7 @@ exports[`EventBus — golden master > rivalryHeatSpike (heat<=75 vs >75 importan
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "rivalry",
       "causalEventId": undefined,
       "data": {
@@ -1957,18 +2042,18 @@ exports[`EventBus — golden master > rivalryHeatSpike (heat<=75 vs >75 importan
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-1DE8FB54",
+      "id": "EV-313CCFB0",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "world",
-      "summary": "Whispers in the keiko-ba suggest this rivalry has become intensely personal after [[rikishi:r-east:Eastho]]'s victory.",
+      "summary": "Observers note that [[rikishi:r-east:Eastho]] and [MISSING: RIVAL] refused to acknowledge each other after the bout—the animosity is palpable.",
       "tags": [
         "rivalry",
         "hype",
       ],
-      "title": "Heat Spike: [[rikishi:r-east:Eastho]] Defeats [MISSING: RIVAL]",
+      "title": "Tensions Explode on the Dohyo",
       "type": "RIVALRY_HEAT_SPIKE",
       "week": 5,
       "year": 2026,
@@ -1980,6 +2065,7 @@ exports[`EventBus — golden master > rivalryHeatSpike (heat<=75 vs >75 importan
 exports[`EventBus — golden master > rosterEvent 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "career",
     "causalEventId": undefined,
     "data": {
@@ -2004,18 +2090,18 @@ exports[`EventBus — golden master > rosterEvent 1`] = `
     },
     "day": 1,
     "heyaId": "heya-1",
-    "id": "EV-121D96D0",
+    "id": "EV-F6393DAB",
     "importance": "major",
     "month": 1,
     "phase": "weekly",
     "rikishiId": "r-east",
     "scope": "heya",
-    "summary": "Roster pressure forced East Stable to part ways with [[rikishi:r-east:Eastho]].",
+    "summary": "[[rikishi:r-east:Eastho]] departs East Stable amid roster overflow.",
     "tags": [
       "roster",
       "release",
     ],
-    "title": "Roster Adjustment",
+    "title": "Roster Trimmed",
     "type": "ROSTER_OVERFLOW_RELEASE",
     "week": 5,
     "year": 2026,
@@ -2023,6 +2109,7 @@ exports[`EventBus — golden master > rosterEvent 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "career",
       "causalEventId": undefined,
       "data": {
@@ -2047,18 +2134,18 @@ exports[`EventBus — golden master > rosterEvent 1`] = `
       },
       "day": 1,
       "heyaId": "heya-1",
-      "id": "EV-121D96D0",
+      "id": "EV-F6393DAB",
       "importance": "major",
       "month": 1,
       "phase": "weekly",
       "rikishiId": "r-east",
       "scope": "heya",
-      "summary": "Roster pressure forced East Stable to part ways with [[rikishi:r-east:Eastho]].",
+      "summary": "[[rikishi:r-east:Eastho]] departs East Stable amid roster overflow.",
       "tags": [
         "roster",
         "release",
       ],
-      "title": "Roster Adjustment",
+      "title": "Roster Trimmed",
       "type": "ROSTER_OVERFLOW_RELEASE",
       "week": 5,
       "year": 2026,
@@ -2070,6 +2157,7 @@ exports[`EventBus — golden master > rosterEvent 1`] = `
 exports[`EventBus — golden master > strategyShift 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "narrative",
     "causalEventId": undefined,
     "data": {
@@ -2113,6 +2201,7 @@ exports[`EventBus — golden master > strategyShift 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "narrative",
       "causalEventId": undefined,
       "data": {
@@ -2160,6 +2249,7 @@ exports[`EventBus — golden master > strategyShift 1`] = `
 exports[`EventBus — golden master > trainingUpdate 1`] = `
 {
   "event": {
+    "bashoNumber": undefined,
     "category": "training",
     "causalEventId": undefined,
     "data": {
@@ -2181,17 +2271,17 @@ exports[`EventBus — golden master > trainingUpdate 1`] = `
     },
     "day": 1,
     "heyaId": undefined,
-    "id": "EV-512E8A89",
+    "id": "EV-427C6184",
     "importance": "notable",
     "month": 1,
     "phase": "weekly",
     "rikishiId": "r-east",
     "scope": "rikishi",
-    "summary": "Steady improvement observed for [[rikishi:r-east:Eastho]] this week.",
+    "summary": "[[rikishi:r-east:Eastho]] has completed a successful training cycle.",
     "tags": [
       "training",
     ],
-    "title": "[[rikishi:r-east:Eastho]]: Training Progress",
+    "title": "Weekly Training Report",
     "type": "TRAINING_UPDATE",
     "week": 5,
     "year": 2026,
@@ -2199,6 +2289,7 @@ exports[`EventBus — golden master > trainingUpdate 1`] = `
   "logLen": 1,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "training",
       "causalEventId": undefined,
       "data": {
@@ -2220,17 +2311,17 @@ exports[`EventBus — golden master > trainingUpdate 1`] = `
       },
       "day": 1,
       "heyaId": undefined,
-      "id": "EV-512E8A89",
+      "id": "EV-427C6184",
       "importance": "notable",
       "month": 1,
       "phase": "weekly",
       "rikishiId": "r-east",
       "scope": "rikishi",
-      "summary": "Steady improvement observed for [[rikishi:r-east:Eastho]] this week.",
+      "summary": "[[rikishi:r-east:Eastho]] has completed a successful training cycle.",
       "tags": [
         "training",
       ],
-      "title": "[[rikishi:r-east:Eastho]]: Training Progress",
+      "title": "Weekly Training Report",
       "type": "TRAINING_UPDATE",
       "week": 5,
       "year": 2026,
@@ -2243,6 +2334,7 @@ exports[`EventBus — golden master > welfareCompliance (warning + sanctioned) 1
 {
   "event": [
     {
+      "bashoNumber": undefined,
       "category": "welfare",
       "causalEventId": undefined,
       "data": {
@@ -2273,7 +2365,7 @@ exports[`EventBus — golden master > welfareCompliance (warning + sanctioned) 1
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "East Stable's welfare compliance status was updated: warning.",
+      "summary": "A welfare review at East Stable concluded — status: warning.",
       "tags": [
         "welfare",
         "warning",
@@ -2284,6 +2376,7 @@ exports[`EventBus — golden master > welfareCompliance (warning + sanctioned) 1
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "welfare",
       "causalEventId": undefined,
       "data": {
@@ -2328,6 +2421,7 @@ exports[`EventBus — golden master > welfareCompliance (warning + sanctioned) 1
   "logLen": 2,
   "logTail": [
     {
+      "bashoNumber": undefined,
       "category": "welfare",
       "causalEventId": undefined,
       "data": {
@@ -2358,7 +2452,7 @@ exports[`EventBus — golden master > welfareCompliance (warning + sanctioned) 1
       "phase": "weekly",
       "rikishiId": undefined,
       "scope": "heya",
-      "summary": "East Stable's welfare compliance status was updated: warning.",
+      "summary": "A welfare review at East Stable concluded — status: warning.",
       "tags": [
         "welfare",
         "warning",
@@ -2369,6 +2463,7 @@ exports[`EventBus — golden master > welfareCompliance (warning + sanctioned) 1
       "year": 2026,
     },
     {
+      "bashoNumber": undefined,
       "category": "welfare",
       "causalEventId": undefined,
       "data": {

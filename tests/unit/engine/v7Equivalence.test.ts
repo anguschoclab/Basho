@@ -189,10 +189,10 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
     const rikishi = new Map([
       [
         "sen",
-        mkR("sen", { heyaId: "hT", rankNumber: 2, shikona: "Senior", tsukebitoIds: ["jr1"] }),
+        mkR("sen", { heyaId: "hT", rank: "sekiwake", rankNumber: 2, shikona: "Senior", tsukebitoIds: ["jr1"] }),
       ],
-      ["jr1", mkR("jr1", { heyaId: "hT", rankNumber: 12, shikona: "JuniorOne" })],
-      ["jr2", mkR("jr2", { heyaId: "hT", rankNumber: 15, shikona: "JuniorTwo" })],
+      ["jr1", mkR("jr1", { heyaId: "hT", rank: "makushita", rankNumber: 12, shikona: "JuniorOne" })],
+      ["jr2", mkR("jr2", { heyaId: "hT", rank: "makushita", rankNumber: 15, shikona: "JuniorTwo" })],
     ]);
     const world = mkWorld({ heyas: new Map([["hT", heya]]), rikishi });
     expect(projectTsukebito(world, "hT")).toEqual({
@@ -200,7 +200,7 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
         {
           seniorId: "sen",
           seniorShikona: "Senior",
-          seniorRankLabel: "maegashira",
+          seniorRankLabel: "sekiwake",
           seniorAvatar: expect.objectContaining({
             identity: expect.objectContaining({ seed: "sen" }),
           }),
@@ -209,7 +209,7 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
             {
               id: "jr1",
               shikona: "JuniorOne",
-              rankLabel: "maegashira",
+              rankLabel: "makushita",
               avatar: expect.objectContaining({
                 identity: expect.objectContaining({ seed: "jr1" }),
               }),
@@ -221,7 +221,7 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
         {
           id: "sen",
           shikona: "Senior",
-          rankLabel: "maegashira",
+          rankLabel: "sekiwake",
           currentCount: 1,
           maxCount: 2,
           avatar: expect.objectContaining({
@@ -233,7 +233,7 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
         {
           id: "jr1",
           shikona: "JuniorOne",
-          rankLabel: "maegashira",
+          rankLabel: "makushita",
           assignedTo: "sen",
           avatar: expect.objectContaining({
             identity: expect.objectContaining({ seed: "jr1" }),
@@ -242,7 +242,7 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
         {
           id: "jr2",
           shikona: "JuniorTwo",
-          rankLabel: "maegashira",
+          rankLabel: "makushita",
           assignedTo: null,
           avatar: expect.objectContaining({
             identity: expect.objectContaining({ seed: "jr2" }),

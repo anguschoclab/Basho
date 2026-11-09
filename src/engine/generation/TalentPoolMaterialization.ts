@@ -115,6 +115,89 @@ export function materializeCandidateToRikishi(
  * which mirror a main-pool candidate id — so a materialized watchlist entry
  * also consumes the main-pool copy (the same person cannot sign twice).
  */
+/** Strip a candidate id out of a pool's candidate record + visibility lists. */
+function stripCandidateFromPool(
+  id: Id,
+  candidates: Record<Id, TalentCandidate>,
+  pools: Record<TalentPoolType, TalentPoolState>
+) {
+  const { [id]: _removed, ...nextCandidates } = candidates;
+  void _removed;
+  const nextPools = { ...pools };
+  for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
+    nextPools[pt] = {
+      ...nextPools[pt],
+      candidatesVisible: nextPools[pt].candidatesVisible.filter((cid) => cid !== id),
+      candidatesHidden: nextPools[pt].candidatesHidden.filter((cid) => cid !== id),
+    };
+  }
+  return { nextCandidates, nextPools };
+}
+
+interface FinalizeContext {
+  world: WorldState;
+  builder: ReturnType<typeof createImpactBuilder>;
+  foreignOccupied: Set<Id>;
+  mintedPersonIds: Set<string>;
+}
+
+/**
+ * Materialize one signed candidate out of the given pool records.
+ * Returns the updated records plus whether the entry was consumed.
+ */
+function processSignedCandidate(
+  id: Id,
+  candidates: Record<Id, TalentCandidate>,
+  pools: Record<TalentPoolType, TalentPoolState>,
+  ctx: FinalizeContext
+): {
+  candidates: Record<Id, TalentCandidate>;
+  pools: Record<TalentPoolType, TalentPoolState>;
+  consumed: boolean;
+} {
+  const { world, builder, foreignOccupied, mintedPersonIds } = ctx;
+  const candidate = candidates[id];
+  if (!candidate || candidate.availabilityState !== "signed") {
+    return { candidates, pools, consumed: false };
+  }
+  if (candidate.competingSuitors.length === 0) {
+    return { candidates, pools, consumed: false };
+  }
+  const winner = candidate.competingSuitors[0];
+  const heyaId = winner.heyaId;
+  if (!world.heyas.has(heyaId)) {
+    return { candidates, pools, consumed: false };
+  }
+
+  // The person was already materialized via another pool copy this pass —
+  // consume the duplicate entry without minting a second rikishi.
+  if (mintedPersonIds.has(candidate.personId)) {
+    const stripped = stripCandidateFromPool(id, candidates, pools);
+    return { candidates: stripped.nextCandidates, pools: stripped.nextPools, consumed: true };
+  }
+
+  if (candidateConsumesForeignSlot(candidate) && foreignOccupied.has(heyaId)) {
+    return {
+      candidates: {
+        ...candidates,
+        [id]: {
+          ...candidate,
+          availabilityState: "available" as const,
+          competingSuitors: [],
+        },
+      },
+      pools,
+      consumed: true,
+    };
+  }
+
+  const resolution = materializeCandidateToRikishiInternal(world, id, heyaId, candidates, pools);
+  builder.merge(resolution.impact);
+  if (resolution.newRikishiId) mintedPersonIds.add(candidate.personId);
+  if (candidateConsumesForeignSlot(candidate)) foreignOccupied.add(heyaId);
+  return { candidates: resolution.nextCandidates, pools: resolution.nextPools, consumed: true };
+}
+
 export function finalizeSignedCandidates(world: WorldState): StateImpact {
   const builder = createImpactBuilder("finalizeSignedCandidates");
   const tp = world.talentPool;
@@ -146,85 +229,12 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   // personIds minted during THIS pass — the rikishi map on `world` is the
   // pre-impact snapshot, so a candidate copied into both pools would
   // otherwise mint a second rikishi for the same person in one batch.
-  const mintedPersonIds = new Set<string>();
-
-  const stripCandidate = (
-    id: Id,
-    candidates: Record<Id, TalentCandidate>,
-    pools: Record<TalentPoolType, TalentPoolState>
-  ) => {
-    const { [id]: _removed, ...nextCandidates } = candidates;
-    void _removed;
-    const nextPools = { ...pools };
-    for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
-      nextPools[pt] = {
-        ...nextPools[pt],
-        candidatesVisible: nextPools[pt].candidatesVisible.filter((cid) => cid !== id),
-        candidatesHidden: nextPools[pt].candidatesHidden.filter((cid) => cid !== id),
-      };
-    }
-    return { nextCandidates, nextPools };
-  };
-
-  /**
-   * Materialize one signed candidate out of the given pool records.
-   * Returns the updated records plus whether the entry was consumed.
-   */
-  const processSigned = (
-    id: Id,
-    candidates: Record<Id, TalentCandidate>,
-    pools: Record<TalentPoolType, TalentPoolState>
-  ): {
-    candidates: Record<Id, TalentCandidate>;
-    pools: Record<TalentPoolType, TalentPoolState>;
-    consumed: boolean;
-  } => {
-    const candidate = candidates[id];
-    if (!candidate || candidate.availabilityState !== "signed") {
-      return { candidates, pools, consumed: false };
-    }
-    if (candidate.competingSuitors.length === 0) {
-      return { candidates, pools, consumed: false };
-    }
-    const winner = candidate.competingSuitors[0];
-    const heyaId = winner.heyaId;
-    if (!world.heyas.has(heyaId)) {
-      return { candidates, pools, consumed: false };
-    }
-
-    // The person was already materialized via another pool copy this pass —
-    // consume the duplicate entry without minting a second rikishi.
-    if (mintedPersonIds.has(candidate.personId)) {
-      const stripped = stripCandidate(id, candidates, pools);
-      return { candidates: stripped.nextCandidates, pools: stripped.nextPools, consumed: true };
-    }
-
-    if (candidateConsumesForeignSlot(candidate) && foreignOccupied.has(heyaId)) {
-      return {
-        candidates: {
-          ...candidates,
-          [id]: {
-            ...candidate,
-            availabilityState: "available" as const,
-            competingSuitors: [],
-          },
-        },
-        pools,
-        consumed: true,
-      };
-    }
-
-    const resolution = materializeCandidateToRikishiInternal(world, id, heyaId, candidates, pools);
-    builder.merge(resolution.impact);
-    if (resolution.newRikishiId) mintedPersonIds.add(candidate.personId);
-    if (candidateConsumesForeignSlot(candidate)) foreignOccupied.add(heyaId);
-    return { candidates: resolution.nextCandidates, pools: resolution.nextPools, consumed: true };
-  };
+  const ctx: FinalizeContext = { world, builder, foreignOccupied, mintedPersonIds: new Set() };
 
   if (tp) {
     for (const id in tp.candidates) {
       if (!Object.prototype.hasOwnProperty.call(tp.candidates, id)) continue;
-      const res = processSigned(id, tpCandidates, tpPools);
+      const res = processSignedCandidate(id, tpCandidates, tpPools, ctx);
       tpCandidates = res.candidates;
       tpPools = res.pools;
       if (res.consumed) tpChanged = true;
@@ -234,7 +244,7 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   if (cp) {
     for (const id in cp.candidates) {
       if (!Object.prototype.hasOwnProperty.call(cp.candidates, id)) continue;
-      const res = processSigned(id, cpCandidates, cpPools);
+      const res = processSignedCandidate(id, cpCandidates, cpPools, ctx);
       cpCandidates = res.candidates;
       cpPools = res.pools;
       if (!res.consumed) continue;
@@ -242,7 +252,7 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
       // The watchlist copy mirrors a main-pool candidate id — once it is
       // consumed here, the main-pool entry must go too (same person).
       if (tp && tpCandidates[id] && res.candidates[id] === undefined) {
-        const stripped = stripCandidate(id, tpCandidates, tpPools);
+        const stripped = stripCandidateFromPool(id, tpCandidates, tpPools);
         tpCandidates = stripped.nextCandidates;
         tpPools = stripped.nextPools;
         tpChanged = true;

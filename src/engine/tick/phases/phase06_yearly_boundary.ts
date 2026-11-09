@@ -69,9 +69,17 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   // Succession checks for all stables
   builder.merge(DynastyService.tickSuccessionCheck(world));
 
-  // World Circuit invitations
+  // World Circuit invitations — per-heya appends compose through merge, so
+  // the expired-entry sweep must be ONE absolute write here. At apply time
+  // worldFields land before arrayAppends: result = pruned base + fresh batch.
   for (const heyaId of world.heyas.keys()) {
     builder.merge(WorldCircuitService.generateYearlyInvitations(world, heyaId));
+  }
+  if (world.pendingExhibitions?.some((i) => i.expiresAtWeek < (world.week ?? 0))) {
+    builder.updateWorldField(
+      "pendingExhibitions",
+      (world.pendingExhibitions ?? []).filter((i) => i.expiresAtWeek >= (world.week ?? 0))
+    );
   }
 
   // 0.4 JSA Board Elections (Phase 4: Bi-Annual)

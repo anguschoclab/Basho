@@ -1,20 +1,25 @@
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { setTsukebito, clearTsukebito } from "@/engine/training/TsukebitoService";
+import {
+  setTsukebito,
+  clearTsukebito,
+  isEligibleForTsukebito,
+  isEligibleTsukebito,
+} from "@/engine/training/TsukebitoService";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function findSenior(world: WorldState): Rikishi {
   for (const r of world.rikishi.values()) {
-    if ((r.rankNumber ?? 99) <= 3 && !r.isRetired) return r;
+    if (isEligibleForTsukebito(r) && !r.isRetired) return r;
   }
   throw new Error("No senior rikishi found");
 }
 
 function findJunior(world: WorldState, senior: Rikishi): Rikishi {
   for (const r of world.rikishi.values()) {
-    if ((r.rankNumber ?? 99) > 10 && !r.isRetired && r.heyaId === senior.heyaId) return r;
+    if (!r.isRetired && r.heyaId === senior.heyaId && isEligibleTsukebito(r, senior)) return r;
   }
   throw new Error("No junior rikishi found in same heya");
 }
