@@ -1,7 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/core/rng";
 import { createRngForEvent } from "@/engine/events/helpers";
 import { logEngineEvent } from "@/engine/events/events";
 import { enrichEventContext } from "@/engine/events/domains/context";
@@ -14,7 +13,7 @@ import { enrichEventContext } from "@/engine/events/domains/context";
  */
 export function bashoStatus(world: WorldState, ctx: NarrativeContext) {
   ctx = enrichEventContext(world, ctx);
-  const rng = rngFromSeed(`basho-status-${ctx.status}-${ctx.day}`, "narrative", "event");
+  const rng = createRngForEvent(world, `basho-status-${ctx.status}-${ctx.day}`);
   const titleRes = BardEngine.resolve(rng, "events.basho.status_title", ctx);
   const summaryRes = BardEngine.resolve(rng, "events.basho.status_summary", ctx);
 
@@ -39,10 +38,9 @@ export function bashoStatus(world: WorldState, ctx: NarrativeContext) {
  * @returns The logged engine event
  */
 export function boutResolved(world: WorldState, data: NarrativeContext) {
-  const rng = rngFromSeed(
-    `bout-resolved-${data.winnerRikishiId}-${data.loserRikishiId}-${data.day}`,
-    "narrative",
-    "event"
+  const rng = createRngForEvent(
+    world,
+    `bout-resolved-${data.winnerRikishiId}-${data.loserRikishiId}-${data.day}`
   );
   data = {
     ...enrichEventContext(world, data),

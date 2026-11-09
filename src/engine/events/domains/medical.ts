@@ -1,7 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { EventImportance, NarrativeContext } from "@/engine/types/events";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/core/rng";
 import { createRngForEvent } from "@/engine/events/helpers";
 import { logEngineEvent } from "@/engine/events/events";
 import { enrichEventContext } from "@/engine/events/domains/context";
@@ -76,10 +75,9 @@ export function lifecycleAction(
   type: "naturalization" | "merger"
 ) {
   data = enrichEventContext(world, data);
-  const rng = rngFromSeed(
-    `lifecycle-${type}-${data.rikishiId || data.heyaId}`,
-    "narrative",
-    "event"
+  const rng = createRngForEvent(
+    world,
+    `lifecycle-${type}-${data.rikishiId || data.heyaId}`
   );
   const titleRes = BardEngine.resolve(rng, `events.lifecycle.${type}_title`, data);
   const summaryRes = BardEngine.resolve(rng, `events.lifecycle.${type}_summary`, data);

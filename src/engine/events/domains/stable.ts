@@ -2,7 +2,6 @@ import type { WorldState } from "@/engine/types/world";
 import type { EventImportance, NarrativeContext } from "@/engine/types/events";
 import type { Id } from "@/engine/types/common";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/core/rng";
 import { createRngForEvent } from "@/engine/events/helpers";
 import { logEngineEvent } from "@/engine/events/events";
 import { enrichEventContext } from "@/engine/events/domains/context";
@@ -164,7 +163,7 @@ export function facilityUpdate(
   type: "UPGRADED" | "DEGRADED"
 ) {
   data = enrichEventContext(world, { heyaId, ...data });
-  const rng = rngFromSeed(`facility-${heyaId}-${type}`, "narrative", "event");
+  const rng = createRngForEvent(world, `facility-${heyaId}-${type}`);
   const path = type === "UPGRADED" ? "events.facility.upgraded" : "events.facility.degraded";
   const titleRes = BardEngine.resolve(rng, `${path}_title`, data);
   const summaryRes = BardEngine.resolve(rng, `${path}_summary`, data);
@@ -191,7 +190,7 @@ export function facilityUpdate(
  */
 export function rosterEvent(world: WorldState, heyaId: Id, data: NarrativeContext) {
   data = enrichEventContext(world, { heyaId, ...data });
-  const rng = rngFromSeed(`roster-${heyaId}-${data.rikishiId}`, "narrative", "event");
+  const rng = createRngForEvent(world, `roster-${heyaId}-${data.rikishiId}`);
   const titleRes = BardEngine.resolve(rng, "events.management.roster_overflow_title", data);
   const summaryRes = BardEngine.resolve(rng, "events.management.roster_overflow_summary", data);
 

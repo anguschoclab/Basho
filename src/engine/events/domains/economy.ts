@@ -2,7 +2,6 @@ import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
 import type { Id } from "@/engine/types/common";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/core/rng";
 import { createRngForEvent } from "@/engine/events/helpers";
 import { logEngineEvent } from "@/engine/events/events";
 import { enrichEventContext } from "@/engine/events/domains/context";
@@ -74,7 +73,7 @@ export function financialAction(
   type: "loan" | "market"
 ) {
   data = enrichEventContext(world, { heyaId, ...data });
-  const rng = rngFromSeed(`finance-${type}-${heyaId}`, "narrative", "event");
+  const rng = createRngForEvent(world, `finance-${type}-${heyaId}`);
   const titleRes = BardEngine.resolve(rng, `events.economy.${type}_title`, data);
   const summaryRes = BardEngine.resolve(rng, `events.economy.${type}_summary`, data);
 

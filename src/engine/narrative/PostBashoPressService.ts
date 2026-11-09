@@ -8,7 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
-import { rngFromSeed } from "@/engine/core/rng";
+import { createRngForEvent } from "@/engine/events/helpers";
 import { getRikishi } from "@/engine/core/queries";
 import { generateChampionLines } from "@/engine/narrative/postBashoPress/champion";
 import {
@@ -35,7 +35,7 @@ export interface PressConferenceContext {
 function generatePressConference(world: WorldState, context: PressConferenceContext): PbpLine[] {
   const lines: PbpLine[] = [];
   const { yushoId, bashoName, year } = context;
-  const pressRng = rngFromSeed(`press-${bashoName}-${year}`, "narrative", "post_basho_press");
+  const pressRng = createRngForEvent(world, `press-${bashoName}-${year}`);
 
   // Champion press conference
   const champion = getRikishi(world, yushoId);
