@@ -505,7 +505,7 @@ function beatReplayHighlight(p: PbpPipeline): void {
     const isDominant = (result.excitementScore ?? 50) < 60;
 
     if (hasHenka) {
-      replayPath = "post_bout.replay.reversal";
+      replayPath = "post_bout.replay.henka";
     } else if (hasEdgeCrisis) {
       replayPath = "post_bout.replay.edge_drama";
     } else if (isQuickFinish) {

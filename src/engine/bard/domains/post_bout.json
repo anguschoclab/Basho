@@ -448,6 +448,13 @@
       "Physics dictates this one — %WINNER% imposes his will and weight on %LOSER%.",
       "A mountain to climb for %LOSER%, and %WINNER% proves an immovable object."
     ],
+    "henka": [
+      "Watch the replay — %WINNER% sidesteps completely at the tachiai.",
+      "A textbook henka from %WINNER% at the initial charge, caught on replay.",
+      "The slow motion shows %WINNER% shifting laterally the moment the hands touched down.",
+      "Let's look at the tachiai again — %WINNER% dodges, and %LOSER% goes flying by.",
+      "%WINNER% avoids the charge entirely. A clean henka on the replay."
+    ],
     "reversal": [
       "What a reversal move by %WINNER%! Look at that hip shift.",
       "An incredible reversal — %LOSER% thought he had it, but %WINNER% turned the tables.",
@@ -482,6 +489,22 @@
       "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%.",
       "Rewind it one more time — %WINNER% makes the %KIMARITE% look effortless.",
       "From a different angle you can see exactly how %WINNER% finishes %LOSER%."
+    ]
+  },
+  "tactic_verdict": {
+    "success": [
+      "The %LABEL% call paid off — the corner's read was right.",
+      "A brilliant tactical call from the corner: the %LABEL% worked perfectly.",
+      "The heya's strategy paid dividends — the %LABEL% was exactly the right approach.",
+      "Execution matched the game plan. The %LABEL% tactic secured the win.",
+      "The corner got it right today, as the %LABEL% proved decisive."
+    ],
+    "failure": [
+      "The %LABEL% call backfired; the opponent had the answer.",
+      "The corner's advice fell flat — the %LABEL% was completely scouted.",
+      "A tactical misstep. The %LABEL% proved ineffective against a prepared opponent.",
+      "The %LABEL% gambit failed to produce the desired result.",
+      "Unfortunately, the %LABEL% strategy did not pan out as planned."
     ]
   }
 }

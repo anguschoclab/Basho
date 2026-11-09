@@ -725,6 +725,7 @@ for (const k of [
     "TYPE",
     "RESULT",
     "NAME",
+    "LABEL",
     ...bagContextKeys(),
 ]) {
   BAG_CONTEXT[k] = "X";
