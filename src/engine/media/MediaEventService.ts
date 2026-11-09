@@ -88,10 +88,15 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
 
   if (!world.mediaState) return builder.build();
 
-  // Find the event in the governance log or media state
+  // Find the event in the governance log or media state. Every id the UI can
+  // dispatch is a governanceLog entry — a stale/unknown id must be a no-op,
+  // not fall back to the player's stable (V18-S7-25).
   const eventIndex = world.governanceLog?.findIndex((r) => r.id === eventId);
+  if (eventIndex === undefined || eventIndex < 0 || !world.governanceLog) {
+    return builder.build();
+  }
   let targetHeyaId = world.playerHeyaId;
-  if (eventIndex !== undefined && eventIndex >= 0 && world.governanceLog) {
+  if (world.governanceLog) {
     // Update the ruling with the player's choice via ImpactBuilder
     const ruling = world.governanceLog[eventIndex] as GovernanceRuling;
     targetHeyaId = ruling.heyaId ?? targetHeyaId;

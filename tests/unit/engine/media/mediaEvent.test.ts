@@ -82,4 +82,20 @@ describe("handleMediaEvent", () => {
     expect(updatedWorld.mediaState!.mediaHeat["rikishi1"]).toBe(50);
     expect(updatedWorld.mediaState!.heyaPressure["heya1"]).toBe(60);
   });
+
+  it("rejects an unknown eventId without touching the player's stable (V18-S7-25)", () => {
+    // Every id the UI can dispatch is a governanceLog entry (PendingMediaCard).
+    // A stale/unknown id must be a no-op — NOT fall back to playerHeyaId,
+    // where 'apologize' would cool the player's own roster and 'deny'
+    // would raise the player's own pressure for a story that doesn't exist.
+    const impact = handleMediaEvent(mockWorld, "stale-ruling-id", "apologize");
+    const updatedWorld = resolveImpacts(mockWorld, [impact]);
+
+    expect(updatedWorld.mediaState).toEqual(mockWorld.mediaState);
+    expect(updatedWorld.governanceLog).toEqual(mockWorld.governanceLog);
+
+    const denyImpact = handleMediaEvent(mockWorld, "stale-ruling-id", "deny");
+    const denyWorld = resolveImpacts(mockWorld, [denyImpact]);
+    expect(denyWorld.mediaState).toEqual(mockWorld.mediaState);
+  });
 });

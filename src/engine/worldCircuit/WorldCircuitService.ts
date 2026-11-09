@@ -79,8 +79,12 @@ function generateYearlyInvitations(world: WorldState, heyaId: string): StateImpa
     { heyaId, importance: "notable" }
   );
 
-  // Store pending invitations in world state
-  builder.appendToWorldArray("pendingExhibitions", invitations);
+  // Store pending invitations in world state — sweeping expired entries first
+  // so the queue stays bounded (V18-S7-18).
+  const live = (world.pendingExhibitions ?? []).filter(
+    (i) => i.expiresAtWeek >= (world.week ?? 0)
+  );
+  builder.updateWorldField("pendingExhibitions", [...live, ...invitations]);
 
   return builder.build();
 }
@@ -99,6 +103,11 @@ function processExhibitionResult(
   const heya = getHeya(world, heyaId);
   const rikishi = getRikishi(world, rikishiId);
   if (!heya || !rikishi) return builder.build();
+
+  // Expired invitations are dead letters — no presence, no narrative, for any
+  // caller (player ACCEPT_EXHIBITION cmd or NPC weekly decision). expiresAtWeek
+  // is the last valid week; strictly greater means the offer lapsed.
+  if ((world.week ?? 0) > invitation.expiresAtWeek) return builder.build();
 
   const rng = RNGRegistry.getSystemRNG(
     world,

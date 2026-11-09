@@ -242,7 +242,11 @@ export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWork
  */
 export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult {
   const reasoning: string[] = [];
-  const invitations = ctx.pendingExhibitions.filter((i) => i.heyaId === ctx.heyaId);
+  // Only live invitations are actionable — expired ones are dead letters.
+  const week = ctx.world.week ?? 0;
+  const invitations = ctx.pendingExhibitions.filter(
+    (i) => i.heyaId === ctx.heyaId && i.expiresAtWeek >= week
+  );
 
   if (invitations.length === 0) {
     return { reasoning };
