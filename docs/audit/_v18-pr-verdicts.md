@@ -31,3 +31,21 @@ All evidence from direct diff/trace inspection on `consolidation/v18`. Dispositi
 | electron, babel, globals, postcss, typescript-eslint, eslint-plugin, vitest | — | PR versions | = PR versions | YES | PR versions |
 
 Execution-time rule: re-run `npm view <pkg> version` + `npm view <pkg>@latest time` before applying; take newer only if ≥7 days old.
+
+## Closeout record (Phase D, main @ b1bb0602)
+
+All 11 open PRs closed via `gh pr close` with integrating-commit comments:
+
+| PR | Final disposition | Landed as |
+|----|-------------------|-----------|
+| #1200 henka replay | CLOSED-integrated | `74c3939a` (bard trio) |
+| #1199 roster memoization | CLOSED-integrated (trio winner) | `15d50d79` |
+| #1184 roster lookups | CLOSED-superseded | — (identical payload to #1199) |
+| #1183 entitycollection | CLOSED-superseded | — (same payload, Bolt-commented) |
+| #1186 venue entrances | CLOSED-integrated | `74c3939a` |
+| #1185 scribe doc | CLOSED-integrated | `af69d5de` (2 corrections applied) |
+| #1182 tactic verdict | CLOSED-integrated | `74c3939a` (+LABEL in BAG_CONTEXT) |
+| #1197/#1198/#1181 scout trio | CLOSED-integrated | `7274d994` |
+| #1194/#1191 tailwind 4.3.5 | CLOSED-superseded | `2262393c` (freshness-gated to 4.3.4; 4.3.5 eligible Nov 13) |
+
+`gh pr list --state open` → `[]`. PR head branches on origin were intentionally left (deletion rule applies to merged branches only — these payloads were applied as new commits, not merges).
