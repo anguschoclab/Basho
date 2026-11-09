@@ -11,6 +11,7 @@ import { info } from "@/engine/utils/Logger";
 import { assertNever } from "@/engine/utils/types";
 import { initializeBasho } from "@/engine/generation/WorldFactory";
 import { resetBashoMediaTracking } from "@/engine/media/MediaService";
+import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { getInterimWeeks, getNextBasho } from "@/engine/calendar/calendar";
 import { emptyDeltas, defaultActiveModifiers } from "@/engine/tick/pipelineRunner";
 import {
@@ -167,6 +168,15 @@ function checkPhaseTransition(
         const current = world.currentBashoName ?? "hatsu";
         const next = getNextBasho(current);
         builder.updateWorldField("_interimDaysRemaining", getInterimWeeks(current, next) * 7 - 7);
+        // Publish the next banzuke at the post_basho → interim boundary —
+        // the same canonical publish the interactive END_BASHO and AutoSim
+        // paths run. The tick-driven drain (holiday, headless advance) is the
+        // only way to reach post_basho without a publish already applied;
+        // without this, interim began with a stale banzuke and the concluded
+        // currentBasho still attached (V18-B03). publishBanzukeUpdate's own
+        // interim fields (enterInterim) win over the fallbacks above; when it
+        // no-ops (no standings) the fallbacks keep the transition working.
+        builder.merge(publishBanzukeUpdate(world));
         logTransition(world, prev, nextPhase, "The inter-basho period begins.");
         return { from: prev, to: nextPhase };
       }

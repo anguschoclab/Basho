@@ -145,6 +145,12 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   if (!nextWorld._autonomousSim && shouldBlockTick(nextWorld)) {
     return {
       ...nextWorld,
+      // A halted tick produced no daily report — drop the one carried in
+      // transientContext from the previous tick so consumers don't read a
+      // stale report as today's (V18-B01).
+      transientContext: nextWorld.transientContext
+        ? { ...nextWorld.transientContext, lastReport: undefined }
+        : nextWorld.transientContext,
       _daysSinceLastWeeklyTick: (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1,
       _suppressPhaseTransition: undefined,
     };

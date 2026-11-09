@@ -24,6 +24,13 @@ export interface GateConfig {
   suppressPhaseTransition?: boolean;
   /** Optional progress callback invoked after each day. */
   onProgress?: (daysAdvanced: number, world: WorldState) => void;
+  /**
+   * Optional transform applied to the world right after each advanceOneDay
+   * (before onProgress and the stop/target checks) — e.g. the holiday path
+   * uses it to run the canonical basho conclusion once senshuraku passes,
+   * since the pipeline has no autonomous active_basho exit arm (V18-B03).
+   */
+  transformWorld?: (world: WorldState) => WorldState;
 }
 
 export interface AdvanceResult {
@@ -46,6 +53,7 @@ export function advanceWithGates(world: WorldState, config: GateConfig): Advance
       currentWorld,
       config.suppressPhaseTransition ? { suppressPhaseTransition: true } : undefined
     );
+    if (config.transformWorld) currentWorld = config.transformWorld(currentWorld);
     daysAdvanced++;
     config.onProgress?.(daysAdvanced, currentWorld);
 

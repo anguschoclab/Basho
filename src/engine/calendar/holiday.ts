@@ -14,9 +14,13 @@
 import type { WorldState, CyclePhase } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import { INSOLVENCY_WARNING_THRESHOLD } from "@/constants/engine/economic";
+import { BASHO_FINAL_DAY } from "@/constants/engine/calendar";
 import { advanceWithGates } from "@/engine/tick/advanceWithGates";
 import { queryEvents } from "@/engine/events/events";
 import { getHeya, getRikishi } from "@/engine/core/queries";
+import { endBasho } from "@/engine/core/world";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 
 // ============================================================================
 // TYPES
@@ -216,9 +220,9 @@ function checkGate(
       let foreignCount = 0;
       for (const rid of new Set(heya.rikishiIds ?? [])) {
         const r = getRikishi(world, rid);
-        if (r && r.nationality !== "japanese") foreignCount++;
+        if (r && !r.isRetired && countsAsForeign(r, world.year)) foreignCount++;
       }
-      if (foreignCount > 1) {
+      if (foreignCount > FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
         return {
           gate: "rosterOverForeignLimit",
           message: "Governance alert — roster exceeds the foreign wrestler quota.",
@@ -277,7 +281,10 @@ function computeTargetDays(world: WorldState, target: HolidayTarget): number {
     endOfBasho: (world) => {
       const phase = world.cyclePhase;
       if (phase === "active_basho" && world.currentBasho) {
-        const remaining = 15 - (world.currentBasho.day ?? 1);
+        // currentBasho.day is the next UNPLAYED day — from day 14 two ticks
+        // remain (14 and 15), from senshuraku one. `15 - day` undercounted
+        // by one, so a holiday from day 15 computed 0 and never advanced.
+        const remaining = BASHO_FINAL_DAY - (world.currentBasho.day ?? 1) + 1;
         return Math.max(0, remaining);
       }
       const toBasho = TARGET_DAYS.nextBashoDay1(world);
@@ -392,8 +399,17 @@ function buildHolidayDigest(
  */
 export function runHoliday(world: WorldState, config: HolidayConfig): HolidayResult {
   // Autonomous fast-forward: suppress interactive loop decisions so the tick
-  // pipeline never freezes waiting for a choice nobody will make.
-  const startWorld = { ...world, _autonomousSim: true };
+  // pipeline never freezes waiting for a choice nobody will make. The chosen
+  // delegation policy drives auto-resolution (phase00_preflight reads
+  // world._autonomousPolicy) — previously never set, so every policy fell
+  // back to "balanced". "roleplay" has no dedicated table yet; it maps to
+  // balanced until persona-aware delegation lands.
+  const startWorld = concludeBashoIfOver({
+    ...world,
+    _autonomousSim: true,
+    _autonomousPolicy:
+      config.delegationPolicy === "roleplay" ? "balanced" : config.delegationPolicy,
+  });
   const startDay = startWorld.dayIndexGlobal ?? 0;
   const maxDays = computeTargetDays(startWorld, config.target);
   const reports: WorldState[] = [];
@@ -404,6 +420,12 @@ export function runHoliday(world: WorldState, config: HolidayConfig): HolidayRes
   const result = advanceWithGates(startWorld, {
     maxDays,
     autonomous: true,
+    // The pipeline has no active_basho → post_basho transition (basho
+    // termination is the interactive END_BASHO action). During a holiday
+    // nobody is there to click it, so run the same canonical sequence —
+    // concludeBashoCompetition + runPostBashoResolution + banzuke publish —
+    // the moment senshuraku has been played out.
+    transformWorld: concludeBashoIfOver,
     shouldStop: (w) => {
       // Don't advance during active_basho unless target is endOfBasho/postBasho
       if (
@@ -426,7 +448,18 @@ export function runHoliday(world: WorldState, config: HolidayConfig): HolidayRes
   });
 
   const daysAdvanced = result.daysAdvanced;
-  const finalWorld = result.world;
+
+  // Strip _autonomousSim before the world rejoins the live session — it is a
+  // NON_PERSISTED run-mode flag, and a leaked one silently auto-resolves every
+  // future pending decision and bypasses the interactive basho-end gate
+  // (V18-B01). _autonomousPolicy stays: it is inert without the sim flag and
+  // records which delegation policy actually ran (V18-B02).
+  const stripRunMode = (w: WorldState): WorldState => ({
+    ...w,
+    _autonomousSim: undefined,
+  });
+  const finalWorld = stripRunMode(result.world);
+  const strippedReports = reports.map(stripRunMode);
 
   const digest = buildHolidayDigest(finalWorld, startDay, daysAdvanced, gateTriggered);
 
@@ -435,8 +468,22 @@ export function runHoliday(world: WorldState, config: HolidayConfig): HolidayRes
     gateTriggered,
     phaseOnExit: finalWorld.cyclePhase,
     digest,
-    reports,
+    reports: strippedReports,
   };
+}
+
+/**
+ * Runs the canonical basho conclusion (the same endBasho the interactive
+ * END_BASHO action takes) once senshuraku has been played out. Stops at
+ * post_basho — the banzuke publish + interim transition belong to the
+ * post_basho drain (phase00_preflight), matching how autonomous ticks let
+ * the post-basho week run before the new banzuke is revealed.
+ * No-op otherwise — and no-op when the world isn't in active_basho.
+ */
+function concludeBashoIfOver(w: WorldState): WorldState {
+  if (w.cyclePhase !== "active_basho") return w;
+  if ((w.currentBasho?.day ?? 0) <= BASHO_FINAL_DAY) return w;
+  return endBasho(w);
 }
 
 /**
