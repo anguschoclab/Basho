@@ -100,7 +100,13 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
     (r) => r.heyaId === world.playerHeyaId && !r.playerChoice
   );
 
-  const pendingRulings = governanceLog.filter((r) => r.heyaId === heya.id && !r.playerSeverity);
+  // A ruling resolved via ANY surface (governance severity pick stamps
+  // playerSeverity; the media path stamps playerChoice) is no longer
+  // actionable — requiring both markers prevents the double-resolve bug
+  // where a media-resolved ruling stayed pending on this tab (S3-2).
+  const pendingRulings = governanceLog.filter(
+    (r) => r.heyaId === heya.id && !r.playerSeverity && !r.playerChoice
+  );
 
   const criticalHeyas = selectHeyasWithCriticalWelfare(world);
   const mergerCandidates = selectMergerCandidates(world);

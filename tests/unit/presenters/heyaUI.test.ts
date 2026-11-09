@@ -6,6 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { projectHeya } from "@/presenters/projections/heyaUI";
+import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 import { makeMockHeya, mockRikishi, makeMockWorld } from "@tests/unit/engine/utils";
 import type { Staff } from "@/engine/types/staff";
 import type { Oyakata } from "@/engine/types/oyakata";
@@ -13,12 +14,18 @@ import type { Oyakata } from "@/engine/types/oyakata";
 // Local type definition for Style (matches usage in queries.ts)
 type Style = "oshi" | "yotsu" | "hybrid";
 
-// Mock query functions
-vi.mock("@/engine/core/queries", () => ({
-  getOyakataForHeya: vi.fn(),
-  getHeyaStaff: vi.fn(),
-  getHeyaStyleBias: vi.fn(),
-}));
+// Mock only the three query fns this suite controls — keep the real
+// implementations for everything else (getHeya et al. are reached through
+// FinanceCalculator now that projectHeya computes a real monthly burn).
+vi.mock("@/engine/core/queries", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/engine/core/queries")>();
+  return {
+    ...actual,
+    getOyakataForHeya: vi.fn(),
+    getHeyaStaff: vi.fn(),
+    getHeyaStyleBias: vi.fn(),
+  };
+});
 
 import { getOyakataForHeya, getHeyaStaff, getHeyaStyleBias } from "@/engine/core/queries";
 
@@ -572,7 +579,9 @@ describe("heyaUI - projectHeya", () => {
   });
 
   describe("Hardcoded Values", () => {
-    it("should set monthlyExpense to 0", () => {
+    it("should project monthlyExpense from the heya's real computed burn", () => {
+      // monthlyExpense was a fabricated 0 — it now projects the stable's
+      // actual weekly burn x4 (V18-S8-1; see v18Projections pins).
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
@@ -581,8 +590,9 @@ describe("heyaUI - projectHeya", () => {
       mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
+      const expected = Math.round(calculateHeyaWeeklyFinances(heya, world).totalBurn * 4);
 
-      expect(result.monthlyExpense).toBe(0);
+      expect(result.monthlyExpense).toBe(expected);
     });
 
     it("should set rosterLimit to 30", () => {

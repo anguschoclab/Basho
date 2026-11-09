@@ -4,6 +4,7 @@ import { WorldState } from "@/engine/types/world";
 import { UIRosterEntry, projectRosterEntry } from "@/presenters/rikishi/index";
 import { getOyakataForHeya } from "@/engine/core/queries";
 import { getHeyaStyleBias, getHeyaStaff } from "@/engine/core/queries";
+import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
 
 export interface UIStaffEntry {
   id: Id;
@@ -62,6 +63,25 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
     return acc;
   }, []);
 
+  // Real achievements: the stable's title count lives on heya.historicalYusho;
+  // sansho totals aggregate across the active roster's prize records (S8-1).
+  let specialPrizeCount = 0;
+  for (const id of h.rikishiIds ?? []) {
+    const prizes = world.rikishi.get(id)?.stats?.achievements?.specialPrizes;
+    if (prizes) {
+      specialPrizeCount += prizes.shukunSho + prizes.kantoSho + prizes.ginoSho;
+    }
+  }
+
+  // Real rivals — the other stable in each recorded rivalry pair (S8-1).
+  const rivalStableIds = Object.values(world.rivalriesState?.heyaRivalryPairs ?? {})
+    .filter((p) => p.heyaAId === h.id || p.heyaBId === h.id)
+    .map((p) => (p.heyaAId === h.id ? p.heyaBId : p.heyaAId));
+
+  // Real burn — weekly upkeep × 4, matching the economy layer's own
+  // monthlyBurn convention (FinanceCalculator) (S8-1).
+  const monthlyExpense = Math.round(calculateHeyaWeeklyFinances(h, world).totalBurn * 4);
+
   const prestigeBand =
     h.prestige < 20
       ? "Emerging"
@@ -79,13 +99,13 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
     prestige: h.prestige,
     prestigeBand,
     funds: h.funds ?? 0,
-    monthlyExpense: 0,
+    monthlyExpense,
     location: h.location ?? "Tokyo",
     ichimon: h.ichimon ?? "Independent",
     oyakataId: h.oyakataId,
     oyakataName: oyakata?.shikona ?? "Vacant",
     styleBias: getHeyaStyleBias(world, h.id),
-    rivalStableIds: [], // To be populated by rivalry system
+    rivalStableIds,
     staff,
     roster,
     rosterSize: roster.length,
@@ -96,8 +116,8 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
       openSlots: Math.max(0, 30 - roster.length),
     },
     achievements: {
-      yushoCount: 0,
-      specialPrizeCount: 0,
+      yushoCount: h.historicalYusho ?? 0,
+      specialPrizeCount,
     },
   };
 }

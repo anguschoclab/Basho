@@ -6,7 +6,7 @@
  */
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { getAllRikishi } from "@/presenters/worldAccess";
+import { getAllRikishi, isRetiredRikishiSummaryEntry } from "@/presenters/worldAccess";
 import { getCohortSummary, getCohortMembers } from "@/engine/generation/CohortTracking";
 
 export interface CohortDTO {
@@ -25,7 +25,14 @@ export interface CohortDTO {
 }
 
 export function selectCohortSummaries(world: WorldState): CohortDTO[] {
+  // Cohort membership must survive retirement — full retiree records live in
+  // world.historicalRikishi (with recruitmentCohortId intact) until year-end
+  // summarization; getAllRikishi is active-only (S8-3). Summaries carry no
+  // cohort id, so only the full-record form is merged.
   const allRikishi = getAllRikishi(world) as Rikishi[];
+  for (const entry of world.historicalRikishi?.values() ?? []) {
+    if (!isRetiredRikishiSummaryEntry(entry)) allRikishi.push(entry as Rikishi);
+  }
   const cohortIds = new Set<string>();
 
   for (const r of allRikishi) {

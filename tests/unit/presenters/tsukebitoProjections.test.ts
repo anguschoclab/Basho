@@ -4,13 +4,19 @@ import { toIdMap } from "@/engine/utils/index";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-function makeRikishi(id: string, rankNumber: number, heyaId: string, shikona?: string): Rikishi {
+function makeRikishi(
+  id: string,
+  rankNumber: number,
+  heyaId: string,
+  shikona?: string,
+  rank = "makushita"
+): Rikishi {
   return {
     id,
     shikona: shikona ?? `Rikishi ${id}`,
     heyaId,
     rankNumber,
-    rank: "maegashira",
+    rank,
     isRetired: false,
   } as any;
 }
@@ -33,16 +39,21 @@ describe("projectTsukebito", () => {
     expect(result.eligibleJuniors).toEqual([]);
   });
 
-  it("identifies eligible seniors (rankNumber <= 3)", () => {
-    const rikishi = [makeRikishi("s1", 1, "h1", "Yokozuna"), makeRikishi("j1", 15, "h1", "Junior")];
+  it("identifies eligible seniors (sanyaku rank)", () => {
+    const rikishi = [
+      makeRikishi("s1", 1, "h1", "Yokozuna", "yokozuna"),
+      // A maegashira is sekitori but NOT sanyaku — ineligible under the
+      // corrected rank-metadata check (was admitted by rankNumber <= 3).
+      makeRikishi("j1", 15, "h1", "Junior", "maegashira"),
+    ];
     const result = projectTsukebito(makeWorld(rikishi), "h1");
     expect(result.eligibleSeniors).toHaveLength(1);
     expect(result.eligibleSeniors[0].shikona).toBe("Yokozuna");
   });
 
-  it("identifies eligible juniors (rankNumber > 10)", () => {
+  it("identifies eligible juniors (non-sekitori rank)", () => {
     const rikishi = [
-      makeRikishi("s1", 2, "h1", "Ozeki"),
+      makeRikishi("s1", 2, "h1", "Ozeki", "ozeki"),
       makeRikishi("j1", 20, "h1", "Junior 1"),
       makeRikishi("j2", 25, "h1", "Junior 2"),
     ];
@@ -51,7 +62,10 @@ describe("projectTsukebito", () => {
   });
 
   it("shows assignments when tsukebitoIds are set", () => {
-    const senior = { ...makeRikishi("s1", 1, "h1", "Yokozuna"), tsukebitoIds: ["j1"] };
+    const senior = {
+      ...makeRikishi("s1", 1, "h1", "Yokozuna", "yokozuna"),
+      tsukebitoIds: ["j1"],
+    };
     const junior = makeRikishi("j1", 20, "h1", "Junior");
     const result = projectTsukebito(makeWorld([senior, junior]), "h1");
     expect(result.assignments).toHaveLength(1);
@@ -60,7 +74,10 @@ describe("projectTsukebito", () => {
   });
 
   it("marks juniors as assigned when they have a senior", () => {
-    const senior = { ...makeRikishi("s1", 1, "h1", "Yokozuna"), tsukebitoIds: ["j1"] };
+    const senior = {
+      ...makeRikishi("s1", 1, "h1", "Yokozuna", "yokozuna"),
+      tsukebitoIds: ["j1"],
+    };
     const junior = makeRikishi("j1", 20, "h1", "Junior");
     const result = projectTsukebito(makeWorld([senior, junior]), "h1");
     const j = result.eligibleJuniors.find((j) => j.id === "j1");
@@ -75,7 +92,7 @@ describe("projectTsukebito", () => {
   });
 
   it("filters to only the specified heya", () => {
-    const senior = makeRikishi("s1", 1, "h2", "Other Heya Senior");
+    const senior = makeRikishi("s1", 1, "h2", "Other Heya Senior", "yokozuna");
     const junior = makeRikishi("j1", 20, "h2", "Other Junior");
     const result = projectTsukebito(makeWorld([senior, junior]), "h1");
     expect(result.eligibleSeniors).toHaveLength(0);

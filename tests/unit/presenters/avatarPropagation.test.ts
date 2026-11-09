@@ -56,7 +56,9 @@ function worldWith(rikishiList: Rikishi[], extra: Partial<WorldState> = {}): Wor
 
 describe("projectTsukebito — avatar propagation", () => {
   const senior = rikishi("sen1", { rank: "sekiwake", rankNumber: 3, tsukebitoIds: ["jun1"] });
-  const junior = rikishi("jun1", { rankNumber: 20 });
+  // Juniors must be non-sekitori — isJuniorTsukebitoEligible now uses rank
+  // metadata and rejects sekitori (V18 eligibility fix); maegashira is sekitori.
+  const junior = rikishi("jun1", { rank: "makushita", division: "makushita", rankNumber: 20 });
   const world = worldWith([senior, junior]);
 
   it("carries resolved avatars on assignment rows, seniors, and juniors", () => {
