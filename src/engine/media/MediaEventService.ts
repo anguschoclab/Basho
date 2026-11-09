@@ -1,6 +1,5 @@
 // MediaEventService.ts — Event-driven media operations.
-// Handles handleMediaEvent, evaluateScandals, generateGovernanceHeadline,
-// and processMediaDecision.
+// Handles handleMediaEvent, evaluateScandals, generateGovernanceHeadline.
 
 import type { WorldState } from "@/engine/types/world";
 import { MediaHeadline, HeadlineTier } from "@/engine/types/media";
@@ -250,40 +249,6 @@ export function evaluateScandals(world: WorldState): StateImpact {
   builder.updateWorldField("mediaState", {
     ...world.mediaState,
     heyaPressure: updatedHeyaPressure,
-  });
-
-  return builder.build();
-}
-
-export function processMediaDecision(
-  world: WorldState,
-  choiceId: string,
-  impact: { rep?: number; politicalCapital?: number }
-): StateImpact {
-  const builder = createImpactBuilder("processMediaDecision");
-  const heyaId = world.playerHeyaId;
-  if (!heyaId) return builder.build();
-
-  if (impact.rep) {
-    const heya = getHeya(world, heyaId);
-    builder.updateHeya(heyaId, {
-      reputation: Math.max(0, Math.min(100, (heya?.reputation ?? 50) + impact.rep)),
-    });
-  }
-
-  if (impact.politicalCapital) {
-    const heya = getHeya(world, heyaId);
-    builder.updateHeya(heyaId, {
-      politicalCapital: Math.max(
-        0,
-        Math.min(100, (heya?.politicalCapital ?? 50) + impact.politicalCapital)
-      ),
-    });
-  }
-
-  builder.logEvent("MEDIA_INTERVIEW_COMPLETED", "media", {
-    choiceId,
-    incident: `Press conference concluded. Impact: ${JSON.stringify(impact)}`,
   });
 
   return builder.build();

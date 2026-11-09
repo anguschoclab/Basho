@@ -4,7 +4,7 @@
  * Sub-module responsibilities:
  *   MediaBoutService      — bout-triggered media updates (updateMediaFromBout + private helpers)
  *   MediaStateService     — state lifecycle (createDefaultMediaState, reset, snapshot, weekly boundary)
- *   MediaEventService     — event-driven media (handleMediaEvent, evaluateScandals, generateGovernanceHeadline, processMediaDecision)
+ *   MediaEventService     — event-driven media (handleMediaEvent, evaluateScandals, generateGovernanceHeadline)
  *   MediaPreBashoService  — pre-basho journalism (triggerPreBashoJournalism, buildMediaDigest)
  */
 
@@ -21,7 +21,6 @@ export {
   generateGovernanceHeadline,
   handleMediaEvent,
   evaluateScandals,
-  processMediaDecision,
 } from "@/engine/media/MediaEventService";
 
 export { triggerPreBashoJournalism, buildMediaDigest } from "@/engine/media/MediaPreBashoService";

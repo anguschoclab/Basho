@@ -44,12 +44,20 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const lastBasho = getCurrentBasho(world);
   if (!lastBasho) return builder.build();
 
-  // Standings can be Map or Object depending on the simulation path; normalize here
-  const standings = lastBasho.standings;
-  if (!standings) {
+  // Canonical type is StandingsTableRuntime (Map); SerializationService
+  // rehydrates via objectToMap. Normalize anyway — a malformed legacy/foreign
+  // save delivering a plain object would otherwise throw on .entries() and
+  // strand the world at post_basho forever. An EMPTY Map is still valid:
+  // absence accounting synthesizes records from the banzuke snapshot.
+  const rawStandings = lastBasho.standings;
+  if (!rawStandings) {
     warn("No standings found in lastBasho", "BanzukePublisher");
     return builder.build();
   }
+  const standings =
+    rawStandings instanceof Map
+      ? rawStandings
+      : new Map(Object.entries(rawStandings));
 
   const standingEntries = Array.from(standings.entries());
 
