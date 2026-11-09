@@ -103,7 +103,7 @@ describe("worker write path — player actions survive the next tick", () => {
     expect(w.heyas.get("heya-p")?.reputation).toBe(62);
   });
 
-  it("APPLY_PRESS_CONFERENCE persists morale and mediaHeat deltas", async () => {
+  it("APPLY_PRESS_CONFERENCE persists morale and heyaPressure deltas", async () => {
     const w = await runThenTick(
       {
         type: "APPLY_PRESS_CONFERENCE",
@@ -113,12 +113,12 @@ describe("worker write path — player actions survive the next tick", () => {
         mediaHeatDelta: 15,
       },
       (world) => {
-        world.mediaState = { mediaHeat: { "heya-p": 5 } } as never;
+        world.mediaState = { heyaPressure: { "heya-p": 5 } } as never;
       }
     );
     // Fixture heya has no welfareState.morale → base 50 + 7
     expect(w.heyas.get("heya-p")?.welfareState?.morale).toBe(57);
-    expect(w.mediaState?.mediaHeat?.["heya-p"]).toBe(20);
+    expect(w.mediaState?.heyaPressure?.["heya-p"]).toBe(20);
   });
 
   it("APPLY_PRESS_CONFERENCE clamps reputation to 0..100", async () => {
@@ -130,6 +130,45 @@ describe("worker write path — player actions survive the next tick", () => {
       mediaHeatDelta: 0,
     });
     expect(w.heyas.get("heya-p")?.reputation).toBe(100);
+  });
+
+  /**
+   * V18-P1 — press-conference heat must land on a consumed key space.
+   * The handler (worker/commands/governance.ts:80-92) writes the delta to
+   * `mediaState.mediaHeat[heyaId]`, but every mediaHeat consumer indexes by
+   * RIKISHI id — perception.getRikishiMediaHeat (:376-380), promotion
+   * projections (:120), KenshoService (:221), BashoHistory (:406),
+   * mediaProjection rikishi rows (:26-35). The heya-keyed entry is dead
+   * weight that decays silently and even renders as a phantom rikishi row.
+   * The consumed heya-level map is `heyaPressure`
+   * (perception.getStableMediaHeat :364-368, mediaProjection :41-48,
+   * MediaPreBashoService :199-201, phase01_week_welfare :181-186), and every
+   * other heya-level press delta in the engine routes there
+   * (crisisRegistry :89-91, chainService "press heat" :292-298,
+   * MediaEventService scandal pressure :231-244).
+   * Note: the "persists morale and mediaHeat deltas" test above codifies
+   * the buggy storage location and must be updated when the fix lands.
+   * FAILS today.
+   */
+  it("V18-P1: APPLY_PRESS_CONFERENCE writes heya-level heat to heyaPressure, not rikishi-keyed mediaHeat", async () => {
+    const w = await runThenTick(
+      {
+        type: "APPLY_PRESS_CONFERENCE",
+        heyaId: "heya-p",
+        reputationDelta: 0,
+        moraleDelta: 0,
+        mediaHeatDelta: 15,
+      },
+      (world) => {
+        world.mediaState = {
+          mediaHeat: {},
+          heyaPressure: { "heya-p": 5 },
+        } as never;
+      }
+    );
+    expect(w.mediaState?.heyaPressure?.["heya-p"]).toBe(20);
+    // mediaHeat stays rikishi-keyed — no dead heya-scoped key.
+    expect(w.mediaState?.mediaHeat?.["heya-p"]).toBeUndefined();
   });
 
   it("SET_HEYA_DIET persists the diet regimen", async () => {

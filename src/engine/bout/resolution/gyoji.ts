@@ -36,8 +36,11 @@ export function applyGyojiOfficiation(
   const bashoNameStr = (basho.bashoName ?? basho.name ?? "unknown") as string;
   const bashoYear = basho.year ?? world?.year ?? DEFAULT_START_YEAR;
 
-  // 6a. If mono-ii occurred, assemble a shimpan panel and resolve the outcome
-  let reversed = !!result.monoii;
+  // 6a. If mono-ii occurred, assemble a shimpan panel and resolve the outcome.
+  // `reversed` starts false — a mono-ii with no panelable pool (< 5 shimpan,
+  // or assembleShimpanPanel returns null) means no call was reviewed, so the
+  // gyoji must NOT be credited a reversal.
+  let reversed = false;
   if (result.monoii && world?.shimpanPool && world.shimpanPool.length >= 5) {
     const panel = assembleShimpanPanel(world.shimpanPool, result.boutId);
     if (panel) {

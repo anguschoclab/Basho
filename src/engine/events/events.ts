@@ -94,7 +94,12 @@ export function logEngineEvent(
   const year = world.year ?? DEFAULT_START_YEAR;
   const week = world.calendar?.currentWeek ?? world.week ?? 0;
   const month = world.calendar?.month ?? 1;
-  const day = world.calendar?.currentDay ?? 1;
+  // Basho-scoped events carry basho coordinates (B{n} D{d}), not the
+  // calendar month-day — EngineEvent.day is documented as day-of-basho 1-15
+  // and formatEventTime only renders B{n} when bashoNumber is populated.
+  const basho = world.currentBasho;
+  const day = basho?.day ?? world.calendar?.currentDay ?? 1;
+  const bashoNumber = basho?.bashoNumber;
 
   const baseDedupeKey =
     params.dedupeKey ??
@@ -142,6 +147,7 @@ export function logEngineEvent(
     week,
     month,
     day,
+    bashoNumber,
     phase: params.phase ?? "weekly",
     category: params.category,
     importance: params.importance ?? "minor",

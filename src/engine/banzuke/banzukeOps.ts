@@ -205,7 +205,8 @@ export function updateBanzuke(
     currentBanzuke,
     assigned,
     updatedOzekiKadoban,
-    previousOzekiKadoban
+    previousOzekiKadoban,
+    demotedOzeki
   );
   return { newBanzuke: assigned, events, updatedOzekiKadoban, sanyakuCounts };
 }
@@ -230,14 +231,29 @@ function resolveOzekiStatuses(
   for (const e of currentBanzuke) {
     if (e.position.rank !== "ozeki") continue;
     const p = perfById.get(e.rikishiId);
+    // A completed demotion (consecutiveMakeKoshi >= 2) ends the ozeki
+    // tenure — whether finalized last basho or persisted stale from before
+    // the cleanup fix. A re-promoted ozeki restarts the make-koshi count
+    // so their first make-koshi is kadoban grace, not instant re-demotion.
+    const prev = previousOzekiKadoban[e.rikishiId];
+    const base = prev && prev.consecutiveMakeKoshi >= 2 ? undefined : prev;
     const next = getOzekiStatus(
       p?.wins ?? 0,
       p?.losses ?? 0,
       p?.absences ?? 0,
-      previousOzekiKadoban[e.rikishiId]
+      base
     );
-    updatedOzekiKadoban[e.rikishiId] = next;
-    if (next.consecutiveMakeKoshi >= 2) demotedOzeki.add(e.rikishiId);
+    if (next.consecutiveMakeKoshi >= 2) {
+      // Tenure ends — write a clean entry instead of leaving demotion
+      // residue for a future re-promotion to accumulate on.
+      updatedOzekiKadoban[e.rikishiId] = {
+        isKadoban: false,
+        consecutiveMakeKoshi: 0,
+      };
+      demotedOzeki.add(e.rikishiId);
+    } else {
+      updatedOzekiKadoban[e.rikishiId] = next;
+    }
   }
 
   // Build set of rikishi who have wasDemotedFromOzeki flag (for Ozeki reclaim logic)
@@ -443,7 +459,8 @@ function banzukeMovementEvents(
   old: BanzukeEntry[],
   assigned: BanzukeEntry[],
   nextOzeki: OzekiKadobanMap,
-  prevOzeki: OzekiKadobanMap
+  prevOzeki: OzekiKadobanMap,
+  demotedOzeki: Set<string>
 ): MovementEvent[] {
   const events: MovementEvent[] = [];
   const oldById = toKeyedMap(old, (e) => e.rikishiId);
@@ -508,7 +525,7 @@ function banzukeMovementEvents(
       to: `kadoban:${state.isKadoban}`,
       kind: "status",
       description:
-        state.consecutiveMakeKoshi >= 2
+        demotedOzeki.has(id)
           ? "Ozeki demoted."
           : state.isKadoban
             ? "Kadoban status set."

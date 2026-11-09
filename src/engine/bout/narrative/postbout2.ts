@@ -9,9 +9,7 @@ import {
   WEIGHT_DIFF_THRESHOLD,
 } from "@/constants/engine/generation";
 import {
-  NARRATIVE_CALL_REVERSED_CHANCE,
   NARRATIVE_GYOJI_CONFUSED_CHANCE,
-  NARRATIVE_REMATCH_CHANCE,
 } from "@/constants/engine/narrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/core/rng";
@@ -450,9 +448,11 @@ function beatMonoii(p: PbpPipeline): void {
       "mono_ii",
       ["drama", "mono_ii"]
     );
-    // Outcome: reversed (with possible rematch), or upheld
-    const outcomeRoll = monoiiRng.next();
-    if (outcomeRoll < NARRATIVE_CALL_REVERSED_CHANCE) {
+    // Outcome: announce the RECORDED outcome (monoiiOutcome is resolved by
+    // applyGyojiOfficiation before narrative generation — V18-O1). No
+    // panelable pool → outcome stays undefined → the call stands.
+    const outcome = result.monoiiOutcome ?? "upheld";
+    if (outcome === "reversed") {
       // Call reversed — judges determine the loser actually touched first
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_reversed", {
@@ -464,7 +464,7 @@ function beatMonoii(p: PbpPipeline): void {
         "mono_ii",
         ["drama"]
       );
-    } else if (outcomeRoll < NARRATIVE_REMATCH_CHANCE) {
+    } else if (outcome === "rematch") {
       // Too close to call — rematch ordered
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.rematch_ordered", {

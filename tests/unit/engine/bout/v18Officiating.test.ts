@@ -108,8 +108,11 @@ describe("V18-O1 — mono-ii narrative outcome matches the recorded outcome", ()
     for (let i = 0; i < 12; i++) {
       const boutId = `v18-monoii-${i}`;
       const result = makeMonoiiResult(boutId);
-      // Production order (boutResolver.ts:190-199): narrative first,
-      // gyoji officiation second.
+      // Production order (boutResolver.ts): officiation resolves the
+      // recorded outcome BEFORE narrative generation, so commentary
+      // announces the same outcome that was recorded.
+      const builder = createImpactBuilder("test-monoii");
+      applyGyojiOfficiation(world, result, basho, builder);
       generateBoutNarrative(
         result,
         east,
@@ -119,8 +122,6 @@ describe("V18-O1 — mono-ii narrative outcome matches the recorded outcome", ()
         `${boutId}-pbp`,
         world
       );
-      const builder = createImpactBuilder("test-monoii");
-      applyGyojiOfficiation(world, result, basho, builder);
 
       const monoiiLines = (result.pbpLines ?? []).filter((l) => l.phase === "mono_ii");
       expect(monoiiLines.length).toBeGreaterThan(0);

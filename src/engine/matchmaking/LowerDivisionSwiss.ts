@@ -233,7 +233,14 @@ function phase2(
       rules: { avoidSameHeya: false },
     });
     if (forced) {
-      pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
+      // Same-heya is a hard rule everywhere else — when the last-resort
+      // disables it, mark the violation explicitly so downstream consumers
+      // (and audits) can distinguish it from a repeat-override "forced".
+      const sameHeya = a.heyaId !== undefined && a.heyaId === b.heyaId;
+      pairings.push({
+        ...forced,
+        reasons: [...forced.reasons, "forced", ...(sameHeya ? ["same_heya_forced"] : [])],
+      });
     }
   }
 

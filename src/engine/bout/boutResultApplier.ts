@@ -515,6 +515,23 @@ export function applyBoutResult(
     return builder.build();
   }
 
+  // Double fusenpai: both rikishi absent — no winner exists. Each side
+  // takes an absence (fusenpai convention, same as single-fusensho below);
+  // no win, records, H2H, media, or event pipeline runs.
+  if (!result.winnerRikishiId) {
+    const standings = new Map(basho.standings);
+    for (const r of [east, west]) {
+      const rec = standings.get(r.id) || { wins: 0, losses: 0, absences: 0 };
+      standings.set(r.id, {
+        wins: rec.wins,
+        losses: rec.losses,
+        absences: (rec.absences ?? 0) + 1,
+      });
+    }
+    builder.addMetadata("updatedStandings", standings);
+    return builder.build();
+  }
+
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 

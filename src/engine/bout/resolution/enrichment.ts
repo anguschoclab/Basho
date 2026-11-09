@@ -14,7 +14,6 @@ import type { BoutTactic } from "@/engine/types/combat";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
-import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { detectKinboshi } from "@/engine/bout/boutAchievements";
 import { recordCareerHighlight, type CareerHighlight } from "@/engine/bout/CareerHighlights";
 import { computeTacticAftermath } from "@/engine/bout/boutTacticAftermath";
@@ -97,8 +96,6 @@ function recordWinnerHighlights(
 export function enrichResult(
   bout: BoutContext,
   result: BoutResult,
-  east: Rikishi,
-  west: Rikishi,
   winner: Rikishi,
   loser: Rikishi,
   basho: BashoState,
@@ -123,16 +120,10 @@ export function enrichResult(
     result.dramaticContext = match.dramaticContext;
   }
 
-  // 2.6. Generate narrative based on data frames
-  generateBoutNarrative(
-    result,
-    east,
-    west,
-    bashoName,
-    bout.day,
-    `${result.boutId}-pbp`,
-    world || ({} as WorldState)
-  );
+  // NOTE: narrative generation is intentionally NOT here — it must run
+  // after applyStakesAndKensho (isYushoRace/isTitleStakes) and
+  // applyGyojiOfficiation (monoiiOutcome, gyojiId) so commentary reflects
+  // the recorded outcomes. See resolveBout's final step.
 }
 
 /**

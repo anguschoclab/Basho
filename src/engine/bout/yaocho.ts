@@ -83,10 +83,21 @@ export function evaluateYaochoIndicators(
     totalMeetings >= YAOCHO_H2H_DOMINANCE_MIN_MEETINGS &&
     h2hWins / totalMeetings >= YAOCHO_H2H_DOMINANCE_WIN_RATE;
 
-  // Check repeated kimarite in H2H history (using lastMatch as indicator)
-  const lastKimarite = h2hEntry?.lastMatch?.kimarite;
+  // "Same kimarite repeated 3+ times" — the current finish must extend a
+  // run of identical kimarite to 3+ consecutive meetings vs this opponent.
+  // lastMatch alone can only ever show two in a row (last + current), so
+  // scan winner.history (MatchResultLog[]) for the true consecutive count.
+  let consecutiveSame = 1; // the current bout
+  const history = winner.history ?? [];
+  for (let i = history.length - 1; i >= 0; i--) {
+    const h = history[i];
+    if (h.opponentId !== loser.id) continue;
+    if (h.kimarite !== result.kimarite) break;
+    consecutiveSame++;
+  }
   const repeatedKimarite =
-    lastKimarite === result.kimarite && totalMeetings >= YAOCHO_REPEAT_KIMARITE_THRESHOLD;
+    consecutiveSame >= YAOCHO_REPEAT_KIMARITE_THRESHOLD &&
+    totalMeetings >= YAOCHO_REPEAT_KIMARITE_THRESHOLD;
 
   const suspiciouslyShort =
     (result.duration ?? YAOCHO_DEFAULT_DURATION) < YAOCHO_SHORT_BOUT_THRESHOLD &&

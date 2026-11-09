@@ -77,15 +77,15 @@ export function governanceCommands(rt: WorkerRuntime): CommandHandlerMap {
           reputation,
           welfareState,
         });
-        const prevHeat = rt.world.mediaState?.mediaHeat?.[cmd.heyaId] ?? 0;
+        const prevPressure = rt.world.mediaState?.heyaPressure?.[cmd.heyaId] ?? 0;
         if (rt.world.mediaState) {
           rt.world = {
             ...rt.world,
             mediaState: {
               ...rt.world.mediaState,
-              mediaHeat: {
-                ...(rt.world.mediaState.mediaHeat ?? {}),
-                [cmd.heyaId]: Math.max(0, prevHeat + cmd.mediaHeatDelta),
+              heyaPressure: {
+                ...(rt.world.mediaState.heyaPressure ?? {}),
+                [cmd.heyaId]: Math.max(0, prevPressure + cmd.mediaHeatDelta),
               },
             },
           };

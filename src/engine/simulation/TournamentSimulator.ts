@@ -321,14 +321,20 @@ export function simulateEntireBasho(
   const keyBouts: BoutResult[] = [];
   const injuries: string[] = [];
 
-  // Initialize standings (sekitori only)
+  // Initialize standings (sekitori only) and clone EVERY participant into
+  // the working map — not just sekitori. simulateDay/applyFusensho write
+  // currentBashoWins/Losses in place; uncloned lower-division entries are
+  // the caller's own objects and would leak sim state back (V18-T1).
   for (const id of workingWorld.activeRikishiIds) {
     const rikishi = getRikishi(workingWorld, id);
     if (!rikishi) continue;
+    workingWorld.rikishi.set(id, {
+      ...rikishi,
+      currentBashoWins: 0,
+      currentBashoLosses: 0,
+    });
     if (isSekitoriDivision(rikishi.division)) {
       standings.set(id, { wins: 0, losses: 0 });
-      const nextRikishi = { ...rikishi, currentBashoWins: 0, currentBashoLosses: 0 };
-      workingWorld.rikishi.set(id, nextRikishi);
     }
   }
 

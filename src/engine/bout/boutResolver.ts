@@ -19,7 +19,7 @@
 
 import type { BoutContext } from "@/engine/bout/boutPhysics";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { BashoState, BoutResult } from "@/engine/types/basho";
+import type { BashoState, BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Side } from "@/engine/types/banzuke";
 // We import the B+ spatial physics runner
@@ -35,6 +35,7 @@ import { applyOfficiating } from "@/engine/bout/resolution/officiating";
 import { enrichResult, applyTacticAftermath } from "@/engine/bout/resolution/enrichment";
 import { applyStakesAndKensho } from "@/engine/bout/resolution/stakes";
 import { applyGyojiOfficiation } from "@/engine/bout/resolution/gyoji";
+import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import {
   RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
   RIVALRY_SPITE_MENTAL_MULTIPLIER,
@@ -61,6 +62,32 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
   const westAbsent = west.injured || west.isRetired || west.isKyujo;
 
   if (!eastAbsent && !westAbsent) return null;
+
+  // Double fusenpai: both rikishi absent — there is no legitimate winner.
+  // `winner` stays typed (Side) but `winnerRikishiId`/`loserRikishiId` are
+  // left empty; consumers guard on the empty winner id.
+  if (eastAbsent && westAbsent) {
+    return {
+      boutId: bout.id,
+      day: bout.day,
+      winner: "east",
+      winnerRikishiId: "",
+      loserRikishiId: "",
+      kimarite: "fusensho",
+      kimariteName: "Fusenshō",
+      stance: "no-grip",
+      tachiaiWinner: "east",
+      duration: 0,
+      excitementScore: 0,
+      upset: false,
+      isKinboshi: false,
+      log: [{ phase: "finish", data: { event: "fusensho", doubleAbsent: true } }],
+      kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
+    };
+  }
 
   const winnerSide: Side = westAbsent ? "east" : "west";
   const winner = winnerSide === "east" ? east : west;
@@ -186,8 +213,8 @@ export function resolveBout(
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 
-  // 2. Achievements, career highlights, dramatic context, narrative
-  enrichResult(bout, result, east, west, winner, loser, basho, world, builder);
+  // 2. Achievements, career highlights, dramatic context
+  enrichResult(bout, result, winner, loser, basho, world, builder);
 
   // 3. Tactic aftermath (fatigue, momentum, injury multiplier) — per side.
   applyTacticAftermath(bout, result, east, west, eastTactic, westTactic, builder);
@@ -197,6 +224,20 @@ export function resolveBout(
 
   // 6. Gyoji officiation — assign a gyoji to this bout and record career stats
   applyGyojiOfficiation(world, result, basho, builder);
+
+  // 7. Narrative — LAST so commentary sees the recorded outcomes
+  //    (monoiiOutcome, gyojiId, isYushoRace/isTitleStakes) instead of
+  //    re-rolling its own. Previously generated inside enrichResult
+  //    before officiation resolved the mono-ii (V18-O1).
+  generateBoutNarrative(
+    result,
+    east,
+    west,
+    (basho.bashoName ?? basho.name) as BashoName | undefined,
+    bout.day,
+    `${result.boutId}-pbp`,
+    world || ({} as WorldState)
+  );
 
   return { result, impact: builder.build() };
 }

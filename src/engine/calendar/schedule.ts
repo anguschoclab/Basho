@@ -268,11 +268,30 @@ export function scheduleJuryoWithCrossover(
   const boutsPerDay = Math.floor(pool.length / 2);
   if (boutsPerDay <= 0) return { scheduled: [], impact: builder.build() };
 
-  // For lower divisions and Juryo, we still use the lower division swiss logic or similar
-  const finalPairings = buildLowerDivisionSwiss(basho, pool, {
+  // For lower divisions and Juryo, we still use the lower division swiss logic or similar.
+  // NOTE: no `division` filter — the pool intentionally mixes juryo with
+  // makushita callups; passing division: "juryo" silently dropped every
+  // callup, leaving a healthy juryo rikishi unpaired (phantom absence at
+  // performance publication).
+  let finalPairings = buildLowerDivisionSwiss(basho, pool, {
     seed: `${options.seed}-juryo-crossover-day${day}`,
-    division,
   });
+
+  // ── Political favor: matchmaking_avoid (day 1, one-shot) ──────────────
+  // Same rule as the makuuchi/lower-division path — without it a
+  // juryo-only requester's favor survives the whole day-1 pipeline
+  // because this function returns before the shared override block.
+  const override = world.matchmakingOverride;
+  if (day === 1 && override?.type === "avoid_rival") {
+    const { pairings, consumed } = applyMatchmakingAvoid(
+      finalPairings,
+      pool,
+      override.requesterId,
+      world
+    );
+    finalPairings = pairings;
+    if (consumed) builder.updateWorldField("matchmakingOverride", undefined);
+  }
 
   const scheduled: MatchSchedule[] = finalPairings.map((p) => ({
     boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
