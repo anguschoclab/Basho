@@ -10,6 +10,7 @@ import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBui
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getHeya } from "@/engine/core/queries";
 import { clamp } from "@/engine/utils/math";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 
 import { ActiveCrisis } from "@/engine/types/crises";
 
@@ -95,12 +96,10 @@ function applyHeyaPressure(
 
 /** Pick one active rikishi of `heyaId` deterministically (crisis resolution RNG). */
 function pickRikishi(world: WorldState, heyaId: string, label: string): string | undefined {
-  const roster = [...world.activeRikishiIds].filter(
-    (rid) => world.rikishi.get(rid)?.heyaId === heyaId && !world.rikishi.get(rid)?.isRetired
-  );
+  const roster = EntityCollection.getHeyaRoster(world, heyaId);
   if (roster.length === 0) return undefined;
   const rng = RNGRegistry.getSystemRNG(world, "narrative", `crisis_pick_${label}_${world.week}`);
-  return roster[rng.int(0, roster.length - 1)];
+  return roster[rng.int(0, roster.length - 1)].id;
 }
 
 const stomach_fluEvent: ActiveCrisis = {
