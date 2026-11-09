@@ -16,6 +16,7 @@ import type { ActiveCrisis, CrisisType } from "@/engine/types/crises";
 import { isGovernancePlayerRelevant } from "@/engine/npc/eventSurfacing";
 import { getRikishi } from "@/engine/core/queries";
 import { OVERSLEEP_CHANCE, OVERSLEEP_MOTIVATION_PENALTY } from "@/constants/engine/generation";
+import { createLoanObject } from "@/engine/economy/loans";
 
 /**
  * Main entry point for drama generation during a tick.
@@ -125,8 +126,9 @@ export function checkTriggeredDrama(world: WorldState): StateImpact {
       if (heya.id === world.playerHeyaId) {
         // Skip while a crisis is already open — otherwise the daily tick
         // re-fires CrisisModal and resets generatedAtWeek every day until the
-        // weekly governance review flags riskIndicators.financial.
-        if (!heya.activeCrisis) {
+        // weekly governance review flags riskIndicators.financial. The player
+        // crisis lives on world.pendingCrisis, so that is the gate to check.
+        if (!world.pendingCrisis && !heya.activeCrisis) {
           const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
           crisisImpacts.push(crisisImpact);
         }
@@ -230,8 +232,30 @@ const STORED_CRISIS_OPTION_EFFECTS: Record<
       const b = createImpactBuilder("crisis_emergency_loan");
       const h = targetHeyaId ? _world.heyas.get(targetHeyaId) : undefined;
       if (h && targetHeyaId) {
+        // "Loan sharks at exorbitant interest rates" — the option copy promises
+        // a debt, so record one: previously this granted free funds with no
+        // repayable Loan entity (V18-S7-2).
+        const rng = rngForWorld(
+          _world,
+          "economy",
+          `crisis_loan_${targetHeyaId}_${_world.week}`
+        );
+        const loan = createLoanObject(
+          _world,
+          targetHeyaId,
+          {
+            loanType: "benefactor",
+            interestRate: 0.3,
+            providerName: "Loan Sharks",
+            stringsAttached: ["loan_shark_terms"],
+            principal: 10_000_000,
+            months: 24,
+          },
+          rng
+        );
         b.updateHeya(targetHeyaId, {
           funds: (h.funds ?? 0) + 10_000_000,
+          activeLoans: [...(h.activeLoans ?? []), loan],
           scandalScore: (h.scandalScore ?? 0) + 10,
           reputation: Math.max(0, (h.reputation ?? 50) - 5),
         });
@@ -297,7 +321,16 @@ export function triggerCrisis(world: WorldState, heyaId: string, type: CrisisTyp
   }
 
   if (crisis) {
-    builder.updateHeya(heyaId, { activeCrisis: crisis });
+    // Player crises surface on world.pendingCrisis — the only field the
+    // CrisisModal gate (useCrisisDetection), the sim halt (shouldBlockTick),
+    // and RESOLVE_CRISIS resolution all read. heya.activeCrisis is the
+    // NPC-autonomous surface; a player crisis written there was invisible,
+    // never halted the sim, and could not be resolved (V18-S7-2).
+    if (heyaId === world.playerHeyaId) {
+      builder.updateWorldField("pendingCrisis", crisis);
+    } else {
+      builder.updateHeya(heyaId, { activeCrisis: crisis });
+    }
     builder.logEvent(
       "GOVERNANCE_RULING",
       "narrative",

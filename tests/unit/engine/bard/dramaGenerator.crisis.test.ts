@@ -8,6 +8,13 @@ function crisisSetOn(impact: StateImpact, heyaId: string): boolean {
   return update?.activeCrisis !== undefined;
 }
 
+/** The player's crisis surfaces on world.pendingCrisis — the canonical
+ *  player gate (CrisisModal/shouldBlockTick/RESOLVE_CRISIS). NPC crises
+ *  stay on heya.activeCrisis for the weekly NPC AI sweep. */
+function playerCrisisSet(impact: StateImpact): boolean {
+  return impact.worldFields?.pendingCrisis !== undefined;
+}
+
 describe("checkTriggeredDrama — player vs NPC crisis routing", () => {
   it("triggers a crisis for the player heya identified by world.playerHeyaId", () => {
     const playerHeya = makeMockHeya("player_heya", { funds: -1_000_000 });
@@ -16,7 +23,7 @@ describe("checkTriggeredDrama — player vs NPC crisis routing", () => {
       heyas: new Map([["player_heya", playerHeya]]),
     });
     const impact = checkTriggeredDrama(world);
-    expect(crisisSetOn(impact, "player_heya")).toBe(true);
+    expect(playerCrisisSet(impact)).toBe(true);
   });
 
   it("player crisis is not starved by an insolvent NPC sorting earlier", () => {
@@ -32,7 +39,7 @@ describe("checkTriggeredDrama — player vs NPC crisis routing", () => {
       ]),
     });
     const impact = checkTriggeredDrama(world);
-    expect(crisisSetOn(impact, "zzz_player")).toBe(true);
+    expect(playerCrisisSet(impact)).toBe(true);
     expect(crisisSetOn(impact, "aaa_npc")).toBe(true);
   });
 
@@ -49,7 +56,7 @@ describe("checkTriggeredDrama — player vs NPC crisis routing", () => {
       ]),
     });
     const impact = checkTriggeredDrama(world);
-    expect(crisisSetOn(impact, "aaa_player")).toBe(true);
+    expect(playerCrisisSet(impact)).toBe(true);
     expect(crisisSetOn(impact, "zzz_npc")).toBe(true);
   });
 

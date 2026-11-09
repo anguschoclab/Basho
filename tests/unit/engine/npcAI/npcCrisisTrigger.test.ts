@@ -58,7 +58,11 @@ describe("checkTriggeredDrama — NPC crisis eligibility", () => {
   it("preserves the player path: an insolvent player heya still gets its crisis", () => {
     const world = worldWithInsolventHeyas(["heya-a"], true);
     const impact = checkTriggeredDrama(world);
-    expect(npcCrisesSet(impact)).toContain("player-heya");
+    // The player crisis surfaces on world.pendingCrisis — the canonical
+    // player gate (CrisisModal/shouldBlockTick/RESOLVE_CRISIS) — not on
+    // heya.activeCrisis, which is the NPC-autonomous surface.
+    expect(impact.worldFields?.pendingCrisis).toBeDefined();
+    expect(npcCrisesSet(impact)).toContain("heya-a");
   });
 
   it("does not retrigger while a heya already has an active crisis", () => {
