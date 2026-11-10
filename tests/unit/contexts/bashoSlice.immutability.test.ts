@@ -81,15 +81,4 @@ describe("P3.4: bashoSlice immutability", () => {
 
     expect((state.world as any).currentBasho.matches).toBe(originalMatches);
   });
-
-  it("SIM_FULL_BASHO does not mutate state.world", () => {
-    const state = makeState(1);
-    const originalDay = (state.world as any).currentBasho.day;
-    const originalMatches = (state.world as any).currentBasho.matches;
-
-    bashoSlice(state, { type: "SIM_FULL_BASHO" } as GameAction);
-
-    expect((state.world as any).currentBasho.day).toBe(originalDay);
-    expect((state.world as any).currentBasho.matches).toBe(originalMatches);
-  });
 });

@@ -1,6 +1,7 @@
 // BashoPage.tsx — Redesigned Tournament Page
 // Clean layout with prominent day controls, better standings, and bout cards
 
+import { useMemo } from "react";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
@@ -30,6 +31,13 @@ export default function BashoPage() {
   const s = useBashoPageState();
   const { world, bashoDigest } = s;
 
+  // One Set shared by the standings sidebar and the match viewer — rebuilt
+  // only when the digest's roster array changes, not per render.
+  const playerRikishiIdSet = useMemo(
+    () => new Set(bashoDigest?.playerRikishiIds ?? []),
+    [bashoDigest?.playerRikishiIds]
+  );
+
   if (!world) return null;
 
   if (!bashoDigest) {
@@ -41,7 +49,6 @@ export default function BashoPage() {
     day,
     matches,
     standings,
-    playerRikishiIds,
     completedBouts,
     dayProgress,
     seasonalFlavor,
@@ -105,7 +112,7 @@ export default function BashoPage() {
           />
 
           {/* Standings sidebar */}
-          <BashoStandingsSidebar standings={standings} playerRikishiIds={playerRikishiIds} />
+          <BashoStandingsSidebar standings={standings} playerRikishiIds={playerRikishiIdSet} />
 
           {/* Match viewer */}
           <div className="lg:col-span-3 lg:order-1 space-y-3">
@@ -113,7 +120,7 @@ export default function BashoPage() {
             <MatchDayViewer
               matches={matches}
               world={world}
-              playerRikishiIds={new Set(playerRikishiIds)}
+              playerRikishiIds={playerRikishiIdSet}
               onSimulateBout={s.simulateBout}
               onSimulateAll={s.simulateAllBouts}
               onTacticChange={s.handleTacticChange}

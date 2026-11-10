@@ -377,6 +377,43 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
 
   // Create a new rikishi from the prospect and add to roster
   const newRikishiId = prospectId;
+  const { newRikishi } = buildPromotedRikishi(world, heya, prospect, newRikishiId, heyaId);
+  builder.addRikishi(newRikishi);
+
+  // Add to heya roster
+  const currentRoster = dedupeIdList(heya.rikishiIds ?? []) ?? [];
+  builder.updateHeya(heyaId, {
+    rikishiIds: pushUniqueId(currentRoster, newRikishiId),
+  } as Partial<Heya>);
+
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "career",
+    {
+      eventId: "youth_academy_promotion",
+      title: "Academy Prospect Promoted",
+      description: `${prospect.shikona} has been promoted from the Youth Academy to the active roster.`,
+      incident: `Starting ability: ${prospect.currentAbility}, potential: ${prospect.potential}`,
+    },
+    { heyaId, rikishiId: newRikishiId, importance: "notable" }
+  );
+
+  return builder.build();
+}
+
+/**
+ * Builds the debutant Rikishi entity for a promoted academy prospect.
+ * Academy development carries over: currentAbility lifts the rolled baseline
+ * and the scouting grade (prospect.potential) lifts the PA ceiling — never
+ * below the promoted rikishi's starting stats.
+ */
+function buildPromotedRikishi(
+  world: WorldState,
+  heya: Heya,
+  prospect: YouthProspect,
+  newRikishiId: string,
+  heyaId: string
+): { newRikishi: Rikishi } {
   const rng = rngFromSeed(world.seed, "academy-promote", newRikishiId);
   const rank: Rank = "jonokuchi";
   const division: Division = "jonokuchi";
@@ -394,7 +431,6 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
   });
 
   const rolled = generateRikishiStats({ rng, rank, profile: combatProfile });
-  // Academy development carries over: currentAbility lifts the rolled baseline.
   const inherit = (v: number) => clampInt(v * 0.5 + prospect.currentAbility * 0.5, 10, 100);
   const rikishiStats: RikishiStats = {
     ...rolled,
@@ -417,8 +453,6 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
     },
   };
 
-  // The academy's scouting grade (prospect.potential) lifts the PA ceiling —
-  // never below the promoted rikishi's starting stats.
   const paScale = clamp(prospect.potential / 70, 0.5, 1.5);
   const paLift = (v: number, cur: number) => Math.max(clampInt(v * paScale, 10, 100), cur);
   const potential: Rikishi["potential"] = {
@@ -478,28 +512,7 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
   } as Rikishi;
 
   applyPersonaAssignment(newRikishi, archetype, rng);
-
-  builder.addRikishi(newRikishi);
-
-  // Add to heya roster
-  const currentRoster = dedupeIdList(heya.rikishiIds ?? []) ?? [];
-  builder.updateHeya(heyaId, {
-    rikishiIds: pushUniqueId(currentRoster, newRikishiId),
-  } as Partial<Heya>);
-
-  builder.logEvent(
-    "LIFECYCLE_EVENT",
-    "career",
-    {
-      eventId: "youth_academy_promotion",
-      title: "Academy Prospect Promoted",
-      description: `${prospect.shikona} has been promoted from the Youth Academy to the active roster.`,
-      incident: `Starting ability: ${prospect.currentAbility}, potential: ${prospect.potential}`,
-    },
-    { heyaId, rikishiId: newRikishiId, importance: "notable" }
-  );
-
-  return builder.build();
+  return { newRikishi };
 }
 
 /**

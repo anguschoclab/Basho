@@ -593,13 +593,15 @@ function resolveAgencyRequests(
   resolvedRequestIds: Set<string>,
   builder: ReturnType<typeof createImpactBuilder>
 ): void {
+  const protectSet = new Set(decision.individualProtects ?? []);
   for (const request of agencyRequests) {
     if (request.heyaId !== heya.id || resolvedRequestIds.has(request.id)) continue;
     const granted = resolveNPCRequest(world, heya, nextOya, request) === "grant";
     if (granted && request.type === "request_rest") {
       decision.individualProtects ??= [];
-      if (!decision.individualProtects.includes(request.rikishiId)) {
+      if (!protectSet.has(request.rikishiId)) {
         decision.individualProtects.push(request.rikishiId);
+        protectSet.add(request.rikishiId);
       }
     }
     applyRequestOutcome(world, builder, request, granted);

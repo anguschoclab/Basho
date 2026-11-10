@@ -59,14 +59,6 @@ export interface RecordEntry {
   achievedDate?: { year: number; month: number };
 }
 
-/** Defines the structure for chronicle record entry. */
-export interface ChronicleRecordEntry {
-  type: "careerWins" | "makuuchiWins" | "yusho" | "consecutiveYusho" | "kinboshi";
-  holder: string;
-  value: string;
-  brokenOn: string;
-}
-
 /** Defines the structure for champion entry. */
 export interface ChampionEntry {
   rikishiId: string;
@@ -91,7 +83,6 @@ export interface ChronicleReport {
   biggestScandals: string[];
   greatestRivalries: RivalryEntry[];
   eraLabels: string[];
-  recordsBroken: ChronicleRecordEntry[];
   highlights: string[];
 }
 

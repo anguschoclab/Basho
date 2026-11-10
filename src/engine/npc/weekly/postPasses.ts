@@ -17,6 +17,7 @@ export function applyPromotionAwareness(
   const heya = getHeya(world, heyaId);
   if (!heya) return;
 
+  const protectSet = new Set(decision.individualProtects);
   const pushSet = new Set(decision.individualPushes);
   const developSet = new Set(decision.individualDevelops);
 
@@ -31,8 +32,9 @@ export function applyPromotionAwareness(
       const isKadoban = kadobanEntry?.isKadoban === true;
 
       if (isKadoban) {
-        if (!decision.individualProtects.includes(rikishiId)) {
+        if (!protectSet.has(rikishiId)) {
           decision.individualProtects = [...decision.individualProtects, rikishiId];
+          protectSet.add(rikishiId);
           pushSet.delete(rikishiId);
           developSet.delete(rikishiId);
           decision.reasoning.push(
@@ -61,8 +63,9 @@ export function applyPromotionAwareness(
     if (rank === "yokozuna") {
       const warnings = r.councilWarnings ?? 0;
       if (warnings > 0) {
-        if (!decision.individualProtects.includes(rikishiId)) {
+        if (!protectSet.has(rikishiId)) {
           decision.individualProtects = [...decision.individualProtects, rikishiId];
+          protectSet.add(rikishiId);
           pushSet.delete(rikishiId);
           developSet.delete(rikishiId);
           decision.reasoning.push(

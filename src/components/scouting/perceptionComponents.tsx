@@ -16,6 +16,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
 import { useGame } from "@/state/game/useGame";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
+import { COMPLIANCE_DISPLAY } from "@/constants/ui/welfare";
 import { toKeyedMap, type PerceptionSnapshot } from "@/presenters/engineAccess";
 import { getOyakataForHeya } from "@/presenters/worldAccess";
 import { activationKeyHandler } from "@/lib/a11y";
@@ -542,7 +543,9 @@ export const StablePerceptionCard = React.memo(
                   Style: <strong className="text-foreground capitalize">{snap.styleBias}</strong>
                 </span>
                 {snap.complianceState !== "compliant" && (
-                  <span className="text-warning">⚠ {snap.complianceState}</span>
+                  <span className="text-warning">
+                    ⚠ {COMPLIANCE_DISPLAY[snap.complianceState]?.label ?? snap.complianceState}
+                  </span>
                 )}
               </div>
             </div>

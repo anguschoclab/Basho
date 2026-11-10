@@ -8,15 +8,10 @@
 
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import type { WorldState } from "@/engine/types/world";
-import type { Heya } from "@/engine/types/heya";
 import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { reportScandal } from "@/engine/governance/services/ScandalService";
 import { calculateKenshoEnvelopes } from "@/engine/economy/KenshoService";
-import { selectBenefactor } from "@/engine/economy/SponsorshipService";
 import {
-  DEBT_LIMIT,
-  BENEFACTOR_BAILOUT_AMOUNT,
   KENSHO_AMOUNT_PER_ENVELOPE,
   KENSHO_SPLIT,
   KINBOSHI_MARKETABILITY_BOOST,
@@ -26,46 +21,6 @@ import {
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
-
-// === INSOLVENCY HANDLER ===
-
-/**
- * Handles insolvency for a heya when its funds fall below the debt limit.
- * Attempts a benefactor bailout at extreme debt; reports a scandal if no benefactor is available.
- *
- * @param {Heya} heya - The heya experiencing insolvency.
- * @param {WorldState} world - The current world state.
- * @returns {StateImpact} The state impact containing financial updates and queued events.
- */
-export function handleInsolvency(heya: Heya, world: WorldState): StateImpact {
-  const builder = createImpactBuilder("handleInsolvency");
-  if (heya.funds >= DEBT_LIMIT) return builder.build();
-
-  const pool = world.sponsorPool;
-  const koenkai = pool?.koenkais.get(heya.koenkaiId ?? "");
-  const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai) : null;
-
-  if (benefactor) {
-    builder.updateHeya(heya.id, { funds: heya.funds + BENEFACTOR_BAILOUT_AMOUNT });
-    builder.logEvent(
-      "FINANCIAL_ALERT",
-      "economy",
-      {
-        heyaname: heya.name,
-        incident: "bailout",
-        money: BENEFACTOR_BAILOUT_AMOUNT,
-        sponsor: benefactor.displayName,
-      },
-      { heyaId: heya.id, importance: "major" }
-    );
-  } else if (heya.governanceStatus !== "sanctioned") {
-    builder.merge(reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach"));
-    // Cap debt so math doesn't spiral into infinity
-    builder.updateHeya(heya.id, { funds: DEBT_LIMIT });
-  }
-
-  return builder.build();
-}
 
 // === BOUT REWARDS (KENSHO) ===
 

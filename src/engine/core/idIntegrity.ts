@@ -459,9 +459,6 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
       checkRef("chronicle", g.rikishiAId, sets.rikishiIds, "chronicle greatestRivalries");
       checkRef("chronicle", g.rikishiBId, sets.rikishiIds, "chronicle greatestRivalries");
     }
-    for (const rec of world.chronicle.recordsBroken ?? []) {
-      checkRef("chronicle", rec.rikishiId, sets.rikishiIds, "chronicle recordsBroken");
-    }
   }
   for (const board of [world.records?.allTime, world.records?.active]) {
     if (!board) continue;

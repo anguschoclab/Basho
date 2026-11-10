@@ -59,6 +59,7 @@ export function useKenshoData() {
     const arr: KenshoBoutEntry[] = [];
 
     if (world?.currentBasho?.matches && heya?.rikishiIds) {
+      const rosterIdSet = new Set(heya.rikishiIds);
       for (const match of world.currentBasho.matches) {
         const result = match.result as BoutResult | undefined;
         if (!result) continue;
@@ -74,7 +75,7 @@ export function useKenshoData() {
             ...rikishiStageInput(r, world?.year ?? 0),
           });
 
-        if (eastRikishi && heya.rikishiIds.includes(eastRikishi.id) && result.kenshoEnvelopes > 0) {
+        if (eastRikishi && rosterIdSet.has(eastRikishi.id) && result.kenshoEnvelopes > 0) {
           arr.push({
             rikishiId: eastRikishi.id,
             rikishiName: eastRikishi.shikona || eastRikishi.id,
@@ -85,7 +86,7 @@ export function useKenshoData() {
           });
         }
 
-        if (westRikishi && heya.rikishiIds.includes(westRikishi.id) && result.kenshoEnvelopes > 0) {
+        if (westRikishi && rosterIdSet.has(westRikishi.id) && result.kenshoEnvelopes > 0) {
           arr.push({
             rikishiId: westRikishi.id,
             rikishiName: westRikishi.shikona || westRikishi.id,

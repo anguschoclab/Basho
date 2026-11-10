@@ -66,11 +66,4 @@ describe("Autosave effect migration (B4.1.2)", () => {
 
     expect(mockAutosave).not.toHaveBeenCalled();
   });
-
-  it("SIM_FULL_BASHO does not call autosaveWithSignal", () => {
-    mockAutosave.mockClear();
-    bashoSlice(makeState(), { type: "SIM_FULL_BASHO" } as GameAction);
-
-    expect(mockAutosave).not.toHaveBeenCalled();
-  });
 });

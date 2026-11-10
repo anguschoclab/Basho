@@ -3,9 +3,9 @@ import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import {
   fillVacanciesForNPC,
   fillVacanciesForNPCWithBidding,
-  materializeCandidateToRikishi,
   finalizeSignedCandidates,
 } from "@/engine/generation/TalentPoolService";
+import { materializeCandidateToRikishiInternal } from "@/engine/generation/TalentPoolMaterialization";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { CandidateAvailabilityState, TalentPoolWorldState } from "@/engine/types/talent";
 import type { Id } from "@/engine/types/common";
@@ -119,14 +119,23 @@ describe("fillVacanciesForNPC", () => {
   });
 });
 
-// ── materializeCandidateToRikishi ─────────────────────────────────────────
+// ── materializeCandidateToRikishiInternal ─────────────────────────────────
 
-describe("materializeCandidateToRikishi", () => {
+const materialize = (world: WorldState, candidateId: Id, heyaId: Id) =>
+  materializeCandidateToRikishiInternal(
+    world,
+    candidateId,
+    heyaId,
+    world.talentPool!.candidates,
+    world.talentPool!.pools
+  );
+
+describe("materializeCandidateToRikishiInternal", () => {
   it("returns empty impact when candidate does not exist", () => {
     const world = MockFactory.createWorld({
       talentPool: makeTalentPool("cand-1"),
     });
-    const impact = materializeCandidateToRikishi(world, "non-existent-id" as Id, "some-heya" as Id);
+    const impact = materialize(world, "non-existent-id" as Id, "some-heya" as Id).impact;
     expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
   });
 
@@ -139,7 +148,7 @@ describe("materializeCandidateToRikishi", () => {
       talentPool: makeTalentPool("cand-1"),
     });
 
-    const impact = materializeCandidateToRikishi(world, "cand-1" as Id, heyaId);
+    const impact = materialize(world, "cand-1" as Id, heyaId).impact;
 
     expect(impact.collections?.rikishiToAdd).toBeDefined();
     expect(impact.collections?.rikishiToAdd?.length).toBe(1);
@@ -154,7 +163,7 @@ describe("materializeCandidateToRikishi", () => {
       talentPool: makeTalentPool("cand-1"),
     });
 
-    const impact = materializeCandidateToRikishi(world, "cand-1" as Id, heyaId);
+    const impact = materialize(world, "cand-1" as Id, heyaId).impact;
 
     // Check heya update includes the new rikishi id
     const heyaUpdate = impact.entities?.heyaUpdates?.get(heyaId);
@@ -171,16 +180,15 @@ describe("materializeCandidateToRikishi", () => {
       talentPool: makeTalentPool("cand-1"),
     });
 
-    const impact = materializeCandidateToRikishi(world, "cand-1" as Id, heyaId);
+    const { impact, nextCandidates, nextPools } = materialize(world, "cand-1" as Id, heyaId);
 
-    // Verify talentPool update
-    const tpUpdate = impact.worldFields?.talentPool;
-    expect(tpUpdate).toBeDefined();
-    expect(tpUpdate?.candidates["cand-1"]).toBeUndefined();
+    // Candidate removal is expressed via the returned next-pool state
+    expect(nextCandidates["cand-1"]).toBeUndefined();
+    expect(nextPools).toBeDefined();
 
-    // Verify after resolution
+    // Entity writes still resolve
     const nextWorld = resolveImpacts(world, [impact]);
-    expect(nextWorld.talentPool?.candidates["cand-1"]).toBeUndefined();
+    expect(nextWorld.rikishi.size).toBe(1);
   });
 });
 
@@ -198,7 +206,7 @@ describe("materialization duplicate guard", () => {
       talentPool: makeTalentPool("cand-1"),
     });
 
-    const impact = materializeCandidateToRikishi(world, "cand-1" as Id, heyaId);
+    const { impact, nextCandidates, nextPools } = materialize(world, "cand-1" as Id, heyaId);
 
     // No new rikishi — the personId already exists in the world
     expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
@@ -206,8 +214,8 @@ describe("materialization duplicate guard", () => {
 
     const nextWorld = resolveImpacts(world, [impact]);
     expect(nextWorld.rikishi.size).toBe(1);
-    // The stale candidate is still stripped from the pool
-    expect(nextWorld.talentPool?.candidates["cand-1"]).toBeUndefined();
+    // The stale candidate is still stripped from the returned next-pool state
+    expect(nextCandidates["cand-1"]).toBeUndefined();
     // And the roster slot is not re-appended
     expect(
       nextWorld.heyas.get(heyaId)?.rikishiIds?.filter((id) => id === "person-cand-1")

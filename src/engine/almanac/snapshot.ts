@@ -1,7 +1,7 @@
 /**
  * snapshot.ts — per-basho Almanac snapshots built from live world state.
  *
- * Unlike `career.ts`/`heyaRecord.ts` (synthetic backfill), `buildAlmanacSnapshot`
+ * Unlike `career.ts` (synthetic backfill), `buildAlmanacSnapshot`
  * aggregates real recorded values — makuuchi headcount, recorded wins, injuries —
  * at basho publish time.
  */

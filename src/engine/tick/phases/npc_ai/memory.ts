@@ -51,14 +51,17 @@ export function consolidateOyakataMemoryPure(
   const log = world.events?.log;
   if (log && log.length > 0) {
     const tail = log.slice(-100);
+    const seenSummaries = new Set(
+      memory.observations.filter((o) => o.tick === tick).map((o) => o.summary)
+    );
     for (const e of tail) {
       if (e.heyaId !== oyakata.heyaId) continue;
       if (e.week !== tick || e.year !== world.year) continue;
       if (e.category !== "discipline" && e.category !== "rivalry" && e.category !== "welfare") {
         continue;
       }
-      const already = memory.observations.some((o) => o.tick === tick && o.summary === e.summary);
-      if (already) continue;
+      if (seenSummaries.has(e.summary)) continue;
+      seenSummaries.add(e.summary);
       memory = addObservation(
         memory,
         {

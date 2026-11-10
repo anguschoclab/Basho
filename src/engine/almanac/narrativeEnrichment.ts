@@ -221,6 +221,27 @@ export function runAlmanacNarrativeUpdate(world: WorldState): StateImpact {
   const year = basho.year;
   const matches = basho.matches;
 
+  // Index matches by participant once (winner + loser), preserving match order.
+  // Per-match winnerCareerWins / notability are rikishi-invariant, so compute once.
+  interface ParticipantMatch {
+    match: (typeof matches)[number];
+    result: BoutResult;
+    notable: boolean;
+  }
+  const matchesByParticipant = new Map<Id, ParticipantMatch[]>();
+  for (const match of matches) {
+    const result = match.result;
+    if (!result) continue;
+    const winnerCareerWins = getRikishi(world, result.winnerRikishiId)?.careerWins ?? 0;
+    const notable = isNotableBout(result, result.pbpLines ?? [], winnerCareerWins);
+    const pm: ParticipantMatch = { match, result, notable };
+    for (const pid of [result.winnerRikishiId, result.loserRikishiId]) {
+      const list = matchesByParticipant.get(pid);
+      if (list) list.push(pm);
+      else matchesByParticipant.set(pid, [pm]);
+    }
+  }
+
   for (const rikishiId of world.activeRikishiIds) {
     const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
@@ -237,19 +258,19 @@ export function runAlmanacNarrativeUpdate(world: WorldState): StateImpact {
     const newBouts: NotableBoutEntry[] = [];
     const newHighlights: NarrativeHighlight[] = [];
 
-    for (const match of matches) {
-      const result = match.result;
-      if (!result) continue;
-      if (result.winnerRikishiId !== rikishiId && result.loserRikishiId !== rikishiId) continue;
-
-      const winnerRikishi = getRikishi(world, result.winnerRikishiId);
-      const winnerCareerWins = winnerRikishi?.careerWins ?? 0;
-      const lines = result.pbpLines ?? [];
-
-      if (!isNotableBout(result, lines, winnerCareerWins)) continue;
+    for (const pm of matchesByParticipant.get(rikishiId) ?? []) {
+      if (!pm.notable) continue;
+      const result = pm.result;
       if (existingBoutIds.has(result.boutId)) continue;
 
-      const entry = buildNotableBoutEntry(result, rikishiId, world, bashoName, year, match.day);
+      const entry = buildNotableBoutEntry(
+        result,
+        rikishiId,
+        world,
+        bashoName,
+        year,
+        pm.match.day
+      );
       if (entry) {
         newBouts.push(entry);
         existingBoutIds.add(result.boutId);

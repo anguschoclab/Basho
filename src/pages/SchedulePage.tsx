@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useGame } from "@/state/game/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
@@ -19,14 +19,23 @@ export default function SchedulePage() {
   const currentBasho = world?.currentBasho;
 
   const [selectedDivision, setSelectedDivision] = useState<Division>("makuuchi");
-  const [selectedDay, setSelectedDay] = useState<number>(currentBasho?.day || 1);
+  // Manual pick is an override on the LIVE basho day — the old useState
+  // initializer snapshotted the day at mount and never followed the basho
+  // forward (S8-3 stale selectedDay).
+  const [dayOverride, setDayOverride] = useState<number | null>(null);
 
   const maxDays = useMemo(() => getTotalBashodays(selectedDivision), [selectedDivision]);
 
-  // Ensure selected day is valid for division when switching
-  if (selectedDay > maxDays) {
-    setSelectedDay(maxDays);
-  }
+  // Follow the basho: when the tournament or day advances, drop any manual
+  // pick so the view tracks the live day again.
+  const bashoDay = currentBasho?.day ?? 1;
+  useEffect(() => {
+    setDayOverride(null);
+  }, [currentBasho?.bashoName, currentBasho?.year, bashoDay]);
+
+  // Clamp to the division's real day count in the derivation — no
+  // render-phase setState (S8-3).
+  const selectedDay = Math.min(dayOverride ?? bashoDay, maxDays);
 
   const matches = useMemo(() => {
     if (!currentBasho || !world) return [];
@@ -76,7 +85,7 @@ export default function SchedulePage() {
             selectedDay={selectedDay}
             maxDays={maxDays}
             onDivisionChange={setSelectedDivision}
-            onDayChange={setSelectedDay}
+            onDayChange={setDayOverride}
           />
 
           <div className="space-y-4">

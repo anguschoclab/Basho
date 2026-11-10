@@ -375,13 +375,6 @@ export interface WorldState {
       shikonaB: string;
       totalBouts: number;
     }>;
-    recordsBroken: Array<{
-      recordType: string;
-      rikishiId: string;
-      shikona: string;
-      value: number;
-      year: number;
-    }>;
     globalCups?: GlobalCupHistoryEntry[];
   };
 

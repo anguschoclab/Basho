@@ -253,7 +253,9 @@ describe("applyWeeklySparring", () => {
     expect(updatedWorld.sparringPairs!.has("h1")).toBe(false);
   });
 
-  it("removes pair when either rikishi injured", () => {
+  it("pauses pair when either rikishi injured (S7-36)", () => {
+    // Injury pauses the pair — weeksActive is preserved so the partnership
+    // resumes where it left off. Only retirement/missing dissolves it.
     const a = mockRikishi("r1", { heyaId: "h1", injured: true });
     const b = mockRikishi("r2", { heyaId: "h1", injured: false });
     const pair = makeSparringPair("r1", "r2");
@@ -261,7 +263,7 @@ describe("applyWeeklySparring", () => {
     const world = makeSparringWorld([a, b], new Map([["h1", sparringState]]));
     const impact = applyWeeklySparring(world);
     const updatedWorld = resolveImpacts(world, [impact]);
-    expect(updatedWorld.sparringPairs!.has("h1")).toBe(false);
+    expect(updatedWorld.sparringPairs!.has("h1")).toBe(true);
   });
 
   it("removes pair when either rikishi retired", () => {

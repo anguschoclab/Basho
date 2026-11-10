@@ -21,7 +21,6 @@ export {
 } from "@/engine/almanac/types";
 
 export { generateCareerRecord } from "@/engine/almanac/career";
-export { generateHeyaRecord } from "@/engine/almanac/heyaRecord";
 export { buildAlmanacSnapshot } from "@/engine/almanac/snapshot";
 export { getRikishiCareerSummary } from "@/engine/almanac/summary";
 export {

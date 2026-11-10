@@ -19,13 +19,6 @@ export function finiteOr(n: number | undefined | null, fallback: number): number
   return typeof n === "number" && Number.isFinite(n) ? n : fallback;
 }
 
-/**
- * Standardizes the 'localClampInt' pattern used in banzuke logic.
- */
-export function localClampInt(val: number, min: number, max: number): number {
-  return clampInt(val, min, max);
-}
-
 export function simpleHashToIndex(s: string, mod: number): number {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {

@@ -13,7 +13,7 @@ import type { Id } from "@/engine/types/common";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "@/engine/types/talent";
 import { generateCandidate } from "@/engine/generation/CandidateGenerator";
-import { deriveStyle } from "@/engine/generation/CandidateBuilder";
+
 import { isCollegeRecruit } from "@/engine/utils/identity";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { buildCombatProfile } from "@/engine/bout/archetype";
@@ -158,55 +158,6 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): State
     pool.candidatesVisible = [...pool.candidatesVisible, candidateId];
   }
   nextPools[poolType] = pool;
-
-  builder.updateWorldField("talentPool", {
-    ...tp,
-    candidates: nextCandidates,
-    pools: nextPools,
-  });
-
-  return builder.build();
-}
-
-/**
- * Injects an existing rikishi into the talent pool as a hidden candidate.
- * This is used for "Boss" NPCs (like Global Cup challengers) who can become diagnosable
- * for recruitment if scouting infrastructure is sufficient.
- */
-export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): StateImpact {
-  const builder = createImpactBuilder("injectRikishiAsCandidate");
-  const tp = ensureTalentPoolState(world);
-
-  // Convert rikishi to candidate
-  const candidateId = `cd_${rikishi.id}`;
-  const candidate: TalentCandidate = {
-    candidateId,
-    personId: rikishi.id,
-    name: rikishi.shikona,
-    nationality: rikishi.nationality ?? "foreign",
-    birthYear: rikishi.birthYear ?? world.year - 24,
-    originRegion: rikishi.origin ?? "International",
-    visibilityBand: "hidden", // Start hidden (requires scouting_office Level 2+)
-    reputationSeed: rikishi.talentSeed ?? 90,
-    tags: ["global_cup_challenger"],
-    combatProfile: rikishi.combatProfile || buildCombatProfile("hybrid"),
-    availabilityState: "available",
-    competingSuitors: [],
-    archetype: rikishi.combatProfile?.archetype ?? "hybrid",
-    style: deriveStyle(rikishi.combatProfile?.archetype ?? "hybrid"),
-    heightPotentialCm: rikishi.height ?? 190,
-    weightPotentialKg: rikishi.weight ?? 150,
-    talentSeed: rikishi.talentSeed ?? 95,
-    temperament: { discipline: 80, volatility: 40 },
-  };
-
-  const nextCandidates = { ...tp.candidates, [candidateId]: candidate };
-  const nextPools = { ...tp.pools };
-  const pool = { ...nextPools["foreign"] };
-  if (!pool.candidatesHidden.includes(candidateId)) {
-    pool.candidatesHidden = [...pool.candidatesHidden, candidateId];
-  }
-  nextPools["foreign"] = pool;
 
   builder.updateWorldField("talentPool", {
     ...tp,

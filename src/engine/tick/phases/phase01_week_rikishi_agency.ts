@@ -25,6 +25,7 @@ import { clamp } from "@/engine/utils/math";
 import {
   deriveDisposition,
   generateRequests,
+  pendingRequestKey,
   shouldEscalate,
 } from "@/engine/npc/agency/RikishiAgencyService";
 import {
@@ -40,17 +41,21 @@ export function phase01_week_rikishi_agency(world: WorldState): StateImpact {
   const week = world.week ?? world.calendar?.currentWeek ?? 0;
 
   const pending: RikishiRequest[] = [...(world.pendingRikishiRequests ?? [])];
+  const pendingKeys = new Set(pending.map(pendingRequestKey));
   const newRequests: RikishiRequest[] = [];
 
   for (const [rid, r] of world.rikishi) {
     if (r.isRetired || !r.heyaId) continue;
 
     const disposition = deriveDisposition(world, r);
-    const generated = generateRequests(world, r, disposition, pending.concat(newRequests));
+    const generated = generateRequests(world, r, disposition, pendingKeys);
     builder.updateRikishi(rid, {
       agency: generated.length > 0 ? { ...disposition, lastRequestWeek: week } : disposition,
     });
-    newRequests.push(...generated);
+    for (const req of generated) {
+      newRequests.push(req);
+      pendingKeys.add(pendingRequestKey(req));
+    }
 
     // Escalation: ignored misery surfaces through canonical governance/welfare
     // paths — never a direct world write outside ImpactBuilder.

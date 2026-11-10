@@ -18,9 +18,18 @@ describe("knip dead code scan", () => {
       stdout = result.stdout;
       stderr = result.stderr;
     } catch (e: unknown) {
-      const err = e as { stdout?: string; stderr?: string };
+      const err = e as { stdout?: string; stderr?: string; message?: string };
       stdout = err.stdout || "";
       stderr = err.stderr || "";
+      // Fail-closed (S9-6): knip exits non-zero when it finds issues — that
+      // path carries report output. An error with NO output means knip never
+      // ran (not installed, spawn failure, timeout) and must not pass.
+      if (!stdout && !stderr) {
+        throw new Error(
+          `knip did not run — no output captured. Underlying error: ${err.message ?? e}`,
+          { cause: e }
+        );
+      }
     }
 
     const output = stdout + stderr;

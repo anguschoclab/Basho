@@ -139,18 +139,25 @@ export function simulateNPCInterest(world: WorldState): StateImpact {
     if (!pool) continue;
 
     const watchedIds: Id[] = [];
+    const watchedSet = new Set<Id>();
 
     // Keep preserved candidates listed in the pool bucket they already
     // occupy — their watchlist presence must survive the rebuild too.
     for (const cId of nextPools[pt]?.candidatesVisible ?? []) {
-      if (nextCandidates[cId]) watchedIds.push(cId);
+      if (nextCandidates[cId]) {
+        watchedIds.push(cId);
+        watchedSet.add(cId);
+      }
     }
 
     for (const cId of pool.candidatesVisible) {
       if (nextCandidates[cId]) {
         // Already tracked (in talks / signed) — do not re-roll suitors or
         // downgrade the negotiation state with a fresh copy.
-        if (!watchedIds.includes(cId)) watchedIds.push(cId);
+        if (!watchedSet.has(cId)) {
+          watchedIds.push(cId);
+          watchedSet.add(cId);
+        }
         continue;
       }
       const candidate = tp.candidates[cId];
@@ -196,6 +203,7 @@ export function simulateNPCInterest(world: WorldState): StateImpact {
           competingSuitors: suitors,
         };
         watchedIds.push(cId);
+        watchedSet.add(cId);
       }
     }
 

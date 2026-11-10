@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FACILITY_REGISTRY, FacilityId } from "@/engine/types/infrastructure";
 import { repairCostFor } from "@/presenters/engineAccess";
+import { CONSTRUCTION_COST_LEVEL_MULTIPLIER } from "@/constants/engine/economyExtended";
 import type { Heya } from "@/engine/types/heya";
 
 type InfraState = NonNullable<Heya["infrastructure"]>[string];
@@ -258,7 +259,11 @@ export function FacilityCard({
             )}
           </Button>
           <p className="text-[10px] text-center mt-2 text-muted-foreground uppercase font-black tracking-widest">
-            Build Cost: {formatYen(Math.round(facility.baseCost * (1 + level * 0.8)))} |
+            Build Cost:{" "}
+            {formatYen(
+              Math.round(facility.baseCost * (1 + level * CONSTRUCTION_COST_LEVEL_MULTIPLIER))
+            )}{" "}
+            |
             Maintenance: {formatYen(facility.maintenanceCost)}/mo
           </p>
         </div>

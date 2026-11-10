@@ -172,20 +172,6 @@ describe("bashoSlice - indexing and bout result handling", () => {
     expect(b2?.result).toBeDefined();
   });
 
-  it("Test 5.5: SIM_FULL_BASHO resolves all bouts across all days", () => {
-    const matches: MatchSchedule[] = [];
-    for (let day = 1; day <= 15; day++) {
-      matches.push(makeMatch(`d${day}-b1`, day));
-    }
-    const state = makeState(matches, 1);
-
-    const action: GameAction = { type: "SIM_FULL_BASHO" };
-    const newState = bashoSlice(state, action);
-    const basho = newState.world!.currentBasho!;
-    const resolved = basho.matches.filter((m) => m.result);
-    expect(resolved.length).toBe(15);
-  });
-
   it("Test 5.6: SIMULATE_ALL_BOUTS sets phase to day_results", () => {
     const matches = [makeMatch("b1", 1)];
     const state = makeState(matches);

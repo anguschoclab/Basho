@@ -5,7 +5,6 @@
  * These identities influence kesho-mawashi designs for all sekitori from that stable.
  */
 
-import type { Id } from "@/engine/types/common";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaBrandIdentity, CrestMotif } from "@/engine/types/keshoMawashi";
 import type { SeededRNG } from "@/engine/core/rng";
@@ -213,16 +212,6 @@ function generateSingleHeyaBrand(rng: SeededRNG, heya: Heya): HeyaBrandIdentity 
     traditionLevel,
     createdAt: { year: DEFAULT_START_YEAR, basho: "hatsu" }, // Default world start
   };
-}
-
-/**
- * Get brand identity for a heya.
- */
-export function getHeyaBrand(
-  brandMap: Map<string, HeyaBrandIdentity>,
-  heyaId: Id
-): HeyaBrandIdentity | undefined {
-  return brandMap.get(heyaId);
 }
 
 /**

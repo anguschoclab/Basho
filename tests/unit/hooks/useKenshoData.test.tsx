@@ -119,4 +119,32 @@ describe("useKenshoData", () => {
     const { result } = renderHook(() => useKenshoData());
     expect(result.current.recentBoutsWithKensho).toEqual([]);
   });
+
+  it("recentBoutsWithKensho includes only roster rikishi with kensho envelopes", () => {
+    const r1 = makeRikishi("r1");
+    const r2 = makeRikishi("r2");
+    const r3 = makeRikishi("r3", { heyaId: "h-other" });
+    const world = makeWorld([r1, r2, r3]);
+    world.currentBasho = {
+      matches: [
+        {
+          boutId: "b1",
+          day: 1,
+          eastRikishiId: "r1",
+          westRikishiId: "r3",
+          result: { boutId: "b1", winnerRikishiId: "r1", kenshoEnvelopes: 3 },
+        },
+        {
+          boutId: "b2",
+          day: 1,
+          eastRikishiId: "r3",
+          westRikishiId: "r4",
+          result: { boutId: "b2", winnerRikishiId: "r3", kenshoEnvelopes: 5 },
+        },
+      ],
+    } as any;
+    mockUseGame(world);
+    const { result } = renderHook(() => useKenshoData());
+    expect(result.current.recentBoutsWithKensho.map((b) => b.rikishiId)).toEqual(["r1"]);
+  });
 });

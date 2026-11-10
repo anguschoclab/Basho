@@ -42,10 +42,14 @@ describe("bundle size budget", () => {
   for (const [prefix, maxBytes] of Object.entries(BUDGETS)) {
     it(`${prefix} chunk is under ${(maxBytes / 1_000_000).toFixed(1)} MB`, () => {
       const chunk = findChunk(prefix);
-      if (!chunk) {
-        // Skip if the chunk doesn't exist (e.g., worker may not always be built)
-        return;
-      }
+      // Fail-closed (S9-6): a missing chunk means the budget isn't being
+      // enforced at all — either the build didn't emit it or the manifest
+      // drifted. Both are findings, not skips.
+      expect(
+        chunk,
+        `No ${prefix}-*.js chunk in dist/assets — budget not enforced for ${prefix}`
+      ).not.toBeNull();
+      if (!chunk) return; // unreachable — assertion above fails first
       const size = statSync(join(DIST_DIR, chunk)).size;
       expect(
         size,

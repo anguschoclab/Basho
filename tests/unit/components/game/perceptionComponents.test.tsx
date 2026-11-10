@@ -207,7 +207,7 @@ describe("StablePerceptionCard", () => {
       />
     );
     expect(screen.getByText("Your Stable")).toBeTruthy();
-    expect(screen.getByText(/watch/)).toBeTruthy();
+    expect(screen.getByText(/watch/i)).toBeTruthy();
   });
 });
 

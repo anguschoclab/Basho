@@ -18,7 +18,7 @@ describe("triggerSuccession — achievementsInReign population", () => {
     const successor = mockRikishi("r-succ", { heyaId: "h1", division: "makuuchi" });
     world.rikishi.set("r-succ", successor);
     // Reign window: 2025–2030. One cup win inside, one outside; one HoF inductee inside.
-    world.chronicle = { eraLabels: [], topChampions: [], greatestRivalries: [], recordsBroken: [], globalCups: [
+    world.chronicle = { eraLabels: [], topChampions: [], greatestRivalries: [], globalCups: [
       { year: 2028, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8,
       participantIds: [], wasPlayerChampion: false },
       { year: 2020, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8,

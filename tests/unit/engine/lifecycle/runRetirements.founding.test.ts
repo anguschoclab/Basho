@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runRetirements } from "@/engine/governance/services/governanceReview";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
 import { rngForWorld } from "@/engine/core/rng";
@@ -68,7 +68,7 @@ describe("runRetirements — stable founding", () => {
     world.seed = foundSeed!;
     const initialHeyaCount = world.heyas.size;
 
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const newWorld = resolveImpacts(world, [impact]);
 
     expect(newWorld.heyas.size).toBe(initialHeyaCount + 1);
@@ -116,7 +116,7 @@ describe("runRetirements — stable founding", () => {
     const initialHeyaCount = world.heyas.size;
     expect(initialHeyaCount).toBe(HEYA_COUNT_CAP + 1);
 
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const newWorld = resolveImpacts(world, [impact]);
 
     // No new heya founded because we're at cap
@@ -153,7 +153,7 @@ describe("runRetirements — stable founding", () => {
     world.seed = noSeed!;
     const initialHeyaCount = world.heyas.size;
 
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const newWorld = resolveImpacts(world, [impact]);
 
     expect(newWorld.heyas.size).toBe(initialHeyaCount);

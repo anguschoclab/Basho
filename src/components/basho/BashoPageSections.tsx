@@ -338,7 +338,7 @@ export function BashoStandingsSidebar({
   playerRikishiIds,
 }: {
   standings: StandingEntry[];
-  playerRikishiIds: string[];
+  playerRikishiIds: Set<string>;
 }) {
   return (
     <Card className="paper lg:order-2">
@@ -349,7 +349,7 @@ export function BashoStandingsSidebar({
         <div className="space-y-1">
           {standings.map((entry: StandingEntry, idx: number) => {
             const rid = entry?.rikishi?.id as string | undefined;
-            const isPlayer = !!rid && playerRikishiIds.includes(rid);
+            const isPlayer = !!rid && playerRikishiIds.has(rid);
             return (
               <div
                 key={rid ?? `l-${idx}`}

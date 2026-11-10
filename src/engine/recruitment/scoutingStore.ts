@@ -49,22 +49,6 @@ function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRik
 }
 
 /**
- * Where scouting data lives in the WorldState.
- * This is intentionally defensive because your WorldState shape may vary.
- *
- * Expected shape (recommended):
- * world.playerKnowledge = {
- *   scouting: Record<string, ScoutedRikishi>
- * }
- */
-function ensureScoutingTable(world: WorldState): Record<string, ScoutedRikishi> {
-  const w = world;
-  if (!w.playerKnowledge) w.playerKnowledge = {};
-  if (!w.playerKnowledge.scouting) w.playerKnowledge.scouting = {};
-  return w.playerKnowledge.scouting as Record<string, ScoutedRikishi>;
-}
-
-/**
  * Read-only access to the scouting table. Returns null when the player has
  * no scouting state — read paths (presenters, projections) must never
  * materialize world.playerKnowledge as a side effect (WS4-04).
@@ -242,16 +226,6 @@ export function getScoutingLevel(
  * want to READ scouting data must use getOrCreateScouted directly — this
  * function intentionally materializes entries into world.playerKnowledge.
  */
-export function warmScoutingForRikishiList(
-  world: WorldState,
-  rikishiIds: Id[],
-  baselineObservation: number = 0
-): void {
-  const table = ensureScoutingTable(world);
-  for (const id of rikishiIds) {
-    if (!table[id]) table[id] = getOrCreateScouted(world, id, baselineObservation);
-  }
-}
 
 /** =========================
  *  World-level hooks (called via safeCall in world.ts / dailyTick.ts)

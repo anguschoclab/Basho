@@ -98,8 +98,21 @@ describe("S7-4a — player poach suitor survives the weekly candidate-pool tick"
     expect(poach.ok).toBe(true);
     const w2 = resolveImpacts(w1, [poach.impact!]);
 
-    // Advance past the player's deadlineWeek (world.week + 4 = 5).
-    const w3in = { ...w2, week: 6 };
+    // Per-suitor deadlines (S7-35): only when EVERY suitor's deadline has
+    // passed does the negotiation resolve — expire all of them.
+    const cand2 = w2.candidatePool!.candidates[CAND]!;
+    const expired = {
+      ...cand2,
+      competingSuitors: cand2.competingSuitors.map((s) => ({ ...s, deadlineWeek: 5 })),
+    };
+    const w3in = {
+      ...w2,
+      week: 6,
+      candidatePool: {
+        ...w2.candidatePool!,
+        candidates: { ...w2.candidatePool!.candidates, [CAND]: expired },
+      },
+    };
     const w3 = resolveImpacts(w3in, [phase01_week_candidate_pool(w3in)]);
 
     // PIN (currently RED): player ("all_in") outranks every NPC band, so the

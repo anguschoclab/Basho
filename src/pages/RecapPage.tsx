@@ -83,8 +83,8 @@ export default function RecapPage() {
     { id: "overview", label: "Overview", href: "/dashboard" },
     { id: "basho", label: "Basho", href: "/basho" },
     { id: "recap", label: "Recap" },
-    { id: "history", label: "History", href: "/history" },
-    { id: "almanac", label: "Almanac", href: "/almanac" },
+    { id: "history", label: "History", href: "/records/history" },
+    { id: "almanac", label: "Almanac", href: "/records/almanac" },
   ];
 
   const bashoTitle = lastBasho?.bashoName?.toUpperCase() || "RECENT";

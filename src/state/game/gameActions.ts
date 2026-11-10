@@ -89,15 +89,6 @@ export const endBashoAction = (): GameAction => ({
 });
 
 /**
- * Simulates a full basho (all 15 days).
- *
- * @returns {GameAction} SIM_FULL_BASHO action.
- */
-export const simFullBasho = (): GameAction => ({
-  type: "SIM_FULL_BASHO",
-});
-
-/**
  * Updates the world state with a new world.
  *
  * @param {WorldState} world - The new world state.

@@ -6,9 +6,4 @@ export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-/**
- * Standardizes rikshina/name formatting.
- */
-export function formatShikona(shikona: string | undefined, name: string): string {
-  return shikona || name || "Unknown Rikishi";
-}
+

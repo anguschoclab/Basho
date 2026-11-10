@@ -100,7 +100,7 @@ describe("RegionalHubPage — UI surface", () => {
   it("renders world circuit regional presence and exhibitions", () => {
     const page = readSrcFile("pages/RegionalHubPage.tsx");
     expect(page).toContain("regionalPresence");
-    expect(page).toContain("pendingExhibitions");
+    expect(page).toContain("exhibitionProjection");
   });
 
   it("uses TOURNAMENT_TABS for sub-navigation", () => {

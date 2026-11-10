@@ -1,6 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { ChronicleReport, ChampionEntry, ChronicleRecordEntry } from "@/engine/types/records";
+import type { ChronicleReport, ChampionEntry } from "@/engine/types/records";
 import { stableTieBreak } from "@/engine/utils/sort";
 import {
   getRikishi,
@@ -21,7 +21,6 @@ export const ChronicleService = {
       biggestScandals: [],
       greatestRivalries: [],
       eraLabels: [],
-      recordsBroken: [],
       highlights: [],
     };
   },
@@ -113,12 +112,5 @@ export const ChronicleService = {
    */
   addHighlight(report: ChronicleReport, highlight: string): void {
     report.highlights.push(highlight);
-  },
-
-  /**
-   * Record a record-breaking event.
-   */
-  addRecord(report: ChronicleReport, record: ChronicleRecordEntry): void {
-    report.recordsBroken.push(record);
   },
 };

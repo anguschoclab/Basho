@@ -9,7 +9,6 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import { getActiveRikishi } from "@/engine/core/selectors";
 import { stableSort } from "@/engine/utils/sort";
-import type { MatchPairing } from "@/engine/matchmaking/index";
 
 /** Default bout days per division (sekitori = 15, lower = 7) */
 export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
@@ -38,26 +37,6 @@ export function getDivisionExpectedSize(division: Division): number {
 }
 
 /**
- * Get the division below the given division in the hierarchy.
- * Returns null for the bottom division (jonokuchi).
- */
-export function getDivisionBelow(division: Division): Division | null {
-  const hierarchy: Division[] = [
-    "makuuchi",
-    "juryo",
-    "makushita",
-    "sandanme",
-    "jonidan",
-    "jonokuchi",
-  ];
-  const index = hierarchy.indexOf(division);
-  if (index === -1 || index === hierarchy.length - 1) {
-    return null;
-  }
-  return hierarchy[index + 1];
-}
-
-/**
  * Active division roster.
  */
 export function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
@@ -68,29 +47,6 @@ export function activeDivisionRoster(world: WorldState, division: Division): Rik
     }
   }
   return stableSort(pool, (r) => r.id);
-}
-
-/**
- * Greedy selection of non-overlapping pairs.
- * Candidates should be pre-sorted by score (descending).
- */
-export function greedySelectPairs(
-  candidates: MatchPairing[],
-  maxPairs: number,
-  used = new Set<string>()
-): MatchPairing[] {
-  const selected: MatchPairing[] = [];
-
-  for (const c of candidates) {
-    if (selected.length >= maxPairs) break;
-    if (used.has(c.eastId) || used.has(c.westId)) continue;
-
-    selected.push(c);
-    used.add(c.eastId);
-    used.add(c.westId);
-  }
-
-  return selected;
 }
 
 /**

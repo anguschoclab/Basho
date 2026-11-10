@@ -136,15 +136,24 @@ const REQUEST_RULES: Array<{
   },
 ];
 
+/** Membership key for a pending request — one (rikishi, type) pair per key. */
+export function pendingRequestKey(q: Pick<RikishiRequest, "rikishiId" | "type">): string {
+  return `${q.rikishiId}:${q.type}`;
+}
+
 /**
  * New requests this rikishi raises this week. Threshold crossing + cooldown +
  * no duplicate pending type. Deterministic (no rng).
+ *
+ * `pendingKeys` is a caller-maintained Set of pendingRequestKey() covering all
+ * requests already pending plus every request generated earlier this pass —
+ * the caller adds the returned requests' keys so later rikishi see them.
  */
 export function generateRequests(
   world: WorldState,
   r: Rikishi,
   disposition: RikishiAgencyState,
-  pending: RikishiRequest[]
+  pendingKeys: ReadonlySet<string>
 ): RikishiRequest[] {
   const week = world.week ?? world.calendar?.currentWeek ?? 0;
   if (
@@ -155,7 +164,7 @@ export function generateRequests(
   }
   const out: RikishiRequest[] = [];
   for (const rule of REQUEST_RULES) {
-    if (pending.some((q) => q.rikishiId === r.id && q.type === rule.type)) continue;
+    if (pendingKeys.has(`${r.id}:${rule.type}`)) continue;
     // Two rules can share a type (e.g. seek_transfer: discontent +
     // low_satisfaction) — `out` must be consulted too or both fire in one
     // call and mint the same deterministic id `${r.id}-${type}-w${week}`.

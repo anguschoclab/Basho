@@ -212,7 +212,6 @@ function finalizeTournament(
     eraLabels: [],
     topChampions: [],
     greatestRivalries: [],
-    recordsBroken: [],
     globalCups: [],
   };
   const historyEntry: GlobalCupHistoryEntry = {

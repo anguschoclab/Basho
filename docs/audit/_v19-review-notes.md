@@ -92,3 +92,64 @@ registered in the plan.
 - V19-N4: `RegionalHubPage.tsx:~38` `void pendingExhibitions;` dead statement.
 - V19-N5: S10 removals must update `unreferenced-exports` + `baseline-orphans.json`.
 - V19-N6: `coach_criticism` JSON path has zero emitters — confirmed dead.
+
+## Phase C outcomes — DEBT burn-down (commit e16cf493 + cleanup batch)
+
+All 21 regression pins green. Per-item verdict:
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| #1201 `allocateVacancies` | APPROVED + MERGED (payload applied verbatim) | 14/14 parity incl. exclusion-key contract; bench ~30% (independently confirmed) |
+| S5-4 basho-name collision | FIXED | `advanceOffSeason` re-rolls between iterations; pin forces `bashoCount` collision → unique names |
+| S5-5 seed leakage `seed_` | FIXED | `nextRand` uses injected rng not world seed |
+| S6-5 loan id same-batch | DEBT-RENEWED (renamed DEBT-S6-5b) | Unreachable via resolved pipeline: `MIN_LOAN` always clears `Math.max(MIN_LOAN, principal)`; same-batch second issuance clobbers not duplicates. Latent `seq+1` jump remains — structural fix deferred |
+| S7-23 `days:N` | FIXED | `computeTargetBasho` honest world-days: `ceil(N/60)`; doc corrected |
+| V19-N1 `day = basho.day ?? 1` | FIXED | `scheduleJuryoWithCrossover`/`buildSwissTorikumi`/`buildLowerDivisionSwiss` accept `day` param, threaded from basho.day |
+| S7-48 `getBashoInfo` | FIXED | year-aware Nth-Sunday via `getBashoSchedule(year)` |
+| S7-24 styleDrift | FIXED | clamped `[-1,1]` in WorldCircuitService |
+| S7-27 academy cap/guard | FIXED | `ACADEMY_MAX` enforced + `Math.min` cap |
+| S7-28 gyoji double-count | FIXED | per-basho seen-set in `rankPoints` aggregation |
+| S7-29 koenkai churn | FIXED | symmetric +/- demand deltas, deterministic |
+| S7-31 gomenfuda counter | FIXED | persistent `heya.gomenfudaByYear` survives event-log pruning; reader prefers counter |
+| S7-35 per-suitor deadline | FIXED | each negotiation carries own `deadlineWeek` |
+| S7-36 sparring injury | FIXED | injury pauses pair (preserves `weeksActive`); only retirement/missing dissolves |
+| S7-37 mentorship ceiling | FIXED | `getEffectiveCeiling` replaces `MAX_STAT_CEILING`; above-ceiling stats preserved, growth halts |
+| S7-38 intake 30-cap | FIXED | `promoteIntake` respects `MAX_ROSTER=30` |
+| S7-39 myoseki generics | FIXED | 105-name kabu list (~137 unique), `Elder_N` gone |
+| S7-40 (landed v18) | APPROVED | — |
+| S7-41/S7-39 pin | FIXED | uniqueNames dedupe already existed; defect was name-pool size |
+| S7-44 DramaMatchmaker | FIXED — rewired (not deleted) | dead `r.rivalries`/`winStreak`/`justReturnedFromInjury` casts → `world.rivalriesState.pairs`, `currentWinStreak`, `recentlyReturnedFromInjury`; `applyDramaBudget` signature takes `RivalriesState`; SwissAlgorithm call-site wired |
+| S7-45 | FIXED (VER) | type-level — tsc enforces |
+| S7-49 | DEBT-RENEWED | structural tuning question, not a correctness bug |
+| S8-3 UI honesty | FIXED + NON-ISSUES | `/history`→`/records/history` (RecapPage); SchedulePage selectedDay override+useEffect reset (render-phase setState removed); InfrastructureSections `0.8`→`CONSTRUCTION_COST_LEVEL_MULTIPLIER`; perceptionComponents raw `complianceState`→`COMPLIANCE_DISPLAY`. No per-keystroke dispatch or raw-id sites found |
+| S9-5 factory regex | FIXED | `LOCAL_FACTORY_RE` expanded to full entity-factory name set; 44 true positives grandfathered into `FACTORY_ALLOWLIST` (existing-file policy) |
+| S9-6 fail-open gates | FIXED | knipGuard + circularDependency + bundleBudget now assert output non-empty before pass |
+| S9-7 config typecheck | FIXED | `tsconfig.node.json` covers root *.ts config files |
+| S9-8 year determinism | FIXED | `determinismDoubleRun` gained year-horizon case |
+| S10 dead code | FIXED per corrected list | see below |
+
+### S10 executed removals
+- `handleInsolvency` (economics.ts) + `economics.test.ts` (whole file pinned dead fn)
+- `getHeyaBrand` trivial map.get wrapper + test block
+- `injectRikishiAsCandidate` (TalentPoolStateService); tests repointed to `materializeCandidateToRikishiInternal` (impact+nextCandidates contract)
+- `runRetirements` deprecated wrapper → tests repointed to `processAllRetirements`
+- `recordsBroken` chain: `ChronicleRecordEntry` type, `addRecord`, field, inits (GlobalCupService, types), idIntegrity reader — all removed together
+- `digestStale` field + writer + 2 test assertions
+- `localClampInt`, `formatShikona` dead utils
+- `historyCache.ts` pairwise chain (file) + orphaned test
+- `SIM_FULL_BASHO` reducer action path (case/type/creator + 4 test files' blocks); live UI path is worker `TICK_MULTIPLE_DAYS`
+- `ensureScoutingTable` dead helper
+- `generateHeyaRecord` (heyaRecord.ts whole file) + barrel export
+- `void pendingExhibitions;` dead statement (RegionalHubPage)
+- `coach_criticism` key in post_basho_press.json (zero emitters — V19-N6)
+- Manifests: `baseline-orphans.json` (176→170), `orphan-tracker.csv` regenerated, `unreferenced-exports.test.ts` classifications pruned
+
+### S10 NON-ISSUES (kept)
+- `validatePath` — Electron path-traversal guard, 7 call sites
+- `rpPerception` — live (`npc/weekly/workers.ts:32`)
+- `shouldHireStaff` — live via TacticalCoordinator→execution
+- `isAtForeignLimit`, `capitalize`, `favorTarget`, `ensureCandidatePoolState` — live or test-only coverage pins
+- almanac test-only exports (`generateCareerRecord`, `buildNotableBoutEntry`, `enrichAlmanacRecord`, `getRikishiCareerSummary`) — pin real almanac behavior
+
+### Housekeeping
+- Removed tracked sim-output junk: `scripts/sim/bard-warning-census.txt`, `scripts/sim/population-flow-results.txt` (+ `.gitignore` rule)

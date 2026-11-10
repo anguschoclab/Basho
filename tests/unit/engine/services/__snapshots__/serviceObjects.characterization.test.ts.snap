@@ -1265,13 +1265,26 @@ exports[`YokozunaService — golden master > evaluateCandidate across rikishi pr
   "ozeki-14wins",
   {
     "name": "Wrestler-r-ozeki-14wins",
-    "performances": [],
-    "reasons": [
-      "Recent Tournament Champion",
+    "performances": [
+      {
+        "junYusho": false,
+        "losses": 0,
+        "rikishiId": "r-ozeki-14wins",
+        "wins": 0,
+        "yusho": false,
+      },
+      {
+        "junYusho": false,
+        "losses": 1,
+        "rikishiId": "r-ozeki-14wins",
+        "wins": 14,
+        "yusho": false,
+      },
     ],
-    "recommendation": "watch",
+    "reasons": [],
+    "recommendation": "reject",
     "rikishiId": "r-ozeki-14wins",
-    "sentiment": 82.5,
+    "sentiment": 42.5,
   },
 ]
 `;
@@ -1281,7 +1294,22 @@ exports[`YokozunaService — golden master > evaluateCandidate across rikishi pr
   "ozeki-10wins",
   {
     "name": "Wrestler-r-ozeki-10wins",
-    "performances": [],
+    "performances": [
+      {
+        "junYusho": false,
+        "losses": 0,
+        "rikishiId": "r-ozeki-10wins",
+        "wins": 0,
+        "yusho": false,
+      },
+      {
+        "junYusho": false,
+        "losses": 1,
+        "rikishiId": "r-ozeki-10wins",
+        "wins": 10,
+        "yusho": false,
+      },
+    ],
     "reasons": [],
     "recommendation": "reject",
     "rikishiId": "r-ozeki-10wins",
@@ -1295,7 +1323,22 @@ exports[`YokozunaService — golden master > evaluateCandidate across rikishi pr
   "ozeki-8wins",
   {
     "name": "Wrestler-r-ozeki-8wins",
-    "performances": [],
+    "performances": [
+      {
+        "junYusho": false,
+        "losses": 0,
+        "rikishiId": "r-ozeki-8wins",
+        "wins": 0,
+        "yusho": false,
+      },
+      {
+        "junYusho": false,
+        "losses": 1,
+        "rikishiId": "r-ozeki-8wins",
+        "wins": 8,
+        "yusho": false,
+      },
+    ],
     "reasons": [],
     "recommendation": "reject",
     "rikishiId": "r-ozeki-8wins",
@@ -1309,7 +1352,22 @@ exports[`YokozunaService — golden master > evaluateCandidate across rikishi pr
   "ozeki-4wins",
   {
     "name": "Wrestler-r-ozeki-4wins",
-    "performances": [],
+    "performances": [
+      {
+        "junYusho": false,
+        "losses": 0,
+        "rikishiId": "r-ozeki-4wins",
+        "wins": 0,
+        "yusho": false,
+      },
+      {
+        "junYusho": false,
+        "losses": 1,
+        "rikishiId": "r-ozeki-4wins",
+        "wins": 4,
+        "yusho": false,
+      },
+    ],
     "reasons": [],
     "recommendation": "reject",
     "rikishiId": "r-ozeki-4wins",

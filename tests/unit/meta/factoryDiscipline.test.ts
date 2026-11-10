@@ -157,10 +157,58 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/presenters/tsukebitoProjections.test.ts",
   "unit/presenters/uiModels.test.ts",
   "unit/presenters/youthAcademyProjections.test.ts",
+
+  // S9-5 expansion (v19): files flagged when the name set was widened to
+  // oyakata/sponsor/basho/candidate/prospect/staff/gyoji/match factories.
+  // Grandfathered under the same policy — migrate opportunistically.
+  "unit/components/BashoStandingsEvolution.test.tsx",
+  "unit/components/HoshitoriChart.test.tsx",
+  "unit/components/RecruitingTab.test.tsx",
+  "unit/contexts/bashoSlice.indexing.test.ts",
+  "unit/engine/advisor/foreignSlotAdvisor.test.ts",
+  "unit/engine/agents/NarrativeAgent.phase.test.ts",
+  "unit/engine/agents/financeAgent.test.ts",
+  "unit/engine/agents/governanceAgent.test.ts",
+  "unit/engine/agents/rivalryAgent.test.ts",
+  "unit/engine/almanac/almanacUpdate.test.ts",
+  "unit/engine/avatar/lifecycleAvatarContinuity.test.ts",
+  "unit/engine/banzuke/specialPrizes.test.ts",
+  "unit/engine/bout/bashoMatchIndex.test.ts",
+  "unit/engine/bout/physicsTrio.characterization.test.ts",
+  "unit/engine/core/idIntegrity.test.ts",
+  "unit/engine/economy/SponsorContractService.hints.test.ts",
+  "unit/engine/economy/SponsorContractService.test.ts",
+  "unit/engine/economy/koenkaiBandAdjustment.test.ts",
+  "unit/engine/governance/KihakuService.test.ts",
+  "unit/engine/hotpathEquivalence.test.ts",
+  "unit/engine/lifecycle/BashoHistory.test.ts",
+  "unit/engine/npc/npcRetirementStrategy.test.ts",
+  "unit/engine/npc/npcSponsorStrategyHelpers.test.ts",
+  "unit/engine/npcAI/economy/foreignSlotPolicy.test.ts",
+  "unit/engine/npcAI/memoryStore.test.ts",
+  "unit/engine/npcAI/npcWeekly.characterization.test.ts",
+  "unit/engine/recruitment/npcRecruitmentStrategy.test.ts",
+  "unit/engine/recruitment/perceivedBidding.test.ts",
+  "unit/engine/recruitment/scoutingCalibration.test.ts",
+  "unit/engine/services/serviceObjects.characterization.test.ts",
+  "unit/engine/strategy/NPCStrategyFramework.test.ts",
+  "unit/engine/systems/generation/CandidateBuilder.test.ts",
+  "unit/engine/systems/generation/TalentPoolCandidateRemoval.test.ts",
+  "unit/engine/systems/generation/talentPoolScouting.test.ts",
+  "unit/engine/tick/phase01_week_staff.integration.test.ts",
+  "unit/engine/tick/phases/npc_ai/memory.test.ts",
+  "unit/engine/tick/phases/npc_ai/mood.test.ts",
+  "unit/pages/CandidatePoolPage.test.tsx",
+  "unit/pages/OyakataPage.test.tsx",
+  "unit/pages/StaffPage.test.tsx",
+  "unit/pages/TalentPoolPage.test.tsx",
+  "unit/presenters/eventProjections.test.ts",
+  "unit/presenters/heyaUI.test.ts",
+  "unit/presenters/recapProjections.test.ts",
 ]);
 
 const LOCAL_FACTORY_RE =
-  /(?:function|const)\s+(?:makeWorld|makeRikishi|makeHeya|mockRikishi|mockHeya|makeMockWorld|makeMockHeya|createMockWorld|createWorld)\b/;
+  /(?:function|const)\s+(?:makeWorld|makeRikishi|makeHeya|mockRikishi|mockHeya|makeMockWorld|makeMockHeya|makeMockRikishi|createMockWorld|createMockRikishi|createMockHeya|createWorld|createRikishi|createHeya|makeOyakata|mockOyakata|createOyakata|makeBasho|mockBasho|createBasho|makeCandidate|mockCandidate|createCandidate|makeProspect|mockProspect|createProspect|makeSponsor|mockSponsor|createSponsor|makeStable|mockStable|createStable|makeStaff|mockStaff|createStaff|makeGyoji|mockGyoji|createGyoji|makeMatch|makeBout)\b/;
 
 describe("factory discipline — no new local entity factories", () => {
   it("test files outside the allowlist use canonical factories", () => {

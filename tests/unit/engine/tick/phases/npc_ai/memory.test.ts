@@ -81,4 +81,26 @@ describe("Bug K: consolidateOyakataMemoryPure does not mutate input oyakata", ()
 
     expect(result.observations.length).toBeLessThanOrEqual(10);
   });
+
+  it("records heya-scoped incidents once per unique summary", () => {
+    const world = makeMockWorld({ week: 5 });
+    const oyakata = makeOyakata();
+    const mkEvent = (summary: string) => ({
+      id: `e-${summary}`,
+      heyaId: "h1",
+      week: 5,
+      year: world.year,
+      category: "discipline",
+      type: "GOVERNANCE_RULING",
+      importance: "major",
+      summary,
+    });
+    world.events = {
+      log: [mkEvent("Scandal ruling"), mkEvent("Scandal ruling"), mkEvent("Warning issued")],
+    } as any;
+
+    const result = consolidateOyakataMemoryPure(world, oyakata, makePerception());
+    const incidents = result.observations.filter((o) => o.type === "incident");
+    expect(incidents.map((o) => o.summary)).toEqual(["Scandal ruling", "Warning issued"]);
+  });
 });

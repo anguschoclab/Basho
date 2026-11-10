@@ -105,9 +105,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "NPC finance strategy getter utility",
   "src/engine/npc/strategy/NPCGovernanceCalculator.ts:getGovernanceStrategy":
     "NPC governance strategy getter utility",
-  "src/engine/utils/math.ts:localClampInt": "Math utility for clamping integers",
   "src/engine/utils/random.ts:seededWeightedPick": "Random utility for seeded weighted picking",
-  "src/engine/utils/string.ts:formatShikona": "String formatting utility for shikona",
 
   // ── Newly classified after audit-orphans.ts fix ──
   "src/engine/basho/ExhibitionBashoService.ts:isExhibitionBasho":
@@ -152,8 +150,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Internal table consumed by applyOyakataCreationConfig; exported for unit testing",
   "src/engine/generation/competitiveBalance.ts:recruitmentBalanceMultiplier":
     "Consumed by TalentPoolNPCRecruitment (NPC recruitment pipeline); pinned by competitiveBalance tests",
-  "src/engine/generation/TalentPoolMaterialization.ts:materializeCandidateToRikishi":
-    "Consumed by TalentPoolNPCRecruitment (NPC talent materialization); pinned by materialization tests",
   "src/engine/generation/PersonaAssignment.ts:assignPressPersona":
     "Internal helper invoked by applyPersonaAssignment; exported for unit testing",
   "src/engine/generation/PersonaAssignment.ts:assignPersonalityTraits":
@@ -312,8 +308,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (3 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/core/world.ts:getRikishiBashoStats":
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/economy/economics.ts:handleInsolvency":
-    "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/economy/facilities.ts:UpgradeResult":
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/economy/loans.ts:processMonthlyLoanRepayments":
@@ -324,12 +318,8 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/history/history.ts:generateCareerSnapshot":
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/history/historyCache.ts:ArchivedYear":
-    "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/history/historyIndex.ts:BashoKey":
     "Live module surface — referenced outside its file (6 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/keshoMawashi/HeyaBrandGenerator.ts:getHeyaBrand":
-    "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/npc/decision/LoopDecisionEngine.ts:detectDueDecisions":
     "Live module surface — referenced outside its file (4 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/npc/handlers.ts:consolidateOyakataMemory":

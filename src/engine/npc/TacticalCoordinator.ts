@@ -135,6 +135,10 @@ export function applyPlanConstraints(
 ): void {
   reasoning.push(`[Strategic Plan] Active plan: ${plan.planId}`);
 
+  // Built lazily on the first focus_rival constraint — most plans never
+  // carry one, and the array it mirrors stays the output shape.
+  let rivalTargetsSet: Set<string> | undefined;
+
   for (const constraint of plan.constraints) {
     switch (constraint.type) {
       case "max_intensity":
@@ -161,14 +165,17 @@ export function applyPlanConstraints(
         input.agentDecisions.rivalry.escalateRivalry = true;
         input.agentDecisions.rivalry.deescalateRivalry = false;
         const rivalHeya = typeof constraint.value === "string" ? constraint.value : undefined;
-        if (
-          rivalHeya &&
-          !input.agentDecisions.rivalry.targetRivalForMatchmaking.includes(rivalHeya)
-        ) {
-          input.agentDecisions.rivalry.targetRivalForMatchmaking = [
-            ...input.agentDecisions.rivalry.targetRivalForMatchmaking,
-            rivalHeya,
-          ];
+        if (rivalHeya) {
+          rivalTargetsSet ??= new Set(
+            input.agentDecisions.rivalry.targetRivalForMatchmaking
+          );
+          if (!rivalTargetsSet.has(rivalHeya)) {
+            rivalTargetsSet.add(rivalHeya);
+            input.agentDecisions.rivalry.targetRivalForMatchmaking = [
+              ...input.agentDecisions.rivalry.targetRivalForMatchmaking,
+              rivalHeya,
+            ];
+          }
         }
         reasoning.push(`[Plan Directive] Rivalry focus mandated by active plan.`);
         break;

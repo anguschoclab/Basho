@@ -67,8 +67,6 @@ export interface GameState {
    * LOAD_WORLD to the worker so its authoritative copy can't go stale (V5-B09).
    */
   uiWorldRevision?: number;
-  /** True when the digest is stale and needs rebuild (set during bulk advances). */
-  digestStale?: boolean;
 }
 
 /**
@@ -83,7 +81,6 @@ export type GameAction =
   | { type: "SIMULATE_ALL_BOUTS" }
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
-  | { type: "SIM_FULL_BASHO" }
   | { type: "SET_BOUT_TACTIC"; boutId: string; tactic: import("@/engine/types/combat").BoutTactic }
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
@@ -105,5 +102,4 @@ export const initialGameState: GameState = {
   isAutoPlaying: false,
   boutTactics: {},
   uiWorldRevision: 0,
-  digestStale: false,
 };

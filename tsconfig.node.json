@@ -28,5 +28,15 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts", "src/app/vite-env.d.ts", "scripts/**/*.ts"]
+  "include": [
+    "vite.config.ts",
+    "src/app/vite-env.d.ts",
+    "scripts/**/*.ts",
+    // S9-7: type-check the toolchain configs too — they were silently
+    // excluded, so a broken vitest/playwright/electron config compiled clean.
+    "*.config.ts",
+    "playwright.lens.config.ts",
+    "vitest.perf.config.ts",
+    "vitest.slow.config.ts"
+  ]
 }

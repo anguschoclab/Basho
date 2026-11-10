@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
-import { runRetirements } from "@/engine/governance/services/governanceReview";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -36,7 +36,7 @@ describe("retirementYearConsistency — all paths stamp world.year", () => {
     world.rikishi.set("r45b", r);
     world.heyas.set("heya-2", heya);
 
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const resolved = resolveImpacts(world, [impact]);
     const retired = resolved.historicalRikishi.get("r45b") as Rikishi | undefined;
 

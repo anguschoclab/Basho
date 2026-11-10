@@ -22,8 +22,8 @@ describe("Game Reducer Purity", () => {
   });
 });
 
-describe("Game Reducer: World Change Flag", () => {
-  it("MUST set digestStale when world changes", () => {
+describe("Game Reducer: World Change", () => {
+  it("replaces the world reference when a new world arrives", () => {
     const world = generateInitialWorld("test-stale");
     const initialState = { ...initialGameState, world };
 
@@ -34,11 +34,10 @@ describe("Game Reducer: World Change Flag", () => {
 
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).not.toBe(initialState.world);
-    expect(nextState.digestStale).toBe(true);
     expect(nextState.digest).toBeNull();
   });
 
-  it("MUST NOT set digestStale when world does not change", () => {
+  it("keeps the world reference when the world does not change", () => {
     const initialState = {
       ...initialGameState,
       world: generateInitialWorld("test-nochange"),
@@ -51,6 +50,5 @@ describe("Game Reducer: World Change Flag", () => {
 
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).toBe(initialState.world);
-    expect(nextState.digestStale).toBe(false);
   });
 });

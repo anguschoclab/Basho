@@ -81,7 +81,6 @@ test-benchmark*.ts
 .claude/worktrees/
 .worktrees/
 bun_output.txt
-.jules/
 .remember/
 .gemini/
 .playwright-mcp/
@@ -93,3 +92,4 @@ bun_output.txt
 test-list.txt
 test-results.json
 consistency-check-*
+scripts/sim/*.txt

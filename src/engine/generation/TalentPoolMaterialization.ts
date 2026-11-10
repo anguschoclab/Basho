@@ -80,32 +80,6 @@ export function materializeCandidateToRikishiInternal(
  * Standardized pure implementation used for both NPC fast-path and weekly resolution.
  * Returns StateImpact describing rikishi materialization instead of mutating directly.
  */
-export function materializeCandidateToRikishi(
-  world: WorldState,
-  candidateId: Id,
-  heyaId: Id
-): StateImpact {
-  const tp = world.talentPool;
-  if (!tp) return createImpactBuilder("materializeCandidateToRikishi").build();
-
-  const result = materializeCandidateToRikishiInternal(
-    world,
-    candidateId,
-    heyaId,
-    tp.candidates,
-    tp.pools
-  );
-  const builder = createImpactBuilder("materializeCandidateToRikishi");
-  builder.merge(result.impact);
-  builder.updateWorldField("talentPool", {
-    ...tp,
-    candidates: result.nextCandidates,
-    pools: result.nextPools,
-  });
-
-  return builder.build();
-}
-
 /**
  * Finalizes all "signed" candidates by converting them into full Rikishi entities.
  * This ensures recruits are actually added to stable rosters and the world state.

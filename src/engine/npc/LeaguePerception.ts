@@ -141,24 +141,24 @@ function buildFinanciallyFragileHeyas(world: WorldState): Id[] {
 
 function buildRivalryClusters(world: WorldState): RivalryCluster[] {
   const clusters: Record<Id, RivalryCluster> = {};
+  const clusterRivalSets: Record<Id, Set<Id>> = {};
   if (!world.rivalriesState?.pairs) return [];
 
   for (const pair of Object.values(world.rivalriesState.pairs)) {
     if (pair.heat < 40) continue;
-    if (!clusters[pair.aId]) {
-      clusters[pair.aId] = { keyRikishiId: pair.aId, rivalIds: [], averageHeat: 0 };
-    }
-    if (!clusters[pair.aId].rivalIds.includes(pair.bId)) {
-      clusters[pair.aId].rivalIds.push(pair.bId);
-      clusters[pair.aId].averageHeat += pair.heat;
-    }
-
-    if (!clusters[pair.bId]) {
-      clusters[pair.bId] = { keyRikishiId: pair.bId, rivalIds: [], averageHeat: 0 };
-    }
-    if (!clusters[pair.bId].rivalIds.includes(pair.aId)) {
-      clusters[pair.bId].rivalIds.push(pair.aId);
-      clusters[pair.bId].averageHeat += pair.heat;
+    for (const [keyId, rivalId] of [
+      [pair.aId, pair.bId],
+      [pair.bId, pair.aId],
+    ] as const) {
+      if (!clusters[keyId]) {
+        clusters[keyId] = { keyRikishiId: keyId, rivalIds: [], averageHeat: 0 };
+        clusterRivalSets[keyId] = new Set();
+      }
+      if (!clusterRivalSets[keyId].has(rivalId)) {
+        clusterRivalSets[keyId].add(rivalId);
+        clusters[keyId].rivalIds.push(rivalId);
+        clusters[keyId].averageHeat += pair.heat;
+      }
     }
   }
 

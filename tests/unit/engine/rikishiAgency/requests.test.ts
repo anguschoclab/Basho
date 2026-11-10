@@ -78,6 +78,31 @@ describe("request generation", () => {
     expect(rest).toHaveLength(1);
   });
 
+  it("does not let another rikishi's same-type pending request block a new request", () => {
+    const r = MockFactory.createRikishi({
+      id: "r-tired",
+      heyaId: "h-npc",
+      fatigue: 85,
+      behavior: { discipline: 50, mediaSavvy: 50, stress: 60 },
+    } as Partial<Rikishi>);
+    const world = worldWith([r]);
+    world.pendingRikishiRequests = [
+      {
+        id: "req-other",
+        rikishiId: "r-other",
+        heyaId: "h-npc",
+        type: "request_rest",
+        createdWeek: 9,
+        reason: "fatigue",
+      },
+    ];
+    const next = resolveImpacts(world, [phase01_week_rikishi_agency(world)]);
+    const rest = (next.pendingRikishiRequests ?? []).filter(
+      (q) => q.rikishiId === "r-tired" && q.type === "request_rest"
+    );
+    expect(rest).toHaveLength(1);
+  });
+
   it("respects the request cooldown after a recent request", () => {
     const r = MockFactory.createRikishi({
       id: "r-cd",

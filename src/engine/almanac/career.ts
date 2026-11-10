@@ -85,12 +85,12 @@ export function generateCareerRecord(
   let currentWinStreak = 0;
   let longestWinStreak = 0;
 
+  const worldBasho = world.currentBashoName || "hatsu";
+  const worldBashoIndex = bashoNames.indexOf(worldBasho);
+
   for (let i = 0; i < careerBasho; i++) {
     const bashoIndex = (debutBashoIndex + i) % 6;
     const year = debutYear + Math.floor((debutBashoIndex + i) / 6);
-
-    const worldBasho = world.currentBashoName || "hatsu";
-    const worldBashoIndex = bashoNames.indexOf(worldBasho);
 
     if (year > world.year || (year === world.year && bashoIndex >= worldBashoIndex)) break;
 

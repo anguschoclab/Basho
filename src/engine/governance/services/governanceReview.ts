@@ -28,7 +28,6 @@ import {
   PRESTIGE_COLLAPSE_BAND,
   NON_FINANCIAL_MERGER_MAX_ROSTER,
 } from "@/constants/engine/economic";
-import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 
 /**
  * Financial insolvency check: scandal report, bailout loans,
@@ -394,14 +393,8 @@ export function runAIMetaDrift(world: WorldState): StateImpact {
 }
 
 /**
- * @deprecated Use processAllRetirements from ../../lifecycle/processRetirements
- * directly — the unified processor every retirement path delegates to.
- * Kept as a thin delegate for compatibility with existing callers and tests.
+ * Retirement processing lives in processAllRetirements
+ * (../../lifecycle/processRetirements) — the unified processor every
+ * retirement path delegates to. The runRetirements delegate was removed
+ * in v19 (S10 dead export — zero production callers).
  */
-export function runRetirements(world: WorldState): StateImpact {
-  const { impact, vacanciesByHeyaId } = processAllRetirements(world);
-  const builder = createImpactBuilder("retirements");
-  builder.merge(impact);
-  builder.addMetadata("vacanciesByHeyaId", vacanciesByHeyaId);
-  return builder.build();
-}

@@ -3,10 +3,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import {
-  generateHeyaBrandIdentities,
-  getHeyaBrand,
-} from "@/engine/keshoMawashi/HeyaBrandGenerator";
+import { generateHeyaBrandIdentities } from "@/engine/keshoMawashi/HeyaBrandGenerator";
 import { makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 
 describe("HeyaBrandGenerator", () => {
@@ -155,40 +152,6 @@ describe("HeyaBrandGenerator", () => {
       expect(brand1.primaryColor).toBe(brand2.primaryColor);
       expect(brand1.secondaryColor).toBe(brand2.secondaryColor);
       expect(brand1.crestMotif).toBe(brand2.crestMotif);
-    });
-  });
-
-  describe("getHeyaBrand", () => {
-    it("returns brand when found", () => {
-      const world = makeMockWorld();
-      const heya = makeMockHeya("heya-1");
-      world.heyas.set(heya.id, heya as any);
-
-      const brands = generateHeyaBrandIdentities(world.rng!, world.heyas);
-      const brand = getHeyaBrand(brands, heya.brandIdentityId!);
-
-      expect(brand).toBeDefined();
-      expect(brand!.heyaId).toBe(heya.id);
-    });
-
-    it("returns undefined when heya has no brandIdentityId", () => {
-      const world = makeMockWorld();
-      const heya = makeMockHeya("heya-1", { brandIdentityId: undefined });
-
-      const brands = generateHeyaBrandIdentities(world.rng!, world.heyas);
-      const brand = heya.brandIdentityId ? getHeyaBrand(brands, heya.brandIdentityId) : undefined;
-
-      expect(brand).toBeUndefined();
-    });
-
-    it("returns undefined when brand not found", () => {
-      const world = makeMockWorld();
-      const heya = makeMockHeya("heya-1", { brandIdentityId: "nonexistent-brand" });
-
-      const brands = generateHeyaBrandIdentities(world.rng!, world.heyas);
-      const brand = getHeyaBrand(brands, heya.brandIdentityId!);
-
-      expect(brand).toBeUndefined();
     });
   });
 });

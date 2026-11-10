@@ -105,25 +105,6 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case "SIM_FULL_BASHO": {
-      if (!state.world.currentBasho) return state;
-      let world = state.world;
-      const currentDay = world.currentBasho?.day ?? 1;
-      for (let d = currentDay; d <= 15; d++) {
-        if (!world.currentBasho) break;
-        world = simulateTodaysBouts(state, world).world;
-        if (d < 15) world = worldEngine.advanceBashoDay(world);
-      }
-      return {
-        ...state,
-        world,
-        phase: "basho_results",
-        currentBoutIndex: 0,
-        lastBoutResult: null,
-        uiWorldRevision: bump + 1,
-      };
-    }
-
     default:
       return state;
   }

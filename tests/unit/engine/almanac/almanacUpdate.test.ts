@@ -235,6 +235,53 @@ describe("runAlmanacNarrativeUpdate", () => {
     expect((bouts ?? []).length).toBeLessThanOrEqual(50);
   });
 
+  it("attributes notable bouts to both winner and loser, not uninvolved rikishi", () => {
+    const r1 = mockRikishi("r1", { careerWins: 5 });
+    const r2 = mockRikishi("r2", { careerWins: 5 });
+    const r3 = mockRikishi("r3", { careerWins: 5 });
+    world.rikishi.set("r1", r1);
+    world.rikishi.set("r2", r2);
+    world.rikishi.set("r3", r3);
+
+    const bout12 = makeBoutResult({
+      boutId: "b-r2-beats-r1",
+      winnerRikishiId: "r2",
+      loserRikishiId: "r1",
+      isKinboshi: true,
+      pbpLines: [makePbpLine("Kinboshi!", { tags: ["kinboshi"] })],
+    });
+    const bout34 = makeBoutResult({
+      boutId: "b-r3-wins",
+      winnerRikishiId: "r3",
+      loserRikishiId: "r4",
+      isKinboshi: true,
+      pbpLines: [makePbpLine("Kinboshi!", { tags: ["kinboshi"] })],
+    });
+    world.currentBasho = makeMockBasho({
+      matches: [
+        makeMatch({ boutId: "b-r2-beats-r1", result: bout12 }),
+        makeMatch({ boutId: "b-r3-wins", result: bout34 }),
+      ],
+    });
+
+    const impact = runAlmanacNarrativeUpdate(world);
+    const newWorld = resolveImpacts(world, [impact]);
+
+    expect(
+      newWorld.rikishi
+        .get("r1")
+        ?.almanacRecord?.notableBouts?.some((b) => b.boutId === "b-r2-beats-r1")
+    ).toBe(true);
+    expect(
+      newWorld.rikishi
+        .get("r2")
+        ?.almanacRecord?.notableBouts?.some((b) => b.boutId === "b-r2-beats-r1")
+    ).toBe(true);
+    const r3Bouts = newWorld.rikishi.get("r3")?.almanacRecord?.notableBouts ?? [];
+    expect(r3Bouts.some((b) => b.boutId === "b-r3-wins")).toBe(true);
+    expect(r3Bouts.some((b) => b.boutId === "b-r2-beats-r1")).toBe(false);
+  });
+
   it("does NOT build promotionHistory (that's in Phase 4B)", () => {
     const r1 = mockRikishi("r1", { careerWins: 5 });
     const r2 = mockRikishi("r2", { careerWins: 5 });

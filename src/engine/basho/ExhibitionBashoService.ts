@@ -126,6 +126,19 @@ export function simulateExhibitionBasho(
   const rivalriesOverlay = ensureRivalriesState(world);
   const seededPairs: typeof rivalriesOverlay.pairs = {};
 
+  // Eligible-rival lists are heya-invariant (rivals must be from a different
+  // stable, and unique ids make the self-exclusion redundant) — cache one
+  // filtered list per heya instead of re-filtering per rikishi.
+  const rivalsByHeya = new Map<Rikishi["heyaId"], Rikishi[]>();
+  const othersFor = (riki: Rikishi): Rikishi[] => {
+    let others = rivalsByHeya.get(riki.heyaId);
+    if (!others) {
+      others = participants.filter((r) => r.heyaId !== riki.heyaId);
+      rivalsByHeya.set(riki.heyaId, others);
+    }
+    return others;
+  };
+
   for (const riki of participants) {
     if (riki.isRetired) continue;
 
@@ -154,7 +167,7 @@ export function simulateExhibitionBasho(
     const rivalryRoll = rng.next();
     if (rivalryRoll < EXHIBITION_RIVALRY_SEED_CHANCE) {
       // Pick a random other participant as potential rival
-      const others = participants.filter((r) => r.id !== riki.id && r.heyaId !== riki.heyaId);
+      const others = othersFor(riki);
       if (others.length > 0) {
         const rival = others[Math.floor(rng.next() * others.length)];
         const key = makeRivalryKey(riki.id, rival.id);

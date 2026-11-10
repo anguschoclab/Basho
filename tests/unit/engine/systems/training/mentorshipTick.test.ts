@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { applyMentorshipBonuses } from "@/engine/training/MentorshipService";
-import { MAX_STAT_CEILING } from "@/constants/engine/training";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import { toIdMap } from "@/engine/utils/index";
 
@@ -66,12 +65,15 @@ describe("applyMentorshipBonuses", () => {
     expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
   });
 
-  it("clamps technique at MAX_STAT_CEILING and applies the adaptability penalty", () => {
+  it("preserves above-effective-ceiling stats and applies the adaptability penalty", () => {
+    // S7-37: growth clamps at getEffectiveCeiling (talent/PA/maturity), not
+    // MAX_STAT_CEILING — and a stat already above its effective ceiling is
+    // preserved, never clamped down.
     const world = makeWorldWithPair({ technique: 140 }, { technique: 98, adaptability: 50 });
     const impact = applyMentorshipBonuses(world);
     const update = impact.entities?.rikishiUpdates?.get("apprentice");
     expect(update).toBeDefined();
-    expect((update!.stats as { technique: number }).technique).toBe(MAX_STAT_CEILING);
+    expect((update!.stats as { technique: number }).technique).toBe(98);
     expect((update!.stats as { adaptability: number }).adaptability).toBe(49);
   });
 

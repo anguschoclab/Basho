@@ -11,7 +11,6 @@ import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder"
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import type { SpecialPrizesResult } from "@/engine/banzuke/specialPrizes";
-import { historyCache } from "@/engine/history/historyCache";
 import { getRikishi } from "@/engine/core/queries";
 import { selectKeyBouts } from "@/engine/lifecycle/keyBouts";
 import { applyBashoTenure } from "@/engine/legacy/tenure";
@@ -241,8 +240,6 @@ function archiveBasho(world: WorldState, basho: BashoState, builder: ImpactBuild
 
       archiveService.archiveAwards(world.year, yearAwards);
 
-      // Cache year data for historyCache (async operation)
-      historyCache.getYear(world.year);
     });
   });
 }

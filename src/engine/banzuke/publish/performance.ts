@@ -382,10 +382,13 @@ export function buildPerformanceList(
     normalizedEntries.push([id, { wins: 0, losses: 0, absences: getTotalBashodays(r.division) }]);
   }
 
+  // Loop-invariant: the just-published basho result is the same for every entry.
+  const history = world.history[world.history.length - 1];
+  const junYushoSet = new Set(history?.junYusho ?? []);
+
   for (const [id, stats] of normalizedEntries) {
-    const history = world.history[world.history.length - 1];
     const isYusho = history?.yusho === id;
-    const isJunYusho = history?.junYusho?.includes(id) ?? false;
+    const isJunYusho = junYushoSet.has(id);
     const rikishi = getRikishi(world, id);
     const divisionDays = rikishi ? getTotalBashodays(rikishi.division) : 15;
 

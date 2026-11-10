@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-06T15:37:40.859Z",
+  "generatedAt": "2026-v19-s10-prune",
   "summary": {
-    "total": 176,
-    "unreferencedExports": 167,
+    "total": 170,
+    "unreferencedExports": 161,
     "orphanRoutes": 0,
     "untickedServices": 9,
     "unusedComponents": 0,
@@ -450,17 +450,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0336",
-      "file": "src/engine/economy/economics.ts",
-      "symbol": "handleInsolvency",
-      "orphanType": "unreferenced-export",
-      "priority": "P0",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0339",
       "file": "src/engine/economy/facilities.ts",
       "symbol": "UpgradeResult",
@@ -802,17 +791,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0368",
-      "file": "src/engine/generation/TalentPoolMaterialization.ts",
-      "symbol": "materializeCandidateToRikishi",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0348",
       "file": "src/engine/generation/applyOyakataConfig.ts",
       "symbol": "PLAYER_BACKSTORIES",
@@ -978,17 +956,6 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0381",
-      "file": "src/engine/history/historyCache.ts",
-      "symbol": "ArchivedYear",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0382",
       "file": "src/engine/history/historyIndex.ts",
       "symbol": "BashoKey",
@@ -1003,17 +970,6 @@
       "id": "ORPH-0388",
       "file": "src/engine/history/prestige.ts",
       "symbol": "computeStatureBand",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0390",
-      "file": "src/engine/keshoMawashi/HeyaBrandGenerator.ts",
-      "symbol": "getHeyaBrand",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1792,31 +1748,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0204",
-      "file": "src/engine/utils/math.ts",
-      "symbol": "localClampInt",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
       "id": "ORPH-0205",
       "file": "src/engine/utils/random.ts",
       "symbol": "seededWeightedPick",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0206",
-      "file": "src/engine/utils/string.ts",
-      "symbol": "formatShikona",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",

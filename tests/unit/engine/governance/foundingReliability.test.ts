@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { runRetirements } from "@/engine/governance/services/governanceReview";
+import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
 
@@ -48,7 +48,7 @@ describe("founding reliability with exhausted myoseki", () => {
     };
 
     // --- Run retirements directly (runGovernanceReview is a separate function) ---
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const next = resolveImpacts(world, [impact]);
 
     // --- Assert deterministic outcomes ---
@@ -120,7 +120,7 @@ describe("founding reliability with exhausted myoseki", () => {
       } as any,
     });
 
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const next = resolveImpacts(world, [impact]);
 
     // The existing stock should now be held (transferred, not minted)
@@ -153,7 +153,7 @@ describe("founding reliability with exhausted myoseki", () => {
     });
 
     const beforeOyakata = world.oyakata?.size ?? 0;
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const next = resolveImpacts(world, [impact]);
 
     // No oyakata conversion — careerWins=10, rank=maegashira → not accomplished
@@ -184,7 +184,7 @@ describe("founding reliability with exhausted myoseki", () => {
     });
 
     const beforeOyakata = world.oyakata?.size ?? 0;
-    const impact = runRetirements(world);
+    const { impact } = processAllRetirements(world);
     const next = resolveImpacts(world, [impact]);
 
     // age = 2025 - 2000 = 25 → guard is age < 28, so no conversion

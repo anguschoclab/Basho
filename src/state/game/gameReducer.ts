@@ -57,9 +57,5 @@ const baseReducer = combineReducers<GameState, GameAction>([coreSlice, bashoSlic
  * Digest building is the responsibility of the UI layer (GameContext selector).
  */
 export function gameReducer(state: GameState, action: GameAction): GameState {
-  const next = baseReducer(state, action);
-  if (next.world !== state.world) {
-    return { ...next, digestStale: true };
-  }
-  return next;
+  return baseReducer(state, action);
 }
