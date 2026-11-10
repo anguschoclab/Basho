@@ -1,8 +1,8 @@
 {
   "generatedAt": "2026-v19-s10-prune",
   "summary": {
-    "total": 170,
-    "unreferencedExports": 161,
+    "total": 171,
+    "unreferencedExports": 162,
     "orphanRoutes": 0,
     "untickedServices": 9,
     "unusedComponents": 0,
@@ -1873,6 +1873,17 @@
       "file": "src/engine/rikishi/signatureKimarite.ts",
       "symbol": "signatureKimarite",
       "orphanType": "unticked-service",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0578",
+      "file": "src/engine/utils/asyncPool.ts",
+      "symbol": "mapWithConcurrency",
+      "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
       "npcConsumer": "",

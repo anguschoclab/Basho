@@ -106,6 +106,8 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   "src/engine/npc/strategy/NPCGovernanceCalculator.ts:getGovernanceStrategy":
     "NPC governance strategy getter utility",
   "src/engine/utils/random.ts:seededWeightedPick": "Random utility for seeded weighted picking",
+  "src/engine/utils/asyncPool.ts:mapWithConcurrency":
+    "Bounded-concurrency async mapper utility (retained API surface)",
 
   // ── Newly classified after audit-orphans.ts fix ──
   "src/engine/basho/ExhibitionBashoService.ts:isExhibitionBasho":

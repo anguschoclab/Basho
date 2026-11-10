@@ -11,7 +11,7 @@ import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";
 import { ChronicleService } from "@/engine/simulation/ChronicleService";
 import { SimTuningService, type TuningMetrics } from "@/engine/simulation/SimTuningService";
 import type { ChronicleReport } from "@/engine/types/records";
-import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { RANK_HIERARCHY, type PromotionEvent, type DemotionEvent, type Rank } from "@/engine/types/banzuke";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
@@ -138,6 +138,36 @@ export function runAutoSim(
       );
     }
 
+    // Rank snapshot before banzuke publish — promotions are diffed below.
+    const prePublishRanks = new Map<string, string>();
+    for (const id of currentWorld.activeRikishiIds) {
+      const r = getRikishi(currentWorld, id);
+      if (r) prePublishRanks.set(id, r.rank);
+    }
+
+    // Run the banzuke update on a world carrying standings + the history record.
+    // Stop conditions run AFTER publish: real promotions land inside the
+    // impact as rikishiUpdates, and bashoResult.promotions is only populated
+    // when callers pass banzukeUpdateHook (the sim path never does) — so a
+    // pre-publish check could never observe a yokozuna/ozeki promotion.
+    currentWorld = publishBanzukeForSim(currentWorld, bashoResult, bashoName);
+
+    const publishedPromotions: PromotionEvent[] = [];
+    const publishedDemotions: DemotionEvent[] = [];
+    for (const [id, from] of prePublishRanks) {
+      const to = getRikishi(currentWorld, id)?.rank;
+      if (!to || to === from) continue;
+      const evt = { rikishiId: id, from, to, description: `${from} → ${to}` };
+      const toTier = RANK_HIERARCHY[to as Rank]?.tier ?? 999;
+      const fromTier = RANK_HIERARCHY[from as Rank]?.tier ?? 999;
+      if (toTier < fromTier) publishedPromotions.push(evt);
+      else publishedDemotions.push(evt);
+    }
+    if (publishedPromotions.length || publishedDemotions.length) {
+      bashoResult.promotions = [...bashoResult.promotions, ...publishedPromotions];
+      bashoResult.demotions = [...(bashoResult.demotions ?? []), ...publishedDemotions];
+    }
+
     for (const condition of config.stopConditions) {
       if (checkStopCondition(condition, bashoResult, currentWorld, config)) {
         stoppedBy = condition;
@@ -145,9 +175,6 @@ export function runAutoSim(
       }
     }
     if (stoppedBy !== "completed") break;
-
-    // Run the banzuke update on a world carrying standings + the history record
-    currentWorld = publishBanzukeForSim(currentWorld, bashoResult, bashoName);
 
     // Count yokozuna vacancy per basho (after banzuke update so freshly-promoted yokozuna aren't falsely counted vacant)
     if (!hasActiveYokozuna(currentWorld)) yokozunaVacantBashoCount++;

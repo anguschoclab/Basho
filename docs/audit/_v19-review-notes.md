@@ -153,3 +153,32 @@ All 21 regression pins green. Per-item verdict:
 
 ### Housekeeping
 - Removed tracked sim-output junk: `scripts/sim/bard-warning-census.txt`, `scripts/sim/population-flow-results.txt` (+ `.gitignore` rule)
+
+## Phase-D discoveries (verification sweep)
+
+- **V19-B1: runAutoSim stop-conditions unreachable** — `checkStopCondition` ran BEFORE
+  `publishBanzukeForSim` applied promotions, and `bashoResult.promotions` is only
+  populated via the optional `banzukeUpdateHook` (never passed on the sim path).
+  `yokozunaPromotion`/`ozekiPromotion` could never fire. FIXED: stop-check moved
+  post-publish; real promotions/demotions now diffed from `RANK_HIERARCHY` tier
+  change and merged into `bashoResult.promotions`/`demotions`. Perf evidence:
+  yokozunaPromotionAutoSim 344s timeout → ~50s.
+- **V19-B2: knipGuard was permanently green via fail-open** — `npx knip` never
+  existed (no dep, no config, ENOENT on Windows). Replaced with a self-contained
+  import-graph dead-file scan (src + tests importers, entry-point/barrel
+  exemptions, `@/`-alias + dynamic-import aware). Now actually enforces.
+- **V19-B3: circularDependency parse contract broken** — madge 8 writes the
+  "No circular dependency found!" marker to stderr; gate only scanned stdout.
+  FIXED: scans combined output.
+- **V19-B4: bundleBudget enforced nonexistent chunks** — rolldown auto-splitting
+  replaced most manualChunks groups; 12 expected names never emitted. Replaced
+  fixed-name list with per-emitted-file budgets (longest-prefix match +
+  0.5 MB default) + structural-chunk existence check. Every emitted .js now
+  has a budget; a new oversized chunk can't slip through.
+- **V19-B5: orphan-tracker missing `mapWithConcurrency`** — genuine unreferenced
+  export caused ORPH-id instability when new entries sorted before it.
+  Registered ORPH-0578 + INTENTIONAL_EXPORTS classification.
+- **autoSimCoreLoop `days` expectation** — updated to S7-23 semantics
+  (30 world-days = 1 basho, was pinning the ~4×-inflated contract).
+- **Scratch-probe lint fallout** — `scratch/probe-yoko*.ts` tripped
+  `@typescript-eslint/no-explicit-any` (lintStrictGate); deleted.

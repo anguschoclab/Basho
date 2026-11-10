@@ -169,3 +169,4 @@ ORPH-0478,src/engine/lifecycle/CareerService.ts,CareerService,unticked-service,P
 ORPH-0484,src/engine/narrative/narrativeDescriptions.ts,narrativeDescriptions,unticked-service,P1,,,,,intentional,
 ORPH-0572,src/engine/narrative/promotionBands.ts,promotionBands,unticked-service,P1,,,,,intentional,
 ORPH-0566,src/engine/rikishi/signatureKimarite.ts,signatureKimarite,unticked-service,P3,,,,,intentional,
+ORPH-0578,src/engine/utils/asyncPool.ts,mapWithConcurrency,unreferenced-export,P3,,,,,intentional,

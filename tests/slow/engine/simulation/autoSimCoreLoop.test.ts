@@ -23,7 +23,10 @@ describe("runAutoSim", () => {
     expect(result.daysSimulated).toBe(64); // 15 + 7 + 42
   });
 
-  it("should run the simulation for days-based duration (30 days = 2 bashos)", () => {
+  it("should run the simulation for days-based duration (30 days = 1 basho)", () => {
+    // S7-23: `days` means world-days — a basho spans ~60 world-days (15 basho
+    // + 7 post-basho + 42 interim). The old ceil(N/15) arm simulated ~4× the
+    // requested span.
     const world = makeMockWorld();
     const result = runAutoSim(world, {
       duration: { type: "days", count: 30 },
@@ -32,7 +35,7 @@ describe("runAutoSim", () => {
       delegationPolicy: "conservative",
       observerMode: true,
     });
-    expect(result.bashoSimulated).toBe(2);
+    expect(result.bashoSimulated).toBe(1);
     expect(result.stoppedBy).toBe("completed");
   });
 

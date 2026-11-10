@@ -4,31 +4,36 @@ import { join } from "path";
 
 const DIST_DIR = join(import.meta.dirname, "../../../", "dist", "assets");
 
+/**
+ * Bundle size budget — every emitted asset chunk under an explicit cap.
+ *
+ * The budget map keys on emitted filename prefixes (dist/assets/<prefix>-*.js).
+ * Vite 8's rolldown pipeline applies its own code-splitting on top of
+ * rollupOptions.manualChunks, so the emitted manifest is a mix of configured
+ * names (engine-core, game-state) and rolldown groups (npc, combat, chains,
+ * page-*). The gate enforces what the build ACTUALLY emits: any chunk not
+ * matching a named entry must fit DEFAULT_BUDGET, so a new oversized chunk
+ * can never slip through unbudgeted.
+ */
 const BUDGETS: Record<string, number> = {
   index: 2_500_000,
-  "engine-core": 500_000,
-  "engine-systems": 500_000,
-  "engine-tick": 500_000,
-  "engine-bout": 1_000_000,
-  "engine-npc": 500_000,
-  "engine-narrative": 500_000,
-  "game-state": 500_000,
-  "ui-primitives": 500_000,
-  "ui-game": 500_000,
-  "ui-layout": 500_000,
-  "ui-features": 500_000,
-  "vendor-recharts": 500_000,
-  "vendor-react": 500_000,
-  "vendor-router": 500_000,
-  "vendor-framer": 500_000,
-  "vendor-radix": 500_000,
-  "vendor-lucide": 500_000,
+  "page-BashoPage": 1_500_000,
+  "engine.worker": 1_000_000,
+  "engine-bout": 1_000_000, // covers engine-bout-core / -support / -narrative prefixes
 };
+const DEFAULT_BUDGET = 500_000;
 
-function findChunk(prefix: string): string | null {
-  if (!existsSync(DIST_DIR)) return null;
-  const files = readdirSync(DIST_DIR);
-  return files.find((f) => f.startsWith(prefix) && f.endsWith(".js")) ?? null;
+function budgetFor(file: string): number {
+  // Longest matching prefix wins so "engine-bout-core" hits "engine-bout".
+  let best = DEFAULT_BUDGET;
+  let bestLen = -1;
+  for (const [prefix, bytes] of Object.entries(BUDGETS)) {
+    if (file.startsWith(prefix) && prefix.length > bestLen) {
+      best = bytes;
+      bestLen = prefix.length;
+    }
+  }
+  return best;
 }
 
 describe("bundle size budget", () => {
@@ -39,22 +44,30 @@ describe("bundle size budget", () => {
     ).toBe(true);
   });
 
-  for (const [prefix, maxBytes] of Object.entries(BUDGETS)) {
-    it(`${prefix} chunk is under ${(maxBytes / 1_000_000).toFixed(1)} MB`, () => {
-      const chunk = findChunk(prefix);
-      // Fail-closed (S9-6): a missing chunk means the budget isn't being
-      // enforced at all — either the build didn't emit it or the manifest
-      // drifted. Both are findings, not skips.
+  it("emits the structural chunks (index, engine.worker, page-*, engine-*)", () => {
+    if (!existsSync(DIST_DIR)) return; // covered by the existence test
+    const files = readdirSync(DIST_DIR).filter((f) => f.endsWith(".js"));
+    for (const required of ["index-", "engine.worker-", "page-", "engine-"]) {
       expect(
-        chunk,
-        `No ${prefix}-*.js chunk in dist/assets — budget not enforced for ${prefix}`
-      ).not.toBeNull();
-      if (!chunk) return; // unreachable — assertion above fails first
-      const size = statSync(join(DIST_DIR, chunk)).size;
-      expect(
-        size,
-        `${chunk} is ${(size / 1_000_000).toFixed(2)} MB, exceeds budget of ${(maxBytes / 1_000_000).toFixed(1)} MB`
-      ).toBeLessThanOrEqual(maxBytes);
-    });
-  }
+        files.some((f) => f.startsWith(required)),
+        `No ${required}*.js chunk in dist/assets — build manifest drifted`
+      ).toBe(true);
+    }
+  });
+
+  it("every emitted js chunk fits its budget", () => {
+    if (!existsSync(DIST_DIR)) return; // covered by the existence test
+    const files = readdirSync(DIST_DIR).filter((f) => f.endsWith(".js"));
+    const violations: string[] = [];
+    for (const file of files) {
+      const size = statSync(join(DIST_DIR, file)).size;
+      const budget = budgetFor(file);
+      if (size > budget) {
+        violations.push(
+          `${file} is ${(size / 1_000_000).toFixed(2)} MB, exceeds budget of ${(budget / 1_000_000).toFixed(1)} MB`
+        );
+      }
+    }
+    expect(violations, `Over-budget chunks:\n${violations.join("\n")}`).toEqual([]);
+  });
 });
