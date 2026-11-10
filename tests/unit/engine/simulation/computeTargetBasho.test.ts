@@ -3,9 +3,15 @@ import { computeTargetBasho } from "@/engine/simulation/AutoSimService";
 import type { SimDuration } from "@/engine/simulation/AutoSimService";
 
 describe("computeTargetBasho", () => {
-  it("converts days to basho (15 days per basho)", () => {
+  it("converts days to basho (~60 world-days per basho cycle)", () => {
+    // A basho spans ~60 world-days (6 basho/year), consistent with the
+    // sibling arms: 9 weeks ≈ 63d, 2 months ≈ 60d. The old 15-day arm
+    // simulated ~4× the requested world time (S7-23).
     expect(computeTargetBasho({ type: "days", count: 15 })).toBe(1);
-    expect(computeTargetBasho({ type: "days", count: 30 })).toBe(2);
+    expect(computeTargetBasho({ type: "days", count: 30 })).toBe(1);
+    expect(computeTargetBasho({ type: "days", count: 60 })).toBe(1);
+    expect(computeTargetBasho({ type: "days", count: 61 })).toBe(2);
+    expect(computeTargetBasho({ type: "days", count: 120 })).toBe(2);
     expect(computeTargetBasho({ type: "days", count: 7 })).toBe(1);
     expect(computeTargetBasho({ type: "days", count: 0 })).toBe(0);
   });
