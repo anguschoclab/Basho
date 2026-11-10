@@ -552,7 +552,14 @@ export function buildSwissTorikumi(
 
   // Apply drama budget post-processing to maximize narrative value
   const rikishiMap = toIdMap(rikishi);
-  const optimizedPairings = applyDramaBudget(raw, rikishiMap, day, basho.standings, facedSet);
+  const optimizedPairings = applyDramaBudget(
+    raw,
+    rikishiMap,
+    day,
+    basho.standings,
+    facedSet,
+    options.rivalriesState
+  );
 
   return sortChronologically(optimizedPairings, pool);
 }

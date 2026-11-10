@@ -125,6 +125,7 @@ export function scheduleDivisionDay(args: {
     // ── Juryo with crossover from Makushita ─────────────────────────
     const { scheduled, impact: crossoverImpact } = scheduleJuryoWithCrossover(world, basho, {
       seed: args.seed,
+      day,
     });
 
     builder.merge(crossoverImpact);
@@ -223,11 +224,12 @@ export function scheduleAllDivisionsDay(args: {
 export function scheduleJuryoWithCrossover(
   world: WorldState,
   basho: BashoState,
-  options: { seed: string }
+  options: { seed: string; day?: number }
 ): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const builder = createImpactBuilder("scheduleJuryoWithCrossover");
   const division = "juryo";
-  const day = basho.day ?? 1;
+  // The caller's requested day wins — basho.day is only the fallback (S7-23).
+  const day = options.day ?? basho.day ?? 1;
 
   if (!needsScheduleForDay(division, day)) {
     return { scheduled: [], impact: builder.build() };

@@ -147,9 +147,9 @@ export function getInterimWeeks(_from: BashoName, _to: BashoName): number {
  * Rule: basho starts on the 2nd Sunday of its month by default (real-world style).
  * If you want to override a specific basho, set startDay in BASHO_CALENDAR[basho].startDay.
  */
-export function getBashoInfo(name: BashoName, _year?: number): BashoInfo {
-  const base = BASHO_CALENDAR[name];
-  const computedStartDay = base.startDay ?? getSecondSunday(DEFAULT_YEAR, base.month);
+export function getBashoInfo(name: BashoName, year?: number): BashoInfo {
+    const base = BASHO_CALENDAR[name];
+    const computedStartDay = base.startDay ?? getSecondSunday(year ?? DEFAULT_YEAR, base.month);
   return {
     ...(base as Omit<BashoInfo, "startDay">),
     startDay: computedStartDay,

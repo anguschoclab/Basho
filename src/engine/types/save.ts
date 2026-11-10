@@ -228,7 +228,8 @@ export const NON_PERSISTED_WORLD_FIELDS: Record<string, string> = {
 /**
  * Type representing save version.
  * When adding a new version: add the literal here, add it to KNOWN_SAVE_VERSIONS,
- * bump CURRENT_SAVE_VERSION, and register a migration step in MigrationService.
+ * and bump CURRENT_SAVE_VERSION. Prior versions are rejected by
+ * MigrationService — there is no migration path (v19: zero back-compat).
  */
 export type SaveVersion = "1.0.0" | "1.1.0" | "1.2.0" | "1.3.0" | "1.4.0";
 

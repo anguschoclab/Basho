@@ -100,7 +100,11 @@ export function runAutoSim(
   };
   while (bashoSimulated < targetBasho) {
     const bashoName = currentWorld.currentBashoName || "hatsu";
-    const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}`;
+    // `bashoSimulated` serial guarantees uniqueness: same-named basho can
+    // legitimately repeat inside one world.year (mid-hatsu year roll —
+    // see nextBashoRecordId), and year+name alone would re-mint the
+    // identical seed and replay a byte-identical tournament (S5-4).
+    const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}-${bashoSimulated}`;
 
     const bashoResult = simulateEntireBasho(currentWorld, bashoName, bashoSeed, {
       banzukeUpdateHook: opts?.banzukeUpdateHook,
@@ -414,7 +418,10 @@ export function checkStopCondition(
 export function computeTargetBasho(duration: SimDuration): number {
   switch (duration.type) {
     case "days":
-      return Math.max(0, Math.ceil(duration.count / 15));
+      // `days` means world-days — a basho spans ~60 world-days (6/year),
+      // consistent with the sibling arms (9 weeks ≈ 63d, 2 months ≈ 60d).
+      // The old /15 arm simulated ~4× the requested span (S7-23).
+      return Math.max(0, Math.ceil(duration.count / 60));
     case "weeks":
       return Math.max(0, Math.ceil(duration.count / 9));
     case "months":

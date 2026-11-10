@@ -120,18 +120,29 @@ export function recordGyojiBout(
   year: number,
   reversed: boolean
 ): Gyoji {
+  // Per-basho aggregation: fold same-basho bouts into the existing entry
+  // instead of appending one row per bout (S7-27 — unbounded growth).
+  const history = [...(gyoji.careerHistory ?? [])];
+  const last = history[history.length - 1];
+  if (last && last.bashoName === bashoName && last.year === year) {
+    history[history.length - 1] = {
+      ...last,
+      boutsOfficiated: last.boutsOfficiated + 1,
+      reversals: last.reversals + (reversed ? 1 : 0),
+    };
+  } else {
+    history.push({
+      bashoName,
+      year,
+      boutsOfficiated: 1,
+      reversals: reversed ? 1 : 0,
+    });
+  }
+
   return {
     ...gyoji,
     boutsOfficiated: gyoji.boutsOfficiated + 1,
     callsReversed: gyoji.callsReversed + (reversed ? 1 : 0),
-    careerHistory: [
-      ...(gyoji.careerHistory ?? []),
-      {
-        bashoName,
-        year,
-        boutsOfficiated: 1,
-        reversals: reversed ? 1 : 0,
-      },
-    ],
+    careerHistory: history,
   };
 }

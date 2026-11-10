@@ -71,9 +71,9 @@ describe("clearInjury — consistent post-clearance state (S7 InjuryService)", (
 
     // Canonical reference: the recovery path's cleared shape — reached when
     // the last recovery week ticks down to zero (RecoveryService.ts:33-42).
-    const recovered = injuredRikishi();
-    recovered.injuryWeeksRemaining = 1;
-    tickRikishiRecovery(recovered);
+    const recoveredRikishi = injuredRikishi();
+    recoveredRikishi.injuryWeeksRemaining = 1;
+    const { rikishi: recovered } = tickRikishiRecovery(recoveredRikishi);
     expect(recovered.injuryStatus?.type).toBe("none");
     expect(recovered.injuryStatus?.weeksRemaining).toBe(0);
     expect(recovered.injury).toBeUndefined();

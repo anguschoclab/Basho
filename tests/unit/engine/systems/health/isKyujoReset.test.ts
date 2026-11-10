@@ -53,20 +53,20 @@ describe("N4/N6: isKyujo reset after recovery", () => {
   it("E.1: tickRikishiRecovery resets isKyujo to false when injury heals", () => {
     const r = makeInjuredRikishi({ injuryWeeksRemaining: 1 });
     expect(r.isKyujo).toBe(true);
-    const recovered = tickRikishiRecovery(r, 1.0);
+    const { recovered, rikishi: out } = tickRikishiRecovery(r, 1.0);
     expect(recovered).toBe(true);
-    expect(r.injured).toBe(false);
+    expect(out.injured).toBe(false);
     // This should pass after fix: isKyujo should be reset
-    expect(r.isKyujo).toBe(false);
+    expect(out.isKyujo).toBe(false);
   });
 
   it("E.2: tickRikishiRecovery does NOT reset isKyujo while still injured", () => {
     const r = makeInjuredRikishi({ injuryWeeksRemaining: 4 });
-    tickRikishiRecovery(r, 1.0);
-    expect(r.injured).toBe(true);
-    expect(r.injuryWeeksRemaining).toBe(3);
+    const { rikishi: out } = tickRikishiRecovery(r, 1.0);
+    expect(out.injured).toBe(true);
+    expect(out.injuryWeeksRemaining).toBe(3);
     // isKyujo should remain true while still injured
-    expect(r.isKyujo).toBe(true);
+    expect(out.isKyujo).toBe(true);
   });
 
   it("E.3: clearInjury resets isKyujo to false and kyujoReason to undefined", () => {

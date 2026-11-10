@@ -1,8 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { MigrationService } from "@/engine/persistence/MigrationService";
 import { CURRENT_SAVE_VERSION, KNOWN_SAVE_VERSIONS } from "@/engine/types/save";
 import type { SaveGame, SaveVersion } from "@/engine/types/save";
-import { logger } from "@/engine/utils/Logger";
 
 function makeMinimalSave(version: SaveVersion, overrides: Partial<SaveGame> = {}): SaveGame {
   return {
@@ -46,273 +45,41 @@ function makeMinimalSave(version: SaveVersion, overrides: Partial<SaveGame> = {}
   } as SaveGame;
 }
 
-describe("MigrationService", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  describe("identity / no-op", () => {
+describe("MigrationService — version gate", () => {
+  describe("current version", () => {
     it("passes a current-version save through unchanged", () => {
       const save = makeMinimalSave(CURRENT_SAVE_VERSION);
       const result = MigrationService.migrateSave(save);
-      expect(result.save.version).toBe(CURRENT_SAVE_VERSION);
-      expect(result.save).toEqual(save);
-      expect(result.context.logs).toHaveLength(0);
+      expect(result.save).toBe(save);
+      expect(result.context.fromVersion).toBe(CURRENT_SAVE_VERSION);
+      expect(result.context.toVersion).toBe(CURRENT_SAVE_VERSION);
     });
 
     it("does not mutate the original save object", () => {
-      const save = makeMinimalSave("1.0.0");
-      const originalVersion = save.version;
+      const save = makeMinimalSave(CURRENT_SAVE_VERSION);
+      const snapshot = JSON.stringify(save);
       MigrationService.migrateSave(save);
-      expect(save.version).toBe(originalVersion);
+      expect(JSON.stringify(save)).toBe(snapshot);
     });
   });
 
-  describe("version bump 1.0.0 → 1.1.0", () => {
-    it("upgrades a 1.0.0 save to CURRENT_SAVE_VERSION", () => {
+  describe("prior versions — rejected, not migrated", () => {
+    it.each(KNOWN_SAVE_VERSIONS.filter((v) => v !== CURRENT_SAVE_VERSION))(
+      "throws a no-longer-supported error for known version %s",
+      (version) => {
+        const save = makeMinimalSave(version);
+        expect(() => MigrationService.migrateSave(save)).toThrow(/no longer supported/i);
+      }
+    );
+
+    it("throws an unknown-version error for unrecognized versions", () => {
+      const save = makeMinimalSave("9.9.9" as SaveVersion);
+      expect(() => MigrationService.migrateSave(save)).toThrow(/unknown save version/i);
+    });
+
+    it("rejects rather than partially upgrading a 1.0.0 save", () => {
       const save = makeMinimalSave("1.0.0");
-      const result = MigrationService.migrateSave(save);
-      expect(result.save.version).toBe(CURRENT_SAVE_VERSION);
-      expect(result.context.fromVersion).toBe("1.0.0");
-      expect(result.context.toVersion).toBe(CURRENT_SAVE_VERSION);
-      expect(result.context.logs.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe("metadata defaults", () => {
-    it("populates missing createdAtISO from lastSavedAtISO", () => {
-      const save = makeMinimalSave("1.0.0", {
-        createdAtISO: undefined as unknown as string,
-        lastSavedAtISO: "2025-06-01T00:00:00Z",
-      });
-      const result = MigrationService.migrateSave(save);
-      expect(result.save.createdAtISO).toBe("2025-06-01T00:00:00Z");
-    });
-
-    it("populates missing ruleset with defaults", () => {
-      const save = makeMinimalSave("1.0.0", {
-        ruleset: undefined as unknown as SaveGame["ruleset"],
-      });
-      const result = MigrationService.migrateSave(save);
-      expect(result.save.ruleset).toEqual({
-        banzukeAlgorithm: "slot_fill_v1",
-        kimariteRegistryVersion: "82_official_v1",
-      });
-    });
-
-    it("defaults missing playTimeMinutes to 0", () => {
-      const save = makeMinimalSave("1.0.0");
-      delete (save as Partial<SaveGame>).playTimeMinutes;
-      const result = MigrationService.migrateSave(save);
-      expect(result.save.playTimeMinutes).toBe(0);
-    });
-  });
-
-  describe("events.version fix", () => {
-    it("sets events.version to 1.0.0 when missing", () => {
-      const save = makeMinimalSave("1.0.0");
-      const events = { log: [], dedupe: {} } as unknown as SaveGame["world"]["events"];
-      (save.world as { events: unknown }).events = events;
-      const result = MigrationService.migrateSave(save);
-      const worldEvents = result.save.world.events as { version?: string };
-      expect(worldEvents.version).toBe("1.0.0");
-    });
-  });
-
-  describe("sponsor pool normalization", () => {
-    it("detects Rikishi-shaped sponsor entries and drops them", () => {
-      const save = makeMinimalSave("1.0.0");
-      (save.world as { sponsorPool?: unknown }).sponsorPool = {
-        sponsors: {
-          sp_1: {
-            id: "rikishi-1",
-            shikona: "Test Rikishi",
-            heyaId: "heya-1",
-            rank: "maegashira",
-            stats: { power: 50 },
-          },
-        },
-        koenkais: {},
-      };
-      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
-      const result = MigrationService.migrateSave(save);
-      const pool = result.save.world.sponsorPool as { sponsors: Record<string, unknown> };
-      expect(Object.keys(pool.sponsors)).toHaveLength(0);
-      expect(warnSpy).toHaveBeenCalled();
-      warnSpy.mockRestore();
-    });
-
-    it("preserves valid Sponsor-shaped entries", () => {
-      const validSponsor = {
-        sponsorId: "sp_1",
-        displayName: "Test Sponsor",
-        category: "local_business",
-        tier: "T1",
-        originRegionId: "tokyo",
-        industryTag: "retail",
-        toneTag: "traditional",
-        prestigeAffinity: 50,
-        loyalty: 50,
-        scandalTolerance: 50,
-        riskAppetite: 50,
-        visibilityPreference: 1,
-        active: true,
-        satisfaction: 80,
-        createdAtTick: 1,
-        lastSeenTick: 10,
-        relationships: [],
-      };
-      const save = makeMinimalSave("1.0.0");
-      (save.world as { sponsorPool?: unknown }).sponsorPool = {
-        sponsors: { sp_1: validSponsor },
-        koenkais: {},
-      };
-      const result = MigrationService.migrateSave(save);
-      const pool = result.save.world.sponsorPool as unknown as {
-        sponsors: Record<string, typeof validSponsor>;
-      };
-      expect(pool.sponsors["sp_1"]).toEqual(validSponsor);
-    });
-
-    it("preserves valid koenkai entries", () => {
-      const validKoenkai = {
-        koenkaiId: "k_1",
-        heyaId: "heya-1",
-        strengthBand: "moderate",
-        members: [],
-        createdAtTick: 1,
-        lastChangedTick: 10,
-      };
-      const save = makeMinimalSave("1.0.0");
-      (save.world as { sponsorPool?: unknown }).sponsorPool = {
-        sponsors: {},
-        koenkais: { k_1: validKoenkai },
-      };
-      const result = MigrationService.migrateSave(save);
-      const pool = result.save.world.sponsorPool as unknown as {
-        koenkais: Record<string, typeof validKoenkai>;
-      };
-      expect(pool.koenkais["k_1"]).toEqual(validKoenkai);
-    });
-  });
-
-  describe("fault tolerance", () => {
-    it("does not abort migration when sponsorPool is corrupt", () => {
-      const save = makeMinimalSave("1.0.0");
-      (save.world as { sponsorPool?: unknown }).sponsorPool = "not-an-object";
-      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
-      const result = MigrationService.migrateSave(save);
-      expect(result.save.version).toBe(CURRENT_SAVE_VERSION);
-      expect(warnSpy).toHaveBeenCalled();
-      warnSpy.mockRestore();
-    });
-
-    it("does not abort migration when events is corrupt", () => {
-      const save = makeMinimalSave("1.0.0");
-      (save.world as { events?: unknown }).events = "corrupt";
-      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
-      const result = MigrationService.migrateSave(save);
-      expect(result.save.version).toBe(CURRENT_SAVE_VERSION);
-      expect(warnSpy).toHaveBeenCalled();
-      warnSpy.mockRestore();
-    });
-  });
-
-  describe("unknown version rejection", () => {
-    it("throws for a version not in KNOWN_SAVE_VERSIONS", () => {
-      const save = makeMinimalSave("1.0.0");
-      (save as { version: string }).version = "0.9.0";
-      expect(() => MigrationService.migrateSave(save)).toThrow();
-    });
-  });
-
-  describe("KNOWN_SAVE_VERSIONS", () => {
-    it("includes both 1.0.0 and 1.1.0", () => {
-      expect(KNOWN_SAVE_VERSIONS).toContain("1.0.0");
-      expect(KNOWN_SAVE_VERSIONS).toContain("1.1.0");
-    });
-  });
-
-  describe("migration step immutability", () => {
-    it("migrateToV1_1_0 does not mutate world.events in place — builds new world object", () => {
-      const save = makeMinimalSave("1.0.0");
-      const originalEvents = save.world.events;
-      const originalEventsRef = save.world.events as object;
-
-      const result = MigrationService.migrateSave(save);
-      // The returned save's world.events should be a new object (immutable construction),
-      // not the same reference as the input's events.
-      expect(result.save.world.events).not.toBe(originalEventsRef);
-      // The original save's events should not have been mutated by the step
-      // (migrateSave deep-copies, but the step itself should also be immutable).
-      expect(save.world.events).toBe(originalEvents);
-    });
-
-    it("migrateToV1_1_0 does not mutate world.sponsorPool in place — builds new world object", () => {
-      const save = makeMinimalSave("1.0.0");
-      (save.world as { sponsorPool?: unknown }).sponsorPool = "corrupt";
-      const originalWorldRef = save.world as object;
-
-      const result = MigrationService.migrateSave(save);
-      // The returned save's world should be a new object, not the same reference
-      expect(result.save.world as object).not.toBe(originalWorldRef);
-    });
-  });
-
-  describe("version bump 1.1.0 → 1.2.0 (officials pools)", () => {
-    it("upgrades a 1.1.0 save to CURRENT_SAVE_VERSION", () => {
-      const save = makeMinimalSave("1.1.0");
-      const result = MigrationService.migrateSave(save);
-      expect(result.save.version).toBe(CURRENT_SAVE_VERSION);
-    });
-
-    it("generates gyojiPool when missing", () => {
-      const save = makeMinimalSave("1.1.0");
-      expect((save.world as any).gyojiPool).toBeUndefined();
-      const result = MigrationService.migrateSave(save);
-      const world = result.save.world as any;
-      expect(world.gyojiPool).toBeDefined();
-      expect(Array.isArray(world.gyojiPool)).toBe(true);
-      expect(world.gyojiPool.length).toBeGreaterThanOrEqual(6);
-    });
-
-    it("generates shimpanPool when missing", () => {
-      const save = makeMinimalSave("1.1.0");
-      expect((save.world as any).shimpanPool).toBeUndefined();
-      const result = MigrationService.migrateSave(save);
-      const world = result.save.world as any;
-      expect(world.shimpanPool).toBeDefined();
-      expect(Array.isArray(world.shimpanPool)).toBe(true);
-      expect(world.shimpanPool.length).toBeGreaterThanOrEqual(5);
-    });
-
-    it("does not overwrite existing gyojiPool", () => {
-      const save = makeMinimalSave("1.1.0");
-      const existingGyoji = [
-        {
-          id: "existing-gyoji",
-          name: "Test",
-          rank: "tate",
-          accuracy: 80,
-          yearsActive: 5,
-          boutsOfficiated: 10,
-          callsReversed: 1,
-        },
-      ];
-      (save.world as any).gyojiPool = existingGyoji;
-      const result = MigrationService.migrateSave(save);
-      const world = result.save.world as any;
-      // migrateSave deep-copies, so check by content not reference
-      expect(world.gyojiPool.length).toBe(1);
-      expect(world.gyojiPool[0].id).toBe("existing-gyoji");
-    });
-
-    it("includes at least one tate-gyoji in generated pool", () => {
-      const save = makeMinimalSave("1.1.0");
-      const result = MigrationService.migrateSave(save);
-      const world = result.save.world as any;
-      const tate = world.gyojiPool.find((g: any) => g.rank === "tate");
-      expect(tate).toBeDefined();
+      expect(() => MigrationService.migrateSave(save)).toThrow(/no longer supported/i);
     });
   });
 });

@@ -273,11 +273,11 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         injuryStatus: { type: "strain", severity: "moderate", weeksRemaining: 1 },
       });
       expect(rikishi.recentlyReturnedFromInjury).toBeUndefined();
-      const recovered = tickRikishiRecovery(rikishi, 1.0);
+      const { recovered, rikishi: out } = tickRikishiRecovery(rikishi, 1.0);
       expect(recovered).toBe(true);
-      expect(rikishi.recentlyReturnedFromInjury).toBe(true);
-      expect(rikishi.injured).toBe(false);
-      expect(rikishi.isKyujo).toBe(false);
+      expect(out.recentlyReturnedFromInjury).toBe(true);
+      expect(out.injured).toBe(false);
+      expect(out.isKyujo).toBe(false);
     });
 
     it("bout narrative generates return_from_kyujo line when recentlyReturnedFromInjury is set", () => {

@@ -25,8 +25,8 @@ import {
   MENTORSHIP_MAX_BLEED,
   MENTORSHIP_BLEED_THRESHOLD,
   MENTORSHIP_BLEED_SCALE,
-  MAX_STAT_CEILING,
 } from "@/constants/engine/training";
+import { getEffectiveCeiling } from "@/engine/training/TrainingMath";
 import { getRikishi } from "@/engine/core/queries";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 
@@ -250,16 +250,19 @@ export function applyMentorshipBonuses(world: WorldState): StateImpact {
     builder.updateRikishi(apprentice.id, {
       stats: {
         ...apprentice.stats,
-        technique: clamp(
-          finiteOr(apprentice.stats?.technique, 50) + techniqueBleed,
-          0,
-          MAX_STAT_CEILING
-        ),
-        adaptability: clamp(
-          finiteOr(apprentice.stats?.adaptability, 50) + adaptabilityPenalty,
-          0,
-          MAX_STAT_CEILING
-        ),
+        // Personal ceilings, not the global cap — a late-bloomer's mentor
+        // can't push them past their own talent arc (S7-37). Stats already
+        // above the ceiling are left alone (bleed stops, never reduces).
+        technique: (() => {
+          const cur = finiteOr(apprentice.stats?.technique, 50);
+          const ceiling = getEffectiveCeiling(apprentice, "technique", world);
+          return cur >= ceiling ? cur : Math.min(ceiling, cur + techniqueBleed);
+        })(),
+        adaptability: (() => {
+          const cur = finiteOr(apprentice.stats?.adaptability, 50);
+          const ceiling = getEffectiveCeiling(apprentice, "adaptability", world);
+          return cur >= ceiling ? cur : Math.min(ceiling, cur + adaptabilityPenalty);
+        })(),
       },
     });
   }

@@ -294,15 +294,18 @@ describe("S5-5 — meta-era record ids unique per record", () => {
     const findEraId = (imp: unknown) =>
       JSON.stringify(imp).match(/meta-era-[^"]+/)?.[0];
 
+    world.dayIndexGlobal = 300;
     world.globalKimariteStats = pushStats;
     const i1 = processYearlyEraDrift(world);
     const id1 = findEraId(i1);
-    expect(id1).toBe("meta-era-2024-explosive");
+    expect(id1).toBe("meta-era-2024-explosive-300");
 
     // Flip dominance to belt ("classic") then back to push — the second
     // "explosive" headline re-mints the identical record id today.
+    world.dayIndexGlobal = 330;
     world.globalKimariteStats = beltStats;
     processYearlyEraDrift(world);
+    world.dayIndexGlobal = 400;
     world.globalKimariteStats = pushStats;
     const i3 = processYearlyEraDrift(world);
     const id3 = findEraId(i3);

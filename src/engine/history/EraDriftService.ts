@@ -141,7 +141,10 @@ export function processYearlyEraDrift(world: WorldState): StateImpact {
       defensive: "The 'Iron Wall' era descends",
     };
     const headline: MediaHeadline = {
-      id: `meta-era-${world.year}-${newTone}`,
+      // dayIndexGlobal disambiguates a same-year tone re-fire (dominance can
+      // flip back to an already-recorded tone) — year+tone alone re-mints the
+      // identical headline id (S5-5).
+      id: `meta-era-${world.year}-${newTone}-${world.dayIndexGlobal ?? 0}`,
       week: world.week ?? 0,
       tier: "national",
       beat: "feature",

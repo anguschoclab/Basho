@@ -215,6 +215,17 @@ export function applyDemandOutcome(
           members: koenkai.members.filter((m) => m.relId !== weakest.relId),
           lastChangedTick: world.dayIndexGlobal ?? 0,
         });
+        // Symmetric bookkeeping: the sponsor-side relationships entry must
+        // leave with the koenkai membership, not linger as a dangling rel
+        // (S7-29).
+        const churnedSponsor = sponsors?.get(weakest.sponsorId);
+        if (churnedSponsor) {
+          builder.updateSponsor(weakest.sponsorId, {
+            relationships: (churnedSponsor.relationships ?? []).filter(
+              (r) => r.relId !== weakest.relId
+            ),
+          });
+        }
       }
     }
   }

@@ -90,29 +90,37 @@ export function allocateVacancies(world: WorldState, gap: number): Record<string
   // 2. Assign floor(share) to each.
   // 3. Distribute remaining units to heyas with largest fractional remainder,
   //    capped at headroom.
-  const shares = eligible.map((e) => ({
-    ...e,
-    raw: (e.headroom / totalHeadroom) * toAllocate,
-    floor: 0,
-    remainder: 0,
-  }));
-
+  const len = eligible.length;
+  const shares = new Array(len);
   let assigned = 0;
-  for (const s of shares) {
-    s.floor = Math.min(Math.floor(s.raw), s.headroom);
-    s.remainder = s.raw - s.floor;
-    assigned += s.floor;
+
+  for (let i = 0; i < len; i++) {
+    const e = eligible[i];
+    const raw = (e.headroom / totalHeadroom) * toAllocate;
+    const floor = Math.min(Math.floor(raw), e.headroom);
+    shares[i] = {
+      heyaId: e.heyaId,
+      headroom: e.headroom,
+      raw,
+      floor,
+      remainder: raw - floor,
+    };
+    assigned += floor;
   }
 
   let remaining = toAllocate - assigned;
   if (remaining > 0) {
     // Sort by remainder descending (stable: preserves insertion order on ties).
-    const byRemainder = [...shares]
-      .map((s, idx) => ({ s, idx }))
-      .sort((a, b) => b.s.remainder - a.s.remainder || a.idx - b.idx);
+    const byRemainder = new Array(len);
+    for (let i = 0; i < len; i++) {
+      byRemainder[i] = { s: shares[i], idx: i };
+    }
 
-    for (const { s } of byRemainder) {
+    byRemainder.sort((a, b) => b.s.remainder - a.s.remainder || a.idx - b.idx);
+
+    for (let i = 0; i < len; i++) {
       if (remaining <= 0) break;
+      const s = byRemainder[i].s;
       const canAdd = Math.min(s.headroom - s.floor, remaining);
       if (canAdd > 0) {
         s.floor += canAdd;
@@ -121,7 +129,8 @@ export function allocateVacancies(world: WorldState, gap: number): Record<string
     }
   }
 
-  for (const s of shares) {
+  for (let i = 0; i < len; i++) {
+    const s = shares[i];
     if (s.floor > 0) result[s.heyaId] = s.floor;
   }
 

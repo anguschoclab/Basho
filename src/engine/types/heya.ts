@@ -75,6 +75,9 @@ export interface Heya {
   scandalScore: number;
   governanceStatus: GovernanceStatus;
   governanceHistory?: GovernanceRuling[];
+  /** Persistent gomenfuda offense counts by year — survives event-log
+   *  pruning so sanctions can't silently reset in long sims (S7-31). */
+  gomenfudaByYear?: Record<number, number>;
 
   welfareState?: WelfareState;
 

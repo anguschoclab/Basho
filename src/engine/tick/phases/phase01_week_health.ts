@@ -40,17 +40,14 @@ export function phase01_week_health(world: WorldState): StateImpact {
     const rikishi = getRikishi(world, id);
     if (!rikishi) continue;
 
-    const r: RikishiWithFatigue = { ...rikishi };
-    // tickRikishiRecovery mutates injuryStatus.weeksRemaining in place —
-    // clone the nested object so partial-tick writes don't leak into the
-    // input world.
+    let r: RikishiWithFatigue = { ...rikishi };
     if (r.injuryStatus) r.injuryStatus = { ...r.injuryStatus };
     let changed = false;
 
     if (r.injured) {
-      processRecovery(world, r, builder);
-      // Always persist recovery progress — tickRikishiRecovery mutates r in place
-      // (reduces injuryWeeksRemaining), and partial recovery must be saved.
+      // tickRikishiRecovery is pure — adopt the returned rikishi so partial
+      // recovery progress is persisted.
+      r = processRecovery(world, r, builder);
       changed = true;
     } else if (world.cyclePhase !== "active_basho") {
       changed = processInjuryRoll(world, r, builder);
@@ -66,7 +63,7 @@ export function phase01_week_health(world: WorldState): StateImpact {
 
 // --- Helper Functions ---
 
-function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder): boolean {
+function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder): Rikishi {
   const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
   // activeModifiers.recoveryMultiplier is derived from the PLAYER heya's
   // facilities/nutrition (phase02_context) — apply it to player rikishi only;
@@ -76,12 +73,12 @@ function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder):
     r.heyaId === world.playerHeyaId ? (activeModifiers?.recoveryMultiplier ?? 1.0) : 1.0;
   // Combine staff medical bonus with facility/nutrition-derived recoveryMultiplier
   const effectiveRecoveryMult = staffBonuses.medical * recoveryMultiplier;
-  const recovered = tickRikishiRecovery(r, effectiveRecoveryMult);
+  const { recovered, rikishi: updated } = tickRikishiRecovery(r, effectiveRecoveryMult);
 
   if (recovered) {
     // Clear the stale injury record — tickRikishiRecovery resets flags but
     // does not touch currentInjury.
-    r.currentInjury = undefined;
+    updated.currentInjury = undefined;
     builder.logEvent(
       "LIFECYCLE_EVENT",
       "injury",
@@ -95,7 +92,7 @@ function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder):
     );
   }
 
-  return recovered;
+  return updated;
 }
 
 function processInjuryRoll(

@@ -1,387 +1,53 @@
 /**
- * MigrationService — handles save-version upgrades.
+ * MigrationService — save-version gate.
  *
- * Each migration step transforms a SaveGame from one version to the next.
- * Steps are chained in ascending version order. Every step is wrapped in
- * try/catch so a single corrupt field does not abort the entire migration.
+ * v19 architecture decision: zero backwards compatibility. A save is either
+ * CURRENT_SAVE_VERSION or it is rejected outright — there are no migration
+ * steps to run and no partial upgrades to get wrong. Known prior versions get
+ * an explicit "no longer supported" error; unrecognized versions get an
+ * "unknown version" error. The load path in saveload.ts wraps this in a
+ * try/catch, so a rejected save surfaces as a failed load rather than a
+ * silently mutated world.
  */
 
 import type { SaveGame, SaveVersion } from "@/engine/types/save";
 import { CURRENT_SAVE_VERSION, KNOWN_SAVE_VERSIONS } from "@/engine/types/save";
-import type { Heya } from "@/engine/types/heya";
-import type { Rikishi } from "@/engine/types/rikishi";
-import { warn } from "@/engine/utils/Logger";
-import { parseSave, stringifySave } from "@/engine/persistence/collectionCodec";
-import { generateGyoji, generateShimpan } from "@/engine/officials/GyojiService";
 
-// @keep-export MigrationContext — live via same-file/dispatch call or public API contract
 export interface MigrationContext {
   fromVersion: SaveVersion;
   toVersion: SaveVersion;
   logs: string[];
 }
 
-// @keep-export MigrationResult — live via same-file/dispatch call or public API contract
 export interface MigrationResult {
   save: SaveGame;
   context: MigrationContext;
 }
 
-type MigrationStep = (save: SaveGame, ctx: MigrationContext) => SaveGame;
-
-const VERSION_ORDER: readonly SaveVersion[] = KNOWN_SAVE_VERSIONS;
-
-function versionIndex(v: SaveVersion): number {
-  const idx = VERSION_ORDER.indexOf(v);
-  if (idx === -1) throw new Error(`Unknown save version: ${v}`);
-  return idx;
-}
-
-// ── Migration steps ────────────────────────────────────────────────────────
-
-/**
- * Migration 1.0.0 → 1.1.0
- *
- * Performs structural transformations that SerializationService.deserializeWorld
- * cannot safely infer at load time:
- * - Top-level save metadata defaults (createdAtISO, ruleset, playTimeMinutes)
- * - Sponsor pool shape normalization (legacy Rikishi-typed sponsors → valid Sponsor)
- * - Events version stamping
- */
-const migrateToV1_1_0: MigrationStep = (save, ctx) => {
-  const next = { ...save };
-
-  // 1. Top-level save metadata
-  try {
-    if (!next.createdAtISO) {
-      next.createdAtISO = next.lastSavedAtISO || new Date().toISOString();
-      ctx.logs.push("migrateToV1_1_0: defaulted createdAtISO");
-    }
-  } catch (e) {
-    warn(`Migration: failed to default createdAtISO: ${e}`, "MigrationService");
-    ctx.logs.push("migrateToV1_1_0: WARN createdAtISO default failed");
-  }
-
-  try {
-    if (!next.ruleset) {
-      next.ruleset = {
-        banzukeAlgorithm: "slot_fill_v1",
-        kimariteRegistryVersion: "82_official_v1",
-      };
-      ctx.logs.push("migrateToV1_1_0: defaulted ruleset");
-    }
-  } catch (e) {
-    warn(`Migration: failed to default ruleset: ${e}`, "MigrationService");
-    ctx.logs.push("migrateToV1_1_0: WARN ruleset default failed");
-  }
-
-  try {
-    if (typeof next.playTimeMinutes !== "number") {
-      next.playTimeMinutes = 0;
-      ctx.logs.push("migrateToV1_1_0: defaulted playTimeMinutes");
-    }
-  } catch (e) {
-    warn(`Migration: failed to default playTimeMinutes: ${e}`, "MigrationService");
-    ctx.logs.push("migrateToV1_1_0: WARN playTimeMinutes default failed");
-  }
-
-  // 2. Structural world fixes
-  let world = next.world as unknown as Record<string, unknown>;
-  if (world) {
-    // 2a. Events version stamping
-    try {
-      const events = world.events;
-      if (events && typeof events === "object" && !("version" in events)) {
-        (events as Record<string, unknown>).version = "1.0.0";
-        ctx.logs.push("migrateToV1_1_0: stamped events.version");
-      } else if (events !== undefined && events !== null && typeof events !== "object") {
-        warn(
-          "Migration: events field is corrupt (not an object), resetting to empty",
-          "MigrationService"
-        );
-        world = { ...world, events: { version: "1.0.0", log: [], dedupe: {} } };
-        next.world = world as unknown as typeof next.world;
-        ctx.logs.push("migrateToV1_1_0: WARN reset corrupt events");
-      }
-    } catch (e) {
-      warn(`Migration: failed to fix events.version: ${e}`, "MigrationService");
-      ctx.logs.push("migrateToV1_1_0: WARN events.version fix failed");
-    }
-
-    // 2b. Sponsor pool normalization
-    try {
-      const pool = world.sponsorPool;
-      if (pool && typeof pool === "object") {
-        const poolObj = pool as Record<string, unknown>;
-        const sponsors = poolObj.sponsors;
-        if (sponsors && typeof sponsors === "object") {
-          const sponsorsRecord = sponsors as Record<string, Record<string, unknown>>;
-          const cleaned: Record<string, Record<string, unknown>> = {};
-          let dropped = 0;
-          for (const [key, entry] of Object.entries(sponsorsRecord)) {
-            if (entry && typeof entry === "object" && isValidSponsor(entry)) {
-              cleaned[key] = entry;
-            } else {
-              dropped++;
-            }
-          }
-          poolObj.sponsors = cleaned;
-          if (dropped > 0) {
-            warn(
-              `Migration: dropped ${dropped} invalid sponsor entries during normalization`,
-              "MigrationService"
-            );
-            ctx.logs.push(`migrateToV1_1_0: dropped ${dropped} invalid sponsor entries`);
-          }
-        }
-      } else if (pool !== undefined && pool !== null) {
-        // Corrupt sponsorPool — reset to empty
-        world = { ...world, sponsorPool: { sponsors: {}, koenkais: {} } };
-        next.world = world as unknown as typeof next.world;
-        warn("Migration: reset corrupt sponsorPool to empty", "MigrationService");
-        ctx.logs.push("migrateToV1_1_0: WARN reset corrupt sponsorPool");
-      }
-    } catch (e) {
-      warn(`Migration: sponsorPool normalization failed: ${e}`, "MigrationService");
-      ctx.logs.push("migrateToV1_1_0: WARN sponsorPool normalization failed");
-    }
-  }
-
-  next.version = "1.1.0";
-  ctx.logs.push("migrateToV1_1_0: version bump to 1.1.0");
-  return next;
-};
-
-/**
- * Migration 1.1.0 → 1.2.0
- *
- * Generates gyoji and shimpan pools for existing saves that predate
- * the officials system. These pools are required for bout officiation
- * (gyoji assignment, mono-ii shimpan panels).
- */
-const migrateToV1_2_0: MigrationStep = (save, ctx) => {
-  const next = { ...save };
-  let world = next.world as unknown as Record<string, unknown>;
-
-  if (world) {
-    // Generate gyojiPool if missing
-    try {
-      if (!world.gyojiPool || !Array.isArray(world.gyojiPool)) {
-        const seed = (world.seed as string) ?? "migrated-save";
-        const ranks = [
-          "tate",
-          "tate",
-          "fuku-tate",
-          "fuku-tate",
-          "sanyaku",
-          "sanyaku",
-          "makuuchi",
-          "makuuchi",
-          "makuuchi",
-          "juryo",
-          "juryo",
-          "juryo",
-          "makushita",
-          "makushita",
-        ] as const;
-        world = {
-          ...world,
-          gyojiPool: ranks.map((rank, i) => generateGyoji(seed, rank, i)),
-        };
-        next.world = world as unknown as typeof next.world;
-        ctx.logs.push("migrateToV1_2_0: generated gyojiPool");
-      }
-    } catch (e) {
-      warn(`Migration: failed to generate gyojiPool: ${e}`, "MigrationService");
-      ctx.logs.push("migrateToV1_2_0: WARN gyojiPool generation failed");
-    }
-
-    // Generate shimpanPool if missing
-    try {
-      if (!world.shimpanPool || !Array.isArray(world.shimpanPool)) {
-        const seed = (world.seed as string) ?? "migrated-save";
-        world = {
-          ...world,
-          shimpanPool: Array.from({ length: 10 }, (_, i) => generateShimpan(seed, i)),
-        };
-        next.world = world as unknown as typeof next.world;
-        ctx.logs.push("migrateToV1_2_0: generated shimpanPool");
-      }
-    } catch (e) {
-      warn(`Migration: failed to generate shimpanPool: ${e}`, "MigrationService");
-      ctx.logs.push("migrateToV1_2_0: WARN shimpanPool generation failed");
-    }
-  }
-
-  next.version = "1.2.0";
-  ctx.logs.push("migrateToV1_2_0: version bump to 1.2.0");
-  return next;
-};
-
-/**
- * Migration 1.2.0 → 1.3.0
- *
- * Initializes new optional fields added in the feature expansion:
- * - heya.jungyoOptOut (exhibition opt-out)
- * - heya.foreignAcademies (world circuit academies)
- * - heya.youthAcademy (player-owned youth academy)
- * - rikishi.tsukebitoPlayerSet (player-controlled tsukebito flag)
- *
- * All fields are optional (undefined) on existing saves — they default
- * to falsy/empty behavior. This migration just ensures the save version
- * is bumped so future migrations can detect the schema.
- */
-const migrateToV1_3_0: MigrationStep = (save, ctx) => {
-  const next = { ...save };
-  // Explicitly initialize new optional fields on existing saves.
-  // All fields are optional (undefined is the correct default), but the
-  // plan requires the migration to explicitly set them rather than relying
-  // on implicit undefined.
-  if (next.world?.heyas) {
-    const heyas = next.world.heyas as Record<string, Heya | undefined>;
-    for (const id of Object.keys(heyas)) {
-      const heya = heyas[id];
-      if (heya) {
-        if (heya.jungyoOptOut === undefined) heya.jungyoOptOut = undefined;
-        if (heya.foreignAcademies === undefined) heya.foreignAcademies = undefined;
-        if (heya.youthAcademy === undefined) heya.youthAcademy = undefined;
-      }
-    }
-  }
-  if (next.world?.rikishi) {
-    const rikishi = next.world.rikishi as Record<string, Rikishi | undefined>;
-    for (const id of Object.keys(rikishi)) {
-      const r = rikishi[id];
-      if (r) {
-        if (r.tsukebitoPlayerSet === undefined) r.tsukebitoPlayerSet = undefined;
-      }
-    }
-  }
-  // BoutResult.shimpanPanelIds is on bout results in currentBasho/history;
-  // since it's optional, existing bouts simply have undefined which is correct.
-  next.version = "1.3.0";
-  ctx.logs.push("migrateToV1_3_0: version bump to 1.3.0 (new optional fields initialized)");
-  return next;
-};
-
-/**
- * 1.3.0 → 1.4.0: adds `world.allTimeKimariteStats` — the never-reset all-time
- * kimarite counter. Optional; starts undefined and accumulates from the load
- * point forward. Existing saves cannot backfill era stats (per-era counts were
- * already reset), so we explicitly initialize to undefined.
- */
-const migrateToV1_4_0: MigrationStep = (save, ctx) => {
-  const next = { ...save };
-  if (next.world && next.world.allTimeKimariteStats === undefined) {
-    next.world = { ...next.world, allTimeKimariteStats: undefined };
-  }
-  next.version = "1.4.0";
-  ctx.logs.push("migrateToV1_4_0: version bump to 1.4.0 (allTimeKimariteStats initialized)");
-  return next;
-};
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-
-const REQUIRED_SPONSOR_FIELDS = [
-  "displayName",
-  "category",
-  "tier",
-  "originRegionId",
-  "industryTag",
-  "toneTag",
-  "prestigeAffinity",
-  "loyalty",
-  "scandalTolerance",
-  "riskAppetite",
-  "visibilityPreference",
-  "active",
-  "satisfaction",
-  "createdAtTick",
-  "lastSeenTick",
-] as const;
-
-/**
- * Returns true if the entry has all required Sponsor fields and does not
- * look like a Rikishi object (no `rikishiId` / `shikona` / `heyaId` combo).
- */
-function isValidSponsor(entry: Record<string, unknown>): boolean {
-  // Reject Rikishi-shaped objects
-  if ("rikishiId" in entry || ("shikona" in entry && "heyaId" in entry)) {
-    return false;
-  }
-  // Check required Sponsor fields
-  for (const field of REQUIRED_SPONSOR_FIELDS) {
-    if (!(field in entry)) return false;
-  }
-  return true;
-}
-
-// ── Migration registry ─────────────────────────────────────────────────────
-
-/**
- * Maps a source version to the step that upgrades it to the next version.
- * E.g. "1.0.0" → step that produces "1.1.0".
- */
-const migrations: Partial<Record<SaveVersion, MigrationStep>> = {
-  "1.0.0": migrateToV1_1_0,
-  "1.1.0": migrateToV1_2_0,
-  "1.2.0": migrateToV1_3_0,
-  "1.3.0": migrateToV1_4_0,
-};
-
-// ── Public API ─────────────────────────────────────────────────────────────
-
 export const MigrationService = {
-  migrations,
-
   /**
-   * Returns the ordered list of migration steps needed to go from `from` to `to`.
-   */
-  getMigrationPath(from: SaveVersion, to: SaveVersion): MigrationStep[] {
-    const fromIdx = versionIndex(from);
-    const toIdx = versionIndex(to);
-    if (fromIdx > toIdx) {
-      throw new Error(`Cannot downgrade save from ${from} to ${to}`);
-    }
-    const steps: MigrationStep[] = [];
-    for (let i = fromIdx; i < toIdx; i++) {
-      const stepVersion = VERSION_ORDER[i];
-      const step = migrations[stepVersion];
-      if (!step) {
-        throw new Error(`No migration step registered for version ${stepVersion}`);
-      }
-      steps.push(step);
-    }
-    return steps;
-  },
-
-  /**
-   * Migrates a save to CURRENT_SAVE_VERSION.
-   * Deep-copies the input save so the original is not mutated.
-   * Throws if the save version is not recognized.
+   * Returns the save unchanged when it is CURRENT_SAVE_VERSION.
+   * Throws for every other version — prior versions are unsupported, not
+   * migrated (v19: zero back-compat contract).
    */
   migrateSave(save: SaveGame): MigrationResult {
     const fromVersion = save.version;
-    if (!KNOWN_SAVE_VERSIONS.includes(fromVersion)) {
-      throw new Error(`Unknown save version: ${fromVersion}`);
-    }
+    const ctx: MigrationContext = {
+      fromVersion,
+      toVersion: CURRENT_SAVE_VERSION,
+      logs: [],
+    };
 
-    const toVersion = CURRENT_SAVE_VERSION;
-    const ctx: MigrationContext = { fromVersion, toVersion, logs: [] };
-
-    if (fromVersion === toVersion) {
+    if (fromVersion === CURRENT_SAVE_VERSION) {
       return { save, context: ctx };
     }
 
-    const steps = this.getMigrationPath(fromVersion, toVersion);
-    // Deep copy through the collection codec — nested Maps/Sets survive
-    // the round trip as real collections, not {} husks.
-    let current: SaveGame = parseSave(stringifySave(save)) as SaveGame;
-
-    for (const step of steps) {
-      current = step(current, ctx);
+    if (KNOWN_SAVE_VERSIONS.includes(fromVersion)) {
+      throw new Error(
+        `Save version ${fromVersion} is no longer supported — start a new game (current: ${CURRENT_SAVE_VERSION}).`
+      );
     }
 
-    return { save: current, context: ctx };
+    throw new Error(`Unknown save version: ${fromVersion}`);
   },
 };

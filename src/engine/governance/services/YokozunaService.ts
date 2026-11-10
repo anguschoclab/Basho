@@ -69,10 +69,21 @@ function evaluateCandidate(world: WorldState, rikishi: Rikishi): YDCCandidate | 
   const history = world.history.slice(-2); // Last 2 basho
   if (history.length < 2) return null;
 
-  // In a real implementation, we'd look at specifically this rikishi's performance record
-  // For now, we simulate the 'equivalent' check
+  // Real championship detection: a yusho is a tournament WIN, not a big
+  // scoreline — a 14-1 jun-yusho is not a title (S7-28). Build the
+  // performance record from the BashoResult history.
   const winsLast = rikishi.currentBashoWins ?? 0;
-  const isYushoLast = winsLast >= 14; // Simplified check
+  const lastTwo = history as { yusho?: string; junYusho?: string[]; bashoName?: string; year?: number }[];
+  const isYushoLast = lastTwo[lastTwo.length - 1]?.yusho === rikishi.id;
+  const performances: BashoPerformance[] = lastTwo.map((rec, i) => ({
+    rikishiId: rikishi.id,
+    wins: i === lastTwo.length - 1 ? winsLast : 0,
+    losses: i === lastTwo.length - 1 ? (rikishi.currentBashoLosses ?? 0) : 0,
+    yusho: rec.yusho === rikishi.id,
+    junYusho: rec.junYusho?.includes(rikishi.id) ?? false,
+  }));
+  const yushoCount = performances.filter((p) => p.yusho).length;
+  const junYushoCount = performances.filter((p) => p.junYusho).length;
 
   // We'll need a way to look back further, but for this Phase P logic:
   const reputation = rikishi.economics?.popularity ?? 50;
@@ -87,6 +98,14 @@ function evaluateCandidate(world: WorldState, rikishi: Rikishi): YDCCandidate | 
     sentiment += 40;
     reasons.push("Recent Tournament Champion");
   }
+  if (!isYushoLast && junYushoCount > 0) {
+    sentiment += 20;
+    reasons.push("Recent Runner-Up Finish");
+  }
+  if (yushoCount >= 2) {
+    sentiment += 15;
+    reasons.push("Back-to-Back Championships");
+  }
 
   // Add Political/Dignity factors
   sentiment += reputation / 4;
@@ -99,7 +118,7 @@ function evaluateCandidate(world: WorldState, rikishi: Rikishi): YDCCandidate | 
   return {
     rikishiId: rikishi.id,
     name: rikishi.shikona,
-    performances: [], // Should be populated from historical banzuke records
+    performances,
     sentiment,
     recommendation,
     reasons,

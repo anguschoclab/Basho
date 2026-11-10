@@ -316,6 +316,14 @@ function applyStyleDrift(world: WorldState, heyaId: string): StateImpact {
   const handler = DRIFT_HANDLERS[dominantRegion];
   if (handler) handler();
 
+  // Style drift accumulates weekly — clamp each bias to its [-1, 1]
+  // semantic range so a permanent academy can't push a bias to infinity
+  // (S7-24).
+  const clampBias = (v: number | undefined) => Math.max(-1, Math.min(1, v ?? 0));
+  nextPhilosophy.powerBias = clampBias(nextPhilosophy.powerBias);
+  nextPhilosophy.techniqueBias = clampBias(nextPhilosophy.techniqueBias);
+  nextPhilosophy.speedBias = clampBias(nextPhilosophy.speedBias);
+
   builder.updateHeya(heyaId, { trainingPhilosophy: nextPhilosophy });
 
   if (world.week % 4 === 0) {
@@ -367,12 +375,21 @@ export function manageAcademy(
   const academy = academies.find((a) => a.region === region);
   if (!academy) return builder.build();
 
-  // Update the academy's quality bonus based on budget investment
+  // Negative budgets are not a divestment mechanism — they'd silently
+  // decrement the bonus for free (S7-24).
+  if (config.budget < 0) return builder.build();
+
+  // Update the academy's quality bonus based on budget investment —
+  // capped: a single mega-investment can't mint an unlimited scout
+  // machine (S7-24).
   const updatedAcademies = academies.map((a) =>
     a.region === region
       ? {
           ...a,
-          candidateQualityBonus: a.candidateQualityBonus + Math.floor(config.budget / 50_000),
+          candidateQualityBonus: Math.min(
+            25,
+            a.candidateQualityBonus + Math.floor(config.budget / 50_000)
+          ),
         }
       : a
   );

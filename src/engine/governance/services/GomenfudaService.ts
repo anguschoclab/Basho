@@ -60,6 +60,12 @@ export function recordGomenfuda(
 
   builder.updateHeya(heya.id, {
     reputation: newReputation,
+    // Persistent offense count — the event log gets pruned, the sanction
+    // record must not (S7-31).
+    gomenfudaByYear: {
+      ...(heya.gomenfudaByYear ?? {}),
+      [world.year]: priorCount + 1,
+    },
   });
 
   // Mark the rikishi as absent
@@ -107,6 +113,12 @@ export function recordGomenfuda(
  * Uses world event log to find prior gomenfuda events.
  */
 export function countGomenfudaForHeya(world: WorldState, heyaId: Id, year: number): number {
+  // Persistent per-year counter wins — the event log is prunable and resets
+  // the offense count in long sims (S7-31). Fall back to the log scan for
+  // worlds that predate the field.
+  const persisted = world.heyas.get(heyaId)?.gomenfudaByYear?.[year];
+  if (persisted !== undefined) return persisted;
+
   const log = world.events?.log;
   if (!log) return 0;
 

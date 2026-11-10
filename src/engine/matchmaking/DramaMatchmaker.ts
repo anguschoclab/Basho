@@ -16,6 +16,7 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Division, Rank } from "@/engine/types/banzuke";
 import type { MatchPairing } from "@/engine/matchmaking/MatchmakingPhases";
+import type { RivalriesState } from "@/constants/engine/rivalry";
 import {
   DRAMA_DAY_SENSHURAKU,
   DRAMA_DAY_KADOBAN_START,
@@ -132,7 +133,7 @@ export function isMakuuchiDebut(
  * @param {Rikishi} b - Second rikishi in the pairing.
  * @param {number} day - Current day of the basho (1-15).
  * @param {Map<string, { wins: number; losses: number }>} standings - Current standings map.
- * @param {Map<string, { heat: number; aId: string; bId: string }>} [rivalryState] - Active rivalries state map for grudge match checks.
+ * @param {RivalriesState} [rivalriesState] - Canonical world rivalries state for grudge match checks.
  * @returns {DramaContext | null} Drama context if significant, null otherwise.
  *
  * @example
@@ -150,7 +151,7 @@ export function scoreDrama(
   b: Rikishi,
   day: number,
   standings: Map<string, { wins: number; losses: number }>,
-  rivalryState?: Map<string, { heat: number; aId: string; bId: string }>
+  rivalriesState?: RivalriesState
 ): DramaContext | null {
   const aRecord = standings.get(a.id) ?? { wins: 0, losses: 0 };
   const bRecord = standings.get(b.id) ?? { wins: 0, losses: 0 };
@@ -166,7 +167,7 @@ export function scoreDrama(
     checkYushoDecider(aRecord, bRecord, standings) ??
     checkKinboshiHunt(a, b) ??
     checkSenshurakuFinale(day, aIsElite, bIsElite) ??
-    checkRivalry(a, b, rivalryState) ??
+    checkRivalry(a, b, rivalriesState) ??
     checkArchetypeClash(a, b) ??
     checkComeback(a, b) ??
     checkRookieVsVeteran(a, b) ??
@@ -281,21 +282,19 @@ function checkSenshurakuFinale(
   return null;
 }
 
-// Rivalry: use rivalryState if available, fall back to rikishi.rivalries
+// Rivalry: canonical source is world.rivalriesState.pairs — the legacy
+// rikishi.rivalries fallback read a field that was never populated (S7-44).
 function checkRivalry(
   a: Rikishi,
   b: Rikishi,
-  rivalryState?: Map<string, { heat: number; aId: string; bId: string }>
+  rivalriesState?: RivalriesState
 ): DramaContext | null {
   let rivalryHeat = 0;
-  if (rivalryState) {
+  if (rivalriesState?.pairs) {
     const pairKey = a.id < b.id ? `${a.id}-${b.id}` : `${b.id}-${a.id}`;
-    const rivalry = rivalryState.get(pairKey);
+    const rivalry = rivalriesState.pairs[pairKey];
     if (rivalry) rivalryHeat = rivalry.heat;
   }
-  const aRivalry = (a as Rikishi & { rivalries?: string[] }).rivalries;
-  const bRivalry = (b as Rikishi & { rivalries?: string[] }).rivalries;
-  const hasRivalryLink = aRivalry?.includes(b.id) || bRivalry?.includes(a.id);
   if (rivalryHeat > DRAMA_GRUDGE_HEAT_THRESHOLD) {
     return {
       label: "grudge_match",
@@ -303,7 +302,7 @@ function checkRivalry(
       reason: "rivalry_heat_extreme",
     };
   }
-  if (rivalryHeat > DRAMA_RIVALRY_HEAT_THRESHOLD || hasRivalryLink) {
+  if (rivalryHeat > DRAMA_RIVALRY_HEAT_THRESHOLD) {
     return {
       label: "rivalry_renewed",
       score: Math.min(
@@ -340,12 +339,10 @@ function checkArchetypeClash(a: Rikishi, b: Rikishi): DramaContext | null {
 
 // Comeback story: rikishi returning from injury
 function checkComeback(a: Rikishi, b: Rikishi): DramaContext | null {
-  const aComeback =
-    a.injured === false &&
-    (a as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
-  const bComeback =
-    b.injured === false &&
-    (b as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
+  // Canonical field: recentlyReturnedFromInjury (set by tickRikishiRecovery) —
+  // the old cast read a justReturnedFromInjury field that never existed (S7-44).
+  const aComeback = a.injured === false && a.recentlyReturnedFromInjury;
+  const bComeback = b.injured === false && b.recentlyReturnedFromInjury;
   if (aComeback || bComeback) {
     return {
       label: "comeback_story",
@@ -386,8 +383,10 @@ function checkWinlessWarrior(day: number, aRecord: Record2, bRecord: Record2): D
 
 // Streak breaker: one rikishi on a 5+ win streak
 function checkStreakBreaker(a: Rikishi, b: Rikishi): DramaContext | null {
-  const aStreak = (a as Rikishi & { winStreak?: number }).winStreak ?? 0;
-  const bStreak = (b as Rikishi & { winStreak?: number }).winStreak ?? 0;
+  // Canonical field: currentWinStreak (written by boutResultApplier) — the
+  // old cast read a winStreak field that was never populated (S7-44).
+  const aStreak = a.currentWinStreak ?? 0;
+  const bStreak = b.currentWinStreak ?? 0;
   if (aStreak >= DRAMA_STREAK_BREAKER_THRESHOLD || bStreak >= DRAMA_STREAK_BREAKER_THRESHOLD) {
     return {
       label: "streak_breaker",
@@ -535,7 +534,7 @@ function checkOriginMatchup(a: Rikishi, b: Rikishi): DramaContext | null {
  * @param {number} day - Current day of the basho (1-15).
  * @param {Map<string, { wins: number; losses: number }>} standings - Current standings map.
  * @param {Set<string>} facedSet - Set of already-faced pair keys (to avoid rematches).
- * @param {Map<string, { heat: number; aId: string; bId: string }>} [rivalryState] - Active rivalries state map.
+ * @param {RivalriesState} [rivalriesState] - Canonical world rivalries state.
  * @returns {MatchPairing[]} Optimized pairings with drama labels added.
  *
  * @example
@@ -551,7 +550,7 @@ export function applyDramaBudget(
   day: number,
   standings: Map<string, { wins: number; losses: number }>,
   facedSet: Set<string>,
-  rivalryState?: Map<string, { heat: number; aId: string; bId: string }>
+  rivalriesState?: RivalriesState
 ): MatchPairing[] {
   // Score all pairings for drama and cache scores
   let initialScore = 0;
@@ -565,7 +564,7 @@ export function applyDramaBudget(
       dramaCache.set(i, null);
       continue;
     }
-    const drama = scoreDrama(east, west, day, standings, rivalryState);
+    const drama = scoreDrama(east, west, day, standings, rivalriesState);
     const score = drama?.score ?? 0;
     scoreCache.set(i, score);
     dramaCache.set(i, drama);
@@ -573,7 +572,7 @@ export function applyDramaBudget(
   }
 
   // Rivalry-aware: increase max swaps when rivalry pairs exist (3.2)
-  const hasRivalryPairs = rivalryState && rivalryState.size > 0;
+  const hasRivalryPairs = rivalriesState && Object.keys(rivalriesState.pairs ?? {}).length > 0;
   const maxSwaps = hasRivalryPairs ? DRAMA_MAX_SWAPS_WITH_RIVALRY : DRAMA_MAX_SWAPS_DEFAULT;
 
   // Attempt up to maxSwaps to increase drama
@@ -609,8 +608,8 @@ export function applyDramaBudget(
 
         if (!east1 || !west1 || !east2 || !west2) continue;
 
-        const drama1 = scoreDrama(east1, west1, day, standings, rivalryState);
-        const drama2 = scoreDrama(east2, west2, day, standings, rivalryState);
+        const drama1 = scoreDrama(east1, west1, day, standings, rivalriesState);
+        const drama2 = scoreDrama(east2, west2, day, standings, rivalriesState);
 
         // Use cached old scores instead of recomputing
         const oldDrama1Score = scoreCache.get(i) ?? 0;

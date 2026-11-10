@@ -299,10 +299,24 @@ export function tickWeekCandidatePool(world: WorldState): StateImpact {
     if (!candidate) continue;
     if (candidate.availabilityState !== "in_talks") continue;
 
-    const hasExpiredDeadline = candidate.competingSuitors.some(
-      (s) => currentWeek >= s.deadlineWeek
+    // Per-suitor deadlines (S7-35): a suitor's deadline is THEIR withdrawal
+    // date, not the negotiation's. Expired suitors drop out individually and
+    // the talks continue with whoever is still deciding — previously ANY
+    // expired deadline resolved the whole negotiation, so a low-interest
+    // suitor with a short deadline slammed the window shut early.
+    const openSuitors = candidate.competingSuitors.filter(
+      (s) => currentWeek < s.deadlineWeek
     );
-    if (!hasExpiredDeadline) continue;
+    if (openSuitors.length === candidate.competingSuitors.length) continue; // none expired
+
+    if (openSuitors.length > 0) {
+      // Expired suitors withdraw; negotiation continues with the remainder.
+      nextCandidates[id] = { ...candidate, competingSuitors: openSuitors };
+      continue;
+    }
+
+    // Every deadline has passed — final decision among the just-expired
+    // batch: sign the best eligible offer, else the candidate walks.
 
     // Resolve: pick the suitor with the highest interest band.
     // Foreign-slot invariant (§5.1): a slot-consuming candidate may only be

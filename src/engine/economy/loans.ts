@@ -126,7 +126,14 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateIm
   }
 
   const deficit = Math.abs(heya.funds);
-  const rng = rngForWorld(world, "economy", `loan_${heyaId}_${world.year}_${world.week}`);
+  // Existing-loan count salts the label so a same-week second issuance (a
+  // different loan type already on the books) can't re-mint an identical
+  // `LN-*` uuid (S6-5 hardening).
+  const rng = rngForWorld(
+    world,
+    "economy",
+    `loan_${heyaId}_${world.year}_${world.week}_${heya.activeLoans?.length ?? 0}`
+  );
 
   const terms = determineLoanTerms(world, heya, rng, deficit);
   const loan = createLoanObject(world, heyaId, terms, rng);

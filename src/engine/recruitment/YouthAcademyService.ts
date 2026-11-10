@@ -38,6 +38,9 @@ import {
 import { applyPersonaAssignment } from "@/engine/generation/PersonaAssignment";
 import { MOCHIKYUKIN_INITIAL_POINTS } from "@/constants/engine/economic";
 
+/** Maximum active roster size — mirrors the JSA roster limit (S7-38). */
+const HEYA_ROSTER_CAP = 30;
+
 /** Re-export types for convenience. */
 export type { AcademyLevel, AcademyStaff, AcademyStaffRole, YouthProspect };
 
@@ -356,6 +359,10 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
 
   const prospect = academy.prospects.find((p) => p.id === prospectId);
   if (!prospect) return builder.build();
+
+  // Roster cap (S7-38): refuse promotion into a full stable instead of
+  // overshooting until the next overflow pass cleans it up.
+  if ((heya.rikishiIds?.length ?? 0) >= HEYA_ROSTER_CAP) return builder.build();
 
   // Remove prospect from academy
   const remainingProspects = academy.prospects.filter((p) => p.id !== prospectId);

@@ -19,6 +19,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { SparringPair, SparringState, SparringChemistry } from "@/engine/types/training";
 import type { CombatArchetype } from "@/engine/types/combat";
 import { clamp, finiteOr } from "@/engine/utils/math";
+import { getEffectiveCeiling } from "@/engine/training/TrainingMath";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { RivalryService } from "@/engine/narrative/RivalryService";
@@ -416,10 +417,18 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
         continue;
       }
 
-      // Skip if either rikishi is injured or retired
-      if (a.injured || a.isRetired || b.injured || b.isRetired) {
+      // Retired or missing rikishi dissolve the pair permanently.
+      if (a.isRetired || b.isRetired) {
         const { [pairKey]: _removed, ...rest } = updatedPairs;
         updatedPairs = rest;
+        continue;
+      }
+
+      // Injury PAUSES the pair instead of dissolving it — a 2-week kyujo
+      // shouldn't destroy months of chemistry buildup (S7-36). The pair is
+      // kept with weeksActive preserved and simply skips this week's growth.
+      if (a.injured || b.injured) {
+        updatedPairs[pairKey] = pair;
         continue;
       }
 
@@ -454,7 +463,10 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
       bleedStats.forEach((stat, idx) => {
         const current = finiteOr(nextStats[stat], 50);
         const bonus = perStat + (idx < remainder ? 1 : 0);
-        nextStats[stat] = clamp(current + bonus, 0, 99);
+        // Personal ceiling, not the flat 99 cap — and growth stops AT it
+        // rather than pulling an above-ceiling stat down (S7-37).
+        const ceiling = getEffectiveCeiling(weaker, stat, world);
+        nextStats[stat] = current >= ceiling ? current : Math.min(ceiling, current + bonus);
       });
       builder.updateRikishi(weaker.id, { stats: nextStats });
 
