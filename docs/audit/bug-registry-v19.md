@@ -1,3 +1,5 @@
+> **STALENESS NOTICE**: This audit report references legacy regex/grep methodologies that may have been superseded. It is retained for historical context.
+
 # Bug Registry — v19 Consolidation
 
 Bugs found and fixed during the v19 review + DEBT burn-down. Each entry cites
