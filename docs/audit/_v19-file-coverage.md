@@ -1,3 +1,5 @@
+> **STALENESS NOTICE**: This audit report references legacy regex/grep methodologies that may have been superseded. It is retained for historical context.
+
 # v19 File Coverage Manifest
 
 Generated 2026 from `git diff d04a55e8..HEAD --name-only` (delta-only review —
