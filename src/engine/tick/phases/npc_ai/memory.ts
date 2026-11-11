@@ -51,9 +51,13 @@ export function consolidateOyakataMemoryPure(
   const log = world.events?.log;
   if (log && log.length > 0) {
     const tail = log.slice(-100);
-    const seenSummaries = new Set(
-      memory.observations.filter((o) => o.tick === tick).map((o) => o.summary)
-    );
+    const seenSummaries = new Set<string>();
+    for (let i = 0; i < memory.observations.length; i++) {
+      const o = memory.observations[i];
+      if (o.tick === tick) {
+        seenSummaries.add(o.summary);
+      }
+    }
     for (const e of tail) {
       if (e.heyaId !== oyakata.heyaId) continue;
       if (e.week !== tick || e.year !== world.year) continue;
