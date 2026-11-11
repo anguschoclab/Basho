@@ -86,12 +86,7 @@ export function BoutTags({
   heatConfig: typeof HEAT_CONFIG;
 }) {
   const { heatBand, rivalry, h2h, east, west } = match;
-  const streak =
-    (
-      east as UIRikishi & {
-        h2h?: Record<string, { wins: number; losses: number; streak?: number }>;
-      }
-    ).h2h?.[west.id]?.streak ?? 0;
+  const streak = east.h2h?.[west.id]?.streak ?? 0;
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap mt-2">
