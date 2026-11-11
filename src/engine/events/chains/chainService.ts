@@ -279,10 +279,9 @@ function applyEffects(
     if (Object.keys(update).length > 0) builder.updateHeya(heya.id, update);
   }
   if (effects.rosterFatigue && heyaId) {
-    for (const rid of world.activeRikishiIds) {
-      const r = world.rikishi.get(rid);
-      if (!r || r.heyaId !== heyaId || r.isRetired) continue;
-      builder.updateRikishi(rid, {
+    const roster = EntityCollection.getHeyaRoster(world, heyaId);
+    for (const r of roster) {
+      builder.updateRikishi(r.id, {
         fatigue: Math.max(0, (r.fatigue ?? 0) + effects.rosterFatigue),
       });
     }
