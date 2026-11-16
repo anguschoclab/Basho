@@ -8,7 +8,7 @@ import type {
   BashoState,
 } from "@/engine/types/basho";
 import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
-import { simulateBout } from "@/engine/bout/boutResolver";
+import { resolveAndApplyBout } from "@/engine/bout/boutPipeline";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { initializeBasho } from "@/engine/generation/WorldFactory";
 import { scheduleAllDivisionsDay } from "@/engine/calendar/schedule";
@@ -62,74 +62,15 @@ function crownYushoWinner(
   return { yushoEntry, finalStandings, playoffMatches };
 }
 
-/**
- * Rebuild basho.standings from played results so Swiss pairing sees real
- * records for every division (the local `standings` map only tracks
- * sekitori for the sim result).
- */
-function syncBashoStandings(basho: BashoState): void {
-  const table = new Map<string, { wins: number; losses: number }>();
-  for (const m of basho.matches) {
-    if (!m.result) continue;
-    const w = table.get(m.result.winnerRikishiId) ?? { wins: 0, losses: 0 };
-    w.wins++;
-    table.set(m.result.winnerRikishiId, w);
-    const l = table.get(m.result.loserRikishiId) ?? { wins: 0, losses: 0 };
-    l.losses++;
-    table.set(m.result.loserRikishiId, l);
-  }
-  basho.standings = table;
-}
-
 type StandingsMap = Map<string, { wins: number; losses: number; absences?: number }>;
 
 /**
- * Fusen-sho / Fusen-paku (standardization point): record an absence-based
- * default win and write a fake bout result for stats consistency.
- */
-function applyFusensho(
-  match: MatchSchedule,
-  east: NonNullable<ReturnType<typeof getRikishi>>,
-  west: NonNullable<ReturnType<typeof getRikishi>>,
-  standings: StandingsMap
-): void {
-  const eastAbsent = east.injured || east.isKyujo || east.isRetired;
-  const winner = eastAbsent ? west : east;
-  const loser = eastAbsent ? east : west;
-
-  winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
-  loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
-
-  const winnerStanding = standings.get(winner.id);
-  const loserStanding = standings.get(loser.id);
-  if (winnerStanding) winnerStanding.wins++;
-  if (loserStanding) {
-    loserStanding.losses++;
-    loserStanding.absences = (loserStanding.absences ?? 0) + 1;
-  }
-
-  match.result = {
-    boutId: match.boutId,
-    winner: eastAbsent ? "west" : "east",
-    winnerRikishiId: winner.id,
-    loserRikishiId: loser.id,
-    kimarite: "fusensho",
-    kimariteName: "Fusenshō",
-    stance: "no-grip",
-    tachiaiWinner: eastAbsent ? "west" : "east",
-    duration: 0,
-    upset: false,
-    kenshoEnvelopes: 0,
-    log: [],
-    momentumScore: 0,
-    inBoutInjury: null,
-    isTimeout: false,
-  };
-}
-
-/**
  * Simulate one day: schedule against current standings, then resolve each
- * unplayed match. Returns the (possibly replaced) basho state.
+ * unplayed match through the SHARED bout pipeline (resolveAndApplyBout —
+ * the same path the interactive and batch resolvers take). Absence,
+ * fusensho, standings, career records, h2h, injury application, and media
+ * all come from the canonical applier — no sim-local bookkeeping.
+ * Returns the (possibly replaced) basho state.
  */
 function simulateDay(
   workingWorld: WorldState,
@@ -141,7 +82,6 @@ function simulateDay(
   injuries: string[]
 ): { world: WorldState; basho: BashoState } {
   activeBasho.day = day;
-  syncBashoStandings(activeBasho);
   const { impact } = scheduleAllDivisionsDay({
     world: workingWorld,
     basho: activeBasho,
@@ -158,34 +98,34 @@ function simulateDay(
     const west = getRikishi(workingWorld, match.westRikishiId);
 
     if (!east || !west) continue;
+    const eastWasInjured = !!east.injured;
+    const westWasInjured = !!west.injured;
 
-    const eitherAbsent =
-      east.injured ||
-      west.injured ||
-      east.isKyujo ||
-      west.isKyujo ||
-      east.isRetired ||
-      west.isRetired;
-    if (eitherAbsent) {
-      applyFusensho(match, east, west, standings);
-      continue;
-    }
+    const {
+      world: nextWorld,
+      result,
+      updatedStandings,
+    } = resolveAndApplyBout(
+      workingWorld,
+      activeBasho,
+      match,
+      undefined,
+      `${seed}-d${day}-b${boutIndex}`
+    );
+    workingWorld = nextWorld;
+    activeBasho = workingWorld.currentBasho ?? activeBasho;
+    if (!result) continue;
 
-    const boutSeed = `${seed}-d${day}-b${boutIndex}`;
-    const { result } = simulateBout(east, west, boutSeed);
     match.result = result;
 
-    const winner = result.winner === "east" ? east : west;
-    const loser = result.winner === "east" ? west : east;
-
-    winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
-    loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
-
-    const winnerStanding = standings.get(winner.id);
-    const loserStanding = standings.get(loser.id);
-
-    if (winnerStanding) winnerStanding.wins++;
-    if (loserStanding) loserStanding.losses++;
+    // Persist authoritative standings back onto the basho so the next day's
+    // Swiss pairing sees real records (W0: replaces the sim-local rebuild,
+    // which diverged — fusenpai counted as a loss instead of an absence,
+    // and the final day's results were never synced).
+    if (updatedStandings) {
+      activeBasho = { ...activeBasho, standings: updatedStandings };
+      workingWorld = { ...workingWorld, currentBasho: activeBasho };
+    }
 
     // Track key bouts (upsets, high-rank, senshuraku)
     const eastTier = RANK_HIERARCHY[east.rank]?.tier ?? 999;
@@ -195,8 +135,35 @@ function simulateDay(
       keyBouts.push(result);
     }
 
-    if (east.injured) injuries.push(east.shikona);
-    if (west.injured) injuries.push(west.shikona);
+    // Injury channel (W0/V18-T2): previously dead code — the absent-check
+    // filtered injured rikishi before this read. Now fed by the real
+    // in-bout injury payload plus post-bout injury rolls applied through
+    // applyBoutResult → InjuryService.
+    if (result.inBoutInjury) {
+      const hurt =
+        workingWorld.rikishi.get(result.inBoutInjury.rikishiId) ??
+        (result.inBoutInjury.rikishiId === east.id ? east : west);
+      injuries.push(hurt.shikona);
+    }
+    for (const [wasInjured, r] of [
+      [eastWasInjured, east],
+      [westWasInjured, west],
+    ] as const) {
+      if (!wasInjured && workingWorld.rikishi.get(r.id)?.injured) {
+        injuries.push(r.shikona);
+      }
+    }
+  }
+
+  // Sync the sekitori-only return map from the authoritative basho
+  // standings at day end (includes absences for fusenpai).
+  for (const [id, entry] of standings) {
+    const rec = activeBasho.standings.get(id);
+    if (rec) {
+      entry.wins = rec.wins;
+      entry.losses = rec.losses;
+      entry.absences = rec.absences ?? 0;
+    }
   }
 
   return { world: workingWorld, basho: activeBasho };
@@ -209,7 +176,6 @@ function simulateDay(
 function persistBashoState(
   workingWorld: WorldState,
   activeBasho: BashoState,
-  standings: StandingsMap,
   yushoWinnerId: string
 ): {
   rikishi: Map<string, NonNullable<ReturnType<typeof getRikishi>>>;
@@ -219,36 +185,8 @@ function persistBashoState(
 } {
   const nextRikishiMap = new Map(workingWorld.rikishi);
   const nextHeyaMap = new Map(workingWorld.heyas);
-
-  // 1. Update all rikishi who participated
-  standings.forEach((stats, id) => {
-    const r = nextRikishiMap.get(id);
-    if (r) {
-      const updated = {
-        ...r,
-        careerWins: (r.careerWins ?? 0) + stats.wins,
-        careerLosses: (r.careerLosses ?? 0) + stats.losses,
-        currentBashoWins: stats.wins,
-        currentBashoLosses: stats.losses,
-      };
-
-      // Update division-specific records — clone the nested object: the
-      // { ...r } spread shares divisionRecords with the caller's rikishi, so
-      // in-place += would mutate the input world (V16-B49).
-      if (updated.divisionRecords?.[r.division]) {
-        updated.divisionRecords = {
-          ...r.divisionRecords,
-          [r.division]: {
-            ...r.divisionRecords[r.division],
-            wins: (r.divisionRecords[r.division].wins ?? 0) + stats.wins,
-            losses: (r.divisionRecords[r.division].losses ?? 0) + stats.losses,
-          },
-        };
-      }
-
-      nextRikishiMap.set(id, updated);
-    }
-  });
+  // NOTE: career W/L + divisionRecords were previously accumulated here from
+  // the local standings map; applyBoutResult now writes them per-bout (W0).
 
   // 2. Update Yusho Winner and their stable
   if (yushoWinnerId) {
@@ -307,7 +245,11 @@ export function simulateEntireBasho(
     banzukeUpdateHook?: BanzukeUpdateHook;
   }
 ): BashoSimResult {
-  const basho = initializeBasho(world, bashoName);
+  const bashoBase = initializeBasho(world, bashoName);
+  // Fold the caller's seed into basho.id once — physics seeds derive from
+  // basho.id + year + day + sorted rikishi ids, so this keeps the production
+  // seed *shape* while preserving per-sim seed variance (W0).
+  const basho: BashoState = { ...bashoBase, id: `${bashoBase.id}-sim-${seed}` };
 
   // Work on a shallow clone to avoid mutating the caller's world
   let workingWorld: WorldState = {
@@ -322,9 +264,10 @@ export function simulateEntireBasho(
   const injuries: string[] = [];
 
   // Initialize standings (sekitori only) and clone EVERY participant into
-  // the working map — not just sekitori. simulateDay/applyFusensho write
-  // currentBashoWins/Losses in place; uncloned lower-division entries are
-  // the caller's own objects and would leak sim state back (V18-T1).
+  // the working map — not just sekitori. Bout resolution routes through
+  // resolveAndApplyBout → applyBoutResult, which writes career/basho records
+  // via impacts; uncloned lower-division entries are the caller's own objects
+  // and would leak sim state back (V18-T1).
   for (const id of workingWorld.activeRikishiIds) {
     const rikishi = getRikishi(workingWorld, id);
     if (!rikishi) continue;
@@ -404,7 +347,7 @@ export function simulateEntireBasho(
   }
 
   // --- STATE PERSISTENCE ---
-  const persisted = persistBashoState(workingWorld, activeBasho, standings, yushoWinner.id);
+  const persisted = persistBashoState(workingWorld, activeBasho, yushoWinner.id);
 
   return {
     bashoName,

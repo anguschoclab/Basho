@@ -113,7 +113,7 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
   describe("resolveBout skips narrative for fusensho bouts", () => {
     it("returns fusensho and leaves pbpLines undefined", () => {
       const east = mockRikishi("r-east", { injured: false });
-      const west = mockRikishi("r-west", { injured: true });
+      const west = mockRikishi("r-west", { isKyujo: true });
       const basho = makeMockBasho();
       const ctx = makeBoutContext();
 

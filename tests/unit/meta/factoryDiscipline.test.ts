@@ -105,7 +105,7 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/engine/queries.getPlayerHeya.test.ts",
   "unit/engine/queries.updateHeyaInWorld.test.ts",
   "unit/engine/schedule/kyujoFilter.test.ts",
-  "unit/engine/simulation/TournamentSimulatorWalkover.test.ts",
+
   "unit/engine/stateImpact.metadata.test.ts",
   "unit/engine/systems/bookmark/BookmarkService.test.ts",
   "unit/engine/systems/generation/initializeBasho.test.ts",

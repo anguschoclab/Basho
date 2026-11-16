@@ -1,5 +1,9 @@
 # Bug Registry — v19 Consolidation
 
+> STALENESS NOTICE: retained for historical reference. Methodology (regex/grep
+> sweeps) is superseded by current audit gates; file/line citations reflect the
+> v19 tree, not the current codebase.
+
 Bugs found and fixed during the v19 review + DEBT burn-down. Each entry cites
 the pin or verification that proves it. Registered DEBT that could not be
 resolved this pass is at the bottom.

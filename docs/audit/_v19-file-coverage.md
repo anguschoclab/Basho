@@ -1,5 +1,9 @@
 # v19 File Coverage Manifest
 
+> STALENESS NOTICE: retained for historical reference. This manifest reflects
+> the v19 consolidation delta; grep-generated listings are superseded by the
+> current tree.
+
 Generated 2026 from `git diff d04a55e8..HEAD --name-only` (delta-only review —
 v18 already covered ~1,129 files; unchanged files were not re-read).
 Legend: [x] = read/reviewed/touched this consolidation; [t] = exercised by test

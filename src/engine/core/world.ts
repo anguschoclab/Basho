@@ -11,13 +11,12 @@
  */
 
 import type { WorldState } from "@/engine/types/world";
-import type { BashoName, BoutResult, BashoState, MatchSchedule } from "@/engine/types/basho";
+import type { BashoName, BoutResult, BashoState } from "@/engine/types/basho";
 import type { Id } from "@/engine/types/common";
-import type { Side } from "@/engine/types/index";
-import { resolveBout } from "@/engine/bout/boutResolver";
 import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
 import { resetBashoMediaTracking, handleMediaEvent } from "@/engine/media/MediaService";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
+import { resolveAndApplyBout } from "@/engine/bout/boutPipeline";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { getActiveRikishi, getHeyaRoster } from "@/engine/core/queries";
@@ -111,77 +110,6 @@ export function advanceBashoDay(world: WorldState): WorldState {
 
   return currentWorld;
 }
-
-/**
- * Shared per-bout core: resolve the bout, apply its result impact, and return
- * the evolved world plus the standings delta the caller must persist.
- * Does NOT write `match.result` into `basho.matches` or consume tactics —
- * callers own those so the batch path can avoid per-bout array copies.
- *
- * @param {WorldState} currentWorld - The current world state.
- * @param {BashoState} basho - The current basho state.
- * @param {MatchScheduleLike} match - The bout schedule information.
- * @param {import("@/engine/types/combat").BoutTactic} [tactic] - Optional tactic chosen by the player.
- * @param {string} fallbackBoutId - Fallback ID if the match lacks a boutId.
- * @returns {Object} An object containing the updated world state, the bout result, and updated standings.
- */
-function resolveAndApplyBout(
-  currentWorld: WorldState,
-  basho: BashoState,
-  match: MatchScheduleLike,
-  tactic: import("@/engine/types/combat").BoutTactic | undefined,
-  fallbackBoutId: string
-): {
-  world: WorldState;
-  result?: BoutResult;
-  updatedStandings?: Map<string, { wins: number; losses: number }>;
-} {
-  const east = currentWorld.rikishi.get(match.eastRikishiId);
-  const west = currentWorld.rikishi.get(match.westRikishiId);
-  if (!east || !west) return { world: currentWorld };
-
-  const eastHeyaId = east.heyaId;
-  const westHeyaId = west.heyaId;
-  const playerHeyaId = currentWorld.playerHeyaId;
-
-  const playerSide = playerHeyaId
-    ? eastHeyaId === playerHeyaId
-      ? ("east" as Side)
-      : westHeyaId === playerHeyaId
-        ? ("west" as Side)
-        : undefined
-    : undefined;
-
-  const boutContext = {
-    id: match.boutId ?? fallbackBoutId,
-    day: basho.day,
-    rikishiEastId: east.id,
-    rikishiWestId: west.id,
-    division: east.division,
-    playerSide,
-  };
-
-  const { result, impact: resolveImpact } = resolveBout(
-    boutContext,
-    east,
-    west,
-    basho,
-    tactic,
-    currentWorld
-  );
-
-  const boutImpact = applyBoutResult(currentWorld, match as MatchSchedule, result);
-  const nextWorld = resolveImpacts(currentWorld, [resolveImpact, boutImpact]);
-
-  return {
-    world: nextWorld,
-    result,
-    updatedStandings: boutImpact.metadata?.updatedStandings as
-      Map<string, { wins: number; losses: number }> | undefined,
-  };
-}
-
-type MatchScheduleLike = Pick<MatchSchedule, "boutId" | "day" | "eastRikishiId" | "westRikishiId">;
 
 /** Consume a bout tactic after it has been applied (V5-B09 semantics). */
 function consumeBoutTactic(world: WorldState, boutId: string | undefined): WorldState {

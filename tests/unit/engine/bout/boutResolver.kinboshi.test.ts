@@ -61,7 +61,7 @@ describe("detectKinboshi ordering and awardFact assignment", () => {
 
   it("does not set awardFact for fusensho wins", () => {
     const east = mockRikishi("r-east", { rank: "maegashira", injured: false });
-    const west = mockRikishi("r-west", { rank: "yokozuna", injured: true });
+    const west = mockRikishi("r-west", { rank: "yokozuna", isKyujo: true });
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 

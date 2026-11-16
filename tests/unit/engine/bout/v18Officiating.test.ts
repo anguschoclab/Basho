@@ -174,7 +174,7 @@ describe("V18-O2 — mono-ii without a shimpan panel records no reversal", () =>
 
 describe("V18-O3 — double-absent bout must not award east a walkover", () => {
   it("resolveBout with both rikishi absent declares no winner", () => {
-    const east = MockFactory.createRikishi("e", { injured: true, side: "east" });
+    const east = MockFactory.createRikishi("e", { isKyujo: true, side: "east" });
     const west = MockFactory.createRikishi("w", { isKyujo: true, side: "west" });
     const basho = MockFactory.createBasho({ day: 3 });
     const bout: BoutContext = {

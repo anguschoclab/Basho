@@ -23,9 +23,9 @@ function makeBoutContext(overrides: Partial<BoutContext> = {}): BoutContext {
 // ---------------------------------------------------------------------------
 
 describe("resolveBout — fusensho (walkover)", () => {
-  it("returns fusensho immediately when west rikishi is injured", () => {
+  it("returns fusensho immediately when west rikishi is kyujo", () => {
     const east = mockRikishi("r-east", { injured: false });
-    const west = mockRikishi("r-west", { injured: true });
+    const west = mockRikishi("r-west", { isKyujo: true });
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
@@ -39,8 +39,8 @@ describe("resolveBout — fusensho (walkover)", () => {
     expect(result.isKinboshi).toBe(false);
   });
 
-  it("returns fusensho immediately when east rikishi is injured", () => {
-    const east = mockRikishi("r-east", { injured: true });
+  it("returns fusensho immediately when east rikishi is kyujo", () => {
+    const east = mockRikishi("r-east", { isKyujo: true });
     const west = mockRikishi("r-west", { injured: false });
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
@@ -77,8 +77,8 @@ describe("resolveBout — fusensho (walkover)", () => {
     expect(result.duration).toBeGreaterThan(0);
   });
 
-  it("injured winner does not receive kinboshi even if ranked maegashira vs yokozuna", () => {
-    const east = mockRikishi("r-east", { injured: true, rank: "yokozuna" });
+  it("fusensho winner does not receive kinboshi even if ranked maegashira vs yokozuna", () => {
+    const east = mockRikishi("r-east", { isKyujo: true, rank: "yokozuna" });
     const west = mockRikishi("r-west", { injured: false, rank: "maegashira" });
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
@@ -282,7 +282,7 @@ describe("resolveBout — kimarite stats accumulation", () => {
 
   it("does not count fusensho in either map", () => {
     const east = mockRikishi("r-east", { injured: false });
-    const west = mockRikishi("r-west", { injured: true });
+    const west = mockRikishi("r-west", { isKyujo: true });
     const basho = makeMockBasho({ year: 2025 });
     const world = makeMockWorld({
       globalKimariteStats: {},

@@ -1,69 +1,74 @@
 import { describe, it, expect } from "vitest";
+import { resolveBout } from "@/engine/bout/boutResolver";
+import { resolveAndApplyBout } from "@/engine/bout/boutPipeline";
+import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { MatchSchedule } from "@/engine/types/basho";
 
-function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
+/**
+ * N9/N10: walkover (fusensho) semantics — exercised through the REAL shared
+ * pipeline (W0 harmonization). There is no longer a separate
+ * TournamentSimulator walkover check; every path routes through
+ * resolveBout's absentRikishi gate (absent === isKyujo || isRetired).
+ */
+function ctx(east: Rikishi, west: Rikishi): BoutContext {
   return {
-    id,
-    shikona: `Rikishi ${id}`,
-    careerWins: 10,
-    careerLosses: 5,
-    currentBashoWins: 0,
-    currentBashoLosses: 0,
-    makuuchiWins: 0,
-    divisionRecords: {
-      makuuchi: { wins: 0, losses: 0 },
-      juryo: { wins: 0, losses: 0 },
-      makushita: { wins: 0, losses: 0 },
-      sandanme: { wins: 0, losses: 0 },
-      jonidan: { wins: 0, losses: 0 },
-      jonokuchi: { wins: 0, losses: 0 },
-    },
-    division: "makuuchi",
-    rank: "maegashira",
-    side: "east",
-    stats: { achievements: undefined },
-    heyaId: "test-heya",
-    ...opts,
-  } as unknown as Rikishi;
+    id: `walkover-${east.id}-${west.id}`,
+    day: 1,
+    rikishiEastId: east.id,
+    rikishiWestId: west.id,
+  };
 }
 
-// Simulates the TournamentSimulator walkover check logic
-function shouldGiveWalkover(east: Rikishi, west: Rikishi): boolean {
-  // Current buggy check (N9): only checks injured
-  // Fixed check (N9): checks injured, isKyujo, isRetired
-  return (
-    !!east.injured ||
-    !!west.injured ||
-    !!east.isKyujo ||
-    !!west.isKyujo ||
-    !!east.isRetired ||
-    !!west.isRetired
-  );
-}
-
-// Simulates the TournamentSimulator walkover kimarite (N10)
-function getWalkoverKimarite(): { kimarite: string; kimariteName: string } {
-  // Current buggy: { kimarite: "oshidashi", kimariteName: "Oshidashi" }
-  // Fixed: { kimarite: "fusensho", kimariteName: "Fusenshō" }
-  return { kimarite: "fusensho", kimariteName: "Fusenshō" };
-}
-
-describe("N9/N10: TournamentSimulator walkover", () => {
-  it("H.1: TournamentSimulator gives fusensho when east.isKyujo is true", () => {
-    const east = makeRikishi("east", { injured: false, isKyujo: true });
-    const west = makeRikishi("west", { injured: false, isKyujo: false });
-    expect(shouldGiveWalkover(east, west)).toBe(true);
+describe("N9/N10: walkover semantics through the shared pipeline", () => {
+  it("H.1: isKyujo produces a fusensho, not a real bout", () => {
+    const east = MockFactory.createRikishi("east", { injured: false, isKyujo: true });
+    const west = MockFactory.createRikishi("west", { injured: false, isKyujo: false });
+    const { result } = resolveBout(ctx(east, west), east, west, MockFactory.createBasho());
+    expect(result.kimarite).toBe("fusensho");
+    expect(result.winnerRikishiId).toBe(west.id);
   });
 
-  it("H.2: TournamentSimulator gives fusensho when west.isRetired is true", () => {
-    const east = makeRikishi("east", { injured: false, isKyujo: false, isRetired: false });
-    const west = makeRikishi("west", { injured: false, isKyujo: false, isRetired: true });
-    expect(shouldGiveWalkover(east, west)).toBe(true);
+  it("H.2: isRetired produces a fusensho", () => {
+    const east = MockFactory.createRikishi("east", { isRetired: false });
+    const west = MockFactory.createRikishi("west", { isRetired: true });
+    const { result } = resolveBout(ctx(east, west), east, west, MockFactory.createBasho());
+    expect(result.kimarite).toBe("fusensho");
+    expect(result.winnerRikishiId).toBe(east.id);
   });
 
-  it('H.3: TournamentSimulator walkover uses kimarite "fusensho" not "oshidashi"', () => {
-    const { kimarite, kimariteName } = getWalkoverKimarite();
-    expect(kimarite).toBe("fusensho");
-    expect(kimariteName).toBe("Fusenshō");
+  it('H.3: walkover kimarite is "fusensho" (never a real technique)', () => {
+    const east = MockFactory.createRikishi("east", { isKyujo: true });
+    const west = MockFactory.createRikishi("west");
+    const { result } = resolveBout(ctx(east, west), east, west, MockFactory.createBasho());
+    expect(result.kimarite).toBe("fusensho");
+    expect(result.kimariteName).toBe("Fusenshō");
+  });
+
+  it("H.4: fusenpai records an absence, not a loss, in standings", () => {
+    const east = MockFactory.createRikishi("east", { isKyujo: true });
+    const west = MockFactory.createRikishi("west");
+    const world = MockFactory.createWorld({
+      cyclePhase: "active_basho",
+      currentBasho: MockFactory.createBasho({ day: 2 }),
+    });
+    world.rikishi.set(east.id, east);
+    world.rikishi.set(west.id, west);
+    const match = {
+      boutId: "w4",
+      day: 2,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
+    } as MatchSchedule;
+    const { updatedStandings } = resolveAndApplyBout(
+      world,
+      world.currentBasho!,
+      match,
+      undefined,
+      "w4"
+    );
+    expect(updatedStandings?.get(east.id)?.absences).toBe(1);
+    expect(updatedStandings?.get(east.id)?.losses).toBe(0);
   });
 });

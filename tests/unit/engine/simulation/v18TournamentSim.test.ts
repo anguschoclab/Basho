@@ -100,18 +100,24 @@ describe("V18-T1 — simulateEntireBasho must not mutate caller's rikishi", () =
   });
 });
 
-describe("V18-T2 — DISPROVED: in-bout injury → BashoSimResult.injuries", () => {
-  it("documents that the injuries channel is dead code (always empty)", () => {
+describe("V18-T2 — resolved (W0): injuries channel is live", () => {
+  it("injuries array only reports shikona hurt during the sim", () => {
     const { world } = lowerDivisionWorld();
 
     const sim = simulateEntireBasho(world, "hatsu", "v18-t2");
 
-    // Pinned as evidence, not as desired behavior: the collection site can
-    // never execute (see file header). If a future fix wires a real injury
-    // channel (e.g. match.result.inBoutInjury → injuries), this assertion
-    // SHOULD then break — that breakage is the intended tripwire, not a
-    // contract to preserve.
-    expect(sim.injuries).toEqual([]);
+    // W0 rewired the channel: result.inBoutInjury + post-bout injury rolls
+    // now flow through the shared pipeline (the old `east.injured` read was
+    // dead code behind the absent-check). Entries, if any, must be real
+    // participant shikona — and any reported injury must correspond to a
+    // rikishi flagged injured in the final world.
+    const shikonaById = new Map(
+      Array.from(sim.finalWorld.rikishi.values()).map((r) => [r.shikona, r.injured])
+    );
+    for (const name of sim.injuries) {
+      expect(shikonaById.has(name), `unknown shikona ${name}`).toBe(true);
+      expect(shikonaById.get(name), `${name} reported but not injured`).toBe(true);
+    }
     expect(sim.standings.size).toBeGreaterThan(0);
   });
 });

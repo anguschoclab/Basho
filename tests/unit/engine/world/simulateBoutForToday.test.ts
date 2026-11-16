@@ -222,14 +222,14 @@ describe("simulateBoutForToday", () => {
     expect(result.result).toBeUndefined();
   });
 
-  it("Test 2.11: handles fusensho (injured rikishi)", () => {
+  it("Test 2.11: handles fusensho (kyujo rikishi)", () => {
     const matches = [makeMatch("b1", 1)];
     const world = makeWorldWithMatches(matches, {
-      east: { injured: true, injuryWeeksRemaining: 2 },
+      east: { isKyujo: true },
     });
     const result = simulateBoutForToday(world, 0);
     expect(result.result).toBeDefined();
-    // Injured rikishi (east) should lose by fusensho
+    // Kyujo rikishi (east) should lose by fusensho
     expect(result.result?.kimarite).toBe("fusensho");
     expect(result.result?.winnerRikishiId).toBe("west");
   });

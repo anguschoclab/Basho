@@ -53,13 +53,23 @@ import { DEFAULT_STAT_VALUE } from "@/constants/engine/rikishi";
 // Contention, achievement, and tactic aftermath logic extracted to dedicated modules.
 
 /**
+ * Canonical absence gate (W0 harmonization): a rikishi is absent from a bout
+ * iff he has withdrawn (`isKyujo`) or retired (`isRetired`). `injured` alone
+ * is NOT absence — an injured rikishi who has not withdrawn competes through
+ * the injury (see morningOfDay / competing-injury penalties).
+ */
+export function absentRikishi(r: Rikishi): boolean {
+  return !!(r.isRetired || r.isKyujo);
+}
+
+/**
  * Pre-physics fusensho check.
- * If either rikishi is injured/absent, return a walkover result immediately
- * without running the physics simulation.
+ * If either rikishi is absent (kyujo/retired), return a walkover result
+ * immediately without running the physics simulation.
  */
 function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResult | null {
-  const eastAbsent = east.injured || east.isRetired || east.isKyujo;
-  const westAbsent = west.injured || west.isRetired || west.isKyujo;
+  const eastAbsent = absentRikishi(east);
+  const westAbsent = absentRikishi(west);
 
   if (!eastAbsent && !westAbsent) return null;
 
