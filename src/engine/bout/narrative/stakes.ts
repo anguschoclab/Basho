@@ -13,19 +13,31 @@ import {
 } from "@/constants/engine/generation";
 import { NAKABI_DAY } from "@/engine/basho/NakabiService";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
 import { isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
 
 function beatHometown(p: PbpPipeline): void {
   const { bashoInfo, east, preBoutRng, push, west } = p;
-  // 3k. Hometown angle
+  // 3k. Hometown angle — tiered (W E): host-prefecture natives get the
+  // home-crowd line; same-region natives get the regional-support line so
+  // a Kumamoto man hears the Kyushu crowd in Fukuoka.
   if (east.origin && west.origin && east.origin !== west.origin) {
     const bashoLocation = bashoInfo?.location;
-    if (bashoLocation && (east.origin === bashoLocation || west.origin === bashoLocation)) {
-      const hometownRikishi = east.origin === bashoLocation ? east : west;
+    const eastTier = hometownTier(east.origin, bashoLocation);
+    const westTier = hometownTier(west.origin, bashoLocation);
+    // Prefer the stronger tier when both sides qualify (can't both be home).
+    const hometownRikishi =
+      eastTier === "home" ? east : westTier === "home" ? west : eastTier ? east : west;
+    const tier = hometownRikishi === east ? eastTier : westTier;
+    if (tier) {
+      const templatePath =
+        tier === "home" ? "pre_bout.hometown" : "pre_bout.hometown_region";
       push(
-        BardEngine.resolve(preBoutRng, "pre_bout.hometown", {
+        BardEngine.resolve(preBoutRng, templatePath, {
           SHIKONA: hometownRikishi.shikona,
           LOCATION: bashoLocation,
+          REGION: bashoRegionLabel(bashoLocation) ?? bashoLocation,
+          ORIGIN: hometownRikishi.origin ?? "",
           rikishiId: hometownRikishi.id,
         }).text,
         "pre_bout",

@@ -16,6 +16,7 @@ import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
 import { KINJITE_FOUL_LABELS } from "@/engine/bout/kinjite";
 import { rngFromSeed } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
 import type { BoutTactic } from "@/engine/types/combat";
 
 const TACTIC_LABELS: Record<BoutTactic, string> = {
@@ -931,13 +932,19 @@ function beatJuryoCallup(p: PbpPipeline): void {
 
 function beatHometownWin(p: PbpPipeline): void {
   const { bashoInfo, postBoutRng, push, winnerRikishi } = p;
-  // 16c. Hometown win — local hero delivers for the home crowd
+  // 16c. Hometown win — tiered (W E): host-prefecture winners get the
+  // hometown hero line; same-region winners get the regional-support line.
   const bashoLocation = bashoInfo?.location;
-  if (bashoLocation && winnerRikishi.origin === bashoLocation) {
+  const tier = hometownTier(winnerRikishi.origin, bashoLocation);
+  if (tier) {
+    const templatePath =
+      tier === "home" ? "post_bout.hometown_win" : "post_bout.hometown_region_win";
     push(
-      BardEngine.resolve(postBoutRng, "post_bout.hometown_win", {
+      BardEngine.resolve(postBoutRng, templatePath, {
         WINNER: winnerRikishi.shikona,
         LOCATION: bashoLocation,
+        REGION: bashoRegionLabel(bashoLocation) ?? bashoLocation,
+        ORIGIN: winnerRikishi.origin ?? "",
         winnerId: winnerRikishi.id,
       }).text,
       "post_bout",

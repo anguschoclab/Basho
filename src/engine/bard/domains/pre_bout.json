@@ -506,5 +506,10 @@
       "A milestone moment: %SHIKONA% steps onto the dohyo as a sekitori for the first time.",
       "The paid ranks await — %SHIKONA% debuts as a salaried rikishi today."
     ]
-  }
+  },
+  "hometown_region": [
+    "The %REGION% faithful rally behind %SHIKONA% — the %ORIGIN% native fighting on home soil.",
+    "%SHIKONA% hails from %ORIGIN% — the %REGION% crowd has adopted him as one of their own today.",
+    "Regional pride on the dohyo: %SHIKONA% of %ORIGIN% feeds off the %REGION% support."
+  ]
 }

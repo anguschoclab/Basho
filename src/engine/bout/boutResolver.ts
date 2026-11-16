@@ -41,6 +41,8 @@ import {
 import { applyMonoiiVerdict } from "@/engine/bout/resolution/monoiiVerdict";
 import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import { hometownTier, applyHometownBonus } from "@/engine/basho/geography";
+import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 import {
   RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
   RIVALRY_SPITE_MENTAL_MULTIPLIER,
@@ -190,9 +192,17 @@ export function resolveBout(
 
   // Clone rikishi to apply temporary bout-only modifiers (aggression + mental)
   // Competing-injury penalties apply on top — a rikishi fighting hurt
-  // carries the injury's stat debuff into the physics run.
-  const eastBout = applyCompetingInjuryPenalty(applyRivalryToRikishi(east, eastRivalry));
-  const westBout = applyCompetingInjuryPenalty(applyRivalryToRikishi(west, westRivalry));
+  // carries the injury's stat debuff into the physics run. The home-region
+  // crowd bonus (W E) lifts a local man's mental on top of both.
+  const bashoLocation = basho.bashoName ? BASHO_CALENDAR[basho.bashoName]?.location : undefined;
+  const eastBout = applyHometownBonus(
+    applyCompetingInjuryPenalty(applyRivalryToRikishi(east, eastRivalry)),
+    hometownTier(east.origin, bashoLocation)
+  );
+  const westBout = applyHometownBonus(
+    applyCompetingInjuryPenalty(applyRivalryToRikishi(west, westRivalry)),
+    hometownTier(west.origin, bashoLocation)
+  );
 
   const { eastTactic, westTactic, ctxFinal } = resolveSideTactics(
     bout,

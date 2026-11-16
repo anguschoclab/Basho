@@ -575,5 +575,10 @@
     "A rare treat for the crowd — juryo call-up %CALLUP% stepped onto the makuuchi card to face %OPPONENT%.",
     "Called up from juryo to fill the top-division card, %CALLUP% answered against %OPPONENT%.",
     "The juryo man came to fight — %CALLUP%, summoned into the makuuchi session, took on %OPPONENT%."
+  ],
+  "hometown_region_win": [
+    "The %REGION% crowd roars — %WINNER% of %ORIGIN% delivers on the regional stage!",
+    "%WINNER% wins for the %REGION% faithful — the %ORIGIN% native made them proud today.",
+    "Regional heroics from %WINNER% — the %ORIGIN% man triumphs before the %REGION% crowd."
   ]
 }
