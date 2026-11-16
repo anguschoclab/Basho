@@ -118,6 +118,20 @@ export const KINJITE_FOUL_WEIGHTS: ReadonlyArray<readonly [string, number]> = [
 /** Base probability a suspected foul is confirmed by the panel. */
 export const FOUL_REVIEW_BASE_CONFIRM = 0.75;
 
+// ── Missed-call review (proactive shimpan catches) constants ────────────────
+
+/** Chance the panel reviews a hiwaza finish (hand/knee-down call). */
+export const MISSED_CALL_HIWAZA_REVIEW_CHANCE = 0.04;
+
+/** Chance the panel reviews a clean-but-close edge finish. */
+export const MISSED_CALL_EDGE_REVIEW_CHANCE = 0.02;
+
+/**
+ * Reversal bias for missed-call verdicts — the panel convened because the
+ * call looked wrong, so the reversal band widens beyond accuracy baselines.
+ */
+export const MISSED_CALL_REVERSAL_BONUS = 0.15;
+
 /** Panel average accuracy at which the base confirm chance applies. */
 export const FOUL_REVIEW_ACCURACY_CENTER = 60;
 

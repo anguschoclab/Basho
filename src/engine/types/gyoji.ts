@@ -94,15 +94,24 @@ export function calculateReversalProbability(gyoji: Gyoji, panel: ShimpanPanel |
 /**
  * Determine the outcome of a mono-ii consultation.
  * Uses the gyoji's accuracy and panel composition to decide.
+ *
+ * `reversalBonus` widens the reversal band — used for missed-call reviews
+ * where the panel convened precisely because the call looked wrong.
+ * `suppressRematch` removes the rematch band — used for torinaoshi reruns,
+ * which must always produce a decisive call.
  */
 export function resolveMonoii(
   gyoji: Gyoji,
   panel: ShimpanPanel | null,
-  rng: { next: () => number }
+  rng: { next: () => number },
+  opts?: { reversalBonus?: number; suppressRematch?: boolean }
 ): MonoiiOutcome {
-  const reversalProb = calculateReversalProbability(gyoji, panel);
+  const reversalProb = Math.min(
+    0.6,
+    calculateReversalProbability(gyoji, panel) + (opts?.reversalBonus ?? 0)
+  );
   const roll = rng.next();
   if (roll < reversalProb) return "reversed";
-  if (roll < reversalProb + 0.1) return "rematch";
+  if (!opts?.suppressRematch && roll < reversalProb + 0.1) return "rematch";
   return "upheld";
 }

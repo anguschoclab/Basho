@@ -19,6 +19,7 @@ import type { PbpLine } from "@/engine/bout/boutNarrative";
 import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
 import type { WorldState } from "@/engine/types/world";
 import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
+import type { MonoiiOutcome } from "@/engine/types/gyoji";
 
 /**
  * Type representing basho name (6 annual tournaments).
@@ -185,12 +186,36 @@ export interface BoutResult {
   dramaticContext?: DramaContext;
   /** Whether this bout required a mono-ii (judge consultation). */
   monoii?: boolean;
+  /**
+   * Why the mono-ii convened: "contested" = physics flagged a controversial
+   * finish; "missed_call" = the panel proactively caught a call the gyoji
+   * got wrong (hiwaza/close-edge finishes). Foul reviews leave this unset.
+   */
+  monoiiKind?: "contested" | "missed_call";
   /** ID of the gyoji who officiated this bout. */
   gyojiId?: string;
   /** IDs of the shimpan (judges) on the mono-ii panel, if a mono-ii occurred. */
   shimpanPanelIds?: string[];
   /** Outcome of the mono-ii consultation (if one occurred). */
   monoiiOutcome?: "upheld" | "reversed" | "rematch";
+  /**
+   * The side the gunbai originally pointed to — set when a sashichigae
+   * (reversal) flips the result so the narrative can tell the story
+   * correctly. Absent when no flip occurred.
+   */
+  apparentWinner?: Side;
+  /** The side originally called the loser before a reversal. */
+  apparentLoser?: Side;
+  /** Whether this bout's result came from a torinaoshi (ordered rematch). */
+  isTorinaoshi?: boolean;
+  /** The annulled first attempt's record, kept for narrative and audit. */
+  torinaoshiContext?: {
+    firstWinner: Side;
+    firstKimarite: KimariteId;
+    firstLog: BoutLogEntry[];
+    /** The rematch's own mono-ii verdict, if it had one (never "rematch"). */
+    rematchOutcome?: MonoiiOutcome;
+  };
   /**
    * Foul review record — present when the judges convened to review a
    * suspected kinjite. Always implies `monoii: true`; `confirmed: true`

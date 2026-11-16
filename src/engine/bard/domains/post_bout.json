@@ -434,6 +434,17 @@
       "It's too close to call! A torinaoshi has been ordered.",
       "We will have a rematch! Both men will have to do it again."
     ],
+    "missed_call": [
+      "The judges stopped the action — they saw something the gyoji missed at the finish.",
+      "The shimpan are calling it back — the gyoji appears to have missed the touch at the tawara.",
+      "From ringside, the chief judge signals — the original call may have been wrong."
+    ],
+    "torinaoshi_recap": [
+      "And in the rematch — %WINNER% settles it with a decisive %KIMARITE%.",
+      "They went again, and this time there was no doubt — %WINNER% by %KIMARITE%.",
+      "The torinaoshi is decisive: %WINNER% takes it with %KIMARITE%.",
+      "Back to the shikiri lines and it's settled at last — %WINNER% wins by %KIMARITE%."
+    ],
     "foul_suspected": [
       "But wait — the judges around the ring are conferring. There is a possibility that %SUSPECT% committed a %FOUL% in the finish.",
       "Hold on — the shimpan are signalling. Did %SUSPECT% get away with a %FOUL% on %VICTIM% there?",

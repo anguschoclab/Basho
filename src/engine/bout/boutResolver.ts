@@ -34,7 +34,12 @@ import { resolveSideTactics } from "@/engine/bout/resolution/tactics";
 import { applyOfficiating } from "@/engine/bout/resolution/officiating";
 import { enrichResult, applyTacticAftermath } from "@/engine/bout/resolution/enrichment";
 import { applyStakesAndKensho } from "@/engine/bout/resolution/stakes";
-import { applyGyojiOfficiation } from "@/engine/bout/resolution/gyoji";
+import {
+  assignGyojiAndResolveVerdict,
+  recordGyojiAftermath,
+} from "@/engine/bout/resolution/gyoji";
+import { applyMonoiiVerdict } from "@/engine/bout/resolution/monoiiVerdict";
+import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import {
   RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
@@ -208,7 +213,7 @@ export function resolveBout(
   );
 
   // 1.5/1.6. Kinjite disqualification + scandal + yaocho detection
-  const { result } = applyOfficiating(
+  const { result: officiatedResult } = applyOfficiating(
     bout,
     physicsResult,
     eastBout as Rikishi,
@@ -219,6 +224,45 @@ export function resolveBout(
     world,
     builder
   );
+
+  // 1.7. Missed-call review — the shimpan panel proactively catches calls
+  // the gyoji got wrong (hiwaza/close-edge finishes), even when physics
+  // flagged no controversy.
+  rollMissedCallReview(officiatedResult, world, `${basho.id ?? "basho"}-${bout.id}`);
+  if (officiatedResult.monoii && !officiatedResult.foulReview) {
+    officiatedResult.monoiiKind ??= "contested";
+  }
+
+  // 1.8. Gyoji assignment + mono-ii verdict — BEFORE enrichment so
+  // achievements, standings, h2h, and kensho all see the final result.
+  // Importance is graded on rank/day, not post-hoc stakes flags.
+  const { gyoji, panel } = assignGyojiAndResolveVerdict(
+    world,
+    officiatedResult,
+    bout,
+    east,
+    west
+  );
+
+  // 1.9. Apply the verdict — a sashichigae flips the winner; a torinaoshi
+  // re-runs the bout under a salted basho id and only the rematch counts.
+  const { result } = applyMonoiiVerdict({
+    bout,
+    ctxFinal,
+    result: officiatedResult,
+    east,
+    west,
+    eastBout: eastBout as Rikishi,
+    westBout: westBout as Rikishi,
+    basho,
+    eastTactic,
+    westTactic,
+    world,
+    builder,
+    meta,
+    gyoji,
+    panel,
+  });
 
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
@@ -232,8 +276,9 @@ export function resolveBout(
   // 4/5. Title stakes, rivalry update, kimarite stats, kensho
   applyStakesAndKensho(world, east, west, winner, result, bout, basho, builder);
 
-  // 6. Gyoji officiation — assign a gyoji to this bout and record career stats
-  applyGyojiOfficiation(world, result, basho, builder);
+  // 6. Record officiating career stats on the FINAL result — a torinaoshi
+  // counts as two officiated bouts.
+  recordGyojiAftermath(world, result, basho, builder, gyoji, panel);
 
   // 7. Narrative — LAST so commentary sees the recorded outcomes
   //    (monoiiOutcome, gyojiId, isYushoRace/isTitleStakes) instead of

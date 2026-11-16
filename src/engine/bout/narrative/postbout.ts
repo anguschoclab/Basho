@@ -746,7 +746,7 @@ function beatFoulReviewArc(p: PbpPipeline): void {
 }
 
 function beatMonoii(p: PbpPipeline): void {
-  const { loserRikishi, push, result, seed, winnerRikishi } = p;
+  const { east, loserRikishi, push, result, seed, west, winnerRikishi } = p;
   // 16. Mono-ii (judge consultation) — expanded sub-paths
   if (result.monoii) {
     // A foul review has its own dedicated arc — the judges convened over a
@@ -756,17 +756,45 @@ function beatMonoii(p: PbpPipeline): void {
       return;
     }
     const monoiiRng = rngFromSeed(seed, "pbp", "mono-ii");
+    // The gunbai went to the APPARENT winner — after a sashichigae that is
+    // the eventual loser. Narrate the call as it was made.
+    const gunbaiWinner =
+      result.apparentWinner != null
+        ? result.apparentWinner === "east"
+          ? east
+          : west
+        : winnerRikishi;
+    const gunbaiLoser =
+      result.apparentWinner != null
+        ? result.apparentWinner === "east"
+          ? west
+          : east
+        : loserRikishi;
     // Initial gunbai call — contested
     push(
       BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gunbai_contested", {
-        WINNER: winnerRikishi.shikona,
-        LOSER: loserRikishi.shikona,
-        winnerId: winnerRikishi.id,
-        loserId: loserRikishi.id,
+        WINNER: gunbaiWinner.shikona,
+        LOSER: gunbaiLoser.shikona,
+        winnerId: gunbaiWinner.id,
+        loserId: gunbaiLoser.id,
       }).text,
       "mono_ii",
       ["drama", "mono_ii"]
     );
+    // A proactive panel catch — the judges stopped it before the result
+    // was even announced.
+    if (result.monoiiKind === "missed_call") {
+      push(
+        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.missed_call", {
+          WINNER: gunbaiWinner.shikona,
+          LOSER: gunbaiLoser.shikona,
+          winnerId: gunbaiWinner.id,
+          loserId: gunbaiLoser.id,
+        }).text,
+        "mono_ii",
+        ["drama", "mono_ii"]
+      );
+    }
     // Gyoji confusion — only when the call didn't stand: an upheld decision
     // means the gyoji was right (V16-B47: previously rolled independently of
     // the actual outcome).
@@ -832,6 +860,20 @@ function beatMonoii(p: PbpPipeline): void {
         "mono_ii",
         ["drama"]
       );
+      // The torinaoshi actually happened — recap how the rematch ended.
+      if (result.isTorinaoshi) {
+        push(
+          BardEngine.resolve(monoiiRng, "post_bout.mono_ii.torinaoshi_recap", {
+            WINNER: winnerRikishi.shikona,
+            LOSER: loserRikishi.shikona,
+            KIMARITE: result.kimariteName,
+            winnerId: winnerRikishi.id,
+            loserId: loserRikishi.id,
+          }).text,
+          "mono_ii",
+          ["drama"]
+        );
+      }
     } else {
       // Call upheld — original decision stands
       push(
