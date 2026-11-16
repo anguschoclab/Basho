@@ -161,6 +161,11 @@ export interface Rikishi {
   consecutiveMakeKoshi?: number; // Tracks consecutive losing records (make-koshi) for yokozuna retirement pressure
   consecutiveKachiKoshi?: number; // Tracks consecutive winning records (kachi-koshi) for narrative
   consecutiveKyujo?: number; // Tracks consecutive tournaments missed entirely
+  /** Consecutive basho contested with zero absences — the "Iron Man" streak. */
+  consecutiveBashoFought?: number;
+  /** Set at banzuke publish when this rikishi is the first from his origin to
+   *  reach makuuchi or san'yaku — powers the origin-first pre-bout beat. */
+  firstFromOriginThisBasho?: boolean;
   councilWarnings?: number; // Number of formal council warnings received (stat debuffs)
   pressureScore?: number; // Internal score tracking sub-par performances for warnings
 

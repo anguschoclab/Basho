@@ -1,8 +1,9 @@
 import type { WorldState } from "@/engine/types/world";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
-import type { RecordEntry } from "@/engine/types/records";
+import { createDefaultRecords, type RecordBoards, type RecordEntry } from "@/engine/types/records";
 import type { Id } from "@/engine/types/common";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { CareerSnapshot } from "@/engine/types/history";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getRikishi } from "@/engine/core/queries";
@@ -93,115 +94,70 @@ function updateLeaderboard(
 export function onBashoEnded(world: WorldState): StateImpact {
   const builder = createImpactBuilder("onBashoEnded");
 
-  const records = world.records || {
-    allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-  };
+  const records = world.records || createDefaultRecords();
 
   const year = world.year ?? DEFAULT_START_YEAR;
   const month = world.calendar?.month ?? 1;
 
   // Create deep copies of leaderboards to avoid mutating
+  const copyBoards = (b: RecordBoards): RecordBoards => ({
+    careerWins: [...b.careerWins],
+    makuuchiWins: [...b.makuuchiWins],
+    yusho: [...b.yusho],
+    consecutiveYusho: [...b.consecutiveYusho],
+    kinboshi: [...b.kinboshi],
+    // Boards added in W F may be absent on old saves — default to empty.
+    careerBouts: [...(b.careerBouts ?? [])],
+    makuuchiBouts: [...(b.makuuchiBouts ?? [])],
+    consecutiveAppearances: [...(b.consecutiveAppearances ?? [])],
+    kinboshiConceded: [...(b.kinboshiConceded ?? [])],
+  });
   const updatedRecords = {
-    allTime: {
-      careerWins: [...records.allTime.careerWins],
-      makuuchiWins: [...records.allTime.makuuchiWins],
-      yusho: [...records.allTime.yusho],
-      consecutiveYusho: [...records.allTime.consecutiveYusho],
-      kinboshi: [...records.allTime.kinboshi],
-    },
-    active: {
-      careerWins: [...records.active.careerWins],
-      makuuchiWins: [...records.active.makuuchiWins],
-      yusho: [...records.active.yusho],
-      consecutiveYusho: [...records.active.consecutiveYusho],
-      kinboshi: [...records.active.kinboshi],
-    },
+    allTime: copyBoards(records.allTime),
+    active: copyBoards(records.active),
   };
 
   for (const rikishiId of world.activeRikishiIds) {
     const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
-    // 1. Career Wins
-    updateLeaderboard(updatedRecords.allTime.careerWins, rikishi, rikishi.careerWins, year, month);
-    updateLeaderboard(updatedRecords.active.careerWins, rikishi, rikishi.careerWins, year, month);
-
-    // 2. Makuuchi Wins
-    if (rikishi.division === "makuuchi") {
-      updateLeaderboard(
-        updatedRecords.allTime.makuuchiWins,
-        rikishi,
-        rikishi.makuuchiWins,
-        year,
-        month
-      );
-      updateLeaderboard(
-        updatedRecords.active.makuuchiWins,
-        rikishi,
-        rikishi.makuuchiWins,
-        year,
-        month
-      );
-    }
-
-    // 3. Yusho
-    if (rikishi.careerRecord?.yusho) {
-      updateLeaderboard(
-        updatedRecords.allTime.yusho,
-        rikishi,
-        rikishi.careerRecord.yusho,
-        year,
-        month
-      );
-      updateLeaderboard(
-        updatedRecords.active.yusho,
-        rikishi,
-        rikishi.careerRecord.yusho,
-        year,
-        month
-      );
-    }
-
-    // 4. Consecutive Yusho
-    if (rikishi.consecutiveYusho) {
-      updateLeaderboard(
-        updatedRecords.allTime.consecutiveYusho,
-        rikishi,
-        rikishi.consecutiveYusho,
-        year,
-        month
-      );
-      updateLeaderboard(
-        updatedRecords.active.consecutiveYusho,
-        rikishi,
-        rikishi.consecutiveYusho,
-        year,
-        month
-      );
-    }
-
-    // 5. Kinboshi
-    if (rikishi.stats?.achievements?.kinboshiEarned) {
-      updateLeaderboard(
-        updatedRecords.allTime.kinboshi,
-        rikishi,
-        rikishi.stats.achievements.kinboshiEarned,
-        year,
-        month
-      );
-      updateLeaderboard(
-        updatedRecords.active.kinboshi,
-        rikishi,
-        rikishi.stats.achievements.kinboshiEarned,
-        year,
-        month
-      );
-    }
+    updateRikishiBoards(updatedRecords, rikishi, year, month);
   }
 
   builder.updateWorldField("records", updatedRecords);
 
   return builder.build();
+}
+
+/** Push one rikishi's qualifying values onto every board of both scopes. */
+function updateRikishiBoards(
+  updatedRecords: { allTime: RecordBoards; active: RecordBoards },
+  rikishi: Rikishi,
+  year: number,
+  month: number
+): void {
+  const both = (board: keyof RecordBoards, value: number | undefined) => {
+    updateLeaderboard(updatedRecords.allTime[board], rikishi, value ?? 0, year, month);
+    updateLeaderboard(updatedRecords.active[board], rikishi, value ?? 0, year, month);
+  };
+
+  both("careerWins", rikishi.careerWins);
+  if (rikishi.division === "makuuchi") both("makuuchiWins", rikishi.makuuchiWins);
+  both("yusho", rikishi.careerRecord?.yusho);
+  both("consecutiveYusho", rikishi.consecutiveYusho);
+  both("kinboshi", rikishi.stats?.achievements?.kinboshiEarned);
+
+  // W F appearance/durability boards
+  both(
+    "careerBouts",
+    (rikishi.careerWins ?? 0) + (rikishi.careerLosses ?? 0) + (rikishi.careerAbsences ?? 0)
+  );
+  both(
+    "makuuchiBouts",
+    (rikishi.divisionRecords?.makuuchi?.wins ?? 0) +
+      (rikishi.divisionRecords?.makuuchi?.losses ?? 0)
+  );
+  both("consecutiveAppearances", rikishi.consecutiveBashoFought);
+  both("kinboshiConceded", rikishi.stats?.achievements?.kinboshiConceded);
 }
 
 /**
@@ -223,37 +179,58 @@ function removeActiveRecord(list: RecordEntry[], rikishiId: Id) {
 export function onRikishiRetired(world: WorldState, rikishiId: Id): StateImpact {
   const builder = createImpactBuilder("onRikishiRetired");
 
-  const records = world.records || {
-    allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-  };
+  const records = world.records || createDefaultRecords();
 
   // Create deep copies of active leaderboards to avoid mutating
+  const copyBoards = (b: RecordBoards): RecordBoards => ({
+    careerWins: [...b.careerWins],
+    makuuchiWins: [...b.makuuchiWins],
+    yusho: [...b.yusho],
+    consecutiveYusho: [...b.consecutiveYusho],
+    kinboshi: [...b.kinboshi],
+    // Boards added in W F may be absent on old saves — default to empty.
+    careerBouts: [...(b.careerBouts ?? [])],
+    makuuchiBouts: [...(b.makuuchiBouts ?? [])],
+    consecutiveAppearances: [...(b.consecutiveAppearances ?? [])],
+    kinboshiConceded: [...(b.kinboshiConceded ?? [])],
+  });
   const updatedRecords = {
-    allTime: {
-      careerWins: [...records.allTime.careerWins],
-      makuuchiWins: [...records.allTime.makuuchiWins],
-      yusho: [...records.allTime.yusho],
-      consecutiveYusho: [...records.allTime.consecutiveYusho],
-      kinboshi: [...records.allTime.kinboshi],
-    },
-    active: {
-      careerWins: [...records.active.careerWins],
-      makuuchiWins: [...records.active.makuuchiWins],
-      yusho: [...records.active.yusho],
-      consecutiveYusho: [...records.active.consecutiveYusho],
-      kinboshi: [...records.active.kinboshi],
-    },
+    allTime: copyBoards(records.allTime),
+    active: copyBoards(records.active),
   };
 
   // Use manual shift/pop to remove from active lists to avoid O(N) allocation overhead of .filter()
-  removeActiveRecord(updatedRecords.active.careerWins, rikishiId);
-  removeActiveRecord(updatedRecords.active.makuuchiWins, rikishiId);
-  removeActiveRecord(updatedRecords.active.yusho, rikishiId);
-  removeActiveRecord(updatedRecords.active.consecutiveYusho, rikishiId);
-  removeActiveRecord(updatedRecords.active.kinboshi, rikishiId);
+  for (const board of [
+    updatedRecords.active.careerWins,
+    updatedRecords.active.makuuchiWins,
+    updatedRecords.active.yusho,
+    updatedRecords.active.consecutiveYusho,
+    updatedRecords.active.kinboshi,
+    updatedRecords.active.careerBouts,
+    updatedRecords.active.makuuchiBouts,
+    updatedRecords.active.consecutiveAppearances,
+    updatedRecords.active.kinboshiConceded,
+  ]) {
+    removeActiveRecord(board, rikishiId);
+  }
 
   builder.updateWorldField("records", updatedRecords);
 
   return builder.build();
+}
+
+/**
+ * Backfill for saves predating `Rikishi.consecutiveBashoFought`: count the
+ * trailing careerHistory snapshots with zero absences. Capped by the
+ * history window (last 6 basho), so long streaks undercount on load —
+ * the live counter takes over from the next publish.
+ */
+export function computeConsecutiveBashoFought(careerHistory: CareerSnapshot[] | undefined): number {
+  if (!careerHistory?.length) return 0;
+  let streak = 0;
+  for (let i = careerHistory.length - 1; i >= 0; i--) {
+    if ((careerHistory[i].absences ?? 0) > 0) break;
+    streak++;
+  }
+  return streak;
 }

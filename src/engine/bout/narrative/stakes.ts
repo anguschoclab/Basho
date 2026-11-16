@@ -8,7 +8,9 @@ import { BASHO_DAYS } from "@/constants/engine/calendar";
 import {
   BIRTHDAY_WINDOW_DAYS,
   FIRST_WIN_MENTION_MIN_DAY,
+  IRON_MAN_BEAT_THRESHOLD,
   LEADERBOARD_MIN_LEADER_WINS,
+  OLDEST_DIVISION_AGE,
   WINLESS_MENTION_MIN_DAY,
 } from "@/constants/engine/generation";
 import { NAKABI_DAY } from "@/engine/basho/NakabiService";
@@ -412,8 +414,89 @@ function beatBoutOfTheDay(p: PbpPipeline): void {
   }
 }
 
+function beatIronMan(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W F: the Iron Man streak — consecutive basho with zero absences.
+  for (const r of [east, west]) {
+    const streak = r.consecutiveBashoFought ?? 0;
+    if (streak >= IRON_MAN_BEAT_THRESHOLD) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.iron_man", {
+          SHIKONA: r.shikona,
+          STREAK: streak.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["iron_man"]
+      );
+      break; // one line per bout even if both qualify
+    }
+  }
+}
+
+function beatOldestDivision(p: PbpPipeline): void {
+  const { east, eastAge, preBoutRng, push, west, westAge } = p;
+  // W F: veteran-longevity framing for the division's elder statesman.
+  const elder = eastAge >= westAge ? { r: east, age: eastAge } : { r: west, age: westAge };
+  if (elder.age >= OLDEST_DIVISION_AGE) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.oldest_division", {
+        SHIKONA: elder.r.shikona,
+        AGE: elder.age.toString(),
+        rikishiId: elder.r.id,
+      }).text,
+      "pre_bout",
+      ["oldest_division", "veteran"]
+    );
+  }
+}
+
+function beatMakuuchiBoutMilestone(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W F: top-division bout count hitting a round hundred.
+  for (const r of [east, west]) {
+    const bouts =
+      (r.divisionRecords?.makuuchi?.wins ?? 0) + (r.divisionRecords?.makuuchi?.losses ?? 0);
+    const next = bouts + 1;
+    if (next >= 100 && next % 100 === 0) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.makuuchi_bout_milestone", {
+          SHIKONA: r.shikona,
+          MILESTONE: next.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["makuuchi_milestone", "milestone"]
+      );
+    }
+  }
+}
+
+function beatOriginFirst(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W F: origin-first flag set at banzuke publish for this basho.
+  for (const r of [east, west]) {
+    if (r.firstFromOriginThisBasho && r.origin) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.origin_first", {
+          SHIKONA: r.shikona,
+          ORIGIN: r.origin,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["origin_first"]
+      );
+      break;
+    }
+  }
+}
+
 export function narrateStakes(p: PbpPipeline): void {
   beatHometown(p);
+  beatIronMan(p);
+  beatOldestDivision(p);
+  beatMakuuchiBoutMilestone(p);
+  beatOriginFirst(p);
   beatBirthday(p);
   beatWinlessFirstWin(p);
   beatTournamentDay(p);

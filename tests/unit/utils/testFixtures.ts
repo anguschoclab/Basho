@@ -10,6 +10,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import { SeededRNG } from "@/engine/core/rng";
+import { createDefaultRecords } from "@/engine/types/records";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 /**
@@ -448,22 +449,7 @@ export const sampleWorldState: WorldState = {
     drift: {},
   },
   globalKimariteStats: {},
-  records: {
-    allTime: {
-      careerWins: [],
-      makuuchiWins: [],
-      yusho: [],
-      consecutiveYusho: [],
-      kinboshi: [],
-    },
-    active: {
-      careerWins: [],
-      makuuchiWins: [],
-      yusho: [],
-      consecutiveYusho: [],
-      kinboshi: [],
-    },
-  },
+  records: createDefaultRecords(),
   settings: {
     archiveMode: "standard",
   },

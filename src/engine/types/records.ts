@@ -86,19 +86,37 @@ export interface ChronicleReport {
   highlights: string[];
 }
 
+/** Leaderboard boards tracked on both the all-time and active scopes. */
+export interface RecordBoards {
+  careerWins: RecordEntry[];
+  makuuchiWins: RecordEntry[];
+  yusho: RecordEntry[];
+  consecutiveYusho: RecordEntry[];
+  kinboshi: RecordEntry[];
+  careerBouts: RecordEntry[];
+  makuuchiBouts: RecordEntry[];
+  consecutiveAppearances: RecordEntry[];
+  kinboshiConceded: RecordEntry[];
+}
+
 export interface WorldRecords {
-  allTime: {
-    careerWins: RecordEntry[];
-    makuuchiWins: RecordEntry[];
-    yusho: RecordEntry[];
-    consecutiveYusho: RecordEntry[];
-    kinboshi: RecordEntry[];
-  };
-  active: {
-    careerWins: RecordEntry[];
-    makuuchiWins: RecordEntry[];
-    yusho: RecordEntry[];
-    consecutiveYusho: RecordEntry[];
-    kinboshi: RecordEntry[];
-  };
+  allTime: RecordBoards;
+  active: RecordBoards;
+}
+
+/** The single initializer for an empty WorldRecords — every construction
+ *  site uses this so a new board can't silently strand an old save. */
+export function createDefaultRecords(): WorldRecords {
+  const boards = (): RecordBoards => ({
+    careerWins: [],
+    makuuchiWins: [],
+    yusho: [],
+    consecutiveYusho: [],
+    kinboshi: [],
+    careerBouts: [],
+    makuuchiBouts: [],
+    consecutiveAppearances: [],
+    kinboshiConceded: [],
+  });
+  return { allTime: boards(), active: boards() };
 }

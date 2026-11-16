@@ -85,7 +85,11 @@ export type PbpTag =
   | "ydc_accountability"
   | "post_basho_press"
   | "playoff"
-  | "lower_division";
+  | "lower_division"
+  | "iron_man"
+  | "oldest_division"
+  | "makuuchi_milestone"
+  | "origin_first";
 
 export type PbpLine = {
   text: string;

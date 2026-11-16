@@ -578,6 +578,12 @@ export const MOMENTUM_NARRATIVE_THRESHOLD = 15;
 /** Senshuraku (final day) of a basho */
 export const SENSURAKU_DAY = 15;
 
+/** Consecutive-basho streak (zero absences) worth narrating as an Iron Man run */
+export const IRON_MAN_BEAT_THRESHOLD = 25;
+
+/** Age at which a rikishi is narrated as the division's elder */
+export const OLDEST_DIVISION_AGE = 38;
+
 // ─────────────────────────────────────────
 // Personality & Press Persona constants
 // ─────────────────────────────────────────

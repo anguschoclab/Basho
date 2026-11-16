@@ -7,7 +7,10 @@ import { checkShikonaChange, recordShikonaChange } from "@/engine/history/histor
 import { getRikishi, getHeya } from "@/engine/core/queries";
 import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
 import { recordSekitoriPromotion } from "@/engine/legacy/tenure";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { isSekitoriDivision, isSanyakuRank } from "@/constants/engine/rankDisplay";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;
@@ -109,6 +112,7 @@ export function applyNewRanks(
       }
 
       checkOzekiRankTransitions(builder, rikishi, newEntry);
+      checkOriginFirst(world, builder, rikishi, newEntry, lastBasho);
 
       // Gap 4/9: Generate return_from_kyujo narrative for returning rikishi
       if (rikishi.isKyujo) {
@@ -185,4 +189,103 @@ function checkOzekiRankTransitions(
       { rikishiId: newEntry.rikishiId, heyaId: rikishi.heyaId, importance: "headline" }
     );
   }
+}
+
+/** Has this rikishi ever held a makuuchi spot (any prior bouts or snapshots)? */
+function everReachedMakuuchi(r: Rikishi): boolean {
+  if (r.division === "makuuchi") return true;
+  const makuuchiBouts =
+    (r.divisionRecords?.makuuchi?.wins ?? 0) + (r.divisionRecords?.makuuchi?.losses ?? 0);
+  if (makuuchiBouts > 0) return true;
+  return (r.careerHistory ?? []).some((s) => s.division === "makuuchi");
+}
+
+/** Has this rikishi ever held a san'yaku rank? */
+function everReachedSanyaku(r: Rikishi): boolean {
+  if (isSanyakuRank(r.rank)) return true;
+  return (r.careerHistory ?? []).some((s) => isSanyakuRank(s.rank));
+}
+
+/**
+ * Scans active + historical rikishi for a same-origin precedent at the level
+ * ("makuuchi" | "sanyaku"). Excludes the promotee himself.
+ */
+function hasOriginPrecedent(
+  world: WorldState,
+  origin: string,
+  selfId: string,
+  level: "makuuchi" | "sanyaku"
+): boolean {
+  const reached = (entry: Rikishi | RetiredRikishiSummary): boolean => {
+    if (entry.origin !== origin) return false;
+    const summary = entry as RetiredRikishiSummary;
+    if (summary.isSummary === true) {
+      return level === "makuuchi"
+        ? summary.peakDivision === "makuuchi"
+        : isSanyakuRank(summary.peakRank);
+    }
+    const r = entry as Rikishi;
+    return level === "makuuchi" ? everReachedMakuuchi(r) : everReachedSanyaku(r);
+  };
+
+  for (const [id, r] of world.rikishi) {
+    if (id === selfId) continue;
+    if (reached(r)) return true;
+  }
+  for (const [, r] of world.historicalRikishi ?? []) {
+    if (reached(r)) return true;
+  }
+  return false;
+}
+
+/**
+ * Origin-first milestones: when a rikishi reaches makuuchi or san'yaku and
+ * nobody from his origin has ever been there, flag firstFromOriginThisBasho
+ * and record an origin_first milestone. The flag lives until the next
+ * publish, same lifecycle as sanyakuPromotionThisBasho.
+ */
+function checkOriginFirst(
+  world: WorldState,
+  builder: Builder,
+  rikishi: Rikishi,
+  newEntry: BanzukeResult["newBanzuke"][number],
+  lastBasho: BashoState
+): void {
+  if (!rikishi.origin) return;
+
+  const level: "makuuchi" | "sanyaku" | null =
+    newEntry.division === "makuuchi" && !everReachedMakuuchi(rikishi)
+      ? "makuuchi"
+      : isSanyakuRank(newEntry.position.rank) && !everReachedSanyaku(rikishi)
+        ? "sanyaku"
+        : null;
+  if (!level) return;
+
+  if (hasOriginPrecedent(world, rikishi.origin, rikishi.id, level)) return;
+
+  const levelLabel = level === "makuuchi" ? "the top division" : "san'yaku";
+  const milestone = {
+    id: `origin-first-${rikishi.id}-${lastBasho.bashoName}-${world.year}`,
+    type: "origin_first" as const,
+    title: `First rikishi from ${rikishi.origin} to reach ${levelLabel}`,
+    description: `${rikishi.shikona} is the first rikishi from ${rikishi.origin} to earn a spot in ${levelLabel}.`,
+    date: { year: world.year, month: BASHO_CALENDAR[lastBasho.bashoName]?.month ?? 0 },
+  };
+  builder.updateRikishi(rikishi.id, {
+    firstFromOriginThisBasho: true,
+    milestones: [...(rikishi.milestones ?? []), milestone],
+  });
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "milestone",
+    {
+      status: "origin_first",
+      rikishiId: rikishi.id,
+      shikona: rikishi.shikona,
+      origin: rikishi.origin,
+      level,
+      description: milestone.description,
+    },
+    { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "headline" }
+  );
 }

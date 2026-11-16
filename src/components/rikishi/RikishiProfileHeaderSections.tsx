@@ -14,6 +14,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 import { SEKIWAKE_33_WIN_THRESHOLD } from "@/constants/engine/banzuke";
+import { IRON_MAN_BEAT_THRESHOLD } from "@/constants/engine/generation";
 
 /** Health/ownership/status badge row. */
 export function HeaderBadges({
@@ -165,6 +166,24 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
               Kachi-Koshi Streak
             </span>
             <span className="text-warning font-black">{rikishi.consecutiveKachiKoshi}</span>
+          </div>
+        </div>
+      )}
+      {(rikishi.consecutiveBashoFought ?? 0) >= IRON_MAN_BEAT_THRESHOLD && (
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+            <span className="text-primary flex items-center gap-1">Iron Man Streak</span>
+            <span className="text-primary font-black">
+              {rikishi.consecutiveBashoFought} basho
+            </span>
+          </div>
+        </div>
+      )}
+      {rikishi.firstFromOriginThisBasho && (
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+            <span className="text-gold flex items-center gap-1">Origin Pioneer</span>
+            <span className="opacity-70">First from {rikishi.origin}</span>
           </div>
         </div>
       )}

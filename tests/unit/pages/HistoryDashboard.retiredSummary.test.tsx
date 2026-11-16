@@ -8,6 +8,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 import { toIdMap } from "@/engine/utils/index";
+import { createDefaultRecords } from "@/engine/types/records";
 
 // Mock AppLayout to avoid layout complexity
 vi.mock("@/components/layout/AppLayout", () => ({
@@ -124,10 +125,7 @@ function makeWorldWithRetired(
     staff: new Map(),
     events: { version: "1.0.0", log: [], dedupe: {} },
     history: [],
-    records: {
-      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    },
+    records: createDefaultRecords(),
     settings: { archiveMode: "standard" },
     meta: { tone: "classic", drift: {} },
     globalKimariteStats: {},

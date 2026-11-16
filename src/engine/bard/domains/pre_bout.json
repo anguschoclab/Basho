@@ -511,5 +511,25 @@
     "The %REGION% faithful rally behind %SHIKONA% — the %ORIGIN% native fighting on home soil.",
     "%SHIKONA% hails from %ORIGIN% — the %REGION% crowd has adopted him as one of their own today.",
     "Regional pride on the dohyo: %SHIKONA% of %ORIGIN% feeds off the %REGION% support."
+  ],
+  "iron_man": [
+    "%SHIKONA% has contested every bout for %STREAK% consecutive tournaments — the Iron Man run continues.",
+    "No absences for %STREAK% straight basho — %SHIKONA% simply does not miss the dohyo.",
+    "%STREAK% tournaments in a row without missing a day. The crowd salutes %SHIKONA%'s durability."
+  ],
+  "oldest_division": [
+    "At %AGE%, %SHIKONA% remains the senior man on this dohyo.",
+    "%SHIKONA%, %AGE% years old and still answering the call — a testament to endurance.",
+    "The division's elder statesman: %SHIKONA%, %AGE%, takes the clay once more."
+  ],
+  "makuuchi_bout_milestone": [
+    "This will be %SHIKONA%'s %MILESTONE%th bout in the top division.",
+    "A milestone on the dohyo — %SHIKONA% reaches %MILESTONE% top-division bouts today.",
+    "%SHIKONA% steps up for top-division bout number %MILESTONE%."
+  ],
+  "origin_first": [
+    "%SHIKONA% carries the hopes of %ORIGIN% — the first from his home to reach this level.",
+    "A pioneer on the dohyo: no rikishi from %ORIGIN% had ever come this far before %SHIKONA%.",
+    "The flags of %ORIGIN% are out — %SHIKONA% is the first of his home to stand here."
   ]
 }

@@ -19,6 +19,9 @@ import { SEKIWAKE_33_WIN_THRESHOLD, SEKIWAKE_OZEKI_RECLAIM_WINS } from "@/consta
 type Builder = ReturnType<typeof createImpactBuilder>;
 type StandingStats = { wins: number; losses: number; absences: number };
 
+/** Iron-man streaks that earn a milestone entry (consecutive basho with zero absences). */
+const IRON_MAN_MILESTONES = [25, 50, 75, 100] as const;
+
 interface OzekiBidResult {
   promoteToYokozuna: boolean;
   consecutiveStrongOzeki: number;
@@ -252,11 +255,39 @@ function recordBashoPerformance(
   const kihakuInput = KihakuService.extractFromBasho(id, lastBasho, stats.wins, absentFinalDay);
   const kihakuIsenScore = KihakuService.calculateScore(kihakuInput);
 
+  // Iron-man streak: any absence (partial or full kyujo) resets it.
+  const consecutiveBashoFought =
+    (stats.absences ?? 0) === 0 ? (rikishi.consecutiveBashoFought ?? 0) + 1 : 0;
+  const ironManMilestone = IRON_MAN_MILESTONES.find((m) => consecutiveBashoFought === m);
+  if (ironManMilestone) {
+    const milestone = {
+      id: `ironman-${id}-${lastBasho.bashoName}-${world.year}`,
+      type: "iron_man_streak" as const,
+      title: `${consecutiveBashoFought} consecutive basho contested`,
+      description: `${rikishi.shikona} has contested every scheduled bout for ${consecutiveBashoFought} consecutive tournaments — an Iron Man run.`,
+      date: { year: world.year, month: BASHO_CALENDAR[lastBasho.bashoName]?.month ?? 0 },
+    };
+    builder.updateRikishi(id, { milestones: [...(rikishi.milestones ?? []), milestone] });
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "milestone",
+      {
+        status: "iron_man_streak",
+        rikishiId: id,
+        shikona: rikishi.shikona,
+        streak: consecutiveBashoFought,
+        description: milestone.description,
+      },
+      { rikishiId: id, importance: "notable" }
+    );
+  }
+
   builder.updateRikishi(id, {
     consecutiveStrongOzeki: tracked.consecutiveStrongOzeki,
     consecutiveMakeKoshi: tracked.consecutiveMakeKoshi,
     consecutiveKachiKoshi: tracked.consecutiveKachiKoshi,
     consecutiveKyujo: tracked.consecutiveKyujo,
+    consecutiveBashoFought,
     pressureScore: tracked.pressureScore,
     councilWarnings: tracked.councilWarnings,
     stats: {

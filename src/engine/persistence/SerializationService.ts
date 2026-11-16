@@ -15,6 +15,8 @@ import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { warn } from "@/engine/utils/Logger";
 import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import { createDefaultRecords } from "@/engine/types/records";
+import { computeConsecutiveBashoFought } from "@/engine/history/records";
 
 /**
  * Serialization Service handles the transformation between runtime Maps
@@ -46,6 +48,20 @@ function objectToMap<T>(obj: Record<string, T | undefined>): Map<string, T> {
     if (v !== undefined) map.set(key, v);
   }
   return map;
+}
+
+/**
+ * Restore derived rikishi fields introduced after older saves were written.
+ * consecutiveBashoFought backfills from the careerHistory tail; later
+ * publishes maintain the live counter.
+ */
+function backfillRikishiDerived(rikishi: Map<string, Rikishi>): Map<string, Rikishi> {
+  for (const r of rikishi.values()) {
+    if (r.consecutiveBashoFought === undefined) {
+      r.consecutiveBashoFought = computeConsecutiveBashoFought(r.careerHistory);
+    }
+  }
+  return rikishi;
 }
 
 /**
@@ -270,7 +286,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
 
     heyas: objectToMap(heyasObj),
     closedHeyas: objectToMap(s.closedHeyas || {}),
-    rikishi: objectToMap(rikishiObj),
+    rikishi: backfillRikishiDerived(objectToMap(rikishiObj)),
     historicalRikishi: objectToMap(s.historicalRikishi || {}),
     activeRikishiIds: new Set(s.activeRikishiIds || []),
     oyakata: objectToMap(s.oyakata || {}),
@@ -282,16 +298,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
     history: serialized.history || [],
     historyIndex: s.historyIndex,
     lineage: s.lineage || [],
-    records: s.records || {
-      allTime: {
-        careerWins: [],
-        makuuchiWins: [],
-        yusho: [],
-        consecutiveYusho: [],
-        kinboshi: [],
-      },
-      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    },
+    records: s.records || createDefaultRecords(),
     hallOfFame: s.hallOfFame,
     events: s.events || { version: "1.0.0", log: [], dedupe: {} },
     rivalriesState: s.rivalriesState,

@@ -4,6 +4,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Id } from "@/engine/types/common";
 import type { BashoState } from "@/engine/types/basho";
+import { createDefaultRecords } from "@/engine/types/records";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 /**
@@ -47,16 +48,7 @@ export const MockFactory = {
       staff: new Map(),
       history: [],
       ftue: { isActive: false, bashoCompleted: 0, suppressedEvents: [] },
-      records: {
-        allTime: {
-          careerWins: [],
-          makuuchiWins: [],
-          yusho: [],
-          consecutiveYusho: [],
-          kinboshi: [],
-        },
-        active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-      },
+      records: createDefaultRecords(),
       calendar: { currentWeek: 1 },
       historicalRikishi: new Map(),
       meta: { tone: "classic", drift: {}, history: [] },

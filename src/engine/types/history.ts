@@ -61,7 +61,11 @@ export interface Milestone {
     | "stats_record"
     | "retirement"
     | "shikona_change"
-    | "ozeki_demotion_comeback_yusho";
+    | "ozeki_demotion_comeback_yusho"
+    | "iron_man_streak"
+    | "oldest_in_division"
+    | "origin_first"
+    | "career_bouts";
   title: string;
   description: string;
   date: { year: number; month: number };

@@ -25,7 +25,7 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import { DynastyService } from "@/engine/legacy/DynastyService";
 import type { MyosekiStock, MyosekiMarket } from "@/engine/types/myoseki";
-import type { WorldRecords } from "@/engine/types/records";
+import { createDefaultRecords, type WorldRecords } from "@/engine/types/records";
 import type { Heya } from "@/engine/types/heya";
 
 const YEAR = 2050; // retirees are 50 → checkRetirement → deterministic "Mandatory Age Retirement"
@@ -35,10 +35,7 @@ function recordEntry(rikishiId: string, value: number) {
 }
 
 function emptyRecords(): WorldRecords {
-  return {
-    allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-  };
+  return createDefaultRecords();
 }
 
 function chairStock(id: string, oyakataId: string): MyosekiStock {

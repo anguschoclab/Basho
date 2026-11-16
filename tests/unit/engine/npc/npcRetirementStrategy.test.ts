@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { DefaultRetirementStrategy } from "@/engine/npc/strategy/npcRetirementStrategy";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
+import { createDefaultRecords } from "@/engine/types/records";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 
@@ -49,13 +50,10 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
     });
     world.rikishi.set("r45", r);
     world.records = {
-      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+      ...createDefaultRecords(),
       active: {
+        ...createDefaultRecords().active,
         careerWins: [{ rikishiId: "r45", shikona: "R45", value: 100, achievedDate: { year: 2040, month: 1 } }],
-        makuuchiWins: [],
-        yusho: [],
-        consecutiveYusho: [],
-        kinboshi: [],
       },
     };
 

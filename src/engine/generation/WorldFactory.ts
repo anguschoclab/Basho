@@ -28,6 +28,7 @@ import type { Faction, IchimonName } from "@/engine/types/economy";
 import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 import { getBashoNumber } from "@/engine/calendar/calendar";
 import { rollDohyoCondition } from "@/engine/basho/dohyo";
+import { createDefaultRecords } from "@/engine/types/records";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { RivalryService } from "@/engine/narrative/RivalryService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -116,10 +117,7 @@ export function generateInitialWorld(seed: string): WorldState {
     almanacSnapshots: [],
     factions: createInitialFactions(worldRng),
     calendar: { month: 1, currentWeek: 1, currentDay: 1 },
-    records: {
-      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    },
+    records: createDefaultRecords(),
     settings: { archiveMode: "standard" },
     planetRating: 50,
     isInitialSeed: true,

@@ -96,6 +96,8 @@ export function projectRosterEntry(
     consecutiveMakeKoshi: r.consecutiveMakeKoshi ?? 0,
     consecutiveKyujo: r.consecutiveKyujo ?? 0,
     consecutiveKachiKoshi: r.consecutiveKachiKoshi ?? 0,
+    consecutiveBashoFought: r.consecutiveBashoFought ?? 0,
+    firstFromOriginThisBasho: r.firstFromOriginThisBasho ?? false,
     councilWarnings: r.councilWarnings ?? 0,
     streakLabel: calculateStreak(r.history ?? []).label,
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),

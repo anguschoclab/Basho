@@ -10,7 +10,7 @@ import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { StateImpact } from "@/engine/core/StateImpact";
-import type { RecordEntry, WorldRecords } from "@/engine/types/records";
+import { createDefaultRecords, type RecordEntry, type WorldRecords } from "@/engine/types/records";
 
 export const HistoryService = {
   /**
@@ -91,21 +91,6 @@ export const HistoryService = {
   },
 
   createEmptyRecords(): WorldRecords {
-    return {
-      allTime: {
-        careerWins: [],
-        makuuchiWins: [],
-        yusho: [],
-        consecutiveYusho: [],
-        kinboshi: [],
-      },
-      active: {
-        careerWins: [],
-        makuuchiWins: [],
-        yusho: [],
-        consecutiveYusho: [],
-        kinboshi: [],
-      },
-    };
+    return createDefaultRecords();
   },
 };

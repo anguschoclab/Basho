@@ -11,7 +11,7 @@ import { Trophy, Building2, ScrollText, Crown, AlertCircle, Users } from "lucide
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi, Heya } from "@/presenters/uiDigest";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
-import type { RecordEntry, WorldRecords } from "@/engine/types/records";
+import { createDefaultRecords, type RecordEntry, type WorldRecords } from "@/engine/types/records";
 import { getAllHeyas } from "@/presenters/worldAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
@@ -157,15 +157,18 @@ function LeaderboardCard({
 }
 
 const RecordsTab = ({ records }: { records?: WorldRecords }) => {
-  const r = records || {
-    allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-  };
+  const emptyBoards = createDefaultRecords();
+  const r = { ...emptyBoards, ...records };
 
   const categories = [
     { label: "All-Time Wins", data: r.allTime.careerWins, icon: Crown },
     { label: "Top Division Yusho", data: r.allTime.yusho, icon: Trophy },
     { label: "Consecutive Wins", data: r.allTime.consecutiveYusho, icon: ScrollText },
     { label: "Kinboshi Collectors", data: r.allTime.kinboshi, icon: Trophy },
+    { label: "Career Bouts", data: r.allTime.careerBouts, icon: ScrollText },
+    { label: "Top Division Bouts", data: r.allTime.makuuchiBouts, icon: ScrollText },
+    { label: "Iron Men (Consecutive Basho)", data: r.allTime.consecutiveAppearances, icon: Crown },
+    { label: "Kinboshi Conceded (Yokozuna)", data: r.allTime.kinboshiConceded, icon: Trophy },
   ];
 
   return (
