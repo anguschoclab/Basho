@@ -11,14 +11,12 @@ import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import { buildPipeline } from "@/engine/bout/narrative/pipeline";
 import { narratePrelude } from "@/engine/bout/narrative/prelude";
-import { narrateRecords } from "@/engine/bout/narrative/context";
-import { narrateStyle } from "@/engine/bout/narrative/context2";
+import { narrateRecords, narrateStyle } from "@/engine/bout/narrative/context";
 import { narrateStakes } from "@/engine/bout/narrative/stakes";
 import { narrateCeremony } from "@/engine/bout/narrative/ceremony";
 import { narrateFrames } from "@/engine/bout/narrative/frames";
 import { narrateResolution } from "@/engine/bout/narrative/resolution";
-import { narratePostBout } from "@/engine/bout/narrative/postbout";
-import { narrateAftermath } from "@/engine/bout/narrative/postbout2";
+import { narrateAftermath, narratePostBout } from "@/engine/bout/narrative/postbout";
 import { narrateInterview } from "@/engine/bout/narrative/interview";
 
 export type { PbpPhase, PbpVoice, PbpTag, PbpLine } from "@/engine/bout/narrative/pbpTypes";

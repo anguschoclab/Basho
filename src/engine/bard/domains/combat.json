@@ -246,13 +246,21 @@
         "And that is the conclusion. %WINNER% takes the victory.",
         "Resolution at the rope. %WINNER% is the victor.",
         "%WINNER% executing by %KIMARITE%.",
-        "%WINNER% drives through with a textbook %KIMARITE%!"
+        "%WINNER% drives through with a textbook %KIMARITE%!",
+        "%LOSER% has no more real estate — %WINNER% escorts him out by %KIMARITE%.",
+        "And that's all she wrote! %WINNER% finishes it by %KIMARITE%.",
+        "%WINNER% bids farewell to %LOSER% at the edge — %KIMARITE% is the call.",
+        "%WINNER% outlasts %LOSER% and seals it by %KIMARITE%."
       ],
       "dramatic": [
         "%WINNER% stands tall, chest heaving, as the reality of the victory settles.",
         "The hall buzzes with the electricity of that encounter.",
         "%WINNER% accepts the win with stoic grace. A true warrior.",
-        "An unforgettable finish! %WINNER% cements his legacy today!"
+        "An unforgettable finish! %WINNER% cements his legacy today!",
+        "A war of attrition comes to an end — %WINNER% finally breaks %LOSER%!",
+        "%WINNER% pancakes %LOSER% to the clay — a devastating finish!",
+        "Both guns blazing from the tachiai, and %WINNER%'s firepower wins out!",
+        "%WINNER% shows who's boss on the mawashi game — a commanding close!"
       ],
       "kinboshi": [
         "A historic kinboshi! The arena erupts into chaos as a rain of purple zabuton floods the dohyo!",
@@ -670,6 +678,9 @@
     "hansoku": [
       "The shinpan are signaling a foul! It appears %LOSER% made illegal contact with the topknot of his opponent. A disqualification is called, and %WINNER% is awarded the win by hansoku.",
       "A rare and dramatic end to this bout. The judges have ruled that %LOSER% used a prohibited technique, resulting in an immediate loss. %WINNER% takes the match via hansoku."
+    ],
+    "hansoku_foul": [
+      "Hansoku! The judges confirm the foul — the apparent finish is overturned and %WINNER% takes the victory by disqualification."
     ],
     "uwatenage": [
       "%WINNER% gets the outside belt grip and swings %LOSER% to the clay with a powerful uwatenage!",

@@ -104,6 +104,8 @@ export function explainerFor(line: PbpLine): string | null {
     return "A sidestep at the charge — legal, but some fans consider it cheap.";
   if (tags.includes("mono_ii"))
     return "The ringside judges confer to overturn or confirm the referee's call.";
+  if (tags.includes("foul"))
+    return "A suspected forbidden move — the judges can disqualify the offender.";
   if (tags.includes("yusho_race") || tags.includes("title_stakes"))
     return "This bout directly affects who takes the tournament title.";
   if (tags.includes("upset")) return "The heavy favorite just lost — a real shock for the crowd.";
@@ -130,6 +132,7 @@ const BADGE_TAGS: Record<string, string> = {
   playoff: "PLAYOFF",
   henka: "HENKA",
   mono_ii: "MONO-II",
+  foul: "FOUL",
   grudge_match: "GRUDGE",
   rivalry: "RIVALRY",
   injury: "INJURY",
@@ -152,6 +155,7 @@ export function selectHeadlineIndex(lines: PbpLine[]): number {
     "kinboshi",
     "ginboshi",
     "upset",
+    "foul",
     "title_stakes",
     "yusho_race",
     "playoff",

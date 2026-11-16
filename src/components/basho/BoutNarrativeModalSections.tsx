@@ -26,6 +26,62 @@ import { GlossaryTip } from "@/components/ui/GlossaryTip";
 import { PHASE_STYLE, TAG_ICONS } from "@/components/basho/boutModalConstants";
 import { generateAnnouncerLines } from "@/presenters/projections/commentaryProjections";
 
+/** Shimpan/mono-ii verdict + foul-review chips shown under the VS header. */
+function OfficiatingBadges({ result }: { result: BoutResult }) {
+  return (
+    <>
+      {result.monoii && (
+        <div
+          className="flex items-center justify-center gap-2 mb-2 flex-wrap"
+          data-testid="shimpan-panel"
+        >
+          <Badge variant="outline" className="text-[10px]">
+            Mono-ii
+          </Badge>
+          {result.shimpanPanelIds && result.shimpanPanelIds.length > 0 && (
+            <Badge variant="secondary" className="text-[10px]">
+              Shimpan: {result.shimpanPanelIds.length} judges
+            </Badge>
+          )}
+          {result.monoiiOutcome && (
+            <Badge
+              variant={
+                result.monoiiOutcome === "reversed"
+                  ? "destructive"
+                  : result.monoiiOutcome === "rematch"
+                    ? "default"
+                    : "secondary"
+              }
+              className="text-[10px]"
+            >
+              {result.monoiiOutcome === "upheld"
+                ? "Decision upheld"
+                : result.monoiiOutcome === "reversed"
+                  ? "Decision reversed"
+                  : "Rematch ordered"}
+            </Badge>
+          )}
+        </div>
+      )}
+
+      {/* Foul-review verdict */}
+      {result.foulReview && (
+        <div
+          className="flex items-center justify-center gap-2 mb-2 flex-wrap"
+          data-testid="foul-review"
+        >
+          <Badge
+            variant={result.foulReview.confirmed ? "destructive" : "secondary"}
+            className="text-[10px]"
+          >
+            {result.foulReview.confirmed ? "Hansoku confirmed" : "No foul — call stands"}
+          </Badge>
+        </div>
+      )}
+    </>
+  );
+}
+
 /** VS header — east/west bar, names, gyoji/shimpan badges, replay viewer. */
 export function BoutModalHeader({
   result,
@@ -101,40 +157,8 @@ export function BoutModalHeader({
           </div>
         )}
 
-        {/* Shimpan panel on mono-ii */}
-        {result.monoii && (
-          <div
-            className="flex items-center justify-center gap-2 mb-2 flex-wrap"
-            data-testid="shimpan-panel"
-          >
-            <Badge variant="outline" className="text-[10px]">
-              Mono-ii
-            </Badge>
-            {result.shimpanPanelIds && result.shimpanPanelIds.length > 0 && (
-              <Badge variant="secondary" className="text-[10px]">
-                Shimpan: {result.shimpanPanelIds.length} judges
-              </Badge>
-            )}
-            {result.monoiiOutcome && (
-              <Badge
-                variant={
-                  result.monoiiOutcome === "reversed"
-                    ? "destructive"
-                    : result.monoiiOutcome === "rematch"
-                      ? "default"
-                      : "secondary"
-                }
-                className="text-[10px]"
-              >
-                {result.monoiiOutcome === "upheld"
-                  ? "Decision upheld"
-                  : result.monoiiOutcome === "reversed"
-                    ? "Decision reversed"
-                    : "Rematch ordered"}
-              </Badge>
-            )}
-          </div>
-        )}
+        {/* Shimpan panel on mono-ii + foul-review verdict */}
+        <OfficiatingBadges result={result} />
 
         {/* Replay viewer */}
         <BoutReplayViewer

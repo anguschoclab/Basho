@@ -345,4 +345,62 @@ describe("BoutNarrativeModal", () => {
     // The tachiai kanji label should be present
     expect(screen.getByText("立合")).toBeTruthy();
   });
+
+  it("shows 'Hansoku confirmed' chip when a foul review is confirmed", () => {
+    const result = {
+      ...mockResult([makeLine("finish", "The judges confer…")]),
+      monoii: true,
+      monoiiOutcome: "reversed" as const,
+      kimarite: "hansoku" as const,
+      kimariteName: "Hansoku",
+      foulReview: {
+        foul: "topknot_grab" as const,
+        suspectRikishiId: "r-2",
+        victimRikishiId: "r-1",
+        suspectSide: "west" as const,
+        confirmed: true,
+        apparentKimarite: "yorikiri" as const,
+      },
+    };
+    renderWithProvider(
+      <BoutNarrativeModal
+        open
+        onOpenChange={vi.fn()}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
+        result={result}
+        bashoName={bashoName}
+        day={1}
+      />
+    );
+    expect(screen.getByText(/Hansoku confirmed/i)).toBeTruthy();
+  });
+
+  it("shows 'No foul — call stands' chip when a foul review is cleared", () => {
+    const result = {
+      ...mockResult([makeLine("finish", "The judges confer…")]),
+      monoii: true,
+      monoiiOutcome: "upheld" as const,
+      foulReview: {
+        foul: "topknot_grab" as const,
+        suspectRikishiId: "r-1",
+        victimRikishiId: "r-2",
+        suspectSide: "east" as const,
+        confirmed: false,
+        apparentKimarite: "oshidashi" as const,
+      },
+    };
+    renderWithProvider(
+      <BoutNarrativeModal
+        open
+        onOpenChange={vi.fn()}
+        east={mockUIRikishi("r-1", "East")}
+        west={mockUIRikishi("r-2", "West")}
+        result={result}
+        bashoName={bashoName}
+        day={1}
+      />
+    );
+    expect(screen.getByText(/No foul/i)).toBeTruthy();
+  });
 });

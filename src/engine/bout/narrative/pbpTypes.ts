@@ -69,6 +69,7 @@ export type PbpTag =
   | "weight_diff"
   | "age_diff"
   | "mono_ii"
+  | "foul"
   | "interview"
   | "body_type"
   | "debut"

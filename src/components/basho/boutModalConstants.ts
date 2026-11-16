@@ -69,5 +69,6 @@ export const TAG_ICONS: Record<string, string> = {
   senshuraku: "🎯",
   tournament_context: "📅",
   mono_ii: "🔍",
+  foul: "🚫",
   interview: "🎤",
 };

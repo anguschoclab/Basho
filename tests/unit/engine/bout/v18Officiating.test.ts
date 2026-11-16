@@ -8,7 +8,7 @@
  *   recorded one. resolveBout runs enrichResult → generateBoutNarrative
  *   (boutResolver.ts:190) BEFORE applyGyojiOfficiation assigns
  *   `result.monoiiOutcome` (boutResolver.ts:199, resolution/gyoji.ts:57-59).
- *   Inside the narrative, postbout2.ts:454 re-rolls reversed/rematch/upheld
+ *   Inside the narrative, postbout.ts re-rolls reversed/rematch/upheld
  *   on an independent RNG stream (`rngFromSeed(seed, "pbp", "mono-ii")`), so
  *   the outcome the commentary announces is a coin flip unrelated to the
  *   outcome actually recorded on the bout.

@@ -88,6 +88,42 @@ export interface BoutLogEntry {
 }
 
 /**
+ * Kinjite (禁止手) — forbidden-contact foul categories a shimpan panel can
+ * review. Topknot grabs are the canonical foul; the rest cover the other
+ * banned striking/gouging targets.
+ */
+export type KinjiteFoul =
+  | "topknot_grab"
+  | "closed_fist"
+  | "eye_poke"
+  | "throat_grab"
+  | "ear_strike"
+  | "low_blow"
+  | "finger_bend"
+  | "kick";
+
+/**
+ * Foul review record — set when the shimpan panel was called to review a
+ * suspected kinjite during this bout. The suspect is always the apparent
+ * winner at the moment of the foul; a confirmed review flips the result to
+ * hansoku.
+ */
+export interface FoulReview {
+  /** The foul the suspect was accused of. */
+  foul: KinjiteFoul;
+  /** Rikishi accused of the foul (the apparent winner). */
+  suspectRikishiId: Id;
+  /** Rikishi the foul was committed against. */
+  victimRikishiId: Id;
+  /** Side of the suspect. */
+  suspectSide: Side;
+  /** Panel verdict: true = foul confirmed (hansoku); false = cleared. */
+  confirmed: boolean;
+  /** The technique the apparent winner actually used before any hansoku flip. */
+  apparentKimarite: KimariteId;
+}
+
+/**
  * Defines the structure for bout result.
  * Contains the complete outcome of a single bout.
  */
@@ -155,6 +191,12 @@ export interface BoutResult {
   shimpanPanelIds?: string[];
   /** Outcome of the mono-ii consultation (if one occurred). */
   monoiiOutcome?: "upheld" | "reversed" | "rematch";
+  /**
+   * Foul review record — present when the judges convened to review a
+   * suspected kinjite. Always implies `monoii: true`; `confirmed: true`
+   * means the suspect was disqualified (kimarite === "hansoku").
+   */
+  foulReview?: FoulReview;
   /** Momentum score (positive = east dominated, negative = west dominated). */
   momentumScore: number;
   /** In-bout injury if one occurred during the bout. */

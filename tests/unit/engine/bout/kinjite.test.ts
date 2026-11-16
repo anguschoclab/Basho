@@ -1,8 +1,31 @@
 import { describe, it, expect } from "vitest";
-import { calculateHansokuChance, tryHansoku } from "@/engine/bout/kinjite";
+import {
+  calculateHansokuChance,
+  pickFoulType,
+  resolveFoulVerdict,
+  rollFoulSuspicion,
+  type FoulSuspicion,
+} from "@/engine/bout/kinjite";
+import {
+  KINJITE_MAX_SUSPICION,
+  KINJITE_SUSPICION_BASE,
+} from "@/constants/engine/bout";
+import { SeededRNG } from "@/engine/core/rng";
 import { mockRikishi, makeMockBasho } from "@tests/unit/engine/utils";
-import type { BoutResult } from "@/engine/types/basho";
+import type { BoutResult, KinjiteFoul } from "@/engine/types/basho";
 import type { BoutContext } from "@/engine/bout/boutUtils";
+import type { ShimpanPanel } from "@/engine/types/gyoji";
+
+const KINJITE_FOULS: KinjiteFoul[] = [
+  "topknot_grab",
+  "closed_fist",
+  "eye_poke",
+  "throat_grab",
+  "ear_strike",
+  "low_blow",
+  "finger_bend",
+  "kick",
+];
 
 function makeBoutContext(overrides: Partial<BoutContext> = {}): BoutContext {
   return {
@@ -36,14 +59,62 @@ function makeBoutResult(winner: "east" | "west" = "east"): BoutResult {
   };
 }
 
+function makeDesperateSetup() {
+  const east = mockRikishi("r-east", { aggression: 95, technique: 25, heyaId: "heya-east" });
+  const west = mockRikishi("r-west", { technique: 70, heyaId: "heya-west" });
+  const bout = makeBoutContext({ day: 15 });
+  const basho = makeMockBasho({ day: 15 });
+  basho.standings = new Map([
+    ["r-east", { wins: 7, losses: 7 }],
+    ["r-west", { wins: 7, losses: 7 }],
+  ]);
+  return { east, west, bout, basho };
+}
+
+function makeSuspicion(suspectSide: "east" | "west" = "east"): FoulSuspicion {
+  return {
+    suspectSide,
+    suspectRikishiId: suspectSide === "east" ? "r-east" : "r-west",
+    victimRikishiId: suspectSide === "east" ? "r-west" : "r-east",
+    foul: "topknot_grab",
+  };
+}
+
+function makePanel(accuracy = 70): ShimpanPanel {
+  const mk = (id: string) => ({
+    id,
+    name: `Judge-${id}`,
+    accuracy,
+    yearsActive: 10,
+    consultations: 0,
+  });
+  return {
+    chief: mk("sh-chief"),
+    panelists: [mk("sh-1"), mk("sh-2"), mk("sh-3"), mk("sh-4")],
+  };
+}
+
 describe("Kinjite (hansoku/DQ) — calculateHansokuChance", () => {
-  it("returns 0 for high-technique rikishi (ratio < 1.4)", () => {
+  it("high-technique rikishi get the baseline rate (no brawler bonus)", () => {
+    const winner = mockRikishi("r-east", { aggression: 60, technique: 80 });
+    const bout = makeBoutContext({ day: 1 });
+    const basho = makeMockBasho({ day: 1 });
+    basho.standings = new Map([["r-east", { wins: 3, losses: 2 }]]);
+
+    // Balanced rikishi carry only the universal baseline — any rikishi can
+    // commit a heat-of-the-moment foul, but no aggression bonus applies.
+    expect(calculateHansokuChance(winner, bout, basho)).toBe(KINJITE_SUSPICION_BASE);
+  });
+
+  it("adds desperation bonuses even without a brawler ratio", () => {
     const winner = mockRikishi("r-east", { aggression: 60, technique: 80 });
     const bout = makeBoutContext({ day: 15 });
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([["r-east", { wins: 7, losses: 7 }]]);
 
-    expect(calculateHansokuChance(winner, bout, basho)).toBe(0);
+    expect(calculateHansokuChance(winner, bout, basho)).toBeGreaterThan(
+      KINJITE_SUSPICION_BASE
+    );
   });
 
   it("returns > 0 for high-aggression/low-technique on day 15 with 7-7", () => {
@@ -99,74 +170,51 @@ describe("Kinjite (hansoku/DQ) — calculateHansokuChance", () => {
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([["r-east", { wins: 7, losses: 7 }]]);
 
-    expect(calculateHansokuChance(winner, bout, basho)).toBeLessThanOrEqual(0.05);
+    expect(calculateHansokuChance(winner, bout, basho)).toBeLessThanOrEqual(
+      KINJITE_MAX_SUSPICION
+    );
   });
 });
 
-describe("Kinjite (hansoku/DQ) — tryHansoku", () => {
-  it("does not fire for fusensho results", () => {
-    const east = mockRikishi("r-east", { aggression: 95, technique: 25 });
-    const west = mockRikishi("r-west", { technique: 70 });
-    const bout = makeBoutContext({ day: 15 });
-    const basho = makeMockBasho({ day: 15 });
-    basho.standings = new Map([
-      ["r-east", { wins: 7, losses: 7 }],
-      ["r-west", { wins: 7, losses: 7 }],
-    ]);
-
+describe("Kinjite — rollFoulSuspicion", () => {
+  it("returns null for fusensho results", () => {
+    const { east, west, bout, basho } = makeDesperateSetup();
     const fusenshoResult: BoutResult = {
       ...makeBoutResult("east"),
       kimarite: "fusensho",
       kimariteName: "Fusensho",
       duration: 0,
     };
-
-    const { result, fouledHeyaId } = tryHansoku(
-      bout,
-      fusenshoResult,
-      east,
-      west,
-      basho,
-      "test-seed"
-    );
-    expect(result.kimarite).toBe("fusensho");
-    expect(fouledHeyaId).toBeNull();
+    for (let i = 0; i < 100; i++) {
+      const suspicion = rollFoulSuspicion(bout, fusenshoResult, east, west, basho, `seed-${i}`);
+      expect(suspicion).toBeNull();
+    }
   });
 
-  it("does not fire for high-technique winner", () => {
+  it("fires far less often for a high-technique winner than a desperate brawler", () => {
     const east = mockRikishi("r-east", { aggression: 60, technique: 80 });
     const west = mockRikishi("r-west", { technique: 70 });
-    const bout = makeBoutContext({ day: 15 });
-    const basho = makeMockBasho({ day: 15 });
-    basho.standings = new Map([
-      ["r-east", { wins: 7, losses: 7 }],
-      ["r-west", { wins: 7, losses: 7 }],
-    ]);
-
-    let dqFired = false;
-    for (let i = 0; i < 200; i++) {
-      const { result } = tryHansoku(bout, makeBoutResult("east"), east, west, basho, `seed-${i}`);
-      if (result.kimarite === "hansoku") {
-        dqFired = true;
-        break;
+    const { bout, basho } = makeDesperateSetup();
+    let balancedCount = 0;
+    for (let i = 0; i < 2000; i++) {
+      if (
+        rollFoulSuspicion(bout, makeBoutResult("east"), east, west, basho, `seed-${i}`)
+      ) {
+        balancedCount++;
       }
     }
-    expect(dqFired).toBe(false);
+    // Baseline rate ~1.1% on day 15 (base + senshuraku + 7-7 bonuses, no
+    // brawler bonus) — over 2000 seeds expect ~22, well under the brawler's
+    // ~7% rate. Bound loosely to keep the test seed-insensitive.
+    expect(balancedCount).toBeGreaterThan(0);
+    expect(balancedCount).toBeLessThan(80);
   });
 
-  it("flips result when DQ fires — original winner becomes loser", () => {
-    const east = mockRikishi("r-east", { aggression: 95, technique: 25, heyaId: "heya-east" });
-    const west = mockRikishi("r-west", { technique: 70, heyaId: "heya-west" });
-    const bout = makeBoutContext({ day: 15 });
-    const basho = makeMockBasho({ day: 15 });
-    basho.standings = new Map([
-      ["r-east", { wins: 7, losses: 7 }],
-      ["r-west", { wins: 7, losses: 7 }],
-    ]);
-
-    let dqFound = false;
-    for (let i = 0; i < 500; i++) {
-      const { result, fouledHeyaId } = tryHansoku(
+  it("returns a suspicion naming the apparent winner as suspect for desperate rikishi", () => {
+    const { east, west, bout, basho } = makeDesperateSetup();
+    let suspicion: FoulSuspicion | null = null;
+    for (let i = 0; i < 600 && !suspicion; i++) {
+      suspicion = rollFoulSuspicion(
         bout,
         makeBoutResult("east"),
         east,
@@ -174,35 +222,115 @@ describe("Kinjite (hansoku/DQ) — tryHansoku", () => {
         basho,
         `seed-hansoku-${i}`
       );
-      if (result.kimarite === "hansoku") {
-        dqFound = true;
-        expect(result.winner).toBe("west");
-        expect(result.winnerRikishiId).toBe("r-west");
-        expect(result.loserRikishiId).toBe("r-east");
-        expect(result.upset).toBe(true);
-        expect(fouledHeyaId).toBe("heya-east");
-        expect(result.kimariteName).toBe("Hansoku");
-        break;
-      }
     }
-    expect(dqFound).toBe(true);
+    expect(suspicion).not.toBeNull();
+    expect(suspicion?.suspectSide).toBe("east");
+    expect(suspicion?.suspectRikishiId).toBe("r-east");
+    expect(suspicion?.victimRikishiId).toBe("r-west");
+    expect(KINJITE_FOULS).toContain(suspicion?.foul);
   });
 
-  it("is deterministic given the same seed", () => {
-    const east = mockRikishi("r-east", { aggression: 95, technique: 25 });
-    const west = mockRikishi("r-west", { technique: 70 });
-    const bout = makeBoutContext({ day: 15 });
-    const basho = makeMockBasho({ day: 15 });
-    basho.standings = new Map([
-      ["r-east", { wins: 7, losses: 7 }],
+  it("is deterministic for the same seed", () => {
+    const { east, west, bout, basho } = makeDesperateSetup();
+    const s1 = rollFoulSuspicion(bout, makeBoutResult("east"), east, west, basho, "det-seed-1");
+    const s2 = rollFoulSuspicion(bout, makeBoutResult("east"), east, west, basho, "det-seed-1");
+    expect(s1).toEqual(s2);
+  });
+
+  it("is position-invariant — mirrored east/west produces mirrored suspicion", () => {
+    const { east, west, bout, basho } = makeDesperateSetup();
+    // Find a seed that fires for the east-winner configuration.
+    let firingSeed: string | null = null;
+    for (let i = 0; i < 600 && !firingSeed; i++) {
+      const s = rollFoulSuspicion(bout, makeBoutResult("east"), east, west, basho, `mirror-${i}`);
+      if (s) firingSeed = `mirror-${i}`;
+    }
+    expect(firingSeed).not.toBeNull();
+    // Mirror: swap rikishi and flip the apparent winner. The west rikishi in the
+    // mirrored bout is the aggressive one — same stats as r-east above.
+    const mirroredEast = mockRikishi("r-west", { technique: 70, heyaId: "heya-west" });
+    const mirroredWest = mockRikishi("r-west", { aggression: 95, technique: 25, heyaId: "heya-east" });
+    const mirroredBasho = makeMockBasho({ day: 15 });
+    mirroredBasho.standings = new Map([
       ["r-west", { wins: 7, losses: 7 }],
     ]);
+    const mirrored = rollFoulSuspicion(
+      bout,
+      makeBoutResult("west"),
+      mirroredEast,
+      mirroredWest,
+      mirroredBasho,
+      firingSeed!
+    );
+    expect(mirrored).not.toBeNull();
+    expect(mirrored?.suspectSide).toBe("west");
+    expect(mirrored?.suspectRikishiId).toBe(mirroredWest.id);
+    expect(mirrored?.victimRikishiId).toBe(mirroredEast.id);
+  });
+});
 
-    const seed = "deterministic-seed-12345";
-    const call1 = tryHansoku(bout, makeBoutResult("east"), east, west, basho, seed);
-    const call2 = tryHansoku(bout, makeBoutResult("east"), east, west, basho, seed);
+describe("Kinjite — pickFoulType", () => {
+  it("weights topknot_grab as the dominant foul type", () => {
+    const counts = new Map<KinjiteFoul, number>();
+    const rng = new SeededRNG("foul-dist");
+    for (let i = 0; i < 400; i++) {
+      const foul = pickFoulType(rng);
+      counts.set(foul, (counts.get(foul) ?? 0) + 1);
+    }
+    for (const foul of KINJITE_FOULS) {
+      expect(counts.get(foul) ?? 0).toBeGreaterThan(0);
+    }
+    const topknot = counts.get("topknot_grab") ?? 0;
+    for (const [foul, count] of counts) {
+      if (foul === "topknot_grab") continue;
+      expect(topknot).toBeGreaterThan(count);
+    }
+  });
 
-    expect(call1.result.kimarite).toBe(call2.result.kimarite);
-    expect(call1.result.winner).toBe(call2.result.winner);
+  it("is deterministic for the same draw", () => {
+    const v = { next: () => 0.01 };
+    expect(pickFoulType(v)).toBe(pickFoulType(v));
+  });
+
+  it("maps the top of the roll range to a non-topknot foul", () => {
+    const foul = pickFoulType({ next: () => 0.999 });
+    expect(KINJITE_FOULS).toContain(foul);
+    expect(foul).not.toBe("topknot_grab");
+  });
+});
+
+describe("Kinjite — resolveFoulVerdict", () => {
+  it("is deterministic for the same seed and panel", () => {
+    const suspicion = makeSuspicion();
+    const panel = makePanel();
+    const v1 = resolveFoulVerdict(suspicion, panel, "verdict-seed-1");
+    const v2 = resolveFoulVerdict(suspicion, panel, "verdict-seed-1");
+    expect(v1).toBe(v2);
+  });
+
+  it("produces both confirmed and cleared verdicts across seeds", () => {
+    const suspicion = makeSuspicion();
+    const panel = makePanel(65);
+    let confirmed = 0;
+    let cleared = 0;
+    for (let i = 0; i < 300; i++) {
+      if (resolveFoulVerdict(suspicion, panel, `verdict-${i}`)) confirmed++;
+      else cleared++;
+    }
+    expect(confirmed).toBeGreaterThan(0);
+    expect(cleared).toBeGreaterThan(0);
+  });
+
+  it("higher-accuracy panels confirm more often than low-accuracy panels", () => {
+    const suspicion = makeSuspicion();
+    const highPanel = makePanel(90);
+    const lowPanel = makePanel(40);
+    let highConfirmed = 0;
+    let lowConfirmed = 0;
+    for (let i = 0; i < 300; i++) {
+      if (resolveFoulVerdict(suspicion, highPanel, `acc-${i}`)) highConfirmed++;
+      if (resolveFoulVerdict(suspicion, lowPanel, `acc-${i}`)) lowConfirmed++;
+    }
+    expect(highConfirmed).toBeGreaterThan(lowConfirmed);
   });
 });

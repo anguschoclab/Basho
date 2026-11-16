@@ -169,7 +169,7 @@ exports[`generateBoutNarrative — golden master > 7-7 pressure both sides 1`] =
     "id": "gm-bout-closing-20",
     "phase": "closing",
     "tags": [],
-    "text": "The hall buzzes with the electricity of that encounter.",
+    "text": "An unforgettable finish! [[rikishi:r-east:Wrestler-r-east]] cements his legacy today!",
     "voice": "dramatic",
   },
   {
@@ -643,7 +643,7 @@ exports[`generateBoutNarrative — golden master > final day senshuraku 1`] = `
     "id": "gm-bout-closing-17",
     "phase": "closing",
     "tags": [],
-    "text": "The hall buzzes with the electricity of that encounter.",
+    "text": "An unforgettable finish! [[rikishi:r-east:Wrestler-r-east]] cements his legacy today!",
     "voice": "dramatic",
   },
   {
@@ -925,7 +925,7 @@ exports[`generateBoutNarrative — golden master > mid-basho day 8 with records 
     "tags": [
       "tournament_context",
     ],
-    "text": "After 8 days of action, the leaderboard is starting to take shape.",
+    "text": "We've reached nakabi, the midpoint of the basho. From here the contenders begin to separate from the pack.",
     "voice": "formal",
   },
   {
@@ -1565,7 +1565,7 @@ exports[`generateBoutNarrative — golden master > upset + kinboshi + kensho 1`]
     "id": "gm-bout-closing-16",
     "phase": "closing",
     "tags": [],
-    "text": "The hall buzzes with the electricity of that encounter.",
+    "text": "An unforgettable finish! [[rikishi:r-east:Wrestler-r-east]] cements his legacy today!",
     "voice": "dramatic",
   },
   {
@@ -1607,6 +1607,15 @@ exports[`generateBoutNarrative — golden master > upset + kinboshi + kensho 1`]
       "kensho",
     ],
     "text": "The sponsors didn't see that coming! 20 kensho envelopes for the underdog [[rikishi:r-east:Wrestler-r-east]].",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-22",
+    "phase": "post_bout",
+    "tags": [
+      "kinboshi",
+    ],
+    "text": "That's career gold star number 1 for [[rikishi:r-east:Wrestler-r-east]].",
     "voice": "dramatic",
   },
 ]
@@ -1743,7 +1752,7 @@ exports[`generateBoutNarrative — golden master > winning streak callout 1`] = 
     "id": "gm-bout-closing-16",
     "phase": "closing",
     "tags": [],
-    "text": "The hall buzzes with the electricity of that encounter.",
+    "text": "An unforgettable finish! [[rikishi:r-east:Wrestler-r-east]] cements his legacy today!",
     "voice": "dramatic",
   },
   {

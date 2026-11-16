@@ -27,6 +27,24 @@
       "How did you prepare for this matchup?",
       "What does this win mean for your tournament?"
     ],
+    "kinboshi": [
+      "You got another kinboshi gold star from the yokozuna. How do you feel?",
+      "A gold star! What was going through your mind when you faced the yokozuna?",
+      "That's a kinboshi — how does it feel to take down the yokozuna?",
+      "You earned a gold star today. Where does this rank among your career wins?"
+    ],
+    "hansoku": [
+      "The judges ruled your opponent's foul — you win by disqualification. How do you feel about that finish?",
+      "It wasn't the way anyone wanted the bout to end. Your opponent's foul gave you the win — your thoughts?",
+      "The judges conference went your way on the foul review. Did you see the illegal move at the time?",
+      "A victory by disqualification after the foul was confirmed. How do you reflect on that bout?"
+    ],
+    "giant_killer": [
+      "You took down a %OPPONENT_RANK% today. How did you do it?",
+      "A huge scalp — beating a %OPPONENT_RANK% like that. What was the key?",
+      "You showed the upper ranks what's what today. How do you feel after toppling a %OPPONENT_RANK%?",
+      "The %OPPONENT_RANK% couldn't handle your sumo today. What made the difference?"
+    ],
     "first_win": [
       "Your first win finally came today. How do you feel?",
       "How did you reset mentally after the losing streak?",

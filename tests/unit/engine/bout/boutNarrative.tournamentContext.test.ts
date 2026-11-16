@@ -149,4 +149,93 @@ describe("generateBoutNarrative — tournament day context (T18)", () => {
       expect(line.text).not.toContain("[MISSING:");
     }
   });
+
+  it("T18.16: nakabi (day 8) → midpoint-of-tournament line", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 4,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 3,
+    });
+    const world = makeBoutWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-nakabi", world);
+    const text = getPreBoutLines(result)
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).toMatch(/nakabi|midpoint|halfway/);
+  });
+
+  it("T18.17: day 7 does not produce the nakabi line", () => {
+    const east = mockRikishi("r-east", { shikona: "Alpha" });
+    const west = mockRikishi("r-west", { shikona: "Beta" });
+    const world = makeBoutWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 7, "seed-not-nakabi", world);
+    const text = getPreBoutLines(result)
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).not.toMatch(/nakabi/);
+  });
+
+  it("T18.18: two ozeki → ozeki-showdown line", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      rank: "ozeki",
+      currentBashoWins: 6,
+      currentBashoLosses: 1,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      rank: "ozeki",
+      currentBashoWins: 5,
+      currentBashoLosses: 2,
+    });
+    const world = makeBoutWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-ozeki-showdown", world);
+    const text = getPreBoutLines(result)
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).toMatch(/ozeki/);
+    expect(text).toMatch(/showdown|clash|rare|marquee/);
+  });
+
+  it("T18.19: bout participant tied for the lead → co-leader callout", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 6,
+      currentBashoLosses: 1,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 3,
+    });
+    const third = mockRikishi("r-other", {
+      shikona: "Gamma",
+      currentBashoWins: 6,
+      currentBashoLosses: 1,
+    });
+    const basho = makeMockBasho({
+      day: 8,
+      standings: new Map([
+        ["r-east", { wins: 6, losses: 1 }],
+        ["r-west", { wins: 4, losses: 3 }],
+        ["r-other", { wins: 6, losses: 1 }],
+      ]) as never,
+    });
+    const world = makeBoutWorld(east, west, { currentBasho: basho });
+    world.rikishi.set(third.id, third);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-co-leader", world);
+    const text = getPreBoutLines(result)
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).toMatch(/co-leader|joint leader|shares the lead|top of the leaderboard/);
+  });
 });

@@ -137,6 +137,12 @@
       "The crowd erupts in disbelief — %WINNER% stuns everyone with a day-15 upset that changes everything.",
       "Senshuraku drama at its finest — the crowd gasps as %WINNER% pulls off the impossible."
     ],
+    "hansoku_penalty": [
+      "%WINNER% moves to %WINS% wins after %LOSER%'s hansoku penalty.",
+      "A victory by default — %WINNER% improves to %WINS% wins following %LOSER%'s disqualification.",
+      "The foul costs %LOSER% everything — %WINNER% takes the win and goes to %WINS% victories.",
+      "%LOSER% drops to %LOSSES% losses after the hansoku — a bitter way to lose one."
+    ],
     "freeze_up_recovery": [
       "%WINNER% shook off the freeze and found his legs when it mattered — a remarkable recovery.",
       "From frozen to fearless — %WINNER% overcomes the mid-basho slump to deliver today.",
@@ -357,6 +363,23 @@
     "%SHIKONA% hits win number %MILESTONE% on his birthday. A reason to celebrate tonight.",
     "The milestone arrives right on his birthday! %MILESTONE% wins for %SHIKONA%."
   ],
+  "hometown_win": [
+    "The home crowd erupts — %WINNER% delivers a victory in front of his %LOCATION% faithful!",
+    "%WINNER% wins for the hometown fans — the %LOCATION% natives are on their feet!",
+    "A roar from the %LOCATION% crowd as local hero %WINNER% takes the victory!",
+    "What a moment for %WINNER% — winning in his hometown of %LOCATION% to a standing ovation."
+  ],
+  "belated_birthday": [
+    "%WINNER% grabs his belated birthday gift with that win.",
+    "A belated birthday present for %WINNER% — the victory arrives a few days late.",
+    "%WINNER% finally gets his birthday celebration, a few days after the fact."
+  ],
+  "kinboshi_count": [
+    "That's career gold star number %COUNT% for %WINNER%.",
+    "The kinboshi count climbs — %WINNER% now owns %COUNT% gold stars over his career.",
+    "Another kinboshi for the collection — that makes %COUNT% in %WINNER%'s career.",
+    "Gold star number %COUNT%! %WINNER% adds to his tally of yokozuna scalps."
+  ],
   "mono_ii": {
     "gunbai_contested": [
       "The gyoji points his gunbai to %WINNER%. Will we have a mono-ii?",
@@ -410,6 +433,36 @@
       "The judges call for a rematch — back to the shikiri lines.",
       "It's too close to call! A torinaoshi has been ordered.",
       "We will have a rematch! Both men will have to do it again."
+    ],
+    "foul_suspected": [
+      "But wait — the judges around the ring are conferring. There is a possibility that %SUSPECT% committed a %FOUL% in the finish.",
+      "Hold on — the shimpan are signalling. Did %SUSPECT% get away with a %FOUL% on %VICTIM% there?",
+      "The gunbai went to %SUSPECT% for the %APPARENT_KIMARITE%, but the judges want to talk this one over — a possible %FOUL%.",
+      "There's a delay — the judges suspect %SUSPECT% may have committed a %FOUL% on %VICTIM% during that finish."
+    ],
+    "foul_review": [
+      "The five judges convene with the gyoji to review the possible %FOUL%.",
+      "A mono-ii over the foul — the shimpan form their circle to discuss what they saw.",
+      "The judges gather at the center of the dohyo to rule on the suspected %FOUL% by %SUSPECT%.",
+      "Kinjite review — the shimpan will determine whether %SUSPECT%'s actions were illegal."
+    ],
+    "foul_replay": [
+      "The replay shows it clearly — watch %SUSPECT%'s hand on %VICTIM%.",
+      "The slow-motion replay reveals the moment in question — %SUSPECT% and that %FOUL% on %VICTIM%.",
+      "Let's check the replay. Right there — did you catch the %FOUL% by %SUSPECT%?",
+      "Freeze the replay at the decisive moment — the cameras caught everything between %SUSPECT% and %VICTIM%."
+    ],
+    "foul_confirmed": [
+      "The judges confirm it — %SUSPECT% did commit the %FOUL%. Hansoku! The win is awarded to %WINNER% by disqualification.",
+      "After deliberation, the verdict is in: %SUSPECT% is guilty of the %FOUL%. Hansoku declared — %WINNER% takes the victory.",
+      "Confirmed by the shimpan: %SUSPECT% pulled off a %FOUL% on %VICTIM%. The bout is overturned — hansoku for %WINNER%.",
+      "Yes, it was a foul. %SUSPECT% loses the bout to hansoku — the victory goes to %WINNER% instead."
+    ],
+    "foul_cleared": [
+      "After review, the judges find no foul — %SUSPECT%'s hands were clean. The call stands, %WINNER% wins by %APPARENT_KIMARITE%.",
+      "No kinjite — the shimpan clear %SUSPECT% of any wrongdoing. The gunbai for %WINNER% stands.",
+      "The replay vindicates %SUSPECT% — no foul committed. The original call for %WINNER% holds.",
+      "The judges rule it was a legal finish — %SUSPECT% is cleared and %WINNER%'s victory by %APPARENT_KIMARITE% is confirmed."
     ]
   },
   "replay": {

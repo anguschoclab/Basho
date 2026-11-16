@@ -3,7 +3,7 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/core/rng";
 
 /**
- * Replay-highlight paths resolved by beatReplayHighlight (postbout2.ts).
+ * Replay-highlight paths resolved by beatReplayHighlight (postbout.ts).
  * Each path must expose enough distinct templates that the seeded pick
  * produces visibly different commentary — a path stuck at 1-2 variants
  * makes the replay beat repetitive.

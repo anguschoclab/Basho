@@ -11,6 +11,7 @@ import {
   LEADERBOARD_MIN_LEADER_WINS,
   WINLESS_MENTION_MIN_DAY,
 } from "@/constants/engine/generation";
+import { NAKABI_DAY } from "@/engine/basho/NakabiService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
 
@@ -40,12 +41,35 @@ function beatBirthday(p: PbpPipeline): void {
   if (bashoInfo) {
     for (const r of [east, west]) {
       if (r.birthMonth && r.birthDay && r.birthMonth === bashoInfo.month) {
-        const dayDiff = Math.abs(r.birthDay - day);
-        if (dayDiff <= BIRTHDAY_WINDOW_DAYS) {
+        const dayDiff = r.birthDay - day;
+        const age = r.age ?? 0;
+        if (dayDiff === 1) {
+          // Tomorrow's birthday — "last bout as a N-year-old"
+          push(
+            BardEngine.resolve(preBoutRng, "pre_bout.birthday_eve", {
+              SHIKONA: r.shikona,
+              AGE: age.toString(),
+              NEXT_AGE: (age + 1).toString(),
+              rikishiId: r.id,
+            }).text,
+            "pre_bout",
+            ["birthday"]
+          );
+        } else if (dayDiff === 0) {
+          push(
+            BardEngine.resolve(preBoutRng, "pre_bout.birthday_exact", {
+              SHIKONA: r.shikona,
+              AGE: age.toString(),
+              rikishiId: r.id,
+            }).text,
+            "pre_bout",
+            ["birthday"]
+          );
+        } else if (Math.abs(dayDiff) <= BIRTHDAY_WINDOW_DAYS) {
           push(
             BardEngine.resolve(preBoutRng, "pre_bout.birthday", {
               SHIKONA: r.shikona,
-              AGE: (r.age ?? 0).toString(),
+              AGE: age.toString(),
               rikishiId: r.id,
             }).text,
             "pre_bout",
@@ -150,6 +174,16 @@ function beatTournamentDay(p: PbpPipeline): void {
   } else if (day >= 2 && day <= 4) {
     push(
       BardEngine.resolve(preBoutRng, "pre_bout.early_days", {
+        DAY: day.toString(),
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
+    );
+  } else if (day === NAKABI_DAY) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.nakabi", {
         DAY: day.toString(),
         eastRikishiId: east.id,
         westRikishiId: west.id,
@@ -289,6 +323,61 @@ function beatKenshoMention(p: PbpPipeline): void {
   }
 }
 
+function beatOzekiShowdown(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // 3p5. Ozeki showdown — two ozeki meeting is a rare marquee matchup
+  if (east.rank === "ozeki" && west.rank === "ozeki") {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.ozeki_showdown", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
+    );
+  }
+}
+
+function beatCoLeader(p: PbpPipeline): void {
+  const { day, east, preBoutRng, push, west, world } = p;
+  // 3p6. Co-leader callout — a participant tied for the lead gets the
+  // "co-leader X at W-L" framing broadcasts use.
+  if (day >= 5 && world.currentBasho) {
+    const standings = world.currentBasho.standings;
+    let maxWins = 0;
+    let leaders = 0;
+    for (const [, rec] of standings) {
+      if (rec.wins > maxWins) {
+        maxWins = rec.wins;
+        leaders = 1;
+      } else if (rec.wins === maxWins) {
+        leaders++;
+      }
+    }
+    if (leaders >= 2) {
+      for (const r of [east, west]) {
+        const rec = standings.get(r.id);
+        const wins = rec?.wins ?? r.currentBashoWins ?? 0;
+        const losses = rec?.losses ?? r.currentBashoLosses ?? 0;
+        if (wins === maxWins) {
+          push(
+            BardEngine.resolve(preBoutRng, "pre_bout.co_leader", {
+              SHIKONA: r.shikona,
+              WINS: wins.toString(),
+              LOSSES: losses.toString(),
+              rikishiId: r.id,
+            }).text,
+            "pre_bout",
+            ["yusho_race"]
+          );
+        }
+      }
+    }
+  }
+}
+
 function beatBoutOfTheDay(p: PbpPipeline): void {
   const { east, preBoutRng, push, result, west } = p;
   // 3p4. Bout of the day designation (Gap 6): high-drama matchup
@@ -318,6 +407,8 @@ export function narrateStakes(p: PbpPipeline): void {
   beatTournamentDay(p);
   beatTitleStakes(p);
   beatLeaderboard(p);
+  beatCoLeader(p);
+  beatOzekiShowdown(p);
   beatPlayoffImplications(p);
   beatKenshoMention(p);
   beatBoutOfTheDay(p);

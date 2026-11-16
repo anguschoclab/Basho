@@ -57,23 +57,31 @@ export const MOMENTUM_LOSS_ALL_OUT = -4;
 
 // ── Kinjite (forbidden technique DQ) constants ────────────────────────────────
 
-/** Minimum aggression/technique ratio to trigger foul risk. */
+/** Minimum aggression/technique ratio for the brawler foul-risk bonus. */
 export const KINJITE_MIN_RATIO_FOR_FOUL_RISK = 1.4;
 
-/** Base DQ probability before desperation scaling. */
-export const KINJITE_BASE_DQ_CHANCE = 0.002;
+/**
+ * Baseline foul-suspicion probability for ANY bout — real kinjite are
+ * mostly heat-of-the-moment acts (the topknot grab happens in a scramble),
+ * not exclusively desperation fouls, so every rikishi carries a small risk.
+ * Tuned near real-world rarity (~1 confirmed hansoku per 1–3 basho).
+ */
+export const KINJITE_SUSPICION_BASE = 0.002;
 
-/** Additional DQ probability on senshuraku weekend (days 14-15). */
-export const KINJITE_SENSHURAKU_BONUS = 0.003;
+/** Extra suspicion per point of (aggression/technique − 1.0) once a brawler. */
+export const KINJITE_RATIO_SCALE = 0.008;
 
-/** Additional DQ probability when winner is 7-7 (must-win pressure). */
-export const KINJITE_SEVEN_SEVEN_BONUS = 0.005;
+/** Additional suspicion probability on senshuraku weekend (days 14-15). */
+export const KINJITE_SENSHURAKU_BONUS = 0.002;
 
-/** Additional DQ probability when winner is kadoban ozeki. */
-export const KINJITE_KADOBAN_BONUS = 0.004;
+/** Additional suspicion probability when winner is 7-7 (must-win pressure). */
+export const KINJITE_SEVEN_SEVEN_BONUS = 0.003;
 
-/** Maximum DQ probability cap. */
-export const KINJITE_MAX_DQ_CHANCE = 0.05;
+/** Additional suspicion probability when winner is kadoban ozeki. */
+export const KINJITE_KADOBAN_BONUS = 0.003;
+
+/** Maximum suspicion probability cap. */
+export const KINJITE_MAX_SUSPICION = 0.05;
 
 /** Senshuraku weekend start day. */
 export const KINJITE_SENSHURAKU_START_DAY = 14;
@@ -84,11 +92,43 @@ export const KINJITE_KADOBAN_DAY_THRESHOLD = 10;
 /** Kadoban ozeki win threshold. */
 export const KINJITE_KADOBAN_WIN_THRESHOLD = 8;
 
-/** Ratio subtraction for DQ scaling. */
+/** Ratio subtraction for aggression scaling. */
 export const KINJITE_RATIO_SUBTRACTION = 1.0;
 
-/** Ratio divisor for DQ scaling. */
-export const KINJITE_RATIO_DIVISOR = 2;
+// ── Foul review (shimpan-panel kinjite adjudication) constants ────────────────
+
+/** Minimum shimpan pool size required to convene a foul review panel. */
+export const FOUL_REVIEW_MIN_SHIMPAN = 5;
+
+/** Excitement bonus applied to confirmed-foul bouts (clamped to 100 overall). */
+export const KINJITE_FOUL_EXCITEMENT_BONUS = 25;
+
+/** Weighted foul-type distribution — topknot grabs dominate real kinjite. */
+export const KINJITE_FOUL_WEIGHTS: ReadonlyArray<readonly [string, number]> = [
+  ["topknot_grab", 0.5],
+  ["closed_fist", 0.12],
+  ["eye_poke", 0.08],
+  ["throat_grab", 0.08],
+  ["ear_strike", 0.06],
+  ["low_blow", 0.06],
+  ["finger_bend", 0.05],
+  ["kick", 0.05],
+];
+
+/** Base probability a suspected foul is confirmed by the panel. */
+export const FOUL_REVIEW_BASE_CONFIRM = 0.75;
+
+/** Panel average accuracy at which the base confirm chance applies. */
+export const FOUL_REVIEW_ACCURACY_CENTER = 60;
+
+/** Confirm-chance adjustment per point of panel average accuracy. */
+export const FOUL_REVIEW_ACCURACY_SCALE = 0.005;
+
+/** Minimum possible confirm chance (very poor panel). */
+export const FOUL_REVIEW_MIN_CONFIRM = 0.55;
+
+/** Maximum possible confirm chance (elite panel). */
+export const FOUL_REVIEW_MAX_CONFIRM = 0.95;
 
 // ── Yaocho (match-fixing) constants ───────────────────────────────────────────
 

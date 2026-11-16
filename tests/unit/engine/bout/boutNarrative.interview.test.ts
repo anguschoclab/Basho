@@ -152,3 +152,125 @@ describe("generateBoutNarrative — post-bout interview (T13)", () => {
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
   });
 });
+
+describe("generateBoutNarrative — interview question priority (kinboshi / hansoku / giant-killer)", () => {
+  beforeEach(() => {
+    BardEngine.resetCache();
+  });
+
+  /** Loop seeds until the 25% interview gate fires; return the interview lines. */
+  function interviewText(
+    result: BoutResult,
+    east: ReturnType<typeof mockRikishi>,
+    west: ReturnType<typeof mockRikishi>
+  ): string {
+    const world = makeBoutWorld(east, west);
+    for (let i = 0; i < 40; i++) {
+      const r = makeBoutResult({ ...result });
+      generateBoutNarrative(r, east, west, BASHO, 8, `seed-iq-${i}`, world);
+      const lines = getInterviewLines(r);
+      if (lines.length > 0) return lines.map((l) => l.text).join(" ");
+    }
+    return "";
+  }
+
+  it("kinboshi award → kinboshi/gold-star question", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      rank: "maegashira",
+      currentBashoWins: 5,
+      currentBashoLosses: 2,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      rank: "yokozuna",
+      currentBashoWins: 6,
+      currentBashoLosses: 1,
+    });
+    const text = interviewText(
+      makeBoutResult({ isKinboshi: true, upset: true, awardFact: "kinboshi" }),
+      east,
+      west
+    );
+    expect(text).toMatch(/gold star|kinboshi/i);
+  });
+
+  it("hansoku win → hansoku/foul question", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      rank: "maegashira",
+      currentBashoWins: 5,
+      currentBashoLosses: 2,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      rank: "maegashira",
+      currentBashoWins: 4,
+      currentBashoLosses: 3,
+    });
+    const text = interviewText(
+      makeBoutResult({
+        kimarite: "hansoku",
+        kimariteName: "Hansoku",
+        monoii: true,
+        monoiiOutcome: "reversed",
+        foulReview: {
+          foul: "topknot_grab",
+          suspectRikishiId: "r-west",
+          victimRikishiId: "r-east",
+          suspectSide: "west",
+          confirmed: true,
+          apparentKimarite: "yorikiri",
+        },
+      }),
+      east,
+      west
+    );
+    // Must be a foul-specific question, not just %KIMARITE% rendering "Hansoku".
+    expect(text).toMatch(/foul|disqualif|judges|panel/i);
+  });
+
+  it("maegashira upset over ozeki → giant-killer question", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      rank: "maegashira",
+      currentBashoWins: 5,
+      currentBashoLosses: 2,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      rank: "ozeki",
+      currentBashoWins: 6,
+      currentBashoLosses: 1,
+    });
+    const text = interviewText(makeBoutResult({ upset: true }), east, west);
+    expect(text).toMatch(/ozeki|giant|upset|shove/i);
+  });
+
+  it("kinboshi outranks hansoku when both apply", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      rank: "maegashira",
+      currentBashoWins: 5,
+      currentBashoLosses: 2,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      rank: "yokozuna",
+      currentBashoWins: 6,
+      currentBashoLosses: 1,
+    });
+    const text = interviewText(
+      makeBoutResult({
+        isKinboshi: true,
+        upset: true,
+        awardFact: "kinboshi",
+        kimarite: "hansoku",
+        kimariteName: "Hansoku",
+      }),
+      east,
+      west
+    );
+    expect(text).toMatch(/gold star|kinboshi/i);
+  });
+});

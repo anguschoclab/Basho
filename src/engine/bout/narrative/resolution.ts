@@ -5,6 +5,7 @@
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
 import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 import { rngFromSeed } from "@/engine/core/rng";
 
 function beatFinishTechnique(p: PbpPipeline): void {
@@ -12,18 +13,33 @@ function beatFinishTechnique(p: PbpPipeline): void {
   // 8. Finishing technique
   if (result.kimarite) {
     const finishRng = rngFromSeed(seed, "pbp", "finish");
-    const winnerName = result.winner === "east" ? east.shikona : west.shikona;
-    const loserName = result.winner === "east" ? west.shikona : east.shikona;
-    const techPath = `combat.kimarite.${result.kimarite}`;
+    // With a foul review the finish line describes the APPARENT finish — the
+    // gunbai call the crowd saw (suspect over victim). The mono-ii arc in
+    // post-bout owns the foul reveal; announcing it here would spoil the arc.
+    const review = result.foulReview;
+    const apparentWinnerId = review
+      ? review.suspectRikishiId
+      : result.winner === "east"
+        ? east.id
+        : west.id;
+    const apparentLoserId = review
+      ? review.victimRikishiId
+      : result.winner === "east"
+        ? west.id
+        : east.id;
+    const apparentKimariteSlug = review?.apparentKimarite ?? result.kimarite;
+    const winnerName = apparentWinnerId === east.id ? east.shikona : west.shikona;
+    const loserName = apparentLoserId === east.id ? east.shikona : west.shikona;
+    const techPath = `combat.kimarite.${apparentKimariteSlug}`;
     const path = BardEngine.has(techPath) ? techPath : "combat.phases.finish";
     const res = BardEngine.resolve(finishRng, path, {
       winner: winnerName,
       loser: loserName,
-      kimarite: result.kimariteName ?? result.kimarite,
+      kimarite: getKimarite(apparentKimariteSlug)?.name ?? apparentKimariteSlug,
       east: east.shikona,
       west: west.shikona,
-      winnerId: result.winner === "east" ? east.id : west.id,
-      loserId: result.winner === "east" ? west.id : east.id,
+      winnerId: apparentWinnerId,
+      loserId: apparentLoserId,
       eastRikishiId: east.id,
       westRikishiId: west.id,
     });

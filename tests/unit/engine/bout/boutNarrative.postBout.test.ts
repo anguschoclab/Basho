@@ -369,3 +369,85 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
   });
 });
+
+describe("generateBoutNarrative — broadcast post-bout beats", () => {
+  beforeEach(() => {
+    BardEngine.resetCache();
+  });
+
+  it("hometown winner → hometown-win post-bout line", () => {
+    // hatsu basho is held in Tokyo.
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      origin: "Tokyo",
+      currentBashoWins: 5,
+      currentBashoLosses: 2,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      origin: "Osaka",
+      currentBashoWins: 3,
+      currentBashoLosses: 4,
+    });
+    const world = makeBoutWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-hometown-win", world);
+    const text = getPostBoutLines(result)
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).toMatch(/hometown|home crowd|local|tokyo/);
+  });
+
+  it("loser's hometown → no hometown-win line", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      origin: "Osaka",
+      currentBashoWins: 5,
+      currentBashoLosses: 2,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      origin: "Tokyo",
+      currentBashoWins: 3,
+      currentBashoLosses: 4,
+    });
+    const world = makeBoutWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-hometown-loss", world);
+    const text = getPostBoutLines(result)
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).not.toMatch(/hometown hero|home crowd roars|delights the hometown/);
+  });
+
+  it("kinboshi win → career gold-star count line (earned count + 1)", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      rank: "maegashira",
+      currentBashoWins: 3,
+      currentBashoLosses: 4,
+      stats: {
+        achievements: { kinboshiEarned: 5 },
+      } as never,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      rank: "yokozuna",
+      currentBashoWins: 6,
+      currentBashoLosses: 1,
+    });
+    const world = makeBoutWorld(east, west);
+    const result = makeBoutResult({
+      isKinboshi: true,
+      upset: true,
+      awardFact: "kinboshi",
+    });
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-kinboshi-count", world);
+    const text = getPostBoutLines(result)
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    // Winner entered with 5 career kinboshi — this is his 6th.
+    expect(text).toMatch(/gold star|kinboshi/);
+    expect(text).toMatch(/sixth|6th|\b6\b/);
+  });
+});

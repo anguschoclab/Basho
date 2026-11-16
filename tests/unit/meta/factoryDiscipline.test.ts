@@ -66,6 +66,7 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/engine/bout/boutResultApplier.dailyOverride.test.ts",
   "unit/engine/bout/boutResultApplier.streaks.test.ts",
   "unit/engine/bout/boutTacticAftermath.test.ts",
+  "unit/engine/bout/foulReview.test.ts",
   "unit/engine/bout/sevenSevenPressure.test.ts",
   "unit/engine/bout/tacticSymmetry.test.ts",
   "unit/engine/bout/veteranDecline.test.ts",

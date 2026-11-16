@@ -45,21 +45,31 @@ export function applyGyojiOfficiation(
     const panel = assembleShimpanPanel(world.shimpanPool, result.boutId);
     if (panel) {
       result.shimpanPanelIds = [panel.chief.id, ...panel.panelists.map((p) => p.id)];
-      // Use a deterministic RNG from the bout seed for mono-ii resolution
-      const monoiiRng = {
-        next: () => {
-          // Deterministic hash from boutId + panel chief id
-          const str = `${result.boutId}-${panel.chief.id}`;
-          let h = 0;
-          for (let i = 0; i < str.length; i++) {
-            h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-          }
-          return Math.abs(h % 1000) / 1000;
-        },
-      };
-      const outcome = resolveMonoii(gyoji, panel, monoiiRng);
-      result.monoiiOutcome = outcome;
-      reversed = outcome === "reversed";
+      // A foul review already decided its verdict at officiating time —
+      // confirmed → the apparent winner's call is reversed (hansoku);
+      // cleared → the call stands. Never a rematch. Generic mono-ii keeps
+      // the accuracy-driven roll.
+      if (result.foulReview) {
+        const outcome = result.foulReview.confirmed ? "reversed" : "upheld";
+        result.monoiiOutcome = outcome;
+        reversed = outcome === "reversed";
+      } else {
+        // Use a deterministic RNG from the bout seed for mono-ii resolution
+        const monoiiRng = {
+          next: () => {
+            // Deterministic hash from boutId + panel chief id
+            const str = `${result.boutId}-${panel.chief.id}`;
+            let h = 0;
+            for (let i = 0; i < str.length; i++) {
+              h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+            }
+            return Math.abs(h % 1000) / 1000;
+          },
+        };
+        const outcome = resolveMonoii(gyoji, panel, monoiiRng);
+        result.monoiiOutcome = outcome;
+        reversed = outcome === "reversed";
+      }
 
       // Increment consultation count for each shimpan on the panel
       const panelIds = result.shimpanPanelIds ?? [];

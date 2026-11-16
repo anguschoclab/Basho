@@ -134,4 +134,76 @@ describe("generateBoutNarrative — birthday narrative (T19)", () => {
       expect(line.text).not.toContain("[MISSING:");
     }
   });
+
+  it("T19.8: birthday tomorrow → 'last bout as a N-year-old' eve line", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      birthMonth: 1,
+      birthDay: 10,
+      age: 41,
+      currentBashoWins: 4,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 4,
+    });
+    const world = makeWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 9, "seed-birthday-eve", world);
+    const text = getPreBoutLines(result)
+      .filter((l) => l.tags?.includes("birthday"))
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).toMatch(/last bout as a|final bout as a|41-year-old|turns/);
+  });
+
+  it("T19.9: birthday today → exact-birthday line", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      birthMonth: 1,
+      birthDay: 10,
+      age: 32,
+      currentBashoWins: 4,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 4,
+    });
+    const world = makeWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 10, "seed-birthday-exact", world);
+    const text = getPreBoutLines(result)
+      .filter((l) => l.tags?.includes("birthday"))
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).toMatch(/birthday|turns/);
+  });
+
+  it("T19.10: winner whose birthday just passed → belated-birthday post-bout line", () => {
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      birthMonth: 1,
+      birthDay: 9,
+      age: 32,
+      currentBashoWins: 4,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 4,
+    });
+    const world = makeWorld(east, west);
+    const result = makeBoutResult();
+    generateBoutNarrative(result, east, west, BASHO, 10, "seed-belated-bday", world);
+    const text = (result.pbpLines ?? [])
+      .filter((l) => l.phase === "post_bout")
+      .map((l) => l.text.toLowerCase())
+      .join(" ");
+    expect(text).toMatch(/belated|birthday/);
+  });
 });

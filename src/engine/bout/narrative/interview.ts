@@ -34,12 +34,29 @@ const CAREER_PHASE_MAP: Record<string, string> = {
   twilight: "career_twilight",
 };
 
+/** Ranks whose defeat by a rank-and-filer counts as a giant-killing. */
+const GIANT_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+
 function selectInterviewType(p: PbpPipeline): InterviewSetup {
   const { ctx, day, loserRikishi, result, winnerLosses, winnerRikishi, winnerWins } = p;
 
   // Determine interview question type
   let questionType = "general_win";
-  const makuuchiTournaments = countMakuuchiTournaments(winnerRikishi.careerHistory);
+  // Marquee results outrank the record-based questions. A kinboshi over a
+  // yokozuna is the headline even when the bout ended in hansoku — the gold
+  // star is what the press asks about first.
+  if (result.isKinboshi) {
+    questionType = "kinboshi";
+  } else if (result.foulReview?.confirmed) {
+    questionType = "hansoku";
+  } else if (
+    result.upset &&
+    GIANT_RANKS.has(loserRikishi.rank) &&
+    !GIANT_RANKS.has(winnerRikishi.rank)
+  ) {
+    questionType = "giant_killer";
+  } else {
+    const makuuchiTournaments = countMakuuchiTournaments(winnerRikishi.careerHistory);
   // Check for career milestone hit with this win
   const hitMilestone = CAREER_WIN_MILESTONES.includes((winnerRikishi.careerWins ?? 0) + 1);
   const loserLossesAfter = (loserRikishi.currentBashoLosses ?? 0) + 1;
@@ -97,6 +114,7 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
     BardEngine.has("interview.questions.fighting_name_meaning")
   ) {
     questionType = "fighting_name_meaning";
+  }
   }
 
   // Career phase question (6.1): use declinePhase for phase-specific question
