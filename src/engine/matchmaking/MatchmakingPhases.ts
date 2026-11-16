@@ -330,7 +330,8 @@ export function buildCandidatePairs(
   options: CandidateBuildOptions
 ): MatchPairing[] {
   const pool = rikishi.filter((r) => {
-    if (r.isRetired || r.injured || r.isKyujo) return false;
+    // W A: injured-but-entered rikishi stay in the pool — see SwissAlgorithm.
+    if (r.isRetired || r.isKyujo) return false;
     if (options.division && r.division !== options.division) return false;
     return true;
   });

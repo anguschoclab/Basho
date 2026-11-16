@@ -14,6 +14,8 @@ import { initializeBasho } from "@/engine/generation/WorldFactory";
 import { scheduleAllDivisionsDay } from "@/engine/calendar/schedule";
 import { stableTieBreak, sortStandings } from "@/engine/utils/sort";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { evaluateNpcMorningKyujo } from "@/engine/tick/phases/phase01_basho_npc_tactics";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { getRikishi } from "@/engine/core/queries";
 import { resolvePlayoffs } from "@/engine/lifecycle/PlayoffResolver";
@@ -90,6 +92,14 @@ function simulateDay(
   });
   workingWorld = resolveImpacts(workingWorld, [impact]);
   activeBasho = workingWorld.currentBasho ?? activeBasho;
+
+  // NPC day-of kyujo evaluation (W A parity): injured NPCs on the new
+  // card withdraw per the same matrix the tick + interactive paths use —
+  // their bouts become fusensho through the canonical absence gate.
+  const morningBuilder = createImpactBuilder("simMorningKyujo");
+  evaluateNpcMorningKyujo(workingWorld, morningBuilder);
+  workingWorld = resolveImpacts(workingWorld, [morningBuilder.build()]);
+
   const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
 
   for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {

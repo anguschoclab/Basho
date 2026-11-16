@@ -402,7 +402,8 @@ export function buildLowerDivisionSwiss(
 ): MatchPairing[] {
   const pool: Rikishi[] = [];
   for (const r of rikishi) {
-    if (r.isRetired || r.injured || r.isKyujo) continue;
+    // W A: injured-but-entered rikishi stay in the pool — see SwissAlgorithm.
+    if (r.isRetired || r.isKyujo) continue;
     if (options.division && r.division !== options.division) continue;
     pool.push(r);
   }

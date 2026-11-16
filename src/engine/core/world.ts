@@ -25,6 +25,7 @@ import { getActiveRikishi, getHeyaRoster } from "@/engine/core/queries";
 import * as bashoManager from "@/engine/lifecycle/BashoManager";
 import * as competition from "@/engine/lifecycle/CompetitionService";
 import { ensureDaySchedule } from "@/engine/calendar/schedule";
+import { resolveMorningOfDay } from "@/engine/basho/morningOfDay";
 import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
 
 export { getActiveRikishi, getHeyaRoster, applyBoutResult, handleMediaEvent };
@@ -93,6 +94,11 @@ export function advanceBashoDay(world: WorldState): WorldState {
   if (nextDay <= 15) {
     const scheduleImpact = ensureDaySchedule(currentWorld, nextDay);
     currentWorld = resolveImpacts(currentWorld, [scheduleImpact]);
+
+    // Morning-of-day evaluation (W A): NPC kyujo calls + player
+    // kyujo_decisions for injured entrants on the freshly scheduled card.
+    // Without this the interactive path never evaluates hurt rikishi.
+    currentWorld = resolveImpacts(currentWorld, [resolveMorningOfDay(currentWorld)]);
   }
 
   const eventImpact = createImpactBuilder("advanceDay")

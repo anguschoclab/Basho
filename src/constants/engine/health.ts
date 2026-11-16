@@ -88,3 +88,16 @@ export const BOUT_INJURY_NORMAL_CHANCE = 0.02;
 
 /** Winner injury chance multiplier (fraction of base chance) */
 export const WINNER_INJURY_CHANCE_MULTIPLIER = 0.5;
+
+/**
+ * Aggravation chance for a rikishi who competes while already injured —
+ * the "fighting hurt" tax. Keyed by the pre-existing injury's severity.
+ */
+export const AGGRAVATION_CHANCE_BY_SEVERITY: Record<string, number> = {
+  minor: 0.08,
+  moderate: 0.12,
+  serious: 0.18,
+};
+
+/** Extra recovery weeks an aggravation event adds (uniform 1..max). */
+export const AGGRAVATION_EXTRA_WEEKS_MAX = 2;

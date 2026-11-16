@@ -23,7 +23,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import type { Id } from "@/engine/types/common";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { getRikishi } from "@/engine/core/queries";
 import { rngFromSeed } from "@/engine/core/rng";
 
@@ -139,6 +139,25 @@ export function phase01_basho_npc_tactics(world: WorldState): StateImpact {
   const basho = world.currentBasho;
   if (!basho) return builder.build();
 
+  evaluateNpcMorningKyujo(world, builder);
+  return builder.build();
+}
+
+/**
+ * The NPC day-of morning evaluation, shared with `resolveMorningOfDay`
+ * (the interactive basho path never runs this phase — `advanceBashoDay`
+ * must invoke the same evaluation or NPC withdrawals and postures would
+ * diverge between interactive and batch play). Idempotent: re-running the
+ * same day skips already-kyujo rikishi and re-rolls identical seeds.
+ *
+ *   1. Per-heya basho posture (conservative/standard/aggressive).
+ *   2. Day-of kyujo calls — the withdraw/compete matrix per injured NPC
+ *      entrant. Injured rikishi who stay entered fight with penalties.
+ */
+export function evaluateNpcMorningKyujo(world: WorldState, builder: ImpactBuilder): void {
+  const basho = world.currentBasho;
+  if (!basho) return;
+
   // Heyas with entrants fighting today.
   const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
   const entrantsByHeya = new Map<Id, Id[]>();
@@ -211,5 +230,4 @@ export function phase01_basho_npc_tactics(world: WorldState): StateImpact {
   }
 
   builder.updateWorldField("bashoNpcPosture", postures);
-  return builder.build();
 }

@@ -189,8 +189,10 @@ export function resolveBout(
   }
 
   // Clone rikishi to apply temporary bout-only modifiers (aggression + mental)
-  const eastBout = applyRivalryToRikishi(east, eastRivalry);
-  const westBout = applyRivalryToRikishi(west, westRivalry);
+  // Competing-injury penalties apply on top — a rikishi fighting hurt
+  // carries the injury's stat debuff into the physics run.
+  const eastBout = applyCompetingInjuryPenalty(applyRivalryToRikishi(east, eastRivalry));
+  const westBout = applyCompetingInjuryPenalty(applyRivalryToRikishi(west, westRivalry));
 
   const { eastTactic, westTactic, ctxFinal } = resolveSideTactics(
     bout,
@@ -362,6 +364,49 @@ export function applyRivalryToRikishi(
       ),
     },
   };
+}
+
+/**
+ * Competing-injury penalty (W A): a rikishi who stays entered while hurt
+ * carries a severity × area stat debuff into the bout. The penalty is
+ * targeted — a taped ankle costs balance and speed, a bad shoulder costs
+ * power and technique — plus a small mental toll everywhere.
+ *
+ * Severity scale: minor 6% / moderate 14% / serious 25% on the targeted
+ * stats. Applied to the bout clone; world state is untouched.
+ */
+export function applyCompetingInjuryPenalty(r: Rikishi): Rikishi {
+  if (!r.injured) return r;
+  const severity = r.injuryStatus?.severity ?? "moderate";
+  const base = severity === "serious" ? 0.25 : severity === "moderate" ? 0.14 : 0.06;
+  const area = r.injuryStatus?.location ?? r.currentInjury?.area ?? "other";
+  const debuff = (v: number | undefined, p: number) =>
+    clamp((v ?? DEFAULT_STAT_VALUE) * (1 - p), STAT_CLAMP_MIN, STAT_CLAMP_MAX);
+
+  const lowerBody = area === "knee" || area === "ankle" || area === "hip";
+  const upperBody = area === "shoulder" || area === "elbow" || area === "wrist" || area === "rib";
+  const core = area === "back" || area === "neck";
+
+  const stats = { ...r.stats };
+  if (lowerBody) {
+    stats.balance = debuff(stats.balance, base);
+    stats.speed = debuff(stats.speed, base);
+  } else if (upperBody) {
+    stats.power = debuff(stats.power, base);
+    stats.technique = debuff(stats.technique, base);
+  } else if (core) {
+    stats.power = debuff(stats.power, base);
+    stats.balance = debuff(stats.balance, base);
+  } else {
+    const half = base / 2;
+    stats.power = debuff(stats.power, half);
+    stats.speed = debuff(stats.speed, half);
+    stats.technique = debuff(stats.technique, half);
+    stats.balance = debuff(stats.balance, half);
+  }
+  // Hurt rikishi fight with doubt — small mental cost regardless of area.
+  stats.mental = debuff(stats.mental, base / 2);
+  return { ...r, stats };
 }
 
 /**

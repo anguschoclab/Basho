@@ -58,14 +58,16 @@ describe("N7/N8: Scheduling isKyujo filter", () => {
     expect(ids).not.toContain("r2");
   });
 
-  it("G.2: activeDivisionRoster still excludes injured rikishi (regression guard)", () => {
+  it("G.2: activeDivisionRoster keeps injured-but-competing rikishi (W-A: injured ≠ absent)", () => {
     const r1 = makeRikishi("r1", { division: "makuuchi", injured: false, isKyujo: false });
     const r2 = makeRikishi("r2", { division: "makuuchi", injured: true, isKyujo: false });
     const world = makeWorld([r1, r2]);
     const roster = activeDivisionRoster(world, "makuuchi");
     const ids = roster.map((r) => r.id);
     expect(ids).toContain("r1");
-    expect(ids).not.toContain("r2");
+    // W-A: injured rikishi who haven't withdrawn stay in the active pool —
+    // the morning-of-day decision (not the schedule filter) determines absence.
+    expect(ids).toContain("r2");
   });
 
   it("G.3: activeDivisionRoster filters by division", () => {
@@ -88,18 +90,15 @@ describe("N7/N8: Scheduling isKyujo filter", () => {
     expect(ids).toEqual(["r1", "r2", "r3"]);
   });
 
-  it("G.5: TournamentSimulator gives fusensho when isKyujo is true (N9 logic check)", () => {
-    // This tests the N9 fix logic: isKyujo should trigger walkover
-    const east = makeRikishi("east", { injured: false, isKyujo: true });
-    const west = makeRikishi("west", { injured: false, isKyujo: false });
-    // Simulate the fixed check
-    const shouldWalkover =
-      east.injured ||
-      west.injured ||
-      east.isKyujo ||
-      west.isKyujo ||
-      east.isRetired ||
-      west.isRetired;
-    expect(shouldWalkover).toBe(true);
+  it("G.5: walkover gate fires on isKyujo/isRetired — not injured alone (canonical absentRikishi)", () => {
+    // Canonical absence semantics (W0/W-A): isKyujo || isRetired → absent;
+    // injured alone still competes.
+    const kyujoEast = makeRikishi("east", { injured: false, isKyujo: true });
+    const healthyWest = makeRikishi("west", { injured: false, isKyujo: false });
+    const absent = (r: Rikishi) => !!(r.isRetired || r.isKyujo);
+    expect(absent(kyujoEast) || absent(healthyWest)).toBe(true);
+
+    const injuredEast = makeRikishi("east2", { injured: true, isKyujo: false });
+    expect(absent(injuredEast) || absent(healthyWest)).toBe(false);
   });
 });

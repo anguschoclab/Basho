@@ -537,7 +537,10 @@ export function buildSwissTorikumi(
 ): MatchPairing[] {
   const pool: Rikishi[] = [];
   for (const r of rikishi) {
-    if (r.isRetired || r.injured || r.isKyujo) continue;
+    // W A: injured-but-entered rikishi stay in the pool — kyujo/retirement
+    // alone removes them. The withdraw call happens at the morning-of-day
+    // evaluation; a hurt rikishi who stays entered fights with penalties.
+    if (r.isRetired || r.isKyujo) continue;
     if (options.division && r.division !== options.division) continue;
     pool.push(r);
   }

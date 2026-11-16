@@ -119,6 +119,11 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     // Officiating (hansoku/yaocho → reportScandal) appends rulings here —
     // previously dropped silently along with the heya scandalScore writes.
     "governanceLog",
+    // resolveMorningOfDay (inside advanceBashoDay) surfaces kyujo_decisions
+    // + pendingCrisis for injured player entrants on the next day's card —
+    // without re-export they'd be silently dropped from the phase delta.
+    "pendingDecisions",
+    "pendingCrisis",
   ] as const;
   for (const field of PASSTHROUGH_FIELDS) {
     if (currentWorld[field] !== world[field]) {
@@ -127,25 +132,6 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
   }
 
   reexportEntityDiffs(builder, world, currentWorld);
-
-  // Collect any rikishi stat changes by diffing — the simulateBoutForToday
-  // function resolves impacts internally, so we capture the final rikishi state
-  // for any rikishi that appear in the basho matches.
-  if (currentWorld.currentBasho) {
-    const matchRikishiIds = new Set<string>();
-    for (const m of currentWorld.currentBasho.matches ?? []) {
-      if (m.result) {
-        matchRikishiIds.add(m.eastRikishiId);
-        matchRikishiIds.add(m.westRikishiId);
-      }
-    }
-    for (const rId of matchRikishiIds) {
-      const updated = currentWorld.rikishi.get(rId);
-      if (updated) {
-        builder.updateRikishi(rId, updated);
-      }
-    }
-  }
 
   // Oyakata entity updates resolve into currentWorld.oyakata too (NPC
   // opponent learning from resolved bouts). oyakata is a Map, not a
@@ -175,6 +161,17 @@ function reexportEntityDiffs(
   world: WorldState,
   currentWorld: WorldState
 ): void {
+  // Rikishi: every resolveBout/applyBoutResult/resolveMorningOfDay write
+  // resolves into currentWorld.rikishi — diff the whole map by reference.
+  // (Subsumes the old matchRikishiIds block, which missed morning-of-day
+  // kyujo writes on next-day matches that have no result yet.)
+  if (currentWorld.rikishi !== world.rikishi) {
+    for (const [id, r] of currentWorld.rikishi) {
+      if (world.rikishi.get(id) !== r) {
+        builder.updateRikishi(id, r);
+      }
+    }
+  }
   if (currentWorld.heyas !== world.heyas) {
     for (const [id, heya] of currentWorld.heyas) {
       if (world.heyas.get(id) !== heya) {

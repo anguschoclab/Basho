@@ -38,11 +38,16 @@ export function getDivisionExpectedSize(division: Division): number {
 
 /**
  * Active division roster.
+ *
+ * Injured-but-entered rikishi ARE schedulable (W A) — the withdraw/compete
+ * call belongs to the morning-of-day evaluation and the bout-level
+ * fusensho gate, not to scheduling. Only explicit kyujo removes a rikishi
+ * from the card.
  */
 export function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
   for (const r of getActiveRikishi(world)) {
-    if (r.division === division && !r.injured && !r.isKyujo) {
+    if (r.division === division && !r.isKyujo) {
       pool.push(r);
     }
   }

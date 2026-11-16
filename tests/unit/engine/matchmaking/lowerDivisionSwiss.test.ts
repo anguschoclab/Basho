@@ -33,7 +33,7 @@ const OPTS = { seed: "test-lower-swiss", division: "makushita" as const };
 // ---------------------------------------------------------------------------
 
 describe("buildLowerDivisionSwiss — pool filtering", () => {
-  it("excludes kyujo, injured, retired, and other-division rikishi", () => {
+  it("excludes kyujo, retired, and other-division rikishi (injured still compete)", () => {
     const active1 = mk("mk-1", { rankNumber: 1 });
     const active2 = mk("mk-2", { rankNumber: 2 });
     const kyujo = mk("mk-3", { isKyujo: true });
@@ -47,6 +47,21 @@ describe("buildLowerDivisionSwiss — pool filtering", () => {
       [active1, active2, kyujo, injured, retired, makuuchi],
       OPTS
     );
+
+    // W-A: injured-but-not-kyujo rikishi keep fighting — the pool holds
+    // active1 + active2 + injured (3) → one pairing + one unpaired bye.
+    // kyujo/retired/makuuchi are excluded from the pool entirely.
+    expect(pairings).toHaveLength(1);
+    expect([pairings[0].eastId, pairings[0].westId].sort()).toEqual(["mk-1", "mk-4"]);
+  });
+
+  it("an injured rikishi who withdraws (isKyujo) leaves the pool", () => {
+    const active1 = mk("mk-1", { rankNumber: 1 });
+    const active2 = mk("mk-2", { rankNumber: 2 });
+    const withdrawn = mk("mk-3", { injured: true, isKyujo: true });
+
+    const basho = MockFactory.createBasho({ day: 1 });
+    const pairings = buildLowerDivisionSwiss(basho, [active1, active2, withdrawn], OPTS);
 
     expect(pairings).toHaveLength(1);
     expect([pairings[0].eastId, pairings[0].westId].sort()).toEqual(["mk-1", "mk-2"]);

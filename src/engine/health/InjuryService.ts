@@ -51,6 +51,8 @@ import {
   BOUT_INJURY_VIOLENT_CHANCE,
   BOUT_INJURY_NORMAL_CHANCE,
   WINNER_INJURY_CHANCE_MULTIPLIER,
+  AGGRAVATION_CHANCE_BY_SEVERITY,
+  AGGRAVATION_EXTRA_WEEKS_MAX,
 } from "@/constants/engine/health";
 
 /**
@@ -214,126 +216,262 @@ export function onBoutResolvedInjury(
 
   if (!result) return builder.build();
 
-  // Only applies to makuuchi/juryo bouts with high-intensity outcomes
   const loser = result.winner === "east" ? west : east;
   const winner = result.winner === "east" ? east : west;
-  if (!loser || loser.injured) return builder.build();
+
+  // 1. Physics-produced in-bout injury (edge-crisis damage) — previously
+  //    produced but never consumed; it now actually injures the rikishi.
+  applyInBoutInjury(world, builder, result, east ?? null, west ?? null);
+  const inBoutVictimId = result.inBoutInjury?.rikishiId;
 
   // Bout-induced injury probability based on kimarite violence
   const violentKimarite = ["uwatenage", "shitatenage", "oshitaoshi", "tsukiotoshi", "hatakikomi"];
   const isViolentFinish = violentKimarite.includes(result.kimarite ?? "");
-
   const baseBoutInjuryChance = isViolentFinish
     ? BOUT_INJURY_VIOLENT_CHANCE
     : BOUT_INJURY_NORMAL_CHANCE; // 2-4% per bout
-  const boutInjuryChance = baseBoutInjuryChance * (injuryRiskMultiplier ?? 1.0);
-  const rngSeed = RNGRegistry.getSystemRNG(
-    world,
-    "health",
-    `bout::${loser.id}::${world.dayIndexGlobal}`
-  );
-  const roll = rngSeed.next();
 
-  if (roll < boutInjuryChance) {
-    const injuryWeeksRemaining =
-      POST_BOUT_INJURY_WEEKS_MIN +
-      Math.floor(rngSeed.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1));
-
-    builder.updateRikishi(loser.id, {
-      injured: true,
-      injuryWeeksRemaining,
-    });
-
-    builder.updateRikishiNestedField(loser.id, "injuryStatus", {
-      type: "inflammation",
-      isInjured: true,
-      severity: "minor",
-      location: "other",
-      weeksRemaining: injuryWeeksRemaining,
-      weeksToHeal: injuryWeeksRemaining,
-    });
-
-    builder.updateRikishiNestedField(loser.id, "currentInjury", {
-      id: rngSeed.uuid("IJ"),
-      severity: "minor",
-      area: "other",
-      type: "inflammation",
-      weeksOut: injuryWeeksRemaining,
-      weekOccurred: world.week ?? 0,
-    });
-
-    builder.logEvent(
-      "LIFECYCLE_EVENT",
-      "injury",
-      {
-        rikishiId: loser.id,
-        shikona: loser.shikona || loser.name,
-        status: "injury_bout",
-        reason: "Bout impact",
-        score: injuryWeeksRemaining,
-      },
-      { rikishiId: loser.id, heyaId: loser.heyaId }
-    );
+  // 2. Loser post-bout roll — a rikishi who ENTERED the bout injured takes
+  //    an aggravation roll instead of being skipped; the old `loser.injured`
+  //    early-return made "fighting hurt" risk-free and starved the winner's
+  //    roll below.
+  if (loser && loser.id !== inBoutVictimId) {
+    if (loser.injured) {
+      applyAggravationRoll(world, builder, loser, injuryRiskMultiplier ?? 1.0);
+    } else {
+      applyFreshBoutInjury(
+        world,
+        builder,
+        loser,
+        baseBoutInjuryChance * (injuryRiskMultiplier ?? 1.0),
+        "Bout impact"
+      );
+    }
   }
 
-  // Winner injury roll: if the winner has an elevated injury risk (e.g. competing
-  // while injured via kyujo_decision "compete"), roll for them at 50% of the base chance.
-  if (winner && !winner.injured && winnerInjuryRiskMultiplier && winnerInjuryRiskMultiplier > 1.0) {
-    const winnerBoutInjuryChance =
-      baseBoutInjuryChance * WINNER_INJURY_CHANCE_MULTIPLIER * winnerInjuryRiskMultiplier;
-    const winnerRng = RNGRegistry.getSystemRNG(
-      world,
-      "health",
-      `bout::${winner.id}::${world.dayIndexGlobal}`
-    );
-    const winnerRoll = winnerRng.next();
-
-    if (winnerRoll < winnerBoutInjuryChance) {
-      const winnerWeeksRemaining =
-        POST_BOUT_INJURY_WEEKS_MIN +
-        Math.floor(
-          winnerRng.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1)
-        );
-
-      builder.updateRikishi(winner.id, {
-        injured: true,
-        injuryWeeksRemaining: winnerWeeksRemaining,
-      });
-
-      builder.updateRikishiNestedField(winner.id, "injuryStatus", {
-        type: "inflammation",
-        isInjured: true,
-        severity: "minor",
-        location: "other",
-        weeksRemaining: winnerWeeksRemaining,
-        weeksToHeal: winnerWeeksRemaining,
-      });
-
-      builder.updateRikishiNestedField(winner.id, "currentInjury", {
-        id: winnerRng.uuid("IJ"),
-        severity: "minor",
-        area: "other",
-        type: "inflammation",
-        weeksOut: winnerWeeksRemaining,
-        weekOccurred: world.week ?? 0,
-      });
-
-      builder.logEvent(
-        "LIFECYCLE_EVENT",
-        "injury",
-        {
-          rikishiId: winner.id,
-          shikona: winner.shikona || winner.name,
-          status: "injury_bout",
-          reason: "Bout impact (competing while injured)",
-          score: winnerWeeksRemaining,
-        },
-        { rikishiId: winner.id, heyaId: winner.heyaId }
+  // 3. Winner roll — only under elevated risk (e.g. kyujo_decision
+  //    "compete"). An injured winner aggravates at the reduced rate; a
+  //    healthy winner takes the standard reduced fresh-injury roll.
+  if (
+    winner &&
+    winner.id !== inBoutVictimId &&
+    winnerInjuryRiskMultiplier &&
+    winnerInjuryRiskMultiplier > 1.0
+  ) {
+    if (winner.injured) {
+      applyAggravationRoll(
+        world,
+        builder,
+        winner,
+        winnerInjuryRiskMultiplier * WINNER_INJURY_CHANCE_MULTIPLIER
+      );
+    } else {
+      applyFreshBoutInjury(
+        world,
+        builder,
+        winner,
+        baseBoutInjuryChance * WINNER_INJURY_CHANCE_MULTIPLIER * winnerInjuryRiskMultiplier,
+        "Bout impact (competing while injured)"
       );
     }
   }
 
   return builder.build();
+}
+
+/** Fresh minor bout injury — shared by the loser and elevated-winner paths. */
+function applyFreshBoutInjury(
+  world: WorldState,
+  builder: ReturnType<typeof createImpactBuilder>,
+  r: Rikishi,
+  chance: number,
+  reason: string
+): void {
+  const rngSeed = RNGRegistry.getSystemRNG(
+    world,
+    "health",
+    `bout::${r.id}::${world.dayIndexGlobal}`
+  );
+  if (rngSeed.next() >= chance) return;
+
+  const injuryWeeksRemaining =
+    POST_BOUT_INJURY_WEEKS_MIN +
+    Math.floor(rngSeed.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1));
+
+  builder.updateRikishi(r.id, {
+    injured: true,
+    injuryWeeksRemaining,
+  });
+  builder.updateRikishiNestedField(r.id, "injuryStatus", {
+    type: "inflammation",
+    isInjured: true,
+    severity: "minor",
+    location: "other",
+    weeksRemaining: injuryWeeksRemaining,
+    weeksToHeal: injuryWeeksRemaining,
+  });
+  builder.updateRikishiNestedField(r.id, "currentInjury", {
+    id: rngSeed.uuid("IJ"),
+    severity: "minor",
+    area: "other",
+    type: "inflammation",
+    weeksOut: injuryWeeksRemaining,
+    weekOccurred: world.week ?? 0,
+  });
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "injury",
+    {
+      rikishiId: r.id,
+      shikona: r.shikona || r.name,
+      status: "injury_bout",
+      reason,
+      score: injuryWeeksRemaining,
+    },
+    { rikishiId: r.id, heyaId: r.heyaId }
+  );
+}
+
+const SEVERITY_RANK: Record<string, number> = { none: 0, minor: 1, moderate: 2, serious: 3 };
+
+/**
+ * Aggravation roll for a rikishi who competed while already injured.
+ * Chance scales with the existing severity and any override multiplier
+ * (kyujo_decision "compete" writes one). On a hit, recovery lengthens by
+ * 1–2 weeks; the injury keeps its type/area.
+ */
+function applyAggravationRoll(
+  world: WorldState,
+  builder: ReturnType<typeof createImpactBuilder>,
+  r: Rikishi,
+  multiplier: number
+): void {
+  const severity = r.injuryStatus?.severity ?? "moderate";
+  const chance = (AGGRAVATION_CHANCE_BY_SEVERITY[severity] ?? 0.12) * multiplier;
+  if (chance <= 0) return;
+
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "health",
+    `aggrav::${r.id}::${world.dayIndexGlobal}`
+  );
+  if (rng.next() >= chance) return;
+
+  const extraWeeks = 1 + Math.floor(rng.next() * AGGRAVATION_EXTRA_WEEKS_MAX);
+  const newWeeks = (r.injuryWeeksRemaining ?? 0) + extraWeeks;
+
+  builder.updateRikishi(r.id, { injuryWeeksRemaining: newWeeks });
+  builder.updateRikishiNestedField(r.id, "injuryStatus", {
+    ...(r.injuryStatus ?? { type: "sprain" as const, severity: "moderate" as const }),
+    isInjured: true,
+    weeksRemaining: newWeeks,
+    weeksToHeal: Math.max(r.injuryStatus?.weeksToHeal ?? 0, newWeeks),
+  });
+  if (r.currentInjury) {
+    builder.updateRikishiNestedField(r.id, "currentInjury", {
+      ...r.currentInjury,
+      weeksOut: newWeeks,
+    });
+  }
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "injury",
+    {
+      rikishiId: r.id,
+      shikona: r.shikona || r.name,
+      status: "injury_aggravated",
+      reason: "Competed while injured",
+      score: newWeeks,
+    },
+    { rikishiId: r.id, heyaId: r.heyaId }
+  );
+}
+
+/**
+ * Consume `result.inBoutInjury` — the physics-produced edge-crisis injury.
+ * A healthy rikishi takes the named severity/area with recovery weeks from
+ * getBaseWeeksOut; an already-injured rikishi aggravates (longer recovery,
+ * severity escalates to the worse of the two).
+ */
+function applyInBoutInjury(
+  world: WorldState,
+  builder: ReturnType<typeof createImpactBuilder>,
+  result: BoutResult,
+  east: Rikishi | null,
+  west: Rikishi | null
+): void {
+  const inj = result.inBoutInjury;
+  if (!inj) return;
+  const victim = inj.rikishiId === east?.id ? east : inj.rikishiId === west?.id ? west : null;
+  if (!victim) return;
+
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "health",
+    `inbout::${victim.id}::${result.boutId}`
+  );
+
+  let appliedWeeks = 0;
+  if (victim.injured) {
+    const newWeeks =
+      (victim.injuryWeeksRemaining ?? 0) + 1 + Math.floor(rng.next() * AGGRAVATION_EXTRA_WEEKS_MAX);
+    appliedWeeks = newWeeks;
+    const prevSeverity = victim.injuryStatus?.severity ?? "moderate";
+    const severity =
+      (SEVERITY_RANK[inj.severity] ?? 0) > (SEVERITY_RANK[prevSeverity] ?? 0)
+        ? inj.severity
+        : prevSeverity;
+    builder.updateRikishi(victim.id, { injured: true, injuryWeeksRemaining: newWeeks });
+    builder.updateRikishiNestedField(victim.id, "injuryStatus", {
+      ...(victim.injuryStatus ?? { type: "sprain" as const, severity: "moderate" as const }),
+      isInjured: true,
+      severity,
+      weeksRemaining: newWeeks,
+      weeksToHeal: Math.max(victim.injuryStatus?.weeksToHeal ?? 0, newWeeks),
+    });
+    if (victim.currentInjury) {
+      builder.updateRikishiNestedField(victim.id, "currentInjury", {
+        ...victim.currentInjury,
+        severity,
+        weeksOut: newWeeks,
+      });
+    }
+  } else {
+    const range = getBaseWeeksOut(inj.severity, inj.area, "strain");
+    const span = Math.max(1, range.max - range.min + 1);
+    const weeks = range.min + Math.floor(rng.next() * span);
+    appliedWeeks = weeks;
+    builder.updateRikishi(victim.id, { injured: true, injuryWeeksRemaining: weeks });
+    builder.updateRikishiNestedField(victim.id, "injuryStatus", {
+      type: "strain",
+      isInjured: true,
+      severity: inj.severity,
+      location: inj.area,
+      weeksRemaining: weeks,
+      weeksToHeal: weeks,
+    });
+    builder.updateRikishiNestedField(victim.id, "currentInjury", {
+      id: rng.uuid("IJ"),
+      severity: inj.severity,
+      area: inj.area,
+      type: "strain",
+      weeksOut: weeks,
+      weekOccurred: world.week ?? 0,
+    });
+  }
+
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "injury",
+    {
+      rikishiId: victim.id,
+      shikona: victim.shikona || victim.name,
+      status: "injury_bout",
+      reason: inj.triggerEvent,
+      score: appliedWeeks,
+    },
+    { rikishiId: victim.id, heyaId: victim.heyaId }
+  );
 }
 
 /**
