@@ -34,6 +34,7 @@ import { TrainingService } from "@/engine/training/TrainingService";
 import { BloodlineService } from "@/engine/legacy/BloodlineService";
 import { applyMentorshipBonuses } from "@/engine/training/MentorshipService";
 import { applyWeeklySparring } from "@/engine/training/SparringService";
+import { applyWeeklyDegeiko } from "@/engine/training/DegeikoService";
 import {
   assignTsukebito,
   applyWeeklyTsukebitoBenefits,
@@ -76,6 +77,7 @@ export function phase01_week_training(world: WorldState): StateImpact {
     (w) => BloodlineService.applyHeritageBonus(w),
     (w) => applyMentorshipBonuses(w),
     (w) => applyWeeklySparring(w),
+    (w) => applyWeeklyDegeiko(w),
   ]);
 
   // Tsukebito / ototodeshi system (computed on the post-sparring world)

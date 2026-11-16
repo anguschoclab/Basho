@@ -18,12 +18,14 @@ import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots
 import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
 import { SparringPanel } from "@/components/training/SparringPanel";
+import { DegeikoPanel } from "@/components/training/DegeikoPanel";
 import { WeightJourneysSection } from "@/components/training/WeightJourneysSection";
 import {
   CoachAdvisoryPanel,
   ProjectedGainsPanel,
 } from "@/components/training/TrainingAdvisorySections";
 import { getPlayerHeya } from "@/presenters/engineAccess";
+import { getAllHeyas } from "@/presenters/worldAccess";
 import { useTrainingState } from "@/hooks/useTrainingState";
 import { useTrainingDerived } from "@/hooks/useTrainingDerived";
 
@@ -94,6 +96,14 @@ export default function TrainingPage() {
           pairs={Object.values(world.sparringPairs?.get(playerHeyaId)?.pairs ?? {})}
           onAddPair={(aId, bId) => addSparringPair(playerHeyaId, aId, bId)}
           onRemovePair={(aId, bId) => removeSparringPair(playerHeyaId, aId, bId)}
+        />
+
+        {/* W I — degeiko request to a host stable */}
+        <DegeikoPanel
+          heyas={getAllHeyas(world)}
+          trainingState={world.trainingState}
+          playerHeyaId={playerHeyaId}
+          heyaRikishi={rikishiList}
         />
 
         <WeightJourneysSection rikishiList={rikishiList} currentYear={world.year} />

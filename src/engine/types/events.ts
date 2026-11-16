@@ -69,7 +69,10 @@ export type EngineEventType =
   | "PRE_BASHO_JOURNALISM" // Pre-basho journalism cycle
   | "WORLD_META_EVOLUTION" // World meta-narrative evolved
   | "RECORD_BROKEN" // A record was broken
-  | "CHAIN_STAGE_RESOLVED"; // An event-chain stage was resolved
+  | "CHAIN_STAGE_RESOLVED" // An event-chain stage was resolved
+  | "DEGEIKO_SCHEDULED" // Inter-heya keiko visit accepted and scheduled
+  | "DEGEIKO_DECLINED" // Inter-heya keiko request declined
+  | "DEGEIKO_COMPLETED"; // Degeiko session applied (gains + partner links)
 
 /**
  * Type representing event phase.

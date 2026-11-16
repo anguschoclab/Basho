@@ -88,6 +88,7 @@ export type EngineCommand =
   | { type: "REMOVE_MENTOR"; apprenticeId: string }
   | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
   | { type: "REMOVE_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
+  | { type: "REQUEST_DEGEIKO"; heyaId: string; targetHeyaId: string; rikishiIds: string[] }
   | { type: "BOOKMARK_ENTITY"; entityType: string; entityId: string; note?: string }
   | { type: "UNBOOKMARK_ENTITY"; entityType: string; entityId: string }
   | { type: "UPDATE_BOOKMARK_NOTE"; entityType: string; entityId: string; note: string }

@@ -64,6 +64,7 @@ export interface GameContextValue {
   removeMentor: (apprenticeId: string) => void;
   addSparringPair: (heyaId: string, aId: string, bId: string) => void;
   removeSparringPair: (heyaId: string, aId: string, bId: string) => void;
+  requestDegeiko: (heyaId: string, targetHeyaId: string, rikishiIds: string[]) => void;
   bookmarkEntity: (entityType: string, entityId: string, note?: string) => void;
   unbookmarkEntity: (entityType: string, entityId: string) => void;
   updateBookmarkNote: (entityType: string, entityId: string, note: string) => void;

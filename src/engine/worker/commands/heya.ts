@@ -15,6 +15,7 @@ import { repairFacility } from "@/engine/economy/facilityWear";
 import { assignMentor } from "@/engine/legacy/lineage";
 import { removeMentor } from "@/engine/training/MentorshipService";
 import { assignSparringPair, removeSparringPair } from "@/engine/training/SparringService";
+import { requestDegeiko } from "@/engine/training/DegeikoService";
 import { setTsukebito, clearTsukebito } from "@/engine/training/TsukebitoService";
 import { updateHeyaInWorld } from "@/engine/core/queries";
 import { retireRikishiImpact, createImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -201,6 +202,15 @@ function addSparringPairCmd(rt: WorkerRuntime, cmd: Cmd<"ADD_SPARRING_PAIR">) {
   }
 }
 
+function requestDegeikoCmd(rt: WorkerRuntime, cmd: Cmd<"REQUEST_DEGEIKO">) {
+  if (rt.world) {
+    if (cmd.heyaId !== rt.world.playerHeyaId) return;
+    const impact = requestDegeiko(rt.world, cmd.heyaId, cmd.targetHeyaId, cmd.rikishiIds);
+    rt.world = resolveImpacts(rt.world, [impact]);
+    rt.syncAndDigest();
+  }
+}
+
 function removeSparringPairCmd(rt: WorkerRuntime, cmd: Cmd<"REMOVE_SPARRING_PAIR">) {
   if (rt.world) {
     if (cmd.heyaId !== rt.world.playerHeyaId) return;
@@ -291,6 +301,7 @@ export function heyaCommands(rt: WorkerRuntime): CommandHandlerMap {
     REMOVE_MENTOR: (cmd) => removeMentorCmd(rt, cmd),
     ADD_SPARRING_PAIR: (cmd) => addSparringPairCmd(rt, cmd),
     REMOVE_SPARRING_PAIR: (cmd) => removeSparringPairCmd(rt, cmd),
+    REQUEST_DEGEIKO: (cmd) => requestDegeikoCmd(rt, cmd),
     SET_TSUKEBITO: (cmd) => setTsukebitoCmd(rt, cmd),
     REMOVE_TSUKEBITO: (cmd) => removeTsukebitoCmd(rt, cmd),
     SET_TRAINING_STATE: (cmd) => setTrainingStateCmd(rt, cmd),

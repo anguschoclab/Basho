@@ -197,6 +197,13 @@ function useSocialTutorialCommands() {
     [sendCommand]
   );
 
+  const requestDegeiko = useCallback(
+    (heyaId: string, targetHeyaId: string, rikishiIds: string[]) => {
+      sendCommand({ type: "REQUEST_DEGEIKO", heyaId, targetHeyaId, rikishiIds });
+    },
+    [sendCommand]
+  );
+
   const bookmarkEntity = useCallback(
     (entityType: string, entityId: string, note?: string) => {
       sendCommand({ type: "BOOKMARK_ENTITY", entityType, entityId, note });
@@ -231,6 +238,7 @@ function useSocialTutorialCommands() {
       removeMentor,
       addSparringPair,
       removeSparringPair,
+      requestDegeiko,
       bookmarkEntity,
       unbookmarkEntity,
       updateBookmarkNote,
@@ -247,6 +255,7 @@ function useSocialTutorialCommands() {
       removeMentor,
       addSparringPair,
       removeSparringPair,
+      requestDegeiko,
       bookmarkEntity,
       unbookmarkEntity,
       updateBookmarkNote,

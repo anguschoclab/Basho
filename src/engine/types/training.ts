@@ -40,6 +40,13 @@ export interface IndividualFocus {
   focusType: FocusMode;
 }
 
+/** A scheduled degeiko (inter-heya keiko) visit, consumed by the weekly phase. */
+export interface DegeikoSession {
+  targetHeyaId: Id;
+  week: number;
+  rikishiIds: Id[];
+}
+
 /** Defines the structure for heya training state. */
 export interface HeyaTrainingState {
   heyaId: Id;
@@ -50,6 +57,8 @@ export interface HeyaTrainingState {
    * If a rikishi has a plan here, it overrides/augments the passive activeProfile growth.
    */
   weeklyPlan?: Record<Id, DaySchedule>;
+  /** Pending degeiko visit at another heya (W I). */
+  pendingDegeiko?: DegeikoSession | null;
 }
 
 /**
