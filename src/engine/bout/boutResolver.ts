@@ -42,6 +42,7 @@ import { applyMonoiiVerdict } from "@/engine/bout/resolution/monoiiVerdict";
 import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { hometownTier, applyHometownBonus } from "@/engine/basho/geography";
+import { applyDohyoCondition } from "@/engine/basho/dohyo";
 import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 import {
   RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
@@ -190,19 +191,7 @@ export function resolveBout(
     }
   }
 
-  // Clone rikishi to apply temporary bout-only modifiers (aggression + mental)
-  // Competing-injury penalties apply on top — a rikishi fighting hurt
-  // carries the injury's stat debuff into the physics run. The home-region
-  // crowd bonus (W E) lifts a local man's mental on top of both.
-  const bashoLocation = basho.bashoName ? BASHO_CALENDAR[basho.bashoName]?.location : undefined;
-  const eastBout = applyHometownBonus(
-    applyCompetingInjuryPenalty(applyRivalryToRikishi(east, eastRivalry)),
-    hometownTier(east.origin, bashoLocation)
-  );
-  const westBout = applyHometownBonus(
-    applyCompetingInjuryPenalty(applyRivalryToRikishi(west, westRivalry)),
-    hometownTier(west.origin, bashoLocation)
-  );
+  const { eastBout, westBout } = buildBoutClones(east, west, eastRivalry, westRivalry, basho);
 
   const { eastTactic, westTactic, ctxFinal } = resolveSideTactics(
     bout,
@@ -307,6 +296,33 @@ export function resolveBout(
   );
 
   return { result, impact: builder.build() };
+}
+
+/**
+ * Build the bout clones — every bout-only modifier layers here, in order:
+ * rivalry heat/spite → competing-injury penalty → hometown crowd bonus →
+ * venue clay condition. The originals are never touched.
+ */
+function buildBoutClones(
+  east: Rikishi,
+  west: Rikishi,
+  eastRivalry: { heat: number; spite: number },
+  westRivalry: { heat: number; spite: number },
+  basho: BashoState
+): { eastBout: Rikishi; westBout: Rikishi } {
+  const bashoLocation = basho.bashoName ? BASHO_CALENDAR[basho.bashoName]?.location : undefined;
+  const cloneFor = (r: Rikishi, rivalry: { heat: number; spite: number }) =>
+    applyDohyoCondition(
+      applyHometownBonus(
+        applyCompetingInjuryPenalty(applyRivalryToRikishi(r, rivalry)),
+        hometownTier(r.origin, bashoLocation)
+      ),
+      basho.dohyoCondition
+    );
+  return {
+    eastBout: cloneFor(east, eastRivalry),
+    westBout: cloneFor(west, westRivalry),
+  };
 }
 
 /**

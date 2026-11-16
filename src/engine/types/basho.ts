@@ -290,6 +290,13 @@ export type StandingsTable = Record<Id, { wins: number; losses: number; absences
 export type StandingsTableRuntime = Map<Id, { wins: number; losses: number; absences?: number }>;
 
 /**
+ * Dohyo clay condition for a basho — rolled at basho init (W J).
+ * "firm" is the neutral baseline; "slick" clay (dry Kyushu venue) lowers
+ * footing balance; "heavy" clay (humid Nagoya venue) slows tempo.
+ */
+export type DohyoCondition = "firm" | "slick" | "heavy";
+
+/**
  * Defines the structure for basho state.
  * Tracks the current state of an active or completed basho.
  */
@@ -308,6 +315,13 @@ export interface BashoState {
   standings: StandingsTableRuntime;
   /** Whether this basho is currently active. */
   isActive: boolean;
+
+  /**
+   * Dohyo clay condition for this basho (W J) — rolled deterministically
+   * at basho init from the venue's climate profile. Applies symmetric
+   * bout-clone modifiers to both rikishi (venue affects everyone equally).
+   */
+  dohyoCondition?: DohyoCondition;
 
   /**
    * Per-basho kinboshi tally: rikishi ID → count earned this basho.

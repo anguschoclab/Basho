@@ -70,7 +70,7 @@ export default function BashoPage() {
         <PageHeader
           eyebrow="TOURNAMENT"
           title={bashoInfo?.nameJa ?? "Basho"}
-          lede={`${dayInfo?.dayJa ?? `Day ${day}`} · ${bashoInfo?.location ?? "—"} · ${completedBouts}/${matches.length} bouts complete${seasonalFlavor ? ` · ${seasonalFlavor}` : ""}`}
+          lede={`${dayInfo?.dayJa ?? `Day ${day}`} · ${bashoInfo?.location ?? "—"}${world?.currentBasho?.dohyoCondition ? ` · dohyo: ${world.currentBasho.dohyoCondition}` : ""} · ${completedBouts}/${matches.length} bouts complete${seasonalFlavor ? ` · ${seasonalFlavor}` : ""}`}
           actions={<BashoHeaderActions day={day} isNakabiDay={bashoDigest.isNakabiDay} />}
         />
         <BashoDayControls

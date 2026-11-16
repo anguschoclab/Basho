@@ -27,6 +27,7 @@ import type { BashoName, BashoState } from "@/engine/types/basho";
 import type { Faction, IchimonName } from "@/engine/types/economy";
 import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 import { getBashoNumber } from "@/engine/calendar/calendar";
+import { rollDohyoCondition } from "@/engine/basho/dohyo";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { RivalryService } from "@/engine/narrative/RivalryService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -203,6 +204,11 @@ export function generateInitialWorld(seed: string): WorldState {
  */
 export function initializeBasho(world: WorldState, name: BashoName): BashoState {
   const rng = rngFromSeed(world.seed, "basho", `${world.year}-${name}`);
+  // W-J: venue clay condition — same seeded draw every init (idempotent).
+  const dohyoCondition = rollDohyoCondition(
+    rngFromSeed(world.seed, "dohyo", `${world.year}-${name}`),
+    name
+  );
   return {
     id: rng.uuid("BS"),
     year: world.year,
@@ -214,6 +220,7 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
     standings: new Map(),
     isActive: true,
     kinboshiThisBasho: {},
+    dohyoCondition,
   };
 }
 

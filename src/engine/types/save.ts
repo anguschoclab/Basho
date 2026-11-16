@@ -77,6 +77,9 @@ export interface SerializedBashoState {
    *  records after reload. */
   isExhibition?: boolean;
   exhibitionName?: string;
+  /** Venue clay condition (W J) — must round-trip so mid-basho saves keep
+   *  the same bout modifiers. */
+  dohyoCondition?: BashoState["dohyoCondition"];
 }
 
 /** Defines the structure for serialized world state. */

@@ -66,6 +66,7 @@ export function buildStartBashoImpact(world: WorldState, bashoName?: BashoName):
         status: "started",
         incident: name,
         day: 1,
+        dohyoCondition: basho.dohyoCondition,
       },
       { importance: "headline" }
     );

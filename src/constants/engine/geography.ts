@@ -107,3 +107,26 @@ export const HOMETOWN_MENTAL_BONUS_HOME = 0.03;
 
 /** Mental-stat multiplier for a rikishi fighting in his home region. */
 export const HOMETOWN_MENTAL_BONUS_REGION = 0.015;
+
+// ── Dohyo (clay) condition — venue profiles (W J) ───────────────────────────
+
+/**
+ * Per-basho clay-condition weights: [firm, slick, heavy].
+ * Commentary-informed: Kyushu's dry clay runs slick ("they water it"),
+ * Nagoya's midsummer humidity packs heavy, Tokyo/Osaka mostly firm.
+ */
+export const DOHYO_WEIGHTS: Record<string, readonly [number, number, number]> = {
+  hatsu: [0.6, 0.25, 0.15],
+  haru: [0.55, 0.3, 0.15],
+  natsu: [0.55, 0.25, 0.2],
+  nagoya: [0.4, 0.15, 0.45],
+  aki: [0.6, 0.25, 0.15],
+  kyushu: [0.4, 0.5, 0.1],
+};
+
+/** Slick clay — footing slips: balance −8% (more slips/hands-down finishes). */
+export const DOHYO_SLICK_BALANCE_PENALTY = 0.08;
+
+/** Heavy clay — dead footing: speed −6%, stamina −4% (slower, tiring work). */
+export const DOHYO_HEAVY_SPEED_PENALTY = 0.06;
+export const DOHYO_HEAVY_STAMINA_PENALTY = 0.04;
