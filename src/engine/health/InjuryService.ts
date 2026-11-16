@@ -411,7 +411,7 @@ function applyInBoutInjury(
     `inbout::${victim.id}::${result.boutId}`
   );
 
-  let appliedWeeks = 0;
+  let appliedWeeks: number;
   if (victim.injured) {
     const newWeeks =
       (victim.injuryWeeksRemaining ?? 0) + 1 + Math.floor(rng.next() * AGGRAVATION_EXTRA_WEEKS_MAX);

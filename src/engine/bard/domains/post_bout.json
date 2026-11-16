@@ -570,5 +570,10 @@
       "The %LABEL% gambit failed to produce the desired result.",
       "Unfortunately, the %LABEL% strategy did not pan out as planned."
     ]
-  }
+  },
+  "cross_division_callup": [
+    "A rare treat for the crowd — juryo call-up %CALLUP% stepped onto the makuuchi card to face %OPPONENT%.",
+    "Called up from juryo to fill the top-division card, %CALLUP% answered against %OPPONENT%.",
+    "The juryo man came to fight — %CALLUP%, summoned into the makuuchi session, took on %OPPONENT%."
+  ]
 }

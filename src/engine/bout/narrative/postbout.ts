@@ -909,6 +909,26 @@ function beatHansokuPenalty(p: PbpPipeline): void {
   }
 }
 
+function beatJuryoCallup(p: PbpPipeline): void {
+  const { east, postBoutRng, push, result, west } = p;
+  // 16d. Cross-division call-up — a juryo rikishi answered the makuuchi card.
+  const callupId = result.crossDivisionCallupId;
+  if (!callupId) return;
+  const callup = callupId === east.id ? east : callupId === west.id ? west : undefined;
+  if (!callup) return;
+  const opponent = callup === east ? west : east;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.cross_division_callup", {
+      CALLUP: callup.shikona,
+      OPPONENT: opponent.shikona,
+      callupId: callup.id,
+      opponentId: opponent.id,
+    }).text,
+    "post_bout",
+    ["drama"]
+  );
+}
+
 function beatHometownWin(p: PbpPipeline): void {
   const { bashoInfo, postBoutRng, push, winnerRikishi } = p;
   // 16c. Hometown win — local hero delivers for the home crowd
@@ -1021,6 +1041,7 @@ export function narrateAftermath(p: PbpPipeline): void {
   beatMomentumScore(p);
   beatMonoii(p);
   beatHansokuPenalty(p);
+  beatJuryoCallup(p);
   beatHometownWin(p);
   beatBelatedBirthday(p);
   beatKinboshiCount(p);

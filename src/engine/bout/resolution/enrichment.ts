@@ -114,10 +114,13 @@ export function enrichResult(
   const bashoLabel = `${basho.year ?? world?.year ?? DEFAULT_START_YEAR}-${bashoName ?? "unknown"}`;
   recordWinnerHighlights(winner, loser, bout, bashoLabel, kinboshiDelta, builder);
 
-  // 2.5. Copy dramatic context from match schedule onto result
+  // 2.5. Copy dramatic context + cross-division metadata from match schedule
   const match = basho.matches?.find((m) => m.boutId === result.boutId);
   if (match?.dramaticContext) {
     result.dramaticContext = match.dramaticContext;
+  }
+  if (match?.crossDivisionCallupId) {
+    result.crossDivisionCallupId = match.crossDivisionCallupId;
   }
 
   // NOTE: narrative generation is intentionally NOT here — it must run

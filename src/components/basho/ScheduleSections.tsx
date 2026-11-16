@@ -99,6 +99,9 @@ function MatchCard({
   const east = getRikishi(world, match.eastRikishiId);
   const west = getRikishi(world, match.westRikishiId);
   const result = match.result;
+  const callupId = match.crossDivisionCallupId;
+  const callupIsEast = callupId === match.eastRikishiId;
+  const callupIsWest = callupId === match.westRikishiId;
 
   return (
     <Card
@@ -110,7 +113,9 @@ function MatchCard({
           <div className={`font-bold text-lg ${result?.winner === "east" ? "text-primary" : ""}`}>
             {east?.shikona || match.eastRikishiId}
           </div>
-          <div className="text-sm text-muted-foreground">East</div>
+          <div className="text-sm text-muted-foreground">
+            East{callupIsEast ? " · Jūryō call-up" : ""}
+          </div>
         </div>
 
         <div className="flex flex-col items-center justify-center px-4">
@@ -128,7 +133,9 @@ function MatchCard({
           <div className={`font-bold text-lg ${result?.winner === "west" ? "text-primary" : ""}`}>
             {west?.shikona || match.westRikishiId}
           </div>
-          <div className="text-sm text-muted-foreground">West</div>
+          <div className="text-sm text-muted-foreground">
+            West{callupIsWest ? " · Jūryō call-up" : ""}
+          </div>
         </div>
       </div>
     </Card>

@@ -93,39 +93,51 @@ export function scheduleDivisionDay(args: {
   day: number;
   seed: string;
   config?: { maxActiveRikishi?: number };
+  /** Rikishi to withhold from this division's pool (e.g. a juryo callup). */
+  excludeIds?: ReadonlySet<string>;
+  /** Pre-built bouts appended after pairing (e.g. the cross-division bout). */
+  extraBouts?: MatchSchedule[];
 }): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const { world, basho, division, day, config } = args;
 
   const builder = createImpactBuilder("scheduleDivisionDay");
-  const roster = activeDivisionRoster(world, division);
+  const roster = activeDivisionRoster(world, division).filter(
+    (r) => !args.excludeIds?.has(r.id)
+  );
   const maxActiveRikishi = config?.maxActiveRikishi;
   if (!needsScheduleForDay(division, day)) return { scheduled: [], impact: builder.build() };
 
   const pool =
     typeof maxActiveRikishi === "number" ? roster.slice(0, Math.max(0, maxActiveRikishi)) : roster;
 
-  if (pool.length < 2) return { scheduled: [], impact: builder.build() };
+  if (pool.length < 2 && !args.extraBouts?.length)
+    return { scheduled: [], impact: builder.build() };
 
-  let finalPairings: MatchPairing[];
+  let finalPairings: MatchPairing[] = [];
 
   if (division === "makuuchi") {
     // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
-    finalPairings = buildSwissTorikumi(basho, pool, {
-      seed: `${args.seed}-swiss-makuuchi-day${day}`,
-      division: "makuuchi",
-      rivalriesState: world.rivalriesState,
-    });
+    if (pool.length >= 2) {
+      finalPairings = buildSwissTorikumi(basho, pool, {
+        seed: `${args.seed}-swiss-makuuchi-day${day}`,
+        division: "makuuchi",
+        rivalriesState: world.rivalriesState,
+      });
+    }
   } else if (["makushita", "sandanme", "jonidan", "jonokuchi"].includes(division)) {
     // ── NEW: 7-bout Division Swiss path ─────────────────────────────────
-    finalPairings = buildLowerDivisionSwiss(basho, pool, {
-      seed: `${args.seed}-lower-swiss-${division}-day${day}`,
-      division,
-    });
+    if (pool.length >= 2) {
+      finalPairings = buildLowerDivisionSwiss(basho, pool, {
+        seed: `${args.seed}-lower-swiss-${division}-day${day}`,
+        division,
+      });
+    }
   } else if (division === "juryo") {
     // ── Juryo with crossover from Makushita ─────────────────────────
     const { scheduled, impact: crossoverImpact } = scheduleJuryoWithCrossover(world, basho, {
       seed: args.seed,
       day,
+      excludeIds: args.excludeIds,
     });
 
     builder.merge(crossoverImpact);
@@ -157,10 +169,67 @@ export function scheduleDivisionDay(args: {
     dramaticContext: extractDramaContext(p),
   }));
 
-  // Append to basho state using ImpactBuilder
-  builder.appendToWorldArray("basho.matches", scheduled);
+  // Cross-division bouts sit first on the card — the JSA opens the makuuchi
+  // session with the juryo call-up.
+  const ordered = [...(args.extraBouts ?? []), ...scheduled];
 
-  return { scheduled, impact: builder.build() };
+  // Append to basho state using ImpactBuilder
+  builder.appendToWorldArray("basho.matches", ordered);
+
+  return { scheduled: ordered, impact: builder.build() };
+}
+
+/**
+ * Plan the juryo → makuuchi crossover for a day.
+ *
+ * When the makuuchi card is odd, the JSA calls up the top-ranked juryo
+ * rikishi to face the lowest-ranked makuuchi man. The callup is planned
+ * BEFORE the division loop so juryo scheduling can exclude him — his
+ * vacated juryo slot then back-fills through the makushita crossover,
+ * mirroring the real torikumi cascade.
+ *
+ * Returns null when makuuchi is even, no healthy juryo candidate exists,
+ * or either division isn't scheduled today.
+ */
+export function planJuryoCallupForMakuuchi(
+  world: WorldState,
+  basho: BashoState,
+  day: number
+): { juryoId: string; makuuchiId: string } | null {
+  if (!needsScheduleForDay("makuuchi", day) || !needsScheduleForDay("juryo", day)) return null;
+
+  const makuuchiPool = activeDivisionRoster(world, "makuuchi");
+  if (makuuchiPool.length < 3 || makuuchiPool.length % 2 === 0) return null;
+
+  // Skip anyone already booked today (defensive — callers schedule divisions
+  // in one pass, but standalone invocations may follow a partial card).
+  const busyToday = new Set(
+    basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
+  );
+
+  // The JSA calls up the top juryo man — a hurt rikishi isn't promoted into
+  // a harder bout, so the pick skips `injured` (he still fights his juryo
+  // bout via the normal card, which the competing-injury rules cover).
+  const callup = activeDivisionRoster(world, "juryo")
+    .filter((r) => !r.injured && !busyToday.has(r.id))
+    .sort((a, b) => {
+      const byRank = (a.rankNumber ?? 99) - (b.rankNumber ?? 99);
+      if (byRank !== 0) return byRank;
+      if (a.side !== b.side) return a.side === "east" ? -1 : 1;
+      return a.id < b.id ? -1 : 1;
+    })[0];
+  if (!callup) return null;
+
+  // The odd man out is the lowest-ranked makuuchi rikishi — matching real
+  // torikumi where the callup opens the session against the bottom of the card.
+  const oddMan = [...makuuchiPool].sort((a, b) => {
+    const byRank = (b.rankNumber ?? 0) - (a.rankNumber ?? 0);
+    if (byRank !== 0) return byRank;
+    if (a.side !== b.side) return a.side === "west" ? -1 : 1;
+    return a.id < b.id ? -1 : 1;
+  })[0];
+
+  return { juryoId: callup.id, makuuchiId: oddMan.id };
 }
 
 /**
@@ -186,6 +255,20 @@ export function scheduleAllDivisionsDay(args: {
     args.divisions ??
     (["jonokuchi", "jonidan", "sandanme", "makushita", "juryo", "makuuchi"] as Division[]);
 
+  // W-B: plan the juryo → makuuchi crossover up front so the juryo loop can
+  // exclude the callup (and back-fill his slot via makushita) and makuuchi
+  // can append the cross-division bout.
+  const crossover = planJuryoCallupForMakuuchi(args.world, args.basho, args.day);
+  const crossBout: MatchSchedule | undefined = crossover
+    ? {
+        boutId: `b-${args.world.year}-${args.basho.bashoName}-d${args.day}-${crossover.makuuchiId}-${crossover.juryoId}`,
+        day: args.day,
+        eastRikishiId: crossover.makuuchiId,
+        westRikishiId: crossover.juryoId,
+        crossDivisionCallupId: crossover.juryoId,
+      }
+    : undefined;
+
   const builder = createImpactBuilder("scheduleAllDivisionsDay");
   const out: MatchSchedule[] = [];
   for (const div of divisions) {
@@ -195,6 +278,13 @@ export function scheduleAllDivisionsDay(args: {
       division: div,
       day: args.day,
       seed: args.seed,
+      excludeIds:
+        crossover && div === "juryo"
+          ? new Set([crossover.juryoId])
+          : crossover && div === "makuuchi"
+            ? new Set([crossover.makuuchiId])
+            : undefined,
+      extraBouts: crossBout && div === "makuuchi" ? [crossBout] : undefined,
     });
     out.push(...scheduled);
     builder.merge(impact);
@@ -224,7 +314,7 @@ export function scheduleAllDivisionsDay(args: {
 export function scheduleJuryoWithCrossover(
   world: WorldState,
   basho: BashoState,
-  options: { seed: string; day?: number }
+  options: { seed: string; day?: number; excludeIds?: ReadonlySet<string> }
 ): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const builder = createImpactBuilder("scheduleJuryoWithCrossover");
   const division = "juryo";
@@ -235,7 +325,11 @@ export function scheduleJuryoWithCrossover(
     return { scheduled: [], impact: builder.build() };
   }
 
-  let pool = activeDivisionRoster(world, division);
+  // excludeIds: the makuuchi-callup rikishi is withheld here — his vacated
+  // slot then counts toward oddSlots and back-fills via makushita (W-B).
+  let pool = activeDivisionRoster(world, division).filter(
+    (r) => !options.excludeIds?.has(r.id)
+  );
   const expectedSize = getDivisionExpectedSize(division);
   const actualSize = pool.length;
 

@@ -42,7 +42,10 @@ export default function SchedulePage() {
     return currentBasho.matches.filter((m) => {
       if (m.day !== selectedDay) return false;
       const eastRikishi = getRikishi(world, m.eastRikishiId);
-      return eastRikishi?.division === selectedDivision;
+      const westRikishi = getRikishi(world, m.westRikishiId);
+      // Either side — a cross-division bout (juryo call-up) belongs on both
+      // divisions' schedules.
+      return eastRikishi?.division === selectedDivision || westRikishi?.division === selectedDivision;
     });
   }, [currentBasho, selectedDay, selectedDivision, world]);
 

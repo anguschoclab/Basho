@@ -239,6 +239,12 @@ export interface BoutResult {
   };
   /** Whether the bout ended via timeout (max ticks reached). */
   isTimeout: boolean;
+  /**
+   * Cross-division call-up: id of the rikishi fighting up from the division
+   * below (e.g. a juryo rikishi called into an odd makuuchi card). Copied
+   * from the MatchSchedule during enrichment for narrative/UI.
+   */
+  crossDivisionCallupId?: Id;
 }
 
 /**
@@ -263,6 +269,12 @@ export interface MatchSchedule {
   result?: BoutResult | null;
   /** Optional drama context for narrative enhancement (e.g., 7-7 showdown, yusho decider). */
   dramaticContext?: DramaContext;
+  /**
+   * Cross-division call-up bout (e.g. odd makuuchi card → top juryo rikishi
+   * fights up). Holds the called-up rikishi's id; his result still counts
+   * toward his own division's record.
+   */
+  crossDivisionCallupId?: Id;
 }
 
 /**
