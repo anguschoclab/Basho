@@ -215,6 +215,9 @@ export interface RikishiCareerDataDTO {
   consecutiveKachiKoshi?: number;
   consecutiveBashoFought?: number;
   firstFromOriginThisBasho?: boolean;
+  siblingIds?: string[];
+  schoolOrigin?: string;
+  practicePartners?: string[];
   weightJourney?: {
     targetKg: number;
     progressKg: number;
@@ -328,6 +331,9 @@ export interface UIRosterEntry {
   consecutiveKachiKoshi?: number;
   consecutiveBashoFought?: number;
   firstFromOriginThisBasho?: boolean;
+  siblingIds?: string[];
+  schoolOrigin?: string;
+  practicePartners?: string[];
   councilWarnings: number;
   streakLabel: string;
   winPercentage: number;

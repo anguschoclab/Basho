@@ -9,6 +9,7 @@ import { getHeya } from "@/engine/core/queries";
 import { assessMaezumo } from "@/engine/generation/MaezumoService";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { candidateConsumesForeignSlot } from "@/engine/generation/talentPoolReads";
+import { mintFamilyBonds } from "@/engine/generation/FamilyBondService";
 
 /**
  * Internal helper for materialization that tracks state updates during a loop.
@@ -48,6 +49,8 @@ export function materializeCandidateToRikishiInternal(
     if (maezumoResult.maezumoCompleted) {
       rikishi.maezumoCompleted = true;
     }
+
+    mintFamilyBonds(world, builder, rikishi, candidate, heyaId, rng);
 
     builder.addRikishi(rikishi);
     newRikishiId = rikishi.id;

@@ -40,5 +40,8 @@ export function toCareerDataDTO(r: Rikishi, world: WorldState): RikishiCareerDat
     weightJourney: r.weightJourney,
     oversleptBasho: r.oversleptBasho ?? null,
     wasDemotedFromOzeki: r.wasDemotedFromOzeki ?? false,
+    siblingIds: r.siblingIds,
+    schoolOrigin: r.schoolOrigin,
+    practicePartners: r.practicePartners,
   };
 }

@@ -541,5 +541,15 @@
     "%SHIKONA% has won every bout this basho by %KIMARITE% — the same finish every time.",
     "Every one of %SHIKONA%'s wins has come by %KIMARITE%. Will anyone force a different ending?",
     "Predictable but unstoppable: %SHIKONA% keeps winning by %KIMARITE%."
+  ],
+  "schoolmates": [
+    "A school reunion on the dohyo — both men are %SCHOOL% products.",
+    "%SCHOOL% alumni collide: %EAST% and %WEST% trained under the same program.",
+    "Former %SCHOOL% teammates now trade techniques in opposing colors."
+  ],
+  "practice_partners": [
+    "These two know each other's habits — regular keiko partners from training.",
+    "%EAST% and %WEST% have shared the practice dohyo many times — no secrets here.",
+    "Old sparring partners meet for real this time."
   ]
 }

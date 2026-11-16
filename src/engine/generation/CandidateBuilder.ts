@@ -381,6 +381,7 @@ export function convertCandidateToRikishi(args: {
     heyaId,
     nationality: candidate.nationality,
     origin: candidate.originRegion,
+    schoolOrigin: candidate.schoolOrigin,
     talentSeed: candidate.talentSeed,
     // Identity continuity: the scout-card face carries over unchanged.
     // The candidate's identity is seeded by personId — which becomes this

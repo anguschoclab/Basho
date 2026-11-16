@@ -188,6 +188,10 @@ export function scorePairing(args: {
 
   if (a.id === b.id) return null;
 
+  // W H — siblings (kyodai) never meet on the dohyo. Hard reject in every
+  // path, including allowRepeatOverride fallbacks, like the same-id check.
+  if (a.siblingIds?.includes(b.id) || b.siblingIds?.includes(a.id)) return null;
+
   if (rules.avoidSameHeya && a.heyaId && b.heyaId && a.heyaId === b.heyaId) return null;
 
   let faced: boolean;

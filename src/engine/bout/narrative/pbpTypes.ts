@@ -96,7 +96,9 @@ export type PbpTag =
   | "deep_grip"
   | "shallow_grip"
   | "one_kimarite"
-  | "grip_preview";
+  | "grip_preview"
+  | "schoolmates"
+  | "practice_partners";
 
 export type PbpLine = {
   text: string;

@@ -50,6 +50,8 @@ import {
   TEMPERAMENT_MAX,
   AMATEUR_STAR_TAG_CHANCE,
   JAPANESE_PREFECTURES_COUNT,
+  SCHOOL_ORIGIN_CHANCE,
+  SUMO_SCHOOLS,
 } from "@/constants/engine/generation";
 import { DUAL_CITIZEN_RECRUIT_SHARE } from "@/constants/engine/recruitment";
 
@@ -187,6 +189,8 @@ export function generateCandidate(args: {
   // yields the documented 80% tag rate; `> CHANCE` yielded ~20% (S7-42).
   const amateurStarTag = !isEmergentProdigy && rng.next() < AMATEUR_STAR_TAG_CHANCE;
 
+  const schoolOrigin = rollSchoolOrigin(poolType, rng);
+
   return {
     candidateId: id,
     personId,
@@ -200,6 +204,7 @@ export function generateCandidate(args: {
           poolType === "university" ? UNIVERSITY_BIRTH_YEAR_RANGE : OTHER_BIRTH_YEAR_RANGE
         )),
     originRegion: origin,
+    schoolOrigin,
 
     visibilityBand: "hidden",
     availabilityState: "available",
@@ -245,4 +250,16 @@ export function generateCandidate(args: {
     scoutingBias: generateScoutingBias(id, currentYear),
     avatarConfig: generateAvatarIdentity({ seed: personId, nationality, role: "prospect" }),
   };
+}
+
+/** W H — domestic school programs: amateur recruits can carry a named
+ * school that later produces schoolmate narrative + keiko links. */
+function rollSchoolOrigin(poolType: TalentPoolType, rng: SeededRNG): string | undefined {
+  if (
+    (poolType === "high_school" || poolType === "university") &&
+    rng.next() < SCHOOL_ORIGIN_CHANCE
+  ) {
+    return seededPick(rng, SUMO_SCHOOLS);
+  }
+  return undefined;
 }

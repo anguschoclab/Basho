@@ -80,6 +80,8 @@ export interface TalentCandidate {
   birthYear: number;
   /** Region of origin. */
   originRegion: string;
+  /** Amateur school program the candidate comes from (high school / university pools). */
+  schoolOrigin?: string;
   /** Nationality. */
   nationality: string;
   /**

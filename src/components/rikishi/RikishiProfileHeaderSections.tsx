@@ -187,6 +187,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
           </div>
         </div>
       )}
+      <FamilyBondIndicators rikishi={rikishi} />
       {rikishi.wasDemotedFromOzeki && rikishi.rank === "sekiwake" && (
         <div className="pt-2">
           <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
@@ -434,5 +435,33 @@ export function CareerStatsColumn({ rikishi }: { rikishi: UIRikishi }) {
         </React.Fragment>
       ))}
     </div>
+  );
+}
+
+function FamilyBondIndicators({ rikishi }: { rikishi: UIRikishi }) {
+  const siblingCount = rikishi.siblingIds?.length ?? 0;
+  return (
+    <>
+      {siblingCount > 0 && (
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+            <span className="text-primary flex items-center gap-1">Kyodai</span>
+            <span className="opacity-70">
+              {siblingCount === 1
+                ? "Has a brother on the banzuke"
+                : `${siblingCount} brothers on the banzuke`}
+            </span>
+          </div>
+        </div>
+      )}
+      {rikishi.schoolOrigin && (
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+            <span className="text-primary flex items-center gap-1">School</span>
+            <span className="opacity-70">{rikishi.schoolOrigin}</span>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

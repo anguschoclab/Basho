@@ -790,3 +790,48 @@ export const MAEZUMO_RANK_MIN = 1;
 
 /** Maximum rank number after maezumo placement */
 export const MAEZUMO_RANK_MAX = 50;
+
+// ─────────────────────────────────────────
+// Family / school / practice bonds (W H)
+// ─────────────────────────────────────────
+
+/** Amateur sumo programs recruits can come from */
+export const SUMO_SCHOOLS: readonly string[] = [
+  "Saitama Sakae",
+  "Tottori Johoku",
+  "Nippon Sport Science University",
+  "Toyo University",
+  "Nihon University",
+  "Kindai University",
+  "Meitoku Gijuku",
+  "Niijima Gakuen",
+];
+
+/** Chance a domestic pool candidate (high school / university) carries a named school */
+export const SCHOOL_ORIGIN_CHANCE = 0.35;
+
+/** Chance an intake also mints a sibling rikishi */
+export const SIBLING_CHANCE = 0.04;
+
+/** Maximum birth-year gap between siblings */
+export const SIBLING_MAX_AGE_GAP = 4;
+
+/** Per-candidate chance a same-school rikishi in another heya becomes a keiko partner */
+export const PRACTICE_PARTNER_CHANCE = 0.2;
+
+/** Max keiko partners linked at materialization */
+export const PRACTICE_PARTNER_MAX = 2;
+
+/** Common family names for generated realName values */
+export const JAPANESE_FAMILY_NAMES: readonly string[] = [
+  "Sato", "Suzuki", "Takahashi", "Tanaka", "Watanabe",
+  "Yamamoto", "Nakamura", "Kobayashi", "Kato", "Yoshida",
+  "Yamada", "Sasaki", "Yamaguchi", "Saito", "Matsumoto",
+];
+
+/** Common given names for generated realName values */
+export const JAPANESE_GIVEN_NAMES: readonly string[] = [
+  "Haruto", "Yuto", "Sota", "Kaito", "Ren",
+  "Daiki", "Shota", "Kosei", "Ryota", "Kazuki",
+  "Taiga", "Hayato", "Koki", "Sho", "Takumi",
+];

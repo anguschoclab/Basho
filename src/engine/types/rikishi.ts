@@ -98,6 +98,13 @@ export interface Rikishi {
   /** Year of professional debut (jonokuchi entry). Backfilled at load if absent. */
   debutYear?: number;
 
+  /** Sibling rikishi ids (kyodai). Siblings never meet on the dohyo. */
+  siblingIds?: Id[];
+  /** Amateur school the rikishi came from (high school / university sumo program). */
+  schoolOrigin?: string;
+  /** Cross-heya keiko partners (degeiko / amateur-days practice). */
+  practicePartners?: Id[];
+
   height: number;
   weight: number;
 

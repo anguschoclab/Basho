@@ -542,6 +542,43 @@ function beatOneKimariteStreak(p: PbpPipeline): void {
   }
 }
 
+function beatBonds(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W H: school + keiko bonds. Siblings never pair (matchmaking rejects).
+  if (
+    east.schoolOrigin &&
+    east.schoolOrigin === west.schoolOrigin &&
+    east.heyaId !== west.heyaId
+  ) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.schoolmates", {
+        SCHOOL: east.schoolOrigin,
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["schoolmates"]
+    );
+  }
+  if (
+    east.practicePartners?.includes(west.id) ||
+    west.practicePartners?.includes(east.id)
+  ) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.practice_partners", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["practice_partners"]
+    );
+  }
+}
+
 export function narrateStakes(p: PbpPipeline): void {
   beatHometown(p);
   beatIronMan(p);
@@ -550,6 +587,7 @@ export function narrateStakes(p: PbpPipeline): void {
   beatOriginFirst(p);
   beatGripPreview(p);
   beatOneKimariteStreak(p);
+  beatBonds(p);
   beatBirthday(p);
   beatWinlessFirstWin(p);
   beatTournamentDay(p);
