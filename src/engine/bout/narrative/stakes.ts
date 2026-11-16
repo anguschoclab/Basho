@@ -17,6 +17,7 @@ import { NAKABI_DAY } from "@/engine/basho/NakabiService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
 import { isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 
 function beatHometown(p: PbpPipeline): void {
   const { bashoInfo, east, preBoutRng, push, west } = p;
@@ -491,12 +492,64 @@ function beatOriginFirst(p: PbpPipeline): void {
   }
 }
 
+function beatGripPreview(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W G: broadcast note on a rikishi's preferred grip heading into the bout.
+  const GRIP_LABELS: Record<string, string> = {
+    migi: "right-inside",
+    hidari: "left-inside",
+  };
+  for (const r of [east, west]) {
+    const pref = r.combatProfile?.preferredGrip;
+    if (pref && pref !== "none") {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.grip_preview", {
+          SHIKONA: r.shikona,
+          GRIP_LABEL: GRIP_LABELS[pref],
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["grip_preview"]
+      );
+      break; // one preview per bout
+    }
+  }
+}
+
+function beatOneKimariteStreak(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west, world } = p;
+  // W G: every win this basho by the same kimarite (≥3 wins).
+  const metrics = world?.currentBasho?.boutMetrics;
+  if (!metrics) return;
+  for (const r of [east, west]) {
+    const used = metrics[r.id]?.kimariteUsed;
+    if (!used) continue;
+    const entries = Object.entries(used).filter(([, count]) => (count ?? 0) > 0);
+    const wins = entries.reduce((acc, [, count]) => acc + (count ?? 0), 0);
+    if (entries.length === 1 && wins >= 3) {
+      const kimariteId = entries[0][0];
+      const kimariteName = getKimarite(kimariteId)?.name ?? kimariteId;
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.one_kimarite_streak", {
+          SHIKONA: r.shikona,
+          KIMARITE: kimariteName,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["one_kimarite", "streak"]
+      );
+    }
+  }
+}
+
 export function narrateStakes(p: PbpPipeline): void {
   beatHometown(p);
   beatIronMan(p);
   beatOldestDivision(p);
   beatMakuuchiBoutMilestone(p);
   beatOriginFirst(p);
+  beatGripPreview(p);
+  beatOneKimariteStreak(p);
   beatBirthday(p);
   beatWinlessFirstWin(p);
   beatTournamentDay(p);

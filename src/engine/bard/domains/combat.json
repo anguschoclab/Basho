@@ -139,6 +139,10 @@
         "A moment of pure drama at the rope! %NAME% hangs in the balance!",
         "The tawara groans under %NAME%'s desperate resistance!",
         "Inches from defeat! %NAME% clings to the edge of existence!"
+      ],
+      "crab_walk": [
+        "%NAME% scuttles sideways along the rope — the crab walk!",
+        "Crab-walking on the tawara! %NAME% refuses to go straight back!"
       ]
     },
     "fatigue": {
@@ -217,10 +221,52 @@
         "The uwate slips away from %NAME% — back to neutral positioning.",
         "%NAME%'s grip on the mawashi loosens — the advantage is gone."
       ],
+      "favorite_grip": [
+        "%NAME% gets to his favorite grip — this is where he wins!",
+        "There's the grip %NAME% wants — his best position!"
+      ],
+      "makikae": [
+        "Makikae! %NAME% switches one hand from outside to inside!",
+        "%NAME% changes his grip mid-fight — one hand inside now!"
+      ],
+      "grip_denied": [
+        "%NAME% controls the mawashi — %OPP% has nothing!",
+        "%OPP% is denied any grip as %NAME% takes the inside!"
+      ],
+      "deep_grip": [
+        "%NAME% digs deeper on the mawashi — chest to chest now!",
+        "Deep grip! %NAME% buries his hands tight on the belt!"
+      ],
+      "shallow_grip": [
+        "%NAME%'s grip goes shallow — fingertips on the belt!",
+        "The grip slips loose — %NAME% barely hanging on!"
+      ],
       "depth_change": [
         "%NAME% deepens his grip on the mawashi — more leverage, more control.",
         "The belt grip tightens for %NAME% — he's sinking deeper into position.",
         "%NAME% adjusts his grip — a subtle but important shift in the belt battle."
+      ]
+    },
+    "technique": {
+      "nodowa": [
+        "A nodowa thrust from %NAME% — straight to the throat!",
+        "%NAME% jams a hand into the throat — the nodowa!"
+      ],
+      "hazuoshi": [
+        "Hazuoshi! %NAME% pins the arm and squeezes!",
+        "%NAME% clamps down on the upper arm — hazuoshi pressure!"
+      ],
+      "zotsu": [
+        "A zotsu attack — %NAME% goes for the rib cage!",
+        "%NAME% digs at the ribs — the zotsu!"
+      ],
+      "kachiage": [
+        "Kachiage! %NAME% slams upward with the forearm at the charge!",
+        "%NAME% rises into the charge with a forearm smash — kachiage!"
+      ],
+      "kaina_hineri": [
+        "Kaina hineri! %NAME% twists the inside arm for leverage!",
+        "%NAME% wrenches the arm over — the kaina hineri!"
       ]
     },
     "bout_timeout": {

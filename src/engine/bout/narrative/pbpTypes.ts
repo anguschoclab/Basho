@@ -89,7 +89,14 @@ export type PbpTag =
   | "iron_man"
   | "oldest_division"
   | "makuuchi_milestone"
-  | "origin_first";
+  | "origin_first"
+  | "favorite_grip"
+  | "makikae"
+  | "grip_denied"
+  | "deep_grip"
+  | "shallow_grip"
+  | "one_kimarite"
+  | "grip_preview";
 
 export type PbpLine = {
   text: string;

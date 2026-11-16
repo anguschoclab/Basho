@@ -3,9 +3,10 @@
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
-import type { PbpPhase } from "@/engine/bout/narrative/pbpTypes";
+import type { PbpPhase, PbpTag } from "@/engine/bout/narrative/pbpTypes";
 import {
   NARRATIVE_DEPTH_CHANGE_CHANCE,
+  NARRATIVE_TECHNIQUE_CHANCE,
   NARRATIVE_LOW_RECOVERY_THRESHOLD,
   NARRATIVE_STAMINA_CHANCE,
   NARRATIVE_TAWARA_TOE_THRESHOLD,
@@ -13,6 +14,7 @@ import {
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/core/rng";
 import type { BoutLogEntry } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
 import type { Stance } from "@/engine/types/combat";
 
 import type { SeededRNG } from "@/engine/core/rng";
@@ -153,7 +155,37 @@ function handleEngagementFrame(
       });
       push(tacRes.text, "tactical");
     }
+
+    emitTechniqueCallout(s, family, attacker, tickSeed);
   }
+}
+
+/** W G — rare technique call-outs keyed on the engagement family. */
+function emitTechniqueCallout(
+  s: FrameState,
+  family: string,
+  attacker: Rikishi,
+  tickSeed: string
+): void {
+  const { push } = s.p;
+  const techRng = rngFromSeed(tickSeed, "pbp", "technique");
+  if (techRng.next() >= NARRATIVE_TECHNIQUE_CHANCE) return;
+  const techPath =
+    family === "belt"
+      ? techRng.next() < 0.5
+        ? "combat.phases.technique.hazuoshi"
+        : "combat.phases.technique.nodowa"
+      : family === "speed"
+        ? "combat.phases.technique.zotsu"
+        : family === "trick"
+          ? "combat.phases.technique.kaina_hineri"
+          : null;
+  if (!techPath) return;
+  const techRes = BardEngine.resolve(techRng, techPath, {
+    NAME: attacker.shikona,
+    nameId: attacker.id,
+  });
+  push(techRes.text, "engagement");
 }
 
 function handleTachiaiFrame(s: FrameState, entry: BoutLogEntry, rng: SeededRNG): void {
@@ -187,6 +219,14 @@ function handleTachiaiFrame(s: FrameState, entry: BoutLogEntry, rng: SeededRNG):
         loserId: loserSide.id,
       });
       push(res.text, "tachiai");
+      // W G — rare kachiage call-out on a decisive charge
+      if (rng.next() < NARRATIVE_TECHNIQUE_CHANCE && margin > 10) {
+        const kaRes = BardEngine.resolve(rng, "combat.phases.technique.kachiage", {
+          NAME: winnerSide.shikona,
+          nameId: winnerSide.id,
+        });
+        push(kaRes.text, "tachiai");
+      }
     }
   }
 }
@@ -323,41 +363,94 @@ function handleGripTransitionFrame(s: FrameState, entry: BoutLogEntry, rng: Seed
       eastGripTo?: string;
       westGripFrom?: string;
       westGripTo?: string;
+      eastRightInside?: boolean;
+      eastLeftInside?: boolean;
+      westRightInside?: boolean;
+      westLeftInside?: boolean;
+      eastDepthFrom?: string;
+      eastDepthTo?: string;
+      westDepthFrom?: string;
+      westDepthTo?: string;
     };
     if (gripData.type === "grip_class_shift") {
       // Determine which side had the notable transition
       const eastChanged = gripData.eastGripFrom !== gripData.eastGripTo;
       const side = eastChanged ? "east" : "west";
       const r = side === "east" ? east : west;
+      const opp = side === "east" ? west : east;
       const from = side === "east" ? gripData.eastGripFrom : gripData.westGripFrom;
       const to = side === "east" ? gripData.eastGripTo : gripData.westGripTo;
+      const oppTo = side === "east" ? gripData.westGripTo : gripData.eastGripTo;
+      const rightInside =
+        side === "east" ? gripData.eastRightInside : gripData.westRightInside;
+      const leftInside =
+        side === "east" ? gripData.eastLeftInside : gripData.westLeftInside;
+
+      const gainedInside = to === "shitate" || to === "morozashi";
+      const wasOutside = from === "uwate" || from === "outside";
+      const pref = r.combatProfile?.preferredGrip;
+      const matchedPreferred =
+        gainedInside &&
+        ((pref === "migi" && rightInside === true) ||
+          (pref === "hidari" && leftInside === true));
+      const denied = gainedInside && (oppTo === "none" || oppTo === "outside");
 
       let gripPath: string | null = null;
-      if (to === "morozashi") gripPath = "combat.phases.grip_transition.morozashi_gained";
+      let gripTag: PbpTag | undefined;
+      if (matchedPreferred) {
+        gripPath = "combat.phases.grip_transition.favorite_grip";
+        gripTag = "favorite_grip";
+      } else if (wasOutside && gainedInside) {
+        gripPath = "combat.phases.grip_transition.makikae";
+        gripTag = "makikae";
+      } else if (to === "morozashi") gripPath = "combat.phases.grip_transition.morozashi_gained";
       else if (from === "morozashi" && to !== "morozashi")
         gripPath = "combat.phases.grip_transition.morozashi_lost";
       else if (to === "uwate") gripPath = "combat.phases.grip_transition.uwate_gained";
       else if (from === "uwate" && to !== "uwate" && to !== "morozashi")
         gripPath = "combat.phases.grip_transition.uwate_lost";
+      else if (denied) {
+        gripPath = "combat.phases.grip_transition.grip_denied";
+        gripTag = "grip_denied";
+      }
 
       if (gripPath) {
         push(
           BardEngine.resolve(rng, gripPath, {
             NAME: r.shikona,
             rikishiId: r.id,
+            OPP: opp.shikona,
+            oppId: opp.id,
           }).text,
-          "grip_transition" as PbpPhase
+          "grip_transition" as PbpPhase,
+          gripTag ? [gripTag] : undefined
         );
       }
     } else if (gripData.type === "depth_change") {
       // Only narrate depth changes occasionally to avoid spam
       if (rng.next() < NARRATIVE_DEPTH_CHANGE_CHANCE) {
+        const eastMoved = gripData.eastDepthFrom !== gripData.eastDepthTo;
+        const r = eastMoved ? east : west;
+        const to = eastMoved ? gripData.eastDepthTo : gripData.westDepthTo;
+        const depthPath =
+          to === "deep" || to === "maemitsu"
+            ? "combat.phases.grip_transition.deep_grip"
+            : to === "shallow"
+              ? "combat.phases.grip_transition.shallow_grip"
+              : "combat.phases.grip_transition.depth_change";
+        const depthTag =
+          to === "deep" || to === "maemitsu"
+            ? ("deep_grip" as PbpTag)
+            : to === "shallow"
+              ? ("shallow_grip" as PbpTag)
+              : undefined;
         push(
-          BardEngine.resolve(rng, "combat.phases.grip_transition.depth_change", {
-            NAME: east.shikona,
-            rikishiId: east.id,
+          BardEngine.resolve(rng, depthPath, {
+            NAME: r.shikona,
+            rikishiId: r.id,
           }).text,
-          "grip_transition" as PbpPhase
+          "grip_transition" as PbpPhase,
+          depthTag ? [depthTag] : undefined
         );
       }
     }
@@ -468,13 +561,28 @@ function handleEdgeCrisisFrame(s: FrameState, entry: BoutLogEntry, rng: SeededRN
         "edge_crisis"
       );
     } else {
-      push(
-        BardEngine.resolve(rng, "combat.phases.edge_crisis.approach", {
-          NAME: sideName,
-          nameId: sideId,
-        }).text,
-        "edge_crisis"
-      );
+      const sideR = crisisData.side === "east" ? east : west;
+      // W G — defensive archetypes crab-walk along the rope
+      if (
+        sideR.combatProfile?.archetype === "defensive" &&
+        rng.next() < NARRATIVE_TECHNIQUE_CHANCE
+      ) {
+        push(
+          BardEngine.resolve(rng, "combat.phases.edge_crisis.crab_walk", {
+            NAME: sideName,
+            nameId: sideId,
+          }).text,
+          "edge_crisis"
+        );
+      } else {
+        push(
+          BardEngine.resolve(rng, "combat.phases.edge_crisis.approach", {
+            NAME: sideName,
+            nameId: sideId,
+          }).text,
+          "edge_crisis"
+        );
+      }
     }
   }
 }

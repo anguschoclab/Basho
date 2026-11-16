@@ -531,5 +531,15 @@
     "%SHIKONA% carries the hopes of %ORIGIN% — the first from his home to reach this level.",
     "A pioneer on the dohyo: no rikishi from %ORIGIN% had ever come this far before %SHIKONA%.",
     "The flags of %ORIGIN% are out — %SHIKONA% is the first of his home to stand here."
+  ],
+  "grip_preview": [
+    "Watch the belt battle — %SHIKONA% wants the %GRIP_LABEL% grip.",
+    "%SHIKONA%'s route to victory runs through the %GRIP_LABEL% position.",
+    "The key today: can %SHIKONA% secure the %GRIP_LABEL% mawashi hold?"
+  ],
+  "one_kimarite_streak": [
+    "%SHIKONA% has won every bout this basho by %KIMARITE% — the same finish every time.",
+    "Every one of %SHIKONA%'s wins has come by %KIMARITE%. Will anyone force a different ending?",
+    "Predictable but unstoppable: %SHIKONA% keeps winning by %KIMARITE%."
   ]
 }

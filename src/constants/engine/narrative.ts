@@ -150,6 +150,9 @@ export const NARRATIVE_STAMINA_CHANCE = 0.4;
 /** Chance to narrate grip depth changes */
 export const NARRATIVE_DEPTH_CHANGE_CHANCE = 0.3;
 
+/** Chance to narrate rare technique call-outs (nodowa, hazuoshi, zotsu, kachiage, kaina hineri, crab walk) */
+export const NARRATIVE_TECHNIQUE_CHANCE = 0.15;
+
 /** Recovery probability threshold for low-recovery edge crisis narration */
 export const NARRATIVE_LOW_RECOVERY_THRESHOLD = 0.2;
 
