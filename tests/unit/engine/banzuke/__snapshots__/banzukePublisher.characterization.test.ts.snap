@@ -857,7 +857,6 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
         "junYusho": [],
         "prizes": {
           "yushoAmount": 10000000,
-          "junYushoAmount": 0,
           "specialPrizes": 0
         },
         "nextBanzuke": {
@@ -1915,7 +1914,6 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
         "junYusho": [],
         "prizes": {
           "yushoAmount": 10000000,
-          "junYushoAmount": 0,
           "specialPrizes": 0
         },
         "nextBanzuke": {
@@ -2973,7 +2971,6 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
         "junYusho": [],
         "prizes": {
           "yushoAmount": 10000000,
-          "junYushoAmount": 0,
           "specialPrizes": 0
         },
         "nextBanzuke": {

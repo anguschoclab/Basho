@@ -4,11 +4,10 @@
  * Manages the mochikyukin (cumulative bonus) system for sekitori.
  *
  * Mochikyukin is a JSA incentive system where sekitori earn points for:
- * - Per kachi-nokori (wins above 8): 0.5 points
+ * - Net wins (wins − losses, floored at 0): 0.5 points each
  * - Yusho (championship): 30 points
- * - Zensho-yusho (perfect championship): +50 points
+ * - Zensho-yusho (perfect championship): 50 points — replaces the yusho award
  * - Kinboshi (v Yokozuna): 10 points
- * - Jun-yusho (runner-up): 5 points
  *
  * Points accumulate throughout a sekitori's career and are paid out
  * 6 times per year (every 2 months) at ¥4,000 per point.
@@ -21,15 +20,13 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { Id } from "@/engine/types/common";
 import {
   MOCHIKYUKIN_POINT_VALUE,
-  MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT,
+  MOCHIKYUKIN_POINTS_PER_KACHIKOSHI_STAR,
   MOCHIKYUKIN_POINTS_YUSHO,
   MOCHIKYUKIN_POINTS_KINBOSHI,
-  MOCHIKYUKIN_POINTS_JUN_YUSHO,
   MOCHIKYUKIN_POINTS_ZENSHO_YUSHO,
   MOCHIKYUKIN_RANK_FLOORS,
 } from "@/constants/engine/economic";
 import { getRikishi } from "@/engine/core/queries";
-import { kachiNokoriToMochikyukinPoints } from "@/engine/economy/KachiNokoriService";
 
 /**
  * Accumulate mochikyukin points for a rikishi based on basho results.
@@ -40,9 +37,7 @@ export function accumulateMochikyukinPoints(
   rikishiId: Id,
   bashoResults: {
     netWins: number;
-    kachiNokori: number;
     isYusho: boolean;
-    isJunYusho: boolean;
     isZenshoYusho: boolean;
     kinboshiEarned: number;
   }
@@ -68,27 +63,14 @@ export function accumulateMochikyukinPoints(
 
   let pointsEarned = 0;
 
-  // Per kachi-nokori (wins above 8) — aligned to real JSA system
-  if (bashoResults.kachiNokori > 0) {
-    pointsEarned += kachiNokoriToMochikyukinPoints(
-      bashoResults.kachiNokori,
-      MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT
-    );
-  }
+  // Net-win stars — JSA formula: 0.5 points per win in excess of losses.
+  pointsEarned += Math.max(0, bashoResults.netWins) * MOCHIKYUKIN_POINTS_PER_KACHIKOSHI_STAR;
 
-  // Yusho (championship)
+  // Yusho (championship) — a zensho-yusho replaces the yusho award, not adds to it.
   if (bashoResults.isYusho) {
-    pointsEarned += MOCHIKYUKIN_POINTS_YUSHO;
-  }
-
-  // Zensho-yusho (perfect championship — additional bonus on top of yusho)
-  if (bashoResults.isZenshoYusho) {
-    pointsEarned += MOCHIKYUKIN_POINTS_ZENSHO_YUSHO;
-  }
-
-  // Jun-yusho (runner-up)
-  if (bashoResults.isJunYusho) {
-    pointsEarned += MOCHIKYUKIN_POINTS_JUN_YUSHO;
+    pointsEarned += bashoResults.isZenshoYusho
+      ? MOCHIKYUKIN_POINTS_ZENSHO_YUSHO
+      : MOCHIKYUKIN_POINTS_YUSHO;
   }
 
   // Kinboshi (v Yokozuna) - only count newly earned kinboshi this basho

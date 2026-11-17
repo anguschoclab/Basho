@@ -88,7 +88,7 @@ describe("selectKeyBouts", () => {
       bashoName: "hatsu",
       yusho: "r1",
       junYusho: [],
-      prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+      prizes: { yushoAmount: 0, specialPrizes: 0 },
       keyBouts: [keyBoutEntry],
     };
     world.history = [bashoResult as BashoResult];

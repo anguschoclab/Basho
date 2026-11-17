@@ -3,7 +3,6 @@ import {
   calculateKachiNokori,
   getKachiNokoriForRikishi,
   buildPostBashoPayload,
-  kachiNokoriToMochikyukinPoints,
   KACHI_NOKORI_THRESHOLD,
 } from "@/engine/economy/KachiNokoriService";
 import { mockRikishi } from "@tests/unit/engine/utils";
@@ -98,16 +97,5 @@ describe("buildPostBashoPayload", () => {
     const riki = mockRikishi("r-1", { shikona: "Yokozuna Test" });
     const payload = buildPostBashoPayload(riki, 13, 2);
     expect(payload.shikona).toBe("Yokozuna Test");
-  });
-});
-
-describe("kachiNokoriToMochikyukinPoints", () => {
-  it("converts kachi-nokori to points at given rate", () => {
-    expect(kachiNokoriToMochikyukinPoints(3, 0.5)).toBe(1.5);
-    expect(kachiNokoriToMochikyukinPoints(5, 1.0)).toBe(5);
-  });
-
-  it("returns 0 when kachi-nokori is 0", () => {
-    expect(kachiNokoriToMochikyukinPoints(0, 0.5)).toBe(0);
   });
 });

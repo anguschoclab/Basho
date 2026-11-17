@@ -23,7 +23,7 @@ function makeBashoResult(overrides: Partial<BashoResult> = {}): BashoResult {
     bashoName: "hatsu",
     yusho: "none",
     junYusho: [],
-    prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+    prizes: { yushoAmount: 0, specialPrizes: 0 },
     ...overrides,
   } as BashoResult;
 }

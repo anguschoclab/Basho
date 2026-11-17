@@ -15,7 +15,7 @@ function pushHistoryEntry(world: WorldState, yusho: string = "none") {
     ginoSho: "none" as any,
     shukunsho: "none" as any,
     kantosho: "none" as any,
-    prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+    prizes: { yushoAmount: 0, specialPrizes: 0 },
     id: "1",
   });
 }

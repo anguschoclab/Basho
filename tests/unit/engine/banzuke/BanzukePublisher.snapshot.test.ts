@@ -36,7 +36,7 @@ function makeResultFixture(yusho: string) {
     bashoName: "hatsu",
     yusho,
     junYusho: [],
-    prizes: { yushoAmount: 10_000_000, junYushoAmount: 0, specialPrizes: 0 },
+    prizes: { yushoAmount: 10_000_000, specialPrizes: 0 },
   } as never;
 }
 
@@ -169,7 +169,7 @@ describe("publishBanzukeUpdate — banzuke snapshot persistence", () => {
         bashoName: "kyushu",
         yusho: "r_yoko",
         junYusho: [],
-        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        prizes: { yushoAmount: 0, specialPrizes: 0 },
       } as never,
     ];
 

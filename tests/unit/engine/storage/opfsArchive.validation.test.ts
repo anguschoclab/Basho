@@ -66,7 +66,7 @@ describe("OPFS Archive Validation", () => {
           bashoNumber: 1,
           bashoName: "hatsu",
           yusho: "rikishi-1",
-          prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 },
+          prizes: { yushoAmount: 100, specialPrizes: 20 },
         },
       ];
       const mockFile = {

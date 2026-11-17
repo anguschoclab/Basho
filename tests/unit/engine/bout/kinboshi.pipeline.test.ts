@@ -174,9 +174,9 @@ describe("kinboshi pipeline — basho conclusion", () => {
     const concluded = applyImpact(afterBout, impact);
     const after = concluded.rikishi.get("r-east")!.stats.achievements?.mochikyukinPoints ?? 0;
 
-    // +10 for the kinboshi; the east rikishi's lone win earns no other points
-    // (west takes the yusho in this fixture, so no yusho/kachi-nokori bonus).
-    expect(after - before).toBe(10);
+    // +10 for the kinboshi plus +1.5 net-win stars (east finishes 3 net wins
+    // up in this fixture; JSA awards 0.5 pts per win in excess of losses).
+    expect(after - before).toBe(11.5);
   });
 
   it("pays no separate one-time kinboshi stipend (mochikyukin is the only payout)", () => {

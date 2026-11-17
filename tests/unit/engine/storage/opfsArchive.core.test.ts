@@ -444,7 +444,7 @@ describe("OPFSArchiveService core functionality", () => {
           bashoName: "hatsu" as const,
           yusho: "r1",
           junYusho: [],
-          prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 },
+          prizes: { yushoAmount: 100, specialPrizes: 20 },
         },
       ];
       await service.archiveAwards(2024, awards);
@@ -492,7 +492,7 @@ describe("OPFSArchiveService core functionality", () => {
           bashoName: "hatsu" as const,
           yusho: "r1",
           junYusho: [],
-          prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 },
+          prizes: { yushoAmount: 100, specialPrizes: 20 },
         },
       ];
       const mockFileHandle = {

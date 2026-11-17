@@ -46,7 +46,7 @@ function lastBasho(year = 2026, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6 = 2): BashoRe
     bashoName: "haru",
     yusho: "r1",
     junYusho: [],
-    prizes: { yushoAmount: 10, junYushoAmount: 0, specialPrizes: 0 },
+    prizes: { yushoAmount: 10, specialPrizes: 0 },
   } as BashoResult;
 }
 

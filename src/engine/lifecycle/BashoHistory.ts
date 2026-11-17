@@ -20,7 +20,7 @@ import { YOKOZUNA_SUPPORT_STRONG_MIN } from "@/constants/engine/generation";
 // ─── Prize credits ───────────────────────────────────────────────────────────
 
 /** Credit yusho prize to rikishi economics (JSA model: paid directly to
- *  rikishi). Per-division yusho prizes (2027 JSA revision). Returns the
+ *  rikishi). Per-division yusho prizes at real JSA values. Returns the
  *  resolved yusho prize amount. */
 function creditYushoPrize(world: WorldState, yusho: Id, builder: ImpactBuilder): number {
   const yushoRikishi = getRikishi(world, yusho);
@@ -55,36 +55,6 @@ function creditYushoPrize(world: WorldState, yusho: Id, builder: ImpactBuilder):
   return yushoPrize;
 }
 
-/** Credit jun-yusho prizes to rikishi economics. */
-function creditJunYushoPrizes(world: WorldState, junYushoIds: Id[], builder: ImpactBuilder): void {
-  for (const junYushoId of junYushoIds) {
-    const junRikishi = getRikishi(world, junYushoId);
-    if (junRikishi) {
-      const junEconomics = junRikishi.economics || {
-        cash: 0,
-        retirementFund: 0,
-        careerKenshoWon: 0,
-        kinboshiCount: 0,
-        totalEarnings: 0,
-        currentBashoEarnings: 0,
-        popularity: 50,
-      };
-      // Split jun-yusho: 50% cash, 50% retirement fund
-      const junCash = SIMULATION_CONFIG.prizes.junYusho * 0.5;
-      const junRetirement = SIMULATION_CONFIG.prizes.junYusho * 0.5;
-
-      builder.updateRikishi(junYushoId, {
-        economics: {
-          ...junEconomics,
-          cash: junEconomics.cash + junCash,
-          retirementFund: junEconomics.retirementFund + junRetirement,
-          totalEarnings: junEconomics.totalEarnings + SIMULATION_CONFIG.prizes.junYusho,
-        },
-      });
-    }
-  }
-}
-
 // ─── BashoResult construction ────────────────────────────────────────────────
 
 function buildBashoResult(
@@ -108,7 +78,6 @@ function buildBashoResult(
     playoffMatches,
     prizes: {
       yushoAmount: yushoPrize,
-      junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
       specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
     },
   };
@@ -316,8 +285,8 @@ export function recordBashoHistory(
   const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
 
   const yushoPrize = creditYushoPrize(world, yusho, builder);
+  // Jun-yusho is a label only — the JSA pays no runner-up prize.
   const junYushoIds = topCandidates.filter((id) => id !== yusho);
-  creditJunYushoPrizes(world, junYushoIds, builder);
 
   const result = buildBashoResult(
     rng,

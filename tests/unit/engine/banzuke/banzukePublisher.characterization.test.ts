@@ -33,7 +33,7 @@ function makeResultFixture(yusho: string, extras: Record<string, unknown> = {}) 
     bashoName: "hatsu",
     yusho,
     junYusho: [],
-    prizes: { yushoAmount: 10_000_000, junYushoAmount: 0, specialPrizes: 0 },
+    prizes: { yushoAmount: 10_000_000, specialPrizes: 0 },
     ...extras,
   } as never;
 }

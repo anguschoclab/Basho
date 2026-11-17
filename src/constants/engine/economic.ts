@@ -45,8 +45,11 @@ export const KENSHO_SPLIT = {
 /** Mochikyukin (cumulative bonus) point value (¥ per point). */
 export const MOCHIKYUKIN_POINT_VALUE = 4_000;
 
-/** Mochikyukin points earned per win above the 8th (kachi-nokori basis, matching the JSA formula). */
-export const MOCHIKYUKIN_POINTS_PER_WIN_ABOVE_EIGHT = 0.5;
+/**
+ * Mochikyukin points earned per net-win "star" (wins − losses).
+ * JSA formula: +0.5 points per win in excess of losses, floored at 0.
+ */
+export const MOCHIKYUKIN_POINTS_PER_KACHIKOSHI_STAR = 0.5;
 
 /** Mochikyukin points earned per yusho (championship). */
 export const MOCHIKYUKIN_POINTS_YUSHO = 30;
@@ -54,10 +57,7 @@ export const MOCHIKYUKIN_POINTS_YUSHO = 30;
 /** Mochikyukin points earned per kinboshi (v Yokozuna). */
 export const MOCHIKYUKIN_POINTS_KINBOSHI = 10;
 
-/** Mochikyukin points earned per jun-yusho (runner-up). */
-export const MOCHIKYUKIN_POINTS_JUN_YUSHO = 5;
-
-/** Mochikyukin points earned for a zensho-yusho (perfect championship). */
+/** Mochikyukin points earned for a zensho-yusho (perfect championship — replaces the yusho award, not additive). */
 export const MOCHIKYUKIN_POINTS_ZENSHO_YUSHO = 50;
 
 /**
@@ -66,12 +66,12 @@ export const MOCHIKYUKIN_POINTS_ZENSHO_YUSHO = 50;
  */
 export const MOCHIKYUKIN_INITIAL_POINTS = 3;
 
-/** Mochikyukin rank floors — minimum effective points for payout by rank. */
+/** Mochikyukin rank floors — minimum effective points for payout by rank (JSA). */
 export const MOCHIKYUKIN_RANK_FLOORS: Record<string, number> = {
   yokozuna: 150,
   ozeki: 100,
-  sekiwake: 80,
-  komusubi: 70,
+  sekiwake: 60,
+  komusubi: 60,
   maegashira: 60,
   juryo: 40,
 } as const;

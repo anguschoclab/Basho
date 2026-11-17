@@ -90,7 +90,7 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
         bashoName: "kyushu",
         yusho: "legend_1" as Id,
         junYusho: ["rival_1" as Id],
-        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        prizes: { yushoAmount: 0, specialPrizes: 0 },
         nextBanzuke: {
           year: 2025,
           bashoNumber: 6,

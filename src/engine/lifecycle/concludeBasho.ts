@@ -11,7 +11,6 @@
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { mergeImpacts, resolveImpacts } from "@/engine/core/ImpactResolver";
 import { accumulateMochikyukinPoints } from "@/engine/economy/MochikyukinService";
-import { calculateKachiNokori } from "@/engine/economy/KachiNokoriService";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import {
@@ -136,8 +135,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   const mochikyukinImpact = accumulateAllMochikyukin(
     resolveImpacts(postPrizeWorld, [teateImpact]),
     basho,
-    yusho,
-    topCandidates
+    yusho
   );
 
   // Merge impacts together
@@ -414,8 +412,7 @@ function emitPostBashoPress(
 function accumulateAllMochikyukin(
   world: WorldState,
   basho: BashoState,
-  yusho: Id,
-  topCandidates: Id[]
+  yusho: Id
 ): StateImpact {
   const mochikyukinImpact = createImpactBuilder("mochikyukinAccumulation");
   for (const id of world.activeRikishiIds) {
@@ -426,17 +423,13 @@ function accumulateAllMochikyukin(
     const bashoWins = r.currentBashoWins ?? 0;
     const bashoLosses = r.currentBashoLosses ?? 0;
     const netWins = bashoWins - bashoLosses;
-    const kachiNokori = calculateKachiNokori(bashoWins);
     const isYusho = id === yusho;
-    const isJunYusho = topCandidates.length > 1 && id === topCandidates[1];
     const kinboshiThisBasho = basho.kinboshiThisBasho?.[id] ?? 0;
     const isZenshoYusho = isYusho && bashoLosses === 0;
 
     const impact = accumulateMochikyukinPoints(world, id, {
       netWins,
-      kachiNokori,
       isYusho,
-      isJunYusho,
       isZenshoYusho,
       kinboshiEarned: kinboshiThisBasho,
     });

@@ -428,7 +428,6 @@ export interface BashoResult {
 
   prizes: {
     yushoAmount: number;
-    junYushoAmount: number;
     specialPrizes: number;
   };
 

@@ -288,8 +288,7 @@ function publishBanzukeForSim(
         shukunsho: bashoResult.shukunsho,
         kantosho: bashoResult.kantosho,
         prizes: {
-          yushoAmount: SIMULATION_CONFIG.prizes.yusho,
-          junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+          yushoAmount: SIMULATION_CONFIG.prizes.yushoByDivision.makuuchi,
           specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
         },
       },

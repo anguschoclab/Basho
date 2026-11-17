@@ -19,7 +19,6 @@ export type HistoryRecord = {
   shukunsho?: string | null;
   prizes?: {
     yushoAmount?: number;
-    junYushoAmount?: number;
     specialPrizes?: number;
   } | null;
 };

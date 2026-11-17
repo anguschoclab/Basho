@@ -38,7 +38,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: SIMULATION_CONFIG.prizes.yusho,
-              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              
               specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
@@ -86,7 +86,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: SIMULATION_CONFIG.prizes.yusho,
-              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              
               specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
@@ -134,7 +134,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: SIMULATION_CONFIG.prizes.yusho,
-              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              
               specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
@@ -180,7 +180,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: SIMULATION_CONFIG.prizes.yusho,
-              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              
               specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
@@ -226,7 +226,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: SIMULATION_CONFIG.prizes.yusho,
-              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              
               specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
@@ -273,7 +273,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: SIMULATION_CONFIG.prizes.yusho,
-              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              
               specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },

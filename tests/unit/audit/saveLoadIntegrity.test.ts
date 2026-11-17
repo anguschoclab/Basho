@@ -265,7 +265,7 @@ describe("L4.9: save/load integrity — unbounded growth", () => {
         bashoName: "hatsu",
         yusho: "r1",
         junYusho: [],
-        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        prizes: { yushoAmount: 0, specialPrizes: 0 },
       } as BashoResult);
     }
 
@@ -286,7 +286,7 @@ describe("L4.9: save/load integrity — unbounded growth", () => {
         bashoName: "hatsu",
         yusho: "r1",
         junYusho: [],
-        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        prizes: { yushoAmount: 0, specialPrizes: 0 },
       } as BashoResult);
     }
 
@@ -308,7 +308,7 @@ describe("L4.9: save/load integrity — unbounded growth", () => {
         bashoName: "hatsu",
         yusho: "r1",
         junYusho: [],
-        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        prizes: { yushoAmount: 0, specialPrizes: 0 },
       } as BashoResult);
     }
 

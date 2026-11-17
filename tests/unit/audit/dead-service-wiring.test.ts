@@ -48,18 +48,19 @@ describe("GomenfudaService — health phase wiring", () => {
   });
 });
 
-// ─── KachiNokoriService → CompetitionService.ts + phase05_monthly_boundary ───
+// ─── KachiNokoriService → phase05_monthly_boundary + recap presenter ───
 
-describe("KachiNokoriService — CompetitionService wiring", () => {
-  it("calculateKachiNokori is imported and called by CompetitionService", () => {
-    const file = readSrcFile("engine/lifecycle/concludeBasho.ts");
-    expect(file).toContain("calculateKachiNokori");
-    expect(file).toMatch(/calculateKachiNokori\s*\(/);
+describe("KachiNokoriService — display-stat wiring", () => {
+  it("getKachiNokoriForRikishi is imported and called by phase05_monthly_boundary", () => {
+    const file = readSrcFile("engine/tick/phases/phase05_monthly_boundary.ts");
+    expect(file).toContain("getKachiNokoriForRikishi");
+    expect(file).toMatch(/getKachiNokoriForRikishi\s*\(/);
   });
 
   it("KachiNokoriService is imported from the correct path", () => {
-    const file = readSrcFile("engine/lifecycle/concludeBasho.ts");
-    expect(file).toMatch(/from\s+["'].*KachiNokoriService["']/);
+    const phase = readSrcFile("engine/tick/phases/phase05_monthly_boundary.ts");
+    const presenter = readSrcFile("presenters/projections/recapKachiNokoriProjections.ts");
+    expect(phase + presenter).toMatch(/from\s+["'].*KachiNokoriService["']/);
   });
 });
 

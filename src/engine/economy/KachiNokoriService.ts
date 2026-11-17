@@ -3,12 +3,12 @@
  *
  * Kachi-nokori is the surplus of wins above 8 for sekitori rikishi.
  * This is used for:
- * - Mochikyukin bonus calculation (wins above 8, not net wins)
  * - Post-basho UI display as a player-visible stat
  * - Promotion consideration context
  *
- * The real JSA system uses kachi-nokori (wins - 8) rather than netWins
- * (wins - losses) for mochikyukin accumulation.
+ * NOTE: kachi-nokori is a display stat only. Mochikyukin accumulation uses
+ * the real JSA formula — 0.5 points per net win (wins − losses) — which is
+ * computed in MochikyukinService from bashoResults.netWins, not from this.
  */
 
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -68,13 +68,4 @@ export function buildPostBashoPayload(
     isKachikoshi: wins > losses,
     isMakekoshi: wins < losses,
   };
-}
-
-/**
- * Convert kachi-nokori to mochikyukin points.
- * Uses the same per-win rate as the existing system, but based on
- * wins above 8 instead of net wins.
- */
-export function kachiNokoriToMochikyukinPoints(kachiNokori: number, pointsPerWin: number): number {
-  return kachiNokori * pointsPerWin;
 }

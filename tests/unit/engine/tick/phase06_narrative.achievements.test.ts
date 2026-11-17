@@ -132,7 +132,7 @@ describe("deriveRecentAchievements — roster-scoped paths", () => {
         bashoName: "hatsu",
         yusho: "r-mine",
         junYusho: [],
-        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        prizes: { yushoAmount: 0, specialPrizes: 0 },
         ...lastBasho,
       } as BashoResult,
     ];

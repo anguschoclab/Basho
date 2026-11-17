@@ -59,7 +59,7 @@ describe("Yokozuna Presence Logic Validation", () => {
         bashoName: res.bashoName,
         yusho: res.yushoWinner.id,
         junYusho: [],
-        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        prizes: { yushoAmount: 0, specialPrizes: 0 },
       };
       currentWorld.history.push(record);
 

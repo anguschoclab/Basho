@@ -6,20 +6,18 @@
 import type { Division } from "@/engine/types/banzuke";
 
 export const SIMULATION_CONFIG = {
-  /** Prize amounts (2027 JSA revision) */
+  /** Prize amounts — real JSA values. */
   prizes: {
-    yusho: 20_000_000,
+    yusho: 10_000_000,
     yushoByDivision: {
-      makuuchi: 20_000_000,
-      juryo: 3_000_000,
-      makushita: 700_000,
-      sandanme: 500_000,
-      jonidan: 300_000,
-      jonokuchi: 200_000,
+      makuuchi: 10_000_000,
+      juryo: 2_000_000,
+      makushita: 500_000,
+      sandanme: 300_000,
+      jonidan: 200_000,
+      jonokuchi: 100_000,
     } as Record<Division, number>,
-    junYusho: 2_000_000,
-    specialPrize: 3_000_000,
-    kinboshiStipend: 40_000, // Per kinboshi per basho
+    specialPrize: 2_000_000,
   },
 
   /** Career milestones */
