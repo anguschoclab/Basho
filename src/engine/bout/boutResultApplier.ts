@@ -31,9 +31,12 @@ import { RIKISHI_BOUT_HISTORY_MAX } from "@/constants/engine/bout";
 function computeUpdatedStandings(
   basho: BashoState,
   winner: Rikishi,
-  loser: Rikishi,
-  isFusensho: boolean
+  loser: Rikishi
 ): Map<string, { wins: number; losses: number; absences?: number }> {
+  // JSA convention: a fusenshō result is a fusenpai *loss* — the scheduled
+  // bout on the day of withdrawal goes in the losses column. Kyūjō days
+  // after that produce no matches at all, so they publish as absences
+  // (derived as divisionDays − wins − losses), not extra losses.
   const standings = new Map(basho.standings);
   const wRec = standings.get(winner.id) || { wins: 0, losses: 0, absences: 0 };
   const lRec = standings.get(loser.id) || { wins: 0, losses: 0, absences: 0 };
@@ -42,19 +45,11 @@ function computeUpdatedStandings(
     losses: wRec.losses,
     absences: wRec.absences ?? 0,
   });
-  if (isFusensho) {
-    standings.set(loser.id, {
-      wins: lRec.wins,
-      losses: lRec.losses,
-      absences: (lRec.absences ?? 0) + 1,
-    });
-  } else {
-    standings.set(loser.id, {
-      wins: lRec.wins,
-      losses: lRec.losses + 1,
-      absences: lRec.absences ?? 0,
-    });
-  }
+  standings.set(loser.id, {
+    wins: lRec.wins,
+    losses: lRec.losses + 1,
+    absences: lRec.absences ?? 0,
+  });
   return standings;
 }
 
@@ -515,17 +510,17 @@ export function applyBoutResult(
     return builder.build();
   }
 
-  // Double fusenpai: both rikishi absent — no winner exists. Each side
-  // takes an absence (fusenpai convention, same as single-fusensho below);
-  // no win, records, H2H, media, or event pipeline runs.
+  // Double fusenpai (両者不戦敗): both rikishi absent for a scheduled bout —
+  // no winner exists. Each side takes a fusenpai loss; no win, records, H2H,
+  // media, or event pipeline runs.
   if (!result.winnerRikishiId) {
     const standings = new Map(basho.standings);
     for (const r of [east, west]) {
       const rec = standings.get(r.id) || { wins: 0, losses: 0, absences: 0 };
       standings.set(r.id, {
         wins: rec.wins,
-        losses: rec.losses,
-        absences: (rec.absences ?? 0) + 1,
+        losses: rec.losses + 1,
+        absences: rec.absences ?? 0,
       });
     }
     builder.addMetadata("updatedStandings", standings);
@@ -535,9 +530,9 @@ export function applyBoutResult(
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 
-  // 1. Update Standing
+  // 1. Update Standing — a fusenshō is a fusenpai loss, not an absence.
   const isFusensho = result.kimarite === "fusensho";
-  const standings = computeUpdatedStandings(basho, winner, loser, isFusensho);
+  const standings = computeUpdatedStandings(basho, winner, loser);
 
   // 1.5/1.6. Bout metrics + kinboshi tracking
   updateBoutMetrics(basho, winner, loser, result, isFusensho, builder);

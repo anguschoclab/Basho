@@ -3,6 +3,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import { MediaHeadline, HeadlineTier } from "@/engine/types/media";
+import { createDefaultMediaState } from "@/engine/media/MediaService";
 import type { GovernanceRuling } from "@/engine/types/economy";
 import { rngForWorld } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -296,7 +297,7 @@ export function announceJsaBulletins(world: WorldState): StateImpact {
   if (newHeadlines.length > 250) newHeadlines.splice(0, newHeadlines.length - 250);
 
   builder.updateWorldField("mediaState", {
-    ...world.mediaState,
+    ...(world.mediaState ?? createDefaultMediaState()),
     headlines: newHeadlines,
   });
   return builder.build();

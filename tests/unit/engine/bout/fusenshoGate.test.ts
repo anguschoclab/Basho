@@ -107,7 +107,7 @@ describe("resolveAndApplyBout — shared bout pipeline", () => {
     } as MatchSchedule;
   }
 
-  it("fusensho loser records an ABSENCE, not a loss", () => {
+  it("fusensho loser records a fusenpai LOSS (JSA same-day convention)", () => {
     const east = MockFactory.createRikishi("east", { isKyujo: true });
     const west = MockFactory.createRikishi("west");
     const world = worldWithBasho([east, west]);
@@ -120,8 +120,8 @@ describe("resolveAndApplyBout — shared bout pipeline", () => {
     );
     expect(result?.kimarite).toBe("fusensho");
     const loserRec = updatedStandings?.get(east.id);
-    expect(loserRec?.absences).toBe(1);
-    expect(loserRec?.losses).toBe(0);
+    expect(loserRec?.losses).toBe(1);
+    expect(loserRec?.absences).toBe(0);
     const winnerRec = updatedStandings?.get(west.id);
     expect(winnerRec?.wins).toBe(1);
   });

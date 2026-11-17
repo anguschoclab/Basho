@@ -130,8 +130,7 @@ function simulateDay(
 
     // Persist authoritative standings back onto the basho so the next day's
     // Swiss pairing sees real records (W0: replaces the sim-local rebuild,
-    // which diverged — fusenpai counted as a loss instead of an absence,
-    // and the final day's results were never synced).
+    // which diverged, and the final day's results were never synced).
     if (updatedStandings) {
       activeBasho = { ...activeBasho, standings: updatedStandings };
       workingWorld = { ...workingWorld, currentBasho: activeBasho };
@@ -166,13 +165,14 @@ function simulateDay(
   }
 
   // Sync the sekitori-only return map from the authoritative basho
-  // standings at day end (includes absences for fusenpai).
+  // standings at day end. A fusenshō sits in the losses column (fusenpai
+  // convention); the days missed after withdrawal are the absence count.
   for (const [id, entry] of standings) {
     const rec = activeBasho.standings.get(id);
     if (rec) {
       entry.wins = rec.wins;
       entry.losses = rec.losses;
-      entry.absences = rec.absences ?? 0;
+      entry.absences = Math.max(0, day - rec.wins - rec.losses);
     }
   }
 

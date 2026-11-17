@@ -17,7 +17,7 @@ import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { getBashoNumber } from "@/engine/calendar/calendar";
 import { nextBashoRecordId } from "@/engine/simulation/AutoSimService";
-import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import { jsaYushoPrize, jsaSanshoPrize } from "@/constants/engine/jsaEra";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoName } from "@/engine/types/basho";
 
@@ -98,8 +98,8 @@ function publishBanzukeForSim(
         shukunsho: bashoResult.shukunsho,
         kantosho: bashoResult.kantosho,
         prizes: {
-          yushoAmount: SIMULATION_CONFIG.prizes.yushoByDivision.makuuchi,
-          specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
+          yushoAmount: jsaYushoPrize("makuuchi", currentWorld.year),
+          specialPrizes: jsaSanshoPrize(currentWorld.year),
         },
       },
     ],

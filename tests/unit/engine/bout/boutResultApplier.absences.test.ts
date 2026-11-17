@@ -198,7 +198,7 @@ function makeFusenshoWorld(opts?: {
 }
 
 describe("Bug 15 + N5: Absences tracking", () => {
-  it("A.1: fusensho loss increments absences (not losses) in standings", () => {
+  it("A.1: fusensho is a fusenpai loss — the withdrawal-day bout counts as a loss in standings", () => {
     const { world, match, result } = makeFusenshoWorld({ westInjured: true });
     const impact = applyBoutResult(world, match, result);
     const standings = impact.metadata?.updatedStandings as Map<
@@ -207,8 +207,8 @@ describe("Bug 15 + N5: Absences tracking", () => {
     >;
     expect(standings).toBeDefined();
     const westRec = standings!.get("west");
-    expect(westRec?.absences).toBe(1);
-    expect(westRec?.losses).toBe(0);
+    expect(westRec?.losses).toBe(1);
+    expect(westRec?.absences).toBe(0);
   });
 
   it("A.2: regular bout (non-fusensho) does not increment absences", () => {
@@ -224,7 +224,7 @@ describe("Bug 15 + N5: Absences tracking", () => {
     expect(westRec?.losses).toBe(1);
   });
 
-  it("A.3: fusensho loser gets absences+1 in standings, losses unchanged", () => {
+  it("A.3: fusenpai adds a loss and leaves the absence ledger untouched", () => {
     const { world, match, result } = makeFusenshoWorld({ westInjured: true, westAbsences: 3 });
     const impact = applyBoutResult(world, match, result);
     const standings = impact.metadata?.updatedStandings as Map<
@@ -232,8 +232,8 @@ describe("Bug 15 + N5: Absences tracking", () => {
       { wins: number; losses: number; absences: number }
     >;
     const westRec = standings!.get("west");
-    expect(westRec?.absences).toBe(4);
-    expect(westRec?.losses).toBe(0);
+    expect(westRec?.losses).toBe(1);
+    expect(westRec?.absences).toBe(3);
   });
 
   it("A.4: fusensho winner gets wins+1 in standings (normal win)", () => {
@@ -248,14 +248,15 @@ describe("Bug 15 + N5: Absences tracking", () => {
     expect(eastRec?.absences).toBe(0);
   });
 
-  it("A.5: consecutive fusensho losses accumulate absences correctly", () => {
+  it("A.5: consecutive fusensho days each land as a fusenpai loss", () => {
     const { world, match, result } = makeFusenshoWorld({ westInjured: true, westAbsences: 5 });
     const impact = applyBoutResult(world, match, result);
     const standings1 = impact.metadata?.updatedStandings as Map<
       string,
       { wins: number; losses: number; absences: number }
     >;
-    expect(standings1!.get("west")?.absences).toBe(6);
+    expect(standings1!.get("west")?.losses).toBe(1);
+    expect(standings1!.get("west")?.absences).toBe(5);
 
     // Manually update the world's basho standings for the second call
     const updatedWorld = {
@@ -272,7 +273,81 @@ describe("Bug 15 + N5: Absences tracking", () => {
       { wins: number; losses: number; absences: number }
     >;
     const westRec = standings2!.get("west");
-    expect(westRec?.absences).toBe(7);
+    expect(westRec?.losses).toBe(2);
+    expect(westRec?.absences).toBe(5);
+  });
+
+  it("A.8: double-fusenpai (両者不戦敗) is a loss for both rikishi", () => {
+    const { world, match } = makeFusenshoWorld({ eastInjured: true, westInjured: true });
+    const doubleFusenpai: BoutResult = {
+      boutId: "test-bout",
+      winner: "east",
+      winnerRikishiId: "",
+      loserRikishiId: "",
+      kimarite: "fusensho",
+      kimariteName: "Fusenshō",
+      stance: "no-grip",
+      tachiaiWinner: "east",
+      duration: 0,
+      upset: false,
+      isKinboshi: false,
+      log: [],
+      kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
+    };
+    const impact = applyBoutResult(world, match, doubleFusenpai);
+    const standings = impact.metadata?.updatedStandings as Map<
+      string,
+      { wins: number; losses: number; absences: number }
+    >;
+    expect(standings!.get("east")?.losses).toBe(1);
+    expect(standings!.get("west")?.losses).toBe(1);
+    expect(standings!.get("east")?.absences).toBe(0);
+    expect(standings!.get("west")?.absences).toBe(0);
+  });
+
+  it("A.9: a fusenpai followed by an absent tail publishes as W-L-A (JSA scorecard shape)", () => {
+    // West fusenpai'd on day 12 after going 5-6: the withdrawal-day bout sits
+    // in the losses column and the three unscheduled days publish as absences.
+    const standings = new Map([["r1", { wins: 5, losses: 6, absences: 0 }]]);
+    const r1 = mockRikishi("r1", {
+      rank: "maegashira",
+      rankNumber: 5,
+      division: "makuuchi",
+      careerHistory: [],
+    });
+    const basho = makeMockBasho({ bashoName: "hatsu", standings, isActive: false, day: 15 });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      activeRikishiIds: new Set(["r1"]),
+      currentBasho: basho,
+      cyclePhase: "post_basho",
+      history: [
+        {
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          yusho: "none",
+          junYusho: [],
+          ginoSho: "none",
+          shukunsho: "none",
+          kantosho: "none",
+          id: "1",
+          prizes: [],
+        } as any,
+      ],
+    });
+
+    const impact = publishBanzukeUpdate(world);
+    const newWorld = resolveImpacts(world, [impact]);
+    const lastEntry = newWorld.rikishi
+      .get("r1")!
+      .careerHistory![newWorld.rikishi.get("r1")!.careerHistory!.length - 1];
+    expect(lastEntry.wins).toBe(5);
+    expect(lastEntry.losses).toBe(6);
+    expect(lastEntry.absences).toBe(4);
   });
 
   it("A.6: BanzukePublisher reads absences >= 15 as isKyujo (integration)", () => {

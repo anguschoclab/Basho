@@ -46,7 +46,7 @@ describe("N9/N10: walkover semantics through the shared pipeline", () => {
     expect(result.kimariteName).toBe("Fusenshō");
   });
 
-  it("H.4: fusenpai records an absence, not a loss, in standings", () => {
+  it("H.4: fusenpai records a loss, not an absence, in standings", () => {
     const east = MockFactory.createRikishi("east", { isKyujo: true });
     const west = MockFactory.createRikishi("west");
     const world = MockFactory.createWorld({
@@ -68,7 +68,7 @@ describe("N9/N10: walkover semantics through the shared pipeline", () => {
       undefined,
       "w4"
     );
-    expect(updatedStandings?.get(east.id)?.absences).toBe(1);
-    expect(updatedStandings?.get(east.id)?.losses).toBe(0);
+    expect(updatedStandings?.get(east.id)?.losses).toBe(1);
+    expect(updatedStandings?.get(east.id)?.absences).toBe(0);
   });
 });
