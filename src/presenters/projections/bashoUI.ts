@@ -32,9 +32,9 @@ export interface UIBashoSummary {
   yushoShikona?: string;
   junYushoIds: Id[];
   specialPrizes: {
-    shukunSho?: Id;
-    kantoSho?: Id;
-    ginoSho?: Id;
+    shukunSho?: Id[];
+    kantoSho?: Id[];
+    ginoSho?: Id[];
   };
   isActive: boolean;
 }

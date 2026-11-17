@@ -413,10 +413,11 @@ export interface BashoResult {
   yusho: Id;
   junYusho: Id[];
 
-  // Awards
-  ginoSho?: Id;
-  kantosho?: Id;
-  shukunsho?: Id;
+  // Awards — each prize lists every winner; the JSA may split a prize,
+  // award one rikishi several prizes, or withhold a prize (empty array).
+  ginoSho?: Id[];
+  kantosho?: Id[];
+  shukunsho?: Id[];
 
   /** Bout ID of the most exciting bout this basho (highest excitementScore). */
   boutOfTheBasho?: string;
@@ -462,7 +463,7 @@ export interface BashoSimResult {
   finalWorld: WorldState;
   /** Kettei-sen bouts played to break a shared top record. */
   playoffMatches?: MatchSchedule[];
-  ginoSho?: Id;
-  shukunsho?: Id;
-  kantosho?: Id;
+  ginoSho?: Id[];
+  shukunsho?: Id[];
+  kantosho?: Id[];
 }

@@ -262,8 +262,7 @@ test(`Year of Bashos: 6 honbasho, calendar rollover, banzuke movement, award + w
       ["kantosho", "kantosho"],
       ["shukunsho", "shukunsho"],
     ] as const) {
-      const wid = last[field];
-      if (wid) {
+      for (const wid of last[field] ?? []) {
         expect(rikishiById[wid], `${type} winner exists`).toBeTruthy();
         expect(hasLogEntry(type, wid), `awardLog records ${type}`).toBe(true);
         awardWinners.push({

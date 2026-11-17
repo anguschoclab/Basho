@@ -176,7 +176,7 @@ describe("PostBashoPressService — Prize Winners", () => {
     const lines = PostBashoPressService.generatePressConference(world, {
       yushoId: "champ10",
       junYushoIds: [],
-      shukunsho: "prize1",
+      shukunsho: ["prize1"],
       bashoName: "hatsu",
       year: 2025,
     });
@@ -217,7 +217,7 @@ describe("PostBashoPressService — Prize Winners", () => {
     const lines = PostBashoPressService.generatePressConference(world, {
       yushoId: "champ11",
       junYushoIds: [],
-      kantosho: "prize2",
+      kantosho: ["prize2"],
       bashoName: "hatsu",
       year: 2025,
     });
@@ -246,9 +246,9 @@ describe("PostBashoPressService — Prize Winners", () => {
     const lines = PostBashoPressService.generatePressConference(world, {
       yushoId: "champ12",
       junYushoIds: [],
-      shukunsho: "champ12",
-      ginoSho: "champ12",
-      kantosho: "champ12",
+      shukunsho: ["champ12"],
+      ginoSho: ["champ12"],
+      kantosho: ["champ12"],
       bashoName: "hatsu",
       year: 2025,
     });

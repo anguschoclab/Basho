@@ -50,7 +50,7 @@ describe("BashoHistory - recordBashoHistory (Bug 1)", () => {
     ];
     const basho = makeBasho(matches);
     const world = MockFactory.createWorld({ currentBasho: basho });
-    const impact = recordBashoHistory(world, basho, "east", [], [], {}, 8);
+    const impact = recordBashoHistory(world, basho, "east", [], [], { ginoSho: [], kantosho: [], shukunsho: [] }, 8);
     expect(impact).toBeDefined();
   });
 
@@ -60,18 +60,18 @@ describe("BashoHistory - recordBashoHistory (Bug 1)", () => {
     ];
     const basho = makeBasho(matches);
     const world = MockFactory.createWorld({ currentBasho: basho });
-    expect(() => recordBashoHistory(world, basho, "east", [], [], {}, 8)).not.toThrow();
+    expect(() => recordBashoHistory(world, basho, "east", [], [], { ginoSho: [], kantosho: [], shukunsho: [] }, 8)).not.toThrow();
   });
 
   it("Test 11.3: handles empty matches array", () => {
     const basho = makeBasho([]);
     const world = MockFactory.createWorld({ currentBasho: basho });
-    expect(() => recordBashoHistory(world, basho, "east", [], [], {}, 8)).not.toThrow();
+    expect(() => recordBashoHistory(world, basho, "east", [], [], { ginoSho: [], kantosho: [], shukunsho: [] }, 8)).not.toThrow();
   });
 
   it("Test 11.4: handles missing currentBasho gracefully", () => {
     const world = MockFactory.createWorld({ currentBasho: undefined });
     const basho = makeBasho([]);
-    expect(() => recordBashoHistory(world, basho, "east", [], [], {}, 8)).not.toThrow();
+    expect(() => recordBashoHistory(world, basho, "east", [], [], { ginoSho: [], kantosho: [], shukunsho: [] }, 8)).not.toThrow();
   });
 });

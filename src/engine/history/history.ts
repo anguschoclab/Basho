@@ -59,9 +59,9 @@ export function generateCareerSnapshot(world: WorldState, rikishi: Rikishi): Car
     isYusho: lastBasho?.yusho === rikishi.id,
     isJunYusho: lastBasho?.junYusho?.includes(rikishi.id) || false,
     specialPrizes: {
-      shukunsho: lastBasho?.shukunsho === rikishi.id,
-      kantosho: lastBasho?.kantosho === rikishi.id,
-      ginosho: lastBasho?.ginoSho === rikishi.id,
+      shukunsho: (lastBasho?.shukunsho ?? []).includes(rikishi.id),
+      kantosho: (lastBasho?.kantosho ?? []).includes(rikishi.id),
+      ginosho: (lastBasho?.ginoSho ?? []).includes(rikishi.id),
     },
 
     weight: rikishi.weight,

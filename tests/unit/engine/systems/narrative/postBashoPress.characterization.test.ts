@@ -94,7 +94,7 @@ describe("PostBashoPressService — golden master", () => {
     const ctx: PressConferenceContext = {
       yushoId: champ.id,
       junYushoIds: [junYusho.id],
-      ginoSho: prize.id,
+      ginoSho: [prize.id],
       bashoName: "hatsu",
       year: 2026,
     };

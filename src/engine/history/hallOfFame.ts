@@ -156,8 +156,8 @@ function processTechnicians(
 ) {
   const ginoCountsStats = new Map<string, number>();
   for (const br of history) {
-    if (br.ginoSho) {
-      ginoCountsStats.set(br.ginoSho, (ginoCountsStats.get(br.ginoSho) || 0) + 1);
+    for (const id of br.ginoSho ?? []) {
+      ginoCountsStats.set(id, (ginoCountsStats.get(id) || 0) + 1);
     }
   }
 

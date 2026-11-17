@@ -54,21 +54,23 @@ export function distributePrizes(
   // Track multiple prizes per rikishi
   const prizeCounts: Record<string, number> = {};
   const econCache = new Map<string, NonNullable<Rikishi["economics"]>>();
+  const achCache = new Map<string, NonNullable<Rikishi["stats"]>["achievements"]>();
 
   for (const [key, type] of Object.entries(awardTypes)) {
-    const rikishiId = (prizes as Record<string, string | undefined>)[key];
-    if (!rikishiId) continue;
-    awardSansho(
-      builder,
-      world,
-      basho,
-      rikishiId,
-      type,
-      sanshoRng,
-      sanshoNarrativeLines,
-      prizeCounts,
-      econCache
-    );
+    for (const rikishiId of prizes[key as keyof SpecialPrizesResult] ?? []) {
+      awardSansho(
+        builder,
+        world,
+        basho,
+        rikishiId,
+        type,
+        sanshoRng,
+        sanshoNarrativeLines,
+        prizeCounts,
+        econCache,
+        achCache
+      );
+    }
   }
 
   appendMultiPrizeLines(world, basho, prizeCounts, sanshoRng, sanshoNarrativeLines);
@@ -101,7 +103,8 @@ function awardSansho(
   sanshoRng: ReturnType<typeof rngFromSeed>,
   sanshoNarrativeLines: PbpLine[],
   prizeCounts: Record<string, number>,
-  econCache: Map<string, NonNullable<Rikishi["economics"]>>
+  econCache: Map<string, NonNullable<Rikishi["economics"]>>,
+  achCache: Map<string, NonNullable<Rikishi["stats"]>["achievements"]>
 ): void {
   const r = getRikishi(world, rikishiId);
   if (!r) return;
@@ -127,14 +130,18 @@ function awardSansho(
   }
   prizeCounts[rikishiId] = (prizeCounts[rikishiId] ?? 0) + 1;
 
-  const currentAchievements = r.stats?.achievements || {
-    kinboshiEarned: 0,
-    ginboshiEarned: 0,
-    kinboshiConceded: 0,
-    ginboshiConceded: 0,
-    mochikyukinPoints: 0,
-    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
-  };
+  // Read accumulated achievements from the cache when present — like
+  // econCache, a second sansho for the same rikishi must compose on the first
+  // award's write, not the stale base state.
+  const currentAchievements = achCache.get(rikishiId) ??
+    r.stats?.achievements ?? {
+      kinboshiEarned: 0,
+      ginboshiEarned: 0,
+      kinboshiConceded: 0,
+      ginboshiConceded: 0,
+      mochikyukinPoints: 0,
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+    };
   const currentSp = currentAchievements.specialPrizes || {
     shukunSho: 0,
     kantoSho: 0,
@@ -144,6 +151,8 @@ function awardSansho(
   if (type === "Shukun") updatedSp.shukunSho++;
   else if (type === "Kanto") updatedSp.kantoSho++;
   else if (type === "Gino") updatedSp.ginoSho++;
+  const nextAchievements = { ...currentAchievements, specialPrizes: updatedSp };
+  achCache.set(rikishiId, nextAchievements);
 
   // Apply sansho popularity boost via applyAchievementImpact
   const tempR = { ...r, economics: r.economics ? { ...r.economics } : undefined };
@@ -159,10 +168,7 @@ function awardSansho(
   builder.updateRikishi(rikishiId, {
     stats: {
       ...r.stats,
-      achievements: {
-        ...currentAchievements,
-        specialPrizes: updatedSp,
-      },
+      achievements: nextAchievements,
     },
     ...(tempR.economics && { economics: tempR.economics }),
   });

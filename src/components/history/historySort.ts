@@ -14,9 +14,9 @@ export type HistoryRecord = {
   bashoName: string;
   yusho?: string | null;
   junYusho?: string[] | null;
-  ginoSho?: string | null;
-  kantosho?: string | null;
-  shukunsho?: string | null;
+  ginoSho?: string[] | null;
+  kantosho?: string[] | null;
+  shukunsho?: string[] | null;
   prizes?: {
     yushoAmount?: number;
     specialPrizes?: number;

@@ -74,9 +74,13 @@ export function BashoHistoryCard({
   // Prefer yusho prize as "headline" prize; otherwise show none.
   const yushoMillions = safeMillions(prizes?.yushoAmount);
 
-  const shukun = basho.shukunsho ? (getRikishi?.(basho.shukunsho) ?? null) : null;
-  const kanto = basho.kantosho ? (getRikishi?.(basho.kantosho) ?? null) : null;
-  const gino = basho.ginoSho ? (getRikishi?.(basho.ginoSho) ?? null) : null;
+  const lookupAll = (ids: string[] | null | undefined): Rikishi[] =>
+    (ids ?? [])
+      .map((rid) => getRikishi?.(rid) ?? null)
+      .filter((r): r is Rikishi => r !== null);
+  const shukun = lookupAll(basho.shukunsho);
+  const kanto = lookupAll(basho.kantosho);
+  const gino = lookupAll(basho.ginoSho);
 
   const avatarOf = (r: Rikishi | null | undefined): AvatarRenderData | undefined =>
     r
@@ -191,26 +195,30 @@ export function BashoHistoryCard({
   );
 }
 
-/** One special-prize cell (sansō) — icon, ja label, recipient. */
+/** One special-prize cell (sansō) — icon, ja label, recipients (prize may be shared). */
 function PrizeCell({
   icon,
   label,
-  rikishi,
-  avatar,
+  winners,
+  avatarOf,
 }: {
   icon: ReactNode;
   label: string;
-  rikishi: Rikishi | null;
-  avatar?: AvatarRenderData;
+  winners: Rikishi[];
+  avatarOf: (r: Rikishi | null | undefined) => AvatarRenderData | undefined;
 }) {
   return (
     <div className="p-3 rounded-lg bg-secondary/30 text-center">
       {icon}
       <div className="text-xs text-muted-foreground">{label}</div>
-      {rikishi ? (
-        <div className="text-sm font-display flex items-center justify-center gap-1.5">
-          <SumoAvatar avatar={avatar} size="xs" fallback={rikishi.shikona} />
-          <RikishiName id={rikishi.id} name={rikishi.shikona} />
+      {winners.length > 0 ? (
+        <div className="text-sm font-display flex flex-col items-center gap-1">
+          {winners.map((r) => (
+            <div key={r.id} className="flex items-center justify-center gap-1.5">
+              <SumoAvatar avatar={avatarOf(r)} size="xs" fallback={r.shikona} />
+              <RikishiName id={r.id} name={r.shikona} />
+            </div>
+          ))}
         </div>
       ) : (
         <div className="text-sm font-display">—</div>
@@ -226,9 +234,9 @@ function SpecialPrizesRow({
   gino,
   avatarOf,
 }: {
-  shukun: Rikishi | null;
-  kanto: Rikishi | null;
-  gino: Rikishi | null;
+  shukun: Rikishi[];
+  kanto: Rikishi[];
+  gino: Rikishi[];
   avatarOf: (r: Rikishi | null | undefined) => AvatarRenderData | undefined;
 }) {
   return (
@@ -236,20 +244,20 @@ function SpecialPrizesRow({
       <PrizeCell
         icon={<Award className="h-4 w-4 mx-auto mb-1 text-gold" />}
         label="殊勲賞"
-        rikishi={shukun}
-        avatar={avatarOf(shukun)}
+        winners={shukun}
+        avatarOf={avatarOf}
       />
       <PrizeCell
         icon={<Star className="h-4 w-4 mx-auto mb-1 text-destructive" />}
         label="敢闘賞"
-        rikishi={kanto}
-        avatar={avatarOf(kanto)}
+        winners={kanto}
+        avatarOf={avatarOf}
       />
       <PrizeCell
         icon={<Medal className="h-4 w-4 mx-auto mb-1 text-primary" />}
         label="技能賞"
-        rikishi={gino}
-        avatar={avatarOf(gino)}
+        winners={gino}
+        avatarOf={avatarOf}
       />
     </div>
   );

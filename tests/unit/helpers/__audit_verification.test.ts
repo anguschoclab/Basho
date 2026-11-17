@@ -215,7 +215,7 @@ describe("audit verification: recapProjections bugfix scenarios", () => {
 // ── 3. specialPrizes bugfix scenarios (from specialPrizes.bugfix.test.ts) ────
 
 describe("audit verification: specialPrizes bugfix scenarios", () => {
-  it("Test 7.3: does not award prizes to non-maegashira", () => {
+  it("Test 7.3: does not award prizes to the yusho winner", () => {
     const sekiwake = makeRikishi("s1", { rank: "sekiwake" });
     const result = makeResult("b1", "s1", "opp1");
     const matches = [makeMatchWithResult("b1", 1, "s1", "opp1", result)];
@@ -227,9 +227,10 @@ describe("audit verification: specialPrizes bugfix scenarios", () => {
     for (let i = 1; i <= 10; i++)
       rikishiMap.set(`opp${i}`, makeRikishi(`opp${i}`, { rank: "maegashira" }));
     const prizes = determineSpecialPrizes(matches, rikishiMap, "s1");
-    expect(prizes.shukunsho).toBeUndefined();
-    expect(prizes.kantosho).toBeUndefined();
-    expect(prizes.ginoSho).toBeUndefined();
+    // s1 is the champion — sansho exclude the yusho winner regardless of rank.
+    expect(prizes.shukunsho).not.toContain("s1");
+    expect(prizes.kantosho).not.toContain("s1");
+    expect(prizes.ginoSho).not.toContain("s1");
   });
 
   it("Test 7.5: awards at most 3 sansho prizes (one of each type)", () => {
@@ -294,18 +295,18 @@ describe("audit verification: specialPrizes bugfix scenarios", () => {
       );
     }
     const prizes = determineSpecialPrizes(matches, rikishiMap, "y1");
-    expect(prizes).toEqual({});
+    expect(prizes).toEqual({ ginoSho: [], kantosho: [], shukunsho: [] });
   });
 
   it("Test 7.7: handles empty matches array", () => {
     const east = makeRikishi("east");
     const prizes = determineSpecialPrizes([], new Map([["east", east]]), "east");
-    expect(prizes).toEqual({});
+    expect(prizes).toEqual({ ginoSho: [], kantosho: [], shukunsho: [] });
   });
 
   it("Test 7.8: handles empty rikishiMap", () => {
     const prizes = determineSpecialPrizes([], new Map(), "nobody");
-    expect(prizes).toEqual({});
+    expect(prizes).toEqual({ ginoSho: [], kantosho: [], shukunsho: [] });
   });
 });
 

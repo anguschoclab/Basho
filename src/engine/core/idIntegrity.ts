@@ -418,9 +418,12 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
   }
   for (const b of world.history ?? []) {
     checkRef("history", b.yusho, sets.rikishiIds, `basho '${b.id}' yusho`);
-    checkRef("history", b.ginoSho, sets.rikishiIds, `basho '${b.id}' ginoSho`);
-    checkRef("history", b.shukunsho, sets.rikishiIds, `basho '${b.id}' shukunsho`);
-    checkRef("history", b.kantosho, sets.rikishiIds, `basho '${b.id}' kantosho`);
+    for (const id of b.ginoSho ?? [])
+      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' ginoSho`);
+    for (const id of b.shukunsho ?? [])
+      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' shukunsho`);
+    for (const id of b.kantosho ?? [])
+      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' kantosho`);
     for (const id of b.junYusho ?? [])
       checkRef("history", id, sets.rikishiIds, `basho '${b.id}' junYusho`);
   }

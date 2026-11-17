@@ -87,9 +87,9 @@ export interface BashoHistorySummary {
   bashoName: BashoName;
   yusho?: Id;
   junYusho?: Id[];
-  ginoSho?: Id;
-  kantosho?: Id;
-  shukunsho?: Id;
+  ginoSho?: Id[];
+  kantosho?: Id[];
+  shukunsho?: Id[];
   hasBanzukeSnapshot: boolean;
   sortKey: string;
 }
@@ -216,32 +216,32 @@ export function buildHistoryIndex(args: {
           rikishiId: rid,
         });
       }
-      if (br.ginoSho)
-        pushRikishiEntry(idx, br.ginoSho, {
+      for (const rid of br.ginoSho ?? [])
+        pushRikishiEntry(idx, rid, {
           bashoKey: bk,
           year,
           bashoNumber,
           bashoName,
           ginoSho: true,
-          rikishiId: br.ginoSho,
+          rikishiId: rid,
         });
-      if (br.kantosho)
-        pushRikishiEntry(idx, br.kantosho, {
+      for (const rid of br.kantosho ?? [])
+        pushRikishiEntry(idx, rid, {
           bashoKey: bk,
           year,
           bashoNumber,
           bashoName,
           kantosho: true,
-          rikishiId: br.kantosho,
+          rikishiId: rid,
         });
-      if (br.shukunsho)
-        pushRikishiEntry(idx, br.shukunsho, {
+      for (const rid of br.shukunsho ?? [])
+        pushRikishiEntry(idx, rid, {
           bashoKey: bk,
           year,
           bashoNumber,
           bashoName,
           shukunsho: true,
-          rikishiId: br.shukunsho,
+          rikishiId: rid,
         });
     }
   }
@@ -353,32 +353,32 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
       rikishiId: rid,
     });
   }
-  if (bashoResult.ginoSho)
-    trackedPush(bashoResult.ginoSho, {
+  for (const rid of bashoResult.ginoSho ?? [])
+    trackedPush(rid, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
       bashoName: bashoResult.bashoName,
       ginoSho: true,
-      rikishiId: bashoResult.ginoSho,
+      rikishiId: rid,
     });
-  if (bashoResult.kantosho)
-    trackedPush(bashoResult.kantosho, {
+  for (const rid of bashoResult.kantosho ?? [])
+    trackedPush(rid, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
       bashoName: bashoResult.bashoName,
       kantosho: true,
-      rikishiId: bashoResult.kantosho,
+      rikishiId: rid,
     });
-  if (bashoResult.shukunsho)
-    trackedPush(bashoResult.shukunsho, {
+  for (const rid of bashoResult.shukunsho ?? [])
+    trackedPush(rid, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
       bashoName: bashoResult.bashoName,
       shukunsho: true,
-      rikishiId: bashoResult.shukunsho,
+      rikishiId: rid,
     });
 
   const bashoState = world.currentBasho;

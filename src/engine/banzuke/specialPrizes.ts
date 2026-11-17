@@ -1,22 +1,46 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule } from "@/engine/types/basho";
 
-/** Resulting special prizes for a tournament. */
+/**
+ * Resulting special prizes for a tournament.
+ * Each prize lists every winner — the JSA may split a prize between tied
+ * rikishi, award one rikishi multiple prizes, or withhold a prize entirely
+ * (empty array).
+ */
 export interface SpecialPrizesResult {
-  ginoSho?: string;
-  kantosho?: string;
-  shukunsho?: string;
+  ginoSho: string[];
+  kantosho: string[];
+  shukunsho: string[];
+}
+
+/** Every candidate at the top score shares the prize (JSA allows split awards). */
+function topScorers(scores: Map<string, number>, minScore: number): string[] {
+  let best = -1;
+  for (const score of scores.values()) best = Math.max(best, score);
+  if (best < minScore) return [];
+  return [...scores.entries()]
+    .filter(([, score]) => score === best)
+    .map(([id]) => id)
+    .sort();
 }
 
 /**
  * Logic to determine Gino-sho, Kanto-sho, and Shukun-sho prizes.
- * Awarded to Maegashira who meet high-performance criteria.
+ *
+ * JSA eligibility: any makuuchi rikishi ranked below ozeki (sekiwake,
+ * komusubi, maegashira) who posts kachi-koshi. The yusho winner is excluded —
+ * the champion takes the Emperor's Cup, not sansho.
+ *
+ * The deterministic scorer below is the game's proxy for the real sansho
+ * committee's deliberation [game abstraction].
  */
 export function determineSpecialPrizes(
   matches: MatchSchedule[],
   rikishiMap: Map<string, Rikishi>,
   yushoId: string
 ): SpecialPrizesResult {
+  const result: SpecialPrizesResult = { ginoSho: [], kantosho: [], shukunsho: [] };
+
   const stats = new Map<string, { wins: number; opponents: string[]; kimarites: string[] }>();
   const yokozunaIds = new Set<string>();
 
@@ -43,53 +67,43 @@ export function determineSpecialPrizes(
 
   const candidates: Rikishi[] = [];
   for (const r of rikishiMap.values()) {
-    if (r.division !== "makuuchi" || r.rank !== "maegashira") continue;
+    if (r.division !== "makuuchi") continue;
+    if (r.rank === "yokozuna" || r.rank === "ozeki") continue;
+    if (r.id === yushoId) continue;
     const s = stats.get(r.id);
     if (s && s.wins >= 8) candidates.push(r);
   }
 
-  if (candidates.length === 0) return {};
+  if (candidates.length === 0) return result;
 
-  const result: SpecialPrizesResult = {};
-
-  let bestShukun = { id: "", score: -1 };
+  // Shukun-sho (Outstanding Performance): beat the yusho winner or a yokozuna.
+  const shukunScores = new Map<string, number>();
   for (const c of candidates) {
     const s = stats.get(c.id);
     if (!s) continue;
     const beatYusho = s.opponents.includes(yushoId);
-    let beatYokozuna = false;
-    for (const oppId of s.opponents) {
-      if (yokozunaIds.has(oppId)) {
-        beatYokozuna = true;
-        break;
-      }
-    }
-
+    const beatYokozuna = s.opponents.some((oppId) => yokozunaIds.has(oppId));
     if (beatYusho || beatYokozuna) {
-      const score = (beatYusho ? 10 : 0) + (beatYokozuna ? 5 : 0) + s.wins;
-      if (score > bestShukun.score) bestShukun = { id: c.id, score };
+      shukunScores.set(c.id, (beatYusho ? 10 : 0) + (beatYokozuna ? 5 : 0) + s.wins);
     }
   }
-  if (bestShukun.id) result.shukunsho = bestShukun.id;
+  result.shukunsho = topScorers(shukunScores, 0);
 
-  let bestKanto = { id: "", score: -1 };
+  // Kanto-sho (Fighting Spirit): strongest record below the champion.
+  const kantoScores = new Map<string, number>();
   for (const c of candidates) {
-    if (c.id === result.shukunsho) continue;
     const s = stats.get(c.id);
-    if (s && s.wins >= 10 && s.wins > bestKanto.score) bestKanto = { id: c.id, score: s.wins };
+    if (s) kantoScores.set(c.id, s.wins);
   }
-  if (bestKanto.id) result.kantosho = bestKanto.id;
+  result.kantosho = topScorers(kantoScores, 10);
 
-  let bestGino = { id: "", score: -1 };
+  // Gino-sho (Technique): widest kimarite repertoire.
+  const ginoScores = new Map<string, number>();
   for (const c of candidates) {
-    if (c.id === result.shukunsho || c.id === result.kantosho) continue;
     const s = stats.get(c.id);
-    if (!s) continue;
-    const uniqueMoves = new Set(s.kimarites).size;
-    if (uniqueMoves > bestGino.score && uniqueMoves >= 3)
-      bestGino = { id: c.id, score: uniqueMoves };
+    if (s) ginoScores.set(c.id, new Set(s.kimarites).size);
   }
-  if (bestGino.id) result.ginoSho = bestGino.id;
+  result.ginoSho = topScorers(ginoScores, 3);
 
   return result;
 }

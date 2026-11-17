@@ -96,12 +96,19 @@ export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
     }
   }
 
-  const ginoShoRikishi = lastBasho.ginoSho ? world.rikishi.get(lastBasho.ginoSho) : null;
-  const ginoSho = ginoShoRikishi ? cachedProject(ginoShoRikishi) : null;
-  const shukunShoRikishi = lastBasho.shukunsho ? world.rikishi.get(lastBasho.shukunsho) : null;
-  const shukunSho = shukunShoRikishi ? cachedProject(shukunShoRikishi) : null;
-  const kantoShoRikishi = lastBasho.kantosho ? world.rikishi.get(lastBasho.kantosho) : null;
-  const kantoSho = kantoShoRikishi ? cachedProject(kantoShoRikishi) : null;
+  // Each sansho may be shared — project every winner, not just one.
+  const ginoSho = (lastBasho.ginoSho ?? [])
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is NonNullable<typeof r> => r != null)
+    .map(cachedProject);
+  const shukunSho = (lastBasho.shukunsho ?? [])
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is NonNullable<typeof r> => r != null)
+    .map(cachedProject);
+  const kantoSho = (lastBasho.kantosho ?? [])
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is NonNullable<typeof r> => r != null)
+    .map(cachedProject);
 
   return {
     champion,

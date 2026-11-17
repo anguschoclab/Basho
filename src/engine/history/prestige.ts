@@ -97,9 +97,9 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
 
       if (lastBasho.yusho === r.id) hasYusho = true;
       if (lastBasho.junYusho.includes(r.id)) hasJunYusho = true;
-      if (lastBasho.ginoSho === r.id) sanshoPrizeCount++;
-      if (lastBasho.kantosho === r.id) sanshoPrizeCount++;
-      if (lastBasho.shukunsho === r.id) sanshoPrizeCount++;
+      if ((lastBasho.ginoSho ?? []).includes(r.id)) sanshoPrizeCount++;
+      if ((lastBasho.kantosho ?? []).includes(r.id)) sanshoPrizeCount++;
+      if ((lastBasho.shukunsho ?? []).includes(r.id)) sanshoPrizeCount++;
 
       if (isSekitoriDivision(r.division)) sekitoriCount++;
     }

@@ -204,12 +204,12 @@ describe("projectBashoResults", () => {
       ]),
     });
 
-    const basho = makeBashoResult({ ginoSho: "r1", shukunsho: "r2", kantosho: "r3" });
+    const basho = makeBashoResult({ ginoSho: ["r1"], shukunsho: ["r2"], kantosho: ["r3"] });
     const result = projectBashoResults(world, basho);
 
-    expect(result.ginoSho?.id).toBe("r1");
-    expect(result.shukunSho?.id).toBe("r2");
-    expect(result.kantoSho?.id).toBe("r3");
+    expect(result.ginoSho?.[0]?.id).toBe("r1");
+    expect(result.shukunSho?.[0]?.id).toBe("r2");
+    expect(result.kantoSho?.[0]?.id).toBe("r3");
   });
 
   it("returns null prize winners when IDs are missing", () => {
@@ -217,9 +217,9 @@ describe("projectBashoResults", () => {
     const basho = makeBashoResult();
     const result = projectBashoResults(world, basho);
 
-    expect(result.ginoSho).toBeNull();
-    expect(result.shukunSho).toBeNull();
-    expect(result.kantoSho).toBeNull();
+    expect(result.ginoSho).toEqual([]);
+    expect(result.shukunSho).toEqual([]);
+    expect(result.kantoSho).toEqual([]);
   });
 
   it("caches projectRikishi — same rikishi in multiple kinboshi gets same projection object", () => {

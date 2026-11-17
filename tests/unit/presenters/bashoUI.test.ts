@@ -47,9 +47,9 @@ describe("Basho UI Presenters", () => {
       const bashoResult: Partial<BashoResult> = {
         yusho: "r_yusho",
         junYusho: ["r_jun1", "r_jun2"],
-        shukunsho: "r_shukun",
-        kantosho: "r_kanto",
-        ginoSho: "r_gino",
+        shukunsho: ["r_shukun"],
+        kantosho: ["r_kanto"],
+        ginoSho: ["r_gino"],
       };
 
       const result = projectBashoSummary(state as BashoState, bashoResult as BashoResult);
@@ -58,9 +58,9 @@ describe("Basho UI Presenters", () => {
       expect(result.yushoShikona).toBeUndefined(); // Needs world to resolve
       expect(result.junYushoIds).toEqual(["r_jun1", "r_jun2"]);
       expect(result.specialPrizes).toEqual({
-        shukunSho: "r_shukun",
-        kantoSho: "r_kanto",
-        ginoSho: "r_gino",
+        shukunSho: ["r_shukun"],
+        kantoSho: ["r_kanto"],
+        ginoSho: ["r_gino"],
       });
     });
 

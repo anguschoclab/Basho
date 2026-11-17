@@ -21,9 +21,9 @@ import { generateLowerDivisionChampionLines } from "@/engine/narrative/postBasho
 export interface PressConferenceContext {
   yushoId: Id;
   junYushoIds: Id[];
-  ginoSho?: Id;
-  kantosho?: Id;
-  shukunsho?: Id;
+  ginoSho?: Id[];
+  kantosho?: Id[];
+  shukunsho?: Id[];
   bashoName: string;
   year: number;
   divisionYushoMap?: Record<string, Id>;
@@ -43,9 +43,13 @@ function generatePressConference(world: WorldState, context: PressConferenceCont
     lines.push(...generateChampionLines(champion, pressRng, bashoName, year));
   }
 
-  // Special prize winners
-  for (const prizeId of [context.shukunsho, context.kantosho, context.ginoSho]) {
-    if (!prizeId) continue;
+  // Special prize winners — each prize may be shared, so flatten all lists.
+  const prizeWinnerIds = [
+    ...(context.shukunsho ?? []),
+    ...(context.kantosho ?? []),
+    ...(context.ginoSho ?? []),
+  ];
+  for (const prizeId of new Set(prizeWinnerIds)) {
     const winner = getRikishi(world, prizeId);
     if (!winner || prizeId === yushoId) continue;
     lines.push(...generatePrizeWinnerLines(winner, pressRng, bashoName, year));

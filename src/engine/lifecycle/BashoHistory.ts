@@ -135,36 +135,24 @@ function buildAwardLogEntries(
       type: "junYusho" as const,
       winnerId: id,
     })),
-    ...(prizes.shukunsho
-      ? [
-          {
-            bashoName: basho.bashoName,
-            year: world.year,
-            type: "shukunsho" as const,
-            winnerId: prizes.shukunsho,
-          },
-        ]
-      : []),
-    ...(prizes.kantosho
-      ? [
-          {
-            bashoName: basho.bashoName,
-            year: world.year,
-            type: "kantosho" as const,
-            winnerId: prizes.kantosho,
-          },
-        ]
-      : []),
-    ...(prizes.ginoSho
-      ? [
-          {
-            bashoName: basho.bashoName,
-            year: world.year,
-            type: "ginoSho" as const,
-            winnerId: prizes.ginoSho,
-          },
-        ]
-      : []),
+    ...(prizes.shukunsho ?? []).map((id) => ({
+      bashoName: basho.bashoName,
+      year: world.year,
+      type: "shukunsho" as const,
+      winnerId: id,
+    })),
+    ...(prizes.kantosho ?? []).map((id) => ({
+      bashoName: basho.bashoName,
+      year: world.year,
+      type: "kantosho" as const,
+      winnerId: id,
+    })),
+    ...(prizes.ginoSho ?? []).map((id) => ({
+      bashoName: basho.bashoName,
+      year: world.year,
+      type: "ginoSho" as const,
+      winnerId: id,
+    })),
     ...(result.boutOfTheBasho
       ? [
           {

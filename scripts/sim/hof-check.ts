@@ -14,7 +14,7 @@ const yushoCounts = new Map<string, number>();
 const ginoCounts = new Map<string, number>();
 for (const br of world.history ?? []) {
   if (br.yusho) yushoCounts.set(br.yusho, (yushoCounts.get(br.yusho) ?? 0) + 1);
-  if (br.ginoSho) ginoCounts.set(br.ginoSho, (ginoCounts.get(br.ginoSho) ?? 0) + 1);
+  for (const id of br.ginoSho ?? []) ginoCounts.set(id, (ginoCounts.get(id) ?? 0) + 1);
 }
 console.log(
   `worldgen: champion-eligible(3+ yusho)=${[...yushoCounts.values()].filter((c) => c >= 3).length} technician-eligible(3+ gino)=${[...ginoCounts.values()].filter((c) => c >= 3).length}`

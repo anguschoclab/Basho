@@ -21,9 +21,9 @@ interface TournamentCeremonyProps {
   isPlayerChampion: boolean;
   junYusho: Array<{ rikishi: UIRikishi; heyaName: string }>;
   kinboshi: Array<{ winner: UIRikishi; loser: UIRikishi }>;
-  ginoSho: UIRikishi | null;
-  shukunSho: UIRikishi | null;
-  kantoSho: UIRikishi | null;
+  ginoSho: UIRikishi[];
+  shukunSho: UIRikishi[];
+  kantoSho: UIRikishi[];
 }
 
 export function TournamentCeremony({

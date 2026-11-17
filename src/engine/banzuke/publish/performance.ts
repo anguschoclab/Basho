@@ -234,9 +234,9 @@ function recordBashoPerformance(
     isYusho,
     isJunYusho,
     specialPrizes: {
-      shukunsho: history?.shukunsho === id,
-      kantosho: history?.kantosho === id,
-      ginosho: history?.ginoSho === id,
+      shukunsho: (history?.shukunsho ?? []).includes(id),
+      kantosho: (history?.kantosho ?? []).includes(id),
+      ginosho: (history?.ginoSho ?? []).includes(id),
     },
     weight: rikishi.weight,
     momentum: rikishi.momentum,
@@ -424,9 +424,9 @@ export function buildPerformanceList(
     const divisionDays = rikishi ? getTotalBashodays(rikishi.division) : 15;
 
     let prizePoints = 0;
-    if (history?.ginoSho === id) prizePoints += 1;
-    if (history?.shukunsho === id) prizePoints += 1;
-    if (history?.kantosho === id) prizePoints += 1;
+    if ((history?.ginoSho ?? []).includes(id)) prizePoints += 1;
+    if ((history?.shukunsho ?? []).includes(id)) prizePoints += 1;
+    if ((history?.kantosho ?? []).includes(id)) prizePoints += 1;
 
     let promoteToYokozuna = false;
     let consecutiveStrongOzeki = rikishi?.consecutiveStrongOzeki || 0;

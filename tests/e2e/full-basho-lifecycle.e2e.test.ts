@@ -110,8 +110,8 @@ test("Full Basho Lifecycle: seed -> wizard -> 15-day basho -> awards + banzuke p
     ["kantosho", "kantosho"],
     ["shukunsho", "shukunsho"],
   ] as const) {
-    const winnerId = last[field];
-    if (winnerId) {
+    const winnerIds = last[field] ?? [];
+    for (const winnerId of winnerIds) {
       expect(rikishiById[winnerId], `${type} ${winnerId} is a real rikishi`).toBeTruthy();
       expect(hasLogEntry(type, winnerId), `awardLog records ${type}`).toBe(true);
     }

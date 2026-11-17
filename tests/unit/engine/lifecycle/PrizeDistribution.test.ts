@@ -134,7 +134,7 @@ describe("PrizeDistribution (Bug 11 - sansho popularity)", () => {
     const world = MockFactory.createWorld({ rikishi: rikishiMap, currentBasho: basho });
     const { prizes, impact } = distributePrizes(world, basho, "y1");
     expect(impact).toBeDefined();
-    expect(prizes.shukunsho).toBe("m1");
+    expect(prizes.shukunsho).toEqual(["m1"]);
   });
 
   it("Test 12.3: sansho prize should apply popularity boost (Bug 11)", () => {
@@ -252,9 +252,9 @@ describe("PrizeDistribution (Bug 11 - sansho popularity)", () => {
       currentBasho: basho,
     });
     const { prizes } = distributePrizes(world, basho, "y1");
-    expect(prizes.shukunsho).toBeUndefined();
-    expect(prizes.kantosho).toBeUndefined();
-    expect(prizes.ginoSho).toBeUndefined();
+    expect(prizes.shukunsho).toEqual([]);
+    expect(prizes.kantosho).toEqual([]);
+    expect(prizes.ginoSho).toEqual([]);
   });
 
   it("Test 12.8: handles all three sansho prizes at once", () => {
@@ -319,8 +319,114 @@ describe("PrizeDistribution (Bug 11 - sansho popularity)", () => {
     const world = MockFactory.createWorld({ rikishi: rikishiMap, currentBasho: basho });
     const { prizes, impact } = distributePrizes(world, basho, "y1");
     expect(impact).toBeDefined();
-    const count = [prizes.shukunsho, prizes.kantosho, prizes.ginoSho].filter(Boolean).length;
-    expect(count).toBeLessThanOrEqual(3);
+    const count = [prizes.shukunsho, prizes.kantosho, prizes.ginoSho].filter(
+      (ids) => ids.length > 0
+    ).length;
+    expect(count).toBe(3);
+  });
+
+  it("Test 12.11: a shared prize pays ¥2M to EACH co-winner (JSA: split awards)", () => {
+    const m1 = makeRikishi("m1", { rank: "maegashira" });
+    const m2 = makeRikishi("m2", { rank: "maegashira" });
+    const rikishiMap = new Map([
+      ["m1", m1],
+      ["m2", m2],
+    ]);
+    // m1 and m2 tie at 11 wins — shared kantosho.
+    const matches: MatchSchedule[] = [
+      ...makeMatchesForRikishi("m1", 11, Array.from({ length: 11 }, (_, i) => `a${i}`)),
+      ...makeMatchesForRikishi("m2", 11, Array.from({ length: 11 }, (_, i) => `b${i}`)),
+    ];
+    for (let i = 0; i < 11; i++) {
+      rikishiMap.set(`a${i}`, makeRikishi(`a${i}`, { rank: "maegashira" }));
+      rikishiMap.set(`b${i}`, makeRikishi(`b${i}`, { rank: "maegashira" }));
+    }
+    const basho: BashoState = {
+      id: "test-basho",
+      year: 2026,
+      bashoNumber: 1,
+      bashoName: "hatsu" as BashoName,
+      day: 15,
+      matches,
+      standings: new Map(),
+      isActive: true,
+    };
+    const world = MockFactory.createWorld({ rikishi: rikishiMap, currentBasho: basho });
+    const { prizes, impact } = distributePrizes(world, basho, "nobody");
+    expect(prizes.kantosho).toEqual(["m1", "m2"]);
+    for (const rid of ["m1", "m2"]) {
+      const update = impact.entities?.rikishiUpdates?.get(rid);
+      expect(update?.economics?.cash).toBe(1_000_000);
+      expect(update?.economics?.retirementFund).toBe(1_000_000);
+      expect(update?.economics?.totalEarnings).toBe(2_000_000);
+    }
+  });
+
+  it("Test 12.12: a multi-prize winner is paid ¥2M per prize won", () => {
+    const m1 = makeRikishi("m1", { rank: "maegashira" });
+    const y1 = makeRikishi("y1", { rank: "yokozuna" });
+    const rikishiMap = new Map([
+      ["m1", m1],
+      ["y1", y1],
+    ]);
+    // m1: 11 wins, beats the yokozuna (who takes yusho elsewhere in fixture),
+    // 3 distinct kimarite — tops shukun, kanto, and gino simultaneously.
+    const matches: MatchSchedule[] = [
+      {
+        boutId: "b-y",
+        day: 1,
+        eastRikishiId: "m1",
+        westRikishiId: "y1",
+        result: makeResult("b-y", "m1", "y1", "yorikiri"),
+      },
+      {
+        boutId: "b-2",
+        day: 2,
+        eastRikishiId: "m1",
+        westRikishiId: "o2",
+        result: makeResult("b-2", "m1", "o2", "oshidashi"),
+      },
+      {
+        boutId: "b-3",
+        day: 3,
+        eastRikishiId: "m1",
+        westRikishiId: "o3",
+        result: makeResult("b-3", "m1", "o3", "hatakikomi"),
+      },
+      ...makeMatchesForRikishi(
+        "m1",
+        8,
+        Array.from({ length: 8 }, (_, i) => `o${i + 4}`)
+      ),
+    ];
+    for (let i = 2; i <= 11; i++)
+      rikishiMap.set(`o${i}`, makeRikishi(`o${i}`, { rank: "maegashira" }));
+    const basho: BashoState = {
+      id: "test-basho",
+      year: 2026,
+      bashoNumber: 1,
+      bashoName: "hatsu" as BashoName,
+      day: 15,
+      matches,
+      standings: new Map(),
+      isActive: true,
+    };
+    const world = MockFactory.createWorld({ rikishi: rikishiMap, currentBasho: basho });
+    const { prizes, impact } = distributePrizes(world, basho, "y1");
+    expect(prizes.shukunsho).toContain("m1");
+    expect(prizes.kantosho).toContain("m1");
+    expect(prizes.ginoSho).toContain("m1");
+    const update = impact.entities?.rikishiUpdates?.get("m1");
+    // 3 prizes × ¥2M = ¥6M total, split 50/50 cash/retirement
+    expect(update?.economics?.cash).toBe(3_000_000);
+    expect(update?.economics?.retirementFund).toBe(3_000_000);
+    expect(update?.economics?.totalEarnings).toBe(6_000_000);
+    // Achievement counters record all three prizes
+    expect(update?.stats?.achievements?.specialPrizes).toEqual({
+      shukunSho: 1,
+      kantoSho: 1,
+      ginoSho: 1,
+    });
   });
 
   it("Test 12.9: handles empty rikishiMap", () => {

@@ -213,13 +213,13 @@ export function SpecialPrizesSection({
   shukunSho,
   kantoSho,
 }: {
-  ginoSho: UIRikishi | null;
-  shukunSho: UIRikishi | null;
-  kantoSho: UIRikishi | null;
+  ginoSho: UIRikishi[];
+  shukunSho: UIRikishi[];
+  kantoSho: UIRikishi[];
 }) {
   const prizes = [
     {
-      rikishi: shukunSho,
+      winners: shukunSho,
       label: "Shukun-shō",
       ja: "殊勲賞",
       sub: "Outstanding Performance",
@@ -227,7 +227,7 @@ export function SpecialPrizesSection({
       color: "border-destructive/20 bg-destructive/5",
     },
     {
-      rikishi: kantoSho,
+      winners: kantoSho,
       label: "Kantō-shō",
       ja: "敢闘賞",
       sub: "Fighting Spirit",
@@ -235,7 +235,7 @@ export function SpecialPrizesSection({
       color: "border-west/20 bg-west/5",
     },
     {
-      rikishi: ginoSho,
+      winners: ginoSho,
       label: "Ginō-shō",
       ja: "技能賞",
       sub: "Technique",
@@ -269,11 +269,15 @@ export function SpecialPrizesSection({
                 </div>
                 <div className="text-2xl font-display font-black">{prize.ja}</div>
               </div>
-              {prize.rikishi && (
+              {prize.winners.length > 0 && (
                 <>
                   <div className="text-sm text-muted-foreground">{prize.sub}</div>
-                  <div className="font-display font-black">
-                    <RikishiName id={prize.rikishi.id} name={prize.rikishi.shikona} />
+                  <div className="font-display font-black space-y-1">
+                    {prize.winners.map((r) => (
+                      <div key={r.id}>
+                        <RikishiName id={r.id} name={r.shikona} />
+                      </div>
+                    ))}
                   </div>
                 </>
               )}

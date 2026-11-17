@@ -199,7 +199,7 @@ describe("historyIndex", () => {
         } as WorldState["currentBasho"],
       });
 
-      const result = makeMockBashoResult({ yusho: "r1", ginoSho: "r1" });
+      const result = makeMockBashoResult({ yusho: "r1", ginoSho: ["r1"] });
       indexBashoResult(world, result);
 
       const idx = world.historyIndex as HistoryIndex;
@@ -235,7 +235,7 @@ describe("historyIndex", () => {
         } as WorldState["currentBasho"],
       });
 
-      const result = makeMockBashoResult({ yusho: "r1", shukunsho: "r1" });
+      const result = makeMockBashoResult({ yusho: "r1", shukunsho: ["r1"] });
       indexBashoResult(world, result);
 
       const idx = world.historyIndex as HistoryIndex;

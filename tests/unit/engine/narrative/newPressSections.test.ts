@@ -193,7 +193,7 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
     const lines = PostBashoPressService.generatePressConference(world, {
       yushoId: "fn-champ",
       junYushoIds: [],
-      ginoSho: "fn-winner",
+      ginoSho: ["fn-winner"],
       bashoName: "hatsu",
       year: 2025,
     });
@@ -235,7 +235,7 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
     const lines = PostBashoPressService.generatePressConference(world, {
       yushoId: "co-champ",
       junYushoIds: [],
-      kantosho: "co-winner",
+      kantosho: ["co-winner"],
       bashoName: "nagoya",
       year: 2025,
     });
