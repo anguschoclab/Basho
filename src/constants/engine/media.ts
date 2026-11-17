@@ -57,3 +57,14 @@ export const MEDIA_IMPACT_LOW = 1;
 
 // Media response slice count
 export const MEDIA_RESPONSE_SLICE_COUNT = 5;
+
+// ── W K: Day-recap headlines ────────────────────────────────────────────────
+// Titled ranks (yokozuna through komusubi) whose defeat counts toward a
+// "day of upsets" recap. Distinct from strict san'yaku (sekiwake+komusubi).
+export const TITLED_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+// San'yaku upsets in a single day needed to trigger the upset-day recap.
+export const DAY_RECAP_SANYAKU_UPSET_THRESHOLD = 2;
+// Headline impact scores for the three recap kinds.
+export const DAY_RECAP_IMPACT_KINBOSHI = 60;
+export const DAY_RECAP_IMPACT_LEADER_CHANGE = 40;
+export const DAY_RECAP_IMPACT_UPSET_DAY = 35;

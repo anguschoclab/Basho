@@ -4,7 +4,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import { MediaState, MediaHeadline, MediaTone, MediaBeat } from "@/engine/types/media";
-import { BoutResult, BashoName } from "@/engine/types/basho";
+import { BoutResult, BashoName, MatchSchedule } from "@/engine/types/basho";
 import { Division } from "@/engine/types/banzuke";
 import { rngForWorld, SeededRNG } from "@/engine/core/rng";
 import { getRivalryBoutModifiers } from "@/engine/narrative/RivalryHeatService";
@@ -23,6 +23,11 @@ import {
   STREAK_IMPACT_BASE,
   STREAK_IMPACT_MULTIPLIER,
   STREAK_MAIN_EVENT_THRESHOLD,
+  TITLED_RANKS,
+  DAY_RECAP_SANYAKU_UPSET_THRESHOLD,
+  DAY_RECAP_IMPACT_KINBOSHI,
+  DAY_RECAP_IMPACT_LEADER_CHANGE,
+  DAY_RECAP_IMPACT_UPSET_DAY,
 } from "@/constants/engine/media";
 import {
   RIVALRY_TENSION_BEAT_THRESHOLD,
@@ -38,7 +43,12 @@ import {
   calculateHeatBump,
   calculatePressureBump,
 } from "@/engine/media/MediaImpactService";
-import { generateBoutHeadline, generateStreakHeadline } from "@/engine/media/HeadlineGenerator";
+import {
+  generateBoutHeadline,
+  generateRecapHeadline,
+  generateStreakHeadline,
+} from "@/engine/media/HeadlineGenerator";
+import { createDefaultMediaState } from "@/engine/media/MediaStateService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getRikishi } from "@/engine/core/queries";
@@ -300,4 +310,168 @@ function processStreak(
     state: { ...state, bashoStreaks: nextStreaks, streakHeadlinesFired: nextFired },
     headline,
   };
+}
+
+// ── W K: Day-recap headlines ─────────────────────────────────────────────────
+
+type RecapKind = "kinboshi" | "leaderChange" | "upsetDay";
+
+interface RecapCandidate {
+  kind: RecapKind;
+  rikishiIds: string[];
+  ctx: Record<string, string | number>;
+}
+
+/**
+ * Scans the just-resolved day's results and emits at most ONE recap headline,
+ * in priority order: first kinboshi > leader change > day of upsets.
+ * Called from advanceBashoDay before day++ so `basho.day` is the resolved day.
+ */
+export function generateDayRecapHeadline(world: WorldState): StateImpact | null {
+  const basho = world.currentBasho;
+  if (!basho) return null;
+  const day = basho.day;
+  const todayResults: BoutResult[] = [];
+  for (const m of basho.matches) {
+    if (m.day === day && m.result) todayResults.push(m.result);
+  }
+  if (todayResults.length === 0) return null;
+
+  const candidate =
+    recapKinboshi(world, basho, todayResults, day) ??
+    recapLeaderChange(world, basho, day) ??
+    recapSanyakuUpsetDay(world, todayResults, day);
+  if (!candidate) return null;
+
+  const state = world.mediaState ?? createDefaultMediaState();
+  const rng = rngForWorld(world, "media", `recap::${basho.id ?? basho.bashoName}::day${day}`);
+  const { title, subtitle } = generateRecapHeadline({
+    rng,
+    kind: candidate.kind,
+    ctx: candidate.ctx,
+  });
+
+  const tier: MediaHeadline["tier"] = candidate.kind === "kinboshi" ? "main_event" : "national";
+  const impact =
+    candidate.kind === "kinboshi"
+      ? DAY_RECAP_IMPACT_KINBOSHI
+      : candidate.kind === "leaderChange"
+        ? DAY_RECAP_IMPACT_LEADER_CHANGE
+        : DAY_RECAP_IMPACT_UPSET_DAY;
+
+  const heyaIds = new Set<string>();
+  for (const id of candidate.rikishiIds) {
+    const heyaId = getRikishi(world, id)?.heyaId;
+    if (heyaId) heyaIds.add(heyaId);
+  }
+
+  const headline: MediaHeadline = {
+    id: rng.uuid("MH"),
+    week: world.week ?? 0,
+    bashoName: basho.bashoName,
+    tier,
+    beat: candidate.kind === "leaderChange" ? "title_race" : "upset",
+    tone: candidate.kind === "upsetDay" ? "controversy" : "hype",
+    rikishiIds: candidate.rikishiIds,
+    heyaIds: [...heyaIds],
+    title,
+    subtitle,
+    impact,
+    tags: ["basho", "day_recap", candidate.kind],
+  };
+
+  const builder = createImpactBuilder("generateDayRecapHeadline");
+  builder.updateWorldField("mediaState", applyHeadlineEffects(state, world, headline));
+  builder.logEvent(
+    "MEDIA_RESPONSE",
+    "media",
+    { status: "meta_shift", incident: title, day, score: impact },
+    { rikishiId: candidate.rikishiIds[0] }
+  );
+  return builder.build();
+}
+
+/** First-kinboshi recap — fires only on the basho's first gold star. */
+function recapKinboshi(
+  world: WorldState,
+  basho: { matches: MatchSchedule[] },
+  todayResults: BoutResult[],
+  day: number
+): RecapCandidate | null {
+  const kinboshi = todayResults.find((r) => r.isKinboshi);
+  if (!kinboshi) return null;
+  const earlierKinboshi = basho.matches.some((m) => m.day < day && m.result?.isKinboshi);
+  if (earlierKinboshi) return null;
+  return {
+    kind: "kinboshi",
+    rikishiIds: [kinboshi.winnerRikishiId, kinboshi.loserRikishiId],
+    ctx: {
+      winner: getRikishi(world, kinboshi.winnerRikishiId)?.shikona ?? "Unknown",
+      loser: getRikishi(world, kinboshi.loserRikishiId)?.shikona ?? "Unknown",
+      day,
+    },
+  };
+}
+
+/** Leader-change recap — a new sole makuuchi leader emerged today. */
+function recapLeaderChange(
+  world: WorldState,
+  basho: { matches: MatchSchedule[] },
+  day: number
+): RecapCandidate | null {
+  const winsNow = new Map<string, number>();
+  const winsBefore = new Map<string, number>();
+  for (const m of basho.matches) {
+    if (!m.result) continue;
+    const winner = getRikishi(world, m.result.winnerRikishiId);
+    if (winner?.division !== "makuuchi") continue;
+    winsNow.set(winner.id, (winsNow.get(winner.id) ?? 0) + 1);
+    if (m.day < day) winsBefore.set(winner.id, (winsBefore.get(winner.id) ?? 0) + 1);
+  }
+  const leaderNow = soleLeader(winsNow);
+  if (!leaderNow || leaderNow === soleLeader(winsBefore)) return null;
+  return {
+    kind: "leaderChange",
+    rikishiIds: [leaderNow],
+    ctx: {
+      leader: getRikishi(world, leaderNow)?.shikona ?? "Unknown",
+      day,
+      basho: world.currentBasho?.bashoName ?? "basho",
+    },
+  };
+}
+
+function soleLeader(wins: Map<string, number>): string | null {
+  let max = 0;
+  let leader: string | null = null;
+  let tied = false;
+  for (const [id, w] of wins) {
+    if (w > max) {
+      max = w;
+      leader = id;
+      tied = false;
+    } else if (w === max) {
+      tied = true;
+    }
+  }
+  return leader !== null && !tied ? leader : null;
+}
+
+/** Day-of-upsets recap — ≥2 san'yaku-ranked losers fell to lower ranks. */
+function recapSanyakuUpsetDay(
+  world: WorldState,
+  todayResults: BoutResult[],
+  day: number
+): RecapCandidate | null {
+  const rikishiIds: string[] = [];
+  let count = 0;
+  for (const r of todayResults) {
+    if (!r.upset) continue;
+    const loser = getRikishi(world, r.loserRikishiId);
+    if (!loser || loser.division !== "makuuchi" || !TITLED_RANKS.has(loser.rank)) continue;
+    count++;
+    rikishiIds.push(r.winnerRikishiId, r.loserRikishiId);
+  }
+  if (count < DAY_RECAP_SANYAKU_UPSET_THRESHOLD) return null;
+  return { kind: "upsetDay", rikishiIds, ctx: { count, day } };
 }

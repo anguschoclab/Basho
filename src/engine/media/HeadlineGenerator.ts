@@ -77,6 +77,21 @@ export function generateStreakHeadline(args: { rng: SeededRNG; shikona: string; 
   return { title, subtitle };
 }
 
+/**
+ * W K — day-recap headline text for the resolved-day summary.
+ * Kinds map to media.recap.* template blocks.
+ */
+export function generateRecapHeadline(args: {
+  rng: SeededRNG;
+  kind: "kinboshi" | "leaderChange" | "upsetDay";
+  ctx: Record<string, string | number>;
+}): { title: string; subtitle?: string } {
+  const { rng, kind, ctx } = args;
+  const title = BardEngine.resolve(rng, `media.recap.${kind}`, ctx).text;
+  const subtitle = BardEngine.resolve(rng, `media.recap.subtitles.${kind}`, ctx).text;
+  return { title, subtitle };
+}
+
 export function generatePreBashoHeadline(args: {
   rng: SeededRNG;
   kind: "rivalryWatch" | "promotionRace" | "formWatch" | "titleFavorites";

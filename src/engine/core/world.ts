@@ -15,6 +15,7 @@ import type { BashoName, BoutResult, BashoState } from "@/engine/types/basho";
 import type { Id } from "@/engine/types/common";
 import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
 import { resetBashoMediaTracking, handleMediaEvent } from "@/engine/media/MediaService";
+import { generateDayRecapHeadline } from "@/engine/media/MediaBoutService";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { resolveAndApplyBout } from "@/engine/bout/boutPipeline";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -77,6 +78,11 @@ export function advanceBashoDay(world: WorldState): WorldState {
   if (!basho) return currentWorld;
 
   const nextDay = basho.day + 1;
+
+  // W K: day-recap headline scans the resolved day's results — must run while
+  // basho.day still points at today (before the day++ impact).
+  const recapImpact = generateDayRecapHeadline(currentWorld);
+  if (recapImpact) currentWorld = resolveImpacts(currentWorld, [recapImpact]);
 
   // Update basho day immutably via impacts.
   // boutTactics are per-day — clear them so stale entries can't leak into the

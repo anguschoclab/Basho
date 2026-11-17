@@ -159,5 +159,41 @@
       "Media obligations pile up for %SHIKONA% following a surge in public interest.",
       "Cameras follow %SHIKONA%'s every move as media scrutiny intensifies at %HEYA%."
     ]
+  },
+  "recap": {
+    "kinboshi": [
+      "Gold Star for %WINNER%: %LOSER% Slain on Day %DAY%",
+      "%WINNER% Slays the Yokozuna on Day %DAY%",
+      "A Star Is Born: %WINNER% Topples %LOSER%",
+      "Day %DAY% Belongs to %WINNER% — %LOSER% Falls to the Kinboshi",
+      "Kinboshi! %WINNER% Hands %LOSER% a Stunning Defeat"
+    ],
+    "leaderChange": [
+      "%LEADER% Seizes Sole Possession of the Lead",
+      "New Leader: %LEADER% Alone at the Top After Day %DAY%",
+      "The Race Tightens: %LEADER% Takes Over on Day %DAY%",
+      "%LEADER% Steps Forward — Sole Leader of the %BASHO%",
+      "Changing of the Guard: %LEADER% Leads the Field"
+    ],
+    "upsetDay": [
+      "Day of Upsets Rocks the Kokugikan — %COUNT% San'yaku Fall",
+      "Chaos on Day %DAY%: %COUNT% San'yaku Wrestlers Stunned",
+      "The Ranked Fall: %COUNT% San'yaku Upsets Shake the Basho",
+      "A Bloodbath on Day %DAY% — %COUNT% San'yaku Fall to Lower Ranks"
+    ],
+    "subtitles": {
+      "kinboshi": [
+        "The maegashira earns the sport's most coveted single-day honor.",
+        "A victory the crowd will remember long after this basho ends."
+      ],
+      "leaderChange": [
+        "Every remaining day now carries championship weight.",
+        "The yusho race has a new front-runner."
+      ],
+      "upsetDay": [
+        "The yusho race was thrown wide open by day's end.",
+        "Commentators called it the wildest day of the tournament so far."
+      ]
+    }
   }
 }
