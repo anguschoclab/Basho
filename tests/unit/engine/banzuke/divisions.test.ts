@@ -80,6 +80,29 @@ describe("getRanksByDivision", () => {
   });
 });
 
+describe("RANK_HIERARCHY salaries (JSA monthly figures)", () => {
+  // Real JSA monthly salary: Y ¥3.0M, O ¥2.5M, S ¥1.8M, K ¥1.4M, M ¥1.1M,
+  // J ¥1.1M. Non-sekitori receive no salary (basho teate covers them).
+  const expected: Record<Rank, number> = {
+    yokozuna: 3_000_000,
+    ozeki: 2_500_000,
+    sekiwake: 1_800_000,
+    komusubi: 1_400_000,
+    maegashira: 1_100_000,
+    juryo: 1_100_000,
+    makushita: 0,
+    sandanme: 0,
+    jonidan: 0,
+    jonokuchi: 0,
+  };
+
+  for (const rank of ALL_RANKS) {
+    it(`${rank}.salary === ${expected[rank]}`, () => {
+      expect(RANK_HIERARCHY[rank].salary).toBe(expected[rank]);
+    });
+  }
+});
+
 describe("getDivisionOfRank", () => {
   const expected: Record<Rank, Division> = {
     yokozuna: "makuuchi",

@@ -38,9 +38,11 @@ describe("Ozeki promotion (4.2)", () => {
       expect(result).toBe(2);
     });
 
-    it("sekiwake without promoteToOzeki but 11+ wins stays at sekiwake tier (2)", () => {
+    it("sekiwake with 11+ wins but no 3-basho body stays at sekiwake tier (3)", () => {
+      // Real JSA has no single-basho ozeki promotion — even a huge record
+      // requires the ~33-wins-over-3-sanyaku-basho body of work.
       const result = bestTierAllowed(entry("sekiwake"), perf(11, 4), undefined, NONE);
-      expect(result).toBe(2);
+      expect(result).toBe(3);
     });
 
     it("komusubi with promoteToOzeki flag is allowed to reach ozeki tier (2)", () => {

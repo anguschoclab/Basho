@@ -43,7 +43,6 @@ import {
   MAKUSHITA_DEFAULT_RANK_NUMBER,
   OZEKI_DEMOTED_FLOOR,
   JONOKUCHI_NEAR_KACHI_WINS,
-  SEKIWAKE_OZEKI_PROMOTION_WINS,
   SEKIWAKE_OZEKI_RECLAIM_WINS,
   SEKIWAKE_33_WIN_THRESHOLD,
   KOMUSUBI_PROMOTION_WINS,
@@ -188,7 +187,8 @@ export function bestTierAllowed(
   if (rank === "ozeki" && demotedOzeki.has(entry.rikishiId)) return 3;
   if (rank === "ozeki" && perf?.promoteToYokozuna) return 1;
   if (rank === "sekiwake" && perf?.promoteToOzeki) return 2;
-  if (rank === "sekiwake" && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_PROMOTION_WINS) return 2;
+  // NOTE: no single-basho wins shortcut — JSA ozeki promotion always requires
+  // the ~33-wins-over-3-sanyaku-basho body of work (handled below).
   // Ozeki reclaim: demoted ozeki at sekiwake with 10+ wins can return to ozeki
   if (
     rank === "sekiwake" &&

@@ -35,10 +35,14 @@ export const BENEFACTOR_BAILOUT_AMOUNT = 10_000_000;
 /** Kensho payout per envelope (¥). Constitution §6. */
 export const KENSHO_AMOUNT_PER_ENVELOPE = 70_000;
 
-/** Kensho split per envelope (¥). */
+/**
+ * Kensho split per envelope (¥) — the post-May-2025 JSA model: the winner
+ * takes ¥10K immediately and ¥50K goes into their kensho retirement account,
+ * with the JSA retaining a ¥10K administration fee.
+ */
 export const KENSHO_SPLIT = {
-  cash: 30_000,
-  retirement: 30_000,
+  cash: 10_000,
+  retirement: 50_000,
   jsaFee: 10_000,
 } as const;
 

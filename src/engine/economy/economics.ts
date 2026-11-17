@@ -95,7 +95,7 @@ export function onBoutResolvedEconomics(
   if (kenshoCount > 0) {
     const total = kenshoCount * KENSHO_AMOUNT_PER_ENVELOPE;
 
-    // Real JSA model: ¥10K JSA fee + ¥30K cash + ¥30K retirement per envelope
+    // Post-May-2025 JSA model: ¥10K cash + ¥50K retirement account + ¥10K JSA fee
     const cashToWinner = kenshoCount * KENSHO_SPLIT.cash;
     const retirementAdd = kenshoCount * KENSHO_SPLIT.retirement;
 

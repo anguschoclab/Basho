@@ -63,7 +63,6 @@ export const JONOKUCHI_NEAR_KACHI_WINS = 3;
 
 // ── Promotion win thresholds ──────────────────────────────────────────────────
 
-export const SEKIWAKE_OZEKI_PROMOTION_WINS = 11;
 export const SEKIWAKE_OZEKI_RECLAIM_WINS = 10;
 export const SEKIWAKE_33_WIN_THRESHOLD = 33;
 export const KOMUSUBI_PROMOTION_WINS = 10;

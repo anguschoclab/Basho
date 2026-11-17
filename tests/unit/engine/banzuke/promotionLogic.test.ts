@@ -188,8 +188,22 @@ describe("bestTierAllowed", () => {
     expect(bestTierAllowed(entry("ozeki"), p, undefined, NONE)).toBe(1);
   });
 
-  it("sekiwake with 11+ wins can reach tier 2 (ozeki)", () => {
-    expect(bestTierAllowed(entry("sekiwake"), perf(11, 4), undefined, NONE)).toBe(2);
+  it("sekiwake with 11+ wins alone cannot reach tier 2 — no single-basho ozeki shortcut (JSA)", () => {
+    // Even a dominant record is insufficient without the 3-basho ~33-win body.
+    expect(bestTierAllowed(entry("sekiwake"), perf(11, 4), undefined, NONE)).toBe(3);
+    expect(bestTierAllowed(entry("sekiwake"), perf(15, 0), undefined, NONE)).toBe(3);
+  });
+
+  it("sekiwake with 33+ sanyaku wins over 3 basho and 10+ here can reach tier 2", () => {
+    // The real JSA promotion standard.
+    expect(
+      bestTierAllowed(
+        entry("sekiwake"),
+        perf(11, 4, { sekiwakeThreeBashoWins: 33 }),
+        undefined,
+        NONE
+      )
+    ).toBe(2);
   });
 
   it("sekiwake with 10 wins stays at tier 3", () => {

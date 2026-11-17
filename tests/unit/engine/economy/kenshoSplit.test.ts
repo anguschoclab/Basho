@@ -36,8 +36,8 @@ function resolveKensho(
   return onBoutResolvedEconomics(world, makeBoutContext(winner, loser, kenshoEnvelopes));
 }
 
-describe("Kensho split — real JSA model", () => {
-  it("winner gets ¥30K cash per envelope", () => {
+describe("Kensho split — real JSA model (post-May-2025)", () => {
+  it("winner gets ¥10K cash per envelope", () => {
     const winner = mockRikishi("w1", {
       rank: "maegashira",
       division: "makuuchi",
@@ -70,9 +70,10 @@ describe("Kensho split — real JSA model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const updatedWinner = resolved.rikishi.get("w1");
     expect(updatedWinner?.economics?.cash).toBe(KENSHO_SPLIT.cash);
+    expect(updatedWinner?.economics?.cash).toBe(10_000);
   });
 
-  it("winner gets ¥30K retirement per envelope", () => {
+  it("winner gets ¥50K retirement account per envelope", () => {
     const winner = mockRikishi("w1", {
       rank: "maegashira",
       division: "makuuchi",
@@ -105,6 +106,7 @@ describe("Kensho split — real JSA model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const updatedWinner = resolved.rikishi.get("w1");
     expect(updatedWinner?.economics?.retirementFund).toBe(KENSHO_SPLIT.retirement);
+    expect(updatedWinner?.economics?.retirementFund).toBe(50_000);
   });
 
   it("heya gets ¥0 from kensho", () => {
@@ -150,7 +152,7 @@ describe("Kensho split — real JSA model", () => {
     );
   });
 
-  it("2 envelopes → ¥60K cash + ¥60K retirement + ¥20K JSA fee", () => {
+  it("2 envelopes → ¥20K cash + ¥100K retirement + ¥20K JSA fee", () => {
     const winner = mockRikishi("w1", {
       rank: "maegashira",
       division: "makuuchi",
@@ -182,8 +184,8 @@ describe("Kensho split — real JSA model", () => {
     const impact = resolveKensho(world, winner, loser, 2);
     const resolved = resolveImpacts(world, [impact]);
     const updatedWinner = resolved.rikishi.get("w1");
-    expect(updatedWinner?.economics?.cash).toBe(60_000);
-    expect(updatedWinner?.economics?.retirementFund).toBe(60_000);
+    expect(updatedWinner?.economics?.cash).toBe(20_000);
+    expect(updatedWinner?.economics?.retirementFund).toBe(100_000);
   });
 
   it("0 envelopes → no economic update", () => {
