@@ -292,6 +292,9 @@ export function tickTalentPoolYear(world: WorldState): StateImpact {
 
   const nextPools = { ...tp.pools };
   let nextCandidates = { ...tp.candidates };
+  // Removed prospects keep resolving via the tombstone — events and requests
+  // logged against their personId while they were live are permanent records.
+  const departed = new Set<string>(tp.departedIds ?? []);
 
   for (const poolType of poolTypes) {
     const pool = { ...tp.pools[poolType] };
@@ -304,10 +307,16 @@ export function tickTalentPoolYear(world: WorldState): StateImpact {
     pool.candidatesVisible = visible.filteredIds;
     pool.candidatesHidden = hidden.filteredIds;
 
-    // Remove from nextCandidates
+    // Remove from nextCandidates — tombstoning the candidateId and personId
+    // keeps historical person refs resolvable after the prospect is gone.
     const removedIds = [...visible.idsToRemove, ...hidden.idsToRemove];
     if (removedIds.length > 0) {
       const removedSet = new Set(removedIds);
+      for (const id of removedIds) {
+        departed.add(id);
+        const personId = tp.candidates[id]?.personId;
+        if (personId) departed.add(personId);
+      }
       const filteredCandidates: Record<string, TalentCandidate> = {};
       for (const id in nextCandidates) {
         if (Object.prototype.hasOwnProperty.call(nextCandidates, id)) {
@@ -344,6 +353,7 @@ export function tickTalentPoolYear(world: WorldState): StateImpact {
     pools: nextPools,
     candidates: nextCandidates,
     lastYearlyRefreshYear: currentYear,
+    departedIds: departed.size > 0 ? [...departed] : tp.departedIds,
   });
 
   return builder.build();

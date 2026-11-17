@@ -157,12 +157,16 @@ function makeAuditCtx(world: WorldState, violations: IdIntegrityViolation[]): Au
       ...rikishiIds,
       ...Object.keys(world.talentPool?.candidates ?? {}),
       ...Object.keys(world.candidatePool?.candidates ?? {}),
+      ...(world.talentPool?.departedIds ?? []),
+      ...(world.candidatePool?.departedIds ?? []),
     ]),
     // Person refs that outlive active-roster membership: a released rikishi
     // re-enters the talent pool under the SAME id (reinjectToTalentPool sets
     // candidateId = personId = rikishi.id), so events/awards/lineage/pending
     // requests about them stay resolvable. Materialized candidates carry
     // their rikishi id as personId, so both keys and personIds belong here.
+    // departedIds tombstones prospects removed by the yearly age-out —
+    // events/requests recorded while they were live remain valid history.
     lifetimeIds: new Set<string>([
       ...rikishiIds,
       ...Object.keys(world.talentPool?.candidates ?? {}),
@@ -171,6 +175,8 @@ function makeAuditCtx(world: WorldState, violations: IdIntegrityViolation[]): Au
       ...Object.values(world.candidatePool?.candidates ?? {}).map(
         (c) => (c as { personId?: string }).personId ?? ""
       ),
+      ...(world.talentPool?.departedIds ?? []),
+      ...(world.candidatePool?.departedIds ?? []),
     ]),
   };
 

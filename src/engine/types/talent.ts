@@ -242,4 +242,12 @@ export interface TalentPoolWorldState {
    * Tracks how much the player has scouted each candidate.
    */
   playerScouting?: Record<Id, { scoutingLevel: number; lastScoutedWeek: number }>;
+
+  /**
+   * Tombstone of every id removed from `candidates` — candidateIds AND their
+   * personIds. Aged-out prospects vanish from the pool, but events and
+   * requests recorded against their personId while they were live must keep
+   * resolving (ID-integrity lifetimeIds reads this list).
+   */
+  departedIds?: Id[];
 }

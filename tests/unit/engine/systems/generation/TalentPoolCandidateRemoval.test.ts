@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { tickTalentPoolYear } from "@/engine/generation/TalentPoolStateService";
 import { makeMockWorld } from "@tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { validateWorldIdIntegrity } from "@/engine/core/idIntegrity";
 import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
 import type { TalentCandidate, TalentPoolWorldState, TalentPoolType } from "@/engine/types/talent";
 
 function makeCandidate(id: string, birthYear: number): TalentCandidate {
@@ -202,5 +204,65 @@ describe("TalentPoolStateService — candidate removal via tickTalentPoolYear", 
     // Ghost IDs should also be removed from candidates object
     expect(newTp.candidates["ghost-1"]).toBeUndefined();
     expect(newTp.candidates["ghost-2"]).toBeUndefined();
+  });
+
+  it("tombstones aged-out prospects so lifetime refs stay resolvable", () => {
+    // high_school maxAge = 20 — born 2002 is age 23 in 2025 → removed.
+    const oldCandidate = makeCandidate("old-1", 2002);
+    const tp = makeTalentPool(
+      { "old-1": oldCandidate },
+      { high_school: { candidatesVisible: ["old-1"], candidatesHidden: [] } }
+    );
+    world.talentPool = tp;
+
+    // A heya exists so request/heya refs resolve independently of the person
+    // tombstone under test.
+    world.heyas.set("heya-a", { id: "heya-a", rikishiIds: [] } as unknown as Heya);
+
+    // Records written while the prospect was live keep referencing his
+    // personId after he leaves the pool (production: signing-offer events
+    // log rikishiId = candidate.personId; pending requests carry the same).
+    world.events = {
+      version: "1.0.0",
+      log: [
+        {
+          id: "ev-1",
+          type: "RECRUIT_DISCOVERED",
+          year: 2025,
+          week: 10,
+          phase: "weekly",
+          category: "scouting",
+          importance: "minor",
+          scope: "rikishi",
+          rikishiId: "person_old-1",
+          title: "Prospect scouted",
+          summary: "A scout filed a report.",
+          data: {},
+        },
+      ],
+      dedupe: {},
+    };
+    world.pendingRikishiRequests = [
+      {
+        id: "req-1",
+        rikishiId: "person_old-1",
+        heyaId: "heya-a",
+        type: "request_rest",
+        createdWeek: 9,
+        reason: "fatigue",
+      },
+    ];
+
+    const newWorld = resolveImpacts(world, [tickTalentPoolYear(world)]);
+
+    // The prospect is gone from the pool but tombstoned with his personId.
+    expect(newWorld.talentPool!.candidates["old-1"]).toBeUndefined();
+    expect(newWorld.talentPool!.departedIds).toContain("old-1");
+    expect(newWorld.talentPool!.departedIds).toContain("person_old-1");
+
+    const personViolations = validateWorldIdIntegrity(newWorld).filter(
+      (v) => v.id === "person_old-1" || v.id === "old-1"
+    );
+    expect(personViolations).toEqual([]);
   });
 });

@@ -83,7 +83,79 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
       if (seededCount++ >= 3) break;
       seeded.set(id, { ...r, birthYear: world.year - RETIREMENT_MANDATORY_AGE });
     }
-    const result = await runAutoSim({ ...world, rikishi: seeded }, SIM_CONFIG);
+    const simWorld = { ...world, rikishi: seeded };
+
+    // Latent-defect pin (ID integrity): an over-age pure prospect still in
+    // the hidden reserve. "locked" keeps NPC bidding/materialization from
+    // claiming him mid-year so the yearly refresh ages him out on schedule —
+    // refs recorded while he was live (a scouting event, a pending request)
+    // must keep resolving via the pool's departedIds tombstone, not dangle.
+    const AGED_ID = "CD-AGEDOUT-PIN";
+    const AGED_PERSON = "person-AGEDOUT-PIN";
+    if (simWorld.talentPool?.pools?.high_school) {
+      simWorld.talentPool.candidates[AGED_ID] = {
+        candidateId: AGED_ID,
+        personId: AGED_PERSON,
+        name: "Overaged Prospect",
+        birthYear: world.year - 25,
+        originRegion: "Japan",
+        nationality: "Japan",
+        visibilityBand: "rumored",
+        reputationSeed: 50,
+        tags: [],
+        combatProfile: {
+          archetype: "oshi",
+          familyPreferences: { push: 10, belt: 0, trick: 0, speed: 0 },
+          preferredGrip: "none",
+          preferredGripDepth: "standard",
+          statModifiers: {},
+          counterFamily: "push",
+          archetypeBehavior: {
+            tachiaiSpeedBonus: 0,
+            lateralMovementBonus: 0,
+            edgeEscapeBonus: 0,
+            beltTorqueBonus: 0,
+            pushVelocityBonus: 0,
+          },
+        },
+        availabilityState: "locked",
+        competingSuitors: [],
+        archetype: "oshi",
+        style: "oshi",
+        heightPotentialCm: 180,
+        weightPotentialKg: 140,
+        talentSeed: 50,
+        temperament: { discipline: 50, volatility: 50 },
+      };
+      simWorld.talentPool.pools.high_school.candidatesHidden.push(AGED_ID);
+      simWorld.events.log.push({
+        id: "ev-agedout-pin",
+        type: "RECRUIT_DISCOVERED",
+        year: world.year,
+        week: world.week,
+        phase: "weekly",
+        category: "scouting",
+        importance: "minor",
+        scope: "rikishi",
+        rikishiId: AGED_PERSON,
+        title: "Prospect scouted",
+        summary: "A scout filed a report.",
+        data: {},
+      });
+      simWorld.pendingRikishiRequests = [
+        ...(simWorld.pendingRikishiRequests ?? []),
+        {
+          id: "req-agedout-pin",
+          rikishiId: AGED_PERSON,
+          heyaId: simWorld.playerHeyaId!,
+          type: "request_rest",
+          createdWeek: world.week,
+          reason: "fatigue",
+        },
+      ];
+    }
+
+    const result = await runAutoSim(simWorld, SIM_CONFIG);
     finalWorld = result.finalWorld;
     // The 7-basho sim still needs ~29min on this hardware under the era-keyed
     // pipeline; 1.5M was exceeded. Scope is already minimal (fewest basho that
@@ -138,7 +210,12 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
   it("world maintains ID integrity after a full year boundary", async () => {
     // Audits every entity map, ID-list field, cross-collection membership,
     // and dangling reference in the evolved world — duplicates or ghosts
-    // introduced by any sim phase surface here.
+    // introduced by any sim phase surface here. The seeded over-age prospect
+    // must have been tombstoned at the yearly refresh so his person refs in
+    // events.log/pendingRikishiRequests still resolve.
+    expect(finalWorld.talentPool?.candidates["CD-AGEDOUT-PIN"]).toBeUndefined();
+    expect(finalWorld.talentPool?.departedIds).toContain("CD-AGEDOUT-PIN");
+    expect(finalWorld.talentPool?.departedIds).toContain("person-AGEDOUT-PIN");
     assertWorldIdIntegrity(finalWorld);
   });
 
