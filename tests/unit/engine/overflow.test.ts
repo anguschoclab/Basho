@@ -183,4 +183,37 @@ describe("enforceHardCapRosterOverflow", () => {
     const releaseEvents = (impact.events ?? []).filter((e) => e.type === "ROSTER_OVERFLOW_RELEASE");
     expect(releaseEvents.length).toBe(4);
   });
+
+  it("every released rikishi's candidate survives in the talent pool (multi-release batch)", () => {
+    // Regression pin: merging one reinjectToTalentPool impact per release
+    // replayed the same stale base, so each absolute talentPool write
+    // clobbered the previous candidate — only the last release's candidate
+    // survived, orphaning the others' event/request refs (idIntegrity).
+    for (let h = 0; h < 2; h++) {
+      const ids: string[] = [];
+      for (let i = 0; i < HARD_CAP_ROSTER_SIZE + 2; i++) {
+        const id = `h${h}-r${i}`;
+        ids.push(id);
+        world.rikishi.set(id, mockRikishi(id, { heyaId: `heya-${h}`, talentSeed: 50 }));
+      }
+      world.heyas.set(`heya-${h}`, makeMockHeya(`heya-${h}`, { rikishiIds: ids }));
+    }
+
+    const beforeIds = new Set(
+      [...world.heyas.values()].flatMap((h) => h.rikishiIds ?? [])
+    );
+    const newWorld = resolveImpacts(world, [enforceHardCapRosterOverflow(world)]);
+    const afterIds = new Set(
+      [...newWorld.heyas.values()].flatMap((h) => h.rikishiIds ?? [])
+    );
+    const released = [...beforeIds].filter((id) => !afterIds.has(id));
+    expect(released.length).toBe(4);
+
+    const candidates = newWorld.talentPool?.candidates ?? {};
+    for (const id of released) {
+      expect(candidates[id], `released ${id} re-entered as candidate`).toBeDefined();
+      expect(candidates[id].personId).toBe(id);
+      expect(candidates[id].priorCareer).toBeDefined();
+    }
+  });
 });

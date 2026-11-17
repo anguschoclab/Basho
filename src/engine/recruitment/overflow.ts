@@ -1,7 +1,8 @@
 import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 import {
   countsAsForeignFromRikishi,
-  reinjectToTalentPool,
+  reinjectManyToTalentPool,
 } from "@/engine/generation/TalentPoolService";
 import { stableTieBreak } from "@/engine/utils/sort";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -20,6 +21,10 @@ export const HARD_CAP_ROSTER_SIZE = 30;
  */
 export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
   const builder = createImpactBuilder("enforceHardCapRosterOverflow");
+  // All releases across every heya land in ONE talentPool write — merging a
+  // per-release absolute write would let the last release's stale-base
+  // snapshot clobber the earlier candidates (V19 dangling person-* refs).
+  const releasedRikishi: Rikishi[] = [];
 
   for (const heya of EntityCollection.getHeyas(world)) {
     const uniqueIds = [...new Set(heya.rikishiIds ?? [])];
@@ -78,13 +83,10 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
       // releases compose (previously each write read the stale pre-impact
       // rikishiIds, silently keeping all but the last release).
       releasedIds.add(rikishi.id);
+      releasedRikishi.push(rikishi);
       const nextRikishiIds = (heya.rikishiIds ?? []).filter((id) => !releasedIds.has(id));
       builder.updateHeya(heya.id, { rikishiIds: nextRikishiIds });
       builder.removeRikishi(rikishi.id);
-
-      // Re-inject into the talent pool as a free agent
-      // Note: reinjectToTalentPool should return an impact
-      builder.merge(reinjectToTalentPool(world, rikishi));
 
       builder.logEvent(
         "ROSTER_OVERFLOW_RELEASE",
@@ -99,6 +101,10 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
       );
     }
   }
+
+  // Re-inject every released rikishi into the talent pool as free agents —
+  // a single absolute write so no release's candidate is clobbered.
+  builder.merge(reinjectManyToTalentPool(world, releasedRikishi));
 
   return builder.build();
 }

@@ -30,6 +30,12 @@ export interface MatchResultLog {
   bashoId: string;
   day: number;
   year: number;
+  /**
+   * W M — the division card this bout was contested on. Lets the narrative
+   * distinguish "met four times in Juryo" from "first top-division meeting".
+   * Absent on entries written before the field existed.
+   */
+  division?: import("@/engine/types/banzuke").Division;
 }
 
 /** A single recent H2H meeting entry for broadcast display. */

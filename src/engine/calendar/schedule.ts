@@ -298,7 +298,11 @@ function mintMaezumoEntrant(world: WorldState, basho: BashoState, index: number)
   return {
     ...entrant,
     isMaezumo: true,
-    heyaId: "maezumo",
+    // Real maezumo entrants are unattached (no stable yet) — a fake "maezumo"
+    // heyaId produces dangling refs across requests/events/NPC posture. The
+    // field is a required string, so "" is the unattached convention (the
+    // `!r.heyaId` guards throughout the tick phases already skip it).
+    heyaId: "",
     stats: {
       ...entrant.stats,
       power: stat,

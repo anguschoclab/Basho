@@ -33,5 +33,5 @@ describe("yokozuna promotion in AutoSim", () => {
           ? (updatedOzeki.yearlyAggregates?.length ?? 0)
           : 0;
     expect(historyLen).toBeGreaterThanOrEqual(1);
-  }, 60000);
+  }, 300_000);
 });

@@ -20,6 +20,7 @@ import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
 import type { WorldState } from "@/engine/types/world";
 import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
 import type { MonoiiOutcome } from "@/engine/types/gyoji";
+import type { GripClass } from "@/engine/types/combat-spatial";
 
 /**
  * Type representing basho name (6 annual tournaments).
@@ -252,6 +253,19 @@ export interface BoutResult {
    * penalty (movement is wins-driven), wins count toward record.
    */
   eighthBoutForRikishiId?: Id;
+  /**
+   * W M — winner's final mawashi grip class at decision time, taken from the
+   * live belt state (or saved belt during a belt-borne edge crisis). Absent
+   * for push-dominant finishes and tachiai resolutions with no belt battle.
+   */
+  winnerGrip?: GripClass;
+  /**
+   * W M — whether each side secured his declared `preferredGrip` at decision
+   * time (migi → right hand inside, hidari → left hand inside). A flag is
+   * only present for rikishi with a real preference on a bout that reached
+   * the belt; feeds the per-basho signature-grip metrics.
+   */
+  gripSecured?: { east?: boolean; west?: boolean };
 }
 
 /**
@@ -356,6 +370,14 @@ export interface BashoState {
       edgeCrisisSurvived: number;
       comebackWins: number;
       opponentTiers: number[];
+      /** W M — bouts fought by a rikishi who declares a preferredGrip. */
+      preferredGripBouts?: number;
+      /** W M — of those, bouts where he secured the preferred grip. */
+      preferredGripSecured?: number;
+      /** W M — wins among secured bouts ("once he gets the grip…"). */
+      preferredGripWins?: number;
+      /** W M — consecutive wins this basho vs sanyaku-ranked opponents. */
+      sanyakuWinStreak?: number;
     }
   >;
 

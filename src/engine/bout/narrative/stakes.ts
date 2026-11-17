@@ -18,6 +18,9 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
 import { isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
+import { isSanyakuRank, getRankDisplayEntry } from "@/constants/engine/rankDisplay";
+import { BASHO_NAMES } from "@/constants/ui/calendar";
+import type { Division } from "@/engine/types/banzuke";
 
 function beatHometown(p: PbpPipeline): void {
   const { bashoInfo, east, preBoutRng, push, west } = p;
@@ -579,8 +582,174 @@ function beatBonds(p: PbpPipeline): void {
   }
 }
 
+const W9_GRIP_LABELS: Record<string, string> = {
+  migi: "right-inside",
+  hidari: "left-inside",
+};
+
+const W9_DIVISION_LABELS: Partial<Record<Division, string>> = {
+  makuuchi: "the top division",
+  juryo: "Juryo",
+  makushita: "Makushita",
+  sandanme: "Sandanme",
+  jonidan: "Jonidan",
+  jonokuchi: "Jonokuchi",
+};
+
+const MEETING_MILESTONES = new Set([10, 20, 30, 40, 50, 75, 100]);
+
+function beatSignatureGrip(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west, world } = p;
+  // W M: a preferrer who wins day after day once he lands his grip.
+  const metrics = world?.currentBasho?.boutMetrics;
+  if (!metrics) return;
+  for (const r of [east, west]) {
+    const pref = r.combatProfile?.preferredGrip;
+    if (pref !== "migi" && pref !== "hidari") continue;
+    const m = metrics[r.id];
+    const secured = m?.preferredGripSecured ?? 0;
+    const gripWins = m?.preferredGripWins ?? 0;
+    if (secured < 3 || gripWins / secured < 0.7) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.signature_grip", {
+        SHIKONA: r.shikona,
+        GRIP_LABEL: W9_GRIP_LABELS[pref],
+        GRIP_WINS: gripWins,
+        GRIP_BOUTS: secured,
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["signature_grip", "favorite_grip"]
+    );
+    break; // one reputation line per bout
+  }
+}
+
+function beatDivisionSplit(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W M: dominant in the division below, winless up here.
+  for (const r of [east, west]) {
+    const records = r.divisionRecords;
+    const current = r.division ? records?.[r.division] : undefined;
+    if (!records || !current) continue;
+    const currentBouts = current.wins + current.losses;
+    if (currentBouts < 8 || current.wins / currentBouts > 0.4) continue;
+    let bestDivision: Division | undefined;
+    let bestRate = 0;
+    for (const [div, rec] of Object.entries(records) as [Division, { wins: number; losses: number }][]) {
+      if (div === r.division) continue;
+      const bouts = rec.wins + rec.losses;
+      const rate = bouts >= 10 ? rec.wins / bouts : 0;
+      if (rate > bestRate) {
+        bestRate = rate;
+        bestDivision = div;
+      }
+    }
+    if (!bestDivision || bestRate < 0.6) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.division_split", {
+        SHIKONA: r.shikona,
+        LOWER_DIVISION: W9_DIVISION_LABELS[bestDivision] ?? bestDivision,
+        CURRENT_DIVISION: W9_DIVISION_LABELS[r.division as Division] ?? r.division,
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["division_split"]
+    );
+    break;
+  }
+}
+
+function beatMeetingMilestone(p: PbpPipeline): void {
+  const { east, pair, preBoutRng, push, west } = p;
+  // W M: "meeting for the 30th time" — round-number career meetings.
+  if (!pair) return;
+  const meetings = pair.meetings + 1;
+  if (!MEETING_MILESTONES.has(meetings)) return;
+  push(
+    BardEngine.resolve(preBoutRng, "pre_bout.meeting_milestone", {
+      EAST: east.shikona,
+      WEST: west.shikona,
+      MEETINGS: meetings,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
+    }).text,
+    "pre_bout",
+    ["meeting_milestone", "rivalry"]
+  );
+}
+
+function beatFirstTopDivisionMeeting(p: PbpPipeline): void {
+  const { east, pair, preBoutRng, push, west } = p;
+  // W M: first top-division meeting despite prior meetings below. Every
+  // recorded meeting must carry a division tag (post-W M logs only) and be
+  // non-makuuchi — otherwise the claim could be wrong about legacy data.
+  if (!pair || pair.meetings < 1) return;
+  if (east.division !== "makuuchi" && west.division !== "makuuchi") return;
+  const mutual = (east.history ?? []).filter((h) => h.opponentId === west.id);
+  const tagged = mutual.filter((h) => h.division !== undefined);
+  if (tagged.length !== pair.meetings || tagged.length === 0) return;
+  if (tagged.some((h) => h.division === "makuuchi")) return;
+  const counts = new Map<Division, number>();
+  for (const h of tagged) counts.set(h.division as Division, (counts.get(h.division as Division) ?? 0) + 1);
+  const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+  push(
+    BardEngine.resolve(preBoutRng, "pre_bout.first_top_division", {
+      EAST: east.shikona,
+      WEST: west.shikona,
+      LOWER_DIVISION: top ? (W9_DIVISION_LABELS[top] ?? top) : "the lower divisions",
+      MEETINGS: pair.meetings,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
+    }).text,
+    "pre_bout",
+    ["first_top_division", "rivalry"]
+  );
+}
+
+function beatSanyakuArcs(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  for (const r of [east, west]) {
+    const wins = r.currentBashoWins ?? 0;
+    const losses = r.currentBashoLosses ?? 0;
+    // Shin-sanyaku growing pains: promoted this basho, record under water.
+    if (r.sanyakuPromotionThisBasho && losses > wins) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.shin_sanyaku", {
+          SHIKONA: r.shikona,
+          RANK: getRankDisplayEntry(r.rank ?? "")?.en ?? r.rank ?? "sanyaku",
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["shin_sanyaku"]
+      );
+      continue;
+    }
+    // Return-to-sanyaku watch: previously held a named rank, now winning.
+    if (r.rank && isSanyakuRank(r.rank)) continue;
+    if (wins <= losses) continue;
+    const sanyakuSnapshots = (r.careerHistory ?? []).filter((s) => isSanyakuRank(s.rank));
+    const last = sanyakuSnapshots[sanyakuSnapshots.length - 1];
+    if (!last) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.sanyaku_return", {
+        SHIKONA: r.shikona,
+        RETURN_DATE: `${BASHO_NAMES[last.bashoName] ?? last.bashoName} ${last.year}`,
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["sanyaku_return"]
+    );
+  }
+}
+
 export function narrateStakes(p: PbpPipeline): void {
   beatHometown(p);
+  beatSignatureGrip(p);
+  beatDivisionSplit(p);
+  beatMeetingMilestone(p);
+  beatFirstTopDivisionMeeting(p);
+  beatSanyakuArcs(p);
   beatIronMan(p);
   beatOldestDivision(p);
   beatMakuuchiBoutMilestone(p);

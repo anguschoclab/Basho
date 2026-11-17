@@ -97,6 +97,7 @@ interface IdSets {
   myosekiIds: Set<string>;
   personIds: Set<string>;
   cupIds: Set<string>;
+  lifetimeIds: Set<string>;
 }
 
 interface AuditCtx {
@@ -157,10 +158,26 @@ function makeAuditCtx(world: WorldState, violations: IdIntegrityViolation[]): Au
       ...Object.keys(world.talentPool?.candidates ?? {}),
       ...Object.keys(world.candidatePool?.candidates ?? {}),
     ]),
+    // Person refs that outlive active-roster membership: a released rikishi
+    // re-enters the talent pool under the SAME id (reinjectToTalentPool sets
+    // candidateId = personId = rikishi.id), so events/awards/lineage/pending
+    // requests about them stay resolvable. Materialized candidates carry
+    // their rikishi id as personId, so both keys and personIds belong here.
+    lifetimeIds: new Set<string>([
+      ...rikishiIds,
+      ...Object.keys(world.talentPool?.candidates ?? {}),
+      ...Object.keys(world.candidatePool?.candidates ?? {}),
+      ...Object.values(world.talentPool?.candidates ?? {}).map((c) => c.personId),
+      ...Object.values(world.candidatePool?.candidates ?? {}).map(
+        (c) => (c as { personId?: string }).personId ?? ""
+      ),
+    ]),
   };
 
   const checkRef: AuditCtx["checkRef"] = (collection, id, into, detail) => {
-    if (id === undefined || id === null) return;
+    // "" is the no-ref convention for required-string fields (e.g. an
+    // unattached maezumo entrant's heyaId) — it means "no ref", not a bad one.
+    if (id === undefined || id === null || id === "") return;
     if (!into.has(id)) add("dangling_ref", collection, id, detail);
   };
   const checkIdList: AuditCtx["checkIdList"] = (collection, ids, into, detail) => {
@@ -392,19 +409,19 @@ function auditPooledArrayIds(ctx: AuditCtx): void {
 function auditPooledArrayRefs(ctx: AuditCtx): void {
   const { world, sets, add, checkRef } = ctx;
   for (const a of world.awardLog ?? []) {
-    checkRef("awardLog", a.winnerId, sets.rikishiIds, "awardLog winnerId");
-    checkRef("awardLog", a.opponentId, sets.rikishiIds, "awardLog opponentId");
+    checkRef("awardLog", a.winnerId, sets.lifetimeIds, "awardLog winnerId");
+    checkRef("awardLog", a.opponentId, sets.lifetimeIds, "awardLog opponentId");
   }
   for (const e of world.encouragementLog ?? []) {
-    checkRef("encouragementLog", e.from, sets.rikishiIds, "encouragementLog from");
-    checkRef("encouragementLog", e.to, sets.rikishiIds, "encouragementLog to");
+    checkRef("encouragementLog", e.from, sets.lifetimeIds, "encouragementLog from");
+    checkRef("encouragementLog", e.to, sets.lifetimeIds, "encouragementLog to");
   }
   for (const e of world.lineage ?? []) {
-    checkRef("lineage", e.mentorId, sets.rikishiIds, "lineage mentorId");
-    checkRef("lineage", e.menteeId, sets.rikishiIds, "lineage menteeId");
+    checkRef("lineage", e.mentorId, sets.lifetimeIds, "lineage mentorId");
+    checkRef("lineage", e.menteeId, sets.lifetimeIds, "lineage menteeId");
   }
   for (const q of world.pendingRikishiRequests ?? []) {
-    checkRef("pendingRikishiRequests", q.rikishiId, sets.rikishiIds, `request '${q.id}' rikishiId`);
+    checkRef("pendingRikishiRequests", q.rikishiId, sets.lifetimeIds, `request '${q.id}' rikishiId`);
     checkRef("pendingRikishiRequests", q.heyaId, sets.heyaIds, `request '${q.id}' heyaId`);
   }
   for (const e of world.pendingExhibitions ?? []) {
@@ -413,25 +430,25 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
   // Event causalEventId is deliberately unchecked — events are pruned while
   // causal refs to them may legitimately remain.
   for (const e of world.events?.log ?? []) {
-    checkRef("events.log", e.rikishiId, sets.rikishiIds, `event '${e.id}' rikishiId`);
+    checkRef("events.log", e.rikishiId, sets.lifetimeIds, `event '${e.id}' rikishiId`);
     checkRef("events.log", e.heyaId, sets.heyaIds, `event '${e.id}' heyaId`);
   }
   for (const b of world.history ?? []) {
-    checkRef("history", b.yusho, sets.rikishiIds, `basho '${b.id}' yusho`);
+    checkRef("history", b.yusho, sets.lifetimeIds, `basho '${b.id}' yusho`);
     for (const id of b.ginoSho ?? [])
-      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' ginoSho`);
+      checkRef("history", id, sets.lifetimeIds, `basho '${b.id}' ginoSho`);
     for (const id of b.shukunsho ?? [])
-      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' shukunsho`);
+      checkRef("history", id, sets.lifetimeIds, `basho '${b.id}' shukunsho`);
     for (const id of b.kantosho ?? [])
-      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' kantosho`);
+      checkRef("history", id, sets.lifetimeIds, `basho '${b.id}' kantosho`);
     for (const id of b.junYusho ?? [])
-      checkRef("history", id, sets.rikishiIds, `basho '${b.id}' junYusho`);
+      checkRef("history", id, sets.lifetimeIds, `basho '${b.id}' junYusho`);
   }
   for (const snapshot of world.almanacSnapshots ?? []) {
     checkRef(
       "almanacSnapshots",
       snapshot.yushoWinner?.rikishiId,
-      sets.rikishiIds,
+      sets.lifetimeIds,
       `snapshot ${snapshot.year}-${snapshot.bashoNumber} yushoWinner`
     );
     for (const section of [snapshot.promotions, snapshot.demotions, snapshot.retirements]) {
@@ -439,7 +456,7 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
         checkRef(
           "almanacSnapshots",
           entry.rikishiId,
-          sets.rikishiIds,
+          sets.lifetimeIds,
           `snapshot ${snapshot.year}-${snapshot.bashoNumber}`
         );
       }
@@ -456,18 +473,18 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
   }
   if (world.chronicle) {
     for (const c of world.chronicle.topChampions ?? []) {
-      checkRef("chronicle", c.rikishiId, sets.rikishiIds, "chronicle topChampions");
+      checkRef("chronicle", c.rikishiId, sets.lifetimeIds, "chronicle topChampions");
     }
     for (const g of world.chronicle.greatestRivalries ?? []) {
-      checkRef("chronicle", g.rikishiAId, sets.rikishiIds, "chronicle greatestRivalries");
-      checkRef("chronicle", g.rikishiBId, sets.rikishiIds, "chronicle greatestRivalries");
+      checkRef("chronicle", g.rikishiAId, sets.lifetimeIds, "chronicle greatestRivalries");
+      checkRef("chronicle", g.rikishiBId, sets.lifetimeIds, "chronicle greatestRivalries");
     }
   }
   for (const board of [world.records?.allTime, world.records?.active]) {
     if (!board) continue;
     for (const leaderboard of Object.values(board)) {
       for (const entry of (leaderboard as Array<{ rikishiId?: string }> | undefined) ?? []) {
-        checkRef("records", entry.rikishiId, sets.rikishiIds, "record leaderboard entry");
+        checkRef("records", entry.rikishiId, sets.lifetimeIds, "record leaderboard entry");
       }
     }
   }

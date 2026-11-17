@@ -17,6 +17,7 @@ import { KINJITE_FOUL_LABELS } from "@/engine/bout/kinjite";
 import { rngFromSeed } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import type { BoutTactic } from "@/engine/types/combat";
 
 const TACTIC_LABELS: Record<BoutTactic, string> = {
@@ -1046,8 +1047,57 @@ function beatReplayHighlight(p: PbpPipeline): void {
   }
 }
 
+function beatSignatureGripAftermath(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi, world } = p;
+  // W M: the grip pattern held again — winner secured his preferred grip
+  // and already has a winning record when he lands it this basho.
+  const winnerSide = result.winner;
+  if (result.gripSecured?.[winnerSide] !== true) return;
+  const pref = winnerRikishi.combatProfile?.preferredGrip;
+  if (pref !== "migi" && pref !== "hidari") return;
+  const m = world?.currentBasho?.boutMetrics?.[winnerRikishi.id];
+  const secured = m?.preferredGripSecured ?? 0;
+  const gripWins = m?.preferredGripWins ?? 0;
+  if (secured < 2 || gripWins / secured < 0.7) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.signature_grip", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      GRIP_LABEL: pref === "migi" ? "right-inside" : "left-inside",
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["signature_grip", "favorite_grip"]
+  );
+}
+
+function beatSanyakuWinStreak(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, winnerRikishi, world } = p;
+  // W M: "beat an Ozeki for the second straight day" — consecutive wins
+  // over sanyaku-ranked opponents. Metrics are pre-bout, so this win makes
+  // it streak+1 in a row.
+  if (!isSanyakuRank(loserRikishi.rank ?? "")) return;
+  const prior = world?.currentBasho?.boutMetrics?.[winnerRikishi.id]?.sanyakuWinStreak ?? 0;
+  const streak = prior + 1;
+  if (streak < 2) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.sanyaku_streak", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      STREAK: streak,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["sanyaku_streak", "upset"]
+  );
+}
+
 export function narrateAftermath(p: PbpPipeline): void {
   beatPostBoutYushoRace(p);
+  beatSignatureGripAftermath(p);
+  beatSanyakuWinStreak(p);
   beatPostBoutLeaderboard(p);
   beatPostBoutStoryline(p);
   beatPostBoutUpset(p);

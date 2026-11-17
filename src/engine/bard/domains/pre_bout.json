@@ -551,5 +551,35 @@
     "These two know each other's habits — regular keiko partners from training.",
     "%EAST% and %WEST% have shared the practice dohyo many times — no secrets here.",
     "Old sparring partners meet for real this time."
+  ],
+  "signature_grip": [
+    "Once %SHIKONA% secures the %GRIP_LABEL%, he has won %GRIP_WINS% of %GRIP_BOUTS% this basho - the grip is the whole game.",
+    "Watch for %SHIKONA% hunting the %GRIP_LABEL%: he is %GRIP_WINS% for %GRIP_BOUTS% when he lands it.",
+    "A %GRIP_LABEL% machine - when %SHIKONA% gets that grip, he wins day after day."
+  ],
+  "division_split": [
+    "%SHIKONA% was dominant in %LOWER_DIVISION%, but the top division has been a different story.",
+    "The confidence %SHIKONA% showed in %LOWER_DIVISION% has not followed him to %CURRENT_DIVISION%.",
+    "%SHIKONA% owns %LOWER_DIVISION% on paper - can he finally win up here?"
+  ],
+  "meeting_milestone": [
+    "Career meeting number %MEETINGS% for %EAST% and %WEST% - a rivalry measured in decades.",
+    "This is the %MEETINGS%th time these two have met. Few matchups in sumo run this deep.",
+    "%EAST% and %WEST% meet for the %MEETINGS%th time - a fixture of the top division."
+  ],
+  "first_top_division": [
+    "First time meeting in the top division - though %EAST% and %WEST% know each other well from %LOWER_DIVISION%.",
+    "They have met %MEETINGS% times below the top division. Today %EAST% and %WEST% meet as makuuchi for the first time.",
+    "A familiar pairing in new territory: %EAST% and %WEST% finally meet on the top-division card."
+  ],
+  "shin_sanyaku": [
+    "%SHIKONA% is learning the named ranks the hard way - a rough first basho at %RANK%.",
+    "Growing pains for the new %RANK%: %SHIKONA% is still finding his footing among the elite.",
+    "A difficult debut at %RANK% for %SHIKONA% - not unusual for a first-timer in the named ranks."
+  ],
+  "sanyaku_return": [
+    "%SHIKONA% is closing on a first return to sanyaku since %RETURN_DATE% - the wins are piling up.",
+    "It has been a long road back for %SHIKONA%, chasing the named ranks for the first time since %RETURN_DATE%.",
+    "The form that once made %SHIKONA% a sanyaku man is resurfacing - a return is within reach."
   ]
 }

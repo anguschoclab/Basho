@@ -98,7 +98,14 @@ export type PbpTag =
   | "one_kimarite"
   | "grip_preview"
   | "schoolmates"
-  | "practice_partners";
+  | "practice_partners"
+  | "signature_grip"
+  | "division_split"
+  | "meeting_milestone"
+  | "first_top_division"
+  | "sanyaku_return"
+  | "shin_sanyaku"
+  | "sanyaku_streak";
 
 export type PbpLine = {
   text: string;

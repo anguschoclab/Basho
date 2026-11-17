@@ -8,7 +8,7 @@ import {
   EXCITEMENT_TICK_DIVISOR,
   EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS,
 } from "@/constants/engine/physics";
-import type { EngineStateV2 } from "@/engine/types/combat-spatial";
+import type { EngineStateV2, BeltBattleState } from "@/engine/types/combat-spatial";
 import type { BoutContext } from "@/engine/bout/boutUtils";
 import type { CombatArchetype, TacticalFamily } from "@/engine/types/combat";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
@@ -98,6 +98,40 @@ export function buildBoutResultV2(
     east.combatProfile?.counterFamily === westDominant ||
     west.combatProfile?.counterFamily === eastDominant;
 
+  // W M — final grip facts for the signature-grip metrics/beats. The belt
+  // state is live while the phase is still belt_battle; a belt-borne edge
+  // crisis keeps it in savedBelt. Push/tachiai finishes leave both unset.
+  const finalBelt =
+    st.phase.tag === "belt_battle"
+      ? st.phase.state
+      : st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle"
+        ? st.phase.savedBelt
+        : undefined;
+  const winnerGrip = finalBelt
+    ? winner === "east"
+      ? finalBelt.eastGripClass
+      : finalBelt.westGripClass
+    : undefined;
+  const securedFor = (
+    r: Rikishi,
+    left: BeltBattleState["eastLeft"] | undefined,
+    right: BeltBattleState["eastRight"] | undefined
+  ): boolean | undefined => {
+    const pref = r.combatProfile?.preferredGrip;
+    if (!finalBelt || (pref !== "migi" && pref !== "hidari")) return undefined;
+    const hand = pref === "migi" ? right : left;
+    return hand?.isInside === true;
+  };
+  const eastSecured = securedFor(east, finalBelt?.eastLeft, finalBelt?.eastRight);
+  const westSecured = securedFor(west, finalBelt?.westLeft, finalBelt?.westRight);
+  const gripSecured =
+    eastSecured !== undefined || westSecured !== undefined
+      ? {
+          ...(eastSecured !== undefined ? { east: eastSecured } : {}),
+          ...(westSecured !== undefined ? { west: westSecured } : {}),
+        }
+      : undefined;
+
   return {
     boutId: bout.id,
     day: bout.day,
@@ -119,5 +153,7 @@ export function buildBoutResultV2(
     archetypeMatchup: { eastArchetype, westArchetype, counterActivated },
     isTimeout,
     monoii,
+    ...(winnerGrip !== undefined ? { winnerGrip } : {}),
+    ...(gripSecured !== undefined ? { gripSecured } : {}),
   };
 }

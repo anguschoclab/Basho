@@ -25,6 +25,7 @@ import { checkMentorMenteeBout } from "@/engine/training/MentorshipService";
 import { getRikishi } from "@/engine/core/queries";
 import { BOUT_DURATION_FATIGUE_PER_TICK } from "@/constants/engine/condition";
 import { RIKISHI_BOUT_HISTORY_MAX } from "@/constants/engine/bout";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 
 // ─── 1. Standings ────────────────────────────────────────────────────────────
 
@@ -114,6 +115,30 @@ function updateBoutMetrics(
     // Opponent tier for SOS calculation (4.3)
     const winnerTier = winner.rankNumber ?? 99;
     lMetrics.opponentTiers.push(winnerTier);
+
+    // W M — signature-grip reputation: for each rikishi who declares a
+    // preferred grip, count bouts fought, bouts where he secured it at
+    // decision time, and wins among those secured bouts.
+    const loserSide: "east" | "west" = result.winner === "east" ? "west" : "east";
+    for (const [rikishi, sideKey] of [
+      [winner, result.winner],
+      [loser, loserSide],
+    ] as const) {
+      const pref = rikishi.combatProfile?.preferredGrip;
+      if (pref !== "migi" && pref !== "hidari") continue;
+      const m = ensureMetrics(rikishi.id);
+      m.preferredGripBouts = (m.preferredGripBouts ?? 0) + 1;
+      if (result.gripSecured?.[sideKey] === true) {
+        m.preferredGripSecured = (m.preferredGripSecured ?? 0) + 1;
+        if (rikishi === winner) m.preferredGripWins = (m.preferredGripWins ?? 0) + 1;
+      }
+    }
+
+    // W M — consecutive wins vs sanyaku-ranked opponents this basho.
+    wMetrics.sanyakuWinStreak = isSanyakuRank(loser.rank ?? "")
+      ? (wMetrics.sanyakuWinStreak ?? 0) + 1
+      : 0;
+    lMetrics.sanyakuWinStreak = 0;
   }
   // Track kinboshi earned this basho for the end-of-basho mochikyukin
   // accumulation. Written in the SAME currentBasho update as boutMetrics so
@@ -183,11 +208,22 @@ function updateCareerRecords(
   // getH2HReport, streak labels, and favored-kimarite projections. Capped at
   // a rolling window (RIKISHI_BOUT_HISTORY_MAX) — boundHistoryArrays bounds
   // world-level arrays but not per-rikishi logs.
+  // W M — `division` records the card the bout was contested on: for a
+  // cross-division callup or an eighth-bout fill, the bout is logged under
+  // the HOST division (the rikishi who wasn't brought in).
+  const calledUpId = match.crossDivisionCallupId ?? match.eighthBoutForRikishiId;
+  const cardDivision =
+    calledUpId === winner.id
+      ? loser.division
+      : calledUpId === loser.id
+        ? winner.division
+        : winner.division;
   const logEntryBase = {
     kimarite: result.kimarite ?? "",
     bashoId: basho.id ?? `${basho.bashoName}-${world.year}`,
     day: match.day ?? 0,
     year: world.year ?? 0,
+    division: cardDivision,
   };
   const appendBoutLog = (log: Rikishi["history"], entry: MatchResultLog) =>
     [...(log ?? []), entry].slice(-RIKISHI_BOUT_HISTORY_MAX);

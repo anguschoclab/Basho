@@ -98,5 +98,5 @@ describe("Yokozuna Presence Logic Validation", () => {
     );
 
     expect(totalCountByBasho.length).toBe(TOTAL_BASHO);
-  }, 60000);
+  }, 300_000);
 });

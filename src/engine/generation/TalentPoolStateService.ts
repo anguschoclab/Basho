@@ -77,16 +77,15 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
 }
 
 /**
- * Reinjects a released rikishi back into the talent pool as a free agent.
- * Returns StateImpact describing the update.
+ * Builds the free-agent candidate a released rikishi re-enters the pool as —
+ * the pool bucket uses the canonical citizenship-aware check (§5.2): a
+ * naturalized/dual/tenure-complete veteran holds Japanese status and must not
+ * re-enter the foreign pool.
  */
-export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): StateImpact {
-  const builder = createImpactBuilder("reinjectToTalentPool");
-  const tp = ensureTalentPoolState(world);
-
-  // Create a candidate from the rikishi — the pool bucket uses the canonical
-  // citizenship-aware check (§5.2): a naturalized/dual/tenure-complete
-  // veteran holds Japanese status and must not re-enter the foreign pool.
+export function buildReleasedCandidate(
+  world: WorldState,
+  rikishi: Rikishi
+): { candidate: TalentCandidate; poolType: TalentPoolType } {
   const candidateId = rikishi.id;
   const poolType: TalentPoolType = countsAsForeign(rikishi, world.year)
     ? "foreign"
@@ -98,66 +97,86 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): State
   const archetype: "oshi" | "yotsu" | "hybrid" = "hybrid";
   const combatProfile = buildCombatProfile(archetype);
 
-  const nextCandidates = {
-    ...tp.candidates,
-    [candidateId]: {
-      candidateId,
-      personId: rikishi.id,
-      poolType,
-      name: rikishi.shikona,
-      nationality: rikishi.nationality ?? "Japan",
-      birthYear: rikishi.birthYear ?? world.year - 20,
-      originRegion: rikishi.origin ?? "Unknown",
-      visibilityBand: "obscure",
-      reputationSeed: rikishi.talentSeed ?? 50,
-      tags: [],
-      combatProfile,
-      availabilityState: "available",
-      competingSuitors: [],
-      archetype,
-      style: archetype,
-      heightPotentialCm: rikishi.height ?? 180,
-      weightPotentialKg: rikishi.weight ?? 100,
-      talentSeed: rikishi.talentSeed ?? 50,
-      temperament: {
-        discipline: 50,
-        volatility: 50,
-      },
-      // Citizenship travels with the candidate — a naturalized/dual veteran
-      // re-signing must not consume the foreign slot again (S7 talent pool).
-      citizenshipStatus: rikishi.citizenshipStatus,
-      dualCitizen: rikishi.citizenshipStatus === "dual" ? true : undefined,
-      // The released veteran's career — convertCandidateToRikishi reads this
-      // to re-mint the real record instead of a jonokuchi debutant, and the
-      // yearly refresh exempts priorCareer candidates from the age-out.
-      priorCareer: {
-        stats: rikishi.stats,
-        heightCm: rikishi.height,
-        careerWins: rikishi.careerWins ?? 0,
-        careerLosses: rikishi.careerLosses ?? 0,
-        careerAbsences: rikishi.careerAbsences ?? 0,
-        makuuchiWins: rikishi.makuuchiWins ?? 0,
-        divisionRecords: rikishi.divisionRecords,
-        careerHistory: rikishi.careerHistory,
-        careerRecord: rikishi.careerRecord,
-        debutYear: rikishi.debutYear,
-        joinedHeyaDate: rikishi.joinedHeyaDate,
-        heyaHistory: rikishi.heyaHistory,
-        potential: rikishi.potential,
-      },
-    } as TalentCandidate,
-  };
+  const candidate = {
+    candidateId,
+    personId: rikishi.id,
+    poolType,
+    name: rikishi.shikona,
+    nationality: rikishi.nationality ?? "Japan",
+    birthYear: rikishi.birthYear ?? world.year - 20,
+    originRegion: rikishi.origin ?? "Unknown",
+    visibilityBand: "obscure",
+    reputationSeed: rikishi.talentSeed ?? 50,
+    tags: [],
+    combatProfile,
+    availabilityState: "available",
+    competingSuitors: [],
+    archetype,
+    style: archetype,
+    heightPotentialCm: rikishi.height ?? 180,
+    weightPotentialKg: rikishi.weight ?? 100,
+    talentSeed: rikishi.talentSeed ?? 50,
+    temperament: {
+      discipline: 50,
+      volatility: 50,
+    },
+    // Citizenship travels with the candidate — a naturalized/dual veteran
+    // re-signing must not consume the foreign slot again (S7 talent pool).
+    citizenshipStatus: rikishi.citizenshipStatus,
+    dualCitizen: rikishi.citizenshipStatus === "dual" ? true : undefined,
+    // The released veteran's career — convertCandidateToRikishi reads this
+    // to re-mint the real record instead of a jonokuchi debutant, and the
+    // yearly refresh exempts priorCareer candidates from the age-out.
+    priorCareer: {
+      stats: rikishi.stats,
+      heightCm: rikishi.height,
+      careerWins: rikishi.careerWins ?? 0,
+      careerLosses: rikishi.careerLosses ?? 0,
+      careerAbsences: rikishi.careerAbsences ?? 0,
+      makuuchiWins: rikishi.makuuchiWins ?? 0,
+      divisionRecords: rikishi.divisionRecords,
+      careerHistory: rikishi.careerHistory,
+      careerRecord: rikishi.careerRecord,
+      debutYear: rikishi.debutYear,
+      joinedHeyaDate: rikishi.joinedHeyaDate,
+      heyaHistory: rikishi.heyaHistory,
+      potential: rikishi.potential,
+    },
+  } as TalentCandidate;
 
+  return { candidate, poolType };
+}
+
+/**
+ * Reinjects released rikishi back into the talent pool as free agents in ONE
+ * absolute talentPool write. Callers releasing more than one rikishi in a
+ * pass MUST use this — merging one reinjectToTalentPool per release clobbers
+ * all but the last candidate (each absolute write replays the same stale
+ * base), orphaning the released persons' pending requests and event refs.
+ */
+export function reinjectManyToTalentPool(
+  world: WorldState,
+  rikishis: readonly Rikishi[]
+): StateImpact {
+  const builder = createImpactBuilder("reinjectManyToTalentPool");
+  if (rikishis.length === 0) return builder.build();
+  const tp = ensureTalentPoolState(world);
+
+  const nextCandidates = { ...tp.candidates };
   const nextPools = { ...tp.pools };
-  const pool = { ...nextPools[poolType] };
-  if (
-    pool &&
-    !pool.candidatesVisible.includes(candidateId) &&
-    !pool.candidatesHidden.includes(candidateId)
-  ) {
-    pool.candidatesVisible = [...pool.candidatesVisible, candidateId];
+  for (const rikishi of rikishis) {
+    const { candidate, poolType } = buildReleasedCandidate(world, rikishi);
+    nextCandidates[candidate.candidateId] = candidate;
+    const pool = { ...nextPools[poolType] };
+    if (
+      pool &&
+      !pool.candidatesVisible.includes(candidate.candidateId) &&
+      !pool.candidatesHidden.includes(candidate.candidateId)
+    ) {
+      pool.candidatesVisible = [...pool.candidatesVisible, candidate.candidateId];
+    }
+    nextPools[poolType] = pool;
   }
-  nextPools[poolType] = pool;
 
   builder.updateWorldField("talentPool", {
     ...tp,
@@ -166,6 +185,14 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): State
   });
 
   return builder.build();
+}
+
+/**
+ * Reinjects a released rikishi back into the talent pool as a free agent.
+ * Returns StateImpact describing the update.
+ */
+export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): StateImpact {
+  return reinjectManyToTalentPool(world, [rikishi]);
 }
 
 // ============================================

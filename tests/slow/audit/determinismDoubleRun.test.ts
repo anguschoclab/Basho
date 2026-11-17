@@ -19,7 +19,10 @@ const runDoubleRun = (horizon: "basho" | "year") => {
       cwd: PROJECT_ROOT,
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
-      timeout: 480_000,
+      // The year horizon needs ~440s standalone (two full-year autosims) —
+      // under suite contention it crosses the old 480s bound. 590s stays
+      // inside the 600s slow-suite testTimeout.
+      timeout: 590_000,
     });
   } catch (err: unknown) {
     exitCode = (err as { status?: number }).status ?? 1;
@@ -35,7 +38,7 @@ describe("determinism double-run — production gate", () => {
       const { stdout, exitCode } = runDoubleRun("basho");
       expect(exitCode, `determinism double-run diverged:\n${stdout}`).toBe(0);
     },
-    480_000
+    600_000
   );
 
   // S9-8: the basho horizon alone never exercises year-boundary systems —
@@ -47,6 +50,6 @@ describe("determinism double-run — production gate", () => {
       const { stdout, exitCode } = runDoubleRun("year");
       expect(exitCode, `determinism double-run (year) diverged:\n${stdout}`).toBe(0);
     },
-    480_000
+    600_000
   );
 });

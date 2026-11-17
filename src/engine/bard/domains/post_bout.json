@@ -604,5 +604,15 @@
     "The %REGION% crowd roars — %WINNER% of %ORIGIN% delivers on the regional stage!",
     "%WINNER% wins for the %REGION% faithful — the %ORIGIN% native made them proud today.",
     "Regional heroics from %WINNER% — the %ORIGIN% man triumphs before the %REGION% crowd."
+  ],
+  "signature_grip": [
+    "Once %WINNER% locked in the %GRIP_LABEL%, the outcome was never in doubt - that grip decides his bouts.",
+    "The %GRIP_LABEL% did it again for %WINNER%. When he gets that grip, he wins.",
+    "Textbook %WINNER%: secure the %GRIP_LABEL%, control the bout, finish."
+  ],
+  "sanyaku_streak": [
+    "%WINNER% has now beaten a sanyaku opponent %STREAK% days running.",
+    "Back-to-back giant-killers: %STREAK% straight wins over sanyaku-ranked opposition for %WINNER%.",
+    "%STREAK% consecutive victories over the named ranks - %WINNER% is hunting the elite."
   ]
 }

@@ -649,6 +649,7 @@ exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
   "tachiaiWinner": "east",
   "upset": false,
   "winner": "east",
+  "winnerGrip": "shitate",
   "winnerRikishiId": "r1",
 }
 `;
