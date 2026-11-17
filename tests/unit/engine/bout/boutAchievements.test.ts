@@ -102,7 +102,7 @@ describe("boutAchievements", () => {
       expect(result.awardFact).toBeUndefined();
     });
 
-    it("does not award for non-maegashira winner vs yokozuna", () => {
+    it("does not award kinboshi for non-maegashira winner vs yokozuna", () => {
       for (const rank of ["sekiwake", "komusubi", "ozeki"]) {
         const winner = makeRikishi("s1", rank);
         const loser = makeRikishi("y1", "yokozuna");
@@ -111,6 +111,30 @@ describe("boutAchievements", () => {
         expect(kinboshiDelta).toBe(false);
         expect(awards.filter((a) => a.type === "kinboshi")).toHaveLength(0);
       }
+    });
+
+    it("awards ginboshi when sekiwake or komusubi beats yokozuna (informal silver star — sanyaku cannot earn kinboshi)", () => {
+      for (const rank of ["sekiwake", "komusubi"]) {
+        const winner = makeRikishi("s1", rank);
+        const loser = makeRikishi("y1", "yokozuna");
+        const result = makeResult();
+        const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
+        expect(kinboshiDelta).toBe(false);
+        expect(awards).toEqual([
+          expect.objectContaining({ type: "ginboshi", winnerId: "s1", loserId: "y1" }),
+        ]);
+        expect(result.awardFact).toBe("ginboshi");
+      }
+    });
+
+    it("awards nothing when ozeki beats yokozuna", () => {
+      const winner = makeRikishi("o1", "ozeki");
+      const loser = makeRikishi("y1", "yokozuna");
+      const result = makeResult();
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
+      expect(kinboshiDelta).toBe(false);
+      expect(awards).toHaveLength(0);
+      expect(result.awardFact).toBeUndefined();
     });
 
     it("does not award for maegashira vs sekiwake", () => {
@@ -122,13 +146,24 @@ describe("boutAchievements", () => {
       expect(awards).toHaveLength(0);
     });
 
-    it("awards kinboshi on hansoku (JSA: disqualification wins count — only fusensho is excluded)", () => {
+    it("does not award kinboshi on hansoku (JSA: disqualification wins never earn a gold star)", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("y1", "yokozuna");
       const result = makeResult("hansoku");
       const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
-      expect(kinboshiDelta).toBe(true);
-      expect(awards[0]?.type).toBe("kinboshi");
+      expect(kinboshiDelta).toBe(false);
+      expect(awards).toHaveLength(0);
+      expect(result.awardFact).toBeUndefined();
+    });
+
+    it("does not award ginboshi on hansoku", () => {
+      const winner = makeRikishi("m1", "maegashira");
+      const loser = makeRikishi("o1", "ozeki");
+      const result = makeResult("hansoku");
+      const { kinboshiDelta, awards } = detectKinboshi(result, winner, loser);
+      expect(kinboshiDelta).toBe(false);
+      expect(awards).toHaveLength(0);
+      expect(result.awardFact).toBeUndefined();
     });
 
     it("suppresses kinboshi when isPlayoff is set (honbasho-only rule)", () => {

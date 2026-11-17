@@ -42,23 +42,30 @@ export function detectKinboshi(
       boutId: result.boutId,
     };
 
-    // Kinboshi: maegashira over yokozuna. Fusensho (default win) excluded;
-    // hansoku (disqualification) DOES count per JSA practice.
+    // Kinboshi: maegashira over yokozuna. Fusensho (default win) and hansoku
+    // (disqualification) are both excluded — the JSA awards no gold star
+    // unless the yokozuna is beaten in a contested regulation bout.
     if (
       winner.rank === "maegashira" &&
       loser.rank === "yokozuna" &&
-      result.kimarite !== "fusensho"
+      result.kimarite !== "fusensho" &&
+      result.kimarite !== "hansoku"
     ) {
       kinboshiDelta = true;
       awards.push({ type: "kinboshi", ...awardBase });
       result.awardFact = "kinboshi";
     } else if (
-      winner.rank === "maegashira" &&
-      loser.rank === "ozeki" &&
-      result.kimarite !== "fusensho"
+      result.kimarite !== "fusensho" &&
+      result.kimarite !== "hansoku" &&
+      ((winner.rank === "maegashira" && loser.rank === "ozeki") ||
+        ((winner.rank === "sekiwake" || winner.rank === "komusubi") &&
+          loser.rank === "yokozuna"))
     ) {
-      // Ginboshi: informal "silver star" — recorded on the result but carries
-      // no official ledger entry or mochikyukin value.
+      // Ginboshi: informal fan/media "silver star" — not an official JSA
+      // award. Real-world usage covers (a) maegashira over ozeki and
+      // (b) sekiwake/komusubi over yokozuna, since sanyaku cannot earn a
+      // kinboshi. Recorded on the result for flavor only; carries no
+      // official ledger entry or mochikyukin value.
       awards.push({ type: "ginboshi", ...awardBase });
       result.awardFact = "ginboshi";
     }
