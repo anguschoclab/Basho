@@ -223,8 +223,10 @@ describe("S7-35 — per-suitor deadline semantics", () => {
 // from the unit suite by noSubprocessInUnitTests.
 
 // ── Char: double-fusenpai guard (landed V18 — refactor canary) ────────────
-describe("char — double-fusenpai records absences, no winner", () => {
-  it("both absent sides take an absence and no standings win/loss", () => {
+// JSA convention (不戦敗): both absent rikishi take a fusenpai *loss* for the
+// scheduled bout — the win column stays untouched and no winner exists.
+describe("char — double-fusenpai records losses, no winner", () => {
+  it("both absent sides take a fusenpai loss and no standings win", () => {
     const e = MockFactory.createRikishi("e1", {});
     const w = MockFactory.createRikishi("w1", {});
     const world = MockFactory.createWorld();
@@ -243,9 +245,16 @@ describe("char — double-fusenpai records absences, no winner", () => {
       log: [],
     } as never;
     const impact = applyBoutResult(world, match, result);
-    const st = impact.metadata?.updatedStandings as Map<string, { absences: number }>;
-    expect(st.get("e1")?.absences).toBe(1);
-    expect(st.get("w1")?.absences).toBe(1);
+    const st = impact.metadata?.updatedStandings as Map<
+      string,
+      { wins: number; losses: number; absences: number }
+    >;
+    expect(st.get("e1")?.losses).toBe(1);
+    expect(st.get("w1")?.losses).toBe(1);
+    expect(st.get("e1")?.wins).toBe(0);
+    expect(st.get("w1")?.wins).toBe(0);
+    expect(st.get("e1")?.absences).toBe(0);
+    expect(st.get("w1")?.absences).toBe(0);
   });
 });
 

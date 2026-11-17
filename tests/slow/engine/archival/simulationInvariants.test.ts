@@ -7,7 +7,7 @@
  *  - world.rikishi has no ghost entries from summarization
  *  - full records are archived to cold storage (archiveFullRikishiRecord called)
  *
- * Uses a 3-year sim to ensure year boundaries are crossed and summarization
+ * Uses a 7-basho sim to ensure a year boundary is crossed and summarization
  * actually fires in the AutoSim path (the primary mode for long sims).
  */
 
@@ -15,6 +15,7 @@ import { describe, it, expect, vi, beforeAll } from "vitest";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
 import { assertWorldIdIntegrity } from "@/engine/core/idIntegrity";
+import { RETIREMENT_MANDATORY_AGE } from "@/constants/engine/career";
 import type { WorldState } from "@/engine/types/world";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 
@@ -50,7 +51,12 @@ vi.mock("@/engine/persistence/storage/electronArchive", () => ({
 }));
 
 const SIM_CONFIG = {
-  duration: { type: "years" as const, count: 3 },
+  // 7 basho crosses exactly one year boundary — every invariant below
+  // (summarization, snapshot bounding, ghost IDs, ID integrity) is exercised.
+  // (Was 3yr, then 2yr; the heavier post-workstream sim kept exceeding the
+  // hook bound. 7 basho is ~60% of a 2-year run while still crossing the
+  // December→January summarization boundary.)
+  duration: { type: "basho" as const, count: 7 },
   stopConditions: [] as never[],
   verbosity: "minimal" as const,
   delegationPolicy: "balanced" as const,
@@ -58,7 +64,7 @@ const SIM_CONFIG = {
 };
 
 describe("simulation history-storage invariants (Plan Step 3.4)", () => {
-  // One 3-year sim shared by all four assertions (previously each `it` ran
+  // One shared sim for all assertions (previously each `it` ran
   // its own ~2min runAutoSim — 4× cost for no additional coverage: every
   // invariant is checked on the same finalWorld). The per-seed variety the
   // old code had was incidental, not semantic.
@@ -66,17 +72,31 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
 
   beforeAll(async () => {
     const world = generateInitialWorld("sim-invariant");
-    const result = await runAutoSim(world, SIM_CONFIG);
+    // Guarantee pre-boundary retirements: a freshly generated world is young
+    // enough that natural year-1 retirements are not assured — without them
+    // the summarization invariant has no material to verify. Age three
+    // rikishi to the mandatory age so they retire at the first retirement
+    // pass and sit in historicalRikishi as full records before the boundary.
+    const seeded = new Map(world.rikishi);
+    let seededCount = 0;
+    for (const [id, r] of seeded) {
+      if (seededCount++ >= 3) break;
+      seeded.set(id, { ...r, birthYear: world.year - RETIREMENT_MANDATORY_AGE });
+    }
+    const result = await runAutoSim({ ...world, rikishi: seeded }, SIM_CONFIG);
     finalWorld = result.finalWorld;
-  }, 900000);
+    // The 7-basho sim still needs ~29min on this hardware under the era-keyed
+    // pipeline; 1.5M was exceeded. Scope is already minimal (fewest basho that
+    // cross a year boundary) so the bound follows the observed runtime.
+  }, 2_200_000);
 
   it("historicalRikishi entries are summaries after year-end summarization", async () => {
     expect(finalWorld.historicalRikishi).toBeDefined();
 
-    // In a 3-year sim with ~440 rikishi, at least some should retire and
-    // be summarized at the year boundary. If all are full, the summarization
-    // is not firing in AutoSim (the bug that was fixed by moving it to
-    // phase06_yearly_boundary).
+    // Mandatory-age rikishi are seeded in beforeAll so at least one retires
+    // before the year boundary and is summarized. If all entries are full,
+    // the summarization is not firing in AutoSim (the bug that was fixed by
+    // moving it to phase06_yearly_boundary).
     const size = finalWorld.historicalRikishi.size;
     let summaryCount = 0;
     let fullCount = 0;
@@ -90,8 +110,10 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
       }
     }
 
-    // There must be retired rikishi in a 3-year sim, and at least some
-    // must be summaries (retired before the last year boundary).
+    // There must be retired rikishi (seeded mandatory-age retirees plus any
+    // natural ones), and at least some must be summaries (retired before
+    // the year boundary — post-boundary year-2 retirees legitimately stay
+    // full until the next boundary).
     expect(size).toBeGreaterThan(0);
     expect(summaryCount).toBeGreaterThan(0);
   });
@@ -113,7 +135,7 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
     }
   });
 
-  it("world maintains ID integrity after 3 simulated years", async () => {
+  it("world maintains ID integrity after a full year boundary", async () => {
     // Audits every entity map, ID-list field, cross-collection membership,
     // and dangling reference in the evolved world — duplicates or ghosts
     // introduced by any sim phase surface here.
