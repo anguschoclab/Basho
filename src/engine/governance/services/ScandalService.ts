@@ -12,6 +12,8 @@ import { bumpTenure } from "@/engine/legacy/tenure";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
 import { ELECTION_INCUMBENCY_BONUS } from "@/constants/engine/succession";
+import { BOARD_COMMITTEE } from "@/constants/engine/committee";
+import { conveneCommittee } from "@/engine/committee/committee";
 import {
   SCANDAL_SEVERITY_MULT_LENIENT,
   SCANDAL_SEVERITY_MULT_STANDARD,
@@ -110,11 +112,29 @@ export function runElections(world: WorldState): StateImpact {
     });
   }
 
-  // Sort by score descending to find winners. Deterministic id tiebreak on
-  // exact-score ties — mirrors projectManagerCareer's projected standing so
-  // the election outcome can't disagree with the UI projection (V-T2).
+  // Board election via the shared committee framework: each heya's influence
+  // score is the case baseline; the committee's decision adopts the tally
+  // (BOARD spec has zero discretion — the mechanical vote is the outcome).
+  // Deterministic id tiebreak on exact-score ties — mirrors
+  // projectManagerCareer's projected standing so the election outcome can't
+  // disagree with the UI projection (V-T2).
+  const decisions = conveneCommittee(
+    BOARD_COMMITTEE,
+    candidates.map((c) => ({
+      subjectId: c.heyaId,
+      baseScore: c.score,
+      merits: 0,
+      demerits: 0,
+      faction: "none",
+    })),
+    rngForWorld(world, "governance", BOARD_COMMITTEE.id)
+  );
+  for (const c of candidates) {
+    const d = decisions.get(c.heyaId);
+    if (d) c.score = d.score;
+  }
   candidates.sort((a, b) => b.score - a.score || (a.heyaId < b.heyaId ? -1 : 1));
-  const elected = candidates.slice(0, 5); // Top 5 form the Board
+  const elected = candidates.slice(0, BOARD_COMMITTEE.size);
 
   for (const candidate of elected) {
     builder.updateHeya(candidate.heyaId, {

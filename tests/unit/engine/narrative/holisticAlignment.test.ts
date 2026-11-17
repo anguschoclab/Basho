@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { generateBoutNarrative, generateKyujoNarrative } from "@/engine/bout/boutNarrative";
 import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
-import { computeMovementUnits } from "@/engine/banzuke/promotionLogic";
+import { deliberateBanzukeMovement } from "@/engine/banzuke/banzukeCommittee";
+import { rngFromSeed } from "@/engine/core/rng";
 import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { mockRikishi, makeMockWorld } from "@tests/unit/engine/utils";
@@ -337,7 +338,9 @@ describe("Holistic System Alignment — 10 Gaps", () => {
       } as BanzukeEntry;
     }
 
-    it("comebackWins adds bonus to movement units", () => {
+    const rng = () => rngFromSeed("gap6", "banzuke", "committee");
+
+    it("comebackWins is merit evidence in committee movement", () => {
       const entry = makeBanzukeEntry("r-test", "maegashira");
       const perfWithout: BashoPerformance = {
         rikishiId: "r-test",
@@ -351,12 +354,12 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         comebackWins: 2,
       };
       const demotedOzeki = new Set<string>();
-      const without = computeMovementUnits(entry, perfWithout, demotedOzeki);
-      const withCB = computeMovementUnits(entry, perfWith, demotedOzeki);
-      expect(withCB).toBeGreaterThan(without);
+      const without = deliberateBanzukeMovement(entry, perfWithout, demotedOzeki, rng());
+      const withCB = deliberateBanzukeMovement(entry, perfWith, demotedOzeki, rng());
+      expect(withCB.delta).toBeGreaterThan(without.delta);
     });
 
-    it("edgeCrisisSurvived adds bonus to movement units", () => {
+    it("edgeCrisisSurvived is merit evidence in committee movement", () => {
       const entry = makeBanzukeEntry("r-test", "maegashira");
       const perfWithout: BashoPerformance = {
         rikishiId: "r-test",
@@ -370,9 +373,9 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         edgeCrisisSurvived: 4,
       };
       const demotedOzeki = new Set<string>();
-      const without = computeMovementUnits(entry, perfWithout, demotedOzeki);
-      const withEC = computeMovementUnits(entry, perfWith, demotedOzeki);
-      expect(withEC).toBeGreaterThan(without);
+      const without = deliberateBanzukeMovement(entry, perfWithout, demotedOzeki, rng());
+      const withEC = deliberateBanzukeMovement(entry, perfWith, demotedOzeki, rng());
+      expect(withEC.delta).toBeGreaterThan(without.delta);
     });
   });
 

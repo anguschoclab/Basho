@@ -1,5 +1,8 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule } from "@/engine/types/basho";
+import type { SeededRNG } from "@/engine/core/rng";
+import { conveneCommittee, type CommitteeDecision } from "@/engine/committee/committee";
+import { SANSHO_COMMITTEE } from "@/constants/engine/committee";
 
 /**
  * Resulting special prizes for a tournament.
@@ -11,6 +14,8 @@ export interface SpecialPrizesResult {
   ginoSho: string[];
   kantosho: string[];
   shukunsho: string[];
+  /** Sansho committee deliberation records (present when convened). */
+  deliberations?: CommitteeDecision[];
 }
 
 /** Every candidate at the top score shares the prize (JSA allows split awards). */
@@ -31,13 +36,16 @@ function topScorers(scores: Map<string, number>, minScore: number): string[] {
  * komusubi, maegashira) who posts kachi-koshi. The yusho winner is excluded —
  * the champion takes the Emperor's Cup, not sansho.
  *
- * The deterministic scorer below is the game's proxy for the real sansho
- * committee's deliberation [game abstraction].
+ * Award selection runs through the shared committee framework
+ * (SANSHO_COMMITTEE): the deterministic stat scores below are each case's
+ * baseline, and the committee's deliberation produces the decision record
+ * (votes + rationale) surfaced in the feed.
  */
 export function determineSpecialPrizes(
   matches: MatchSchedule[],
   rikishiMap: Map<string, Rikishi>,
-  yushoId: string
+  yushoId: string,
+  committeeRng?: SeededRNG
 ): SpecialPrizesResult {
   const result: SpecialPrizesResult = { ginoSho: [], kantosho: [], shukunsho: [] };
 
@@ -76,6 +84,33 @@ export function determineSpecialPrizes(
 
   if (candidates.length === 0) return result;
 
+  // Sansho committee: each award's stat-derived score is the case baseline;
+  // the committee deliberates and its score decides the award. With no
+  // seeded evidence the committee adopts the baseline — the record stands.
+  const deliberations: CommitteeDecision[] = [];
+  const committeed = (prize: string, scores: Map<string, number>): Map<string, number> => {
+    if (!committeeRng || scores.size === 0) return scores;
+    const decisions = conveneCommittee(
+      SANSHO_COMMITTEE,
+      [...scores.entries()].map(([id, score]) => ({
+        subjectId: `${prize}:${id}`,
+        baseScore: score,
+        merits: 0,
+        demerits: 0,
+        faction: "none",
+      })),
+      committeeRng
+    );
+    const out = new Map<string, number>();
+    for (const [id] of scores) {
+      const d = decisions.get(`${prize}:${id}`);
+      if (!d) continue;
+      deliberations.push(d);
+      out.set(id, d.score);
+    }
+    return out;
+  };
+
   // Shukun-sho (Outstanding Performance): beat the yusho winner or a yokozuna.
   const shukunScores = new Map<string, number>();
   for (const c of candidates) {
@@ -87,7 +122,7 @@ export function determineSpecialPrizes(
       shukunScores.set(c.id, (beatYusho ? 10 : 0) + (beatYokozuna ? 5 : 0) + s.wins);
     }
   }
-  result.shukunsho = topScorers(shukunScores, 0);
+  result.shukunsho = topScorers(committeed("shukun", shukunScores), 0);
 
   // Kanto-sho (Fighting Spirit): strongest record below the champion.
   const kantoScores = new Map<string, number>();
@@ -95,7 +130,7 @@ export function determineSpecialPrizes(
     const s = stats.get(c.id);
     if (s) kantoScores.set(c.id, s.wins);
   }
-  result.kantosho = topScorers(kantoScores, 10);
+  result.kantosho = topScorers(committeed("kanto", kantoScores), 10);
 
   // Gino-sho (Technique): widest kimarite repertoire.
   const ginoScores = new Map<string, number>();
@@ -103,7 +138,9 @@ export function determineSpecialPrizes(
     const s = stats.get(c.id);
     if (s) ginoScores.set(c.id, new Set(s.kimarites).size);
   }
-  result.ginoSho = topScorers(ginoScores, 3);
+  result.ginoSho = topScorers(committeed("gino", ginoScores), 3);
+
+  if (deliberations.length > 0) result.deliberations = deliberations;
 
   return result;
 }

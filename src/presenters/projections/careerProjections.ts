@@ -2,11 +2,11 @@ import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
 import type { Heya } from "@/engine/types/heya";
 import {
-  ELECTION_BOARD_SIZE,
   SUCCESSION_INSOLVENCY_EVENTS,
   SUCCESSION_MAJOR_SCANDALS,
   SUCCESSION_UNDERPERFORMANCE_BASHO,
 } from "@/constants/engine/succession";
+import { BOARD_COMMITTEE } from "@/constants/engine/committee";
 import { CAREER_MILESTONES } from "@/constants/ui/career";
 
 export interface CareerMilestone {
@@ -79,12 +79,12 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
   );
   const rank = Math.max(1, ranked.indexOf(heyaId) + 1);
   const myScore = scores.get(heyaId) ?? electionScore(heya ?? {});
-  const boardCutoff = ranked[ELECTION_BOARD_SIZE - 1];
+  const boardCutoff = ranked[BOARD_COMMITTEE.size - 1];
   const fifthScore = boardCutoff !== undefined ? (scores.get(boardCutoff) ?? 0) : null;
-  // Mirrors runElections' slice(0, ELECTION_BOARD_SIZE): anyone ranked inside
+  // Mirrors runElections' slice(0, BOARD_COMMITTEE.size): anyone ranked inside
   // the board takes a seat, including short fields. A heyaId absent from the
   // world can't be seated — the old `size >= 1` guard was tautological.
-  const boardSeat = rank <= ELECTION_BOARD_SIZE && ranked.includes(heyaId);
+  const boardSeat = rank <= BOARD_COMMITTEE.size && ranked.includes(heyaId);
 
   const values: Record<string, number> = {
     "first-sekitori": tenure.sekitoriProduced,

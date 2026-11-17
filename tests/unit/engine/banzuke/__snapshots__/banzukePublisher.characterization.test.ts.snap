@@ -733,6 +733,23 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
     },
     {
       "type": "BASHO_STATUS",
+      "category": "banzuke_committee",
+      "data": {
+        "status": "committee_deliberation",
+        "description": "Banzuke committee (11–12): merit evidence +1.",
+        "rikishiId": "r_ozeki",
+        "from": "makuuchi:大関E",
+        "to": "makuuchi:横綱E",
+        "adjustment": 1,
+        "votesFor": 11,
+        "votesAgainst": 12
+      },
+      "heyaId": "heya-r_ozeki",
+      "rikishiId": "r_ozeki",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
       "category": "promotion",
       "data": {
         "status": "ozeki_demotion",
@@ -1801,6 +1818,23 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
       "heyaId": "heya-r_m10",
       "rikishiId": "r_m10",
       "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "banzuke_committee",
+      "data": {
+        "status": "committee_deliberation",
+        "description": "Banzuke committee (11–12): merit evidence +1.",
+        "rikishiId": "r_m5",
+        "from": "makuuchi:前頭5E",
+        "to": "makuuchi:大関W",
+        "adjustment": 1,
+        "votesFor": 11,
+        "votesAgainst": 12
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
     }
   ],
   "worldFields": {
@@ -2857,6 +2891,23 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
       },
       "heyaId": "heya-r_m10",
       "rikishiId": "r_m10",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "banzuke_committee",
+      "data": {
+        "status": "committee_deliberation",
+        "description": "Banzuke committee (11–12): merit evidence +1.",
+        "rikishiId": "r_m5",
+        "from": "makuuchi:前頭5E",
+        "to": "makuuchi:大関W",
+        "adjustment": 1,
+        "votesFor": 11,
+        "votesAgainst": 12
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
       "importance": "notable"
     }
   ],

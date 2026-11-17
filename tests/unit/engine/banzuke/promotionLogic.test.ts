@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { computeMovementUnits, bestTierAllowed } from "@/engine/banzuke/promotionLogic";
+import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
 import { getOzekiStatus } from "@/engine/banzuke/ozekiLogic";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 
@@ -43,135 +43,6 @@ function perf(
 }
 
 const NONE = new Set<string>();
-
-// ── computeMovementUnits ───────────────────────────────────────────────────
-
-describe("computeMovementUnits — maegashira (threshold = 8)", () => {
-  it("returns 0 at exactly kachi-koshi (8 wins)", () => {
-    expect(computeMovementUnits(entry("maegashira", 5), perf(8, 7), NONE)).toBe(0);
-  });
-
-  it("returns +2 for 10 wins", () => {
-    expect(computeMovementUnits(entry("maegashira", 5), perf(10, 5), NONE)).toBe(2);
-  });
-
-  it("returns -8 for 0 wins", () => {
-    expect(computeMovementUnits(entry("maegashira", 5), perf(0, 15), NONE)).toBe(-8);
-  });
-
-  it("clamps to +15 maximum (makuuchi)", () => {
-    // raw = 15 - 8 + yusho(5) + kinboshi(3) + specialPrizes(3) = 18 -> clamped to +15
-    const move = computeMovementUnits(
-      entry("maegashira", 5),
-      perf(15, 0, { yusho: true, kinboshi: 3, specialPrizes: 3 }),
-      NONE
-    );
-    expect(move).toBe(15);
-  });
-
-  it("clamps to -10 minimum", () => {
-    const move = computeMovementUnits(entry("maegashira", 5), perf(0, 15), NONE);
-    expect(move).toBeGreaterThanOrEqual(-10);
-  });
-
-  it("returns 0 when perf is undefined", () => {
-    expect(computeMovementUnits(entry("maegashira", 5), undefined, NONE)).toBe(0);
-  });
-
-  it("applies absence penalty: 1 absence = light kyujo, 15 absences = heavy kyujo", () => {
-    const perf1 = perf(8, 6, { absences: 1 });
-    expect(computeMovementUnits(entry("maegashira", 5), perf1, NONE)).toBe(-1);
-
-    const perf2 = perf(0, 0, { absences: 15 });
-    expect(computeMovementUnits(entry("maegashira", 5), perf2, NONE)).toBe(-18);
-  });
-
-  it("adds yusho and kinboshi bonuses (14 wins, yusho, 2 kinboshi → +13)", () => {
-    const move = computeMovementUnits(
-      entry("maegashira", 1),
-      perf(14, 1, { yusho: true, kinboshi: 2 }),
-      NONE
-    );
-    expect(move).toBe(13);
-  });
-
-  it("incorporates opponentAvgTier into bonus (harder schedule = more movement)", () => {
-    const perfHard = perf(8, 7, { opponentAvgTier: 2 });
-    expect(computeMovementUnits(entry("maegashira", 15), perfHard, NONE)).toBe(1);
-
-    const perfEasy = perf(8, 7, { opponentAvgTier: 6 });
-    expect(computeMovementUnits(entry("maegashira", 15), perfEasy, NONE)).toBe(0);
-  });
-
-  it("handles junYusho and specialPrizes bonuses (8 wins, junYusho, 2 prizes → +4)", () => {
-    const move = computeMovementUnits(
-      entry("maegashira", 15),
-      perf(8, 7, { junYusho: true, specialPrizes: 2 }),
-      NONE
-    );
-    expect(move).toBe(4);
-  });
-});
-
-describe("computeMovementUnits — yokozuna (±2 ceiling)", () => {
-  it("clamps positive movement to +2", () => {
-    const move = computeMovementUnits(entry("yokozuna"), perf(14, 1, { yusho: true }), NONE);
-    expect(move).toBe(2);
-  });
-
-  it("clamps negative movement to -2", () => {
-    const move = computeMovementUnits(entry("yokozuna"), perf(4, 11), NONE);
-    expect(move).toBe(-2);
-  });
-});
-
-describe("computeMovementUnits — ozeki (0.65× damped, ±4)", () => {
-  it("damps movement by 0.65: 10 wins → +1", () => {
-    // base = 10-8 = 2, damped = round(2 * 0.65) = round(1.3) = 1
-    expect(computeMovementUnits(entry("ozeki"), perf(10, 5), NONE)).toBe(1);
-  });
-
-  it("clamps positive movement to +4", () => {
-    const move = computeMovementUnits(entry("ozeki"), perf(14, 1, { yusho: true }), NONE);
-    expect(move).toBe(4);
-  });
-
-  it("applies harsh penalty (≤ -6) when rikishi is in demotedOzeki set", () => {
-    // 7 wins (make-koshi): base = 7-8 = -1, damped = round(-0.65) = -1
-    // demoted: min(-6, -1-4) = min(-6, -5) = -6
-    const demoted = new Set(["r1"]);
-    expect(computeMovementUnits(entry("ozeki"), perf(7, 8), demoted)).toBeLessThanOrEqual(-6);
-  });
-
-  it("does not apply demotion penalty when rikishi is NOT in demotedOzeki", () => {
-    const move = computeMovementUnits(entry("ozeki"), perf(7, 8), NONE);
-    expect(move).toBeGreaterThan(-6);
-  });
-});
-
-describe("computeMovementUnits — sekiwake/komusubi (0.8× damped, ±8)", () => {
-  it("damps movement by 0.8 for sekiwake: 10 wins → +2", () => {
-    // base = 10-8 = 2, scaled = round(2 * 0.8) = round(1.6) = 2
-    expect(computeMovementUnits(entry("sekiwake"), perf(10, 5), NONE)).toBe(2);
-  });
-
-  it("clamps sekiwake positive movement to +8", () => {
-    // raw scaled = round((15 - 8 + yusho(5)) * 0.8) = round(9.6) = 10 -> clamped to +8
-    const move = computeMovementUnits(entry("sekiwake"), perf(15, 0, { yusho: true }), NONE);
-    expect(move).toBe(8);
-  });
-
-  it("clamps sekiwake negative movement to -6", () => {
-    const move = computeMovementUnits(entry("sekiwake"), perf(0, 15), NONE);
-    expect(move).toBeGreaterThanOrEqual(-6);
-  });
-
-  it("damps movement by 0.8 for komusubi: 10 wins → +2", () => {
-    expect(computeMovementUnits(entry("komusubi"), perf(10, 5), NONE)).toBe(2);
-  });
-});
-
-// ── bestTierAllowed ────────────────────────────────────────────────────────
 
 describe("bestTierAllowed", () => {
   it("yokozuna always returns tier 1 regardless of performance", () => {

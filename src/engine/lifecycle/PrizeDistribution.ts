@@ -20,7 +20,7 @@ import { getTotalBashodays } from "@/engine/calendar/scheduleHelpers";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { rngFromSeed } from "@/engine/core/rng";
+import { rngFromSeed, rngForWorld } from "@/engine/core/rng";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 /**
@@ -38,7 +38,12 @@ export function distributePrizes(
   yusho: Id
 ): { prizes: SpecialPrizesResult; impact: StateImpact } {
   const builder = createImpactBuilder("distributePrizes");
-  const prizes = determineSpecialPrizes(basho.matches, world.rikishi, yusho);
+  const prizes = determineSpecialPrizes(
+    basho.matches,
+    world.rikishi,
+    yusho,
+    rngForWorld(world, "governance", "sansho_committee")
+  );
 
   const awardTypes = {
     shukunsho: "Shukun",
@@ -82,6 +87,32 @@ export function distributePrizes(
   }
 
   appendMultiPrizeLines(world, basho, prizeCounts, sanshoRng, sanshoNarrativeLines);
+
+  // Sansho committee feed item: one line per awarded prize with the
+  // committee's vote — the real panel's 5-member selection made visible.
+  if (prizes.deliberations) {
+    for (const d of prizes.deliberations) {
+      const [prize, rikishiId] = d.subjectId.split(":");
+      const winner =
+        prizes.shukunsho.includes(rikishiId) && prize === "shukun" ? "Shukun-sho"
+        : prizes.kantosho.includes(rikishiId) && prize === "kanto" ? "Kanto-sho"
+        : prizes.ginoSho.includes(rikishiId) && prize === "gino" ? "Gino-sho"
+        : null;
+      if (!winner) continue;
+      const r = getRikishi(world, rikishiId);
+      builder.logEvent(
+        "AWARD_CONFERRED",
+        "governance",
+        {
+          status: "sansho_committee",
+          regime: winner,
+          description: `Sansho committee (${d.votesFor}–${d.votesAgainst}) selects ${r?.shikona ?? rikishiId} for ${winner}: ${d.rationale.join("; ")}.`,
+          rikishiId,
+        },
+        { rikishiId, heyaId: r?.heyaId, importance: "notable" }
+      );
+    }
+  }
 
   // Log ceremony intro narrative as a separate event
   if (sanshoNarrativeLines.length > 0) {

@@ -33,7 +33,10 @@ import {
 } from "@/engine/banzuke/banzukeHelpers";
 import type { WorldState } from "@/engine/types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
-import { computeMovementUnits, bestTierAllowed } from "@/engine/banzuke/promotionLogic";
+import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
+import { deliberateBanzukeMovement } from "@/engine/banzuke/banzukeCommittee";
+import type { CommitteeDecision } from "@/engine/committee/committee";
+import { rngForWorld } from "@/engine/core/rng";
 import { buildFullSlotTemplate } from "@/engine/banzuke/banzukeTemplate";
 import { toKeyedMap } from "@/engine/utils/index";
 
@@ -42,6 +45,8 @@ interface BanzukeUpdateResult {
   newBanzuke: BanzukeEntry[];
   events: MovementEvent[];
   updatedOzekiKadoban: OzekiKadobanMap;
+  /** Committee deliberation records per rikishi (votes + rationale). */
+  deliberations: Map<string, CommitteeDecision>;
   sanyakuCounts: {
     yokozuna: number;
     ozeki: number;
@@ -208,7 +213,13 @@ export function updateBanzuke(
     previousOzekiKadoban,
     demotedOzeki
   );
-  return { newBanzuke: assigned, events, updatedOzekiKadoban, sanyakuCounts };
+  return {
+    newBanzuke: assigned,
+    events,
+    updatedOzekiKadoban,
+    sanyakuCounts,
+    deliberations: new Map(scored.map((s) => [s.entry.rikishiId, s.decision])),
+  };
 }
 
 /**
@@ -299,11 +310,13 @@ type ScoredCandidate = {
   oldKey: number;
   desiredKey: number;
   eligibleBestTier: number;
+  decision: CommitteeDecision;
 };
 
 /**
- * Scores each banzuke entry by desired position (movement units + ichimon
- * political weight) and eligible tier, then sorts by desiredKey with the
+ * Scores each banzuke entry by desired position — the banzuke committee's
+ * deliberated slot delta ((W−L)/2, kyujo ≈ losses, bounded merit/preference
+ * discretion) — plus eligible tier, then sorts by desiredKey with the
  * H2H/SOS tiebreak hierarchy.
  */
 function scoreBanzukeCandidates(
@@ -326,25 +339,27 @@ function scoreBanzukeCandidates(
     }
   }
 
+  const committeeRng = rngForWorld(world, "banzuke", "committee");
+
   return currentBanzuke
     .map((e) => {
       const p = perfById.get(e.rikishiId);
-      const move = computeMovementUnits(e, p, demotedOzeki);
-
-      let politicalWeight = 0;
-      if (heyaMap && e.rikishiId) {
-        const heya = rikishiToHeyaMap.get(e.rikishiId);
-        if (heya?.ichimon === "Dewanoumi") politicalWeight = 300;
-        else if (heya?.ichimon === "Nishonoseki") politicalWeight = 250;
-        else if (heya?.ichimon) politicalWeight = 100;
-      }
+      const heya = heyaMap ? rikishiToHeyaMap.get(e.rikishiId) : undefined;
+      const { delta: move, decision } = deliberateBanzukeMovement(
+        e,
+        p,
+        demotedOzeki,
+        committeeRng,
+        heya?.ichimon ?? "none"
+      );
 
       const oldKey = positionKey(e);
-      const desiredKey = oldKey - move * 1_000 - politicalWeight;
+      const desiredKey = oldKey - move * 1_000;
       return {
         entry: e,
         oldKey,
         desiredKey,
+        decision,
         eligibleBestTier: bestTierAllowed(
           e,
           p,

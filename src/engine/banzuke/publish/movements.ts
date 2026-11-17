@@ -114,4 +114,29 @@ export function applyMovementEvents(
       { rikishiId: narrative.rikishiId, heyaId: narrativeRikishi?.heyaId, importance: "notable" }
     );
   }
+
+  // Banzuke committee commentary: surface deliberation notes for movers whose
+  // cases involved exercised discretion (merit/demerit/faction nudge) or a
+  // contested vote — the committee's judgment is news, the baseline is not.
+  for (const evt of result.events) {
+    const decision = result.deliberations.get(evt.rikishiId);
+    if (!decision) continue;
+    if (decision.adjustment === 0 && decision.votesAgainst === 0) continue;
+    const mover = getRikishi(world, evt.rikishiId);
+    builder.logEvent(
+      "BASHO_STATUS",
+      "banzuke_committee",
+      {
+        status: "committee_deliberation",
+        description: `Banzuke committee (${decision.votesFor}–${decision.votesAgainst}): ${decision.rationale.join("; ")}.`,
+        rikishiId: evt.rikishiId,
+        from: evt.from,
+        to: evt.to,
+        adjustment: decision.adjustment,
+        votesFor: decision.votesFor,
+        votesAgainst: decision.votesAgainst,
+      },
+      { rikishiId: evt.rikishiId, heyaId: mover?.heyaId, importance: "notable" }
+    );
+  }
 }

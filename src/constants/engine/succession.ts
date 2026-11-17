@@ -30,4 +30,4 @@ export const GRUDGE_PLAN_BONUS = 4;
 
 /** Political-capital bump for elected JSA board members (was hardcoded +20 — reduced to blunt the self-reinforcing incumbency lock). */
 export const ELECTION_INCUMBENCY_BONUS = 8;
-export const ELECTION_BOARD_SIZE = 5;
+// Board seat count lives in constants/engine/committee.ts (BOARD_COMMITTEE.size).
