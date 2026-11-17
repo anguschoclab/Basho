@@ -108,6 +108,12 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     "playerKnowledge",
     // Written by resolveBout / applyBoutResult into currentWorld; would be
     // dropped without re-export (kimarite era stats, official pool updates).
+    // activeRikishiIds: ensureDaySchedule (inside advanceBashoDay) adds
+    // minted maezumo/callup entrants via collections — the rikishi map entry
+    // re-exports through reexportEntityDiffs, but the index Set is a world
+    // field and drops without this passthrough (map-present, index-absent
+    // integrity violation).
+    "activeRikishiIds",
     "globalKimariteStats",
     "allTimeKimariteStats",
     "shimpanPool",

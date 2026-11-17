@@ -202,4 +202,23 @@ describe("phase01_basho_bouts", () => {
     expect(totalWins).toBe(2);
     expect(totalLosses).toBe(2);
   });
+
+  it("propagates rikishi minted mid-tick (maezumo fill) into activeRikishiIds", () => {
+    // Day 2 → advance to day 3: jonokuchi schedules on odd days, and a 1-man
+    // roster has no lower-division donor — the cascade mints a maezumo fill.
+    // The mint lands inside advanceBashoDay's resolved world; without the
+    // activeRikishiIds passthrough the map entry re-exports but the index
+    // add is silently dropped (map-present, index-absent violation).
+    const matches = [makeMatch("b1", 2)];
+    const world = makeWorldForPhase(matches, { day: 2 });
+    const jk = makeRikishi("jk1", { division: "jonokuchi", rank: "jonokuchi", side: "west" });
+    world.rikishi.set("jk1", jk);
+    world.heyas.get("test-heya")!.rikishiIds = ["east", "west", "jk1"];
+
+    const result = resolveImpacts(world, [phase01_basho_bouts(world)]);
+
+    const maezumo = Array.from(result.rikishi.values()).find((r) => r.isMaezumo);
+    expect(maezumo).toBeDefined();
+    expect(result.activeRikishiIds.has(maezumo!.id)).toBe(true);
+  });
 });
