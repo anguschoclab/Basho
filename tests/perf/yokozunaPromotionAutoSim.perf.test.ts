@@ -5,7 +5,9 @@ import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 describe("PERF: yokozuna promotion in AutoSim", () => {
   it(
     "has yokozuna or yokozuna promotion event within 12 basho from a world with 0 yokozuna",
-    { timeout: 300000 },
+    // The 18-basho autosim needs ~370s on this hardware under the current
+    // pipeline — the old 300s bound killed it before the assertion ran.
+    { timeout: 600000 },
     () => {
       const world = generateInitialWorld("no-yokozuna-test-001");
       // Force all yokozuna to retired state and remove from activeRikishiIds
