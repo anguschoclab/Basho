@@ -4,10 +4,22 @@
 **Status:** HARMONIZED / MOVE-BASED / IMPLEMENTATION-GRADE  
 **Project name:** **Basho** (all legacy naming normalized to “Basho” throughout this edition)
 
-> **Divergence notice (added 2026-11):** This constitution is a point-in-time binding contract. Verified divergences from current code — treat `docs/user-manual.md` and source constants as current truth for values:
+> **Divergence notice (added 2026-11, expanded 2026-11 JSA-alignment pass):** This constitution is a point-in-time binding contract. Verified divergences from current code — treat `docs/user-manual.md` and source constants as current truth for values:
 >
 > - **Economy:** Part B describes pre-JSA-model money flows. Current code routes wrestler compensation (salaries, prizes, kenshō, teate, mochikyukin, travel allowances) to **rikishi personal economics**; heya income is koenkai (70% band share), JSA per-wrestler subsidy, sponsor tiers, JSA grants, and oyakata salary (`src/engine/economy/FinanceCalculator.ts`, `src/engine/lifecycle/PrizeDistribution.ts`).
-> - **Rank salaries:** current monthly values are Yokozuna ¥3.3M / Ozeki ¥2.75M / Sekiwake+Komusubi ¥2.0M / Maegashira ¥1.55M / Juryo ¥1.2M (`src/engine/types/banzuke.ts` → `RANK_HIERARCHY`).
+> - **Era-keyed JSA economics:** all wrestler compensation now follows the real-world timeline — the game opens January 2026 on the pre-revision schedule and switches to the JSA's 2026-07-30 board revision effective Hatsu 2027 (`src/constants/engine/jsaEra.ts`):
+>   - *Monthly salaries:* Y ¥3.0M→¥3.3M / O ¥2.5M→¥2.75M / S+K ¥1.8M→¥2.0M / M ¥1.4M→¥1.55M / J ¥1.1M→¥1.2M. Part B's tables (e.g. Komusubi ¥1.7M) are fictional — Komusubi is sanyaku, paid the same as Sekiwake.
+>   - *Yusho prizes:* ¥10M→¥20M (makuuchi), ¥2M→¥3M (juryo), ¥500k→¥700k / ¥300k→¥500k / ¥200k→¥300k / ¥100k→¥200k (lower divisions).
+>   - *Sansho:* ¥2M→¥3M per award, paid to the **wrestler** (never the stable), to S/K/M-eligible recipients, shareable, multi-award, and withholdable.
+>   - *Basho teate:* real per-basho values ¥165k/¥110k/¥88k/¥77k → ¥180k/¥120k/¥95k/¥82k — Part B's monthly ¥150k/¥90k/¥55k/¥35k table is fictional.
+>   - *New payments modeled:* 勝星金 per-win money (¥3,500–¥2,500 by division → ¥4,000–¥3,000), 勝ち越し金 per-net-win money (¥8,000–¥5,500 → ¥10,000–¥7,500, with absences counted in the loss column), 本場所特別手当 sanyaku allowances (Y ¥200k / O ¥150k / S-K ¥50k, pro-rated by days contested), and a +30% jungyo stipend bump from 2027.
+>   - *Announcement:* dated media-feed headlines fire at the real moments — the August 2026 board announcement, the October 2026 Article-9 amendment, and the January 2027 effective date (`announceJsaBulletins` in `src/engine/media/MediaEventService.ts`).
+> - **Kensho split:** Part B's several variants (¥10k→stable/¥50k→retirement; 50% rikishi / 50% beya) are all fictional. Real post-May-2025 split: sponsor pays ¥70,000 → ¥10,000 JSA fee + **¥10,000 cash** to the winner + **¥50,000** to the winner's JSA-held account (retirement fund in-game). Game-original additions kept deliberately: media-heat bonus envelopes and kinboshi/ginboshi minimum banners.
+> - **Kinboshi:** the Part B "¥40,000/month stipend while in Makuuchi" claim is fictional; the real mechanic modeled is +10 mochikyukin points per star (¥4,000 × points paid bimonthly while sekitori). Kinboshi requires a maegashira beating a yokozuna **in a contested bout** — never by fusensho or hansoku.
+> - **Fusenpai convention:** a withdrawal produces exactly one fusenpai *loss* on the day the bout was scheduled; subsequent missed days are absences (W-L-A record, e.g. 5-7-3). Part B/test-era descriptions of "absence not loss" are superseded.
+> - **Playoffs:** three-way yusho ties resolve by **tomoe-sen** (first to two consecutive wins), not a bracket bye; 4+ candidates use single-elimination.
+> - **Jun-yusho:** label only — tied non-champions receive no prize money or mochikyukin bonus.
+> - **Ozeki promotion:** ~33 wins over three basho standard + the 10-win kadoban-reversal rule. The former 11-win single-basho shortcut is removed.
 > - **Kimarite weighting:** rarity is now derived from real-world frequency **shares** via `rarityFromShare` (≥8% common, ≥1.5% uncommon, ≥0.2% rare, below legendary) in `src/constants/engine/kimariteTargets.ts`, not the absolute weight tiers this document describes.
 > - **NPC code layout:** all NPC systems consolidated under `src/engine/npc/` (workers, agents, strategies, weekly orchestration).
 > - **Worker commands:** canonical union is `EngineCommand` in `src/engine/worker/types.ts`; see `docs/audit/worker-command-surface.md`.

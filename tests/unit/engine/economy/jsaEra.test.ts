@@ -147,6 +147,22 @@ describe("payBashoTeate — teate + shoshi-kin + kachikoshi-kin (real JSA worked
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(254_000);
   });
 
+  it("absence days count in the loss column for kachikoshi-kin (負け数には休場も含む)", () => {
+    // 4-1 makushita whose last two days were missed after a withdrawal:
+    // record 4-1-2 → losses for the formula = 1 + 2 absences → net 1 point.
+    const r = mockRikishi("r1", {
+      rank: "makushita",
+      division: "makushita",
+      currentBashoWins: 4,
+      currentBashoLosses: 1,
+      economics: econ(),
+    });
+    const world = makeMockWorld({ year: 2026, rikishi: new Map([["r1", r]]), activeRikishiIds: new Set(["r1"]) });
+    const resolved = resolveImpacts(world, [payBashoTeate(world)]);
+    // 165_000 + 4 × 3_500 + 1 × 8_000 = 187_000
+    expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(187_000);
+  });
+
   it("make-koshi pays no kachikoshi bonus", () => {
     const r = mockRikishi("r1", {
       rank: "jonidan",

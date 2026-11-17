@@ -217,10 +217,10 @@ Professional sumo has six divisions. Only the top two divisions (Makuuchi and Ju
 
 ### Divisions from Top to Bottom
 
-| Division               | Pro Status   | Monthly Salary          |
-| ---------------------- | ------------ | ----------------------- |
-| **Makuuchi** (幕内)    | Professional | ¥1,550,000 – ¥3,300,000 |
-| **Juryo** (十両)       | Professional | ¥1,200,000              |
+| Division               | Pro Status   | Monthly Salary (2026)   | Monthly Salary (2027+) |
+| ---------------------- | ------------ | ----------------------- | ---------------------- |
+| **Makuuchi** (幕内)    | Professional | ¥1,400,000 – ¥3,000,000 | ¥1,550,000 – ¥3,300,000 |
+| **Juryo** (十両)       | Professional | ¥1,100,000              | ¥1,200,000             |
 | **Makushita** (幕下)   | Semi-pro     | None                    |
 | **Sandanme** (三段目)  | Amateur      | None                    |
 | **Jonidan** (序二段)   | Amateur      | None                    |
@@ -259,37 +259,45 @@ Matchups are set by the **torikumi** — a scheduling committee that uses a Swis
 
 ### Tournament Awards
 
-| Award                 | Japanese | Description                                            |
-| --------------------- | -------- | ------------------------------------------------------ |
-| **Yusho**             | 優勝     | Championship — most wins (playoff if tied)             |
-| **Jun-Yusho**         | 準優勝   | Runner-up                                              |
-| **Ginosho**           | 技能賞   | Technique Award — best technique display               |
-| **Kantosho**          | 敢闘賞   | Fighting Spirit Award                                  |
-| **Shukunsho**         | 殊勲賞   | Outstanding Performance — beating top-ranked opponents |
-| **Bout of the Basho** | —        | Most exciting match by excitement score                |
+| Award                 | Japanese | Description                                                                       |
+| --------------------- | -------- | --------------------------------------------------------------------------------- |
+| **Yusho**             | 優勝     | Championship — most wins (playoff if tied)                                        |
+| **Jun-Yusho**         | 準優勝   | Runner-up — label only; tied non-champions earn no separate prize or record bonus |
+| **Ginosho**           | 技能賞   | Technique Award — best technique display                                          |
+| **Kantosho**          | 敢闘賞   | Fighting Spirit Award                                                             |
+| **Shukunsho**         | 殊勲賞   | Outstanding Performance — beating top-ranked opponents                            |
+| **Bout of the Basho** | —        | Most exciting match by excitement score                                           |
+
+Sansho are awarded to **Sekiwake, Komusubi, and Maegashira** (the three prize-eligible ranks), can be **shared** by multiple wrestlers, a single wrestler can take **more than one** prize, and a prize may be **withheld entirely** when no performance merits it. Each prize pays **¥2,000,000 (2026) / ¥3,000,000 (2027+)** to the winning wrestler.
+
+Tied championships resolve by playoff: two rikishi fight a deciding bout; **three tied rikishi fight tomoe-sen** (a round-robin rotation where the first to win two consecutive bouts is champion); four or more use a single-elimination bracket.
 
 ### Special Bout Outcomes
 
-| Event                 | Description                                      |
-| --------------------- | ------------------------------------------------ |
-| **Kinboshi** (金星)   | Gold Star — Maegashira or lower beats a Yokozuna |
-| **Ginboshi** (銀星)   | Silver Star — Maegashira or lower beats an Ozeki |
-| **Fusensho** (不戦勝) | Default win — opponent absent (kyūjō)            |
-| **Hansoku** (反則)    | Disqualification — rule violation                |
+| Event                 | Description                                                                                                |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Kinboshi** (金星)   | Gold Star — a **Maegashira** beats a Yokozuna in a contested bout (never by fusensho or hansoku)          |
+| **Ginboshi** (銀星)   | Silver Star — a Maegashira beats an Ozeki, or a Sekiwake/Komusubi beats a Yokozuna (informal, fan-coined) |
+| **Fusensho** (不戦勝) | Default win — opponent absent (kyūjō)                                                                      |
+| **Hansoku** (反則)    | Disqualification — rule violation                                                                          |
 
-**Kinboshi** is one of the highest individual honours outside a championship win. It is a significant career milestone for lower-ranked wrestlers and a source of media attention.
+**Kinboshi** is one of the highest individual honours outside a championship win. Only rank-and-file maegashira are eligible — sanyaku wrestlers receive no official star for beating a Yokozuna (fans informally call it a *ginboshi* instead). A win by default or disqualification does not count. Each kinboshi adds **+10 mochikyukin points** — a real, lasting pay rise paid at every future basho while the wrestler remains a sekitori.
 
 ### Kenshō Envelopes
 
-Corporate sponsors place **kenshō** envelopes on featured bouts. Each envelope contains **¥70,000** for the winner. High-profile bouts can carry dozens of envelopes — a meaningful income source for top wrestlers and their stables.
+Corporate sponsors place **kenshō** banners on featured makuuchi bouts. Each banner costs the sponsor **¥70,000**, of which the winner receives ¥60,000: **¥10,000 cash** handed over in envelopes on the dohyo and **¥50,000** deposited into a JSA-held account in the winner's name (credited to their retirement fund in-game). The remaining ¥10,000 is the JSA administration fee. No envelopes are awarded for a fusensho walkover.
+
+Two additions are **deliberate game mechanics, not JSA rules** (see *Known Deviations*): media heat can attract bonus envelopes to a hyped bout, and kinboshi/ginboshi bouts carry minimum banner guarantees — a way of making fame matter a little more.
 
 ### Withdrawal — Kyūjō
 
-Wrestlers can withdraw from a tournament, receiving default losses for the remaining days. Reasons include:
+Wrestlers can withdraw from a tournament. Reasons include:
 
 - **Injury** (most common — a medical certificate is required for official records)
 - **Voluntary** — rare, with reputational consequences
 - **Personal circumstances**
+
+On the scorecard, a withdrawal produces exactly **one fusenpai loss** — the bout already scheduled for the day of withdrawal. Every day missed afterwards is a plain **absence**, not an additional loss: a wrestler who goes 5–6 and withdraws on day 12 finishes **5–7 with 3 absences**. The same applies when both wrestlers are absent for a scheduled bout (両者不戦敗 — a fusenpai loss for each).
 
 ---
 
@@ -468,6 +476,12 @@ Before each basho, a dedicated **banzuke_reveal** phase (14 days) publishes the 
 - Study opponent matchup projections
 - Adjust training targets and recovery plans
 
+### Promotion to Ozeki
+
+The standing promotion standard is a body of work — roughly **33 wins across the three most recent basho** while holding Sekiwake or Komusubi. There is no single-tournament shortcut: a lone 11- or 12-win basho makes a Sekiwake a candidate, not an Ozeki.
+
+One exception exists: a Sekiwake **just demoted from Ozeki** re-earns the rank immediately with **10+ wins** in his next tournament (the kadoban-reversal rule).
+
 ### Kadoban — Ozeki Probation
 
 If an **Ozeki** posts a losing record (make-koshi) in any basho, they enter **kadoban** status for the following tournament. Kadoban means:
@@ -494,18 +508,30 @@ Running a heya costs money — wrestlers' salaries, facilities, food, travel, st
 
 ### Salaries — Paid by the JSA, Not by You
 
-Under the JSA model, wrestler salaries are paid by the association directly into each rikishi's personal finances — they are **not** a heya expense. The monthly scale by rank:
+Under the JSA model, wrestler salaries are paid by the association directly into each rikishi's personal finances — they are **not** a heya expense. The JSA's July 2026 board revision raised every figure effective from the January 2027 tournament — the game tracks both schedules on the real timeline:
 
-| Rank                | Monthly Salary |
-| ------------------- | -------------- |
-| Yokozuna            | ¥3,300,000     |
-| Ozeki               | ¥2,750,000     |
-| Sekiwake / Komusubi | ¥2,000,000     |
-| Maegashira          | ¥1,550,000     |
-| Juryo               | ¥1,200,000     |
-| Makushita and below | ¥0             |
+| Rank                | Monthly Salary (2026) | Monthly Salary (from Jan 2027) |
+| ------------------- | --------------------- | ------------------------------ |
+| Yokozuna            | ¥3,000,000            | ¥3,300,000                     |
+| Ozeki               | ¥2,500,000            | ¥2,750,000                     |
+| Sekiwake / Komusubi | ¥1,800,000            | ¥2,000,000                     |
+| Maegashira          | ¥1,400,000            | ¥1,550,000                     |
+| Juryo               | ¥1,100,000            | ¥1,200,000                     |
+| Makushita and below | ¥0                    | ¥0                             |
 
-What your stable actually receives from the JSA each month is a **per-wrestler subsidy** keyed by rank (Yokozuna ¥2,500,000 down to Jonokuchi ¥15,000), plus a fixed weekly operational grant and your oyakata's salary. Sekitori also receive a yearly **travel allowance** (¥450,000–¥1,500,000 by rank) paid personally by the JSA — 70% cash, 30% retirement fund.
+What your stable actually receives from the JSA each month is a **per-wrestler subsidy** keyed by rank (Yokozuna ¥2,500,000 down to Jonokuchi ¥15,000), plus a fixed weekly operational grant and your oyakata's salary. Sekitori also receive a yearly **travel allowance** (¥450,000–¥1,500,000 by rank) paid personally by the JSA — 70% cash, 30% retirement fund — which rises ~30% from 2027 under the same revision.
+
+#### Basho earnings
+
+Per tournament, wrestlers collect:
+
+- **Yusho prize** — ¥10M/¥2M/¥500k/¥300k/¥200k/¥100k by division in 2026, rising to ¥20M/¥3M/¥700k/¥500k/¥300k/¥200k from January 2027
+- **Sansho prize** — ¥2M each (2026) / ¥3M each (2027+)
+- **Basho teate** — non-sekitori per-tournament allowance: ¥165k/¥110k/¥88k/¥77k by division (Makushita/Sandanme/Jonidan/Jonokuchi) in 2026, rising to ¥180k/¥120k/¥95k/¥82k from 2027
+- **Win money** (勝星金) — non-sekitori, per bout won: ¥3,500 Makushita / ¥2,500 Sandanme / ¥2,000 Jonidan / ¥1,500 Jonokuchi in 2026 → ¥4,000/¥3,000/¥2,500/¥2,000 from 2027
+- **Kachikoshi money** (勝ち越し金) — non-sekitori, per *net* win: ¥8,000 Makushita / ¥6,500 Sandanme / ¥5,500 Jonidan / ¥5,500 Jonokuchi in 2026 → ¥10,000/¥8,500/¥7,500/¥7,500 from 2027. The loss column here counts absence days too — a wrestler who misses part of the tournament earns fewer kachikoshi points
+- **Sanyaku basho allowance** — Yokozuna ¥200k / Ozeki ¥150k / Sekiwake+Komusubi ¥50k per basho, pro-rated by days contested (11+ days full, 6–10 two-thirds, 1–5 one-third)
+- **Mochikyukin** — see below
 
 ### Income Sources
 
@@ -517,7 +543,19 @@ What your stable actually receives from the JSA each month is a **per-wrestler s
 | **JSA grants**        | Weekly + monthly   | Fixed operational grant plus oyakata salary (paid by JSA to the heya)                           |
 | **Sponsorships**      | Per contract       | Variable by sponsor tier                                                                        |
 
-Prize money, kenshō envelopes, and mochikyukin payouts are credited to the **winning wrestler's personal finances** (50% cash / 50% retirement fund where applicable) — they do not flow into heya funds directly.
+Prize money, kenshō envelopes, and mochikyukin payouts are credited to the **winning wrestler's personal finances** — they do not flow into heya funds directly. Kensho pays ¥10,000 cash plus ¥50,000 into the wrestler's JSA-held account per banner; other winnings credit cash.
+
+#### Mochikyukin — career prize money
+
+Each sekitori accumulates **mochikyukin points** that pay out at every future basho for the rest of their professional career:
+
+- **+0.5 points per net win** — (wins − losses) × 0.5, floor of zero
+- **+10 per kinboshi**
+- **+30 for a yusho** (Makuuchi), **+20** (Juryo)
+- **+50 for a zensho yusho** — a perfect 15-0 *replaces* the 30, it does not stack
+- Sekiwake and Komusubi hold a **60-point floor** while in sanyaku
+
+The accumulated points pay **¥4,000 × points** every two months while the wrestler remains a sekitori — matching the real system's pace, where a single gold star (10 points) becomes a permanent ¥240,000-a-year rise.
 
 ### Expenses
 
@@ -915,9 +953,9 @@ The sumo world's overall tactical meta shifts over time between four eras:
 
 Era drift is reflected in media commentary and visible in the Almanac's league-wide kimarite statistics.
 
-### Myoseki — Wrestling Name Market
+### Myoseki — Elder Share Market
 
-The **Myoseki** market (under the JSA section) allows buying and selling of official wrestling names — prestigious shikona that carry historical weight. Acquiring a famous myoseki can boost a wrestler's brand value and koenkai appeal.
+The **Myoseki** market (under the JSA section) models the real elder-share system: exactly **105 shares** exist, each conferring the right to remain in the JSA as an oyakata after retirement. Shares can be held, leased to other retired rikishi (the de facto loan market), or sold — prestigious names command ¥150M–¥350M. Acquiring an elder share determines succession options, stable branching rights, and the oyakata career track after your wrestlers retire.
 
 ### Auto-Simulation
 
@@ -936,9 +974,10 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 | **Bout of the Basho**      | Most exciting match of a tournament                                               |
 | **Butsukari**              | Charging practice drill                                                           |
 | **Cycle Phase**            | Current game phase (pre_basho, active_basho, post_basho, interim, banzuke_reveal) |
+| **Fusenpai**               | Default loss — recorded on the day of a tournament withdrawal                     |
 | **Fusensho**               | Default win — opponent was absent                                                 |
 | **Ginosho**                | Technique Award special prize                                                     |
-| **Ginboshi**               | Silver Star — beating an Ozeki as a lower-ranked wrestler                         |
+| **Ginboshi**               | Silver Star — informal fan term: a Maegashira beats an Ozeki, or a Sekiwake/Komusubi beats a Yokozuna |
 | **Hansoku**                | Disqualification for rule violation                                               |
 | **Hatsu**                  | New Year basho, held in January in Tokyo                                          |
 | **Heya**                   | Sumo stable — your organisation                                                   |
@@ -953,7 +992,7 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 | **Kantosho**               | Fighting Spirit Award                                                             |
 | **Kenshō**                 | Prize envelopes placed on featured bouts                                          |
 | **Kimarite**               | Official winning technique used to end a bout                                     |
-| **Kinboshi**               | Gold Star — lower-ranked wrestler beats a Yokozuna                                |
+| **Kinboshi**               | Gold Star — a Maegashira beats a Yokozuna in a contested bout                     |
 | **Koenkai**                | Stable's organised fan and supporter club                                         |
 | **Komusubi**               | Fourth rank in Makuuchi                                                           |
 | **Kyūjō**                  | Tournament withdrawal                                                             |
@@ -962,9 +1001,9 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 | **Makushita**              | Third division; first below professional                                          |
 | **Make-koshi**             | Losing record: 7 or fewer wins (15-match); 3 or fewer (7-match lower divisions)    |
 | **Maegashira**             | Numbered ranks in Makuuchi (1–13+)                                                |
-| **Mochikyukin**            | Career prize money accumulation                                                   |
+| **Mochikyukin**            | Career bonus points paying ¥4,000 × points every two months while a sekitori     |
 | **Moushi-ai**              | Full match practice                                                               |
-| **Myoseki**                | Official wrestling name — a tradable asset                                        |
+| **Myoseki**                | Elder share — one of 105 licenses to remain in the JSA as an oyakata; leasable   |
 | **Nagoya**                 | July basho, held in Nagoya                                                        |
 | **Natsu**                  | Summer basho, held in May in Tokyo                                                |
 | **Oyakata**                | Stable master — the player character                                              |
@@ -981,6 +1020,28 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 | **Welfare Risk**           | Score (0–100) measuring quality of training environment                           |
 | **Yokozuna**               | Grand Champion — highest rank in sumo                                             |
 | **Yusho**                  | Tournament championship                                                           |
+
+---
+
+## Appendix A — Known Deviations from Real JSA Rules
+
+Basho models the modern Japan Sumo Association rulebook as closely as practical, including the July-2026 board revision on its real effective date (January 2027). The following are **deliberate deviations or game constructions** — kept because they serve the game, not because they reflect JSA rules:
+
+| Feature | Real JSA | In Basho |
+| ------- | -------- | -------- |
+| **Ginboshi** | Informal fan/media term with no official status, record, or payment — fans use it for a Maegashira beating an Ozeki, or a Sekiwake/Komusubi beating a Yokozuna | Kept as a tracked, celebrated upset marker in both senses; it grants popularity and prestige but no mochikyukin, matching its unofficial status |
+| **Kensho fame mechanics** | Banners are placed by sponsors on specific bouts; media heat plays no role | Media heat can attract bonus envelopes, and kinboshi/ginboshi bouts carry minimum banner guarantees — retained so fame visibly matters (the ¥10k/¥50k/¥10k per-banner split itself is the real one) |
+| **Jungyo stipend** | 2027 package raises tour allowances 20–50% by rank | Flat +30% applied from 2027 — a midpoint approximation |
+| **Article 9 topknot rule** | Since October 2026, a wrestler whose hair touches the dohyo first loses — the old exception saving an attacker whose topknot touched while felling the opponent was deleted | No divergence to model: the bout engine already resolves every downed finish by who loses structural control (balance), which is the post-2026 rule by construction. The change is announced in the media feed on its real date |
+| **Sanyaku allowance pro-rating** | Pro-rated by days contested (11+ full, 6–10 two-thirds, 1–5 one-third) | Same schedule; a withdrawal day counts as contested for this purpose |
+| **Heya economics** | Stables are funded by koenkai and JSA structures with no fixed per-wrestler subsidy | A rank-keyed per-wrestler JSA subsidy, fixed weekly grant, and oyakata salary model stable income for gameplay |
+| **Prestige / heat / myth scores** | None exist | Game-original narrative scalars that drive sponsors, media tone, and governance |
+| **Global Cup** | No such event | Game-original international showcase |
+| **Ozeki promotion** | ~33 wins across three basho is the standard; 10 wins re-earns the rank immediately after a kadoban demotion | Same standards; no single-tournament shortcut |
+
+### Rules the game deliberately follows exactly
+
+Fusenpai/fusensho scoring (a withdrawal-day bout is a default *loss*, later missed days are absences), kensho eligibility (makuuchi only, withdrawn on fusensho), kinboshi eligibility (maegashira only, contested bouts only), sansho (S/K/M eligible, shareable, multi-award, withholdable), tomoe-sen three-way playoffs, zensho-yusho mochikyukin replacement, and all era-keyed JSA money figures.
 
 ---
 

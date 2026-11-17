@@ -16,6 +16,7 @@ import {
   jsaSanyakuBashoAllowance,
 } from "@/constants/engine/jsaEra";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { getTotalBashodays } from "@/engine/calendar/scheduleHelpers";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -275,12 +276,16 @@ export function payBashoTeate(world: WorldState): StateImpact {
 
     // Real JSA non-sekitori compensation: basho teate (場所手当) +
     // shoshi-kin (勝星金, per win) + kachikoshi-kin (勝ち越し金, per net win).
+    // For kachikoshi-kin the loss column includes absence days
+    // (負け数には休場も含む) — a rikishi who missed days has their net-win
+    // total reduced by the unscheduled tail.
     const wins = r.currentBashoWins ?? 0;
     const losses = r.currentBashoLosses ?? 0;
+    const absences = Math.max(0, getTotalBashodays(r.division) - wins - losses);
     const teateAmount =
       jsaBashoTeate(r.division, year) +
       wins * jsaWinBonus(r.division, year) +
-      Math.max(0, wins - losses) * jsaKachikoshiBonus(r.division, year);
+      Math.max(0, wins - losses - absences) * jsaKachikoshiBonus(r.division, year);
 
     if (teateAmount > 0) {
       const economics = r.economics || {
