@@ -104,6 +104,7 @@ export type EventCategory =
   | "ai_decision" // AI-driven management decision events
   | "ai_plan_change" // AI strategic plan change events
   | "ai_rival_posture" // AI rival posture / intelligence events
+  | "banzuke_committee" // Banzuke committee deliberation events
   | "misc"; // Miscellaneous events
 
 /**

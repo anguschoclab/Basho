@@ -136,7 +136,8 @@ describe("intai-kin retirement payment", () => {
     retireRikishiFully(world, retiree, "Age", builder);
     const next = resolveImpacts(world, [builder.build()]);
     const retired = next.historicalRikishi?.get("yz2") ?? next.rikishi.get("yz2");
-    expect(retired?.economics?.cash).toBe(INTAI_KIN_YOKOZUNA);
+    const cash = retired && "economics" in retired ? retired.economics?.cash : undefined;
+    expect(cash).toBe(INTAI_KIN_YOKOZUNA);
   });
 
   it("a lower-division retiree receives the smallest intai-kin payment", () => {
@@ -159,6 +160,7 @@ describe("intai-kin retirement payment", () => {
     retireRikishiFully(world, retiree, "Age", builder);
     const next = resolveImpacts(world, [builder.build()]);
     const retired = next.historicalRikishi?.get("ld") ?? next.rikishi.get("ld");
-    expect(retired?.economics?.cash).toBe(INTAI_KIN_LOWER);
+    const cash = retired && "economics" in retired ? retired.economics?.cash : undefined;
+    expect(cash).toBe(INTAI_KIN_LOWER);
   });
 });

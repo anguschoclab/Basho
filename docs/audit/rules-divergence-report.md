@@ -36,9 +36,9 @@
 - **Now:** `FIXED` — era-keyed `jsaYushoPrize` (`a9612c2d`); consumed by BashoHistory, PrizeDistribution, AutoSimService, and projection paths.
 
 ### 6. Playoffs (優勝決定戦)
-- **JSA rule:** 2-way = one bout; **3-way = tomoe-sen** (round-robin rotation, champion needs two consecutive wins); 4+ = single-elimination.
-- **Was:** all candidate counts used single-elimination; 3-way gave an unfair bye.
-- **Now:** `FIXED` — tomoe-sen implemented with full pbp/narrative (`3b27337f`).
+- **JSA rule:** 2-way = one bout; **3-way = tomoe-sen** (round-robin rotation, champion needs two consecutive wins); 4+ = single-elimination. All playoff rounds are contested on **senshuraku (day 15)**; in a 2-way playoff the higher-ranked rikishi stands on east.
+- **Was:** all candidate counts used single-elimination; 3-way gave an unfair bye. Playoffs were also scheduled on a fictional "day 16+".
+- **Now:** `FIXED` — tomoe-sen implemented with full pbp/narrative (`3b27337f`); all rounds on day 15 with unique bout ids and higher-rank-on-east (`c72df39e`).
 
 ### 7. Jun-yusho (準優勝)
 - **JSA rule:** no official award — runner-up is a label.
@@ -52,7 +52,7 @@
 
 ### 9. Kensho (懸賞金)
 - **JSA rule:** makuuchi bouts only; sponsor pays ¥70,000 → ¥10,000 JSA fee + **¥10,000 cash** on the dohyo + **¥50,000** JSA-held account (split since Natsu 2025); withdrawn on fusensho.
-- **Now:** `ALIGNED` on the money (`KENSHO_SPLIT = {cash:10k, retirement:50k, jsaFee:10k}`, fusensho→0 envelopes). `GAME-DEVIATION` retained by decision: media-heat bonus envelopes and kinboshi/ginboshi minimum-banner guarantees — documented as the "fame matters" mechanic.
+- **Now:** `FIXED` — banners/envelopes now only attach to makuuchi bouts end-to-end (`stakes.ts` gates on `east.division === "makuuchi"`, matching the payout gate at `economics.ts:51`; `c72df39e`). `ALIGNED` on the money (`KENSHO_SPLIT = {cash:10k, retirement:50k, jsaFee:10k}`, fusensho→0 envelopes). `GAME-DEVIATION` retained by decision: media-heat bonus envelopes and kinboshi/ginboshi minimum-banner guarantees — documented as the "fame matters" mechanic.
 
 ### 10. Non-sekitori basho compensation (場所手当・勝星金・勝ち越し金)
 - **JSA rule:** teate ¥165k/¥110k/¥88k/¥77k → ¥180k/¥120k/¥95k/¥82k; win money ¥3,500/¥3,000/¥2,500/¥2,500 → ¥4,000/¥3,500/¥3,000/¥3,000; kachikoshi money ¥8,000/¥6,500/¥5,500/¥5,500 → ¥10,000/¥8,500/¥7,500/¥7,500; **absence days count in the loss column** for kachikoshi-kin.
@@ -83,8 +83,9 @@
 - **Now:** `ALIGNED` — council flow, no demotion, pressure warnings all modeled.
 
 ### 16. Banzuke movement & torikumi
-- **JSA rule:** makushita top-20 fast-track to juryo; joi maegashira meet sanyaku in week 1.
-- **Now:** `ALIGNED` — amplified top-20 promotion/dampened demotion; "San'yaku Gauntlet" phase in SwissAlgorithm.
+- **JSA rule:** banzuke committee ≈ (wins − losses)/2 rank slots; kyujo ≈ losses (no multiplier); achievements informal; makushita top-20 fast-track to juryo; joi maegashira meet sanyaku in week 1.
+- **Was:** a units formula (`wins − KK − 1.4–2.5× absences + achievement units`) plus a fictional ichimon political weight (Dewanoumi +300 / Nishonoseki +250 / other +100) drove `desiredKey`.
+- **Now:** `FIXED` — `banzukeCommittee.ts` runs every entry through the shared committee framework: base delta (W−L)/2 where every unfought scheduled day counts as a loss, merit evidence (yusho/sansho/kinboshi/comeback/edge) bounded by a ±2-slot discretion cap, faction only as seeded member preference. The old units formula and political weight are deleted (`322711c3`). Rule-bound logic (kadoban, 33-win/reclaim, tier ceilings via `bestTierAllowed`) stays outside deliberation. Committee votes/rationale surface as feed items.
 
 ### 17. Kimarite catalogue & distribution
 - **JSA rule:** ~82 official techniques + non-technique outcomes.
@@ -99,8 +100,9 @@
 - **Now:** `ALIGNED` — present as an outcome; kinboshi exclusion fixed at #1.
 
 ### 20. Myoseki (名跡) & elders
-- **JSA reality:** 105 elder shares; de facto loan market (owner/holder/lease).
-- **Now:** `ALIGNED` — `MYOSEKI_TOTAL_COUNT = 105`, owner/holder/lease + asking-price + lease-fee modeling. (Manual previously misdescribed it as "tradable wrestling names" — corrected.)
+- **JSA reality:** 105 elder shares; de facto loan market (owner/holder/lease). When no share is obtainable, sanyaku+ retirees may hold **jun-toshiyori** (temporary status: 5y yokozuna / 3y others); great yokozuna may receive **ichidai-toshiyori** (one-generation, non-transferable name).
+- **Was:** merit issuance minted new shares beyond 105 unconditionally.
+- **Now:** `FIXED` — merit minting is bounded by `MYOSEKI_TOTAL_COUNT`; exhausted pool → jun-toshiyori (expiry enforced via DynastyService → forced succession) or ichidai-toshiyori (20+ yusho yokozuna); no stock and no credential → no elder conversion (`031d9779`). (Manual previously misdescribed it as "tradable wrestling names" — corrected.)
 
 ### 21. Oyakata retirement age
 - **JSA rule:** mandatory retirement at 65 (rare re-employment to 70).
@@ -118,9 +120,37 @@
 - **Requirement:** rule changes land on the real timeline *and* are announced in-world.
 - **Now:** `ALIGNED` — `announceJsaBulletins` emits dated one-time headlines: August 2026 (pay revision announced), October 2026 (Article-9 amendment), January 2027 (effective date).
 
-### 25. Intai-kin / ichidai toshiyori
-- **JSA reality:** retirement bonus (引退金) and one-generation elder name for great yokozuna.
-- **Now:** `UNMODELED` — documented as absent; no immediate implementation planned.
+### 25. Intai-kin / ichidai toshiyori / jun-toshiyori
+- **JSA reality:** retirement lump-sum (引退金) keyed by final rank; jun-toshiyori temporary elder status; ichidai-toshiyori one-generation name for great yokozuna.
+- **Now:** `FIXED` — `INTAI_KIN_*` constants credit the rank-keyed payment in `retireRikishiFully` (¥20M Y / ¥15M O / ¥7.5M S-K / ¥5M M / ¥3.5M J / ¥2.5M lower); jun-toshiyori + ichidai-toshiyori modeled per #20 (`031d9779`).
+
+### 26. Foreign rikishi quota (post-2010)
+- **JSA rule:** one foreign-slot rikishi per heya, bound at **debut** — post-debut naturalization never frees the slot; only pre-debut Japanese citizenship (dual/native) exempts. Closure/merger may stack slot-holders in the receiving stable, which then cannot recruit foreigners until they retire. Japanese citizenship is mandatory for any foreign-born retiree to stay as toshiyori.
+- **Was:** tenure (`naturalized`/`citizenshipAcquiredYear`) freed the slot — the pre-2010 loophole; `RosterFactory` re-stamped overflow as "naturalized" to dodge its own cap; mergers dispersed slot-holders; no toshiyori citizenship gate.
+- **Now:** `FIXED` — `countsAsForeign`/`candidateConsumesForeignSlot` bind at debut; dual/native only exempt path; whole-roster merger transfer permits the legal stacking exception; worldgen re-rolls overflow foreigners to Japanese instead of loophole-stamping; foreign-born retiree requires Japanese citizenship to convert (`c72df39e`).
+
+### 27. Roster size & releases/transfers
+- **JSA reality:** no roster cap; no releases or transfers between stables — a departed rikishi retires. Mass moves occur only on stable closure/merger.
+- **Was:** `STANDARD_ROSTER_CAP 25 / MERGED_ROSTER_CAP 30 / HARD_CAP_ROSTER_SIZE 30` enforced weekly releases; released rikishi re-entered the talent pool as `priorCareer` veterans (free agency).
+- **Now:** `FIXED` — caps and the overflow/release machinery deleted; `priorCareer` and the re-entry path removed; whole-roster closure/merger transfers retained as the only legal mass move (`c72df39e`). `TARGET_ROSTER_SIZE` remains as a population-planning floor, not a cap.
+
+### 28. New-recruit eligibility & tsukedashi (新弟子検査・付け出し)
+- **JSA rule:** standard recruit under 23 at the shindeshi kensa; qualified amateurs use the under-25 exception and may debut on the banzuke — makushita tsukedashi Ms60 / sandanme tsukedashi Sd80 (game keeps the classic placement numbers).
+- **Was:** no age gate; all recruits ran maezumo into jonokuchi.
+- **Now:** `FIXED` — under-23 gate in `offerCandidate` (`c72df39e`); `tsukedashi` credential flag on amateur-star candidates (university → Ms60, high-school → Sd80) with the under-25 exception and maezumo skip (`031d9779`).
+
+### 29. Committee framework (番付編成会議・三賞選考・横審・理事選)
+- **JSA reality:** the JSA governs through committees — banzuke composition (~23 oyakata), sansho selection (5), the YDC (~10), board elections (5-seat board in-game model).
+- **Now:** `FIXED` — shared framework `engine/committee/committee.ts` + `constants/engine/committee.ts`: seeded members deliberate cases (rule-bound baseline + bounded merit/demerit/faction discretion → votes + rationale). Banzuke (#16), sansho selection, board elections, and the existing YDC all run on it; decisions emit feed items (`322711c3`).
+
+### 30. Ring & venue nomenclature
+- **JSA reality:** dohyo radius 2.275m (4.55m is the diameter); Nagoya honbasho moved to IG Arena (post-2023 era).
+- **Was:** `RING_RADIUS_METERS = 4.55` (diameter used as radius); Nagoya venue used the pre-2023 name.
+- **Now:** `FIXED` — radius corrected to 2.275; venue string updated (`c72df39e`).
+
+### 31. Lower-division odd-man scheduling safeguard
+- **JSA reality:** 7 bouts; odd numbers are absorbed by cross-division cascade → maezumo pull → fusensho. The eighth bout is not used in modern honbasho.
+- **Now:** `GAME-DEVIATION` retained by decision — the engine runs the real cascade first, then minted-maezumo fill, and only as a last resort a UI-labeled rare eighth make-up bout (guarantees no null pairing in a deterministic scheduler). Documented; not a candidate for removal.
 
 ---
 
@@ -153,6 +183,9 @@ Implementation: `src/constants/engine/jsaEra.ts` (single source of truth; `JSA_R
 | `c39d3e83` | salary/kensho normalization; ozeki shortcut removal |
 | `a9612c2d` | era-keyed economics; win/kachikoshi/sanyaku payments; jungyo bump; JSA bulletins |
 | `b841c043` | fusenpai same-day loss; double-fusenpai; derived absence tail |
+| `c72df39e` | post-2010 foreign quota; no roster cap; no free agency; makuuchi-only kensho; senshuraku playoffs; debut-age gate; ring/venue strings |
+| `322711c3` | shared committee framework; banzuke committee replaces units formula + political weight; sansho/board harmonization; deliberation feed items |
+| `031d9779` | tsukedashi Ms60/Sd80 + under-25 exception; myoseki 105-cap; jun-/ichidai-toshiyori; intai-kin |
 
 ## Deliberate deviations retained (user-approved)
 
@@ -161,3 +194,7 @@ Implementation: `src/constants/engine/jsaEra.ts` (single source of truth; `JSA_R
 - **Jungyo stipend** — +30% midpoint approximation of the 20–50% per-rank raise.
 - **Heya economics** — per-wrestler JSA subsidy, fixed grants, oyakata salary (game construction).
 - **Prestige / heat / myth scalars, Global Cup, drama matchmaking** — game-original systems.
+- **Rare eighth lower-division bout** — last-resort scheduler safeguard after the real cross-division cascade and maezumo fill; UI-labeled (see #31).
+- **Minted maezumo filler** — a synthetic unattached entrant minted under `MAEZUMO_MINT_CAP` when the cascade has no live maezumo pool; scheduling filler, not a recruit.
+- **Banzuke committee abstraction** — seeded member preference inside a ±2-slot discretion cap stands in for real politics; deterministic, tunable via `constants/engine/committee.ts` (see #16/#29).
+- **Tsukedashi placement** — classic Ms60/Sd80 slots used (real post-2019 is Ms15/Sd90); constants make it a one-line change if the era rule is preferred.

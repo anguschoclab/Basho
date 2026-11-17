@@ -153,7 +153,11 @@ export const selectRecentEvents = createSelector((world: WorldState) => {
     else if (e.category === "training") buckets.training.push(e);
     else if (e.category === "career") buckets.career.push(e);
     else if (e.category === "rivalry") buckets.rivalry.push(e);
-    else if (e.type.startsWith("GOVERNANCE") || e.category === "discipline")
+    else if (
+      e.type.startsWith("GOVERNANCE") ||
+      e.category === "discipline" ||
+      e.category === "banzuke_committee"
+    )
       buckets.governance.push(e);
     else if (
       e.category === "welfare" ||
