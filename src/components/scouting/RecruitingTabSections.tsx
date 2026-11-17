@@ -34,7 +34,7 @@ import {
 } from "@/presenters/engineAccess";
 import { cn } from "@/lib/utils";
 import { activationKeyHandler } from "@/lib/a11y";
-import { toPotentialBand, TARGET_ROSTER_SIZE } from "@/presenters/engineAccess";
+import { toPotentialBand } from "@/presenters/engineAccess";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import type { UIRikishi } from "@/presenters/uiModels";
@@ -147,10 +147,10 @@ export function QuotaFilterRow({ state }: { state: State }) {
             Stable is at its foreign limit
           </div>
         )}
-        {/* W20 — roster occupancy uses TARGET_ROSTER_SIZE as the capacity truth */}
+        {/* Roster size — no legal cap, display the honest count */}
         <div className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-muted/60 text-muted-foreground">
           <Users className="h-3.5 w-3.5" />
-          Roster: {state.playerHeya?.rikishiIds?.length ?? 0}/{TARGET_ROSTER_SIZE}
+          Roster: {state.playerHeya?.rikishiIds?.length ?? 0}
         </div>
       </div>
 

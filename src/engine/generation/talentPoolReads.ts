@@ -8,7 +8,7 @@ import type { Id } from "@/engine/types/common";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { TalentPoolType, TalentCandidate } from "@/engine/types/talent";
 import { isForeign } from "@/engine/utils/identity";
-import { countsAsForeign, NATURALIZATION_YEARS } from "@/engine/utils/citizenshipUtils";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { getHeya, getRikishi } from "@/engine/core/queries";
 
@@ -78,8 +78,9 @@ export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
 
   for (const rikishiId of world.activeRikishiIds) {
     const r = getRikishi(world, rikishiId);
-    // Citizenship-aware (§5.2): naturalized and dual-citizen rikishi no longer
-    // consume the slot even though their nationality stays foreign.
+    // Post-2010 binding (§5.2): every rikishi who debuted as a foreign
+    // national consumes the slot until retirement; only pre-debut citizens
+    // (dual/native) are exempt.
     if (r && countsAsForeign(r, world.year)) {
       counts.set(r.heyaId, (counts.get(r.heyaId) ?? 0) + 1);
     }
@@ -109,9 +110,10 @@ export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
 }
 
 /**
- * A candidate consumes the foreign slot iff foreign-born AND not a dual
- * citizen (§5.1–5.3). A re-entering veteran's citizenship status travels on
- * the candidate — naturalized/dual/native statuses never consume the slot.
+ * A candidate consumes the foreign slot iff foreign-born AND not already a
+ * Japanese citizen before debut (§5.1–5.3, post-2010 rule). "dual"/"native"
+ * candidates entered sumo as Japanese recruits and are exempt; a "naturalized"
+ * candidate debuted as a foreign national, so the slot stays bound.
  */
 export function candidateConsumesForeignSlot(
   candidate: Pick<TalentCandidate, "nationality" | "dualCitizen" | "citizenshipStatus">
@@ -119,29 +121,17 @@ export function candidateConsumesForeignSlot(
   if (!isForeign({ nationality: candidate.nationality })) return false;
   if (candidate.dualCitizen === true) return false;
   const status = candidate.citizenshipStatus;
-  return status !== "naturalized" && status !== "dual" && status !== "native";
+  return status !== "dual" && status !== "native";
 }
 
 /**
- * Checks if a rikishi counts as foreign for roster-cap purposes.
- * Delegates to the canonical citizenship-aware `countsAsForeign` (§5.2):
- * naturalized and dual-citizen rikishi — and veterans whose residency
- * tenure has completed — do not consume the slot.
- *
- * `currentYear` should be `world.year` when a world is in scope. When
- * omitted, tenure is evaluated at the rikishi's naturalization-eligibility
- * date (joinedHeyaDate + NATURALIZATION_YEARS) — the answer assumes the
- * residency clock has run out, which is the right read for release-path
- * callers reasoning about veterans who already served their tenure.
+ * Checks if a rikishi counts as foreign for slot purposes. Delegates to the
+ * canonical `countsAsForeign` (§5.2, post-2010): the slot binds at debut, so
+ * tenure and post-debut naturalization no longer release it.
  */
 export function countsAsForeignFromRikishi(
   rikishi: Pick<Rikishi, "nationality" | "citizenshipStatus" | "joinedHeyaDate">,
   currentYear?: number
 ): boolean {
-  const referenceYear =
-    currentYear ??
-    (rikishi.joinedHeyaDate
-      ? parseInt(rikishi.joinedHeyaDate, 10) + NATURALIZATION_YEARS
-      : DEFAULT_START_YEAR);
-  return countsAsForeign(rikishi as Rikishi, referenceYear);
+  return countsAsForeign(rikishi as Rikishi, currentYear ?? DEFAULT_START_YEAR);
 }

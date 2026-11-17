@@ -143,7 +143,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     expect(["r1", "r2"]).toContain(result.winner);
   });
 
-  it("Test 14.9: playoff matches should have correct day (16+)", () => {
+  it("Test 14.9: kettei-sen happens on senshuraku (day 15), not a fictional day 16", () => {
     const r1 = makeRikishi("r1");
     const r2 = makeRikishi("r2");
     const basho = makeBasho();
@@ -157,7 +157,43 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2"]);
-    expect(result.matches[0].day).toBeGreaterThanOrEqual(16);
+    for (const m of result.matches) {
+      expect(m.day).toBe(15);
+    }
+  });
+
+  it("Test 14.9b: multi-round playoffs stay on day 15 with unique boutIds", () => {
+    const rikishi = new Map<string, Rikishi>();
+    for (let i = 1; i <= 4; i++) rikishi.set(`r${i}`, makeRikishi(`r${i}`));
+    const basho = makeBasho();
+    const world = MockFactory.createWorld({
+      rikishi,
+      currentBasho: basho,
+      sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
+      rivalriesState: { pairs: {}, version: "1.0.0" },
+    });
+    const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3", "r4"]);
+    const ids = result.matches.map((m) => m.boutId);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const m of result.matches) expect(m.day).toBe(15);
+  });
+
+  it("Test 14.9c: a two-way kettei-sen puts the higher-ranked rikishi on the east side", () => {
+    const m1 = makeRikishi("m1", { rank: "maegashira", rankNumber: 10 });
+    const y1 = makeRikishi("y1", { rank: "yokozuna" });
+    const basho = makeBasho();
+    const world = MockFactory.createWorld({
+      rikishi: new Map([
+        ["m1", m1],
+        ["y1", y1],
+      ]),
+      currentBasho: basho,
+      sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
+      rivalriesState: { pairs: {}, version: "1.0.0" },
+    });
+    const result = resolvePlayoffs(world, basho, ["m1", "y1"]);
+    expect(result.matches[0].eastRikishiId).toBe("y1");
+    expect(result.matches[0].westRikishiId).toBe("m1");
   });
 
   it("Test 14.10: resolves playoff with odd number (bye handling)", () => {

@@ -235,25 +235,23 @@ describe("worldgen + merger — slot invariant beyond recruitment", () => {
     const impact = executeMerger(world, "h-source", "h-target", "insolvency");
     const resolved = resolveImpacts(world, [impact]);
 
-    // The target keeps its incumbent + all natives; the excess foreigner is
-    // re-homed to a free-slot stable (or retired if none exists) — never
-    // stacked past the cap.
+    // Post-2010 merger exception: the receiving stable legally holds BOTH
+    // slot-bound foreigners — whole-roster absorption, no dispersal — and its
+    // foreign recruitment stays frozen until they retire.
     const foreignInTarget = [...resolved.rikishi.values()].filter(
       (r) => !r.isRetired && r.heyaId === "h-target" && countsAsForeign(r, resolved.year)
     );
-    expect(foreignInTarget.length).toBeLessThanOrEqual(FOREIGN_RIKISHI_LIMIT_PER_HEYA);
-    const foreignS = resolved.rikishi.get("r-foreign-s")!;
-    expect(foreignS.heyaId === "h-free" || foreignS.isRetired).toBe(true);
+    expect(foreignInTarget.length).toBe(2);
+    expect(resolved.rikishi.get("r-foreign-s")!.heyaId).toBe("h-target");
     expect(resolved.rikishi.get("r-native-s")!.heyaId).toBe("h-target");
+    expect(resolved.heyas.has("h-free") && resolved.heyas.get("h-free")!.rikishiIds?.length === 0).toBe(true);
 
     // Roster integrity: heya.rikishiIds must reflect every heyaId transfer —
     // a desynced rikishi is invisible to getHeyaRoster-based occupancy checks.
     const targetRoster = resolved.heyas.get("h-target")!.rikishiIds ?? [];
     expect(targetRoster).toContain("r-native-s");
     expect(targetRoster).toContain("r-foreign-t");
-    if (foreignS.heyaId === "h-free") {
-      expect(resolved.heyas.get("h-free")!.rikishiIds).toContain("r-foreign-s");
-    }
+    expect(targetRoster).toContain("r-foreign-s");
   });
 });
 
@@ -266,6 +264,7 @@ describe("offer path — slot semantics", () => {
       nationality: "Mongolia",
       originRegion: "Mongolia",
       dualCitizen: true,
+      birthYear: 2012, // 18 in 2030 — inside the new-apprentice age window
       availabilityState: "available",
     });
     addCandidate(world, "foreign", dual);
@@ -342,7 +341,7 @@ describe("finalizeSignedCandidates — last-line slot guard", () => {
 });
 
 describe("fillVacanciesForNPC — citizenship-aware slot check", () => {
-  it("a naturalized incumbent frees the slot (replaces origin-string check)", () => {
+  it("a naturalized incumbent still occupies the slot — post-2010 binding", () => {
     const world = makeMockWorld({ week: 1, year: 2030 });
     seedHeyaAndOyakata(world, ["r-nat"]);
     world.rikishi.set(
@@ -371,7 +370,9 @@ describe("fillVacanciesForNPC — citizenship-aware slot check", () => {
     const signed = [...resolved.rikishi.values()].filter(
       (r) => r.heyaId === HEYA && r.id !== "r-nat"
     );
-    expect(signed.length).toBe(1);
+    // The naturalized incumbent debuted foreign — the slot stays bound, so
+    // the NPC cannot sign the foreign candidate.
+    expect(signed.length).toBe(0);
   });
 
   it("same-batch leak: a slot-free heya cannot fill two vacancies with two foreigners in one pass", () => {

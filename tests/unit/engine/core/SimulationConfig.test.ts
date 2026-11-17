@@ -19,7 +19,6 @@ describe("SimulationConfig", () => {
 
     it("should have recruitment constants", () => {
       expect(SIMULATION_CONFIG.recruitment.durationWeeks).toBe(4);
-      expect(SIMULATION_CONFIG.recruitment.playerHeyaRosterCap).toBe(30);
     });
 
     it("should have media constants", () => {

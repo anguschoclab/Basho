@@ -107,10 +107,12 @@ export function createRosters(
           if (freeStables.length > 0) {
             assigned = worldRng.pick(freeStables);
           } else {
-            // More foreign rikishi generated than open slots: this one enters
-            // already naturalized (§5.5) — keeps nationality/history intact
-            // while freeing the slot.
-            r.citizenshipStatus = "naturalized";
+            // Every stable's foreign slot is taken — a wrestler who would have
+            // debuted as a foreign national simply doesn't exist at genesis:
+            // generate a Japanese recruit instead (the honest post-2010 read —
+            // never silently stamp a post-debut naturalization).
+            r.nationality = "Japan";
+            r.origin = "Japan";
           }
         }
         if (countsAsForeign(r, DEFAULT_START_YEAR)) foreignOccupied.add(assigned.id);

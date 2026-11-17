@@ -44,6 +44,7 @@ describe("runRetirements — stable founding", () => {
       birthYear: 1980,
       careerWins: 300,
       shikona: "TestOzeki",
+      nationality: "Japan",
       // Personally solvent — funds the founding out of the retirement fund,
       // so only the RNG gate decides (JSA branching model).
       economics: { retirementFund: 200_000_000 } as any,

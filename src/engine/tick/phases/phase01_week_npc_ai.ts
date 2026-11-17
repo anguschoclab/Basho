@@ -24,7 +24,7 @@ import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { buildAIContext } from "@/engine/npc/contextBuilder";
 import { createPlan, shouldReplan } from "@/engine/npc/StrategicPlanner";
 import { makeNPCWeeklyDecision } from "@/engine/npc/weekly";
-import { enforceHardCapRosterOverflow } from "@/engine/recruitment/overflow";
+
 import {
   getMemory,
   setActivePlan,
@@ -225,8 +225,6 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
   });
 
   builder.updateWorldField("npcScoutingPriorities", scoutingMap);
-
-  mergeAbsorb(builder, enforceHardCapRosterOverflow(world));
 
   return builder.build();
 }

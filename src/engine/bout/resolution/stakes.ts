@@ -110,7 +110,12 @@ export function applyStakesAndKensho(
       builder.updateWorldField("allTimeKimariteStats", allTime);
     }
 
-    applyKensho(world, result, winner, importance);
+    // Kensho banners/envelopes are a makuuchi-only tradition — lower-division
+    // bouts (including juryo kettei-sen playoffs) never draw banners. Mirrors
+    // the payout gate in economics.ts (onBoutResolvedEconomics).
+    if (east.division === "makuuchi") {
+      applyKensho(world, result, winner, importance);
+    }
   }
 
   // Merge rivalry impact into main builder

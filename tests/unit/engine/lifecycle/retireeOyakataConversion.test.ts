@@ -71,6 +71,7 @@ describe("processRetireeOyakataConversion — guard conditions", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 10,
+      nationality: "Japan",
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["seki"] });
     const world = makeMockWorld({
@@ -95,6 +96,7 @@ describe("processRetireeOyakataConversion — guard conditions", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 250,
+      nationality: "Japan",
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["veteran"] });
     const world = makeMockWorld({
@@ -113,6 +115,57 @@ describe("processRetireeOyakataConversion — guard conditions", () => {
   });
 });
 
+describe("processRetireeOyakataConversion — citizenship gate (JSA rule: Japanese citizenship is mandatory for foreign-born toshiyori)", () => {
+  const makeWorldFor = (retiree: ReturnType<typeof mockRikishi>) =>
+    makeMockWorld({
+      year: 2025,
+      rikishi: new Map([[retiree.id, retiree]]),
+      heyas: new Map([["h1", makeMockHeya("h1", { rikishiIds: [retiree.id] })]]),
+      myosekiMarket: { stocks: {}, history: [] } as any,
+    });
+
+  it("blocks an accomplished retiree who is still a foreign national", () => {
+    const retiree = mockRikishi("foreign-seki", {
+      heyaId: "h1",
+      rank: "sekiwake",
+      division: "makuuchi",
+      birthYear: 1990,
+      nationality: "Mongolia",
+      citizenshipStatus: "foreign",
+      joinedHeyaDate: "2024",
+      careerWins: 10,
+    });
+    const world = makeWorldFor(retiree);
+    const builder = createImpactBuilder("test");
+    const beforeOyakata = world.oyakata?.size ?? 0;
+
+    processRetireeOyakataConversion(world, retiree, builder);
+    const next = resolveImpacts(world, [builder.build()]);
+
+    expect(next.oyakata?.size ?? 0).toBe(beforeOyakata);
+  });
+
+  it("converts an accomplished naturalized foreigner (citizenship obtained)", () => {
+    const retiree = mockRikishi("nat-seki", {
+      heyaId: "h1",
+      rank: "sekiwake",
+      division: "makuuchi",
+      birthYear: 1990,
+      nationality: "Mongolia",
+      citizenshipStatus: "naturalized",
+      careerWins: 10,
+    });
+    const world = makeWorldFor(retiree);
+    const builder = createImpactBuilder("test");
+    const beforeOyakata = world.oyakata?.size ?? 0;
+
+    processRetireeOyakataConversion(world, retiree, builder);
+    const next = resolveImpacts(world, [builder.build()]);
+
+    expect(next.oyakata?.size ?? 0).toBeGreaterThan(beforeOyakata);
+  });
+});
+
 describe("processRetireeOyakataConversion — myoseki market", () => {
   it("handles missing myoseki market gracefully (treats as empty)", () => {
     const retiree = mockRikishi("legend", {
@@ -121,6 +174,7 @@ describe("processRetireeOyakataConversion — myoseki market", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 400,
+      nationality: "Japan",
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["legend"] });
     const world = makeMockWorld({
@@ -147,6 +201,7 @@ describe("processRetireeOyakataConversion — myoseki market", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 300,
+      nationality: "Japan",
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["legend2"] });
     const stockId = "MY-existing";
@@ -188,6 +243,7 @@ describe("processRetireeOyakataConversion — myoseki market", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 500,
+      nationality: "Japan",
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["legend3"] });
     const world = makeMockWorld({
@@ -214,6 +270,7 @@ describe("processRetireeOyakataConversion — myoseki market", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 500,
+      nationality: "Japan",
       economics: { retirementFund: 250_000_000 } as any,
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["legend4"] });
@@ -241,6 +298,7 @@ describe("processRetireeOyakataConversion — oyakata generation", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 400,
+      nationality: "Japan",
       avatarConfig: { hairStyle: "chonmage", faceShape: "round" } as any,
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["legend5"] });
@@ -270,6 +328,7 @@ describe("processRetireeOyakataConversion — oyakata generation", () => {
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 400,
+      nationality: "Japan",
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["legend6"] });
     const world = makeMockWorld({

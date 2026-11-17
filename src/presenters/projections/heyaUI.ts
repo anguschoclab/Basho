@@ -5,6 +5,7 @@ import { UIRosterEntry, projectRosterEntry } from "@/presenters/rikishi/index";
 import { getOyakataForHeya } from "@/engine/core/queries";
 import { getHeyaStyleBias, getHeyaStaff } from "@/engine/core/queries";
 import { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
+import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 
 export interface UIStaffEntry {
   id: Id;
@@ -30,7 +31,6 @@ export interface UIHeya {
   staff: UIStaffEntry[];
   roster: UIRosterEntry[];
   rosterSize: number;
-  rosterLimit: number;
   recruitment: {
     scoutingPriority: string;
     targetStyle: string;
@@ -109,11 +109,11 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
     staff,
     roster,
     rosterSize: roster.length,
-    rosterLimit: 30,
     recruitment: {
       scoutingPriority: world.npcScoutingPriorities?.[h.id] || "passive",
       targetStyle: "neutral",
-      openSlots: Math.max(0, 30 - roster.length),
+      // No roster cap — openSlots tracks the NPC appetite target, not a legal ceiling.
+      openSlots: Math.max(0, TARGET_ROSTER_SIZE - roster.length),
     },
     achievements: {
       yushoCount: h.historicalYusho ?? 0,

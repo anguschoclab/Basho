@@ -4,12 +4,9 @@
  * Constants governing roster capacity, transfers, and narrative counts.
  */
 
-// Roster capacity
-export const ROSTER_CAPACITY_STANDARD = 25;
-export const ROSTER_CAPACITY_MERGER = 30;
-
-/** Absolute roster ceiling — equals merger capacity. */
-export const HEYA_ROSTER_HARD_CAP = 30;
+// The real JSA has no roster cap — heya size is bounded by finances and
+// recruitment appetite, not a legal ceiling. The old 25/30 capacity
+// constants and the weekly release enforcer were removed.
 
 // Transfer ratios
 export const TRANSFER_RATIO_STANDARD = 0.5;

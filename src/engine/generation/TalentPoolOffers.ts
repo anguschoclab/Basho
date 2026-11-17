@@ -16,7 +16,10 @@ import {
   getForeignCountInHeya,
   candidateConsumesForeignSlot,
 } from "@/engine/generation/TalentPoolScouting";
-import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
+import {
+  FOREIGN_RIKISHI_LIMIT_PER_HEYA,
+  NEW_APPRENTICE_MAX_AGE,
+} from "@/constants/engine/recruitment";
 import { getHeya } from "@/engine/core/queries";
 import { EventBus } from "@/engine/events/events";
 
@@ -37,6 +40,16 @@ export function offerCandidate(
   if (!candidate) return { ok: false, reason: "Candidate not found" };
 
   const rng = rngFromSeed(`offer-validate-${candidateId}-${heyaId}`, "narrative", "scouting");
+
+  // 0. Validation: JSA new-apprentice eligibility — a standard recruit must
+  // be under 23 at the shindeshi kensa. (The under-25 amateur-experience
+  // exception belongs to the tsukedashi path, not the general offer gate.)
+  if (world.year - candidate.birthYear >= NEW_APPRENTICE_MAX_AGE) {
+    return {
+      ok: false,
+      reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.too_old").text,
+    };
+  }
 
   // 1. Validation: Foreigner limit — §5.3/5.4: only slot-consuming candidates
   // are gated; dual citizens are exempt and may always be recruited.

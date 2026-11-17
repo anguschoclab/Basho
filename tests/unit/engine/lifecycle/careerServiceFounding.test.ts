@@ -24,6 +24,7 @@ describe("CareerService.processRetirements — oyakata conversion + founding", (
       division: "makuuchi",
       birthYear: 1980,
       careerWins: 400,
+      nationality: "Japan",
       isRetired: false,
       injured: false,
       injuryWeeksRemaining: 0,

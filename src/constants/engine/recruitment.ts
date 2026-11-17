@@ -30,6 +30,12 @@ export const INVESTMENT_BONUS: Record<ScoutingInvestment, number> = {
 
 // Talent Pool Constants (merged from TalentPoolConstants.ts)
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
+/**
+ * JSA new-apprentice eligibility: a standard recruit must be under 23 at the
+ * shindeshi kensa (debut exam). The under-25 exception applies only to
+ * qualified amateur backgrounds — handled by the tsukedashi path, not here.
+ */
+export const NEW_APPRENTICE_MAX_AGE = 23;
 /** Canon §5.3 — ~5–10% of foreign-born recruits hold Japanese citizenship. */
 export const DUAL_CITIZEN_RECRUIT_SHARE = 0.07;
 /** §9.3 — NPCs are reluctant to release foreign-slot rikishi (sunk cost). */

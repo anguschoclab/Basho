@@ -17,8 +17,8 @@ export const DEFAULT_FACILITY_LEVEL = 50;
 /** Maximum stamina value (normalized) */
 export const MAX_STAMINA_NORMALIZED = 1.0;
 
-/** Ring radius in meters */
-export const RING_RADIUS_METERS = 4.55;
+/** Dohyo diameter in meters (JSA regulation: 4.55m across, ~2.275m radius) */
+export const RING_DIAMETER_METERS = 4.55;
 
 /** Balance calculation multiplier from CoG offset */
 export const BALANCE_COG_MULTIPLIER = 200;

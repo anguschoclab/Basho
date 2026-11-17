@@ -27,6 +27,7 @@ import {
   MERGER_THRESHOLD,
 } from "@/constants/engine/economic";
 import { getHeya } from "@/engine/core/queries";
+import { getCitizenshipStatus } from "@/engine/utils/citizenshipUtils";
 
 /**
  * If `retiree` is accomplished and of eligible age, converts them to an oyakata,
@@ -50,6 +51,12 @@ export function processRetireeOyakataConversion(
     retiree.careerWins >= 200;
 
   if (age < 28 || !isAccomplished) return;
+
+  // JSA rule: Japanese citizenship is mandatory for toshiyori (elder) status.
+  // A foreign-born retiree who never naturalized cannot stay as a coach —
+  // naturalization still unlocks elder life even though (post-2010) it never
+  // freed the active-roster foreign slot.
+  if (getCitizenshipStatus(retiree, world.year) === "foreign") return;
 
   // The myoseki market is only lazily created by the impact resolver, so a freshly
   // generated (e.g. headless-sim) world may not have one yet. Treat a missing market

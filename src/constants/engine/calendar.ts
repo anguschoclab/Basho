@@ -31,7 +31,7 @@ export const INTERIM_DAYS = 42;
 export const DAYS_PER_YEAR = 365;
 
 // Senshuraku
-export const SENSHURAKU_DAY = 14;
+export const SENSHURAKU_DAY = 15;
 export const SENSHURAKU_FINAL_DAY = 15;
 
 // Basho final day (day-of-basho index)

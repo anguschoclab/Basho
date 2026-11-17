@@ -1,8 +1,10 @@
 /**
  * WS6 — Foreign slot policy (canon §5.1–5.4, §9.3).
  *
- * The slot is consumed only by rikishi WITHOUT Japanese citizenship.
- * Dual citizens (foreign-born, Japanese passport) never consume it.
+ * The slot binds at debut (shindeshi kensa): a rikishi who debuted as a
+ * foreign national occupies it until retirement — post-2010 JSA rule.
+ * Only rikishi who held Japanese citizenship at debut (dual citizens,
+ * foreign-born with a Japanese passport) never consume it.
  * NPC managers weight the slot: aggression from traits+quirk, and
  * sunk-cost reluctance to release a foreign rikishi.
  */
@@ -53,7 +55,7 @@ describe("candidateConsumesForeignSlot", () => {
 });
 
 describe("foreignSlotOccupied", () => {
-  it("a naturalized incumbent frees the slot (§5.5)", () => {
+  it("a naturalized incumbent still occupies the slot (post-2010 binding)", () => {
     const world = makeMockWorld({ year: 2030 });
     world.heyas.set("h1", makeMockHeya("h1", { rikishiIds: ["r1"] }));
     world.rikishi.set(
@@ -63,6 +65,21 @@ describe("foreignSlotOccupied", () => {
         heyaId: "h1",
         nationality: "Mongolia",
         citizenshipStatus: "naturalized",
+      } as never)
+    );
+    expect(foreignSlotOccupied(world, "h1")).toBe(true);
+  });
+
+  it("a dual citizen incumbent does not occupy the slot", () => {
+    const world = makeMockWorld({ year: 2030 });
+    world.heyas.set("h1", makeMockHeya("h1", { rikishiIds: ["r1"] }));
+    world.rikishi.set(
+      "r1",
+      MockFactory.createRikishi({
+        id: "r1",
+        heyaId: "h1",
+        nationality: "Mongolia",
+        citizenshipStatus: "dual",
       } as never)
     );
     expect(foreignSlotOccupied(world, "h1")).toBe(false);

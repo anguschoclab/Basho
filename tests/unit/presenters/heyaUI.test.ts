@@ -595,7 +595,7 @@ describe("heyaUI - projectHeya", () => {
       expect(result.monthlyExpense).toBe(expected);
     });
 
-    it("should set rosterLimit to 30", () => {
+    it("should expose the honest roster size with no legal limit", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
@@ -605,7 +605,8 @@ describe("heyaUI - projectHeya", () => {
 
       const result = projectHeya(heya, world);
 
-      expect(result.rosterLimit).toBe(30);
+      expect(result.rosterSize).toBe(result.roster.length);
+      expect("rosterLimit" in result).toBe(false);
     });
 
     it("should set achievements.yushoCount to 0", () => {

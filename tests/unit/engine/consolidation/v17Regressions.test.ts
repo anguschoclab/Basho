@@ -72,13 +72,13 @@ describe("V17-F02 merger target selection", () => {
     expect(findMergerTarget(world, "h-src")).toBe("h-npc");
   });
 
-  it("fallback pool excludes the player — returns null rather than player target", async () => {
+  it("fallback pool excludes the player — picks the NPC even at 30 roster", async () => {
     const { findMergerTarget } = await import("@/engine/economy/mergers");
     const player = makeMockHeya("h-player", { prestigeBand: "struggling" as never });
     const npc = makeMockHeya("h-npc", { prestigeBand: "struggling" as never });
     const src = makeMockHeya("h-src");
-    // Fill the NPC roster to the merger cap so the fallback pool (roster < cap)
-    // contains ONLY the player — the buggy code would return the player.
+    // No roster cap anymore — a packed NPC stable remains a valid merger
+    // target; the invariant under test is simply "never the player's heya".
     const npcRikishi = Array.from({ length: 30 }, (_, i) =>
       mockRikishi(`npc-r${i}`, { heyaId: "h-npc" })
     );
@@ -95,7 +95,9 @@ describe("V17-F02 merger target selection", () => {
       ]),
       rikishi: new Map(npcRikishi.map((r) => [r.id, r])),
     });
-    expect(findMergerTarget(world, "h-src")).toBeNull();
+    const target = findMergerTarget(world, "h-src");
+    expect(target).not.toBe("h-player");
+    expect(target).toBe("h-npc");
   });
 });
 
@@ -355,6 +357,7 @@ describe("V17-F10 retiree oyakata conversion stock eligibility", () => {
       birthYear: 1990,
       careerWins: 250,
       shikona: "Retiree",
+      nationality: "Japan",
     });
     const world = makeMockWorld({
       seed: "conv-test",

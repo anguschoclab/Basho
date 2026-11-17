@@ -62,7 +62,7 @@ export function buildPipeline(
 ): PbpPipeline {
   const lines: PbpLine[] = [];
   const rng = rngFromSeed(seed, "narrative", "bout");
-  const ctx = buildNarrativeContext(east, west, result, bashoName, day, rng);
+  const ctx = buildNarrativeContext(east, west, result, bashoName, day, rng, world.year);
   const intensity = getIntensity(ctx.voiceStyle);
 
   const push = (text: string, phase: PbpPhase, tags: PbpTag[] = []) => {

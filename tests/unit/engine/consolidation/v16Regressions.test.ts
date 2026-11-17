@@ -65,13 +65,13 @@ describe("V16-B04 yearly-boundary age", () => {
 
 // ── V16-B16 — NPC merger must not target the player's stable ─────────────────
 describe("V16-B16 merger excludes player heya", () => {
-  it("findMergerTarget never returns the player's heya — even when it is the only fallback candidate", async () => {
+  it("findMergerTarget never returns the player's heya — fallback picks the NPC even at 30 roster", async () => {
     const { findMergerTarget } = await import("@/engine/economy/mergers");
     const player = makeMockHeya("h-player", { prestigeBand: "struggling" as never });
     const npc = makeMockHeya("h-npc", { prestigeBand: "struggling" as never });
     const src = makeMockHeya("h-src");
-    // Fill the NPC roster to the merger cap so the fallback pool (roster < cap)
-    // contains ONLY the player — the buggy code returned the player here.
+    // No roster cap anymore — a packed NPC stable remains a valid merger
+    // target; the invariant under test is simply "never the player's heya".
     const npcRikishi = Array.from({ length: 30 }, (_, i) =>
       mockRikishi(`npc-r${i}`, { heyaId: "h-npc" })
     );
@@ -88,7 +88,9 @@ describe("V16-B16 merger excludes player heya", () => {
       ]),
       rikishi: new Map(npcRikishi.map((r) => [r.id, r])),
     });
-    expect(findMergerTarget(world, "h-src")).toBeNull();
+    const target = findMergerTarget(world, "h-src");
+    expect(target).not.toBe("h-player");
+    expect(target).toBe("h-npc");
   });
 });
 

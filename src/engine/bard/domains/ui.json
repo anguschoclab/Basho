@@ -159,6 +159,7 @@
       "reasons": {
         "foreigner_limit": "Heya already at foreigner limit (1).",
         "unavailable": "Candidate is no longer accepting offers.",
+        "too_old": "Candidate is past the new-apprentice age limit.",
         "not_found": "Candidate not found"
       }
     },

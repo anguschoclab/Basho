@@ -37,9 +37,18 @@ export function getCitizenshipStatus(
 
 /**
  * Checks if a rikishi counts against the foreign recruitment limit.
+ *
+ * Post-2010 JSA rule: the foreign slot binds at the shindeshi kensa (debut
+ * examination). A rikishi who debuted as a foreign national occupies the
+ * stable's single foreign slot until retirement — naturalization after debut
+ * does NOT free it. The only exemptions are Japanese nationals and athletes
+ * who already held Japanese citizenship before debut ("dual"/"native").
  */
-export function countsAsForeign(rikishi: Rikishi, currentYear: number): boolean {
-  return getCitizenshipStatus(rikishi, currentYear) === "foreign";
+export function countsAsForeign(rikishi: Rikishi, _currentYear: number): boolean {
+  const status = rikishi.citizenshipStatus;
+  if (status === "dual" || status === "native") return false;
+  const nat = rikishi.nationality;
+  return Boolean(nat && nat !== "Japan" && nat !== "Japanese");
 }
 
 /**

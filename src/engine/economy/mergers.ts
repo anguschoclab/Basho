@@ -9,16 +9,12 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { pushUniqueId } from "@/engine/core/idIntegrity";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { bumpTenure } from "@/engine/legacy/tenure";
-import { retireRikishiFully } from "@/engine/lifecycle/processRetirements";
 import { releaseElderStockToPool } from "@/engine/governance/myosekiMarket";
 import {
   TRANSFER_RATIO_STANDARD,
   TRANSFER_RATIO_SCANDAL,
-  ROSTER_CAPACITY_STANDARD,
-  ROSTER_CAPACITY_MERGER,
   FACILITY_MERGER_RATIO,
 } from "@/constants/engine/roster";
-import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 
 /**
  * Execute a stable merger.
@@ -148,13 +144,12 @@ export function executeMerger(
 }
 
 /**
- * Transfer the source roster into the merger target. Placement is capacity-
- * aware for EVERY rikishi — the target fills to ROSTER_CAPACITY_MERGER, then
- * surplus disperses across other stables with open slots (deterministic pick:
- * prestige then id). A slot-consuming foreign rikishi additionally cannot
- * stack onto a stable whose foreign slot is occupied. Wrestlers no beya can
- * roster are force-retired — their careers archive instead of silently
- * overflowing the target and being released by the weekly hard-cap enforcer.
+ * Transfer the entire source roster into the merger target — the real JSA
+ * merger rule: when a heya closes, its wrestlers are absorbed wholesale by
+ * the receiving stable. There is no roster cap, and the foreign quota is
+ * waived for the transfer itself (a receiving heya may legally hold 2+
+ * slot-bound foreigners; its foreign recruitment then stays frozen until
+ * they retire — enforced by the canonical foreign-count reads).
  */
 function transferRosterAcrossMerger(
   world: WorldState,
@@ -162,76 +157,17 @@ function transferRosterAcrossMerger(
   target: NonNullable<ReturnType<typeof getHeya>>,
   builder: ReturnType<typeof createImpactBuilder>
 ): Id[] {
-  const foreignOccupied = new Set<Id>();
-  for (const r of world.rikishi.values()) {
-    if (!r.isRetired && r.heyaId && r.heyaId !== source.id && countsAsForeign(r, world.year)) {
-      foreignOccupied.add(r.heyaId);
-    }
-  }
-  const dispersalCandidates = [...world.heyas.values()]
-    .filter(
-      // The player's stable never silently absorbs a dispersed rikishi.
-      (h) => h.id !== source.id && h.id !== target.id && h.id !== world.playerHeyaId
-    )
-    .sort((a, b) => (b.prestige ?? 0) - (a.prestige ?? 0) || stableTieBreak(a.id, b.id));
-
-  // Roster reads are pre-impact — destinations fill up as placements land,
-  // so track each stable's fill locally or every rikishi would see the same
-  // stale headroom and pile onto one stable past the hard cap.
-  const fillCount = new Map<Id, number>();
-  const room = (heyaId: Id): boolean => {
-    let fill = fillCount.get(heyaId);
-    if (fill === undefined) {
-      fill = getHeyaRoster(world, heyaId).length;
-      fillCount.set(heyaId, fill);
-    }
-    return fill < ROSTER_CAPACITY_MERGER;
-  };
-  const take = (heyaId: Id): void => {
-    fillCount.set(heyaId, (fillCount.get(heyaId) ?? getHeyaRoster(world, heyaId).length) + 1);
-  };
-
   // updateRikishi(heyaId) does not resync heya.rikishiIds — accumulate
-  // incoming ids per destination and write them back explicitly, or roster
-  // reads (getHeyaRoster) would miss the transferred rikishi forever.
-  const destRosterAdds = new Map<Id, Id[]>();
+  // incoming ids and write them back explicitly, or roster reads
+  // (getHeyaRoster) would miss the transferred rikishi forever.
+  const addedIds: Id[] = [];
   let transferredRikishiIds: Id[] = [];
   for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
     const rikishi = getRikishi(world, rId);
     if (!rikishi) continue;
 
-    const consumesSlot = countsAsForeign(rikishi, world.year);
-    let destId: Id | undefined;
-    if (!consumesSlot) {
-      destId = room(target.id) ? target.id : dispersalCandidates.find((h) => room(h.id))?.id;
-    } else if (!foreignOccupied.has(target.id) && room(target.id)) {
-      destId = target.id;
-    } else {
-      destId = dispersalCandidates.find((h) => !foreignOccupied.has(h.id) && room(h.id))?.id;
-    }
-
-    if (!destId) {
-      // No beya can roster them — forced retirement through the canonical
-      // path (archives the career, clears activeRikishiIds and leaderboards,
-      // and lets accomplished veterans convert to oyakata). A bare
-      // isRetired update would leave a zombie: retired-flagged but still
-      // counted in the active population forever.
-      retireRikishiFully(
-        world,
-        rikishi,
-        `${source.name} folded and no stable had an open slot`,
-        builder
-      );
-      continue;
-    }
-
-    if (consumesSlot) foreignOccupied.add(destId);
-    take(destId);
-    const destHeya = destId === target.id ? target : getHeya(world, destId);
-    builder.updateRikishi(rId, { heyaId: destId });
-    const bucket = destRosterAdds.get(destId) ?? [];
-    bucket.push(rId);
-    destRosterAdds.set(destId, bucket);
+    builder.updateRikishi(rId, { heyaId: target.id });
+    addedIds.push(rId);
     transferredRikishiIds = pushUniqueId(transferredRikishiIds, rId);
 
     builder.logEvent(
@@ -239,22 +175,18 @@ function transferRosterAcrossMerger(
       "career",
       {
         rikishiId: rId,
-        heyaId: destId,
+        heyaId: target.id,
         shikona: rikishi.shikona || rikishi.name,
         status: "transferred",
-        reason: destHeya?.name ?? target.name,
+        reason: target.name,
       },
-      { rikishiId: rId, heyaId: destId, importance: "notable" }
+      { rikishiId: rId, heyaId: target.id, importance: "notable" }
     );
   }
 
-  for (const [destId, addedIds] of destRosterAdds) {
-    const dest = destId === target.id ? target : getHeya(world, destId);
-    if (!dest) continue;
-    builder.updateHeya(destId, {
-      rikishiIds: [...new Set([...(dest.rikishiIds ?? []), ...addedIds])],
-    });
-  }
+  builder.updateHeya(target.id, {
+    rikishiIds: [...new Set([...(target.rikishiIds ?? []), ...addedIds])],
+  });
   return transferredRikishiIds;
 }
 
@@ -268,14 +200,13 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
 
   const rng = rngForWorld(world, "merger", `merger_${sourceHeyaId}_${world.year}_${world.week}`);
 
-  // Candidates: not the source, not player (unless forced, but usually NPC targets NPC),
-  // has room in roster (< 25 rikishi), and prestige >= modest.
+  // Candidates: not the source, not the player, and prestige >= modest.
+  // Real JSA has no roster cap, so headroom no longer gates a target.
   const candidates: import("@/engine/types/heya").Heya[] = [];
   for (const h of world.heyas.values()) {
     if (
       h.id !== sourceHeyaId &&
       h.id !== world.playerHeyaId &&
-      getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_STANDARD &&
       (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")
     ) {
       candidates.push(h);
@@ -283,15 +214,10 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
   }
 
   if (candidates.length === 0) {
-    // Fallback: any stable with room — still never the player's heya
+    // Fallback: any stable — still never the player's heya
     const fallback: import("@/engine/types/heya").Heya[] = [];
     for (const h of world.heyas.values()) {
-      if (
-        h.id !== sourceHeyaId &&
-        h.id !== world.playerHeyaId &&
-        getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_MERGER
-      )
-        fallback.push(h);
+      if (h.id !== sourceHeyaId && h.id !== world.playerHeyaId) fallback.push(h);
     }
     if (fallback.length === 0) return null;
     return fallback[rng.int(0, fallback.length - 1)].id;

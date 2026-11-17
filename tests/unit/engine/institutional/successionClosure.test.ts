@@ -10,10 +10,6 @@
 import { describe, it, expect } from "vitest";
 import { DynastyService } from "@/engine/legacy/DynastyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import {
-  enforceHardCapRosterOverflow,
-  HARD_CAP_ROSTER_SIZE,
-} from "@/engine/recruitment/overflow";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
@@ -224,20 +220,18 @@ describe("succession closure — dying stable folds instead of trustee", () => {
     expect(next.heyas.has("h-floor")).toBe(true);
   });
 
-  it("disperses a full-roster closure across open slots — overflow retires, never silently deletes", () => {
+  it("folds a full-roster closure wholesale into the merger target — no cap, no forced retirement", () => {
     const { world } = buildWorld({
       dyingId: "h-full",
       rosterSize: 30,
       fillerCount: HEYA_FLOOR,
       welfareState: SANCTIONED(SUCCESSION_CLOSURE_SANCTION_WEEKS),
     });
-    // League-wide headroom is scarce: filler-1 has 20 open slots (the merger
-    // target — only stable under the 25-roster candidacy bar), filler-0 has
-    // 2, every other stable is packed at 30.
+    // Real JSA has no roster cap: every rikishi in the closing stable moves
+    // to the receiving heya regardless of its size.
     for (let i = 0; i < HEYA_FLOOR; i++) {
       const fid = `filler-${i}`;
-      const size = i === 0 ? 28 : i === 1 ? 10 : 30;
-      const ids = rosterFiller(world, fid, size);
+      const ids = rosterFiller(world, fid, 30);
       world.heyas.set(fid, { ...world.heyas.get(fid)!, rikishiIds: ids });
     }
     const sourceIds = [...(world.heyas.get("h-full")!.rikishiIds ?? [])];
@@ -247,37 +241,16 @@ describe("succession closure — dying stable folds instead of trustee", () => {
 
     // Stable still folded.
     expect(next.heyas.has("h-full")).toBe(false);
+    const targetId = next.closedHeyas?.get("h-full")?.mergedInto;
+    expect(targetId).toBeDefined();
 
-    // Every former roster member is accounted for: transferred to a stable
-    // with room, or force-retired into historicalRikishi — nobody is
-    // hard-deleted, nobody lingers as a retired-flagged active.
-    let transferred = 0;
-    let retired = 0;
+    // Every former roster member transferred — nobody force-retired, nobody
+    // hard-deleted.
     for (const id of sourceIds) {
       const active = next.rikishi.get(id);
-      const historical = next.historicalRikishi.get(id);
-      expect(
-        active !== undefined || historical !== undefined,
-        `rikishi ${id} must survive the closure`
-      ).toBe(true);
-      if (active) {
-        transferred++;
-        expect(active.heyaId).not.toBe("h-full");
-        expect(next.activeRikishiIds.has(id)).toBe(true);
-      } else {
-        retired++;
-        expect(next.activeRikishiIds.has(id)).toBe(false);
-      }
+      expect(active, `rikishi ${id} must survive the closure`).toBeDefined();
+      expect(active!.heyaId).toBe(targetId);
+      expect(next.activeRikishiIds.has(id)).toBe(true);
     }
-    expect(transferred).toBe(22); // 20 target slots + 2 dispersal slots
-    expect(retired).toBe(8);
-
-    // The invariant the weekly enforcer guards: no stable exceeds the cap,
-    // so enforceHardCapRosterOverflow releases nobody.
-    for (const h of next.heyas.values()) {
-      expect((h.rikishiIds ?? []).length).toBeLessThanOrEqual(HARD_CAP_ROSTER_SIZE);
-    }
-    const overflowImpact = enforceHardCapRosterOverflow(next);
-    expect(overflowImpact.collections?.rikishiToRemove ?? []).toHaveLength(0);
   });
 });

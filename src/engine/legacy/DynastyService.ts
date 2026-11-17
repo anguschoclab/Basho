@@ -34,7 +34,7 @@ import { adjustBrandForOyakata } from "@/engine/keshoMawashi/HeyaBrandGenerator"
 import type { Id } from "@/engine/types/common";
 import { executeMerger, findMergerTarget } from "@/engine/economy/mergers";
 import { HEYA_FLOOR, PRESTIGE_COLLAPSE_BAND } from "@/constants/engine/economic";
-import { ROSTER_CAPACITY_MERGER } from "@/constants/engine/roster";
+
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import {
   SUCCESSION_INSOLVENCY_EVENTS,
@@ -614,8 +614,8 @@ function closeIfHeirlessAndDying(world: WorldState, heya: Heya, builder: ImpactB
   // Branches fold back into the mother line when the parent can absorb;
   // otherwise the standard merger-target search picks a kin stable.
   const parent = heya.branchedFromHeyaId ? getHeya(world, heya.branchedFromHeyaId) : undefined;
-  const parentCanAbsorb =
-    parent !== undefined && getHeyaRoster(world, parent.id).length < ROSTER_CAPACITY_MERGER;
+  // No roster cap — the mother stable can always fold a branch back in.
+  const parentCanAbsorb = parent !== undefined;
   const targetId = parentCanAbsorb ? parent.id : findMergerTarget(world, heya.id);
   if (!targetId) return false;
 

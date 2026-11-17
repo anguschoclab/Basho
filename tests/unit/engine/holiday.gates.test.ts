@@ -92,7 +92,7 @@ describe("V18-B04 — rosterOverForeignLimit gate nationality semantics", () => 
     expect(result.gateTriggered).toBeNull();
   });
 
-  it("naturalized foreign rikishi do not count toward the limit", () => {
+  it("naturalized foreign rikishi still count toward the limit — post-2010 binding", () => {
     const world = worldWithPlayerRoster([
       mockRikishi("f1", {
         heyaId: "h-player",
@@ -106,9 +106,8 @@ describe("V18-B04 — rosterOverForeignLimit gate nationality semantics", () => 
       }),
     ]);
     const result = holidayWithForeignGate(world);
-    // countsAsForeign() → "naturalized" → 0 toward the quota; the raw
-    // nationality string check counts them anyway.
-    expect(result.gateTriggered).toBeNull();
+    // Post-2010: both debuted as foreign nationals → count 2 ≥ limit → fires.
+    expect(result.gateTriggered?.gate).toBe("rosterOverForeignLimit");
   });
 
   it("a canonically over-limit roster DOES trip the gate", () => {

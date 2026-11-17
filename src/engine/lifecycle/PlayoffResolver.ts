@@ -8,6 +8,8 @@ import { rngForWorld } from "@/engine/core/rng";
 import { getRikishi } from "@/engine/core/queries";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/core/rng";
+import { SENSHURAKU_DAY } from "@/constants/engine/calendar";
+import { compareRanks } from "@/engine/banzuke/banzukeHelpers";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 /**
@@ -33,7 +35,11 @@ export function resolvePlayoffs(
   const allMatches: MatchSchedule[] = [];
   const rng = rngForWorld(world, "combat", `playoff::${basho.bashoName}::${world.year}`);
   const shuffled = rng.shuffle(candidates.slice());
-  let day = 16;
+  // Real JSA: kettei-sen are fought on senshuraku (day 15) right after the
+  // regulation bouts — never on a fictional day 16+. A bout counter keeps
+  // boutIds unique across multi-round playoffs on the same day.
+  const day = SENSHURAKU_DAY;
+  let boutCount = 0;
 
   if (shuffled.length === 3) {
     return resolveTomoeSen(world, basho, shuffled, day, rng, allMatches);
@@ -50,14 +56,21 @@ export function resolvePlayoffs(
     }
     const bye = round.length % 2 === 1 ? round[round.length - 1] : null;
 
-    for (const [eastId, westId] of bouts) {
-      const east = getRikishi(world, eastId);
-      const west = getRikishi(world, westId);
-      if (!east || !west) {
-        next.push(eastId);
+    for (const [aId, bId] of bouts) {
+      const ra = getRikishi(world, aId);
+      const rb = getRikishi(world, bId);
+      if (!ra || !rb) {
+        next.push(aId);
         continue;
       }
-      const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-${eastId}-${westId}`;
+      // The higher-ranked rikishi takes the east side — the same convention
+      // the torikumi committee applies to every scheduled bout.
+      const [eastId, westId] = compareRanks(ra, rb) <= 0 ? [aId, bId] : [bId, aId];
+      const aHigher = compareRanks(ra, rb) <= 0;
+      const east = aHigher ? ra : rb;
+      const west = aHigher ? rb : ra;
+      boutCount++;
+      const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-b${boutCount}-${eastId}-${westId}`;
       const { result } = resolveBout(
         { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId, isPlayoff: true },
         east,
@@ -74,7 +87,6 @@ export function resolvePlayoffs(
 
     if (bye) next.push(bye);
     round = next;
-    day++;
   }
 
   return { winner: round[0], matches: allMatches };
@@ -99,7 +111,8 @@ function resolveTomoeSen(
   allMatches: MatchSchedule[]
 ): { winner: Id; matches: MatchSchedule[] } {
   const [a, b, c] = order;
-  let day = startDay;
+  const day = startDay;
+  let boutCount = 0;
   // rotation holds the three rikishi in fight order; the first two fight the
   // opening bout, then the winner faces the idle third rikishi each round.
   const rotation: Id[] = [a, b, c];
@@ -118,7 +131,8 @@ function resolveTomoeSen(
       return { winner: east ? eastId : westId, matches: allMatches };
     }
 
-    const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-${eastId}-${westId}`;
+    boutCount++;
+    const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-t${boutCount}-${eastId}-${westId}`;
     const { result } = resolveBout(
       { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId, isPlayoff: true },
       east,
@@ -146,7 +160,6 @@ function resolveTomoeSen(
     rotation[0] = winnerId;
     rotation[1] = idleId;
     rotation[2] = winnerId === eastId ? westId : eastId;
-    day++;
   }
 
   // Kuji fallback: the JSA draws lots when a tomoe-sen cannot settle.

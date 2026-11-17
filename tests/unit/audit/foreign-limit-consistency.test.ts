@@ -31,12 +31,19 @@ describe("foreign-slot limit consistency", () => {
     expect(isAtForeignLimit(rikishiList, 2024)).toBe(true);
   });
 
-  it("returns false when no foreign rikishi count against the slot", () => {
+  it("returns false when no foreign-at-debut rikishi count against the slot", () => {
     const rikishiList = [
       MockFactory.createRikishi({ id: "n1", nationality: "Japan" }),
-      // Naturalized (5+ years tenure) does not consume the foreign slot.
-      MockFactory.createRikishi({ id: "nat1", nationality: "Mongolia", joinedHeyaDate: "2018" }),
+      // Dual citizens held Japanese citizenship at debut — never consume.
+      MockFactory.createRikishi({ id: "d1", nationality: "Mongolia", citizenshipStatus: "dual" }),
     ];
     expect(isAtForeignLimit(rikishiList, 2024)).toBe(false);
+  });
+
+  it("naturalized (post-debut) rikishi still consume the slot — post-2010 JSA rule", () => {
+    const rikishiList = [
+      MockFactory.createRikishi({ id: "nat1", nationality: "Mongolia", joinedHeyaDate: "2018" }),
+    ];
+    expect(isAtForeignLimit(rikishiList, 2024)).toBe(true);
   });
 });

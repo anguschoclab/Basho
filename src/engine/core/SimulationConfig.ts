@@ -17,7 +17,7 @@ export const SIMULATION_CONFIG = {
   /** Recruitment windows */
   recruitment: {
     durationWeeks: 4,
-    playerHeyaRosterCap: 30, // Reference to overflow cap
+    // No roster cap — the JSA has no legal ceiling on heya size.
   },
 
   /** Media impact baseline shifts */

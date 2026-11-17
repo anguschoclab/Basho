@@ -275,16 +275,15 @@ describe("NPC AI rotation", () => {
     });
   });
 
-  describe("R10: enforceHardCapRosterOverflow still runs for skipped heyas", () => {
-    it("skipped heya with > 30 rikishi still gets overflow enforcement", () => {
-      // Create a world with 43 heyas but give one heya 35 rikishi
+  describe("R10: no roster cap — large rosters are left untouched", () => {
+    it("a heya with 35 rikishi keeps all of them through the weekly phase", () => {
+      // The JSA has no roster cap — the old weekly release enforcer is gone.
       const world = buildWorldWithNpcHeyas(43, {
         cyclePhase: "interim",
         week: 1,
         monthBoundary: false,
       });
 
-      // Give npc_00 35 rikishi (over the 30 hard cap)
       const targetHeya = world.heyas.get("npc_00")!;
       const rikishiIds: string[] = [];
       const rikishiMap = new Map(world.rikishi);
@@ -305,13 +304,13 @@ describe("NPC AI rotation", () => {
       );
 
       const impact = phase01_week_npc_ai(world);
-
-      // Resolve and check that the heya's roster was trimmed
       const resolved = resolveImpacts(world, [impact]);
-      const trimmedHeya = resolved.heyas.get("npc_00");
-      expect(trimmedHeya).toBeDefined();
-      if (trimmedHeya) {
-        expect(trimmedHeya.rikishiIds?.length ?? 0).toBeLessThanOrEqual(30);
+      const untouched = resolved.heyas.get("npc_00");
+      expect(untouched).toBeDefined();
+      expect(untouched?.rikishiIds?.length ?? 0).toBe(35);
+      // Nobody was released into retirement either.
+      for (const id of rikishiIds) {
+        expect(resolved.rikishi.get(id)?.isRetired ?? false).toBe(false);
       }
     });
   });

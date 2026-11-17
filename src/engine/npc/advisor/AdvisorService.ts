@@ -21,7 +21,7 @@ import {
   getForeignCountInHeya,
 } from "@/engine/generation/talentPoolReads";
 import { scanRecentEvents } from "@/engine/events/events";
-import { HEYA_ROSTER_HARD_CAP } from "@/constants/engine/roster";
+
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 
 const ROSTER_LOW_THRESHOLD = 10;
@@ -238,7 +238,7 @@ function leagueRecommendations(world: WorldState, heyaId: Id): AIRecommendation[
   // A top recruit is visible and rival stables have roster vacancies.
   if (league.topRecruitAvailable) {
     const rivalWithVacancy = [...world.heyas.values()].some(
-      (h) => h.id !== heyaId && (h.rikishiIds?.length ?? 0) < HEYA_ROSTER_HARD_CAP
+      (h) => h.id !== heyaId
     );
     if (rivalWithVacancy) {
       recs.push(

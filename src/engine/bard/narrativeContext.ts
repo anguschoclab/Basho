@@ -43,6 +43,18 @@ export const VENUE_PROFILES: Record<
 };
 
 /**
+ * Era-aware venue name. The Nagoya basho moved from the Aichi Prefectural
+ * Gymnasium (Dolphins Arena) to the new IG Arena starting July 2025.
+ */
+function venueNameFor(location: string, year?: number): string {
+  const profile = VENUE_PROFILES[location] ?? VENUE_PROFILES["Tokyo"];
+  if (location === "Nagoya" && year !== undefined && year >= 2025) {
+    return "IG Arena";
+  }
+  return profile.venue;
+}
+
+/**
  * Build a rich BoutNarrativeContext for bout narrative generation.
  * Extracts venue, voice style, and stakes metadata from the basho and rikishi.
  */
@@ -52,7 +64,8 @@ export function buildNarrativeContext(
   result: BoutResult,
   bashoName: BashoName | undefined,
   day: number,
-  rng: SeededRNG
+  rng: SeededRNG,
+  year?: number
 ): BoutNarrativeContext {
   const bashoInfo = bashoName ? BASHO_CALENDAR[bashoName] : undefined;
   const location = bashoInfo?.location ?? "Tokyo";
@@ -80,7 +93,7 @@ export function buildNarrativeContext(
     west,
     result,
     location,
-    venue: venueProfile.venue,
+    venue: venueNameFor(location, year),
     venueShortName: venueProfile.shortName,
     day,
     voiceStyle,
