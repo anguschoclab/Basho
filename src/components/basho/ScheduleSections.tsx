@@ -102,6 +102,14 @@ function MatchCard({
   const callupId = match.crossDivisionCallupId;
   const callupIsEast = callupId === match.eastRikishiId;
   const callupIsWest = callupId === match.westRikishiId;
+  const callup = callupIsEast ? east : callupIsWest ? west : undefined;
+  const callupLabel = !callup
+    ? undefined
+    : match.eighthBoutForRikishiId === callup.id
+      ? "8th bout"
+      : callup.isMaezumo
+        ? "Maezumo call-up"
+        : `${DIVISION_NAMES[callup.division] ?? callup.division} call-up`;
 
   return (
     <Card
@@ -114,7 +122,7 @@ function MatchCard({
             {east?.shikona || match.eastRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">
-            East{callupIsEast ? " · Jūryō call-up" : ""}
+            East{callupIsEast && callupLabel ? ` · ${callupLabel}` : ""}
           </div>
         </div>
 
@@ -134,7 +142,7 @@ function MatchCard({
             {west?.shikona || match.westRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">
-            West{callupIsWest ? " · Jūryō call-up" : ""}
+            West{callupIsWest && callupLabel ? ` · ${callupLabel}` : ""}
           </div>
         </div>
       </div>

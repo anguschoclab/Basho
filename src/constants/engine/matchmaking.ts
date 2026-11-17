@@ -142,3 +142,27 @@ export const SIDE_HONOR_BONUS = 0.2;
 
 export const MATCH_DAY_LATE_THRESHOLD = 7;
 export const MATCH_YUSHO_CONTENDER_MIN_WINS = 11;
+
+// ── W L: No-byes callup cascade ───────────────────────────────────────────────
+
+/** Divisions in top-down cascade order — callups flow UP the banzuke. */
+export const CALLUP_CASCADE_ORDER = [
+  "makuuchi",
+  "juryo",
+  "makushita",
+  "sandanme",
+  "jonidan",
+  "jonokuchi",
+] as const;
+
+/** Max maezumo entrants minted per basho; beyond this the 8th bout fills. */
+export const MAEZUMO_MINT_CAP = 2;
+
+/** Stat baseline for minted maezumo entrants (pre-dan recruits). */
+export const MAEZUMO_CALLUP_STAT = 30;
+
+/** Last lower-division scheduling day — 8th bouts only happen here. */
+export const EIGHTH_BOUT_DAY = 13;
+
+/** Bouts a lower-division rikishi completes before 8th-bout eligibility. */
+export const LOWER_DIVISION_BOUT_COUNT = 7;

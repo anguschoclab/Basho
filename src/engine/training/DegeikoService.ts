@@ -16,6 +16,7 @@ import {
   DEGEIKO_FATIGUE_COST,
   DEGEIKO_MAX_PARTICIPANTS,
   DEGEIKO_MAX_PARTNERS,
+  DEGEIKO_NPC_DEVELOPING_EXPERIENCE,
   DEGEIKO_TECHNIQUE_GAIN,
 } from "@/constants/engine/degeiko";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -53,6 +54,18 @@ export function requestDegeiko(
   const state = world.trainingState?.get(heyaId);
   if (state?.pendingDegeiko) return builder.build();
 
+  // Player-as-host: the oyakata decides whether to open the stable, not a
+  // dice roll. The request queues as a `degeiko_invite` pendingDecision.
+  if (targetHeyaId === world.playerHeyaId) {
+    const existing = world.pendingDegeikoInvites ?? [];
+    if (existing.some((i) => i.fromHeyaId === heyaId)) return builder.build();
+    builder.updateWorldField("pendingDegeikoInvites", [
+      ...existing,
+      { id: `dg_${heyaId}_${world.week}`, fromHeyaId: heyaId, rikishiIds: [...rikishiIds], week: world.week },
+    ]);
+    return builder.build();
+  }
+
   const rng = rngForWorld(world, "degeiko", `request_${heyaId}_${targetHeyaId}_${world.week}`);
   if (rng.next() >= DEGEIKO_ACCEPT_CHANCE) {
     builder.logEvent(
@@ -80,6 +93,50 @@ export function requestDegeiko(
     { heyaId, importance: "major" }
   );
   return builder.build();
+}
+
+/**
+ * W L — NPC degeiko initiation. An NPC oyakata sends his developing rikishi
+ * (low experience) to train at a stronger stable: the highest-prestige heya
+ * that isn't his own. Requests at the player's stable queue as invites;
+ * requests at other NPC stables resolve via seeded acceptance. Pure needs-
+ * driven logic — deterministic, no chance roll on whether to ask.
+ */
+export function evaluateNpcDegeiko(world: WorldState, heyaId: Id): StateImpact {
+  const builder = createImpactBuilder("evaluateNpcDegeiko");
+  const heya = getHeya(world, heyaId);
+  if (!heya || heyaId === world.playerHeyaId) return builder.build();
+  if (world.trainingState?.get(heyaId)?.pendingDegeiko) return builder.build();
+  if ((world.pendingDegeikoInvites ?? []).some((i) => i.fromHeyaId === heyaId)) {
+    return builder.build();
+  }
+
+  const developing = [...world.rikishi.values()]
+    .filter(
+      (r) =>
+        r.heyaId === heyaId &&
+        !r.isRetired &&
+        !r.injured &&
+        !r.isKyujo &&
+        (r.stats?.experience ?? 0) < DEGEIKO_NPC_DEVELOPING_EXPERIENCE
+    )
+    .sort((a, b) => (a.stats?.experience ?? 0) - (b.stats?.experience ?? 0));
+  if (developing.length === 0) return builder.build();
+
+  // Target the strongest other stable — visiting a weaker stable teaches
+  // nothing worth the fatigue cost.
+  const targets = [...world.heyas.values()]
+    .filter((h) => h.id !== heyaId)
+    .sort((a, b) => (b.prestige ?? 0) - (a.prestige ?? 0) || (a.id < b.id ? -1 : 1));
+  const target = targets.find((h) => (h.prestige ?? 0) > (heya.prestige ?? 0)) ?? targets[0];
+  if (!target) return builder.build();
+
+  return requestDegeiko(
+    world,
+    heyaId,
+    target.id,
+    developing.slice(0, DEGEIKO_MAX_PARTICIPANTS).map((r) => r.id)
+  );
 }
 
 /**

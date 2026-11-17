@@ -137,6 +137,7 @@ export type WritableWorldFields = Pick<
   | "activeScoutMissions"
   | "staffCandidatePool"
   | "pendingRikishiRequests"
+  | "pendingDegeikoInvites"
   | "factionPostures"
   | "yokozunaVacancyStreak"
   | "events"

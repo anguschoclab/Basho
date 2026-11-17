@@ -143,7 +143,45 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
   // surface as non-blocking decisions resolved via applyDecisionEffect.
   pushRikishiRequestDecisions(world, playerHeyaId, currentWeek, existing, out);
 
+  // Decision 7: Degeiko invites (QUEUE) — an NPC stable asked to send
+  // rikishi to the player's heya. The oyakata accepts or declines.
+  pushDegeikoInvites(world, playerHeyaId, currentWeek, existing, out);
+
   return out;
+}
+
+function pushDegeikoInvites(
+  world: WorldState,
+  playerHeyaId: string | undefined,
+  currentWeek: number,
+  existing: LoopDecision[],
+  out: LoopDecision[]
+): void {
+  if (!playerHeyaId) return;
+  for (const inv of world.pendingDegeikoInvites ?? []) {
+    const from = world.heyas.get(inv.fromHeyaId);
+    const decisionId = `degeiko_${inv.id}`;
+    if (existing.some((d) => d.id === decisionId)) continue;
+    out.push({
+      id: decisionId,
+      type: "degeiko_invite",
+      description: `${from?.name ?? inv.fromHeyaId} requests degeiko at your stable — ${inv.rikishiIds.length} rikishi will visit for keiko.`,
+      deadlineWeek: currentWeek + 1,
+      required: false,
+      options: [
+        {
+          id: "accept",
+          label: "Accept Visit",
+          impact: "Their rikishi gain technique and experience; your roster gains practice partners.",
+        },
+        {
+          id: "decline",
+          label: "Decline",
+          impact: "No session. The requesting stable is turned away.",
+        },
+      ],
+    });
+  }
 }
 
 function pushKyujoDecisions(
@@ -422,6 +460,54 @@ export function applyDecisionEffect(
       );
     }
   }
+  if (decisionType === "degeiko_invite" && decisionId) {
+    applyDegeikoInviteOutcome(world, builder, decisionId, optionId, heya.id, heya.name);
+  }
+}
+
+/** Resolve a degeiko_invite: accept schedules the session on the guest
+ *  stable's trainingState; decline turns the stable away. The invite is
+ *  consumed either way. */
+function applyDegeikoInviteOutcome(
+  world: WorldState,
+  builder: ImpactBuilder,
+  decisionId: string,
+  optionId: string,
+  hostHeyaId: string,
+  hostHeyaName: string | undefined
+): void {
+  const invId = decisionId.startsWith("degeiko_") ? decisionId.slice("degeiko_".length) : "";
+  const invite = (world.pendingDegeikoInvites ?? []).find((i) => i.id === invId);
+  builder.updateWorldField(
+    "pendingDegeikoInvites",
+    (world.pendingDegeikoInvites ?? []).filter((i) => i.id !== invId)
+  );
+  if (!invite) return;
+  const guest = world.heyas.get(invite.fromHeyaId);
+  if (optionId === "accept") {
+    const state = world.trainingState?.get(invite.fromHeyaId);
+    builder.updateTrainingState(invite.fromHeyaId, {
+      ...(state ?? { heyaId: invite.fromHeyaId, activeProfile: {} as never, focusSlots: [] }),
+      pendingDegeiko: {
+        targetHeyaId: hostHeyaId,
+        week: world.week,
+        rikishiIds: [...invite.rikishiIds],
+      },
+    });
+    builder.logEvent(
+      "DEGEIKO_SCHEDULED",
+      "training",
+      { heya: guest?.name, heyaId: invite.fromHeyaId, targetHeyaId: hostHeyaId, targetHeya: hostHeyaName, rikishiIds: invite.rikishiIds },
+      { heyaId: invite.fromHeyaId, importance: "major" }
+    );
+  } else {
+    builder.logEvent(
+      "DEGEIKO_DECLINED",
+      "training",
+      { heya: guest?.name, heyaId: invite.fromHeyaId, targetHeyaId: hostHeyaId, targetHeya: hostHeyaName },
+      { heyaId: invite.fromHeyaId, importance: "minor" }
+    );
+  }
 }
 
 /** Build a human-readable consequence summary from the actual world state. */
@@ -518,6 +604,7 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     rikishi_request: "grant",
     chain_stage: "first",
     koenkai_demand: "comply",
+    degeiko_invite: "accept",
   },
   balanced: {
     pre_basho_readiness: "rest",
@@ -528,6 +615,7 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     rikishi_request: "grant",
     chain_stage: "first",
     koenkai_demand: "comply",
+    degeiko_invite: "accept",
   },
   aggressive: {
     pre_basho_readiness: "push",
@@ -538,6 +626,7 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     rikishi_request: "deny",
     chain_stage: "first",
     koenkai_demand: "decline",
+    degeiko_invite: "accept",
   },
 };
 
@@ -581,6 +670,8 @@ const QUEUE_DEFAULTS: Record<string, string> = {
   chain_stage: "first",
   // An ignored koenkai demand is a decline — supporters notice.
   koenkai_demand: "decline",
+  // An ignored degeiko invite expires as a refusal — the stable is turned away.
+  degeiko_invite: "decline",
 } as const;
 
 /**

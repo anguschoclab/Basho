@@ -245,6 +245,13 @@ export interface BoutResult {
    * from the MatchSchedule during enrichment for narrative/UI.
    */
   crossDivisionCallupId?: Id;
+  /**
+   * W L — hachiban-zumo: marks a bout where one rikishi fights an 8th bout
+   * (having already completed his scheduled 7) to balance an odd jonokuchi
+   * card. Id of the rikishi fighting the extra bout; losses carry no rank
+   * penalty (movement is wins-driven), wins count toward record.
+   */
+  eighthBoutForRikishiId?: Id;
 }
 
 /**
@@ -275,6 +282,8 @@ export interface MatchSchedule {
    * toward his own division's record.
    */
   crossDivisionCallupId?: Id;
+  /** W L — hachiban-zumo marker: id of the rikishi fighting his 8th bout. */
+  eighthBoutForRikishiId?: Id;
 }
 
 /**

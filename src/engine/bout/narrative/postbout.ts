@@ -912,16 +912,27 @@ function beatHansokuPenalty(p: PbpPipeline): void {
 
 function beatJuryoCallup(p: PbpPipeline): void {
   const { east, postBoutRng, push, result, west } = p;
-  // 16d. Cross-division call-up — a juryo rikishi answered the makuuchi card.
+  // 16d. Cross-division call-up — a rikishi answered a higher division's
+  // card: juryo→makuuchi, the lower-division cascade, maezumo fills, and
+  // the rare hachiban-zumo (8th bout) all land here.
   const callupId = result.crossDivisionCallupId;
   if (!callupId) return;
   const callup = callupId === east.id ? east : callupId === west.id ? west : undefined;
   if (!callup) return;
   const opponent = callup === east ? west : east;
+  const path = callup.isMaezumo
+    ? "post_bout.maezumo_callup"
+    : result.eighthBoutForRikishiId
+      ? "post_bout.eighth_bout"
+      : callup.division === "juryo"
+        ? "post_bout.cross_division_callup"
+        : "post_bout.cross_division_callup_lower";
   push(
-    BardEngine.resolve(postBoutRng, "post_bout.cross_division_callup", {
+    BardEngine.resolve(postBoutRng, path, {
       CALLUP: callup.shikona,
       OPPONENT: opponent.shikona,
+      CALLUP_DIVISION: callup.division,
+      RECEIVING_DIVISION: opponent.division,
       callupId: callup.id,
       opponentId: opponent.id,
     }).text,

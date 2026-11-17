@@ -41,6 +41,8 @@ import {
 import { applyMonoiiVerdict } from "@/engine/bout/resolution/monoiiVerdict";
 import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import { BardEngine } from "@/engine/bard/BardEngine";
+import { SeededRNG, rngForWorld } from "@/engine/core/rng";
 import { hometownTier, applyHometownBonus } from "@/engine/basho/geography";
 import { applyDohyoCondition } from "@/engine/basho/dohyo";
 import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
@@ -134,6 +136,36 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
 }
 
 /**
+ * Fusensho results skip the narrative pipeline entirely (the physics never
+ * ran), so the default-win explanation is attached here directly — the
+ * crowd still deserves to know why no bout was fought.
+ */
+function attachFusenshoNarrative(
+  result: BoutResult,
+  east: Rikishi,
+  west: Rikishi,
+  bout: BoutContext,
+  world?: WorldState
+): void {
+  const rng = world
+    ? rngForWorld(world, "narrative", `fusensho::${bout.id}`)
+    : new SeededRNG(`fusensho::${bout.id}`);
+  const doubleAbsent = !result.winnerRikishiId;
+  const resolved = doubleAbsent
+    ? BardEngine.resolve(rng, "post_bout.fusensho_double", {})
+    : BardEngine.resolve(rng, "post_bout.fusensho", {
+        WINNER:
+          result.winnerRikishiId === east.id ? east.shikona : west.shikona,
+        ABSENT:
+          result.loserRikishiId === east.id ? east.shikona : west.shikona,
+      });
+  result.pbpLines = [
+    ...(result.pbpLines ?? []),
+    { text: resolved.text, id: `${bout.id}-fusensho`, phase: "post_bout", tags: ["drama"] },
+  ];
+}
+
+/**
  * Resolve a bout between two rikishi.
  * Main orchestrator for bout resolution using spatial physics engine.
  *
@@ -174,7 +206,10 @@ export function resolveBout(
 
   // 0. Fusensho — injured/retired rikishi cannot fight; opponent wins by walkover
   const fusenshoResult = tryFusensho(bout, east, west);
-  if (fusenshoResult) return { result: fusenshoResult, impact: builder.build() };
+  if (fusenshoResult) {
+    attachFusenshoNarrative(fusenshoResult, east, west, bout, world);
+    return { result: fusenshoResult, impact: builder.build() };
+  }
 
   // --- PHASE 3: RIVALRY CONNECTIVITY ---
   let eastRivalry = { heat: 0, spite: 0 };

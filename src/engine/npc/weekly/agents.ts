@@ -5,6 +5,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { RecruitmentAgentResult } from "@/engine/npc/agents/RecruitmentAgent";
 import { WorldCircuitService } from "@/engine/worldCircuit/WorldCircuitService";
+import { evaluateNpcDegeiko } from "@/engine/training/DegeikoService";
 import { getRikishi } from "@/engine/core/queries";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
@@ -330,6 +331,10 @@ export function buildWeeklyImpact(
   if (agentDecisions && oyakata) {
     builder.merge(executeAgentDecisions(world, heyaId, agentDecisions, oyakata));
   }
+
+  // W L — NPC stables also initiate degeiko: a weaker stable sends its
+  // developing rikishi to train at a stronger one.
+  builder.merge(evaluateNpcDegeiko(world, heyaId));
 
   return builder.build();
 }

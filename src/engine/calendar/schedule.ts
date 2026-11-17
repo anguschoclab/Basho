@@ -26,6 +26,15 @@ import {
   activeDivisionRoster,
   needsScheduleForDay,
 } from "@/engine/calendar/scheduleHelpers";
+import {
+  CALLUP_CASCADE_ORDER,
+  MAEZUMO_MINT_CAP,
+  MAEZUMO_CALLUP_STAT,
+  EIGHTH_BOUT_DAY,
+  LOWER_DIVISION_BOUT_COUNT,
+} from "@/constants/engine/matchmaking";
+import { generateFullRikishi } from "@/engine/generation/CandidateBuilder";
+import { SeededRNG } from "@/engine/core/rng";
 import type { DramaContext, DramaLabel } from "@/engine/matchmaking/DramaMatchmaker";
 import { toKeyedMap } from "@/engine/utils/index";
 
@@ -97,6 +106,8 @@ export function scheduleDivisionDay(args: {
   excludeIds?: ReadonlySet<string>;
   /** Pre-built bouts appended after pairing (e.g. the cross-division bout). */
   extraBouts?: MatchSchedule[];
+  /** W L — callups joining this division's Swiss pool (juryo only). */
+  extraPoolIds?: readonly string[];
 }): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const { world, basho, division, day, config } = args;
 
@@ -138,6 +149,7 @@ export function scheduleDivisionDay(args: {
       seed: args.seed,
       day,
       excludeIds: args.excludeIds,
+      callupIds: args.extraPoolIds,
     });
 
     builder.merge(crossoverImpact);
@@ -232,6 +244,260 @@ export function planJuryoCallupForMakuuchi(
   return { juryoId: callup.id, makuuchiId: oddMan.id };
 }
 
+// ── W L: No-byes callup cascade ────────────────────────────────────────────────
+
+/**
+ * The complete callup plan for a day, computed top-down before any division
+ * schedules. In honbasho nobody sits out: an odd pool absorbs the top rikishi
+ * of the division below (a fixed bout against the receiving division's bottom
+ * man), which can leave THAT division odd — the cascade continues down to
+ * jonokuchi, where a maezumo entrant or an 8th bout (hachiban-zumo) fills.
+ */
+export interface DivisionCallupPlan {
+  /** Per-division natives withheld from that division's Swiss pool — either
+   *  called UP to the division above, or reserved for a fixed cross bout. */
+  excludeIds: Map<Division, Set<string>>;
+  /** Juryo: makushita callups merged into the juryo Swiss pool. */
+  includePool: Map<Division, Rikishi[]>;
+  /** Fixed cross-division bouts appended to each receiving division's card. */
+  fixedBouts: Map<Division, MatchSchedule[]>;
+  /** Ephemeral maezumo entrants to persist via the schedule impact. */
+  maezumoToAdd: Rikishi[];
+}
+
+/** Banzuke-order ascending — top of a division first (east before west). */
+function byTopRank(a: Rikishi, b: Rikishi): number {
+  const byRank = (a.rankNumber ?? 99) - (b.rankNumber ?? 99);
+  if (byRank !== 0) return byRank;
+  if (a.side !== b.side) return a.side === "east" ? -1 : 1;
+  return a.id < b.id ? -1 : 1;
+}
+
+/** Banzuke-order descending — bottom of a division first (west before east). */
+function byBottomRank(a: Rikishi, b: Rikishi): number {
+  const byRank = (b.rankNumber ?? 0) - (a.rankNumber ?? 0);
+  if (byRank !== 0) return byRank;
+  if (a.side !== b.side) return a.side === "west" ? -1 : 1;
+  return a.id < b.id ? -1 : 1;
+}
+
+/** Mint an ephemeral maezumo entrant (unranked preliminary filler). */
+function mintMaezumoEntrant(world: WorldState, basho: BashoState, index: number): Rikishi {
+  const id = `maezumo-${basho.id}-${index}`;
+  const rng = new SeededRNG(`${world.seed}::maezumo::${id}`);
+  const entrant = generateFullRikishi({
+    id,
+    rng,
+    currentYear: world.year,
+    rank: "jonokuchi",
+    division: "jonokuchi",
+    side: index % 2 === 0 ? "east" : "west",
+    rankNumber: 900 + index,
+  });
+  const stat = MAEZUMO_CALLUP_STAT;
+  return {
+    ...entrant,
+    isMaezumo: true,
+    heyaId: "maezumo",
+    stats: {
+      ...entrant.stats,
+      power: stat,
+      speed: stat,
+      technique: stat,
+      stamina: stat,
+      mental: stat,
+      balance: stat,
+      aggression: stat,
+      experience: 0,
+      adaptability: stat,
+    },
+  };
+}
+
+/** Count resolved bouts a rikishi has contested this basho. */
+function completedBouts(basho: BashoState, rikishiId: string): number {
+  let n = 0;
+  for (const m of basho.matches) {
+    if (!m.result) continue;
+    if (m.eastRikishiId === rikishiId || m.westRikishiId === rikishiId) n++;
+  }
+  return n;
+}
+
+/** Pick the hachiban-zumo filler — a lower-division man finishing his 7th. */
+function pickEighthBoutMan(world: WorldState, basho: BashoState, skip: Set<string>): Rikishi | undefined {
+  const candidates: Rikishi[] = [];
+  for (const div of ["makushita", "sandanme", "jonidan", "jonokuchi"] as const) {
+    for (const r of activeDivisionRoster(world, div)) {
+      if (r.injured || skip.has(r.id)) continue;
+      // ≥6 completed: he completes his 7th on today's card, then fights the 8th.
+      if (completedBouts(basho, r.id) >= LOWER_DIVISION_BOUT_COUNT - 1) candidates.push(r);
+    }
+  }
+  candidates.sort(byBottomRank);
+  return candidates[0];
+}
+
+export function planDivisionCallups(args: {
+  world: WorldState;
+  basho: BashoState;
+  day: number;
+  divisions?: Division[];
+}): DivisionCallupPlan {
+  const { world, basho, day } = args;
+  const plan: DivisionCallupPlan = {
+    excludeIds: new Map(),
+    includePool: new Map(),
+    fixedBouts: new Map(),
+    maezumoToAdd: [],
+  };
+  // Parity checks run top-down in JSA cascade order; args.divisions only
+  // selects WHICH divisions schedule today, never the direction of the scan.
+  const scheduledSet = new Set<Division>(args.divisions ?? [...CALLUP_CASCADE_ORDER]);
+  const order = CALLUP_CASCADE_ORDER.filter((d) => scheduledSet.has(d)) as Division[];
+
+  const busyToday = new Set(
+    basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
+  );
+  const excluded = (d: Division) => plan.excludeIds.get(d) ?? new Set<string>();
+  const excludedEverywhere = () => {
+    const all = new Set<string>();
+    for (const s of plan.excludeIds.values()) for (const id of s) all.add(id);
+    return all;
+  };
+  const rosterOf = (d: Division) =>
+    activeDivisionRoster(world, d).filter((r) => !excluded(d).has(r.id) && !busyToday.has(r.id));
+  const pushFixed = (d: Division, m: MatchSchedule) => {
+    const list = plan.fixedBouts.get(d) ?? [];
+    list.push(m);
+    plan.fixedBouts.set(d, list);
+  };
+  const markExcluded = (d: Division, id: string) => {
+    const s = plan.excludeIds.get(d) ?? new Set<string>();
+    s.add(id);
+    plan.excludeIds.set(d, s);
+  };
+  const boutId = (e: string, w: string) =>
+    `b-${world.year}-${basho.bashoName}-d${day}-${e}-${w}`;
+
+  for (let i = 0; i < order.length; i++) {
+    const D = order[i];
+    if (!needsScheduleForDay(D, day)) continue;
+
+    // Makuuchi keeps the W B juryo-callup semantics verbatim.
+    if (D === "makuuchi") {
+      const roster = rosterOf(D);
+      if (roster.length % 2 === 1 && roster.length >= 3) {
+        const cross = planJuryoCallupForMakuuchi(world, basho, day);
+        if (cross) {
+          markExcluded("makuuchi", cross.makuuchiId);
+          markExcluded("juryo", cross.juryoId);
+          pushFixed("makuuchi", {
+            boutId: boutId(cross.makuuchiId, cross.juryoId),
+            day,
+            eastRikishiId: cross.makuuchiId,
+            westRikishiId: cross.juryoId,
+            crossDivisionCallupId: cross.juryoId,
+          });
+        }
+      }
+      continue;
+    }
+
+    // Juryo fills roster shortfall via pool-merge (existing semantics) — the
+    // plan merely fixes WHICH makushita men go, before their card is set.
+    if (D === "juryo") {
+      const roster = rosterOf(D);
+      const oddSlots = getDivisionExpectedSize(D) - roster.length;
+      if (oddSlots <= 0) {
+        // Parity fallback: even expected size but odd actual pool.
+        if (roster.length % 2 === 0) continue;
+      }
+      const taken = excludedEverywhere();
+      const makushitaPool = activeDivisionRoster(world, "makushita")
+        .filter((r) => !r.injured && !taken.has(r.id) && !busyToday.has(r.id))
+        .sort(byTopRank);
+      let need = Math.max(oddSlots, roster.length % 2 === 1 ? 1 : 0);
+      need = Math.min(need, 5, makushitaPool.length);
+      // Keep the merged juryo pool even (within the 5-man joi cap).
+      const cap = Math.min(5, makushitaPool.length);
+      if ((roster.length + need) % 2 === 1 && need < cap) need++;
+      const callups = makushitaPool.slice(0, Math.max(0, need));
+      if (callups.length > 0) plan.includePool.set("juryo", callups);
+      for (const c of callups) markExcluded("makushita", c.id);
+      continue;
+    }
+
+    // Lower divisions: odd pool → top man of a lower division, fixed bout.
+    const roster = rosterOf(D).sort(byBottomRank);
+    if (roster.length % 2 === 0) continue;
+    const bottom = roster[0];
+
+    // Scan every division below D in cascade order — a donor division need
+    // not be scheduling its own card today to supply its top man.
+    let callup: Rikishi | undefined;
+    const lowerDivs = CALLUP_CASCADE_ORDER.slice(
+      CALLUP_CASCADE_ORDER.indexOf(D) + 1
+    ) as Division[];
+    for (const lower of lowerDivs) {
+      if (callup) break;
+      const taken = excludedEverywhere();
+      callup = activeDivisionRoster(world, lower)
+        .filter((r) => !r.injured && !taken.has(r.id) && !busyToday.has(r.id) && !r.isMaezumo)
+        .sort(byTopRank)[0];
+      if (callup) markExcluded(lower, callup.id);
+    }
+
+    if (!callup && D === "jonokuchi") {
+      callup = resolveJonokuchiFill(world, basho, day, excludedEverywhere(), plan);
+    }
+
+    if (!callup) continue; // documented edge — the odd man sits.
+    markExcluded(D, bottom.id);
+    const isEighth = !callup.isMaezumo && completedBouts(basho, callup.id) > 0;
+    pushFixed(D, {
+      boutId: boutId(bottom.id, callup.id),
+      day,
+      eastRikishiId: bottom.id,
+      westRikishiId: callup.id,
+      crossDivisionCallupId: callup.id,
+      ...(callup.isMaezumo ? {} : isEighth ? { eighthBoutForRikishiId: callup.id } : {}),
+    });
+  }
+
+  return plan;
+}
+
+/**
+ * Jonokuchi fill: reuse an available maezumo entrant, mint one under the cap,
+ * or — on the last lower-division day — pull a man finishing his 7th for an
+ * 8th bout.
+ */
+function resolveJonokuchiFill(
+  world: WorldState,
+  basho: BashoState,
+  day: number,
+  taken: Set<string>,
+  plan: DivisionCallupPlan
+): Rikishi | undefined {
+  const existing: Rikishi[] = [];
+  let liveMaezumo = 0;
+  for (const r of world.rikishi.values()) {
+    if (!r.isMaezumo || r.isRetired) continue;
+    liveMaezumo++;
+    if (!r.injured && !r.isKyujo && !taken.has(r.id)) existing.push(r);
+  }
+  existing.sort((a, b) => (a.id < b.id ? -1 : 1));
+  if (existing[0]) return existing[0];
+  if (liveMaezumo + plan.maezumoToAdd.length < MAEZUMO_MINT_CAP) {
+    const entrant = mintMaezumoEntrant(world, basho, liveMaezumo + plan.maezumoToAdd.length);
+    plan.maezumoToAdd.push(entrant);
+    return entrant;
+  }
+  if (day === EIGHTH_BOUT_DAY) return pickEighthBoutMan(world, basho, taken);
+  return undefined;
+}
+
 /**
  * Schedule all divisions for a single day.
  * Returns StateImpact describing scheduled matches instead of mutating directly.
@@ -255,21 +521,61 @@ export function scheduleAllDivisionsDay(args: {
     args.divisions ??
     (["jonokuchi", "jonidan", "sandanme", "makushita", "juryo", "makuuchi"] as Division[]);
 
-  // W-B: plan the juryo → makuuchi crossover up front so the juryo loop can
-  // exclude the callup (and back-fill his slot via makushita) and makuuchi
-  // can append the cross-division bout.
-  const crossover = planJuryoCallupForMakuuchi(args.world, args.basho, args.day);
-  const crossBout: MatchSchedule | undefined = crossover
-    ? {
-        boutId: `b-${args.world.year}-${args.basho.bashoName}-d${args.day}-${crossover.makuuchiId}-${crossover.juryoId}`,
-        day: args.day,
-        eastRikishiId: crossover.makuuchiId,
-        westRikishiId: crossover.juryoId,
-        crossDivisionCallupId: crossover.juryoId,
-      }
-    : undefined;
+  // W L: the whole callup cascade is planned up front — a rikishi called up
+  // is excluded from his own division's card and paired on the receiving
+  // division's card, exactly as the JSA builds the torikumi.
+  const plan = planDivisionCallups({
+    world: args.world,
+    basho: args.basho,
+    day: args.day,
+    divisions,
+  });
 
   const builder = createImpactBuilder("scheduleAllDivisionsDay");
+  for (const maezumo of plan.maezumoToAdd) builder.addRikishi(maezumo);
+
+  // Surface callups involving the player's stable — a player's rikishi
+  // stepping onto a higher card (or hosting one) is player-facing news.
+  const playerHeyaId = args.world.playerHeyaId;
+  if (playerHeyaId) {
+    const rikishiById = args.world.rikishi;
+    const playerRikishiIds = new Set<string>();
+    for (const r of rikishiById.values()) {
+      if (r.heyaId === playerHeyaId) playerRikishiIds.add(r.id);
+    }
+    const fixedBouts = [...plan.fixedBouts.values()].flat();
+    for (const bout of fixedBouts) {
+      const involvesPlayer =
+        playerRikishiIds.has(bout.eastRikishiId) || playerRikishiIds.has(bout.westRikishiId);
+      if (!involvesPlayer || !bout.crossDivisionCallupId) continue;
+      const callup = rikishiById.get(bout.crossDivisionCallupId);
+      if (!callup) continue;
+      // When the player owns both sides, the callup angle is the news.
+      const playerParticipantId = playerRikishiIds.has(callup.id)
+        ? callup.id
+        : playerRikishiIds.has(bout.eastRikishiId)
+          ? bout.eastRikishiId
+          : bout.westRikishiId;
+      const playerRikishi = rikishiById.get(playerParticipantId);
+      const isCallup = playerParticipantId === callup.id;
+      builder.logEvent(
+        "BASHO_STATUS",
+        "basho",
+        {
+          status: "callup",
+          rikishiId: playerParticipantId,
+          shikona: playerRikishi?.shikona,
+          callupId: callup.id,
+          callupShikona: callup.shikona,
+          role: isCallup ? "called_up" : "host",
+          day: args.day,
+          division: callup.division,
+        },
+        { heyaId: playerHeyaId, rikishiId: playerParticipantId, importance: "notable" }
+      );
+    }
+  }
+
   const out: MatchSchedule[] = [];
   for (const div of divisions) {
     const { scheduled, impact } = scheduleDivisionDay({
@@ -278,13 +584,9 @@ export function scheduleAllDivisionsDay(args: {
       division: div,
       day: args.day,
       seed: args.seed,
-      excludeIds:
-        crossover && div === "juryo"
-          ? new Set([crossover.juryoId])
-          : crossover && div === "makuuchi"
-            ? new Set([crossover.makuuchiId])
-            : undefined,
-      extraBouts: crossBout && div === "makuuchi" ? [crossBout] : undefined,
+      excludeIds: plan.excludeIds.get(div),
+      extraBouts: plan.fixedBouts.get(div),
+      extraPoolIds: plan.includePool.get(div)?.map((r) => r.id),
     });
     out.push(...scheduled);
     builder.merge(impact);
@@ -314,7 +616,7 @@ export function scheduleAllDivisionsDay(args: {
 export function scheduleJuryoWithCrossover(
   world: WorldState,
   basho: BashoState,
-  options: { seed: string; day?: number; excludeIds?: ReadonlySet<string> }
+  options: { seed: string; day?: number; excludeIds?: ReadonlySet<string>; callupIds?: readonly string[] }
 ): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const builder = createImpactBuilder("scheduleJuryoWithCrossover");
   const division = "juryo";
@@ -336,28 +638,31 @@ export function scheduleJuryoWithCrossover(
   // Check for odd slots (injured or kyujo)
   const oddSlots = expectedSize - actualSize;
 
-  if (oddSlots > 0) {
-    // Call up top Makushita (Ms1-Ms5)
-    // Exclude rikishi already scheduled for this day — makushita is
-    // scheduled before juryo, so without this a call-up gets two bouts.
-    const busyToday = new Set(
-      basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
-    );
-    const makushitaPool = activeDivisionRoster(world, "makushita")
-      .filter((r) => !r.injured && !r.isKyujo && !busyToday.has(r.id))
-      .sort((a, b) => {
-        const aNum = a.rankNumber ?? 99;
-        const bNum = b.rankNumber ?? 99;
-        if (aNum !== bNum) return aNum - bNum;
-        return a.side === "east" ? -1 : 1;
-      });
-
-    // Take top 5 or as many as needed
-    const callupCount = Math.min(oddSlots, 5, makushitaPool.length);
-    const callups = makushitaPool.slice(0, callupCount);
+  const callupIdSet = new Set<string>();
+  if (oddSlots > 0 || options.callupIds?.length) {
+    let callups: Rikishi[];
+    if (options.callupIds?.length) {
+      // W L — the top-down plan already chose these men before the makushita
+      // card was built, so they are never "busy today".
+      callups = options.callupIds
+        .map((id) => world.rikishi.get(id))
+        .filter((r): r is Rikishi => !!r && !r.injured && !r.isKyujo);
+    } else {
+      // Legacy self-selection — call up top Makushita (Ms1-Ms5). Exclude
+      // rikishi already scheduled for this day — makushita is scheduled
+      // before juryo, so without this a call-up gets two bouts.
+      const busyToday = new Set(
+        basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
+      );
+      const makushitaPool = activeDivisionRoster(world, "makushita")
+        .filter((r) => !r.injured && !r.isKyujo && !busyToday.has(r.id))
+        .sort(byTopRank);
+      callups = makushitaPool.slice(0, Math.min(oddSlots, 5, makushitaPool.length));
+    }
 
     // Temporarily move callups to Juryo for scheduling
     pool = [...pool, ...callups];
+    for (const c of callups) callupIdSet.add(c.id);
   }
 
   // Use a temporary basho state to avoid early pollution
@@ -389,13 +694,21 @@ export function scheduleJuryoWithCrossover(
     if (consumed) builder.updateWorldField("matchmakingOverride", undefined);
   }
 
-  const scheduled: MatchSchedule[] = finalPairings.map((p) => ({
-    boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
-    day,
-    eastRikishiId: p.eastId,
-    westRikishiId: p.westId,
-    dramaticContext: extractDramaContext(p),
-  }));
+  const scheduled: MatchSchedule[] = finalPairings.map((p) => {
+    const callupId = callupIdSet.has(p.eastId)
+      ? p.eastId
+      : callupIdSet.has(p.westId)
+        ? p.westId
+        : undefined;
+    return {
+      boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
+      day,
+      eastRikishiId: p.eastId,
+      westRikishiId: p.westId,
+      dramaticContext: extractDramaContext(p),
+      ...(callupId ? { crossDivisionCallupId: callupId } : {}),
+    };
+  });
 
   builder.appendToWorldArray("basho.matches", scheduled);
 

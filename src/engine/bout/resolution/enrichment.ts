@@ -122,6 +122,9 @@ export function enrichResult(
   if (match?.crossDivisionCallupId) {
     result.crossDivisionCallupId = match.crossDivisionCallupId;
   }
+  if (match?.eighthBoutForRikishiId) {
+    result.eighthBoutForRikishiId = match.eighthBoutForRikishiId;
+  }
 
   // NOTE: narrative generation is intentionally NOT here — it must run
   // after applyStakesAndKensho (isYushoRace/isTitleStakes) and

@@ -576,6 +576,30 @@
     "Called up from juryo to fill the top-division card, %CALLUP% answered against %OPPONENT%.",
     "The juryo man came to fight — %CALLUP%, summoned into the makuuchi session, took on %OPPONENT%."
   ],
+  "cross_division_callup_lower": [
+    "The schedulers reached down a division — %CALLUP% of %CALLUP_DIVISION% answered the %RECEIVING_DIVISION% card against %OPPONENT%.",
+    "No byes in this sport — %CALLUP% was summoned up from %CALLUP_DIVISION% to face %OPPONENT% on the %RECEIVING_DIVISION% slate.",
+    "%CALLUP% made the climb from %CALLUP_DIVISION% for the day, filling the odd slot against %OPPONENT%."
+  ],
+  "maezumo_callup": [
+    "Fresh from the maezumo preliminaries, %CALLUP% stepped onto the jonokuchi card to face %OPPONENT%.",
+    "An unranked debut — %CALLUP%, called up from maezumo, took his first official bow against %OPPONENT%.",
+    "The schedulers dipped into the maezumo intake — %CALLUP% filled the open slot against %OPPONENT%."
+  ],
+  "eighth_bout": [
+    "A rare hachiban-zumo — %CALLUP%, his seven bouts already complete, answered the call against %OPPONENT%.",
+    "Eighth-bout duty for %CALLUP% — back on the dohyo so that %OPPONENT% would not go without an opponent.",
+    "%CALLUP% took the unusual eighth bout, his card already full, facing %OPPONENT% for the record books."
+  ],
+  "fusensho": [
+    "%WINNER% took the dohyo alone — %ABSENT% was withdrawn, and the bow brought a fusensho.",
+    "No contest — %ABSENT% did not answer. %WINNER% collects the default win without raising a hand.",
+    "The call echoed over an empty half of the dohyo — %ABSENT% absent, fusensho to %WINNER%."
+  ],
+  "fusensho_double": [
+    "Silence on both sides of the dohyo — neither rikishi answered the call, a double fusenpai.",
+    "No winner today — both men were absent, and the schedulers recorded a double default."
+  ],
   "hometown_region_win": [
     "The %REGION% crowd roars — %WINNER% of %ORIGIN% delivers on the regional stage!",
     "%WINNER% wins for the %REGION% faithful — the %ORIGIN% native made them proud today.",

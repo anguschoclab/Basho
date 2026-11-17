@@ -354,6 +354,18 @@ export interface WorldState {
    */
   pendingRikishiRequests?: import("@/engine/npc/agency/types").RikishiRequest[];
 
+  /**
+   * W L — degeiko requests NPC stables have made targeting the PLAYER's
+   * stable. Each entry surfaces as a `degeiko_invite` pendingDecision; the
+   * player (as host) accepts or declines. Expires with the decision.
+   */
+  pendingDegeikoInvites?: Array<{
+    id: string;
+    fromHeyaId: Id;
+    rikishiIds: Id[];
+    week: number;
+  }>;
+
   /** Chronicle/Historical record browser state */
   chronicle?: {
     eraLabels: Array<{

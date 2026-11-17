@@ -196,6 +196,7 @@ function serializeWorld(world: WorldState): SerializedWorldState {
     activeScoutMissions: world.activeScoutMissions,
     staffCandidatePool: world.staffCandidatePool,
     pendingRikishiRequests: world.pendingRikishiRequests,
+    pendingDegeikoInvites: world.pendingDegeikoInvites,
     pendingExhibitions: world.pendingExhibitions,
     matchmakingOverride: world.matchmakingOverride,
     objectivesState: world.objectivesState,
@@ -232,6 +233,7 @@ function deserializePendingFields(s: SerializedWorldState): Partial<WorldState> 
     activeScoutMissions: s.activeScoutMissions,
     staffCandidatePool: s.staffCandidatePool,
     pendingRikishiRequests: s.pendingRikishiRequests,
+    pendingDegeikoInvites: s.pendingDegeikoInvites,
   };
 }
 

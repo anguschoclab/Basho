@@ -129,6 +129,12 @@ export interface Rikishi {
     consecutiveExtremeWeeks?: number; // 0-3: leads to burnout crash
   };
   isKyujo: boolean; // Separate from injured - voluntary withdrawal
+  /**
+   * W L — ephemeral maezumo (unranked preliminary) entrant minted to fill an
+   * odd jonokuchi card. Excluded from division rosters, performance publish,
+   * and career records; only ever appears via explicit cross-division callup.
+   */
+  isMaezumo?: boolean;
   kyujoReason?: "voluntary" | "injury" | "personal";
   medicalCertificate?: {
     injury: string;

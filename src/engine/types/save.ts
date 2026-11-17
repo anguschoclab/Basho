@@ -191,6 +191,7 @@ export interface SerializedWorldState {
   activeScoutMissions?: WorldState["activeScoutMissions"];
   staffCandidatePool?: WorldState["staffCandidatePool"];
   pendingRikishiRequests?: WorldState["pendingRikishiRequests"];
+  pendingDegeikoInvites?: WorldState["pendingDegeikoInvites"];
   pendingExhibitions?: WorldState["pendingExhibitions"];
   matchmakingOverride?: WorldState["matchmakingOverride"];
   objectivesState?: WorldState["objectivesState"];

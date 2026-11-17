@@ -110,8 +110,8 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
     });
   });
 
-  describe("resolveBout skips narrative for fusensho bouts", () => {
-    it("returns fusensho and leaves pbpLines undefined", () => {
+  describe("resolveBout fusensho narrative", () => {
+    it("returns fusensho with a default-win pbp line (W L)", () => {
       const east = mockRikishi("r-east", { injured: false });
       const west = mockRikishi("r-west", { isKyujo: true });
       const basho = makeMockBasho();
@@ -121,7 +121,12 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
 
       expect(result.kimarite).toBe("fusensho");
       expect(result.duration).toBe(0);
-      expect(result.pbpLines).toBeUndefined();
+      // The physics never ran, but the walkover is still narrated — the
+      // crowd sees why no bout was fought.
+      expect(result.pbpLines).toBeDefined();
+      expect(result.pbpLines!.length).toBeGreaterThan(0);
+      expect(result.pbpLines![0].phase).toBe("post_bout");
+      expect(result.pbpLines![0].text).toContain("r-east");
     });
   });
 

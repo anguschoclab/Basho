@@ -17,3 +17,6 @@ export const DEGEIKO_FATIGUE_COST = 8;
 
 /** Host rikishi that become mutual keiko partners per participant */
 export const DEGEIKO_MAX_PARTNERS = 2;
+
+/** Experience below which a rikishi counts as "developing" for NPC degeiko needs */
+export const DEGEIKO_NPC_DEVELOPING_EXPERIENCE = 40;
