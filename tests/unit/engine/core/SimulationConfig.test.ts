@@ -1,25 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import { jsaYushoPrize, jsaSanshoPrize } from "@/constants/engine/jsaEra";
 
 describe("SimulationConfig", () => {
   describe("SIMULATION_CONFIG", () => {
-    it("should have defined prize amounts (real JSA values)", () => {
-      expect(SIMULATION_CONFIG.prizes.yusho).toBe(10_000_000);
-      expect(SIMULATION_CONFIG.prizes.specialPrize).toBe(2_000_000);
-      // The JSA pays no jun-yusho prize — the runner-up is a label only.
-      expect("junYusho" in SIMULATION_CONFIG.prizes).toBe(false);
-      // Kinboshi compensation flows through mochikyukin — no stipend constant.
-      expect("kinboshiStipend" in SIMULATION_CONFIG.prizes).toBe(false);
-    });
-
-    it("should have per-division yusho prizes (real JSA values)", () => {
-      expect(SIMULATION_CONFIG.prizes.yushoByDivision).toBeDefined();
-      expect(SIMULATION_CONFIG.prizes.yushoByDivision.makuuchi).toBe(10_000_000);
-      expect(SIMULATION_CONFIG.prizes.yushoByDivision.juryo).toBe(2_000_000);
-      expect(SIMULATION_CONFIG.prizes.yushoByDivision.makushita).toBe(500_000);
-      expect(SIMULATION_CONFIG.prizes.yushoByDivision.sandanme).toBe(300_000);
-      expect(SIMULATION_CONFIG.prizes.yushoByDivision.jonidan).toBe(200_000);
-      expect(SIMULATION_CONFIG.prizes.yushoByDivision.jonokuchi).toBe(100_000);
+    it("prize money lives in the era-keyed JSA tables", () => {
+      // jsaEra.ts carries the 2026 and 2027+ schedules; the config no
+      // longer exposes a flat `prizes` block to stale-read from.
+      expect("prizes" in SIMULATION_CONFIG).toBe(false);
+      expect(jsaYushoPrize("makuuchi", 2026)).toBe(10_000_000);
+      expect(jsaSanshoPrize(2026)).toBe(2_000_000);
     });
 
     it("should define career milestones", () => {

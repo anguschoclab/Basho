@@ -16,11 +16,15 @@ import {
   calculateDivisionStandings,
   resolveDivisionPlayoffs,
 } from "@/engine/lifecycle/PlayoffResolver";
-import { distributePrizes, payBashoTeate } from "@/engine/lifecycle/PrizeDistribution";
+import {
+  distributePrizes,
+  payBashoTeate,
+  paySanyakuBashoAllowance,
+} from "@/engine/lifecycle/PrizeDistribution";
 import { recordBashoHistory, checkYokozunaPromotions } from "@/engine/lifecycle/BashoHistory";
 import { concludeBashoCompetition } from "@/engine/lifecycle/concludeBasho";
 
 export { resolvePlayoffs, calculateStandings, calculateDivisionStandings, resolveDivisionPlayoffs };
-export { distributePrizes, payBashoTeate };
+export { distributePrizes, payBashoTeate, paySanyakuBashoAllowance };
 export { recordBashoHistory, checkYokozunaPromotions };
 export { concludeBashoCompetition };

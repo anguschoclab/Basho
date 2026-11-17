@@ -19,7 +19,11 @@ import {
   calculateDivisionStandings,
   resolveDivisionPlayoffs,
 } from "@/engine/lifecycle/PlayoffResolver";
-import { distributePrizes, payBashoTeate } from "@/engine/lifecycle/PrizeDistribution";
+import {
+  distributePrizes,
+  payBashoTeate,
+  paySanyakuBashoAllowance,
+} from "@/engine/lifecycle/PrizeDistribution";
 import { recordBashoHistory } from "@/engine/lifecycle/BashoHistory";
 import { getRikishi } from "@/engine/core/queries";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -128,18 +132,23 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   // rather than overwriting them via mergeImpacts' shallow entity merge.
   const postPrizeWorld = resolveImpacts(world, [builder.build(), historyImpact]);
   const teateImpact = payBashoTeate(postPrizeWorld);
+  // 本場所特別手当 — per-basho sanyaku+ allowance, pro-rated by days contested.
+  const postTeateWorld = resolveImpacts(postPrizeWorld, [teateImpact]);
+  const sanyakuAllowanceImpact = paySanyakuBashoAllowance(postTeateWorld);
 
   // Kinboshi compensation flows exclusively through mochikyukin accumulation
   // below (+10 pts/star at ¥4,000/pt, paid every 2 months while sekitori) —
   // the JSA model has no separate one-time stipend.
-  const mochikyukinImpact = accumulateAllMochikyukin(
-    resolveImpacts(postPrizeWorld, [teateImpact]),
-    basho,
-    yusho
-  );
+  const mochikyukinImpact = accumulateAllMochikyukin(postTeateWorld, basho, yusho);
 
   // Merge impacts together
-  return mergeImpacts([builder.build(), historyImpact, teateImpact, mochikyukinImpact]);
+  return mergeImpacts([
+    builder.build(),
+    historyImpact,
+    teateImpact,
+    sanyakuAllowanceImpact,
+    mochikyukinImpact,
+  ]);
 }
 
 /**

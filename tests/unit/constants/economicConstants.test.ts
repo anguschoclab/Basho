@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
+import { jsaBashoTeate } from "@/constants/engine/jsaEra";
 import {
-  NON_SEKITORI_BASHO_ALLOWANCE,
   POLITICAL_FAVOR_ADVANCE_PAYOUT,
   NPC_FALLBACK_MONTHLY_BURN_ESTIMATE,
   NPC_RIKISHI_BURN_ESTIMATE_MONTHLY,
@@ -109,18 +109,18 @@ describe("Extracted economic constants", () => {
     });
   });
 
-  describe("NON_SEKITORI_BASHO_ALLOWANCE (2027 updated values)", () => {
-    it("makushita receives 180,000", () => {
-      expect(NON_SEKITORI_BASHO_ALLOWANCE.makushita).toBe(180_000);
+  describe("basho teate (era-keyed; jsaEra.ts)", () => {
+    it("2026 schedule: 165k/110k/88k/77k", () => {
+      expect(jsaBashoTeate("makushita", 2026)).toBe(165_000);
+      expect(jsaBashoTeate("sandanme", 2026)).toBe(110_000);
+      expect(jsaBashoTeate("jonidan", 2026)).toBe(88_000);
+      expect(jsaBashoTeate("jonokuchi", 2026)).toBe(77_000);
     });
-    it("sandanme receives 120,000", () => {
-      expect(NON_SEKITORI_BASHO_ALLOWANCE.sandanme).toBe(120_000);
-    });
-    it("jonidan receives 96,000", () => {
-      expect(NON_SEKITORI_BASHO_ALLOWANCE.jonidan).toBe(96_000);
-    });
-    it("jonokuchi receives 84,000", () => {
-      expect(NON_SEKITORI_BASHO_ALLOWANCE.jonokuchi).toBe(84_000);
+    it("2027+ schedule: 180k/120k/95k/82k", () => {
+      expect(jsaBashoTeate("makushita", 2027)).toBe(180_000);
+      expect(jsaBashoTeate("sandanme", 2027)).toBe(120_000);
+      expect(jsaBashoTeate("jonidan", 2027)).toBe(95_000);
+      expect(jsaBashoTeate("jonokuchi", 2027)).toBe(82_000);
     });
   });
 });

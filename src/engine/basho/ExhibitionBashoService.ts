@@ -19,6 +19,8 @@ import {
   EXHIBITION_INJURY_BASE_CHANCE,
   EXHIBITION_INJURY_FATIGUE_PENALTY,
 } from "@/constants/engine/exhibitionBasho";
+import { jsaJungyoStipendMultiplier } from "@/constants/engine/jsaEra";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import {
   ensureRivalriesState,
   makeRivalryKey,
@@ -142,9 +144,12 @@ export function simulateExhibitionBasho(
   for (const riki of participants) {
     if (riki.isRetired) continue;
 
-    // Partial stipend
+    // Partial stipend — the 2027 JSA package raises jungyo allowances
+    // ~20-50% by rank (jsaJungyoStipendMultiplier is the midpoint proxy).
     const baseStipend = EXHIBITION_BASE_STIPEND;
-    const stipend = Math.round(baseStipend * EXHIBITION_STIPEND_MULTIPLIER);
+    const stipend = Math.round(
+      baseStipend * jsaJungyoStipendMultiplier(world.year ?? DEFAULT_START_YEAR)
+    );
     if (riki.economics) {
       builder.updateRikishi(riki.id, {
         economics: {

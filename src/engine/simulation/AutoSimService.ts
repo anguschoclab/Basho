@@ -14,7 +14,7 @@ import type { ChronicleReport } from "@/engine/types/records";
 import { RANK_HIERARCHY, type PromotionEvent, type DemotionEvent, type Rank } from "@/engine/types/banzuke";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
-import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import { jsaYushoPrize, jsaSanshoPrize } from "@/constants/engine/jsaEra";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -288,8 +288,8 @@ function publishBanzukeForSim(
         shukunsho: bashoResult.shukunsho,
         kantosho: bashoResult.kantosho,
         prizes: {
-          yushoAmount: SIMULATION_CONFIG.prizes.yushoByDivision.makuuchi,
-          specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
+          yushoAmount: jsaYushoPrize("makuuchi", currentWorld.year ?? DEFAULT_START_YEAR),
+          specialPrizes: jsaSanshoPrize(currentWorld.year ?? DEFAULT_START_YEAR),
         },
       },
     ],

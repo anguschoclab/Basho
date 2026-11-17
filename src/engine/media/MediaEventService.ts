@@ -209,6 +209,99 @@ export function handleMediaEventForHeya(
   return builder.build();
 }
 
+/**
+ * Dated JSA rule-change bulletins, fired at the calendar months matching the
+ * real announcements. Each headline is deduped by tag so replayed boundary
+ * ticks cannot double-publish.
+ *
+ * - 2026-07-30 (→ month boundary into August): the JSA board approves the
+ *   compensation revision effective Hatsu 2027 (yusho ¥10M→¥20M, sanshō
+ *   ¥2M→¥3M, sekitori salaries +~10%, non-sekitori allowances up).
+ * - 2026-10-01 (→ month boundary into October): Article 9 of the bout
+ *   regulations loses its 71-year-old exception — a topknot touching the
+ *   clay first is now always a loss. The bout engine doesn't model hair
+ *   touches; the bulletin is world-faithful ambience, not a rules change
+ *   in sim terms.
+ * - Boundary into January 2027 (phase05 still sees year=2026; phase06
+ *   increments it after): the revised schedule takes effect.
+ */
+export function announceJsaBulletins(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("announceJsaBulletins");
+  const headlines = world.mediaState?.headlines;
+  if (!headlines) return builder.build();
+
+  const year = world.year ?? 0;
+  const month = world.calendar?.month ?? 0;
+  const week = world.week ?? 0;
+
+  const bulletins: Array<{
+    tag: string;
+    tier: HeadlineTier;
+    title: string;
+    subtitle: string;
+    when: boolean;
+  }> = [
+    {
+      tag: "jsa_pay_revision_announced",
+      tier: "national",
+      title: "JSA approves sweeping rikishi pay and prize revision",
+      subtitle:
+        "Effective from Hatsu 2027 — makuuchi yūshō doubles to ¥20,000,000, sanshō rise to ¥3,000,000, and sekitori salaries climb ~10%.",
+      when: year === 2026 && month === 8,
+    },
+    {
+      tag: "jsa_article9_revision",
+      tier: "local",
+      title: "JSA amends bout regulations for the first time in 71 years",
+      subtitle:
+        "Article 9's exception is gone — a topknot touching the clay first now means defeat, even for the attacking rikishi mid-throw.",
+      when: year === 2026 && month === 10,
+    },
+    {
+      tag: "jsa_pay_revision_effective",
+      tier: "national",
+      title: "Revised JSA pay schedule takes effect this basho",
+      subtitle:
+        "Yūshō prizes, sanshō, monthly salaries, and non-sekitori allowances all rise under the July 2026 board revision.",
+      when: year === 2026 && month === 1,
+    },
+  ];
+
+  const fired = bulletins.filter(
+    (b) => b.when && !headlines.some((h) => h.tags?.includes(b.tag))
+  );
+  if (fired.length === 0) return builder.build();
+
+  const rng = rngForWorld(
+    world,
+    "media",
+    `jsa-bulletins::${year}::${month}::${headlines.length}`
+  );
+  const newHeadlines = [...headlines];
+  for (const b of fired) {
+    newHeadlines.push({
+      id: rng.uuid("MH"),
+      week,
+      tier: b.tier,
+      beat: "feature",
+      tone: "neutral",
+      rikishiIds: [],
+      heyaIds: [],
+      title: b.title,
+      subtitle: b.subtitle,
+      impact: b.tier === "national" ? 40 : 20,
+      tags: ["governance", "jsa", b.tag],
+    });
+  }
+  if (newHeadlines.length > 250) newHeadlines.splice(0, newHeadlines.length - 250);
+
+  builder.updateWorldField("mediaState", {
+    ...world.mediaState,
+    headlines: newHeadlines,
+  });
+  return builder.build();
+}
+
 /** Deterministically pick the acting heya's hottest rival stable. */
 function hottestHeyaRival(world: WorldState, heyaId: string): string | undefined {
   const pairs = world.rivalriesState?.heyaRivalryPairs;

@@ -11,6 +11,8 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { jsaSekitoriSalary } from "@/constants/engine/jsaEra";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { getRikishi } from "@/engine/core/queries";
 import {
   SEKITORI_OVERHEAD_MONTHLY,
@@ -53,8 +55,9 @@ export function processHeyaEconomics(
     }
 
     if (info.isSekitori) {
-      // Credit salary to the rikishi (paid by JSA, not deducted from heya)
-      const baseSalary = info.salary ?? 0;
+      // Credit salary to the rikishi (paid by JSA, not deducted from heya).
+      // Era-keyed: the July-2026 JSA revision raises salaries ~10% from 2027.
+      const baseSalary = jsaSekitoriSalary(r.rank, world.year ?? DEFAULT_START_YEAR);
       const economics = r.economics || {
         cash: 0,
         retirementFund: 0,

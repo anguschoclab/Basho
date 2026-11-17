@@ -80,15 +80,17 @@ describe("getRanksByDivision", () => {
   });
 });
 
-describe("RANK_HIERARCHY salaries (JSA monthly figures)", () => {
-  // Real JSA monthly salary: Y ¥3.0M, O ¥2.5M, S ¥1.8M, K ¥1.4M, M ¥1.1M,
-  // J ¥1.1M. Non-sekitori receive no salary (basho teate covers them).
+describe("RANK_HIERARCHY salaries (JSA monthly figures, 2026 schedule)", () => {
+  // Real JSA monthly salary (pre-2027): Y ¥3.0M, O ¥2.5M, S ¥1.8M, K ¥1.8M
+  // (komusubi is sanyaku), M ¥1.4M, J ¥1.1M. Non-sekitori receive no salary
+  // (basho teate + win/kachikoshi money covers them). The era-keyed 2027+
+  // schedule lives in jsaEra.ts — see jsaEra.test.ts.
   const expected: Record<Rank, number> = {
     yokozuna: 3_000_000,
     ozeki: 2_500_000,
     sekiwake: 1_800_000,
-    komusubi: 1_400_000,
-    maegashira: 1_100_000,
+    komusubi: 1_800_000,
+    maegashira: 1_400_000,
     juryo: 1_100_000,
     makushita: 0,
     sandanme: 0,

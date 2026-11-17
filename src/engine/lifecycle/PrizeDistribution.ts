@@ -6,10 +6,17 @@ import type { BashoState } from "@/engine/types/basho";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { applyAchievementImpact } from "@/engine/economy/SponsorshipService";
-import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 import type { Id } from "@/engine/types/common";
 import { getRikishi } from "@/engine/core/queries";
-import { NON_SEKITORI_BASHO_ALLOWANCE } from "@/constants/engine/economic";
+import {
+  jsaSanshoPrize,
+  jsaBashoTeate,
+  jsaWinBonus,
+  jsaKachikoshiBonus,
+  jsaSanyakuBashoAllowance,
+} from "@/constants/engine/jsaEra";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/core/rng";
@@ -88,7 +95,9 @@ export function distributePrizes(
   return { prizes, impact: builder.build() };
 }
 
-const SANSHO_PRIZE_AMOUNT = SIMULATION_CONFIG.prizes.specialPrize;
+// Era-keyed — the JSA's July-2026 revision raises it ¥2M → ¥3M from Hatsu 2027.
+const sanshoPrizeAmount = (world: WorldState) =>
+  jsaSanshoPrize(world.year ?? DEFAULT_START_YEAR);
 
 /**
  * Awards one sansho: ceremony narrative line, achievement counters, popularity
@@ -173,11 +182,12 @@ function awardSansho(
     ...(tempR.economics && { economics: tempR.economics }),
   });
 
+  const prizeAmount = sanshoPrizeAmount(world);
   builder.logEvent(
     "AWARD_CONFERRED",
     "economy",
     {
-      money: SANSHO_PRIZE_AMOUNT,
+      money: prizeAmount,
       status: "special_prize",
       regimen: type as string,
       narrative: sanshoNarrativeLines.filter((l) => l.id.includes(`sansho-${type}-${rikishiId}`)),
@@ -203,14 +213,14 @@ function awardSansho(
       popularity: 50,
     });
   // Split sansho: 50% cash, 50% retirement fund
-  const sanshoCash = SANSHO_PRIZE_AMOUNT * 0.5;
-  const sanshoRetirement = SANSHO_PRIZE_AMOUNT * 0.5;
+  const sanshoCash = prizeAmount * 0.5;
+  const sanshoRetirement = prizeAmount * 0.5;
 
   const nextEconomics = {
     ...economics,
     cash: economics.cash + sanshoCash,
     retirementFund: economics.retirementFund + sanshoRetirement,
-    totalEarnings: economics.totalEarnings + SANSHO_PRIZE_AMOUNT,
+    totalEarnings: economics.totalEarnings + prizeAmount,
   };
   econCache.set(r.id, nextEconomics);
   builder.updateRikishi(r.id, { economics: nextEconomics });
@@ -254,6 +264,7 @@ function appendMultiPrizeLines(
  */
 export function payBashoTeate(world: WorldState): StateImpact {
   const builder = createImpactBuilder("payBashoTeate");
+  const year = world.year ?? DEFAULT_START_YEAR;
 
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
@@ -262,7 +273,14 @@ export function payBashoTeate(world: WorldState): StateImpact {
     // Only non-sekitori receive basho teate
     if (isSekitoriDivision(r.division)) continue;
 
-    const teateAmount = NON_SEKITORI_BASHO_ALLOWANCE[r.division] || 0;
+    // Real JSA non-sekitori compensation: basho teate (場所手当) +
+    // shoshi-kin (勝星金, per win) + kachikoshi-kin (勝ち越し金, per net win).
+    const wins = r.currentBashoWins ?? 0;
+    const losses = r.currentBashoLosses ?? 0;
+    const teateAmount =
+      jsaBashoTeate(r.division, year) +
+      wins * jsaWinBonus(r.division, year) +
+      Math.max(0, wins - losses) * jsaKachikoshiBonus(r.division, year);
 
     if (teateAmount > 0) {
       const economics = r.economics || {
@@ -282,6 +300,44 @@ export function payBashoTeate(world: WorldState): StateImpact {
         },
       });
     }
+  }
+
+  return builder.build();
+}
+
+/**
+ * 本場所特別手当 — per-basho special allowance for sanyaku-and-above
+ * (yokozuna ¥200,000 / ozeki ¥150,000 / sekiwake+komusubi ¥50,000), pro-rated
+ * by days contested: 11+ full, 6–10 → 2/3, ≤5 → 1/3, full kyujo → none.
+ * Paid by the JSA directly to rikishi economics.
+ */
+export function paySanyakuBashoAllowance(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("paySanyakuBashoAllowance");
+
+  for (const id of world.activeRikishiIds) {
+    const r = getRikishi(world, id);
+    if (!r || !RANK_HIERARCHY[r.rank]?.isSanyaku) continue;
+
+    const contested = (r.currentBashoWins ?? 0) + (r.currentBashoLosses ?? 0);
+    const amount = jsaSanyakuBashoAllowance(r.rank, contested);
+    if (amount <= 0) continue;
+
+    const economics = r.economics || {
+      cash: 0,
+      retirementFund: 0,
+      careerKenshoWon: 0,
+      kinboshiCount: 0,
+      totalEarnings: 0,
+      currentBashoEarnings: 0,
+      popularity: 50,
+    };
+    builder.updateRikishi(id, {
+      economics: {
+        ...economics,
+        cash: economics.cash + amount,
+        totalEarnings: economics.totalEarnings + amount,
+      },
+    });
   }
 
   return builder.build();

@@ -149,7 +149,9 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     division: "makuuchi",
     nameJa: "小結",
     tier: 4,
-    salary: 1_400_000,
+    // 三役 salary (komusubi is sanyaku, not hiramaku). This is the 2026
+    // schedule — jsaSekitoriSalary() applies the 2027+ revision by year.
+    salary: 1_800_000,
     isSanyaku: true,
     isSekitori: true,
     fightsPerBasho: 15,
@@ -159,7 +161,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     division: "makuuchi",
     nameJa: "前頭",
     tier: 5,
-    salary: 1_100_000,
+    salary: 1_400_000,
     isSanyaku: false,
     isSekitori: true,
     fightsPerBasho: 15,

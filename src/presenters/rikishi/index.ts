@@ -121,7 +121,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishiDTO {
     ...toAchievementsDTO(r),
 
     // Economics
-    ...toEconomicsDTO(r),
+    ...toEconomicsDTO(r, world.year),
 
     // Visual
     ...toVisualDTO(r, world),

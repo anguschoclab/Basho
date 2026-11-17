@@ -3,22 +3,10 @@
  * All magic numbers and business rules are externalized here.
  */
 
-import type { Division } from "@/engine/types/banzuke";
-
 export const SIMULATION_CONFIG = {
-  /** Prize amounts — real JSA values. */
-  prizes: {
-    yusho: 10_000_000,
-    yushoByDivision: {
-      makuuchi: 10_000_000,
-      juryo: 2_000_000,
-      makushita: 500_000,
-      sandanme: 300_000,
-      jonidan: 200_000,
-      jonokuchi: 100_000,
-    } as Record<Division, number>,
-    specialPrize: 2_000_000,
-  },
+  // Prize money moved to @/constants/engine/jsaEra — the JSA's July-2026
+  // revision changes yusho/sansho amounts by calendar year (effective
+  // Hatsu 2027), so the values live behind year-aware getters there.
 
   /** Career milestones */
   milestones: {

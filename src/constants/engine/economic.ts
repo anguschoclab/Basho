@@ -11,13 +11,8 @@ export const OYAKATA_SALARY_MONTHLY = 1_200_000;
 /** Weekly baseline scouting/recruitment burn (¥). */
 export const RECRUITMENT_BUDGET_WEEKLY = 100_000;
 
-/** Basho teate (tournament allowance) for non-sekitori rikishi by division (¥). */
-export const NON_SEKITORI_BASHO_ALLOWANCE: Record<string, number> = {
-  makushita: 180_000,
-  sandanme: 120_000,
-  jonidan: 96_000,
-  jonokuchi: 84_000,
-} as const;
+// Non-sekitori basho teate moved to @/constants/engine/jsaEra — the
+// July-2026 JSA revision raises it, so the amounts are year-aware there.
 
 /**
  * Minimum weekly income floor guaranteed by kōenkai (¥).

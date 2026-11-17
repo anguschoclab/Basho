@@ -9,7 +9,8 @@ import type { BashoState, BashoResult, MatchSchedule, AwardLogEntry } from "@/en
 import type { Id } from "@/engine/types/common";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
+import { jsaYushoPrize, jsaSanshoPrize } from "@/constants/engine/jsaEra";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { SpecialPrizesResult } from "@/engine/banzuke/specialPrizes";
 import { getRikishi } from "@/engine/core/queries";
 import { selectKeyBouts } from "@/engine/lifecycle/keyBouts";
@@ -24,11 +25,11 @@ import { YOKOZUNA_SUPPORT_STRONG_MIN } from "@/constants/engine/generation";
  *  resolved yusho prize amount. */
 function creditYushoPrize(world: WorldState, yusho: Id, builder: ImpactBuilder): number {
   const yushoRikishi = getRikishi(world, yusho);
-  let yushoPrize = SIMULATION_CONFIG.prizes.yusho;
+  const year = world.year ?? DEFAULT_START_YEAR;
+  let yushoPrize = jsaYushoPrize("makuuchi", year);
   if (yushoRikishi) {
     const division = yushoRikishi.division || "makuuchi";
-    yushoPrize =
-      SIMULATION_CONFIG.prizes.yushoByDivision[division] ?? SIMULATION_CONFIG.prizes.yusho;
+    yushoPrize = jsaYushoPrize(division, year) || yushoPrize;
 
     const yushoEconomics = yushoRikishi.economics || {
       cash: 0,
@@ -78,7 +79,7 @@ function buildBashoResult(
     playoffMatches,
     prizes: {
       yushoAmount: yushoPrize,
-      specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
+      specialPrizes: jsaSanshoPrize(world.year ?? DEFAULT_START_YEAR),
     },
   };
 

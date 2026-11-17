@@ -32,6 +32,7 @@ import { tickFacilityCondition } from "@/engine/economy/facilityWear";
 import { tickMonthlyStaffContracts, refreshStaffCandidatePool } from "@/engine/economy/staffPosts";
 import { payMochikyukinBonuses } from "@/engine/economy/MochikyukinService";
 import { getKachiNokoriForRikishi } from "@/engine/economy/KachiNokoriService";
+import { announceJsaBulletins } from "@/engine/media/MediaEventService";
 import { renewSponsorContract } from "@/engine/economy/SponsorContractService";
 import type { Sponsor } from "@/engine/types/sponsors";
 import {
@@ -124,6 +125,9 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     producers.push((w) => simulateExhibitionBasho(w, jungyoEvent.name, participants));
   }
   producers.push((w) => payMochikyukinBonuses(w, currentMonth));
+  // Dated JSA rule-change bulletins (pay revision announced Aug 2026,
+  // effective Jan 2027; Article-9 topknot rule Oct 2026).
+  producers.push((w) => announceJsaBulletins(w));
   // P2 — monthly koenkai demands + staff contract/wage/candidate-pool cycle.
   producers.push((w) => tickMonthlyKoenkaiDemands(w));
   producers.push((w) => tickMonthlyStaffContracts(w));
