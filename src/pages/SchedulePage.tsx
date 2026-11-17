@@ -8,7 +8,8 @@ import { Trophy } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { Division } from "@/engine/types/banzuke";
-import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
+import { needsScheduleForDay } from "@/presenters/uiDigest";
+import { BASHO_DAYS } from "@/constants/engine/calendar";
 import { getRikishi } from "@/presenters/worldAccess";
 import { ScheduleFilters, ScheduleBoutList } from "@/components/basho/ScheduleSections";
 
@@ -24,7 +25,10 @@ export default function SchedulePage() {
   // forward (S8-3 stale selectedDay).
   const [dayOverride, setDayOverride] = useState<number | null>(null);
 
-  const maxDays = useMemo(() => getTotalBashodays(selectedDivision), [selectedDivision]);
+  // The picker spans all 15 calendar days for every division — lower
+  // divisions fight on odd days only; needsScheduleForDay marks their rest
+  // days "(Rest)". (getTotalBashodays is the BOUT count, not the day range.)
+  const maxDays = BASHO_DAYS;
 
   // Follow the basho: when the tournament or day advances, drop any manual
   // pick so the view tracks the live day again.

@@ -176,6 +176,96 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
   });
 });
 
+describe("PlayoffResolver — tomoe-sen (JSA 3-way playoff)", () => {
+  const makeWorld = (ids: string[], basho: BashoState) =>
+    MockFactory.createWorld({
+      rikishi: new Map(ids.map((id) => [id, makeRikishi(id)])),
+      currentBasho: basho,
+      sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
+      rivalriesState: { pairs: {}, version: "1.0.0" },
+    });
+  const makeBashoFor = (year: number, bashoName: BashoName): BashoState => ({
+    ...makeBasho(),
+    year,
+    bashoName,
+  });
+
+  it("champion must win at least 2 playoff bouts — no bye-champion (all seeds)", () => {
+    for (const year of [2025, 2026, 2027]) {
+      for (const bashoName of ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"] as BashoName[]) {
+        const basho = makeBashoFor(year, bashoName);
+        const world = makeWorld(["r1", "r2", "r3"], basho);
+        const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3"]);
+        const winnerBouts = result.matches.filter(
+          (m) => m.result?.winnerRikishiId === result.winner
+        );
+        expect(
+          winnerBouts.length,
+          `${year}-${bashoName}: champion ${result.winner} won ${winnerBouts.length} bout(s)`
+        ).toBeGreaterThanOrEqual(2);
+      }
+    }
+  });
+
+  it("champion's wins are consecutive at the tail (first to two straight wins)", () => {
+    const basho = makeBasho();
+    const world = makeWorld(["r1", "r2", "r3"], basho);
+    const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3"]);
+    const { matches, winner } = result;
+    expect(matches.length).toBeGreaterThanOrEqual(2);
+    expect(matches[matches.length - 1].result?.winnerRikishiId).toBe(winner);
+    expect(matches[matches.length - 2].result?.winnerRikishiId).toBe(winner);
+  });
+
+  it("every candidate fights within the first two bouts (round-robin seeding)", () => {
+    const basho = makeBasho();
+    const world = makeWorld(["r1", "r2", "r3"], basho);
+    const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3"]);
+    const participants = new Set<string>();
+    for (const m of result.matches.slice(0, 2)) {
+      participants.add(m.eastRikishiId);
+      participants.add(m.westRikishiId);
+    }
+    expect(participants.size).toBe(3);
+  });
+
+  it("if the playoff runs past 2 bouts, an earlier loser returns (not eliminated)", () => {
+    const basho = makeBasho();
+    const world = makeWorld(["r1", "r2", "r3"], basho);
+    const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3"]);
+    if (result.matches.length >= 3) {
+      const firstLoser = result.matches[0].result?.loserRikishiId;
+      const reappears = result.matches
+        .slice(1)
+        .some((m) => m.eastRikishiId === firstLoser || m.westRikishiId === firstLoser);
+      expect(reappears).toBe(true);
+    }
+    expect(["r1", "r2", "r3"]).toContain(result.winner);
+  });
+
+  it("is deterministic — identical inputs produce identical tomoe-sen sequence", () => {
+    const basho = makeBasho();
+    const run = () =>
+      resolvePlayoffs(makeWorld(["r1", "r2", "r3"], basho), basho, ["r1", "r2", "r3"]);
+    const a = run();
+    const b = run();
+    expect(a.winner).toBe(b.winner);
+    expect(a.matches.map((m) => m.result?.winnerRikishiId)).toEqual(
+      b.matches.map((m) => m.result?.winnerRikishiId)
+    );
+  });
+
+  it("a 3-man tomoe-sen always terminates (bounded cycle)", () => {
+    const basho = makeBasho();
+    const world = makeWorld(["r1", "r2", "r3"], basho);
+    const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3"]);
+    // Two-consecutive-wins normally settles it in ≤9 bouts; a kuji fallback
+    // bounds it absolutely. Either way it must terminate with a winner.
+    expect(result.matches.length).toBeLessThanOrEqual(12);
+    expect(["r1", "r2", "r3"]).toContain(result.winner);
+  });
+});
+
 describe("PlayoffResolver — kinboshi exclusion (honbasho-only rule)", () => {
   it("maegashira beating yokozuna in a playoff earns NO kinboshi and does not mutate achievements", () => {
     // Dominant maegashira vs weak yokozuna so the upset is deterministic.

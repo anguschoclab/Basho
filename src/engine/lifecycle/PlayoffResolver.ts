@@ -3,6 +3,7 @@ import { resolveBout } from "@/engine/bout/boutResolver";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState, MatchSchedule } from "@/engine/types/basho";
 import type { Id } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { rngForWorld } from "@/engine/core/rng";
 import { getRikishi } from "@/engine/core/queries";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -10,10 +11,19 @@ import { rngFromSeed } from "@/engine/core/rng";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 /**
- * Run a single-elimination playoff among tied yūshō candidates.
+ * Resolve playoff bouts among tied yūshō candidates.
+ *
+ * JSA formats:
+ *  - 2 candidates: single kettei-sen bout.
+ *  - 3 candidates: tomoe-sen — the winner of each bout stays on the dohyo to
+ *    face the rikishi who sat out; the title goes to the first rikishi to win
+ *    two consecutive bouts. A bounded kuji (lot) fallback terminates a
+ *    pathological 1-1-1 cycle, mirroring the JSA provision.
+ *  - 4+ candidates: single-elimination bracket.
+ *
  * Uses resolveBout (physics + narrative + rivalry update) but skips the
  * full applyBoutResult side-effects (no standings mutation, no kenshō).
- * The bracket is deterministically shuffled via the world seed.
+ * The draw is deterministically shuffled via the world seed.
  */
 export function resolvePlayoffs(
   world: WorldState,
@@ -22,8 +32,14 @@ export function resolvePlayoffs(
 ): { winner: Id; matches: MatchSchedule[] } {
   const allMatches: MatchSchedule[] = [];
   const rng = rngForWorld(world, "combat", `playoff::${basho.bashoName}::${world.year}`);
-  let round = rng.shuffle(candidates.slice());
+  const shuffled = rng.shuffle(candidates.slice());
   let day = 16;
+
+  if (shuffled.length === 3) {
+    return resolveTomoeSen(world, basho, shuffled, day, rng, allMatches);
+  }
+
+  let round = shuffled;
 
   while (round.length > 1) {
     const next: Id[] = [];
@@ -51,52 +67,7 @@ export function resolvePlayoffs(
         world
       );
 
-      // Add playoff-specific narrative lines (Gap 3)
-      const playoffRng = rngFromSeed(`playoff-${boutId}-narrative`, "pbp", "playoff");
-      const playoffLines: PbpLine[] = [];
-      const preLine = BardEngine.resolve(playoffRng, "pre_bout.playoff_bout", {
-        EAST: east.shikona,
-        WEST: west.shikona,
-        eastRikishiId: east.id,
-        westRikishiId: west.id,
-      });
-      if (preLine.text && !preLine.text.includes("[MISSING:")) {
-        playoffLines.push({
-          text: preLine.text,
-          id: `${boutId}-playoff-pre`,
-          phase: "pre_bout",
-          tags: ["yusho_race"],
-        });
-      }
-      const winnerName = result.winner === "east" ? east.shikona : west.shikona;
-      const loserName = result.winner === "east" ? west.shikona : east.shikona;
-      const winnerId = result.winner === "east" ? east.id : west.id;
-      const loserId = result.winner === "east" ? west.id : east.id;
-      const postLine = BardEngine.resolve(playoffRng, "post_bout.playoff_result", {
-        WINNER: winnerName,
-        LOSER: loserName,
-        winnerId,
-        loserId,
-      });
-      if (postLine.text && !postLine.text.includes("[MISSING:")) {
-        playoffLines.push({
-          text: postLine.text,
-          id: `${boutId}-playoff-post`,
-          phase: "post_bout",
-          tags: ["yusho_race"],
-        });
-      }
-      // Prepend playoff opening line and append playoff result line to existing pbpLines
-      if (result.pbpLines && result.pbpLines.length > 0) {
-        result.pbpLines = [
-          ...playoffLines.slice(0, 1),
-          ...result.pbpLines,
-          ...playoffLines.slice(1),
-        ];
-      } else {
-        result.pbpLines = playoffLines.length > 0 ? playoffLines : undefined;
-      }
-
+      decoratePlayoffNarrative(boutId, east, west, result);
       allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
       next.push(result.winnerRikishiId);
     }
@@ -107,6 +78,131 @@ export function resolvePlayoffs(
   }
 
   return { winner: round[0], matches: allMatches };
+}
+
+/** Bouts the JSA allows a tomoe-sen to run before falling back to kuji. */
+const TOMOE_SEN_MAX_BOUTS = 12;
+
+/**
+ * Three-man tomoe-sen: the winner of each bout stays on to face the rikishi
+ * who sat out the previous bout. The champion is the first to win two
+ * consecutive bouts. If the 1-1-1 cycle cannot break within the bounded
+ * number of bouts, the title is decided by lot (kuji) — the JSA provision
+ * used in the event of an unresolvable tie.
+ */
+function resolveTomoeSen(
+  world: WorldState,
+  basho: BashoState,
+  order: [Id, Id, Id] | Id[],
+  startDay: number,
+  rng: ReturnType<typeof rngForWorld>,
+  allMatches: MatchSchedule[]
+): { winner: Id; matches: MatchSchedule[] } {
+  const [a, b, c] = order;
+  let day = startDay;
+  // rotation holds the three rikishi in fight order; the first two fight the
+  // opening bout, then the winner faces the idle third rikishi each round.
+  const rotation: Id[] = [a, b, c];
+  let consecutiveWinner: Id | null = null;
+  let consecutiveWins = 0;
+
+  for (let bout = 0; bout < TOMOE_SEN_MAX_BOUTS; bout++) {
+    const eastId = rotation[0];
+    const westId = rotation[1];
+    const idleId = rotation[2];
+    const east = getRikishi(world, eastId);
+    const west = getRikishi(world, westId);
+
+    if (!east || !west) {
+      // Missing rikishi: the present one takes the title outright.
+      return { winner: east ? eastId : westId, matches: allMatches };
+    }
+
+    const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-${eastId}-${westId}`;
+    const { result } = resolveBout(
+      { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId, isPlayoff: true },
+      east,
+      west,
+      basho,
+      undefined,
+      world
+    );
+
+    decoratePlayoffNarrative(boutId, east, west, result);
+    allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
+
+    const winnerId = result.winnerRikishiId;
+    if (winnerId === consecutiveWinner) {
+      consecutiveWins++;
+    } else {
+      consecutiveWinner = winnerId;
+      consecutiveWins = 1;
+    }
+    if (consecutiveWins >= 2) {
+      return { winner: winnerId, matches: allMatches };
+    }
+
+    // Winner stays; the idle rikishi steps in next.
+    rotation[0] = winnerId;
+    rotation[1] = idleId;
+    rotation[2] = winnerId === eastId ? westId : eastId;
+    day++;
+  }
+
+  // Kuji fallback: the JSA draws lots when a tomoe-sen cannot settle.
+  return { winner: rng.pick(order), matches: allMatches };
+}
+
+/** Wraps a resolved playoff bout's pbp with tomoe/bracket framing lines. */
+function decoratePlayoffNarrative(
+  boutId: string,
+  east: Rikishi,
+  west: Rikishi,
+  result: NonNullable<MatchSchedule["result"]>
+): void {
+  const playoffRng = rngFromSeed(`playoff-${boutId}-narrative`, "pbp", "playoff");
+  const playoffLines: PbpLine[] = [];
+  const preLine = BardEngine.resolve(playoffRng, "pre_bout.playoff_bout", {
+    EAST: east.shikona,
+    WEST: west.shikona,
+    eastRikishiId: east.id,
+    westRikishiId: west.id,
+  });
+  if (preLine.text && !preLine.text.includes("[MISSING:")) {
+    playoffLines.push({
+      text: preLine.text,
+      id: `${boutId}-playoff-pre`,
+      phase: "pre_bout",
+      tags: ["yusho_race"],
+    });
+  }
+  const winnerName = result.winner === "east" ? east.shikona : west.shikona;
+  const loserName = result.winner === "east" ? west.shikona : east.shikona;
+  const winnerId = result.winner === "east" ? east.id : west.id;
+  const loserId = result.winner === "east" ? west.id : east.id;
+  const postLine = BardEngine.resolve(playoffRng, "post_bout.playoff_result", {
+    WINNER: winnerName,
+    LOSER: loserName,
+    winnerId,
+    loserId,
+  });
+  if (postLine.text && !postLine.text.includes("[MISSING:")) {
+    playoffLines.push({
+      text: postLine.text,
+      id: `${boutId}-playoff-post`,
+      phase: "post_bout",
+      tags: ["yusho_race"],
+    });
+  }
+  if (result.pbpLines && result.pbpLines.length > 0) {
+    result.pbpLines = [
+      ...playoffLines.slice(0, 1),
+      ...result.pbpLines,
+      ...playoffLines.slice(1),
+    ];
+  } else {
+    result.pbpLines = playoffLines.length > 0 ? playoffLines : undefined;
+  }
 }
 
 /**
