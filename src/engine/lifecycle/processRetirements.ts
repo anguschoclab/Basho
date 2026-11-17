@@ -33,6 +33,14 @@ import { getRikishi } from "@/engine/core/queries";
 import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
 import { electronArchiveService } from "@/engine/persistence/storage/electronArchive";
 import { warn } from "@/engine/utils/Logger";
+import {
+  INTAI_KIN_YOKOZUNA,
+  INTAI_KIN_OZEKI,
+  INTAI_KIN_SANYAKU,
+  INTAI_KIN_MAKUUCHI,
+  INTAI_KIN_JURYO,
+  INTAI_KIN_LOWER,
+} from "@/constants/engine/economic";
 
 /**
  * Archive a retiring rikishi's full record to cold storage.
@@ -85,6 +93,30 @@ export function retireRikishiFully(
   );
 
   builder.retireRikishi(id, world.year, reason);
+
+  // Intai-kin (引退金): the JSA's lump-sum retirement payment, keyed by the
+  // rank held at retirement. Credited to the retiree's own economics.
+  const intaiKin =
+    rikishi.rank === "yokozuna"
+      ? INTAI_KIN_YOKOZUNA
+      : rikishi.rank === "ozeki"
+        ? INTAI_KIN_OZEKI
+        : rikishi.rank === "sekiwake" || rikishi.rank === "komusubi"
+          ? INTAI_KIN_SANYAKU
+          : rikishi.division === "makuuchi"
+            ? INTAI_KIN_MAKUUCHI
+            : rikishi.division === "juryo"
+              ? INTAI_KIN_JURYO
+              : INTAI_KIN_LOWER;
+  if (rikishi.economics) {
+    builder.updateRikishi(id, {
+      economics: {
+        ...rikishi.economics,
+        cash: rikishi.economics.cash + intaiKin,
+        totalEarnings: rikishi.economics.totalEarnings + intaiKin,
+      },
+    });
+  }
 
   // Canonical career event — consumed by presenters/UI (npcAgentProjections etc.)
   builder.logEvent(

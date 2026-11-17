@@ -70,7 +70,7 @@ export function distributePrizes(
   const achCache = new Map<string, NonNullable<Rikishi["stats"]>["achievements"]>();
 
   for (const [key, type] of Object.entries(awardTypes)) {
-    for (const rikishiId of prizes[key as keyof SpecialPrizesResult] ?? []) {
+    for (const rikishiId of prizes[key as keyof typeof awardTypes]) {
       awardSansho(
         builder,
         world,
@@ -102,7 +102,7 @@ export function distributePrizes(
       const r = getRikishi(world, rikishiId);
       builder.logEvent(
         "AWARD_CONFERRED",
-        "governance",
+        "economy",
         {
           status: "sansho_committee",
           regime: winner,

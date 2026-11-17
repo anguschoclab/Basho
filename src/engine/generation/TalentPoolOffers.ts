@@ -19,6 +19,7 @@ import {
 import {
   FOREIGN_RIKISHI_LIMIT_PER_HEYA,
   NEW_APPRENTICE_MAX_AGE,
+  TSUKEDASHI_MAX_AGE,
 } from "@/constants/engine/recruitment";
 import { getHeya } from "@/engine/core/queries";
 import { EventBus } from "@/engine/events/events";
@@ -42,9 +43,10 @@ export function offerCandidate(
   const rng = rngFromSeed(`offer-validate-${candidateId}-${heyaId}`, "narrative", "scouting");
 
   // 0. Validation: JSA new-apprentice eligibility — a standard recruit must
-  // be under 23 at the shindeshi kensa. (The under-25 amateur-experience
-  // exception belongs to the tsukedashi path, not the general offer gate.)
-  if (world.year - candidate.birthYear >= NEW_APPRENTICE_MAX_AGE) {
+  // be under 23 at the shindeshi kensa. Tsukedashi-qualified amateurs use
+  // the under-25 amateur-experience exception instead.
+  const maxAge = candidate.tsukedashi ? TSUKEDASHI_MAX_AGE : NEW_APPRENTICE_MAX_AGE;
+  if (world.year - candidate.birthYear >= maxAge) {
     return {
       ok: false,
       reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.too_old").text,

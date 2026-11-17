@@ -309,8 +309,28 @@ export const BACKSTORY_STARTING_FUNDS: Record<string, number> = {
 
 // === EXTRACTED MYOSEKI MARKET CONSTANTS (§8c) ===
 
-/** Total number of myoseki in the world. */
+/** Total number of myoseki in the world. The JSA's elder stock is a fixed
+ *  kabu pool — merit may claim an unclaimed share but never mint a 106th. */
 export const MYOSEKI_TOTAL_COUNT = 105;
+
+/**
+ * Elder statuses available when no stock is obtainable.
+ * Jun-toshiyori (準年寄): temporary coaching status for sanyaku+ retirees —
+ * 5 years for a yokozuna, 3 for others. Ichidai-toshiyori (一代年寄):
+ * one-generation, non-transferable elder name reserved for great yokozuna.
+ */
+export const JUN_TOSHIYORI_YEARS_YOKOZUNA = 5;
+export const JUN_TOSHIYORI_YEARS_OTHER = 3;
+/** Yusho count at which a yokozuna earns the one-generation elder name. */
+export const ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD = 20;
+
+/** Intai-kin (引退金): JSA lump-sum retirement payment keyed by final rank. */
+export const INTAI_KIN_YOKOZUNA = 20_000_000;
+export const INTAI_KIN_OZEKI = 15_000_000;
+export const INTAI_KIN_SANYAKU = 7_500_000;
+export const INTAI_KIN_MAKUUCHI = 5_000_000;
+export const INTAI_KIN_JURYO = 3_500_000;
+export const INTAI_KIN_LOWER = 2_500_000;
 
 /** Base asking price for a myoseki on the market (¥). */
 export const MYOSEKI_BASE_ASKING_PRICE = 150_000_000;

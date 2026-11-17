@@ -25,6 +25,10 @@ import {
   HEYA_SOFT_TARGET,
   HEYA_FOUNDING_RAMP,
   MERGER_THRESHOLD,
+  MYOSEKI_TOTAL_COUNT,
+  JUN_TOSHIYORI_YEARS_YOKOZUNA,
+  JUN_TOSHIYORI_YEARS_OTHER,
+  ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD,
 } from "@/constants/engine/economic";
 import { getHeya } from "@/engine/core/queries";
 import { getCitizenshipStatus } from "@/engine/utils/citizenshipUtils";
@@ -78,18 +82,50 @@ export function processRetireeOyakataConversion(
     (s) => s.status === "available" && s.ownerId === "JSA"
   );
 
-  // Merit issuance: without this the fixed pool stays fully held and no new stables
-  // ever form over a 25-year NPC sim. An accomplished retiree always earns an elder
-  // name — models JSA merit-elder-name issuance (Constitution §61).
-  const availableStock = existing ?? {
-    id: rng.uuid("MY"),
-    name: `${retiree.shikona ?? retiree.name ?? id}-myoseki`,
-    prestigeTier: "modest" as const,
-    ownerId: "JSA",
-    holderId: "JSA",
-    status: "available" as const,
-    askingPrice: undefined,
-  };
+  // Merit issuance is bounded by the real kabu pool: the JSA's 105 elder
+  // names are a fixed supply — merit claims an unclaimed share, never a 106th.
+  const canMint = Object.keys(market.stocks).length < MYOSEKI_TOTAL_COUNT;
+  const availableStock =
+    existing ??
+    (canMint
+      ? {
+          id: rng.uuid("MY"),
+          name: `${retiree.shikona ?? retiree.name ?? id}-myoseki`,
+          prestigeTier: "modest" as const,
+          ownerId: "JSA",
+          holderId: "JSA",
+          status: "available" as const,
+          askingPrice: undefined,
+        }
+      : null);
+
+  // Stock exhausted: only credential-tier retirees can still hold elder
+  // status — jun-toshiyori (準年寄, temporary) for sanyaku+, ichidai-toshiyori
+  // (一代年寄, one-generation non-transferable) for a great yokozuna.
+  const yushoCount = (retiree.careerHistory ?? []).reduce(
+    (a, h) => a + (h.isYusho ? 1 : 0),
+    0
+  );
+  const elderStatus =
+    availableStock != null
+      ? ("toshiyori" as const)
+      : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
+        ? ("ichidai_toshiyori" as const)
+        : retiree.rank === "yokozuna" ||
+            retiree.rank === "ozeki" ||
+            retiree.rank === "sekiwake" ||
+            retiree.rank === "komusubi"
+          ? ("jun_toshiyori" as const)
+          : null;
+  // No stock and no credential — real JSA: the retiree simply retires.
+  if (elderStatus == null) return;
+  const elderExpiryYear =
+    elderStatus === "jun_toshiyori"
+      ? world.year +
+        (retiree.rank === "yokozuna"
+          ? JUN_TOSHIYORI_YEARS_YOKOZUNA
+          : JUN_TOSHIYORI_YEARS_OTHER)
+      : undefined;
 
   // Become an Oyakata
   const newOyakataId = rng.uuid("OY");
@@ -121,7 +157,11 @@ export function processRetireeOyakataConversion(
     });
   }
 
-  queueMeritStockTransfer(world, market, availableStock, newOyakataId, retiree, rng, builder);
+  newOyakata.elderStatus = elderStatus;
+  if (elderExpiryYear !== undefined) newOyakata.elderExpiryYear = elderExpiryYear;
+
+  if (availableStock)
+    queueMeritStockTransfer(world, market, availableStock, newOyakataId, retiree, rng, builder);
 
   // Queue Oyakata add (newly generated, not an update)
   builder.addOyakata(newOyakata);
@@ -134,7 +174,7 @@ export function processRetireeOyakataConversion(
       heyaId: retiree.heyaId,
       shikona: retiree.shikona ?? retiree.name ?? id,
       status: "elder_stock_acquired",
-      regimen: availableStock.name, // myoseki name
+      regimen: availableStock?.name ?? elderStatus, // myoseki name or elder status
     },
     { heyaId: retiree.heyaId, rikishiId: id }
   );
@@ -151,7 +191,14 @@ export function processRetireeOyakataConversion(
   // not just found a new stable — previously the handover ran unconditionally,
   // deposing a sitting oyakata or leaving a stale oyakataId after founding.
   if (!foundedHeya && chairVacant) {
-    builder.merge(recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name));
+    builder.merge(
+      recordOyakataHandover(
+        world,
+        retiree.heyaId,
+        newOyakataId,
+        availableStock?.name ?? elderStatus
+      )
+    );
   }
 }
 

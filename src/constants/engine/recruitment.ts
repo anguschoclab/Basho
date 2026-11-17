@@ -36,6 +36,19 @@ export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
  * qualified amateur backgrounds — handled by the tsukedashi path, not here.
  */
 export const NEW_APPRENTICE_MAX_AGE = 23;
+
+/**
+ * Tsukedashi (付け出し): elite amateur credential holders may debut on the
+ * banzuke instead of running maezumo, and the amateur-experience exception
+ * raises the debut age gate from <23 to <25. Placement follows the classic
+ * scheme — makushita tsukedashi at Ms60, sandanme tsukedashi at Sd80.
+ */
+export const TSUKEDASHI_MAX_AGE = 25;
+export const MAKUSHITA_TSUKEDASHI_RANK = 60;
+export const SANDANME_TSUKEDASHI_RANK = 80;
+/** Share of amateur-star candidates who hold national-title credentials. */
+export const TSUKEDASHI_UNIVERSITY_SHARE = 0.4;
+export const TSUKEDASHI_HS_SHARE = 0.25;
 /** Canon §5.3 — ~5–10% of foreign-born recruits hold Japanese citizenship. */
 export const DUAL_CITIZEN_RECRUIT_SHARE = 0.07;
 /** §9.3 — NPCs are reluctant to release foreign-slot rikishi (sunk cost). */

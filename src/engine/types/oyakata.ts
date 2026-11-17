@@ -64,6 +64,16 @@ export interface Oyakata {
 
   isEmeritus?: boolean; // Retired elders who stay in the registry
 
+  /**
+   * Elder status kind. "toshiyori" (default/undefined) holds a myoseki share;
+   * "jun_toshiyori" is a temporary no-stock status for sanyaku+ retirees
+   * (junToshiyoriExpiryYear bounds it); "ichidai_toshiyori" is a
+   * one-generation non-transferable name for great yokozuna.
+   */
+  elderStatus?: "toshiyori" | "jun_toshiyori" | "ichidai_toshiyori";
+  /** Year a jun-toshiyori appointment lapses (5y yokozuna / 3y others). */
+  elderExpiryYear?: number;
+
   /** Drama Pass (Initiative 4) */
   grudges?: Id[]; // Heya or Oyakata IDs this person hates
   temperament?: "Stoic" | "Volatile" | "Vindictive";

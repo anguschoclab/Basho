@@ -102,6 +102,7 @@ export type WritableWorldFields = Pick<
   | "mediaState"
   | "ftue"
   | "rivalriesState"
+  | "activeRikishiIds"
   | "_preBashoAssessment"
   | "sponsorPool"
   | "myosekiMarket"

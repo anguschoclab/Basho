@@ -53,7 +53,11 @@ import {
   SCHOOL_ORIGIN_CHANCE,
   SUMO_SCHOOLS,
 } from "@/constants/engine/generation";
-import { DUAL_CITIZEN_RECRUIT_SHARE } from "@/constants/engine/recruitment";
+import {
+  DUAL_CITIZEN_RECRUIT_SHARE,
+  TSUKEDASHI_UNIVERSITY_SHARE,
+  TSUKEDASHI_HS_SHARE,
+} from "@/constants/engine/recruitment";
 
 function rollDevelopmentProfile(rng: SeededRNG): DevelopmentProfile {
   const roll = rng.next();
@@ -229,6 +233,20 @@ export function generateCandidate(args: {
     // The flag its readers check (eventSurfacing, CandidatePoolPage) —
     // previously never set even when the tag landed (S7-43).
     isAmateurStar: amateurStarTag || undefined,
+    // Tsukedashi qualification: only amateur stars can hold credentials.
+    // University-pool stars ≈ national university/corporate champions →
+    // makushita tsukedashi; high-school stars ≈ national-title holders →
+    // sandanme tsukedashi. Seeded, so the same candidate always qualifies.
+    tsukedashi:
+      amateurStarTag && poolType === "university"
+        ? rng.next() < TSUKEDASHI_UNIVERSITY_SHARE
+          ? "makushita"
+          : undefined
+        : amateurStarTag && poolType === "high_school"
+          ? rng.next() < TSUKEDASHI_HS_SHARE
+            ? "sandanme"
+            : undefined
+          : undefined,
     // §5.3 — a small share of foreign-born recruits hold Japanese citizenship.
     dualCitizen: poolType === "foreign" ? rng.next() < DUAL_CITIZEN_RECRUIT_SHARE : undefined,
 

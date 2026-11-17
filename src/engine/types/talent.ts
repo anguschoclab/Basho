@@ -125,6 +125,13 @@ export interface TalentCandidate {
   };
   /** Whether this candidate is an amateur star. */
   isAmateurStar?: boolean;
+  /**
+   * Tsukedashi qualification (付け出し資格): an elite amateur credential
+   * lets the recruit debut on the banzuke instead of maezumo —
+   * "makushita" (national university/corporate champion) enters at Ms60,
+   * "sandanme" (other national titles) at Sd80; the age gate is under-25.
+   */
+  tsukedashi?: "makushita" | "sandanme";
   /** Whether this candidate is an ultra-rare emergent prodigy (1.5% chance). */
   isEmergentProdigy?: boolean;
 

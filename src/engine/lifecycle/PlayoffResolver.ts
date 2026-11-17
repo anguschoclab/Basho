@@ -10,6 +10,7 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/core/rng";
 import { SENSHURAKU_DAY } from "@/constants/engine/calendar";
 import { compareRanks } from "@/engine/banzuke/banzukeHelpers";
+import { toRankPosition } from "@/engine/types/banzuke";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 
 /**
@@ -65,8 +66,12 @@ export function resolvePlayoffs(
       }
       // The higher-ranked rikishi takes the east side — the same convention
       // the torikumi committee applies to every scheduled bout.
-      const [eastId, westId] = compareRanks(ra, rb) <= 0 ? [aId, bId] : [bId, aId];
-      const aHigher = compareRanks(ra, rb) <= 0;
+      const aHigher =
+        compareRanks(
+          toRankPosition({ rank: ra.rank, rankNumber: ra.rankNumber, side: ra.side }),
+          toRankPosition({ rank: rb.rank, rankNumber: rb.rankNumber, side: rb.side })
+        ) <= 0;
+      const [eastId, westId] = aHigher ? [aId, bId] : [bId, aId];
       const east = aHigher ? ra : rb;
       const west = aHigher ? rb : ra;
       boutCount++;

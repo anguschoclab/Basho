@@ -64,7 +64,7 @@ function runStakes(
     loserRikishiId: west.id,
     kimarite: "yorikiri",
     kimariteName: "Yorikiri",
-    stance: "hirazu",
+    stance: "no-grip",
     tachiaiWinner: "east",
     duration: 8,
     upset: false,

@@ -10,6 +10,10 @@ import { assessMaezumo } from "@/engine/generation/MaezumoService";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { candidateConsumesForeignSlot } from "@/engine/generation/talentPoolReads";
 import { mintFamilyBonds } from "@/engine/generation/FamilyBondService";
+import {
+  MAKUSHITA_TSUKEDASHI_RANK,
+  SANDANME_TSUKEDASHI_RANK,
+} from "@/constants/engine/recruitment";
 
 /**
  * Internal helper for materialization that tracks state updates during a loop.
@@ -41,13 +45,25 @@ export function materializeCandidateToRikishiInternal(
     const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
     const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
 
-    // Apply maezumo assessment to determine initial jonokuchi rankNumber
-    const maezumoResult = assessMaezumo(rikishi, world.seed ?? "default");
-    if (maezumoResult.rankNumber !== undefined) {
-      rikishi.rankNumber = maezumoResult.rankNumber;
-    }
-    if (maezumoResult.maezumoCompleted) {
+    if (candidate.tsukedashi) {
+      // Tsukedashi debut: qualified amateurs enter the banzuke directly —
+      // Ms60 (makushita) or Sd80 (sandanme), no maezumo.
+      const isMakushita = candidate.tsukedashi === "makushita";
+      rikishi.division = isMakushita ? "makushita" : "sandanme";
+      rikishi.rank = rikishi.division;
+      rikishi.rankNumber = isMakushita
+        ? MAKUSHITA_TSUKEDASHI_RANK
+        : SANDANME_TSUKEDASHI_RANK;
       rikishi.maezumoCompleted = true;
+    } else {
+      // Apply maezumo assessment to determine initial jonokuchi rankNumber
+      const maezumoResult = assessMaezumo(rikishi, world.seed ?? "default");
+      if (maezumoResult.rankNumber !== undefined) {
+        rikishi.rankNumber = maezumoResult.rankNumber;
+      }
+      if (maezumoResult.maezumoCompleted) {
+        rikishi.maezumoCompleted = true;
+      }
     }
 
     mintFamilyBonds(world, builder, rikishi, candidate, heyaId, rng);

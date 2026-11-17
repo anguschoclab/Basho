@@ -125,7 +125,7 @@ export function applyMovementEvents(
     const mover = getRikishi(world, evt.rikishiId);
     builder.logEvent(
       "BASHO_STATUS",
-      "banzuke_committee",
+      "promotion",
       {
         status: "committee_deliberation",
         description: `Banzuke committee (${decision.votesFor}–${decision.votesAgainst}): ${decision.rationale.join("; ")}.`,

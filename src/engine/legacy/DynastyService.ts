@@ -148,9 +148,23 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
       );
     }
 
-    // Forced succession at 65
-    if (age >= 65 && !oyakata.retirementYear) {
-      if (endIronmanCareer(world, builder, heya, oyakata, "mandatory retirement at 65 (JSA)")) {
+    // Jun-toshiyori expiry: a temporary elder who never acquired stock must
+    // step down when the appointment lapses (JSA grace period exhausted).
+    const junExpired =
+      oyakata.elderStatus === "jun_toshiyori" &&
+      world.year >= (oyakata.elderExpiryYear ?? Number.POSITIVE_INFINITY);
+
+    // Forced succession at 65, or at jun-toshiyori expiry
+    if ((age >= 65 || junExpired) && !oyakata.retirementYear) {
+      if (
+        endIronmanCareer(
+          world,
+          builder,
+          heya,
+          oyakata,
+          junExpired ? "jun-toshiyori appointment expired" : "mandatory retirement at 65 (JSA)"
+        )
+      ) {
         continue;
       }
       const base = successionBase();
