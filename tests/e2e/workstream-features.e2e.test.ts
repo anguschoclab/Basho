@@ -267,7 +267,9 @@ test("Workstream UI: degeiko -> records boards -> venue chip -> schedule badges 
     await expect(page.getByText("Filters", { exact: true })).toBeVisible({ timeout: 15_000 });
 
     const callupId = flagged.crossDivisionCallupId ?? flagged.eighthBoutForRikishiId!;
-    const callupRikishi = rikishiById[callupId];
+    // Re-read rikishi from the same snapshot — maezumo/callup rikishi are
+    // minted mid-basho, after the earlier map was captured.
+    const callupRikishi = (world.rikishi ?? {})[callupId];
     expect(callupRikishi, "flagged callup rikishi exists").toBeTruthy();
     // The bout is listed under either participant's division — filter by the
     // called-up rikishi's own division so his badge renders.
