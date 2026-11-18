@@ -23,6 +23,15 @@ describe("MainContentPane", () => {
     expect(main).toBeTruthy();
   });
 
+  it("main is a programmatic skip-link target (tabIndex -1)", () => {
+    // The AppLayout "Skip to main content" link calls focus() on
+    // #main-content — that only works because the element is tabbable
+    // programmatically via tabIndex={-1} (kept out of the normal tab order).
+    const { container } = render(<MainContentPane>Content</MainContentPane>);
+    const main = container.querySelector("main#main-content");
+    expect(main?.getAttribute("tabindex")).toBe("-1");
+  });
+
   it("renders children inside content area", () => {
     render(
       <MainContentPane>

@@ -167,9 +167,12 @@ export function SidebarInset({
   ref,
   className,
   ...props
-}: React.ComponentProps<"main"> & { ref?: React.Ref<HTMLDivElement> }) {
+}: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
+  // Rendered as a div, not <main>: the app's only consumer (AppLayout) wraps
+  // TopNavBar + the true <main id="main-content"> from MainContentPane, so a
+  // <main> here would produce two nested main landmarks on every page.
   return (
-    <main
+    <div
       ref={ref}
       className={cn(
         "relative flex min-h-svh flex-1 flex-col bg-background",

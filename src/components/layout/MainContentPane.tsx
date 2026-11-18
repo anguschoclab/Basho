@@ -17,7 +17,8 @@ export function MainContentPane({
   return (
     <main
       id="main-content"
-      className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth"
+      tabIndex={-1}
+      className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth focus:outline-hidden"
       style={{ background: "hsl(var(--background))" }}
     >
       {/* Page title when there's no sub-nav */}

@@ -55,6 +55,20 @@ export function AppLayout({
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full bg-background text-foreground overflow-hidden">
+        {/* Skip link — first tab stop; lets keyboard users bypass the
+            sidebar/nav chrome straight into the page (WCAG 2.4.1). Hidden
+            off-viewport until focused, then slides in. */}
+        <a
+          href="#main-content"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById("main-content")?.focus();
+          }}
+          className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg ring-offset-background motion-safe:transition-transform motion-safe:duration-200 focus:translate-y-0 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          Skip to main content
+        </a>
+
         {/* Left Pane: Sidebar */}
         <AppSidebar />
 
