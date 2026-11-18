@@ -2,9 +2,9 @@
   "generatedAt": "2026-11-18T14:37:00.193Z",
   "suites": {
     "fast": {
-      "totalDurationMs": 310254,
-      "fileCount": 1098,
-      "testCount": 10191,
+      "totalDurationMs": 310754,
+      "fileCount": 1099,
+      "testCount": 10196,
       "files": [
         {
           "file": "tests/unit/audit/duplicateExportGate.test.ts",
@@ -580,6 +580,11 @@
           "file": "tests/unit/components/game/SparringPanel.test.tsx",
           "testCount": 5,
           "durationMs": 514
+        },
+        {
+          "file": "tests/unit/engine/generation/familyBonds.test.ts",
+          "testCount": 5,
+          "durationMs": 500
         },
         {
           "file": "tests/unit/components/avatar/avatarCoverage.test.tsx",
