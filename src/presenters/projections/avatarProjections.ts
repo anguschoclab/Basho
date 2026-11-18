@@ -6,6 +6,7 @@ export {
   oyakataStageInput,
   prospectStageInput,
   resolveAvatar,
+  retiredSummaryStageInput,
   rikishiStageInput,
   shimpanStageInput,
   staffStageInput,

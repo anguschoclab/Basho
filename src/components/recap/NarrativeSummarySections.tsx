@@ -23,6 +23,7 @@ import {
   Newspaper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar } from "@/presenters/projections/avatarProjections";
 import type { AvatarRenderData } from "@/engine/types/avatar";
@@ -56,7 +57,7 @@ export interface GroupedNarrativeEvents {
 }
 
 export interface PrestigeChange {
-  heya: { name: string; prestigeBand: string; reputation: number };
+  heya: { id: string; name: string; prestigeBand: string; reputation: number };
   change: string;
   oyakataAvatar?: AvatarRenderData;
 }
@@ -154,7 +155,11 @@ export function PrestigeShiftsSection({ prestigeChanges }: { prestigeChanges: Pr
             </div>
             <div className="space-y-2 flex-1">
               <div className="flex items-center justify-between">
-                <div className="font-display font-black text-lg">{item.heya.name}</div>
+                <StableName
+                  id={item.heya.id}
+                  name={item.heya.name}
+                  className="font-display font-black text-lg"
+                />
                 <Badge
                   variant="outline"
                   className="text-[10px] font-black uppercase tracking-widest"

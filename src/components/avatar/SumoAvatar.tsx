@@ -92,11 +92,13 @@ export const SumoAvatar = memo(function SumoAvatar({
   const pixelSize = SIZE_MAP[size];
 
   const identity = avatar?.identity ?? config;
-  let resolvedStage =
-    avatar?.stage ?? stage ?? (identity ? deriveAvatarStage({}, identity) : undefined);
-  if (expression && resolvedStage && resolvedStage.expression !== expression) {
-    resolvedStage = { ...resolvedStage, expression };
-  }
+  const resolvedStage = useMemo(() => {
+    const base =
+      avatar?.stage ?? stage ?? (identity ? deriveAvatarStage({}, identity) : undefined);
+    return expression && base && base.expression !== expression
+      ? { ...base, expression }
+      : base;
+  }, [avatar?.stage, stage, identity, expression]);
 
   const paths = useMemo(
     () => (identity && resolvedStage ? composeAvatar(identity, resolvedStage) : null),

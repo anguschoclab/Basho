@@ -15,6 +15,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import {
+  resolveAvatar,
+  retiredSummaryStageInput,
+} from "@/presenters/projections/avatarProjections";
 import { getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
@@ -35,6 +39,14 @@ export function RetiredRikishiProfile({
   const heya = getHeya(world, summary.heyaId);
   const peak = getRankDisplayEntry(summary.peakRank);
   const careerRecord = `${summary.careerWins}–${summary.careerLosses}`;
+  const avatar = summary.avatarConfig
+    ? resolveAvatar({
+        id: summary.id,
+        stored: summary.avatarConfig,
+        nationality: summary.nationality ?? summary.origin ?? "Japan",
+        ...retiredSummaryStageInput(summary, world.year ?? 0),
+      })
+    : undefined;
 
   const stats: Array<{ label: string; value: string | number }> = [
     { label: "Career Record", value: careerRecord },
@@ -58,7 +70,7 @@ export function RetiredRikishiProfile({
         </Button>
 
         <div className="flex items-center gap-4">
-          <SumoAvatar size="lg" fallback={summary.shikona} />
+          <SumoAvatar avatar={avatar} size="lg" fallback={summary.shikona} />
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-display font-black tracking-tight">{summary.shikona}</h1>

@@ -104,7 +104,8 @@ export function processRetireeOyakataConversion(
   );
 
   // Carry the wrestler's face into elder life: same identity, new role.
-  // Hairstyle/graying re-derive from age+role at render time.
+  // Hairstyle/graying re-derive from age+role at render time. Weight carries
+  // too — a heavy retiree keeps his build (avatar fullness only).
   if (retiree.avatarConfig) {
     newOyakata.avatarConfig = { ...retiree.avatarConfig, role: "oyakata" };
   } else {
@@ -114,6 +115,7 @@ export function processRetireeOyakataConversion(
       role: "oyakata",
     });
   }
+  if (retiree.weight != null) newOyakata.weight = retiree.weight;
 
   newOyakata.elderStatus = elderStatus;
   if (elderExpiryYear !== undefined) newOyakata.elderExpiryYear = elderExpiryYear;

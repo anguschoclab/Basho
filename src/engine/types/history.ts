@@ -127,6 +127,10 @@ export interface RetiredRikishiSummary {
 
   /** Persistent avatar identity — carried over so archived faces stay stable. */
   avatarConfig?: import("@/engine/types/avatar").AvatarIdentity;
+  /** Carried over for avatar identity regeneration (stored identity normally wins). */
+  nationality?: string;
+  /** Body weight (kg) at retirement — cosmetic, keeps avatar fullness in archives. */
+  weight?: number;
 
   // Career totals
   careerWins: number;

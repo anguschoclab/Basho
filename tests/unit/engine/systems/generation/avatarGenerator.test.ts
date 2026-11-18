@@ -15,6 +15,8 @@ import {
   deriveAvatarStage,
   resolveAvatar,
   rikishiStageInput,
+  oyakataStageInput,
+  retiredSummaryStageInput,
   staffStageInput,
   gyojiStageInput,
   prospectStageInput,
@@ -157,6 +159,49 @@ describe("deriveAvatarStage", () => {
     expect(
       deriveAvatarStage({ role: "rikishi", division: "juryo", age: 25, expression: "determined" }).expression
     ).toBe("determined");
+  });
+});
+
+describe("role-aware default stage", () => {
+  it("falls back to a plausible age per role instead of everyone-is-30", () => {
+    const oyakata = deriveAvatarStage({}, gen({ role: "oyakata" }));
+    const rikishi = deriveAvatarStage({}, gen({ role: "rikishi" }));
+    const prospect = deriveAvatarStage({}, gen({ role: "prospect" }));
+    const gyoji = deriveAvatarStage({}, gen({ role: "gyoji" }));
+    const staff = deriveAvatarStage({}, gen({ role: "staff" }));
+    expect(oyakata.ageStage).toBe("elder");
+    expect(gyoji.ageStage).toBe("elder");
+    expect(staff.ageStage).toBe("elder");
+    expect(rikishi.ageStage).toBe("prime");
+    expect(prospect.ageStage).toBe("teen");
+    // Elders actually look it.
+    expect(oyakata.wrinkleTier).toBe(3);
+    expect(oyakata.graying).toBe(2);
+  });
+});
+
+describe("weight memory for elders", () => {
+  it("keeps fullness on oyakata when weight is known", () => {
+    const heavy = deriveAvatarStage(oyakataStageInput({ age: 60, weight: 170 } as never));
+    const unknown = deriveAvatarStage(oyakataStageInput({ age: 60 } as never));
+    expect(heavy.fullness).toBe(2);
+    expect(unknown.fullness).toBe(0);
+  });
+});
+
+describe("retiredSummaryStageInput", () => {
+  it("builds a suit-and-short-hair stage from a compact summary", () => {
+    const input = retiredSummaryStageInput(
+      { birthYear: 1970, retirementYear: 2003, weight: 160 } as never,
+      2025
+    );
+    const s = deriveAvatarStage(input);
+    expect(s.attire).toBe("suit");
+    expect(s.tsuna).toBe(false);
+    expect(["short", "receding", "bald"]).toContain(s.hairstyle);
+    // Age keeps advancing like HallOfFamePage — a 55-year-old face, not 30.
+    expect(s.ageStage).toBe("elder");
+    expect(s.fullness).toBe(1);
   });
 });
 

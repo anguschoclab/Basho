@@ -31,6 +31,7 @@ import type { Staff } from "@/engine/types/staff";
 import type { Gyoji, Shimpan } from "@/engine/types/gyoji";
 import type { AcademyStaff, YouthProspect } from "@/engine/types/academy";
 import type { TalentCandidate } from "@/engine/types/talent";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 // ---------------------------------------------------------------------------
@@ -169,6 +170,14 @@ function seedBit(seed: string, salt: string): number {
   return Math.abs(h) & 1;
 }
 
+/** Deterministic int in [min, max] from a seed string — cosmetic weight backfill. */
+function seedInt(seed: string, salt: string, min: number, max: number): number {
+  let h = 0;
+  const s = seed + salt;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return min + (Math.abs(h) % (max - min + 1));
+}
+
 function hairstyleFor(input: AvatarStageInput, identity: AvatarIdentity | undefined): Hairstyle {
   const ageStage = ageStageOf(input.age ?? 30);
   const elderCut: Hairstyle =
@@ -247,19 +256,35 @@ function expressionFor(input: AvatarStageInput): AvatarExpression {
   return "neutral";
 }
 
+/**
+ * Neutral portrait age per role — used when only an identity is available
+ * (e.g. SumoAvatar's config-only path), so a bare render doesn't turn every
+ * elder into a smooth-faced 30-year-old.
+ */
+const DEFAULT_AGE_BY_ROLE: Record<AvatarRole, number> = {
+  rikishi: 25,
+  prospect: 17,
+  oyakata: 60,
+  gyoji: 50,
+  shimpan: 60,
+  staff: 45,
+};
+
 export function deriveAvatarStage(input: AvatarStageInput, identity?: AvatarIdentity): AvatarStage {
-  const age = input.age ?? 30;
   const role = input.role ?? identity?.role ?? "staff";
+  const age = input.age ?? DEFAULT_AGE_BY_ROLE[role];
   const ageStage = ageStageOf(age);
-  const resolved = { ...input, role };
+  const resolved = { ...input, role, age };
 
   const wrinkleTier: AvatarStage["wrinkleTier"] = age < 30 ? 0 : age < 40 ? 1 : age < 50 ? 2 : 3;
   const graying: AvatarStage["graying"] = age < 35 ? 0 : age < 50 ? 1 : 2;
 
-  // Sumo-scale girth bands; non-wrestlers stay lean.
+  // Sumo-scale girth bands; elders keep their build when the record carried
+  // a weight over (conversion/archive), other non-wrestlers stay lean.
   const w = input.weight ?? 0;
-  const fullness: AvatarStage["fullness"] =
-    role === "rikishi" || role === "prospect" ? (w >= 165 ? 2 : w >= 125 ? 1 : 0) : 0;
+  const carriesBulk =
+    role === "rikishi" || role === "prospect" || (role === "oyakata" && input.weight != null);
+  const fullness: AvatarStage["fullness"] = carriesBulk ? (w >= 165 ? 2 : w >= 125 ? 1 : 0) : 0;
 
   return {
     role,
@@ -322,7 +347,12 @@ type HeyaLike = {
 };
 
 /** Minimal shape an entity needs to receive a generated identity. */
-type AvatarBearer = { id: string; avatarConfig?: AvatarIdentity; nationality?: string };
+type AvatarBearer = {
+  id: string;
+  avatarConfig?: AvatarIdentity;
+  nationality?: string;
+  weight?: number;
+};
 
 function valuesOf<T>(c: Map<string, T> | Record<string, T> | undefined): T[] {
   if (!c) return [];
@@ -362,6 +392,8 @@ export function ensureAvatarIdentities(world: {
     }
   }
 
+  const rikishiById = new Map(rikishiVals.map((r) => [r.id, r]));
+  const histById = new Map(histVals.map((r) => [r.id, r]));
   for (const o of valuesOf(world.oyakata)) {
     if (!isV2Identity(o.avatarConfig)) {
       o.avatarConfig = generateAvatarIdentity({
@@ -369,6 +401,15 @@ export function ensureAvatarIdentities(world: {
         nationality: "Japan",
         role: "oyakata",
       });
+    }
+    // Cosmetic weight backfill: the former wrestler's real build when his
+    // record is still around, else a plausible seeded elder weight (110-175kg).
+    if (o.weight == null) {
+      const former = o.formerRikishiId
+        ? (rikishiById.get(o.formerRikishiId) ?? histById.get(o.formerRikishiId))
+        : undefined;
+      o.weight =
+        former?.weight ?? seedInt(o.formerRikishiId ?? o.id, "elder-weight", 110, 175);
     }
   }
 
@@ -440,7 +481,7 @@ export function ensureAvatarIdentities(world: {
 
 export function rikishiStageInput(r: Rikishi, currentYear: number): AvatarStageInput {
   return {
-    role: r.isRetired ? "rikishi" : "rikishi",
+    role: "rikishi",
     age: r.age ?? currentYear - r.birthYear,
     division: r.division,
     rank: r.rank,
@@ -454,7 +495,20 @@ export function rikishiStageInput(r: Rikishi, currentYear: number): AvatarStageI
 }
 
 export function oyakataStageInput(o: Oyakata): AvatarStageInput {
-  return { role: "oyakata", age: o.age };
+  return { role: "oyakata", age: o.age, weight: o.weight };
+}
+
+/** Compact summaries keep `birthYear`/`weight`; age advances with the world clock. */
+export function retiredSummaryStageInput(
+  s: Pick<RetiredRikishiSummary, "birthYear" | "weight">,
+  currentYear: number
+): AvatarStageInput {
+  return {
+    role: "rikishi",
+    age: currentYear - s.birthYear,
+    isRetired: true,
+    weight: s.weight,
+  };
 }
 
 export function staffStageInput(s: Staff): AvatarStageInput {

@@ -8,7 +8,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Badge } from "@/components/ui/badge";
-import { RikishiName } from "@/components/shared/ClickableName";
+import { RikishiName, StableName } from "@/components/shared/ClickableName";
 import { Trophy, Shield, Target, Crown, TrendingUp, Calendar, Swords } from "lucide-react";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import { HOF_CATEGORY_LABELS } from "@/presenters/uiDigest";
@@ -91,7 +91,16 @@ export function InducteeFullCard({ inductee }: { inductee: UIHofInductee }) {
               </span>
               {inductee.heyaName && (
                 <span>
-                  Stable: <span className="text-xs font-medium">{inductee.heyaName}</span>
+                  Stable:{" "}
+                  {inductee.heyaId ? (
+                    <StableName
+                      id={inductee.heyaId}
+                      name={inductee.heyaName}
+                      className="text-xs font-medium"
+                    />
+                  ) : (
+                    <span className="text-xs font-medium">{inductee.heyaName}</span>
+                  )}
                 </span>
               )}
             </div>
@@ -159,7 +168,11 @@ export function InducteeFullCard({ inductee }: { inductee: UIHofInductee }) {
                     <div key={i} className="flex items-center gap-2 text-xs">
                       <span className="text-success">W</span>
                       <span className="text-muted-foreground">vs</span>
-                      <span className="font-medium">{f.opponentName}</span>
+                      {f.opponentId ? (
+                        <RikishiName id={f.opponentId} name={f.opponentName} className="font-medium" />
+                      ) : (
+                        <span className="font-medium">{f.opponentName}</span>
+                      )}
                       <Badge className="text-[10px]">{f.kimarite}</Badge>
                     </div>
                   ))}

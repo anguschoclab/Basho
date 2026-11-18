@@ -14,6 +14,13 @@ import type { Division, Rank } from "@/engine/types/banzuke";
 import type { StaffRole } from "@/engine/types/staff";
 import type { GyojiRank } from "@/engine/types/gyoji";
 
+/**
+ * Identity schema version. `resolveAvatar`/`ensureAvatarIdentities` reject
+ * stored configs whose version doesn't match and REGENERATE the face from
+ * the entity seed — so bumping this re-faces every entity in every save.
+ * If a future v3 must keep faces stable, migrate v2 fields forward into the
+ * new schema instead of reseeding.
+ */
 export const AVATAR_VERSION = 2;
 
 export type AvatarRole = "rikishi" | "oyakata" | "staff" | "gyoji" | "shimpan" | "prospect";
@@ -116,16 +123,16 @@ export interface AvatarRenderData {
 
 /** Nationality → skin tone ranges (3-stop gradient per origin region). */
 export const NATIONALITY_SKIN_TONES: Record<string, { base: string; range: [string, string] }> = {
-  japan: { base: "#F5D0A9", range: ["#F5D0A9", "#E8B89D"] },
-  mongolia: { base: "#D4A574", range: ["#D4A574", "#C68E5F"] },
-  georgia: { base: "#E5C298", range: ["#E5C298", "#D4A574"] },
-  russia: { base: "#F5D0A9", range: ["#F5D0A9", "#E8B89D"] },
-  bulgaria: { base: "#E5C298", range: ["#E5C298", "#D4A574"] },
-  estonia: { base: "#F5D0A9", range: ["#F5D0A9", "#E8B89D"] },
+  japan: { base: "#EEC4A3", range: ["#F5D0A9", "#E8B89D"] },
+  mongolia: { base: "#CD9A6A", range: ["#D4A574", "#C68E5F"] },
+  georgia: { base: "#DCB486", range: ["#E5C298", "#D4A574"] },
+  russia: { base: "#EEC4A3", range: ["#F5D0A9", "#E8B89D"] },
+  bulgaria: { base: "#DCB486", range: ["#E5C298", "#D4A574"] },
+  estonia: { base: "#EEC4A3", range: ["#F5D0A9", "#E8B89D"] },
   brazil: { base: "#D4A574", range: ["#E8B89D", "#A67B5B"] },
   hawaii: { base: "#D4A574", range: ["#E8B89D", "#A67B5B"] },
   usa: { base: "#E5C298", range: ["#F5D0A9", "#A67B5B"] },
-  kazakhstan: { base: "#D4A574", range: ["#D4A574", "#C68E5F"] },
+  kazakhstan: { base: "#CD9A6A", range: ["#D4A574", "#C68E5F"] },
   egypt: { base: "#C68E5F", range: ["#D4A574", "#A67B5B"] },
 };
 

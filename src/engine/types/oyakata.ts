@@ -64,6 +64,9 @@ export interface Oyakata {
 
   isEmeritus?: boolean; // Retired elders who stay in the registry
 
+  /** Body weight (kg) carried over from the rikishi record at conversion — cosmetic, drives avatar fullness only. */
+  weight?: number;
+
   /**
    * Elder status kind. "toshiyori" (default/undefined) holds a myoseki share;
    * "jun_toshiyori" is a temporary no-stock status for sanyaku+ retirees

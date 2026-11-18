@@ -15,6 +15,7 @@ import {
   CANDIDATE_RESULT_CAP,
 } from "@/presenters/projections/entitySearchProjections";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
+import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
@@ -193,6 +194,45 @@ describe("searchEntities", () => {
     const retired = res.retired[0];
     expect(retired.isRetired).toBe(true);
     expect(retired.rankLabel).toContain("Yokozuna");
+  });
+
+  it("carries resolved avatars on retired hits — summaries and full records", () => {
+    const world = worldFixture({
+      historicalRikishi: new Map<string, RetiredRikishiSummary | Rikishi>([
+        [
+          "old1",
+          makeSummary({
+            id: "old1",
+            shikona: "Taiho",
+            avatarConfig: generateAvatarIdentity({
+              seed: "old1",
+              nationality: "Japan",
+              role: "rikishi",
+            }),
+          }),
+        ],
+        [
+          "r2",
+          rikishiFixture({
+            id: "r2",
+            shikona: "Taihobito",
+            isRetired: true,
+            avatarConfig: generateAvatarIdentity({
+              seed: "r2",
+              nationality: "Japan",
+              role: "rikishi",
+            }),
+          }),
+        ],
+      ]),
+    });
+    const res = searchEntities(world, "tai", "h1");
+    const summaryHit = res.retired.find((r) => r.id === "old1");
+    const fullHit = res.retired.find((r) => r.id === "r2");
+    expect(summaryHit?.avatar?.identity.seed).toBe("old1");
+    expect(fullHit?.avatar?.identity.seed).toBe("r2");
+    // Retired stage: suit, no topknot, age advancing with the world clock.
+    expect(summaryHit?.avatar?.stage.attire).toBe("suit");
   });
 
   it("puts active hits in rikishi bucket and retired in retired bucket (never interleaved)", () => {
@@ -395,6 +435,24 @@ describe("searchEntities — oyakata bucket", () => {
     }
     const res = searchEntities(worldFixture({ oyakata }), "elder", "h1");
     expect(res.oyakata.length).toBe(OYAKATA_RESULT_CAP);
+  });
+
+  it("a name shared across entity kinds surfaces in every bucket (Kokonoe collision)", () => {
+    const world = worldFixture({
+      heyas: new Map([
+        ["h9", heyaFixture({ id: "h9", name: "Kokonoe", rikishiIds: [] })],
+      ]),
+      rikishi: new Map([
+        ["r9", rikishiFixture({ id: "r9", shikona: "Kokonoe", heyaId: "h9" })],
+      ]),
+      oyakata: new Map([
+        ["o9", oyakataFixture("o9", { name: "Kokonoe", heyaId: "h9" })],
+      ]),
+    });
+    const res = searchEntities(world, "kokonoe", "h1");
+    expect(res.heyas.map((h) => h.id)).toEqual(["h9"]);
+    expect(res.rikishi.map((r) => r.id)).toEqual(["r9"]);
+    expect(res.oyakata.map((o) => o.id)).toEqual(["o9"]);
   });
 });
 

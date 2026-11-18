@@ -15,10 +15,14 @@ import { projectRikishi } from "@/presenters/rikishi/index";
 export interface UIHofInductee extends HoFInductee {
   rikishi: UIRikishi | null;
   heyaName: string;
+  /** Present when the stable resolves in-world — drives the StableName link. */
+  heyaId?: string;
   greatestFights: Array<{
     bashoName: string;
     kimarite: string;
     opponentName: string;
+    /** Present when the opponent resolves in-world (active or historical). */
+    opponentId?: string;
     isWin: boolean;
   }>;
   yushoList: Array<{
@@ -39,21 +43,19 @@ export function projectHOFUIDigest(world: WorldState): { inductees: UIHofInducte
     const heya = rikishi ? world.heyas.get(rikishi.heyaId) : null;
 
     // Greatest fights projection — single-pass build of last 5 wins
-    const greatestFights: Array<{
-      bashoName: string;
-      kimarite: string;
-      opponentName: string;
-      isWin: boolean;
-    }> = [];
+    const greatestFights: UIHofInductee["greatestFights"] = [];
     const history = (rikishi as Rikishi)?.history;
     if (history) {
       for (let i = history.length - 1; i >= 0 && greatestFights.length < 5; i--) {
         const m = history[i];
         if (m.win) {
+          const opp =
+            world.rikishi.get(m.opponentId) ?? world.historicalRikishi?.get(m.opponentId);
           greatestFights.push({
             bashoName: m.bashoId ?? "",
             kimarite: m.kimarite,
-            opponentName: world.rikishi.get(m.opponentId)?.shikona ?? "Unknown",
+            opponentName: opp?.shikona ?? "Unknown",
+            opponentId: opp?.id,
             isWin: m.win,
           });
         }
@@ -73,6 +75,7 @@ export function projectHOFUIDigest(world: WorldState): { inductees: UIHofInducte
       ...ind,
       rikishi: rikishi ? projectRikishi(rikishi, world) : null,
       heyaName: heya?.name ?? "Independent",
+      heyaId: heya?.id,
       greatestFights,
       yushoList,
     };

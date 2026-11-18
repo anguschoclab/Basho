@@ -24,6 +24,7 @@ import { hasScoutingCoverage } from "@/presenters/projections/rivalStablesProjec
 import {
   resolveAvatar,
   rikishiStageInput,
+  retiredSummaryStageInput,
   oyakataStageInput,
   staffStageInput,
   candidateStageInput,
@@ -241,10 +242,26 @@ function rikishiBuckets(
         ? toHit(entry, world, playerHeyaId, {
             isRetired: true,
             rankLabel: peakRankLabelFor(entry),
+            avatar: entry.avatarConfig
+              ? resolveAvatar({
+                  id: entry.id,
+                  stored: entry.avatarConfig,
+                  nationality: entry.nationality ?? entry.origin ?? "Japan",
+                  ...retiredSummaryStageInput(entry, world.year ?? 0),
+                })
+              : undefined,
           })
         : toHit(entry as Rikishi, world, playerHeyaId, {
             isRetired: true,
             rankLabel: `Retired · ${rankLabelFor(entry as Rikishi)}`,
+            avatar: (entry as Rikishi).avatarConfig
+              ? resolveAvatar({
+                  id: entry.id,
+                  stored: (entry as Rikishi).avatarConfig,
+                  nationality: (entry as Rikishi).nationality,
+                  ...rikishiStageInput(entry as Rikishi, world.year ?? 0),
+                })
+              : undefined,
           });
       return { hit, _score: rikishiScore(entry, q), shikona: entry.shikona };
     })

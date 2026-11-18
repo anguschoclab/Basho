@@ -143,7 +143,7 @@ function paintEars(p: Painter, identity: AvatarIdentity) {
 
 function paintEyes(p: Painter, identity: AvatarIdentity, stage: AvatarStage) {
   const intense = stage.expression === "intense";
-  const y = intense ? 10 : 10;
+  const y = 10;
   switch (identity.eyes) {
     case "standard":
       p.fillRows(y, y, 8, 9, "ink");
@@ -175,42 +175,66 @@ function paintEyes(p: Painter, identity: AvatarIdentity, stage: AvatarStage) {
       break;
   }
   if (intense) {
-    // squint: shadow over eyes
-    p.px(8, y - 1, "skinShadow");
-    p.px(16, y - 1, "skinShadow");
+    // Squint: a shaded lid over both eye spans. Painted before brows so a
+    // lowered brow tip still reads on top of the lid.
+    p.fillRows(y - 1, y - 1, 8, 9, "skinShadow");
+    p.fillRows(y - 1, y - 1, 15, 16, "skinShadow");
   }
 }
 
 function paintBrows(p: Painter, identity: AvatarIdentity, stage: AvatarStage) {
   const t = identity.browThickness;
   const slot: PaletteSlot = "hair";
-  const rows = t === 3 ? [7, 8] : t === 2 ? [8] : [8];
+  const rows = t === 3 ? [7, 8] : [8];
   const lower = stage.expression === "intense" ? 1 : 0;
+  const raise = stage.expression === "confident" ? 1 : 0;
+  // t=1 renders each brow as a shortened dash centered on the full span.
+  const dash = (x0: number, x1: number): [number, number] =>
+    t === 1 ? [Math.round((x0 + x1) / 2) - 1, Math.round((x0 + x1) / 2)] : [x0, x1];
 
   for (const y of rows) {
-    const yy = y + (y === 8 ? lower : 0);
+    const yy = y + (y === 8 ? lower : 0) - raise;
     switch (identity.brows) {
-      case "straight":
-        p.fillRows(yy, yy, 7, 10, slot);
-        p.fillRows(yy, yy, 14, 17, slot);
+      case "straight": {
+        const [l0, l1] = dash(7, 10);
+        const [r0, r1] = dash(14, 17);
+        p.fillRows(yy, yy, l0, l1, slot);
+        p.fillRows(yy, yy, r0, r1, slot);
         break;
-      case "furrowed":
-        p.fillRows(yy, yy, 8, 10, slot);
-        p.fillRows(yy, yy, 14, 16, slot);
-        p.px(10, yy + 1, slot);
-        p.px(14, yy + 1, slot);
+      }
+      case "furrowed": {
+        const [l0, l1] = dash(8, 10);
+        const [r0, r1] = dash(14, 16);
+        p.fillRows(yy, yy, l0, l1, slot);
+        p.fillRows(yy, yy, r0, r1, slot);
+        if (t !== 1) {
+          p.px(10, yy + 1, slot);
+          p.px(14, yy + 1, slot);
+        }
         break;
-      case "arched":
-        p.fillRows(yy, yy, 8, 10, slot);
-        p.fillRows(yy, yy, 14, 16, slot);
-        p.px(7, yy - 1, slot);
-        p.px(17, yy - 1, slot);
+      }
+      case "arched": {
+        const [l0, l1] = dash(8, 10);
+        const [r0, r1] = dash(14, 16);
+        p.fillRows(yy, yy, l0, l1, slot);
+        p.fillRows(yy, yy, r0, r1, slot);
+        if (t !== 1) {
+          p.px(7, yy - 1, slot);
+          p.px(17, yy - 1, slot);
+        }
         break;
+      }
       case "sparse":
         p.px(8, yy, slot);
         p.px(16, yy, slot);
         break;
     }
+  }
+
+  if (stage.expression === "worried") {
+    // Furrow cue: inner brow ends drop toward the nose.
+    p.px(10, 9, slot);
+    p.px(14, 9, slot);
   }
 }
 
