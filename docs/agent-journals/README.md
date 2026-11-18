@@ -12,7 +12,7 @@ agent to read its journal here before working and append new findings.
 | 🏛️ Curator  | `.claude/agents/curator.md`      | [curator.md](curator.md)         |
 | 📜 Scribe   | `.claude/agents/scribe.md`       | [scribe.md](scribe.md)           |
 | ✨ Polish   | `.claude/agents/polish.md`       | [polish.md](polish.md)           |
-| 🎭 Bard     | `.claude/agents/bard.md`         | bard.md *(none yet)*             |
+| 🎭 Bard     | `.claude/agents/bard.md`         | [bard.md](bard.md)               |
 | 🧱 Mason    | `.claude/agents/mason.md`        | mason.md *(none yet)*            |
 | 🧪 Scout    | `.claude/agents/scout.md`        | scout.md *(none yet)*            |
 | 🛡️ Sentinel | `.claude/agents/sentinel.md`     | sentinel.md *(none yet)*         |
