@@ -10,7 +10,7 @@ agent to read its journal here before working and append new findings.
 | Agent       | Persona                          | Journal                          |
 | ----------- | -------------------------------- | -------------------------------- |
 | 🏛️ Curator  | `.claude/agents/curator.md`      | [curator.md](curator.md)         |
-| 📜 Scribe   | `.claude/agents/scribe.md`       | scribe.md *(none yet)*           |
+| 📜 Scribe   | `.claude/agents/scribe.md`       | [scribe.md](scribe.md)           |
 | ✨ Polish   | `.claude/agents/polish.md`       | [polish.md](polish.md)           |
 | 🎭 Bard     | `.claude/agents/bard.md`         | bard.md *(none yet)*             |
 | 🧱 Mason    | `.claude/agents/mason.md`        | mason.md *(none yet)*            |

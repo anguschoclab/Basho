@@ -9,9 +9,9 @@ description: Work on heya (stable) management systems — finances, sponsors, lo
 
 ## Money flow — the tick schedule
 
-- **Daily** (`phase01_daily_*`): economy micro-tick, sponsor accrual, welfare decay.
-- **Weekly** (`phase01_economy`, every 7 days): financial settlement.
-- **Monthly** (`phase05_monthly_*`, every 30 days): salaries, rent, loan payments.
+- **Daily** (`phase01_daily_micro` — fused economy/welfare/sponsors/drama): economy micro-tick, sponsor accrual, welfare decay.
+- **Weekly** (`phase01_week_economy`, every 7 days, inside `bashoPipeline`/`offSeasonPipeline`): financial settlement.
+- **Monthly** (`phase05_monthly_boundary`, appended to the weekly tick that carries the month boundary): salaries, rent, loan payments.
 - **Canonical breakdown:** `FinanceCalculator.calculateHeyaWeeklyFinances(heya, world)` is the *only* income/expense source of truth — UI (e.g. `IncomeExpensesCards`) must bind to it, never hand-sum.
 - **Removed, do not reintroduce:** `processHeyaFinances()` / `tickWeekEconomics()` — `scripts/audit/engine-reviewer.ts` flags any new call site.
 
@@ -29,7 +29,7 @@ Facilities' three axes feed `ActiveModifiers` in `phase02_context`, which multip
 
 ## Governance & welfare
 
-`governanceStatus`: `"good_standing" | "warning" | "probation" | "sanctioned"`. `welfareState`: `{ welfareRisk (0–100), complianceState, weeksInState, morale, activeDiet }`. Services in `src/engine/governance/` (`GovernanceService`, `ScandalService`, `PoliticalFavorsService`) and `src/engine/welfare/`; risk scoring + compliance transitions run in `phase04_welfare`.
+`governanceStatus`: `"good_standing" | "warning" | "probation" | "sanctioned"`. `welfareState`: `{ welfareRisk (0–100), complianceState, weeksInState, morale, activeDiet }`. Services in `src/engine/governance/` (`GovernanceService`, `ScandalService`, `PoliticalFavorsService`) and `src/engine/welfare/`; risk scoring + compliance transitions run in `phase01_week_welfare`.
 
 ## Recruitment
 

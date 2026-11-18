@@ -63,20 +63,17 @@ tests/               All tests: unit/, slow/, perf/, e2e/, helpers/, setup/
 **Basho names:** `"hatsu" | "haru" | "natsu" | "nagoya" | "aki" | "kyushu"` (Jan/Mar/May/Jul/Sep/Nov)
 
 ## Tick Pipeline (src/engine/tick/tickDaily.ts)
-`advanceOneDay(world)` runs `phase00_preflight` unconditionally, then pushes the applicable phases onto `activePhases` in this family order (each gated by its cadence — daily / weekly / basho-day / monthly / yearly boundary):
-1. **phase00_preflight** — increment day, check phase transitions
-2. **phase01_daily_*** — economy micro-tick, sponsors, welfare decay (every day)
-3. **phase01_basho_npc_tactics / phase01_basho_bouts** — NPC bout prep + bout resolution (active_basho days only)
-4. **phase01_week_*** — training, health, governance, recruitment, rivalries, welfare (every 7 days)
-5. **phase01_economy / phase01_monthly_market** — weekly financial settlement; monthly market (gated)
-6. **phase02_context** — compute ActiveModifiers (multipliers from facilities + oyakata)
-7. **phase03_progression** — apply training gains, injury/recovery
-8. **phase04_welfare** — risk scoring, compliance transitions
-9. **phase05_monthly_*** — salaries, rent, loan payments (every 30 days)
-10. **phase06_yearly_*** — Hall of Fame, era labels (year boundary)
-11. **phase06_narrative** — BardEngine story generation
+`advanceOneDay(world)` returns early if `world.gameOver` or (interactive only) `active_basho` is past senshuraku — the day is not consumed. Otherwise it runs `phase00_preflight` unconditionally (increments `dayIndexGlobal`, decrements interim/post-basho counters, flags month/year boundaries in `transientContext.boundaries`, checks phase transitions), then pushes onto `activePhases` in this order:
+1. **phase01_daily_micro** — fused daily economy → welfare → sponsors → drama in one StateImpact; skipped by `advanceDaysFast` via `skipDailyMicroPhases` (the individual `phase01_daily_*` phases only run inside the fusion)
+2. **phase01_basho_npc_tactics → phase01_basho_bouts** — NPC day-of kyujo/posture + bout resolution (`active_basho` days only; NOT gated by `skipDailyMicroPhases`, so fast advance still resolves bouts)
+3. **weekly gate** (`_daysSinceLastWeeklyTick + 1 >= 7`): spreads in the full `bashoPipeline` (active_basho) or `offSeasonPipeline` array, then appends boundary phases — `phase05_monthly_boundary` + `phase01_monthly_market` on month boundary, `phase06_yearly_boundary` on year boundary. Boundaries falling between weekly ticks are deferred via `pendingMonthBoundary`/`pendingYearBoundary` and folded into the next weekly tick — monthly/yearly work only ever runs inside a weekly tick.
 
-**Specialized pipelines:** `bashoPipeline` (active tournament days), `offSeasonPipeline` (interim)
+**Pipeline arrays** (tick/pipelines/) — both open `phase01_week_economy → phase02_context` (context derives `transientContext.activeModifiers` consumed by downstream phases) and close `phase06_narrative` (reads `transientContext.deltas` → Inbox/news events):
+- `offSeasonPipeline` (non-basho weeks): `phase_pre_basho_assessment`, `phase01_week_{training, health, welfare, staff, scouting, governance, rikishi_agency, npc_ai, talent_pool, candidate_pool, recruitment, rivalries, world_circuit, academy}`, `phase_global_cup_advance`
+- `bashoPipeline` (tournament weeks): `phase01_week_{staff, scouting, health, welfare, governance, rikishi_agency, npc_ai, talent_pool, candidate_pool, recruitment, rivalries}` — no training during competition; `phase01_week_health` is recovery-only (new injury rolls skipped while `cyclePhase === "active_basho"`)
+
+**Boundary phases:** `phase05_monthly_boundary` — JSA salaries, overhead, loans, facility wear, jungyo exhibitions, staff contracts, sponsor renewals, NPC monthly loops; `phase01_monthly_market` — myoseki price drift; `phase06_yearly_boundary` — Hall of Fame, era drift, bi-annual JSA elections, aging, records, `year` increment. Note: no `phase03_*`/`phase04_*` files exist — progression is `phase01_week_training`/`phase01_week_health`, welfare is `phase01_week_welfare` (+ `phase01_daily_welfare` inside daily micro).
+**Halts:** after preflight, `shouldBlockTick` can stop the rest of the tick (interactive only; day already consumed, weekly counter still advanced). `advanceDays(world, days)` / `advanceDaysFast(world, days)` are capped at `MAX_DAYS_ADVANCE` (365) — chunk multi-year sims in a loop.
 **Entry for worker/slices:** `src/engine/tick/tickOrchestrator.ts` — `tickOrchestrator()` / `advanceDaysFastOrchestrator()` pass-throughs to `advanceOneDay`/`advanceDaysFast` (world cloning now happens at the worker boundary)
 
 ## Presenter Layer

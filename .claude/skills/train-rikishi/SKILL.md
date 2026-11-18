@@ -1,6 +1,6 @@
 ---
 name: train-rikishi
-description: Work on rikishi training, stats, and development systems — training profiles, weekly drills, mentors, sparring, tsukebito, injury/recovery, condition/fatigue. Use whenever touching stat growth, TrainingProfile/HeyaTrainingState, the SET_TRAINING_STATE command, phase01_week_training/phase03_progression, or injury mechanics — maps services, types, commands, and the Map-shape + decay gotchas.
+description: Work on rikishi training, stats, and development systems — training profiles, weekly drills, mentors, sparring, tsukebito, injury/recovery, condition/fatigue. Use whenever touching stat growth, TrainingProfile/HeyaTrainingState, the SET_TRAINING_STATE command, phase01_week_training/phase01_week_health, or injury mechanics — maps services, types, commands, and the Map-shape + decay gotchas.
 ---
 
 # Rikishi Training & Development Domain
@@ -25,7 +25,7 @@ Health side (`src/engine/health/`): `InjuryService`, `RecoveryService`, `HealthA
 
 ## Tick order
 
-`phase01_week_training` + `phase01_week_health` run every 7 days → `phase02_context` computes `ActiveModifiers` (facility/oyakata multipliers on gains) → `phase03_progression` applies stat gains + injury/recovery. Higher intensity = more growth *and* more injury risk; `recovery` emphasis and the `recovery`/`nutrition` facility axes push back.
+Inside `offSeasonPipeline` (weekly ticks, non-basho weeks): `phase02_context` computes `ActiveModifiers` (facility/oyakata multipliers on gains) → `phase01_week_training` applies stat gains → `phase01_week_health` rolls injuries + advances recovery. During `active_basho` weeks `bashoPipeline` runs instead — no training, and health is recovery-only. Higher intensity = more growth *and* more injury risk; `recovery` emphasis and the `recovery`/`nutrition` facility axes push back.
 
 ## Worker commands (`commands/heya.ts`)
 
