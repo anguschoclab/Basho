@@ -22,26 +22,34 @@ type CyclePhase = "active_basho" | "interim" | "pre_basho" | "post_basho" | "ban
 
 /**
  * Computes the next condition value for a rikishi based on the current cycle phase.
- * Returns a shallow-cloned rikishi with updated condition.
+ * Pure scalar variant — prefer this in hot loops that already hold a cloned
+ * rikishi (e.g. phase01_daily_welfare) to avoid a redundant `{ ...r }` spread
+ * per rikishi per day.
  */
-export function tickCondition(r: Rikishi, cyclePhase: CyclePhase): Rikishi {
+export function computeNextCondition(r: Rikishi, cyclePhase: CyclePhase): number {
   const currentCondition = r.condition ?? DEFAULT_CONDITION;
   const fatigue = r.fatigue ?? 0;
-
-  let nextCondition = currentCondition;
 
   if (cyclePhase === "active_basho") {
     // Decay proportional to fatigue: fatigue=100 → -0.5/day, fatigue=0 → 0/day
     const decayRate = (fatigue / FATIGUE_DECAY_DIVISOR) * FATIGUE_DECAY_RATE;
-    nextCondition = Math.max(MIN_CONDITION, currentCondition - decayRate);
-  } else if (cyclePhase === "interim" || cyclePhase === "post_basho") {
+    return Math.max(MIN_CONDITION, currentCondition - decayRate);
+  }
+  if (cyclePhase === "interim" || cyclePhase === "post_basho") {
     // Recovery: 1.0 per day — back to 100 from 70 in ~30 days
-    nextCondition = Math.min(MAX_CONDITION, currentCondition + RECOVERY_RATE_NORMAL);
+    return Math.min(MAX_CONDITION, currentCondition + RECOVERY_RATE_NORMAL);
   }
   // pre_basho and banzuke_reveal: slow recovery (0.5/day)
-  else if (cyclePhase === "pre_basho" || cyclePhase === "banzuke_reveal") {
-    nextCondition = Math.min(MAX_CONDITION, currentCondition + RECOVERY_RATE_SLOW);
+  if (cyclePhase === "pre_basho" || cyclePhase === "banzuke_reveal") {
+    return Math.min(MAX_CONDITION, currentCondition + RECOVERY_RATE_SLOW);
   }
+  return currentCondition;
+}
 
-  return { ...r, condition: nextCondition };
+/**
+ * Computes the next condition value for a rikishi based on the current cycle phase.
+ * Returns a shallow-cloned rikishi with updated condition.
+ */
+export function tickCondition(r: Rikishi, cyclePhase: CyclePhase): Rikishi {
+  return { ...r, condition: computeNextCondition(r, cyclePhase) };
 }

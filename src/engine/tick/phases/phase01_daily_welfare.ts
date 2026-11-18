@@ -10,7 +10,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { WelfareService } from "@/engine/welfare/WelfareService";
 import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
 import { rngFromSeed } from "@/engine/core/rng";
-import { tickCondition } from "@/engine/tick/conditionTick";
+import { computeNextCondition } from "@/engine/tick/conditionTick";
 import { MAX_MENTAL_STAT, MIN_MENTAL_STAT, DEFAULT_MENTAL_STAT } from "@/constants/engine/health";
 import {
   MIN_WEIGHT,
@@ -37,6 +37,14 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
     );
   }
 
+  // PERF: `toRikishiDescriptor` ignores its first arg (`_rng`) — the band math is
+  // pure — so a single shared instance replaces a per-rikishi `seedrandom`
+  // construction. That construction (ARC4 key-scheduling over a ~40-char seed)
+  // was ~95% of this phase's cost at ~N constructions per day tick.
+  // If the descriptor API ever consumes the rng, per-rikishi seeding must be
+  // restored to preserve the previous deterministic stream layout.
+  const descriptorRng = rngFromSeed(`desc-${world.dayIndexGlobal}`, "narrative", "rikishi");
+
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
     if (!r) continue;
@@ -44,8 +52,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
     const next = { ...r };
 
     // 1. Sync Descriptor
-    const rikishiRng = rngFromSeed(`desc-${world.dayIndexGlobal}-${id}`, "narrative", "rikishi");
-    next.descriptor = toRikishiDescriptor(rikishiRng, next, next.descriptor);
+    next.descriptor = toRikishiDescriptor(descriptorRng, next, next.descriptor);
 
     // 2. Diet Effects
     const diet = heyaDietCache.get(next.heyaId);
@@ -92,12 +99,13 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
       next.fatigue = Math.max(0, (next.fatigue ?? 0) - FATIGUE_RECOVERY_GOOD);
     }
 
-    // 4. Condition decay (during basho) / recovery (during off-season)
-    const withCondition = tickCondition(
+    // 4. Condition decay (during basho) / recovery (during off-season).
+    // PERF: scalar computeNextCondition — `next` is already a clone, so the
+    // extra `{ ...r }` inside tickCondition was discarded work per rikishi.
+    next.condition = computeNextCondition(
       next,
-      world.cyclePhase as Parameters<typeof tickCondition>[1]
+      world.cyclePhase as Parameters<typeof computeNextCondition>[1]
     );
-    next.condition = withCondition.condition;
 
     builder.updateRikishi(id, next);
   }
