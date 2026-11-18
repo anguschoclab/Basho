@@ -76,56 +76,14 @@ export function processRetireeOyakataConversion(
   // Use seeded RNG — needed both for merit-stock id and the oyakata/founding logic below.
   const rng = rngForWorld(world, "governance", `retirement_${id}`);
 
-  // Only unclaimed JSA pool stock is eligible — an "available" stock owned by a
-  // player/NPC is a live listing and must never be confiscated by conversion.
-  const existing = Object.values(market.stocks).find(
-    (s) => s.status === "available" && s.ownerId === "JSA"
+  const { availableStock, elderStatus, elderExpiryYear } = resolveElderShare(
+    world,
+    market,
+    retiree,
+    rng
   );
-
-  // Merit issuance is bounded by the real kabu pool: the JSA's 105 elder
-  // names are a fixed supply — merit claims an unclaimed share, never a 106th.
-  const canMint = Object.keys(market.stocks).length < MYOSEKI_TOTAL_COUNT;
-  const availableStock =
-    existing ??
-    (canMint
-      ? {
-          id: rng.uuid("MY"),
-          name: `${retiree.shikona ?? retiree.name ?? id}-myoseki`,
-          prestigeTier: "modest" as const,
-          ownerId: "JSA",
-          holderId: "JSA",
-          status: "available" as const,
-          askingPrice: undefined,
-        }
-      : null);
-
-  // Stock exhausted: only credential-tier retirees can still hold elder
-  // status — jun-toshiyori (準年寄, temporary) for sanyaku+, ichidai-toshiyori
-  // (一代年寄, one-generation non-transferable) for a great yokozuna.
-  const yushoCount = (retiree.careerHistory ?? []).reduce(
-    (a, h) => a + (h.isYusho ? 1 : 0),
-    0
-  );
-  const elderStatus =
-    availableStock != null
-      ? ("toshiyori" as const)
-      : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
-        ? ("ichidai_toshiyori" as const)
-        : retiree.rank === "yokozuna" ||
-            retiree.rank === "ozeki" ||
-            retiree.rank === "sekiwake" ||
-            retiree.rank === "komusubi"
-          ? ("jun_toshiyori" as const)
-          : null;
   // No stock and no credential — real JSA: the retiree simply retires.
   if (elderStatus == null) return;
-  const elderExpiryYear =
-    elderStatus === "jun_toshiyori"
-      ? world.year +
-        (retiree.rank === "yokozuna"
-          ? JUN_TOSHIYORI_YEARS_YOKOZUNA
-          : JUN_TOSHIYORI_YEARS_OTHER)
-      : undefined;
 
   // Become an Oyakata
   const newOyakataId = rng.uuid("OY");
@@ -205,6 +163,72 @@ export function processRetireeOyakataConversion(
 type Market = NonNullable<WorldState["myosekiMarket"]>;
 type Rng = ReturnType<typeof rngForWorld>;
 type Stock = Market["stocks"][string];
+type ElderStatus = NonNullable<import("@/engine/types/oyakata").Oyakata["elderStatus"]>;
+
+/**
+ * Resolve the retiree's elder share + status.
+ *
+ * Only unclaimed JSA pool stock is eligible — an "available" stock owned by a
+ * player/NPC is a live listing and must never be confiscated by conversion.
+ * Merit issuance is bounded by the real kabu pool: the JSA's 105 elder names
+ * are a fixed supply — merit claims an unclaimed share, never a 106th.
+ * Stock exhausted: only credential-tier retirees can still hold elder
+ * status — jun-toshiyori (準年寄, temporary) for sanyaku+, ichidai-toshiyori
+ * (一代年寄, one-generation non-transferable) for a great yokozuna.
+ */
+function resolveElderShare(
+  world: WorldState,
+  market: Market,
+  retiree: Rikishi,
+  rng: Rng
+): {
+  availableStock: Stock | null;
+  elderStatus: ElderStatus | null;
+  elderExpiryYear?: number;
+} {
+  const id = retiree.id;
+  const existing = Object.values(market.stocks).find(
+    (s) => s.status === "available" && s.ownerId === "JSA"
+  );
+  const canMint = Object.keys(market.stocks).length < MYOSEKI_TOTAL_COUNT;
+  const availableStock: Stock | null =
+    existing ??
+    (canMint
+      ? {
+          id: rng.uuid("MY"),
+          name: `${retiree.shikona ?? retiree.name ?? id}-myoseki`,
+          prestigeTier: "modest" as const,
+          ownerId: "JSA",
+          holderId: "JSA",
+          status: "available" as const,
+          askingPrice: undefined,
+        }
+      : null);
+
+  const yushoCount = (retiree.careerHistory ?? []).reduce(
+    (a, h) => a + (h.isYusho ? 1 : 0),
+    0
+  );
+  const elderStatus: ElderStatus | null =
+    availableStock != null
+      ? "toshiyori"
+      : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
+        ? "ichidai_toshiyori"
+        : retiree.rank === "yokozuna" ||
+            retiree.rank === "ozeki" ||
+            retiree.rank === "sekiwake" ||
+            retiree.rank === "komusubi"
+          ? "jun_toshiyori"
+          : null;
+  const elderExpiryYear =
+    elderStatus === "jun_toshiyori"
+      ? world.year +
+        (retiree.rank === "yokozuna"
+          ? JUN_TOSHIYORI_YEARS_YOKOZUNA
+          : JUN_TOSHIYORI_YEARS_OTHER)
+      : undefined;
+  return { availableStock, elderStatus, elderExpiryYear };
+}
 
 /** Queue the myoseki transfer + transaction record for the retiree's new stock. */
 function queueMeritStockTransfer(

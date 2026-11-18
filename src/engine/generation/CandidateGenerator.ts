@@ -165,28 +165,7 @@ export function generateCandidate(args: {
     paPkg.stats = LegacyService.applyLegacyTrait(paPkg.stats, legacyTrait);
   }
 
-  // Determine origin based on pool using geography data
-  const FOREIGN_ORIGINS = ["Mongolia", "Georgia", "Russia", "Brazil", "USA", "Kazakhstan"];
-  const origin =
-    poolType === "foreign"
-      ? seededPick(rng, FOREIGN_ORIGINS)
-      : seededPick(rng, [
-          ...SUMO_HOTBEDS.filter((h) => h !== "Mongolia" && h !== "Georgia" && h !== "Egypt"),
-          ...JAPANESE_PREFECTURES.slice(0, JAPANESE_PREFECTURES_COUNT),
-        ]);
-
-  const name = generateShikona(`${rng.seed}::candidate::${id}`, {
-    rng,
-    heyaId: undefined,
-    nationality: poolType === "foreign" ? origin : "Japan",
-    rank: "jonokuchi",
-    legacyShikona: undefined,
-  });
-
-  // personId doubles as the avatar seed so the scout-card face carries over
-  // unchanged when the candidate is converted into a Rikishi.
-  const personId = rng.uuid("PS");
-  const nationality = poolType === "foreign" ? origin : "Japan";
+  const { origin, name, personId, nationality } = rollOriginIdentity(poolType, rng, id);
 
   // Amateur-star roll — drawn only for non-prodigies, preserving the single
   // conditional draw the previous inline roll consumed. `rng.next() < CHANCE`
@@ -233,20 +212,7 @@ export function generateCandidate(args: {
     // The flag its readers check (eventSurfacing, CandidatePoolPage) —
     // previously never set even when the tag landed (S7-43).
     isAmateurStar: amateurStarTag || undefined,
-    // Tsukedashi qualification: only amateur stars can hold credentials.
-    // University-pool stars ≈ national university/corporate champions →
-    // makushita tsukedashi; high-school stars ≈ national-title holders →
-    // sandanme tsukedashi. Seeded, so the same candidate always qualifies.
-    tsukedashi:
-      amateurStarTag && poolType === "university"
-        ? rng.next() < TSUKEDASHI_UNIVERSITY_SHARE
-          ? "makushita"
-          : undefined
-        : amateurStarTag && poolType === "high_school"
-          ? rng.next() < TSUKEDASHI_HS_SHARE
-            ? "sandanme"
-            : undefined
-          : undefined,
+    tsukedashi: rollTsukedashi(poolType, amateurStarTag, rng),
     // §5.3 — a small share of foreign-born recruits hold Japanese citizenship.
     dualCitizen: poolType === "foreign" ? rng.next() < DUAL_CITIZEN_RECRUIT_SHARE : undefined,
 
@@ -272,6 +238,54 @@ export function generateCandidate(args: {
 
 /** W H — domestic school programs: amateur recruits can carry a named
  * school that later produces schoolmate narrative + keiko links. */
+/**
+ * Roll the candidate's origin, shikona name, personId, and nationality from
+ * the pool type — personId doubles as the avatar seed so the scout-card
+ * face carries over unchanged when the candidate becomes a Rikishi.
+ */
+function rollOriginIdentity(
+  poolType: TalentPoolType,
+  rng: SeededRNG,
+  id: string
+): { origin: string; name: string; personId: string; nationality: string } {
+  const FOREIGN_ORIGINS = ["Mongolia", "Georgia", "Russia", "Brazil", "USA", "Kazakhstan"];
+  const origin =
+    poolType === "foreign"
+      ? seededPick(rng, FOREIGN_ORIGINS)
+      : seededPick(rng, [
+          ...SUMO_HOTBEDS.filter((h) => h !== "Mongolia" && h !== "Georgia" && h !== "Egypt"),
+          ...JAPANESE_PREFECTURES.slice(0, JAPANESE_PREFECTURES_COUNT),
+        ]);
+  const nationality = poolType === "foreign" ? origin : "Japan";
+  const name = generateShikona(`${rng.seed}::candidate::${id}`, {
+    rng,
+    heyaId: undefined,
+    nationality,
+    rank: "jonokuchi",
+    legacyShikona: undefined,
+  });
+  return { origin, name, personId: rng.uuid("PS"), nationality };
+}
+
+/**
+ * Tsukedashi qualification: only amateur stars can hold credentials.
+ * University-pool stars ≈ national university/corporate champions →
+ * makushita tsukedashi; high-school stars ≈ national-title holders →
+ * sandanme tsukedashi. Seeded, so the same candidate always qualifies.
+ */
+function rollTsukedashi(
+  poolType: TalentPoolType,
+  amateurStarTag: boolean,
+  rng: SeededRNG
+): TalentCandidate["tsukedashi"] {
+  if (!amateurStarTag) return undefined;
+  if (poolType === "university")
+    return rng.next() < TSUKEDASHI_UNIVERSITY_SHARE ? "makushita" : undefined;
+  if (poolType === "high_school")
+    return rng.next() < TSUKEDASHI_HS_SHARE ? "sandanme" : undefined;
+  return undefined;
+}
+
 function rollSchoolOrigin(poolType: TalentPoolType, rng: SeededRNG): string | undefined {
   if (
     (poolType === "high_school" || poolType === "university") &&
