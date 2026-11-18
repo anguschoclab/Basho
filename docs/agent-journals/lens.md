@@ -1,5 +1,15 @@
 # Lens's Journal
 
+## 2026-11-18 - Two weight fields, and only the boring one is snapshotted
+**Data:** `rikishi.weight` (top-level physical kg) vs `rikishi.stats.weight` (combat stat); `CareerSnapshot.weight`
+**Learning:** A "weight trajectory" chart looked ideal — WeightJourney ticks weekly toward a target and starvation shaves weight in welfare — but the two writers touch DIFFERENT fields. WeightJourney writes `stats.weight` (never snapshotted); `CareerSnapshot.weight` records `rikishi.weight`, which only moves via `phase01_daily_welfare` starvation. The snapshot series is flat for almost everyone → honest-but-useless chart, dropped.
+**Pattern:** Before charting a snapshot field, grep which writers touch it AND which clone the type carries — `X` and `stats.X` are not the same series. careerHistory ordering: appended chronologically, `.slice(-6)`, newest LAST — the "newest-first" comment in useRikishiData is wrong; pick latest by `year*100+month`, never by position.
+
+## 2026-11-18 - careerHistory gives a league-wide per-basho read
+**Data:** every rikishi's LATEST `careerHistory` snapshot (bashoId `${bashoName}-${year}`) grouped by `heyaId`
+**Learning:** Empirical (advanceDaysFast + endBasho + publishBanzukeUpdate): 1134/1134 rikishi had a snapshot in the last completed basho — coverage is total on the real path. Maezumo fill-ins carry `heyaId: ""` (unattached by design) and must be skipped, not bucketed. Full-record retirees in `historicalRikishi` still hold careerHistory — merge them (non-summary entries) or a stable loses its just-retired rikishi's wins.
+**Pattern:** For "who's ahead" league tables, `latest snapshot where bashoId === world.history.at(-1).bashoId` is the league's last published result — populated 100% of the calendar, no live-BashoState dependency.
+
 ## 2026-11-05 - careerHistory scope + sim-path data population
 **Data:** `rikishi.careerHistory` (CareerSnapshot[], capped at last 6 by `recordBashoPerformance`), `rikishi.history` (MatchResultLog[], rolling 500 via RIKISHI_BOUT_HISTORY_MAX)
 **Learning:** careerHistory snapshots carry no heyaId and no historical record tracks roster membership — per-heya series are only honest as "current roster" aggregates. `rikishi.history` populates ONLY via the real tick path (`applyBoutResult` in phase01_basho_bouts / advanceDaysFast); `runAutoSim`/`TournamentSimulator` inject standings directly and produce ZERO bout logs. Empirical: 438/438 rikishi have history after one basho via advanceDaysFast; ~5/30 roster members per heya have careerHistory snapshots after 3 auto-sim basho (only rikishi in standings get snapshots; generated worlds don't back-fill).

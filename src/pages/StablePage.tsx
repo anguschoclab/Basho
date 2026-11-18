@@ -9,19 +9,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { Building2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { StableStatsTable } from "@/components/stable/StableStatsTable";
-import { StableFormChart } from "@/components/stable/StableFormChart";
-import { StableLeagueChart } from "@/components/stable/StableLeagueChart";
 import { InfrastructureDashboard } from "@/components/stable/InfrastructureDashboard";
 import { SponsorshipHub } from "@/components/economy/SponsorshipHub";
-import { projectSponsorUIDigest, projectStableBashoForm, projectStableLeague } from "@/presenters/projections/index";
+import { projectSponsorUIDigest } from "@/presenters/projections/index";
 import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
 import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { getHeyaRoster } from "@/presenters/engineAccess";
 import { deriveStableHarmony } from "@/presenters/engineAccess";
-import { RosterTab, HeyaTab, AttendantsTab, AcademyTab } from "@/components/stable/StablePageTabs";
+import {
+  RosterTab,
+  HeyaTab,
+  AttendantsTab,
+  AcademyTab,
+  PerformanceTab,
+} from "@/components/stable/StablePageTabs";
 
 export default function StablePage() {
   const { id: routeId } = useParams({ strict: false });
@@ -43,16 +46,6 @@ export default function StablePage() {
     if (!world || !heya) return [];
     return rawRoster.map((r) => projectRikishi(r, world));
   }, [world, heya, rawRoster]);
-
-  const bashoFormData = useMemo(() => {
-    if (!world || !heya) return [];
-    return projectStableBashoForm(world, heya.id);
-  }, [world, heya]);
-
-  const stableLeague = useMemo(() => {
-    if (!world || !heya) return null;
-    return projectStableLeague(world);
-  }, [world, heya]);
 
   if (!hasWorld || !world) return null;
 
@@ -168,13 +161,7 @@ export default function StablePage() {
 
           <RosterTab world={world} heya={heya} rikishiList={rikishiList} rawRoster={rawRoster} />
 
-          <TabsContent value="performance">
-            <div className="space-y-6">
-              <StableFormChart data={bashoFormData} />
-              <StableLeagueChart data={stableLeague} highlightHeyaId={viewingHeyaId} />
-              <StableStatsTable rikishiList={rikishiList} />
-            </div>
-          </TabsContent>
+          <PerformanceTab world={world} heya={heya} rikishiList={rikishiList} />
 
           <HeyaTab world={world} heya={heya} />
           <AttendantsTab world={world} heya={heya} />

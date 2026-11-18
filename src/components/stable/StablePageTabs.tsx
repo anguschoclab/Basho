@@ -5,6 +5,7 @@
  * assignment, stable health panel, tsukebito attendants, and youth academy.
  */
 
+import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/state/game/useGame";
 import { useGameStore } from "@/state/stores/gameStore";
@@ -16,7 +17,14 @@ import { AlertTriangle, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { StableHealthPanel } from "@/components/stable/StableHealthPanel";
-import { projectHeyaData } from "@/presenters/projections/heyaProjections";
+import { StableFormChart } from "@/components/stable/StableFormChart";
+import { StableLeagueChart } from "@/components/stable/StableLeagueChart";
+import { StableStatsTable } from "@/components/stable/StableStatsTable";
+import {
+  projectHeyaData,
+  projectStableBashoForm,
+  projectStableLeague,
+} from "@/presenters/projections/heyaProjections";
 import { MentorAssignmentPanel } from "@/components/training/MentorAssignmentPanel";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
@@ -169,6 +177,29 @@ export function HeyaTab({ world, heya }: { world: WorldState; heya: Heya }) {
         oyakataQuirks={data.oyakataQuirks}
         oyakataTraits={data.oyakataTraits ?? null}
       />
+    </TabsContent>
+  );
+}
+
+/** Basho form, league comparison, and per-rikishi stats for the viewed heya. */
+export function PerformanceTab({
+  world,
+  heya,
+  rikishiList,
+}: {
+  world: WorldState;
+  heya: Heya;
+  rikishiList: RikishiDTO[];
+}) {
+  const bashoFormData = useMemo(() => projectStableBashoForm(world, heya.id), [world, heya.id]);
+  const stableLeague = useMemo(() => projectStableLeague(world), [world]);
+  return (
+    <TabsContent value="performance">
+      <div className="space-y-6">
+        <StableFormChart data={bashoFormData} />
+        <StableLeagueChart data={stableLeague} highlightHeyaId={heya.id} />
+        <StableStatsTable rikishiList={rikishiList} />
+      </div>
     </TabsContent>
   );
 }
