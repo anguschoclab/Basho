@@ -2,36 +2,46 @@
   "warning": [
     "The chairman names %SHIKONA% specifically, referencing the need for awareness of his role as Yokozuna.",
     "The YDC chairman states: '%SHIKONA% must be acutely aware of his position and the dignity it demands.'",
-    "Council deliberation concludes with a formal warning to %SHIKONA% — the tone is stern."
+    "Council deliberation concludes with a formal warning to %SHIKONA% — the tone is stern.",
+    "The chairman strikes a firm tone on %SHIKONA%: 'A losing record is not something the rank can absorb quietly.'",
+    "The council issues %SHIKONA% a formal warning — 'one losing basho can be weathered; it must not become a pattern.'"
   ],
   "encouragement": [
     "The chairman offers measured encouragement: 'We'd like to hope highly for %SHIKONA% next time.'",
     "The YDC expresses cautious optimism for %SHIKONA%'s trajectory, while noting room for improvement.",
-    "'We expect to see better from %SHIKONA% — the potential remains,' the chairman states."
+    "'We expect to see better from %SHIKONA% — the potential remains,' the chairman states.",
+    "The chairman offers %SHIKONA% a qualified endorsement: 'A winning record, yes — but the sumo itself left questions.'",
+    "The YDC stops short of full praise for %SHIKONA% — 'kachi-koshi is the floor for a Yokozuna, not the standard.'"
   ],
   "demand_reflection": [
     "The chairman demands %SHIKONA% ask himself what is meant by spirit, technique, and physique.",
     "'%SHIKONA% must reflect deeply on what it means to wear the tsuna,' the YDC declares.",
-    "A pointed statement from the council: %SHIKONA% is told to examine his commitment to the Yokozuna standard."
+    "A pointed statement from the council: %SHIKONA% is told to examine his commitment to the Yokozuna standard.",
+    "The chairman addresses %SHIKONA% with unusual bluntness: 'The name Yokozuna is not kept by courtesy. Examine what has gone wrong.'"
   ],
   "praise": [
     "The chairman praises %SHIKONA%: 'That mentality and spirit is exactly what we'd hoped to see.'",
     "The YDC commends %SHIKONA% for exemplary performance and dignified conduct throughout the tournament.",
-    "'%SHIKONA% has shown the fighting spirit befitting the rank,' the chairman affirms."
+    "'%SHIKONA% has shown the fighting spirit befitting the rank,' the chairman affirms.",
+    "The chairman holds up %SHIKONA%'s sumo as the standard: 'When the Yokozuna fights like this, the entire banzuke rises to meet him.'",
+    "The council commends %SHIKONA% without reservation — a tournament that reaffirmed the dignity of the tsuna."
   ],
   "absence_criticism": [
     "The chairman calls it 'a crying shame' that %SHIKONA% absented himself on that important final day.",
     "The YDC notes with displeasure that %SHIKONA% withdrew on the final day — a day of great significance.",
-    "'For a Yokozuna to absent himself on senshuraku is regrettable,' the chairman states of %SHIKONA%."
+    "'For a Yokozuna to absent himself on senshuraku is regrettable,' the chairman states of %SHIKONA%.",
+    "The chairman laments %SHIKONA% missing senshuraku: 'The fans come to see the Yokozuna — on the final day most of all.'"
   ],
   "kinboshi_criticism": [
     "The council notes that %SHIKONA% conceded %COUNT% kinboshi to rank-and-file rikishi — the Yokozuna standard was not upheld.",
     "'A Yokozuna must not be a source of gold stars for the maegashira ranks,' the chairman says of %SHIKONA%'s %COUNT% conceded kinboshi.",
-    "The YDC criticizes %SHIKONA% for surrendering %COUNT% kinboshi, calling it beneath the dignity of the rank."
+    "The YDC criticizes %SHIKONA% for surrendering %COUNT% kinboshi, calling it beneath the dignity of the rank.",
+    "'A kinboshi is the story of a maegashira's career — %SHIKONA% wrote %COUNT% of them,' the chairman observes."
   ],
   "private_cynicism": [
     "Privately, the chairman confides that he feels further warnings to %SHIKONA% may be pointless.",
     "Behind closed doors, the chairman expresses doubt that %SHIKONA% will respond to further pressure.",
-    "The chairman's private assessment of %SHIKONA% is far bleaker than his public statement suggests."
+    "The chairman's private assessment of %SHIKONA% is far bleaker than his public statement suggests.",
+    "In private, the chairman concedes the council has begun quietly discussing what comes after %SHIKONA%."
   ]
 }
