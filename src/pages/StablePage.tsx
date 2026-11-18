@@ -11,9 +11,10 @@ import { Building2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StableStatsTable } from "@/components/stable/StableStatsTable";
 import { StableFormChart } from "@/components/stable/StableFormChart";
+import { StableLeagueChart } from "@/components/stable/StableLeagueChart";
 import { InfrastructureDashboard } from "@/components/stable/InfrastructureDashboard";
 import { SponsorshipHub } from "@/components/economy/SponsorshipHub";
-import { projectSponsorUIDigest, projectStableBashoForm } from "@/presenters/projections/index";
+import { projectSponsorUIDigest, projectStableBashoForm, projectStableLeague } from "@/presenters/projections/index";
 import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
 import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
@@ -46,6 +47,11 @@ export default function StablePage() {
   const bashoFormData = useMemo(() => {
     if (!world || !heya) return [];
     return projectStableBashoForm(world, heya.id);
+  }, [world, heya]);
+
+  const stableLeague = useMemo(() => {
+    if (!world || !heya) return null;
+    return projectStableLeague(world);
   }, [world, heya]);
 
   if (!hasWorld || !world) return null;
@@ -165,6 +171,7 @@ export default function StablePage() {
           <TabsContent value="performance">
             <div className="space-y-6">
               <StableFormChart data={bashoFormData} />
+              <StableLeagueChart data={stableLeague} highlightHeyaId={viewingHeyaId} />
               <StableStatsTable rikishiList={rikishiList} />
             </div>
           </TabsContent>

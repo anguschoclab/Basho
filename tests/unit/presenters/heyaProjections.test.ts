@@ -9,11 +9,13 @@ import {
   projectHeyaData,
   projectHeyaRosterWithAge,
   projectStableBashoForm,
+  projectStableLeague,
 } from "@/presenters/projections/heyaProjections";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "@tests/unit/engine/utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Oyakata } from "@/engine/types/oyakata";
-import type { CareerSnapshot } from "@/engine/types/history";
+import type { BashoResult } from "@/engine/types/basho";
+import type { CareerSnapshot, RetiredRikishiSummary } from "@/engine/types/history";
 
 vi.mock("@/presenters/rikishi/index", () => ({
   projectRikishi: vi.fn((r: Rikishi) => ({ id: r.id, shikona: r.shikona })),
@@ -183,5 +185,132 @@ describe("projectStableBashoForm", () => {
       heyas: new Map([["h1", makeMockHeya("h1", { rikishiIds: ["r1"], oyakataId: "o1" })]]),
     });
     expect(projectStableBashoForm(noHistory, "h1")).toEqual([]);
+  });
+});
+
+function bashoResult(bashoName: string, year: number): BashoResult {
+  return { id: `${bashoName}-${year}`, bashoName, year } as BashoResult;
+}
+
+describe("projectStableLeague", () => {
+  function makeLeagueWorld(opts: {
+    history?: BashoResult[];
+    rosters?: Record<string, { heyaId: string; careerHistory: CareerSnapshot[] }[]>;
+    retired?: Map<string, Rikishi | RetiredRikishiSummary>;
+    playerHeyaId?: string;
+  }) {
+    const rikishi = new Map<string, Rikishi>();
+    const heyaRoster = new Map<string, string[]>();
+    for (const [heyaId, members] of Object.entries(opts.rosters ?? {})) {
+      const ids: string[] = [];
+      members.forEach((m, i) => {
+        const id = `${heyaId}-r${i}`;
+        rikishi.set(id, mockRikishi(id, { heyaId: m.heyaId, careerHistory: m.careerHistory }));
+        ids.push(id);
+      });
+      heyaRoster.set(heyaId, ids);
+    }
+    const heyas = new Map(
+      Object.keys(opts.rosters ?? {}).map((heyaId) => [
+        heyaId,
+        makeMockHeya(heyaId, {
+          name: `${heyaId}-beya`,
+          rikishiIds: heyaRoster.get(heyaId) ?? [],
+          oyakataId: `o-${heyaId}`,
+        }),
+      ])
+    );
+    return makeMockWorld({
+      rikishi,
+      heyas,
+      historicalRikishi: opts.retired ?? new Map(),
+      history: opts.history ?? [bashoResult("hatsu", 2025)],
+      playerHeyaId: opts.playerHeyaId,
+    });
+  }
+
+  it("returns null when no basho has completed", () => {
+    expect(projectStableLeague(makeLeagueWorld({ history: [] }))).toBeNull();
+  });
+
+  it("totals each rikishi's latest-snapshot wins per heya, sorted by wins desc", () => {
+    const world = makeLeagueWorld({
+      rosters: {
+        h1: [
+          { heyaId: "h1", careerHistory: [snap({ wins: 9, losses: 6 })] },
+          { heyaId: "h1", careerHistory: [snap({ wins: 8, losses: 7 })] },
+        ],
+        h2: [{ heyaId: "h2", careerHistory: [snap({ wins: 12, losses: 3 })] }],
+        h3: [],
+      },
+    });
+    const league = projectStableLeague(world)!;
+    expect(league.bashoLabel).toBe("Hatsu 2025");
+    expect(league.rows.map((r) => r.heyaId)).toEqual(["h1", "h2", "h3"]);
+    expect(league.rows[0]).toMatchObject({ wins: 17, losses: 13, rikishi: 2 });
+    expect(league.rows[1]).toMatchObject({ wins: 12, losses: 3, rikishi: 1 });
+    expect(league.rows[2]).toMatchObject({ heyaName: "h3-beya", wins: 0, rikishi: 0 });
+  });
+
+  it("uses only the latest snapshot; rikishi with no snapshot in that basho contribute nothing", () => {
+    const world = makeLeagueWorld({
+      rosters: {
+        h1: [
+          {
+            heyaId: "h1",
+            careerHistory: [
+              snap({ bashoId: "kyushu-2024", bashoName: "kyushu", year: 2024, month: 11, wins: 11 }),
+              snap({ bashoId: "hatsu-2025", wins: 6 }),
+            ],
+          },
+          {
+            heyaId: "h1",
+            careerHistory: [
+              snap({ bashoId: "kyushu-2024", bashoName: "kyushu", year: 2024, month: 11, wins: 9 }),
+            ],
+          },
+        ],
+      },
+    });
+    const league = projectStableLeague(world)!;
+    expect(league.rows[0]).toMatchObject({ heyaId: "h1", wins: 6, rikishi: 1 });
+  });
+
+  it("counts full-record retirees toward their last heya and skips summaries", () => {
+    const retiredFull = mockRikishi("ret-full", {
+      heyaId: "h2",
+      careerHistory: [snap({ wins: 10, losses: 5 })],
+    });
+    const retiredSummary = {
+      id: "ret-sum",
+      isSummary: true,
+      heyaId: "h1",
+    } as unknown as RetiredRikishiSummary;
+    const world = makeLeagueWorld({
+      rosters: {
+        h1: [{ heyaId: "h1", careerHistory: [snap({ wins: 8, losses: 7 })] }],
+        h2: [],
+      },
+      retired: new Map<string, Rikishi | RetiredRikishiSummary>([
+        ["ret-full", retiredFull],
+        ["ret-sum", retiredSummary],
+      ]),
+    });
+    const league = projectStableLeague(world)!;
+    expect(league.rows.find((r) => r.heyaId === "h2")).toMatchObject({ wins: 10, rikishi: 1 });
+    expect(league.rows.find((r) => r.heyaId === "h1")).toMatchObject({ wins: 8, rikishi: 1 });
+  });
+
+  it("flags the player heya row", () => {
+    const world = makeLeagueWorld({
+      rosters: {
+        h1: [{ heyaId: "h1", careerHistory: [snap({ wins: 8, losses: 7 })] }],
+        h2: [],
+      },
+      playerHeyaId: "h2",
+    });
+    const league = projectStableLeague(world)!;
+    expect(league.rows.find((r) => r.heyaId === "h2")?.isPlayer).toBe(true);
+    expect(league.rows.find((r) => r.heyaId === "h1")?.isPlayer).toBe(false);
   });
 });

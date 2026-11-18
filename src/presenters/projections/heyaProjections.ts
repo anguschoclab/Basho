@@ -7,9 +7,11 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { HeyaDataUI } from "@/presenters/uiDigestTypes";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { projectRikishi } from "@/presenters/rikishi/index";
 import { getHeyaRoster } from "@/engine/core/queries";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { getAllRikishi, isRetiredRikishiSummaryEntry } from "@/presenters/worldAccess";
 import type { UIRikishi } from "@/presenters/rikishi/index";
 
 /**
@@ -114,4 +116,88 @@ export function projectStableBashoForm(world: WorldState, heyaId: string): Stabl
       kachiKoshi: b.kachiKoshi,
       rikishi: b.rikishi,
     }));
+}
+
+/** One stable's row in the last-basho league table. */
+export interface StableLeagueRow {
+  heyaId: string;
+  heyaName: string;
+  wins: number;
+  losses: number;
+  /** Roster members with a recorded snapshot in that basho. */
+  rikishi: number;
+  isPlayer: boolean;
+}
+
+export interface StableLeagueResult {
+  /** Display label, e.g. "Hatsu 2025". */
+  bashoLabel: string;
+  rows: StableLeagueRow[];
+}
+
+/**
+ * League table for the most recently completed basho: total recorded wins
+ * per stable, aggregated from each rikishi's LATEST careerHistory snapshot
+ * (picked by max year*100+month rather than trusting array order).
+ * Retired rikishi whose full records still sit in historicalRikishi count
+ * toward their last heya — they scored those wins for it. Stables closed
+ * since the basho no longer appear: the table is the current league.
+ * bashoId is `${bashoName}-${year}` — a degenerate year containing two
+ * same-named basho (the kyushu-drift case) will blend them; CareerSnapshot
+ * carries no occurrence key.
+ */
+export function projectStableLeague(world: WorldState): StableLeagueResult | null {
+  const history = world.history ?? [];
+  const last = history[history.length - 1];
+  if (!last) return null;
+
+  const bashoId = `${last.bashoName}-${last.year}`;
+  const totals = new Map<string, { wins: number; losses: number; rikishi: number }>();
+  for (const heya of world.heyas.values()) {
+    totals.set(heya.id, { wins: 0, losses: 0, rikishi: 0 });
+  }
+
+  const universe = getAllRikishi(world) as Rikishi[];
+  for (const entry of world.historicalRikishi?.values() ?? []) {
+    if (!isRetiredRikishiSummaryEntry(entry)) universe.push(entry as Rikishi);
+  }
+
+  for (const r of universe) {
+    const hist = r.careerHistory ?? [];
+    let latest: (typeof hist)[number] | undefined;
+    for (const snap of hist) {
+      if (!latest || snap.year * 100 + snap.month > latest.year * 100 + latest.month) {
+        latest = snap;
+      }
+    }
+    if (!latest) continue;
+    const snapKey = latest.bashoId || `${latest.bashoName}-${latest.year}`;
+    if (snapKey !== bashoId) continue;
+    const t = totals.get(r.heyaId);
+    if (!t) continue;
+    t.wins += latest.wins;
+    t.losses += latest.losses;
+    t.rikishi += 1;
+  }
+
+  const rows: StableLeagueRow[] = [];
+  for (const heya of world.heyas.values()) {
+    const t = totals.get(heya.id) ?? { wins: 0, losses: 0, rikishi: 0 };
+    rows.push({
+      heyaId: heya.id,
+      heyaName: heya.name,
+      wins: t.wins,
+      losses: t.losses,
+      rikishi: t.rikishi,
+      isPlayer: heya.id === world.playerHeyaId,
+    });
+  }
+  rows.sort(
+    (a, b) => b.wins - a.wins || a.losses - b.losses || a.heyaName.localeCompare(b.heyaName)
+  );
+
+  return {
+    bashoLabel: `${last.bashoName.charAt(0).toUpperCase()}${last.bashoName.slice(1)} ${last.year}`,
+    rows,
+  };
 }
