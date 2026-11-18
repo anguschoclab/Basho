@@ -42,18 +42,19 @@ export function ClickableName({ type, id, name, className, children }: Clickable
   const ctx = use(GameContext);
   const safeId = sanitizeId(id);
 
-  // There is no /oyakata/$id route — an oyakata mention links to their stable
-  // page instead; unresolved IDs render as plain text rather than a dead link.
+  // Oyakata mentions deep-link to /oyakata/$id — but only when the elder
+  // actually exists in the loaded world (mention tokens in generated text can
+  // reference elders absent from the registry); unresolved or unsafe IDs
+  // render as plain text rather than a dead link.
   if (type === "oyakata") {
-    const heyaId = ctx?.state?.world?.oyakata.get(id)?.heyaId;
-    const safeHeyaId = sanitizeId(heyaId ?? "");
-    if (!safeHeyaId) {
+    const inWorld = !!safeId && !!ctx?.state?.world?.oyakata?.get(id);
+    if (!inWorld) {
       return <span className={className}>{children ?? name}</span>;
     }
     return (
       <Link
-        to="/stable/$id"
-        params={{ id: safeHeyaId }}
+        to="/oyakata/$oyakataId"
+        params={{ oyakataId: safeId }}
         className={cn(
           "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-xs",
           className
@@ -120,28 +121,25 @@ export function StableName({ id, name, className, children }: Omit<ClickableName
 /**
  * A convenience component for clickable oyakata names.
  *
- * There is no /oyakata/$id route — when `heyaId` is provided the name links to
- * the oyakata's stable page (/stable/$heyaId); otherwise it renders plain
- * text rather than a dead link.
+ * Links to the elder's dedicated profile (/oyakata/$id) when the elder exists
+ * in the loaded world; renders plain text otherwise so generated mention text
+ * never produces a dead link. `heyaId` is accepted for backwards-compatible
+ * call sites but the profile route is now the canonical target.
  *
  * @param props - Component properties
  * @param props.id - The unique identifier for the oyakata
- * @param props.heyaId - The oyakata's stable id; links to that stable's page
  * @param props.name - The display name of the oyakata
  * @param props.className - Optional CSS classes for styling
  * @param props.children - Optional children to render instead of the name
  */
 export function OyakataName({
-  heyaId,
+  id,
   name,
   className,
   children,
 }: Omit<ClickableNameProps, "type"> & { heyaId?: string }) {
-  if (!heyaId) {
-    return <span className={className}>{children ?? name}</span>;
-  }
   return (
-    <ClickableName type="stable" id={heyaId} name={name} className={className}>
+    <ClickableName type="oyakata" id={id} name={name} className={className}>
       {children}
     </ClickableName>
   );

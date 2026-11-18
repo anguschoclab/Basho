@@ -4,9 +4,12 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import * as GameContext from "@/state/game/useGame";
 import TalentPoolPage from "@/pages/TalentPoolPage";
 
+let mockSearch: { pool?: string; focus?: string } = {};
+
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
   useLocation: () => ({ pathname: "/talent" }),
+  useSearch: () => mockSearch,
   Link: ({ children, to, ...props }: any) =>
     React.createElement("a", { href: to, ...props }, children),
 }));
@@ -96,6 +99,7 @@ function getCardTitles(): string[] {
 describe("TalentPoolPage sorting", () => {
   beforeEach(() => {
     localStorage.clear();
+    mockSearch = {};
     mockCandidates = [
       makeCandidate("c1", {
         name: "Alpha",
@@ -199,5 +203,36 @@ describe("TalentPoolPage sorting", () => {
     const order = getCardTitles();
     // desc age: 20, 18, 16 → Bravo, Charlie, Alpha
     expect(order).toEqual(["Bravo", "Charlie", "Alpha"]);
+  });
+});
+
+describe("TalentPoolPage deep links", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    mockCandidates = [makeCandidate("c1", { name: "Alpha" })];
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  afterEach(() => {
+    cleanup();
+    mockSearch = {};
+    vi.clearAllMocks();
+  });
+
+  it("selects the pool tab named by ?pool=", () => {
+    mockSearch = { pool: "foreign" };
+    mockUseGame({ playerHeyaId: "h1", year: 2024 });
+    render(<TalentPoolPage />);
+    const foreignTab = screen.getByRole("tab", { name: /foreign/i });
+    expect(foreignTab.getAttribute("data-state")).toBe("active");
+  });
+
+  it("marks the ?focus= candidate card with an anchor id and highlight", () => {
+    mockSearch = { focus: "c1" };
+    mockUseGame({ playerHeyaId: "h1", year: 2024 });
+    render(<TalentPoolPage />);
+    const card = document.getElementById("candidate-c1");
+    expect(card).toBeTruthy();
+    expect(card?.className).toMatch(/ring/);
   });
 });

@@ -6,8 +6,12 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { checkShikonaChange, recordShikonaChange } from "@/engine/history/history";
 import { getRikishi, getHeya } from "@/engine/core/queries";
 import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
-import { recordSekitoriPromotion } from "@/engine/legacy/tenure";
-import { isSekitoriDivision, isSanyakuRank } from "@/constants/engine/rankDisplay";
+import {
+  accumulatePromotionTenure,
+  applyTenureDeltas,
+  type TenureDelta,
+} from "@/engine/legacy/tenure";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
@@ -27,19 +31,16 @@ export function applyNewRanks(
   eventsByRikishiId: Map<string, MovementEvent>,
   builder: Builder
 ): void {
+  // WS5/WS5b — promotion tenure deltas are accumulated per heya and flushed
+  // once at the end: bumpTenure reads pre-resolution tenure, so per-rikishi
+  // writes to the same oyakata would overwrite each other.
+  const tenureDeltas = new Map<string, TenureDelta>();
+
   for (const newEntry of result.newBanzuke) {
     const rikishi = getRikishi(world, newEntry.rikishiId);
     if (rikishi) {
       const oldRank = rikishi.rank;
       const oldShikona = rikishi.shikona;
-      const wasSekitori = isSekitoriDivision(rikishi.division);
-
-      // WS5 — a cross into juryo/makuuchi counts toward the oyakata's
-      // sekitoriProduced tenure record.
-      {
-        const heya = getHeya(world, rikishi.heyaId);
-        if (heya) recordSekitoriPromotion(world, builder, heya, wasSekitori, newEntry.division);
-      }
 
       // Check if shikona should change due to promotion
       const newShikona = checkShikonaChange(world, rikishi, oldRank);
@@ -50,6 +51,17 @@ export function applyNewRanks(
       // Check if this rikishi had a sanyaku promotion this basho (Gap 5)
       const movementEvent = eventsByRikishiId.get(newEntry.rikishiId);
       const isSanyakuPromotion = movementEvent?.isSanyakuPromotion ?? false;
+
+      // WS5 — rank milestones count toward the sitting oyakata's tenure record.
+      if (getHeya(world, rikishi.heyaId)) {
+        accumulatePromotionTenure(
+          tenureDeltas,
+          rikishi,
+          newEntry.division,
+          newEntry.position.rank,
+          isSanyakuPromotion
+        );
+      }
 
       if (newShikona) {
         recordShikonaChange(world, builder, rikishi.id, oldShikona, newShikona);
@@ -139,6 +151,8 @@ export function applyNewRanks(
       }
     }
   }
+
+  applyTenureDeltas(world, builder, tenureDeltas);
 }
 
 /**

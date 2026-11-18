@@ -49,15 +49,15 @@ describe("PbpLineText component", () => {
     expect(link.getAttribute("href")).toBe("/stable/h-1");
   });
 
-  it("renders oyakata mention as plain text when it cannot be resolved to a stable", () => {
-    // No GameContext / no matching oyakata — no /oyakata route exists, so the
-    // mention must render as plain text rather than a dead link.
+  it("renders oyakata mention as plain text when it cannot be resolved", () => {
+    // No GameContext / no matching oyakata — the mention must render as
+    // plain text rather than a dead link.
     render(<PbpLineText text="Master [[oyakata:o-1:Michinoku]] speaks" />);
     expect(screen.getByText("Michinoku")).toBeTruthy();
     expect(screen.queryByTestId("router-link")).toBeNull();
   });
 
-  it("links an oyakata mention to their stable page", () => {
+  it("links an oyakata mention to their elder profile page", () => {
     const world = { oyakata: new Map([["o-1", { heyaId: "h-9" }]]) };
     render(
       <GameContext.Provider value={{ state: { world } } as never}>
@@ -66,7 +66,7 @@ describe("PbpLineText component", () => {
     );
     expect(screen.getByText("Michinoku")).toBeTruthy();
     const link = screen.getByTestId("router-link");
-    expect(link.getAttribute("href")).toBe("/stable/h-9");
+    expect(link.getAttribute("href")).toBe("/oyakata/o-1");
   });
 
   it("renders multiple links in a single string", () => {

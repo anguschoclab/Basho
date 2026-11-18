@@ -90,7 +90,7 @@ describe("StablePage — legacy UI surface", () => {
   });
 });
 
-describe("OyakataPage — legacy UI surface", () => {
+describe("OyakataProfilePage — legacy UI surface", () => {
   it("renders oyakata traits and profile", () => {
     const sections = readSrcFile("components/oyakata/OyakataPageSections.tsx");
     expect(sections).toContain("TRAIT_LABELS");
@@ -98,7 +98,7 @@ describe("OyakataPage — legacy UI surface", () => {
   });
 
   it("uses menteesOf from lineage module", () => {
-    const hook = readSrcFile("hooks/useOyakataSelection.ts");
-    expect(hook).toContain("menteesOf");
+    const page = readSrcFile("pages/OyakataProfilePage.tsx");
+    expect(page).toContain("menteesOf");
   });
 });

@@ -139,6 +139,22 @@ describe("Breadcrumbs", () => {
     expect(screen.getByText("Miyagino")).toBeTruthy();
   });
 
+  it("labels /oyakata as Elders and links to the real index route", () => {
+    mockLocation.pathname = "/oyakata/o7";
+    render(<Breadcrumbs />);
+    const link = screen.getByText("Elders").closest("a");
+    expect(link?.getAttribute("href")).toBe("/oyakata");
+  });
+
+  it("resolves /oyakata/$id crumb to the oyakata's name from world", () => {
+    const world = worldFixture();
+    world.oyakata.set("o7", MockFactory.createOyakata("o7", { name: "Chiganoura" }));
+    mockLocation.pathname = "/oyakata/o7";
+    render(<Breadcrumbs world={world} />);
+    expect(screen.getByText("Elders")).toBeTruthy();
+    expect(screen.getByText("Chiganoura")).toBeTruthy();
+  });
+
   it("Title-Cases unresolved dynamic ids when world lacks the entity", () => {
     mockLocation.pathname = "/rikishi/r-missing";
     render(<Breadcrumbs world={worldFixture()} />);

@@ -47,7 +47,7 @@ export interface RivalStablesProjection {
 }
 
 /** Player scouting coverage of a rival stable's roster. */
-function hasScoutingCoverage(world: WorldState, heyaId: string): boolean {
+export function hasScoutingCoverage(world: WorldState, heyaId: string): boolean {
   const scouting = world.playerKnowledge?.scouting;
   if (!scouting) return false;
   return Object.values(scouting).some(

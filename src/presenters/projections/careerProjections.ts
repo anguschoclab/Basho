@@ -22,6 +22,9 @@ export interface ManagerCareerProjection {
     bashoServed: number;
     championships: number;
     sekitoriProduced: number;
+    sanyakuProduced: number;
+    ozekiProduced: number;
+    yokozunaProduced: number;
     insolvencyEvents: number;
     majorScandals: number;
     forcedMergers: number;
@@ -50,6 +53,9 @@ const ZERO_TENURE = {
   bashoServed: 0,
   championships: 0,
   sekitoriProduced: 0,
+  sanyakuProduced: 0,
+  ozekiProduced: 0,
+  yokozunaProduced: 0,
   insolvencyEvents: 0,
   majorScandals: 0,
   forcedMergers: 0,

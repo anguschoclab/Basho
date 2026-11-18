@@ -38,6 +38,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/stable/medical": "Medical",
   "/stable/staff": "Staff",
   "/stable/oyakata": "Oyakata",
+  "/oyakata": "Elders",
   "/office": "Office",
   "/office/finances": "Finances",
   "/office/facilities": "Facilities",
@@ -97,6 +98,9 @@ function resolveEntityLabel(segments: string[], index: number, world?: WorldStat
   }
   if (parent === "stable") {
     return getHeya(world, id)?.name ?? null;
+  }
+  if (parent === "oyakata") {
+    return world.oyakata?.get(id)?.name ?? null;
   }
   return null;
 }

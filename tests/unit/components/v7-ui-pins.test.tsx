@@ -9,8 +9,12 @@ import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import type { WorldState } from "@/engine/types/world";
 
+const mockNavigate = vi.fn();
+
 vi.mock("@tanstack/react-router", () => ({
-  useNavigate: () => vi.fn(),
+  useNavigate: () => mockNavigate,
+  useParams: () => ({}),
+  Navigate: () => null,
   Link: ({ children, to, ...props }: { children?: React.ReactNode; to?: string }) =>
     React.createElement("a", { href: to, ...props }, children),
 }));
@@ -135,11 +139,12 @@ describe("v7 pin — #966 StaffPage empty state", () => {
 });
 
 // ---------------------------------------------------------------------------
-// #987: OyakataPage — oyakata cards must be keyboard-activatable.
+// #987: Oyakata directory — cards must be keyboard-activatable; Enter now
+// deep-links to the dedicated /oyakata/$id profile route.
 // ---------------------------------------------------------------------------
-describe("v7 pin — #987 OyakataPage keyboard a11y", () => {
-  it("Enter key on an oyakata card selects it", async () => {
-    const { default: OyakataPage } = await import("@/pages/OyakataPage");
+describe("v7 pin — #987 oyakata directory keyboard a11y", () => {
+  it("Enter key on an oyakata card navigates to its profile", async () => {
+    const { OyakataDirectoryPage } = await import("@/pages/OyakataProfilePage");
     const oyakata = {
       id: "o1",
       name: "Master One",
@@ -158,11 +163,14 @@ describe("v7 pin — #987 OyakataPage keyboard a11y", () => {
     } as unknown as WorldState;
     mockUseGame(world);
     mockStore(world);
-    render(<OyakataPage />);
+    render(<OyakataDirectoryPage />);
     const card = screen.getAllByRole("button").find((el) => el.textContent?.includes("Master One"));
     expect(card).toBeDefined();
     fireEvent.keyDown(card!, { key: "Enter" });
-    expect(screen.getAllByText("Master One").length).toBeGreaterThan(1);
+    expect(mockNavigate).toHaveBeenCalledWith({
+      to: "/oyakata/$oyakataId",
+      params: { oyakataId: "o1" },
+    });
   });
 });
 

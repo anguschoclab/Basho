@@ -17,7 +17,13 @@ import { withSuspense, withWorldGuard } from "@/app/routes-helpers";
 
 const StablePage = lazy(() => import("@/pages/StablePage"));
 const TrainingPage = lazy(() => import("@/pages/TrainingPage"));
-const OyakataPage = lazy(() => import("@/pages/OyakataPage"));
+const OyakataProfilePage = lazy(() => import("@/pages/OyakataProfilePage"));
+const OyakataDirectoryPage = lazy(() =>
+  import("@/pages/OyakataProfilePage").then((m) => ({ default: m.OyakataDirectoryPage }))
+);
+const PlayerOyakataRedirect = lazy(() =>
+  import("@/pages/OyakataProfilePage").then((m) => ({ default: m.PlayerOyakataRedirect }))
+);
 const RikishiPage = lazy(() => import("@/pages/RikishiPage"));
 const RikishiComparePage = lazy(() => import("@/pages/RikishiComparePage"));
 const BashoPage = lazy(() => import("@/pages/BashoPage"));
@@ -189,7 +195,7 @@ const stableStaffRoute = createRoute({
 const stableOyakataRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/oyakata",
-  component: () => withWorldGuard(OyakataPage),
+  component: () => withWorldGuard(PlayerOyakataRedirect),
 });
 const stableInfrastructureRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
@@ -450,6 +456,18 @@ const rivalStablesRoute = createRoute({
   component: () => withWorldGuard(RivalStablesPage),
 });
 
+// Elders — directory index + per-oyakata profile
+const oyakataIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/oyakata",
+  component: () => withWorldGuard(OyakataDirectoryPage),
+});
+const oyakataIdRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/oyakata/$oyakataId",
+  component: () => withWorldGuard(OyakataProfilePage),
+});
+
 const youthAcademyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/academy",
@@ -544,6 +562,10 @@ const routeTree = rootRoute.addChildren([
   // Rival Stables & Youth Academy
   rivalStablesRoute,
   youthAcademyRoute,
+
+  // Elders
+  oyakataIndexRoute,
+  oyakataIdRoute,
 
   notFoundRoute,
 ]);

@@ -16,8 +16,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { onFocusGlobalSearch } from "@/components/shared/searchFocusSignal";
 import {
   searchEntities,
-  type RikishiSearchHit,
-  type HeyaSearchHit,
+  type EntitySearchResults,
 } from "@/presenters/projections/entitySearchProjections";
 import {
   SearchResultsDropdown,
@@ -29,11 +28,52 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const EMPTY = {
-  rikishi: [] as RikishiSearchHit[],
-  retired: [] as RikishiSearchHit[],
-  heyas: [] as HeyaSearchHit[],
+const EMPTY: EntitySearchResults = {
+  rikishi: [],
+  retired: [],
+  heyas: [],
+  oyakata: [],
+  staff: [],
+  candidates: [],
 };
+
+type Navigate = ReturnType<typeof useNavigate>;
+
+/** Flatten all buckets into a single keyboard-navigable option list. */
+function buildOptions(results: EntitySearchResults): FlatOption[] {
+  return [
+    ...results.heyas.map((hit) => ({ kind: "heya" as const, hit })),
+    ...results.rikishi.map((hit) => ({ kind: "rikishi" as const, hit })),
+    ...results.retired.map((hit) => ({ kind: "rikishi" as const, hit })),
+    ...results.oyakata.map((hit) => ({ kind: "oyakata" as const, hit })),
+    ...results.staff.map((hit) => ({ kind: "staff" as const, hit })),
+    ...results.candidates.map((hit) => ({ kind: "candidate" as const, hit })),
+  ];
+}
+
+/** Route a selected hit to its destination page. */
+function navigateForOption(navigate: Navigate, opt: FlatOption): void {
+  switch (opt.kind) {
+    case "heya":
+      navigate({ to: "/stable/$id", params: { id: opt.hit.id } });
+      return;
+    case "oyakata":
+      navigate({ to: "/oyakata/$oyakataId", params: { oyakataId: opt.hit.id } });
+      return;
+    case "staff":
+      if (opt.hit.isPlayerOwned) navigate({ to: "/stable/staff" });
+      else navigate({ to: "/stable/$id", params: { id: opt.hit.heyaId } });
+      return;
+    case "candidate":
+      navigate({
+        to: "/jsa/talent",
+        search: { pool: opt.hit.pool, focus: opt.hit.candidateId },
+      });
+      return;
+    default:
+      navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: opt.hit.id } });
+  }
+}
 
 export function GlobalEntitySearch() {
   const { state } = useGame();
@@ -82,21 +122,10 @@ export function GlobalEntitySearch() {
     [open, trimmed, world, playerHeyaId]
   );
 
-  const options = useMemo<FlatOption[]>(
-    () => [
-      ...results.heyas.map((hit) => ({ kind: "heya" as const, hit })),
-      ...results.rikishi.map((hit) => ({ kind: "rikishi" as const, hit })),
-      ...results.retired.map((hit) => ({ kind: "rikishi" as const, hit })),
-    ],
-    [results]
-  );
+  const options = useMemo<FlatOption[]>(() => buildOptions(results), [results]);
 
   const select = (opt: FlatOption) => {
-    if (opt.kind === "heya") {
-      navigate({ to: "/stable/$id", params: { id: opt.hit.id } });
-    } else {
-      navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: opt.hit.id } });
-    }
+    navigateForOption(navigate, opt);
     setQuery("");
     setOpen(false);
     setActiveIndex(-1);
@@ -153,7 +182,7 @@ export function GlobalEntitySearch() {
             aria-controls="gs-results"
             aria-activedescendant={activeIndex >= 0 ? `gs-opt-${activeIndex}` : undefined}
             aria-autocomplete="list"
-            placeholder="Search wrestlers & stables…"
+            placeholder="Search wrestlers, elders & more…"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);

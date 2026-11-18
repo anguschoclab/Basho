@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearch } from "@tanstack/react-router";
 import { StableName } from "@/components/shared/ClickableName";
 import { useGame } from "@/state/game/useGame";
 import { useGameStore } from "@/state/stores/gameStore";
@@ -15,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { Search, UserPlus, Globe, GraduationCap, School } from "lucide-react";
 
 import type { TalentPoolType, TalentCandidate, VisibilityBand } from "@/engine/types/talent";
+import type { WorldState } from "@/presenters/uiDigest";
 import { talentpool } from "@/presenters/engineAccess";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/presenters/engineAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
@@ -23,6 +25,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, candidateStageInput } from "@/presenters/projections/avatarProjections";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import { cn } from "@/lib/utils";
 
 function CandidateHeading({
   candidate,
@@ -105,10 +108,47 @@ const SORT_OPTIONS: SortOption[] = [
 ];
 
 /** talent pool page. */
+const POOL_TYPES: TalentPoolType[] = ["high_school", "university", "foreign"];
+
+/** Apply the page's sort accessor to the visible-candidate list. */
+function sortCandidates(
+  world: WorldState,
+  list: TalentCandidate[],
+  sortKey: string,
+  sortOrder: SortDirection
+): TalentCandidate[] {
+  const accessor: Record<string, (c: TalentCandidate) => string | number | undefined> = {
+    name: (c) => c.name,
+    age: (c) => (world ? world.year - c.birthYear : undefined),
+    potential: (c) => c.talentSeed,
+    intel: (c) => talentpool.getCandidateScoutingLevel(world, c.candidateId),
+  };
+  const fn = accessor[sortKey];
+  return fn ? [...list].sort((a, b) => compareBy(a, b, fn, sortOrder)) : list;
+}
+
+/** Deep links: /jsa/talent?pool=<pool>&focus=<candidateId> (from global search). */
+function useTalentDeepLink() {
+  const search = useSearch({ strict: false }) as { pool?: string; focus?: string };
+  const poolParam = POOL_TYPES.includes(search.pool as TalentPoolType)
+    ? (search.pool as TalentPoolType)
+    : undefined;
+  const focusId = typeof search.focus === "string" ? search.focus : undefined;
+  const [activePool, setActivePool] = useState<TalentPoolType>(poolParam ?? "high_school");
+  useEffect(() => {
+    if (poolParam) setActivePool(poolParam);
+  }, [poolParam]);
+  useEffect(() => {
+    if (!focusId) return;
+    document.getElementById(`candidate-${focusId}`)?.scrollIntoView({ block: "center" });
+  }, [focusId, activePool]);
+  return { activePool, setActivePool, focusId };
+}
+
 export default function TalentPoolPage() {
   const { state } = useGame();
   const world = state.world;
-  const [activePool, setActivePool] = useState<TalentPoolType>("high_school");
+  const { activePool, setActivePool, focusId } = useTalentDeepLink();
   const [sortKey, setSortKey] = useState<string>("name");
   const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
   const sendCommand = useGameStore((s) => s.sendCommand);
@@ -123,22 +163,12 @@ export default function TalentPoolPage() {
   const candidates = useMemo(() => {
     if (!world) return [] as TalentCandidate[];
     const list = talentpool.listVisibleCandidates(world, activePool);
-    const accessor: Record<string, (c: TalentCandidate) => string | number | undefined> = {
-      name: (c) => c.name,
-      age: (c) => (world ? world.year - c.birthYear : undefined),
-      potential: (c) => c.talentSeed,
-      intel: (c) => talentpool.getCandidateScoutingLevel(world, c.candidateId),
-    };
-    const fn = accessor[sortKey];
-    if (fn) {
-      return [...list].sort((a, b) => compareBy(a, b, fn, sortOrder));
-    }
-    return list;
+    return sortCandidates(world, list, sortKey, sortOrder);
   }, [world, activePool, sortKey, sortOrder]);
 
   const poolState = world ? getTalentPool(world) : undefined;
   const poolSummary = poolState
-    ? (["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => ({
+    ? POOL_TYPES.map((pt) => ({
         pool: pt,
         visible: poolState.pools[pt]?.candidatesVisible.length ?? 0,
         hidden: poolState.pools[pt]?.candidatesHidden.length ?? 0,
@@ -296,7 +326,14 @@ export default function TalentPoolPage() {
                     const sub = visibilityLabel(c.visibilityBand);
 
                     return (
-                      <Card key={c.candidateId} className="overflow-hidden">
+                      <Card
+                        key={c.candidateId}
+                        id={`candidate-${c.candidateId}`}
+                        className={cn(
+                          "overflow-hidden",
+                          c.candidateId === focusId && "ring-2 ring-primary"
+                        )}
+                      >
                         <CardHeader>
                           <div className="flex items-start justify-between gap-2">
                             <CandidateHeading

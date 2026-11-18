@@ -6,21 +6,37 @@
  * function-length budget and render logic stays out of the controller.
  */
 
-import { Search, X, Building2 } from "lucide-react";
+import { Search, X, Building2, Briefcase, Star } from "lucide-react";
 import type {
   RikishiSearchHit,
   HeyaSearchHit,
+  OyakataSearchHit,
+  StaffSearchHit,
+  CandidateSearchHit,
 } from "@/presenters/projections/entitySearchProjections";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export type FlatOption =
-  { kind: "heya"; hit: HeyaSearchHit } | { kind: "rikishi"; hit: RikishiSearchHit };
+  | { kind: "heya"; hit: HeyaSearchHit }
+  | { kind: "rikishi"; hit: RikishiSearchHit }
+  | { kind: "oyakata"; hit: OyakataSearchHit }
+  | { kind: "staff"; hit: StaffSearchHit }
+  | { kind: "candidate"; hit: CandidateSearchHit };
 
 function optionGroup(opt: FlatOption): string {
   if (opt.kind === "heya") return "Stables";
-  return opt.hit.isRetired ? "Retired" : "Wrestlers";
+  if (opt.kind === "rikishi") return opt.hit.isRetired ? "Retired" : "Wrestlers";
+  if (opt.kind === "oyakata") return "Oyakata";
+  if (opt.kind === "staff") return "Staff";
+  return "Prospects";
+}
+
+function optionKey(opt: FlatOption): string {
+  return opt.kind === "candidate"
+    ? `candidate-${opt.hit.candidateId}`
+    : `${opt.kind}-${opt.hit.id}`;
 }
 
 function SearchOptionRow({
@@ -56,6 +72,63 @@ function SearchOptionRow({
           <span className="ml-auto text-[10px] text-muted-foreground shrink-0">
             {opt.hit.rikishiCount} wrestlers
           </span>
+        </>
+      ) : opt.kind === "oyakata" ? (
+        <>
+          <SumoAvatar avatar={opt.hit.avatar} size="xs" fallback={opt.hit.name} />
+          <span className="font-medium truncate">{opt.hit.name}</span>
+          {opt.hit.isEmeritus && (
+            <Badge variant="secondary" className="shrink-0">
+              Emeritus
+            </Badge>
+          )}
+          {opt.hit.isCaretaker && (
+            <Badge variant="outline" className="shrink-0">
+              Caretaker
+            </Badge>
+          )}
+          {opt.hit.archetypeLabel && (
+            <span className="text-[10px] text-muted-foreground shrink-0 capitalize hidden md:inline">
+              {opt.hit.archetypeLabel.replace(/_/g, " ")}
+            </span>
+          )}
+          <span className="text-[10px] text-muted-foreground truncate hidden sm:inline ml-auto">
+            {opt.hit.heyaName}
+          </span>
+          {opt.hit.isPlayerOwned && (
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Your stable" />
+          )}
+        </>
+      ) : opt.kind === "staff" ? (
+        <>
+          <Briefcase className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <span className="font-medium truncate">{opt.hit.name}</span>
+          <span className="text-[10px] text-muted-foreground shrink-0">{opt.hit.roleLabel}</span>
+          <span className="text-[10px] text-muted-foreground truncate hidden sm:inline ml-auto">
+            {opt.hit.heyaName}
+          </span>
+          {opt.hit.isPlayerOwned && (
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Your stable" />
+          )}
+        </>
+      ) : opt.kind === "candidate" ? (
+        <>
+          <SumoAvatar avatar={opt.hit.avatar} size="xs" fallback={opt.hit.name} />
+          <span className="font-medium truncate">{opt.hit.name}</span>
+          <span className="text-[10px] text-muted-foreground shrink-0">
+            {opt.hit.poolLabel} · {opt.hit.age}
+          </span>
+          {opt.hit.isAmateurStar && (
+            <Badge variant="secondary" className="shrink-0">
+              <Star className="h-2.5 w-2.5 mr-0.5" />
+              Star
+            </Badge>
+          )}
+          {opt.hit.isForeign && (
+            <Badge variant="outline" className="shrink-0">
+              Foreign
+            </Badge>
+          )}
         </>
       ) : (
         <>
@@ -109,7 +182,7 @@ export function SearchResultsDropdown({
           const group = optionGroup(opt);
           const showHeader = idx === 0 || optionGroup(options[idx - 1]) !== group;
           return (
-            <div key={`${opt.kind}-${opt.hit.id}`}>
+            <div key={optionKey(opt)}>
               {showHeader && (
                 <div className="px-3 pt-2 pb-1 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                   {group}

@@ -89,6 +89,12 @@ export interface Oyakata {
     bashoServed: number;
     championships: number;
     sekitoriProduced: number;
+    /** First-time promotions into san'yaku (komusubi+) under this reign. */
+    sanyakuProduced: number;
+    /** First-time ōzeki promotions under this reign — demote→reclaim does not re-count. */
+    ozekiProduced: number;
+    /** Yokozuna promotions under this reign. */
+    yokozunaProduced: number;
     insolvencyEvents: number;
     majorScandals: number;
     forcedMergers: number;

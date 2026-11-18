@@ -2,6 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import { ClickableName, RikishiName, StableName, OyakataName } from "@/components/shared/ClickableName";
+import { GameContext, type GameContextValue } from "@/state/game/gameContextInstance";
+import { MockFactory } from "@tests/helpers/utils/MockFactory";
+import type { WorldState } from "@/engine/types/world";
+import type { Oyakata } from "@/engine/types/oyakata";
 
 // ── Mock TanStack Router Link ─────────────────────────────
 // Render a real <a> so we can inspect props and fire events.
@@ -33,6 +37,20 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 // ── Helpers ────────────────────────────────────────────────
+function worldWithOyakata(id: string): WorldState {
+  const world = MockFactory.createWorld();
+  world.oyakata.set(id, MockFactory.createOyakata(id, { name: "Chiganoura" } as Partial<Oyakata>));
+  return world;
+}
+
+function renderWithWorld(world: WorldState, node: React.ReactNode) {
+  return render(
+    <GameContext.Provider value={{ state: { world } } as GameContextValue}>
+      {node}
+    </GameContext.Provider>
+  );
+}
+
 const defaultClasses = [
   "cursor-pointer",
   "hover:text-primary",
@@ -255,27 +273,63 @@ describe("Convenience wrappers", () => {
     expect(screen.queryByText("Miyagino")).toBeNull();
   });
 
-  it("OyakataName links to the oyakata's stable when heyaId is provided", () => {
-    render(<OyakataName id="o3" name="Chiganoura" heyaId="h-ise" className="oyakata-link" />);
+  it("OyakataName links to /oyakata/$id when the oyakata exists in the world", () => {
+    const world = worldWithOyakata("o3");
+    renderWithWorld(world, <OyakataName id="o3" name="Chiganoura" className="oyakata-link" />);
     const link = screen.getByTestId("router-link");
-    expect(link.getAttribute("href")).toBe("/stable/h-ise");
+    expect(link.getAttribute("href")).toBe("/oyakata/o3");
     expect(link.classList.contains("oyakata-link")).toBe(true);
     expect(screen.getByText("Chiganoura")).toBeTruthy();
   });
 
-  it("OyakataName without heyaId renders plain text (no dead /oyakata route)", () => {
+  it("OyakataName renders plain text when the oyakata is not in the world", () => {
+    renderWithWorld(worldWithOyakata("other"), <OyakataName id="o3" name="Chiganoura" />);
+    expect(screen.queryByTestId("router-link")).toBeNull();
+    expect(screen.getByText("Chiganoura")).toBeTruthy();
+  });
+
+  it("OyakataName renders plain text without a game context (no dead links)", () => {
     render(<OyakataName id="o3" name="Chiganoura" />);
     expect(screen.queryByTestId("router-link")).toBeNull();
     expect(screen.getByText("Chiganoura")).toBeTruthy();
   });
 
   it("OyakataName forwards children", () => {
-    render(
+    renderWithWorld(
+      worldWithOyakata("o3"),
       <OyakataName id="o3" name="Chiganoura">
         <span data-testid="oyakata-child">Child</span>
       </OyakataName>
     );
     expect(screen.getByTestId("oyakata-child")).toBeTruthy();
     expect(screen.queryByText("Chiganoura")).toBeNull();
+  });
+});
+
+describe("ClickableName type=oyakata", () => {
+  it("links to /oyakata/$id when the world contains the oyakata", () => {
+    renderWithWorld(
+      worldWithOyakata("o3"),
+      <ClickableName type="oyakata" id="o3" name="Chiganoura" />
+    );
+    expect(screen.getByTestId("router-link").getAttribute("href")).toBe("/oyakata/o3");
+  });
+
+  it("renders plain text when the oyakata id is absent from the world", () => {
+    renderWithWorld(
+      MockFactory.createWorld(),
+      <ClickableName type="oyakata" id="o-missing" name="Ghost" />
+    );
+    expect(screen.queryByTestId("router-link")).toBeNull();
+    expect(screen.getByText("Ghost")).toBeTruthy();
+  });
+
+  it("renders plain text for an unsafe id", () => {
+    renderWithWorld(
+      worldWithOyakata("o3"),
+      <ClickableName type="oyakata" id="javascript:alert(1)" name="Bad" />
+    );
+    expect(screen.queryByTestId("router-link")).toBeNull();
+    expect(screen.getByText("Bad")).toBeTruthy();
   });
 });

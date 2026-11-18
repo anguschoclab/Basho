@@ -9,10 +9,10 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
-import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
-import type { Division } from "@/engine/types/banzuke";
+import type { Division, Rank } from "@/engine/types/banzuke";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   SEKITORI_KACHI_KOSHI_WINS,
@@ -21,6 +21,8 @@ import {
 
 type Tenure = NonNullable<Oyakata["tenure"]>;
 type TenureCounter = Exclude<keyof Tenure, "startedYear">;
+/** Accumulated tenure increments for one heya within a single publish pass. */
+export type TenureDelta = Partial<Record<TenureCounter, number>>;
 
 function baseTenure(year: number): Tenure {
   return {
@@ -28,6 +30,9 @@ function baseTenure(year: number): Tenure {
     bashoServed: 0,
     championships: 0,
     sekitoriProduced: 0,
+    sanyakuProduced: 0,
+    ozekiProduced: 0,
+    yokozunaProduced: 0,
     insolvencyEvents: 0,
     majorScandals: 0,
     forcedMergers: 0,
@@ -91,17 +96,10 @@ export function applyBashoTenure(
   // Accumulate all tenure deltas per heya, then write once — successive
   // bumpTenure calls read the pre-resolution world, so two writes would
   // overwrite each other's tenure object via the shallow entity merge.
-  const deltas = new Map<string, Partial<Record<TenureCounter, number>>>();
-  const addDelta = (heyaId: string, d: Partial<Record<TenureCounter, number>>) => {
-    const cur = deltas.get(heyaId) ?? {};
-    for (const [k, v] of Object.entries(d) as [TenureCounter, number][]) {
-      cur[k] = (cur[k] ?? 0) + v;
-    }
-    deltas.set(heyaId, cur);
-  };
+  const deltas = new Map<string, TenureDelta>();
 
   for (const heyaId of entered) {
-    addDelta(heyaId, { bashoServed: 1 });
+    mergeTenureDelta(deltas, heyaId, { bashoServed: 1 });
     const heya = world.heyas.get(heyaId);
     if (!heya) continue;
     builder.updateHeya(heyaId, {
@@ -112,12 +110,10 @@ export function applyBashoTenure(
   }
 
   if (winnerHeyaId) {
-    addDelta(winnerHeyaId, { championships: 1 });
+    mergeTenureDelta(deltas, winnerHeyaId, { championships: 1 });
   }
 
-  for (const [heyaId, delta] of deltas) {
-    bumpTenure(world, builder, heyaId, delta);
-  }
+  applyTenureDeltas(world, builder, deltas);
 
   // Legacy modifier decay — the predecessor's shadow shortens each basho.
   for (const [heyaId, heya] of world.heyas) {
@@ -133,17 +129,62 @@ export function applyBashoTenure(
   }
 }
 
+/** Merge one heya's delta into the per-publish accumulator. */
+export function mergeTenureDelta(
+  deltas: Map<string, TenureDelta>,
+  heyaId: string,
+  d: TenureDelta
+): void {
+  const cur = deltas.get(heyaId) ?? {};
+  for (const [k, v] of Object.entries(d) as [TenureCounter, number][]) {
+    cur[k] = (cur[k] ?? 0) + v;
+  }
+  deltas.set(heyaId, cur);
+}
+
 /**
- * Sekitori promotion bookkeeping — called from applyNewRanks when a rikishi
- * crosses into juryo/makuuchi. `newDivision` is the post-banzuke division.
+ * Flush accumulated deltas — one bumpTenure per heya. bumpTenure reads
+ * pre-resolution tenure, so two writes to the same oyakata in one pass would
+ * overwrite each other via the shallow entity merge.
  */
-export function recordSekitoriPromotion(
+export function applyTenureDeltas(
   world: WorldState,
   builder: ImpactBuilder,
-  heya: Heya,
-  wasSekitori: boolean,
-  newDivision: Division
+  deltas: Map<string, TenureDelta>
 ): void {
-  if (wasSekitori || !isSekitoriDivision(newDivision)) return;
-  bumpTenure(world, builder, heya.id, { sekitoriProduced: 1 });
+  for (const [heyaId, delta] of deltas) {
+    bumpTenure(world, builder, heyaId, delta);
+  }
+}
+
+/** Has this rikishi ever held `rank` (current or any career snapshot)? */
+function everReachedRank(r: Rikishi, rank: Rank): boolean {
+  if (r.rank === rank) return true;
+  return (r.careerHistory ?? []).some((s) => s.rank === rank);
+}
+
+/**
+ * Promotion bookkeeping for applyNewRanks — accumulates this rikishi's
+ * first-time rank milestones into the per-heya delta map (flushed once by
+ * applyTenureDeltas at the end of the publish pass):
+ *   - sekitoriProduced: first cross into juryo/makuuchi
+ *   - sanyakuProduced: first cross into san'yaku (komusubi+)
+ *   - ozekiProduced:   first time reaching ōzeki (reclaims don't re-count)
+ *   - yokozunaProduced: reaching yokozuna
+ */
+export function accumulatePromotionTenure(
+  deltas: Map<string, TenureDelta>,
+  rikishi: Rikishi,
+  newDivision: Division,
+  newRank: Rank,
+  isSanyakuPromotion: boolean
+): void {
+  const d: TenureDelta = {};
+  if (!isSekitoriDivision(rikishi.division) && isSekitoriDivision(newDivision)) {
+    d.sekitoriProduced = 1;
+  }
+  if (isSanyakuPromotion) d.sanyakuProduced = 1;
+  if (newRank === "ozeki" && !everReachedRank(rikishi, "ozeki")) d.ozekiProduced = 1;
+  if (newRank === "yokozuna" && !everReachedRank(rikishi, "yokozuna")) d.yokozunaProduced = 1;
+  if (Object.keys(d).length > 0) mergeTenureDelta(deltas, rikishi.heyaId, d);
 }

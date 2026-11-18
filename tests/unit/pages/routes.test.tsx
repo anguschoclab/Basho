@@ -61,6 +61,12 @@ describe("router", () => {
     const routeIds = Object.keys(router.routesById);
     expect(routeIds).toContain("/stable/$id");
     expect(routeIds).toContain("/rikishi/$rikishiId");
+    expect(routeIds).toContain("/oyakata/$oyakataId");
+  });
+
+  it("should register the oyakata index route", () => {
+    const routeIds = Object.keys(router.routesById);
+    expect(routeIds).toContain("/oyakata");
   });
 
   it("should register rival-stables and academy routes", () => {

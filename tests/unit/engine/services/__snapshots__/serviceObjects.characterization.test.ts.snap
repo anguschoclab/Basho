@@ -374,6 +374,9 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
           "bashoServed": 0,
           "championships": 0,
           "sekitoriProduced": 0,
+          "sanyakuProduced": 0,
+          "ozekiProduced": 0,
+          "yokozunaProduced": 0,
           "insolvencyEvents": 0,
           "majorScandals": 0,
           "forcedMergers": 0
@@ -621,6 +624,9 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
           "bashoServed": 0,
           "championships": 0,
           "sekitoriProduced": 0,
+          "sanyakuProduced": 0,
+          "ozekiProduced": 0,
+          "yokozunaProduced": 0,
           "insolvencyEvents": 0,
           "majorScandals": 0,
           "forcedMergers": 0
@@ -951,6 +957,9 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 6
           "bashoServed": 0,
           "championships": 0,
           "sekitoriProduced": 0,
+          "sanyakuProduced": 0,
+          "ozekiProduced": 0,
+          "yokozunaProduced": 0,
           "insolvencyEvents": 0,
           "majorScandals": 0,
           "forcedMergers": 0
@@ -1039,6 +1048,9 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 7
           "bashoServed": 0,
           "championships": 0,
           "sekitoriProduced": 0,
+          "sanyakuProduced": 0,
+          "ozekiProduced": 0,
+          "yokozunaProduced": 0,
           "insolvencyEvents": 0,
           "majorScandals": 0,
           "forcedMergers": 0

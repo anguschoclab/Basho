@@ -200,7 +200,6 @@ const ALLOWED_LOCAL_FACTORIES = new Set([
   "unit/engine/tick/phases/npc_ai/memory.test.ts",
   "unit/engine/tick/phases/npc_ai/mood.test.ts",
   "unit/pages/CandidatePoolPage.test.tsx",
-  "unit/pages/OyakataPage.test.tsx",
   "unit/pages/StaffPage.test.tsx",
   "unit/pages/TalentPoolPage.test.tsx",
   "unit/presenters/eventProjections.test.ts",
