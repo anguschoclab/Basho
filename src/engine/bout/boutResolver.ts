@@ -43,6 +43,7 @@ import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG, rngForWorld } from "@/engine/core/rng";
+import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import { hometownTier, applyHometownBonus } from "@/engine/basho/geography";
 import { applyDohyoCondition } from "@/engine/basho/dohyo";
 import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
@@ -444,7 +445,7 @@ export function applyCompetingInjuryPenalty(r: Rikishi): Rikishi {
   const debuff = (v: number | undefined, p: number) =>
     clamp((v ?? DEFAULT_STAT_VALUE) * (1 - p), STAT_CLAMP_MIN, STAT_CLAMP_MAX);
 
-  const lowerBody = area === "knee" || area === "ankle" || area === "hip";
+  const lowerBody = isLowerBodyArea(area);
   const upperBody = area === "shoulder" || area === "elbow" || area === "wrist" || area === "rib";
   const core = area === "back" || area === "neck";
 

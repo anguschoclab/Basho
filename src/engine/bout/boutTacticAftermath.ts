@@ -21,12 +21,28 @@ function aftermathForSide(
   rikishi: Rikishi,
   isWinner: boolean,
   tactic: BoutTactic | undefined,
-  kimarite: string
+  kimarite: string,
+  wonByHenka: boolean
 ): { update: Partial<Rikishi>; injuryMultiplier: number } {
   let injuryMultiplier = 1.0;
   let update: Partial<Rikishi> = {};
 
-  if (!tactic || kimarite === "fusensho") return { update, injuryMultiplier };
+  if (kimarite === "fusensho") return { update, injuryMultiplier };
+  if (!tactic && !wonByHenka) return { update, injuryMultiplier };
+
+  // No declared tactic — only the spontaneous-henka stigma can still apply.
+  if (!tactic) {
+    if (isWinner && wonByHenka) {
+      update = {
+        momentum: clamp(
+          (rikishi.momentum ?? 50) - HENKA_MOMENTUM_PENALTY,
+          STAT_CLAMP_MIN,
+          STAT_CLAMP_MAX
+        ),
+      };
+    }
+    return { update, injuryMultiplier };
+  }
 
   const profile = getTacticProfile(tactic);
 
@@ -47,8 +63,11 @@ function aftermathForSide(
     };
   }
 
-  // Winning by sidestep carries a momentum stigma (crowd dislikes henka wins).
-  if (isWinner && tactic === "HENKA" && update.momentum === undefined) {
+  // Winning by sidestep carries a momentum stigma (crowd dislikes henka
+  // wins). A log-confirmed decisive sidestep (wonByHenka) earns the penalty
+  // outright — it overrides the tactic profile's win momentum, spontaneous
+  // or declared; the tactic-style win never happened.
+  if (isWinner && (wonByHenka || (tactic === "HENKA" && update.momentum === undefined))) {
     const currentMomentum = rikishi.momentum ?? 50;
     update = {
       ...update,
@@ -81,17 +100,24 @@ export function computeTacticAftermath(
 } {
   const resolved: SideTactics = tactics ?? sideTactics(bout);
 
+  // W N — a spontaneous henka leaves a `henka_success` log entry even when no
+  // HENKA tactic was declared; the winner's side still earned the stigma.
+  const henkaSide = result.log?.find((e) => e.data?.event === "henka_success")?.data
+    ?.attackerSide as "east" | "west" | undefined;
+
   const eastResult = aftermathForSide(
     east,
     result.winner === "east",
     resolved.east,
-    result.kimarite
+    result.kimarite,
+    result.winner === "east" && henkaSide === "east"
   );
   const westResult = aftermathForSide(
     west,
     result.winner === "west",
     resolved.west,
-    result.kimarite
+    result.kimarite,
+    result.winner === "west" && henkaSide === "west"
   );
 
   return {

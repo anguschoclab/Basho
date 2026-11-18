@@ -18,8 +18,9 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
 import { isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
-import { isSanyakuRank, getRankDisplayEntry } from "@/constants/engine/rankDisplay";
+import { isSanyakuRank, getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 import { BASHO_NAMES } from "@/constants/ui/calendar";
+import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import type { Division } from "@/engine/types/banzuke";
 
 function beatHometown(p: PbpPipeline): void {
@@ -320,6 +321,69 @@ function beatPlayoffImplications(p: PbpPipeline): void {
         ["yusho_race"]
       );
     }
+  }
+}
+
+function beatHurtLowerBody(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W N — "the feet aren't moving well… that injury to the knee is
+  // hampering his sumo": pre-bout note when an entered man carries a
+  // lower-body knock. One line even when both sides are hurt.
+  for (const r of [east, west]) {
+    if (!r.injured) continue;
+    const area = r.injuryStatus?.location;
+    if (!isLowerBodyArea(area)) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.hurt_lower_body", {
+        SHIKONA: r.shikona,
+        AREA: area ?? "",
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["hurt_lower_body", "injury"]
+    );
+    break;
+  }
+}
+
+function beatSiblingLead(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west, world } = p;
+  // W N — "his brother is sharing the lead down in Juryo": a combatant's
+  // sibling sits atop a DIFFERENT division's table. The standings map is
+  // flat across divisions, so the lead is computed per-division.
+  const standings = world.currentBasho?.standings;
+  if (!standings) return;
+  // Per-division win maxima in one pass — the standings map is flat across
+  // divisions, so "the lead" only means anything per division.
+  const divisionMax = new Map<Division, number>();
+  for (const [rid, rec] of standings) {
+    const rr = world.rikishi.get(rid);
+    if (!rr?.division) continue;
+    if (rec.wins > (divisionMax.get(rr.division) ?? 0)) {
+      divisionMax.set(rr.division, rec.wins);
+    }
+  }
+  for (const focal of [east, west]) {
+    const sibId = focal.siblingIds?.[0];
+    if (!sibId) continue;
+    const sib = world.rikishi.get(sibId);
+    if (!sib || sib.division === focal.division) continue;
+    const sibWins = standings.get(sibId)?.wins ?? sib.currentBashoWins ?? 0;
+    if (sibWins === 0) continue;
+    if (sibWins < (divisionMax.get(sib.division) ?? 0)) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.sibling_lead", {
+        SHIKONA: focal.shikona,
+        SIBLING: sib.shikona,
+        DIVISION: DIVISION_NAMES[sib.division] ?? sib.division ?? "",
+        WINS: sibWins.toString(),
+        rikishiId: focal.id,
+        siblingId: sib.id,
+      }).text,
+      "pre_bout",
+      ["sibling_lead"]
+    );
+    break;
   }
 }
 
@@ -765,6 +829,8 @@ export function narrateStakes(p: PbpPipeline): void {
   beatCoLeader(p);
   beatOzekiShowdown(p);
   beatPlayoffImplications(p);
+  beatHurtLowerBody(p);
+  beatSiblingLead(p);
   beatKenshoMention(p);
   beatBoutOfTheDay(p);
 }

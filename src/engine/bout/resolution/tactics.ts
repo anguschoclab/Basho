@@ -15,6 +15,10 @@ import { chooseTactic, type BoutAIContext } from "@/engine/bout/BoutAI";
 import { buildOpponentModel } from "@/engine/npc/OpponentModel";
 import { getOpponentModel } from "@/engine/npc/MemoryStore";
 import { rngFromSeed } from "@/engine/core/rng";
+import {
+  PHASE_TWO_MIN,
+  PHASE_TWO_FRAGILITY_RATIO,
+} from "@/constants/engine/narrative";
 
 /**
  * Rank-pressure inference for NPC tactic selection.
@@ -53,6 +57,13 @@ function chooseNpcSideTactic(
     (oyakata?.memory ? getOpponentModel(oyakata.memory, opponent.id) : undefined) ??
     buildOpponentModel(opponent, world.week ?? 0);
   const bashoDay = basho.day ?? bout.day ?? 1;
+  // W N — "phase two" fragility: an opponent who keeps winning the tachiai
+  // but losing the bout rewards patience over early trickery.
+  const om = basho.boutMetrics?.[opponent.id];
+  const oppTachiaiWins = om?.tachiaiWins ?? 0;
+  const opponentFragile =
+    oppTachiaiWins >= PHASE_TWO_MIN &&
+    (om?.tachiaiWonButLost ?? 0) / oppTachiaiWins >= PHASE_TWO_FRAGILITY_RATIO;
   const ctx: BoutAIContext = {
     rng: rngFromSeed(world.seed ?? "world", "boutAI", `${basho.id ?? "basho"}:${bout.id}:${side}`),
     bashoDay,
@@ -63,6 +74,7 @@ function chooseNpcSideTactic(
     opponentModel,
     rankPressure: deriveRankPressure(record, bashoDay),
     heyaPosture: rikishi.heyaId ? world.bashoNpcPosture?.[rikishi.heyaId] : undefined,
+    opponentFragile,
   };
   return chooseTactic(rikishi, opponent, ctx);
 }

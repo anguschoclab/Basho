@@ -26,6 +26,9 @@ import {
   HENKA_POWER_GAP_FACTOR,
   HENKA_TECH_BASE,
   HENKA_TECH_FACTOR,
+  DESPERATE_LOSS_STREAK,
+  DESPERATE_BASHO_LOSSES,
+  DESPERATE_HENKA_BONUS,
 } from "@/constants/engine/physics";
 import type { EngineStateV2, PushBattleState } from "@/engine/types/combat-spatial";
 import { initBeltBattle } from "@/engine/bout/boutGrip";
@@ -187,6 +190,37 @@ function logTachiaiClash(
 }
 
 /**
+ * W N — spontaneous-henka probability for `npc` facing `opponent`.
+ * Exported for unit testing: returns 0 unless technique>60, speed>60 and the
+ * opponent is 15+ power stronger. A desperate rikishi (long losing skid or a
+ * buried basho record) adds DESPERATE_HENKA_BONUS, still capped by
+ * HENKA_MAX_CHANCE — "desperate times, desperate measures".
+ */
+export function spontaneousHenkaChance(npc: Rikishi, opponent: Rikishi): number {
+  const npcTech = stat(npc, "technique");
+  const npcSpeed = stat(npc, "speed");
+  const opponentPower = tachiaiPowerWithMatchupPenalty(opponent, npc);
+  const npcPower = tachiaiPowerWithMatchupPenalty(npc, opponent);
+  const powerGap = opponentPower - npcPower;
+  if (
+    npcTech <= HENKA_TECHNIQUE_THRESHOLD ||
+    npcSpeed <= HENKA_SPEED_THRESHOLD ||
+    powerGap <= HENKA_POWER_GAP_THRESHOLD
+  ) {
+    return 0;
+  }
+  const desperate =
+    (npc.currentLossStreak ?? 0) >= DESPERATE_LOSS_STREAK ||
+    (npc.currentBashoLosses ?? 0) >= DESPERATE_BASHO_LOSSES;
+  return Math.min(
+    HENKA_MAX_CHANCE,
+    (powerGap - HENKA_POWER_GAP_BASE) * HENKA_POWER_GAP_FACTOR +
+      (npcTech - HENKA_TECH_BASE) * HENKA_TECH_FACTOR +
+      (desperate ? DESPERATE_HENKA_BONUS : 0)
+  );
+}
+
+/**
  * CR-02: Henka side resolution — explicit tactic henka (east wins ties),
  * or NPC spontaneous henka when a high-technique NPC faces a much stronger
  * opponent. Evaluated east-then-west for determinism.
@@ -209,22 +243,7 @@ function resolveHenkaSide(
     for (const npcSide of candidates) {
       const npc = npcSide === "east" ? east : west;
       const opponent = npcSide === "east" ? west : east;
-      const npcTech = stat(npc, "technique");
-      const npcSpeed = stat(npc, "speed");
-      const opponentPower = tachiaiPowerWithMatchupPenalty(opponent, npc);
-      const npcPower = tachiaiPowerWithMatchupPenalty(npc, opponent);
-      const powerGap = opponentPower - npcPower;
-      // NPC attempts henka when: technique > 60, speed > 60, and opponent is 15+ power stronger
-      const henkaChance =
-        npcTech > HENKA_TECHNIQUE_THRESHOLD &&
-        npcSpeed > HENKA_SPEED_THRESHOLD &&
-        powerGap > HENKA_POWER_GAP_THRESHOLD
-          ? Math.min(
-              HENKA_MAX_CHANCE,
-              (powerGap - HENKA_POWER_GAP_BASE) * HENKA_POWER_GAP_FACTOR +
-                (npcTech - HENKA_TECH_BASE) * HENKA_TECH_FACTOR
-            )
-          : 0;
+      const henkaChance = spontaneousHenkaChance(npc, opponent);
       if (henkaChance > 0 && rng.next() < henkaChance) {
         henkaSide = npcSide as Side;
         boutLog.push({

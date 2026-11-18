@@ -43,6 +43,14 @@ export const INJURY_TYPE_LABELS: Record<InjuryType, string> = {
   none: "None",
 };
 
+/** Lower-body areas — the "feet not moving" / "limping away" group. */
+const LOWER_BODY_AREAS: ReadonlySet<InjuryBodyArea> = new Set(["knee", "ankle", "hip"]);
+
+/** W N — canonical lower-body check, shared by stat debuffs and commentary. */
+export function isLowerBodyArea(area: InjuryBodyArea | string | undefined): boolean {
+  return !!area && LOWER_BODY_AREAS.has(area as InjuryBodyArea);
+}
+
 /**
  * Baseline recovery weeks by severity and area.
  */

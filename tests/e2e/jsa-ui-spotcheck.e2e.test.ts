@@ -137,7 +137,7 @@ test("JSA UI spot checks: raw roster count, juryo replay has no kensho, recap sh
       if (!b || !w?.rikishi) return null;
       const get =
         w.rikishi instanceof Map
-          ? (id: string) => w.rikishi instanceof Map && w.rikishi.get(id)
+          ? (id: string) => (w.rikishi instanceof Map ? w.rikishi.get(id) : undefined)
           : (id: string) =>
               (w.rikishi as Record<string, { shikona?: string; division?: string }>)[id];
       for (const m of b.matches) {

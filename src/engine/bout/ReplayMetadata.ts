@@ -64,6 +64,14 @@ export function getBoutAnimationFamily(kimariteId: string): BoutAnimationFamily 
   return FAMILY_MAP[def.kimariteClass] ?? "generic";
 }
 
+/**
+ * W N — pull-style wins (hikiotoshi, hatakikomi, slap_pull, …). Shared by the
+ * boutMetrics pull counter and the "third time's a charm" narrative beat.
+ */
+export function isPullStyleKimarite(kimariteId: string): boolean {
+  return getBoutAnimationFamily(kimariteId) === "pull";
+}
+
 // ---------------------------------------------------------------------------
 // BoutScript — pre-computed animation parameters derived from BoutResult
 // ---------------------------------------------------------------------------

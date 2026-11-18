@@ -173,3 +173,15 @@ export const NARRATIVE_STRESS_TERSE_CHANCE = 0.5;
 
 /** Chance for media-savvy polished interview modifier */
 export const NARRATIVE_MEDIA_SAVVY_CHANCE = 0.4;
+
+/** W N — absorbed attack entries that qualify a pull win as "the Nth time's a charm". */
+export const PULL_CHARM_MIN_ABSORB = 2;
+
+/** W N — tachiai-won-but-lost count that makes "phase two" a reputation. */
+export const PHASE_TWO_MIN = 3;
+
+/** W N — tachiai-loss ratio at which an opponent reads as fragile late in bouts. */
+export const PHASE_TWO_FRAGILITY_RATIO = 0.5;
+
+/** W N — latest day on which a first-basho kachi-koshi counts as a fast debut clinch. */
+export const DEBUT_KACHI_MAX_DAY = 10;

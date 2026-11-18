@@ -23,6 +23,7 @@ import {
   TACTIC_HYBRID_OSHI_THRESHOLD,
   TACTIC_HYBRID_STANDARD_THRESHOLD,
 } from "@/constants/engine/generation";
+import { DESPERATE_LOSS_STREAK, DESPERATE_BASHO_LOSSES } from "@/constants/engine/physics";
 
 export interface BoutAIContext {
   bashoDay?: number;
@@ -41,6 +42,11 @@ export interface BoutAIContext {
   rankPressure?: "demotion" | "promotion" | "neutral";
   /** Acting stable's banded basho posture (WS3 — phase01_basho_npc_tactics). */
   heyaPosture?: "conservative" | "standard" | "aggressive";
+  /**
+   * W N — opponent repeatedly wins the tachiai but loses the bout ("phase
+   * two" letdown). Patient tactics outlast fast starters.
+   */
+  opponentFragile?: boolean;
 }
 
 /**
@@ -80,6 +86,14 @@ export function chooseBaseTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
 
 const INTENSITY_TACTICS: BoutTactic[] = ["ALL_OUT", "OSHI_THRUST", "YOTSU_BELT"];
 const DEFENSIVE_TACTICS: BoutTactic[] = ["DEFENSIVE_PULL", "HENKA", "STANDARD"];
+
+/** W N — long losing skid or buried basho record → "desperate times, desperate measures". */
+function isDesperate(r: Rikishi): boolean {
+  return (
+    (r.currentLossStreak ?? 0) >= DESPERATE_LOSS_STREAK ||
+    (r.currentBashoLosses ?? 0) >= DESPERATE_BASHO_LOSSES
+  );
+}
 
 function isHighFatigue(fatigue?: number): boolean {
   return fatigue !== undefined && fatigue > 70;
@@ -147,9 +161,15 @@ export function chooseTactic(
   if (ctx.rankPressure === "demotion" && tactic === "ALL_OUT") {
     tactic = "DEFENSIVE_PULL";
   }
-  if (ctx.rankPressure === "promotion" && tactic === "HENKA") {
+  if (ctx.rankPressure === "promotion" && tactic === "HENKA" && !isDesperate(cpu)) {
     // Promotion runs avoid the crowd-disliked henka unless desperate.
     tactic = "OSHI_THRUST";
+  }
+
+  // 5b. Phase-two fragility — a fast starter who keeps fading late rewards
+  // patience over trickery: sit tight and let the bout come to you.
+  if (ctx.opponentFragile && tactic !== "STANDARD" && tactic !== "ALL_OUT") {
+    tactic = "STANDARD";
   }
 
   // 6. Basho posture (WS3) — the heya's daily stance tempers tactic choice.

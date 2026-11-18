@@ -56,6 +56,16 @@
       "Were you nervous going up as a makuuchi fighter?",
       "What kind of basho do you want to make it?"
     ],
+    "debut_kachikoshi": [
+      "You've secured kachi-koshi very quickly - and this is your debut tournament in the top division. What went well for you?",
+      "A winning record already in your debut basho. Did you expect to adjust to this level so fast?",
+      "Debut tournament, kachi-koshi clinched - what has impressed you most about your own sumo these two weeks?"
+    ],
+    "sanyaku_streak": [
+      "You've now defeated sanyaku-ranked opponents in consecutive bouts. What are your thoughts on that?",
+      "Another elite scalp - that's consecutive wins over the named ranks. Where is this run of form coming from?",
+      "Back-to-back wins over sanyaku opposition. Are you starting to believe you belong at this level?"
+    ],
     "general_win": [
       "How do you feel about that performance?",
       "What was the key moment in the bout?",

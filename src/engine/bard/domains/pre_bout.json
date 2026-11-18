@@ -581,5 +581,15 @@
     "%SHIKONA% is closing on a first return to sanyaku since %RETURN_DATE% - the wins are piling up.",
     "It has been a long road back for %SHIKONA%, chasing the named ranks for the first time since %RETURN_DATE%.",
     "The form that once made %SHIKONA% a sanyaku man is resurfacing - a return is within reach."
+  ],
+  "hurt_lower_body": [
+    "We'd like to see %SHIKONA% in better physical condition - that %AREA% problem is hampering his sumo, and the feet aren't moving well.",
+    "%SHIKONA% is struggling with the %AREA% - watch the footwork today, because he can't really dig in when the pressure goes on.",
+    "The %AREA% is the issue for %SHIKONA% this tournament. He can turn up, but can he put weight on it at the tachiai?"
+  ],
+  "sibling_lead": [
+    "%SHIKONA% takes the dohyo with family business in mind - his brother is sharing the lead down in %DIVISION% on %WINS% wins.",
+    "A leaderboard note for %SHIKONA%: his brother sits atop the %DIVISION% standings at %WINS% wins.",
+    "Family pride is on the line - %SHIKONA%'s brother is one of the leaders in %DIVISION%, and the brothers' basho is going very well indeed."
   ]
 }

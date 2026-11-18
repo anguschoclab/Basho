@@ -105,7 +105,14 @@ export type PbpTag =
   | "first_top_division"
   | "sanyaku_return"
   | "shin_sanyaku"
-  | "sanyaku_streak";
+  | "sanyaku_streak"
+  | "henka_dignity"
+  | "pull_charm"
+  | "hurt_lower_body"
+  | "limp_away"
+  | "compete_credit"
+  | "sibling_lead"
+  | "phase_two";
 
 export type PbpLine = {
   text: string;

@@ -16,8 +16,10 @@ import {
 import {
   NARRATIVE_MEDIA_SAVVY_CHANCE,
   NARRATIVE_STRESS_TERSE_CHANCE,
+  DEBUT_KACHI_MAX_DAY,
 } from "@/constants/engine/narrative";
 import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
 
@@ -38,7 +40,7 @@ const CAREER_PHASE_MAP: Record<string, string> = {
 const GIANT_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
 
 function selectInterviewType(p: PbpPipeline): InterviewSetup {
-  const { ctx, day, loserRikishi, result, winnerLosses, winnerRikishi, winnerWins } = p;
+  const { ctx, day, loserRikishi, result, winnerLosses, winnerRikishi, winnerWins, world } = p;
 
   // Determine interview question type
   let questionType = "general_win";
@@ -61,9 +63,26 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
   const hitMilestone = CAREER_WIN_MILESTONES.includes((winnerRikishi.careerWins ?? 0) + 1);
   const loserLossesAfter = (loserRikishi.currentBashoLosses ?? 0) + 1;
   const loserWinsAfter = loserRikishi.currentBashoWins ?? 0;
-  if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
+  // W N — "you've now defeated two consecutive Yokozuna": back-to-back
+  // sanyaku scalps is the press's first question (metrics are pre-bout, so
+  // this win makes it prior+1).
+  const sanyakuStreak =
+    (world?.currentBasho?.boutMetrics?.[winnerRikishi.id]?.sanyakuWinStreak ?? 0) +
+    (isSanyakuRank(loserRikishi.rank ?? "") ? 1 : 0);
+  if (sanyakuStreak >= 2 && BardEngine.has("interview.questions.sanyaku_streak")) {
+    questionType = "sanyaku_streak";
+  } else if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
+    // W N — a first-basho man clinching kachi-koshi inside the window gets
+    // the debut question ("secured kachi-koshi very quickly, your debut
+    // tournament").
+    if (
+      makuuchiTournaments <= 1 &&
+      day <= DEBUT_KACHI_MAX_DAY &&
+      BardEngine.has("interview.questions.debut_kachikoshi")
+    ) {
+      questionType = "debut_kachikoshi";
     // Earliest kachi-koshi variant — achieved on day 7 or earlier with some career history
-    if (day <= 7 && makuuchiTournaments >= 2) {
+    } else if (day <= 7 && makuuchiTournaments >= 2) {
       questionType = "earliest_kachi";
     } else {
       questionType = "kachi_koshi";

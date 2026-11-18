@@ -11,7 +11,14 @@ import {
   MOMENTUM_NARRATIVE_THRESHOLD,
   WEIGHT_DIFF_THRESHOLD,
 } from "@/constants/engine/generation";
-import { NARRATIVE_GYOJI_CONFUSED_CHANCE } from "@/constants/engine/narrative";
+import {
+  NARRATIVE_GYOJI_CONFUSED_CHANCE,
+  PHASE_TWO_MIN,
+  PULL_CHARM_MIN_ABSORB,
+} from "@/constants/engine/narrative";
+import { LEAPING_HENKA_SPEED } from "@/constants/engine/physics";
+import { isPullStyleKimarite } from "@/engine/bout/ReplayMetadata";
+import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
 import { KINJITE_FOUL_LABELS } from "@/engine/bout/kinjite";
 import { rngFromSeed } from "@/engine/core/rng";
@@ -1094,10 +1101,123 @@ function beatSanyakuWinStreak(p: PbpPipeline): void {
   );
 }
 
+function beatHenkaDignity(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  // W N — "desperate times, desperate measures": a sanyaku+ sidestep draws
+  // credibility commentary. High-agility winners get the leaping-henka
+  // ("leaping dragon") variant.
+  const henka = result.log?.find(
+    (e) => e.data?.event === "henka_success" && e.data?.attackerSide === result.winner
+  );
+  if (!henka || !isSanyakuRank(winnerRikishi.rank ?? "")) return;
+  const leap = (winnerRikishi.stats?.speed ?? 0) >= LEAPING_HENKA_SPEED;
+  push(
+    BardEngine.resolve(
+      postBoutRng,
+      leap ? "post_bout.henka_dignity_leap" : "post_bout.henka_dignity",
+      {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        RANK: winnerRikishi.rank ?? "",
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }
+    ).text,
+    "post_bout",
+    ["henka_dignity", "henka"]
+  );
+}
+
+function beatPullCharm(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  // W N — "he was determined to pull going backwards… the third time's a
+  // charm": the winner absorbed repeated forward pressure, then finished on
+  // a pull-family kimarite.
+  if (!isPullStyleKimarite(result.kimarite ?? "")) return;
+  const loserSide = result.winner === "east" ? "west" : "east";
+  const absorbed = (result.log ?? []).filter(
+    (e) => e.data?.family === "push" && e.data?.attackerSide === loserSide
+  ).length;
+  if (absorbed < PULL_CHARM_MIN_ABSORB) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.pull_charm", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      COUNT: absorbed.toString(),
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["pull_charm"]
+  );
+}
+
+function beatLimpAway(p: PbpPipeline): void {
+  const { east, postBoutRng, push, result, west } = p;
+  // W N — "limping away from that encounter… let's hope it's just
+  // temporary": a lower-body injury sustained inside this bout.
+  const inj = result.inBoutInjury;
+  if (!inj || !isLowerBodyArea(inj.area)) return;
+  const hurt = inj.rikishiId === east.id ? east : west;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.limp_away", {
+      SHIKONA: hurt.shikona,
+      AREA: inj.area,
+      rikishiId: hurt.id,
+    }).text,
+    "post_bout",
+    ["limp_away", "injury"]
+  );
+}
+
+function beatCompeteCredit(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, winnerRikishi } = p;
+  // W N — "the fact that he's competing is a plus": a man who entered the
+  // bout carrying an injury and won anyway.
+  if (!winnerRikishi.injured) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.compete_credit", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["compete_credit", "injury"]
+  );
+}
+
+function beatPhaseTwo(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi, world } = p;
+  // W N — "he's got that big hit, but it's phase two that lets him down":
+  // won the tachiai, lost the bout — and it's a pattern (pre-bout metrics,
+  // so this loss makes it prior+1).
+  if (!result.tachiaiWinner || result.tachiaiWinner === result.winner) return;
+  const prior = world?.currentBasho?.boutMetrics?.[loserRikishi.id]?.tachiaiWonButLost ?? 0;
+  const count = prior + 1;
+  if (count < PHASE_TWO_MIN) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.phase_two", {
+      LOSER: loserRikishi.shikona,
+      WINNER: winnerRikishi.shikona,
+      COUNT: count.toString(),
+      loserId: loserRikishi.id,
+      winnerId: winnerRikishi.id,
+    }).text,
+    "post_bout",
+    ["phase_two"]
+  );
+}
+
 export function narrateAftermath(p: PbpPipeline): void {
   beatPostBoutYushoRace(p);
   beatSignatureGripAftermath(p);
   beatSanyakuWinStreak(p);
+  beatHenkaDignity(p);
+  beatPullCharm(p);
+  beatLimpAway(p);
+  beatCompeteCredit(p);
+  beatPhaseTwo(p);
   beatPostBoutLeaderboard(p);
   beatPostBoutStoryline(p);
   beatPostBoutUpset(p);

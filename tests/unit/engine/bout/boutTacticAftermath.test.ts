@@ -168,6 +168,23 @@ describe("boutTacticAftermath", () => {
     expect(westUpdate.momentum).toBeLessThan(50);
   });
 
+  it("penalizes a SPONTANEOUS henka win even without the HENKA tactic", () => {
+    const east = makeRikishi("east", 0, 50);
+    const west = makeRikishi("west", 0, 50);
+    const bout = makeBout(undefined);
+    const result = makeResult("east");
+    result.log = [
+      { phase: "tachiai", clock: 0, data: { event: "henka_success", attackerSide: "east" } },
+    ] as never;
+    const { eastUpdate, westUpdate } = computeTacticAftermath(bout, result, east, west, {
+      east: "STANDARD",
+      west: "STANDARD",
+    });
+    expect(eastUpdate.momentum).toBeDefined();
+    expect(eastUpdate.momentum).toBeLessThan(50);
+    expect(westUpdate.momentum ?? 50).toBeGreaterThanOrEqual(50); // loser untouched by stigma
+  });
+
   it("clamps fatigue to max", () => {
     const east = makeRikishi("east", 95, 50);
     const west = makeRikishi("west");

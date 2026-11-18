@@ -833,9 +833,10 @@ exports[`generateBoutNarrative — golden master > in-bout injury narrative 1`] 
     "id": "gm-bout-post_bout-17",
     "phase": "post_bout",
     "tags": [
+      "limp_away",
       "injury",
     ],
-    "text": "[[rikishi:r-west:Wrestler-r-west]] will need treatment for that knee — the bout took a physical toll.",
+    "text": "[[rikishi:r-west:Wrestler-r-west]] left the ring in some discomfort, favouring the knee - the hope is it's nothing lasting.",
     "voice": "understated",
   },
   {
@@ -844,7 +845,16 @@ exports[`generateBoutNarrative — golden master > in-bout injury narrative 1`] 
     "tags": [
       "injury",
     ],
-    "text": "That knee injury looks serious — [[rikishi:r-west:Wrestler-r-west]]'s participation going forward is in doubt.",
+    "text": "[[rikishi:r-west:Wrestler-r-west]] is favoring his knee — this could mean time away from the dohyo.",
+    "voice": "understated",
+  },
+  {
+    "id": "gm-bout-post_bout-19",
+    "phase": "post_bout",
+    "tags": [
+      "injury",
+    ],
+    "text": "[[rikishi:r-west:Wrestler-r-west]] is clutching his knee — that could threaten the rest of his tournament.",
     "voice": "understated",
   },
 ]

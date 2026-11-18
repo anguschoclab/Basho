@@ -614,5 +614,35 @@
     "%WINNER% has now beaten a sanyaku opponent %STREAK% days running.",
     "Back-to-back giant-killers: %STREAK% straight wins over sanyaku-ranked opposition for %WINNER%.",
     "%STREAK% consecutive victories over the named ranks - %WINNER% is hunting the elite."
+  ],
+  "henka_dignity": [
+    "Desperate times, desperate measures from %WINNER% - but a %RANK% is expected to win with dignity, and a few in the crowd let him hear it.",
+    "%WINNER% sidestepped to the win. Desperate times call for desperate measures, yet the murmurs say a man of his rank should meet the charge head-on.",
+    "A sidestep keeps %WINNER%'s tournament alive - though the purists will note a %RANK% looking after his credibility took the low road today."
+  ],
+  "henka_dignity_leap": [
+    "The leaping dragon: %WINNER% took to the air at the tachiai and came away with the win - desperate times, desperate measures from a %RANK%.",
+    "A flying sidestep from %WINNER%! He leapt clear of the charge and thrust %LOSER% down - effective, but not the dignity the crowd expects of his rank.",
+    "%WINNER% jumped high and sideways to steal it. Desperate measures keep the record alive - and a few disappointed voices in the crowd made themselves known."
+  ],
+  "pull_charm": [
+    "%WINNER% was determined to pull going backwards - not normally recommended, but he kept tugging until the %COUNT%th time proved the charm.",
+    "Pull, retreat, pull again - %WINNER% went backwards %COUNT% times and the last one finally brought %LOSER% down.",
+    "Going backwards is not meant to work, but %WINNER% persisted: %COUNT% tugs on the arms of %LOSER% and the pull-down finally landed."
+  ],
+  "limp_away": [
+    "%SHIKONA% is limping away from that encounter - let's hope it's just temporary.",
+    "A worrying sight: %SHIKONA% limped off the dohyo favouring the %AREA%. Shake that one off.",
+    "%SHIKONA% left the ring in some discomfort, favouring the %AREA% - the hope is it's nothing lasting."
+  ],
+  "compete_credit": [
+    "Whatever the condition, %WINNER% turned up and won - the fact that he's competing at all is a plus right now.",
+    "Not at his best physically, but %WINNER% keeps answering the bell - and today the effort earned him the win.",
+    "%WINNER% is clearly hampered, yet he keeps fighting - and keeps winning while he's at it."
+  ],
+  "phase_two": [
+    "Same story for %LOSER%: the big tachiai was there, but it's phase two that lets him down - %COUNT% times now this basho.",
+    "%LOSER% won the charge again and lost the bout again. Phase two keeps undoing his good work - that's %COUNT% such losses.",
+    "The initial hit isn't the problem for %LOSER% - it's everything after. Another tachiai won, another bout gone: %COUNT% and counting."
   ]
 }

@@ -378,6 +378,12 @@ export interface BashoState {
       preferredGripWins?: number;
       /** W M — consecutive wins this basho vs sanyaku-ranked opponents. */
       sanyakuWinStreak?: number;
+      /** W N — bouts where this rikishi won the tachiai. */
+      tachiaiWins?: number;
+      /** W N — of those, bouts still lost ("phase two" letdowns). */
+      tachiaiWonButLost?: number;
+      /** W N — wins by pull-family kimarite (hikiotoshi, hatakikomi, tsukiotoshi…). */
+      pullWins?: number;
     }
   >;
 

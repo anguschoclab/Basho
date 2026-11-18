@@ -543,6 +543,18 @@ export const HENKA_TECH_BASE = 60;
 /** Technique scaling factor */
 export const HENKA_TECH_FACTOR = 0.003;
 
+/** W N — consecutive-basho loss streak that marks a rikishi as desperate. */
+export const DESPERATE_LOSS_STREAK = 5;
+
+/** W N — basho loss total that marks a rikishi as desperate. */
+export const DESPERATE_BASHO_LOSSES = 8;
+
+/** W N — additive spontaneous-henka chance for desperate NPCs (still capped). */
+export const DESPERATE_HENKA_BONUS = 0.1;
+
+/** W N — speed stat at which a winning henka reads as a leaping evasion. */
+export const LEAPING_HENKA_SPEED = 70;
+
 // ─────────────────────────────────────────
 // Counter-tactic reduction constants
 // ─────────────────────────────────────────

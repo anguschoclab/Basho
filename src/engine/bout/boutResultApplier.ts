@@ -26,6 +26,7 @@ import { getRikishi } from "@/engine/core/queries";
 import { BOUT_DURATION_FATIGUE_PER_TICK } from "@/constants/engine/condition";
 import { RIKISHI_BOUT_HISTORY_MAX } from "@/constants/engine/bout";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { isPullStyleKimarite } from "@/engine/bout/ReplayMetadata";
 
 // ─── 1. Standings ────────────────────────────────────────────────────────────
 
@@ -139,6 +140,20 @@ function updateBoutMetrics(
       ? (wMetrics.sanyakuWinStreak ?? 0) + 1
       : 0;
     lMetrics.sanyakuWinStreak = 0;
+
+    // W N — "phase two" tracking: who won the tachiai, and did the bout
+    // still get away from him; plus pull-family win counting.
+    if (result.tachiaiWinner) {
+      const tachiaiVictor = result.tachiaiWinner === result.winner ? winner : loser;
+      const tMetrics = ensureMetrics(tachiaiVictor.id);
+      tMetrics.tachiaiWins = (tMetrics.tachiaiWins ?? 0) + 1;
+      if (result.tachiaiWinner !== result.winner) {
+        tMetrics.tachiaiWonButLost = (tMetrics.tachiaiWonButLost ?? 0) + 1;
+      }
+    }
+    if (isPullStyleKimarite(result.kimarite)) {
+      wMetrics.pullWins = (wMetrics.pullWins ?? 0) + 1;
+    }
   }
   // Track kinboshi earned this basho for the end-of-basho mochikyukin
   // accumulation. Written in the SAME currentBasho update as boutMetrics so
