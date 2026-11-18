@@ -1,7 +1,7 @@
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { SaveSlotService, type SaveSlotInfo } from "@/engine/persistence/SaveSlotService";
 import { MigrationService } from "@/engine/persistence/MigrationService";
-import { parseSave, stringifySave } from "@/engine/persistence/collectionCodec";
+import { MAX_SAVE_BYTES, parseSave, stringifySave } from "@/engine/persistence/collectionCodec";
 import { error } from "@/engine/utils/Logger";
 import type { WorldState, SaveGame } from "@/engine/types/index";
 import { CURRENT_SAVE_VERSION } from "@/engine/types/index";
@@ -171,6 +171,13 @@ export function exportSave(
 
 export async function importSave(file: File): Promise<WorldState | null> {
   try {
+    // Reject oversized files before reading: file.text() buffers the whole
+    // payload in memory and JSON.parse multiplies it several-fold, so a
+    // crafted "save" could exhaust renderer memory (CWE-400). file.size is
+    // Blob metadata and cannot be forged by the file's contents.
+    if (!file || !Number.isFinite(file.size) || file.size > MAX_SAVE_BYTES) {
+      throw new Error("Save file exceeds maximum supported size");
+    }
     const text = await file.text();
     const parsed = parseSave(text);
     if (!SaveSlotService.isValidSave(parsed)) throw new Error("Invalid save file structure");

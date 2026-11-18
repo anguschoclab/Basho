@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { saveGame, loadGame, importSave, exportSave } from "@/engine/persistence/saveload";
+import { MAX_SAVE_BYTES, parseSave } from "@/engine/persistence/collectionCodec";
 import {
   setStorageProvider,
   resetStorageProvider,
@@ -433,5 +434,51 @@ describe("saveload - importSave migration", () => {
     expect(result).not.toBeNull();
     expect(result).toBe(mockWorld);
     expect(MigrationService.migrateSave).toHaveBeenCalled();
+  });
+});
+
+// ── CWE-400 — import/parse boundaries must reject oversized payloads ────────
+// file.text() buffers the entire payload and JSON.parse multiplies that
+// several-fold, so an unbounded import is a memory-exhaustion vector.
+describe("saveload - oversized input rejection", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetStorageProvider();
+  });
+
+  afterEach(() => {
+    resetStorageProvider();
+    vi.restoreAllMocks();
+  });
+
+  it("rejects an oversized save file without reading its contents", async () => {
+    // Stub only the File shape importSave touches — no need to allocate a
+    // real multi-MB payload in a unit test.
+    const textSpy = vi.fn();
+    const oversized = { size: MAX_SAVE_BYTES + 1, text: textSpy } as unknown as File;
+
+    const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
+    const result = await importSave(oversized);
+
+    expect(result).toBeNull();
+    expect(textSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it("rejects a file whose size is not a finite number", async () => {
+    const textSpy = vi.fn();
+    const bogus = { size: Number.NaN, text: textSpy } as unknown as File;
+
+    const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
+    const result = await importSave(bogus);
+
+    expect(result).toBeNull();
+    expect(textSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it("parseSave throws on save text exceeding the size limit", () => {
+    const oversized = "x".repeat(MAX_SAVE_BYTES + 1);
+    expect(() => parseSave(oversized)).toThrow("exceeds maximum supported size");
   });
 });

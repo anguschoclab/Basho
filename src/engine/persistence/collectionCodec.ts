@@ -12,6 +12,15 @@
 const MAP_TAG = "$$map";
 const SET_TAG = "$$set";
 
+/**
+ * Upper bound on save text accepted at the parse/import boundary.
+ * Exported saves are indented JSON and even a long-running world is only a
+ * few MB — anything beyond this is corrupt or hostile. Enforcing it before
+ * file.text()/JSON.parse stops a crafted "save" from exhausting renderer
+ * memory (CWE-400, uncontrolled resource consumption).
+ */
+export const MAX_SAVE_BYTES = 32 * 1024 * 1024;
+
 // @keep-export saveReplacer — live via same-file/dispatch call or public API contract
 export function saveReplacer(_key: string, value: unknown): unknown {
   if (value instanceof Map) {
@@ -43,5 +52,10 @@ export function stringifySave(value: unknown, space?: number): string {
 
 /** Strict JSON parse with collection revival — throws on malformed input. */
 export function parseSave(text: string): unknown {
+  // Size gate covers every parse site (slot loads, slot-info scans, imports).
+  // JSON is ASCII-dominant, so string length is a tight proxy for byte size.
+  if (typeof text !== "string" || text.length > MAX_SAVE_BYTES) {
+    throw new Error("Save data exceeds maximum supported size");
+  }
   return JSON.parse(text, saveReviver);
 }
