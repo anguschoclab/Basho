@@ -191,4 +191,68 @@ describe("resolveBout — per-side NPC tactics (WS1)", () => {
       east.fatigue ?? 0
     );
   });
+
+  it("wires a real spontaneous henka through aftermath — the winner keeps the momentum stigma", () => {
+    // W N end-to-end: physics emits npc_spontaneous_henka + henka_success,
+    // computeTacticAftermath reads the log, and the winner's rikishi update
+    // carries the −15 stigma (HENKA_MOMENTUM_PENALTY) even though no HENKA
+    // tactic was declared. The physics rng seeds from basho.id+day+ids —
+    // NOT world.seed — so the sweep varies basho.id to vary the bout stream.
+    const tryBasho = (bashoId: string) => {
+      const east = makeRikishi("east", "heya-a", {
+        stats: {
+          power: 95, speed: 50, technique: 50, weight: 180, stamina: 60,
+          mental: 60, adaptability: 60, balance: 55, aggression: 60, experience: 20,
+        },
+      });
+      const west = makeRikishi("west", "heya-b", {
+        style: "yotsu",
+        stats: {
+          power: 40, speed: 75, technique: 75, weight: 120, stamina: 60,
+          mental: 60, adaptability: 60, balance: 60, aggression: 40, experience: 20,
+        },
+      });
+      const day = 5;
+      const basho = MockFactory.createBasho({
+        id: bashoId, day,
+        matches: [{ boutId: "npc-bout", day, eastRikishiId: "east", westRikishiId: "west" }],
+        standings: new Map([
+          ["east", { wins: 4, losses: 4 }],
+          ["west", { wins: 4, losses: 4 }],
+        ]),
+      });
+      const world = MockFactory.createWorld({
+        rikishi: new Map([["east", east], ["west", west]]),
+        heyas: new Map([
+          ["heya-a", MockFactory.createHeya("heya-a", { rikishiIds: ["east"] })],
+          ["heya-b", MockFactory.createHeya("heya-b", { rikishiIds: ["west"] })],
+        ]),
+        currentBasho: basho,
+        cyclePhase: "active_basho",
+      });
+      const bout: BoutContext = { id: "npc-bout", day, rikishiEastId: "east", rikishiWestId: "west" };
+      return resolveBout(bout, east, west, basho, undefined, world);
+    };
+
+    let outcome: ReturnType<typeof tryBasho> | undefined;
+    for (let i = 0; i < 60 && !outcome; i++) {
+      const attempt = tryBasho(`wn-spontaneous-${i}`);
+      const events = (attempt.result.log ?? []).map((e) => e.data?.event);
+      if (events.includes("npc_spontaneous_henka") && events.includes("henka_success")) {
+        outcome = attempt;
+      }
+    }
+    expect(outcome, "sweep must surface a spontaneous-henka win").toBeTruthy();
+
+    const { result, impact } = outcome!;
+    const henkaSide = (result.log ?? []).find((e) => e.data?.event === "henka_success")?.data
+      ?.attackerSide;
+    expect(result.winner).toBe(henkaSide);
+    const winnerId = result.winner === "east" ? "east" : "west";
+    const winnerUpdate = impact.entities?.rikishiUpdates?.get(winnerId);
+    expect(
+      winnerUpdate?.momentum,
+      "a decisive sidestep earns the crowd stigma even without a declared HENKA tactic"
+    ).toBeLessThan(50);
+  });
 });
