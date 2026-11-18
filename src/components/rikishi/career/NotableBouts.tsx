@@ -7,6 +7,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Star, Swords } from "lucide-react";
+import { PbpLineText } from "@/components/basho/PbpLineText";
 import type { NotableBoutEntry } from "@/presenters/engineAccess";
 
 export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry[] }) {
@@ -79,7 +80,7 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
               >
                 {b.narrativeLines.map((line, j: number) => (
                   <p key={j} className="text-xs text-muted-foreground font-display italic">
-                    {line}
+                    <PbpLineText text={line} />
                   </p>
                 ))}
               </div>

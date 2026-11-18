@@ -192,9 +192,10 @@ export function RikishiProfileBody({
               history={history as CareerSnapshot[]}
               milestones={rikishi.milestones as Milestone[]}
               careerProgressionData={careerProgressionData}
-              notableBouts={undefined}
-              narrativeHighlights={undefined}
-              promotionHistory={undefined}
+              notableBouts={rawRikishi.almanacRecord?.notableBouts}
+              // narrativeHighlights intentionally unwired: its entries echo the
+              // milestone timeline and notable-bout rows already on this tab.
+              promotionHistory={rawRikishi.almanacRecord?.promotionHistory}
               earningsProgressionData={earningsProgressionData}
               divisionRecords={rikishi.divisionRecords}
               economics={{
