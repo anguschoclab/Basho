@@ -24,6 +24,7 @@ import {
 import { useGame } from "@/state/game/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
+import { SimpleRankBadge } from "@/components/layout/page-shell/RankBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -114,8 +115,10 @@ function mentorshipPairs(world: WorldState, heyaId: string) {
 function StatCell({ value, label }: { value: number | string; label: string }) {
   return (
     <div>
-      <div className="font-bold">{value}</div>
-      <div className="text-[10px] text-muted-foreground uppercase">{label}</div>
+      <div className="font-mono font-bold tabular-nums">{value}</div>
+      <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+        {label}
+      </div>
     </div>
   );
 }
@@ -511,20 +514,7 @@ export default function OyakataProfilePage() {
           {o.isEmeritus && <Badge variant="secondary">Emeritus</Badge>}
           {o.isCaretaker && <Badge variant="outline">Caretaker</Badge>}
           {status && <Badge variant="outline">{status}</Badge>}
-          {o.highestRank && (
-            <Badge
-              variant={
-                o.highestRank.toLowerCase() === "yokozuna" ||
-                o.highestRank.toLowerCase() === "ozeki"
-                  ? "default"
-                  : "outline"
-              }
-              className="capitalize"
-            >
-              {o.highestRank.toLowerCase() === "yokozuna" && <Crown className="h-3 w-3 mr-1" />}
-              {o.highestRank}
-            </Badge>
-          )}
+          {o.highestRank && <SimpleRankBadge rank={o.highestRank} />}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
