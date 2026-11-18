@@ -24,7 +24,7 @@ export function selectHolidayDigest(world: WorldState): HolidayDigestDTO | null 
   // Find the most recent holiday return event
   for (let i = log.length - 1; i >= 0; i--) {
     const event = log[i];
-    const data = event.data as unknown as Record<string, unknown>;
+    const data = event.data;
     if (data?.eventId === "holiday_return" || data?.status === "holiday_return") {
       const incidents = (data.incidents as Array<Record<string, unknown>>) ?? [];
       return {

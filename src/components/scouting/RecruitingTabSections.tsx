@@ -37,7 +37,6 @@ import { activationKeyHandler } from "@/lib/a11y";
 import { toPotentialBand } from "@/presenters/engineAccess";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
-import type { UIRikishi } from "@/presenters/uiModels";
 import type { useRecruitingState } from "@/hooks/useRecruitingState";
 
 type State = ReturnType<typeof useRecruitingState>;
@@ -384,8 +383,8 @@ export function RecruitingDialogs({ state }: { state: State }) {
           </DialogHeader>
           {state.comparisonPair && state.comparisonPair.a && state.comparisonPair.b && (
             <CompareModePanel
-              rikishiA={state.comparisonPair.a as unknown as UIRikishi}
-              rikishiB={state.comparisonPair.b as unknown as UIRikishi}
+              rikishiA={state.comparisonPair.a}
+              rikishiB={state.comparisonPair.b}
               onClose={() => state.setShowCompare(false)}
             />
           )}

@@ -5,8 +5,8 @@
  * table, and the trial-clash action/result block.
  */
 
-import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/presenters/uiDigest";
+import type { AvatarRenderData } from "@/engine/types/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,25 @@ import type {
   PublicInjuryAvailability,
   PublicAvailabilityStatus,
 } from "@/presenters/rikishi/transformers/publicInjury";
+
+/**
+ * Minimal contract for one side of the comparison panel. Both `UIRikishi`
+ * (roster entries) and `CandidateDigestEntry` (scouting prospects) satisfy it
+ * structurally — prospects carry `candidateId`/`name` instead of `id`/`shikona`,
+ * so every field is optional and consumers must tolerate absence.
+ */
+export interface ComparableEntry {
+  /** Rikishi id — present on roster entries, absent on talent candidates. */
+  id?: string;
+  /** Talent-candidate id — present on scouting prospects. */
+  candidateId?: string;
+  /** Prospect display name (candidates carry `name`; rikishi carry `shikona`). */
+  name?: string;
+  shikona?: string;
+  heyaName?: string;
+  rankLabel?: string;
+  avatar?: AvatarRenderData;
+}
 
 /** Badge tint per public availability status — always-public information. */
 const AVAILABILITY_BADGE_CLASS: Record<PublicAvailabilityStatus, string> = {
@@ -34,7 +53,7 @@ export function CompareRikishiHeader({
   highlight,
   availability,
 }: {
-  rikishi: UIRikishi;
+  rikishi: ComparableEntry;
   highlight: boolean;
   availability?: PublicInjuryAvailability;
 }) {
@@ -113,11 +132,11 @@ export function CompareStats({
   rikishiB,
 }: {
   world: WorldState | null;
-  rikishiA: UIRikishi;
-  rikishiB: UIRikishi;
+  rikishiA: ComparableEntry;
+  rikishiB: ComparableEntry;
 }) {
-  const rawA = world?.rikishi.get(rikishiA.id);
-  const rawB = world?.rikishi.get(rikishiB.id);
+  const rawA = rikishiA.id ? world?.rikishi.get(rikishiA.id) : undefined;
+  const rawB = rikishiB.id ? world?.rikishi.get(rikishiB.id) : undefined;
   const owned =
     !!world?.playerHeyaId &&
     rawA?.heyaId === world.playerHeyaId &&
@@ -255,8 +274,8 @@ export function TrialClashSection({
   onRun,
   onReset,
 }: {
-  rikishiA: UIRikishi;
-  rikishiB: UIRikishi;
+  rikishiA: ComparableEntry;
+  rikishiB: ComparableEntry;
   isSimulating: boolean;
   results: { winner: "A" | "B"; score: string } | null;
   unavailable?: boolean;

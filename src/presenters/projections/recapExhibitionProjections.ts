@@ -32,7 +32,7 @@ export function selectExhibitionResults(
 
   for (const event of log) {
     if (event.type !== "BASHO_STATUS" && event.category !== "basho") continue;
-    const data = event.data as unknown as Record<string, unknown>;
+    const data = event.data;
     if (data?.status !== "exhibition_complete" && data?.eventId !== "exhibition_complete") continue;
 
     const resultsArr = (data.results as Array<Record<string, unknown>>) ?? [];

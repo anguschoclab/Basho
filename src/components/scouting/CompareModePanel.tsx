@@ -2,7 +2,6 @@
 // best-of-3 "trial clash". Sections live in ./CompareModePanelSections.tsx.
 
 import { useState } from "react";
-import { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { resolveBoutParticipant } from "@/presenters/worldAccess";
 import { Button } from "@/components/ui/button";
@@ -14,11 +13,12 @@ import {
   CompareStats,
   CompareInjuryAvailability,
   TrialClashSection,
+  type ComparableEntry,
 } from "@/components/scouting/CompareModePanelSections";
 
 interface CompareModePanelProps {
-  rikishiA: UIRikishi;
-  rikishiB: UIRikishi;
+  rikishiA: ComparableEntry;
+  rikishiB: ComparableEntry;
   onClose?: () => void;
 }
 
@@ -66,11 +66,11 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
   // Public injury/availability — resolved from the raw record (or honest
   // "No public record" for unscouted prospects); presence is always public.
   const availabilityA = projectPublicInjuryAvailability(
-    state.world?.rikishi.get(rikishiA.id),
+    rikishiA.id ? state.world?.rikishi.get(rikishiA.id) : undefined,
     state.world
   );
   const availabilityB = projectPublicInjuryAvailability(
-    state.world?.rikishi.get(rikishiB.id),
+    rikishiB.id ? state.world?.rikishi.get(rikishiB.id) : undefined,
     state.world
   );
 
