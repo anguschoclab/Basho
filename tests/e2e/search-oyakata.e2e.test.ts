@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { createNewGame, dismissOnboardingTour } from "./helpers";
+import { createNewGame, dismissOnboardingTour, resolveCrisisIfPresent } from "./helpers";
 
 /**
  * E2E coverage for the WS-search expansion:
@@ -61,6 +61,168 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   await createNewGame(page);
   await dismissOnboardingTour(page);
 
+  // A fresh world has no hired staff, and its talent pools are EMPTY —
+  // candidates only exist once the fortnightly refresh runs inside
+  // tickWeekTalentPool (refreshAllPools fires when dayIndex > 0 &&
+  // dayIndex % 14 === 0). SCOUT_POOL on an empty hidden reserve is a silent
+  // no-op, so the sim must first advance ~2 weeks through the canonical
+  // worker command path before prospects can exist at all.
+  // (commands → resolveImpacts → syncAndDigest → __BASHO_WORLD__ refresh.)
+
+  // 1. Mint a scout through HIRE_STAFF — also lifts the scoutMult that
+  //    scales SCOUT_CANDIDATE intel gain below.
+  await page.evaluate(() => {
+    const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+    const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
+    store?.getState?.().sendCommand?.({
+      type: "HIRE_STAFF",
+      heyaId: w?.playerHeyaId,
+      role: "scout",
+    });
+  });
+  await page.waitForFunction(
+    () => {
+      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      const staff = w?.staff instanceof Map ? [...w.staff.values()] : Object.values(w?.staff ?? {});
+      return staff.length > 0;
+    },
+    { timeout: 15000 }
+  );
+
+  // 2. Advance the sim in weekly chunks until the pool refresh + passive
+  //    discovery populate the talent pools. TICK_MULTIPLE_DAYS halts early
+  //    on required decisions/major same-week events (shouldHaltAdvance), so
+  //    drive it in a retry loop that clears blocking decisions first.
+  //    sendCommand drops non-tick commands while pendingTick is set — waits
+  //    between iterations are what keep this sequence canonical.
+  for (let i = 0; i < 10; i++) {
+    const populated = await page.evaluate(() => {
+      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      const pools = w?.talentPool?.pools ?? {};
+      return Object.values<any>(pools).some(
+        (p: any) =>
+          (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
+      );
+    });
+    if (populated) break;
+
+    await resolveCrisisIfPresent(page);
+    await page.evaluate(() => {
+      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
+      const send = store?.getState?.().sendCommand;
+      send?.({ type: "RESUME_SIM" });
+      for (const d of w?.pendingDecisions ?? []) {
+        if (d?.required && d?.options?.[0]?.id) {
+          send?.({
+            type: "RESOLVE_LOOP_DECISION",
+            decisionId: d.id,
+            optionId: d.options[0].id,
+          });
+        }
+      }
+      send?.({ type: "TICK_MULTIPLE_DAYS", days: 7 });
+    });
+    await page
+      .waitForFunction(
+        () =>
+          !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
+            .pendingTick,
+        { timeout: 90000 }
+      )
+      .catch(() => {});
+  }
+
+  const poolDiag = await page.evaluate(() => {
+    const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+    const pools = w?.talentPool?.pools ?? {};
+    const summary: Record<string, { hidden: number; visible: number }> = {};
+    for (const [pt, p] of Object.entries<any>(pools)) {
+      summary[pt] = {
+        hidden: p?.candidatesHidden?.length ?? 0,
+        visible: p?.candidatesVisible?.length ?? 0,
+      };
+    }
+    return {
+      dayIndex: w?.dayIndexGlobal,
+      week: w?.week,
+      phase: w?.cyclePhase,
+      candidates: Object.keys(w?.talentPool?.candidates ?? {}).length,
+      pendingTick: !!(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
+        .pendingTick,
+      summary,
+    };
+  });
+  console.log("POOL-STATE", JSON.stringify(poolDiag));
+  const poolSeeded = Object.values(poolDiag.summary).some(
+    (p) => p.hidden + p.visible > 0
+  );
+  expect(poolSeeded, "talent pools populated after advancing the sim").toBe(true);
+
+  // 3. Graft a searchable prospect into the live world. No canonical command
+  //    sequence produces one in a fresh world: the emergency demographic dump
+  //    reveals every prospect at the day-14 refresh, domestic candidates are
+  //    signed + materialized within the same weekly tick, and the survivors
+  //    are all foreign — a pool listVisibleCandidates gates behind
+  //    regionalPresence ≥ 40, which a new heya cannot raise quickly.
+  //    So reuse a real generated candidate, mark it public, and park it in
+  //    the ungated high_school visible list — exercising the real search
+  //    projection + deep-link rather than the recruitment lifecycle.
+  //    onWorldUpdated is the worker→context sync bridge (same callback
+  //    syncWorld invokes); LOAD_WORLD keeps the worker copy consistent.
+  const graftedId = await page.evaluate(() => {
+    const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+    const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
+    const tp = w?.talentPool;
+    const cid = Object.keys(tp?.candidates ?? {})[0];
+    if (!tp || !cid) return null;
+    // Move the candidate into high_school — strip it from every other pool
+    // list first so it holds exactly one membership (SerializationService
+    // flags cross-pool IDs as integrity violations).
+    const movedPools = Object.fromEntries(
+      Object.entries<any>(tp.pools).map(([pt, p]: [string, any]) => [
+        pt,
+        {
+          ...p,
+          candidatesVisible: (p.candidatesVisible ?? []).filter((id: string) => id !== cid),
+          candidatesHidden: (p.candidatesHidden ?? []).filter((id: string) => id !== cid),
+        },
+      ])
+    );
+    movedPools.high_school = {
+      ...movedPools.high_school,
+      candidatesVisible: [cid],
+    };
+    const patched = {
+      ...w,
+      talentPool: {
+        ...tp,
+        candidates: {
+          ...tp.candidates,
+          [cid]: { ...tp.candidates[cid], visibilityBand: "public" },
+        },
+        pools: movedPools,
+      },
+    };
+    store?.getState?.().onWorldUpdated?.(patched);
+    store?.getState?.().sendCommand?.({ type: "LOAD_WORLD", world: patched });
+    return cid;
+  });
+  expect(graftedId, "a generated candidate exists to graft").toBeTruthy();
+  const graftedCid = graftedId as string;
+  await page.waitForFunction(
+    (cid) => {
+      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      const tp = w?.talentPool;
+      return (
+        tp?.candidates?.[cid]?.visibilityBand === "public" &&
+        (tp?.pools?.high_school?.candidatesVisible ?? []).includes(cid)
+      );
+    },
+    graftedCid,
+    { timeout: 10000 }
+  );
+
   // Pull real entity handles out of the live world (Maps on oyakata/staff,
   // Record on talentPool.candidates — normalize both).
   const fx = await page.evaluate((): EntityFixtures => {
@@ -72,17 +234,36 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
     const heya = w.heyas instanceof Map ? w.heyas.get(playerHeyaId) : w.heyas?.[playerHeyaId];
     const allOyakata = toArr(w.oyakata);
     const playerO = allOyakata.find((o: any) => o.id === heya?.oyakataId);
+    // WS7 gating mirrors hasScoutingCoverage: a rival's archetype label is
+    // only rendered when the player's knowledge already covers that heya —
+    // so the "label absent" assertion needs an UNSCOUTED rival, not just any.
+    const covered = (heyaId: string) =>
+      Object.values<any>(w.playerKnowledge?.scouting ?? {}).some(
+        (s: any) => s?.publicInfo?.heyaId === heyaId && (s?.timesObserved ?? 0) > 0
+      );
     const npcO = allOyakata.find(
-      (o: any) => o.heyaId !== playerHeyaId && o.name && !o.isEmeritus
+      (o: any) => o.heyaId !== playerHeyaId && o.name && !o.isEmeritus && !covered(o.heyaId)
     );
     const staff = toArr(w.staff).find((s: any) => s.name) ?? null;
     const candidates = toArr(w.talentPool?.candidates);
-    const pub = candidates.find((c: any) => c.visibilityBand === "public" && c.name);
+    // Mirror the search gate exactly: only pools listVisibleCandidates can
+    // return without regional-presence gating (foreign needs presence ≥40),
+    // and names are knowable when public or scouted ≥65.
+    const searchablePools = ["high_school", "university"];
+    const pub = candidates.find(
+      (c: any) =>
+        c.name &&
+        (c.visibilityBand === "public" ||
+          (w.talentPool?.playerScouting?.[c.candidateId]?.scoutingLevel ?? 0) >= 65) &&
+        searchablePools.some((pt) =>
+          w.talentPool?.pools?.[pt]?.candidatesVisible?.includes(c.candidateId)
+        )
+    );
     let candidatePool: string | null = null;
     if (pub && w.talentPool?.pools) {
-      for (const [poolType, pool] of Object.entries<any>(w.talentPool.pools)) {
-        if ((pool as any).candidatesVisible?.includes(pub.id)) {
-          candidatePool = poolType;
+      for (const pt of searchablePools) {
+        if (w.talentPool.pools[pt]?.candidatesVisible?.includes(pub.candidateId)) {
+          candidatePool = pt;
           break;
         }
       }
@@ -97,13 +278,18 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
       staffIsPlayerOwned: staff?.heyaId === playerHeyaId,
       staffHeyaId: staff?.heyaId ?? null,
       candidateName: pub?.name ?? null,
-      candidateId: pub?.id ?? null,
+      candidateId: pub?.candidateId ?? null,
       candidatePool,
     };
   });
 
   expect(fx.playerOyakataId, "player oyakata exists").toBeTruthy();
-  expect(fx.npcOyakataId, "at least one rival oyakata exists").toBeTruthy();
+  expect(fx.npcOyakataId, "at least one unscouted rival oyakata exists").toBeTruthy();
+  // Sections 4–5 are load-bearing claims — fail loudly if the generated
+  // world can't exercise them instead of skipping silently.
+  expect(fx.staffName, "a named staff member exists").toBeTruthy();
+  expect(fx.candidateId, "a public talent-pool candidate exists").toBeTruthy();
+  expect(fx.candidatePool, "the candidate sits in a visible pool").toBeTruthy();
 
   const searchInput = page.getByRole("combobox");
   const dropdown = page.locator("#gs-results");

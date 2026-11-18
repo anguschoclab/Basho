@@ -346,4 +346,45 @@ describe("GlobalEntitySearch", () => {
       search: { pool: "foreign", focus: "c1" },
     });
   });
+
+  it("same-named entities in different groups are located group-scoped (Kokonoe collision)", () => {
+    // A heya, a rikishi, and an oyakata can all be named "Kokonoe" — the
+    // dropdown disambiguates by group, and each row still routes by kind.
+    vi.mocked(searchEntities).mockReturnValue(
+      resultsOf({
+        heyas: [heyaHit({ id: "h9", name: "Kokonoe" })],
+        rikishi: [rikishiHit({ id: "r9", shikona: "Kokonoe" })],
+        oyakata: [oyakataHit({ id: "o9", name: "Kokonoe" })],
+      })
+    );
+    render(<GlobalEntitySearch />);
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "kokonoe" } });
+
+    expect(screen.getAllByRole("option")).toHaveLength(3);
+    expect(screen.getByText("Stables")).toBeTruthy();
+    expect(screen.getByText("Wrestlers")).toBeTruthy();
+    expect(screen.getByText("Oyakata")).toBeTruthy();
+
+    // Locate the option inside the Oyakata group specifically (same logic
+    // as the e2e optionIdInGroup helper — headers precede their options).
+    const res = document.getElementById("gs-results")!;
+    let inGroup = false;
+    let oyaRow: HTMLElement | null = null;
+    for (const child of Array.from(res.children)) {
+      const header = child.firstElementChild;
+      if (header && header.getAttribute("role") !== "option") {
+        inGroup = (header.textContent ?? "").trim() === "Oyakata";
+      }
+      const opt = child.querySelector<HTMLElement>('[role="option"]');
+      if (inGroup && opt && (opt.textContent ?? "").includes("Kokonoe")) {
+        oyaRow = opt;
+      }
+    }
+    expect(oyaRow).not.toBeNull();
+    fireEvent.click(oyaRow!);
+    expect(mockNavigate).toHaveBeenCalledWith({
+      to: "/oyakata/$oyakataId",
+      params: { oyakataId: "o9" },
+    });
+  });
 });
