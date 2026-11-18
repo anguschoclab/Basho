@@ -20,6 +20,8 @@ export interface YouthProspectDTO {
   potential: number;
   currentAbility: number;
   developmentPoints: number;
+  /** Weekly ability readings recorded by off-season development ticks (rolling 52). */
+  developmentHistory: Array<{ week: number; ability: number }>;
   avatarConfig?: AvatarIdentity;
 }
 
@@ -86,6 +88,7 @@ export function projectYouthAcademy(world: WorldState, heyaId: string): YouthAca
         potential: p.potential,
         currentAbility: p.currentAbility,
         developmentPoints: p.developmentPoints,
+        developmentHistory: p.developmentHistory ?? [],
         avatarConfig: p.avatarConfig,
       })),
     },

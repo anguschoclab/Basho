@@ -116,4 +116,50 @@ describe("projectYouthAcademy", () => {
     const result = projectYouthAcademy(makeWorld(academy), "h1");
     expect(result.academy!.maxLevel).toBe(5);
   });
+
+  it("carries developmentHistory readings through to the prospect DTO", () => {
+    const history = [
+      { week: 5, ability: 22 },
+      { week: 6, ability: 22 },
+      { week: 7, ability: 23 },
+    ];
+    const academy = makeAcademy({
+      prospects: [
+        {
+          id: "p1",
+          shikona: "Young Prospect",
+          age: 15,
+          region: "Japan",
+          potential: 70,
+          currentAbility: 23,
+          developmentPoints: 40,
+          enrolledAtYear: 2024,
+          enrolledAtWeek: 1,
+          developmentHistory: history,
+        },
+      ],
+    });
+    const result = projectYouthAcademy(makeWorld(academy), "h1");
+    expect(result.academy!.prospects[0].developmentHistory).toEqual(history);
+  });
+
+  it("defaults developmentHistory to [] when the stored prospect lacks it", () => {
+    const academy = makeAcademy({
+      prospects: [
+        {
+          id: "p1",
+          shikona: "Legacy Prospect",
+          age: 15,
+          region: "Japan",
+          potential: 70,
+          currentAbility: 23,
+          developmentPoints: 40,
+          enrolledAtYear: 2024,
+          enrolledAtWeek: 1,
+        } as any,
+      ],
+    });
+    const result = projectYouthAcademy(makeWorld(academy), "h1");
+    expect(result.academy!.prospects[0].developmentHistory).toEqual([]);
+  });
 });
