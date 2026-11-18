@@ -15,6 +15,7 @@ import {
   Legend,
 } from "recharts";
 import { formatMetaTrends } from "@/presenters/uiDigest";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { WorldState } from "@/presenters/uiDigest";
 import { getAllHeyas, getAllRikishi, getRikishi } from "@/presenters/worldAccess";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -78,65 +79,74 @@ export default function TrendsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-[400px] w-full mt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="hsl(var(--border))"
-                  />
-                  <XAxis
-                    dataKey="basho"
-                    tick={{ fontSize: 10, fontWeight: 600 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10, fontWeight: 600 }}
-                    axisLine={false}
-                    tickLine={false}
-                    domain={[0, 100]}
-                    unit="%"
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      borderColor: "hsl(var(--border))",
-                      fontSize: "12px",
-                      borderRadius: "12px",
-                      boxShadow: "0 10px 30px hsl(var(--foreground) / 0.1)",
-                    }}
-                  />
-                  <Legend verticalAlign="top" height={36} iconType="circle" />
-                  <Area
-                    type="monotone"
-                    name="Oshi-Zumo (Thrusting)"
-                    dataKey="oshi"
-                    stackId="1"
-                    stroke="hsl(var(--primary))"
-                    fill="hsl(var(--primary))"
-                    fillOpacity={0.6}
-                  />
-                  <Area
-                    type="monotone"
-                    name="Yotsu-Zumo (Grappling)"
-                    dataKey="yotsu"
-                    stackId="1"
-                    stroke="hsl(var(--accent))"
-                    fill="hsl(var(--accent))"
-                    fillOpacity={0.4}
-                  />
-                  <Area
-                    type="monotone"
-                    name="Hybrid/Varied Styles"
-                    dataKey="hybrid"
-                    stackId="1"
-                    stroke="hsl(var(--muted-foreground))"
-                    fill="hsl(var(--muted-foreground))"
-                    fillOpacity={0.2}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {data.length === 0 ? (
+                <EmptyState
+                  icon={TrendingUp}
+                  title="No tournaments recorded yet"
+                  description="Meta trends are built from completed basho — this chart fills in after your first tournament."
+                  className="h-full"
+                />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="hsl(var(--border))"
+                    />
+                    <XAxis
+                      dataKey="basho"
+                      tick={{ fontSize: 10, fontWeight: 600 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fontWeight: 600 }}
+                      axisLine={false}
+                      tickLine={false}
+                      domain={[0, 100]}
+                      unit="%"
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        borderColor: "hsl(var(--border))",
+                        fontSize: "12px",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px hsl(var(--foreground) / 0.1)",
+                      }}
+                    />
+                    <Legend verticalAlign="top" height={36} iconType="circle" />
+                    <Area
+                      type="monotone"
+                      name="Oshi-Zumo (Thrusting)"
+                      dataKey="oshi"
+                      stackId="1"
+                      stroke="hsl(var(--primary))"
+                      fill="hsl(var(--primary))"
+                      fillOpacity={0.6}
+                    />
+                    <Area
+                      type="monotone"
+                      name="Yotsu-Zumo (Grappling)"
+                      dataKey="yotsu"
+                      stackId="1"
+                      stroke="hsl(var(--accent))"
+                      fill="hsl(var(--accent))"
+                      fillOpacity={0.4}
+                    />
+                    <Area
+                      type="monotone"
+                      name="Hybrid/Varied Styles"
+                      dataKey="hybrid"
+                      stackId="1"
+                      stroke="hsl(var(--muted-foreground))"
+                      fill="hsl(var(--muted-foreground))"
+                      fillOpacity={0.2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </CardContent>
         </Card>
