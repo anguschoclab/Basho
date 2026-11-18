@@ -466,7 +466,7 @@ After each basho the JSA publishes the **banzuke** — the official rankings for
 - **Lose record (make-koshi, 7 or fewer)** → demotion candidate
 - **Yusho winner** → strong promotion, sometimes a large jump
 
-The size of rank movement depends on how dominant the performance was. A 10-5 record earns a modest promotion; a 13-2 runner-up performance may jump multiple ranks.
+Movement is decided by the **banzuke committee** (番付編成会議): each wrestler's baseline is roughly **(wins − losses) ÷ 2 rank slots**, where missed days count like losses — there is no extra penalty for kyujo beyond the lost record. Yusho, sansho, kinboshi, and comeback performances act as informal evidence that can nudge a borderline call by a couple of slots, and committee members carry their own leanings. Deliberation notes for notable cases appear in the news feed. A 10-5 record earns a modest promotion; a 13-2 runner-up performance may jump multiple ranks.
 
 ### Banzuke Reveal Phase
 
@@ -675,6 +675,13 @@ Once you've scouted a candidate:
 | **Covert**         | Quiet approach — reduces visibility of your interest |
 
 Other stables compete for the same talent. A candidate's **suitor interest band** (Low, Medium, High, All-In) tells you how much competition you're facing. Watch the **deadline** — if you don't finalise before it closes, the candidate may sign elsewhere.
+
+### JSA Eligibility Rules
+
+- **Age** — a standard recruit must be under 23 at the shindeshi kensa. Candidates carrying a **tsukedashi** credential (elite amateur titles) use the under-25 amateur-experience exception.
+- **Tsukedashi (付け出し)** — credentialed amateurs debut directly on the banzuke instead of maezumo: university champions at **Makushita 60**, national-title schoolers at **Sandanme 80**.
+- **Foreign quota** — each stable may hold **one** foreign-slot rikishi, bound at debut: a foreign-born recruit who later naturalises still occupies the slot (post-2010 rule). Foreign-born athletes who already held Japanese citizenship before debut do not count. A stable that absorbs wrestlers from a closed stable may temporarily hold two — but cannot recruit another foreigner until they retire.
+- **No transfers** — wrestlers never move between stables or re-enter the pool. A departed rikishi retires; the only mass moves happen when a stable closes.
 
 ### Recruitment Windows
 
@@ -887,6 +894,8 @@ Wrestlers retire for several reasons:
 | **Natural aging**        | Chance grows ~10% per year of age beyond 34 (e.g. ~10% at 35, ~20% at 36) |
 | **Voluntary**            | Player-initiated early retirement                |
 
+On retirement the JSA pays **intai-kin** (引退金) — a rank-keyed lump sum to the wrestler: ¥20M yokozuna, ¥15M ozeki, ¥7.5M sekiwake/komusubi, ¥5M maegashira, ¥3.5M juryo, ¥2.5M below juryo. An accomplished retiree may stay in the JSA as an oyakata — he needs an elder share (myoseki), or, if the pool is exhausted, a credential-tier retiree can take a **jun-toshiyori** temporary appointment (5 years for a yokozuna, 3 otherwise) or, for a great yokozuna, the **ichidai-toshiyori** one-generation name. A foreign-born retiree needs Japanese citizenship to convert.
+
 ### Hall of Fame
 
 Retired wrestlers with significant careers enter the **Hall of Fame**, accessible via the Archives section. Records include:
@@ -955,7 +964,7 @@ Era drift is reflected in media commentary and visible in the Almanac's league-w
 
 ### Myoseki — Elder Share Market
 
-The **Myoseki** market (under the JSA section) models the real elder-share system: exactly **105 shares** exist, each conferring the right to remain in the JSA as an oyakata after retirement. Shares can be held, leased to other retired rikishi (the de facto loan market), or sold — prestigious names command ¥150M–¥350M. Acquiring an elder share determines succession options, stable branching rights, and the oyakata career track after your wrestlers retire.
+The **Myoseki** market (under the JSA section) models the real elder-share system: exactly **105 shares** exist — the pool is fixed, and no merit creates a 106th. Each share confers the right to remain in the JSA as an oyakata after retirement. Shares can be held, leased to other retired rikishi (the de facto loan market), or sold — prestigious names command ¥150M–¥350M. Acquiring an elder share determines succession options, stable branching rights, and the oyakata career track after your wrestlers retire.
 
 ### Auto-Simulation
 
