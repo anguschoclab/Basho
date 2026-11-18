@@ -736,6 +736,8 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
       "category": "banzuke_committee",
       "data": {
         "status": "committee_deliberation",
+        "title": "Banzuke Committee",
+        "summary": "Banzuke committee (11–12): merit evidence +1.",
         "description": "Banzuke committee (11–12): merit evidence +1.",
         "rikishiId": "r_ozeki",
         "from": "makuuchi:大関E",
@@ -1824,6 +1826,8 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
       "category": "banzuke_committee",
       "data": {
         "status": "committee_deliberation",
+        "title": "Banzuke Committee",
+        "summary": "Banzuke committee (11–12): merit evidence +1.",
         "description": "Banzuke committee (11–12): merit evidence +1.",
         "rikishiId": "r_m5",
         "from": "makuuchi:前頭5E",
@@ -2898,6 +2902,8 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
       "category": "banzuke_committee",
       "data": {
         "status": "committee_deliberation",
+        "title": "Banzuke Committee",
+        "summary": "Banzuke committee (11–12): merit evidence +1.",
         "description": "Banzuke committee (11–12): merit evidence +1.",
         "rikishiId": "r_m5",
         "from": "makuuchi:前頭5E",

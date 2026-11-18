@@ -128,6 +128,8 @@ export function applyMovementEvents(
       "banzuke_committee",
       {
         status: "committee_deliberation",
+        title: "Banzuke Committee",
+        summary: `Banzuke committee (${decision.votesFor}–${decision.votesAgainst}): ${decision.rationale.join("; ")}.`,
         description: `Banzuke committee (${decision.votesFor}–${decision.votesAgainst}): ${decision.rationale.join("; ")}.`,
         rikishiId: evt.rikishiId,
         from: evt.from,

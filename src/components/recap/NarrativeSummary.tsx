@@ -15,6 +15,7 @@ import {
   NarrativeGovernanceSection,
   YdcSection,
   PressConferenceSection,
+  CommitteeSection,
   WrapUpFooter,
 } from "@/components/recap/NarrativeSummarySections";
 
@@ -38,6 +39,7 @@ export function NarrativeSummary({
     groupedEvents.governance?.length > 0 || (narrativeSummaryData.governanceLog?.length ?? 0) > 0;
   const hasYdcAccountability = (groupedEvents.ydcAccountability?.length ?? 0) > 0;
   const hasPressConference = (groupedEvents.pressConference?.length ?? 0) > 0;
+  const hasCommittee = (groupedEvents.committee?.length ?? 0) > 0;
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 delay-300 fill-mode-both">
@@ -55,6 +57,8 @@ export function NarrativeSummary({
       {hasYdcAccountability && <YdcSection groupedEvents={groupedEvents} />}
 
       {hasPressConference && <PressConferenceSection groupedEvents={groupedEvents} />}
+
+      {hasCommittee && <CommitteeSection groupedEvents={groupedEvents} />}
 
       <WrapUpFooter
         year={narrativeSummaryData.year}

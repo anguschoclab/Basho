@@ -106,6 +106,8 @@ export function distributePrizes(
         {
           status: "sansho_committee",
           regime: winner,
+          title: "Sansho Committee",
+          summary: `Sansho committee (${d.votesFor}–${d.votesAgainst}) selects ${r?.shikona ?? rikishiId} for ${winner}: ${d.rationale.join("; ")}.`,
           description: `Sansho committee (${d.votesFor}–${d.votesAgainst}) selects ${r?.shikona ?? rikishiId} for ${winner}: ${d.rationale.join("; ")}.`,
           rikishiId,
         },

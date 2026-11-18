@@ -12,6 +12,15 @@ import type { AvatarRenderData } from "@/engine/types/avatar";
 import { getHeya } from "@/presenters/worldAccess";
 import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 
+/** Committee deliberation events — surfaced in the recap regardless of phase/category. */
+function isCommitteeEvent(e: EngineEvent): boolean {
+  return (
+    e.category === "banzuke_committee" ||
+    e.data?.status === "committee_deliberation" ||
+    e.data?.status === "sansho_committee"
+  );
+}
+
 /** Events belonging to the basho wrap-up phase (optionally one basho). */
 export function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {
   return events
@@ -20,7 +29,8 @@ export function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number):
         (e.phase === "basho_wrap" ||
           e.category === "basho" ||
           e.category === "career" ||
-          e.category === "promotion") &&
+          e.category === "promotion" ||
+          isCommitteeEvent(e)) &&
         (bashoNumber === undefined || e.bashoNumber === bashoNumber)
     )
     .slice(-50);
@@ -37,10 +47,12 @@ export function groupEventsByNarrative(events: EngineEvent[]) {
     ydcAccountability: [] as EngineEvent[],
     pressConference: [] as EngineEvent[],
     sponsors: [] as EngineEvent[],
+    committee: [] as EngineEvent[],
     other: [] as EngineEvent[],
   };
   for (const e of events) {
-    if (e.type.includes("YUSHO") || e.type.includes("CHAMPIONSHIP")) groups.yusho.push(e);
+    if (isCommitteeEvent(e)) groups.committee.push(e);
+    else if (e.type.includes("YUSHO") || e.type.includes("CHAMPIONSHIP")) groups.yusho.push(e);
     else if (
       e.category === "promotion" ||
       e.type.includes("PROMOTION") ||
@@ -142,6 +154,13 @@ export function toNarrativeGroupedEvents(groupedEvents: ReturnType<typeof groupE
       title: e.title,
       summary: e.summary,
       narrative: e.data?.narrative as { text: string; id: string }[] | undefined,
+    })),
+    committee: groupedEvents.committee.map((e) => ({
+      title: e.title,
+      summary: e.summary,
+      status: (e.data?.status as string) ?? "committee_deliberation",
+      votesFor: e.data?.votesFor as number | undefined,
+      votesAgainst: e.data?.votesAgainst as number | undefined,
     })),
   };
 }

@@ -21,7 +21,7 @@ export default defineConfig({
     },
     {
       name: "soak",
-      testMatch: /(full-basho-lifecycle|year-of-bashos)\.e2e\.test\.ts/,
+      testMatch: /(full-basho-lifecycle|year-of-bashos|jsa-ui-spotcheck)\.e2e\.test\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
     {

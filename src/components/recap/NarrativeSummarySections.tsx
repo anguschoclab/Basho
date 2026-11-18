@@ -46,6 +46,13 @@ export interface GroupedNarrativeEvents {
     summary: string;
     narrative?: { text: string; id: string }[];
   }[];
+  committee?: {
+    title: string;
+    summary: string;
+    status: string;
+    votesFor?: number;
+    votesAgainst?: number;
+  }[];
 }
 
 export interface PrestigeChange {
@@ -429,6 +436,36 @@ export function YdcSection({ groupedEvents }: { groupedEvents: GroupedNarrativeE
       <div className="space-y-3">
         {(groupedEvents.ydcAccountability ?? []).map((e, i) => (
           <YdcEntry key={i} e={e} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** Committee deliberations — banzuke + sansho panel votes behind the outcomes. */
+export function CommitteeSection({ groupedEvents }: { groupedEvents: GroupedNarrativeEvents }) {
+  return (
+    <section className="space-y-6 pt-6">
+      <div className="flex items-center gap-3">
+        <h3 className="pro-header">Committee Deliberations</h3>
+        <div className="h-px flex-1 bg-border/20" />
+      </div>
+      <div className="space-y-3">
+        {(groupedEvents.committee ?? []).map((e, i) => (
+          <div
+            key={i}
+            className="dossier-paper p-4 rounded-lg border-l-4 border-l-primary flex items-start gap-4"
+          >
+            <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+              <Gavel className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-display font-black text-sm uppercase tracking-tight">
+                {e.title}
+              </div>
+              <p className="text-xs text-muted-foreground italic leading-relaxed">{e.summary}</p>
+            </div>
+          </div>
         ))}
       </div>
     </section>
