@@ -73,11 +73,15 @@ Measured at closeout (commits `60ba6bcc`…`1327467c`):
 | `bun run lint` | green via pre-commit hook on every commit |
 | `bun run test` (fast) | 1102 files / 10,241 tests — all green |
 | `bun run test:slow` | 18 files / 64 tests — all green (subprocess audits + long sims) |
+| `bun run test:perf` | 5 files / 14 tests — all green |
+| `bun run test:coverage` | 1102 files / 10,241 tests green; thresholds met 79.1/68.2/70.9/80.9 (after `duplicateExportGate` hook-timeout fix, `735ee808`) |
 | `bun run test:e2e:smoke` | 5/6 first pass; `reload-restore` flake under 6-worker load, green on isolated re-run |
+| `bun run test:e2e` (mobile) | 3/3 green |
+| `bun run test:e2e:soak` | `full-basho-lifecycle` + `jsa-ui-spotcheck` green; `year-of-bashos` hit its 2h timeout mid-basho-6 under heavy concurrent load — healthy sim, isolated re-run in progress |
+| determinism double-run | **PASS** — 2 runs byte-identical (26.4 MB serialized, basho horizon) |
 | `bun run test:timings` | `test-timings.json` re-baselined |
 
-Not run this pass: `test:perf` (baseline re-seeds via CI on main push),
-`test:e2e:soak`, and a determinism double-run — recommended before the
-dependabot upgrade lands. One UI wart observed during e2e: duplicate React
-keys `b-2026-hatsu-d2-*` in a bout list — origin unverified, flagged for
-the next pass.
+Not run this pass: the perf CI gate (baseline re-seeds on main push).
+The duplicate-React-key wart was root-caused and fixed: `useKenshoData`
+emitted a row per participant, duping `boutId` keys on same-heya kensho
+bouts and crediting losers with the winner's envelopes (`1a8d2f2f`).
