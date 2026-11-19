@@ -719,7 +719,8 @@ function beatSpoiler(p: PbpPipeline): void {
     const isCurrentlyLower = spoiler.rank === "maegashira";
     if (!formerSanyaku || !isCurrentlyLower) continue;
     const contenderInContention =
-      (world.currentBasho && isYushoContention(contender, spoiler, world.currentBasho)) ||
+      (world.currentBasho &&
+        isYushoContention(contender, spoiler, world.currentBasho, world)) ||
       (contender.currentBashoWins ?? 0) >= 8;
     if (!contenderInContention) continue;
     const formerRank =

@@ -561,12 +561,17 @@ export function applyBoutResult(
     return builder.build();
   }
 
+  // Maezumo participants are evaluation fillers — a bout touching one never
+  // writes standings, career counters, or history for either side.
+  const maezumoBout = east.isMaezumo === true || west.isMaezumo === true;
+
   // Double fusenpai (両者不戦敗): both rikishi absent for a scheduled bout —
   // no winner exists. Each side takes a fusenpai loss; no win, records, H2H,
   // media, or event pipeline runs.
   if (!result.winnerRikishiId) {
     const standings = new Map(basho.standings);
     for (const r of [east, west]) {
+      if (r.isMaezumo) continue;
       const rec = standings.get(r.id) || { wins: 0, losses: 0, absences: 0 };
       standings.set(r.id, {
         wins: rec.wins,
@@ -583,7 +588,7 @@ export function applyBoutResult(
 
   // 1. Update Standing — a fusenshō is a fusenpai loss, not an absence.
   const isFusensho = result.kimarite === "fusensho";
-  const standings = computeUpdatedStandings(basho, winner, loser);
+  const standings = maezumoBout ? basho.standings : computeUpdatedStandings(basho, winner, loser);
 
   // 1.5/1.6. Bout metrics + kinboshi tracking
   updateBoutMetrics(basho, winner, loser, result, isFusensho, builder);
@@ -591,11 +596,13 @@ export function applyBoutResult(
   // Bout-duration fatigue
   applyBoutFatigue(winner, loser, result, builder);
 
-  // Career records + per-bout MatchResultLog
-  updateCareerRecords(world, basho, match, result, winner, loser, builder);
+  if (!maezumoBout) {
+    // Career records + per-bout MatchResultLog
+    updateCareerRecords(world, basho, match, result, winner, loser, builder);
 
-  // 2. Achievement counters
-  applyAchievements(world, basho, match, result, winner, loser, builder);
+    // 2. Achievement counters
+    applyAchievements(world, basho, match, result, winner, loser, builder);
+  }
   const kinboshiAwardCount = (result.awards ?? []).filter((a) => a.type === "kinboshi").length;
 
   // 3/4. H2H + secondary systems

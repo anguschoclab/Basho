@@ -458,7 +458,8 @@ export function planDivisionCallups(args: {
 
     if (!callup) continue; // documented edge — the odd man sits.
     markExcluded(D, bottom.id);
-    const isEighth = !callup.isMaezumo && completedBouts(basho, callup.id) > 0;
+    const isEighth =
+      !callup.isMaezumo && day === EIGHTH_BOUT_DAY && completedBouts(basho, callup.id) > 0;
     pushFixed(D, {
       boutId: boutId(bottom.id, callup.id),
       day,

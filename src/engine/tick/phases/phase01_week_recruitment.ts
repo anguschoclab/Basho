@@ -5,7 +5,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder, worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import * as talentpool from "@/engine/generation/TalentPoolService";
 import { assignMentor } from "@/engine/legacy/lineage";
@@ -95,8 +95,11 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     }
   }
 
-  // 5. Finalize signed candidates into full Rikishi
-  builder.merge(talentpool.finalizeSignedCandidates(world));
+  // 5. Finalize signed candidates into full Rikishi — run against the world
+  // composed with everything queued so far: finalize emits a whole-field
+  // `talentPool` write, and worldFields merge is last-wins, so a base-derived
+  // snapshot would revert candidates the NPC fill just consumed (pool zombies).
+  builder.merge(talentpool.finalizeSignedCandidates(worldWithQueuedFields(world, builder)));
 
   // 6. Auto-assign mentors to newly recruited rikishi
   // Note: we look at CURRENT world state, but changes will be captured in impacts

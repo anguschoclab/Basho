@@ -69,10 +69,9 @@ function applyRosterFatigue(
   heyaId: string,
   delta: number
 ): void {
-  for (const rid of world.activeRikishiIds) {
-    const r = world.rikishi.get(rid);
-    if (!r || r.heyaId !== heyaId || r.isRetired) continue;
-    b.updateRikishi(rid, { fatigue: Math.max(0, (r.fatigue ?? 0) + delta) });
+  const roster = EntityCollection.getHeyaRoster(world, heyaId);
+  for (const r of roster) {
+    b.updateRikishi(r.id, { fatigue: Math.max(0, (r.fatigue ?? 0) + delta) });
   }
 }
 

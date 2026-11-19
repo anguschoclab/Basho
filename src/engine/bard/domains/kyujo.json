@@ -30,7 +30,11 @@
   "oversleeping": [
     "%SHIKONA% overslept and missed his bout — a fusensho loss that stunned the arena.",
     "A fusensho scandal — %SHIKONA% failed to appear on the dohyo, costing him the bout by default.",
-    "The crowd murmurs in disbelief as %SHIKONA%'s oversleeping results in a fusensho loss."
+    "The crowd murmurs in disbelief as %SHIKONA%'s oversleeping results in a fusensho loss.",
+    "Whispers of indiscipline swirl as %SHIKONA% sleeps through his match, forfeiting by fusensho.",
+    "A deeply embarrassing day for %SHIKONA%, whose failure to wake up hands his opponent a free win.",
+    "The ultimate unforced error: %SHIKONA% is absent from the dohyo after oversleeping his bout.",
+    "Officials are left waiting as %SHIKONA% is nowhere to be found — a fusensho loss via oversleeping."
   ],
   "multi_surgery": [
     "%SHIKONA% undergoes %COUNT% major operations — a long road to recovery lies ahead.",

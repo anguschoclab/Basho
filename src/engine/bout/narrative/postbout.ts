@@ -317,6 +317,7 @@ function beatPostBoutLeaderboard(p: PbpPipeline): void {
     let coLeaders = 0;
     let preBoutMaxWins = 0;
     for (const [rid, rec] of standings) {
+      if (world.rikishi.get(rid)?.division !== winnerRikishi.division) continue;
       const preW =
         rid === winnerRikishi.id ? winnerWins : rid === loserRikishi.id ? loserWins : rec.wins;
       if (preW > preBoutMaxWins) preBoutMaxWins = preW;

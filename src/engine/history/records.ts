@@ -119,7 +119,8 @@ export function onBashoEnded(world: WorldState): StateImpact {
 
   for (const rikishiId of world.activeRikishiIds) {
     const rikishi = getRikishi(world, rikishiId);
-    if (!rikishi) continue;
+    // Maezumo fillers are evaluation participants — never board-eligible.
+    if (!rikishi || rikishi.isMaezumo) continue;
     updateRikishiBoards(updatedRecords, rikishi, year, month);
   }
 

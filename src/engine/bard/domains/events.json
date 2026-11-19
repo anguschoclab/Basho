@@ -367,12 +367,17 @@
     "oversleeping_incident_title": [
       "%SHIKONA% Oversleeps, Misses Bout",
       "Fusensho Scandal: %SHIKONA% No-Show",
-      "%SHIKONA% Late to the Dohyo"
+      "%SHIKONA% Late to the Dohyo",
+      "%SHIKONA% Sleeps Through Match",
+      "Unforced Error: %SHIKONA% Absent"
     ],
     "oversleeping_incident_summary": [
       "%SHIKONA% overslept and missed his bout on day %DAY% — a fusensho loss that stunned the arena.",
       "A shocking scene as %SHIKONA% fails to appear — oversleeping costs him the bout by default.",
-      "The crowd murmurs in disbelief as %SHIKONA%'s absence is announced — a fusensho loss from oversleeping."
+      "The crowd murmurs in disbelief as %SHIKONA%'s absence is announced — a fusensho loss from oversleeping.",
+      "Whispers of indiscipline swirl on day %DAY% as %SHIKONA% sleeps through his match, forfeiting by fusensho.",
+      "A deeply embarrassing day %DAY% for %SHIKONA%, whose failure to wake up hands his opponent a free win.",
+      "The ultimate unforced error: %SHIKONA% is absent from the dohyo on day %DAY% after oversleeping his bout."
     ],
     "weight_milestone_title": [
       "%SHIKONA% Reaches %WEIGHT%kg",

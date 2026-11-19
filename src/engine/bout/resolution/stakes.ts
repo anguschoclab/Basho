@@ -82,8 +82,8 @@ export function applyStakesAndKensho(
     // Title-stakes flags must be set BEFORE onBoutResolved — the rivalry
     // service reads them to pick heat-gain constants and the title_stakes
     // trigger. Previously they were only assigned in the kensho block below.
-    const yushoContention = isYushoContention(east, west, basho);
-    const playoff = isPlayoffScenario(east, west, basho);
+    const yushoContention = isYushoContention(east, west, basho, world);
+    const playoff = isPlayoffScenario(east, west, basho, world);
     const importance = determineBoutImportance(
       east.rank,
       west.rank,

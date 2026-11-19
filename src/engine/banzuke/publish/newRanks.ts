@@ -42,8 +42,21 @@ export function applyNewRanks(
       const oldRank = rikishi.rank;
       const oldShikona = rikishi.shikona;
 
-      // Check if shikona should change due to promotion
-      const newShikona = checkShikonaChange(world, rikishi, oldRank);
+      // Check if shikona should change due to promotion — pass the POST-update
+      // shape: checkShikonaChange diffs rikishi.rank against previousRank, and
+      // at this point `rikishi` still carries the old rank (the update is only
+      // staged below), which made every promotion predicate unreachable.
+      const newShikona = checkShikonaChange(
+        world,
+        {
+          ...rikishi,
+          rank: newEntry.position.rank,
+          division: newEntry.division,
+          rankNumber: newEntry.position.rankNumber,
+          side: newEntry.position.side,
+        },
+        oldRank
+      );
 
       // Track if rikishi was kyujo due to injury — set return flag for narrative triggers
       const wasKyujoFromInjury = rikishi.isKyujo && rikishi.kyujoReason === "injury";

@@ -76,7 +76,6 @@ export const HEAT_CONFIG: Record<
 };
 
 export function getH2HRecord(r1: UIRikishi, r2: UIRikishi) {
-  const record = (r1 as UIRikishi & { h2h?: Record<string, { wins: number; losses: number }> })
-    .h2h?.[r2.id];
+  const record = r1.h2h?.[r2.id];
   return record ? { wins: record.wins, losses: record.losses } : { wins: 0, losses: 0 };
 }

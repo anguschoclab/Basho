@@ -252,23 +252,24 @@ function beatTitleStakes(p: PbpPipeline): void {
 }
 
 function beatLeaderboard(p: PbpPipeline): void {
-  const { day, preBoutRng, push, world } = p;
-  // 3p. Leaderboard summary (days 5+, when leader has enough wins)
+  const { day, east, preBoutRng, push, world } = p;
+  // 3p. Leaderboard summary (days 5+, when leader has enough wins) — scoped
+  // to the bout's division; the standings map mixes every division.
   if (day >= 5 && world.currentBasho) {
     const standings = world.currentBasho.standings;
     let maxWins = 0;
     const leaders: string[] = [];
     let chasers = 0;
     for (const [rid, rec] of standings) {
+      const r = world.rikishi.get(rid);
+      if (!r || r.division !== east.division) continue;
       const w = rec.wins;
       if (w > maxWins) {
         maxWins = w;
         leaders.length = 0;
-        const r = world.rikishi.get(rid);
-        if (r) leaders.push(r.shikona);
+        leaders.push(r.shikona);
       } else if (w === maxWins) {
-        const r = world.rikishi.get(rid);
-        if (r) leaders.push(r.shikona);
+        leaders.push(r.shikona);
       } else if (w === maxWins - 1) {
         chasers++;
       }
@@ -297,7 +298,7 @@ function beatPlayoffImplications(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // 3p2. Yusho contention / playoff implications
   if (world.currentBasho) {
-    if (isYushoContention(east, west, world.currentBasho)) {
+    if (isYushoContention(east, west, world.currentBasho, world)) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.yusho_race", {
           EAST: east.shikona,
@@ -309,7 +310,7 @@ function beatPlayoffImplications(p: PbpPipeline): void {
         ["yusho_race"]
       );
     }
-    if (isPlayoffScenario(east, west, world.currentBasho)) {
+    if (isPlayoffScenario(east, west, world.currentBasho, world)) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.playoff_implications", {
           EAST: east.shikona,
@@ -430,7 +431,8 @@ function beatCoLeader(p: PbpPipeline): void {
     const standings = world.currentBasho.standings;
     let maxWins = 0;
     let leaders = 0;
-    for (const [, rec] of standings) {
+    for (const [rid, rec] of standings) {
+      if (world.rikishi.get(rid)?.division !== east.division) continue;
       if (rec.wins > maxWins) {
         maxWins = rec.wins;
         leaders = 1;

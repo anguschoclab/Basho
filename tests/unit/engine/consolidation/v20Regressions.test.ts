@@ -15,7 +15,7 @@ import { planDivisionCallups } from "@/engine/calendar/schedule";
 import { materializeCandidateToRikishiInternal } from "@/engine/generation/TalentPoolMaterialization";
 import { fillVacanciesForNPCWithBidding } from "@/engine/generation/TalentPoolNPCRecruitment";
 import { finalizeSignedCandidates } from "@/engine/generation/TalentPoolMaterialization";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { createImpactBuilder, worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { EIGHTH_BOUT_DAY } from "@/constants/engine/matchmaking";
 import type { WorldState } from "@/engine/types/world";
@@ -76,7 +76,7 @@ describe("V20-E4 — applyNewRanks triggers promotion shikona changes", () => {
   const buildWorld = (seed: string) => {
     const world = MockFactory.createWorld({ seed });
     const heya = MockFactory.createHeya("heya_a");
-    const oyakata = MockFactory.createOyakata("oy_a", {
+    const oyakata = MockFactory.createOyakata(heya.oyakataId, {
       heyaId: heya.id,
       archetype: "traditionalist",
       formerShikona: "Takanohana",
@@ -310,9 +310,12 @@ describe("V20-E14 — NPC-consumed candidates stay consumed", () => {
     >;
     expect(afterFill["c-open"]).toBeUndefined();
 
+    // Mirror the phase's production composition: finalize runs against the
+    // world with everything queued so far, so its whole-field talentPool
+    // write cannot revert the fill's consumed candidates.
     const builder = createImpactBuilder("phase01_week_recruitment-repro");
     builder.merge(fillVacanciesForNPCWithBidding(world, { [npcHeya.id]: 1 }, { systemBackfill: true }));
-    builder.merge(finalizeSignedCandidates(world));
+    builder.merge(finalizeSignedCandidates(worldWithQueuedFields(world, builder)));
     const resolved = resolveImpacts(world, [builder.build()]);
 
     const post = resolved.talentPool?.candidates as Record<
