@@ -154,6 +154,23 @@ function updateBoutMetrics(
     if (isPullStyleKimarite(result.kimarite)) {
       wMetrics.pullWins = (wMetrics.pullWins ?? 0) + 1;
     }
+
+    // W O — record last basho day each side attempted or executed a henka.
+    const henkaDay = result.day ?? basho.day;
+    const eastId = result.winner === "east" ? winner.id : loser.id;
+    const westId = result.winner === "east" ? loser.id : winner.id;
+    const eastDidHenka =
+      result.tactics?.east === "HENKA" ||
+      (result.log ?? []).some(
+        (e) => e.data?.event === "henka_success" && e.data?.attackerSide === "east"
+      );
+    const westDidHenka =
+      result.tactics?.west === "HENKA" ||
+      (result.log ?? []).some(
+        (e) => e.data?.event === "henka_success" && e.data?.attackerSide === "west"
+      );
+    if (eastDidHenka) ensureMetrics(eastId).lastHenkaDay = henkaDay;
+    if (westDidHenka) ensureMetrics(westId).lastHenkaDay = henkaDay;
   }
   // Track kinboshi earned this basho for the end-of-basho mochikyukin
   // accumulation. Written in the SAME currentBasho update as boutMetrics so

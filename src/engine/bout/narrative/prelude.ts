@@ -7,6 +7,12 @@ import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/core/rng";
 import { BloodlineService } from "@/engine/legacy/BloodlineService";
+import {
+  H2H_RECENT_MIN_SAMPLE,
+  H2H_RECENT_SURGE_MIN_TOTAL,
+  H2H_RECENT_WINDOW,
+} from "@/constants/engine/narrative";
+import { getRankDisplayEntry } from "@/constants/engine/rankDisplay";
 
 function beatOpeningVenue(p: PbpPipeline): void {
   const { ctx, day, east, intensity, push, seed, west } = p;
@@ -213,10 +219,86 @@ function beatStreakCallout(p: PbpPipeline): void {
   }
 }
 
+function beatGiantKillerH2H(p: PbpPipeline): void {
+  const { east, pair, push, seed, west } = p;
+  if (!pair || pair.meetings < 2) return;
+  const aIsEast = pair.aId === east.id;
+  const eastWins = aIsEast ? pair.aWins : pair.bWins;
+  const westWins = aIsEast ? pair.bWins : pair.aWins;
+
+  const eastIsMaegashira = east.rank === "maegashira";
+  const westIsMaegashira = west.rank === "maegashira";
+  const eastIsElite = east.rank === "yokozuna" || east.rank === "ozeki";
+  const westIsElite = west.rank === "yokozuna" || west.rank === "ozeki";
+
+  const eastLead = eastIsMaegashira && westIsElite && eastWins > westWins && eastWins >= 2;
+  const westLead = westIsMaegashira && eastIsElite && westWins > eastWins && westWins >= 2;
+  if (!eastLead && !westLead) return;
+
+  const underdog = eastLead ? east : west;
+  const elite = eastLead ? west : east;
+  const underdogWins = eastLead ? eastWins : westWins;
+  const eliteWins = eastLead ? westWins : eastWins;
+  const gkRng = rngFromSeed(seed, "pbp", "h2h-giant-killer");
+  push(
+    BardEngine.resolve(gkRng, "pre_bout.giant_killer_h2h", {
+      UNDERDOG: underdog.shikona,
+      ELITE: elite.shikona,
+      ELITE_RANK: getRankDisplayEntry(elite.rank ?? "")?.en ?? elite.rank ?? "",
+      UNDERDOG_WINS: underdogWins.toString(),
+      ELITE_WINS: eliteWins.toString(),
+      underdogId: underdog.id,
+      eliteId: elite.id,
+    }).text,
+    "opening",
+    ["rivalry", "upset"]
+  );
+}
+
+function beatH2HRecentSurge(p: PbpPipeline): void {
+  const { east, pair, push, seed, west } = p;
+  if (!pair || pair.meetings < H2H_RECENT_SURGE_MIN_TOTAL) return;
+  const aIsEast = pair.aId === east.id;
+  const eastWins = aIsEast ? pair.aWins : pair.bWins;
+  const westWins = aIsEast ? pair.bWins : pair.aWins;
+  if (eastWins === westWins) return;
+
+  const leaderIsEast = eastWins > westWins;
+  const careerLeader = leaderIsEast ? east : west;
+  const surger = leaderIsEast ? west : east;
+  const leaderWins = leaderIsEast ? eastWins : westWins;
+  const surgerWins = leaderIsEast ? westWins : eastWins;
+
+  const mutual = (east.history ?? []).filter((h) => h.opponentId === west.id);
+  const recent = mutual.slice(-H2H_RECENT_WINDOW);
+  if (recent.length < H2H_RECENT_MIN_SAMPLE) return;
+
+  const recentSurgerWins = recent.filter((h) => (surger === east ? h.win : !h.win)).length;
+  if (recentSurgerWins < recent.length - 1) return;
+
+  const surgeRng = rngFromSeed(seed, "pbp", "h2h-recent-surge");
+  push(
+    BardEngine.resolve(surgeRng, "pre_bout.h2h_recent_surge", {
+      CAREER_LEADER: careerLeader.shikona,
+      SURGER: surger.shikona,
+      LEADER_WINS: leaderWins.toString(),
+      SURGER_WINS: surgerWins.toString(),
+      RECENT_WINS: recentSurgerWins.toString(),
+      RECENT_TOTAL: recent.length.toString(),
+      leaderId: careerLeader.id,
+      surgerId: surger.id,
+    }).text,
+    "opening",
+    ["rivalry"]
+  );
+}
+
 export function narratePrelude(p: PbpPipeline): void {
   beatOpeningVenue(p);
   beatDynasty(p);
   beatDramaOpening(p);
   beatRivalryContext(p);
+  beatGiantKillerH2H(p);
+  beatH2HRecentSurge(p);
   beatStreakCallout(p);
 }

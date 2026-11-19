@@ -555,6 +555,9 @@ export const DESPERATE_HENKA_BONUS = 0.1;
 /** W N — speed stat at which a winning henka reads as a leaping evasion. */
 export const LEAPING_HENKA_SPEED = 70;
 
+/** W O — defense bonus when an opponent attempts henka on the day after pulling one (tape is out). */
+export const HENKA_REPEAT_DEFENSE_BONUS = 10;
+
 // ─────────────────────────────────────────
 // Counter-tactic reduction constants
 // ─────────────────────────────────────────

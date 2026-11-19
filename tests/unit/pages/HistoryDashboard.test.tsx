@@ -170,7 +170,7 @@ describe("HistoryDashboard — Records tab", () => {
     mockUseGame(makeWorld({ records: undefined }));
     render(<HistoryDashboard />);
     const empty = screen.getAllByText("No records yet recorded...");
-    expect(empty).toHaveLength(8);
+    expect(empty).toHaveLength(9);
   });
 
   it("shows empty state for individual empty categories while displaying populated ones", () => {
@@ -194,7 +194,7 @@ describe("HistoryDashboard — Records tab", () => {
     expect(screen.getByText("Hakuho")).toBeTruthy();
     expect(screen.getByText("Kakuryu")).toBeTruthy();
     const empty = screen.getAllByText("No records yet recorded...");
-    expect(empty).toHaveLength(7);
+    expect(empty).toHaveLength(8);
   });
 
   it("renders record entry shikona and value badge", () => {

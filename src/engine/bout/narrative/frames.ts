@@ -393,6 +393,12 @@ function handleGripTransitionFrame(s: FrameState, entry: BoutLogEntry, rng: Seed
         gainedInside &&
         ((pref === "migi" && rightInside === true) ||
           (pref === "hidari" && leftInside === true));
+      const planBInside =
+        gainedInside &&
+        !matchedPreferred &&
+        to !== "morozashi" &&
+        (pref === "migi" || pref === "hidari") &&
+        (rightInside === true || leftInside === true);
       const denied = gainedInside && (oppTo === "none" || oppTo === "outside");
 
       let gripPath: string | null = null;
@@ -400,6 +406,9 @@ function handleGripTransitionFrame(s: FrameState, entry: BoutLogEntry, rng: Seed
       if (matchedPreferred) {
         gripPath = "combat.phases.grip_transition.favorite_grip";
         gripTag = "favorite_grip";
+      } else if (planBInside) {
+        gripPath = "combat.phases.grip_transition.plan_b_grip";
+        gripTag = "plan_b_grip";
       } else if (wasOutside && gainedInside) {
         gripPath = "combat.phases.grip_transition.makikae";
         gripTag = "makikae";
@@ -587,6 +596,22 @@ function handleEdgeCrisisFrame(s: FrameState, entry: BoutLogEntry, rng: SeededRN
   }
 }
 
+function handleClinchToBeltFrame(s: FrameState, entry: BoutLogEntry, rng: SeededRNG): void {
+  const { east, push, west } = s.p;
+  if (entry.phase === "engagement" && entry.data?.event === "clinch_to_belt") {
+    push(
+      BardEngine.resolve(rng, "combat.phases.grip_transition.thrust_to_belt", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "grip_transition",
+      ["thrust_to_belt"]
+    );
+  }
+}
+
 function narrateFrameEntry(s: FrameState, entry: BoutLogEntry, idx: number): void {
   const { push, seed } = s.p;
   const tickSeed = `${seed}-tick-${(entry.data?.tick as number) || 0}-${idx}`;
@@ -597,6 +622,7 @@ function narrateFrameEntry(s: FrameState, entry: BoutLogEntry, idx: number): voi
   }
 
   handleEngagementFrame(s, entry, rng, tickSeed);
+  handleClinchToBeltFrame(s, entry, rng);
   handleTachiaiFrame(s, entry, rng);
   handleClinchFrame(s, entry, rng);
   handleMomentumFrame(s, entry, rng);

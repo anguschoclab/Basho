@@ -406,7 +406,8 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
         "careerBouts": [],
         "makuuchiBouts": [],
         "consecutiveAppearances": [],
-        "kinboshiConceded": []
+        "kinboshiConceded": [],
+        "oldestMakuuchiKachiKoshi": []
       },
       "active": {
         "careerWins": [],
@@ -417,7 +418,8 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
         "careerBouts": [],
         "makuuchiBouts": [],
         "consecutiveAppearances": [],
-        "kinboshiConceded": []
+        "kinboshiConceded": [],
+        "oldestMakuuchiKachiKoshi": []
       }
     }
   }
@@ -656,7 +658,8 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
         "careerBouts": [],
         "makuuchiBouts": [],
         "consecutiveAppearances": [],
-        "kinboshiConceded": []
+        "kinboshiConceded": [],
+        "oldestMakuuchiKachiKoshi": []
       },
       "active": {
         "careerWins": [],
@@ -667,7 +670,8 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
         "careerBouts": [],
         "makuuchiBouts": [],
         "consecutiveAppearances": [],
-        "kinboshiConceded": []
+        "kinboshiConceded": [],
+        "oldestMakuuchiKachiKoshi": []
       }
     }
   }

@@ -384,8 +384,13 @@ export interface BashoState {
       tachiaiWonButLost?: number;
       /** W N — wins by pull-family kimarite (hikiotoshi, hatakikomi, tsukiotoshi…). */
       pullWins?: number;
+      /** W O — last basho day on which this rikishi attempted or executed a henka. */
+      lastHenkaDay?: number;
     }
   >;
+
+  /** W O — mid-basho kyujo re-entry (sai-shutsujo): rikishi ID -> basho day they returned. */
+  reenteredOnDay?: Record<Id, number>;
 
   /** True for exhibition/jungyo basho — results do not count toward records or banzuke. */
   isExhibition?: boolean;

@@ -16,6 +16,21 @@ import {
 } from "@/constants/engine/generation";
 import { NOTABLE_NARRATIVE_TAGS, NOTABLE_NARRATIVE_PHASES } from "@/engine/almanac/types";
 import type { PbpLine } from "@/engine/bout/narrative/pbpTypes";
+import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
+
+/** Count trailing non-kachi-koshi tournaments in a rikishi's career history. */
+export function countKachiKoshiDrought(
+  history: { wins: number; losses: number; rank: Rank }[] | undefined
+): number {
+  if (!history || history.length === 0) return 0;
+  let drought = 0;
+  for (let i = history.length - 1; i >= 0; i--) {
+    const s = history[i];
+    if (isKachiKoshi(s.wins, s.losses, s.rank)) break;
+    drought++;
+  }
+  return drought;
+}
 
 export function countMakuuchiTournaments(history: { division?: string }[] | undefined): number {
   if (!history) return 0;

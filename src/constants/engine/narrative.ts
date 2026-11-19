@@ -185,3 +185,34 @@ export const PHASE_TWO_FRAGILITY_RATIO = 0.5;
 
 /** W N — latest day on which a first-basho kachi-koshi counts as a fast debut clinch. */
 export const DEBUT_KACHI_MAX_DAY = 10;
+
+/** W O — prior winless H2H losses required before a first win is a "monkey off his back" breakthrough. */
+export const H2H_HOODOO_MIN_LOSSES = 3;
+
+/** W O — minimum career meetings before a recent-form H2H surge beat fires. */
+export const H2H_RECENT_SURGE_MIN_TOTAL = 6;
+
+/** W O — window of recent mutual bouts inspected for a recent H2H surge. */
+export const H2H_RECENT_WINDOW = 6;
+
+/** W O — minimum mutual history entries needed to evaluate a recent H2H surge. */
+export const H2H_RECENT_MIN_SAMPLE = 5;
+
+/** W O — minimum age for the historic oldest-makuuchi-kachi-koshi record beat & interview. */
+export const OLDEST_KACHI_KOSHI_MIN_AGE = 38;
+
+/** W O — earliest kachi-koshi day windows (fixing dead day<=7 check for 8-win sekitori). */
+export const EARLIEST_KACHI_SEKITORI_MAX_DAY = 11;
+export const EARLIEST_KACHI_LOWER_MAX_DAY = 5;
+
+/** W O — trailing non-KK basho in careerHistory before kachi-koshi drought commentary fires (2 => first in 3+). */
+export const KACHI_DROUGHT_MIN_BASHO = 2;
+
+/** W O — consecutive losses (with >=1 basho win) for losing-skid / skid-snapped commentary. */
+export const LOSING_SKID_MIN = 4;
+
+/** W O — height (cm) for both combatants to qualify as a "Battle of the Giants". */
+export const GIANT_HEIGHT_THRESHOLD = 190;
+
+/** W O — maximum age for the "proven giant-killer with untapped potential" beat. */
+export const PROVEN_GIANT_KILLER_MAX_AGE = 25;

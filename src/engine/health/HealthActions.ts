@@ -71,6 +71,15 @@ export function treatInjury(world: WorldState, rikishiId: string, weeks: number)
       recentlyReturnedFromInjury: true,
     });
     builder.updateRikishiNestedField(rikishiId, "currentInjury", undefined);
+    if (r.isKyujo && world.cyclePhase === "active_basho" && world.currentBasho) {
+      builder.updateWorldField("currentBasho", {
+        ...world.currentBasho,
+        reenteredOnDay: {
+          ...(world.currentBasho.reenteredOnDay ?? {}),
+          [rikishiId]: world.currentBasho.day,
+        },
+      });
+    }
   } else {
     builder.updateRikishi(rikishiId, {
       injuryWeeksRemaining: remaining,

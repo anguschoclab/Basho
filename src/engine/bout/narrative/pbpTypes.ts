@@ -112,7 +112,23 @@ export type PbpTag =
   | "limp_away"
   | "compete_credit"
   | "sibling_lead"
-  | "phase_two";
+  | "phase_two"
+  | "post_henka_scrutiny"
+  | "oldest_kachi_record"
+  | "kachi_drought"
+  | "kachi_denied"
+  | "make_koshi_staved_off"
+  | "pride_win"
+  | "losing_skid"
+  | "skid_snapped"
+  | "battle_of_giants"
+  | "prefecture_showdown"
+  | "sibling_kyujo"
+  | "mid_basho_return"
+  | "thrust_to_belt"
+  | "plan_b_grip"
+  | "morozashi_escape"
+  | "rank_pride";
 
 export type PbpLine = {
   text: string;

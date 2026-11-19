@@ -22,6 +22,13 @@ import { isSanyakuRank, getRankDisplayEntry, DIVISION_NAMES } from "@/constants/
 import { BASHO_NAMES } from "@/constants/ui/calendar";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import type { Division } from "@/engine/types/banzuke";
+import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
+import { countKachiKoshiDrought } from "@/engine/bout/narrative/helpers";
+import {
+  KACHI_DROUGHT_MIN_BASHO,
+  LOSING_SKID_MIN,
+  PROVEN_GIANT_KILLER_MAX_AGE,
+} from "@/constants/engine/narrative";
 
 function beatHometown(p: PbpPipeline): void {
   const { bashoInfo, east, preBoutRng, push, west } = p;
@@ -49,6 +56,34 @@ function beatHometown(p: PbpPipeline): void {
         }).text,
         "pre_bout",
         ["hometown"]
+      );
+    }
+  } else if (east.origin && west.origin && east.origin === west.origin) {
+    const tier = hometownTier(east.origin, bashoInfo?.location);
+    if (tier) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.prefecture_showdown_local", {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          ORIGIN: east.origin,
+          REGION: bashoRegionLabel(bashoInfo?.location) ?? bashoInfo?.location ?? "",
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "pre_bout",
+        ["hometown", "prefecture_showdown"]
+      );
+    } else {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.prefecture_showdown", {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          ORIGIN: east.origin,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "pre_bout",
+        ["hometown", "prefecture_showdown"]
       );
     }
   }
@@ -347,6 +382,17 @@ function beatHurtLowerBody(p: PbpPipeline): void {
   }
 }
 
+function findKyujoSibling(
+  world: PbpPipeline["world"],
+  focal: PbpPipeline["east"]
+): PbpPipeline["east"] | undefined {
+  for (const sibId of focal.siblingIds ?? []) {
+    const sib = world.rikishi.get(sibId);
+    if (sib?.isKyujo) return sib;
+  }
+  return undefined;
+}
+
 function beatSiblingLead(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // W N — "his brother is sharing the lead down in Juryo": a combatant's
@@ -364,6 +410,7 @@ function beatSiblingLead(p: PbpPipeline): void {
       divisionMax.set(rr.division, rec.wins);
     }
   }
+  let emitted = false;
   for (const focal of [east, west]) {
     const sibId = focal.siblingIds?.[0];
     if (!sibId) continue;
@@ -384,7 +431,25 @@ function beatSiblingLead(p: PbpPipeline): void {
       "pre_bout",
       ["sibling_lead"]
     );
+    emitted = true;
     break;
+  }
+  if (!emitted) {
+    for (const focal of [east, west]) {
+      const sib = findKyujoSibling(world, focal);
+      if (!sib) continue;
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.sibling_kyujo", {
+          SHIKONA: focal.shikona,
+          SIBLING: sib.shikona,
+          rikishiId: focal.id,
+          siblingId: sib.id,
+        }).text,
+        "pre_bout",
+        ["sibling_kyujo"]
+      );
+      break;
+    }
   }
 }
 
@@ -809,6 +874,87 @@ function beatSanyakuArcs(p: PbpPipeline): void {
   }
 }
 
+function beatPostHenkaScrutiny(p: PbpPipeline): void {
+  const { day, east, preBoutRng, push, west, world } = p;
+  if (day <= 1 || !world.currentBasho?.boutMetrics) return;
+  for (const r of [east, west]) {
+    if (world.currentBasho.boutMetrics[r.id]?.lastHenkaDay !== day - 1) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.post_henka_scrutiny", {
+        SHIKONA: r.shikona,
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["henka", "post_henka_scrutiny"]
+    );
+    break;
+  }
+}
+
+function beatKachiDrought(p: PbpPipeline): void {
+  const { day, east, preBoutRng, push, west } = p;
+  if (day < 8) return;
+  for (const r of [east, west]) {
+    const thresh = kachiKoshiThreshold(r.rank);
+    const w = r.currentBashoWins ?? 0;
+    const l = r.currentBashoLosses ?? 0;
+    if (w < thresh - 3 || w >= thresh || l >= thresh) continue;
+    const drought = countKachiKoshiDrought(r.careerHistory);
+    if (drought < KACHI_DROUGHT_MIN_BASHO) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.kachi_drought", {
+        SHIKONA: r.shikona,
+        COUNT: (drought + 1).toString(),
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["kachi_koshi", "kachi_drought"]
+    );
+    break;
+  }
+}
+
+function beatLosingSkid(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  for (const r of [east, west]) {
+    const streak = r.currentLossStreak ?? 0;
+    if (streak < LOSING_SKID_MIN || (r.currentBashoWins ?? 0) <= 0) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.losing_skid", {
+        SHIKONA: r.shikona,
+        STREAK: streak.toString(),
+        DAYS: (streak + 1).toString(),
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["streak", "losing_skid"]
+    );
+    break;
+  }
+}
+
+function beatProvenGiantKiller(p: PbpPipeline): void {
+  const { east, eastAge, preBoutRng, push, west, westAge } = p;
+  for (const [r, age] of [
+    [east, eastAge],
+    [west, westAge],
+  ] as const) {
+    if (isSanyakuRank(r.rank ?? "")) continue;
+    if (age > PROVEN_GIANT_KILLER_MAX_AGE) continue;
+    if ((r.stats?.achievements?.kinboshiEarned ?? 0) < 1) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.proven_giant_killer", {
+        SHIKONA: r.shikona,
+        AGE: age.toString(),
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["kinboshi", "rookie"]
+    );
+    break;
+  }
+}
+
 export function narrateStakes(p: PbpPipeline): void {
   beatHometown(p);
   beatSignatureGrip(p);
@@ -835,4 +981,8 @@ export function narrateStakes(p: PbpPipeline): void {
   beatSiblingLead(p);
   beatKenshoMention(p);
   beatBoutOfTheDay(p);
+  beatPostHenkaScrutiny(p);
+  beatKachiDrought(p);
+  beatLosingSkid(p);
+  beatProvenGiantKiller(p);
 }

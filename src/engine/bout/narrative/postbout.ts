@@ -3,6 +3,7 @@
  * Code moved verbatim; dependencies arrive via the shared PbpPipeline.
  */
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
+import type { PbpTag } from "@/engine/bout/narrative/pbpTypes";
 import {
   BIRTHDAY_WINDOW_DAYS,
   CAREER_BOUT_MILESTONES,
@@ -12,19 +13,24 @@ import {
   WEIGHT_DIFF_THRESHOLD,
 } from "@/constants/engine/generation";
 import {
+  H2H_HOODOO_MIN_LOSSES,
+  KACHI_DROUGHT_MIN_BASHO,
+  LOSING_SKID_MIN,
   NARRATIVE_GYOJI_CONFUSED_CHANCE,
+  OLDEST_KACHI_KOSHI_MIN_AGE,
   PHASE_TWO_MIN,
   PULL_CHARM_MIN_ABSORB,
 } from "@/constants/engine/narrative";
 import { LEAPING_HENKA_SPEED } from "@/constants/engine/physics";
 import { isPullStyleKimarite } from "@/engine/bout/ReplayMetadata";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
-import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { isKachiKoshi, isMakeKoshi, kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
+import { countKachiKoshiDrought } from "@/engine/bout/narrative/helpers";
 import { KINJITE_FOUL_LABELS } from "@/engine/bout/kinjite";
 import { rngFromSeed } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
-import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { getRankDisplayEntry, isSanyakuRank } from "@/constants/engine/rankDisplay";
 import type { BoutTactic } from "@/engine/types/combat";
 
 const TACTIC_LABELS: Record<BoutTactic, string> = {
@@ -203,6 +209,53 @@ function beatPostBoutBoutMilestone(p: PbpPipeline): void {
   }
 }
 
+function beatOldestKachiRecord(p: PbpPipeline): void {
+  const { eastAge, postBoutRng, push, result, westAge, winnerRikishi, world } = p;
+  if (winnerRikishi.division !== "makuuchi") return;
+  const winnerAge = result.winner === "east" ? eastAge : westAge;
+  if (winnerAge < OLDEST_KACHI_KOSHI_MIN_AGE) return;
+  const prevBest = world.records?.allTime?.oldestMakuuchiKachiKoshi?.[0];
+  if (prevBest && winnerAge <= prevBest.value) return;
+
+  if (prevBest && prevBest.rikishiId !== winnerRikishi.id) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.oldest_kachi_record", {
+        SHIKONA: winnerRikishi.shikona,
+        AGE: winnerAge.toString(),
+        PREV_HOLDER: prevBest.shikona,
+        rikishiId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["milestone", "veteran", "oldest_kachi_record"]
+    );
+  } else {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.oldest_kachi_milestone", {
+        SHIKONA: winnerRikishi.shikona,
+        AGE: winnerAge.toString(),
+        rikishiId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["milestone", "veteran", "oldest_kachi_record"]
+    );
+  }
+}
+
+function beatKachiDroughtBroken(p: PbpPipeline): void {
+  const { postBoutRng, push, winnerRikishi } = p;
+  const drought = countKachiKoshiDrought(winnerRikishi.careerHistory);
+  if (drought < KACHI_DROUGHT_MIN_BASHO) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.kachi_drought_broken", {
+      SHIKONA: winnerRikishi.shikona,
+      COUNT: (drought + 1).toString(),
+      rikishiId: winnerRikishi.id,
+    }).text,
+    "post_bout",
+    ["kachi_koshi", "kachi_drought"]
+  );
+}
+
 function beatPostBoutKachi(p: PbpPipeline): void {
   const {
     bashoInfo,
@@ -225,6 +278,11 @@ function beatPostBoutKachi(p: PbpPipeline): void {
       "post_bout",
       ["kachi_koshi"]
     );
+
+    if (winnerWins + 1 === kachiKoshiThreshold(winnerRikishi.rank)) {
+      beatOldestKachiRecord(p);
+      beatKachiDroughtBroken(p);
+    }
 
     // 14b. Consecutive kachi-koshi storyline
     const kachiStreak = winnerRikishi.consecutiveKachiKoshi ?? 0;
@@ -521,11 +579,19 @@ function beatPostBoutRivalry(p: PbpPipeline): void {
       const loserShikona = winnerIsEast ? west.shikona : east.shikona;
       const winnerNewWins = winnerIsEast ? newEastWins : newWestWins;
       const loserNewWins = winnerIsEast ? newWestWins : newEastWins;
+      const winnerWinsBefore = winnerIsEast ? eastWinsBefore : westWinsBefore;
+      const loserWinsBefore = winnerIsEast ? westWinsBefore : eastWinsBefore;
       const diff = Math.abs(newEastWins - newWestWins);
 
       let rivalryPath: string;
-      if (diff >= 3) {
+      let rivalryTags: PbpTag[] = ["rivalry"];
+      if (winnerWinsBefore === 0 && loserWinsBefore >= H2H_HOODOO_MIN_LOSSES) {
+        rivalryPath = "post_bout.rivalry.first_breakthrough";
+        rivalryTags = ["rivalry", "milestone"];
+      } else if (diff >= 3 && winnerNewWins > loserNewWins) {
         rivalryPath = "post_bout.rivalry.domination";
+      } else if (diff >= 3 && winnerNewWins < loserNewWins) {
+        rivalryPath = "post_bout.rivalry.chipped_away";
       } else if (winnerNewWins === loserNewWins) {
         rivalryPath = "post_bout.rivalry.evened";
       } else if (loserNewWins > 0 && winnerNewWins === loserNewWins + 1 && loserNewWins >= 1) {
@@ -545,7 +611,7 @@ function beatPostBoutRivalry(p: PbpPipeline): void {
           loserId: loserRikishi.id,
         }).text,
         "post_bout",
-        ["rivalry"]
+        rivalryTags
       );
     }
   }
@@ -951,7 +1017,21 @@ function beatJuryoCallup(p: PbpPipeline): void {
 }
 
 function beatHometownWin(p: PbpPipeline): void {
-  const { bashoInfo, postBoutRng, push, winnerRikishi } = p;
+  const { bashoInfo, east, loserRikishi, postBoutRng, push, west, winnerRikishi } = p;
+  if (east.origin && west.origin && east.origin === west.origin) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.prefecture_showdown_win", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        ORIGIN: east.origin,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "post_bout",
+      ["hometown", "prefecture_showdown"]
+    );
+    return;
+  }
   // 16c. Hometown win — tiered (W E): host-prefecture winners get the
   // hometown hero line; same-region winners get the regional-support line.
   const bashoLocation = bashoInfo?.location;
@@ -1210,6 +1290,147 @@ function beatPhaseTwo(p: PbpPipeline): void {
   );
 }
 
+function beatRecordStakesAftermath(p: PbpPipeline): void {
+  const {
+    day,
+    loserLosses,
+    loserRikishi,
+    loserWins,
+    postBoutRng,
+    push,
+    winnerLosses,
+    winnerRikishi,
+    winnerWins,
+  } = p;
+  const wThresh = kachiKoshiThreshold(winnerRikishi.rank);
+  const lThresh = kachiKoshiThreshold(loserRikishi.rank);
+
+  if (winnerLosses === wThresh - 1 && winnerWins + 1 < wThresh) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.make_koshi_staved_off", {
+        WINNER: winnerRikishi.shikona,
+        WINS: (winnerWins + 1).toString(),
+        LOSSES: winnerLosses.toString(),
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["comeback", "make_koshi_staved_off"]
+    );
+  }
+  if (loserWins === lThresh - 1 && loserLosses + 1 < lThresh) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.kachi_denied", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        DAY: day.toString(),
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "post_bout",
+      ["kachi_koshi", "kachi_denied"]
+    );
+  }
+  if (winnerLosses >= wThresh && winnerWins >= 1) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.pride_win_after_mk", {
+        WINNER: winnerRikishi.shikona,
+        WINS: (winnerWins + 1).toString(),
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["pride_win"]
+    );
+  }
+}
+
+function beatSkidSnapped(p: PbpPipeline): void {
+  const { postBoutRng, push, winnerRikishi } = p;
+  const streak = winnerRikishi.currentLossStreak ?? 0;
+  if (streak < LOSING_SKID_MIN) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.skid_snapped", {
+      WINNER: winnerRikishi.shikona,
+      STREAK: streak.toString(),
+      winnerId: winnerRikishi.id,
+    }).text,
+    "post_bout",
+    ["streak", "comeback", "skid_snapped"]
+  );
+}
+
+function beatMidBashoReturnWin(p: PbpPipeline): void {
+  const { day, postBoutRng, push, winnerRikishi, world } = p;
+  const reenteredDay = world.currentBasho?.reenteredOnDay?.[winnerRikishi.id];
+  if (reenteredDay === undefined) return;
+  if (day === reenteredDay) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.mid_basho_return_win", {
+        WINNER: winnerRikishi.shikona,
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["comeback", "mid_basho_return"]
+    );
+  } else if (day === reenteredDay + 1 && (winnerRikishi.currentWinStreak ?? 0) >= 1) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.mid_basho_back_to_back", {
+        WINNER: winnerRikishi.shikona,
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["comeback", "streak", "mid_basho_return"]
+    );
+  }
+}
+
+function beatMorozashiEscape(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  const loserSide = result.winner === "east" ? "west" : "east";
+  const gripToKey = loserSide === "east" ? "eastGripTo" : "westGripTo";
+  const loserGotMorozashi = (result.log ?? []).some(
+    (e) =>
+      e.phase === "grip_transition" &&
+      e.data?.type === "grip_class_shift" &&
+      e.data?.[gripToKey] === "morozashi"
+  );
+  if (!loserGotMorozashi) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.morozashi_escape", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["comeback", "morozashi_escape"]
+  );
+}
+
+function beatRankPride(p: PbpPipeline): void {
+  const { day, loserRikishi, loserWins, postBoutRng, push, winnerLosses, winnerRikishi, winnerWins } =
+    p;
+  const isYokozunaVsLower = winnerRikishi.rank === "yokozuna" && loserRikishi.rank !== "yokozuna";
+  const isOzekiVsLower =
+    winnerRikishi.rank === "ozeki" &&
+    loserRikishi.rank !== "yokozuna" &&
+    loserRikishi.rank !== "ozeki";
+  if (!isYokozunaVsLower && !isOzekiVsLower) return;
+  if (!(loserWins > winnerWins || winnerRikishi.injured || (day >= 8 && winnerWins <= winnerLosses))) {
+    return;
+  }
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.rank_pride", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      RANK: getRankDisplayEntry(winnerRikishi.rank)?.en ?? winnerRikishi.rank,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["rank_pride", "dominant"]
+  );
+}
+
 export function narrateAftermath(p: PbpPipeline): void {
   beatPostBoutYushoRace(p);
   beatSignatureGripAftermath(p);
@@ -1221,6 +1442,11 @@ export function narrateAftermath(p: PbpPipeline): void {
   beatPhaseTwo(p);
   beatPostBoutLeaderboard(p);
   beatPostBoutStoryline(p);
+  beatRecordStakesAftermath(p);
+  beatSkidSnapped(p);
+  beatMidBashoReturnWin(p);
+  beatMorozashiEscape(p);
+  beatRankPride(p);
   beatPostBoutUpset(p);
   beatComebackWin(p);
   beatPostBoutRivalry(p);

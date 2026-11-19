@@ -169,6 +169,7 @@ const RecordsTab = ({ records }: { records?: WorldRecords }) => {
     { label: "Top Division Bouts", data: r.allTime.makuuchiBouts, icon: ScrollText },
     { label: "Iron Men (Consecutive Basho)", data: r.allTime.consecutiveAppearances, icon: Crown },
     { label: "Kinboshi Conceded (Yokozuna)", data: r.allTime.kinboshiConceded, icon: Trophy },
+    { label: "Oldest Makuuchi Kachi-Koshi", data: r.allTime.oldestMakuuchiKachiKoshi, icon: Crown },
   ];
 
   return (

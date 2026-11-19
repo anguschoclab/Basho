@@ -44,7 +44,8 @@
   "winless": [
     "%P2% has never defeated %P1% in %TOTAL% meetings. Will today be different?",
     "An incredible streak — %P1% has won all %TOTAL% of their encounters. %P2% is still searching for that first win.",
-    "%P2% is winless against %P1% across %TOTAL% bouts. The psychological edge is enormous."
+    "%P2% is winless against %P1% across %TOTAL% bouts. The psychological edge is enormous.",
+    "%P1% has held %P2% in check across all %TOTAL% meetings — can %P2% finally get the monkey off his back today?"
   ],
   "career_parallel": [
     "Amazingly, both enter this bout with %WINS% career wins each. A true parallel.",

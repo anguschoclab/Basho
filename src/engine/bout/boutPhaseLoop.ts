@@ -214,7 +214,7 @@ export function resolveBoutPhysicsImpl(
 
   const st = initEngineStateV2(bout, east, west);
   const boutLog: BoutLogEntry[] = [];
-  resolveTachiaiV2(rng, bout, east, west, st, boutLog);
+  resolveTachiaiV2(rng, bout, east, west, st, boutLog, basho);
 
   const effectiveMeta = meta || { tone: "classic", drift: {} };
   const division = east.division || west.division || "makushita";

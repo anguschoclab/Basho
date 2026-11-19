@@ -155,6 +155,16 @@
       "It's %WINNER_WINS% to %LOSER_WINS% now. %WINNER% owns this matchup.",
       "The pattern continues: %WINNER% has beaten %LOSER% %WINNER_WINS% times across %TOTAL% meetings."
     ],
+    "first_breakthrough": [
+      "%WINNER% finally gets the monkey off his back — defeating %LOSER% for the very first time in his career (%WINNER_WINS%-%LOSER_WINS% over %TOTAL% meetings).",
+      "Breakthrough at last! After falling in every previous encounter, %WINNER% snaps the skid against %LOSER% to move the series to %WINNER_WINS%-%LOSER_WINS%.",
+      "A career first against %LOSER% — %WINNER% puts an end to the long drought in this matchup (%WINNER_WINS%-%LOSER_WINS%)."
+    ],
+    "chipped_away": [
+      "%WINNER% chips away at %LOSER%'s series lead — still trailing %LOSER_WINS%-%WINNER_WINS% across %TOTAL% meetings, but grabbing an important win today.",
+      "One step closer in a lopsided series: %WINNER% takes this bout to pull back to %WINNER_WINS%-%LOSER_WINS% against %LOSER%.",
+      "%LOSER% still holds the overall edge (%LOSER_WINS%-%WINNER_WINS%), yet %WINNER% earns a measure of pride today."
+    ],
     "evened": [
       "All even now — %WINNER% levels the series at %WINNER_WINS%-%LOSER_WINS%.",
       "The rivalry is deadlocked: %WINNER_WINS%-%LOSER_WINS% after %TOTAL% bouts.",
@@ -489,7 +499,8 @@
       "The grip battle was key — %WINNER% secured his favorite hold and took control.",
       "Pause it there — %WINNER% wins the inside position and the bout is effectively over.",
       "Look at the arm positioning — %WINNER% outwrestles %LOSER% for the dominant grip.",
-      "The hand fight was everything here. %WINNER% refused to surrender his preferred hold."
+      "The hand fight was everything here. %WINNER% refused to surrender his preferred hold.",
+      "As soon as %WINNER% seized that lethal grip, he was in total command — %LOSER% had no weapon to work with."
     ],
     "edge_drama": [
       "%LOSER% almost goes out, but look at his footwork. Stays inside the ring — remarkable balance.",
@@ -503,7 +514,8 @@
       "%WINNER% absorbs the pressure, then counters beautifully. That's sumo at its finest.",
       "Patient sumo from %WINNER% — invite the charge, sidestep, and strike. Watch the feet here.",
       "Beautiful change of direction — %WINNER% turns %LOSER%'s own momentum against him.",
-      "The counter was flawless. %WINNER% absorbs, pivots, and %LOSER% has nowhere to go."
+      "The counter was flawless. %WINNER% absorbs, pivots, and %LOSER% has nowhere to go.",
+      "What a technique sequence by %WINNER% — disrupting %LOSER%'s balance before finishing cleanly with %KIMARITE%."
     ],
     "size_overcame": [
       "Just overpowered. Too big, too strong — %WINNER% used every kilogram to advantage.",
@@ -538,7 +550,8 @@
       "A masterclass from %WINNER% — never threatened, always in command.",
       "%LOSER% had absolutely no answers for the relentless pressure of %WINNER%.",
       "Clinical and composed. %WINNER% dictates the entire pace of the bout.",
-      "One-way traffic on the dohyo today as %WINNER% dominates every exchange."
+      "One-way traffic on the dohyo today as %WINNER% dominates every exchange.",
+      "%WINNER% kept %LOSER% at dead center from start to finish — %LOSER% simply had no answer."
     ],
     "stamina_issue": [
       "%LOSER% looks like he's bothered with stamina issues in this replay. The energy just wasn't there.",
@@ -644,5 +657,70 @@
     "Same story for %LOSER%: the big tachiai was there, but it's phase two that lets him down - %COUNT% times now this basho.",
     "%LOSER% won the charge again and lost the bout again. Phase two keeps undoing his good work - that's %COUNT% such losses.",
     "The initial hit isn't the problem for %LOSER% - it's everything after. Another tachiai won, another bout gone: %COUNT% and counting."
+  ],
+  "oldest_kachi_record": [
+    "With that win, %AGE%-year-old %SHIKONA% has become the oldest top-division wrestler ever to achieve a kachi-koshi, breaking the previous record held by %PREV_HOLDER%.",
+    "A remarkable milestone! At %AGE%, %SHIKONA% eclipses %PREV_HOLDER%'s mark to set a new age record for a makuuchi winning record.",
+    "History in the top division — %SHIKONA% (age %AGE%) surpasses %PREV_HOLDER% as the oldest rikishi to clinch makuuchi kachi-koshi."
+  ],
+  "oldest_kachi_milestone": [
+    "At %AGE% years old, %SHIKONA% becomes the oldest makuuchi wrestler on record to secure a kachi-koshi — another remarkable milestone of longevity.",
+    "Age %AGE% and still going strong! %SHIKONA% locks in a historic top-division winning record.",
+    "A timeless display by %SHIKONA%, clinching a rare makuuchi kachi-koshi at %AGE% years of age."
+  ],
+  "kachi_drought_broken": [
+    "%SHIKONA% secures his first winning record in %COUNT% tournaments — a long drought finally put to bed.",
+    "Relief at last for %SHIKONA%, snapping a %COUNT%-basho dry spell to post kachi-koshi again.",
+    "After %COUNT% tournaments waiting for a winning finish, %SHIKONA% is back in kachi-koshi territory."
+  ],
+  "make_koshi_staved_off": [
+    "%WINNER% staves off make-koshi for another day — moving to %WINS% and %LOSSES% with zero margin for error.",
+    "Surviving on the brink: %WINNER% climbs to %WINS%-%LOSSES% and stays make-koshi free.",
+    "No losing record today — %WINNER% battles back to %WINS% and %LOSSES% to keep hope alive."
+  ],
+  "kachi_denied": [
+    "%WINNER% denies %LOSER%'s day %DAY% kachi-koshi bid — making %LOSER% wait at least one more day.",
+    "Not today: %WINNER% spoils the celebration and keeps %LOSER% one win short of kachi-koshi on day %DAY%.",
+    "%LOSER%'s wait for an eighth win continues after %WINNER% blocks the door on day %DAY%."
+  ],
+  "pride_win_after_mk": [
+    "Even though %WINNER% already carries a make-koshi, he keeps fighting hard for pride and picks up win number %WINS%.",
+    "There's no quit in %WINNER% — already saddled with a losing record, he battles on to claim his %WINS%th victory.",
+    "Fighting through a difficult basho, %WINNER% adds a hard-earned %WINS%th win for the remainder of the tournament."
+  ],
+  "skid_snapped": [
+    "%WINNER% finally snaps his %STREAK%-bout losing streak and gets back into the win column.",
+    "At long last, the slide ends — %WINNER% halts a %STREAK%-match skid with a much-needed victory.",
+    "Back on the winning track! %WINNER% puts a %STREAK%-bout losing run behind him today."
+  ],
+  "prefecture_showdown_win": [
+    "%WINNER% prevails in this %ORIGIN% showdown, dispatching fellow %ORIGIN% native %LOSER%.",
+    "Bragging rights back to %ORIGIN% go with %WINNER%, who comes out on top against %LOSER%.",
+    "In the battle of %ORIGIN% countrymen, %WINNER% edges past %LOSER% to claim the victory."
+  ],
+  "mid_basho_return_win": [
+    "Fresh back from injury, %WINNER% wastes no time — picking up a victory right on his return to the dohyo.",
+    "What a comeback! Returning mid-tournament, %WINNER% digs in and wins immediately.",
+    "Back in the lineup and straight back into the win column — a welcome victory for %WINNER%."
+  ],
+  "mid_basho_back_to_back": [
+    "After returning to action yesterday, %WINNER% wins on back-to-back days to rebuild momentum.",
+    "Two wins in two days since re-entering the basho — %WINNER% is hitting his stride fast.",
+    "Back-to-back victories for %WINNER% since returning mid-tournament — the layoff hasn't slowed him down."
+  ],
+  "fusensho_injury": [
+    "%ABSENT% has withdrawn from the tournament citing pain in his %AREA% — as a result, %WINNER% receives a forfeit win.",
+    "A kyujo announcement: %ABSENT% has pulled out due to a %AREA% injury, awarding %WINNER% the fusensho without a bout.",
+    "No contest on the clay — %ABSENT% withdraws with a %AREA% issue, giving %WINNER% a default victory."
+  ],
+  "morozashi_escape": [
+    "%LOSER% had double inside grip — morozashi — yet %WINNER% breaks free, squares up, and turns the bout around!",
+    "A dangerous moment: %LOSER% locked in morozashi, but %WINNER% escapes the trap and comes out on top.",
+    "Few survive once an opponent gets both hands inside, yet %WINNER% shakes off %LOSER%'s morozashi and wins anyway."
+  ],
+  "rank_pride": [
+    "%RANK% %WINNER% shows his pride at the ranked position, overpowering %LOSER% when the pressure was on.",
+    "That is why %WINNER% holds the rank of %RANK% — digging deep to turn back %LOSER% despite the circumstances.",
+    "A statement of %RANK% pride from %WINNER%, reminding %LOSER% and the hall what the senior rank demands."
   ]
 }

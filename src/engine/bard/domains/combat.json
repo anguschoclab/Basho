@@ -59,7 +59,8 @@
         "Right hand in, left hand out. Bread and butter sumo.",
         "Left hand inside is solid. %EAST% gets his favorite grip.",
         "Chest to chest again. Right hand inside, left hand outside.",
-        "Both mawashi men — they settle into the grip battle."
+        "Both mawashi men — they settle into the grip battle.",
+        "Chest to chest, %EAST% buries his forehead into %WEST%'s shoulder area to keep the pressure on."
       ],
       "oshi": [
         "Hands at the chest — pure pushing and thrusting.",
@@ -88,13 +89,17 @@
         "%NAME% seems better positioned even though he's much lighter.",
         "Good defense from %NAME% — he weathered that storm and is back in it.",
         "%NAME% looks like he wants to raise the upper body and reset.",
-        "%NAME% survives the pressure and gets back to center."
+        "%NAME% survives the pressure and gets back to center.",
+        "%NAME% holds his ground at dead center — lower body robust and stable, waiting for his golden opportunity.",
+        "%NAME% stays tight, breaks the grip, and resets at the edge."
       ],
       "pressure": [
         "%NAME% is moving forward with real purpose now.",
         "Who's going to dig deep and move forward? %NAME% is answering that question.",
         "%NAME% shifts gears and starts driving the opponent back.",
-        "%NAME% methodically breaks down the posture — inch by inch."
+        "%NAME% methodically breaks down the posture — inch by inch.",
+        "Strong charge by %NAME% — legs moving forward at all times!",
+        "%NAME% attacks from a low angle, raising his opponent's center of gravity."
       ]
     },
     "counter_tactic": [
@@ -245,6 +250,16 @@
         "%NAME% deepens his grip on the mawashi — more leverage, more control.",
         "The belt grip tightens for %NAME% — he's sinking deeper into position.",
         "%NAME% adjusts his grip — a subtle but important shift in the belt battle."
+      ],
+      "thrust_to_belt": [
+        "First the thrusts knock the balance back, then %EAST% and %WEST% lock up on the belt!",
+        "The pushing exchange transitions straight into a mawashi battle between %EAST% and %WEST%.",
+        "After the opening thrusting barrage, they settle chest to chest on the belt — inside position is everything now."
+      ],
+      "plan_b_grip": [
+        "%NAME% can't get his preferred inside hand, so he adjusts quickly to the plan-B opposite grip against %OPP%!",
+        "Denied his favorite hold by %OPP%'s defense, %NAME% switches sides immediately and digs in with the other hand.",
+        "Good adjustment by %NAME% — blocked from his go-to grip, he snaps into plan B on the opposite side."
       ]
     },
     "technique": {
@@ -519,15 +534,18 @@
     ],
     "hatakikomi": [
       "%LOSER% came in with a low, aggressive charge, but %WINNER% was ready with the sidestep and a sharp slap to the shoulder. Down goes %LOSER% to the dirt! Hatakikomi.",
-      "A quick-thinking reaction at the tachiai by %WINNER%. He avoids the initial contact and slaps %LOSER% down to the surface. Hatakikomi, the slap down."
+      "A quick-thinking reaction at the tachiai by %WINNER%. He avoids the initial contact and slaps %LOSER% down to the surface. Hatakikomi, the slap down.",
+      "%WINNER% keeps up the pressure, steps forward, and hits the slap down right away — bringing %LOSER% straight to the clay with a strong hatakikomi."
     ],
     "hikiotoshi": [
       "The momentum of %LOSER% was his own undoing. %WINNER% retreats slightly, catches the arm, and pulls his opponent forward into the clay. Hikiotoshi is the call.",
-      "A swift downward pull by %WINNER% catches %LOSER% off balance. He can't get his feet underneath him and hits the dirt. Hand pull down—hikiotoshi."
+      "A swift downward pull by %WINNER% catches %LOSER% off balance. He can't get his feet underneath him and hits the dirt. Hand pull down—hikiotoshi.",
+      "%LOSER% loses his footing fast as %WINNER% snaps the hand pull-down — clean hikiotoshi."
     ],
     "okuridashi": [
       "A brilliant maneuver to take the back! %WINNER% spins his opponent around and shoves %LOSER% out over the straw from behind. Okuridashi.",
-      "%LOSER% is caught completely out of position, and %WINNER% wastes no time, driving him out of the ring from the rear. That's okuridashi, the rear push out."
+      "%LOSER% is caught completely out of position, and %WINNER% wastes no time, driving him out of the ring from the rear. That's okuridashi, the rear push out.",
+      "%WINNER% gets behind %LOSER% and follows right through with a push from behind — okuridashi!"
     ],
     "tsuriotoshi": [
       "A display of sheer brute strength! %WINNER% gets deep on the mawashi, hoists %LOSER% completely off the clay, and slams him down for a clinical tsuriotoshi.",
@@ -619,7 +637,8 @@
     ],
     "tsukiotoshi": [
       "%LOSER% was charging forward with a head of steam, but %WINNER% sidesteps and applies a powerful downward thrust! Tsukiotoshi is the winning technique.",
-      "A sudden shift in momentum at the edge! %WINNER% catches the shoulder of %LOSER% and drives him straight down to the sand. A clinical thrust-down victory."
+      "A sudden shift in momentum at the edge! %WINNER% catches the shoulder of %LOSER% and drives him straight down to the sand. A clinical thrust-down victory.",
+      "%WINNER% weathers the heavy thrusts, catches an inashi from the side, and buries %LOSER% to the clay with a sharp tsukiotoshi thrust-down!"
     ],
     "tottari": [
       "He's got the arm! %WINNER% clamps down on the limb of %LOSER% with both hands and pulls him across the ring for a masterful tottari.",
@@ -758,7 +777,8 @@
     ],
     "uwatehineri": [
       "%WINNER% twists from the outer belt grip and sends %LOSER% tumbling — uwatehineri!",
-      "A masterful outer-belt twist-down! %WINNER% uses uwatehineri to spin %LOSER% to the clay."
+      "A masterful outer-belt twist-down! %WINNER% uses uwatehineri to spin %LOSER% to the clay.",
+      "%WINNER% seizes his overarm grip, waits patiently, and executes a crisp uwatehineri twisting overarm throw — down goes %LOSER%!"
     ],
     "kotehineri": [
       "%WINNER% grabs the elbow and twists! The arm-twist throw, kotehineri, puts %LOSER% on the sand.",
@@ -822,7 +842,8 @@
     ],
     "sotogake": [
       "%WINNER% hooks the outside leg and trips! A sotogake outer-leg trip sends %LOSER% to the clay.",
-      "The outer-leg trip! %WINNER% uses sotogake to sweep %LOSER% off his feet."
+      "The outer-leg trip! %WINNER% uses sotogake to sweep %LOSER% off his feet.",
+      "%WINNER% maintains relentless pressure and hooks the outside leg — sotogake carries %LOSER% cleanly out!"
     ],
     "uchigake": [
       "%WINNER% hooks the inside leg and drives! An uchigake inner-leg trip topples %LOSER%.",

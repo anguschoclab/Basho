@@ -47,6 +47,10 @@ export interface BoutAIContext {
    * two" letdown). Patient tactics outlast fast starters.
    */
   opponentFragile?: boolean;
+  /** W O — this rikishi pulled a henka yesterday; avoid repeat stigma unless desperate. */
+  usedHenkaYesterday?: boolean;
+  /** W O — opponent pulled a henka yesterday; stay square / counter with OSHI_THRUST. */
+  opponentUsedHenkaYesterday?: boolean;
 }
 
 /**
@@ -170,6 +174,15 @@ export function chooseTactic(
   // patience over trickery: sit tight and let the bout come to you.
   if (ctx.opponentFragile && tactic !== "STANDARD" && tactic !== "ALL_OUT") {
     tactic = "STANDARD";
+  }
+
+  // 5c. Post-henka scrutiny — avoid back-to-back sidesteps unless desperate,
+  // and stay square (OSHI_THRUST counters HENKA) against yesterday's trickster.
+  if (ctx.usedHenkaYesterday && tactic === "HENKA" && !isDesperate(cpu)) {
+    tactic = "STANDARD";
+  }
+  if (ctx.opponentUsedHenkaYesterday && (tactic === "YOTSU_BELT" || tactic === "HENKA")) {
+    tactic = canExecuteTactic(cpu, "OSHI_THRUST") ? "OSHI_THRUST" : "STANDARD";
   }
 
   // 6. Basho posture (WS3) — the heya's daily stance tempers tactic choice.

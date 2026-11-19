@@ -35,6 +35,7 @@ interface RikishiWithFatigue extends Rikishi {
 
 export function phase01_week_health(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_health");
+  const reenteredIds: string[] = [];
 
   for (const id of world.activeRikishiIds) {
     const rikishi = getRikishi(world, id);
@@ -47,7 +48,11 @@ export function phase01_week_health(world: WorldState): StateImpact {
     if (r.injured) {
       // tickRikishiRecovery is pure — adopt the returned rikishi so partial
       // recovery progress is persisted.
+      const wasKyujo = r.isKyujo;
       r = processRecovery(world, r, builder);
+      if (wasKyujo && !r.isKyujo && world.cyclePhase === "active_basho" && world.currentBasho) {
+        reenteredIds.push(id);
+      }
       changed = true;
     } else if (world.cyclePhase !== "active_basho") {
       changed = processInjuryRoll(world, r, builder);
@@ -56,6 +61,17 @@ export function phase01_week_health(world: WorldState): StateImpact {
     if (changed) {
       builder.updateRikishi(id, r);
     }
+  }
+
+  if (reenteredIds.length > 0 && world.currentBasho) {
+    const nextMap = { ...(world.currentBasho.reenteredOnDay ?? {}) };
+    for (const rid of reenteredIds) {
+      nextMap[rid] = world.currentBasho.day;
+    }
+    builder.updateWorldField("currentBasho", {
+      ...world.currentBasho,
+      reenteredOnDay: nextMap,
+    });
   }
 
   return builder.build();

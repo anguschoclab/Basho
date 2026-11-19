@@ -1,7 +1,7 @@
 import type { SeededRNG } from "@/engine/core/rng";
 import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { BoutLogEntry } from "@/engine/types/basho";
+import type { BashoState, BoutLogEntry } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";
 import type { TacticalFamily } from "@/engine/types/combat";
 import {
@@ -29,6 +29,7 @@ import {
   DESPERATE_LOSS_STREAK,
   DESPERATE_BASHO_LOSSES,
   DESPERATE_HENKA_BONUS,
+  HENKA_REPEAT_DEFENSE_BONUS,
 } from "@/constants/engine/physics";
 import type { EngineStateV2, PushBattleState } from "@/engine/types/combat-spatial";
 import { initBeltBattle } from "@/engine/bout/boutGrip";
@@ -268,16 +269,24 @@ function attemptHenka(
   east: Rikishi,
   west: Rikishi,
   st: EngineStateV2,
-  boutLog: BoutLogEntry[]
+  boutLog: BoutLogEntry[],
+  basho?: BashoState,
+  boutDay = 1
 ): boolean {
   const trickster = henkaSide === "east" ? east : west;
   const opponent = henkaSide === "east" ? west : east;
-  // High-aggression opponents overcommit → more vulnerable to henka
+  const repeatedHenka =
+    boutDay > 1 && basho?.boutMetrics?.[trickster.id]?.lastHenkaDay === boutDay - 1;
+  // High-aggression opponents overcommit → more vulnerable to henka;
+  // repeating a henka on consecutive days faces heightened vigilance.
   const henkaScore =
     stat(trickster, "technique") +
     computeTachiaiPower(opponent, { henkaVulnerabilityMode: true }) +
     jitter(rng, HENKA_JITTER_MAGNITUDE);
-  const defenseScore = stat(opponent, "balance") + jitter(rng, HENKA_JITTER_MAGNITUDE);
+  const defenseScore =
+    stat(opponent, "balance") +
+    jitter(rng, HENKA_JITTER_MAGNITUDE) +
+    (repeatedHenka ? HENKA_REPEAT_DEFENSE_BONUS : 0);
 
   if (henkaScore > defenseScore) {
     // Spatial henka: the trickster sidesteps and the opponent's own charge
@@ -308,7 +317,8 @@ export function resolveTachiaiV2(
   east: Rikishi,
   west: Rikishi,
   st: EngineStateV2,
-  boutLog: BoutLogEntry[]
+  boutLog: BoutLogEntry[],
+  basho?: BashoState
 ): void {
   st.phase = { tag: "tachiai", impactVelocity: TACHIAI_IMPACT_VELOCITY, contactAngle: 0 };
 
@@ -396,7 +406,10 @@ export function resolveTachiaiV2(
   );
 
   const henkaSide = resolveHenkaSide(rng, bout, east, west, boutLog);
-  if (henkaSide !== null && attemptHenka(rng, henkaSide, east, west, st, boutLog)) {
+  if (
+    henkaSide !== null &&
+    attemptHenka(rng, henkaSide, east, west, st, boutLog, basho, bout.day ?? basho?.day ?? 1)
+  ) {
     return;
   }
 

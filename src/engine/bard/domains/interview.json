@@ -12,6 +12,11 @@
       "What's been going well this tournament?",
       "How will you approach the rest?"
     ],
+    "oldest_kachi": [
+      "At %AGE%, you've become the oldest top-division wrestler to achieve a winning record. Another remarkable milestone for %SHIKONA% — what keeps you competing with such youthful energy?",
+      "You've secured kachi-koshi at %AGE% years old! How does it feel to set this standard of longevity?",
+      "Another historic winning record at %AGE% — what is your mindset competing in makuuchi right now, and what are your goals for the remainder of the tournament?"
+    ],
     "make_koshi": [
       "Tough day today. What went wrong?",
       "What's your mindset heading into tomorrow?",
@@ -174,7 +179,8 @@
     "\"One bout at a time.\"",
     "\"My sumo spoke for itself.\"",
     "\"I prepare the same way every day.\"",
-    "\"The result is what it is.\""
+    "\"The result is what it is.\"",
+    "\"I want to focus on each bout one at a time and give it my best.\""
   ],
   "villain": [
     "\"Of course I won. Did anyone expect otherwise?\"",
@@ -214,7 +220,8 @@
     "\"It hasn't always been easy, but I wouldn't change a thing.\"",
     "\"The journey matters more than the destination — I've learned that.\"",
     "\"Patience and perseverance — that's what brought me here today.\"",
-    "\"I've grown more from my losses than my wins, honestly.\""
+    "\"I've grown more from my losses than my wins, honestly.\"",
+    "\"Rather than feeling I've returned, I feel as though I'm competing here for the very first time.\""
   ],
   "quirky": [
     "\"Well, I can still do a backflip, you know. But I save those for celebration.\"",

@@ -40,7 +40,7 @@ import {
 } from "@/engine/bout/resolution/gyoji";
 import { applyMonoiiVerdict } from "@/engine/bout/resolution/monoiiVerdict";
 import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
-import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import { generateBoutNarrative, type PbpTag } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG, rngForWorld } from "@/engine/core/rng";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
@@ -152,17 +152,35 @@ function attachFusenshoNarrative(
     ? rngForWorld(world, "narrative", `fusensho::${bout.id}`)
     : new SeededRNG(`fusensho::${bout.id}`);
   const doubleAbsent = !result.winnerRikishiId;
-  const resolved = doubleAbsent
-    ? BardEngine.resolve(rng, "post_bout.fusensho_double", {})
-    : BardEngine.resolve(rng, "post_bout.fusensho", {
-        WINNER:
-          result.winnerRikishiId === east.id ? east.shikona : west.shikona,
-        ABSENT:
-          result.loserRikishiId === east.id ? east.shikona : west.shikona,
+  let resolved: { text: string; id: string; path: string };
+  let tags: PbpTag[] = ["drama"];
+
+  if (doubleAbsent) {
+    resolved = BardEngine.resolve(rng, "post_bout.fusensho_double", {});
+  } else {
+    const winnerObj = result.winnerRikishiId === east.id ? east : west;
+    const absent = result.loserRikishiId === east.id ? east : west;
+    const injuryArea =
+      absent.kyujoReason === "injury"
+        ? (absent.injuryStatus?.location ?? absent.currentInjury?.area)
+        : undefined;
+    if (injuryArea && injuryArea !== "other") {
+      resolved = BardEngine.resolve(rng, "post_bout.fusensho_injury", {
+        WINNER: winnerObj.shikona,
+        ABSENT: absent.shikona,
+        AREA: injuryArea,
       });
+      tags = ["drama", "injury"];
+    } else {
+      resolved = BardEngine.resolve(rng, "post_bout.fusensho", {
+        WINNER: winnerObj.shikona,
+        ABSENT: absent.shikona,
+      });
+    }
+  }
   result.pbpLines = [
     ...(result.pbpLines ?? []),
-    { text: resolved.text, id: `${bout.id}-fusensho`, phase: "post_bout", tags: ["drama"] },
+    { text: resolved.text, id: `${bout.id}-fusensho`, phase: "post_bout", tags },
   ];
 }
 

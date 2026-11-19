@@ -24,6 +24,8 @@ import {
 } from "@/constants/engine/generation";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { isYushoContention } from "@/engine/bout/boutContention";
+import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
+import { GIANT_HEIGHT_THRESHOLD } from "@/constants/engine/narrative";
 
 function beatCurrentRecords(p: PbpPipeline): void {
   const { day, east, eastLosses, eastWins, preBoutRng, push, west, westLosses, westWins } = p;
@@ -219,6 +221,31 @@ function beatSevenSeven(p: PbpPipeline): void {
   }
 }
 
+function beatBattleForKachi(p: PbpPipeline): void {
+  const { east, eastLosses, eastWins, preBoutRng, push, west, westLosses, westWins } = p;
+  // W O — both men one win shy of kachi-koshi (e.g., 7-3 vs 7-3), excluding 7-7 vs 7-7.
+  const eastThresh = kachiKoshiThreshold(east.rank);
+  const westThresh = kachiKoshiThreshold(west.rank);
+  if (
+    eastThresh === westThresh &&
+    eastWins === eastThresh - 1 &&
+    westWins === westThresh - 1 &&
+    !(eastWins === 7 && eastLosses === 7 && westWins === 7 && westLosses === 7)
+  ) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.storylines.battle_for_kachi", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        WINS: eastWins.toString(),
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["kachi_koshi", "title_stakes"]
+    );
+  }
+}
+
 function beatShikonaConferred(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3a-pre6. Fighting name conferred early — rikishi carries shikona before sekitori
@@ -339,9 +366,22 @@ function beatInjuryMention(p: PbpPipeline): void {
 }
 
 function beatInjuryRecovery(p: PbpPipeline): void {
-  const { east, preBoutRng, push, west, world } = p;
+  const { day, east, preBoutRng, push, west, world } = p;
   // 3d-2. Injury recovery narrative (6.3): rikishi returning from injury
   for (const r of [east, west]) {
+    const reenteredDay = world.currentBasho?.reenteredOnDay?.[r.id];
+    if (reenteredDay !== undefined && day >= reenteredDay && day <= reenteredDay + 1) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.mid_basho_return", {
+          SHIKONA: r.shikona,
+          RETURN_DAY: reenteredDay.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["comeback", "injury", "mid_basho_return"]
+      );
+      continue;
+    }
     if (r.recentlyReturnedFromInjury && !r.injured) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.injury_return", {
@@ -420,6 +460,19 @@ function beatPhysicalComparison(p: PbpPipeline): void {
       "pre_bout",
       ["weight_diff"]
     );
+  } else if (east.height >= GIANT_HEIGHT_THRESHOLD && west.height >= GIANT_HEIGHT_THRESHOLD) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.battle_of_giants", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        EAST_HEIGHT: Math.round(east.height).toString(),
+        WEST_HEIGHT: Math.round(west.height).toString(),
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["body_type", "battle_of_giants"]
+    );
   }
 }
 
@@ -450,6 +503,7 @@ export function narrateRecords(p: PbpPipeline): void {
   beatCareerHighRank(p);
   beatStoryline(p);
   beatSevenSeven(p);
+  beatBattleForKachi(p);
   beatShikonaConferred(p);
   beatRookieTourneyCount(p);
   beatH2HStreak(p);

@@ -28,6 +28,7 @@ describe("createDefaultRecords", () => {
       expect(scope.makuuchiBouts).toEqual([]);
       expect(scope.consecutiveAppearances).toEqual([]);
       expect(scope.kinboshiConceded).toEqual([]);
+      expect(scope.oldestMakuuchiKachiKoshi).toEqual([]);
     }
   });
 });
@@ -121,6 +122,43 @@ describe("onBashoEnded — new leaderboards", () => {
     const next = resolveImpacts(world, [onBashoEnded(world)]);
     expect(next.records.allTime.kinboshiConceded[0]?.value).toBe(9);
   });
+
+  it("populates oldestMakuuchiKachiKoshi with age for makuuchi KK winners only", () => {
+    const vetMakuuchi = MockFactory.createRikishi("r_old_mk", {
+      heyaId: "h1",
+      division: "makuuchi",
+      age: 42,
+      currentBashoWins: 8,
+      currentBashoLosses: 7,
+    });
+    const vetJuryo = MockFactory.createRikishi("r_old_ju", {
+      heyaId: "h1",
+      division: "juryo",
+      age: 44,
+      currentBashoWins: 9,
+      currentBashoLosses: 6,
+    });
+    const vetMakeKoshi = MockFactory.createRikishi("r_old_lose", {
+      heyaId: "h1",
+      division: "makuuchi",
+      age: 45,
+      currentBashoWins: 7,
+      currentBashoLosses: 8,
+    });
+    const world = MockFactory.createWorld({
+      year: 2030,
+      rikishi: new Map([
+        ["r_old_mk", vetMakuuchi],
+        ["r_old_ju", vetJuryo],
+        ["r_old_lose", vetMakeKoshi],
+      ]),
+    });
+
+    const next = resolveImpacts(world, [onBashoEnded(world)]);
+    const board = next.records.allTime.oldestMakuuchiKachiKoshi;
+    expect(board.map((e) => e.rikishiId)).toEqual(["r_old_mk"]);
+    expect(board[0]?.value).toBe(42);
+  });
 });
 
 describe("onRikishiRetired — active-board cleanup", () => {
@@ -128,6 +166,9 @@ describe("onRikishiRetired — active-board cleanup", () => {
     const r = MockFactory.createRikishi("r_ret", {
       heyaId: "h1",
       division: "makuuchi",
+      age: 40,
+      currentBashoWins: 8,
+      currentBashoLosses: 7,
       careerWins: 500,
       careerLosses: 300,
       careerAbsences: 0,
@@ -162,6 +203,7 @@ describe("onRikishiRetired — active-board cleanup", () => {
       "makuuchiBouts",
       "consecutiveAppearances",
       "kinboshiConceded",
+      "oldestMakuuchiKachiKoshi",
     ] as const) {
       expect(afterRetire.records.active[board].some((e) => e.rikishiId === "r_ret")).toBe(false);
       expect(afterRetire.records.allTime[board].some((e) => e.rikishiId === "r_ret")).toBe(true);

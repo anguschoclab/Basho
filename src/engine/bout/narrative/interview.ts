@@ -14,11 +14,14 @@ import {
   TRAIT_MODIFIER_CHANCE,
 } from "@/constants/engine/generation";
 import {
+  DEBUT_KACHI_MAX_DAY,
+  EARLIEST_KACHI_LOWER_MAX_DAY,
+  EARLIEST_KACHI_SEKITORI_MAX_DAY,
   NARRATIVE_MEDIA_SAVVY_CHANCE,
   NARRATIVE_STRESS_TERSE_CHANCE,
-  DEBUT_KACHI_MAX_DAY,
+  OLDEST_KACHI_KOSHI_MIN_AGE,
 } from "@/constants/engine/narrative";
-import { isKachiKoshi, isMakeKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { isKachiKoshi, isMakeKoshi, kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
@@ -72,17 +75,30 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
   if (sanyakuStreak >= 2 && BardEngine.has("interview.questions.sanyaku_streak")) {
     questionType = "sanyaku_streak";
   } else if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
-    // W N — a first-basho man clinching kachi-koshi inside the window gets
-    // the debut question ("secured kachi-koshi very quickly, your debut
-    // tournament").
+    const winnerAge = result.winner === "east" ? p.eastAge : p.westAge;
+    const prevOldest = world?.records?.allTime?.oldestMakuuchiKachiKoshi?.[0];
+    const kkThreshold = kachiKoshiThreshold(winnerRikishi.rank);
+    const earliestMaxDay =
+      kkThreshold >= 8 ? EARLIEST_KACHI_SEKITORI_MAX_DAY : EARLIEST_KACHI_LOWER_MAX_DAY;
     if (
+      winnerRikishi.division === "makuuchi" &&
+      winnerWins + 1 === kkThreshold &&
+      winnerAge >= OLDEST_KACHI_KOSHI_MIN_AGE &&
+      (!prevOldest || winnerAge > prevOldest.value) &&
+      BardEngine.has("interview.questions.oldest_kachi")
+    ) {
+      questionType = "oldest_kachi";
+    } else if (
       makuuchiTournaments <= 1 &&
       day <= DEBUT_KACHI_MAX_DAY &&
       BardEngine.has("interview.questions.debut_kachikoshi")
     ) {
       questionType = "debut_kachikoshi";
-    // Earliest kachi-koshi variant — achieved on day 7 or earlier with some career history
-    } else if (day <= 7 && makuuchiTournaments >= 2) {
+    } else if (
+      winnerWins + 1 === kkThreshold &&
+      day <= earliestMaxDay &&
+      makuuchiTournaments >= 2
+    ) {
       questionType = "earliest_kachi";
     } else {
       questionType = "kachi_koshi";
@@ -164,6 +180,7 @@ function runInterviewLoop(p: PbpPipeline, setup: InterviewSetup): void {
           MILESTONE: ((winnerRikishi.careerWins ?? 0) + 1).toString(),
           WINS: (winnerWins + 1).toString(),
           DAY: day.toString(),
+          AGE: (result.winner === "east" ? p.eastAge : p.westAge).toString(),
           rikishiId: winnerRikishi.id,
         }).text,
         "interview",

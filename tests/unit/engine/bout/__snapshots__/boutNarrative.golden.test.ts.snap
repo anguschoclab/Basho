@@ -1261,7 +1261,7 @@ exports[`generateBoutNarrative — golden master > multi-frame log coverage 1`] 
     "id": "gm-bout-momentum-16",
     "phase": "momentum",
     "tags": [],
-    "text": "[[rikishi:r-west:Wrestler-r-west]] shifts gears and starts driving the opponent back.",
+    "text": "Strong charge by [[rikishi:r-west:Wrestler-r-west]] — legs moving forward at all times!",
     "voice": "formal",
   },
   {
@@ -1375,7 +1375,7 @@ exports[`generateBoutNarrative — golden master > timeout bout 1`] = `
     "tags": [
       "tournament_context",
     ],
-    "text": "Only a few days left and the yusho race is heating up.",
+    "text": "Day 10 — every bout from here carries championship implications.",
     "voice": "formal",
   },
   {
@@ -1713,7 +1713,7 @@ exports[`generateBoutNarrative — golden master > winning streak callout 1`] = 
     "tags": [
       "tournament_context",
     ],
-    "text": "Only a few days left and the yusho race is heating up.",
+    "text": "Day 13 — every bout from here carries championship implications.",
     "voice": "dramatic",
   },
   {

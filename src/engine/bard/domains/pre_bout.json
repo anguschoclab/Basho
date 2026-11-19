@@ -116,6 +116,11 @@
       "Seven wins, seven losses — for both. This bout decides who finishes with a winning record.",
       "The pressure is immense: 7-7 for both rikishi. One bout, one result, one career-defining moment."
     ],
+    "battle_for_kachi": [
+      "This is a battle for kachi-koshi — both %EAST% and %WEST% enter at %WINS% wins, one shy of a winning record.",
+      "The winner gets kachi-koshi today: %EAST% and %WEST% both stand at %WINS% victories.",
+      "One win away for both men — %EAST% versus %WEST% with kachi-koshi waiting on the other side."
+    ],
     "oversleeping_reference": [
       "Less than a year since he became a laughing stock for oversleeping, %SHIKONA% steps onto the dohyo with something to prove.",
       "The oversleeping incident still lingers — %SHIKONA% knows the cameras are watching his every move today.",
@@ -357,7 +362,8 @@
   "late_tournament": [
     "The tournament is entering its final stretch.",
     "Only a few days left and the yusho race is heating up.",
-    "Day %DAY% — every bout from here carries championship implications."
+    "Day %DAY% — every bout from here carries championship implications.",
+    "Entering the home stretch on day %DAY% — expect plenty more twists and turns before we crown our champion."
   ],
   "final_day": [
     "The last day of the basho. Champions will be decided today.",
@@ -382,13 +388,15 @@
   "leaderboard_co_leaders": [
     "%SHIKONA% are the co-leaders at %WINS% wins. %CHASERS% rikishi just one win behind.",
     "Tied at the top — %SHIKONA% share the lead at %WINS%. The yusho race is wide open.",
-    "Two at the summit: %SHIKONA% co-leading at %WINS% wins with %CHASERS% chasers close behind."
+    "Two at the summit: %SHIKONA% co-leading at %WINS% wins with %CHASERS% chasers close behind.",
+    "Sharing the lead at %WINS% wins: %SHIKONA%, with %CHASERS% rikishi hot on their heels."
   ],
   "co_leader": [
     "%SHIKONA%, the co-leader with %WINS% wins and %LOSSES% losses, looks to protect that position today.",
     "Co-leader %SHIKONA% is fighting to keep his record at the top of the leaderboard intact.",
     "%SHIKONA% shares the lead at %WINS%-%LOSSES%. A win keeps him level at the top.",
-    "The co-leader %SHIKONA% takes the dohyo — every bout matters now with the race this tight."
+    "The co-leader %SHIKONA% takes the dohyo — every bout matters now with the race this tight.",
+    "%SHIKONA% is firing on all cylinders at %WINS%-%LOSSES% — a win guarantees at least a share of the lead."
   ],
   "ozeki_showdown": [
     "An ozeki showdown we don't see too often — %EAST% against %WEST%.",
@@ -555,7 +563,8 @@
   "signature_grip": [
     "Once %SHIKONA% secures the %GRIP_LABEL%, he has won %GRIP_WINS% of %GRIP_BOUTS% this basho - the grip is the whole game.",
     "Watch for %SHIKONA% hunting the %GRIP_LABEL%: he is %GRIP_WINS% for %GRIP_BOUTS% when he lands it.",
-    "A %GRIP_LABEL% machine - when %SHIKONA% gets that grip, he wins day after day."
+    "A %GRIP_LABEL% machine - when %SHIKONA% gets that grip, he wins day after day.",
+    "Watch for %SHIKONA%'s lethal weapon, the %GRIP_LABEL% — %GRIP_WINS% for %GRIP_BOUTS% when he seizes it."
   ],
   "division_split": [
     "%SHIKONA% was dominant in %LOWER_DIVISION%, but the top division has been a different story.",
@@ -591,5 +600,60 @@
     "%SHIKONA% takes the dohyo with family business in mind - his brother is sharing the lead down in %DIVISION% on %WINS% wins.",
     "A leaderboard note for %SHIKONA%: his brother sits atop the %DIVISION% standings at %WINS% wins.",
     "Family pride is on the line - %SHIKONA%'s brother is one of the leaders in %DIVISION%, and the brothers' basho is going very well indeed."
+  ],
+  "giant_killer_h2h": [
+    "Now get this: %UNDERDOG% holds a %UNDERDOG_WINS%-%ELITE_WINS% edge over %ELITE_RANK% %ELITE%, looking for another huge upset today.",
+    "On paper %ELITE% outranks him, yet %UNDERDOG% owns a %UNDERDOG_WINS% to %ELITE_WINS% record against the %ELITE_RANK%.",
+    "%UNDERDOG% has proven a thorn in %ELITE_RANK% %ELITE%'s side — leading their head-to-head %UNDERDOG_WINS%-%ELITE_WINS%."
+  ],
+  "h2h_recent_surge": [
+    "%CAREER_LEADER% leads the lifetime series %LEADER_WINS% to %SURGER_WINS%, but get this: %SURGER% has won %RECENT_WINS% of their last %RECENT_TOTAL% meetings.",
+    "The career ledger favors %CAREER_LEADER% (%LEADER_WINS%-%SURGER_WINS%), yet %SURGER% has become a very tough opponent, taking %RECENT_WINS% of the last %RECENT_TOTAL%.",
+    "Ignore the overall %LEADER_WINS%-%SURGER_WINS% tally for a moment — %SURGER% has turned the tables lately with %RECENT_WINS% wins in their past %RECENT_TOTAL% bouts."
+  ],
+  "post_henka_scrutiny": [
+    "%SHIKONA% resorted to a sidestep at the initial charge yesterday — let's pay close attention to what he does at the tachiai today.",
+    "After pulling a henka yesterday, %SHIKONA% steps up with every eye watching whether he meets this tachiai head-on.",
+    "Yesterday's sidestep drew raised eyebrows for %SHIKONA%; his opponent will surely be braced at the charge today."
+  ],
+  "kachi_drought": [
+    "%SHIKONA% is closing in on his first winning record in %COUNT% tournaments — a long-awaited kachi-koshi is within reach.",
+    "It has been %COUNT% basho since %SHIKONA% last posted a winning record; he needs to dig deep over the final days.",
+    "A kachi-koshi drought of %COUNT% tournaments hangs over %SHIKONA%, who is trying to turn things around at last."
+  ],
+  "losing_skid": [
+    "%SHIKONA% is looking to snap a %STREAK%-bout losing streak and get back in the win column for the first time in %DAYS% days.",
+    "The slump has stretched to %STREAK% straight losses for %SHIKONA% — searching for his first victory in %DAYS% days.",
+    "Nothing has clicked lately for %SHIKONA%, who enters on a %STREAK%-match losing skid looking to halt the slide."
+  ],
+  "battle_of_giants": [
+    "Sumo's two giants face off today: %EAST% standing at %EAST_HEIGHT% cm meets %WEST% at %WEST_HEIGHT% cm.",
+    "A clash of skyscrapers on the clay — %EAST% (%EAST_HEIGHT% cm) versus %WEST% (%WEST_HEIGHT% cm) promises heavy-timber sumo.",
+    "Look at the reach and height in the ring: %EAST% at %EAST_HEIGHT% centimeters squares off against %WEST% at %WEST_HEIGHT%."
+  ],
+  "prefecture_showdown_local": [
+    "A %ORIGIN% showdown right here in %REGION% — both %EAST% and %WEST% hail from %ORIGIN%, giving the regional crowd plenty to cheer.",
+    "Countrymen on home soil: %EAST% and %WEST% are both %ORIGIN% natives battling before the %REGION% faithful.",
+    "%ORIGIN% pride runs deep in %REGION% as native sons %EAST% and %WEST% meet on the dohyo."
+  ],
+  "prefecture_showdown": [
+    "A %ORIGIN% prefecture derby — both %EAST% and %WEST% hail from the same home soil, and neither wants to yield bragging rights.",
+    "Both men carry the pride of %ORIGIN%: %EAST% and %WEST% renew a hometown showdown far from home.",
+    "%EAST% versus %WEST% — two proud %ORIGIN% natives meeting head-to-head on the big stage."
+  ],
+  "proven_giant_killer": [
+    "At just %AGE%, %SHIKONA% has already proven he can take down a Yokozuna, and there is still plenty of untapped potential.",
+    "Don't let the youth fool you — %AGE%-year-old %SHIKONA% owns a kinboshi and carries real upside into every matchup.",
+    "%SHIKONA%, still only %AGE%, already has a Yokozuna scalp on his resume with plenty of room left to grow."
+  ],
+  "sibling_kyujo": [
+    "%SHIKONA% takes the dohyo carrying the family flag alone today — his brother %SIBLING% has withdrawn from the tournament.",
+    "With his brother %SIBLING% sidelined as kyujo, %SHIKONA% steps onto the clay looking to lift the family spirits.",
+    "Family note before the bout: %SIBLING% is out kyujo, leaving younger brother %SHIKONA% to represent the pair today."
+  ],
+  "mid_basho_return": [
+    "Good to see %SHIKONA% back in action after missing time earlier in the tournament — he returned on day %RETURN_DAY%.",
+    "%SHIKONA% is back on the dohyo after re-entering the basho on day %RETURN_DAY%, trying to salvage his tournament.",
+    "Having returned mid-basho on day %RETURN_DAY%, %SHIKONA% steps up again looking to find rhythm after his layoff."
   ]
 }

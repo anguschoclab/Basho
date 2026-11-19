@@ -64,6 +64,9 @@ function chooseNpcSideTactic(
   const opponentFragile =
     oppTachiaiWins >= PHASE_TWO_MIN &&
     (om?.tachiaiWonButLost ?? 0) / oppTachiaiWins >= PHASE_TWO_FRAGILITY_RATIO;
+  const usedHenkaYesterday =
+    bashoDay > 1 && basho.boutMetrics?.[rikishi.id]?.lastHenkaDay === bashoDay - 1;
+  const opponentUsedHenkaYesterday = bashoDay > 1 && om?.lastHenkaDay === bashoDay - 1;
   const ctx: BoutAIContext = {
     rng: rngFromSeed(world.seed ?? "world", "boutAI", `${basho.id ?? "basho"}:${bout.id}:${side}`),
     bashoDay,
@@ -75,6 +78,8 @@ function chooseNpcSideTactic(
     rankPressure: deriveRankPressure(record, bashoDay),
     heyaPosture: rikishi.heyaId ? world.bashoNpcPosture?.[rikishi.heyaId] : undefined,
     opponentFragile,
+    usedHenkaYesterday,
+    opponentUsedHenkaYesterday,
   };
   return chooseTactic(rikishi, opponent, ctx);
 }

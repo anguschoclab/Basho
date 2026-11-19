@@ -35,6 +35,15 @@ export function buyPhysioSession(world: WorldState, rikishiId: string): StateImp
       ? { ...r.injuryStatus, weeksRemaining: nextWeeks, isInjured: nextWeeks > 0 }
       : r.injuryStatus,
   });
+  if (r.isKyujo && nextWeeks === 0 && world.cyclePhase === "active_basho" && world.currentBasho) {
+    builder.updateWorldField("currentBasho", {
+      ...world.currentBasho,
+      reenteredOnDay: {
+        ...(world.currentBasho.reenteredOnDay ?? {}),
+        [rikishiId]: world.currentBasho.day,
+      },
+    });
+  }
   builder.logEvent(
     "MEDICAL_REPORT",
     "injury",

@@ -103,6 +103,7 @@ export interface RecordBoards {
   makuuchiBouts: RecordEntry[];
   consecutiveAppearances: RecordEntry[];
   kinboshiConceded: RecordEntry[];
+  oldestMakuuchiKachiKoshi: RecordEntry[];
 }
 
 export interface WorldRecords {
@@ -123,6 +124,7 @@ export function createDefaultRecords(): WorldRecords {
     makuuchiBouts: [],
     consecutiveAppearances: [],
     kinboshiConceded: [],
+    oldestMakuuchiKachiKoshi: [],
   });
   return { allTime: boards(), active: boards() };
 }

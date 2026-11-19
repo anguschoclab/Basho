@@ -111,6 +111,7 @@ export function onBashoEnded(world: WorldState): StateImpact {
     makuuchiBouts: [...(b.makuuchiBouts ?? [])],
     consecutiveAppearances: [...(b.consecutiveAppearances ?? [])],
     kinboshiConceded: [...(b.kinboshiConceded ?? [])],
+    oldestMakuuchiKachiKoshi: [...(b.oldestMakuuchiKachiKoshi ?? [])],
   });
   const updatedRecords = {
     allTime: copyBoards(records.allTime),
@@ -159,6 +160,15 @@ function updateRikishiBoards(
   );
   both("consecutiveAppearances", rikishi.consecutiveBashoFought);
   both("kinboshiConceded", rikishi.stats?.achievements?.kinboshiConceded);
+
+  const latestSnap = rikishi.careerHistory?.[rikishi.careerHistory.length - 1];
+  const wonMakuuchiKachi =
+    (rikishi.division === "makuuchi" && (rikishi.currentBashoWins ?? 0) >= 8) ||
+    (latestSnap?.division === "makuuchi" && latestSnap.wins >= 8 && latestSnap.year === year);
+  if (wonMakuuchiKachi) {
+    const age = rikishi.age ?? (rikishi.birthYear ? year - rikishi.birthYear : 0);
+    if (age > 0) both("oldestMakuuchiKachiKoshi", age);
+  }
 }
 
 /**
@@ -194,6 +204,7 @@ export function onRikishiRetired(world: WorldState, rikishiId: Id): StateImpact 
     makuuchiBouts: [...(b.makuuchiBouts ?? [])],
     consecutiveAppearances: [...(b.consecutiveAppearances ?? [])],
     kinboshiConceded: [...(b.kinboshiConceded ?? [])],
+    oldestMakuuchiKachiKoshi: [...(b.oldestMakuuchiKachiKoshi ?? [])],
   });
   const updatedRecords = {
     allTime: copyBoards(records.allTime),
@@ -211,6 +222,7 @@ export function onRikishiRetired(world: WorldState, rikishiId: Id): StateImpact 
     updatedRecords.active.makuuchiBouts,
     updatedRecords.active.consecutiveAppearances,
     updatedRecords.active.kinboshiConceded,
+    updatedRecords.active.oldestMakuuchiKachiKoshi,
   ]) {
     removeActiveRecord(board, rikishiId);
   }
