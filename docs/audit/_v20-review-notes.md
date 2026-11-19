@@ -70,3 +70,12 @@ bun.lock · docs/user-manual.md · docs/Basho_Constitution · .claude/CLAUDE.md 
 | oversleeping variant counts | #1205 | RED ✓ (3/3/3 → 5/6/7) |
 
 8 intended RED + 4 intended GREEN confirmed 2026-11 pre-Phase-E.
+
+## Post-fix status (commit 578ef5f2)
+
+All 8 RED pins now GREEN; 4 characterization pins unchanged-green. Fixes:
+E1 division-scoped leaders (+3 narrative beats + 2 callers migrated),
+E4 post-update shikona shape, E5/E6 maezumo inert, E7 day-gate,
+E14 worldWithQueuedFields compose, E19 passthrough + trainingState diff.
+Payloads #1202/#1203/#1204/#1205 applied; all 12 PRs closed; branches
+pruned (perf-baseline retained). Save version bumped 1.5.0.
