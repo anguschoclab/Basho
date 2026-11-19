@@ -136,6 +136,10 @@ describe("Bug 3.3: falls_out condition", () => {
       ]),
       day: 9,
     });
+    world.rikishi.set(
+      "other",
+      makeRikishi("other", { shikona: "Other Rikishi", division: "makuuchi" })
+    );
     generateBoutNarrative(result, east, west, "hatsu" as BashoName, 9, "test-seed-f3", world);
     expect(hasFallsOutLine(result)).toBe(false);
   });
@@ -160,6 +164,10 @@ describe("Bug 3.3: falls_out condition", () => {
       ]),
       day: 9,
     });
+    world.rikishi.set(
+      "other",
+      makeRikishi("other", { shikona: "Other Rikishi", division: "makuuchi" })
+    );
     generateBoutNarrative(result, east, west, "hatsu" as BashoName, 9, "test-seed-f4", world);
     // This should FAIL before fix (condition unreachable), PASS after fix
     expect(hasFallsOutLine(result)).toBe(true);
