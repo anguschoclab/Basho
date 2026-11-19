@@ -64,8 +64,20 @@ dependabot fresh-upgrade pass.
 
 ## Verification
 
-`bun run type-check` clean; `bun run test` targeted runs green
-(1002 tests across consolidation + bard suites; boutContention migrated to
-the new signatures); lint pre-commit hook passes on all commits.
-test-timings.json re-baselined. Full-suite + determinism double-run to be
-re-confirmed in the next session's pass before the dependabot upgrade lands.
+Measured at closeout (commits `60ba6bcc`…`1327467c`):
+
+| Gate | Result |
+|------|--------|
+| `bun run type-check` | clean |
+| `bun run build` | green (vite, 53s) |
+| `bun run lint` | green via pre-commit hook on every commit |
+| `bun run test` (fast) | 1102 files / 10,241 tests — all green |
+| `bun run test:slow` | 18 files / 64 tests — all green (subprocess audits + long sims) |
+| `bun run test:e2e:smoke` | 5/6 first pass; `reload-restore` flake under 6-worker load, green on isolated re-run |
+| `bun run test:timings` | `test-timings.json` re-baselined |
+
+Not run this pass: `test:perf` (baseline re-seeds via CI on main push),
+`test:e2e:soak`, and a determinism double-run — recommended before the
+dependabot upgrade lands. One UI wart observed during e2e: duplicate React
+keys `b-2026-hatsu-d2-*` in a bout list — origin unverified, flagged for
+the next pass.
