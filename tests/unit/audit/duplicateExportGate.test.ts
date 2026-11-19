@@ -35,11 +35,13 @@ const KNOWN_COLLISIONS: Record<string, string> = {};
 
 describe("duplicate-export gate", () => {
   // Full-repo scan is ~5s — hoist so it runs once instead of per-assertion
-  // (keeps the file under the 10s fast-suite budget).
+  // (keeps the file under the 10s fast-suite budget). The explicit hook
+  // timeout covers `bun run test:coverage`, where v8 instrumentation makes
+  // the same scan take ~60s.
   let collisions: ReturnType<typeof scanDuplicateExports>["collisions"];
   beforeAll(() => {
     collisions = scanDuplicateExports().collisions;
-  });
+  }, 120_000);
 
   it("no exported name is defined in multiple production files without an allowlist entry", () => {
     const violations = collisions.filter(
