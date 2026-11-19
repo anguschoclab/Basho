@@ -249,10 +249,11 @@ describe("Kinjite — rollFoulSuspicion", () => {
     // Mirror: swap rikishi and flip the apparent winner. The west rikishi in the
     // mirrored bout is the aggressive one — same stats as r-east above.
     const mirroredEast = mockRikishi("r-west", { technique: 70, heyaId: "heya-west" });
-    const mirroredWest = mockRikishi("r-west", { aggression: 95, technique: 25, heyaId: "heya-east" });
+    const mirroredWest = mockRikishi("r-east", { aggression: 95, technique: 25, heyaId: "heya-east" });
     const mirroredBasho = makeMockBasho({ day: 15 });
     mirroredBasho.standings = new Map([
       ["r-west", { wins: 7, losses: 7 }],
+      ["r-east", { wins: 7, losses: 7 }],
     ]);
     const mirrored = rollFoulSuspicion(
       bout,
