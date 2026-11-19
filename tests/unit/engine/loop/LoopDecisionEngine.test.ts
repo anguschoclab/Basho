@@ -834,3 +834,97 @@ describe("resolveLoopDecision — DECISION_RESOLVED event", () => {
     expect((ev as { importance?: string }).importance).toBe("notable");
   });
 });
+
+// ─── resolved-decision suppression ───────────────────────────────────
+// Ids are period-deterministic (`…-y{year}-w{week}`). A decision whose
+// trigger outlives resolution (insolvency austerity leaves runwayBand
+// critical) re-fired on the very next tick with the SAME id — each
+// swallowed tick burned a calendar day without advancing the basho,
+// observed e2e as bashoDay frozen for 10+ days.
+
+describe("resolved decision suppression", () => {
+  it("resolveLoopDecision records the resolved id", () => {
+    const world = makeWorld({
+      seed: "s",
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", makeHeya("h1", [])]]),
+      pendingDecisions: [
+        {
+          id: "insolvency-s-y1-w2",
+          type: "insolvency_response",
+          description: "x",
+          deadlineWeek: 3,
+          required: true,
+          options: [{ id: "austerity", label: "Austerity", impact: "x" }],
+        },
+      ],
+    });
+    const impact = resolveLoopDecision(world, "insolvency-s-y1-w2", "austerity");
+    expect(impact.worldFields?.resolvedDecisionIds).toContain("insolvency-s-y1-w2");
+  });
+
+  it("an already-resolved insolvency id is not re-issued while runway stays critical", () => {
+    const heya = { ...makeHeya("h1", []), runwayBand: "critical" } as Heya;
+    const world = makeWorld({
+      seed: "s",
+      year: 1,
+      week: 2,
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]),
+      resolvedDecisionIds: ["insolvency-s-y1-w2"],
+    });
+    expect(detectDueDecisions(world).some((d) => d.type === "insolvency_response")).toBe(false);
+  });
+
+  it("a new week re-fires insolvency when runway is still critical", () => {
+    const heya = { ...makeHeya("h1", []), runwayBand: "critical" } as Heya;
+    const world = makeWorld({
+      seed: "s",
+      year: 1,
+      week: 3,
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]),
+      resolvedDecisionIds: ["insolvency-s-y1-w2"], // last week's instance
+    });
+    const due = detectDueDecisions(world).find((d) => d.type === "insolvency_response");
+    expect(due?.id).toBe("insolvency-s-y1-w3");
+  });
+
+  it("autonomouslyResolveDecisions records the ids it resolves", () => {
+    const r = makeRikishi("r1", "makushita", "Tired");
+    (r as unknown as { fatigue: number }).fatigue = 80;
+    const world = makeWorld({
+      seed: "auto",
+      year: 1,
+      week: 4,
+      cyclePhase: "pre_basho",
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", makeHeya("h1", ["r1"])]]),
+      rikishi: new Map([["r1", r]]),
+    });
+    const impact = autonomouslyResolveDecisions(world, "balanced");
+    expect(impact.worldFields?.resolvedDecisionIds).toContain("prebasho-auto-y1-w4");
+  });
+
+  it("clears pendingCrisis even when the decision is no longer in the queue", () => {
+    // The queue and pendingCrisis can desync (same-tick expired-defaults
+    // clobber, old saves). If the blocking crisis references the id, the
+    // resolve must still clear it — otherwise the modal is unresolvable
+    // and shouldBlockTick swallows every tick.
+    const world = makeWorld({
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", makeHeya("h1", [])]]),
+      pendingDecisions: [],
+      pendingCrisis: {
+        id: "insolvency-s-y1-w5",
+        type: "loop_decision",
+        title: "Treasury Insolvent",
+        description: "x",
+        options: [{ id: "austerity", label: "Austerity Diet" }],
+      },
+    });
+    const impact = resolveLoopDecision(world, "insolvency-s-y1-w5", "austerity");
+    expect(impact.worldFields).toHaveProperty("pendingCrisis", undefined);
+    expect(impact.worldFields?.resolvedDecisionIds).toContain("insolvency-s-y1-w5");
+  });
+});

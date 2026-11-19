@@ -36,6 +36,13 @@ const COMMAND_HANDLERS: CommandHandlerMap = {
  *
  * @param {MessageEvent<EngineCommand>} event - The message event containing the command.
  */
+// Commands whose execution sets pendingTick on the main thread (mirrors the
+// flag list in gameStore.sendCommand). While one runs, its completion events
+// may legitimately clear that flag — events posted outside this window must
+// not, or a queued non-tick command's WORLD_UPDATED/TICK_COMPLETED ends the
+// pending window early and the sendCommand drop-guard fails open.
+const PENDING_TICK_COMMANDS = new Set(["TICK_DAY", "TICK_MULTIPLE_DAYS", "GO_ON_HOLIDAY"]);
+
 self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   const command = event.data;
 
@@ -44,7 +51,12 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     const handler = COMMAND_HANDLERS[command.type] as
       ((cmd: EngineCommand) => void | Promise<void>) | undefined;
     if (handler) {
-      await handler(command);
+      if (PENDING_TICK_COMMANDS.has(command.type)) rt.tickDepth++;
+      try {
+        await handler(command);
+      } finally {
+        if (PENDING_TICK_COMMANDS.has(command.type)) rt.tickDepth--;
+      }
     } else {
       warn(`Unknown command: ${command.type}`, "Worker");
     }

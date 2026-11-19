@@ -689,20 +689,42 @@ export async function driveBashoToRecap(page: Page): Promise<void> {
     if (i % 5 === 4) {
       const w = await readLiveWorldMeta(page);
       const dlgInfo = await page
-        .evaluate(() =>
-          [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map((d) => ({
-            state: d.getAttribute("data-state"),
-            text: (d.textContent ?? "").slice(0, 80),
-            btns: [...d.querySelectorAll("button")]
-              .map((b) => (b.textContent ?? "").trim())
-              .slice(0, 6),
-          }))
-        )
-        .catch((): { state: string | null; text: string; btns: string[] }[] => []);
+        .evaluate(() => {
+          const st = (
+            window as unknown as {
+              __BASHO_STORE__?: { getState?: () => Record<string, unknown> };
+            }
+          ).__BASHO_STORE__?.getState?.();
+          return {
+            dialogs: [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].map(
+              (d) => ({
+                state: d.getAttribute("data-state"),
+                text: (d.textContent ?? "").slice(0, 80),
+                btns: [...d.querySelectorAll("button")]
+                  .map((b) => (b.textContent ?? "").trim())
+                  .slice(0, 6),
+              })
+            ),
+            pendingTick: !!st?.pendingTick,
+            queuedTick: !!st?.queuedTick,
+            simPaused: !!st?.simPaused,
+            commandRejected: st?.commandRejected ?? null,
+            error: st?.error ?? null,
+          };
+        })
+        .catch(() => ({
+          dialogs: [] as { state: string | null; text: string; btns: string[] }[],
+          pendingTick: null,
+          queuedTick: null,
+          simPaused: null,
+          commandRejected: null,
+          error: null,
+        }));
       console.log(
         `[driveBasho] iter ${i + 1}: url=${page.url().replace(/.*:\d+/, "")} ` +
           `world=${w ? `day${w.dayIndexGlobal} ${w.cyclePhase}${w.currentBasho ? " bashoDay" + w.currentBasho.day + " matches" + w.currentBasho.matchCount : ""}${w.pendingCrisis ? " crisis:" + w.pendingCrisis.id : ""}` : "none"} ` +
-          `dialogs=${JSON.stringify(dlgInfo)}`
+          `tick={pending:${dlgInfo.pendingTick} queued:${dlgInfo.queuedTick} paused:${dlgInfo.simPaused} rejected:${dlgInfo.commandRejected} err:${dlgInfo.error}} ` +
+          `dialogs=${JSON.stringify(dlgInfo.dialogs)}`
       );
     }
     if (

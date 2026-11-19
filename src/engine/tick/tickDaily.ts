@@ -143,17 +143,7 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   // counter too — otherwise a run of halted days starves the weekly tick
   // forever while days elapse.
   if (!nextWorld._autonomousSim && shouldBlockTick(nextWorld)) {
-    return {
-      ...nextWorld,
-      // A halted tick produced no daily report — drop the one carried in
-      // transientContext from the previous tick so consumers don't read a
-      // stale report as today's (V18-B01).
-      transientContext: nextWorld.transientContext
-        ? { ...nextWorld.transientContext, lastReport: undefined }
-        : nextWorld.transientContext,
-      _daysSinceLastWeeklyTick: (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1,
-      _suppressPhaseTransition: undefined,
-    };
+    return haltBlockedTick(nextWorld);
   }
 
   const boundaries = nextWorld.transientContext?.boundaries || {
@@ -243,6 +233,39 @@ export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldSt
   return opts?.suppressPhaseTransition
     ? { ...nextWorld, _suppressPhaseTransition: undefined }
     : nextWorld;
+}
+
+/**
+ * Build the world returned when a tick is swallowed by a blocking crisis or
+ * required decision. The calendar day was already consumed by preflight.
+ *
+ * A blocked gate day must hold the gate OPEN, not close it: weekly
+ * decisions mint on the gate day itself (the week rolls in preflight), so a
+ * chronic required crisis (e.g. insolvency) blocks the very tick that mints
+ * it. Resetting the counter to 0 would defer the weekly pipeline another 7
+ * days — and the next gate day mints a fresh crisis and blocks again —
+ * starving every weekly phase (incl. phase06's year roll, which a
+ * pendingYearBoundary needs) forever. Holding the counter at the threshold
+ * keeps isWeeklyTick true so the first UNBLOCKED tick runs the weekly
+ * pipeline, while preflight's === crossing keeps the week from re-rolling
+ * each blocked day (the original runaway: week free-ran ~1/day, minting a
+ * fresh -w{week} crisis id per tick that resolvedDecisionIds could not
+ * suppress — observed e2e: bashoDay frozen at 1 for 20+ days, then
+ * world.year frozen at 2026 through the new-year basho).
+ */
+function haltBlockedTick(nextWorld: WorldState): WorldState {
+  const daysSinceTick = (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1;
+  return {
+    ...nextWorld,
+    // A halted tick produced no daily report — drop the one carried in
+    // transientContext from the previous tick so consumers don't read a
+    // stale report as today's (V18-B01).
+    transientContext: nextWorld.transientContext
+      ? { ...nextWorld.transientContext, lastReport: undefined }
+      : nextWorld.transientContext,
+    _daysSinceLastWeeklyTick: Math.min(daysSinceTick, WEEKLY_TICK_THRESHOLD),
+    _suppressPhaseTransition: undefined,
+  };
 }
 
 /**

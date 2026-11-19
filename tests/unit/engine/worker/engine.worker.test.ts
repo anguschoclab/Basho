@@ -87,9 +87,12 @@ describe("engine.worker", () => {
       playerHeyaId: "heya-123",
     });
 
+    // Non-tick commands emit DIGEST_UPDATED, not TICK_COMPLETED — the latter
+    // clears pendingTick/isSimulating on the main thread and is reserved for
+    // real tick completions.
     expect(mockPostMessage).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: "TICK_COMPLETED",
+        type: "DIGEST_UPDATED",
         digest: {
           mockDigest: true,
           worldSeed: "test-seed",
@@ -107,7 +110,7 @@ describe("engine.worker", () => {
 
     expect(mockPostMessage).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: "TICK_COMPLETED",
+        type: "DIGEST_UPDATED",
         digest: {
           mockDigest: true,
           worldSeed: "loaded-seed",
@@ -162,6 +165,28 @@ describe("engine.worker", () => {
           ticked: true,
         }),
       })
+    );
+  });
+
+  it("tags WORLD_UPDATED clearsPendingTick only inside a tick command", async () => {
+    const world = MockFactory.createWorld({ seed: "tagged-seed" });
+    await triggerMessage({ type: "LOAD_WORLD", world });
+    vi.clearAllMocks();
+
+    // A non-tick command's sync must not clear pendingTick.
+    await triggerMessage({
+      type: "RESOLVE_LOOP_DECISION",
+      decisionId: "d-none",
+      optionId: "x",
+    });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "WORLD_UPDATED", clearsPendingTick: false })
+    );
+
+    vi.clearAllMocks();
+    await triggerMessage({ type: "TICK_DAY" });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "WORLD_UPDATED", clearsPendingTick: true })
     );
   });
 

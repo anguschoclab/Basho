@@ -30,6 +30,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { TraitsCard, CareerAsRikishiCard } from "@/components/oyakata/OyakataPageSections";
+import { ManagerCareerCard } from "@/components/oyakata/ManagerCareerCard";
 import { StableName, RikishiName } from "@/components/shared/ClickableName";
 import { getOyakata, getAllOyakata, getHeya, getRikishi } from "@/presenters/worldAccess";
 import { getPlayerHeya, menteesOf } from "@/presenters/engineAccess";
@@ -523,6 +524,9 @@ export default function OyakataProfilePage() {
             <CareerAsRikishiCard oyakata={o} />
             <ElderStatusCard o={o} />
             {playerOwned && <SuccessionCard o={o} world={world} />}
+            {playerOwned && playerHeyaId && (
+              <ManagerCareerCard world={world} heyaId={playerHeyaId} />
+            )}
           </div>
           <div className="space-y-6">
             <Card>

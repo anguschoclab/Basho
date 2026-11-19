@@ -138,7 +138,10 @@ function initWorker(get: StoreGet, set: StoreSet) {
         set({
           workerWorld: data.world,
           worldVersion: data.version ?? get().worldVersion + 1,
-          pendingTick: false,
+          // Only a sync posted inside a tick command's execution completes the
+          // pending window — a queued non-tick command's sync arriving while a
+          // tick still runs must not open the drop-guard early.
+          pendingTick: data.clearsPendingTick === true ? false : get().pendingTick,
         });
         get().onWorldUpdated?.(data.world);
         get().checkTourTrigger(data.world);

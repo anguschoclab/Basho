@@ -186,7 +186,15 @@ export type WorkerEvent =
   | { type: "READY"; worldExists: boolean }
   | { type: "TICK_COMPLETED"; digest: UIDigest; digestRevision?: number }
   | { type: "DIGEST_UPDATED"; digest: UIDigest; digestRevision?: number }
-  | { type: "WORLD_UPDATED"; world: WorldState; version: number }
+  | {
+      type: "WORLD_UPDATED";
+      world: WorldState;
+      version: number;
+      /** True only when posted inside a pendingTick command's execution —
+       *  the main thread must not treat a queued non-tick command's sync as
+       *  tick completion. */
+      clearsPendingTick?: boolean;
+    }
   | { type: "ERROR"; message: string }
   | { type: "PROGRESS"; message: string; current: number; total: number }
   | {

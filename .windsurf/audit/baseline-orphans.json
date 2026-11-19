@@ -1,14 +1,25 @@
 {
-  "generatedAt": "2026-v19-s10-prune",
+  "generatedAt": "2026-11-18T17:39:01.334Z",
   "summary": {
-    "total": 171,
-    "unreferencedExports": 162,
+    "total": 185,
+    "unreferencedExports": 177,
     "orphanRoutes": 0,
-    "untickedServices": 9,
+    "untickedServices": 8,
     "unusedComponents": 0,
     "writeOnlyState": 0
   },
   "entries": [
+    {
+      "id": "ORPH-0580",
+      "file": "src/engine/banzuke/banzukeCommittee.ts",
+      "symbol": "BanzukeDeliberation",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
     {
       "id": "ORPH-0299",
       "file": "src/engine/banzuke/banzukeOps.ts",
@@ -87,9 +98,9 @@
       "status": "intentional"
     },
     {
-      "id": "ORPH-0334",
-      "file": "src/engine/basho/NakabiService.ts",
-      "symbol": "NAKABI_DAY",
+      "id": "ORPH-0581",
+      "file": "src/engine/basho/geography.ts",
+      "symbol": "HometownTier",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -164,9 +175,42 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0582",
+      "file": "src/engine/bout/boutPipeline.ts",
+      "symbol": "MatchScheduleLike",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0583",
+      "file": "src/engine/bout/boutResolver.ts",
+      "symbol": "absentRikishi",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
       "id": "ORPH-0131",
       "file": "src/engine/bout/boutResolver.ts",
       "symbol": "applyRivalryToRikishi",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0584",
+      "file": "src/engine/bout/boutResolver.ts",
+      "symbol": "applyCompetingInjuryPenalty",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -241,9 +285,64 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0585",
+      "file": "src/engine/bout/kinjite.ts",
+      "symbol": "FoulSuspicion",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
       "id": "ORPH-0143",
       "file": "src/engine/bout/kinjite.ts",
       "symbol": "calculateHansokuChance",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0586",
+      "file": "src/engine/bout/kinjite.ts",
+      "symbol": "pickFoulType",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0587",
+      "file": "src/engine/bout/physics/tachiai.ts",
+      "symbol": "spontaneousHenkaChance",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0588",
+      "file": "src/engine/bout/resolution/gyoji.ts",
+      "symbol": "boutImportanceForBout",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0589",
+      "file": "src/engine/bout/resolution/monoiiVerdict.ts",
+      "symbol": "MonoiiVerdictParams",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -450,6 +549,17 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0590",
+      "file": "src/engine/economy/KachiNokoriService.ts",
+      "symbol": "calculateKachiNokori",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
       "id": "ORPH-0339",
       "file": "src/engine/economy/facilities.ts",
       "symbol": "UpgradeResult",
@@ -620,6 +730,17 @@
       "symbol": "skillFromBands",
       "orphanType": "unreferenced-export",
       "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0591",
+      "file": "src/engine/generation/CandidateBuilder.ts",
+      "symbol": "deriveStyle",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
@@ -923,6 +1044,17 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0592",
+      "file": "src/engine/health/RecoveryService.ts",
+      "symbol": "RecoveryTickResult",
+      "orphanType": "unreferenced-export",
+      "priority": "P0",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
       "id": "ORPH-0562",
       "file": "src/engine/health/physioPurchase.ts",
       "symbol": "PHYSIO_WEEKS_PER_SESSION",
@@ -972,6 +1104,17 @@
       "symbol": "computeStatureBand",
       "orphanType": "unreferenced-export",
       "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0593",
+      "file": "src/engine/legacy/tenure.ts",
+      "symbol": "mergeTenureDelta",
+      "orphanType": "unreferenced-export",
+      "priority": "P2",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
@@ -1363,6 +1506,28 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0594",
+      "file": "src/engine/persistence/MigrationService.ts",
+      "symbol": "MigrationContext",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0595",
+      "file": "src/engine/persistence/MigrationService.ts",
+      "symbol": "MigrationResult",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
       "id": "ORPH-0461",
       "file": "src/engine/persistence/storage/electronArchive.ts",
       "symbol": "ElectronArchiveService",
@@ -1432,17 +1597,6 @@
       "id": "ORPH-0470",
       "file": "src/engine/recruitment/YouthAcademyService.ts",
       "symbol": "getQualityBonus",
-      "orphanType": "unreferenced-export",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0468",
-      "file": "src/engine/recruitment/overflow.ts",
-      "symbol": "HARD_CAP_ROSTER_SIZE",
       "orphanType": "unreferenced-export",
       "priority": "P1",
       "uiRoute": "",
@@ -1737,9 +1891,31 @@
       "status": "intentional"
     },
     {
+      "id": "ORPH-0578",
+      "file": "src/engine/utils/asyncPool.ts",
+      "symbol": "mapWithConcurrency",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
       "id": "ORPH-0577",
       "file": "src/engine/utils/citizenshipUtils.ts",
       "symbol": "isAtForeignLimit",
+      "orphanType": "unreferenced-export",
+      "priority": "P3",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "intentional"
+    },
+    {
+      "id": "ORPH-0596",
+      "file": "src/engine/utils/identity.ts",
+      "symbol": "isCollegeRecruit",
       "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
@@ -1784,17 +1960,6 @@
       "id": "ORPH-0472",
       "file": "src/engine/almanac/index.ts",
       "symbol": "index",
-      "orphanType": "unticked-service",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0475",
-      "file": "src/engine/bout/ReplayMetadata.ts",
-      "symbol": "ReplayMetadata",
       "orphanType": "unticked-service",
       "priority": "P3",
       "uiRoute": "",
@@ -1873,17 +2038,6 @@
       "file": "src/engine/rikishi/signatureKimarite.ts",
       "symbol": "signatureKimarite",
       "orphanType": "unticked-service",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "intentional"
-    },
-    {
-      "id": "ORPH-0578",
-      "file": "src/engine/utils/asyncPool.ts",
-      "symbol": "mapWithConcurrency",
-      "orphanType": "unreferenced-export",
       "priority": "P3",
       "uiRoute": "",
       "npcConsumer": "",

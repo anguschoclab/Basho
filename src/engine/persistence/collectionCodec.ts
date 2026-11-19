@@ -14,12 +14,16 @@ const SET_TAG = "$$set";
 
 /**
  * Upper bound on save text accepted at the parse/import boundary.
- * Exported saves are indented JSON and even a long-running world is only a
- * few MB — anything beyond this is corrupt or hostile. Enforcing it before
- * file.text()/JSON.parse stops a crafted "save" from exhausting renderer
- * memory (CWE-400, uncontrolled resource consumption).
+ * Enforcing it before file.text()/JSON.parse stops a crafted "save" from
+ * exhausting renderer memory (CWE-400, uncontrolled resource consumption).
+ *
+ * Size must cover legitimate growth: `world.history` accumulates completed
+ * BashoResult[] with per-bout narrative, so a long-running world grows to
+ * ~30MB per in-game year (ElectronStorageProvider's own sizing note) — and
+ * e2e soak worlds cross 32MB within a single year. 128MB ≈ four years of
+ * runway; anything beyond is still rejected as corrupt or hostile.
  */
-export const MAX_SAVE_BYTES = 32 * 1024 * 1024;
+export const MAX_SAVE_BYTES = 128 * 1024 * 1024;
 
 // @keep-export saveReplacer — live via same-file/dispatch call or public API contract
 export function saveReplacer(_key: string, value: unknown): unknown {

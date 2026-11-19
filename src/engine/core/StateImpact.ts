@@ -133,6 +133,7 @@ export type WritableWorldFields = Pick<
   | "meta"
   | "pendingCrisis"
   | "pendingDecisions"
+  | "resolvedDecisionIds"
   | "activeChains"
   | "chainCooldowns"
   | "activeScoutMissions"

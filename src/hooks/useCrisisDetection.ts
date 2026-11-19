@@ -7,7 +7,7 @@
  * cannot be dismissed without resolving).
  */
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useGameStore } from "@/state/stores/gameStore";
 import { useGame } from "@/state/game/useGame";
 import { getPlayerHeya } from "@/presenters/engineAccess";
@@ -80,11 +80,25 @@ export function useCrisisDetection() {
     return null;
   }, [world?.pendingCrisis, welfareCrisis, digestCrisis]);
 
-  // Logic to auto-open if a crisis is detected
+  // Auto-open when a NEW crisis appears. The crisis object is re-derived
+  // on every world sync (new identity, same logical crisis), so gating on
+  // object identity would re-open a modal the player already dismissed —
+  // e.g. a sanctioned stable re-popping the welfare dialog on every tick
+  // (observed e2e: drive loop dismissing "Welfare Sanction" each advance).
+  // Keys persist while any crisis is active — a welfare crisis masked by
+  // a pendingCrisis and then unmasked was never cleared, so it must not
+  // re-open either. The set resets only when the world reports no crisis
+  // at all, so a genuinely new occurrence of the same kind still opens.
+  const autoOpenedKeys = useRef<Set<string>>(new Set());
   useEffect(() => {
-    if (crisis) {
-      setIsOpen(true);
+    if (!crisis) {
+      autoOpenedKeys.current.clear();
+      return;
     }
+    const key = `${crisis.type}:${crisis.id}`;
+    if (autoOpenedKeys.current.has(key)) return;
+    autoOpenedKeys.current.add(key);
+    setIsOpen(true);
   }, [crisis]);
 
   const isWorldBacked = crisis?.type === "loop_decision" || crisis?.type === "pending_crisis";

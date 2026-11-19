@@ -36,6 +36,13 @@ function makeId(prefix: string, seed: string, world: WorldState): string {
   return `${prefix}-${seed}-y${world.year ?? 0}-w${world.week ?? 0}`;
 }
 
+/**
+ * Resolved ids only need to outlive their own re-fire window — one week
+ * for `…-w{N}` ids, one basho day for `kyujo_*` ids. 64 covers months of
+ * decisions; the FIFO drops nothing a future tick could still re-issue.
+ */
+const RESOLVED_DECISION_ID_CAP = 64;
+
 /** Pure: which decisions are due this tick for the player heya (no world mutation). */
 export function detectDueDecisions(world: WorldState): LoopDecision[] {
   const out: LoopDecision[] = [];
@@ -147,7 +154,14 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
   // rikishi to the player's heya. The oyakata accepts or declines.
   pushDegeikoInvites(world, playerHeyaId, currentWeek, existing, out);
 
-  return out;
+  // Ids are period-deterministic: an already-resolved id must not re-fire
+  // within its own period. Triggers routinely outlive resolution —
+  // insolvency austerity keeps runwayBand critical, kyujo "compete" leaves
+  // the rikishi scheduled — and re-issuing re-sets pendingCrisis, which
+  // soft-locks the advance loop (each blocked tick burns a calendar day
+  // while bashoDay stays frozen; observed e2e: day 9 for 10+ days).
+  const resolved = new Set(world.resolvedDecisionIds ?? []);
+  return resolved.size === 0 ? out : out.filter((d) => !resolved.has(d.id));
 }
 
 function pushDegeikoInvites(
@@ -565,11 +579,29 @@ export function resolveLoopDecision(
   const decisions = world.pendingDecisions ?? [];
   const decision = decisions.find((d) => d.id === decisionId);
 
-  if (!decision) return builder.build();
+  if (!decision) {
+    // pendingCrisis and the queue can desync (a same-tick expired-defaults
+    // write once dropped the just-promoted decision; old saves may carry the
+    // same shape). If this id IS the blocking crisis, still clear it —
+    // otherwise the modal is unresolvable and shouldBlockTick swallows every
+    // subsequent tick. The option's effect can't apply without the decision.
+    if (world.pendingCrisis?.id === decisionId) {
+      builder.updateWorldField("pendingCrisis", undefined);
+      builder.updateWorldField(
+        "resolvedDecisionIds",
+        [...(world.resolvedDecisionIds ?? []), decisionId].slice(-RESOLVED_DECISION_ID_CAP)
+      );
+    }
+    return builder.build();
+  }
 
   // Remove the resolved decision
   const remaining = decisions.filter((d) => d.id !== decisionId);
   builder.updateWorldField("pendingDecisions", remaining);
+  builder.updateWorldField(
+    "resolvedDecisionIds",
+    [...(world.resolvedDecisionIds ?? []), decisionId].slice(-RESOLVED_DECISION_ID_CAP)
+  );
 
   // Clear pendingCrisis if this was the blocking decision
   if (world.pendingCrisis?.id === decisionId) {
@@ -582,7 +614,13 @@ export function resolveLoopDecision(
   builder.logEvent(
     "DECISION_RESOLVED",
     "narrative",
-    { title: "Decision Resolved", summary, decisionType: decision.type, optionId },
+    {
+      title: "Decision Resolved",
+      summary,
+      decisionType: decision.type,
+      decisionId: decision.id,
+      optionId,
+    },
     world.playerHeyaId
       ? { heyaId: world.playerHeyaId, importance: "notable" }
       : { importance: "notable" }
@@ -640,10 +678,12 @@ export function autonomouslyResolveDecisions(
   if (due.length === 0) return builder.build();
   const table = DELEGATION_DEFAULTS[policy] ?? DELEGATION_DEFAULTS.balanced;
   const heyaId = world.playerHeyaId;
+  const resolvedIds: string[] = [];
   for (const d of due) {
     const optionId = table[d.type] ?? d.options[0]?.id;
     if (!optionId) continue;
     applyDecisionEffect(world, builder, d.type, optionId, d.id);
+    resolvedIds.push(d.id);
     builder.logEvent(
       "DECISION_AUTO_RESOLVED",
       "narrative",
@@ -655,6 +695,15 @@ export function autonomouslyResolveDecisions(
         optionId,
       },
       heyaId ? { heyaId } : undefined
+    );
+  }
+  // Record resolved ids so a persistent trigger doesn't re-issue the same
+  // period-deterministic id on the next tick (same suppression as the
+  // interactive resolveLoopDecision path).
+  if (resolvedIds.length > 0) {
+    builder.updateWorldField(
+      "resolvedDecisionIds",
+      [...(world.resolvedDecisionIds ?? []), ...resolvedIds].slice(-RESOLVED_DECISION_ID_CAP)
     );
   }
   return builder.build();

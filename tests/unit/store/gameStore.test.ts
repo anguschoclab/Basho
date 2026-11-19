@@ -100,7 +100,7 @@ describe("gameStore - pendingTick lifecycle", () => {
     expect(useGameStore.getState().error).toBe("Test error");
   });
 
-  it("WORLD_UPDATED clears pendingTick", () => {
+  it("WORLD_UPDATED clears pendingTick when posted inside a tick command", () => {
     const mockWorker = initAndGetWorker();
     useGameStore.setState({ pendingTick: true });
 
@@ -108,9 +108,34 @@ describe("gameStore - pendingTick lifecycle", () => {
       type: "WORLD_UPDATED",
       world: { id: "test" } as WorldState,
       version: 1,
+      clearsPendingTick: true,
     });
 
     expect(useGameStore.getState().pendingTick).toBe(false);
+  });
+
+  it("a non-tick WORLD_UPDATED does NOT clear pendingTick (queued-command race)", () => {
+    // A command queued behind TICK_MULTIPLE_DAYS syncs its world when it
+    // runs — that WORLD_UPDATED must not end the pending window early, or
+    // sendCommand's drop-guard fails open and commands interleave into the
+    // still-running tick (search-oyakata graft-clobber e2e flake).
+    const mockWorker = initAndGetWorker();
+    useGameStore.setState({ pendingTick: true });
+
+    emit(mockWorker, {
+      type: "WORLD_UPDATED",
+      world: { id: "test" } as WorldState,
+      version: 1,
+      clearsPendingTick: false,
+    });
+
+    expect(useGameStore.getState().pendingTick).toBe(true);
+    // The world itself still syncs — only the flag clear is gated.
+    expect(useGameStore.getState().workerWorld).toEqual({ id: "test" });
+
+    // And a dropped follow-up command stays dropped.
+    useGameStore.getState().sendCommand({ type: "LOAD_WORLD", world: {} as WorldState });
+    expect(mockWorker.postMessage).not.toHaveBeenCalled();
   });
 
   it("second TICK_DAY is dropped while pendingTick is true", () => {

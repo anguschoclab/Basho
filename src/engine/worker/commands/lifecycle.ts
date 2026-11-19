@@ -160,9 +160,7 @@ export function lifecycleCommands(rt: WorkerRuntime): CommandHandlerMap {
           }
         }
 
-        rt.emitDigest();
-        rt.worldVersion++;
-        rt.post({ type: "WORLD_UPDATED", world: rt.world, version: rt.worldVersion });
+        rt.syncAndDigest();
       }
     },
     PAUSE_SIM: () => {

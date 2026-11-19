@@ -13,12 +13,15 @@ import { createNewGame, dismissOnboardingTour, resolveCrisisIfPresent } from "./
 interface EntityFixtures {
   playerOyakataId: string;
   playerOyakataName: string;
+  playerHeyaName: string | null;
   npcOyakataId: string | null;
   npcOyakataName: string | null;
   npcOyakataArchetype: string | null;
+  npcHeyaName: string | null;
   staffName: string | null;
   staffIsPlayerOwned: boolean;
   staffHeyaId: string | null;
+  staffHeyaName: string | null;
   candidateName: string | null;
   candidateId: string | null;
   candidatePool: string | null;
@@ -30,9 +33,9 @@ interface EntityFixtures {
  * sharing an oyakata's name), so group scoping is required — the dropdown
  * renders group headers as sibling divs before their options.
  */
-async function optionIdInGroup(page: Page, group: string, name: string) {
+async function optionIdInGroup(page: Page, group: string, name: string, sub?: string) {
   return page.evaluate(
-    ({ group, name }) => {
+    ({ group, name, sub }) => {
       const res = document.getElementById("gs-results");
       if (!res) return null;
       let inGroup = false;
@@ -42,13 +45,17 @@ async function optionIdInGroup(page: Page, group: string, name: string) {
           inGroup = (header.textContent ?? "").trim() === group;
         }
         const opt = child.querySelector('[role="option"]');
-        if (inGroup && opt && (opt.textContent ?? "").includes(name)) {
+        if (!inGroup || !opt) continue;
+        const text = opt.textContent ?? "";
+        // Same-named entities can appear in one group — the row also shows
+        // the heya name, so callers can pass it as a secondary matcher.
+        if (text.includes(name) && (!sub || text.includes(sub))) {
           return opt.id;
         }
       }
       return null;
     },
-    { group, name }
+    { group, name, sub }
   );
 }
 
@@ -93,19 +100,44 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   //    discovery populate the talent pools. TICK_MULTIPLE_DAYS halts early
   //    on required decisions/major same-week events (shouldHaltAdvance), so
   //    drive it in a retry loop that clears blocking decisions first.
-  //    sendCommand drops non-tick commands while pendingTick is set — waits
-  //    between iterations are what keep this sequence canonical.
-  for (let i = 0; i < 10; i++) {
-    const populated = await page.evaluate(() => {
+  //    sendCommand drops EVERY command while pendingTick is set — including
+  //    RESOLVE_LOOP_DECISION — so each phase must wait for a strictly idle
+  //    store before sending. Iterate on world-age, not round count: a halted
+  //    chunk may only advance a day or two.
+  const idle = (ms = 120000) =>
+    page.waitForFunction(
+      () =>
+        !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
+          .pendingTick,
+      { timeout: ms }
+    );
+  const poolSnap = () =>
+    page.evaluate(() => {
       const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      const ww = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
+        ?.workerWorld;
       const pools = w?.talentPool?.pools ?? {};
-      return Object.values<any>(pools).some(
-        (p: any) =>
-          (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
-      );
+      return {
+        populated: Object.values<any>(pools).some(
+          (p: any) =>
+            (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
+        ),
+        uiDay: (w?.dayIndexGlobal ?? 0) as number,
+        wkDay: (ww?.dayIndexGlobal ?? 0) as number,
+        // advanceOneDay's senshuraku early-return freezes the worker world at
+        // currentBasho.day > 15 — further ticks no-op until the player ends
+        // the basho. The day-14 pool refresh lands before that wall, so a
+        // frozen worker still means the pools exist; wait for the UI world
+        // to converge rather than ticking forever.
+        wkFrozen: (ww?.currentBasho?.day ?? 0) > 15,
+      };
     });
-    if (populated) break;
 
+  for (let i = 0; i < 15; i++) {
+    const snap = await poolSnap();
+    if (snap.populated || snap.wkFrozen || snap.uiDay >= 30) break;
+
+    await idle();
     await resolveCrisisIfPresent(page);
     await page.evaluate(() => {
       const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
@@ -121,43 +153,63 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
           });
         }
       }
-      send?.({ type: "TICK_MULTIPLE_DAYS", days: 7 });
     });
-    await page
-      .waitForFunction(
-        () =>
-          !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
-            .pendingTick,
-        { timeout: 90000 }
-      )
-      .catch(() => {});
+    // Resolutions post non-tick world updates — still idle — then tick and
+    // drain it fully before the next round's sends.
+    await idle();
+    await page.evaluate(() => {
+      const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
+      store?.getState?.().sendCommand?.({ type: "TICK_MULTIPLE_DAYS", days: 7 });
+    });
+    await idle();
   }
 
-  const poolDiag = await page.evaluate(() => {
-    const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
-    const pools = w?.talentPool?.pools ?? {};
-    const summary: Record<string, { hidden: number; visible: number }> = {};
-    for (const [pt, p] of Object.entries<any>(pools)) {
-      summary[pt] = {
-        hidden: p?.candidatesHidden?.length ?? 0,
-        visible: p?.candidatesVisible?.length ?? 0,
-      };
-    }
-    return {
-      dayIndex: w?.dayIndexGlobal,
-      week: w?.week,
-      phase: w?.cyclePhase,
-      candidates: Object.keys(w?.talentPool?.candidates ?? {}).length,
-      pendingTick: !!(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
-        .pendingTick,
-      summary,
-    };
-  });
-  console.log("POOL-STATE", JSON.stringify(poolDiag));
-  const poolSeeded = Object.values(poolDiag.summary).some(
-    (p) => p.hidden + p.visible > 0
-  );
+  // __BASHO_WORLD__ (the reducer state the search actually reads) converges
+  // behind the worker under load — updateWorld dispatches ride
+  // startTransition and starve while syncs stream in. Assert on the UI world
+  // only after it has had a quiet window to catch up.
+  const poolSeeded = await page
+    .waitForFunction(
+      () => {
+        const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+        const pools = w?.talentPool?.pools ?? {};
+        return Object.values<any>(pools).some(
+          (p: any) =>
+            (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
+        );
+      },
+      { timeout: 60000 }
+    )
+    .then(() => true)
+    .catch(() => false);
   expect(poolSeeded, "talent pools populated after advancing the sim").toBe(true);
+
+  // The seed loop can exit with a crisis minted by its final tick (the
+  // populated-check breaks before the next resolve pass). A world-backed
+  // pendingCrisis opens an undismissable modal on /dashboard — its scrim
+  // intercepts every search click below (observed: combobox click blocked
+  // by data-state=open aria-hidden scrim → 300s timeout, e.g. a "Nightlife
+  // Scandal" narrative crisis). Resolve whatever is pending — modals
+  // first, then any required decisions — before any UI interaction.
+  for (let i = 0; i < 3; i++) {
+    if (!(await resolveCrisisIfPresent(page))) break;
+  }
+  await page.evaluate(() => {
+    const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+    const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
+    const send = store?.getState?.().sendCommand;
+    send?.({ type: "RESUME_SIM" });
+    for (const d of w?.pendingDecisions ?? []) {
+      if (d?.required && d?.options?.[0]?.id) {
+        send?.({
+          type: "RESOLVE_LOOP_DECISION",
+          decisionId: d.id,
+          optionId: d.options[0].id,
+        });
+      }
+    }
+  });
+  await idle();
 
   // 3. Graft a searchable prospect into the live world. No canonical command
   //    sequence produces one in a fresh world: the emergency demographic dump
@@ -170,7 +222,20 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   //    projection + deep-link rather than the recruitment lifecycle.
   //    onWorldUpdated is the worker→context sync bridge (same callback
   //    syncWorld invokes); LOAD_WORLD keeps the worker copy consistent.
-  const graftedId = await page.evaluate(() => {
+  //
+  //    Hard requirement: no tick may be in flight. sendCommand drops
+  //    LOAD_WORLD while pendingTick is set — the main-thread graft then
+  //    gets clobbered when the in-flight tick completes and syncs the
+  //    worker's pre-graft world (the intermittent 10s waitForFunction
+  //    timeout this sequence used to hit). The advance loop above exits
+  //    its pendingTick wait via .catch, so idle is not guaranteed here.
+  await page.waitForFunction(
+    () =>
+      !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
+        .pendingTick,
+    { timeout: 90000 }
+  );
+  const grafted = await page.evaluate(() => {
     const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
     const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
     const tp = w?.talentPool;
@@ -205,23 +270,56 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
       },
     };
     store?.getState?.().onWorldUpdated?.(patched);
-    store?.getState?.().sendCommand?.({ type: "LOAD_WORLD", world: patched });
-    return cid;
+    // sendCommand returns false when dropped (tick in progress) — surface
+    // it at the graft rather than timing out downstream on a world the
+    // worker never received.
+    const accepted = store?.getState?.().sendCommand?.({ type: "LOAD_WORLD", world: patched });
+    return { cid, accepted };
   });
-  expect(graftedId, "a generated candidate exists to graft").toBeTruthy();
-  const graftedCid = graftedId as string;
-  await page.waitForFunction(
-    (cid) => {
-      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
-      const tp = w?.talentPool;
-      return (
-        tp?.candidates?.[cid]?.visibilityBand === "public" &&
-        (tp?.pools?.high_school?.candidatesVisible ?? []).includes(cid)
-      );
-    },
-    graftedCid,
-    { timeout: 10000 }
-  );
+  expect(grafted, "a generated candidate exists to graft").toBeTruthy();
+  expect(
+    (grafted as { accepted?: boolean }).accepted,
+    "LOAD_WORLD was not dropped by a pending tick"
+  ).not.toBe(false);
+  const graftedCid = (grafted as { cid: string }).cid;
+  try {
+    await page.waitForFunction(
+      (cid) => {
+        const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+        const tp = w?.talentPool;
+        return (
+          tp?.candidates?.[cid]?.visibilityBand === "public" &&
+          (tp?.pools?.high_school?.candidatesVisible ?? []).includes(cid)
+        );
+      },
+      graftedCid,
+      { timeout: 10000 }
+    );
+  } catch (err) {
+    // Diagnostic: did the grafted world reach the UI (transition committed),
+    // or was it clobbered by a later worker WORLD_UPDATED?
+    const diag = await page
+      .evaluate((cid) => {
+        const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+        const st = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.();
+        const tp = w?.talentPool;
+        return {
+          dayIndex: w?.dayIndexGlobal,
+          graftedBand: tp?.candidates?.[cid]?.visibilityBand,
+          hsVisible: (tp?.pools?.high_school?.candidatesVisible ?? []).slice(0, 3),
+          cidIn: (tp?.pools?.high_school?.candidatesVisible ?? []).includes(cid),
+          workerDayIndex: st?.workerWorld?.dayIndexGlobal,
+          workerBand: st?.workerWorld?.talentPool?.candidates?.[cid]?.visibilityBand,
+          pendingTick: !!st?.pendingTick,
+          queuedTick: !!st?.queuedTick,
+          rejected: st?.commandRejected ?? null,
+          error: st?.error ?? null,
+        };
+      }, graftedCid)
+      .catch(() => "evaluate failed");
+    console.log("GRAFT-DIAG", JSON.stringify(diag));
+    throw err;
+  }
 
   // Pull real entity handles out of the live world (Maps on oyakata/staff,
   // Record on talentPool.candidates — normalize both).
@@ -241,10 +339,22 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
       Object.values<any>(w.playerKnowledge?.scouting ?? {}).some(
         (s: any) => s?.publicInfo?.heyaId === heyaId && (s?.timesObserved ?? 0) > 0
       );
+    // Same-named elders/staff are legal in this world — optionIdInGroup
+    // resolves by display name, so pick fixtures whose names are unique
+    // within their bucket or the click lands on a different entity's page.
+    const uniqueName = (list: any[], self: any) =>
+      list.filter((x: any) => x.name === self.name).length === 1;
     const npcO = allOyakata.find(
-      (o: any) => o.heyaId !== playerHeyaId && o.name && !o.isEmeritus && !covered(o.heyaId)
+      (o: any) =>
+        o.heyaId !== playerHeyaId &&
+        o.name &&
+        !o.isEmeritus &&
+        !covered(o.heyaId) &&
+        uniqueName(allOyakata, o)
     );
-    const staff = toArr(w.staff).find((s: any) => s.name) ?? null;
+    const allStaff = toArr(w.staff);
+    const staff =
+      allStaff.find((s: any) => s.name && uniqueName(allStaff, s)) ?? null;
     const candidates = toArr(w.talentPool?.candidates);
     // Mirror the search gate exactly: only pools listVisibleCandidates can
     // return without regional-presence gating (foreign needs presence ≥40),
@@ -268,15 +378,23 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
         }
       }
     }
+    const heyaNameOf = (id: string | undefined | null) => {
+      if (!id) return null;
+      const h = w.heyas instanceof Map ? w.heyas.get(id) : w.heyas?.[id];
+      return h?.name ?? null;
+    };
     return {
       playerOyakataId: playerO?.id,
       playerOyakataName: playerO?.name,
+      playerHeyaName: heyaNameOf(playerHeyaId),
       npcOyakataId: npcO?.id ?? null,
       npcOyakataName: npcO?.name ?? null,
       npcOyakataArchetype: npcO?.archetype ?? null,
+      npcHeyaName: heyaNameOf(npcO?.heyaId),
       staffName: staff?.name ?? null,
       staffIsPlayerOwned: staff?.heyaId === playerHeyaId,
       staffHeyaId: staff?.heyaId ?? null,
+      staffHeyaName: heyaNameOf(staff?.heyaId),
       candidateName: pub?.name ?? null,
       candidateId: pub?.candidateId ?? null,
       candidatePool,
@@ -298,8 +416,8 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
     await searchInput.fill(q);
     await expect(dropdown).toBeVisible({ timeout: 10000 });
   };
-  const clickGroupOption = async (group: string, name: string) => {
-    const id = await optionIdInGroup(page, group, name);
+  const clickGroupOption = async (group: string, name: string, sub?: string) => {
+    const id = await optionIdInGroup(page, group, name, sub);
     expect(id, `a ${group} result matching "${name}"`).not.toBeNull();
     await page.locator(`#${id}`).click();
   };
@@ -307,7 +425,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   // ── 1. Oyakata bucket: player's own elder resolves and navigates ──
   await searchFor(fx.playerOyakataName);
   await expect(dropdown.getByText("Oyakata", { exact: true })).toBeVisible();
-  await clickGroupOption("Oyakata", fx.playerOyakataName);
+  await clickGroupOption("Oyakata", fx.playerOyakataName, fx.playerHeyaName ?? undefined);
   await page.waitForURL(`**/oyakata/${fx.playerOyakataId}`, { timeout: 10000 });
 
   // Profile renders real state: name as Shippori page title, record card,
@@ -327,7 +445,12 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
 
   // ── 2. Rival oyakata: row renders but archetype intel stays gated ──
   await searchFor(fx.npcOyakataName!);
-  const npcOptId = await optionIdInGroup(page, "Oyakata", fx.npcOyakataName!);
+  const npcOptId = await optionIdInGroup(
+    page,
+    "Oyakata",
+    fx.npcOyakataName!,
+    fx.npcHeyaName ?? undefined
+  );
   expect(npcOptId, "rival oyakata appears in results").not.toBeNull();
   const npcRow = page.locator(`#${npcOptId}`);
   if (fx.npcOyakataArchetype) {
@@ -358,14 +481,31 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   if (fx.staffName) {
     await searchFor(fx.staffName);
     await expect(dropdown.getByText("Staff", { exact: true })).toBeVisible();
-    await clickGroupOption("Staff", fx.staffName);
+    await clickGroupOption("Staff", fx.staffName, fx.staffHeyaName ?? undefined);
     const expected = fx.staffIsPlayerOwned ? "**/stable/staff" : `**/stable/${fx.staffHeyaId}`;
     await page.waitForURL(expected, { timeout: 10000 });
   }
 
   // ── 5. Prospects bucket → /jsa/talent deep link ──
   if (fx.candidateId && fx.candidateName && fx.candidatePool) {
+    const graftedCid2 = fx.candidateId;
     await page.goto("/dashboard");
+    // The goto is a full reload — the world only returns once useRequireWorld
+    // restores the autosave. The graft must survive the save/load round-trip.
+    await page.waitForFunction(
+      () =>
+        !!(window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__?.dayIndexGlobal,
+      { timeout: 15000 }
+    );
+    const graftRestored = await page.evaluate((cid: string) => {
+      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      const tp = w?.talentPool;
+      return (
+        tp?.candidates?.[cid]?.visibilityBand === "public" &&
+        (tp?.pools?.high_school?.candidatesVisible ?? []).includes(cid)
+      );
+    }, graftedCid2);
+    expect(graftRestored, "grafted prospect survives the save/load round-trip").toBe(true);
     await searchFor(fx.candidateName);
     await expect(dropdown.getByText("Prospects", { exact: true })).toBeVisible();
     await clickGroupOption("Prospects", fx.candidateName);

@@ -17,6 +17,7 @@ function makeRt(world: ReturnType<typeof makeMockWorld>): WorkerRuntime {
     worldVersion: 0,
     digestRevision: 0,
     simPaused: false,
+    tickDepth: 0,
     post: vi.fn(),
     emitDigest: vi.fn(),
     syncWorld: vi.fn(),

@@ -348,6 +348,19 @@ export interface WorldState {
   }>;
 
   /**
+   * Ids of loop decisions already resolved. Decision ids are period-
+   * deterministic (`…-y{year}-w{week}`, `kyujo_{rikishiId}_{bashoDay}`), so
+   * a resolved id must never be re-issued within its own period — without
+   * this, a decision whose trigger outlives resolution (insolvency
+   * austerity keeps runwayBand critical; kyujo "compete" leaves the
+   * rikishi scheduled) re-fires on the next tick, re-sets pendingCrisis,
+   * and soft-locks the advance loop: each swallowed tick burns a calendar
+   * day while bashoDay stays frozen. Bounded FIFO — an id only needs to
+   * outlive its own ≤7-day re-fire window.
+   */
+  resolvedDecisionIds?: string[];
+
+  /**
    * WS4 — live rikishi requests awaiting resolution. Player-heya requests
    * surface as `rikishi_request` pendingDecisions; NPC requests resolve in
    * the weekly NPC phase.

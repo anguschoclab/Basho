@@ -186,6 +186,7 @@ export interface SerializedWorldState {
   // ── Pending / in-flight state ───────────────────────────────────────────
   pendingCrisis?: WorldState["pendingCrisis"];
   pendingDecisions?: WorldState["pendingDecisions"];
+  resolvedDecisionIds?: WorldState["resolvedDecisionIds"];
   activeChains?: WorldState["activeChains"];
   chainCooldowns?: WorldState["chainCooldowns"];
   activeScoutMissions?: WorldState["activeScoutMissions"];

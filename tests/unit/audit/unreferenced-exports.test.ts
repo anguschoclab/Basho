@@ -114,8 +114,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Type-guard predicate paired with isHonbasho on the live ExhibitionBashoService (phase05 jungyo pipeline); pinned by exhibitionBasho.test",
   "src/engine/basho/ExhibitionBashoService.ts:isHonbasho":
     "Name predicate consumed by getExhibitionBashoSchedule and getNextEvent; pinned by exhibitionBasho.test",
-  "src/engine/basho/NakabiService.ts:NAKABI_DAY":
-    "Internal constant consumed by isNakabiDay and generateNakabiSummary; exported for unit testing",
   "src/engine/welfare/WelfareCalculations.ts:getSeverityWeight":
     "Internal helper invoked by computeInjuryPressure; exported for unit testing",
   "src/engine/economy/KachiNokoriService.ts:KACHI_NOKORI_THRESHOLD":
@@ -350,8 +348,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/persistence/storageProvider.ts:resetStorageProvider":
     "Live module surface — referenced outside its file (3 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/recruitment/overflow.ts:HARD_CAP_ROSTER_SIZE":
-    "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/shikona/generateShikona.ts:generateRikishiName":
     "Live module surface — referenced outside its file (2 consumer(s) via deep path or type-position import the auditor cannot resolve)",
 
@@ -361,8 +357,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Domain barrel retained as public API surface — deep-import policy leaves it unconsumed",
   "src/engine/bout/kimarite/index.ts:index":
     "Domain barrel retained as public API surface — deep-import policy leaves it unconsumed",
-  "src/engine/bout/ReplayMetadata.ts:ReplayMetadata":
-    "Consumed by src/presenters/engineAccess.ts — presenters are outside the unticked scan scope",
   "src/engine/economy/awards.ts:awards":
     "Consumed by components (HoshitoriChart, HoFInductionCeremony, KenshoManagementWidget) — components are outside the unticked scan scope",
   "src/engine/narrative/narrativeDescriptions.ts:narrativeDescriptions":
@@ -373,6 +367,42 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Compatibility barrel re-exporting the kesho-mawashi generator pipeline — pinned by dedicated tests",
   "src/engine/lifecycle/CareerService.ts:CareerService":
     "Compatibility facade delegating to the unified retirement processor — pinned by dedicated tests",
+
+  // ── Nov 2026 baseline refresh (ORPH-0580..0596) ──
+  "src/engine/banzuke/banzukeCommittee.ts:BanzukeDeliberation":
+    "Return type of live deliberateBanzukeMovement; exported for unit testing",
+  "src/engine/basho/geography.ts:HometownTier":
+    "Parameter type of applyHometownBonus; exported for unit testing",
+  "src/engine/bout/boutPipeline.ts:MatchScheduleLike":
+    "Parameter type of resolveAndApplyBout; exported for unit testing",
+  "src/engine/bout/boutResolver.ts:absentRikishi":
+    "Internal helper invoked by tryFusensho (pre-physics walkover check); pinned by fusenshoGate/kyujoFilter/TournamentSimulatorWalkover tests",
+  "src/engine/bout/boutResolver.ts:applyCompetingInjuryPenalty":
+    "Internal helper invoked by resolveBout; pinned by competingInjury.test",
+  "src/engine/bout/kinjite.ts:FoulSuspicion":
+    "Return type of rollFoulSuspicion; pinned by kinjite.test",
+  "src/engine/bout/kinjite.ts:pickFoulType":
+    "Internal helper invoked by rollFoulSuspicion; pinned by kinjite.test",
+  "src/engine/bout/physics/tachiai.ts:spontaneousHenkaChance":
+    "Internal helper invoked by the tachiai NPC-henka loop; pinned by boutAI.desperation.test",
+  "src/engine/bout/resolution/gyoji.ts:boutImportanceForBout":
+    "Internal helper invoked by assignGyojiAndResolveVerdict; pinned by gyojiImportance.test",
+  "src/engine/bout/resolution/monoiiVerdict.ts:MonoiiVerdictParams":
+    "Parameter type of applyMonoiiVerdict; exported for unit testing",
+  "src/engine/economy/KachiNokoriService.ts:calculateKachiNokori":
+    "Internal helper invoked by getKachiNokoriForRikishi and buildPostBashoPayload; pinned by kachiNokori tests",
+  "src/engine/generation/CandidateBuilder.ts:deriveStyle":
+    "Internal helper invoked by createCombatStats; exported for unit testing",
+  "src/engine/health/RecoveryService.ts:RecoveryTickResult":
+    "Return type of tickRikishiRecovery; exported for unit testing",
+  "src/engine/legacy/tenure.ts:mergeTenureDelta":
+    "Internal helper invoked by applyBashoTenure and applyTenureDeltas; exported for unit testing",
+  "src/engine/persistence/MigrationService.ts:MigrationContext":
+    "Context type of migrateSave; exported for unit testing",
+  "src/engine/persistence/MigrationService.ts:MigrationResult":
+    "Return type of migrateSave; exported for unit testing",
+  "src/engine/utils/identity.ts:isCollegeRecruit":
+    "Canonical college-recruit predicate pinned by identity.test; runtime debut path keys off talent-pool poolType instead of origin parsing",
 };
 
 /**

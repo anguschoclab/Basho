@@ -6,6 +6,7 @@
 
 import type { WorldState, CyclePhase } from "@/engine/types/world";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { info } from "@/engine/utils/Logger";
 import { assertNever } from "@/engine/utils/types";
@@ -73,8 +74,15 @@ export function phase00_preflight(world: WorldState): StateImpact {
   if (world._autonomousSim) {
     builder.merge(autonomouslyResolveDecisions(world, world._autonomousPolicy ?? "balanced"));
   } else {
-    builder.merge(evaluatePendingDecisions(world));
-    builder.merge(applyExpiredQueueDefaults(world));
+    const decisionsImpact = evaluatePendingDecisions(world);
+    builder.merge(decisionsImpact);
+    // applyExpiredQueueDefaults rewrites the whole pendingDecisions array —
+    // running it on the pre-detection world would drop decisions enqueued a
+    // moment ago while pendingCrisis keeps their id (unresolvable crisis →
+    // every tick swallowed; observed e2e: bashoDay 9 frozen 10+ days).
+    // Resolve the detection impact into a view first so expiry sees them.
+    const worldForExpiry = resolveImpacts(world, [decisionsImpact]);
+    builder.merge(applyExpiredQueueDefaults(worldForExpiry));
   }
 
   // Note: clearQueryCaches() moved to weekly gate in tickDaily.ts (B1.2 optimization).
@@ -99,9 +107,13 @@ function advanceCalendarDay(world: WorldState): {
 
   // The weekly gate fires when the tick counter reaches WEEKLY_TICK_THRESHOLD;
   // the counter resets after the pipeline (tickDaily), so preflight still sees
-  // the previous day's value. A new week starts on the gate day.
+  // the previous day's value. A new week starts on the gate day — and ONLY on
+  // the exact crossing: a blocked gate holds the counter at the threshold
+  // (tickDaily keeps it there so the first unblocked tick still runs the
+  // weekly pipeline), so >= would re-roll the week every blocked day and
+  // mint a fresh -w{week} crisis id per tick (runaway re-fire).
   const daysSinceTick = (world._daysSinceLastWeeklyTick ?? 0) + 1;
-  if (daysSinceTick >= WEEKLY_TICK_THRESHOLD) {
+  if (daysSinceTick === WEEKLY_TICK_THRESHOLD) {
     cal.currentWeek += 1;
   }
 

@@ -191,6 +191,7 @@ function serializeWorld(world: WorldState): SerializedWorldState {
 
     pendingCrisis: world.pendingCrisis,
     pendingDecisions: world.pendingDecisions,
+    resolvedDecisionIds: world.resolvedDecisionIds,
     activeChains: world.activeChains,
     chainCooldowns: world.chainCooldowns,
     activeScoutMissions: world.activeScoutMissions,
@@ -228,6 +229,7 @@ function deserializePendingFields(s: SerializedWorldState): Partial<WorldState> 
   return {
     pendingCrisis: s.pendingCrisis,
     pendingDecisions: s.pendingDecisions,
+    resolvedDecisionIds: s.resolvedDecisionIds,
     activeChains: s.activeChains,
     chainCooldowns: s.chainCooldowns,
     activeScoutMissions: s.activeScoutMissions,
