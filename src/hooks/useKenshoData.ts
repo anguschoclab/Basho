@@ -75,25 +75,22 @@ export function useKenshoData() {
             ...rikishiStageInput(r, world?.year ?? 0),
           });
 
-        if (eastRikishi && rosterIdSet.has(eastRikishi.id) && result.kenshoEnvelopes > 0) {
+        // Kensho envelopes go to the winner — only the winner's side earns,
+        // and same-heya bouts must not emit the bout twice (dup boutId key).
+        const winnerSide =
+          result.winnerRikishiId === match.eastRikishiId
+            ? eastRikishi
+            : result.winnerRikishiId === match.westRikishiId
+              ? westRikishi
+              : undefined;
+        if (winnerSide && rosterIdSet.has(winnerSide.id) && result.kenshoEnvelopes > 0) {
           arr.push({
-            rikishiId: eastRikishi.id,
-            rikishiName: eastRikishi.shikona || eastRikishi.id,
+            rikishiId: winnerSide.id,
+            rikishiName: winnerSide.shikona || winnerSide.id,
             boutId: match.boutId,
             kenshoEnvelopes: result.kenshoEnvelopes,
             awardFact: result.awardFact || undefined,
-            avatar: boutAvatar(eastRikishi),
-          });
-        }
-
-        if (westRikishi && rosterIdSet.has(westRikishi.id) && result.kenshoEnvelopes > 0) {
-          arr.push({
-            rikishiId: westRikishi.id,
-            rikishiName: westRikishi.shikona || westRikishi.id,
-            boutId: match.boutId,
-            kenshoEnvelopes: result.kenshoEnvelopes,
-            awardFact: result.awardFact || undefined,
-            avatar: boutAvatar(westRikishi),
+            avatar: boutAvatar(winnerSide),
           });
         }
       }
