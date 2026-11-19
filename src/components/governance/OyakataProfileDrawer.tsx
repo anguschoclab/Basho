@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { RivalStableDTO } from "@/presenters/projections/rivalStablesProjections";
@@ -34,7 +35,20 @@ export function OyakataProfileDrawer({
             <SumoAvatar avatar={rival.oyakataAvatar} size="lg" fallback={rival.oyakataName} />
             <div>
               <SheetTitle data-testid="drawer-heya-name">{rival.heyaName}</SheetTitle>
-              <SheetDescription>{rival.oyakataName} — Rival Stable Profile</SheetDescription>
+              <SheetDescription>
+                {rival.oyakataId ? (
+                  <Link
+                    to="/oyakata/$oyakataId"
+                    params={{ oyakataId: rival.oyakataId }}
+                    className="underline underline-offset-2 hover:text-foreground"
+                  >
+                    {rival.oyakataName}
+                  </Link>
+                ) : (
+                  rival.oyakataName
+                )}{" "}
+                — Rival Stable Profile
+              </SheetDescription>
             </div>
           </div>
         </SheetHeader>

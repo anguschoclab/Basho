@@ -23,6 +23,7 @@ import type { Gyoji, ShimpanPanel } from "@/engine/types/gyoji";
 import type { BoutContext } from "@/engine/bout/boutPhysics";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { rngFromSeed } from "@/engine/core/rng";
 import { DEFAULT_DAY } from "@/constants/engine/physics";
 import { FOUL_REVIEW_MIN_SHIMPAN, MISSED_CALL_REVERSAL_BONUS } from "@/constants/engine/bout";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
@@ -47,17 +48,11 @@ export function boutImportanceForBout(east: Rikishi, west: Rikishi, day: number)
   return importance;
 }
 
-/** Deterministic mono-ii roll, hashed from the bout + panel chief. */
+/** Deterministic mono-ii roll, seeded from the bout + panel chief. */
 function monoiiRoll(boutId: string, chiefId: string): { next: () => number } {
+  const rng = rngFromSeed(`${boutId}-${chiefId}`, "monoii", "roll");
   return {
-    next: () => {
-      const str = `${boutId}-${chiefId}`;
-      let h = 0;
-      for (let i = 0; i < str.length; i++) {
-        h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-      }
-      return Math.abs(h % 1000) / 1000;
-    },
+    next: () => rng.next(),
   };
 }
 

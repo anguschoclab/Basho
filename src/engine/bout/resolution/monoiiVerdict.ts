@@ -22,6 +22,7 @@ import type { Side } from "@/engine/types/banzuke";
 import type { BoutTactic } from "@/engine/types/combat";
 import type { Gyoji, ShimpanPanel, MonoiiOutcome } from "@/engine/types/gyoji";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { rngFromSeed } from "@/engine/core/rng";
 import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 import { applyOfficiating } from "@/engine/bout/resolution/officiating";
 import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
@@ -52,16 +53,11 @@ export interface MonoiiVerdictParams {
   panel?: ShimpanPanel | null;
 }
 
-/** Deterministic mono-ii roll — same hash scheme the verdict stage uses. */
+/** Deterministic mono-ii roll — seeded from the verdict key. */
 function monoiiRoll(key: string): { next: () => number } {
+  const rng = rngFromSeed(key, "monoii", "roll");
   return {
-    next: () => {
-      let h = 0;
-      for (let i = 0; i < key.length; i++) {
-        h = ((h << 5) - h + key.charCodeAt(i)) | 0;
-      }
-      return Math.abs(h % 1000) / 1000;
-    },
+    next: () => rng.next(),
   };
 }
 

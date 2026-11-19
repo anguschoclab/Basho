@@ -66,7 +66,7 @@ export function CompareRikishiHeader({
     >
       <SumoAvatar avatar={rikishi.avatar} size="lg" className="mx-auto" expression="neutral" />
       <h3 className={cn("font-display font-bold text-lg", highlight && "text-primary")}>
-        {rikishi.shikona}
+        {rikishi.shikona ?? rikishi.name}
       </h3>
       {rikishi.heyaName && (
         <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -332,7 +332,9 @@ export function TrialClashSection({
                 TRIAL VERDICT
               </Badge>
               <h4 className="font-display font-bold text-xl uppercase tracking-tight">
-                {results.winner === "A" ? rikishiA.shikona : rikishiB.shikona} Wins
+                {(results.winner === "A" ? rikishiA : rikishiB).shikona ??
+                  (results.winner === "A" ? rikishiA : rikishiB).name}{" "}
+                Wins
               </h4>
             </div>
 

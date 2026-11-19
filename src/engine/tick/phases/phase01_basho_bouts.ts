@@ -130,6 +130,14 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     // without re-export they'd be silently dropped from the phase delta.
     "pendingDecisions",
     "pendingCrisis",
+    // Autonomous decision resolution (morning-of under _autonomousSim) writes
+    // suppression ids + request queues; dropping resolvedDecisionIds caused a
+    // duplicate DECISION_AUTO_RESOLVED per day (V20-E19).
+    "resolvedDecisionIds",
+    "pendingRikishiRequests",
+    "pendingDegeikoInvites",
+    "activeChains",
+    "chainCooldowns",
   ] as const;
   for (const field of PASSTHROUGH_FIELDS) {
     if (currentWorld[field] !== world[field]) {
@@ -189,6 +197,17 @@ function reexportEntityDiffs(
     for (const [id, s] of currentWorld.staff) {
       if (world.staff.get(id) !== s) {
         builder.updateStaff(id, s);
+      }
+    }
+  }
+  // trainingState is a Map-valued collection — a world-field write can't
+  // carry it, so it re-exports as an entity diff like the others (V20-E19).
+  const curTs = currentWorld.trainingState;
+  const baseTs = world.trainingState;
+  if (curTs && curTs !== baseTs) {
+    for (const [id, ts] of curTs) {
+      if (baseTs?.get(id) !== ts) {
+        builder.updateTrainingState(id, ts);
       }
     }
   }

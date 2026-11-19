@@ -39,6 +39,8 @@ export interface RivalStableDTO {
   oyakataAvatar?: AvatarRenderData;
   /** Stablemaster name — public record. */
   oyakataName?: string;
+  /** Stablemaster entity id — enables profile links. */
+  oyakataId?: string;
 }
 
 export interface RivalStablesProjection {
@@ -107,6 +109,7 @@ export function projectRivalStables(
           })
         : undefined,
       oyakataName: face?.name,
+      oyakataId: face?.id,
     });
   }
 

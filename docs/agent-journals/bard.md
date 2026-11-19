@@ -17,3 +17,8 @@
 **Discovery:** `medical.json` (6 paths × 3) and most of `events.json` (title/summary pairs like `events.medical.*`, `events.basho.day_*`, `events.lifecycle.retirement_*`, `events.economy.insolvency_*`) have NO production `resolve()` callers — the `EventBus` factories (`medicalReportBase`, `bashoStatus`, `boutResolved`, `awardConferred`, `lifecycleEvent`) are exercised only in tests; production code logs those event types with hardcoded strings (e.g. `physioPurchase.ts`, `phase01_basho_npc_tactics.ts`).
 **Rule:** "Low variant count" ≠ "high-value gap." Always locate a live `BardEngine.resolve`/`generateGovernanceHeadline` call site for a path before writing content for it — enriching dead paths ships zero player-facing value.
 **Check:** `grep -rn "resolve.*<domain>" src/engine` and `grep -rn "EventBus\.<factory>" src` — if only tests call the factory, the templates are dead.
+
+## 2024-11-11 - Enriching Oversleeping Narratives (folded from .jules/bard.md, PR #1205)
+**Discovery:** The oversleeping incident (which is triggered when `world.cyclePhase === "active_basho"` and random chance) lacked variety, leading to repeated fusensho loss descriptions for rikishi.
+**Rule:** When adding new narratives for events like kyujo or incident reports, ensure the tone matches the gravity of sumo (e.g. "fusensho scandal", "deeply embarrassing", "unforced error") and only use context tokens that are populated by the engine (`%SHIKONA%` for kyujo, `%SHIKONA%` and `%DAY%` for events).
+**Check:** Verify token bindings by running `bun x vitest run tests/unit/engine/bard/templateTokenIntegrity.test.ts`.

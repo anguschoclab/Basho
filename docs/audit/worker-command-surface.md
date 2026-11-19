@@ -21,7 +21,7 @@
 
 ## Non-Tick Mutating Worker Commands (via `resolveImpacts`)
 
-Representative set — the full union is `EngineCommand` in `types.ts` (~55 commands):
+Representative set — the full union is `EngineCommand` in `types.ts` (67 commands):
 
 | Command                 | Domain        |
 | ----------------------- | ------------- |
