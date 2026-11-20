@@ -10,6 +10,11 @@ import type { TalentPoolType, TalentCandidate } from "@/engine/types/talent";
 import { isForeign } from "@/engine/utils/identity";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import {
+  FOREIGN_RIKISHI_LIMIT_PER_HEYA,
+  NEW_APPRENTICE_MAX_AGE,
+  TSUKEDASHI_MAX_AGE,
+} from "@/constants/engine/recruitment";
 import { getHeya, getRikishi } from "@/engine/core/queries";
 
 // ============================================
@@ -170,4 +175,61 @@ export function countsAsForeignFromRikishi(
   currentYear?: number
 ): boolean {
   return countsAsForeign(rikishi as Rikishi, currentYear ?? DEFAULT_START_YEAR);
+}
+
+// ============================================
+// SIGNABILITY PREDICATES (shared player/NPC gates)
+// ============================================
+
+/**
+ * JSA age eligibility (shindeshi kensa): a standard recruit must debut under
+ * `NEW_APPRENTICE_MAX_AGE`; tsukedashi-qualified amateurs get the
+ * `TSUKEDASHI_MAX_AGE` exception. Age is derived from `birthYear` — the same
+ * computation used by `offerCandidate`.
+ */
+export function isCandidateAgeEligible(
+  world: WorldState,
+  candidate: Pick<TalentCandidate, "birthYear" | "tsukedashi">
+): boolean {
+  const maxAge = candidate.tsukedashi
+    ? TSUKEDASHI_MAX_AGE
+    : NEW_APPRENTICE_MAX_AGE;
+  return world.year - candidate.birthYear < maxAge;
+}
+
+/**
+ * Foreign-slot gate (§5.3/5.4): only slot-consuming candidates are blocked;
+ * dual citizens and native-status recruits are exempt. Reads the roster-side
+ * foreign count — NPC batch paths additionally track pending-signing
+ * occupancy within a pass.
+ */
+export function isCandidateForeignBlocked(
+  world: WorldState,
+  candidate: TalentCandidate,
+  heyaId: Id
+): boolean {
+  return (
+    candidateConsumesForeignSlot(candidate) &&
+    getForeignCountInHeya(world, heyaId) >= FOREIGN_RIKISHI_LIMIT_PER_HEYA
+  );
+}
+
+/**
+ * Composite signability predicate — the single source for the JSA offer/
+ * signing gates (age, availability, foreign slot). Player `offerCandidate`
+ * and every NPC signing path must funnel through this.
+ */
+export function isCandidateSignable(
+  world: WorldState,
+  candidate: TalentCandidate,
+  heyaId: Id
+): boolean {
+  if (!isCandidateAgeEligible(world, candidate)) return false;
+  if (
+    candidate.availabilityState !== "available" &&
+    candidate.availabilityState !== "in_talks"
+  ) {
+    return false;
+  }
+  return !isCandidateForeignBlocked(world, candidate, heyaId);
 }

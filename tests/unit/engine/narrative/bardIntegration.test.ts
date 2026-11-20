@@ -17,6 +17,7 @@ describe("Bard Engine Integration", () => {
   it("TalentPoolService logs RECRUIT_DISCOVERED with high_talent_signed status", () => {
     const world = {
       week: 2,
+      year: 2026,
       dayIndexGlobal: 1,
       heyas: new Map([["heya-1", { id: "heya-1", name: "Test Heya", reputation: 50 }]]),
       rikishi: new Map(),
@@ -27,6 +28,7 @@ describe("Bard Engine Integration", () => {
             candidateId: "c1",
             personId: "c1",
             name: "Prospect",
+            birthYear: 2008,
             talentSeed: 95,
             availabilityState: "in_talks",
             competingSuitors: [{ heyaId: "heya-1", interestBand: "all_in", deadlineWeek: 1 }],

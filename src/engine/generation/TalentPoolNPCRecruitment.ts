@@ -13,9 +13,34 @@ import { recruitmentBalanceMultipliers } from "@/engine/generation/competitiveBa
 import { error } from "@/engine/utils/Logger";
 import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
 import { isForeign } from "@/engine/utils/identity";
-import { candidateConsumesForeignSlot } from "@/engine/generation/talentPoolReads";
+import {
+  candidateConsumesForeignSlot,
+  isCandidateAgeEligible,
+} from "@/engine/generation/talentPoolReads";
 import { foreignSlotBidAggression, foreignSlotOccupied } from "@/engine/npc/ForeignSlotPolicy";
 import { DUAL_CITIZEN_BID_PREFERENCE } from "@/constants/engine/recruitment";
+
+
+/**
+ * Re-issues the accumulated rikishiIds roster after a materialization. The
+ * per-call write inside `materializeCandidateToRikishiInternal` reads the
+ * pre-impact heya, so without this the second+ recruit in one batch
+ * overwrites the first (stale-base, B12b). Shared by both fill paths.
+ */
+function accumulateRosterAddition(
+  world: WorldState,
+  builder: ReturnType<typeof createImpactBuilder>,
+  rosterAdditions: Map<string, string[]>,
+  heyaId: string,
+  newRikishiId: string
+): void {
+  const prior = rosterAdditions.get(heyaId) ?? [];
+  const next = [...prior, newRikishiId];
+  rosterAdditions.set(heyaId, next);
+  builder.updateHeya(heyaId, {
+    rikishiIds: [...(getHeya(world, heyaId)?.rikishiIds ?? []), ...next],
+  });
+}
 
 /**
  * Automates recruitment for NPC stables.
@@ -60,6 +85,8 @@ export function fillVacanciesForNPC(
         for (const cId of pool.candidatesVisible) {
           const c = currentCandidates[cId];
           if (!c || c.availabilityState !== "available") continue;
+          // Age gate (V20-E15): over-age candidates can't legally debut.
+          if (!isCandidateAgeEligible(world, c)) continue;
           // Slot occupied → only dual citizens may still appear (§5.4).
           if (hasForeigner && candidateConsumesForeignSlot(c)) continue;
           availableCandidates.push(cId);
@@ -115,15 +142,9 @@ export function fillVacanciesForNPC(
         );
         builder.merge(materializeImpact.impact);
         if (materializeImpact.newRikishiId) {
-          // The per-call rikishiIds write inside materialize reads the
-          // pre-impact heya — re-issue the accumulated roster so multiple
-          // recruits in one batch compose (stale-base, B12b).
-          const prior = rosterAdditions.get(heyaId) ?? [];
-          const next = [...prior, materializeImpact.newRikishiId];
-          rosterAdditions.set(heyaId, next);
-          builder.updateHeya(heyaId, {
-            rikishiIds: [...(heya.rikishiIds ?? []), ...next],
-          });
+          accumulateRosterAddition(
+            world, builder, rosterAdditions, heyaId, materializeImpact.newRikishiId
+          );
         }
         currentCandidates = materializeImpact.nextCandidates;
         currentPools = materializeImpact.nextPools;
@@ -207,6 +228,8 @@ export function fillVacanciesForNPCWithBidding(
       // §5.4 hard gate: slot occupied → slot-consuming candidates are invisible.
       // Dual citizens are exempt and may always appear.
       if (slotOccupied && candidateConsumesForeignSlot(candidate)) continue;
+      // Age gate (V20-E15): NPCs can't bid on over-age candidates.
+      if (!isCandidateAgeEligible(world, candidate)) continue;
       const bidAmount = computeNpcBid(
         world,
         heya,
@@ -317,6 +340,9 @@ function assignWinningBids(
 
     const candidate = currentCandidates[bid.candidateId];
     if (!candidate) continue;
+    // Last-line age gate: a candidate who aged past eligibility mid-process
+    // can no longer legally sign — void the bid.
+    if (!isCandidateAgeEligible(world, candidate)) continue;
 
     // §5.4 batch enforcement: a slot-consuming foreigner won earlier in this
     // same resolution consumes the heya's slot — later foreign wins are void.
@@ -346,13 +372,9 @@ function assignWinningBids(
       );
       builder.merge(materializeImpact.impact);
       if (materializeImpact.newRikishiId) {
-        // Re-issue the accumulated roster — see fillVacanciesForNPC note.
-        const prior = rosterAdditions.get(bid.heyaId) ?? [];
-        const next = [...prior, materializeImpact.newRikishiId];
-        rosterAdditions.set(bid.heyaId, next);
-        builder.updateHeya(bid.heyaId, {
-          rikishiIds: [...(getHeya(world, bid.heyaId)?.rikishiIds ?? []), ...next],
-        });
+        accumulateRosterAddition(
+          world, builder, rosterAdditions, bid.heyaId, materializeImpact.newRikishiId
+        );
       }
       currentCandidates = materializeImpact.nextCandidates;
       currentPools = materializeImpact.nextPools;

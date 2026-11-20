@@ -417,8 +417,19 @@ function getMyosekiTransaction(
   };
 }
 
+/** Fallback purchase price by prestige tier when a listed stock carries no
+ * asking price (¥). Adopted from the retired MyosekiTradingService impl —
+ * deliberately distinct from MYOSEKI_GENERATION_BASE_PRICES (different
+ * values, different purpose). */
+const MYOSEKI_FALLBACK_PRICES: Record<MyosekiStock["prestigeTier"], number> = {
+  elite: 500_000_000,
+  respected: 200_000_000,
+  modest: 80_000_000,
+};
+
 /**
- * Buy a Myoseki stock.
+ * Buy a Myoseki stock — the single canonical purchase path for the player
+ * worker command, NPC execution/finance, and the weekly NPC myoseki sweep.
  * Returns StateImpact describing myoseki purchase instead of mutating directly.
  */
 export function buyMyoseki(
@@ -428,17 +439,18 @@ export function buyMyoseki(
   myosekiId: Id
 ): StateImpact {
   const builder = createImpactBuilder("buyMyoseki");
-  const stock = getAvailableStock(world, myosekiId);
-  if (!stock || !stock.askingPrice) return builder.build();
+  const stock = world.myosekiMarket?.stocks[myosekiId];
+  if (!stock || stock.status !== "available") return builder.build();
+  // An "available" stock without an asking price transacts at its tier base.
+  const amount = stock.askingPrice ?? MYOSEKI_FALLBACK_PRICES[stock.prestigeTier];
 
   const heya = getHeya(world, buyerHeyaId);
-  if (!heya || heya.funds < stock.askingPrice) return builder.build();
+  if (!heya || heya.funds < amount) return builder.build();
   // Self-purchase is a no-op — re-buying your own listing debited the heya and
   // shredded the stock's sale terms for nothing.
   if (stock.ownerId === buyerId) return builder.build();
 
-  const newFunds = heya.funds - stock.askingPrice;
-  const amount = stock.askingPrice;
+  const newFunds = heya.funds - amount;
 
   builder.updateHeya(buyerHeyaId, { funds: newFunds });
 

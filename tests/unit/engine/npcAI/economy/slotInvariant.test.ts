@@ -86,6 +86,7 @@ describe("fillVacanciesForNPCWithBidding — slot invariant", () => {
         nationality: "Georgia",
         originRegion: "Georgia",
         talentSeed: 100,
+        birthYear: 2012, // 18 in 2030 — inside the new-apprentice age window
         availabilityState: "available",
       });
       if (perceivedTalentSeed(world, HEYA, c) >= 95) foreignCand = c;
@@ -95,6 +96,7 @@ describe("fillVacanciesForNPCWithBidding — slot invariant", () => {
       candidateId: "nc1",
       nationality: "Japan",
       talentSeed: 50,
+      birthYear: 2012,
       availabilityState: "available",
     });
     addCandidate(world, "foreign", foreignCand);
@@ -115,6 +117,7 @@ describe("fillVacanciesForNPCWithBidding — slot invariant", () => {
       originRegion: "Mongolia",
       dualCitizen: true,
       talentSeed: 90,
+      birthYear: 2012,
       availabilityState: "available",
     });
     addCandidate(world, "foreign", dualCand);
@@ -133,6 +136,7 @@ describe("fillVacanciesForNPCWithBidding — slot invariant", () => {
       nationality: "Georgia",
       originRegion: "Georgia",
       talentSeed: 80,
+      birthYear: 2012,
       availabilityState: "available",
     });
     addCandidate(world, "foreign", foreignCand);
@@ -157,6 +161,7 @@ describe("fillVacanciesForNPCWithBidding — slot invariant", () => {
           nationality: "Georgia",
           originRegion: "Georgia",
           talentSeed: 95,
+          birthYear: 2012,
           availabilityState: "available",
         })
       );

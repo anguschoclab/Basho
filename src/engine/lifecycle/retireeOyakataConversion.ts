@@ -243,6 +243,8 @@ function queueMeritStockTransfer(
   builder: ImpactBuilder
 ): void {
   const nextStocks = { ...market.stocks };
+  // availableStock may be freshly minted above (not yet in market.stocks), so
+  // this is a full upsert — the granular myosekiUpdates merge can't insert.
   nextStocks[availableStock.id] = {
     ...availableStock,
     ownerId: newOyakataId,

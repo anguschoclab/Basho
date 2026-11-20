@@ -18,6 +18,10 @@ import type { AgentDecisions } from "@/engine/npc/npcTypes";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { getHeya, getRikishiAnywhere } from "@/engine/core/queries";
 import { buyMyoseki } from "@/engine/governance/myosekiMarket";
+import {
+  applyScandalPRSpend,
+  SCANDAL_PR_COST,
+} from "@/engine/governance/services/ScandalService";
 import { hireStaff } from "@/engine/economy/staff";
 import type { StaffRole } from "@/engine/types/staff";
 import { buildYouthAcademy, upgradeYouthAcademy } from "@/engine/recruitment/YouthAcademyService";
@@ -47,10 +51,6 @@ const DOMAIN_COOLDOWN_WEEKS: Record<string, number> = {
   academy: 12,
   rescue: 4,
 };
-
-/** Funds cost for a PR-driven scandal reduction when political capital is short. */
-const SCANDAL_PR_COST = 5_000_000;
-const SCANDAL_PR_REDUCTION = 8;
 
 /** Funds cost for one facility level. */
 const FACILITY_UPGRADE_COST = 20_000_000;
@@ -180,10 +180,7 @@ function tryScandalReduction(
   if ((heya.politicalCapital ?? 0) >= pardonCost) {
     builder.merge(PoliticalFavorsService.requestFavor(world, heyaId, "governance_pardon"));
   } else if (canSpend(SCANDAL_PR_COST)) {
-    builder.updateHeya(heyaId, {
-      scandalScore: Math.max(0, (heya.scandalScore ?? 0) - SCANDAL_PR_REDUCTION),
-      funds: heya.funds - SCANDAL_PR_COST,
-    });
+    builder.merge(applyScandalPRSpend(world, heyaId));
   }
   return true;
 }

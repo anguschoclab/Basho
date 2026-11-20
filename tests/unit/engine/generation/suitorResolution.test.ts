@@ -20,6 +20,7 @@ function inTalksCandidate(suitors: Suitor[]): TalentCandidate {
     combatProfile: { archetype: "hybrid" },
     availabilityState: "in_talks",
     competingSuitors: suitors,
+    birthYear: 2008,
     archetype: "hybrid",
     heightPotentialCm: 180,
     weightPotentialKg: 100,

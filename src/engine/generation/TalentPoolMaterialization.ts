@@ -8,7 +8,10 @@ import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getHeya } from "@/engine/core/queries";
 import { assessMaezumo } from "@/engine/generation/MaezumoService";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
-import { candidateConsumesForeignSlot } from "@/engine/generation/talentPoolReads";
+import {
+  candidateConsumesForeignSlot,
+  isCandidateAgeEligible,
+} from "@/engine/generation/talentPoolReads";
 import { mintFamilyBonds } from "@/engine/generation/FamilyBondService";
 import {
   MAKUSHITA_TSUKEDASHI_RANK,
@@ -171,6 +174,24 @@ function processSignedCandidate(
   }
 
   if (candidateConsumesForeignSlot(candidate) && foreignOccupied.has(heyaId)) {
+    return {
+      candidates: {
+        ...candidates,
+        [id]: {
+          ...candidate,
+          availabilityState: "available" as const,
+          competingSuitors: [],
+        },
+      },
+      pools,
+      consumed: true,
+    };
+  }
+
+  // Last-line age gate (V20-E15): a signed candidate who aged past
+  // eligibility while talks resolved is released back to the pool rather
+  // than materializing an illegal debut.
+  if (!isCandidateAgeEligible(world, candidate)) {
     return {
       candidates: {
         ...candidates,

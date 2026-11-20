@@ -19,64 +19,35 @@
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { WorldState } from "@/engine/types/world";
-import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import type { Id } from "@/engine/types/common";
 import type {
+  TalentPoolType,
   TalentPoolWorldState,
   TalentCandidate,
   SuitorInterestBand,
   SuitorOfferType,
 } from "@/engine/types/talent";
+import {
+  createDefaultPoolState,
+  type PoolCapacitySpec,
+} from "@/engine/generation/TalentPoolStateService";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { candidateConsumesForeignSlot, foreignSlotOccupied } from "@/engine/npc/ForeignSlotPolicy";
 
 // ── Pool Initialization ───────────────────────────────────────────────────
 
+/**
+ * Scouted candidate-pool capacities — deliberately tiny vs the full talent
+ * pool (this is the stable's visible window, not the national pipeline).
+ */
+const CANDIDATE_POOL_CAPS: Record<TalentPoolType, PoolCapacitySpec> = {
+  high_school: { populationCap: 50, hiddenReserveCap: 50 },
+  university: { populationCap: 40, hiddenReserveCap: 40 },
+  foreign: { populationCap: 30, hiddenReserveCap: 30 },
+};
+
 function createDefaultCandidatePoolState(world: WorldState): TalentPoolWorldState {
-  return {
-    // @world-builder
-    version: "1.0.0",
-    lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
-    candidates: {},
-    pools: {
-      high_school: {
-        poolId: "high_school",
-        poolType: "high_school",
-        refreshCadence: "yearly",
-        populationCap: 50,
-        hiddenReserveCap: 50,
-        candidatesVisible: [],
-        candidatesHidden: [],
-        lastRefreshWeek: world.week ?? 0,
-        scarcityBand: "normal",
-        qualityBand: "normal",
-      },
-      university: {
-        poolId: "university",
-        poolType: "university",
-        refreshCadence: "yearly",
-        populationCap: 40,
-        hiddenReserveCap: 40,
-        candidatesVisible: [],
-        candidatesHidden: [],
-        lastRefreshWeek: world.week ?? 0,
-        scarcityBand: "normal",
-        qualityBand: "normal",
-      },
-      foreign: {
-        poolId: "foreign",
-        poolType: "foreign",
-        refreshCadence: "yearly",
-        populationCap: 30,
-        hiddenReserveCap: 30,
-        candidatesVisible: [],
-        candidatesHidden: [],
-        lastRefreshWeek: world.week ?? 0,
-        scarcityBand: "normal",
-        qualityBand: "normal",
-      },
-    },
-  };
+  return createDefaultPoolState(world, CANDIDATE_POOL_CAPS);
 }
 
 /**

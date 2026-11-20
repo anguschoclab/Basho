@@ -245,23 +245,9 @@ describe("V17-F07 myoseki lease fees", () => {
   });
 });
 
-// ── V17-F08 — purchaseMyoseki resolves seller proceeds via oyakata namespace ─
-describe("V17-F08 purchaseMyoseki proceeds", () => {
+// ── V17-F08 — myoseki purchase resolves seller proceeds via oyakata namespace ─
+describe("V17-F08 myoseki purchase proceeds", () => {
   function purchaseWorld() {
-    const world = makeMockWorld({
-      seed: "myo-purchase",
-      year: 2024,
-      week: 10,
-      playerHeyaId: "h-player",
-      heyas: new Map([
-        ["h-seller", makeMockHeya("h-seller", { funds: 5_000, oyakataId: "oya-seller" })],
-        ["h-buyer", makeMockHeya("h-buyer", { funds: 5_000, oyakataId: "oya-buyer" })],
-      ]),
-      oyakata: new Map([
-        ["oya-seller", { id: "oya-seller", heyaId: "h-seller" } as never],
-        ["oya-buyer", { id: "oya-buyer", heyaId: "h-buyer" } as never],
-      ]),
-    });
     const market = {
       stocks: {
         s1: {
@@ -276,13 +262,28 @@ describe("V17-F08 purchaseMyoseki proceeds", () => {
       },
       history: [],
     };
+    const world = makeMockWorld({
+      seed: "myo-purchase",
+      year: 2024,
+      week: 10,
+      playerHeyaId: "h-player",
+      heyas: new Map([
+        ["h-seller", makeMockHeya("h-seller", { funds: 5_000, oyakataId: "oya-seller" })],
+        ["h-buyer", makeMockHeya("h-buyer", { funds: 5_000, oyakataId: "oya-buyer" })],
+      ]),
+      oyakata: new Map([
+        ["oya-seller", { id: "oya-seller", heyaId: "h-seller" } as never],
+        ["oya-buyer", { id: "oya-buyer", heyaId: "h-buyer" } as never],
+      ]),
+      myosekiMarket: market,
+    });
     return { world, market };
   }
 
   it("debits the buyer heya and credits the seller heya resolved via oyakata", async () => {
-    const { purchaseMyoseki } = await import("@/engine/governance/services/MyosekiTradingService");
-    const { world, market } = purchaseWorld();
-    const impact = purchaseMyoseki(world, market as never, "s1", "oya-buyer", 5_000);
+    const { buyMyoseki } = await import("@/engine/governance/myosekiMarket");
+    const { world } = purchaseWorld();
+    const impact = buyMyoseki(world, "oya-buyer", "h-buyer", "s1");
     const resolved = resolveImpacts(world, [impact]);
     expect(resolved.heyas.get("h-buyer")?.funds).toBe(5_000 - 1000);
     expect(resolved.heyas.get("h-seller")?.funds).toBe(5_000 + 1000);

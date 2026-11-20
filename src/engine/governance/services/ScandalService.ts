@@ -287,3 +287,25 @@ export function issueGovernanceRuling(
 
   return builder.build();
 }
+
+/** Cost of a heya-funded PR campaign to blunt an active scandal (yen). */
+export const SCANDAL_PR_COST = 5_000_000;
+
+/** Scandal-score points removed by one PR campaign. */
+export const SCANDAL_PR_REDUCTION = 8;
+
+/**
+ * NPC/player-shared governance action — pays for a PR campaign that reduces
+ * the heya's scandal score, clamped at zero. Callers gate on funds/cooldown;
+ * this only writes the cost + score reduction.
+ */
+export function applyScandalPRSpend(world: WorldState, heyaId: string): StateImpact {
+  const builder = createImpactBuilder("applyScandalPRSpend");
+  const heya = getHeya(world, heyaId);
+  if (!heya || heya.funds < SCANDAL_PR_COST) return builder.build();
+  builder.updateHeya(heyaId, {
+    scandalScore: Math.max(0, (heya.scandalScore ?? 0) - SCANDAL_PR_REDUCTION),
+    funds: heya.funds - SCANDAL_PR_COST,
+  });
+  return builder.build();
+}

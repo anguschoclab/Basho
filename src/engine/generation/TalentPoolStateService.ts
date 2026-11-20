@@ -13,54 +13,58 @@ import type { Id } from "@/engine/types/common";
 import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "@/engine/types/talent";
 import { generateCandidate } from "@/engine/generation/CandidateGenerator";
 
+/** Per-pool capacity pair — the only domain difference between pool kinds. */
+export interface PoolCapacitySpec {
+  populationCap: number;
+  hiddenReserveCap: number;
+}
+
 /**
- * Ensures the talent pool state is initialized.
+ * Shared pool-state factory — one structural initializer for both the
+ * candidate pool (small scouted window) and the full talent pool (large
+ * hidden reserve). The capacities are domain constants and must NOT be
+ * unified: the scouted candidate pool is intentionally tiny.
  */
-function createDefaultTalentPoolState(world: WorldState): TalentPoolWorldState {
+export function createDefaultPoolState(
+  world: WorldState,
+  caps: Record<TalentPoolType, PoolCapacitySpec>
+): TalentPoolWorldState {
+  const mkPool = (poolType: TalentPoolType) => ({
+    poolId: poolType,
+    poolType,
+    refreshCadence: "yearly" as const,
+    ...caps[poolType],
+    candidatesVisible: [] as Id[],
+    candidatesHidden: [] as Id[],
+    lastRefreshWeek: world.week ?? 0,
+    scarcityBand: "normal" as const,
+    qualityBand: "normal" as const,
+  });
   return {
     // @world-builder
     version: "1.0.0",
     lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
     candidates: {},
     pools: {
-      high_school: {
-        poolId: "high_school",
-        poolType: "high_school",
-        refreshCadence: "yearly",
-        populationCap: 450,
-        hiddenReserveCap: 400,
-        candidatesVisible: [],
-        candidatesHidden: [],
-        lastRefreshWeek: world.week ?? 0,
-        scarcityBand: "normal",
-        qualityBand: "normal",
-      },
-      university: {
-        poolId: "university",
-        poolType: "university",
-        refreshCadence: "yearly",
-        populationCap: 300,
-        hiddenReserveCap: 250,
-        candidatesVisible: [],
-        candidatesHidden: [],
-        lastRefreshWeek: world.week ?? 0,
-        scarcityBand: "normal",
-        qualityBand: "normal",
-      },
-      foreign: {
-        poolId: "foreign",
-        poolType: "foreign",
-        refreshCadence: "yearly",
-        populationCap: 200,
-        hiddenReserveCap: 150,
-        candidatesVisible: [],
-        candidatesHidden: [],
-        lastRefreshWeek: world.week ?? 0,
-        scarcityBand: "normal",
-        qualityBand: "normal",
-      },
+      high_school: mkPool("high_school"),
+      university: mkPool("university"),
+      foreign: mkPool("foreign"),
     },
   };
+}
+
+/** Talent pool capacities — the full national pipeline, incl. big hidden reserves. */
+const TALENT_POOL_CAPS: Record<TalentPoolType, PoolCapacitySpec> = {
+  high_school: { populationCap: 450, hiddenReserveCap: 400 },
+  university: { populationCap: 300, hiddenReserveCap: 250 },
+  foreign: { populationCap: 200, hiddenReserveCap: 150 },
+};
+
+/**
+ * Ensures the talent pool state is initialized.
+ */
+function createDefaultTalentPoolState(world: WorldState): TalentPoolWorldState {
+  return createDefaultPoolState(world, TALENT_POOL_CAPS);
 }
 
 /**

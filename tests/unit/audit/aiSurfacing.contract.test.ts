@@ -76,6 +76,7 @@ describe("WS7 surfacing contract — emitted events reach the feed", () => {
       nationality: "Georgia",
       originRegion: "Georgia",
       talentSeed: 80,
+      birthYear: 2012, // 18 in 2030 — inside the new-apprentice age window
       availabilityState: "available",
     });
     world.talentPool.candidates[foreignCand.candidateId] = foreignCand;

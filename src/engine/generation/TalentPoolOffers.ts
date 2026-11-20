@@ -13,14 +13,9 @@ import {
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { ensureTalentPoolState } from "@/engine/generation/TalentPoolStateService";
 import {
-  getForeignCountInHeya,
-  candidateConsumesForeignSlot,
-} from "@/engine/generation/TalentPoolScouting";
-import {
-  FOREIGN_RIKISHI_LIMIT_PER_HEYA,
-  NEW_APPRENTICE_MAX_AGE,
-  TSUKEDASHI_MAX_AGE,
-} from "@/constants/engine/recruitment";
+  isCandidateAgeEligible,
+  isCandidateForeignBlocked,
+} from "@/engine/generation/talentPoolReads";
 import { getHeya } from "@/engine/core/queries";
 import { EventBus } from "@/engine/events/events";
 
@@ -45,8 +40,7 @@ export function offerCandidate(
   // 0. Validation: JSA new-apprentice eligibility — a standard recruit must
   // be under 23 at the shindeshi kensa. Tsukedashi-qualified amateurs use
   // the under-25 amateur-experience exception instead.
-  const maxAge = candidate.tsukedashi ? TSUKEDASHI_MAX_AGE : NEW_APPRENTICE_MAX_AGE;
-  if (world.year - candidate.birthYear >= maxAge) {
+  if (!isCandidateAgeEligible(world, candidate)) {
     return {
       ok: false,
       reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.too_old").text,
@@ -55,14 +49,11 @@ export function offerCandidate(
 
   // 1. Validation: Foreigner limit — §5.3/5.4: only slot-consuming candidates
   // are gated; dual citizens are exempt and may always be recruited.
-  if (candidateConsumesForeignSlot(candidate)) {
-    const foreignCount = getForeignCountInHeya(world, heyaId);
-    if (foreignCount >= FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
-      return {
-        ok: false,
-        reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.foreigner_limit").text,
-      };
-    }
+  if (isCandidateForeignBlocked(world, candidate, heyaId)) {
+    return {
+      ok: false,
+      reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.foreigner_limit").text,
+    };
   }
 
   // 2. Validation: Already signed or unavailable
@@ -120,11 +111,19 @@ export function resolveCandidateSuitor(
     return { signed: false, candidate };
   }
 
+  // Age gate (V20-E15): an over-age candidate can no longer legally sign —
+  // the talks collapse back to available rather than resolving a winner.
+  if (!isCandidateAgeEligible(world, candidate)) {
+    return {
+      signed: false,
+      candidate: { ...candidate, availabilityState: "available", competingSuitors: [] },
+    };
+  }
+
   // §5.4: a slot-consuming candidate can only be won by a suitor whose heya
   // has a free foreign slot — ineligible suitors are dropped before ranking.
-  const consumesSlot = candidateConsumesForeignSlot(candidate);
   const eligibleSuitors = candidate.competingSuitors.filter(
-    (s) => !consumesSlot || getForeignCountInHeya(world, s.heyaId) < FOREIGN_RIKISHI_LIMIT_PER_HEYA
+    (s) => !isCandidateForeignBlocked(world, candidate, s.heyaId)
   );
   // No suitor can legally sign — the talks collapse and the candidate goes
   // back on the market rather than re-resolving the same deadline weekly.

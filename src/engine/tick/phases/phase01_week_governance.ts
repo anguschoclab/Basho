@@ -32,11 +32,8 @@ import {
   SCANDAL_SCORE_MEDIUM_THRESHOLD,
   SCANDAL_SCORE_LOW_THRESHOLD,
 } from "@/constants/engine/governanceExtended";
-import {
-  purchaseMyoseki,
-  findAvailableStock,
-} from "@/engine/governance/services/MyosekiTradingService";
-import { tickMyosekiMarket } from "@/engine/governance/myosekiMarket";
+import { findAvailableStock } from "@/engine/governance/services/MyosekiTradingService";
+import { buyMyoseki, tickMyosekiMarket } from "@/engine/governance/myosekiMarket";
 import { assignYokozunaAttendants } from "@/engine/governance/ceremonies/yokozunaAttendants";
 import { rngForWorld } from "@/engine/core/rng";
 import { getRikishi } from "@/engine/core/queries";
@@ -261,7 +258,7 @@ function processNpcMyosekiPurchases(world: WorldState): {
       if (heya.funds >= price && price > 0) {
         // buyerId is an oyakata id in the myoseki model — passing heyaId
         // stamped a heya id onto ownerId/holderId.
-        const impact = purchaseMyoseki(w, m, available.id, heya.oyakataId ?? heyaId, heya.funds);
+        const impact = buyMyoseki(w, heya.oyakataId ?? heyaId, heyaId, available.id);
         myosekiImpacts.push(impact);
         w = resolveImpacts(w, [impact]);
       }

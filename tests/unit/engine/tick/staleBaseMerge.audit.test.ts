@@ -5,7 +5,7 @@ import { phase05_monthly_boundary } from "@/engine/tick/phases/phase05_monthly_b
 import { phase01_week_candidate_pool } from "@/engine/tick/phases/phase01_week_candidate_pool";
 import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
 import { phase01_week_health } from "@/engine/tick/phases/phase01_week_health";
-import { purchaseMyoseki } from "@/engine/governance/services/MyosekiTradingService";
+import { buyMyoseki } from "@/engine/governance/myosekiMarket";
 import { tickWeekTalentPool } from "@/engine/generation/TalentPoolMaintenance";
 import { withdrawRikishi } from "@/engine/health/HealthActions";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
@@ -79,8 +79,7 @@ describe("audit: stale-base snapshot merges", () => {
         history: [],
       } as never,
     });
-    const market = world.myosekiMarket!;
-    const impact = purchaseMyoseki(world, market, "m1" as never, "npc" as never, 10_000_000);
+    const impact = buyMyoseki(world, "npc" as never, "npc" as never, "m1" as never);
     const resolved = resolveImpacts(world, [impact]);
     // Stock transfers AND the buyer is debited — before the fix, NPCs paid nothing.
     expect(resolved.myosekiMarket!.stocks["m1"].ownerId).toBe("npc");
