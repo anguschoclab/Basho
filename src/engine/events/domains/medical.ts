@@ -1,9 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { EventImportance, NarrativeContext } from "@/engine/types/events";
-import { BardEngine } from "@/engine/bard/BardEngine";
-import { createRngForEvent } from "@/engine/events/helpers";
-import { logEngineEvent } from "@/engine/events/events";
-import { enrichEventContext } from "@/engine/events/domains/context";
+import {logBardEvent} from "@/engine/events/helpers";
 
 /**
  * Creates a medical report event for a rikishi.
@@ -17,22 +14,19 @@ export function medicalReportBase(
   ctx: NarrativeContext,
   importance: EventImportance
 ) {
-  ctx = enrichEventContext(world, ctx);
-  const rng = createRngForEvent(world, `medical-${ctx.rikishiId}-${ctx.status}`);
-  const titleRes = BardEngine.resolve(rng, "events.medical.title", ctx);
-  const summaryRes = BardEngine.resolve(rng, "events.medical.summary", ctx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `medical-${ctx.rikishiId}-${ctx.status}`,
+    ctx: ctx,
+    titlePath: "events.medical.title",
+    summaryPath: "events.medical.summary",
+    event: {
     type: "MEDICAL_REPORT",
     category: "injury",
     importance,
     scope: "rikishi",
     rikishiId: ctx.rikishiId,
     heyaId: ctx.heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: ctx,
-    tags: ["medical", ctx.status as string],
+    tags: ["medical", ctx.status as string]},
   });
 }
 
@@ -43,22 +37,19 @@ export function medicalReportBase(
  * @returns The logged engine event
  */
 export function lifecycleEvent(world: WorldState, ctx: NarrativeContext) {
-  ctx = enrichEventContext(world, ctx);
-  const rng = createRngForEvent(world, `lifecycle-${ctx.rikishiId}-${ctx.status}`);
-  const titleRes = BardEngine.resolve(rng, "events.lifecycle.title", ctx);
-  const summaryRes = BardEngine.resolve(rng, "events.lifecycle.summary", ctx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `lifecycle-${ctx.rikishiId}-${ctx.status}`,
+    ctx: ctx,
+    titlePath: "events.lifecycle.title",
+    summaryPath: "events.lifecycle.summary",
+    event: {
     type: "LIFECYCLE_EVENT",
     category: "career",
     importance: ctx.status === "retirement" ? "major" : "notable",
     scope: "rikishi",
     rikishiId: ctx.rikishiId,
     heyaId: ctx.heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: ctx,
-    tags: ["career", ctx.status as string],
+    tags: ["career", ctx.status as string]},
   });
 }
 
@@ -74,24 +65,19 @@ export function lifecycleAction(
   data: NarrativeContext,
   type: "naturalization" | "merger"
 ) {
-  data = enrichEventContext(world, data);
-  const rng = createRngForEvent(
-    world,
-    `lifecycle-${type}-${data.rikishiId || data.heyaId}`
-  );
-  const titleRes = BardEngine.resolve(rng, `events.lifecycle.${type}_title`, data);
-  const summaryRes = BardEngine.resolve(rng, `events.lifecycle.${type}_summary`, data);
-
-  return logEngineEvent(world, {
-    type: "LIFECYCLE_EVENT",
-    category: "career",
-    importance: "major",
-    scope: data.rikishiId ? "rikishi" : "heya",
-    rikishiId: data.rikishiId,
-    heyaId: data.heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["lifecycle", type],
+  return logBardEvent(world, {
+    salt: `lifecycle-${type}-${data.rikishiId || data.heyaId}`,
+    ctx: data,
+    titlePath: `events.lifecycle.${type}_title`,
+    summaryPath: `events.lifecycle.${type}_summary`,
+    event: {
+      type: "LIFECYCLE_EVENT",
+      category: "career",
+      importance: "major",
+      scope: data.rikishiId ? "rikishi" : "heya",
+      rikishiId: data.rikishiId,
+      heyaId: data.heyaId,
+      tags: ["lifecycle", type],
+    },
   });
 }

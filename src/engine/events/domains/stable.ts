@@ -1,10 +1,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { EventImportance, NarrativeContext } from "@/engine/types/events";
 import type { Id } from "@/engine/types/common";
-import { BardEngine } from "@/engine/bard/BardEngine";
-import { createRngForEvent } from "@/engine/events/helpers";
-import { logEngineEvent } from "@/engine/events/events";
-import { enrichEventContext } from "@/engine/events/domains/context";
+import {logBardEvent} from "@/engine/events/helpers";
 
 /**
  * Creates a governance ruling event for a heya.
@@ -20,21 +17,18 @@ export function governanceRuling(
   ctx: NarrativeContext,
   importance: EventImportance = "major"
 ) {
-  const enrichedCtx = enrichEventContext(world, { heyaId, ...ctx });
-  const rng = createRngForEvent(world, `gov-${heyaId}-${ctx.incident}`);
-  const titleRes = BardEngine.resolve(rng, "events.governance.title", enrichedCtx);
-  const summaryRes = BardEngine.resolve(rng, "events.governance.summary", enrichedCtx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `gov-${heyaId}-${ctx.incident}`,
+    ctx: { heyaId, ...ctx },
+    titlePath: "events.governance.title",
+    summaryPath: "events.governance.summary",
+    event: {
     type: "GOVERNANCE_RULING",
     category: "discipline",
     importance,
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: enrichedCtx,
-    tags: ["governance", "discipline"],
+    tags: ["governance", "discipline"]},
   });
 }
 
@@ -46,21 +40,18 @@ export function governanceRuling(
  * @returns The logged engine event
  */
 export function welfareCompliance(world: WorldState, heyaId: Id, ctx: NarrativeContext) {
-  ctx = enrichEventContext(world, { heyaId, ...ctx });
-  const rng = createRngForEvent(world, `welfare-${heyaId}-${ctx.status}`);
-  const titleRes = BardEngine.resolve(rng, "events.welfare.title", ctx);
-  const summaryRes = BardEngine.resolve(rng, "events.welfare.summary", ctx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `welfare-${heyaId}-${ctx.status}`,
+    ctx: { heyaId, ...ctx },
+    titlePath: "events.welfare.title",
+    summaryPath: "events.welfare.summary",
+    event: {
     type: "WELFARE_COMPLIANCE",
     category: "welfare",
     importance: ctx.status === "sanctioned" ? "headline" : "major",
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: ctx,
-    tags: ["welfare", ctx.status as string],
+    tags: ["welfare", ctx.status as string]},
   });
 }
 
@@ -72,21 +63,18 @@ export function welfareCompliance(world: WorldState, heyaId: Id, ctx: NarrativeC
  * @returns The logged engine event
  */
 export function oyakataMoodShift(world: WorldState, heyaId: Id, data: NarrativeContext) {
-  data = enrichEventContext(world, { heyaId, ...data });
-  const rng = createRngForEvent(world, `mood-${heyaId}`);
-  const titleRes = BardEngine.resolve(rng, "events.narrative.mood_shift_title", data);
-  const summaryRes = BardEngine.resolve(rng, "events.narrative.mood_shift_summary", data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `mood-${heyaId}`,
+    ctx: { heyaId, ...data },
+    titlePath: "events.narrative.mood_shift_title",
+    summaryPath: "events.narrative.mood_shift_summary",
+    event: {
     type: "OYAKATA_MOOD_SHIFT",
     category: "narrative",
     importance: "major",
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["narrative", "mood"],
+    tags: ["narrative", "mood"]},
   });
 }
 
@@ -104,21 +92,18 @@ export function managementDecision(
   data: NarrativeContext,
   importance: EventImportance = "minor"
 ) {
-  data = enrichEventContext(world, { heyaId, ...data });
-  const rng = createRngForEvent(world, `mgmt-${heyaId}`);
-  const titleRes = BardEngine.resolve(rng, "events.management.decision_title", data);
-  const summaryRes = BardEngine.resolve(rng, "events.management.decision_summary", data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `mgmt-${heyaId}`,
+    ctx: { heyaId, ...data },
+    titlePath: "events.management.decision_title",
+    summaryPath: "events.management.decision_summary",
+    event: {
     type: "NPC_MANAGER_DECISION",
     category: "training",
     importance,
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["management", "strategy"],
+    tags: ["management", "strategy"]},
   });
 }
 
@@ -130,21 +115,18 @@ export function managementDecision(
  * @returns The logged engine event
  */
 export function strategyShift(world: WorldState, heyaId: Id, data: NarrativeContext) {
-  data = enrichEventContext(world, { heyaId, ...data });
-  const rng = createRngForEvent(world, `strategy-${heyaId}`);
-  const titleRes = BardEngine.resolve(rng, "events.narrative.strategy_shift_title", data);
-  const summaryRes = BardEngine.resolve(rng, "events.narrative.strategy_shift_summary", data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `strategy-${heyaId}`,
+    ctx: { heyaId, ...data },
+    titlePath: "events.narrative.strategy_shift_title",
+    summaryPath: "events.narrative.strategy_shift_summary",
+    event: {
     type: "NARRATIVE_STRATEGY_SHIFT",
     category: "narrative",
     importance: "major",
     scope: "world",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["narrative", "strategy"],
+    tags: ["narrative", "strategy"]},
   });
 }
 
@@ -162,22 +144,20 @@ export function facilityUpdate(
   data: NarrativeContext,
   type: "UPGRADED" | "DEGRADED"
 ) {
-  data = enrichEventContext(world, { heyaId, ...data });
-  const rng = createRngForEvent(world, `facility-${heyaId}-${type}`);
   const path = type === "UPGRADED" ? "events.facility.upgraded" : "events.facility.degraded";
-  const titleRes = BardEngine.resolve(rng, `${path}_title`, data);
-  const summaryRes = BardEngine.resolve(rng, `${path}_summary`, data);
 
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `facility-${heyaId}-${type}`,
+    ctx: { heyaId, ...data },
+    titlePath: `${path}_title`,
+    summaryPath: `${path}_summary`,
+    event: {
     type: type === "UPGRADED" ? "FACILITY_UPGRADED" : "FACILITY_DEGRADED",
     category: "facility",
     importance: "notable",
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["facility", type.toLowerCase()],
+    tags: ["facility", type.toLowerCase()]},
   });
 }
 
@@ -189,22 +169,19 @@ export function facilityUpdate(
  * @returns The logged engine event
  */
 export function rosterEvent(world: WorldState, heyaId: Id, data: NarrativeContext) {
-  data = enrichEventContext(world, { heyaId, ...data });
-  const rng = createRngForEvent(world, `roster-${heyaId}-${data.rikishiId}`);
-  const titleRes = BardEngine.resolve(rng, "events.management.roster_overflow_title", data);
-  const summaryRes = BardEngine.resolve(rng, "events.management.roster_overflow_summary", data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `roster-${heyaId}-${data.rikishiId}`,
+    ctx: { heyaId, ...data },
+    titlePath: "events.management.roster_overflow_title",
+    summaryPath: "events.management.roster_overflow_summary",
+    event: {
     type: "ROSTER_OVERFLOW_RELEASE",
     category: "career",
     importance: "major",
     scope: "heya",
     heyaId,
     rikishiId: data.rikishiId as Id,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["roster", "release"],
+    tags: ["roster", "release"]},
   });
 }
 
@@ -216,20 +193,17 @@ export function rosterEvent(world: WorldState, heyaId: Id, data: NarrativeContex
  * @returns The logged engine event
  */
 export function prestigeEvent(world: WorldState, heyaId: Id, data: NarrativeContext) {
-  data = enrichEventContext(world, { heyaId, ...data });
-  const rng = createRngForEvent(world, `prestige-${heyaId}`);
-  const titleRes = BardEngine.resolve(rng, "events.narrative.prestige_title", data);
-  const summaryRes = BardEngine.resolve(rng, "events.narrative.prestige_summary", data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `prestige-${heyaId}`,
+    ctx: { heyaId, ...data },
+    titlePath: "events.narrative.prestige_title",
+    summaryPath: "events.narrative.prestige_summary",
+    event: {
     type: "AWARD_CONFERRED",
     category: "milestone",
     importance: "notable",
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["prestige", "milestone"],
+    tags: ["prestige", "milestone"]},
   });
 }

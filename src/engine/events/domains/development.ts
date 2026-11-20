@@ -1,9 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
-import { BardEngine } from "@/engine/bard/BardEngine";
-import { createRngForEvent } from "@/engine/events/helpers";
-import { logEngineEvent } from "@/engine/events/events";
-import { enrichEventContext } from "@/engine/events/domains/context";
+import {logBardEvent} from "@/engine/events/helpers";
 
 /**
  * Creates a training update event.
@@ -12,22 +9,19 @@ import { enrichEventContext } from "@/engine/events/domains/context";
  * @returns The logged engine event
  */
 export function trainingUpdate(world: WorldState, ctx: NarrativeContext) {
-  ctx = enrichEventContext(world, ctx);
-  const rng = createRngForEvent(world, `training-${ctx.rikishiId}`);
-  const titleRes = BardEngine.resolve(rng, "events.training.title", ctx);
-  const summaryRes = BardEngine.resolve(rng, "events.training.summary", ctx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `training-${ctx.rikishiId}`,
+    ctx: ctx,
+    titlePath: "events.training.title",
+    summaryPath: "events.training.summary",
+    event: {
     type: "TRAINING_UPDATE",
     category: "training",
     importance: "notable",
     scope: ctx.rikishiId ? "rikishi" : "heya",
     rikishiId: ctx.rikishiId,
     heyaId: ctx.heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: ctx,
-    tags: ["training"],
+    tags: ["training"]},
   });
 }
 
@@ -38,20 +32,18 @@ export function trainingUpdate(world: WorldState, ctx: NarrativeContext) {
  * @returns The logged engine event
  */
 export function recruitDiscovered(world: WorldState, data: NarrativeContext) {
-  data = enrichEventContext(world, data);
-  const rng = createRngForEvent(world, `recruit-${data.rikishiId}`);
-  const res = BardEngine.resolve(rng, "events.recruiting.scouting_reports", data);
-  const titleRes = BardEngine.resolve(rng, "events.recruiting.title", data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `recruit-${data.rikishiId}`,
+    ctx: data,
+    titlePath: "events.recruiting.title",
+    summaryPath: "events.recruiting.scouting_reports",
+    summaryFirst: true,
+    event: {
     type: "RECRUIT_DISCOVERED",
     category: "scouting",
     importance: "notable",
     scope: "world",
     rikishiId: data.rikishiId,
-    title: titleRes.text,
-    summary: res.text,
-    data,
-    tags: ["scouting", "recruitment"],
+    tags: ["scouting", "recruitment"]},
   });
 }

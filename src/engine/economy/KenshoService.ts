@@ -1,4 +1,5 @@
 import { SeededRNG } from "@/engine/core/rng";
+import { compareSponsorId } from "@/engine/economy/sponsorshipQueries";
 import type { Sponsor, SponsorPool, KenshoBannerSlot } from "@/engine/types/sponsors";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -142,7 +143,7 @@ export function assignKenshoBanners(
         (s.tier === "T5" ? T5_TIER_BONUS : 0) +
         (s.tier === "T4" ? T4_TIER_BONUS : 0),
     }))
-    .sort((a, b) => b.score - a.score || a.sponsor.sponsorId.localeCompare(b.sponsor.sponsorId));
+    .sort((a, b) => b.score - a.score || compareSponsorId(a.sponsor, b.sponsor));
 
   const t4plusWeights: Array<{ item: Sponsor; w: number }> = [];
   const t3Weights: Array<{ item: Sponsor; w: number }> = [];

@@ -1,10 +1,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
 import type { Id } from "@/engine/types/common";
-import { BardEngine } from "@/engine/bard/BardEngine";
-import { createRngForEvent } from "@/engine/events/helpers";
-import { logEngineEvent } from "@/engine/events/events";
-import { enrichEventContext } from "@/engine/events/domains/context";
+import {logBardEvent} from "@/engine/events/helpers";
 
 /**
  * Creates a financial alert event for a heya.
@@ -14,21 +11,18 @@ import { enrichEventContext } from "@/engine/events/domains/context";
  * @returns The logged engine event
  */
 export function financialAlert(world: WorldState, heyaId: Id, ctx: NarrativeContext) {
-  ctx = enrichEventContext(world, { heyaId, ...ctx });
-  const rng = createRngForEvent(world, `finance-${heyaId}-${ctx.incident}`);
-  const titleRes = BardEngine.resolve(rng, "events.economy.title", ctx);
-  const summaryRes = BardEngine.resolve(rng, "events.economy.summary", ctx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `finance-${heyaId}-${ctx.incident}`,
+    ctx: { heyaId, ...ctx },
+    titlePath: "events.economy.title",
+    summaryPath: "events.economy.summary",
+    event: {
     type: "FINANCIAL_ALERT",
     category: "economy",
     importance: ctx.incident === "insolvency" ? "headline" : "major",
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: ctx,
-    tags: ["economy", ctx.incident as string],
+    tags: ["economy", ctx.incident as string]},
   });
 }
 
@@ -39,22 +33,20 @@ export function financialAlert(world: WorldState, heyaId: Id, ctx: NarrativeCont
  * @returns The logged engine event
  */
 export function monthlyFinanceReport(world: WorldState, data: NarrativeContext) {
-  data = enrichEventContext(world, data);
-  const rng = createRngForEvent(world, `finance-tick-${data.heya}`);
-  const res = BardEngine.resolve(rng, "events.economy.market_shifts", data);
-  const titleRes = BardEngine.resolve(rng, "events.economy.title", data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `finance-tick-${data.heya}`,
+    ctx: data,
+    titlePath: "events.economy.title",
+    summaryPath: "events.economy.market_shifts",
+    summaryFirst: true,
+    event: {
     type: "MONTHLY_FINANCE_REPORT",
     category: "economy",
     phase: "monthly",
     importance: "notable",
     scope: "heya",
     heyaId: data.heyaId,
-    title: titleRes.text,
-    summary: res.text,
-    data,
-    tags: ["economy", "finance"],
+    tags: ["economy", "finance"]},
   });
 }
 
@@ -72,20 +64,17 @@ export function financialAction(
   data: NarrativeContext,
   type: "loan" | "market"
 ) {
-  data = enrichEventContext(world, { heyaId, ...data });
-  const rng = createRngForEvent(world, `finance-${type}-${heyaId}`);
-  const titleRes = BardEngine.resolve(rng, `events.economy.${type}_title`, data);
-  const summaryRes = BardEngine.resolve(rng, `events.economy.${type}_summary`, data);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `finance-${type}-${heyaId}`,
+    ctx: { heyaId, ...data },
+    titlePath: `events.economy.${type}_title`,
+    summaryPath: `events.economy.${type}_summary`,
+    event: {
     type: "FINANCIAL_ALERT",
     category: "economy",
     importance: "notable",
     scope: "heya",
     heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["economy", type],
+    tags: ["economy", type]},
   });
 }

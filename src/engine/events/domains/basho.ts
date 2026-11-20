@@ -1,9 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
-import { BardEngine } from "@/engine/bard/BardEngine";
-import { createRngForEvent } from "@/engine/events/helpers";
-import { logEngineEvent } from "@/engine/events/events";
-import { enrichEventContext } from "@/engine/events/domains/context";
+import {logBardEvent} from "@/engine/events/helpers";
 
 /**
  * Creates a basho status update event (e.g., start, end, day update).
@@ -12,22 +9,19 @@ import { enrichEventContext } from "@/engine/events/domains/context";
  * @returns The logged engine event
  */
 export function bashoStatus(world: WorldState, ctx: NarrativeContext) {
-  ctx = enrichEventContext(world, ctx);
-  const rng = createRngForEvent(world, `basho-status-${ctx.status}-${ctx.day}`);
-  const titleRes = BardEngine.resolve(rng, "events.basho.status_title", ctx);
-  const summaryRes = BardEngine.resolve(rng, "events.basho.status_summary", ctx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `basho-status-${ctx.status}-${ctx.day}`,
+    ctx: ctx,
+    titlePath: "events.basho.status_title",
+    summaryPath: "events.basho.status_summary",
+    event: {
     type: "BASHO_STATUS",
     category: "basho",
     importance:
       ctx.status === "started" || ctx.status === "ended" || ctx.day === 15 ? "headline" : "notable",
     phase: "basho_day",
     scope: "world",
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: ctx,
-    tags: ["basho", ctx.status as string],
+    tags: ["basho", ctx.status as string]},
   });
 }
 
@@ -41,25 +35,22 @@ export function boutResolved(world: WorldState, data: NarrativeContext) {
   const rngKey = data.isDraw
     ? `bout-resolved-draw-${data.eastRikishiId}-${data.westRikishiId}-${data.day}`
     : `bout-resolved-${data.winnerRikishiId}-${data.loserRikishiId}-${data.day}`;
-  const rng = createRngForEvent(world, rngKey);
-  data = {
-    ...enrichEventContext(world, data),
-    winnerId: data.winnerRikishiId,
-    loserId: data.loserRikishiId,
-  };
-  const titleRes = BardEngine.resolve(rng, "events.basho.bout_title", data);
-  const summaryRes = BardEngine.resolve(rng, "events.basho.bout_summary", data);
 
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: rngKey,
+    ctx: data,
+    extraData: {winnerId: data.winnerRikishiId,
+    loserId: data.loserRikishiId,
+  },
+    titlePath: "events.basho.bout_title",
+    summaryPath: "events.basho.bout_summary",
+    event: {
     type: "BOUT_RESOLVED",
     category: "basho",
     importance: data.upset || data.isKinboshi ? "headline" : "notable",
     phase: "basho_day",
     scope: "world",
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data,
-    tags: ["basho", "bout", "pbp"],
+    tags: ["basho", "bout", "pbp"]},
   });
 }
 
@@ -70,12 +61,12 @@ export function boutResolved(world: WorldState, data: NarrativeContext) {
  * @returns The logged engine event
  */
 export function awardConferred(world: WorldState, ctx: NarrativeContext) {
-  ctx = enrichEventContext(world, ctx);
-  const rng = createRngForEvent(world, `award-${ctx.rikishiId}-${ctx.status}`);
-  const titleRes = BardEngine.resolve(rng, "events.awards.title", ctx);
-  const summaryRes = BardEngine.resolve(rng, "events.awards.summary", ctx);
-
-  return logEngineEvent(world, {
+    return logBardEvent(world, {
+    salt: `award-${ctx.rikishiId}-${ctx.status}`,
+    ctx: ctx,
+    titlePath: "events.awards.title",
+    summaryPath: "events.awards.summary",
+    event: {
     type: "AWARD_CONFERRED",
     category: "basho",
     importance: "headline",
@@ -83,10 +74,7 @@ export function awardConferred(world: WorldState, ctx: NarrativeContext) {
     scope: "rikishi",
     rikishiId: ctx.rikishiId,
     heyaId: ctx.heyaId,
-    title: titleRes.text,
-    summary: summaryRes.text,
-    data: ctx,
-    tags: ["basho", "award"],
+    tags: ["basho", "award"]},
   });
 }
 
@@ -97,23 +85,20 @@ export function awardConferred(world: WorldState, ctx: NarrativeContext) {
  * @returns The logged engine event
  */
 export function rivalryHeatSpike(world: WorldState, data: NarrativeContext) {
-  const rng = createRngForEvent(world, `rivalry-heat-${data.winner}-${data.loser}`);
-  const enrichedData = {
-    ...enrichEventContext(world, data),
-    winnerId: data.winnerId || data.winnerRikishiId,
+    return logBardEvent(world, {
+    salt: `rivalry-heat-${data.winner}-${data.loser}`,
+    ctx: data,
+    extraData: {winnerId: data.winnerId || data.winnerRikishiId,
     loserId: data.loserId || data.loserRikishiId,
-  };
-  const res = BardEngine.resolve(rng, "events.rivalry.press_rumors", enrichedData);
-  const titleRes = BardEngine.resolve(rng, "events.rivalry.title", enrichedData);
-
-  return logEngineEvent(world, {
+  },
+    titlePath: "events.rivalry.title",
+    summaryPath: "events.rivalry.press_rumors",
+    summaryFirst: true,
+    event: {
     type: "RIVALRY_HEAT_SPIKE",
     category: "rivalry",
     importance: (data.heat as number) > 75 ? "major" : "notable",
     scope: "world",
-    title: titleRes.text,
-    summary: res.text,
-    data: enrichedData,
-    tags: ["rivalry", "hype"],
+    tags: ["rivalry", "hype"]},
   });
 }

@@ -12,6 +12,7 @@ import { rngForWorld } from "@/engine/core/rng";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { isSponsorPlayerRelevant } from "@/engine/npc/eventSurfacing";
+import { compareSponsorAffinity } from "@/engine/economy/sponsorshipQueries";
 import {
   NPC_RIKISHI_BURN_ESTIMATE_MONTHLY,
   NPC_FACILITY_BURN_MULTIPLIER,
@@ -64,9 +65,7 @@ export function filterEligibleSponsors(
     eligibleSponsors.push(s);
   }
 
-  return eligibleSponsors.sort(
-    (a, b) => b.prestigeAffinity - a.prestigeAffinity || a.sponsorId.localeCompare(b.sponsorId)
-  );
+  return eligibleSponsors.sort(compareSponsorAffinity);
 }
 
 // @keep-export createSponsorRelationship — live via same-file/dispatch call or public API contract

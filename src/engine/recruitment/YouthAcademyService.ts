@@ -544,8 +544,7 @@ export function investInAcademy(world: WorldState, heyaId: string, amount: numbe
     funds: cash - amount,
   });
 
-  builder.logEvent(
-    "MANAGEMENT_DECISION",
+  builder.logManagementDecision(
     "economy",
     {
       eventId: "youth_academy_invest",
@@ -617,8 +616,7 @@ export function hireAcademyStaff(
     funds: cash - STAFF_HIRE_COST,
   });
 
-  builder.logEvent(
-    "MANAGEMENT_DECISION",
+  builder.logManagementDecision(
     "economy",
     {
       eventId: "youth_academy_staff_hired",

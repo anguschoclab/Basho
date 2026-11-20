@@ -112,8 +112,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
 
   // D. Emit Management Decision Event for UI Overlay (D1)
   const interviewPrompt = generateInterviewPrompt(world, rng);
-  builder.logEvent(
-    "MANAGEMENT_DECISION",
+  builder.logManagementDecision(
     "narrative",
     {
       heyaId: world.playerHeyaId,

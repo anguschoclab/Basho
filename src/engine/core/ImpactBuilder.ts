@@ -374,6 +374,23 @@ export class ImpactBuilder {
   }
 
   /**
+   * Queue a MANAGEMENT_DECISION event — the canonical wrapper so call sites
+   * don't repeat the event-type literal.
+   */
+  logManagementDecision(
+    category: EventCategory,
+    data: NarrativeContext,
+    options?: {
+      heyaId?: Id;
+      rikishiId?: Id;
+      importance?: EventImportance;
+      causalEventId?: Id;
+    }
+  ): ImpactBuilder {
+    return this.logEvent("MANAGEMENT_DECISION", category, data, options);
+  }
+
+  /**
    * Add custom metadata to the impact.
    */
   addMetadata(key: string, value: unknown): ImpactBuilder {

@@ -19,6 +19,7 @@ import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getRikishi, getNPCHeyas } from "@/engine/core/queries";
+import { dedupeIdList } from "@/engine/core/idIntegrity";
 import { buildPerceptionSnapshot } from "@/engine/npc/perception";
 import { buildLeaguePerception } from "@/engine/npc/LeaguePerception";
 import { buildAIContext } from "@/engine/npc/contextBuilder";
@@ -290,12 +291,7 @@ function maybeAssignNPCMentors(
   builder: ReturnType<typeof createImpactBuilder>
 ): void {
   const members: Rikishi[] = [];
-  const heyaIds = heya.rikishiIds ?? [];
-  const seenIds = new Set<string>();
-  for (let i = 0; i < heyaIds.length; i++) {
-    const id = heyaIds[i];
-    if (seenIds.has(id)) continue;
-    seenIds.add(id);
+  for (const id of dedupeIdList(heya.rikishiIds ?? []) ?? []) {
     const r = getRikishi(world, id);
     if (r) members.push(r);
   }
@@ -366,12 +362,7 @@ function maybeAssignNPCSparringPairs(
   sparringMap: Map<Id, SparringState>
 ): boolean {
   const members: Rikishi[] = [];
-  const heyaIds = heya.rikishiIds ?? [];
-  const seenIds = new Set<string>();
-  for (let i = 0; i < heyaIds.length; i++) {
-    const id = heyaIds[i];
-    if (seenIds.has(id)) continue;
-    seenIds.add(id);
+  for (const id of dedupeIdList(heya.rikishiIds ?? []) ?? []) {
     const r = getRikishi(world, id);
     if (r) members.push(r);
   }

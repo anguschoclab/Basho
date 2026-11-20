@@ -201,8 +201,7 @@ export function hireStaffCandidate(
     "staffCandidatePool",
     (world.staffCandidatePool ?? []).filter((c) => c.id !== candidateId)
   );
-  builder.logEvent(
-    "MANAGEMENT_DECISION",
+  builder.logManagementDecision(
     "economy",
     {
       title: `Hired ${candidate.name} (${candidate.role})`,
@@ -248,8 +247,7 @@ export function tickMonthlyStaffContracts(world: WorldState): StateImpact {
       });
       for (const s of expired) {
         builder.removeStaff(s.id);
-        builder.logEvent(
-          "MANAGEMENT_DECISION",
+        builder.logManagementDecision(
           "economy",
           {
             title: `${s.name}'s contract expired`,

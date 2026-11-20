@@ -114,8 +114,7 @@ export function sendScout(
   };
   builder.updateHeya(heyaId, { funds: Math.round(heya.funds - def.costYen) });
   builder.updateWorldField("activeScoutMissions", [...missions, mission]);
-  builder.logEvent(
-    "MANAGEMENT_DECISION",
+  builder.logManagementDecision(
     "scouting",
     {
       title: `Scout dispatched — ${def.tier}`,

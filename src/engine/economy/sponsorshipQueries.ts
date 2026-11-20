@@ -36,6 +36,17 @@ export const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
   powerful: KOENKAI_INCOME_POWERFUL,
 };
 
+/** Deterministic sponsor-id tiebreak — every sponsor ordering shares it. */
+export const compareSponsorId = (a: Sponsor, b: Sponsor): number =>
+  a.sponsorId.localeCompare(b.sponsorId);
+
+/**
+ * Canonical sponsor ranking: prestigeAffinity descending, sponsorId
+ * ascending as the deterministic tiebreak.
+ */
+export const compareSponsorAffinity = (a: Sponsor, b: Sponsor): number =>
+  b.prestigeAffinity - a.prestigeAffinity || compareSponsorId(a, b);
+
 export const SPONSOR_TIER_INCOME: Record<import("@/engine/types/sponsors").SponsorTier, number> = {
   T0: SPONSOR_TIER_INCOME_T0,
   T1: SPONSOR_TIER_INCOME_T1,
@@ -107,9 +118,7 @@ export function createKoenkai(
 
   const eligibleSponsors = Array.from(sponsorPool.sponsors.values())
     .filter((s) => s.active && (s.tier === "T1" || s.tier === "T2" || s.tier === "T3"))
-    .sort(
-      (a, b) => b.prestigeAffinity - a.prestigeAffinity || a.sponsorId.localeCompare(b.sponsorId)
-    );
+    .sort(compareSponsorAffinity);
 
   const picked = eligibleSponsors.slice(0, Math.min(memberCount, eligibleSponsors.length));
   const members: SponsorRelationship[] = picked.map((sponsor, idx) => {
@@ -162,7 +171,7 @@ export function selectBenefactor(
       .filter((m) => m.role === "koenkai_pillar")
       .map((m) => sponsorPool.sponsors.get(m.sponsorId))
       .filter((s): s is Sponsor => s !== undefined)
-      .sort((a, b) => b.riskAppetite - a.riskAppetite || a.sponsorId.localeCompare(b.sponsorId));
+      .sort((a, b) => b.riskAppetite - a.riskAppetite || compareSponsorId(a, b));
 
     if (pillars.length > 0 && pillars[0].riskAppetite >= 50) return pillars[0];
   }

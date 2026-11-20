@@ -230,8 +230,7 @@ export function applyDemandOutcome(
     }
   }
 
-  builder.logEvent(
-    "MANAGEMENT_DECISION",
+  builder.logManagementDecision(
     "sponsor",
     {
       title: `Koenkai: ${def.title}`,
