@@ -8,6 +8,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { resolveAvatar, rikishiStageInput } from "@/engine/generation/avatarGenerator";
 import { getAllRikishi } from "@/presenters/worldAccess";
+import { kihakuLabel } from "@/presenters/rikishi/transformers/kihaku";
 
 export interface KihakuPerformerDTO {
   rikishiId: string;
@@ -19,13 +20,7 @@ export interface KihakuPerformerDTO {
   label: string;
 }
 
-function kihakuLabel(score: number): string {
-  if (score >= 80) return "Blazing Spirit";
-  if (score >= 65) return "Fierce Determination";
-  if (score >= 50) return "Steady Resolve";
-  if (score >= 35) return "Faltering Will";
-  return "Broken Spirit";
-}
+
 
 export function selectTopKihakuPerformers(world: WorldState, limit = 5): KihakuPerformerDTO[] {
   const allRikishi = getAllRikishi(world);

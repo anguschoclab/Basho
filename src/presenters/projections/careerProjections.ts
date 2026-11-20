@@ -8,6 +8,7 @@ import {
 } from "@/constants/engine/succession";
 import { BOARD_COMMITTEE } from "@/constants/engine/committee";
 import { CAREER_MILESTONES } from "@/constants/ui/career";
+import { baseTenure } from "@/engine/legacy/tenure";
 
 export interface CareerMilestone {
   id: string;
@@ -49,18 +50,7 @@ export interface ManagerCareerProjection {
   };
 }
 
-const ZERO_TENURE = {
-  bashoServed: 0,
-  championships: 0,
-  sekitoriProduced: 0,
-  sanyakuProduced: 0,
-  ozekiProduced: 0,
-  yokozunaProduced: 0,
-  insolvencyEvents: 0,
-  majorScandals: 0,
-  forcedMergers: 0,
-  boardSeatsWon: 0,
-};
+const ZERO_TENURE = baseTenure(0);
 
 function electionScore(heya: { politicalCapital?: number; reputation?: number }): number {
   return (heya.politicalCapital ?? 50) + (heya.reputation ?? 50) / 2;

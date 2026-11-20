@@ -2,9 +2,9 @@
   "generatedAt": "2026-11-20T18:10:19.084Z",
   "suites": {
     "fast": {
-      "totalDurationMs": 53997,
-      "fileCount": 1115,
-      "testCount": 10417,
+      "totalDurationMs": 54018,
+      "fileCount": 1116,
+      "testCount": 10428,
       "files": [
         {
           "file": "tests/unit/engine/bout/tacticWinRate.test.ts",
@@ -2644,6 +2644,11 @@
         {
           "file": "tests/unit/presenters/rikishi/transformers/kimarite.test.ts",
           "testCount": 6,
+          "durationMs": 21
+        },
+        {
+          "file": "tests/unit/audit/dedup-characterization.test.ts",
+          "testCount": 11,
           "durationMs": 21
         },
         {

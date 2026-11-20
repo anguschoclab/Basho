@@ -94,7 +94,7 @@ export function projectGlobalCup(world: WorldState): GlobalCupProjection | null 
 /**
  * Get flag emoji for nationality
  */
-function getFlagForNationality(nationality: string): string {
+export function getFlagForNationality(nationality: string): string {
   const flags: Record<string, string> = {
     Japan: "🇯🇵",
     Mongolia: "🇲🇳",

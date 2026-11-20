@@ -6,6 +6,7 @@
  */
 
 import { Trophy, Shield, Target } from "lucide-react";
+import { RANK_NAMES } from "@/constants/engine/rankDisplay";
 import type { HoFCategory } from "@/presenters/engineAccess";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
@@ -28,18 +29,9 @@ export const CATEGORY_ACCENT: Record<HoFCategory, string> = {
   technician: "text-success",
 };
 
-export const RANK_JA: Record<string, string> = {
-  yokozuna: "横綱",
-  ozeki: "大関",
-  sekiwake: "関脇",
-  komusubi: "小結",
-  maegashira: "前頭",
-  juryo: "十両",
-  makushita: "幕下",
-  sandanme: "三段目",
-  jonidan: "序二段",
-  jonokuchi: "序ノ口",
-};
+export const RANK_JA: Record<string, string> = Object.fromEntries(
+  Object.entries(RANK_NAMES).map(([rank, { ja }]) => [rank, ja])
+);
 
 export const HOF_SORT_OPTIONS = [
   { key: "name", label: "Name" },

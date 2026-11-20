@@ -9,6 +9,7 @@ import { Coins, TrendingUp, Building2 } from "lucide-react";
 import { formatYen } from "@/lib/engineUtils";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getPlayerHeya } from "@/presenters/engineAccess";
+import { SPONSOR_RECRUITMENT_COSTS } from "@/constants/engine/economic";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
@@ -19,14 +20,7 @@ const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T5: { label: "Elite", color: "text-destructive" },
 };
 
-const RECRUITMENT_COSTS: Record<string, number> = {
-  T0: 50_000,
-  T1: 150_000,
-  T2: 400_000,
-  T3: 800_000,
-  T4: 1_500_000,
-  T5: 4_000_000,
-};
+const RECRUITMENT_COSTS: Record<string, number> = SPONSOR_RECRUITMENT_COSTS;
 
 const SponsorRow = React.memo(
   ({

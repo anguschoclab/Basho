@@ -39,25 +39,14 @@ import { projectNPCAgentActivity } from "@/presenters/projections/npcAgentProjec
 import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import { getRankDisplayEntry, isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { activationKeyHandler } from "@/lib/a11y";
+import { baseTenure } from "@/presenters/engineAccess";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-const ZERO_TENURE = {
-  startedYear: 0,
-  bashoServed: 0,
-  championships: 0,
-  sekitoriProduced: 0,
-  sanyakuProduced: 0,
-  ozekiProduced: 0,
-  yokozunaProduced: 0,
-  insolvencyEvents: 0,
-  majorScandals: 0,
-  forcedMergers: 0,
-  boardSeatsWon: 0,
-};
+const ZERO_TENURE = baseTenure(0);
 
-type Tenure = typeof ZERO_TENURE;
+type Tenure = ReturnType<typeof baseTenure>;
 
 function tenureOf(o: Oyakata): Tenure {
   return { ...ZERO_TENURE, ...o.tenure };

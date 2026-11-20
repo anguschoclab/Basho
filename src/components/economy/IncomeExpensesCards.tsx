@@ -7,26 +7,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { formatYen } from "@/lib/engineUtils";
+import type { HeyaFinanceResult } from "@/presenters/engineAccess";
 
-interface WeeklyFinances {
-  revenue: number;
-  expenses: number;
-  totalBurn?: number;
-  income: {
-    koenkai: number;
-    jsaSubsidy: number;
-    sponsorTier: number;
-    jsaGrant: number;
-    oyakataSalary: number;
-  };
-  outgoings: {
-    facilityUpkeep: number;
-    staffUpkeep: number;
-    fixedOverhead: number;
-    recruitment: number;
-    infrastructureUpkeep?: number;
-  };
-}
+type WeeklyFinances = HeyaFinanceResult;
 
 interface IncomeExpensesCardsProps {
   weeklyFinances: WeeklyFinances | null;

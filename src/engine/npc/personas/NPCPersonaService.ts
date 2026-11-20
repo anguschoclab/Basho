@@ -18,6 +18,7 @@ import { rngForWorld } from "@/engine/core/rng";
 import { getHeyaStyleBias, getOyakataForHeya, getHeya } from "@/engine/core/queries";
 import { getCachedPerception, PerceptionSnapshot } from "@/engine/npc/perception";
 import { BardEngine } from "@/engine/bard/BardEngine";
+import { QUIRK_IDS, pickUnique } from "@/engine/npc/personas/oyakataPersonalities";
 import {
   DEFAULT_WELFARE_DISCIPLINE,
   DEFAULT_RISK_APPETITE,
@@ -69,39 +70,7 @@ export interface NPCPersona {
   mood: OyakataMood;
 }
 
-const QUIRK_IDS = [
-  "Old-School Stickler",
-  "Gambler's Instinct",
-  "Welfare Hawk",
-  "Discipline Hawk",
-  "Media Operator",
-  "Sleeper Scout",
-  "Nepotist",
-  "Weight-Cutter",
-  "Keiko Romantic",
-  "Cold Pragmatist",
-  "Family First",
-  "Numbers Guy",
-] as const;
 
-/**
- * Pick unique items from a pool using RNG.
- * Randomly selects the specified number of unique items from the pool.
- *
- * @param {{ next: () => number }} rng - The RNG instance.
- * @param {readonly T[]} items - The pool of items to select from.
- * @param {number} count - The number of unique items to select.
- * @returns {T[]} Array of unique selected items.
- */
-function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
-  const pool = [...items];
-  const out: T[] = [];
-  while (pool.length && out.length < count) {
-    const idx = Math.floor(rng.next() * pool.length);
-    out.push(pool.splice(idx, 1)[0]);
-  }
-  return out;
-}
 
 interface OyakataPersona {
   quirks: string[];

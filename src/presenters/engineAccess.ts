@@ -83,6 +83,8 @@ export {
 export { getActiveRikishi as selectActiveRikishi } from "@/engine/core/selectors";
 export { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
 export { calculateHeyaWeeklyFinances } from "@/engine/economy/FinanceCalculator";
+export type { HeyaFinanceResult } from "@/engine/economy/FinanceCalculator";
+export { baseTenure } from "@/engine/legacy/tenure";
 export { InfrastructureService } from "@/engine/economy/InfrastructureService";
 export { listNPCWatchedCandidates, getTopSuitor } from "@/engine/generation/CandidatePoolService";
 export {

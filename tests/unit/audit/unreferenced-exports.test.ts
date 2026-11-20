@@ -310,8 +310,6 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/economy/facilities.ts:UpgradeResult":
     "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
-  "src/engine/economy/loans.ts:processMonthlyLoanRepayments":
-    "Live module surface — referenced outside its file (1 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/economy/staff.ts:StaffBonuses":
     "Live module surface — referenced outside its file (4 consumer(s) via deep path or type-position import the auditor cannot resolve)",
   "src/engine/history/hallOfFame.ts:tryAddInductee":

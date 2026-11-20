@@ -24,7 +24,7 @@ type TenureCounter = Exclude<keyof Tenure, "startedYear">;
 /** Accumulated tenure increments for one heya within a single publish pass. */
 export type TenureDelta = Partial<Record<TenureCounter, number>>;
 
-function baseTenure(year: number): Tenure {
+export function baseTenure(year: number): Required<Tenure> {
   return {
     startedYear: year,
     bashoServed: 0,

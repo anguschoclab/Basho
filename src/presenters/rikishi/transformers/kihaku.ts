@@ -14,7 +14,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { RikishiKihakuDTO } from "@/presenters/rikishi/types";
 export type { RikishiKihakuDTO };
 
-function kihakuLabel(score: number): string {
+export function kihakuLabel(score: number): string {
   if (score >= 80) return "Blazing Spirit";
   if (score >= 65) return "Fierce Determination";
   if (score >= 50) return "Steady Resolve";

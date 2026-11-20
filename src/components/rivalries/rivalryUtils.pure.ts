@@ -5,12 +5,13 @@
  * Extracted to comply with react-refresh/only-export-components rule.
  */
 
+import { toRivalryHeatBand } from "@/presenters/engineAccess";
 import type { RivalryHeatBand } from "@/presenters/engineAccess";
 
+/**
+ * Map a rivalry heat score (0–100) to its display band.
+ * Delegates to the canonical engine band conversion.
+ */
 export function getDisplayHeatBand(heat: number): RivalryHeatBand {
-  if (heat >= 85) return "legendary";
-  if (heat >= 65) return "fierce";
-  if (heat >= 40) return "heated";
-  if (heat >= 20) return "simmering";
-  return "dormant";
+  return toRivalryHeatBand(heat);
 }

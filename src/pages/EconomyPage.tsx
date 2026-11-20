@@ -13,6 +13,7 @@ import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUti
 import { FinancialHealthOverview } from "@/components/economy/FinancialHealthOverview";
 import { BailoutCard } from "@/components/economy/BailoutCard";
 import { DebtSection } from "@/components/economy/DebtSection";
+import type { LoanRow } from "@/components/economy/debtMeta";
 import { KoenkaiSekitoriCards } from "@/components/economy/KoenkaiSekitoriCards";
 import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
 import { SponsorDrawCard } from "@/components/economy/SponsorDrawCard";
@@ -22,20 +23,6 @@ import { LOAN_ISSUANCE_THRESHOLD } from "@/constants/engine/economic";
 import { SortMenu } from "@/components/ui/SortMenu";
 import type { SortDirection } from "@/lib/sortUtils";
 import { useEconomyDerived } from "@/hooks/useEconomyDerived";
-
-/** Loan type matching DebtSection component requirements. */
-interface DebtLoan {
-  id: string;
-  type: string;
-  providerName: string;
-  amount: number;
-  interestRate: number;
-  dueWeek: number;
-  remainingBalance: number;
-  principal: number;
-  monthlyPayment: number;
-  stringsAttached?: string[];
-}
 
 const EARNER_SORT_OPTIONS = [
   { key: "name", label: "Name" },
@@ -124,7 +111,7 @@ export default function EconomyPage() {
         {/* Debt & Obligations (FM v2.0) */}
         <DebtSection
           activeLoans={
-            (playerHeya as typeof playerHeya & { activeLoans?: DebtLoan[] }).activeLoans ?? []
+            (playerHeya as typeof playerHeya & { activeLoans?: LoanRow[] }).activeLoans ?? []
           }
           onPrepay={(loanId) => sendCommand({ type: "PREPAY_LOAN", heyaId: playerHeya.id, loanId })}
         />

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { useGame } from "@/state/game/useGame";
 import { resolveAvatar, rikishiStageInput } from "@/presenters/projections/avatarProjections";
+import { getFlagForNationality } from "@/presenters/projections/globalCupProjections";
 import type { GlobalCupParticipant } from "@/engine/types/globalCup";
 
 interface GlobalCupParticipantProps {
@@ -16,29 +17,12 @@ interface GlobalCupParticipantProps {
   className?: string;
 }
 
-// Simple flag mapping (using emoji for now)
-const flagMap: Record<string, string> = {
-  Japan: "🇯🇵",
-  Mongolia: "🇲🇳",
-  Estonia: "🇪🇪",
-  Georgia: "🇬🇪",
-  Bulgaria: "🇧🇬",
-  Brazil: "🇧🇷",
-  USA: "🇺🇸",
-  Russia: "🇷🇺",
-  Ukraine: "🇺🇦",
-  China: "🇨🇳",
-  Korea: "🇰🇷",
-  Hungary: "🇭🇺",
-  Czech: "🇨🇿",
-};
-
 export function GlobalCupParticipantCard({
   participant,
   isChampion,
   className,
 }: GlobalCupParticipantProps) {
-  const flag = flagMap[participant.nationality] || "🏳️";
+  const flag = getFlagForNationality(participant.nationality);
   const { state } = useGame();
   const rikishi = state.world?.rikishi.get(participant.rikishiId);
   const avatar = rikishi

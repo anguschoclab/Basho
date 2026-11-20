@@ -42,7 +42,7 @@ export function runwayMonthsToBand(runwayMonths: number): RunwayBand {
   return RUNWAY_BANDS.DESPERATE;
 }
 
-interface HeyaFinanceResult {
+export interface HeyaFinanceResult {
   /** Effective weekly income after survival floor. */
   revenue: number;
   /** Effective weekly expenses after solvency clamping. */

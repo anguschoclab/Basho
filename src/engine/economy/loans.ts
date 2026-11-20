@@ -5,7 +5,6 @@ import type { Loan, LoanType } from "@/engine/types/economy";
 import { generateGovernanceHeadline } from "@/engine/media/MediaService";
 import { rngForWorld } from "@/engine/core/rng";
 import type { SeededRNG } from "@/engine/core/rng";
-import { stableSort } from "@/engine/utils/sort";
 import { selectBenefactor } from "@/engine/economy/SponsorshipService";
 import { LOAN_ISSUANCE_THRESHOLD, FACTION_BAILOUT_AMOUNT } from "@/constants/engine/economic";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -185,62 +184,6 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateIm
       severity: terms.loanType === "benefactor" ? "main_event" : "national",
     })
   );
-
-  return builder.build();
-}
-
-/**
- * Process monthly loan repayments for all heyas.
- * Returns StateImpact describing loan repayments instead of mutating state directly.
- */
-export function processMonthlyLoanRepayments(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("processMonthlyLoanRepayments");
-
-  for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
-    if (!heya.activeLoans || heya.activeLoans.length === 0) continue;
-
-    let totalPayment = 0;
-    const remainingLoans: Loan[] = [];
-
-    for (const loan of heya.activeLoans) {
-      if (loan.remainingBalance <= 0) continue;
-
-      const payment = Math.min(loan.monthlyPayment, loan.remainingBalance);
-      totalPayment += payment;
-      const remainingBalance = loan.remainingBalance - payment;
-
-      if (remainingBalance > 0) {
-        remainingLoans.push({ ...loan, remainingBalance });
-      } else {
-        // Loan paid off
-        builder.logEvent(
-          "FINANCIAL_ALERT",
-          "economy",
-          {
-            incident: "loan_paid_off",
-            status: loan.type,
-            heya: loan.providerName,
-            heyaname: heya.name,
-          },
-          { heyaId: heya.id }
-        );
-      }
-    }
-
-    const updates: Partial<Heya> = {};
-
-    if (totalPayment > 0 || heya.activeLoans.length !== remainingLoans.length) {
-      updates.activeLoans = remainingLoans;
-    }
-
-    if (totalPayment > 0) {
-      updates.funds = heya.funds - totalPayment;
-    }
-
-    if (Object.keys(updates).length > 0) {
-      builder.updateHeya(heya.id, updates);
-    }
-  }
 
   return builder.build();
 }

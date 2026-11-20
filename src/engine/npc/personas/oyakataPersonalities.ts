@@ -105,7 +105,7 @@ const ARCHETYPE_DESCRIPTIONS: Record<OyakataArchetype, string> = {
 const FORMER_SHIKONA_SUFFIXES = ["yama", "gawa", "fuji", "umi", "kuni", "hime", "maru", "ryu"];
 const FORMER_SHIKONA_PREFIXES = ["Taka", "Waka", "Koto", "Tochi", "Chiyo", "Hoku", "Asa", "Tera"];
 
-const QUIRK_IDS = [
+export const QUIRK_IDS = [
   "Old-School Stickler",
   "Gambler's Instinct",
   "Welfare Hawk",
@@ -121,9 +121,15 @@ const QUIRK_IDS = [
 ] as const;
 
 /**
- * Pick unique items from a pool
+ * Pick unique items from a pool using RNG.
+ * Randomly selects the specified number of unique items from the pool.
+ *
+ * @param {{ next: () => number }} rng - The RNG instance.
+ * @param {readonly T[]} items - The pool of items to select from.
+ * @param {number} count - The number of unique items to select.
+ * @returns {T[]} Array of unique selected items.
  */
-function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
+export function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
   const pool = [...items];
   const out: T[] = [];
   while (pool.length && out.length < count) {
