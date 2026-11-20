@@ -13,6 +13,7 @@ import {
   PoliticalFavorsService,
   type FavorType,
 } from "@/engine/governance/services/PoliticalFavorsService";
+import { RikishiCouncilService } from "@/engine/governance/services/RikishiCouncilService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { updateHeyaInWorld } from "@/engine/core/queries";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
@@ -107,6 +108,24 @@ export function governanceCommands(rt: WorkerRuntime): CommandHandlerMap {
           cmd.heyaId,
           cmd.favorId as FavorType
         );
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+    PROPOSE_COUNCIL_MOTION: (cmd) => {
+      if (rt.world) {
+        const impact = RikishiCouncilService.proposeCouncilMotion(
+          rt.world,
+          cmd.heyaId,
+          cmd.motionType
+        );
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+    VOTE_COUNCIL_MOTION: (cmd) => {
+      if (rt.world) {
+        const impact = RikishiCouncilService.voteCouncilMotion(rt.world, cmd.motionId, cmd.vote);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

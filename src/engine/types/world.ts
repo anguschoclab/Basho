@@ -490,6 +490,9 @@ export interface WorldState {
   // Officials: gyoji and shimpan pools for bout officiation
   gyojiPool?: Gyoji[];
   shimpanPool?: Shimpan[];
+
+  /** §3 Rikishi-kai / Rikishi-ken (力士会, Sekitori Wrestlers' Council) state. */
+  rikishiCouncil?: import("@/engine/types/rikishiCouncil").RikishiCouncilState;
 }
 
 /** Pending exhibition tour invitation (WorldCircuitService). */

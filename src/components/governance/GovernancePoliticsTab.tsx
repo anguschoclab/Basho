@@ -17,6 +17,7 @@ import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import type { StatItem } from "@/components/layout/page-shell/index";
 import { POLITICAL_FAVORS } from "@/presenters/projections/governanceProjections";
+import { RikishiCouncilPanel } from "@/components/governance/RikishiCouncilPanel";
 import { getOyakata } from "@/presenters/worldAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Heya } from "@/engine/types/heya";
@@ -41,6 +42,7 @@ export function GovernancePoliticsTab({ world, heya, derived }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <PoliticalStanding heya={heya} />
         <PoliticalFavorsList heya={heya} />
+        <RikishiCouncilPanel heyaId={heya.id} council={derived.rikishiCouncil} />
         <IchimonRankings world={world} heya={heya} derived={derived} />
       </div>
     </TabsContent>

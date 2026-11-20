@@ -323,6 +323,14 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       "Ranked outside the printed banzuke after a full Jonokuchi absence or division overflow; must fight maezumō again to return to Jonokuchi.",
   },
   {
+    id: "rikishi-kai",
+    term: "Rikishi-kai",
+    termJa: "力士会",
+    category: "structure",
+    definition:
+      "The autonomous association of active sekitori (Makuuchi and Jūryō wrestlers), chaired by a Yokozuna Kaichō to deliberate ring safety, jungyō welfare, and ceremonial standards.",
+  },
+  {
     id: "kachi-nokori",
     term: "Kachi-nokori",
     termJa: "勝ち残り",

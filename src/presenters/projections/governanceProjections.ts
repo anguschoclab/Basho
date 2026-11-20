@@ -8,10 +8,27 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { GovernanceRuling, Faction } from "@/engine/types/economy";
+import type {
+  RikishiCouncilDelegate,
+  RikishiCouncilMotion,
+  RikishiCouncilMotionType,
+} from "@/engine/types/rikishiCouncil";
 import { POLITICAL_FAVORS } from "@/engine/governance/services/PoliticalFavorsService";
+import {
+  RIKISHI_COUNCIL_MOTION_CATALOG,
+  electRikishiCouncilDelegates,
+  type CouncilMotionCatalogEntry,
+} from "@/engine/governance/services/RikishiCouncilService";
+import { getSekitoriInHeya } from "@/engine/core/queries";
 
-// Re-export for UI access (engine imports are restricted in pages)
-export { POLITICAL_FAVORS };
+// Re-export for UI access (engine imports are restricted in pages/components)
+export { POLITICAL_FAVORS, RIKISHI_COUNCIL_MOTION_CATALOG };
+export type {
+  RikishiCouncilDelegate,
+  RikishiCouncilMotion,
+  RikishiCouncilMotionType,
+  CouncilMotionCatalogEntry,
+};
 import type { StatItem } from "@/components/layout/page-shell/index";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presenters/selectors";
 import { scanRecentEvents } from "@/engine/events/events";
@@ -19,6 +36,15 @@ import { toScandalBand } from "@/engine/narrative/descriptorBands";
 import type { ScandalBand } from "@/engine/narrative/NarrativeBands";
 
 export type { ScandalBand };
+
+export interface RikishiCouncilProjection {
+  kaicho?: RikishiCouncilDelegate & { heyaName?: string };
+  delegates: Array<RikishiCouncilDelegate & { heyaName?: string; isPlayerHeya: boolean }>;
+  activePolicies: RikishiCouncilMotionType[];
+  pendingMotions: RikishiCouncilMotion[];
+  recentHistory: RikishiCouncilMotion[];
+  playerHasSekitori: boolean;
+}
 
 export interface GovernanceDerived {
   status: string;
@@ -44,6 +70,7 @@ export interface GovernanceDerived {
     data?: { heyaname?: string; heya?: string; reason?: string; incident?: string };
   }>;
   factionList: Faction[];
+  rikishiCouncil: RikishiCouncilProjection;
 }
 
 export function projectGovernanceDerived(world: WorldState, heya: Heya): GovernanceDerived {
@@ -124,6 +151,7 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
   }>;
 
   const factionList = Object.values(world.factions ?? {}).sort((a, b) => b.influence - a.influence);
+  const rikishiCouncil = projectRikishiCouncil(world, heya);
 
   return {
     status,
@@ -144,6 +172,29 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
     mergerCandidates,
     completedMergerEvents,
     factionList,
+    rikishiCouncil,
+  };
+}
+
+function projectRikishiCouncil(world: WorldState, heya: Heya): RikishiCouncilProjection {
+  const council = world.rikishiCouncil;
+  const rawDelegates =
+    council && council.delegates.length > 0
+      ? council.delegates
+      : electRikishiCouncilDelegates(world).delegates;
+  const delegates = rawDelegates.map((d) => ({
+    ...d,
+    heyaName: world.heyas.get(d.heyaId)?.name,
+    isPlayerHeya: d.heyaId === heya.id,
+  }));
+  const kaicho = delegates.find((d) => d.role === "kaicho") ?? delegates[0];
+  return {
+    kaicho,
+    delegates,
+    activePolicies: council?.activePolicies ?? [],
+    pendingMotions: council?.pendingMotions ?? [],
+    recentHistory: (council?.history ?? []).slice(0, 4),
+    playerHasSekitori: getSekitoriInHeya(world, heya.id) > 0,
   };
 }
 

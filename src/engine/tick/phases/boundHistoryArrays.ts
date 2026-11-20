@@ -33,13 +33,15 @@ export function boundHistoryArrays(world: WorldState): WorldState {
   const almanacLen = world.almanacSnapshots?.length ?? 0;
   const governanceLen = world.governanceLog?.length ?? 0;
   const encouragementLen = world.encouragementLog?.length ?? 0;
+  const councilHistoryLen = world.rikishiCouncil?.history.length ?? 0;
 
   if (
     historyLen <= HISTORY_MAX_ENTRIES &&
     awardLogLen <= HISTORY_MAX_ENTRIES &&
     almanacLen <= ALMANAC_SNAPSHOTS_MAX &&
     governanceLen <= HISTORY_MAX_ENTRIES &&
-    encouragementLen <= HISTORY_MAX_ENTRIES
+    encouragementLen <= HISTORY_MAX_ENTRIES &&
+    councilHistoryLen <= HISTORY_MAX_ENTRIES
   ) {
     return world;
   }
@@ -64,6 +66,13 @@ export function boundHistoryArrays(world: WorldState): WorldState {
 
   if (encouragementLen > HISTORY_MAX_ENTRIES && world.encouragementLog) {
     updates.encouragementLog = world.encouragementLog.slice(encouragementLen - HISTORY_MAX_ENTRIES);
+  }
+
+  if (councilHistoryLen > HISTORY_MAX_ENTRIES && world.rikishiCouncil) {
+    updates.rikishiCouncil = {
+      ...world.rikishiCouncil,
+      history: world.rikishiCouncil.history.slice(councilHistoryLen - HISTORY_MAX_ENTRIES),
+    };
   }
 
   return { ...world, ...updates };

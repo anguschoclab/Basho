@@ -19,6 +19,7 @@ import { getHeyaStaffBonuses } from "@/engine/economy/staff";
 import type { InjurySeverity, InjuryBodyArea, InjuryType } from "@/engine/health/BodyDefinitions";
 import { getRikishi } from "@/engine/core/queries";
 import { recordGomenfuda } from "@/engine/governance/services/GomenfudaService";
+import { hasActiveCouncilPolicy } from "@/engine/governance/services/RikishiCouncilService";
 
 interface CurrentInjury {
   id: string;
@@ -88,7 +89,9 @@ function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder):
   const recoveryMultiplier =
     r.heyaId === world.playerHeyaId ? (activeModifiers?.recoveryMultiplier ?? 1.0) : 1.0;
   // Combine staff medical bonus with facility/nutrition-derived recoveryMultiplier
-  const effectiveRecoveryMult = staffBonuses.medical * recoveryMultiplier;
+  // plus §3 Rikishi-kai dohyo_safety protocol bonus (+5% recovery).
+  const councilSafetyMult = hasActiveCouncilPolicy(world, "dohyo_safety") ? 1.05 : 1.0;
+  const effectiveRecoveryMult = staffBonuses.medical * recoveryMultiplier * councilSafetyMult;
   const { recovered, rikishi: updated } = tickRikishiRecovery(r, effectiveRecoveryMult);
 
   if (recovered) {

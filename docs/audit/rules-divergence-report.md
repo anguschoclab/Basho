@@ -85,15 +85,15 @@
 ### 16. Banzuke movement & torikumi
 - **JSA rule:** banzuke committee ≈ (wins − losses)/2 rank slots; kyujo ≈ losses (no multiplier); achievements informal; makushita top-20 fast-track to juryo; joi maegashira meet sanyaku in week 1.
 - **Was:** a units formula (`wins − KK − 1.4–2.5× absences + achievement units`) plus a fictional ichimon political weight (Dewanoumi +300 / Nishonoseki +250 / other +100) drove `desiredKey`.
-- **Now:** `FIXED` — `banzukeCommittee.ts` runs every entry through the shared committee framework: base delta (W−L)/2 where every unfought scheduled day counts as a loss, merit evidence (yusho/sansho/kinboshi/comeback/edge) bounded by a ±2-slot discretion cap, faction only as seeded member preference. The old units formula and political weight are deleted (`322711c3`). Rule-bound logic (kadoban, 33-win/reclaim, tier ceilings via `bestTierAllowed`) stays outside deliberation. Committee votes/rationale surface as feed items.
+- **Now:** `FIXED` — `banzukeCommittee.ts` runs every entry through the shared committee framework: base delta (W−L)/2 where every unfought scheduled day counts as a loss, merit evidence (yusho/sansho/kinboshi/comeback/edge) bounded by a ±2-slot discretion cap, faction only as seeded member preference. The old units formula and political weight are deleted (`322711c3`). Rule-bound logic (kadoban, 33-win/reclaim, tier ceilings via `bestTierAllowed`) stays outside deliberation. Committee votes/rationale surface as feed items. Yokozuna joi back-loading (D1–3 M4→M1, D4–7 M1→M4/K/S, D11+ Y×O, D15 Y×Y `kore_yori_sanyaku` hold, `693911e3`), rolling torikumi announcement (`postedThroughDay`: D1–2 pre-basho, rolling `D+1` Days 2–13, Senshuraku D15 held until D14 concludes, `f17f526f`), and banzuke-gai off-banzuke drops for full-absence (`0-0-7`) Jonokuchi / slot overflow with maezumo re-entry (`5175f2cc`) are all modeled.
 
 ### 17. Kimarite catalogue & distribution
-- **JSA rule:** ~82 official techniques + non-technique outcomes.
-- **Now:** `ALIGNED` — 88 entries, head of distribution pinned to real sumodb shares (yorikiri 29.6%, oshidashi 16.8%); long tail approximated.
+- **JSA rule:** ~82 official techniques + non-technique outcomes (plus rare non-playoff draw outcomes: `mizu_iri` water break / `hikiwake` stalemate draw, `itamiwake` injury draw, `azukari` shimpan hold draw).
+- **Now:** `ALIGNED` — 88 entries in `KIMARITE_REGISTRY` pinned to real sumodb shares (yorikiri 29.6%, oshidashi 16.8%), plus `DRAW_OUTCOME_METADATA` for `hikiwake` / `itamiwake` / `azukari` and `mizu_iri` water-break physics (`9e873b56`).
 
 ### 18. Bout adjudication — Article 9 (dead-body / hair-touch)
 - **JSA rule (from Oct 1, 2026):** the 71-year exception saving an attacker whose topknot touched the sand first while felling the opponent was deleted — any hair on the sand first = loss.
-- **Now:** `ALIGNED by construction` — the physics resolves downed finishes by balance collapse; the deleted exception was never modeled, so no code change was needed. The media feed announces the amendment on its real date.
+- **Now:** `ALIGNED` — `result.hairDown` flagged on down-type finishes at real incidence (~1/2–3 basho) with `post_bout.hair_down` commentary (`8ec9336c`), and the media feed announces the amendment on its real date.
 
 ### 19. Hansoku (反則)
 - **JSA rule:** disqualification — win for the opponent, no kinboshi for a maegashira beneficiary.
@@ -105,8 +105,8 @@
 - **Now:** `FIXED` — merit minting is bounded by `MYOSEKI_TOTAL_COUNT`; exhausted pool → jun-toshiyori (expiry enforced via DynastyService → forced succession) or ichidai-toshiyori (20+ yusho yokozuna); no stock and no credential → no elder conversion (`031d9779`). (Manual previously misdescribed it as "tradable wrestling names" — corrected.)
 
 ### 21. Oyakata retirement age
-- **JSA rule:** mandatory retirement at 65 (rare re-employment to 70).
-- **Now:** `ALIGNED` — 65 enforced in DynastyService, tagged to JSA rules.
+- **JSA rule:** mandatory retirement at 65 (rare re-employment as *sanyo* consultant to 70 for stockholding elders).
+- **Now:** `ALIGNED` — 65 enforced in DynastyService with `elderStatus: "sanyo"` + `sanyoExpiryYear` extension to 70 across both succession paths (`b54358f7`).
 
 ### 22. Division/rank structure
 - **JSA rule:** six divisions; sanyaku = yokozuna/ozeki/sekiwake/komusubi; hiramaku = maegashira; juryo+ = sekitori.
@@ -135,13 +135,13 @@
 - **Now:** `FIXED` — caps and the overflow/release machinery deleted; `priorCareer` and the re-entry path removed; whole-roster closure/merger transfers retained as the only legal mass move (`c72df39e`). `TARGET_ROSTER_SIZE` remains as a population-planning floor, not a cap.
 
 ### 28. New-recruit eligibility & tsukedashi (新弟子検査・付け出し)
-- **JSA rule:** standard recruit under 23 at the shindeshi kensa; qualified amateurs use the under-25 exception and may debut on the banzuke — makushita tsukedashi Ms60 / sandanme tsukedashi Sd80 (game keeps the classic placement numbers).
-- **Was:** no age gate; all recruits ran maezumo into jonokuchi.
-- **Now:** `FIXED` — under-23 gate in `offerCandidate` (`c72df39e`); `tsukedashi` credential flag on amateur-star candidates (university → Ms60, high-school → Sd80) with the under-25 exception and maezumo skip (`031d9779`).
+- **JSA rule:** standard recruit under 23 at the shindeshi kensa; qualified amateurs use the under-25 exception and may debut on the banzuke — makushita tsukedashi Ms60 / sandanme tsukedashi Sd80 (game keeps the classic placement numbers). Non-tsukedashi shin-deshi fight a 3-bout maezumo preliminary on Days 3/5/7 (graduating after 2 wins) and debut at the foot of the next Jonokuchi banzuke.
+- **Was:** no age gate; all recruits ran maezumo into jonokuchi immediately without preliminary bouts.
+- **Now:** `FIXED` — under-23 gate in `offerCandidate` (`c72df39e`); `tsukedashi` credential flag on amateur-star candidates (university → Ms60, high-school → Sd80) with the under-25 exception and maezumo skip (`031d9779`); non-tsukedashi shin-deshi fight real 3-bout maezumo preliminaries (`maezumoPrelims.ts`, `1372b7a3`) and graduate onto the foot of the next Jonokuchi banzuke.
 
-### 29. Committee framework (番付編成会議・三賞選考・横審・理事選)
-- **JSA reality:** the JSA governs through committees — banzuke composition (~23 oyakata), sansho selection (5), the YDC (~10), board elections (5-seat board in-game model).
-- **Now:** `FIXED` — shared framework `engine/committee/committee.ts` + `constants/engine/committee.ts`: seeded members deliberate cases (rule-bound baseline + bounded merit/demerit/faction discretion → votes + rationale). Banzuke (#16), sansho selection, board elections, and the existing YDC all run on it; decisions emit feed items (`322711c3`).
+### 29. Committee framework (番付編成会議・三賞選考・横審・理事選・力士会)
+- **JSA reality:** the JSA governs through committees — banzuke composition (~23 oyakata), sansho selection (5), the YDC (~10), board elections (10-riji board), and the autonomous sekitori Rikishi-kai (力士会, chaired by the Yokozuna Kaichō).
+- **Now:** `FIXED` — shared framework `engine/committee/committee.ts` + `constants/engine/committee.ts`: seeded members deliberate cases (rule-bound baseline + bounded merit/demerit/faction discretion → votes + rationale). Banzuke (#16), sansho selection, 10-riji board elections (`8ec9336c`), the YDC, and the 7-delegate Rikishi-kai sekitori council (`RikishiCouncilService.ts`) all run on it; decisions emit feed items (`322711c3`).
 
 ### 30. Ring & venue nomenclature
 - **JSA reality:** dohyo radius 2.275m (4.55m is the diameter); Nagoya honbasho moved to IG Arena (post-2023 era).

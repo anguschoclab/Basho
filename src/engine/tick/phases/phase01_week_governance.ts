@@ -17,6 +17,7 @@ import { mergeImpacts, resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { generateGovernanceHeadline, evaluateScandals } from "@/engine/media/MediaService";
 import { YokozunaService } from "@/engine/governance/services/YokozunaService";
+import { RikishiCouncilService } from "@/engine/governance/services/RikishiCouncilService";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import {
   MAX_POLITICAL_CAPITAL,
@@ -87,6 +88,9 @@ export function phase01_week_governance(world: WorldState): StateImpact {
 function processPostBashoCouncil(builder: ImpactBuilder, world: WorldState): void {
   const ydcImpact = YokozunaService.processYDCCouncil(world);
   builder.merge(ydcImpact);
+
+  // §3 Rikishi-kai (力士会) — post-basho sekitori council deliberation.
+  builder.merge(RikishiCouncilService.conveneRikishiCouncil(world));
 
   const { impact: careerImpact } = processAllRetirements(world);
   builder.merge(careerImpact);

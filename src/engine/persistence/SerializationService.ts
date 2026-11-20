@@ -180,6 +180,7 @@ function serializeWorld(world: WorldState): SerializedWorldState {
     factions: world.factions,
     gyojiPool: world.gyojiPool,
     shimpanPool: world.shimpanPool,
+    rikishiCouncil: world.rikishiCouncil,
 
     awardLog: world.awardLog,
     bloodlineRegistry: world.bloodlineRegistry,
@@ -240,6 +241,7 @@ function deserializePendingFields(s: SerializedWorldState): Partial<WorldState> 
     staffCandidatePool: s.staffCandidatePool,
     pendingRikishiRequests: s.pendingRikishiRequests,
     pendingDegeikoInvites: s.pendingDegeikoInvites,
+    rikishiCouncil: s.rikishiCouncil,
   };
 }
 

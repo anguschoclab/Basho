@@ -94,6 +94,10 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     else if (nextState.complianceState === "watch") morale -= MORALE_WATCH_PENALTY;
     // Facility morale bonuses (dormitory quarters lift heya morale)
     morale += Math.round(InfrastructureService.getHeyaBonuses(heya).moraleBonus);
+    // §3 Rikishi-kai welfare_standards charter lifts morale across all stables
+    if (world.rikishiCouncil?.activePolicies.includes("welfare_standards")) {
+      morale += 3;
+    }
     nextState.morale = clamp(morale, 0, MAX_MORALE);
 
     // 2. Transition Logic (Inlined/Refactored for purity)

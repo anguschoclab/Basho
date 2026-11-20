@@ -149,6 +149,7 @@ export type WritableWorldFields = Pick<
   | "tutorialState"
   | "gyojiPool"
   | "shimpanPool"
+  | "rikishiCouncil"
   | "boutTactics"
   | "bashoNpcPosture"
   | "currentBanzuke"

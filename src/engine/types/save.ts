@@ -172,6 +172,7 @@ export interface SerializedWorldState {
   factions?: WorldState["factions"];
   gyojiPool?: WorldState["gyojiPool"];
   shimpanPool?: WorldState["shimpanPool"];
+  rikishiCouncil?: WorldState["rikishiCouncil"];
 
   // ── Long-horizon career state ───────────────────────────────────────────
   awardLog?: WorldState["awardLog"];

@@ -179,6 +179,16 @@ export type EngineCommand =
       heyaId: string;
       region: import("@/engine/worldCircuit/WorldCircuitService").ExhibitionRegion;
       config: import("@/engine/types/academy").AcademyConfig;
+    }
+  | {
+      type: "PROPOSE_COUNCIL_MOTION";
+      heyaId: string;
+      motionType: import("@/engine/types/rikishiCouncil").RikishiCouncilMotionType;
+    }
+  | {
+      type: "VOTE_COUNCIL_MOTION";
+      motionId: string;
+      vote: "for" | "against";
     };
 
 /** Worker -> UI Events */

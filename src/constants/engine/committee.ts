@@ -70,9 +70,23 @@ export const BOARD_COMMITTEE: CommitteeSpec = {
   factionWeight: 0,
 };
 
+/**
+ * §3 Rikishi-kai / Rikishi-ken (力士会, Sekitori Wrestlers' Association).
+ * Chaired by the Kaichō (top Yokozuna / senior sekitori) with Makuuchi
+ * and Juryo delegates (7-seat executive panel).
+ */
+export const RIKISHI_COUNCIL_COMMITTEE: CommitteeSpec = {
+  id: "rikishi_council",
+  size: 7,
+  discretionCap: 1,
+  meritWeight: 1,
+  factionWeight: 1,
+};
+
 export const ALL_COMMITTEES: readonly CommitteeSpec[] = [
   BANZUKE_COMMITTEE,
   SANSHO_COMMITTEE,
   YDC_COMMITTEE,
   BOARD_COMMITTEE,
+  RIKISHI_COUNCIL_COMMITTEE,
 ];

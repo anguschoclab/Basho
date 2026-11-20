@@ -162,6 +162,7 @@ export function useGovernanceDerived(world: WorldState | null) {
       councilStats,
       recordStats,
       pendingRulings: gov.pendingRulings,
+      rikishiCouncil: gov.rikishiCouncil,
     };
   }, [world, heya]);
 
