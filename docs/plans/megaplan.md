@@ -26,6 +26,7 @@ Last harmonized: 2026-11-18 (sources: the 7 plans in `docs/plans/archive/`).
 | W N | Day-10 commentary — henka dignity + desperation, pull tracking, lower-body injury beats, sibling leaderboard, phase-two metric, new interview types | `8473ad78`, `2548085f` (spontaneous-henka stigma pin) | archive/plan-day10-kyushu.md |
 | W O | Day-11 commentary — H2H breakthrough/chipped-away, giant-killer H2H, recent surge; henka stigma metric + repeat defense + NPC counter-awareness | `0f5f6bef` | (plan not archived) |
 | W P | Day-12 commentary — chase-pack/spoiler/demotion-watch/playoff-rematch pre-bout beats, slapathon + valiant-loser + near-miss + followup-delivered + alternating-records + week-two-surge, return-streak ≥3, replay variants, 3 new interview types; **`edgeFinishBonus`** body-type physics (BMI-derived), `edgeFailedConversions` metric + `edge_letdown` beat | `223622ed` | archive/plan-day12-kyushu.md |
+| W Q | Kyushu-article beats (Japan-Times previews/week-1): `best_start`, `elite_scalp_streak`, `ozeki_bid`, `collapse_shadow`, `dream_showdown`, `stars_align` — + §3 deferred landings: **hair-down loss** (`result.hairDown` on down-type finishes), **JSA board 5→10 riji**, **sanyo advisory to 70** (`elderStatus:"sanyo"` + `sanyoExpiryYear`, both succession paths + yearly expiry sweep), **avatar nationality backfill** (oyakata←former rikishi; academy prospects←region heuristic), `OyakataName.heyaId` prop removed | `8ec9336c`, `b54358f7` | (§3 deferred registry; articles via sumo-transcript audit) |
 | JSA v1→v2 | F1–F15 + A1–A12: kinboshi-hansoku exclusion, ginboshi both senses, mochikyukin 0.5×net-wins + zensho-50 + floors, real sansho (shareable/withholdable/multi-award), tomoe-sen, jun-yusho label-only, era-keyed salaries/prizes/teate, kensho ¥10k/¥50k/¥10k makuuchi-gated, fusenpai=same-day loss, playoff day-15 + higher-rank-east, post-2010 foreign quota, roster-cap + free-agency removal, under-23 debut gate, tsukedashi, myoseki 105-cap + jun-/ichidai-toshiyori + intai-kin, **unified committee framework** (banzuke/sansho/YDC/board + deliberation feed) | `c39d3e83`, `6a0a4be4`, `3b27337f`, `a9612c2d`, `b841c043`, `1e11d6cc`, `0b77c377`, `c72df39e`, `322711c3`, `031d9779`, `e4b9b76e` (recap feed), `e17f15e7`, `d0f39d0e`, `0fb97710` | archive/plan-767fdce7… (v1 audit) + archive/plan-2aaf5bef… (v2 execution) |
 | Search + oyakata | Global search → oyakata/staff/recruit buckets + WS7 gating; `/oyakata` directory + `/oyakata/$id` profile + `/stable/oyakata` redirect; talent deep-links; same-heya tenure-aggregation fix | `0a3f0f13`, `09be6ce3`, `70eb96e2` (e2e hardening) | archive/plan-a067c57… + archive/plan-86f2a021… (verification) |
 | Avatar polish | Retired-avatar propagation (search + profile), wired browThickness/intense/expression variants, elder weight memory, role-aware default ages, `Oyakata.weight` + summary `nationality`/`weight`, HoF/prestige ClickableName conformance, skin-tone third stops | `81c1ee15` | archive/plan-avatar-system-polish.md |
@@ -54,16 +55,15 @@ Last harmonized: 2026-11-18 (sources: the 7 plans in `docs/plans/archive/`).
 ## 3. Deferred items registry (documented, deliberately not built)
 
 ### JSA real-rule gaps (catalog)
-- **Yokozuna joi back-loading** — real yokozuna face top opponents late; schedule only has the 5-man joi cap (`schedule.ts:426`).
+- **Yokozuna joi back-loading** — real yokozuna face top opponents late; schedule only has the 5-man joi cap (`schedule.ts:426`). Medium: scheduler weighting + tests.
 - ~~**Oyakata sanyo advisory extension to age 70**~~ — **LANDED `b54358f7`**: `elderStatus: "sanyo"` + `sanyoExpiryYear`; stockholding elders stay emeritus in the registry until 70 across both succession paths.
-- **Real 3-bout maezumo preliminary** — game uses minted filler (`MAEZUMO_MINT_CAP`); documented as deviation.
-- **Azukari / itamiwake / mizu-iri outcomes** — torinaoshi covers the realistic case.
-- **Hair-down automatic loss** — physics balance-collapse approximates it.
-- **Rikishi-ken** (wrestler council) — unmodeled.
-- **Torikumi posting cadence** — real pairings announced ~1.5–2 days ahead rolling; game posts per-day.
+- **Real 3-bout maezumo preliminary** — game uses minted filler (`MAEZUMO_MINT_CAP`); documented as deviation. Large: real prelim brackets replace filler generation.
+- **Azukari / itamiwake / mizu-iri outcomes** — torinaoshi covers the realistic case. Largest schema ripple in the registry: `BoutResult.winner` is a required field with ~15 consumer touchpoints.
+- **Rikishi-ken** (wrestler council) — unmodeled. New governance subsystem — large.
+- **Torikumi posting cadence** — real pairings announced ~1.5–2 days ahead rolling; game posts per-day. Medium-large: rolling posting touches digest/UI.
 - ~~**JSA board size**~~ — **LANDED `8ec9336c`**: `BOARD_COMMITTEE.size` 5→10 riji (auditors unmodeled).
 - ~~**Hair-down automatic loss**~~ — **LANDED `8ec9336c`**: `result.hairDown` flagged on down-type finishes at real incidence (~1/2-3 basho) + `post_bout.hair_down` line.
-- **Banzuke-gai** — documented; can't trigger with fixed-size jonokuchi.
+- **Banzuke-gai** — overflow rikishi ranked off the printed banzuke at division bottom (real rule); can't trigger with fixed-size jonokuchi. Feasible as an overflow-flag model but needs banzuke-compiler changes.
 
 ### Documented intentional deviations (keep, tagged)
 Minted maezumo + 8th-bout + unpaired-odd-man edge · kensho fame-envelope mechanics (heat bonus + star-upset minimums) · ginboshi informal status (no ledger/mochikyukin) · banzuke-committee faction discretion within merit bounds · recruitment windows · mandatory retirement ages (45/40) · myoseki market formalization · welfare/scandal/political-capital meters · Global Cup · drama matchmaker · era drift · dynamic division sizes · travel-allowance flattening · 50/50 prize splits · NPC appetite targets (`MAX_ROSTER_SIZE`/`ROSTER_VACANCY_TARGET` = discretion, not caps) vs `TARGET_ROSTER_SIZE` demographic floor · tsukebito ¥ cost.
