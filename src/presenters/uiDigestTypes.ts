@@ -6,7 +6,7 @@
  */
 
 import type { BashoName, MatchSchedule, BoutResult } from "@/engine/types/basho";
-import type { UIRikishi } from "@/presenters/rikishi/index";
+import type { UIRikishi, UIRosterEntry } from "@/presenters/rikishi/index";
 import type { RivalryPairState } from "@/constants/engine/rivalry";
 import type { RivalryHeatBand } from "@/engine/narrative/NarrativeBands";
 import type { Heya } from "@/engine/types/heya";
@@ -138,6 +138,8 @@ export interface BanzukeUIDigest {
   divisionCounts: Record<string, number>;
   /** O(1) lookup map from division key to division data */
   divisionMap: Map<string, BanzukeDivisionData>;
+  /** §3 banzuke-gai — active rikishi currently off the printed banzuke */
+  banzukeGaiEntries?: UIRosterEntry[];
 }
 
 // ── Dashboard UI Types ───────────────────────────────────────────────────────

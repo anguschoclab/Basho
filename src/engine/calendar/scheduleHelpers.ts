@@ -47,7 +47,13 @@ export function getDivisionExpectedSize(division: Division): number {
 export function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
   for (const r of getActiveRikishi(world)) {
-    if (r.division === division && !r.isKyujo && !r.isMaezumo) {
+    if (
+      r.division === division &&
+      !r.isKyujo &&
+      !r.isMaezumo &&
+      !r.isEphemeralMaezumo &&
+      !r.isBanzukeGai
+    ) {
       pool.push(r);
     }
   }

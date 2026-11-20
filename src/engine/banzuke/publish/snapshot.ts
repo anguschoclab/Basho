@@ -68,7 +68,12 @@ export function persistBanzukeSnapshot(
     : makeBashoKey(prevYear, prevBashoNumber);
 
   const nextYear = next === "hatsu" ? lastBasho.year + 1 : lastBasho.year;
-  const newSnapshot = buildBanzukeSnapshot(result.newBanzuke, nextYear, getBashoNumber(next));
+  const newSnapshot = buildBanzukeSnapshot(
+    result.newBanzuke,
+    nextYear,
+    getBashoNumber(next),
+    result.banzukeGai
+  );
   const foughtOnSnapshot = buildBanzukeSnapshot(
     currentBanzukeList,
     lastBasho.year,

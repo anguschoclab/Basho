@@ -141,6 +141,13 @@ export interface Rikishi {
    * graduate onto the jonokuchi banzuke.
    */
   isEphemeralMaezumo?: boolean;
+  /**
+   * §3 banzuke-gai — dropped off the printed banzuke after a full-absence
+   * (0-0-7 kyujo) jonokuchi basho or division slot overflow. Re-enters
+   * through maezumo when healthy.
+   */
+  isBanzukeGai?: boolean;
+  banzukeGaiReason?: "kyujo" | "overflow";
   kyujoReason?: "voluntary" | "injury" | "personal";
   medicalCertificate?: {
     injury: string;

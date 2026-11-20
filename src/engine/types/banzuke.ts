@@ -86,6 +86,8 @@ export interface BanzukeSnapshot {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   divisions: Record<Division, DivisionBanzukeSnapshot>;
+  /** §3 banzuke-gai — active rikishi ranked off the printed banzuke for this basho. */
+  banzukeGai?: Id[];
 }
 
 /** Defines the structure for rikishi basho performance. */

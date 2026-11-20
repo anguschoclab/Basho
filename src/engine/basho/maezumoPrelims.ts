@@ -32,14 +32,11 @@ export function isEphemeralMaezumoEntrant(r: Rikishi): boolean {
   return r.isEphemeralMaezumo === true || (r.isMaezumo === true && r.id.startsWith("maezumo-"));
 }
 
-/** A real, still-unranked shin-deshi awaiting his maezumo. */
+/** A real, still-unranked shin-deshi or returning banzuke-gai rikishi awaiting maezumo. */
 export function isPendingShinDeshi(r: Rikishi): boolean {
-  return (
-    r.isMaezumo === true &&
-    !isEphemeralMaezumoEntrant(r) &&
-    !r.isRetired &&
-    r.maezumoCompleted !== true
-  );
+  if (r.isRetired || isEphemeralMaezumoEntrant(r)) return false;
+  if (r.isBanzukeGai === true) return true;
+  return r.isMaezumo === true && r.maezumoCompleted !== true;
 }
 
 /** Mark a freshly recruited (non-tsukedashi) rookie as an unranked maezumo entrant. */
@@ -170,7 +167,12 @@ export function graduateMaezumoRikishi(
   });
   const floor = jonokuchiFloor(newBanzuke);
   return grads.map(({ r }, i) => {
-    builder.updateRikishi(r.id, { isMaezumo: false, maezumoCompleted: true });
+    builder.updateRikishi(r.id, {
+      isMaezumo: false,
+      maezumoCompleted: true,
+      isBanzukeGai: false,
+      banzukeGaiReason: undefined,
+    });
     return {
       rikishiId: r.id,
       division: "jonokuchi" as const,

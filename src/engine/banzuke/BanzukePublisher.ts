@@ -65,9 +65,10 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const currentBanzukeList: BanzukeEntry[] = [];
   for (const rikishiId of world.activeRikishiIds) {
     const r = getRikishi(world, rikishiId);
-    // Unranked maezumo entrants (shin-deshi + odd-card fillers) are not on
-    // the banzuke; shin-deshi graduate onto it below.
-    if (!r || r.isMaezumo) continue;
+    // Unranked maezumo entrants (shin-deshi + odd-card fillers) and off-banzuke
+    // (banzuke-gai) rikishi are not on the printed banzuke; shin-deshi and
+    // returning banzuke-gai rikishi graduate onto it below.
+    if (!r || r.isMaezumo || r.isEphemeralMaezumo || r.isBanzukeGai) continue;
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,

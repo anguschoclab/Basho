@@ -315,6 +315,14 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     definition: "Preliminary bouts for new or low-ranked rikishi, held before the main schedule.",
   },
   {
+    id: "banzuke-gai",
+    term: "Banzuke-gai",
+    termJa: "番付外",
+    category: "rank",
+    definition:
+      "Ranked outside the printed banzuke after a full Jonokuchi absence or division overflow; must fight maezumō again to return to Jonokuchi.",
+  },
+  {
     id: "kachi-nokori",
     term: "Kachi-nokori",
     termJa: "勝ち残り",

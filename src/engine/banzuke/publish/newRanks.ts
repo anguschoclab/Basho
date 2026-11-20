@@ -89,6 +89,7 @@ export function applyNewRanks(
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          ...(rikishi.isBanzukeGai ? { isBanzukeGai: false, banzukeGaiReason: undefined } : {}),
           interventionUsedThisBasho: false,
           recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
           sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
@@ -118,6 +119,7 @@ export function applyNewRanks(
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          ...(rikishi.isBanzukeGai ? { isBanzukeGai: false, banzukeGaiReason: undefined } : {}),
           interventionUsedThisBasho: false,
           recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
           sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
@@ -165,7 +167,25 @@ export function applyNewRanks(
     }
   }
 
+  applyBanzukeGaiDrops(world, result, builder);
   applyTenureDeltas(world, builder, tenureDeltas);
+}
+
+function applyBanzukeGaiDrops(world: WorldState, result: BanzukeResult, builder: Builder): void {
+  for (const bgId of result.banzukeGai ?? []) {
+    if (!getRikishi(world, bgId)) continue;
+    builder.updateRikishi(bgId, {
+      isBanzukeGai: true,
+      banzukeGaiReason: result.banzukeGaiReasons?.[bgId] ?? "kyujo",
+      currentBashoWins: 0,
+      currentBashoLosses: 0,
+      currentWinStreak: 0,
+      currentLossStreak: 0,
+      isKyujo: false,
+      kyujoReason: undefined,
+      interventionUsedThisBasho: false,
+    });
+  }
 }
 
 /**

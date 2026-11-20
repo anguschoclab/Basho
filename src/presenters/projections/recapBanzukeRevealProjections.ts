@@ -72,7 +72,11 @@ export function buildBanzukeRevealEntries(
     entries.push({
       id: change.rikishiId,
       shikona: rikishi.shikona,
-      oldRank: change.oldPosition ? formatRankPosition(change.oldPosition) : "New Entry",
+      oldRank: change.oldPosition
+        ? formatRankPosition(change.oldPosition)
+        : previousSnapshot?.banzukeGai?.includes(change.rikishiId)
+          ? "Banzuke-gai"
+          : "New Entry",
       newRank: formatRankPosition(change.newPosition),
       change: displayChange,
       avatar: entity

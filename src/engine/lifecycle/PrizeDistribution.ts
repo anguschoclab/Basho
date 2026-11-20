@@ -302,7 +302,7 @@ export function payBashoTeate(world: WorldState): StateImpact {
 
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
-    if (!r) continue;
+    if (!r || r.isMaezumo || r.isEphemeralMaezumo || r.isBanzukeGai) continue;
 
     // Only non-sekitori receive basho teate
     if (isSekitoriDivision(r.division)) continue;

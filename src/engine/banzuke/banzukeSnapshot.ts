@@ -51,7 +51,8 @@ function comparePositions(a: RankPosition, b: RankPosition): number {
 export function buildBanzukeSnapshot(
   entries: BanzukeEntry[],
   year: number,
-  bashoNumber: 1 | 2 | 3 | 4 | 5 | 6
+  bashoNumber: 1 | 2 | 3 | 4 | 5 | 6,
+  banzukeGai?: string[]
 ): BanzukeSnapshot {
   const divisions = {} as Record<Division, DivisionBanzukeSnapshot>;
   for (const division of DIVISIONS) {
@@ -74,5 +75,10 @@ export function buildBanzukeSnapshot(
     bucket.slots.sort(comparePositions);
   }
 
-  return { year, bashoNumber, divisions };
+  return {
+    year,
+    bashoNumber,
+    divisions,
+    ...(banzukeGai && banzukeGai.length > 0 ? { banzukeGai: [...banzukeGai].sort() } : {}),
+  };
 }

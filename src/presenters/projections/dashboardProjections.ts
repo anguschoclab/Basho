@@ -79,9 +79,17 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
   const prevScoreMap = buildPrevRankScores(history);
 
   const allRikishi = EntityCollection.getActiveRikishi(world);
-  const rosterEntries = allRikishi.map((r) => {
-    return projectRosterEntry(r, world, prevScoreMap.get(r.id));
-  });
+  const banzukeGaiEntries: UIRosterEntry[] = [];
+  const rosterEntries: UIRosterEntry[] = [];
+  for (const r of allRikishi) {
+    if (r.isMaezumo || r.isEphemeralMaezumo) continue;
+    const projected = projectRosterEntry(r, world, prevScoreMap.get(r.id));
+    if (r.isBanzukeGai) {
+      banzukeGaiEntries.push(projected);
+    } else {
+      rosterEntries.push(projected);
+    }
+  }
 
   const entriesByDivision: Record<string, UIRosterEntry[]> = {
     makuuchi: [],
@@ -134,5 +142,6 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
     totalWrestlerCount,
     divisionCounts,
     divisionMap,
+    ...(banzukeGaiEntries.length > 0 ? { banzukeGaiEntries } : {}),
   };
 }

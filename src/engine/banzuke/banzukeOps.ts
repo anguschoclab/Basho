@@ -40,6 +40,11 @@ import { rngForWorld } from "@/engine/core/rng";
 import { buildFullSlotTemplate } from "@/engine/banzuke/banzukeTemplate";
 import { toKeyedMap } from "@/engine/utils/index";
 
+/** Options for banzuke compilation (e.g. optional Jonokuchi slot cap for banzuke-gai overflow). */
+export interface BanzukeUpdateOptions {
+  maxJonokuchiSlots?: number;
+}
+
 /** Defines the structure for banzuke update result. */
 interface BanzukeUpdateResult {
   newBanzuke: BanzukeEntry[];
@@ -54,6 +59,9 @@ interface BanzukeUpdateResult {
     komusubi: number;
     maegashira: number;
   };
+  /** §3 banzuke-gai — rikishi dropped off the printed banzuke (full jonokuchi kyujo or slot overflow). */
+  banzukeGai?: string[];
+  banzukeGaiReasons?: Record<string, "kyujo" | "overflow">;
 }
 
 /**
@@ -182,7 +190,8 @@ export function updateBanzuke(
   perfById: Map<string, BashoPerformance>,
   world: WorldState,
   previousOzekiKadoban: OzekiKadobanMap = {},
-  heyaMap?: Map<string, Heya>
+  heyaMap?: Map<string, Heya>,
+  options?: BanzukeUpdateOptions
 ): BanzukeUpdateResult {
   const { updatedOzekiKadoban, demotedOzeki, reclaimableOzeki } = resolveOzekiStatuses(
     currentBanzuke,
@@ -191,11 +200,44 @@ export function updateBanzuke(
     world
   );
 
-  const sanyakuCounts = computeVariableSanyakuCounts(currentBanzuke, perfById, demotedOzeki);
-  const fullTemplate = computeDivisionTemplate(currentBanzuke, sanyakuCounts);
+  // §3 banzuke-gai — Jonokuchi rikishi with a full 0-0-7 absence drop off the printed banzuke.
+  const banzukeGai: string[] = [];
+  const banzukeGaiReasons: Record<string, "kyujo" | "overflow"> = {};
+  const banzukeGaiEvents: MovementEvent[] = [];
+  const eligibleBanzuke: BanzukeEntry[] = [];
+  for (const e of currentBanzuke) {
+    const p = perfById.get(e.rikishiId);
+    const isFullJonokuchiKyujo =
+      e.division === "jonokuchi" &&
+      (p?.wins ?? 0) === 0 &&
+      (p?.losses ?? 0) === 0 &&
+      (p?.absences ?? 0) >= 7 &&
+      (p?.draws ?? 0) === 0;
+    if (isFullJonokuchiKyujo) {
+      banzukeGai.push(e.rikishiId);
+      banzukeGaiReasons[e.rikishiId] = "kyujo";
+      const from = `${e.division}:${formatRank(e.position)}`;
+      banzukeGaiEvents.push({
+        rikishiId: e.rikishiId,
+        from,
+        to: "banzuke-gai",
+        kind: "demotion",
+        description: `Demoted: ${from} → Banzuke-gai (full Jonokuchi absence)`,
+      });
+    } else {
+      eligibleBanzuke.push(e);
+    }
+  }
 
-  const scored = scoreBanzukeCandidates(
-    currentBanzuke,
+  const sanyakuCounts = computeVariableSanyakuCounts(eligibleBanzuke, perfById, demotedOzeki);
+  const fullTemplate = computeDivisionTemplate(
+    eligibleBanzuke,
+    sanyakuCounts,
+    options?.maxJonokuchiSlots
+  );
+
+  const scoredAll = scoreBanzukeCandidates(
+    eligibleBanzuke,
     perfById,
     world,
     updatedOzekiKadoban,
@@ -204,21 +246,67 @@ export function updateBanzuke(
     heyaMap
   );
 
-  const assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki);
+  let scored = scoredAll;
+  if (options?.maxJonokuchiSlots !== undefined) {
+    const jkTier = RANK_HIERARCHY.jonokuchi.tier;
+    let jkCount = 0;
+    scored = [];
+    for (const s of scoredAll) {
+      if (s.eligibleBestTier >= jkTier) {
+        jkCount++;
+        if (jkCount > options.maxJonokuchiSlots) {
+          banzukeGai.push(s.entry.rikishiId);
+          banzukeGaiReasons[s.entry.rikishiId] = "overflow";
+          const from = `${s.entry.division}:${formatRank(s.entry.position)}`;
+          banzukeGaiEvents.push({
+            rikishiId: s.entry.rikishiId,
+            from,
+            to: "banzuke-gai",
+            kind: "demotion",
+            description: `Demoted: ${from} → Banzuke-gai (division overflow)`,
+          });
+          continue;
+        }
+      }
+      scored.push(s);
+    }
+  }
 
-  const events: MovementEvent[] = banzukeMovementEvents(
-    currentBanzuke,
-    assigned,
-    updatedOzekiKadoban,
-    previousOzekiKadoban,
-    demotedOzeki
-  );
+  const assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki);
+  if (assigned.length < scored.length) {
+    const assignedIds = new Set(assigned.map((a) => a.rikishiId));
+    for (const s of scored) {
+      if (assignedIds.has(s.entry.rikishiId)) continue;
+      banzukeGai.push(s.entry.rikishiId);
+      banzukeGaiReasons[s.entry.rikishiId] = "overflow";
+      const from = `${s.entry.division}:${formatRank(s.entry.position)}`;
+      banzukeGaiEvents.push({
+        rikishiId: s.entry.rikishiId,
+        from,
+        to: "banzuke-gai",
+        kind: "demotion",
+        description: `Demoted: ${from} → Banzuke-gai (division overflow)`,
+      });
+    }
+  }
+
+  const events: MovementEvent[] = [
+    ...banzukeMovementEvents(
+      eligibleBanzuke,
+      assigned,
+      updatedOzekiKadoban,
+      previousOzekiKadoban,
+      demotedOzeki
+    ),
+    ...banzukeGaiEvents,
+  ];
   return {
     newBanzuke: assigned,
     events,
     updatedOzekiKadoban,
     sanyakuCounts,
     deliberations: new Map(scored.map((s) => [s.entry.rikishiId, s.decision])),
+    ...(banzukeGai.length > 0 ? { banzukeGai, banzukeGaiReasons } : {}),
   };
 }
 
@@ -285,7 +373,8 @@ function resolveOzekiStatuses(
  */
 function computeDivisionTemplate(
   currentBanzuke: BanzukeEntry[],
-  sanyakuCounts: ReturnType<typeof computeVariableSanyakuCounts>
+  sanyakuCounts: ReturnType<typeof computeVariableSanyakuCounts>,
+  maxJonokuchiSlots?: number
 ): ReturnType<typeof buildFullSlotTemplate> {
   const fieldSize = currentBanzuke.length;
   const elite = 42 + 28; // makuuchi + juryo fixed
@@ -294,7 +383,12 @@ function computeDivisionTemplate(
   const makushita = 120; // Fixed at 120 per real sumo
   const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.25) + HEADROOM);
   const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.4) + HEADROOM);
-  const jonokuchi = Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
+  const uncappedJonokuchi =
+    Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
+  const jonokuchi =
+    maxJonokuchiSlots !== undefined
+      ? Math.max(0, Math.min(uncappedJonokuchi, maxJonokuchiSlots))
+      : uncappedJonokuchi;
   return buildFullSlotTemplate(sanyakuCounts, {
     makuuchi: 42,
     juryo: 28,

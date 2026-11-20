@@ -96,6 +96,32 @@ export default function BanzukePage() {
           </div>
           <YokozunaTrajectory candidates={yokozunaCandidates} />
         </section>
+
+        {/* Banzuke-gai (Off-Banzuke) */}
+        {(banzukeDigest.banzukeGaiEntries?.length ?? 0) > 0 && (
+          <section className="space-y-2">
+            <div className="flex items-center gap-3">
+              <h2 className="font-display font-bold uppercase tracking-tight text-sm text-muted-foreground">
+                <GlossaryTip termId="banzuke-gai">Banzuke-gai (Off-Banzuke)</GlossaryTip>
+              </h2>
+              <span className="h-px flex-1 bg-border/40" />
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                番付外 · {banzukeDigest.banzukeGaiEntries?.length ?? 0}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {banzukeDigest.banzukeGaiEntries?.map((entry) => (
+                <span
+                  key={entry.id}
+                  className="text-xs px-2.5 py-1 rounded-md border border-border/60 bg-muted/30 font-medium"
+                >
+                  {entry.shikona}
+                  {heyaNameMap.get(entry.heyaId) ? ` (${heyaNameMap.get(entry.heyaId)})` : ""}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </AppLayout>
   );
