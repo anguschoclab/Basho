@@ -68,7 +68,7 @@ export function YouthAcademyPanel({
           </div>
           <div className="p-2 rounded bg-muted/20">
             <div className="text-muted-foreground">Budget</div>
-            <div className="text-sm font-medium tabular-nums">{a.budget.toLocaleString()}</div>
+            <div className="text-sm font-medium tabular-nums">{a.budget.toLocaleString("en-US")}</div>
           </div>
         </div>
 

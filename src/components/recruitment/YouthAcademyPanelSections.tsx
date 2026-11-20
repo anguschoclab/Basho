@@ -47,7 +47,7 @@ export function BuildAcademyCard({ cash, onBuild }: { cash: number; onBuild: () 
           <span className="text-sm tabular-nums">
             Cost:{" "}
             <span className={canAfford ? "text-foreground" : "text-destructive"}>
-              {buildCost.toLocaleString()}
+              {buildCost.toLocaleString("en-US")}
             </span>
           </span>
           <Button
@@ -278,7 +278,7 @@ export function UpgradeSection({
       <div className="flex items-center gap-2">
         <ArrowUpCircle className="h-4 w-4 text-primary" />
         <span className="text-xs">Upgrade to Level {a.level + 1}</span>
-        <span className="text-sm tabular-nums">{upgradeCost.toLocaleString()}</span>
+        <span className="text-sm tabular-nums">{upgradeCost.toLocaleString("en-US")}</span>
       </div>
       <Button
         size="sm"

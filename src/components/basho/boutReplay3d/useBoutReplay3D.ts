@@ -1,35 +1,22 @@
 /**
  * useBoutReplay3D.ts
  * ==================
- * Simulation hook for the 3D bout replay. Identical replay clock to
- * useBoutReplay — same RAF tick, same RikishiState refs — but draws to a
- * detached 2D canvas (the tick's context check requires one) with a no-op
- * drawFrame. The three.js renderer reads the refs directly each frame.
+ * 3D bout replay hook — a thin wrapper over `useReplayClock` that supplies
+ * a detached 2D canvas (the tick's context check requires one) and a no-op
+ * drawFrame; the three.js renderer reads `refs` directly each frame.
  */
 
-import { useRef, useState, useMemo, useCallback } from "react";
+import { useRef } from "react";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getReplayPhaseDurations, buildBoutScript } from "@/presenters/engineAccess";
-import type { BoutScript } from "@/presenters/engineAccess";
-import { SeededRNG } from "@/presenters/engineAccess";
 import type { ReplayPhase } from "@/components/basho/boutReplay/boutCanvas";
-import { getNarrationPbp } from "@/components/basho/boutReplay/feedModel";
 import type { PbpLine } from "@/presenters/engineAccess";
-import { makeSpawnParticles } from "@/components/basho/boutReplay/replayFx";
+import type { ReplayRefs } from "@/components/basho/boutReplay/replayRuntime";
 import {
-  replayReset,
-  replayUpdateProgress,
-  replaySeekTo,
-} from "@/components/basho/boutReplay/replayControls";
-import {
-  useReplayRefs,
-  useReplayLoop,
-  buildReplayRuntime,
-  buildReplayControls,
-  type ReplayRefs,
-} from "@/components/basho/boutReplay/replayRuntime";
-import type { BoutReplayProgress, ReplaySpeed } from "@/components/basho/boutReplay/useBoutReplay";
+  useReplayClock,
+  type BoutReplayProgress,
+  type ReplaySpeed,
+} from "@/components/basho/boutReplay/useReplayClock";
 
 export interface UseBoutReplay3DReturn {
   refs: ReplayRefs;
@@ -44,6 +31,9 @@ export interface UseBoutReplay3DReturn {
   seekTo: (globalProgress: number) => void;
   reset: () => void;
 }
+
+/** Module-stable draw factory — the 3D renderer reads refs every frame. */
+const makeNoopDrawFrame = () => () => {};
 
 export function useBoutReplay3D(
   result: BoutResult,
@@ -61,107 +51,28 @@ export function useBoutReplay3D(
     canvasRef.current.height = 500;
   }
 
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [speed, setSpeed] = useState<ReplaySpeed>(1);
-  const [uiPhase, setUiPhase] = useState<ReplayPhase>("ritual");
-  const [, setNarration] = useState("");
-  const [narIndex, setNarIndex] = useState(0);
-  const [progress, setProgress] = useState<BoutReplayProgress>({
-    phaseIndex: 0,
-    phaseProgress: 0,
-    globalProgress: 0,
-    totalDurationMs: 0,
-    elapsedMs: 0,
+  const clock = useReplayClock({
+    result,
+    eastRikishi,
+    westRikishi,
+    autoPlay,
+    onComplete,
+    onProgressUpdate,
+    canvasRef,
+    makeDrawFrame: makeNoopDrawFrame,
   });
 
-  const refs = useReplayRefs(speed, isPlaying, onProgressUpdate);
-
-  const winnerSide = result.winnerRikishiId === eastRikishi.id ? "east" : "west";
-  const boutScript = useMemo<BoutScript>(() => buildBoutScript(result), [result]);
-  const phaseDurations = useMemo(
-    () => getReplayPhaseDurations(result, boutScript),
-    [result, boutScript]
-  );
-  const rng = useMemo(() => new SeededRNG(result.boutId || "seed"), [result.boutId]);
-  const pbpLines = useMemo(
-    () => getNarrationPbp(result, eastRikishi, westRikishi),
-    [result, eastRikishi, westRikishi]
-  );
-  const lines = useMemo(() => pbpLines.map((l) => l.text), [pbpLines]);
-
-  const spawnParticles = useMemo(
-    () => makeSpawnParticles(refs.particlesRef, refs.particleId, rng),
-    [rng, refs]
-  );
-
-  const rt = useMemo(
-    () =>
-      buildReplayRuntime(canvasRef, refs, {
-        rng,
-        result,
-        winnerSide,
-        boutScript,
-        eastRikishi,
-        westRikishi,
-        lines,
-        spawnParticles,
-      }),
-    [
-      canvasRef,
-      refs,
-      rng,
-      result,
-      winnerSide,
-      boutScript,
-      eastRikishi,
-      westRikishi,
-      lines,
-      spawnParticles,
-    ]
-  );
-
-  // The 3D renderer reads refs every frame — the tick's draw call is a no-op.
-  const drawFrame = useCallback((_ctx: CanvasRenderingContext2D, _W: number, _H: number) => {}, []);
-
-  const setters = useMemo(
-    () => ({ setProgress, setUiPhase, setNarration, setNarIndex, setIsPlaying }),
-    []
-  );
-
-  const controlsCtx = useMemo(
-    () => buildReplayControls(canvasRef, refs, phaseDurations, lines, setters),
-    [canvasRef, refs, phaseDurations, lines, setters]
-  );
-
-  const reset = useCallback(() => replayReset(controlsCtx), [controlsCtx]);
-  const updateProgress = useCallback(() => replayUpdateProgress(controlsCtx), [controlsCtx]);
-  const seekTo = useCallback(
-    (globalProgress: number) => replaySeekTo(controlsCtx, globalProgress, drawFrame),
-    [controlsCtx, drawFrame]
-  );
-
-  useReplayLoop(
-    isPlaying,
-    rt,
-    refs,
-    phaseDurations,
-    setters,
-    onComplete,
-    drawFrame,
-    updateProgress
-  );
-
   return {
-    refs,
-    isPlaying,
-    setIsPlaying,
-    speed,
-    setSpeed,
-    uiPhase,
-    narIndex,
-    pbpLines,
-    progress,
-    seekTo,
-    reset,
+    refs: clock.refs,
+    isPlaying: clock.isPlaying,
+    setIsPlaying: clock.setIsPlaying,
+    speed: clock.speed,
+    setSpeed: clock.setSpeed,
+    uiPhase: clock.uiPhase,
+    narIndex: clock.narIndex,
+    pbpLines: clock.pbpLines,
+    progress: clock.progress,
+    seekTo: clock.seekTo,
+    reset: clock.reset,
   };
 }

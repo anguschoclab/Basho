@@ -3,6 +3,7 @@
  */
 import { Button } from "@/components/ui/button";
 import { Coins } from "lucide-react";
+import { formatYen } from "@/lib/engineUtils";
 
 interface AcademyInvestmentControlProps {
   budget: number;
@@ -19,7 +20,7 @@ export function AcademyInvestmentControl({ budget, onInvest }: AcademyInvestment
           <Coins className="h-3.5 w-3.5" />
           Weekly Budget
         </span>
-        <span className="font-mono">¥{budget.toLocaleString()}</span>
+        <span className="font-mono">{formatYen(budget)}</span>
       </div>
       {onInvest && (
         <div className="flex gap-2">

@@ -29,6 +29,7 @@ import type { StaffRole } from "@/engine/types/staff";
 import type { SortDirection } from "@/lib/sortUtils";
 import { STAFF_UPKEEP_PER_MEMBER } from "@/constants/engine/economic";
 import { ROLE_LABELS, ROLE_DESCRIPTIONS, STAFF_SORT_OPTIONS } from "@/components/staff/staffMeta";
+import { formatYen } from "@/lib/engineUtils";
 
 /** Header summary — monthly upkeep, staff count, sort menu. */
 export function StaffSummary({
@@ -46,7 +47,7 @@ export function StaffSummary({
             Monthly Cost
           </div>
           <div className="text-lg font-bold leading-none">
-            ¥{Math.round(staffCount * STAFF_UPKEEP_PER_MEMBER * (52 / 12)).toLocaleString()}
+            {formatYen(Math.round(staffCount * STAFF_UPKEEP_PER_MEMBER * (52 / 12)))}
           </div>
         </div>
         <div className="h-10 w-px bg-border/50 mx-2" />

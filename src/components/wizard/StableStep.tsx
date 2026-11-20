@@ -4,8 +4,8 @@
  * Step 3: Acquire stable for new game wizard.
  */
 
-import { Building, ArrowLeft, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Building, Sparkles } from "lucide-react";
+import { WizardNav } from "@/components/wizard/WizardNav";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StableCard } from "@/components/wizard/StableStepSections";
 import type { Heya } from "@/engine/types/heya";
@@ -61,25 +61,15 @@ export function StableStep({
         </ScrollArea>
       </div>
 
-      <div className="flex flex-wrap justify-between gap-3 pt-4">
-        <Button
-          variant="ghost"
-          onClick={onPrev}
-          className="h-16 px-4 sm:px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground"
-        >
-          <ArrowLeft className="w-5 h-5" /> Back
-        </Button>
-        <Button
-          onClick={onFinish}
-          disabled={!selectedHeyaId}
-          className="h-16 px-6 sm:px-12 gap-3 font-display font-black uppercase tracking-widest text-base sm:text-xl shadow-[var(--shadow-lg)] rounded-lg bg-primary text-primary-foreground hover:scale-105 transition-transform"
-          {...(!selectedHeyaId
-            ? { tooltip: "Select a stable to continue", tooltipSide: "top" }
-            : {})}
-        >
-          Begin Journey <Sparkles className="w-6 h-6" />
-        </Button>
-      </div>
+      <WizardNav
+        onPrev={onPrev}
+        onNext={onFinish}
+        nextLabel="Begin Journey"
+        nextIcon={<Sparkles className="w-6 h-6" />}
+        nextDisabled={!selectedHeyaId}
+        nextDisabledTooltip="Select a stable to continue"
+        nextClassName="sm:px-12 sm:text-xl shadow-[var(--shadow-lg)] bg-primary text-primary-foreground"
+      />
     </div>
   );
 }

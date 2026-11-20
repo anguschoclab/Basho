@@ -9,6 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { MyosekiStock } from "@/engine/types/myoseki";
 import { stableSort } from "@/engine/utils/sort";
+import { formatYen } from "@/lib/engineUtils";
 
 export interface FinanceAgentContext {
   oyakata: Oyakata;
@@ -102,7 +103,7 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
         shouldBuyMyoseki = true;
         const selected = prioritized[0];
         reasoning.push(
-          `[Finance Agent] Targeting myoseki: ${selected.id} (¥${(selected.askingPrice || 0).toLocaleString()})`
+          `[Finance Agent] Targeting myoseki: ${selected.id} (${formatYen((selected.askingPrice || 0))})`
         );
       } else {
         reasoning.push("[Finance Agent] No affordable myoseki available");
@@ -134,11 +135,11 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
     shouldBuildReserves = true;
     reserveTarget = monthlyBurn * 6; // 6 months runway target
     reasoning.push(
-      `[Finance Agent] Building reserves to ${reserveTarget.toLocaleString()} for safety`
+      `[Finance Agent] Building reserves to ${reserveTarget.toLocaleString("en-US")} for safety`
     );
   } else {
     reserveTarget = monthlyBurn * 3; // 3 months runway target
-    reasoning.push(`[Finance Agent] Maintaining ${reserveTarget.toLocaleString()} reserve target`);
+    reasoning.push(`[Finance Agent] Maintaining ${reserveTarget.toLocaleString("en-US")} reserve target`);
   }
 
   // WS5 — crisis rescue menu (canon §14.8): a desperate stable chooses how to

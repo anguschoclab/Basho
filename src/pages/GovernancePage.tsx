@@ -1,5 +1,3 @@
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/page-shell/index";
@@ -12,6 +10,7 @@ import { useGovernanceDerived } from "@/hooks/useGovernanceDerived";
 import { GovernanceOverviewTab } from "@/components/governance/GovernanceOverviewTab";
 import { GovernanceRulingsTab } from "@/components/governance/GovernanceRulingsTab";
 import { GovernancePoliticsTab } from "@/components/governance/GovernancePoliticsTab";
+import { LoadingPanel } from "@/components/ui/LoadingPanel";
 
 export default function GovernancePage() {
   const { state } = useGame();
@@ -27,14 +26,7 @@ export default function GovernancePage() {
         subNavTabs={ASSOCIATION_TABS}
         activeSubTab="governance"
       >
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <EmptyState
-            icon={Loader2}
-            title="Loading Governance"
-            description="Fetching association records..."
-            iconClassName="animate-spin text-muted-foreground"
-          />
-        </div>
+        <LoadingPanel title="Loading Governance" description="Fetching association records..." />
       </AppLayout>
     );
   }

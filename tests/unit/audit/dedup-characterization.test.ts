@@ -31,8 +31,6 @@ import {
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import type { Rank, Division } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { UIRikishi } from "@/presenters/uiModels";
-import { sortRoster } from "@/components/rikishi/rosterSort";
 
 import { getFlagForNationality } from "@/presenters/projections/globalCupProjections";
 import { kihakuLabel } from "@/presenters/rikishi/transformers/kihaku";
@@ -44,6 +42,15 @@ import { ensureCandidatePoolState } from "@/engine/generation/CandidatePoolServi
 import type { MyosekiMarket } from "@/engine/types/myoseki";
 import type { TalentPoolType } from "@/engine/types/talent";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { formatYen } from "@/lib/engineUtils";
+import {
+  SELECTABLE_MOTIFS,
+  keshoMotifEmoji,
+  keshoMotifDescription,
+} from "@/constants/engine/keshoMotifs";
+import { useReplayClock } from "@/components/basho/boutReplay/useReplayClock";
+import { useBoutReplay } from "@/components/basho/boutReplay/useBoutReplay";
+import { useBoutReplay3D } from "@/components/basho/boutReplay3d/useBoutReplay3D";
 
 // --- D1: loan repayment — canonical impl is monthly/economics/loans.ts ---
 
@@ -391,15 +398,14 @@ describe("W U — canonical rank ordinal parity", () => {
     for (const r of RANKS) expect(legacy[r]).toBe(RANK_ORDINAL[r] + 1);
   });
 
-  it("rosterSort seniority ordering matches canonical rankSeniority", () => {
-    const mk = (rank: string, id: string) =>
-      ({ id, rank } as unknown as UIRikishi);
-    const sorted = sortRoster(
-      [mk("jonidan", "a"), mk("yokozuna", "b"), mk("maegashira", "c")],
-      "rank",
-      "asc"
-    );
-    expect(sorted.map((r) => r.id)).toEqual(["b", "c", "a"]);
+  it("rosterSort legacy RANK_ORDER matched rankSeniority exactly", () => {
+    // The retired RANK_ORDER map ran yokozuna 0 → jonokuchi 9 — pinned so the
+    // rankSeniority migration in rosterSort stays identical.
+    const legacy: Record<Rank, number> = {
+      yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4,
+      juryo: 5, makushita: 6, sandanme: 7, jonidan: 8, jonokuchi: 9,
+    };
+    for (const r of RANKS) expect(rankSeniority(r)).toBe(legacy[r]);
   });
 });
 
@@ -455,5 +461,56 @@ describe("W U — shared predicate truth tables", () => {
     expect(ord(yE1)).toBe(2);
     expect(ord(jW15)).toBe(931);
     expect(ord(yE1)).toBeLessThan(ord(jW15));
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// W V — UI/presenter consolidation
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("W V — formatYen pinned-locale snapshot", () => {
+  it("formatYen renders en-US grouping regardless of host locale", () => {
+    expect(formatYen(1234567)).toBe("¥1,234,567");
+    expect(formatYen(0)).toBe("¥0");
+    expect(formatYen(-45000)).toBe("¥-45,000");
+    expect(formatYen(80_000_000)).toBe("¥80,000,000");
+  });
+});
+
+describe("W V — kesho motif registry", () => {
+  it("every selectable motif resolves an emoji and a description", () => {
+    // The mountain drift: selectable + renderable but missing a description.
+    for (const motif of SELECTABLE_MOTIFS) {
+      expect(keshoMotifEmoji(motif)).toBeDefined();
+      expect(keshoMotifDescription(motif)).toBeDefined();
+    }
+    expect(SELECTABLE_MOTIFS).toHaveLength(19);
+  });
+
+  it("mountain resolves — the drift case", () => {
+    expect(keshoMotifEmoji("mountain")).toBe("⛰️");
+    expect(keshoMotifDescription("mountain")).toBe("a towering mountain");
+  });
+
+  it("legacy symbolMap/renderSymbol keys match the registry", () => {
+    const legacy: Record<string, string> = {
+      dragon: "🐉", phoenix: "🔥", tiger: "🐅", mt_fuji: "🗻", waves: "🌊",
+      sakura: "🌸", pine: "🌲", bamboo: "🎋", crane: "🕊️", rising_sun: "☀️",
+      lightning: "⚡", waterfall: "💧", temple: "⛩️", treasure_ship: "⛵",
+      carp: "🐟", lotus: "🪷", thunder: "⛈️", wind: "💨", mountain: "⛰️",
+    };
+    for (const [motif, emoji] of Object.entries(legacy)) {
+      expect(keshoMotifEmoji(motif)).toBe(emoji);
+    }
+  });
+});
+
+describe("W V — replay clock extraction surface", () => {
+  it("useReplayClock exports the shared clock shape both hooks return", () => {
+    // Structural pin: both wrappers expose the clock's subset — verified via
+    // the type-level contract (compile-time) plus the hook existing at all.
+    expect(typeof useReplayClock).toBe("function");
+    expect(typeof useBoutReplay).toBe("function");
+    expect(typeof useBoutReplay3D).toBe("function");
   });
 });

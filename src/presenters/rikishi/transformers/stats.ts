@@ -16,6 +16,7 @@ import type {
   RikishiDescriptorDTO,
 } from "@/presenters/rikishi/types";
 import { toRikishiDescriptor } from "@/engine/narrative/descriptorBands";
+import { rikishiAge } from "@/presenters/rikishi/transformers/identity";
 import { calculateInjurySummary } from "@/presenters/rikishi/transformers/injury";
 
 /**
@@ -45,7 +46,7 @@ export function toStatusDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): Rik
  * Transform stat bands.
  */
 export function toBandsDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): RikishiBandsDTO {
-  const age = world ? world.year - r.birthYear : 0;
+  const age = rikishiAge(r, world);
   return {
     powerBand: NarrativeService.getStatLabelForValue(rng, r.stats.power),
     techniqueBand: NarrativeService.getStatLabelForValue(rng, r.stats.technique),
@@ -85,7 +86,7 @@ export function toDescriptorDTO(
   rng: SeededRNG,
   world?: WorldState
 ): RikishiDescriptorDTO {
-  const age = world ? world.year - r.birthYear : 0;
+  const age = rikishiAge(r, world);
   return {
     descriptor: toRikishiDescriptor(rng, r, r.descriptor),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),

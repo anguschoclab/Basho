@@ -10,11 +10,10 @@ import { UIRikishi } from "@/presenters/uiModels";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RikishiName, StableName } from "@/components/shared/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Globe } from "lucide-react";
-import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
+import { ArchetypeBadge } from "@/components/rikishi/ArchetypeBadge";
 import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 
 /** Avatar, shikona, heya/rank line, and archetype badge. */
@@ -47,22 +46,10 @@ export function RikishiCardHeader({ rikishi }: { rikishi: UIRikishi }) {
         </div>
         <div className="flex items-center gap-2">
           <BookmarkButton entityType="rikishi" entityId={rikishi.id} />
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge variant="outline" className="font-mono cursor-help">
-                  {rikishi.archetypeName}
-                </Badge>
-              </TooltipTrigger>
-              {rikishi.combatArchetype && (
-                <TooltipContent>
-                  <p className="max-w-xs">
-                    {getCombatArchetypeDescription(rikishi.combatArchetype)}
-                  </p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+          <ArchetypeBadge
+            archetypeName={rikishi.archetypeName}
+            combatArchetype={rikishi.combatArchetype}
+          />
         </div>
       </div>
     </CardHeader>

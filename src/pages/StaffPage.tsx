@@ -16,6 +16,7 @@ import { ROLE_LABELS, STAFF_ACCESSOR } from "@/components/staff/staffMeta";
 import { STAFF_HIRE_COST } from "@/constants/engine/economy";
 import { StaffCard } from "@/components/staff/StaffCard";
 import { StaffSummary, RecruitSlot } from "@/components/staff/StaffPageSections";
+import { formatYen } from "@/lib/engineUtils";
 
 export default function StaffPage() {
   const { state } = useGame();
@@ -46,7 +47,7 @@ export default function StaffPage() {
   const handleHire = useCallback(() => {
     if (!world || !heya) return;
     if ((heya.funds ?? 0) < STAFF_HIRE_COST) {
-      toast.error(`Insufficient funds — hiring costs ¥${STAFF_HIRE_COST.toLocaleString()}.`);
+      toast.error(`Insufficient funds — hiring costs ${formatYen(STAFF_HIRE_COST)}.`);
       return;
     }
 

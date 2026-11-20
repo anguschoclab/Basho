@@ -7,8 +7,6 @@
  */
 
 import { useState } from "react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
@@ -19,6 +17,8 @@ import {
   TransactionHistoryTab,
 } from "@/components/myoseki/MyosekiMarketSections";
 import { useMyosekiMarket } from "@/hooks/useMyosekiMarket";
+import { formatYen } from "@/lib/engineUtils";
+import { LoadingPanel } from "@/components/ui/LoadingPanel";
 
 export default function MyosekiMarketPage() {
   const [activeTab, setActiveTab] = useState("market");
@@ -31,14 +31,7 @@ export default function MyosekiMarketPage() {
         activeSubTab="myoseki"
         pageTitle="Elder Stock Market (Myoseki)"
       >
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <EmptyState
-            icon={Loader2}
-            title="Loading Market Records"
-            description="Fetching elder stock exchange..."
-            iconClassName="animate-spin text-muted-foreground"
-          />
-        </div>
+        <LoadingPanel title="Loading Market Records" description="Fetching elder stock exchange..." />
       </AppLayout>
     );
   }
@@ -59,7 +52,7 @@ export default function MyosekiMarketPage() {
               <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
                 Stable Funds
               </p>
-              <p className="text-lg font-bold font-mono">¥{market.playerFunds.toLocaleString()}</p>
+              <p className="text-lg font-bold font-mono">{formatYen(market.playerFunds)}</p>
             </div>
           }
         />

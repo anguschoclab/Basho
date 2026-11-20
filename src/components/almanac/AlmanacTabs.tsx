@@ -296,7 +296,7 @@ export function TechniquesTab({ derived }: { derived: Derived }) {
                       : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
-                  {scope === "era" ? "This era" : "All time"} · {endings.toLocaleString()}
+                  {scope === "era" ? "This era" : "All time"} · {endings.toLocaleString("en-US")}
                 </button>
               );
             })}

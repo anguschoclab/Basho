@@ -4,8 +4,8 @@
  * Step 2: Choose ichimon for new game wizard.
  */
 
-import { Building2, ArrowRight, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Building2 } from "lucide-react";
+import { WizardNav } from "@/components/wizard/WizardNav";
 import { ICHIMON_FACTIONS } from "@/constants/ui/wizard";
 import { FactionCard } from "@/components/wizard/FactionStepSections";
 import type { IchimonName } from "@/engine/types/economy";
@@ -47,21 +47,7 @@ export function FactionStep({ ichimon, onIchimonChange, onNext, onPrev }: Factio
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-between gap-3 pt-4">
-        <Button
-          variant="ghost"
-          onClick={onPrev}
-          className="h-16 px-4 sm:px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground"
-        >
-          <ArrowLeft className="w-5 h-5" /> Back
-        </Button>
-        <Button
-          onClick={onNext}
-          className="h-16 px-6 sm:px-10 gap-3 font-display font-black uppercase tracking-widest text-base sm:text-lg shadow-2xl rounded-lg hover:scale-105 transition-transform"
-        >
-          Verify Allegiance <ArrowRight className="w-6 h-6" />
-        </Button>
-      </div>
+      <WizardNav onPrev={onPrev} onNext={onNext} nextLabel="Verify Allegiance" />
     </div>
   );
 }

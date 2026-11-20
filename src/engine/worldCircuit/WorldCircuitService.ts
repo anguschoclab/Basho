@@ -13,6 +13,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { StateImpact } from "@/engine/core/StateImpact";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getHeya, getRikishi } from "@/engine/core/queries";
+import { formatYen } from "@/lib/engineUtils";
 
 export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | "East_Asia";
 
@@ -407,7 +408,7 @@ export function manageAcademy(
     {
       incident: "academy_managed",
       status: "success",
-      reason: `${heya.name} invested ¥${config.budget.toLocaleString()} in ${region} academy.`,
+      reason: `${heya.name} invested ${formatYen(config.budget)} in ${region} academy.`,
       score: updatedAcademies.find((a) => a.region === region)?.candidateQualityBonus ?? 0,
     },
     { heyaId, importance: "minor" }

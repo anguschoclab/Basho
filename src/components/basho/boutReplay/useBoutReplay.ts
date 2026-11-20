@@ -1,44 +1,30 @@
 /**
- * src/components/game/boutReplay/useBoutReplay.ts
+ * useBoutReplay.ts
  * ================================================
- * Custom hook that owns all animation state, refs, and the RAF loop
- * for the BoutReplayViewer. Extracted from the BoutReplayViewer monolith
- * for separation of concerns and testability. The runtime helpers live
- * in replayFx/replayLoop/replayControls/replayRuntime.
+ * 2D-canvas bout replay hook — a thin wrapper over `useReplayClock` that
+ * supplies the DOM canvas (`useReplayCanvas`) and the real canvas draw
+ * (`drawReplayFrame`).
  */
 
-import { useState, useMemo, useCallback } from "react";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getReplayPhaseDurations, buildBoutScript } from "@/presenters/engineAccess";
-import type { BoutScript } from "@/presenters/engineAccess";
-import { SeededRNG } from "@/presenters/engineAccess";
 import type { ReplayPhase } from "@/components/basho/boutReplay/boutCanvas";
-import { getNarrationPbp } from "@/components/basho/boutReplay/feedModel";
 import type { PbpLine } from "@/presenters/engineAccess";
-import { makeSpawnParticles, drawReplayFrame } from "@/components/basho/boutReplay/replayFx";
+import { drawReplayFrame, type ReplayRuntime } from "@/components/basho/boutReplay/replayFx";
+import { useReplayCanvas } from "@/components/basho/boutReplay/replayRuntime";
 import {
-  replayReset,
-  replayUpdateProgress,
-  replaySeekTo,
-} from "@/components/basho/boutReplay/replayControls";
-import {
-  useReplayCanvas,
-  useReplayRefs,
-  useReplayLoop,
-  buildReplayRuntime,
-  buildReplayControls,
-} from "@/components/basho/boutReplay/replayRuntime";
+  useReplayClock,
+  type BoutReplayProgress,
+  type ReplaySpeed,
+} from "@/components/basho/boutReplay/useReplayClock";
 
-export interface BoutReplayProgress {
-  phaseIndex: number;
-  phaseProgress: number;
-  globalProgress: number;
-  totalDurationMs: number;
-  elapsedMs: number;
-}
+export type { BoutReplayProgress, ReplaySpeed };
 
-export type ReplaySpeed = 0.5 | 1 | 2;
+/** Module-stable draw factory — draws the replay frame each tick. */
+const makeCanvasDrawFrame =
+  (rt: ReplayRuntime) =>
+  (ctx: CanvasRenderingContext2D, W: number, H: number) =>
+    drawReplayFrame(rt, ctx, W, H);
 
 export interface UseBoutReplayReturn {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -66,113 +52,28 @@ export function useBoutReplay(
   onProgressUpdate?: (progress: BoutReplayProgress) => void
 ): UseBoutReplayReturn {
   const canvasRef = useReplayCanvas();
-
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [speed, setSpeed] = useState<ReplaySpeed>(1);
-  const [uiPhase, setUiPhase] = useState<ReplayPhase>("ritual");
-  const [narration, setNarration] = useState("");
-  const [narIndex, setNarIndex] = useState(0);
-  const [progress, setProgress] = useState<BoutReplayProgress>({
-    phaseIndex: 0,
-    phaseProgress: 0,
-    globalProgress: 0,
-    totalDurationMs: 0,
-    elapsedMs: 0,
-  });
-
-  const refs = useReplayRefs(speed, isPlaying, onProgressUpdate);
-
-  const winnerSide = result.winnerRikishiId === eastRikishi.id ? "east" : "west";
-  const boutScript = useMemo<BoutScript>(() => buildBoutScript(result), [result]);
-  const phaseDurations = useMemo(
-    () => getReplayPhaseDurations(result, boutScript),
-    [result, boutScript]
-  );
-  const rng = useMemo(() => new SeededRNG(result.boutId || "seed"), [result.boutId]);
-  const pbpLines = useMemo(
-    () => getNarrationPbp(result, eastRikishi, westRikishi),
-    [result, eastRikishi, westRikishi]
-  );
-  // String view kept for the legacy single-line narration path; indices are
-  // identical because pbpLines is the single source of truth.
-  const lines = useMemo(() => pbpLines.map((l) => l.text), [pbpLines]);
-
-  const spawnParticles = useMemo(
-    () => makeSpawnParticles(refs.particlesRef, refs.particleId, rng),
-    [rng, refs]
-  );
-
-  const rt = useMemo(
-    () =>
-      buildReplayRuntime(canvasRef, refs, {
-        rng,
-        result,
-        winnerSide,
-        boutScript,
-        eastRikishi,
-        westRikishi,
-        lines,
-        spawnParticles,
-      }),
-    [
-      canvasRef,
-      refs,
-      rng,
-      result,
-      winnerSide,
-      boutScript,
-      eastRikishi,
-      westRikishi,
-      lines,
-      spawnParticles,
-    ]
-  );
-
-  const drawFrame = useCallback(
-    (ctx: CanvasRenderingContext2D, W: number, H: number) => drawReplayFrame(rt, ctx, W, H),
-    [rt]
-  );
-
-  const setters = useMemo(
-    () => ({ setProgress, setUiPhase, setNarration, setNarIndex, setIsPlaying }),
-    []
-  );
-
-  const controlsCtx = useMemo(
-    () => buildReplayControls(canvasRef, refs, phaseDurations, lines, setters),
-    [canvasRef, refs, phaseDurations, lines, setters]
-  );
-
-  const reset = useCallback(() => replayReset(controlsCtx), [controlsCtx]);
-  const updateProgress = useCallback(() => replayUpdateProgress(controlsCtx), [controlsCtx]);
-  const seekTo = useCallback(
-    (globalProgress: number) => replaySeekTo(controlsCtx, globalProgress, drawFrame),
-    [controlsCtx, drawFrame]
-  );
-
-  useReplayLoop(
-    isPlaying,
-    rt,
-    refs,
-    phaseDurations,
-    setters,
+  const clock = useReplayClock({
+    result,
+    eastRikishi,
+    westRikishi,
+    autoPlay,
     onComplete,
-    drawFrame,
-    updateProgress
-  );
-
-  return {
+    onProgressUpdate,
     canvasRef,
-    isPlaying,
-    setIsPlaying,
-    speed,
-    setSpeed,
-    uiPhase,
-    narration,
-    narIndex,
-    pbpLines,
-    progress,
-    seekTo,
-    reset,
+    makeDrawFrame: makeCanvasDrawFrame,
+  });
+  return {
+    canvasRef: clock.canvasRef,
+    isPlaying: clock.isPlaying,
+    setIsPlaying: clock.setIsPlaying,
+    speed: clock.speed,
+    setSpeed: clock.setSpeed,
+    uiPhase: clock.uiPhase,
+    narration: clock.narration,
+    narIndex: clock.narIndex,
+    pbpLines: clock.pbpLines,
+    progress: clock.progress,
+    seekTo: clock.seekTo,
+    reset: clock.reset,
   };
 }

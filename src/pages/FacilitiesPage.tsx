@@ -1,6 +1,4 @@
 import { useMemo, useCallback } from "react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
@@ -11,6 +9,7 @@ import type { FacilityAxis } from "@/presenters/engineAccess";
 import type { FacilityId } from "@/engine/types/infrastructure";
 import { FacilityROIChart } from "@/components/economy/FacilityROIChart";
 import { getPlayerHeya } from "@/presenters/engineAccess";
+import { LoadingPanel } from "@/components/ui/LoadingPanel";
 
 /** facilities page. */
 export default function FacilitiesPage() {
@@ -40,14 +39,7 @@ export default function FacilitiesPage() {
   if (!heya || !world) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="facilities" pageTitle="Infrastructure">
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <EmptyState
-            icon={Loader2}
-            title="Loading Infrastructure"
-            description="Fetching facility status..."
-            iconClassName="animate-spin text-muted-foreground"
-          />
-        </div>
+        <LoadingPanel title="Loading Infrastructure" description="Fetching facility status..." />
       </AppLayout>
     );
   }

@@ -8,6 +8,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
 import { getHeya } from "@/engine/core/queries";
+import { formatYen } from "@/lib/engineUtils";
 
 export interface RecruitmentAgentContext {
   oyakata: Oyakata;
@@ -61,7 +62,7 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
 
   reasoning.push(`[Recruitment Agent] Evaluating candidate with talent ${talent}`);
   reasoning.push(
-    `[Recruitment Agent] Vacancies: ${vacancyCount}, Funds: ¥${funds.toLocaleString()}, Runway: ${runwayBand}`
+    `[Recruitment Agent] Vacancies: ${vacancyCount}, Funds: ${formatYen(funds)}, Runway: ${runwayBand}`
   );
 
   // Base bid calculation based on talent
@@ -134,7 +135,7 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
   if (!shouldBid) {
     reasoning.push("[Recruitment Agent] Insufficient funds or bid too low - not bidding");
   } else {
-    reasoning.push(`[Recruitment Agent] Final bid: ¥${maxBid.toLocaleString()}`);
+    reasoning.push(`[Recruitment Agent] Final bid: ${formatYen(maxBid)}`);
   }
 
   return {

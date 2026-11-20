@@ -5,8 +5,8 @@
  * Features a 7-card backstory grid with difficulty badges and bonus chips.
  */
 
-import { CircleUser, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CircleUser } from "lucide-react";
+import { WizardNav } from "@/components/wizard/WizardNav";
 import {
   NameInputRow,
   BackstoryGrid,
@@ -64,18 +64,13 @@ export function IdentityStep({
         </div>
       </div>
 
-      <div className="flex justify-end pt-4">
-        <Button
-          onClick={onNext}
-          disabled={!oyakataName.trim()}
-          className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-lg hover:scale-105 transition-transform"
-          {...(!oyakataName.trim()
-            ? { tooltip: "Enter a name to continue", tooltipSide: "top" }
-            : {})}
-        >
-          Next Submission <ArrowRight className="w-6 h-6" />
-        </Button>
-      </div>
+      <WizardNav
+        onNext={onNext}
+        nextLabel="Next Submission"
+        nextDisabled={!oyakataName.trim()}
+        nextDisabledTooltip="Enter a name to continue"
+        nextClassName="px-10 text-lg"
+      />
     </div>
   );
 }

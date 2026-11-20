@@ -36,6 +36,7 @@ import {
   CORPORATE_INDUSTRY_PALETTES,
 } from "@/engine/types/keshoMawashi";
 import { rngFromSeed } from "@/engine/core/rng";
+import { keshoMotifDescription } from "@/constants/engine/keshoMotifs";
 import type { SeededRNG } from "@/engine/core/rng";
 import { getHeya, getRikishi } from "@/engine/core/queries";
 
@@ -624,30 +625,11 @@ function generateDescription(
     heya_legacy: "bearing the proud tradition of the heya",
   };
 
-  const symbolDescriptions: Record<string, string> = {
-    dragon: "a powerful dragon",
-    phoenix: "a majestic phoenix",
-    tiger: "a fierce tiger",
-    mt_fuji: "Mount Fuji",
-    waves: "crashing waves",
-    sakura: "cherry blossoms",
-    pine: "evergreen pine",
-    bamboo: "sturdy bamboo",
-    crane: "a graceful crane",
-    rising_sun: "the rising sun",
-    lightning: "lightning bolts",
-    waterfall: "a cascading waterfall",
-    temple: "a traditional temple",
-    treasure_ship: "the treasure ship",
-    carp: "a noble carp",
-    lotus: "a pure lotus",
-    thunder: "thunder clouds",
-    wind: "swirling winds",
-  };
+
 
   const tierDesc = tierDescriptions[tier];
   const originDesc = originDescriptions[origin];
-  const symbolDesc = symbolDescriptions[mainSymbol.value] || mainSymbol.value;
+  const symbolDesc = keshoMotifDescription(mainSymbol.value) || mainSymbol.value;
 
   return `${tierDesc}, ${originDesc}, with ${symbolDesc} as the central motif.`;
 }

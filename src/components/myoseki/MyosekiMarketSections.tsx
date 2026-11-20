@@ -21,6 +21,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, oyakataStageInput } from "@/presenters/projections/avatarProjections";
 import type { MyosekiStock } from "@/engine/types/myoseki";
 import type { useMyosekiMarket } from "@/hooks/useMyosekiMarket";
+import { formatYen } from "@/lib/engineUtils";
 
 type Market = ReturnType<typeof useMyosekiMarket>;
 type MarketState = NonNullable<Market["market"]>;
@@ -103,7 +104,7 @@ function StockCard({ stock, market }: { stock: MyosekiStock; market: Market }) {
         <div className="space-y-1">
           <p className="text-sm font-medium">Asking Price:</p>
           <p className="text-xl font-bold text-primary">
-            ¥{(stock.askingPrice ?? 0).toLocaleString()}
+            {formatYen((stock.askingPrice ?? 0))}
           </p>
         </div>
       </CardContent>
@@ -215,7 +216,7 @@ export function OwnedSharesTab({
                     </Badge>
                     {stock.status === "leased" && (
                       <p className="text-xs text-muted-foreground">
-                        Annual Fee: ¥{(stock.leaseFee ?? 0).toLocaleString()}
+                        Annual Fee: {formatYen((stock.leaseFee ?? 0))}
                       </p>
                     )}
                   </div>
@@ -272,7 +273,7 @@ export function TransactionHistoryTab({ market }: { market: Market }) {
                       {tx.date} | From: {tx.fromId} To: {tx.toId}
                     </p>
                   </div>
-                  <p className="font-bold text-sm">¥{tx.amount.toLocaleString()}</p>
+                  <p className="font-bold text-sm">{formatYen(tx.amount)}</p>
                 </div>
               ))}
             </div>

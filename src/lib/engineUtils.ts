@@ -5,7 +5,7 @@
  * Ensures consistent seed generation, rank sorting, and data formatting.
  */
 
-import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import type { Rank } from "@/engine/types/banzuke";
 import type { Side } from "@/engine/types/index";
 
@@ -35,7 +35,9 @@ export function safeRankSortKey(rank: Rank | string): number {
  * @returns Formatted string (e.g., "¥1,234,567")
  */
 export function formatYen(amount: number): string {
-  return `¥${amount.toLocaleString()}`;
+  // Pinned locale — a bare toLocaleString() drifts with the runtime's ICU
+  // default (host OS / worker / headless browser all differ).
+  return `¥${amount.toLocaleString("en-US")}`;
 }
 
 /**

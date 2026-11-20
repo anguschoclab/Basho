@@ -1,7 +1,5 @@
 // SponsorManagementPage.tsx — Sponsor contract management
 import { useMemo } from "react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/page-shell/index";
@@ -9,6 +7,7 @@ import { useGame } from "@/state/game/useGame";
 import { projectSponsorUIDigest } from "@/presenters/uiDigest";
 import { SponsorContractsPanel } from "@/components/economy/SponsorContractsPanel";
 import { SponsorSatisfactionChart } from "@/components/economy/SponsorSatisfactionChart";
+import { LoadingPanel } from "@/components/ui/LoadingPanel";
 
 /** sponsor management page. */
 export default function SponsorManagementPage() {
@@ -21,14 +20,7 @@ export default function SponsorManagementPage() {
   if (!digest) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="sponsors" pageTitle="Sponsor Relations">
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <EmptyState
-            icon={Loader2}
-            title="Loading Sponsors"
-            description="Fetching sponsor contracts and satisfaction..."
-            iconClassName="animate-spin text-muted-foreground"
-          />
-        </div>
+        <LoadingPanel title="Loading Sponsors" description="Fetching sponsor contracts and satisfaction..." />
       </AppLayout>
     );
   }

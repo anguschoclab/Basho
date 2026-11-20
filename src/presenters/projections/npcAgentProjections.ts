@@ -11,6 +11,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import { resolveAvatar, oyakataStageInput } from "@/engine/generation/avatarGenerator";
+import { formatYen } from "@/lib/engineUtils";
 
 export interface NPCDecisionDTO {
   heyaId: string;
@@ -165,7 +166,7 @@ function surfaceFinancialAlert(data: Record<string, unknown>): SurfacedRow | nul
   if (data.incident === "loan_issued") {
     return {
       category: "rescue",
-      decision: `Took an emergency loan${data.money ? ` (¥${Number(data.money).toLocaleString()})` : ""}`,
+      decision: `Took an emergency loan${data.money ? ` (${formatYen(Number(data.money))})` : ""}`,
       reasoning: "",
     };
   }

@@ -13,7 +13,7 @@ import type { RikishiIdentityDTO } from "@/presenters/rikishi/types";
  */
 export function toIdentityDTO(r: Rikishi, world: WorldState): RikishiIdentityDTO {
   const heya = world.heyas.get(r.heyaId);
-  const age = world.year - r.birthYear;
+  const age = rikishiAge(r, world);
 
   return {
     id: r.id,
@@ -30,4 +30,14 @@ export function toIdentityDTO(r: Rikishi, world: WorldState): RikishiIdentityDTO
     height: r.height,
     weight: r.weight,
   };
+}
+
+/**
+ * Canonical world-age: `world.year - birthYear`, or 0 when no world is
+ * supplied (the optional-world fallback used by the DTO transforms). Sites
+ * with different missing-data semantics (e.g. `birthYear ?? year - 25`)
+ * keep their own logic — this helper is only for the world-optional shape.
+ */
+export function rikishiAge(r: Rikishi, world?: WorldState): number {
+  return world ? world.year - r.birthYear : 0;
 }

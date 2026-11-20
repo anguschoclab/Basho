@@ -7,7 +7,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   MapPin,
   Calendar,
@@ -22,7 +21,7 @@ import {
 } from "lucide-react";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
+import { ArchetypeBadge } from "@/components/rikishi/ArchetypeBadge";
 import {
   RIKISHI_QUICK_STATS,
   RIKISHI_BASIC_INFO,
@@ -180,22 +179,11 @@ export function CombatStyleSection({ rikishi }: { rikishi: UIRikishi }) {
       </h3>
       <div className="bg-muted/20 border-2 border-dashed rounded-lg p-3 space-y-2">
         <div className="flex items-center gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge className="text-[10px] font-black uppercase tracking-widest px-2 h-6 bg-primary/80 cursor-help">
-                  {rikishi.archetypeName || "Unknown"}
-                </Badge>
-              </TooltipTrigger>
-              {rikishi.combatArchetype && (
-                <TooltipContent>
-                  <p className="max-w-xs">
-                    {getCombatArchetypeDescription(rikishi.combatArchetype)}
-                  </p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+          <ArchetypeBadge
+            variant="emphasis"
+            archetypeName={rikishi.archetypeName}
+            combatArchetype={rikishi.combatArchetype}
+          />
           {rikishi.styleName !== rikishi.archetypeName && (
             <Badge
               variant="outline"

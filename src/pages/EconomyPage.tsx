@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Loader2, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/page-shell/index";
@@ -23,6 +23,7 @@ import { LOAN_ISSUANCE_THRESHOLD } from "@/constants/engine/economic";
 import { SortMenu } from "@/components/ui/SortMenu";
 import type { SortDirection } from "@/lib/sortUtils";
 import { useEconomyDerived } from "@/hooks/useEconomyDerived";
+import { LoadingPanel } from "@/components/ui/LoadingPanel";
 
 const EARNER_SORT_OPTIONS = [
   { key: "name", label: "Name" },
@@ -48,14 +49,7 @@ export default function EconomyPage() {
   if (!world) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <EmptyState
-            icon={Loader2}
-            title="Loading Finances"
-            description="Calculating financial health and projections..."
-            iconClassName="animate-spin text-muted-foreground"
-          />
-        </div>
+        <LoadingPanel title="Loading Finances" description="Calculating financial health and projections..." />
       </AppLayout>
     );
   }

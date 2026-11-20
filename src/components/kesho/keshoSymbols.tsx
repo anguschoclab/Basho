@@ -4,6 +4,7 @@
  * Symbol rendering functions for kesho-mawashi display.
  */
 
+import { keshoMotifEmoji } from "@/constants/engine/keshoMotifs";
 import React from "react";
 import { KESHO_COLORS } from "@/constants/ui/drawingPalette";
 
@@ -16,29 +17,7 @@ export function renderSymbol(
   y: number,
   color: string
 ): React.ReactNode {
-  const symbolMap: Record<string, string> = {
-    dragon: "🐉",
-    phoenix: "🔥",
-    tiger: "🐅",
-    mt_fuji: "🗻",
-    waves: "🌊",
-    sakura: "🌸",
-    pine: "🌲",
-    bamboo: "🎋",
-    crane: "🕊️",
-    rising_sun: "☀️",
-    lightning: "⚡",
-    waterfall: "💧",
-    temple: "⛩️",
-    treasure_ship: "⛵",
-    carp: "🐟",
-    lotus: "🪷",
-    thunder: "⛈️",
-    wind: "💨",
-    mountain: "⛰️",
-  };
-
-  const content = symbolMap[symbol.value] || "⭕";
+  const content = keshoMotifEmoji(symbol.value) || "⭕";
 
   return (
     <g transform={`translate(${x}, ${y})`}>
