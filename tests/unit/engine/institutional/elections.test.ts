@@ -12,7 +12,10 @@ function worldWithHeyas(): { world: WorldState; playerOya: Oyakata } {
   const npcHeya = makeMockHeya("h-npc", { politicalCapital: 10, reputation: 10, oyakataId: "oya-n" });
   world.heyas.set(playerHeya.id, playerHeya);
   world.heyas.set(npcHeya.id, npcHeya);
-  for (const id of ["n1", "n2", "n3", "n4", "n5"]) {
+  // 10-seat board (real JSA riji count): the weak candidate stays unelected
+  // only when the field outnumbers the seats — 13 filler heyas guarantee it.
+  for (let i = 1; i <= 13; i++) {
+    const id = `n${i}`;
     world.heyas.set(id as never, makeMockHeya(id, { politicalCapital: 80, reputation: 80 }));
   }
   const playerOya = { id: "oya-p", name: "P", heyaId: "h-player", tenure: { startedYear: 2029, bashoServed: 1, championships: 0, sekitoriProduced: 0, insolvencyEvents: 0, majorScandals: 0, forcedMergers: 0, boardSeatsWon: 0 } } as unknown as Oyakata;

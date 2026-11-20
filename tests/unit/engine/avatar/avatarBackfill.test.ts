@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ensureAvatarIdentities } from "@/engine/generation/avatarGenerator";
+import { ensureAvatarIdentities, generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import type { WorldState } from "@/engine/types/world";
@@ -96,6 +96,43 @@ describe("ensureAvatarIdentities", () => {
 
     const [id] = a.rikishi.keys();
     expect(a.rikishi.get(id)!.avatarConfig).toEqual(b.rikishi.get(id)!.avatarConfig);
+  });
+
+  it("backfills oyakata nationality from the former rikishi's record", () => {
+    const world = generateInitialWorld("avatar-backfill-oya-nat");
+    const rikishi = Array.from(world.rikishi.values())[0];
+    rikishi.nationality = "Mongolia";
+    const oya = Array.from(world.oyakata.values())[0];
+    oya.formerRikishiId = rikishi.id;
+    delete oya.avatarConfig;
+
+    ensureAvatarIdentities(world);
+
+    expect(oya.avatarConfig).toEqual(
+      generateAvatarIdentity({ seed: rikishi.id, nationality: "Mongolia", role: "oyakata" })
+    );
+  });
+
+  it("backfills academy prospect nationality from region (foreign names only)", () => {
+    const world = generateInitialWorld("avatar-backfill-pros-nat");
+    const heya = Array.from(world.heyas.values())[0];
+    heya.youthAcademy = {
+      level: 1, budget: 0, totalGraduated: 0, lastIntakeYear: 0,
+      prospects: [
+        { id: "pros-mn", shikona: "T", age: 16, region: "Mongolia" } as any,
+        { id: "pros-ao", shikona: "K", age: 16, region: "Aomori" } as any,
+      ],
+      staff: [],
+    } as any;
+
+    ensureAvatarIdentities(world);
+
+    expect(heya.youthAcademy!.prospects[0].avatarConfig).toEqual(
+      generateAvatarIdentity({ seed: "pros-mn", nationality: "Mongolia", role: "prospect" })
+    );
+    expect(heya.youthAcademy!.prospects[1].avatarConfig).toEqual(
+      generateAvatarIdentity({ seed: "pros-ao", nationality: "Japan", role: "prospect" })
+    );
   });
 
   it("never overwrites a valid stored identity", () => {

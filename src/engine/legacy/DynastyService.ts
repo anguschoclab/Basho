@@ -236,6 +236,27 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
     }
   }
 
+  // Sanyo advisory expiry: emeritus consultants leave the JSA at 70.
+  for (const o of world.oyakata?.values() ?? []) {
+    if (
+      o.elderStatus === "sanyo" &&
+      !o.retirementYear &&
+      world.year >= (o.sanyoExpiryYear ?? Number.POSITIVE_INFINITY)
+    ) {
+      builder.updateOyakata(o.id, { retirementYear: world.year });
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "narrative",
+        {
+          incident: "sanyo_advisory_complete",
+          shikona: o.name,
+          reason: `${o.name} completed his sanyo advisory term at 70 (JSA).`,
+        },
+        { heyaId: o.heyaId }
+      );
+    }
+  }
+
   return builder.build();
 }
 
@@ -358,8 +379,21 @@ export function triggerSuccession(
   }
 
   // 6. Remove the outgoing oyakata — previously they vanished from the chair
-  // but remained a live oyakata entity.
-  builder.removeOyakata(currentOyakata.id);
+  // but remained a live oyakata entity. Exception: a stockholding elder
+  // retiring at the mandatory 65 may serve the JSA as a sanyo (consultant)
+  // until 70 — he stays in the registry as an emeritus advisor.
+  const sanyoEligible =
+    currentOyakata.age >= 65 &&
+    (currentOyakata.elderStatus ?? "toshiyori") !== "jun_toshiyori";
+  if (sanyoEligible) {
+    builder.updateOyakata(currentOyakata.id, {
+      isEmeritus: true,
+      elderStatus: "sanyo",
+      sanyoExpiryYear: world.year + (70 - currentOyakata.age),
+    });
+  } else {
+    builder.removeOyakata(currentOyakata.id);
+  }
 
   // 7. Elder-stock succession: the retiring oyakata's held myoseki passes to
   // the new oyakata — a succession without the chair's stock is not a real
@@ -581,7 +615,20 @@ function triggerSuccessionWithGeneric(
 
   builder.addOyakata(newOyakata);
   builder.updateHeya(heyaId, { oyakataId: dummyId });
-  builder.removeOyakata(currentOyakata.id);
+  // Same sanyo rule as the heir path: a stockholding elder retiring at the
+  // mandatory 65 may stay in the JSA as a consultant until 70.
+  if (
+    currentOyakata.age >= 65 &&
+    (currentOyakata.elderStatus ?? "toshiyori") !== "jun_toshiyori"
+  ) {
+    builder.updateOyakata(currentOyakata.id, {
+      isEmeritus: true,
+      elderStatus: "sanyo",
+      sanyoExpiryYear: world.year + (70 - currentOyakata.age),
+    });
+  } else {
+    builder.removeOyakata(currentOyakata.id);
+  }
   // The chair's elder stock passes to the trustee — removing the oyakata
   // without reseating their stock leaves a dangling ownerId/holderId.
   transferElderStock(builder, world, currentOyakata.id, dummyId);

@@ -364,6 +364,18 @@ function isV2Identity(c: AvatarIdentity | undefined): c is AvatarIdentity {
 }
 
 /**
+ * Region→nationality heuristic for records that carry a region but no
+ * nationality field (academy prospects). International ORIGINS entries are
+ * country names; every other region is a Japanese prefecture or institution.
+ */
+const FOREIGN_REGION_NAMES = new Set(["mongolia", "georgia", "egypt", "brazil", "usa"]);
+
+function nationalityFromRegion(region: string | undefined): string {
+  if (region && FOREIGN_REGION_NAMES.has(region.toLowerCase())) return region;
+  return "Japan";
+}
+
+/**
  * Assign deterministic v2 AvatarIdentity to every person entity missing one
  * (or carrying a stale version). Seeds are bound to each entity's unique
  * stable id — oyakata prefer `formerRikishiId` so converted elders keep the
@@ -395,19 +407,21 @@ export function ensureAvatarIdentities(world: {
   const rikishiById = new Map(rikishiVals.map((r) => [r.id, r]));
   const histById = new Map(histVals.map((r) => [r.id, r]));
   for (const o of valuesOf(world.oyakata)) {
+    const former = o.formerRikishiId
+      ? (rikishiById.get(o.formerRikishiId) ?? histById.get(o.formerRikishiId))
+      : undefined;
     if (!isV2Identity(o.avatarConfig)) {
+      // Nationality backfill: the former wrestler's birth nationality drives
+      // cosmetic features only — JSA citizenship for toshiyori is mandatory.
       o.avatarConfig = generateAvatarIdentity({
         seed: o.formerRikishiId ?? o.id,
-        nationality: "Japan",
+        nationality: former?.nationality ?? "Japan",
         role: "oyakata",
       });
     }
     // Cosmetic weight backfill: the former wrestler's real build when his
     // record is still around, else a plausible seeded elder weight (110-175kg).
     if (o.weight == null) {
-      const former = o.formerRikishiId
-        ? (rikishiById.get(o.formerRikishiId) ?? histById.get(o.formerRikishiId))
-        : undefined;
       o.weight =
         former?.weight ?? seedInt(o.formerRikishiId ?? o.id, "elder-weight", 110, 175);
     }
@@ -462,7 +476,7 @@ export function ensureAvatarIdentities(world: {
       if (!isV2Identity(p.avatarConfig)) {
         p.avatarConfig = generateAvatarIdentity({
           seed: p.id,
-          nationality: "Japan",
+          nationality: nationalityFromRegion(p.region),
           role: "prospect",
         });
       }

@@ -71,11 +71,15 @@ export interface Oyakata {
    * Elder status kind. "toshiyori" (default/undefined) holds a myoseki share;
    * "jun_toshiyori" is a temporary no-stock status for sanyaku+ retirees
    * (junToshiyoriExpiryYear bounds it); "ichidai_toshiyori" is a
-   * one-generation non-transferable name for great yokozuna.
+   * one-generation non-transferable name for great yokozuna;
+   * "sanyo" is the post-mandatory-retirement consultant status — the elder
+   * stays in the JSA registry as an advisor until 70 (sanyoExpiryYear).
    */
-  elderStatus?: "toshiyori" | "jun_toshiyori" | "ichidai_toshiyori";
+  elderStatus?: "toshiyori" | "jun_toshiyori" | "ichidai_toshiyori" | "sanyo";
   /** Year a jun-toshiyori appointment lapses (5y yokozuna / 3y others). */
   elderExpiryYear?: number;
+  /** Year a sanyo (consultant) appointment lapses — the elder's 70th birthday. */
+  sanyoExpiryYear?: number;
 
   /** Drama Pass (Initiative 4) */
   grudges?: Id[]; // Heya or Oyakata IDs this person hates
