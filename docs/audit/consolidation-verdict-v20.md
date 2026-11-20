@@ -95,10 +95,43 @@ typescript-eslint family 8.72.2 (8.73.0 skipped — <7d fresh per policy).
 | `bun run test` (fast) | 1102 files / 10,241 tests — all green on jsdom 31 |
 
 Not run this pass: the perf CI gate (baseline re-seeds on main push);
-post-upgrade `test:slow`/`test:coverage`/soak re-runs — the suites are
-deps-insensitive except `lintStrictGate` (eslint subprocess audit) and
-jsdom env, both covered by the lint + fast-suite results above.
+post-upgrade `test:slow`/`test:coverage` re-runs — deps-insensitive except
+`lintStrictGate` (eslint subprocess audit) and jsdom env, both covered by
+the lint + fast-suite results above.
 
 The duplicate-React-key wart was root-caused and fixed: `useKenshoData`
 emitted a row per participant, duping `boutId` keys on same-heya kensho
 bouts and crediting losers with the winner's envelopes (`1a8d2f2f`).
+
+### `year-of-bashos` soak — two root causes found, one fixed, one open
+
+**S1 — autosave fallback stall (FIXED, `64b1c70e`).** Every IndexedDB put
+in the headless web environment aborts; the fallback then LZ-compressed the
+full ~26MB save on the main thread *per write* (~3 writes per autosave,
+autosave fires per world update). This inflated the soak from its v8-era
+~8min to 2h+ timeouts. Circuit-breaker latches (`idbWritesBroken`,
+`lsQuotaBroken`) now stop hammering dead backends; `idbCache` still serves
+session reads. Post-fix run: bashos 1–2 ~10x faster, zero IDB spam.
+
+**S2 — `pendingCrisis` interactive wedge (OPEN, real product bug).**
+Headless interactive-path probe (`scratch/interactive-freeze-probe.ts`,
+same e2e seed): when a player-gated `pendingCrisis` is set (e.g.
+`media_firestorm` at basho senshuraku week), `shouldBlockTick`
+(`shouldHaltAdvance.ts:32`) swallows the remainder of *every* tick —
+`dayIndexGlobal` burns +7 per advance while `week`/`bashoDay` freeze
+forever. `reqDecisions` stays 0 because the gate is `pendingCrisis`, not a
+required `pendingDecisions` entry. In the e2e the world froze mid-interim
+for the remaining ~2h: the CrisisModal either failed to render or the
+driver's resolution clicks were dropped by the `pendingTick` command guard.
+Product-side wart regardless of test outcome: a swallowed tick still
+consumes the calendar day, so an unresolvable/undelivered crisis silently
+burns the calendar indefinitely with no surfacing. Needs: (a) confirm the
+modal renders for `media_firestorm`-type crises in the e2e page (log what
+`resolveCrisisIfPresent` sees), (b) consider freezing `dayIndexGlobal` on
+swallowed ticks or a watchdog that fails loudly instead of silently
+advancing, (c) `sendCommand` should not silently drop `RESOLVE_*` commands
+during `pendingTick` — those are exactly the commands that unblock the tick.
+
+Remote branch state: `main` + `perf-baseline` only. Note: a concurrent
+session pushed `0f5f6bef` (narrative enrichment) mid-verification — merged
+via rebase, no conflicts.
