@@ -99,8 +99,8 @@ export function applyStakesAndKensho(
       day: bout.day,
     });
 
-    // E4: Track global kimarite stats for Era Drift
-    if (result.kimarite && result.kimarite !== "fusensho") {
+    // E4: Track global kimarite stats for Era Drift (skip fusensho and non-decision draws)
+    if (result.kimarite && result.kimarite !== "fusensho" && !result.isDraw) {
       const stats = { ...(world.globalKimariteStats || {}) };
       stats[result.kimarite] = (stats[result.kimarite] || 0) + 1;
       builder.updateWorldField("globalKimariteStats", stats);
@@ -111,9 +111,8 @@ export function applyStakesAndKensho(
     }
 
     // Kensho banners/envelopes are a makuuchi-only tradition — lower-division
-    // bouts (including juryo kettei-sen playoffs) never draw banners. Mirrors
-    // the payout gate in economics.ts (onBoutResolvedEconomics).
-    if (east.division === "makuuchi") {
+    // bouts and non-decision draws never award envelopes.
+    if (east.division === "makuuchi" && !result.isDraw) {
       applyKensho(world, result, winner, importance);
     }
   }

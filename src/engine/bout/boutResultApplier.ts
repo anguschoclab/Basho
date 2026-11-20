@@ -34,11 +34,11 @@ function computeUpdatedStandings(
   basho: BashoState,
   winner: Rikishi,
   loser: Rikishi
-): Map<string, { wins: number; losses: number; absences?: number }> {
+): Map<string, { wins: number; losses: number; absences?: number; draws?: number }> {
   // JSA convention: a fusenshō result is a fusenpai *loss* — the scheduled
   // bout on the day of withdrawal goes in the losses column. Kyūjō days
   // after that produce no matches at all, so they publish as absences
-  // (derived as divisionDays − wins − losses), not extra losses.
+  // (derived as divisionDays − wins − losses − draws), not extra losses.
   const standings = new Map(basho.standings);
   const wRec = standings.get(winner.id) || { wins: 0, losses: 0, absences: 0 };
   const lRec = standings.get(loser.id) || { wins: 0, losses: 0, absences: 0 };
@@ -46,11 +46,13 @@ function computeUpdatedStandings(
     wins: wRec.wins + 1,
     losses: wRec.losses,
     absences: wRec.absences ?? 0,
+    ...(wRec.draws ? { draws: wRec.draws } : {}),
   });
   standings.set(loser.id, {
     wins: lRec.wins,
     losses: lRec.losses + 1,
     absences: lRec.absences ?? 0,
+    ...(lRec.draws ? { draws: lRec.draws } : {}),
   });
   return standings;
 }
@@ -573,6 +575,94 @@ function emitMentorMenteeEvent(
  * @param result - The result of the simulated bout.
  * @returns StateImpact describing bout result application.
  */
+/** Apply an official draw result (azukari / itamiwake / hikiwake): neutral to W/L, streaks, and kensho. */
+function applyDrawBoutResult(
+  world: WorldState,
+  basho: BashoState,
+  match: MatchSchedule,
+  result: BoutResult,
+  east: Rikishi,
+  west: Rikishi,
+  maezumoBout: boolean,
+  builder: ImpactBuilder
+): StateImpact {
+  const standings = new Map(basho.standings);
+  if (!maezumoBout) {
+    for (const [sideR, otherR] of [
+      [east, west],
+      [west, east],
+    ] as const) {
+      if (sideR.isMaezumo) continue;
+      const rec = standings.get(sideR.id) || { wins: 0, losses: 0, absences: 0 };
+      const nextDraws = (rec.draws ?? 0) + 1;
+      standings.set(sideR.id, {
+        wins: rec.wins,
+        losses: rec.losses,
+        absences: rec.absences ?? 0,
+        draws: nextDraws,
+      });
+      const rDraws = (sideR.currentBashoDraws ?? 0) + 1;
+      const logEntry: MatchResultLog = {
+        opponentId: otherR.id,
+        win: false,
+        draw: true,
+        kimarite: result.kimarite ?? "",
+        bashoId: basho.id ?? `${basho.bashoName}-${world.year}`,
+        day: match.day ?? 0,
+        year: world.year ?? 0,
+        division: sideR.division,
+      };
+      builder.updateRikishi(sideR.id, {
+        currentBashoDraws: rDraws,
+        currentBashoRecord: {
+          wins: sideR.currentBashoWins ?? 0,
+          losses: sideR.currentBashoLosses ?? 0,
+          draws: rDraws,
+        },
+        history: [...(sideR.history ?? []), logEntry].slice(-RIKISHI_BOUT_HISTORY_MAX),
+      });
+    }
+  }
+
+  const duration = result.duration ?? 0;
+  for (const r of [east, west]) {
+    if (r.division === "makuuchi" || r.division === "juryo") {
+      const gain = Math.round(duration * BOUT_DURATION_FATIGUE_PER_TICK * 1.25);
+      if (gain > 0) {
+        builder.updateRikishi(r.id, { fatigue: Math.min(100, (r.fatigue ?? 0) + gain) });
+      }
+    }
+  }
+
+  const bashoId = basho.id ?? "unknown";
+  builder.merge(updateH2H(east, west, result, bashoId, world.year ?? 0, match.day));
+  builder.merge(injuries.onBoutResolvedInjury(world, { match, result, east, west }));
+  builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));
+  builder.merge(onBoutResolvedOpponentModels(world, { match, result, east, west }));
+
+  builder.logEvent(
+    "BOUT_RESOLVED",
+    "match",
+    {
+      shikona: east.shikona,
+      rikishiId: east.id,
+      east: east.shikona,
+      eastRikishiId: east.id,
+      west: west.shikona,
+      westRikishiId: west.id,
+      kimarite: result.kimarite,
+      duration: result.duration,
+      day: match.day,
+      isDraw: true,
+      drawType: result.drawType,
+    },
+    { rikishiId: east.id, importance: "notable" }
+  );
+
+  builder.addMetadata("updatedStandings", standings);
+  return builder.build();
+}
+
 export function applyBoutResult(
   world: WorldState,
   match: MatchSchedule,
@@ -593,6 +683,10 @@ export function applyBoutResult(
   // Maezumo participants are evaluation fillers — a bout touching one never
   // writes standings, career counters, or history for either side.
   const maezumoBout = east.isMaezumo === true || west.isMaezumo === true;
+
+  if (result.isDraw) {
+    return applyDrawBoutResult(world, basho, match, result, east, west, maezumoBout, builder);
+  }
 
   // Double fusenpai (両者不戦敗): both rikishi absent for a scheduled bout —
   // no winner exists. Each side takes a fusenpai loss; no win, records, H2H,

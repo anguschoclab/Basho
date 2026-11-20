@@ -5,6 +5,7 @@
 export interface H2HRecord {
   wins: number;
   losses: number;
+  draws?: number;
   lastMatch: {
     winnerId: string;
     kimarite: string;
@@ -26,6 +27,7 @@ export interface H2HRecord {
 export interface MatchResultLog {
   opponentId: string;
   win: boolean;
+  draw?: boolean;
   kimarite: string;
   bashoId: string;
   day: number;

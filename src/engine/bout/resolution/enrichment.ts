@@ -13,6 +13,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { BoutTactic } from "@/engine/types/combat";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { DRAW_OUTCOME_METADATA } from "@/constants/engine/bout";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 import { detectKinboshi } from "@/engine/bout/boutAchievements";
 import { recordCareerHighlight, type CareerHighlight } from "@/engine/bout/CareerHighlights";
@@ -102,17 +103,20 @@ export function enrichResult(
   world: WorldState | undefined,
   builder: ImpactBuilder
 ) {
-  // Enrich kimariteName from registry (classifier returns id; registry has display name)
-  // Replace O(N) array find with O(1) Map lookup in boutResolver
-  const k = getKimarite(result.kimarite);
-  if (k) result.kimariteName = k.name;
+  // Enrich kimariteName from registry (or DRAW_OUTCOME_METADATA for draws)
+  if (result.isDraw && result.drawType) {
+    result.kimariteName = DRAW_OUTCOME_METADATA[result.drawType].name;
+    result.isKinboshi = false;
+  } else {
+    const k = getKimarite(result.kimarite);
+    if (k) result.kimariteName = k.name;
 
-  const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
+    const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
+    const kinboshiDelta = detectAwards(result, winner, loser, bout);
 
-  const kinboshiDelta = detectAwards(result, winner, loser, bout);
-
-  const bashoLabel = `${basho.year ?? world?.year ?? DEFAULT_START_YEAR}-${bashoName ?? "unknown"}`;
-  recordWinnerHighlights(winner, loser, bout, bashoLabel, kinboshiDelta, builder);
+    const bashoLabel = `${basho.year ?? world?.year ?? DEFAULT_START_YEAR}-${bashoName ?? "unknown"}`;
+    recordWinnerHighlights(winner, loser, bout, bashoLabel, kinboshiDelta, builder);
+  }
 
   // 2.5. Copy dramatic context + cross-division metadata from match schedule
   const match = basho.matches?.find((m) => m.boutId === result.boutId);

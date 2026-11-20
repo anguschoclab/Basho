@@ -878,34 +878,105 @@ function beatFoulReviewArc(p: PbpPipeline): void {
   );
 }
 
+function emitMonoiiOutcomeLine(
+  p: PbpPipeline,
+  monoiiRng: ReturnType<typeof rngFromSeed>
+): void {
+  const { east, loserRikishi, push, result, west, winnerRikishi } = p;
+  const outcome = result.monoiiOutcome ?? "upheld";
+  if (outcome === "azukari" || outcome === "itamiwake") {
+    push(
+      BardEngine.resolve(monoiiRng, `post_bout.mono_ii.${outcome}`, {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "mono_ii",
+      ["drama", "draw"]
+    );
+  } else if (outcome === "reversed") {
+    push(
+      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_reversed", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "mono_ii",
+      ["drama"]
+    );
+  } else if (outcome === "rematch") {
+    push(
+      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.rematch_ordered", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "mono_ii",
+      ["drama"]
+    );
+    if (result.isTorinaoshi) {
+      push(
+        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.torinaoshi_recap", {
+          WINNER: winnerRikishi.shikona,
+          LOSER: loserRikishi.shikona,
+          KIMARITE: result.kimariteName,
+          winnerId: winnerRikishi.id,
+          loserId: loserRikishi.id,
+        }).text,
+        "mono_ii",
+        ["drama"]
+      );
+    }
+  } else {
+    push(
+      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_upheld", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "mono_ii",
+      ["drama"]
+    );
+  }
+}
+
 function beatMonoii(p: PbpPipeline): void {
   const { east, loserRikishi, push, result, seed, west, winnerRikishi } = p;
-  // 16. Mono-ii (judge consultation) — expanded sub-paths
-  if (result.monoii) {
-    // A foul review has its own dedicated arc — the judges convened over a
-    // suspected kinjite, not a photo-finish.
-    if (result.foulReview) {
-      beatFoulReviewArc(p);
-      return;
-    }
-    const monoiiRng = rngFromSeed(seed, "pbp", "mono-ii");
-    // The gunbai went to the APPARENT winner — after a sashichigae that is
-    // the eventual loser. Narrate the call as it was made.
-    const gunbaiWinner =
-      result.apparentWinner != null
-        ? result.apparentWinner === "east"
-          ? east
-          : west
-        : winnerRikishi;
-    const gunbaiLoser =
-      result.apparentWinner != null
-        ? result.apparentWinner === "east"
-          ? west
-          : east
-        : loserRikishi;
-    // Initial gunbai call — contested
+  if (!result.monoii) return;
+  if (result.foulReview) {
+    beatFoulReviewArc(p);
+    return;
+  }
+  const monoiiRng = rngFromSeed(seed, "pbp", "mono-ii");
+  const gunbaiWinner =
+    result.apparentWinner != null
+      ? result.apparentWinner === "east"
+        ? east
+        : west
+      : winnerRikishi;
+  const gunbaiLoser =
+    result.apparentWinner != null
+      ? result.apparentWinner === "east"
+        ? west
+        : east
+      : loserRikishi;
+  push(
+    BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gunbai_contested", {
+      WINNER: gunbaiWinner.shikona,
+      LOSER: gunbaiLoser.shikona,
+      winnerId: gunbaiWinner.id,
+      loserId: gunbaiLoser.id,
+    }).text,
+    "mono_ii",
+    ["drama", "mono_ii"]
+  );
+  if (result.monoiiKind === "missed_call") {
     push(
-      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gunbai_contested", {
+      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.missed_call", {
         WINNER: gunbaiWinner.shikona,
         LOSER: gunbaiLoser.shikona,
         winnerId: gunbaiWinner.id,
@@ -914,113 +985,40 @@ function beatMonoii(p: PbpPipeline): void {
       "mono_ii",
       ["drama", "mono_ii"]
     );
-    // A proactive panel catch — the judges stopped it before the result
-    // was even announced.
-    if (result.monoiiKind === "missed_call") {
-      push(
-        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.missed_call", {
-          WINNER: gunbaiWinner.shikona,
-          LOSER: gunbaiLoser.shikona,
-          winnerId: gunbaiWinner.id,
-          loserId: gunbaiLoser.id,
-        }).text,
-        "mono_ii",
-        ["drama", "mono_ii"]
-      );
-    }
-    // Gyoji confusion — only when the call didn't stand: an upheld decision
-    // means the gyoji was right (V16-B47: previously rolled independently of
-    // the actual outcome).
-    if (result.monoiiOutcome !== "upheld" && monoiiRng.next() < NARRATIVE_GYOJI_CONFUSED_CHANCE) {
-      push(
-        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gyoji_confused", {
-          WINNER: winnerRikishi.shikona,
-          LOSER: loserRikishi.shikona,
-          winnerId: winnerRikishi.id,
-          loserId: loserRikishi.id,
-        }).text,
-        "mono_ii",
-        ["drama", "mono_ii"]
-      );
-    }
-    // Judges convene
-    push(
-      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.review", {
-        WINNER: winnerRikishi.shikona,
-        LOSER: loserRikishi.shikona,
-        winnerId: winnerRikishi.id,
-        loserId: loserRikishi.id,
-      }).text,
-      "mono_ii",
-      ["drama", "mono_ii"]
-    );
-    // Replay analysis
-    push(
-      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.replay_analysis", {
-        WINNER: winnerRikishi.shikona,
-        LOSER: loserRikishi.shikona,
-        winnerId: winnerRikishi.id,
-        loserId: loserRikishi.id,
-      }).text,
-      "mono_ii",
-      ["drama", "mono_ii"]
-    );
-    // Outcome: announce the RECORDED outcome (monoiiOutcome is resolved by
-    // applyGyojiOfficiation before narrative generation — V18-O1). No
-    // panelable pool → outcome stays undefined → the call stands.
-    const outcome = result.monoiiOutcome ?? "upheld";
-    if (outcome === "reversed") {
-      // Call reversed — judges determine the loser actually touched first
-      push(
-        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_reversed", {
-          WINNER: winnerRikishi.shikona,
-          LOSER: loserRikishi.shikona,
-          winnerId: winnerRikishi.id,
-          loserId: loserRikishi.id,
-        }).text,
-        "mono_ii",
-        ["drama"]
-      );
-    } else if (outcome === "rematch") {
-      // Too close to call — rematch ordered
-      push(
-        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.rematch_ordered", {
-          WINNER: winnerRikishi.shikona,
-          LOSER: loserRikishi.shikona,
-          winnerId: winnerRikishi.id,
-          loserId: loserRikishi.id,
-        }).text,
-        "mono_ii",
-        ["drama"]
-      );
-      // The torinaoshi actually happened — recap how the rematch ended.
-      if (result.isTorinaoshi) {
-        push(
-          BardEngine.resolve(monoiiRng, "post_bout.mono_ii.torinaoshi_recap", {
-            WINNER: winnerRikishi.shikona,
-            LOSER: loserRikishi.shikona,
-            KIMARITE: result.kimariteName,
-            winnerId: winnerRikishi.id,
-            loserId: loserRikishi.id,
-          }).text,
-          "mono_ii",
-          ["drama"]
-        );
-      }
-    } else {
-      // Call upheld — original decision stands
-      push(
-        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_upheld", {
-          WINNER: winnerRikishi.shikona,
-          LOSER: loserRikishi.shikona,
-          winnerId: winnerRikishi.id,
-          loserId: loserRikishi.id,
-        }).text,
-        "mono_ii",
-        ["drama"]
-      );
-    }
   }
+  if (result.monoiiOutcome !== "upheld" && monoiiRng.next() < NARRATIVE_GYOJI_CONFUSED_CHANCE) {
+    push(
+      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gyoji_confused", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "mono_ii",
+      ["drama", "mono_ii"]
+    );
+  }
+  push(
+    BardEngine.resolve(monoiiRng, "post_bout.mono_ii.review", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "mono_ii",
+    ["drama", "mono_ii"]
+  );
+  push(
+    BardEngine.resolve(monoiiRng, "post_bout.mono_ii.replay_analysis", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "mono_ii",
+    ["drama", "mono_ii"]
+  );
+  emitMonoiiOutcomeLine(p, monoiiRng);
 }
 
 function beatHansokuPenalty(p: PbpPipeline): void {
@@ -1693,6 +1691,11 @@ function beatRankPride(p: PbpPipeline): void {
 }
 
 export function narrateAftermath(p: PbpPipeline): void {
+  if (p.result.isDraw) {
+    beatPostBoutInjury(p);
+    beatMonoii(p);
+    return;
+  }
   beatPostBoutYushoRace(p);
   beatSignatureGripAftermath(p);
   beatSanyakuWinStreak(p);

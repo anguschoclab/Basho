@@ -38,10 +38,10 @@ export function bashoStatus(world: WorldState, ctx: NarrativeContext) {
  * @returns The logged engine event
  */
 export function boutResolved(world: WorldState, data: NarrativeContext) {
-  const rng = createRngForEvent(
-    world,
-    `bout-resolved-${data.winnerRikishiId}-${data.loserRikishiId}-${data.day}`
-  );
+  const rngKey = data.isDraw
+    ? `bout-resolved-draw-${data.eastRikishiId}-${data.westRikishiId}-${data.day}`
+    : `bout-resolved-${data.winnerRikishiId}-${data.loserRikishiId}-${data.day}`;
+  const rng = createRngForEvent(world, rngKey);
   data = {
     ...enrichEventContext(world, data),
     winnerId: data.winnerRikishiId,

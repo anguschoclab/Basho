@@ -302,6 +302,11 @@
         "%WEST% is awarded the bout on the judges' decision — his consistency earned it."
       ]
     },
+    "mizu_iri": [
+      "Mizu-iri! The gyoji steps between %EAST% and %WEST% for a water break after a protracted deadlock; both men resume in their exact grip.",
+      "Neither rikishi can break the stalemate — the chief judge calls a water break (mizu-iri), freezing the mawashi grip until they catch their breath.",
+      "An exhausted hush settles over the Kokugikan as %EAST% and %WEST% step apart briefly for a mizu-iri before locking back into place."
+    ],
     "finish": {
       "common": [
         "And that is the conclusion. %WINNER% takes the victory.",
@@ -313,6 +318,20 @@
         "%WINNER% bids farewell to %LOSER% at the edge — %KIMARITE% is the call.",
         "%WINNER% outlasts %LOSER% and seals it by %KIMARITE%."
       ],
+      "draw": {
+        "hikiwake": [
+          "Still deadlocked after two water breaks! The gyoji halts the marathon — hikiwake (official draw) between %EAST% and %WEST%!",
+          "Neither %EAST% nor %WEST% has anything left to tip the scales after mizu-iri. Hikiwake — no decision awarded."
+        ],
+        "itamiwake": [
+          "The bout is stopped on injury grounds! After conferring, the shimpan declare itamiwake — a pain draw between %EAST% and %WEST%.",
+          "Injury prevents a clean finish — %EAST% and %WEST% part with an official itamiwake ruling."
+        ],
+        "azukari": [
+          "Even the rematch leaves the judges divided — the shimpan declare azukari, holding the bout between %EAST% and %WEST% in abeyance.",
+          "Too close across two fiercely contested bouts! Azukari — an official draw for %EAST% and %WEST%."
+        ]
+      },
       "dramatic": [
         "%WINNER% stands tall, chest heaving, as the reality of the victory settles.",
         "The hall buzzes with the electricity of that encounter.",

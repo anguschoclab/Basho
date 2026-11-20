@@ -118,9 +118,10 @@ export function deliberateBanzukeMovement(
   const wins = perf?.wins ?? 0;
   const fights = RANK_HIERARCHY[rank].fightsPerBasho;
 
-  // Real rule: every scheduled bout not won counts against the record —
-  // losses and kyujo days alike. (wins − effectiveLosses)/2 slots.
-  const effectiveLosses = Math.max(0, fights - wins);
+  // Real rule: every scheduled bout not won or drawn counts against the record —
+  // losses and kyujo days alike; draws are neutral. (wins − effectiveLosses)/2 slots.
+  const draws = perf?.draws ?? 0;
+  const effectiveLosses = Math.max(0, fights - wins - draws);
   const baseDelta = Math.round((wins - effectiveLosses) / 2);
 
   const decisions = conveneCommittee(

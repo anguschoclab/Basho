@@ -26,14 +26,24 @@ export function getNarrationPbp(result: BoutResult, east: UIRikishi, west: UIRik
     return raw.filter((l) => l.text && l.text.length > 2);
   }
 
-  const winner = result.winnerRikishiId === east.id ? east : west;
-  const loser = result.winnerRikishiId === east.id ? west : east;
   const mk = (text: string, phase: PbpLine["phase"], tags?: PbpTag[]): PbpLine => ({
     text,
     id: `${result.boutId}-fb-${phase}-${text.slice(0, 8)}`,
     phase,
     tags,
   });
+
+  if (result.isDraw) {
+    return [
+      mk(`${east.shikona} (East) faces ${west.shikona} (West).`, "opening"),
+      mk(`They crouch at the shikiri-sen. Silence falls.`, "ritual"),
+      mk(`TACHIAI! Neither rikishi yields an inch in a grueling exchange.`, "tachiai"),
+      mk(`Official draw — ${result.kimariteName || "draw"}!`, "finish", ["draw"]),
+    ];
+  }
+
+  const winner = result.winnerRikishiId === east.id ? east : west;
+  const loser = result.winnerRikishiId === east.id ? west : east;
 
   const lines: PbpLine[] = [
     mk(`${east.shikona} (East) faces ${west.shikona} (West).`, "opening"),

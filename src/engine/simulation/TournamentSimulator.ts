@@ -172,7 +172,7 @@ function simulateDay(
     if (rec) {
       entry.wins = rec.wins;
       entry.losses = rec.losses;
-      entry.absences = Math.max(0, day - rec.wins - rec.losses);
+      entry.absences = Math.max(0, day - rec.wins - rec.losses - (rec.draws ?? 0));
     }
   }
 
@@ -229,7 +229,7 @@ function persistBashoState(
   const globalKimariteStats = { ...(workingWorld.globalKimariteStats || {}) };
   const allTimeKimariteStats = { ...(workingWorld.allTimeKimariteStats || {}) };
   activeBasho.matches.forEach((m) => {
-    if (m.result?.kimarite) {
+    if (m.result?.kimarite && !m.result.isDraw) {
       globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
       allTimeKimariteStats[m.result.kimarite] = (allTimeKimariteStats[m.result.kimarite] || 0) + 1;
     }

@@ -105,19 +105,21 @@ export function computeTacticAftermath(
   const henkaSide = result.log?.find((e) => e.data?.event === "henka_success")?.data
     ?.attackerSide as "east" | "west" | undefined;
 
+  const eastWon = !result.isDraw && result.winner === "east";
+  const westWon = !result.isDraw && result.winner === "west";
   const eastResult = aftermathForSide(
     east,
-    result.winner === "east",
+    eastWon,
     resolved.east,
     result.kimarite,
-    result.winner === "east" && henkaSide === "east"
+    eastWon && henkaSide === "east"
   );
   const westResult = aftermathForSide(
     west,
-    result.winner === "west",
+    westWon,
     resolved.west,
     result.kimarite,
-    result.winner === "west" && henkaSide === "west"
+    westWon && henkaSide === "west"
   );
 
   return {

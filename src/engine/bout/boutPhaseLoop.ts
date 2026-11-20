@@ -5,7 +5,7 @@ import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult, BashoState, BoutLogEntry } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";
-import type { KimariteId } from "@/engine/types/combat";
+import type { KimariteId, DrawOutcomeType } from "@/engine/types/combat";
 import {
   MAX_BOUT_TICKS,
   POST_RESOLUTION_REVERSAL_CHANCE,
@@ -18,8 +18,15 @@ import {
   FATIGUE_LOG_TICK_1,
   FATIGUE_LOG_TICK_2,
   INSTABILITY_FLOOR,
+  MIZU_IRI_FIRST_TICK,
+  MIZU_IRI_SECOND_TICK,
+  MIZU_IRI_MAX_BREAKS,
+  MIZU_IRI_TORQUE_BALANCE,
+  MIZU_IRI_RING_MARGIN,
+  MIZU_IRI_FATIGUE_RECOVERY,
+  HIKIWAKE_MAX_INSTABILITY_GAP,
 } from "@/constants/engine/bout";
-import type { EngineStateV2 } from "@/engine/types/combat-spatial";
+import { RING_RADIUS, type EngineStateV2 } from "@/engine/types/combat-spatial";
 import {
   sideTactics,
   skillTieBreak,
@@ -88,49 +95,85 @@ function trackTickMomentumAndFatigue(st: EngineStateV2, boutLog: BoutLogEntry[])
   }
 }
 
-function runPhaseLoop(
+interface PhaseLoopOutcome {
+  winner: Side;
+  kimarite: KimariteId | DrawOutcomeType;
+  isTimeout: boolean;
+  isDraw?: boolean;
+  drawType?: DrawOutcomeType;
+  mizuIriCount?: number;
+}
+
+/** Check whether a deadlocked center-ring belt battle warrants a mizu-iri water break. */
+function maybeTriggerMizuIri(
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[],
+  mizuIriCount: number
+): boolean {
+  if (mizuIriCount >= MIZU_IRI_MAX_BREAKS) return false;
+  const triggerTick = mizuIriCount === 0 ? MIZU_IRI_FIRST_TICK : MIZU_IRI_SECOND_TICK;
+  if (st.tick !== triggerTick || st.phase.tag !== "belt_battle") return false;
+
+  const { torqueEast, torqueWest } = st.phase.state;
+  const torqueScale = Math.max(1, Math.abs(torqueEast) + Math.abs(torqueWest));
+  if (Math.abs(torqueEast - torqueWest) > MIZU_IRI_TORQUE_BALANCE * torqueScale) return false;
+
+  const maxDist = RING_RADIUS - MIZU_IRI_RING_MARGIN;
+  if (Math.hypot(st.east.x, st.east.z) > maxDist || Math.hypot(st.west.x, st.west.z) > maxDist) {
+    return false;
+  }
+
+  st.east.boutFatigue *= 1 - MIZU_IRI_FATIGUE_RECOVERY;
+  st.west.boutFatigue *= 1 - MIZU_IRI_FATIGUE_RECOVERY;
+  st.momentumScore *= 0.25;
+  boutLog.push({
+    phase: "mizu_iri",
+    clock: st.tick * CLOCK_MULTIPLIER,
+    data: {
+      breakNumber: mizuIriCount + 1,
+      eastFatigue: st.east.boutFatigue,
+      westFatigue: st.west.boutFatigue,
+    },
+  });
+  return true;
+}
+
+/** Resolve a regulation bout that reached MAX_TICKS without a finish. */
+function resolveTimeoutOutcome(
   rng: SeededRNG,
   east: Rikishi,
   west: Rikishi,
   st: EngineStateV2,
   boutLog: BoutLogEntry[],
-  division: import("@/engine/types/banzuke").Division,
-  meta: { tone: string; drift: Record<string, number> },
-  tactics?: SideTactics
-): { winner: Side; kimarite: KimariteId; isTimeout: boolean } {
-  // CR-02: Henka may have resolved the bout at tachiai
-  if (st.phase.tag === "resolved") {
-    return { winner: st.phase.winner, kimarite: st.phase.technique, isTimeout: false };
-  }
-
-  for (let i = 0; i < MAX_TICKS; i++) {
-    st.tick++;
-    trackTickMomentumAndFatigue(st, boutLog);
-
-    const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta, tactics);
-    if (pushResult?.winner && pushResult?.kimarite) {
-      return { winner: pushResult.winner, kimarite: pushResult.kimarite, isTimeout: false };
-    }
-
-    const beltResult = tickBeltBattle(rng, east, west, st, boutLog, division, meta, tactics);
-    if (beltResult?.winner && beltResult?.kimarite) {
-      return { winner: beltResult.winner, kimarite: beltResult.kimarite, isTimeout: false };
-    }
-
-    const crisisResult = tickEdgeCrisis(rng, east, west, st, boutLog);
-    if (crisisResult?.winner && crisisResult?.kimarite) {
-      return { winner: crisisResult.winner, kimarite: crisisResult.kimarite, isTimeout: false };
-    }
-  }
-
-  // Timeout — most stable rikishi wins (smallest cogOffset relative to footSpread)
+  mizuIriCount: number,
+  isPlayoff?: boolean
+): PhaseLoopOutcome {
   const eastInstability =
     Math.abs(st.east.cogOffset) / Math.max(INSTABILITY_FLOOR, st.east.footSpread);
   const westInstability =
     Math.abs(st.west.cogOffset) / Math.max(INSTABILITY_FLOOR, st.west.footSpread);
 
-  // Shini-tai: if both rikishi exit simultaneously (instability too close to call),
-  // use balance stat as tiebreaker (mono-ii decision)
+  // Non-playoff stalemate after repeated water breaks resolves to hikiwake draw
+  if (
+    !isPlayoff &&
+    mizuIriCount >= MIZU_IRI_MAX_BREAKS &&
+    Math.abs(eastInstability - westInstability) <= HIKIWAKE_MAX_INSTABILITY_GAP
+  ) {
+    boutLog.push({
+      phase: "bout_timeout",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: { eastInstability, westInstability, decisionBasis: "hikiwake_stalemate" },
+    });
+    return {
+      winner: "east",
+      kimarite: "hikiwake",
+      isTimeout: true,
+      isDraw: true,
+      drawType: "hikiwake",
+      mizuIriCount,
+    };
+  }
+
   const shinitaiResult = tryShinitai(eastInstability, westInstability, east, west);
   let winner: Side;
   if (shinitaiResult) {
@@ -147,8 +190,6 @@ function runPhaseLoop(
       },
     });
   } else {
-    // Dead-even stalemate → the better-balanced fighter is awarded the bout
-    // (balance IS the stability stat), then a seeded coin.
     winner =
       eastInstability < westInstability
         ? "east"
@@ -162,7 +203,6 @@ function runPhaseLoop(
     (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle");
   const kimarite: KimariteId = hadBelt ? "yorikiri" : "oshidashi";
 
-  // Log bout timeout event (8.5) — skip if shini-tai already logged
   if (!shinitaiResult) {
     boutLog.push({
       phase: "bout_timeout",
@@ -177,25 +217,79 @@ function runPhaseLoop(
     });
   }
 
-  // CI-05: Rare hi_waza reversals (isamiashi, tsukite)
-  // Very rare (1.5% each) post-resolution reversals where "winner" loses due to own mistake
   const loser: Side = winner === "east" ? "west" : "east";
   const loserInstability = winner === "east" ? westInstability : eastInstability;
 
-  // isamiashi: false start - only if loser was very unstable (near falling)
   if (
     loserInstability > ISAMIASHI_INSTABILITY_THRESHOLD &&
     rng.next() < POST_RESOLUTION_REVERSAL_CHANCE
   ) {
-    return { winner: loser, kimarite: "isamiashi", isTimeout: true };
+    return { winner: loser, kimarite: "isamiashi", isTimeout: true, mizuIriCount };
   }
 
-  // tsukite: missed thrust - only if bout was push-dominant (no belt)
   if (!hadBelt && rng.next() < POST_RESOLUTION_REVERSAL_CHANCE) {
-    return { winner: loser, kimarite: "tsukite", isTimeout: true };
+    return { winner: loser, kimarite: "tsukite", isTimeout: true, mizuIriCount };
   }
 
-  return { winner, kimarite, isTimeout: true };
+  return { winner, kimarite, isTimeout: true, mizuIriCount };
+}
+
+function runPhaseLoop(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[],
+  division: import("@/engine/types/banzuke").Division,
+  meta: { tone: string; drift: Record<string, number> },
+  tactics?: SideTactics,
+  isPlayoff?: boolean
+): PhaseLoopOutcome {
+  // CR-02: Henka may have resolved the bout at tachiai
+  if (st.phase.tag === "resolved") {
+    return { winner: st.phase.winner, kimarite: st.phase.technique, isTimeout: false };
+  }
+
+  let mizuIriCount = 0;
+  for (let i = 0; i < MAX_TICKS; i++) {
+    st.tick++;
+    trackTickMomentumAndFatigue(st, boutLog);
+    if (!isPlayoff && maybeTriggerMizuIri(st, boutLog, mizuIriCount)) {
+      mizuIriCount++;
+    }
+
+    const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta, tactics);
+    if (pushResult?.winner && pushResult?.kimarite) {
+      return {
+        winner: pushResult.winner,
+        kimarite: pushResult.kimarite,
+        isTimeout: false,
+        mizuIriCount,
+      };
+    }
+
+    const beltResult = tickBeltBattle(rng, east, west, st, boutLog, division, meta, tactics);
+    if (beltResult?.winner && beltResult?.kimarite) {
+      return {
+        winner: beltResult.winner,
+        kimarite: beltResult.kimarite,
+        isTimeout: false,
+        mizuIriCount,
+      };
+    }
+
+    const crisisResult = tickEdgeCrisis(rng, east, west, st, boutLog);
+    if (crisisResult?.winner && crisisResult?.kimarite) {
+      return {
+        winner: crisisResult.winner,
+        kimarite: crisisResult.kimarite,
+        isTimeout: false,
+        mizuIriCount,
+      };
+    }
+  }
+
+  return resolveTimeoutOutcome(rng, east, west, st, boutLog, mizuIriCount, isPlayoff);
 }
 
 // ---------------------------------------------------------------------------
@@ -227,18 +321,16 @@ export function resolveBoutPhysicsImpl(
     boutLog,
     division,
     effectiveMeta,
-    sideTactics(bout)
+    sideTactics(bout),
+    bout.isPlayoff
   );
-  const { winner, isTimeout } = resolved;
+  const { winner, isTimeout, isDraw, drawType, mizuIriCount } = resolved;
   let { kimarite } = resolved;
 
-  // CI-05b: hiwaza reclassification — when the loser's terminal body state
-  // shows a self-inflicted ending (collapse, touch-down, own-momentum
-  // step-out), a share of contested finishes are relabeled to the correct
-  // non-technique result instead of a fabricated technique.
-  // Skip reclassification when the timeout path already produced a hi_waza
-  // reversal (isamiashi/tsukite) — don't relabel a label.
-  const hiwaza = HIWAZA_IDS.has(kimarite) ? null : maybeClassifyHiwaza(winner, east, west, st, rng);
+  const hiwaza =
+    isDraw || HIWAZA_IDS.has(kimarite as KimariteId)
+      ? null
+      : maybeClassifyHiwaza(winner, east, west, st, rng);
   if (hiwaza) {
     kimarite = hiwaza;
     boutLog.push({
@@ -249,7 +341,11 @@ export function resolveBoutPhysicsImpl(
     });
   }
 
-  const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog, isTimeout);
+  const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog, isTimeout, {
+    isDraw,
+    drawType,
+    mizuIriCount,
+  });
 
   return { result };
 }

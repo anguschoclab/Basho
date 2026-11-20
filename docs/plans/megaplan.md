@@ -2,7 +2,7 @@
 
 The single living index of shipped workstreams, open findings, and deferred items across all mega-plan cycles. Update this file in place at the end of every mega-plan session; archive each completed session plan verbatim under `docs/plans/archive/` (historical records — never rewrite their findings).
 
-Last harmonized: 2026-11-18 (sources: the 7 plans in `docs/plans/archive/`).
+Last harmonized: 2026-11-20 (sources: the 7 plans in `docs/plans/archive/` + ongoing mega-plan completion).
 
 ---
 
@@ -33,6 +33,7 @@ Last harmonized: 2026-11-18 (sources: the 7 plans in `docs/plans/archive/`).
 | ID hygiene | Tombstone aged-out prospects so lifetime ID refs stay resolvable | `a0081a64` | (landed alongside W M era) |
 | Housekeeping | Re-export `activeRikishiIds` delta | `33fcd3a3` | — |
 | v20 consolidation | Repo-wide review: 441-file delta audited, 21 new findings (14 fixed + pinned), O1/O4/O5 fixed, O2/O3/O7 cleared, 12 PRs dispositioned + branches pruned, save version 1.5.0, `.Jules/` folded | `60ba6bcc`, `36416bbe`, `578ef5f2` | `docs/audit/consolidation-verdict-v20.md` |
+| W R | Foreign-pool region-key bridge (`ORIGIN_TO_EXHIBITION_REGION`) + seeded `search-oyakata` foreign-pool E2E (O6) · Yokozuna joi back-loading (D1–3 M4→M1, D4–7 M1→M4/K/S, D11+ Y×O, D14 Y×Y `kore_yori_sanyaku` hold) · Azukari / itamiwake / mizu-iri draw outcomes | uncommitted | (§2 O6 + §3 deferred registry) |
 
 **Do not duplicate:** the 42-domain rules audit (code vs docs vs real JSA) lives in `docs/audit/rules-divergence-report.md` — consult it before planning rule work.
 
@@ -47,7 +48,7 @@ Last harmonized: 2026-11-18 (sources: the 7 plans in `docs/plans/archive/`).
 | O3 | **Juryo `expectedSize` backfill vs parity semantics** — callups satisfy parity (odd→1); expected-size shortfall should only cover pre-tournament roster gaps. Confirm against real generated roster sizes before tightening. | `src/engine/calendar/schedule.ts` `scheduleJuryoWithCrossover` | af555 W L risk | **FIXED** — parity `need++` under 5-cap at `planDivisionCallups` |
 | O4 | **Maezumo leak audit** — `isMaezumo` entrants must not leak into banzuke/records/HOF paths. Partial guards exist (`scheduleHelpers.ts:50`, `boutResultApplier`, `postbout:931`); full audit of `performance.ts`/`records.ts`/eligibility queries pending. | `src/engine/banzuke/publish/performance.ts` et al. | af555 W L risk | **FIXED v20 (E5/E6)** — maezumo bouts fully inert for standings/career/boards; pinned |
 | O5 | **Rival-oyakata names unlinked** — `OyakataProfileDrawer` (`rival.oyakataName` in SheetDescription) and `RivalOyakataCard` (`heyaName` span) render bare names; route → `/oyakata/$id`. | `src/components/governance/OyakataProfileDrawer.tsx:37`, `RivalOyakataCard.tsx:56` | a067 optional polish | **FIXED v20 (UI2)** — `RivalStableDTO.oyakataId` plumbed; drawer name links `/oyakata/$id` |
-| O6 | **Foreign-pool Prospects e2e gap** — `listVisibleCandidates` gates foreign behind `regionalPresence ≥ 40`, unreachable in short games; search-Prospects e2e covers only domestic pools. Unit coverage exists (`entitySearchProjections.test.ts`). | `talentPoolReads.ts:32-44`; `tests/e2e/search-oyakata.e2e.test.ts` | 86f2 soft spot | OPEN — test gap (needs long progression path) |
+| O6 | **Foreign-pool Prospects e2e gap** — `listVisibleCandidates` gates foreign behind `regionalPresence ≥ 40`, unreachable in short games; search-Prospects e2e covers only domestic pools. Unit coverage exists (`entitySearchProjections.test.ts`). | `talentPoolReads.ts`; `talentPoolScoutingOps.ts`; `tests/e2e/search-oyakata.e2e.test.ts` | 86f2 soft spot | **FIXED** — added `ORIGIN_TO_EXHIBITION_REGION` country→region resolver in `talentPoolReads.ts`/`talentPoolScoutingOps.ts` + seeded foreign-pool E2E (`search-oyakata.e2e.test.ts` §5b) + unit test (`talentPoolReads.foreignPresence.test.ts`) |
 | O7 | **Committee discretion bounds** — A12 faction discretion is the banzuke-flow tuning knob (`constants/engine/committee.ts`); keep tight, expose for tuning. | `src/engine/committee/committee.ts` | 2aaf5 A12 risk | **CLEARED v20** — clamp exists at `committee.ts:87`; residual vote-display oddity logged as E8 |
 
 ---
@@ -55,10 +56,10 @@ Last harmonized: 2026-11-18 (sources: the 7 plans in `docs/plans/archive/`).
 ## 3. Deferred items registry (documented, deliberately not built)
 
 ### JSA real-rule gaps (catalog)
-- **Yokozuna joi back-loading** — real yokozuna face top opponents late; schedule only has the 5-man joi cap (`schedule.ts:426`). Medium: scheduler weighting + tests.
+- ~~**Yokozuna joi back-loading**~~ — **LANDED**: real yokozuna face M4→M1 Days 1–3, M1→M4/K/S Days 4–7, defer Y×O until Day 11 and top Y×Y until Day 15 (`kore_yori_sanyaku`), with locked `DramaMatchmaker` swap guards (`yokozunaJoiBackloading.test.ts`).
 - ~~**Oyakata sanyo advisory extension to age 70**~~ — **LANDED `b54358f7`**: `elderStatus: "sanyo"` + `sanyoExpiryYear`; stockholding elders stay emeritus in the registry until 70 across both succession paths.
 - **Real 3-bout maezumo preliminary** — game uses minted filler (`MAEZUMO_MINT_CAP`); documented as deviation. Large: real prelim brackets replace filler generation.
-- **Azukari / itamiwake / mizu-iri outcomes** — torinaoshi covers the realistic case. Largest schema ripple in the registry: `BoutResult.winner` is a required field with ~15 consumer touchpoints.
+- ~~**Azukari / itamiwake / mizu-iri outcomes**~~ — **LANDED**: `mizu_iri` water breaks with fatigue recovery & grip preservation, `hikiwake` post-break stalemate, `itamiwake` injury draw & `azukari` rematch draw (`DRAW_OUTCOME_METADATA` outside `KIMARITE_REGISTRY`, non-playoff gated, neutral W/L/H2H/zensho/banzuke handling, `△` hoshitori glyph, Bard PBP lines).
 - **Rikishi-ken** (wrestler council) — unmodeled. New governance subsystem — large.
 - **Torikumi posting cadence** — real pairings announced ~1.5–2 days ahead rolling; game posts per-day. Medium-large: rolling posting touches digest/UI.
 - ~~**JSA board size**~~ — **LANDED `8ec9336c`**: `BOARD_COMMITTEE.size` 5→10 riji (auditors unmodeled).

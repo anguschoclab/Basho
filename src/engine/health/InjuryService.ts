@@ -222,6 +222,7 @@ export function onBoutResolvedInjury(
   // 1. Physics-produced in-bout injury (edge-crisis damage) — previously
   //    produced but never consumed; it now actually injures the rikishi.
   applyInBoutInjury(world, builder, result, east ?? null, west ?? null);
+  if (result.isDraw) return builder.build();
   const inBoutVictimId = result.inBoutInjury?.rikishiId;
 
   // Bout-induced injury probability based on kimarite violence

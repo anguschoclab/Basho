@@ -434,7 +434,8 @@ function accumulateAllMochikyukin(
     const netWins = bashoWins - bashoLosses;
     const isYusho = id === yusho;
     const kinboshiThisBasho = basho.kinboshiThisBasho?.[id] ?? 0;
-    const isZenshoYusho = isYusho && bashoLosses === 0;
+    const bashoDraws = basho.standings.get(id)?.draws ?? r.currentBashoDraws ?? 0;
+    const isZenshoYusho = isYusho && bashoLosses === 0 && bashoDraws === 0;
 
     const impact = accumulateMochikyukinPoints(world, id, {
       netWins,

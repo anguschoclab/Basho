@@ -28,6 +28,7 @@ function runBestOfThree(a: Rikishi, b: Rikishi) {
   let winsB = 0;
   for (let i = 0; i < 3; i++) {
     const res = simulateBout(a, b, `compare-${a.id}-vs-${b.id}-${i}`);
+    if (res.result.isDraw) continue;
     if (res.result.winner === "east") winsA++;
     else winsB++;
   }

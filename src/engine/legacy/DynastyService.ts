@@ -105,6 +105,28 @@ function endIronmanCareer(
  * successor exists, stable closure for dying heirless stables, trustee
  * appointment for viable heirless stables.
  */
+function expireSanyoAdvisors(world: WorldState, builder: ImpactBuilder): void {
+  for (const o of world.oyakata?.values() ?? []) {
+    if (
+      o.elderStatus === "sanyo" &&
+      !o.retirementYear &&
+      world.year >= (o.sanyoExpiryYear ?? Number.POSITIVE_INFINITY)
+    ) {
+      builder.updateOyakata(o.id, { retirementYear: world.year });
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "narrative",
+        {
+          incident: "sanyo_advisory_complete",
+          shikona: o.name,
+          reason: `${o.name} completed his sanyo advisory term at 70 (JSA).`,
+        },
+        { heyaId: o.heyaId }
+      );
+    }
+  }
+}
+
 function tickSuccessionCheck(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickSuccessionCheck");
 
@@ -236,26 +258,7 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
     }
   }
 
-  // Sanyo advisory expiry: emeritus consultants leave the JSA at 70.
-  for (const o of world.oyakata?.values() ?? []) {
-    if (
-      o.elderStatus === "sanyo" &&
-      !o.retirementYear &&
-      world.year >= (o.sanyoExpiryYear ?? Number.POSITIVE_INFINITY)
-    ) {
-      builder.updateOyakata(o.id, { retirementYear: world.year });
-      builder.logEvent(
-        "GOVERNANCE_RULING",
-        "narrative",
-        {
-          incident: "sanyo_advisory_complete",
-          shikona: o.name,
-          reason: `${o.name} completed his sanyo advisory term at 70 (JSA).`,
-        },
-        { heyaId: o.heyaId }
-      );
-    }
-  }
+  expireSanyoAdvisors(world, builder);
 
   return builder.build();
 }

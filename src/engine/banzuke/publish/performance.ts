@@ -17,7 +17,7 @@ import {
 import { SEKIWAKE_33_WIN_THRESHOLD, SEKIWAKE_OZEKI_RECLAIM_WINS } from "@/constants/engine/banzuke";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
-type StandingStats = { wins: number; losses: number; absences: number };
+type StandingStats = { wins: number; losses: number; absences: number; draws?: number };
 
 /** Iron-man streaks that earn a milestone entry (consecutive basho with zero absences). */
 const IRON_MAN_MILESTONES = [25, 50, 75, 100] as const;
@@ -201,18 +201,31 @@ function recordBashoPerformance(
     .flatMap((m) => {
       const res = m.result;
       if (!res) return [];
-      const won = res.winnerRikishiId === id;
+      const isDraw = res.isDraw === true;
+      const won = !isDraw && res.winnerRikishiId === id;
       const isKinboshi =
         won && (res.awards?.some((a) => a.type === "kinboshi") || res.isKinboshi === true);
       const isGinboshi = won && (res.awards?.some((a) => a.type === "ginboshi") ?? false);
       return [
         {
           day: m.day,
-          outcome: (won ? "win" : res.kimarite === "fusensho" ? "absence" : "loss") as
-            "win" | "loss" | "absence",
+          outcome: (isDraw
+            ? "draw"
+            : won
+              ? "win"
+              : res.kimarite === "fusensho"
+                ? "absence"
+                : "loss") as "win" | "loss" | "absence" | "draw",
+          ...(isDraw && res.drawType ? { drawType: res.drawType } : {}),
           ...(isKinboshi ? { isKinboshi: true } : {}),
           ...(isGinboshi ? { isGinboshi: true } : {}),
-          opponentId: won ? res.loserRikishiId : res.winnerRikishiId,
+          opponentId: isDraw
+            ? m.eastRikishiId === id
+              ? m.westRikishiId
+              : m.eastRikishiId
+            : won
+              ? res.loserRikishiId
+              : res.winnerRikishiId,
           kimarite: res.kimarite,
         },
       ];
@@ -231,6 +244,7 @@ function recordBashoPerformance(
     wins: stats.wins,
     losses: stats.losses,
     absences: stats.absences ?? 0,
+    ...(stats.draws ? { draws: stats.draws } : {}),
     isYusho,
     isJunYusho,
     specialPrizes: {
@@ -248,7 +262,7 @@ function recordBashoPerformance(
   // Track absentFinalDay: rikishi missed days and didn't complete the
   // scheduled division program (withdrew before their last scheduled bout).
   const divisionDays = getTotalBashodays(rikishi.division);
-  const totalBouts = stats.wins + stats.losses;
+  const totalBouts = stats.wins + stats.losses + (stats.draws ?? 0);
   const absentFinalDay = stats.absences > 0 && totalBouts < divisionDays;
 
   // Calculate kihaku isen (fighting spirit) score using KihakuService
@@ -366,33 +380,32 @@ function enrichMetrics(
  * streaks, career history append, kihaku score, bout-metric enrichment, and
  * ozeki promotion detection.
  */
-export function buildPerformanceList(
+/** Normalize raw standings and synthesize 0-0-divisionDays rows for full-kyujo banzuke members. */
+function normalizeStandingEntries(
   world: WorldState,
-  lastBasho: BashoState,
-  standingEntries: Array<[string, unknown]>,
-  builder: Builder
-): BashoPerformance[] {
-  const performanceList: BashoPerformance[] = [];
-
-  // Missed days are scheduled days not contested — fusenshō plus the
-  // unscheduled withdrawal tail. Standings only carry contested bouts for
-  // partial absences and no row at all for full-kyūjō rikishi, so absences
-  // are derived arithmetically per division rather than trusting the raw
-  // fusenshō count.
+  standingEntries: Array<[string, unknown]>
+): Array<[string, StandingStats]> {
   const normalizedEntries: Array<[string, StandingStats]> = standingEntries.map(
     ([id, stats_any]) => {
       const stats = stats_any as StandingStats;
       const r = getRikishi(world, id);
       const divisionDays = r ? getTotalBashodays(r.division) : 15;
-      const absences = Math.max(0, divisionDays - stats.wins - stats.losses);
-      return [id, { wins: stats.wins, losses: stats.losses, absences }];
+      const absences = Math.max(
+        0,
+        divisionDays - stats.wins - stats.losses - (stats.draws ?? 0)
+      );
+      return [
+        id,
+        {
+          wins: stats.wins,
+          losses: stats.losses,
+          absences,
+          ...(stats.draws ? { draws: stats.draws } : {}),
+        },
+      ];
     }
   );
 
-  // Synthesize rows for banzuke members who produced no standings entry —
-  // the full-kyūjō population the penalty weights were written for but could
-  // never reach. Eligible set: fought-on banzuke membership ∩ active;
-  // fall back to all actives when no snapshot exists.
   const standingIds = new Set(normalizedEntries.map(([id]) => id));
   const eligibleIds: string[] = [];
   if (world.currentBanzuke) {
@@ -412,6 +425,18 @@ export function buildPerformanceList(
     if (!r) continue;
     normalizedEntries.push([id, { wins: 0, losses: 0, absences: getTotalBashodays(r.division) }]);
   }
+  return normalizedEntries;
+}
+
+export function buildPerformanceList(
+  world: WorldState,
+  _lastBasho: BashoState,
+  standingEntries: Array<[string, unknown]>,
+  builder: Builder
+): BashoPerformance[] {
+  const lastBasho = _lastBasho;
+  const performanceList: BashoPerformance[] = [];
+  const normalizedEntries = normalizeStandingEntries(world, standingEntries);
 
   // Loop-invariant: the just-published basho result is the same for every entry.
   const history = world.history[world.history.length - 1];
@@ -493,6 +518,7 @@ export function buildPerformanceList(
       wins: stats.wins,
       losses: stats.losses,
       absences: stats.absences ?? 0,
+      ...(stats.draws ? { draws: stats.draws } : {}),
       yusho: isYusho,
       junYusho: isJunYusho,
       specialPrizes: prizePoints,

@@ -186,7 +186,10 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
         [
           "oya-1",
           {
-            "successionReadiness": "mandatory"
+            "successionReadiness": "mandatory",
+            "isEmeritus": true,
+            "elderStatus": "sanyo",
+            "sanyoExpiryYear": 2031
           }
         ]
       ]
@@ -390,9 +393,6 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
     ],
     "activeRikishiIdsToRemove": [
       "r-sec"
-    ],
-    "oyakataToRemove": [
-      "oya-1"
     ]
   },
   "worldFields": {
@@ -438,7 +438,10 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
         [
           "oya-1",
           {
-            "successionReadiness": "mandatory"
+            "successionReadiness": "mandatory",
+            "isEmeritus": true,
+            "elderStatus": "sanyo",
+            "sanyoExpiryYear": 2031
           }
         ]
       ]
@@ -642,9 +645,6 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
     ],
     "activeRikishiIdsToRemove": [
       "r-mak"
-    ],
-    "oyakataToRemove": [
-      "oya-1"
     ]
   },
   "worldFields": {
@@ -899,7 +899,10 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 6
         [
           "oya-1",
           {
-            "successionReadiness": "mandatory"
+            "successionReadiness": "mandatory",
+            "isEmeritus": true,
+            "elderStatus": "sanyo",
+            "sanyoExpiryYear": 2031
           }
         ]
       ]
@@ -970,9 +973,6 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 6
         },
         "successionReadiness": "stable"
       }
-    ],
-    "oyakataToRemove": [
-      "oya-1"
     ]
   }
 }"
@@ -990,7 +990,10 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 7
         [
           "oya-1",
           {
-            "successionReadiness": "mandatory"
+            "successionReadiness": "mandatory",
+            "isEmeritus": true,
+            "elderStatus": "sanyo",
+            "sanyoExpiryYear": 2026
           }
         ]
       ]
@@ -1061,9 +1064,6 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 7
         },
         "successionReadiness": "stable"
       }
-    ],
-    "oyakataToRemove": [
-      "oya-1"
     ]
   }
 }"

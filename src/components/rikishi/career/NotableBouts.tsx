@@ -40,7 +40,7 @@ export function NotableBouts({ notableBouts }: { notableBouts?: NotableBoutEntry
                   {b.boutId}
                 </span>
                 <span className="text-sm font-display font-black">
-                  {b.winner ? "W" : "L"} vs {b.opponentShikona}
+                  {b.isDraw ? "D" : b.winner ? "W" : "L"} vs {b.opponentShikona}
                 </span>
               </div>
               <div className="flex items-center gap-2">

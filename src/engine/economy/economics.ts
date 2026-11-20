@@ -47,8 +47,8 @@ export function onBoutResolvedEconomics(
   const { result, east, west } = context;
   const builder = createImpactBuilder("onBoutResolvedEconomics");
 
-  // Only Makuuchi bouts generate Kensho normally
-  if (east.division !== "makuuchi") return builder.build();
+  // Only Makuuchi decisive bouts award Kensho envelopes
+  if (east.division !== "makuuchi" || result.isDraw) return builder.build();
 
   const winner = result.winner === "east" ? east : west;
   const winnerHeya = getHeya(world, winner.heyaId);

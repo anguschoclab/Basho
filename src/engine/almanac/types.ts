@@ -36,6 +36,7 @@ export interface NotableBoutEntry {
   opponentId: Id;
   opponentShikona: string;
   winner: boolean;
+  isDraw?: boolean;
   kimarite: string;
   isKinboshi: boolean;
   isUpset: boolean;

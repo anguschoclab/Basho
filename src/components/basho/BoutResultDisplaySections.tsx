@@ -16,18 +16,66 @@ import { formatStance } from "@/presenters/uiDigest";
 import { KimariteTag } from "@/components/ui/KimariteTag";
 import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
-/** Winner announcement — badges, winner/loser avatars, defeat line, kenshō. */
+/** Winner announcement — badges, winner/loser avatars, defeat line, kenshō (or Official Draw). */
 export function WinnerReveal({
   result,
   winner,
   loser,
+  eastRikishi,
+  westRikishi,
   isUpset,
 }: {
   result: BoutResult;
   winner: UIRikishi | undefined;
   loser: UIRikishi | undefined;
+  eastRikishi?: UIRikishi;
+  westRikishi?: UIRikishi;
   isUpset: boolean;
 }) {
+  if (result.isDraw) {
+    const east = eastRikishi ?? winner;
+    const west = westRikishi ?? loser;
+    return (
+      <div className="result-reveal">
+        <Badge variant="outline" className="mb-3 gap-1 border-gold/50 text-gold">
+          OFFICIAL DRAW
+        </Badge>
+        <div className="flex items-center justify-center gap-6 mb-3">
+          {east && (
+            <div className="flex flex-col items-center gap-1">
+              <SumoAvatar
+                avatar={east.avatar}
+                size="lg"
+                expression="neutral"
+                fallback={east.shikona}
+                className="border-2 border-east/50 shadow-xs"
+              />
+              <span className="text-xs text-muted-foreground">East</span>
+            </div>
+          )}
+          <div className="text-2xl font-bold text-muted-foreground">△</div>
+          {west && (
+            <div className="flex flex-col items-center gap-1">
+              <SumoAvatar
+                avatar={west.avatar}
+                size="lg"
+                expression="neutral"
+                fallback={west.shikona}
+                className="border-2 border-west/50 shadow-xs"
+              />
+              <span className="text-xs text-muted-foreground">West</span>
+            </div>
+          )}
+        </div>
+        <h2 className="font-display text-xl font-bold text-foreground mb-1">
+          {east ? <RikishiName id={east.id} name={east.shikona} /> : "East"} —{" "}
+          {west ? <RikishiName id={west.id} name={west.shikona} /> : "West"}
+        </h2>
+        <p className="text-sm text-muted-foreground">No decision awarded ({result.kimariteName})</p>
+      </div>
+    );
+  }
+
   return (
     <div className="result-reveal">
       {isUpset && (
@@ -98,6 +146,7 @@ export function KimariteCard({
   kimariteName,
   kimariteNameJa,
   kimariteDescription,
+  isDraw = false,
   rarity,
   compact,
   kimariteObservedPct,
@@ -106,6 +155,7 @@ export function KimariteCard({
   kimariteName: string;
   kimariteNameJa: string;
   kimariteDescription: string;
+  isDraw?: boolean;
   rarity: string;
   compact: boolean;
   kimariteObservedPct?: number;
@@ -122,7 +172,7 @@ export function KimariteCard({
       )}
     >
       <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] mb-1.5">
-        Winning Technique
+        {isDraw ? "Official Ruling" : "Winning Technique"}
       </p>
       <KimariteTag
         kimariteId={kimariteId}

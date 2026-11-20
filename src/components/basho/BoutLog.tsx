@@ -26,6 +26,7 @@ const phaseLabels: Record<string, string> = {
   momentum: "Struggle",
   finish: "Finish",
   mono_ii: "Mono-ii",
+  mizu_iri: "Mizu-iri",
 };
 
 const phaseColors: Record<string, string> = {
@@ -34,6 +35,7 @@ const phaseColors: Record<string, string> = {
   momentum: "phase-momentum",
   finish: "phase-finish",
   mono_ii: "bg-gold/20 text-gold",
+  mizu_iri: "bg-primary/15 text-primary",
 };
 
 /**

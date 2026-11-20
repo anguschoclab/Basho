@@ -50,7 +50,9 @@ function OfficiatingBadges({ result }: { result: BoutResult }) {
                   ? "destructive"
                   : result.monoiiOutcome === "rematch"
                     ? "default"
-                    : "secondary"
+                    : result.monoiiOutcome === "azukari" || result.monoiiOutcome === "itamiwake"
+                      ? "outline"
+                      : "secondary"
               }
               className="text-[10px]"
             >
@@ -58,7 +60,11 @@ function OfficiatingBadges({ result }: { result: BoutResult }) {
                 ? "Decision upheld"
                 : result.monoiiOutcome === "reversed"
                   ? "Decision reversed"
-                  : "Rematch ordered"}
+                  : result.monoiiOutcome === "azukari"
+                    ? "Decision: Azukari (Draw)"
+                    : result.monoiiOutcome === "itamiwake"
+                      ? "Decision: Itamiwake (Injury Draw)"
+                      : "Rematch ordered"}
             </Badge>
           )}
         </div>

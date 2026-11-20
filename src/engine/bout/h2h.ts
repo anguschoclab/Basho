@@ -55,29 +55,36 @@ export function updateH2H(
   const winnerH2h = winner.h2h || {};
   const loserH2h = loser.h2h || {};
 
-  // Update Winner's record against Loser
   const winnerRecord = { ...(winnerH2h[loser.id] || createEmptyH2H()) };
-  winnerRecord.wins++;
-  winnerRecord.streak = winnerRecord.streak > 0 ? winnerRecord.streak + 1 : 1;
-  winnerRecord.lastMatch = {
-    winnerId: winner.id,
-    kimarite: result.kimarite,
-    bashoId,
-    day,
-    year,
-  };
-
-  // Update Loser's record against Winner
   const loserRecord = { ...(loserH2h[winner.id] || createEmptyH2H()) };
-  loserRecord.losses++;
-  loserRecord.streak = loserRecord.streak < 0 ? loserRecord.streak - 1 : -1;
-  loserRecord.lastMatch = {
-    winnerId: winner.id,
-    kimarite: result.kimarite,
-    bashoId,
-    day,
-    year,
-  };
+
+  if (result.isDraw) {
+    winnerRecord.draws = (winnerRecord.draws ?? 0) + 1;
+    loserRecord.draws = (loserRecord.draws ?? 0) + 1;
+    const drawLastMatch = { winnerId: "", kimarite: result.kimarite, bashoId, day, year };
+    winnerRecord.lastMatch = drawLastMatch;
+    loserRecord.lastMatch = drawLastMatch;
+  } else {
+    winnerRecord.wins++;
+    winnerRecord.streak = winnerRecord.streak > 0 ? winnerRecord.streak + 1 : 1;
+    winnerRecord.lastMatch = {
+      winnerId: winner.id,
+      kimarite: result.kimarite,
+      bashoId,
+      day,
+      year,
+    };
+
+    loserRecord.losses++;
+    loserRecord.streak = loserRecord.streak < 0 ? loserRecord.streak - 1 : -1;
+    loserRecord.lastMatch = {
+      winnerId: winner.id,
+      kimarite: result.kimarite,
+      bashoId,
+      day,
+      year,
+    };
+  }
 
   // Build the update objects
   const winnerUpdate = {

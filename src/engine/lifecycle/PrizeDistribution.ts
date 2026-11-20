@@ -314,7 +314,8 @@ export function payBashoTeate(world: WorldState): StateImpact {
     // total reduced by the unscheduled tail.
     const wins = r.currentBashoWins ?? 0;
     const losses = r.currentBashoLosses ?? 0;
-    const absences = Math.max(0, getTotalBashodays(r.division) - wins - losses);
+    const draws = r.currentBashoDraws ?? 0;
+    const absences = Math.max(0, getTotalBashodays(r.division) - wins - losses - draws);
     const teateAmount =
       jsaBashoTeate(r.division, year) +
       wins * jsaWinBonus(r.division, year) +

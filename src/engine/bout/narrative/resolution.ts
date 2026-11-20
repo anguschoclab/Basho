@@ -10,6 +10,24 @@ import { rngFromSeed } from "@/engine/core/rng";
 
 function beatFinishTechnique(p: PbpPipeline): void {
   const { east, push, result, seed, west } = p;
+  if (result.isDraw && result.drawType) {
+    const finishRng = rngFromSeed(seed, "pbp", "finish");
+    const drawPath = `combat.phases.finish.draw.${result.drawType}`;
+    const res = BardEngine.resolve(
+      finishRng,
+      BardEngine.has(drawPath) ? drawPath : "combat.phases.finish.draw.hikiwake",
+      {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        east: east.shikona,
+        west: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }
+    );
+    push(res.text, "finish", ["draw"]);
+    return;
+  }
   // 8. Finishing technique
   if (result.kimarite) {
     const finishRng = rngFromSeed(seed, "pbp", "finish");
@@ -114,6 +132,7 @@ function beatClosingLine(p: PbpPipeline): void {
 
 export function narrateResolution(p: PbpPipeline): void {
   beatFinishTechnique(p);
+  if (p.result.isDraw) return;
   beatSpecialAwards(p);
   beatCeremony(p);
   beatClosingLine(p);

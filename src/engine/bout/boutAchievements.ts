@@ -33,8 +33,8 @@ export function detectKinboshi(
   const awards: BoutAward[] = [];
   let kinboshiDelta = false;
 
-  // Honbasho torikumi only — playoffs are exhibition-deciding and never award stars.
-  if (!opts?.isPlayoff) {
+  // Honbasho torikumi only — playoffs and draws never award stars.
+  if (!opts?.isPlayoff && !result.isDraw) {
     const awardBase = {
       winnerId: winner.id,
       loserId: loser.id,

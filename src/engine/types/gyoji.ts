@@ -62,7 +62,8 @@ export interface ShimpanPanel {
 }
 
 /** Result of a mono-ii consultation. */
-export type MonoiiOutcome = "upheld" | "reversed" | "rematch";
+/** Judges' conference verdicts, including official draw rulings (azukari / itamiwake). */
+export type MonoiiOutcome = "upheld" | "reversed" | "rematch" | "azukari" | "itamiwake";
 
 /**
  * Calculate the probability that a gyoji's call is reversed by mono-ii.

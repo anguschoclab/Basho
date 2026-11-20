@@ -59,7 +59,7 @@ export function determineSpecialPrizes(
   }
 
   for (const m of matches) {
-    if (!m.result) continue;
+    if (!m.result || m.result.isDraw || !m.result.winnerRikishiId) continue;
     const w = m.result.winnerRikishiId;
     const l = m.result.loserRikishiId;
 

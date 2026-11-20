@@ -59,9 +59,9 @@ export function rollMissedCallReview(
   seedStem: string
 ): void {
   if (!world?.shimpanPool || world.shimpanPool.length < FOUL_REVIEW_MIN_SHIMPAN) return;
-  if (result.monoii || result.foulReview || !result.winnerRikishiId) return;
+  if (result.isDraw || result.monoii || result.foulReview || !result.winnerRikishiId) return;
 
-  const chance = HIWAZA_FINISH_KIMARITE.has(result.kimarite)
+  const chance = HIWAZA_FINISH_KIMARITE.has(result.kimarite as KimariteId)
     ? MISSED_CALL_HIWAZA_REVIEW_CHANCE
     : hasCloseEdgeFinish(result)
       ? MISSED_CALL_EDGE_REVIEW_CHANCE

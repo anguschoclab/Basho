@@ -612,6 +612,21 @@ function handleClinchToBeltFrame(s: FrameState, entry: BoutLogEntry, rng: Seeded
   }
 }
 
+function handleMizuIriFrame(s: FrameState, entry: BoutLogEntry, rng: SeededRNG): void {
+  const { east, push, west } = s.p;
+  if (entry.phase !== "mizu_iri") return;
+  push(
+    BardEngine.resolve(rng, "combat.phases.mizu_iri", {
+      EAST: east.shikona,
+      WEST: west.shikona,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
+    }).text,
+    "mizu_iri",
+    ["mizu_iri", "drama"]
+  );
+}
+
 function narrateFrameEntry(s: FrameState, entry: BoutLogEntry, idx: number): void {
   const { push, seed } = s.p;
   const tickSeed = `${seed}-tick-${(entry.data?.tick as number) || 0}-${idx}`;
@@ -630,6 +645,7 @@ function narrateFrameEntry(s: FrameState, entry: BoutLogEntry, idx: number): voi
   handleBoutInjuryFrame(s, entry, rng);
   handleMomentumShiftFrame(s, entry, rng);
   handleGripTransitionFrame(s, entry, rng);
+  handleMizuIriFrame(s, entry, rng);
   handleTimeoutFrame(s, entry, rng);
   handleCounterTacticFrame(s, entry, rng);
   handleEdgeCrisisFrame(s, entry, rng);

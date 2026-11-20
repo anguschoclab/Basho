@@ -49,8 +49,8 @@ export function buildNotableBoutEntry(
   year: number,
   day: number
 ): NotableBoutEntry | null {
-  const isWinner = result.winnerRikishiId === rikishiId;
-  const isLoser = result.loserRikishiId === rikishiId;
+  const isWinner = !result.isDraw && result.winnerRikishiId === rikishiId;
+  const isLoser = !result.isDraw && result.loserRikishiId === rikishiId;
   if (!isWinner && !isLoser) return null;
 
   const opponentId = isWinner ? result.loserRikishiId : result.winnerRikishiId;
@@ -231,11 +231,12 @@ export function runAlmanacNarrativeUpdate(world: WorldState): StateImpact {
   const matchesByParticipant = new Map<Id, ParticipantMatch[]>();
   for (const match of matches) {
     const result = match.result;
-    if (!result) continue;
+    if (!result || result.isDraw) continue;
     const winnerCareerWins = getRikishi(world, result.winnerRikishiId)?.careerWins ?? 0;
     const notable = isNotableBout(result, result.pbpLines ?? [], winnerCareerWins);
     const pm: ParticipantMatch = { match, result, notable };
     for (const pid of [result.winnerRikishiId, result.loserRikishiId]) {
+      if (!pid) continue;
       const list = matchesByParticipant.get(pid);
       if (list) list.push(pm);
       else matchesByParticipant.set(pid, [pm]);

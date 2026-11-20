@@ -23,6 +23,7 @@ export interface MatchLike {
     rarity?: string;
     isKinboshi?: boolean;
     upset?: boolean;
+    isDraw?: boolean;
   };
 }
 

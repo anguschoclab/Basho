@@ -83,6 +83,9 @@ export function assignGyojiAndResolveVerdict(
   if (!gyoji) return {};
 
   result.gyojiId = gyoji.id;
+  if (result.isDraw) {
+    return { gyoji, panel: null };
+  }
 
   // If mono-ii occurred, assemble a shimpan panel and resolve the outcome.
   if (result.monoii && world?.shimpanPool && world.shimpanPool.length >= FOUL_REVIEW_MIN_SHIMPAN) {

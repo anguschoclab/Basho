@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { MatchSchedule } from "@/engine/types/basho";
 import type { DayResult } from "@/engine/types/history";
 
-type Outcome = "win" | "loss" | "kinboshi" | "absence" | "pending";
+type Outcome = "win" | "loss" | "kinboshi" | "absence" | "draw" | "pending";
 
 interface HoshitoriChartProps {
   rikishiId: string;
@@ -23,6 +23,7 @@ interface HoshitoriChartProps {
 function outcomeFromMatch(match: MatchSchedule, rikishiId: string): Outcome {
   const res = match.result;
   if (!res) return "pending";
+  if (res.isDraw) return "draw";
   if (res.winnerRikishiId === rikishiId) {
     const kinboshi =
       res.isKinboshi === true || (res.awards?.some((a) => a.type === "kinboshi") ?? false);
@@ -34,6 +35,7 @@ function outcomeFromMatch(match: MatchSchedule, rikishiId: string): Outcome {
 
 function outcomeFromDayResult(d: DayResult): Outcome {
   if (d.outcome === "win") return d.isKinboshi ? "kinboshi" : "win";
+  if (d.outcome === "draw") return "draw";
   if (d.outcome === "absence") return "absence";
   return "loss";
 }
@@ -43,6 +45,7 @@ const CELL_STYLE: Record<Outcome, string> = {
   loss: "bg-muted text-muted-foreground",
   kinboshi: "bg-gold text-gold-foreground",
   absence: "bg-muted/40 text-muted-foreground border border-dashed border-muted-foreground/40",
+  draw: "bg-gold/15 text-gold border border-gold/40",
   pending: "bg-transparent text-muted-foreground/30 border border-dashed border-border/40",
 };
 
@@ -51,6 +54,7 @@ const CELL_GLYPH: Record<Outcome, string> = {
   loss: "●",
   kinboshi: "★",
   absence: "—",
+  draw: "△",
   pending: "·",
 };
 
@@ -59,6 +63,7 @@ const CELL_LABEL: Record<Outcome, string> = {
   loss: "kuroboshi (loss)",
   kinboshi: "kinboshi (gold star)",
   absence: "absence",
+  draw: "draw (wake)",
   pending: "not yet fought",
 };
 

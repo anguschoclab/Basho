@@ -5,6 +5,7 @@
  */
 
 import type { BoutResult } from "@/engine/types/basho";
+import { DRAW_OUTCOME_METADATA } from "@/constants/engine/bout";
 
 /** Deterministic pick — commentary must be stable across renders. */
 function pick<T>(arr: T[], salt: string): T {
@@ -28,6 +29,12 @@ const FINISH_CALLS: [RegExp, string][] = [
 export function generateAnnouncerLines(result: BoutResult): string[] {
   const lines: string[] = [];
   const salt = `${result.boutId}`;
+
+  if (result.isDraw && result.drawType) {
+    const meta = DRAW_OUTCOME_METADATA[result.drawType];
+    lines.push(`Official draw (${meta.name} — ${meta.nameJa}): ${meta.description}`);
+    return lines;
+  }
 
   if (result.isKinboshi || result.awardFact === "kinboshi") {
     lines.push(pick(KINBOSHI_CALLS, salt));

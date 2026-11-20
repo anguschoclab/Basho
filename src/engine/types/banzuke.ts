@@ -231,6 +231,7 @@ export interface BashoPerformance {
   wins: number;
   losses: number;
   absences?: number;
+  draws?: number;
   yusho?: boolean;
   junYusho?: boolean;
   specialPrizes?: number;

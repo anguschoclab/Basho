@@ -73,7 +73,7 @@ export const BoutCard = React.memo(
           <RikishiSide
             rikishi={match.east}
             side="east"
-            isWinner={match.result?.winner === "east"}
+            isWinner={!match.result?.isDraw && match.result?.winner === "east"}
             onClick={() =>
               navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } })
             }
@@ -84,7 +84,7 @@ export const BoutCard = React.memo(
           <RikishiSide
             rikishi={match.west}
             side="west"
-            isWinner={match.result?.winner === "west"}
+            isWinner={!match.result?.isDraw && match.result?.winner === "west"}
             onClick={() =>
               navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } })
             }

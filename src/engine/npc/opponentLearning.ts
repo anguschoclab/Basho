@@ -90,10 +90,16 @@ export function onBoutResolvedOpponentModels(world: WorldState, ctx: BoutLearnin
     const memory = getMemory(oyakata, week);
     let model = getOpponentModel(memory, observed.id) ?? buildOpponentModel(observed, week);
 
-    const observedWon = result.winner === observedSide;
+    const observedWon = !result.isDraw && result.winner === observedSide;
     const resolvedTactic: BoutTactic | undefined = result.tactics?.[observedSide];
-    if (observedWon) {
-      model = observeBoutResult(model, observed.id, result.kimarite, week, resolvedTactic);
+    if (observedWon && !result.isDraw) {
+      model = observeBoutResult(
+        model,
+        observed.id,
+        result.kimarite as import("@/engine/types/combat").KimariteId,
+        week,
+        resolvedTactic
+      );
     } else {
       const family: TacticalFamily =
         (resolvedTactic && TACTIC_TO_FAMILY[resolvedTactic]) || familyFromStyle(observed.style);

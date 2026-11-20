@@ -118,7 +118,9 @@ function MatchCard({
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center p-4 gap-4">
         <div className="text-right">
-          <div className={`font-bold text-lg ${result?.winner === "east" ? "text-primary" : ""}`}>
+          <div
+            className={`font-bold text-lg ${result && !result.isDraw && result.winner === "east" ? "text-primary" : ""}`}
+          >
             {east?.shikona || match.eastRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">
@@ -128,17 +130,21 @@ function MatchCard({
 
         <div className="flex flex-col items-center justify-center px-4">
           {result ? (
-            <Badge variant="secondary" className="mb-1">
+            <Badge variant={result.isDraw ? "outline" : "secondary"} className="mb-1">
               {result.kimariteName}
             </Badge>
           ) : (
             <Swords className="h-5 w-5 text-muted-foreground mb-1" />
           )}
-          <span className="text-xs font-mono text-muted-foreground">vs</span>
+          <span className="text-xs font-mono text-muted-foreground">
+            {result?.isDraw ? "draw" : "vs"}
+          </span>
         </div>
 
         <div className="text-left">
-          <div className={`font-bold text-lg ${result?.winner === "west" ? "text-primary" : ""}`}>
+          <div
+            className={`font-bold text-lg ${result && !result.isDraw && result.winner === "west" ? "text-primary" : ""}`}
+          >
             {west?.shikona || match.westRikishiId}
           </div>
           <div className="text-sm text-muted-foreground">

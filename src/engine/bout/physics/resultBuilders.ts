@@ -1,43 +1,26 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult, BoutLogEntry } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";
-import type { KimariteId } from "@/engine/types/combat";
+import type { KimariteId, DrawOutcomeType, CombatArchetype, TacticalFamily } from "@/engine/types/combat";
 import {
   DURATION_MIN_SECONDS,
   CLOCK_MULTIPLIER,
   EXCITEMENT_TICK_DIVISOR,
   EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS,
 } from "@/constants/engine/physics";
+import { DRAW_OUTCOME_METADATA } from "@/constants/engine/bout";
 import type { EngineStateV2, BeltBattleState } from "@/engine/types/combat-spatial";
 import type { BoutContext } from "@/engine/bout/boutUtils";
-import type { CombatArchetype, TacticalFamily } from "@/engine/types/combat";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 
-/**
- * Assemble the final `BoutResult` from a resolved physics state.
- *
- * Derives `duration` from `st.tick` (clamped to `DURATION_MIN_SECONDS`), computes
- * the composite `excitementScore` from the bout log (edge-crisis escapes,
- * momentum shifts, reversals), and resolves kimarite display metadata via
- * `getKimarite`. `isTimeout` marks bouts ended by the clock rather than a finish.
- */
-export function buildBoutResultV2(
-  bout: BoutContext,
-  east: Rikishi,
-  west: Rikishi,
-  st: EngineStateV2,
-  winner: Side,
-  kimarite: KimariteId,
-  boutLog: BoutLogEntry[],
-  isTimeout: boolean = false
-): BoutResult {
-  const duration = Math.max(DURATION_MIN_SECONDS, st.tick * CLOCK_MULTIPLIER);
+interface DrawBuildOpts {
+  isDraw?: boolean;
+  drawType?: DrawOutcomeType;
+  mizuIriCount?: number;
+}
 
-  // Compute composite excitement score:
-  //   - Bout length: up to 40 points (120 ticks max → ~40)
-  //   - Each tawara escape: +20 points (dramatic near-defeats)
-  //   - Grip reversals (inside→outside swaps in log): +10 points each
-  //   - Momentum shifts: +5 points each
+/** Compute excitement score (0-100) from bout duration and log milestones. */
+function computeExcitementScore(st: EngineStateV2, boutLog: BoutLogEntry[]): number {
   let edgeCrisisEscapes = 0;
   let momentumShifts = 0;
   for (const e of boutLog) {
@@ -47,7 +30,7 @@ export function buildBoutResultV2(
       momentumShifts++;
     }
   }
-  const excitementScore = Math.min(
+  return Math.min(
     100,
     Math.round(
       st.tick / EXCITEMENT_TICK_DIVISOR +
@@ -55,10 +38,29 @@ export function buildBoutResultV2(
         momentumShifts * 5
     )
   );
+}
 
-  // Stance follows the battle the bout actually lived in — for tachiai-resolved
-  // (henka) finishes there is no battle phase, so derive it from the winning
-  // technique's family instead of defaulting to belt.
+/**
+ * Assemble the final `BoutResult` from a resolved physics state.
+ *
+ * Derives `duration` from `st.tick` (clamped to `DURATION_MIN_SECONDS`), computes
+ * the composite `excitementScore` from the bout log, and resolves kimarite
+ * display metadata via `getKimarite` (or `DRAW_OUTCOME_METADATA` for draws).
+ */
+export function buildBoutResultV2(
+  bout: BoutContext,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  winner: Side,
+  kimarite: KimariteId | DrawOutcomeType,
+  boutLog: BoutLogEntry[],
+  isTimeout: boolean = false,
+  drawOpts?: DrawBuildOpts
+): BoutResult {
+  const duration = Math.max(DURATION_MIN_SECONDS, st.tick * CLOCK_MULTIPLIER);
+  const excitementScore = computeExcitementScore(st, boutLog);
+
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
     (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle")
@@ -69,22 +71,22 @@ export function buildBoutResultV2(
           : "push-dominant"
         : "push-dominant";
 
+  const isDraw = Boolean(drawOpts?.isDraw && drawOpts?.drawType);
+  const drawType = isDraw ? drawOpts?.drawType : undefined;
   const winnerRikishi = winner === "east" ? east : west;
   const loserRikishi = winner === "east" ? west : east;
   const winnerRankNum = winnerRikishi.rankNumber ?? 99;
   const loserRankNum = loserRikishi.rankNumber ?? 99;
-  const upset = winnerRankNum > loserRankNum;
+  const upset = !isDraw && winnerRankNum > loserRankNum;
 
-  // Detect mono-ii trigger: close bout with edge crisis controversy or shini-tai
-  const monoii = boutLog.some(
-    (e) =>
-      (e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.controversial === true) ||
-      (e.data as Record<string, unknown>)?.shinitai === true
-  );
+  const monoii =
+    !isDraw &&
+    boutLog.some(
+      (e) =>
+        (e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.controversial === true) ||
+        (e.data as Record<string, unknown>)?.shinitai === true
+    );
 
-  // Archetype matchup data
-  // A counter "activates" when a side's counterFamily — the tactical family it
-  // counters most effectively — matches the opponent's dominant family.
   const dominantFamily = (r: Rikishi): TacticalFamily => {
     const prefs = r.combatProfile?.familyPreferences;
     if (!prefs) return "push";
@@ -98,20 +100,18 @@ export function buildBoutResultV2(
     east.combatProfile?.counterFamily === westDominant ||
     west.combatProfile?.counterFamily === eastDominant;
 
-  // W M — final grip facts for the signature-grip metrics/beats. The belt
-  // state is live while the phase is still belt_battle; a belt-borne edge
-  // crisis keeps it in savedBelt. Push/tachiai finishes leave both unset.
   const finalBelt =
     st.phase.tag === "belt_battle"
       ? st.phase.state
       : st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle"
         ? st.phase.savedBelt
         : undefined;
-  const winnerGrip = finalBelt
-    ? winner === "east"
-      ? finalBelt.eastGripClass
-      : finalBelt.westGripClass
-    : undefined;
+  const winnerGrip =
+    finalBelt && !isDraw
+      ? winner === "east"
+        ? finalBelt.eastGripClass
+        : finalBelt.westGripClass
+      : undefined;
   const securedFor = (
     r: Rikishi,
     left: BeltBattleState["eastLeft"] | undefined,
@@ -136,16 +136,16 @@ export function buildBoutResultV2(
     boutId: bout.id,
     day: bout.day,
     winner,
-    winnerRikishiId: winnerRikishi.id,
-    loserRikishiId: loserRikishi.id,
-    kimarite: kimarite as BoutResult["kimarite"],
-    kimariteName: kimarite,
+    winnerRikishiId: isDraw ? "" : winnerRikishi.id,
+    loserRikishiId: isDraw ? "" : loserRikishi.id,
+    kimarite: drawType ?? kimarite,
+    kimariteName: drawType ? DRAW_OUTCOME_METADATA[drawType].name : kimarite,
     stance: resolvedStance,
     tachiaiWinner: st.tachiaiWinner,
     duration,
     excitementScore,
     upset,
-    isKinboshi: false, // set by boutResolver
+    isKinboshi: false,
     log: boutLog,
     kenshoEnvelopes: 0,
     momentumScore: st.momentumScore,
@@ -153,6 +153,8 @@ export function buildBoutResultV2(
     archetypeMatchup: { eastArchetype, westArchetype, counterActivated },
     isTimeout,
     monoii,
+    ...(isDraw && drawType ? { isDraw: true, drawType } : {}),
+    ...(drawOpts?.mizuIriCount ? { mizuIriCount: drawOpts.mizuIriCount } : {}),
     ...(winnerGrip !== undefined ? { winnerGrip } : {}),
     ...(gripSecured !== undefined ? { gripSecured } : {}),
   };

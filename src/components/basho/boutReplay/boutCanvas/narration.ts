@@ -18,6 +18,15 @@ export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIR
     warn(`Bout ${result.boutId} has no pbpLines — falling back to hardcoded strings`, "Narration");
   }
 
+  if (result.isDraw) {
+    return [
+      `${east.shikona} (East) faces ${west.shikona} (West).`,
+      `They crouch at the shikiri-sen. Silence falls.`,
+      `TACHIAI! Neither rikishi yields an inch in a grueling exchange.`,
+      `Official draw — ${result.kimariteName || "draw"}!`,
+    ];
+  }
+
   const winner = result.winnerRikishiId === east.id ? east : west;
   const loser = result.winnerRikishiId === east.id ? west : east;
 

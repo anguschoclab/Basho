@@ -19,7 +19,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoState, BoutResult } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Side } from "@/engine/types/banzuke";
-import type { BoutTactic } from "@/engine/types/combat";
+import type { BoutTactic, DrawOutcomeType } from "@/engine/types/combat";
 import type { Gyoji, ShimpanPanel, MonoiiOutcome } from "@/engine/types/gyoji";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { rngFromSeed } from "@/engine/core/rng";
@@ -27,7 +27,12 @@ import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 import { applyOfficiating } from "@/engine/bout/resolution/officiating";
 import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
 import { resolveMonoii } from "@/engine/types/gyoji";
-import { MISSED_CALL_REVERSAL_BONUS } from "@/constants/engine/bout";
+import {
+  AZUKARI_REMATCH_CHANCE,
+  DRAW_OUTCOME_METADATA,
+  ITAMIWAKE_MINOR_INJURY_CHANCE,
+  MISSED_CALL_REVERSAL_BONUS,
+} from "@/constants/engine/bout";
 
 export interface MonoiiVerdictParams {
   /** Original bout context (id, day, rikishi ids). */
@@ -106,20 +111,62 @@ export function applyMonoiiVerdict(params: MonoiiVerdictParams): { result: BoutR
   return { result };
 }
 
+/** Build an official non-decision draw verdict (itamiwake or azukari). */
+function buildDrawVerdictResult(
+  base: BoutResult,
+  drawType: DrawOutcomeType,
+  outcome: MonoiiOutcome,
+  extra?: Partial<BoutResult>
+): BoutResult {
+  const meta = DRAW_OUTCOME_METADATA[drawType];
+  return {
+    ...base,
+    ...extra,
+    winner: "east",
+    winnerRikishiId: "",
+    loserRikishiId: "",
+    kimarite: drawType,
+    kimariteName: meta.name,
+    isDraw: true,
+    drawType,
+    upset: false,
+    isKinboshi: false,
+    awardFact: null,
+    awards: undefined,
+    kenshoEnvelopes: 0,
+    monoii: true,
+    monoiiOutcome: outcome,
+  };
+}
+
 /**
  * Re-run the bout after a torinaoshi ordering. Physics seeds derive from
  * `basho.id + year + day + rikishiIds`, so salting the basho id produces a
  * genuinely different bout rather than an identical replay.
  *
- * The rematch is officiated end-to-end (kinjite can still happen), can
- * flag its own mono-ii — but `suppressRematch` guarantees the rematch's
- * verdict is decisive. Only the rematch result counts.
+ * Before re-fighting, checks for itamiwake (in-bout injury prevents clean
+ * continuation on non-playoff bouts). If the rematch itself draws a panel,
+ * azukari may hold the bout in abeyance without award.
  */
 function runTorinaoshi(params: MonoiiVerdictParams): BoutResult {
   const {
     bout, ctxFinal, result, east, west, eastBout, westBout, basho,
     eastTactic, westTactic, world, builder, meta, gyoji, panel,
   } = params;
+
+  if (!bout.isPlayoff && result.inBoutInjury != null) {
+    const sev = result.inBoutInjury.severity;
+    const isItamiwake =
+      sev === "moderate" ||
+      sev === "serious" ||
+      (sev === "minor" &&
+        monoiiRoll(`${result.boutId}-itamiwake`).next() < ITAMIWAKE_MINOR_INJURY_CHANCE);
+    if (isItamiwake) {
+      return buildDrawVerdictResult(result, "itamiwake", "itamiwake", {
+        isTorinaoshi: false,
+      });
+    }
+  }
 
   const rematchBasho: BashoState = { ...basho, id: `${basho.id}-torinaoshi` };
   const { result: rematchPhysics } = resolveBoutPhysics(
@@ -144,17 +191,40 @@ function runTorinaoshi(params: MonoiiVerdictParams): BoutResult {
   // The rematch itself can draw a panel — a missed-call review on the
   // second attempt or a flagged controversial finish.
   rollMissedCallReview(rematch, world, `${rematchBasho.id}-${bout.id}`);
-  if (rematch.monoii && !rematch.foulReview) rematch.monoiiKind ??= "contested";
+  if (rematch.monoii && !rematch.foulReview && !rematch.isDraw) {
+    rematch.monoiiKind ??= "contested";
+  }
 
   let rematchOutcome: MonoiiOutcome | undefined;
-  if (rematch.monoii && panel && gyoji) {
+  if (rematch.monoii && !rematch.isDraw && panel && gyoji) {
     if (rematch.foulReview) {
       rematchOutcome = rematch.foulReview.confirmed ? "reversed" : "upheld";
-    } else {
-      rematchOutcome = resolveMonoii(gyoji, panel, monoiiRoll(`${result.boutId}-torinaoshi-${panel.chief.id}`), {
-        reversalBonus: rematch.monoiiKind === "missed_call" ? MISSED_CALL_REVERSAL_BONUS : 0,
-        suppressRematch: true,
+    } else if (
+      !bout.isPlayoff &&
+      monoiiRoll(`${result.boutId}-azukari`).next() < AZUKARI_REMATCH_CHANCE
+    ) {
+      return buildDrawVerdictResult(rematch, "azukari", "azukari", {
+        boutId: result.boutId,
+        isTorinaoshi: true,
+        gyojiId: result.gyojiId,
+        shimpanPanelIds: result.shimpanPanelIds,
+        torinaoshiContext: {
+          firstWinner: result.winner,
+          firstKimarite: result.kimarite,
+          firstLog: result.log,
+          rematchOutcome: "azukari",
+        },
       });
+    } else {
+      rematchOutcome = resolveMonoii(
+        gyoji,
+        panel,
+        monoiiRoll(`${result.boutId}-torinaoshi-${panel.chief.id}`),
+        {
+          reversalBonus: rematch.monoiiKind === "missed_call" ? MISSED_CALL_REVERSAL_BONUS : 0,
+          suppressRematch: true,
+        }
+      );
     }
     rematch.monoiiOutcome = rematchOutcome;
     if (rematchOutcome === "reversed" && !rematch.foulReview) {

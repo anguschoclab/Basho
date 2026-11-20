@@ -459,6 +459,14 @@
       "It's too close to call! A torinaoshi has been ordered.",
       "We will have a rematch! Both men will have to do it again."
     ],
+    "azukari": [
+      "Even after the rematch, the judges see no clean separation — they rule azukari, an official draw with no winner.",
+      "With the torinaoshi deadlocked at the tawara, the shimpan announce azukari between %EAST% and %WEST%."
+    ],
+    "itamiwake": [
+      "The judges cite the injury sustained during the bout and award an itamiwake draw rather than forcing a damaged finish.",
+      "An injured wrestler cannot safely re-enter the ring — the panel announces an official itamiwake between %EAST% and %WEST%."
+    ],
     "missed_call": [
       "The judges stopped the action — they saw something the gyoji missed at the finish.",
       "The shimpan are calling it back — the gyoji appears to have missed the touch at the tawara.",

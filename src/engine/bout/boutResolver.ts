@@ -151,7 +151,7 @@ function attachFusenshoNarrative(
   const rng = world
     ? rngForWorld(world, "narrative", `fusensho::${bout.id}`)
     : new SeededRNG(`fusensho::${bout.id}`);
-  const doubleAbsent = !result.winnerRikishiId;
+  const doubleAbsent = !result.winnerRikishiId && !result.isDraw;
   let resolved: { text: string; id: string; path: string };
   let tags: PbpTag[] = ["drama"];
 

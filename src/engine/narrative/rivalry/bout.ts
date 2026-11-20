@@ -33,7 +33,7 @@ export function onBoutResolved(
   args: { result: BoutResult; day?: number }
 ): StateImpact {
   const { result } = args;
-  if (!result.winnerRikishiId || !result.loserRikishiId) {
+  if (result.isDraw || !result.winnerRikishiId || !result.loserRikishiId) {
     return createImpactBuilder("onBoutResolvedRivalries").build();
   }
 

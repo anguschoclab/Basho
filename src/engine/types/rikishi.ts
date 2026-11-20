@@ -287,7 +287,8 @@ export interface Rikishi {
   // Basho tracking (set by tournament simulation)
   currentBashoWins?: number;
   currentBashoLosses?: number;
-  currentBashoRecord?: { wins: number; losses: number };
+  currentBashoDraws?: number;
+  currentBashoRecord?: { wins: number; losses: number; draws?: number };
   currentWinStreak?: number;
   currentLossStreak?: number;
 

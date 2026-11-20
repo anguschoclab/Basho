@@ -250,12 +250,17 @@ function publishBanzukeForSim(
   bashoName: BashoName
 ): WorldState {
   // 1. Build standings map in the format publishBanzukeUpdate expects
-  const standingsForPublish = new Map<string, { wins: number; losses: number; absences: number }>();
+  const standingsForPublish = new Map<
+    string,
+    { wins: number; losses: number; absences: number; draws?: number }
+  >();
   bashoResult.standings.forEach((stats, id) => {
+    const draws = (stats as { draws?: number }).draws;
     standingsForPublish.set(id, {
       wins: stats.wins,
       losses: stats.losses,
       absences: stats.absences ?? 0,
+      ...(draws ? { draws } : {}),
     });
   });
 

@@ -29,6 +29,11 @@ export const PHASE_STYLE: Record<string, { label: string; color: string; bg: str
     color: "text-destructive",
     bg: "bg-destructive/10 border-destructive/20",
   },
+  mizu_iri: {
+    label: "水入",
+    color: "text-primary",
+    bg: "bg-primary/10 border-primary/20",
+  },
   award: { label: "殊勲", color: "text-success", bg: "bg-success/10 border-success/20" },
   ceremony: { label: "礼", color: "text-muted-foreground", bg: "bg-muted/10 border-muted/20" },
   closing: { label: "結び", color: "text-primary", bg: "bg-primary/10 border-primary/20" },

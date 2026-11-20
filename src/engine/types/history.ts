@@ -1,10 +1,12 @@
 import type { Rank, Division } from "@/engine/types/banzuke";
+import type { DrawOutcomeType } from "@/engine/types/combat";
 import type { Id } from "@/engine/types/common";
 
 /** One cell of a rikishi's hoshitori (star chart) for a single day. */
 export interface DayResult {
   day: number;
-  outcome: "win" | "loss" | "absence";
+  outcome: "win" | "loss" | "absence" | "draw";
+  drawType?: DrawOutcomeType;
   isKinboshi?: boolean;
   isGinboshi?: boolean;
   opponentId?: Id;
@@ -29,6 +31,7 @@ export interface CareerSnapshot {
   wins: number;
   losses: number;
   absences: number;
+  draws?: number;
 
   isYusho: boolean;
   isJunYusho: boolean;

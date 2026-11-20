@@ -20,6 +20,7 @@ export interface UIBoutRow {
   duration?: number;
   isUpset: boolean;
   isKinboshi: boolean;
+  isDraw?: boolean;
 }
 
 export interface UIBashoSummary {
@@ -61,6 +62,7 @@ export function projectBoutRow(m: MatchSchedule, world: WorldState): UIBoutRow {
     duration: m.result?.duration,
     isUpset: m.result?.upset ?? false,
     isKinboshi: m.result?.isKinboshi ?? false,
+    ...(m.result?.isDraw ? { isDraw: true } : {}),
   };
 }
 

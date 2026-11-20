@@ -13,7 +13,7 @@
 
 import type { Id } from "@/engine/types/common";
 import type { Side, BanzukeSnapshot } from "@/engine/types/banzuke";
-import type { KimariteId, Stance, CombatArchetype } from "@/engine/types/combat";
+import type { KimariteId, DrawOutcomeType, Stance, CombatArchetype } from "@/engine/types/combat";
 import type { InjuryBodyArea, InjurySeverity } from "@/engine/health/BodyDefinitions";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import type { PromotionEvent, DemotionEvent } from "@/engine/types/banzuke";
@@ -80,7 +80,8 @@ export interface BoutLogEntry {
     | "bout_injury"
     | "momentum_shift"
     | "counter_tactic"
-    | "bout_timeout";
+    | "bout_timeout"
+    | "mizu_iri";
   /** Clock time when this event occurred (in seconds). */
   clock?: number;
   /** Human-readable description of the event. */
@@ -144,8 +145,8 @@ export interface BoutResult {
   winnerHeyaId?: Id;
   /** ID of the loser's heya (for rivalry tracking). */
   loserHeyaId?: Id;
-  /** Winning technique (kimarite). */
-  kimarite: KimariteId;
+  /** Winning technique (kimarite), or draw classification when `isDraw` is true. */
+  kimarite: KimariteId | DrawOutcomeType;
   /** Name of the winning technique. */
   kimariteName: string;
   /** Stance used by the winner. */
@@ -204,7 +205,13 @@ export interface BoutResult {
   /** IDs of the shimpan (judges) on the mono-ii panel, if a mono-ii occurred. */
   shimpanPanelIds?: string[];
   /** Outcome of the mono-ii consultation (if one occurred). */
-  monoiiOutcome?: "upheld" | "reversed" | "rematch";
+  monoiiOutcome?: MonoiiOutcome;
+  /** True when the bout ended in an official draw (hikiwake / itamiwake / azukari). */
+  isDraw?: boolean;
+  /** Draw classification when `isDraw` is true. */
+  drawType?: DrawOutcomeType;
+  /** Number of mizu-iri water-break pauses observed during the bout. */
+  mizuIriCount?: number;
   /**
    * The side the gunbai originally pointed to — set when a sashichigae
    * (reversal) flips the result so the narrative can tell the story
@@ -218,7 +225,7 @@ export interface BoutResult {
   /** The annulled first attempt's record, kept for narrative and audit. */
   torinaoshiContext?: {
     firstWinner: Side;
-    firstKimarite: KimariteId;
+    firstKimarite: KimariteId | DrawOutcomeType;
     firstLog: BoutLogEntry[];
     /** The rematch's own mono-ii verdict, if it had one (never "rematch"). */
     rematchOutcome?: MonoiiOutcome;
@@ -310,13 +317,19 @@ export interface MatchSchedule {
  * Type representing standings table.
  * Maps rikishi IDs to their win-loss records.
  */
-export type StandingsTable = Record<Id, { wins: number; losses: number; absences?: number }>;
+export type StandingsTable = Record<
+  Id,
+  { wins: number; losses: number; absences?: number; draws?: number }
+>;
 
 /**
  * Type representing standings table runtime.
  * Map version for efficient runtime operations.
  */
-export type StandingsTableRuntime = Map<Id, { wins: number; losses: number; absences?: number }>;
+export type StandingsTableRuntime = Map<
+  Id,
+  { wins: number; losses: number; absences?: number; draws?: number }
+>;
 
 /**
  * Dohyo clay condition for a basho — rolled at basho init (W J).

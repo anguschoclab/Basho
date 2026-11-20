@@ -762,4 +762,36 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: "officials",
     definition: "A conference of shimpan to review a disputed gyōji decision, held on the dohyō.",
   },
+  {
+    id: "mizu-iri",
+    term: "Mizu-iri",
+    termJa: "水入り",
+    category: "tournament",
+    definition:
+      "Water break called during an extended locked bout; rikishi pause, drink water, and resume in their exact grip.",
+  },
+  {
+    id: "hikiwake",
+    term: "Hikiwake",
+    termJa: "引分",
+    category: "tournament",
+    definition:
+      "Stalemate draw declared when neither rikishi can resolve the bout even after mizu-iri water breaks.",
+  },
+  {
+    id: "itamiwake",
+    term: "Itamiwake",
+    termJa: "痛み分け",
+    category: "tournament",
+    definition:
+      "Pain draw recorded when an injury suffered during the bout leaves a wrestler unable to continue after mono-ii review.",
+  },
+  {
+    id: "azukari",
+    term: "Azukari",
+    termJa: "預り",
+    category: "tournament",
+    definition:
+      "Held in abeyance — an official draw awarded when shimpan deem the bout and rematch too close to separate.",
+  },
 ];

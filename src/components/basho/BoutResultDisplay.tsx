@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { getKimarite } from "@/presenters/uiDigest";
+import { DRAW_OUTCOME_METADATA } from "@/constants/engine/bout";
 import {
   WinnerReveal,
   KimariteCard,
@@ -65,44 +66,61 @@ export function BoutResultDisplay({
   compact = false,
   kimariteObservedPct,
 }: BoutResultDisplayProps) {
+  const isDraw = Boolean(result.isDraw);
+  const drawMeta = isDraw && result.drawType ? DRAW_OUTCOME_METADATA[result.drawType] : null;
   const winner = result.winner === "east" ? eastRikishi : westRikishi;
   const loser = result.winner === "east" ? westRikishi : eastRikishi;
   const winnerSide = result.winner;
 
   const kimariteId =
     safeString(result.kimarite) || safeString((result as { kimariteId?: string }).kimariteId) || "";
-  const kimariteFromLookup = kimariteId ? getKimarite(kimariteId) : null;
+  const kimariteFromLookup = !isDraw && kimariteId ? getKimarite(kimariteId) : null;
   const kimariteName =
+    drawMeta?.name ||
     safeString((result as { kimariteName?: string }).kimariteName) ||
     safeString(kimariteFromLookup?.name) ||
     "—";
-  const kimariteNameJa = safeString(kimariteFromLookup?.nameJa);
-  const kimariteDescription = safeString(kimariteFromLookup?.description);
+  const kimariteNameJa = drawMeta?.nameJa ?? safeString(kimariteFromLookup?.nameJa);
+  const kimariteDescription = drawMeta?.description ?? safeString(kimariteFromLookup?.description);
   const rarity = safeString((kimariteFromLookup as { rarity?: string })?.rarity, "").toLowerCase();
   const duration = safeNumber(result.duration, 0);
   const tachiaiWinner = result.tachiaiWinner;
-  const isUpset = Boolean(result.upset);
+  const isUpset = !isDraw && Boolean(result.upset);
 
   return (
     <div className={cn("paper p-0 overflow-hidden text-center", className)}>
       {/* Top color accent bar */}
       <div className="flex h-1">
         <div
-          className={cn("flex-1 transition-all", winnerSide === "east" ? "bg-east" : "bg-east/20")}
+          className={cn(
+            "flex-1 transition-all",
+            isDraw ? "bg-gold/50" : winnerSide === "east" ? "bg-east" : "bg-east/20"
+          )}
         />
         <div
-          className={cn("flex-1 transition-all", winnerSide === "west" ? "bg-west" : "bg-west/20")}
+          className={cn(
+            "flex-1 transition-all",
+            isDraw ? "bg-gold/50" : winnerSide === "west" ? "bg-west" : "bg-west/20"
+          )}
         />
       </div>
 
       <div className="p-6 space-y-5">
-        <WinnerReveal result={result} winner={winner} loser={loser} isUpset={isUpset} />
+        <WinnerReveal
+          result={result}
+          winner={winner}
+          loser={loser}
+          eastRikishi={eastRikishi}
+          westRikishi={westRikishi}
+          isUpset={isUpset}
+        />
 
         <KimariteCard
           kimariteId={kimariteId}
           kimariteName={kimariteName}
           kimariteNameJa={kimariteNameJa}
           kimariteDescription={kimariteDescription}
+          isDraw={isDraw}
           rarity={rarity}
           compact={compact}
           kimariteObservedPct={kimariteObservedPct}

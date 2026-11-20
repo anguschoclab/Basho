@@ -19,6 +19,7 @@ export type PbpPhase =
   | "bout_injury"
   | "grip_transition"
   | "bout_timeout"
+  | "mizu_iri"
   | "counter_tactic"
   | "finish"
   | "post_bout"
@@ -145,7 +146,9 @@ export type PbpTag =
   | "ozeki_bid"
   | "collapse_shadow"
   | "dream_showdown"
-  | "stars_align";
+  | "stars_align"
+  | "mizu_iri"
+  | "draw";
 
 export type PbpLine = {
   text: string;

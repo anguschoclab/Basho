@@ -202,6 +202,9 @@ export type KimariteId =
   | "fusensho"
   | "hansoku";
 
+/** Non-decision JSA bout draw classifications (excluded from KIMARITE_REGISTRY). */
+export type DrawOutcomeType = "azukari" | "itamiwake" | "hikiwake";
+
 /** Type representing bout tactic. */
 export type BoutTactic =
   | "STANDARD"

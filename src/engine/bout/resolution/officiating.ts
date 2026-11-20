@@ -15,7 +15,7 @@ import type { BoutContext } from "@/engine/bout/boutPhysics";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoState, BoutResult } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
-import type { BoutTactic } from "@/engine/types/combat";
+import type { BoutTactic, KimariteId } from "@/engine/types/combat";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { Side } from "@/engine/types/banzuke";
 import { rollFoulSuspicion, resolveFoulVerdict } from "@/engine/bout/kinjite";
@@ -55,6 +55,14 @@ export function applyOfficiating(
   // Requires a panelable officials pool — world-less harnesses can't
   // convene judges, so they never see fouls.
   const hansokuSeed = `${basho.id ?? "basho"}-${bout.id}-kinjite`;
+  if (physicsResult.isDraw) {
+    const drawResult =
+      eastTactic || westTactic
+        ? { ...physicsResult, tactics: { east: eastTactic, west: westTactic } }
+        : physicsResult;
+    return { result: drawResult, fouledHeyaId: null, enableYaocho: false, hansokuSeed };
+  }
+
   const shimpanPool = world?.shimpanPool ?? [];
   const suspicion =
     shimpanPool.length >= FOUL_REVIEW_MIN_SHIMPAN
@@ -76,7 +84,7 @@ export function applyOfficiating(
           victimRikishiId: suspicion.victimRikishiId,
           suspectSide: suspicion.suspectSide,
           confirmed,
-          apparentKimarite: physicsResult.kimarite,
+          apparentKimarite: physicsResult.kimarite as KimariteId,
         },
       };
       if (confirmed) {

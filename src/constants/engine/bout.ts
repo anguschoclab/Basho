@@ -227,3 +227,57 @@ export const INSTABILITY_FLOOR = 0.01;
  * rationale as boundHistoryArrays' HISTORY_MAX_ENTRIES for world arrays).
  */
 export const RIKISHI_BOUT_HISTORY_MAX = 500;
+
+// ── Mizu-iri / Draw outcomes (azukari, itamiwake, hikiwake) ───────────────────
+
+/** Tick at which the first mizu-iri water-break check runs during a clinch. */
+export const MIZU_IRI_FIRST_TICK = 50;
+
+/** Tick at which a second mizu-iri pause check runs if still deadlocked. */
+export const MIZU_IRI_SECOND_TICK = 95;
+
+/** Maximum mizu-iri pauses before timeout evaluates for hikiwake. */
+export const MIZU_IRI_MAX_BREAKS = 2;
+
+/** Max normalized net-torque delta for two locked rikishi to pause for mizu-iri. */
+export const MIZU_IRI_TORQUE_BALANCE = 0.25;
+
+/** Minimum ring margin (m) from tawara for a center-ring mizu-iri stalemate. */
+export const MIZU_IRI_RING_MARGIN = 1.5;
+
+/** Fatigue reduction fraction applied to both rikishi on a mizu-iri water break. */
+export const MIZU_IRI_FATIGUE_RECOVERY = 0.35;
+
+/** Maximum instability gap between wrestlers at timeout to declare hikiwake. */
+export const HIKIWAKE_MAX_INSTABILITY_GAP = 0.12;
+
+/** Probability of an itamiwake draw when an injured rikishi has a minor in-bout injury and mono-ii. */
+export const ITAMIWAKE_MINOR_INJURY_CHANCE = 0.25;
+
+/** Probability an inconclusive torinaoshi rematch with mono-ii is ruled azukari. */
+export const AZUKARI_REMATCH_CHANCE = 0.18;
+
+/** Display metadata for draw outcomes (kept outside KIMARITE_REGISTRY to preserve 82+5+2 pin). */
+export const DRAW_OUTCOME_METADATA: Record<
+  import("@/engine/types/combat").DrawOutcomeType,
+  { name: string; nameJa: string; description: string }
+> = {
+  azukari: {
+    name: "Azukari",
+    nameJa: "預り",
+    description:
+      "Held in abeyance — shimpan judges rule the bout and rematch too close to award a winner.",
+  },
+  itamiwake: {
+    name: "Itamiwake",
+    nameJa: "痛み分け",
+    description:
+      "Pain draw — both sides unable to continue cleanly after an in-bout injury stops the bout.",
+  },
+  hikiwake: {
+    name: "Hikiwake",
+    nameJa: "引分",
+    description:
+      "Stalemate draw — declared when neither rikishi can force a decision even after mizu-iri breaks.",
+  },
+};

@@ -68,6 +68,7 @@ export function updateMediaFromBout(args: {
 }): StateImpact {
   const { state, world, result, day, bashoName, division, rivalries } = args;
   const builder = createImpactBuilder("updateMediaFromBout");
+  if (result.isDraw || !result.winnerRikishiId) return builder.build();
   const week = world.week ?? 0;
   // The headline-count salt keeps MH ids unique when the same bout label is
   // minted twice in one day (re-simulated bout, identical playoff pairing).
@@ -422,7 +423,7 @@ function recapLeaderChange(
   const winsNow = new Map<string, number>();
   const winsBefore = new Map<string, number>();
   for (const m of basho.matches) {
-    if (!m.result) continue;
+    if (!m.result || m.result.isDraw || !m.result.winnerRikishiId) continue;
     const winner = getRikishi(world, m.result.winnerRikishiId);
     if (winner?.division !== "makuuchi") continue;
     winsNow.set(winner.id, (winsNow.get(winner.id) ?? 0) + 1);
@@ -466,7 +467,7 @@ function recapSanyakuUpsetDay(
   const rikishiIds: string[] = [];
   let count = 0;
   for (const r of todayResults) {
-    if (!r.upset) continue;
+    if (!r.upset || r.isDraw || !r.winnerRikishiId) continue;
     const loser = getRikishi(world, r.loserRikishiId);
     if (!loser || loser.division !== "makuuchi" || !TITLED_RANKS.has(loser.rank)) continue;
     count++;

@@ -67,7 +67,7 @@ export function useBashoPageState() {
   const lastBoutKey = useMemo(() => {
     const last = state.lastBoutResult;
     if (!last || !bashoDigest) return null;
-    return `${makePairKey(last.winnerRikishiId, last.loserRikishiId)}::${bashoDigest.day}::${last.kimarite || ""}`;
+    return `${last.boutId || makePairKey(last.winnerRikishiId, last.loserRikishiId)}::${bashoDigest.day}::${last.kimarite || ""}`;
   }, [state.lastBoutResult, bashoDigest]);
 
   const nextBoutIndex = useMemo(() => {
@@ -95,6 +95,7 @@ export function useBashoPageState() {
 
     const matchToday = bashoDigest.matches.find(
       (m: BoutMatchUI) =>
+        (last.boutId && m.boutId === last.boutId) ||
         (m.eastRikishiId === last.winnerRikishiId && m.westRikishiId === last.loserRikishiId) ||
         (m.eastRikishiId === last.loserRikishiId && m.westRikishiId === last.winnerRikishiId)
     );
