@@ -40,6 +40,13 @@ export const HOT_STREAK_WINS_THRESHOLD = 10;
 export const RIVALRY_TENSION_THRESHOLD = 0.5;
 export const RIVALRY_HEAT_BONUS = 0.3;
 
+// Yokozuna joi back-loading thresholds
+export const YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY = 4;
+export const YOKOZUNA_OZEKI_CLASH_START_DAY = 11;
+export const YOKOZUNA_YOKOZUNA_CLASH_START_DAY = 14;
+export const YOKOZUNA_JOI_BACKLOAD_BONUS = 1.35;
+export const ELITE_EARLY_CLASH_PENALTY = 0.2;
+
 // Swiss algorithm magic numbers
 export const RANK_NUMBER_MULTIPLIER = 2;
 export const SIDE_EAST_OFFSET = 0;
@@ -126,7 +133,6 @@ export const MATCH_EARLY_SIMILARITY_WEIGHT = 0.4;
 export const MATCH_SIMILAR_RECORDS_THRESHOLD = 0.75;
 export const MATCH_SANYAKU_MATCHUP_MULTIPLIER = 1.5;
 export const MATCH_SANYAKU_AVOIDED_MULTIPLIER = 0.5;
-export const MATCH_JOI_JIN_SIMILARITY_THRESHOLD = 0.5;
 export const MATCH_JOI_JIN_MULTIPLIER = 1.2;
 export const MATCH_RANK_SCORE_WEIGHT = 0.6;
 export const MATCH_RANK_SIMILARITY_WEIGHT = 0.4;

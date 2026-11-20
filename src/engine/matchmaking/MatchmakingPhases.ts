@@ -26,7 +26,6 @@ import {
   MATCH_SIMILAR_RECORDS_THRESHOLD,
   MATCH_SANYAKU_MATCHUP_MULTIPLIER,
   MATCH_SANYAKU_AVOIDED_MULTIPLIER,
-  MATCH_JOI_JIN_SIMILARITY_THRESHOLD,
   MATCH_JOI_JIN_MULTIPLIER,
   MATCH_RANK_SCORE_WEIGHT,
   MATCH_RANK_SIMILARITY_WEIGHT,
@@ -36,6 +35,13 @@ import {
   SIDE_HONOR_BONUS,
   MATCH_DAY_LATE_THRESHOLD,
   MATCH_YUSHO_CONTENDER_MIN_WINS,
+  M1_TO_M4_THRESHOLD,
+  SWISS_PHASE1_END_DAY,
+  YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY,
+  YOKOZUNA_OZEKI_CLASH_START_DAY,
+  YOKOZUNA_YOKOZUNA_CLASH_START_DAY,
+  YOKOZUNA_JOI_BACKLOAD_BONUS,
+  ELITE_EARLY_CLASH_PENALTY,
   DRAMA_DAY_SENSHURAKU,
   DRAMA_DAY_KADOBAN_START,
   DRAMA_KADOBAN_WIN_THRESHOLD,
@@ -175,16 +181,22 @@ function assignSides(
  * if (pairing) console.log(`Score: ${pairing.score}, Reasons: ${pairing.reasons.join(", ")}`);
  * ```
  */
+function isJoiMaegashira(r: Rikishi): boolean {
+  return r.rank === "maegashira" && (r.rankNumber ?? 99) <= M1_TO_M4_THRESHOLD;
+}
+
 export function scorePairing(args: {
   basho: BashoState;
   a: Rikishi;
   b: Rikishi;
+  day?: number;
   rules?: Partial<MatchmakingRules>;
   allowRepeatOverride?: boolean;
   facedPairs?: Set<string>;
 }): MatchPairing | null {
   const rules = { ...DEFAULT_MATCHMAKING_RULES, ...(args.rules ?? {}) };
   const { basho, a, b } = args;
+  const day = args.day ?? (basho.day || 1);
 
   if (a.id === b.id) return null;
 
@@ -212,7 +224,6 @@ export function scorePairing(args: {
     const rb = getRecord(basho, b.id);
     const s = recordSimilarity(ra, rb);
 
-    const day = basho.day || 1;
     if (day > MATCH_DAY_LATE_THRESHOLD) {
       score *= MATCH_LATE_RECORD_WEIGHT + MATCH_LATE_SIMILARITY_WEIGHT * s;
       if (s > MATCH_STRICT_RECORD_THRESHOLD) reasons.push("strict_record_match");
@@ -234,7 +245,6 @@ export function scorePairing(args: {
 
   if (rules.preferSimilarRank) {
     const s = rankSimilarity(a, b);
-    const day = basho.day || 1;
 
     const aSanyaku = isSanyakuRank(a.rank);
     const bSanyaku = isSanyakuRank(b.rank);
@@ -248,9 +258,32 @@ export function scorePairing(args: {
         reasons.push("sanyaku_avoided_early");
       }
     } else if ((aSanyaku && !bSanyaku) || (!aSanyaku && bSanyaku)) {
-      if (day <= MATCH_DAY_LATE_THRESHOLD && s > MATCH_JOI_JIN_SIMILARITY_THRESHOLD) {
+      const challenger = aSanyaku ? b : a;
+      if (day <= MATCH_DAY_LATE_THRESHOLD && isJoiMaegashira(challenger)) {
         score *= MATCH_JOI_JIN_MULTIPLIER;
         reasons.push("joi_jin_scheduling");
+      }
+    }
+
+    // Yokozuna joi back-loading: M3-M4 on days 1-3, M1-M2 on days 4-7; defer
+    // Yokozuna-vs-Ozeki until day 11+ and Yokozuna-vs-Yokozuna until day 14+.
+    const yokoSide = a.rank === "yokozuna" ? a : b.rank === "yokozuna" ? b : null;
+    const otherSide = yokoSide === a ? b : yokoSide === b ? a : null;
+    if (yokoSide && otherSide) {
+      if (day <= SWISS_PHASE1_END_DAY && isJoiMaegashira(otherSide)) {
+        const rn = otherSide.rankNumber ?? 99;
+        const favored =
+          day < YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY ? rn >= 3 : rn <= 2;
+        if (favored) {
+          score *= YOKOZUNA_JOI_BACKLOAD_BONUS;
+          reasons.push("yokozuna_joi_backload");
+        }
+      } else if (
+        (otherSide.rank === "yokozuna" && day < YOKOZUNA_YOKOZUNA_CLASH_START_DAY) ||
+        (otherSide.rank === "ozeki" && day < YOKOZUNA_OZEKI_CLASH_START_DAY)
+      ) {
+        score *= ELITE_EARLY_CLASH_PENALTY;
+        reasons.push("elite_clash_deferred");
       }
     }
 
@@ -264,7 +297,6 @@ export function scorePairing(args: {
     reasons.push("repeat_forced");
   }
 
-  const day = basho.day || 1;
   if (day > DRAMA_DAY_KADOBAN_START) {
     const ra = getRecord(basho, a.id);
     const rb = getRecord(basho, b.id);

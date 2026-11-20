@@ -544,6 +544,47 @@ function checkOriginMatchup(a: Rikishi, b: Rikishi): DramaContext | null {
  * expect(optimized).toHaveLength(pairings.length);
  * ```
  */
+const LOCKED_SWAP_REASONS = new Set([
+  "gauntlet",
+  "yokozuna_joi_backload",
+  "yokozuna_backload",
+  "kore_yori_sanyaku",
+  "finale",
+  "yusho_exception",
+  "hot_streak_pullup",
+]);
+
+function isSwapBlocked(
+  p1: MatchPairing,
+  p2: MatchPairing,
+  east1: Rikishi,
+  west1: Rikishi,
+  east2: Rikishi,
+  west2: Rikishi
+): boolean {
+  if (
+    p1.reasons.some((r) => LOCKED_SWAP_REASONS.has(r)) ||
+    p2.reasons.some((r) => LOCKED_SWAP_REASONS.has(r))
+  ) {
+    return true;
+  }
+  if (
+    (east1.heyaId && west1.heyaId && east1.heyaId === west1.heyaId) ||
+    (east2.heyaId && west2.heyaId && east2.heyaId === west2.heyaId)
+  ) {
+    return true;
+  }
+  if (
+    east1.siblingIds?.includes(west1.id) ||
+    west1.siblingIds?.includes(east1.id) ||
+    east2.siblingIds?.includes(west2.id) ||
+    west2.siblingIds?.includes(east2.id)
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export function applyDramaBudget(
   pairings: MatchPairing[],
   rikishiMap: Map<string, Rikishi>,
@@ -607,6 +648,7 @@ export function applyDramaBudget(
         const west2 = rikishiMap.get(swapped2.westId);
 
         if (!east1 || !west1 || !east2 || !west2) continue;
+        if (isSwapBlocked(p1, p2, east1, west1, east2, west2)) continue;
 
         const drama1 = scoreDrama(east1, west1, day, standings, rivalriesState);
         const drama2 = scoreDrama(east2, west2, day, standings, rivalriesState);
