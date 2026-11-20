@@ -23,6 +23,7 @@ import { TrendingUp, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { EraTone } from "@/presenters/projections/eraTone";
 import { ERA_TONE_DESCRIPTIONS } from "@/presenters/projections/eraTone";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 const TONE_LABELS: Record<EraTone, string> = {
   classic: "CLASSIC (Yotsu)",
@@ -223,7 +224,7 @@ function LeagueLeaders({ world }: { world: WorldState }) {
       h,
       sekitori: allRikishi.filter(
         (r) =>
-          r.heyaId === h.id && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")
+          r.heyaId === h.id && !r.isRetired && (isSekitoriDivision(r.division))
       ).length,
     }))
     .sort((a, b) => b.sekitori - a.sekitori)

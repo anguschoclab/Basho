@@ -26,6 +26,7 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { isYushoContention } from "@/engine/bout/boutContention";
 import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
 import { GIANT_HEIGHT_THRESHOLD } from "@/constants/engine/narrative";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 function beatCurrentRecords(p: PbpPipeline): void {
   const { day, east, eastLosses, eastWins, preBoutRng, push, west, westLosses, westWins } = p;
@@ -724,7 +725,7 @@ function beatOzekiReturn(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3j2. Ozeki return detection (sekiwake/komusubi formerly ozeki, with 9+ wins)
   for (const r of [east, west]) {
-    if ((r.rank === "sekiwake" || r.rank === "komusubi") && r.careerHistory) {
+    if ((isLowerSanyakuRank(r.rank)) && r.careerHistory) {
       const wasOzeki = r.careerHistory.some((s) => s.rank === "ozeki");
       if (wasOzeki && (r.currentBashoWins ?? 0) >= 9) {
         const needed = Math.max(0, 10 - (r.currentBashoWins ?? 0));
@@ -768,7 +769,7 @@ function beatSpoiler(p: PbpPipeline): void {
   ] as const) {
     if (!spoiler.careerHistory || spoiler.careerHistory.length === 0) continue;
     const formerSanyaku = spoiler.careerHistory.some(
-      (s) => s.rank === "ozeki" || s.rank === "sekiwake" || s.rank === "komusubi"
+      (s) => s.rank === "ozeki" || isLowerSanyakuRank(s.rank)
     );
     const isCurrentlyLower = spoiler.rank === "maegashira";
     if (!formerSanyaku || !isCurrentlyLower) continue;
@@ -779,7 +780,7 @@ function beatSpoiler(p: PbpPipeline): void {
     if (!contenderInContention) continue;
     const formerRank =
       spoiler.careerHistory.find(
-        (s) => s.rank === "ozeki" || s.rank === "sekiwake" || s.rank === "komusubi"
+        (s) => s.rank === "ozeki" || isLowerSanyakuRank(s.rank)
       )?.rank ?? "sanyaku";
     push(
       BardEngine.resolve(preBoutRng, "pre_bout.spoiler", {

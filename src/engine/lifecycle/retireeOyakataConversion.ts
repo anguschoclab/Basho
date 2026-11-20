@@ -32,6 +32,7 @@ import {
 } from "@/constants/engine/economic";
 import { getHeya } from "@/engine/core/queries";
 import { getCitizenshipStatus } from "@/engine/utils/citizenshipUtils";
+import { isYokozunaOrOzekiRank, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /**
  * If `retiree` is accomplished and of eligible age, converts them to an oyakata,
@@ -49,8 +50,7 @@ export function processRetireeOyakataConversion(
   // Constitution 2.3 & 61: Oyakata candidate eligibility
   const age = world.year - retiree.birthYear;
   const isAccomplished =
-    retiree.rank === "yokozuna" ||
-    retiree.rank === "ozeki" ||
+    isYokozunaOrOzekiRank(retiree.rank) ||
     retiree.rank === "sekiwake" ||
     retiree.careerWins >= 200;
 
@@ -216,10 +216,8 @@ function resolveElderShare(
       ? "toshiyori"
       : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
         ? "ichidai_toshiyori"
-        : retiree.rank === "yokozuna" ||
-            retiree.rank === "ozeki" ||
-            retiree.rank === "sekiwake" ||
-            retiree.rank === "komusubi"
+        : isYokozunaOrOzekiRank(retiree.rank) ||
+            isLowerSanyakuRank(retiree.rank)
           ? "jun_toshiyori"
           : null;
   const elderExpiryYear =

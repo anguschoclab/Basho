@@ -12,6 +12,7 @@
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutAward, BoutResult } from "@/engine/types/basho";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 interface DetectKinboshiOptions {
   /**
@@ -58,7 +59,7 @@ export function detectKinboshi(
       result.kimarite !== "fusensho" &&
       result.kimarite !== "hansoku" &&
       ((winner.rank === "maegashira" && loser.rank === "ozeki") ||
-        ((winner.rank === "sekiwake" || winner.rank === "komusubi") &&
+        ((isLowerSanyakuRank(winner.rank)) &&
           loser.rank === "yokozuna"))
     ) {
       // Ginboshi: informal fan/media "silver star" — not an official JSA

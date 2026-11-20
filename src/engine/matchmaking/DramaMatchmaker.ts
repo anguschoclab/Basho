@@ -60,6 +60,7 @@ import {
   DRAMA_MAX_SWAPS_DEFAULT,
   DRAMA_MAX_SWAPS_WITH_RIVALRY,
 } from "@/constants/engine/matchmaking";
+import { isYokozunaOrOzekiRank, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /**
  * Drama labels identifying narrative significance of a matchup.
@@ -155,10 +156,10 @@ export function scoreDrama(
 ): DramaContext | null {
   const aRecord = standings.get(a.id) ?? { wins: 0, losses: 0 };
   const bRecord = standings.get(b.id) ?? { wins: 0, losses: 0 };
-  const aIsElite = a.rank === "yokozuna" || a.rank === "ozeki";
-  const bIsElite = b.rank === "yokozuna" || b.rank === "ozeki";
-  const aIsSanyaku = a.rank === "sekiwake" || a.rank === "komusubi";
-  const bIsSanyaku = b.rank === "sekiwake" || b.rank === "komusubi";
+  const aIsElite = isYokozunaOrOzekiRank(a.rank);
+  const bIsElite = isYokozunaOrOzekiRank(b.rank);
+  const aIsSanyaku = isLowerSanyakuRank(a.rank);
+  const bIsSanyaku = isLowerSanyakuRank(b.rank);
 
   // Checks run in strict priority order — the first non-null result wins.
   return (
@@ -254,8 +255,8 @@ function checkYushoDecider(
 function checkKinboshiHunt(a: Rikishi, b: Rikishi): DramaContext | null {
   const aIsMaegashira = a.rank === "maegashira";
   const bIsMaegashira = b.rank === "maegashira";
-  const aIsElite = a.rank === "yokozuna" || a.rank === "ozeki";
-  const bIsElite = b.rank === "yokozuna" || b.rank === "ozeki";
+  const aIsElite = isYokozunaOrOzekiRank(a.rank);
+  const bIsElite = isYokozunaOrOzekiRank(b.rank);
   if ((aIsMaegashira && bIsElite) || (bIsMaegashira && aIsElite)) {
     return {
       label: "kinboshi_hunt",

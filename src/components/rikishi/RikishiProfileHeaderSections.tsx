@@ -15,6 +15,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 import { SEKIWAKE_33_WIN_THRESHOLD } from "@/constants/engine/banzuke";
 import { IRON_MAN_BEAT_THRESHOLD } from "@/constants/engine/generation";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /** Health/ownership/status badge row. */
 export function HeaderBadges({
@@ -201,7 +202,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
           </div>
         </div>
       )}
-      {(rikishi.rank === "sekiwake" || rikishi.rank === "komusubi") &&
+      {(isLowerSanyakuRank(rikishi.rank)) &&
         (rikishi.sekiwakeThreeBashoWins ?? 0) > 0 && (
           <div className="pt-2">
             <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">

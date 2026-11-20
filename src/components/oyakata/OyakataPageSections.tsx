@@ -14,6 +14,7 @@ import { Brain, Heart, Briefcase, Zap, Scale, Crown, Award } from "lucide-react"
 import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
 import { TRAIT_LABELS, toTraitBand } from "@/presenters/uiDigest";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 
 const TRAIT_ITEMS = [
   { key: "ambition", label: "Ambition", icon: Zap },
@@ -83,8 +84,7 @@ export function CareerAsRikishiCard({ oyakata }: { oyakata: Oyakata }) {
               <div className="flex items-center gap-2">
                 <Badge
                   variant={
-                    oyakata.highestRank.toLowerCase() === "yokozuna" ||
-                    oyakata.highestRank.toLowerCase() === "ozeki"
+                    isYokozunaOrOzekiRank(oyakata.highestRank.toLowerCase())
                       ? "default"
                       : "outline"
                   }

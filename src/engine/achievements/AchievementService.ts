@@ -9,6 +9,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 export interface PlayerAchievement {
   id: string;
@@ -31,7 +32,7 @@ const RULES: AchievementRule[] = [
     description: "Produce a rikishi ranked juryo or higher.",
     check: (w, h) =>
       [...w.rikishi.values()].some(
-        (r) => r.heyaId === h && (r.division === "makuuchi" || r.division === "juryo")
+        (r) => r.heyaId === h && (isSekitoriDivision(r.division))
       ),
   },
   {
@@ -58,7 +59,7 @@ const RULES: AchievementRule[] = [
     description: "Field five or more sekitori at once.",
     check: (w, h) =>
       [...w.rikishi.values()].filter(
-        (r) => r.heyaId === h && (r.division === "makuuchi" || r.division === "juryo")
+        (r) => r.heyaId === h && (isSekitoriDivision(r.division))
       ).length >= 5,
   },
   {

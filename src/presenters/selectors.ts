@@ -22,6 +22,7 @@ import {
 } from "@/constants/engine/kimariteFrequencies";
 
 import { createSelector } from "@/engine/core/selectors";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 export { selectInjuredRikishi, selectRecentEvents } from "@/engine/core/selectors";
 
@@ -32,7 +33,7 @@ export const selectPromotionCandidates = createSelector((world: WorldState) => {
   const result: Rikishi[] = [];
   if (!world.rikishi) return result;
   for (const r of world.rikishi.values()) {
-    if (!r.isRetired && (r.rank === "sekiwake" || r.rank === "komusubi")) {
+    if (!r.isRetired && (isLowerSanyakuRank(r.rank))) {
       result.push(r);
     }
   }

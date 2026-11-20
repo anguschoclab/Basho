@@ -25,7 +25,7 @@ import { checkMentorMenteeBout } from "@/engine/training/MentorshipService";
 import { getRikishi } from "@/engine/core/queries";
 import { BOUT_DURATION_FATIGUE_PER_TICK } from "@/constants/engine/condition";
 import { RIKISHI_BOUT_HISTORY_MAX } from "@/constants/engine/bout";
-import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { isSanyakuRank, isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { isPullStyleKimarite } from "@/engine/bout/ReplayMetadata";
 
 // ─── 1. Standings ────────────────────────────────────────────────────────────
@@ -214,7 +214,7 @@ function applyBoutFatigue(
 ): void {
   // Bout-duration fatigue: longer bouts add more fatigue (sekitori only, loser gets 1.5x)
   const isFusenshoBout = result.kimarite === "fusensho";
-  const isSekitoriBout = winner.division === "makuuchi" || winner.division === "juryo";
+  const isSekitoriBout = isSekitoriDivision(winner.division);
   if (!isFusenshoBout && isSekitoriBout) {
     const duration = result.duration ?? 0;
     const winnerFatigueGain = Math.round(duration * BOUT_DURATION_FATIGUE_PER_TICK);
@@ -626,7 +626,7 @@ function applyDrawBoutResult(
 
   const duration = result.duration ?? 0;
   for (const r of [east, west]) {
-    if (r.division === "makuuchi" || r.division === "juryo") {
+    if (isSekitoriDivision(r.division)) {
       const gain = Math.round(duration * BOUT_DURATION_FATIGUE_PER_TICK * 1.25);
       if (gain > 0) {
         builder.updateRikishi(r.id, { fatigue: Math.min(100, (r.fatigue ?? 0) + gain) });

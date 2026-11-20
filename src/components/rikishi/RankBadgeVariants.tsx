@@ -9,6 +9,7 @@
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { getRankMeta } from "@/components/rikishi/rankBadgeUtils";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 type Division = "sanyaku" | "makuuchi" | "juryo" | "makushita" | "lower";
 
@@ -44,7 +45,7 @@ export function CompactRankBadge({
           division === "sanyaku" && "bg-gold text-gold-foreground",
           division === "sanyaku" && rank === "ozeki" && "bg-silver text-silver-foreground",
           division === "sanyaku" &&
-            (rank === "sekiwake" || rank === "komusubi") &&
+            (isLowerSanyakuRank(rank)) &&
             "bg-bronze text-bronze-foreground",
           // Makuuchi - distinct
           division === "makuuchi" && "bg-primary/20 text-primary border border-primary/30",
@@ -74,7 +75,7 @@ export function RosterRankBadge({ division, rank, side, displayText, className }
           division === "sanyaku" && "bg-gold text-gold-foreground shadow-xs",
           division === "sanyaku" && rank === "ozeki" && "bg-silver text-silver-foreground",
           division === "sanyaku" &&
-            (rank === "sekiwake" || rank === "komusubi") &&
+            (isLowerSanyakuRank(rank)) &&
             "bg-bronze text-bronze-foreground",
           // Makuuchi - primary color
           division === "makuuchi" && "bg-primary/15 text-primary border border-primary/25",
@@ -120,7 +121,7 @@ export function PillRankBadge({
             division === "sanyaku" && rank === "yokozuna" && "bg-gold",
             division === "sanyaku" && rank === "ozeki" && "bg-silver",
             division === "sanyaku" &&
-              (rank === "sekiwake" || rank === "komusubi") &&
+              (isLowerSanyakuRank(rank)) &&
               "bg-bronze text-bronze-foreground",
             // Makuuchi
             division === "makuuchi" && "bg-primary text-primary-foreground",
@@ -167,7 +168,7 @@ export function FullRankBadge({ rank, side, division, displayText, className }: 
           division === "sanyaku" && rank === "yokozuna" && "bg-gold",
           division === "sanyaku" && rank === "ozeki" && "bg-silver",
           division === "sanyaku" &&
-            (rank === "sekiwake" || rank === "komusubi") &&
+            (isLowerSanyakuRank(rank)) &&
             "bg-bronze text-bronze-foreground",
           // Makuuchi
           division === "makuuchi" && "bg-primary/20 text-primary border border-primary/40",

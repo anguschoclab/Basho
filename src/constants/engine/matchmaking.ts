@@ -21,16 +21,6 @@ export const JONIDAN_PAIRING_WEIGHT = 800;
 export const JONOKUCHI_PAIRING_WEIGHT = 900;
 
 // Swiss rank ordinals
-export const SWISS_RANK_YOKOZUNA = 0;
-export const SWISS_RANK_OZEKI = 100;
-export const SWISS_RANK_SEKIWAKE = 200;
-export const SWISS_RANK_KOMUSUBI = 300;
-export const SWISS_RANK_MAEGASHIRA = 400;
-export const SWISS_RANK_JURYO = 500;
-export const SWISS_RANK_MAKUSHITA = 600;
-export const SWISS_RANK_SANDANME = 700;
-export const SWISS_RANK_JONIDAN = 800;
-export const SWISS_RANK_JONOKUCHI = 900;
 export const SWISS_RANK_DEFAULT = 9000;
 
 // Swiss pairing thresholds

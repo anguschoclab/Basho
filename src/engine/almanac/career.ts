@@ -10,7 +10,12 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName } from "@/engine/types/basho";
 import type { Division, Rank } from "@/engine/types/banzuke";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import {
+  isSekitoriDivision,
+  getDivisionOfRank,
+  RANK_ORDINAL,
+  RANKS_ASCENDING,
+} from "@/constants/engine/rankDisplay";
 import type { AlmanacBashoPerformance, RikishiCareerRecord } from "@/engine/almanac/types";
 import {
   CAREER_BASHO_BASE,
@@ -257,32 +262,7 @@ function simulateRankProgression(
   const isKachiKoshi = wins > losses;
   const margin = wins - losses;
 
-  const rankOrder: Rank[] = [
-    "jonokuchi",
-    "jonidan",
-    "sandanme",
-    "makushita",
-    "juryo",
-    "maegashira",
-    "komusubi",
-    "sekiwake",
-    "ozeki",
-    "yokozuna",
-  ];
-
-  const divisionMap: Record<Rank, Division> = {
-    jonokuchi: "jonokuchi",
-    jonidan: "jonidan",
-    sandanme: "sandanme",
-    makushita: "makushita",
-    juryo: "juryo",
-    maegashira: "makuuchi",
-    komusubi: "makuuchi",
-    sekiwake: "makuuchi",
-    ozeki: "makuuchi",
-    yokozuna: "makuuchi",
-  };
-
+  const rankOrder = RANKS_ASCENDING;
   let rankIndex = rankOrder.indexOf(currentRank);
   let newRankNumber = rankNumber;
 
@@ -315,7 +295,7 @@ function simulateRankProgression(
 
   return {
     newRank,
-    newDivision: divisionMap[newRank],
+    newDivision: getDivisionOfRank(newRank) ?? "jonokuchi",
     newRankNumber: numbered ? newRankNumber : undefined,
   };
 }
@@ -337,17 +317,5 @@ function getRankCareerMultiplier(rank: Rank): number {
 }
 
 function getRankValue(rank: Rank): number {
-  const values: Record<Rank, number> = {
-    jonokuchi: 1,
-    jonidan: 2,
-    sandanme: 3,
-    makushita: 4,
-    juryo: 5,
-    maegashira: 6,
-    komusubi: 7,
-    sekiwake: 8,
-    ozeki: 9,
-    yokozuna: 10,
-  };
-  return values[rank] || 0;
+  return RANK_ORDINAL[rank] + 1;
 }

@@ -12,7 +12,7 @@ import {
   H2H_RECENT_SURGE_MIN_TOTAL,
   H2H_RECENT_WINDOW,
 } from "@/constants/engine/narrative";
-import { getRankDisplayEntry } from "@/constants/engine/rankDisplay";
+import { getRankDisplayEntry, isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 
 function beatOpeningVenue(p: PbpPipeline): void {
   const { ctx, day, east, intensity, push, seed, west } = p;
@@ -228,8 +228,8 @@ function beatGiantKillerH2H(p: PbpPipeline): void {
 
   const eastIsMaegashira = east.rank === "maegashira";
   const westIsMaegashira = west.rank === "maegashira";
-  const eastIsElite = east.rank === "yokozuna" || east.rank === "ozeki";
-  const westIsElite = west.rank === "yokozuna" || west.rank === "ozeki";
+  const eastIsElite = isYokozunaOrOzekiRank(east.rank);
+  const westIsElite = isYokozunaOrOzekiRank(west.rank);
 
   const eastLead = eastIsMaegashira && westIsElite && eastWins > westWins && eastWins >= 2;
   const westLead = westIsMaegashira && eastIsElite && westWins > eastWins && westWins >= 2;

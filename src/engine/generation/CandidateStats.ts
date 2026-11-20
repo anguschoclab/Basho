@@ -54,6 +54,7 @@ import {
   HEIGHT_GEN_MIN,
   HEIGHT_GEN_MAX,
 } from "@/constants/engine/generation";
+import { isYokozunaOrOzekiRank, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 interface GeneratedStats extends RikishiStats {
   height: number;
@@ -90,7 +91,7 @@ export function rollDevelopmentProfile(
   const ageIsPrecocious = age < ageCfg.mean - ageCfg.stdDev;
   const ageIsLate = age > ageCfg.mean + ageCfg.stdDev;
 
-  if (ageIsPrecocious && (rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake")) {
+  if (ageIsPrecocious && (isYokozunaOrOzekiRank(rank) || rank === "sekiwake")) {
     return rng.next() < PRODIGY_EARLY_PEAKER_CHANCE ? "prodigy" : "early_peaker";
   }
   if (ageIsLate && (rank === "makushita" || rank === "sandanme" || rank === "jonidan")) {
@@ -258,7 +259,7 @@ export function generateRikishiStats(args: {
       ? BASE_MEAN_YOKOZUNA
       : rank === "ozeki"
         ? BASE_MEAN_OZEKI
-        : rank === "sekiwake" || rank === "komusubi"
+        : isLowerSanyakuRank(rank)
           ? BASE_MEAN_SEKIWAKE_KOMUSUBI
           : rank === "maegashira"
             ? BASE_MEAN_MAEGASHIRA

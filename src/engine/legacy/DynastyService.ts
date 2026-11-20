@@ -22,7 +22,7 @@ import type {
 } from "@/engine/types/oyakata";
 import type { ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { retireRikishiFully } from "@/engine/lifecycle/processRetirements";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { isSekitoriDivision, isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 import type { Rank } from "@/engine/types/banzuke";
 import { createImpactBuilder, worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
@@ -308,7 +308,7 @@ function findEligibleSuccessors(world: WorldState, heyaId: string): string[] {
   if (eligible.length === 0 && world.historicalRikishi) {
     for (const [id, r] of world.historicalRikishi) {
       const highestRank = computeHighestRank(r);
-      if (highestRank === "yokozuna" || highestRank === "ozeki") {
+      if (isYokozunaOrOzekiRank(highestRank)) {
         eligible.push(id);
       }
     }
@@ -484,7 +484,7 @@ function buildSuccessorOyakata(
 ): Oyakata {
   const tenure = currentOyakata.tenure;
   const peak = computeHighestRank(successorRikishi);
-  const wasStar = peak === "yokozuna" || peak === "ozeki";
+  const wasStar = isYokozunaOrOzekiRank(peak);
   // A successor who never reached sekitori carries the journeyman profile.
   const wasJourneyman = RANK_HIERARCHY[peak]?.isSekitori !== true;
   const injuryProne =

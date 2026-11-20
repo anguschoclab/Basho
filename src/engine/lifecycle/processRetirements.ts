@@ -41,6 +41,7 @@ import {
   INTAI_KIN_JURYO,
   INTAI_KIN_LOWER,
 } from "@/constants/engine/economic";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /**
  * Archive a retiring rikishi's full record to cold storage.
@@ -101,7 +102,7 @@ export function retireRikishiFully(
       ? INTAI_KIN_YOKOZUNA
       : rikishi.rank === "ozeki"
         ? INTAI_KIN_OZEKI
-        : rikishi.rank === "sekiwake" || rikishi.rank === "komusubi"
+        : isLowerSanyakuRank(rikishi.rank)
           ? INTAI_KIN_SANYAKU
           : rikishi.division === "makuuchi"
             ? INTAI_KIN_MAKUUCHI

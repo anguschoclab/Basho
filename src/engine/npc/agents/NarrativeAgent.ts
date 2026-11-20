@@ -8,6 +8,7 @@
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { CyclePhase } from "@/engine/types/world";
+import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 
 export interface NarrativeAgentContext {
   oyakata: Oyakata;
@@ -56,7 +57,7 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
   if (recentAchievements.includes("yusho") && currentBashoPhase === "post_basho") {
     shouldTriggerEvent = true;
     eventType = "championship_celebration";
-    const champion = topRikishi.find((r) => r.rank === "yokozuna" || r.rank === "ozeki");
+    const champion = topRikishi.find((r) => isYokozunaOrOzekiRank(r.rank));
     if (champion) {
       rikishiId = champion.id;
       eventFocus = champion.shikona;

@@ -4,6 +4,7 @@
  */
 
 import type { Id } from "@/engine/types/common";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 export type ObjectiveKind = "sekitori_count" | "funds_growth";
 
@@ -45,7 +46,7 @@ export function objectiveProgress(
     if (
       r.heyaId === heyaId &&
       !r.isRetired &&
-      (r.division === "makuuchi" || r.division === "juryo")
+      (isSekitoriDivision(r.division))
     ) {
       sekitori++;
     }

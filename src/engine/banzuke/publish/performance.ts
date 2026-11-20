@@ -9,7 +9,7 @@ import { finiteOr } from "@/engine/utils/math";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
 import { BASHO_CALENDAR } from "@/engine/calendar/calendar";
 import { getTotalBashodays } from "@/engine/calendar/scheduleHelpers";
-import { DIVISIONS } from "@/constants/engine/rankDisplay";
+import { DIVISIONS, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
@@ -359,7 +359,7 @@ function enrichMetrics(
   let count = 0;
   for (let i = chistory.length - 1; i >= 0; i--) {
     const h = chistory[i];
-    if (h.rank === "sekiwake" || h.rank === "komusubi") {
+    if (isLowerSanyakuRank(h.rank)) {
       recentSanyakuWins += h.wins;
       count++;
       if (count === 2) break;

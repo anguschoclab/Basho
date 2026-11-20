@@ -9,6 +9,7 @@ import {
   determinePostRetirementPath,
   getRetirementNarrative,
 } from "@/engine/lifecycle/PostRetirementPath";
+import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 
 interface RetirementNarrativeLine {
   text: string;
@@ -110,8 +111,7 @@ export function generateRetirementNarrative(
   // 5. Oyakata conversion (if eligible: rank yokozuna/ozeki/sekiwake or 200+ career wins, age 28+)
   const age = world.year - rikishi.birthYear;
   const isAccomplished =
-    rikishi.rank === "yokozuna" ||
-    rikishi.rank === "ozeki" ||
+    isYokozunaOrOzekiRank(rikishi.rank) ||
     rikishi.rank === "sekiwake" ||
     (rikishi.careerWins ?? 0) >= 200;
   if (age >= 28 && isAccomplished) {

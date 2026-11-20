@@ -23,6 +23,7 @@ import {
   type MatchmakingRules,
 } from "@/engine/matchmaking/MatchmakingPhases";
 import { toIdMap } from "@/engine/utils/index";
+import { buildFacedSet, tryPair } from "@/engine/matchmaking/swissShared";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
@@ -38,32 +39,6 @@ function banzukeOrdinal(r: Rikishi): number {
   const num = typeof r.rankNumber === "number" ? r.rankNumber : 1;
   const side = r.side === "east" ? 0 : 1;
   return base + num * 2 + side;
-}
-
-function pairKey(aId: string, bId: string): string {
-  return aId < bId ? `${aId}-${bId}` : `${bId}-${aId}`;
-}
-
-function buildFacedSet(basho: BashoState): Set<string> {
-  const set = new Set<string>();
-  for (const m of basho.matches) {
-    set.add(pairKey(m.eastRikishiId, m.westRikishiId));
-  }
-  return set;
-}
-
-/** Try to create a valid pairing; returns null on hard-rule violations. */
-function tryPair(
-  basho: BashoState,
-  a: Rikishi,
-  b: Rikishi,
-  facedSet: Set<string>,
-  pairedIds: Set<string>
-): MatchPairing | null {
-  if (pairedIds.has(a.id) || pairedIds.has(b.id)) return null;
-  const p = scorePairing({ basho, a, b, facedPairs: facedSet });
-  if (!p) return null;
-  return p;
 }
 
 // ── Phase 1 — Days 1–2: Rank-Based Matching ─────────────────────────────────────

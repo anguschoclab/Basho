@@ -9,6 +9,7 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { SeededRNG } from "@/engine/core/rng";
 import { getFavoriteHighlight } from "@/engine/bout/CareerHighlights";
+import { isYokozunaOrOzekiRank, isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 export type PostRetirementPath =
   "oyakata" | "media_pundit" | "sumo_school_coach" | "leave_sumo_world";
@@ -34,12 +35,12 @@ export function determinePostRetirementPath(rikishi: Rikishi, rng: SeededRNG): P
   const division = rikishi.division ?? "";
 
   // Elite champions → oyakata
-  if ((rank === "yokozuna" || rank === "ozeki") && yusho >= OYAKATA_MIN_YUSHO) {
+  if ((isYokozunaOrOzekiRank(rank)) && yusho >= OYAKATA_MIN_YUSHO) {
     return "oyakata";
   }
 
   // Sekitori with strong career → oyakata or media_pundit
-  if (division === "makuuchi" || division === "juryo") {
+  if (isSekitoriDivision(division)) {
     if (wins >= OYAKATA_MIN_WINS && yusho >= OYAKATA_MIN_YUSHO) {
       return rng.next() < 0.7 ? "oyakata" : "media_pundit";
     }

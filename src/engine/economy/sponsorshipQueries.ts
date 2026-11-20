@@ -26,6 +26,7 @@ import {
   KOENKAI_PILLAR_STRENGTH,
   KOENKAI_MEMBER_STRENGTH,
 } from "@/constants/engine/economyExtended";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 export const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
   none: KOENKAI_INCOME_NONE,
@@ -178,7 +179,7 @@ export function computeStarPower(heya: Heya, world: WorldState): number {
     if (!r) continue;
     if (r.rank === "yokozuna") starPower += 30;
     else if (r.rank === "ozeki") starPower += 20;
-    else if (r.rank === "sekiwake" || r.rank === "komusubi") starPower += 10;
+    else if (isLowerSanyakuRank(r.rank)) starPower += 10;
     else if (r.division === "makuuchi") starPower += 5;
   }
   return Math.min(100, starPower);

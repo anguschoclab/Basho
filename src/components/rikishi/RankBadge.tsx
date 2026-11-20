@@ -19,6 +19,7 @@ import {
   PillRankBadge,
   FullRankBadge,
 } from "@/components/rikishi/RankBadgeVariants";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 export type RankBadgeTier =
   | "yokozuna"
@@ -92,7 +93,7 @@ export function RankInline({
           "font-black",
           rank === "yokozuna" && "text-gold",
           rank === "ozeki" && "text-silver",
-          (rank === "sekiwake" || rank === "komusubi") && "text-bronze",
+          (isLowerSanyakuRank(rank)) && "text-bronze",
           rank === "maegashira" && "text-primary",
           rank === "juryo" && "text-west",
           (rank === "makushita" ||

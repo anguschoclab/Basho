@@ -10,36 +10,24 @@
  * Export: buildSwissTorikumi
  */
 
-import { clamp, toIdMap } from "@/engine/utils/index";
+import { toIdMap } from "@/engine/utils/index";
 import type { BashoState } from "@/engine/types/basho";
 import type { Division } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RivalriesState } from "@/constants/engine/rivalry";
-import { getRivalryBoutModifiers } from "@/engine/narrative/RivalryHeatService";
 import {
   scorePairing,
   type MatchPairing,
   type MatchmakingRules,
 } from "@/engine/matchmaking/MatchmakingPhases";
 import { applyDramaBudget } from "@/engine/matchmaking/DramaMatchmaker";
-import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { pairKey, buildFacedSet, tryPair } from "@/engine/matchmaking/swissShared";
+import { isSanyakuRank, rankSeniority, isYokozunaOrOzekiRank, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
-  SWISS_RANK_YOKOZUNA,
-  SWISS_RANK_OZEKI,
-  SWISS_RANK_SEKIWAKE,
-  SWISS_RANK_KOMUSUBI,
-  SWISS_RANK_MAEGASHIRA,
-  SWISS_RANK_JURYO,
-  SWISS_RANK_MAKUSHITA,
-  SWISS_RANK_SANDANME,
-  SWISS_RANK_JONIDAN,
-  SWISS_RANK_JONOKUCHI,
   SWISS_RANK_DEFAULT,
   M1_TO_M4_THRESHOLD,
   PROXIMITY_OFFSET_MAX,
   HOT_STREAK_WINS_THRESHOLD,
-  RIVALRY_TENSION_THRESHOLD,
-  RIVALRY_HEAT_BONUS,
   YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY,
   YOKOZUNA_OZEKI_CLASH_START_DAY,
   YOKOZUNA_YOKOZUNA_CLASH_START_DAY,
@@ -49,8 +37,6 @@ import {
   SIDE_EAST_OFFSET,
   SIDE_WEST_OFFSET,
   PROXIMITY_OFFSET_START,
-  SCORE_CLAMP_MIN,
-  SCORE_CLAMP_MAX,
   UNPAIRED_INCREMENT,
   FINALE_INDEX,
 } from "@/constants/engine/matchmaking";
@@ -58,20 +44,13 @@ import {
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
 /**
- * Rank ordinal values for Swiss pairing algorithm.
- * Lower values indicate higher rank (yokozuna is highest).
+ * Swiss banzuke base per rank — the canonical seniority ordinal scaled by
+ * 100, leaving rank-number + side room below the next rank. Lower values
+ * indicate higher rank (yokozuna is highest).
  */
-const SWISS_RANK_ORDINAL: Record<string, number> = {
-  yokozuna: SWISS_RANK_YOKOZUNA,
-  ozeki: SWISS_RANK_OZEKI,
-  sekiwake: SWISS_RANK_SEKIWAKE,
-  komusubi: SWISS_RANK_KOMUSUBI,
-  maegashira: SWISS_RANK_MAEGASHIRA,
-  juryo: SWISS_RANK_JURYO,
-  makushita: SWISS_RANK_MAKUSHITA,
-  sandanme: SWISS_RANK_SANDANME,
-  jonidan: SWISS_RANK_JONIDAN,
-  jonokuchi: SWISS_RANK_JONOKUCHI,
+const SWISS_RANK_BASE = (rank: string): number => {
+  const seniority = rankSeniority(rank);
+  return seniority > 9 ? SWISS_RANK_DEFAULT : seniority * 100;
 };
 
 /**
@@ -82,7 +61,7 @@ const SWISS_RANK_ORDINAL: Record<string, number> = {
  * @returns {number} Ordinal value (lower = higher rank).
  */
 function banzukeOrdinal(r: Rikishi): number {
-  const base = SWISS_RANK_ORDINAL[r.rank] ?? SWISS_RANK_DEFAULT;
+  const base = SWISS_RANK_BASE(r.rank);
   const num = typeof r.rankNumber === "number" ? r.rankNumber : 1;
   const side = r.side === "east" ? SIDE_EAST_OFFSET : SIDE_WEST_OFFSET;
   return base + num * RANK_NUMBER_MULTIPLIER + side;
@@ -101,68 +80,6 @@ function isM1toM4(r: Rikishi): boolean {
   return r.rank === "maegashira" && (r.rankNumber ?? 99) <= M1_TO_M4_THRESHOLD;
 }
 
-/**
- * Creates a consistent key for a pair of rikishi IDs.
- *
- * @param {string} aId - First rikishi ID.
- * @param {string} bId - Second rikishi ID.
- * @returns {string} Consistent pair key (smaller ID first).
- */
-function pairKey(aId: string, bId: string): string {
-  return aId < bId ? `${aId}-${bId}` : `${bId}-${aId}`;
-}
-
-/**
- * Builds a set of all pairs that have already faced each other in the basho.
- *
- * @param {BashoState} basho - Current basho state.
- * @returns {Set<string>} Set of pair keys for already-faced rikishi.
- */
-function buildFacedSet(basho: BashoState): Set<string> {
-  const set = new Set<string>();
-  for (const m of basho.matches) {
-    set.add(pairKey(m.eastRikishiId, m.westRikishiId));
-  }
-  return set;
-}
-
-/**
- * Attempts to create a valid pairing between two rikishi.
- * Returns null if hard-rule violations prevent pairing.
- *
- * @param {BashoState} basho - Current basho state.
- * @param {Rikishi} a - First rikishi.
- * @param {Rikishi} b - Second rikishi.
- * @param {Set<string>} facedSet - Set of already-faced pairs.
- * @param {Set<string>} pairedIds - Set of already-paired rikishi IDs.
- * @param {RivalriesState} [rivalriesState] - Optional rivalry state for heat modifiers.
- * @returns {MatchPairing | null} Valid pairing or null if invalid.
- */
-function tryPair(
-  basho: BashoState,
-  a: Rikishi,
-  b: Rikishi,
-  facedSet: Set<string>,
-  pairedIds: Set<string>,
-  rivalriesState?: RivalriesState,
-  day?: number
-): MatchPairing | null {
-  if (pairedIds.has(a.id) || pairedIds.has(b.id)) return null;
-  const p = scorePairing({ basho, a, b, day, facedPairs: facedSet });
-  if (!p) return null;
-  if (rivalriesState) {
-    const mod = getRivalryBoutModifiers({ state: rivalriesState, aId: a.id, bId: b.id });
-    if (mod.tension >= RIVALRY_TENSION_THRESHOLD) {
-      return {
-        ...p,
-        score: clamp(p.score + RIVALRY_HEAT_BONUS, SCORE_CLAMP_MIN, SCORE_CLAMP_MAX),
-        reasons: [...p.reasons, "rivalry_heat"],
-      };
-    }
-  }
-  return p;
-}
-
 // ── Phase 1 — Days 1–7: San'yaku Gauntlet ─────────────────────────────────────
 
 function phase1(
@@ -179,9 +96,9 @@ function phase1(
   const upperJoi: Rikishi[] = [];
   const sanyakuLower: Rikishi[] = [];
   for (const r of pool) {
-    if (r.rank === "yokozuna" || r.rank === "ozeki") elite.push(r);
+    if (isYokozunaOrOzekiRank(r.rank)) elite.push(r);
     else if (isM1toM4(r)) upperJoi.push(r);
-    else if (r.rank === "sekiwake" || r.rank === "komusubi") sanyakuLower.push(r);
+    else if (isLowerSanyakuRank(r.rank)) sanyakuLower.push(r);
   }
   elite.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
   upperJoi.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
@@ -199,7 +116,7 @@ function phase1(
     let matchedElite = false;
     for (const joi of joiOrder) {
       if (paired.has(joi.id)) continue;
-      const p = tryPair(basho, e, joi, facedSet, paired, rivalriesState, day);
+      const p = tryPair(basho, e, joi, facedSet, paired, { rivalriesState, day });
       if (p) {
         const extra = isYokozuna ? ["gauntlet", "yokozuna_joi_backload"] : ["gauntlet"];
         pairings.push({ ...p, reasons: [...p.reasons, ...extra] });
@@ -213,7 +130,7 @@ function phase1(
     if (!matchedElite && isYokozuna && day >= YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY) {
       for (const sk of sanyakuLower) {
         if (paired.has(sk.id)) continue;
-        const p = tryPair(basho, e, sk, facedSet, paired, rivalriesState, day);
+        const p = tryPair(basho, e, sk, facedSet, paired, { rivalriesState, day });
         if (p) {
           pairings.push({ ...p, reasons: [...p.reasons, "gauntlet", "yokozuna_joi_backload"] });
           paired.add(e.id);
@@ -242,7 +159,7 @@ function phase1(
     ) {
       const b = remaining[i + offset];
       if (paired.has(b.id)) continue;
-      const p = tryPair(basho, a, b, facedSet, paired, rivalriesState, day);
+      const p = tryPair(basho, a, b, facedSet, paired, { rivalriesState, day });
       if (p) {
         pairings.push(p);
         paired.add(a.id);
@@ -288,19 +205,19 @@ function yokozunaOpponentTier(
   reservedIds: Set<string>
 ): number {
   if (day < YOKOZUNA_OZEKI_CLASH_START_DAY) {
-    if (o.rank === "sekiwake" || o.rank === "komusubi") return 0;
+    if (isLowerSanyakuRank(o.rank)) return 0;
     if (isM1toM4(o) || (o.rank !== "yokozuna" && o.rank !== "ozeki" && yWins === oWins)) return 1;
     if (o.rank !== "yokozuna" && o.rank !== "ozeki") return 2;
     return o.rank === "ozeki" ? 3 : 4;
   }
   if (day < YOKOZUNA_YOKOZUNA_CLASH_START_DAY) {
     if (o.rank === "ozeki") return 0;
-    if (o.rank === "sekiwake" || o.rank === "komusubi") return 1;
+    if (isLowerSanyakuRank(o.rank)) return 1;
     return o.rank !== "yokozuna" ? 2 : 3;
   }
   const isReservedClash = reservedIds.has(y.id) && reservedIds.has(o.id);
   if (o.rank === "ozeki" || (o.rank === "yokozuna" && !isReservedClash)) return 0;
-  if (o.rank === "sekiwake" || o.rank === "komusubi") return 1;
+  if (isLowerSanyakuRank(o.rank)) return 1;
   return o.rank !== "yokozuna" ? 2 : 3;
 }
 
@@ -342,7 +259,7 @@ function pairYokozunaBackloaded(
 
     for (const o of pool) {
       if (o.id === y.id || paired.has(o.id)) continue;
-      const p = tryPair(basho, y, o, facedSet, paired, rivalriesState, day);
+      const p = tryPair(basho, y, o, facedSet, paired, { rivalriesState, day });
       if (!p) continue;
       const oWins = standings?.get(o.id)?.wins ?? 0;
       candidates.push({
@@ -405,7 +322,7 @@ function phase2(
       }
       const topSanyaku = topSanyakuPool.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
       if (topSanyaku) {
-        const p = tryPair(basho, r, topSanyaku, facedSet, paired, rivalriesState, day);
+        const p = tryPair(basho, r, topSanyaku, facedSet, paired, { rivalriesState, day });
         if (p) {
           pairings.push({ ...p, reasons: [...p.reasons, "hot_streak_pullup"] });
           paired.add(r.id);
@@ -454,7 +371,7 @@ function phase2(
       for (let j = idx + 1; j < bucket.length; j++) {
         const b = bucket[j];
         if (paired.has(b.id)) continue;
-        const p = tryPair(basho, a, b, facedSet, paired, rivalriesState, day);
+        const p = tryPair(basho, a, b, facedSet, paired, { rivalriesState, day });
         if (p && (!bestPairing || p.score > bestPairing.score)) {
           bestPartner = b;
           bestPairing = p;
@@ -520,12 +437,12 @@ function phase3(
     const cinderella = leaders[0];
     const gatekeepers: Rikishi[] = [];
     for (const r of pool) {
-      if ((r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id)) gatekeepers.push(r);
+      if ((isYokozunaOrOzekiRank(r.rank)) && !paired.has(r.id)) gatekeepers.push(r);
     }
     const gatekeeper = gatekeepers.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
 
     if (gatekeeper) {
-      const p = tryPair(basho, cinderella, gatekeeper, facedSet, paired, rivalriesState, day);
+      const p = tryPair(basho, cinderella, gatekeeper, facedSet, paired, { rivalriesState, day });
       if (p) {
         yushoExceptionPairings.push({ ...p, reasons: [...p.reasons, "yusho_exception"] });
         paired.add(cinderella.id);
@@ -536,7 +453,7 @@ function phase3(
 
   let elites: Rikishi[] = [];
   for (const r of pool) {
-    if ((r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id)) elites.push(r);
+    if ((isYokozunaOrOzekiRank(r.rank)) && !paired.has(r.id)) elites.push(r);
   }
   elites.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
@@ -548,7 +465,7 @@ function phase3(
       const e2 = elites[i];
       if (paired.has(e2.id)) continue;
 
-      const p = tryPair(basho, e1, e2, facedSet, paired, rivalriesState, day);
+      const p = tryPair(basho, e1, e2, facedSet, paired, { rivalriesState, day });
       if (p) {
         koreyoriPairings.push({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku"] });
         paired.add(e1.id);

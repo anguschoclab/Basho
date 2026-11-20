@@ -18,7 +18,22 @@ import { toRivalryHeatBand } from "@/engine/narrative/descriptorBands";
 import { SPONSOR_RECRUITMENT_COSTS } from "@/constants/engine/economic";
 import { baseTenure } from "@/engine/legacy/tenure";
 import { RANK_JA } from "@/components/hof/hofMeta";
-import { RANK_NAMES } from "@/constants/engine/rankDisplay";
+import {
+  RANK_NAMES,
+  RANK_ORDINAL,
+  RANKS_ASCENDING,
+  rankSeniority,
+  isYokozunaOrOzekiRank,
+  isSanyakuRank,
+  isSekitoriRank,
+  isSekitoriDivision,
+} from "@/constants/engine/rankDisplay";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import type { Rank, Division } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
+import { sortRoster } from "@/components/rikishi/rosterSort";
+
 import { getFlagForNationality } from "@/presenters/projections/globalCupProjections";
 import { kihakuLabel } from "@/presenters/rikishi/transformers/kihaku";
 import { buyMyoseki } from "@/engine/governance/myosekiMarket";
@@ -327,5 +342,118 @@ describe("F3 pool initializer parity", () => {
     expect(caps("high_school")).toEqual([50, 50]);
     expect(caps("university")).toEqual([40, 40]);
     expect(caps("foreign")).toEqual([30, 30]);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// W U — rank ordinals & shared predicates
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("W U — canonical rank ordinal parity", () => {
+  const RANKS: Rank[] = [
+    "jonokuchi", "jonidan", "sandanme", "makushita", "juryo",
+    "maegashira", "komusubi", "sekiwake", "ozeki", "yokozuna",
+  ];
+
+  it("RANK_ORDINAL indexes RANKS_ASCENDING (jonokuchi 0 → yokozuna 9)", () => {
+    RANKS.forEach((r, i) => {
+      expect(RANK_ORDINAL[r]).toBe(i);
+      expect(RANKS_ASCENDING[i]).toBe(r);
+    });
+  });
+
+  it("rankSeniority equals RANK_HIERARCHY tier − 1 (yokozuna 0)", () => {
+    expect(rankSeniority("yokozuna")).toBe(0);
+    expect(rankSeniority("jonokuchi")).toBe(9);
+    RANKS.forEach((r) =>
+      expect(rankSeniority(r)).toBe(RANK_HIERARCHY[r].tier - 1)
+    );
+  });
+
+  it("Swiss banzuke base equals rankSeniority × 100 (historical 0–900 map)", () => {
+    // The retired SWISS_RANK_* map ran yokozuna 0 → jonokuchi 900 in steps
+    // of 100 — pinned so the rankSeniority-derived base stays identical.
+    const expected: Record<Rank, number> = {
+      yokozuna: 0, ozeki: 100, sekiwake: 200, komusubi: 300,
+      maegashira: 400, juryo: 500, makushita: 600, sandanme: 700,
+      jonidan: 800, jonokuchi: 900,
+    };
+    for (const r of RANKS) expect(rankSeniority(r) * 100).toBe(expected[r]);
+  });
+
+  it("almanac getRankValue ladder equals RANK_ORDINAL + 1", () => {
+    // career.ts's 1–10 rank value map is the pure ordinal shifted by one.
+    // Pinned pre-migration so the shared ordinal derivation can't drift.
+    const legacy: Record<Rank, number> = {
+      jonokuchi: 1, jonidan: 2, sandanme: 3, makushita: 4, juryo: 5,
+      maegashira: 6, komusubi: 7, sekiwake: 8, ozeki: 9, yokozuna: 10,
+    };
+    for (const r of RANKS) expect(legacy[r]).toBe(RANK_ORDINAL[r] + 1);
+  });
+
+  it("rosterSort seniority ordering matches canonical rankSeniority", () => {
+    const mk = (rank: string, id: string) =>
+      ({ id, rank } as unknown as UIRikishi);
+    const sorted = sortRoster(
+      [mk("jonidan", "a"), mk("yokozuna", "b"), mk("maegashira", "c")],
+      "rank",
+      "asc"
+    );
+    expect(sorted.map((r) => r.id)).toEqual(["b", "c", "a"]);
+  });
+});
+
+describe("W U — shared predicate truth tables", () => {
+  it("isYokozunaOrOzekiRank: true only for yokozuna/ozeki", () => {
+    for (const [rank, want] of [
+      ["yokozuna", true], ["ozeki", true], ["sekiwake", false],
+      ["komusubi", false], ["maegashira", false], ["juryo", false],
+      ["makushita", false], ["sandanme", false], ["jonidan", false],
+      ["jonokuchi", false], ["bogus", false],
+    ] as const) {
+      expect(isYokozunaOrOzekiRank(rank)).toBe(want);
+    }
+  });
+
+  it("isSanyakuRank: komusubi/sekiwake/ozeki/yokozuna only", () => {
+    for (const [rank, want] of [
+      ["yokozuna", true], ["ozeki", true], ["sekiwake", true],
+      ["komusubi", true], ["maegashira", false], ["juryo", false],
+      ["makushita", false], ["sandanme", false], ["jonidan", false],
+      ["jonokuchi", false],
+    ] as const) {
+      expect(isSanyakuRank(rank)).toBe(want);
+    }
+  });
+
+  it("isSekitoriRank: makuuchi+juryo ranks only", () => {
+    for (const [rank, want] of [
+      ["yokozuna", true], ["ozeki", true], ["sekiwake", true],
+      ["komusubi", true], ["maegashira", true], ["juryo", true],
+      ["makushita", false], ["sandanme", false], ["jonidan", false],
+      ["jonokuchi", false],
+    ] as const) {
+      expect(isSekitoriRank(rank)).toBe(want);
+    }
+  });
+
+  it("isSekitoriDivision: makuuchi/juryo only", () => {
+    for (const [div, want] of [
+      ["makuuchi", true], ["juryo", true], ["makushita", false],
+      ["sandanme", false], ["jonidan", false], ["jonokuchi", false],
+    ] as const) {
+      expect(isSekitoriDivision(div as Division)).toBe(want);
+    }
+  });
+
+  it("Swiss banzukeOrdinal golden: yokozuna E1 < jonokuchi W15", () => {
+    // seniority×100 + rankNumber×2 + side(0 east/1 west)
+    const yE1 = { rank: "yokozuna", rankNumber: 1, side: "east" } as Rikishi;
+    const jW15 = { rank: "jonokuchi", rankNumber: 15, side: "west" } as Rikishi;
+    const ord = (r: Rikishi) =>
+      rankSeniority(r.rank) * 100 + (r.rankNumber ?? 1) * 2 + (r.side === "east" ? 0 : 1);
+    expect(ord(yE1)).toBe(2);
+    expect(ord(jW15)).toBe(931);
+    expect(ord(yE1)).toBeLessThan(ord(jW15));
   });
 });

@@ -5,6 +5,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import type { BoutResult } from "@/engine/types/basho";
 import { KENSHO_AMOUNT_PER_ENVELOPE } from "@/constants/engine/economic";
+import { isYokozunaOrOzekiRank, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 export interface KenshoBoutEntry {
   rikishiId: string;
@@ -40,8 +41,8 @@ export function useKenshoData() {
           const rank = rikishi.rank;
           if (rank) {
             let baseProjection = 0;
-            if (rank === "yokozuna" || rank === "ozeki") baseProjection = 15;
-            else if (rank === "sekiwake" || rank === "komusubi") baseProjection = 10;
+            if (isYokozunaOrOzekiRank(rank)) baseProjection = 15;
+            else if (isLowerSanyakuRank(rank)) baseProjection = 10;
             else if (rank.includes("maegashira")) baseProjection = 5;
             projectedSum += baseProjection * KENSHO_AMOUNT_PER_ENVELOPE;
           }

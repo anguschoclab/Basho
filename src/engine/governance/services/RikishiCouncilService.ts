@@ -30,6 +30,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { rngForWorld } from "@/engine/core/rng";
 import { getRikishi } from "@/engine/core/queries";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 export interface CouncilMotionCatalogEntry {
   type: RikishiCouncilMotionType;
@@ -328,7 +329,7 @@ export function proposeCouncilMotion(
   let hasSekitori = false;
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
-    if (r && r.heyaId === heyaId && (r.division === "makuuchi" || r.division === "juryo")) {
+    if (r && r.heyaId === heyaId && (isSekitoriDivision(r.division))) {
       hasSekitori = true;
       break;
     }

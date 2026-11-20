@@ -3,6 +3,7 @@ import type { MatchSchedule } from "@/engine/types/basho";
 import type { SeededRNG } from "@/engine/core/rng";
 import { conveneCommittee, type CommitteeDecision } from "@/engine/committee/committee";
 import { SANSHO_COMMITTEE } from "@/constants/engine/committee";
+import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 
 /**
  * Resulting special prizes for a tournament.
@@ -76,7 +77,7 @@ export function determineSpecialPrizes(
   const candidates: Rikishi[] = [];
   for (const r of rikishiMap.values()) {
     if (r.division !== "makuuchi") continue;
-    if (r.rank === "yokozuna" || r.rank === "ozeki") continue;
+    if (isYokozunaOrOzekiRank(r.rank)) continue;
     if (r.id === yushoId) continue;
     const s = stats.get(r.id);
     if (s && s.wins >= 8) candidates.push(r);

@@ -76,6 +76,15 @@ export function isSanyakuRank(rank: string): boolean {
   return RANK_HIERARCHY[rank as Rank]?.isSanyaku ?? false;
 }
 
+/**
+ * True iff rank is komusubi or sekiwake — the junior sanyaku ranks below
+ * ozeki/yokozuna. Distinct from `isSanyakuRank` (which includes the elite
+ * pair): use this where "sanyaku but not the top two" is meant.
+ */
+export function isLowerSanyakuRank(rank: string): boolean {
+  return rank === "komusubi" || rank === "sekiwake";
+}
+
 export function isSekitoriRank(rank: string): boolean {
   return RANK_HIERARCHY[rank as Rank]?.isSekitori ?? false;
 }
@@ -90,8 +99,53 @@ export function getDivisionOfRank(rank: string): Division | undefined {
   return RANK_HIERARCHY[rank as Rank]?.division;
 }
 
-export function isSekitoriDivision(division: Division): boolean {
+export function isSekitoriDivision(division: Division | string | undefined): boolean {
   return division === "makuuchi" || division === "juryo";
+}
+
+/**
+ * True iff rank is yokozuna or ozeki — the two elite ("top of sanyaku")
+ * ranks. Centralizes the `r.rank === "yokozuna" || r.rank === "ozeki"`
+ * idiom duplicated across matchmaking, drama, and narrative code.
+ */
+export function isYokozunaOrOzekiRank(rank: string): boolean {
+  return rank === "yokozuna" || rank === "ozeki";
+}
+
+/**
+ * All ranks ordered junior → senior (jonokuchi first, yokozuna last).
+ * Canonical iteration order for promotion/progression arithmetic.
+ */
+export const RANKS_ASCENDING: readonly Rank[] = [
+  "jonokuchi",
+  "jonidan",
+  "sandanme",
+  "makushita",
+  "juryo",
+  "maegashira",
+  "komusubi",
+  "sekiwake",
+  "ozeki",
+  "yokozuna",
+];
+
+/**
+ * Pure ordering ordinal — jonokuchi 0 → yokozuna 9 (index into
+ * RANKS_ASCENDING). For ORDER ONLY: promotion steps, sorts, table lookups.
+ * Never use for prestige/salary/strength weighting — those are nonlinear
+ * domain weights and must stay named constants.
+ */
+export const RANK_ORDINAL: Record<Rank, number> = Object.fromEntries(
+  RANKS_ASCENDING.map((r, i) => [r, i])
+) as Record<Rank, number>;
+
+/**
+ * Seniority ordinal — yokozuna 0 → jonokuchi 9, identical to
+ * `RANK_HIERARCHY[rank].tier - 1`. Unknown ranks return 10 (below junior),
+ * matching the historical `?? 99`-style fallbacks once scaled.
+ */
+export function rankSeniority(rank: string): number {
+  return (RANK_HIERARCHY[rank as Rank]?.tier ?? 11) - 1;
 }
 
 export const DIVISIONS: Division[] = [

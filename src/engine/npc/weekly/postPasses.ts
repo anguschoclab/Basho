@@ -8,6 +8,7 @@ import {
   HIGH_RISK_RATIO_THRESHOLD,
 } from "@/constants/engine/npcStrategy";
 import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 export function applyPromotionAwareness(
   world: WorldState,
@@ -86,7 +87,7 @@ export function applyPromotionAwareness(
       }
     }
 
-    if (rank === "sekiwake" || rank === "komusubi") {
+    if (isLowerSanyakuRank(rank)) {
       if (!developSet.has(rikishiId)) {
         developSet.add(rikishiId);
         decision.reasoning.push(

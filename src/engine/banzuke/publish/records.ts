@@ -7,6 +7,7 @@ import { getRikishi } from "@/engine/core/queries";
 import { createEmptyAlmanacRecord } from "@/engine/almanac/narrativeEnrichment";
 import { MAX_PROMOTION_HISTORY } from "@/engine/almanac/types";
 import type { PromotionHistoryEntry } from "@/engine/almanac/types";
+import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
 type Builder = ReturnType<typeof createImpactBuilder>;
 type BanzukeResult = ReturnType<typeof updateBanzuke>;
@@ -75,7 +76,7 @@ export function updatePromotionTracking(
     if (!r) continue;
     const perf = perfMap.get(newEntry.rikishiId);
     const wins = perf?.wins ?? 0;
-    const isSanyaku = r.rank === "sekiwake" || r.rank === "komusubi";
+    const isSanyaku = isLowerSanyakuRank(r.rank);
     if (isSanyaku && wins >= 10) {
       builder.updateRikishi(newEntry.rikishiId, {
         consecutiveStrongSekiwake: (r.consecutiveStrongSekiwake ?? 0) + 1,

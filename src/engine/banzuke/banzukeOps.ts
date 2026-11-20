@@ -13,7 +13,7 @@ import {
   type BanzukeSnapshot,
 } from "@/engine/types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
-import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { isSanyakuRank, isYokozunaOrOzekiRank, isLowerSanyakuRank, isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 
@@ -592,19 +592,15 @@ function banzukeMovementEvents(
     // Enriched movement narrative (4.1)
     const moveDistance = Math.abs(fromTier - toTier);
     const isJumpPromotion = kind === "promotion" && moveDistance >= 2;
-    const fromIsSekitori = o.division === "makuuchi" || o.division === "juryo";
-    const toIsSekitori = e.division === "makuuchi" || e.division === "juryo";
+    const fromIsSekitori = isSekitoriDivision(o.division);
+    const toIsSekitori = isSekitoriDivision(e.division);
     const isSekitoriPromotion = !fromIsSekitori && toIsSekitori;
     const fromIsSanyaku =
-      o.position.rank === "yokozuna" ||
-      o.position.rank === "ozeki" ||
-      o.position.rank === "sekiwake" ||
-      o.position.rank === "komusubi";
+      isYokozunaOrOzekiRank(o.position.rank) ||
+      isLowerSanyakuRank(o.position.rank);
     const toIsSanyaku =
-      e.position.rank === "yokozuna" ||
-      e.position.rank === "ozeki" ||
-      e.position.rank === "sekiwake" ||
-      e.position.rank === "komusubi";
+      isYokozunaOrOzekiRank(e.position.rank) ||
+      isLowerSanyakuRank(e.position.rank);
     const isSanyakuPromotion = !fromIsSanyaku && toIsSanyaku;
 
     events.push({
