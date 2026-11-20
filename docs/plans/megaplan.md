@@ -55,21 +55,22 @@ Last harmonized: 2026-11-18 (sources: the 7 plans in `docs/plans/archive/`).
 
 ### JSA real-rule gaps (catalog)
 - **Yokozuna joi back-loading** — real yokozuna face top opponents late; schedule only has the 5-man joi cap (`schedule.ts:426`).
-- **Oyakata sanyo advisory extension to age 70** — real rule; game retires oyakata at 65 only (no `sanyo` modeled).
+- ~~**Oyakata sanyo advisory extension to age 70**~~ — **LANDED `b54358f7`**: `elderStatus: "sanyo"` + `sanyoExpiryYear`; stockholding elders stay emeritus in the registry until 70 across both succession paths.
 - **Real 3-bout maezumo preliminary** — game uses minted filler (`MAEZUMO_MINT_CAP`); documented as deviation.
 - **Azukari / itamiwake / mizu-iri outcomes** — torinaoshi covers the realistic case.
 - **Hair-down automatic loss** — physics balance-collapse approximates it.
 - **Rikishi-ken** (wrestler council) — unmodeled.
 - **Torikumi posting cadence** — real pairings announced ~1.5–2 days ahead rolling; game posts per-day.
-- **JSA board size** — game 5 vs real ~10+auditors (cosmetic).
+- ~~**JSA board size**~~ — **LANDED `8ec9336c`**: `BOARD_COMMITTEE.size` 5→10 riji (auditors unmodeled).
+- ~~**Hair-down automatic loss**~~ — **LANDED `8ec9336c`**: `result.hairDown` flagged on down-type finishes at real incidence (~1/2-3 basho) + `post_bout.hair_down` line.
 - **Banzuke-gai** — documented; can't trigger with fixed-size jonokuchi.
 
 ### Documented intentional deviations (keep, tagged)
 Minted maezumo + 8th-bout + unpaired-odd-man edge · kensho fame-envelope mechanics (heat bonus + star-upset minimums) · ginboshi informal status (no ledger/mochikyukin) · banzuke-committee faction discretion within merit bounds · recruitment windows · mandatory retirement ages (45/40) · myoseki market formalization · welfare/scandal/political-capital meters · Global Cup · drama matchmaker · era drift · dynamic division sizes · travel-allowance flattening · 50/50 prize splits · NPC appetite targets (`MAX_ROSTER_SIZE`/`ROSTER_VACANCY_TARGET` = discretion, not caps) vs `TARGET_ROSTER_SIZE` demographic floor · tsukebito ¥ cost.
 
 ### Skipped optional extras
-- **Avatar `nationality` backfill** for pre-existing `RetiredRikishiSummary` — skipped: no reliable source (origin is a region string); stored identities already carry tone; v3 regen path noted at `AVATAR_VERSION`.
-- **`OyakataName.heyaId` prop** — vestigial after `/oyakata/$id` link rework; kept for API stability (cleanup candidate).
+- ~~**Avatar `nationality` backfill**~~ — **LANDED `b54358f7`**: oyakata inherit former-rikishi nationality; academy prospects derive from `region` (international ORIGINS names). Officials correctly remain Japan.
+- ~~**`OyakataName.heyaId` prop**~~ — **LANDED `8ec9336c`**: vestigial prop removed (no production callers).
 
 ---
 
