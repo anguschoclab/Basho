@@ -113,24 +113,24 @@ autosave fires per world update). This inflated the soak from its v8-era
 `lsQuotaBroken`) now stop hammering dead backends; `idbCache` still serves
 session reads. Post-fix run: bashos 1–2 ~10x faster, zero IDB spam.
 
-**S2 — `pendingCrisis` interactive wedge (OPEN, real product bug).**
-Headless interactive-path probe (`scratch/interactive-freeze-probe.ts`,
-same e2e seed): when a player-gated `pendingCrisis` is set (e.g.
-`media_firestorm` at basho senshuraku week), `shouldBlockTick`
-(`shouldHaltAdvance.ts:32`) swallows the remainder of *every* tick —
-`dayIndexGlobal` burns +7 per advance while `week`/`bashoDay` freeze
-forever. `reqDecisions` stays 0 because the gate is `pendingCrisis`, not a
-required `pendingDecisions` entry. In the e2e the world froze mid-interim
-for the remaining ~2h: the CrisisModal either failed to render or the
-driver's resolution clicks were dropped by the `pendingTick` command guard.
-Product-side wart regardless of test outcome: a swallowed tick still
-consumes the calendar day, so an unresolvable/undelivered crisis silently
-burns the calendar indefinitely with no surfacing. Needs: (a) confirm the
-modal renders for `media_firestorm`-type crises in the e2e page (log what
-`resolveCrisisIfPresent` sees), (b) consider freezing `dayIndexGlobal` on
-swallowed ticks or a watchdog that fails loudly instead of silently
-advancing, (c) `sendCommand` should not silently drop `RESOLVE_*` commands
-during `pendingTick` — those are exactly the commands that unblock the tick.
+**S2 — `pendingCrisis` backlog treadmill (FIXED).** Headless
+interactive-path probe (`scratch/interactive-freeze-probe.ts`, same e2e
+seed) reproduced the wedge: once a player-gated `pendingCrisis` exists,
+`shouldBlockTick` swallows every tick — `dayIndexGlobal` burns while
+`week`/`bashoDay` freeze. Resolution paths (`RESOLVE_CRISIS`,
+`RESOLVE_LOOP_DECISION` → `resolveCrisis`/`resolveLoopDecision`) do clear
+the crisis when they land — the killer was the *backlog*: promotion of the
+next required `pendingDecision` ran once per tick in
+`evaluatePendingDecisions`, so a queue of N required decisions cost N
+blocked ticks = N burned days + N modal round-trips. The e2e churned
+modals with near-zero sim progress (probe showed 8 queued decisions).
+Fix: `promoteNextBlockingDecision` — `resolveLoopDecision` and
+`resolveCrisis` now chain-promote the next required decision inside the
+same impact, so the modal drains the backlog back-to-back with zero
+day-burn. Regression pin: `multiDayHalt.test.ts` fifth-signature test.
+The day-burn-on-blocked-tick semantics itself is asserted by existing
+tests (line ~120) and kept — a resolved crisis legitimately costs the
+deliberation day.
 
 Remote branch state: `main` + `perf-baseline` only. Note: a concurrent
 session pushed `0f5f6bef` (narrative enrichment) mid-verification — merged

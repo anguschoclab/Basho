@@ -11,6 +11,7 @@ import type { WorldState } from "@/engine/types/world";
 import { CrisisService } from "@/engine/narrative/CrisisService";
 import { storedCrisisOptionEffect } from "@/engine/bard/dramaGenerator";
 import { getHeya } from "@/engine/core/queries";
+import { promoteNextBlockingDecision } from "@/engine/npc/decision/LoopDecisionEngine";
 
 export function resolveCrisis(world: WorldState, crisisId: string, choiceId: string): StateImpact {
   const builder = createImpactBuilder("resolveCrisis");
@@ -37,6 +38,10 @@ export function resolveCrisis(world: WorldState, crisisId: string, choiceId: str
       // of the returned impact — returning the option's impact directly
       // would drop the clear and leave the halt/modal active forever.
       builder.updateWorldField("pendingCrisis", undefined);
+      // Chain-promote the next required queue decision — promotion
+      // otherwise waits a full blocked tick (and burns a calendar day)
+      // per queued decision (year-of-bashos soak wedge).
+      promoteNextBlockingDecision(builder, world.pendingDecisions);
       // Also clear any residue on the NPC surface — a stuck activeCrisis
       // blocks every future crisis for this heya.
       builder.updateHeya(playerHeyaId, { activeCrisis: undefined });

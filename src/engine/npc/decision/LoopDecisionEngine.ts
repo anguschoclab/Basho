@@ -567,6 +567,31 @@ function decisionConsequenceSummary(
 }
 
 /**
+ * Promote the next required pendingDecision to pendingCrisis, mirroring
+ * evaluatePendingDecisions' promotion shape. Called from resolution paths:
+ * promotion otherwise only runs once per tick inside preflight, and each
+ * blocked tick burns a calendar day — a backlog of N required decisions
+ * cost N silent days and N modal round-trips (year-of-bashos soak wedge).
+ * Chain-promoting drains the queue back-to-back with the modal still open.
+ */
+export function promoteNextBlockingDecision(
+  builder: ImpactBuilder,
+  remaining: WorldState["pendingDecisions"]
+): void {
+  const next = (remaining ?? []).find((d) => d.required);
+  if (!next) return;
+  builder.updateWorldField("pendingCrisis", {
+    id: next.id,
+    type: "loop_decision",
+    title: next.description,
+    description: next.description,
+    // No impactGenerator on stored options — functions can't survive
+    // structuredClone or JSON saves (see evaluatePendingDecisions).
+    options: next.options.map((o) => ({ id: o.id, label: o.label, description: o.impact })),
+  });
+}
+
+/**
  * Resolve a loop decision by ID with a chosen option.
  * Returns StateImpact that updates the world accordingly.
  */
@@ -587,6 +612,7 @@ export function resolveLoopDecision(
     // subsequent tick. The option's effect can't apply without the decision.
     if (world.pendingCrisis?.id === decisionId) {
       builder.updateWorldField("pendingCrisis", undefined);
+      promoteNextBlockingDecision(builder, decisions);
       builder.updateWorldField(
         "resolvedDecisionIds",
         [...(world.resolvedDecisionIds ?? []), decisionId].slice(-RESOLVED_DECISION_ID_CAP)
@@ -603,9 +629,12 @@ export function resolveLoopDecision(
     [...(world.resolvedDecisionIds ?? []), decisionId].slice(-RESOLVED_DECISION_ID_CAP)
   );
 
-  // Clear pendingCrisis if this was the blocking decision
+  // Clear pendingCrisis if this was the blocking decision — then immediately
+  // promote the next required decision from the queue so a backlog drains
+  // back-to-back instead of one modal (and one burned day) per tick.
   if (world.pendingCrisis?.id === decisionId) {
     builder.updateWorldField("pendingCrisis", undefined);
+    promoteNextBlockingDecision(builder, remaining);
   }
 
   applyDecisionEffect(world, builder, decision.type, optionId, decision.id);

@@ -394,4 +394,54 @@ describe("advanceOneDay halt behavior", () => {
     const w12Day = advanceOneDay(crossed);
     expect(w12Day.pendingCrisis?.id).toBe("insolvency-test-seed-y2027-w12");
   });
+
+  /**
+   * Regression (year-of-bashos soak wedge, fifth signature): with several
+   * required decisions queued, promotion ran once per tick inside
+   * evaluatePendingDecisions — and each blocked tick burned a calendar day
+   * (preflight consumes before shouldBlockTick swallows). A backlog of N
+   * required decisions cost N silent days and N modal round-trips: the e2e
+   * churned crisis modals with near-zero sim progress for ~2h. Resolution
+   * must chain-promote the next required decision in the same impact.
+   */
+  it("resolving a blocking decision promotes the next required one without burning a day", () => {
+    const mkDecision = (id: string) => ({
+      id,
+      type: "weekly_training_emphasis",
+      description: `decision ${id}`,
+      deadlineWeek: 10,
+      required: true,
+      options: [{ id: "opt", label: "Opt", impact: "do it" }],
+    });
+    const world = makeMockWorld({
+      pendingCrisis: {
+        id: "d1",
+        type: "loop_decision",
+        title: "decision d1",
+        description: "decision d1",
+        options: [{ id: "opt", label: "Opt", description: "do it" }],
+      } as any,
+      pendingDecisions: [mkDecision("d1"), mkDecision("d2"), mkDecision("d3")],
+    });
+
+    const afterFirst = resolveImpacts(world, [resolveLoopDecision(world, "d1", "opt")]);
+    // d1 consumed; the next required decision promotes immediately —
+    // no intervening tick, no burned day.
+    expect(afterFirst.pendingCrisis?.id).toBe("d2");
+    expect((afterFirst.pendingDecisions ?? []).map((d) => d.id)).toEqual(["d2", "d3"]);
+
+    const afterSecond = resolveImpacts(afterFirst, [
+      resolveLoopDecision(afterFirst, "d2", "opt"),
+    ]);
+    expect(afterSecond.pendingCrisis?.id).toBe("d3");
+
+    const afterThird = resolveImpacts(afterSecond, [
+      resolveLoopDecision(afterSecond, "d3", "opt"),
+    ]);
+    // Queue drained — nothing required left, crisis clears for real.
+    expect(afterThird.pendingCrisis).toBeUndefined();
+    expect(afterThird.pendingDecisions).toEqual([]);
+    // …and the very next tick is unblocked.
+    expect(shouldBlockTick(afterThird)).toBe(false);
+  });
 });
