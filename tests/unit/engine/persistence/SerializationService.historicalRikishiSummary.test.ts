@@ -2,19 +2,14 @@ import { describe, it, expect } from "vitest";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { makeMockWorld, mockRikishi } from "@tests/unit/engine/utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { retiredSummary } from "../../../helpers/retiredSummary";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeSummary(
   id: string,
   overrides: Partial<RetiredRikishiSummary> = {}
 ): RetiredRikishiSummary {
-  return {
-    id,
-    shikona: `Wrestler-${id}`,
-    birthYear: 1980,
-    heyaId: `heya-${id}`,
-    careerWins: 100,
-    careerLosses: 50,
+  return retiredSummary(id, {
     yushoCount: 3,
     junYushoCount: 1,
     sanshoCount: 5,
@@ -22,10 +17,6 @@ function makeSummary(
     totalEarnings: 500_000,
     peakRank: "ozeki",
     peakRankYear: 2005,
-    peakDivision: "makuuchi",
-    retirementYear: 2010,
-    retirementReason: "Age",
-    isRetired: true,
     yearlyAggregates: [
       {
         year: 2005,
@@ -38,9 +29,8 @@ function makeSummary(
         sansho: 2,
       },
     ],
-    isSummary: true,
     ...overrides,
-  };
+  });
 }
 
 describe("SerializationService historicalRikishi with RetiredRikishiSummary", () => {

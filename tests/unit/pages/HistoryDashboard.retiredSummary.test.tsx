@@ -4,6 +4,7 @@ import React from "react";
 import { HistoryDashboard } from "@/pages/HistoryDashboard";
 import * as GameContext from "@/state/game/useGame";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { retiredSummary } from "../../helpers/retiredSummary";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
@@ -65,13 +66,8 @@ function makeSummary(
   id: string,
   overrides: Partial<RetiredRikishiSummary> = {}
 ): RetiredRikishiSummary {
-  return {
-    id,
+  return retiredSummary(id, {
     shikona: `Legend-${id}`,
-    birthYear: 1980,
-    heyaId: `heya-${id}`,
-    careerWins: 100,
-    careerLosses: 50,
     yushoCount: 3,
     junYushoCount: 1,
     sanshoCount: 5,
@@ -79,14 +75,8 @@ function makeSummary(
     totalEarnings: 500_000,
     peakRank: "ozeki",
     peakRankYear: 2005,
-    peakDivision: "makuuchi",
-    retirementYear: 2010,
-    retirementReason: "Age",
-    isRetired: true,
-    yearlyAggregates: [],
-    isSummary: true,
     ...overrides,
-  };
+  });
 }
 
 function makeMockHeya(id: string, name: string): Heya {

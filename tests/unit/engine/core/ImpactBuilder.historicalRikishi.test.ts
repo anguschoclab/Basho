@@ -3,34 +3,8 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "@tests/unit/engine/utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { retiredSummary as makeSummary } from "../../../helpers/retiredSummary";
 
-function makeSummary(
-  id: string,
-  overrides: Partial<RetiredRikishiSummary> = {}
-): RetiredRikishiSummary {
-  return {
-    id,
-    shikona: `Wrestler-${id}`,
-    birthYear: 1980,
-    heyaId: `heya-${id}`,
-    careerWins: 100,
-    careerLosses: 50,
-    yushoCount: 0,
-    junYushoCount: 0,
-    sanshoCount: 0,
-    kinboshiCount: 0,
-    totalEarnings: 0,
-    peakRank: "maegashira",
-    peakRankYear: 2010,
-    peakDivision: "makuuchi",
-    retirementYear: 2010,
-    retirementReason: "Age",
-    isRetired: true,
-    yearlyAggregates: [],
-    isSummary: true,
-    ...overrides,
-  };
-}
 
 describe("updateHistoricalRikishi (ImpactBuilder + ImpactResolver)", () => {
   it("updateHistoricalRikishi writes to historicalRikishiUpdates, not rikishiUpdates", () => {

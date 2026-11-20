@@ -5,110 +5,158 @@ import { AwardLogEntry, BashoName, BoutResult } from "@/engine/types/basho";
 import { Rikishi } from "@/engine/types/rikishi";
 import { MatchSchedule } from "@/engine/types/basho";
 
+function divRecords(
+  makuuchi: [number, number] = [0, 0],
+  juryo: [number, number] = [0, 0],
+  makushita: [number, number] = [0, 0],
+  sandanme: [number, number] = [0, 0],
+  jonidan: [number, number] = [0, 0],
+  jonokuchi: [number, number] = [0, 0]
+): Rikishi["divisionRecords"] {
+  return {
+    makuuchi: { wins: makuuchi[0], losses: makuuchi[1] },
+    juryo: { wins: juryo[0], losses: juryo[1] },
+    makushita: { wins: makushita[0], losses: makushita[1] },
+    sandanme: { wins: sandanme[0], losses: sandanme[1] },
+    jonidan: { wins: jonidan[0], losses: jonidan[1] },
+    jonokuchi: { wins: jonokuchi[0], losses: jonokuchi[1] },
+  };
+}
+
+function makeWorldForBout(opts?: {
+  winnerWins?: number;
+  winnerLosses?: number;
+  loserWins?: number;
+  loserLosses?: number;
+  eastWins?: number;
+  eastLosses?: number;
+  westWins?: number;
+  westLosses?: number;
+  east?: Partial<Rikishi>;
+  west?: Partial<Rikishi>;
+    }): { world: Partial<WorldState>; match: MatchSchedule; result: BoutResult } {
+  const world: Partial<WorldState> = {
+    rikishi: new Map([
+      [
+        "east",
+        {
+          id: "east",
+          shikona: "East Rikishi",
+          careerWins: opts?.eastWins ?? 10,
+          careerLosses: opts?.eastLosses ?? 5,
+          currentBashoWins: opts?.winnerWins ?? 0,
+          currentBashoLosses: opts?.winnerLosses ?? 0,
+          currentBashoRecord: { wins: opts?.winnerWins ?? 0, losses: opts?.winnerLosses ?? 0 },
+          makuuchiWins: 0,
+          divisionRecords: {
+            makuuchi: { wins: 0, losses: 0 },
+            juryo: { wins: 0, losses: 0 },
+            makushita: { wins: 0, losses: 0 },
+            sandanme: { wins: 0, losses: 0 },
+            jonidan: { wins: 0, losses: 0 },
+            jonokuchi: { wins: 0, losses: 0 },
+          },
+          division: "makuuchi",
+          rank: "maegashira",
+          side: "east",
+          stats: { achievements: undefined },
+          heyaId: "test-heya",
+          ...opts?.east,
+        } as Rikishi,
+      ],
+      [
+        "west",
+        {
+          id: "west",
+          shikona: "West Rikishi",
+          careerWins: opts?.westWins ?? 8,
+          careerLosses: opts?.westLosses ?? 7,
+          currentBashoWins: opts?.loserWins ?? 0,
+          currentBashoLosses: opts?.loserLosses ?? 0,
+          currentBashoRecord: { wins: opts?.loserWins ?? 0, losses: opts?.loserLosses ?? 0 },
+          makuuchiWins: 0,
+          divisionRecords: {
+            makuuchi: { wins: 0, losses: 0 },
+            juryo: { wins: 0, losses: 0 },
+            makushita: { wins: 0, losses: 0 },
+            sandanme: { wins: 0, losses: 0 },
+            jonidan: { wins: 0, losses: 0 },
+            jonokuchi: { wins: 0, losses: 0 },
+          },
+          division: "makuuchi",
+          rank: "maegashira",
+          side: "west",
+          stats: { achievements: undefined },
+          heyaId: "test-heya",
+          ...opts?.west,
+        } as Rikishi,
+      ],
+    ]),
+    heyas: new Map([
+      [
+        "test-heya",
+        {
+          id: "test-heya",
+          name: "Test Heya",
+          rikishiIds: ["east", "west"],
+        } as unknown as import("@/engine/types/heya").Heya,
+      ],
+    ]),
+    calendar: { currentWeek: 1, month: 1, currentDay: 1 },
+    currentBasho: {
+      id: "test-basho",
+      year: 2025,
+      currentDay: 1,
+      day: 1,
+      bashoName: "hatsu" as BashoName,
+      bashoNumber: 1,
+      matches: [],
+      standings: new Map([
+        ["east", { wins: opts?.winnerWins ?? 0, losses: opts?.winnerLosses ?? 0 }],
+        ["west", { wins: opts?.loserWins ?? 0, losses: opts?.loserLosses ?? 0 }],
+      ]),
+      isActive: true,
+    },
+  };
+
+  const match: MatchSchedule = {
+    boutId: "test-bout",
+    day: 1,
+    eastRikishiId: "east",
+    westRikishiId: "west",
+  };
+
+  const result: BoutResult = {
+    boutId: "test-bout",
+    winner: "east",
+    winnerRikishiId: "east",
+    loserRikishiId: "west",
+    kimarite: "oshidashi",
+    kimariteName: "Oshidashi",
+    stance: "migi-yotsu",
+    tachiaiWinner: "east",
+    duration: 5.2,
+    upset: false,
+    isKinboshi: false,
+    log: [],
+    kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
+  };
+
+  return { world, match, result };
+    }
+
 describe("boutResultApplier", () => {
   describe("Per-Bout Career Record Updates", () => {
     it("should increment careerWins for winner", () => {
-      const world: Partial<WorldState> = {
-        rikishi: new Map([
-          [
-            "east",
-            {
-              id: "east",
-              shikona: "East Rikishi",
-              careerWins: 100,
-              careerLosses: 50,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "east",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-          [
-            "west",
-            {
-              id: "west",
-              shikona: "West Rikishi",
-              careerWins: 80,
-              careerLosses: 70,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "west",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-        ]),
-        heyas: new Map([
-          [
-            "test-heya",
-            {
-              id: "test-heya",
-              name: "Test Heya",
-              rikishiIds: ["east", "west"],
-            } as unknown as import("@/engine/types/heya").Heya,
-          ],
-        ]),
-        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
-        currentBasho: {
-          id: "test-basho",
-          year: 2025,
-          currentDay: 1,
-          day: 1,
-          bashoName: "hatsu" as BashoName,
-          bashoNumber: 1,
-          matches: [],
-          standings: new Map([
-            ["east", { wins: 0, losses: 0 }],
-            ["west", { wins: 0, losses: 0 }],
-          ]),
-          isActive: true,
-        },
-      };
-
-      const match: MatchSchedule = {
-        boutId: "test-bout",
-        day: 1,
-        eastRikishiId: "east",
-        westRikishiId: "west",
-      };
-
-      const result: BoutResult = {
-        boutId: "test-bout",
-        winner: "east",
-        winnerRikishiId: "east",
-        loserRikishiId: "west",
-        kimarite: "oshidashi",
-        kimariteName: "Oshidashi",
-        stance: "migi-yotsu",
-        tachiaiWinner: "east",
-        duration: 5.2,
-        upset: false,
-        isKinboshi: false,
-        log: [],
-        kenshoEnvelopes: 0,
-        momentumScore: 0,
-        inBoutInjury: null,
-        isTimeout: false,
-      };
+      const { world, match, result } = makeWorldForBout({
+        eastWins: 100,
+        eastLosses: 50,
+        westWins: 80,
+        westLosses: 70,
+      });
 
       const impact = applyBoutResult(world as WorldState, match, result);
 
@@ -120,107 +168,12 @@ describe("boutResultApplier", () => {
     });
 
     it("should increment careerLosses for loser", () => {
-      const world: Partial<WorldState> = {
-        rikishi: new Map([
-          [
-            "east",
-            {
-              id: "east",
-              shikona: "East Rikishi",
-              careerWins: 100,
-              careerLosses: 50,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "east",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-          [
-            "west",
-            {
-              id: "west",
-              shikona: "West Rikishi",
-              careerWins: 80,
-              careerLosses: 70,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "west",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-        ]),
-        heyas: new Map([
-          [
-            "test-heya",
-            {
-              id: "test-heya",
-              name: "Test Heya",
-              rikishiIds: ["east", "west"],
-            } as unknown as import("@/engine/types/heya").Heya,
-          ],
-        ]),
-        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
-        currentBasho: {
-          id: "test-basho",
-          year: 2025,
-          currentDay: 1,
-          day: 1,
-          bashoName: "hatsu" as BashoName,
-          bashoNumber: 1,
-          matches: [],
-          standings: new Map([
-            ["east", { wins: 0, losses: 0 }],
-            ["west", { wins: 0, losses: 0 }],
-          ]),
-          isActive: true,
-        },
-      };
-
-      const match: MatchSchedule = {
-        boutId: "test-bout",
-        day: 1,
-        eastRikishiId: "east",
-        westRikishiId: "west",
-      };
-
-      const result: BoutResult = {
-        boutId: "test-bout",
-        winner: "east",
-        winnerRikishiId: "east",
-        loserRikishiId: "west",
-        kimarite: "oshidashi",
-        kimariteName: "Oshidashi",
-        stance: "migi-yotsu",
-        tachiaiWinner: "east",
-        duration: 5.2,
-        upset: false,
-        isKinboshi: false,
-        log: [],
-        kenshoEnvelopes: 0,
-        momentumScore: 0,
-        inBoutInjury: null,
-        isTimeout: false,
-      };
+      const { world, match, result } = makeWorldForBout({
+        eastWins: 100,
+        eastLosses: 50,
+        westWins: 80,
+        westLosses: 70,
+      });
 
       const impact = applyBoutResult(world as WorldState, match, result);
 
@@ -231,107 +184,14 @@ describe("boutResultApplier", () => {
     });
 
     it("should increment makuuchiWins when winner is in makuuchi division", () => {
-      const world: Partial<WorldState> = {
-        rikishi: new Map([
-          [
-            "east",
-            {
-              id: "east",
-              shikona: "East Rikishi",
-              careerWins: 100,
-              careerLosses: 50,
-              makuuchiWins: 10,
-              divisionRecords: {
-                makuuchi: { wins: 10, losses: 5 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "east",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-          [
-            "west",
-            {
-              id: "west",
-              shikona: "West Rikishi",
-              careerWins: 80,
-              careerLosses: 70,
-              makuuchiWins: 5,
-              divisionRecords: {
-                makuuchi: { wins: 5, losses: 10 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "west",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-        ]),
-        heyas: new Map([
-          [
-            "test-heya",
-            {
-              id: "test-heya",
-              name: "Test Heya",
-              rikishiIds: ["east", "west"],
-            } as unknown as import("@/engine/types/heya").Heya,
-          ],
-        ]),
-        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
-        currentBasho: {
-          id: "test-basho",
-          year: 2025,
-          currentDay: 1,
-          day: 1,
-          bashoName: "hatsu" as BashoName,
-          bashoNumber: 1,
-          matches: [],
-          standings: new Map([
-            ["east", { wins: 0, losses: 0 }],
-            ["west", { wins: 0, losses: 0 }],
-          ]),
-          isActive: true,
-        },
-      };
-
-      const match: MatchSchedule = {
-        boutId: "test-bout",
-        day: 1,
-        eastRikishiId: "east",
-        westRikishiId: "west",
-      };
-
-      const result: BoutResult = {
-        boutId: "test-bout",
-        winner: "east",
-        winnerRikishiId: "east",
-        loserRikishiId: "west",
-        kimarite: "oshidashi",
-        kimariteName: "Oshidashi",
-        stance: "migi-yotsu",
-        tachiaiWinner: "east",
-        duration: 5.2,
-        upset: false,
-        isKinboshi: false,
-        log: [],
-        kenshoEnvelopes: 0,
-        momentumScore: 0,
-        inBoutInjury: null,
-        isTimeout: false,
-      };
+      const { world, match, result } = makeWorldForBout({
+        eastWins: 100,
+        eastLosses: 50,
+        westWins: 80,
+        westLosses: 70,
+        east: { makuuchiWins: 10, divisionRecords: divRecords([10, 5]) },
+        west: { makuuchiWins: 5, divisionRecords: divRecords([5, 10]) },
+      });
 
       const impact = applyBoutResult(world as WorldState, match, result);
 
@@ -342,107 +202,24 @@ describe("boutResultApplier", () => {
     });
 
     it("should NOT increment makuuchiWins when winner is NOT in makuuchi division", () => {
-      const world: Partial<WorldState> = {
-        rikishi: new Map([
-          [
-            "east",
-            {
-              id: "east",
-              shikona: "East Rikishi",
-              careerWins: 100,
-              careerLosses: 50,
-              makuuchiWins: 10,
-              divisionRecords: {
-                makuuchi: { wins: 10, losses: 5 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "juryo",
-              rank: "juryo",
-              side: "east",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-          [
-            "west",
-            {
-              id: "west",
-              shikona: "West Rikishi",
-              careerWins: 80,
-              careerLosses: 70,
-              makuuchiWins: 5,
-              divisionRecords: {
-                makuuchi: { wins: 5, losses: 10 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "juryo",
-              rank: "juryo",
-              side: "west",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-        ]),
-        heyas: new Map([
-          [
-            "test-heya",
-            {
-              id: "test-heya",
-              name: "Test Heya",
-              rikishiIds: ["east", "west"],
-            } as unknown as import("@/engine/types/heya").Heya,
-          ],
-        ]),
-        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
-        currentBasho: {
-          id: "test-basho",
-          year: 2025,
-          currentDay: 1,
-          day: 1,
-          bashoName: "hatsu" as BashoName,
-          bashoNumber: 1,
-          matches: [],
-          standings: new Map([
-            ["east", { wins: 0, losses: 0 }],
-            ["west", { wins: 0, losses: 0 }],
-          ]),
-          isActive: true,
+      const { world, match, result } = makeWorldForBout({
+        eastWins: 100,
+        eastLosses: 50,
+        westWins: 80,
+        westLosses: 70,
+        east: {
+          division: "juryo",
+          rank: "juryo",
+          makuuchiWins: 10,
+          divisionRecords: divRecords([10, 5]),
         },
-      };
-
-      const match: MatchSchedule = {
-        boutId: "test-bout",
-        day: 1,
-        eastRikishiId: "east",
-        westRikishiId: "west",
-      };
-
-      const result: BoutResult = {
-        boutId: "test-bout",
-        winner: "east",
-        winnerRikishiId: "east",
-        loserRikishiId: "west",
-        kimarite: "oshidashi",
-        kimariteName: "Oshidashi",
-        stance: "migi-yotsu",
-        tachiaiWinner: "east",
-        duration: 5.2,
-        upset: false,
-        isKinboshi: false,
-        log: [],
-        kenshoEnvelopes: 0,
-        momentumScore: 0,
-        inBoutInjury: null,
-        isTimeout: false,
-      };
+        west: {
+          division: "juryo",
+          rank: "juryo",
+          makuuchiWins: 5,
+          divisionRecords: divRecords([5, 10]),
+        },
+      });
 
       const impact = applyBoutResult(world as WorldState, match, result);
 
@@ -453,107 +230,18 @@ describe("boutResultApplier", () => {
     });
 
     it("should increment division-specific records for winner's current division", () => {
-      const world: Partial<WorldState> = {
-        rikishi: new Map([
-          [
-            "east",
-            {
-              id: "east",
-              shikona: "East Rikishi",
-              careerWins: 100,
-              careerLosses: 50,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 10, losses: 5 },
-                juryo: { wins: 20, losses: 10 },
-                makushita: { wins: 30, losses: 15 },
-                sandanme: { wins: 40, losses: 20 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "juryo",
-              rank: "juryo",
-              side: "east",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-          [
-            "west",
-            {
-              id: "west",
-              shikona: "West Rikishi",
-              careerWins: 80,
-              careerLosses: 70,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "juryo",
-              rank: "juryo",
-              side: "west",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-        ]),
-        heyas: new Map([
-          [
-            "test-heya",
-            {
-              id: "test-heya",
-              name: "Test Heya",
-              rikishiIds: ["east", "west"],
-            } as unknown as import("@/engine/types/heya").Heya,
-          ],
-        ]),
-        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
-        currentBasho: {
-          id: "test-basho",
-          year: 2025,
-          currentDay: 1,
-          day: 1,
-          bashoName: "hatsu" as BashoName,
-          bashoNumber: 1,
-          matches: [],
-          standings: new Map([
-            ["east", { wins: 0, losses: 0 }],
-            ["west", { wins: 0, losses: 0 }],
-          ]),
-          isActive: true,
+      const { world, match, result } = makeWorldForBout({
+        eastWins: 100,
+        eastLosses: 50,
+        westWins: 80,
+        westLosses: 70,
+        east: {
+          division: "juryo",
+          rank: "juryo",
+          divisionRecords: divRecords([10, 5], [20, 10], [30, 15], [40, 20]),
         },
-      };
-
-      const match: MatchSchedule = {
-        boutId: "test-bout",
-        day: 1,
-        eastRikishiId: "east",
-        westRikishiId: "west",
-      };
-
-      const result: BoutResult = {
-        boutId: "test-bout",
-        winner: "east",
-        winnerRikishiId: "east",
-        loserRikishiId: "west",
-        kimarite: "oshidashi",
-        kimariteName: "Oshidashi",
-        stance: "migi-yotsu",
-        tachiaiWinner: "east",
-        duration: 5.2,
-        upset: false,
-        isKinboshi: false,
-        log: [],
-        kenshoEnvelopes: 0,
-        momentumScore: 0,
-        inBoutInjury: null,
-        isTimeout: false,
-      };
+        west: { division: "juryo", rank: "juryo" },
+      });
 
       const impact = applyBoutResult(world as WorldState, match, result);
 
@@ -565,107 +253,18 @@ describe("boutResultApplier", () => {
     });
 
     it("should increment division-specific records for loser's current division", () => {
-      const world: Partial<WorldState> = {
-        rikishi: new Map([
-          [
-            "east",
-            {
-              id: "east",
-              shikona: "East Rikishi",
-              careerWins: 100,
-              careerLosses: 50,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "juryo",
-              rank: "juryo",
-              side: "east",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-          [
-            "west",
-            {
-              id: "west",
-              shikona: "West Rikishi",
-              careerWins: 80,
-              careerLosses: 70,
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 15, losses: 25 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "juryo",
-              rank: "juryo",
-              side: "west",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-        ]),
-        heyas: new Map([
-          [
-            "test-heya",
-            {
-              id: "test-heya",
-              name: "Test Heya",
-              rikishiIds: ["east", "west"],
-            } as unknown as import("@/engine/types/heya").Heya,
-          ],
-        ]),
-        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
-        currentBasho: {
-          id: "test-basho",
-          year: 2025,
-          currentDay: 1,
-          day: 1,
-          bashoName: "hatsu" as BashoName,
-          bashoNumber: 1,
-          matches: [],
-          standings: new Map([
-            ["east", { wins: 0, losses: 0 }],
-            ["west", { wins: 0, losses: 0 }],
-          ]),
-          isActive: true,
+      const { world, match, result } = makeWorldForBout({
+        eastWins: 100,
+        eastLosses: 50,
+        westWins: 80,
+        westLosses: 70,
+        east: { division: "juryo", rank: "juryo" },
+        west: {
+          division: "juryo",
+          rank: "juryo",
+          divisionRecords: divRecords([0, 0], [15, 25]),
         },
-      };
-
-      const match: MatchSchedule = {
-        boutId: "test-bout",
-        day: 1,
-        eastRikishiId: "east",
-        westRikishiId: "west",
-      };
-
-      const result: BoutResult = {
-        boutId: "test-bout",
-        winner: "east",
-        winnerRikishiId: "east",
-        loserRikishiId: "west",
-        kimarite: "oshidashi",
-        kimariteName: "Oshidashi",
-        stance: "migi-yotsu",
-        tachiaiWinner: "east",
-        duration: 5.2,
-        upset: false,
-        isKinboshi: false,
-        log: [],
-        kenshoEnvelopes: 0,
-        momentumScore: 0,
-        inBoutInjury: null,
-        isTimeout: false,
-      };
+      });
 
       const impact = applyBoutResult(world as WorldState, match, result);
 
@@ -678,122 +277,6 @@ describe("boutResultApplier", () => {
   });
 
   describe("currentBashoWins / currentBashoLosses / currentBashoRecord (Bug 2)", () => {
-    function makeWorldForBout(opts?: {
-      winnerWins?: number;
-      winnerLosses?: number;
-      loserWins?: number;
-      loserLosses?: number;
-    }): { world: Partial<WorldState>; match: MatchSchedule; result: BoutResult } {
-      const world: Partial<WorldState> = {
-        rikishi: new Map([
-          [
-            "east",
-            {
-              id: "east",
-              shikona: "East Rikishi",
-              careerWins: 10,
-              careerLosses: 5,
-              currentBashoWins: opts?.winnerWins ?? 0,
-              currentBashoLosses: opts?.winnerLosses ?? 0,
-              currentBashoRecord: { wins: opts?.winnerWins ?? 0, losses: opts?.winnerLosses ?? 0 },
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "east",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-          [
-            "west",
-            {
-              id: "west",
-              shikona: "West Rikishi",
-              careerWins: 8,
-              careerLosses: 7,
-              currentBashoWins: opts?.loserWins ?? 0,
-              currentBashoLosses: opts?.loserLosses ?? 0,
-              currentBashoRecord: { wins: opts?.loserWins ?? 0, losses: opts?.loserLosses ?? 0 },
-              makuuchiWins: 0,
-              divisionRecords: {
-                makuuchi: { wins: 0, losses: 0 },
-                juryo: { wins: 0, losses: 0 },
-                makushita: { wins: 0, losses: 0 },
-                sandanme: { wins: 0, losses: 0 },
-                jonidan: { wins: 0, losses: 0 },
-                jonokuchi: { wins: 0, losses: 0 },
-              },
-              division: "makuuchi",
-              rank: "maegashira",
-              side: "west",
-              stats: { achievements: undefined },
-              heyaId: "test-heya",
-            } as Rikishi,
-          ],
-        ]),
-        heyas: new Map([
-          [
-            "test-heya",
-            {
-              id: "test-heya",
-              name: "Test Heya",
-              rikishiIds: ["east", "west"],
-            } as unknown as import("@/engine/types/heya").Heya,
-          ],
-        ]),
-        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
-        currentBasho: {
-          id: "test-basho",
-          year: 2025,
-          currentDay: 1,
-          day: 1,
-          bashoName: "hatsu" as BashoName,
-          bashoNumber: 1,
-          matches: [],
-          standings: new Map([
-            ["east", { wins: opts?.winnerWins ?? 0, losses: opts?.winnerLosses ?? 0 }],
-            ["west", { wins: opts?.loserWins ?? 0, losses: opts?.loserLosses ?? 0 }],
-          ]),
-          isActive: true,
-        },
-      };
-
-      const match: MatchSchedule = {
-        boutId: "test-bout",
-        day: 1,
-        eastRikishiId: "east",
-        westRikishiId: "west",
-      };
-
-      const result: BoutResult = {
-        boutId: "test-bout",
-        winner: "east",
-        winnerRikishiId: "east",
-        loserRikishiId: "west",
-        kimarite: "oshidashi",
-        kimariteName: "Oshidashi",
-        stance: "migi-yotsu",
-        tachiaiWinner: "east",
-        duration: 5.2,
-        upset: false,
-        isKinboshi: false,
-        log: [],
-        kenshoEnvelopes: 0,
-        momentumScore: 0,
-        inBoutInjury: null,
-        isTimeout: false,
-      };
-
-      return { world, match, result };
-    }
 
     it("Test 1.1: should increment currentBashoWins on winner", () => {
       const { world, match, result } = makeWorldForBout({ winnerWins: 3, loserLosses: 2 });

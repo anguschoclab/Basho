@@ -19,6 +19,7 @@ import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { retiredSummary } from "../../helpers/retiredSummary";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Staff } from "@/engine/types/staff";
@@ -43,8 +44,7 @@ function rikishiFixture(overrides: Partial<Rikishi> = {}): Rikishi {
 }
 
 function makeSummary(overrides: Partial<RetiredRikishiSummary> = {}): RetiredRikishiSummary {
-  return {
-    id: "old1",
+  return retiredSummary("old1", {
     shikona: "Taiho",
     heyaId: "h1",
     birthYear: 1970,
@@ -53,18 +53,11 @@ function makeSummary(overrides: Partial<RetiredRikishiSummary> = {}): RetiredRik
     yushoCount: 32,
     junYushoCount: 4,
     sanshoCount: 6,
-    kinboshiCount: 0,
-    totalEarnings: 0,
     peakRank: "yokozuna",
     peakRankYear: 1995,
-    peakDivision: "makuuchi",
     retirementYear: 2003,
-    retirementReason: "Age",
-    isRetired: true,
-    yearlyAggregates: [],
-    isSummary: true,
     ...overrides,
-  } as RetiredRikishiSummary;
+  });
 }
 
 function heyaFixture(overrides: Partial<Heya> = {}): Heya {

@@ -5,6 +5,7 @@ import { makeMockWorld, mockRikishi } from "@tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { retiredSummary as makeSummaryEntry } from "../../../helpers/retiredSummary";
 import type { CareerSnapshot } from "@/engine/types/history";
 import type { Rank, Division } from "@/engine/types/banzuke";
 
@@ -65,33 +66,6 @@ function makeFullHistoricalRikishi(id: string, overrides: Partial<Rikishi> = {})
   });
 }
 
-function makeSummaryEntry(
-  id: string,
-  overrides: Partial<RetiredRikishiSummary> = {}
-): RetiredRikishiSummary {
-  return {
-    id,
-    shikona: `Wrestler-${id}`,
-    birthYear: 1980,
-    heyaId: `heya-${id}`,
-    careerWins: 100,
-    careerLosses: 50,
-    yushoCount: 0,
-    junYushoCount: 0,
-    sanshoCount: 0,
-    kinboshiCount: 0,
-    totalEarnings: 0,
-    peakRank: "maegashira",
-    peakRankYear: 2010,
-    peakDivision: "makuuchi",
-    retirementYear: 2010,
-    retirementReason: "Age",
-    isRetired: true,
-    yearlyAggregates: [],
-    isSummary: true,
-    ...overrides,
-  };
-}
 
 describe("runRetiredRikishiSummarization", () => {
   it("converts full Rikishi in historicalRikishi to RetiredRikishiSummary", () => {

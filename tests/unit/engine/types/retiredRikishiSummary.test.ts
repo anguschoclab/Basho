@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest";
 import type { RetiredRikishiSummary, CareerYearAggregate } from "@/engine/types/history";
+import { retiredSummary } from "../../../helpers/retiredSummary";
 import type { Rank, Division } from "@/engine/types/banzuke";
 
 function makeSummary(overrides: Partial<RetiredRikishiSummary> = {}): RetiredRikishiSummary {
-  return {
-    id: "r-1",
+  return retiredSummary("r-1", {
     shikona: "Test Rikishi",
-    birthYear: 1980,
     heyaId: "heya-1",
     origin: "Japan",
     careerWins: 200,
@@ -18,14 +17,8 @@ function makeSummary(overrides: Partial<RetiredRikishiSummary> = {}): RetiredRik
     totalEarnings: 500_000,
     peakRank: "ozeki" as Rank,
     peakRankYear: 2005,
-    peakDivision: "makuuchi" as Division,
-    retirementYear: 2010,
-    retirementReason: "Age",
-    isRetired: true,
-    yearlyAggregates: [],
-    isSummary: true,
     ...overrides,
-  };
+  });
 }
 
 function makeYearAggregate(overrides: Partial<CareerYearAggregate> = {}): CareerYearAggregate {
