@@ -2,7 +2,7 @@
 
 The single living index of shipped workstreams, open findings, and deferred items across all mega-plan cycles. Update this file in place at the end of every mega-plan session; archive each completed session plan verbatim under `docs/plans/archive/` (historical records — never rewrite their findings).
 
-Last harmonized: 2026-11-20 (sources: the 7 plans in `docs/plans/archive/` + ongoing mega-plan completion).
+Last harmonized: 2026-11-20 (sources: the 8 plans in `docs/plans/archive/` + W R completion + v20 soak closeout).
 
 ---
 
@@ -32,8 +32,8 @@ Last harmonized: 2026-11-20 (sources: the 7 plans in `docs/plans/archive/` + ong
 | Avatar polish | Retired-avatar propagation (search + profile), wired browThickness/intense/expression variants, elder weight memory, role-aware default ages, `Oyakata.weight` + summary `nationality`/`weight`, HoF/prestige ClickableName conformance, skin-tone third stops | `81c1ee15` | archive/plan-avatar-system-polish.md |
 | ID hygiene | Tombstone aged-out prospects so lifetime ID refs stay resolvable | `a0081a64` | (landed alongside W M era) |
 | Housekeeping | Re-export `activeRikishiIds` delta | `33fcd3a3` | — |
-| v20 consolidation | Repo-wide review: 441-file delta audited, 21 new findings (14 fixed + pinned), O1/O4/O5 fixed, O2/O3/O7 cleared, 12 PRs dispositioned + branches pruned, save version 1.5.0, `.Jules/` folded | `60ba6bcc`, `36416bbe`, `578ef5f2` | `docs/audit/consolidation-verdict-v20.md` |
-| W R | Foreign-pool region-key bridge (`ORIGIN_TO_EXHIBITION_REGION`) + seeded `search-oyakata` foreign-pool E2E (O6) · Yokozuna joi back-loading (D1–3 M4→M1, D4–7 M1→M4/K/S, D11+ Y×O, D14 Y×Y `kore_yori_sanyaku` hold) · Azukari / itamiwake / mizu-iri draw outcomes · Real 3-bout maezumo preliminary & graduation · Banzuke-gai off-banzuke status & maezumo re-entry · Rolling torikumi posting cadence (`postedThroughDay`, D1+D2 pre-basho, D+1 lookahead, Senshuraku D15 hold on D14) · Rikishi-kai / Rikishi-ken sekitori council (`RikishiCouncilService`, `RIKISHI_COUNCIL_COMMITTEE`) | `e9e66871`, `693911e3`, `9e873b56`, `1372b7a3`, `5175f2cc`, `f17f526f` | (§2 O6 + §3 deferred registry) |
+| v20 consolidation | Repo-wide review: 441-file delta audited, 21 new findings (14 fixed + pinned), O1/O4/O5 fixed, O2/O3/O7 cleared, 12 PRs dispositioned + branches pruned, save version 1.5.0, `.Jules/` folded · Post-closeout: long-sim unblock (weekly gate, decision re-fire, worker sync races), kensho widget winner-only rows + dup boutId keys, year-of-bashos soak root causes — S1 dead-backend storage circuit-break (`ElectronStorageProvider`) + S2 required-decision chain-promote (`promoteNextBlockingDecision` kills the backlog treadmill), dep upgrade set, gate timeouts | `60ba6bcc`, `36416bbe`, `578ef5f2`, `8ba44866`, `1a8d2f2f`, `b7443a1c`, `735ee808`, `64b1c70e`, `a06b0696` | `docs/audit/consolidation-verdict-v20.md` |
+| W R | Foreign-pool region-key bridge (`ORIGIN_TO_EXHIBITION_REGION`) + seeded `search-oyakata` foreign-pool E2E (O6) · Yokozuna joi back-loading (D1–3 M4→M1, D4–7 M1→M4/K/S, D11+ Y×O, D14 Y×Y `kore_yori_sanyaku` hold) · Azukari / itamiwake / mizu-iri draw outcomes · Real 3-bout maezumo preliminary & graduation · Banzuke-gai off-banzuke status & maezumo re-entry · Rolling torikumi posting cadence (`postedThroughDay`, D1+D2 pre-basho, D+1 lookahead, Senshuraku D15 hold on D14) · Rikishi-kai / Rikishi-ken sekitori council (`RikishiCouncilService`, `RIKISHI_COUNCIL_COMMITTEE`) · Post-landing hardening (Map-guard council projections, schedule card on maezumo/draw days, board-10 career tests) | `e9e66871`, `693911e3`, `9e873b56`, `1372b7a3`, `5175f2cc`, `f17f526f`, `4f3e24c4`, `b662742c` | (§2 O6 + §3 deferred registry) |
 
 **Do not duplicate:** the 42-domain rules audit (code vs docs vs real JSA) lives in `docs/audit/rules-divergence-report.md` — consult it before planning rule work.
 
@@ -84,6 +84,7 @@ Minted maezumo + 8th-bout + unpaired-odd-man edge · kensho fame-envelope mechan
 - **Test-mock surface traps:** search mocks need every bucket or `.map` crashes; router mocks need `useSearch`; `factoryDiscipline` meta-gate bans local `make*`/`create*` factory names — use `MockFactory.*`; `trainingState` must be a `Map`; never stub `window` under vmThreads.
 - **`lint:commit` is the real gate** (pre-commit hook); regenerate `docs/audit/test-timings.json` whenever test files are added/moved.
 - **`AVATAR_VERSION` bump regenerates every stored face** — v3 policy documented at `types/avatar.ts`; pixel-diff avatar tests are brittle-by-design — assert *where* output differs, not whole-map inequality.
+- **Presenter/service projections must tolerate non-Map collections** — post-deserialize or partially-shaped worlds can reach projections with `world.heyas`/`world.rikishi`/`activeRikishiIds` absent or non-`Map`; guard with `x instanceof Map ? … : fallback` (canonical: `governanceProjections.projectRikishiCouncil`, `RikishiCouncilService.electRikishiCouncilDelegates`). Components receiving optional projections null-guard (`RikishiCouncilPanel`).
 - **Determinism contract:** zero `Math.random`/`Date.now` in `src/engine`; seeded RNG only; world-RNG consumption is reviewable in every PR.
 
 ---
@@ -105,3 +106,4 @@ Minted maezumo + 8th-bout + unpaired-odd-man edge · kensho fame-envelope mechan
 | `archive/plan-day10-kyushu.md` | Nov-18 | Executed (`8473ad78`+`2548085f`) | §1 W N row; §2 O1 |
 | `archive/plan-avatar-system-polish.md` | Nov-18 | Executed (`81c1ee15`) | §1 avatar row; §3 skipped extras; §4 avatar gotchas |
 | `archive/plan-86f2a021cad4384b.md` | Nov-18 | Executed — verification pass | §1 search row (verify); §2 O6; §4 e2e gotchas |
+| `archive/plan-day12-kyushu.md` | Nov-20 | Executed (`223622ed`) | §1 W P row; §2 O1 division-scope note |

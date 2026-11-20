@@ -186,6 +186,12 @@ Implementation: `src/constants/engine/jsaEra.ts` (single source of truth; `JSA_R
 | `c72df39e` | post-2010 foreign quota; no roster cap; no free agency; makuuchi-only kensho; senshuraku playoffs; debut-age gate; ring/venue strings |
 | `322711c3` | shared committee framework; banzuke committee replaces units formula + political weight; sansho/board harmonization; deliberation feed items |
 | `031d9779` | tsukedashi Ms60/Sd80 + under-25 exception; myoseki 105-cap; jun-/ichidai-toshiyori; intai-kin |
+| `693911e3` | yokozuna joi back-loading (D1–3 M4→M1, D4–7 M1→M4/K/S, D11+ Y×O, D15 Y×Y `kore_yori_sanyaku` hold) |
+| `9e873b56` | `mizu_iri` water breaks + `hikiwake`, `itamiwake`, and `azukari` draw outcomes |
+| `1372b7a3` | real 3-bout maezumo preliminary on Days 3/5/7 for non-tsukedashi shin-deshi + graduation onto Jonokuchi |
+| `5175f2cc` | banzuke-gai off-banzuke drops (full `0-0-7` Jonokuchi absence / slot overflow) + maezumo re-entry |
+| `f17f526f` | rolling torikumi posting cadence (`postedThroughDay`, D1–2 pre-basho, `D+1` lookahead, D15 hold on D14, withdrawal reconciliation) |
+| `4f3e24c4` | Rikishi-kai / Rikishi-ken (力士会) 7-delegate sekitori council (`RikishiCouncilService`, `RIKISHI_COUNCIL_COMMITTEE`) |
 
 ## Deliberate deviations retained (user-approved)
 
