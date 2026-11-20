@@ -69,6 +69,16 @@ export class ElectronStorageProvider implements IStorageProvider {
   private idb: IDBDatabase | null = null;
   private idbCache = new Map<string, string>();
   private hydrated = false;
+  /**
+   * Sticky failure latches. When IDB writes are proven broken (every put
+   * aborts) retrying each write just burns main-thread time, and once
+   * localStorage has rejected a save for quota, the next ~26MB payload will
+   * fail identically — yet fallbackPersist would still LZ-compress it first.
+   * The in-memory idbCache serves session reads regardless, so after the
+   * first failure of either backend we stop attempting it.
+   */
+  private idbWritesBroken = false;
+  private lsQuotaBroken = false;
   readonly ready: Promise<void>;
 
   constructor() {
@@ -123,21 +133,29 @@ export class ElectronStorageProvider implements IStorageProvider {
 
   private webSet(key: string, value: string): void {
     this.idbCache.set(key, value);
-    if (this.hydrated && this.idb) {
+    if (this.hydrated && this.idb && !this.idbWritesBroken) {
       void this.idbPut(key, value).catch((e) => {
+        // Sticky latch — a dead IDB connection fails every put, and the
+        // fallback compresses the whole payload per attempt. One failure
+        // is enough to know this session's persistence is degraded.
+        this.idbWritesBroken = true;
         error(
-          `IndexedDB write failed (${e instanceof DOMException ? `${e.name}: ${e.message}` : String(e)})`,
+          `IndexedDB write failed — disabling IDB writes for this session (${e instanceof DOMException ? `${e.name}: ${e.message}` : String(e)})`,
           "ElectronStorage"
         );
         this.fallbackPersist(key, value);
       });
+    } else if (this.hydrated) {
+      // IDB unavailable or already proven broken — go straight to the
+      // localStorage fallback (it self-disables after a quota failure).
+      this.fallbackPersist(key, value);
     } else {
       // Pre-hydration gap: keep writing localStorage so nothing is lost;
       // the hydrate sweep migrates it into IDB.
       try {
         localStorage.setItem(key, encodeStored(value));
       } catch {
-        // Quota — the in-memory cache still holds the value.
+        this.lsQuotaBroken = true;
       }
     }
   }
@@ -150,9 +168,14 @@ export class ElectronStorageProvider implements IStorageProvider {
    * any surviving localStorage keys back into IDB.
    */
   private fallbackPersist(key: string, value: string): void {
+    // Skip the compress once quota is known-broken — compressing tens of MB
+    // on the main thread just to throw on quota is the dominant cost of a
+    // dead storage backend (observed: ~40-60s stalls per autosave cycle).
+    if (this.lsQuotaBroken) return;
     try {
       localStorage.setItem(key, encodeStored(value));
     } catch {
+      this.lsQuotaBroken = true;
       // localStorage quota exceeded too — nothing more we can persist.
     }
   }

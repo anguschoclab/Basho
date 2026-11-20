@@ -81,7 +81,24 @@ Measured at closeout (commits `60ba6bcc`…`1327467c`):
 | determinism double-run | **PASS** — 2 runs byte-identical (26.4 MB serialized, basho horizon) |
 | `bun run test:timings` | `test-timings.json` re-baselined |
 
-Not run this pass: the perf CI gate (baseline re-seeds on main push).
+### Post-upgrade verification (`b7443a1c` — dependency consolidation)
+
+The dependabot upgrade pass applied: react/react-dom 19.3.1, three +
+@types/three 0.187.0, jsdom 31.0.1, tailwindcss + @tailwindcss/vite 4.3.5,
+typescript-eslint family 8.72.2 (8.73.0 skipped — <7d fresh per policy).
+
+| Gate | Result |
+|------|--------|
+| `bun run type-check` | clean |
+| `bun run lint` | clean on typescript-eslint 8.72.2 |
+| `bun run build` | green (vite 8.3.5, 26s) |
+| `bun run test` (fast) | 1102 files / 10,241 tests — all green on jsdom 31 |
+
+Not run this pass: the perf CI gate (baseline re-seeds on main push);
+post-upgrade `test:slow`/`test:coverage`/soak re-runs — the suites are
+deps-insensitive except `lintStrictGate` (eslint subprocess audit) and
+jsdom env, both covered by the lint + fast-suite results above.
+
 The duplicate-React-key wart was root-caused and fixed: `useKenshoData`
 emitted a row per participant, duping `boutId` keys on same-heya kensho
 bouts and crediting losers with the winner's envelopes (`1a8d2f2f`).
