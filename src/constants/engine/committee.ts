@@ -58,10 +58,13 @@ export const YDC_COMMITTEE: CommitteeSpec = {
   factionWeight: 0,
 };
 
-/** Board of directors election (理事選) — biennial, week 10. */
+/**
+ * Board of directors election (理事選) — biennial, week 10.
+ * Real board: 10 riji (plus ~3-4 auditors, unmodeled — cosmetic).
+ */
 export const BOARD_COMMITTEE: CommitteeSpec = {
   id: "board",
-  size: 5,
+  size: 10,
   discretionCap: 0,
   meritWeight: 0,
   factionWeight: 0,

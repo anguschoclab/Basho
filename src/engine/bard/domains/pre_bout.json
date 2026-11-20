@@ -675,5 +675,21 @@
     "%SHIKONA% stumbled out of the gate but has caught fire in week two — %WINS% wins since the nakabi.",
     "A different man since the midway point — %SHIKONA% has stacked up %WINS% wins in the second week.",
     "After a disastrous opening week, %SHIKONA% has won %WINS% in the second half of the basho."
+  ],
+  "ozeki_bid": [
+    "%SHIKONA% is assembling an ozeki resume — consecutive strong showings have the promotion conversation started.",
+    "An ozeki bid is building for %SHIKONA% — another double-digit basho here makes the case undeniable."
+  ],
+  "collapse_shadow": [
+    "%SHIKONA% is erasing the memory of last basho's late collapse — those doubts are fading fast.",
+    "After ending last tournament on a %LOSSES%-bout skid, %SHIKONA% is answering every question this time around."
+  ],
+  "dream_showdown": [
+    "The scenario sumo dreams of — %EAST% and %WEST%, both unbeaten, meeting late in the basho.",
+    "Two unbeaten records on the line late in the tournament — this is the matchup everyone hoped for."
+  ],
+  "stars_align": [
+    "For once, all the big names are here — no yokozuna or ozeki sitting this one out.",
+    "A rare basho with every star healthy and ready to go from day one."
   ]
 }

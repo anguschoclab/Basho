@@ -16,7 +16,11 @@ import {
 import { NAKABI_DAY } from "@/engine/basho/NakabiService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
-import { isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
+import {
+  getLeaderWins,
+  isPlayoffScenario,
+  isYushoContention,
+} from "@/engine/bout/boutContention";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 import { isSanyakuRank, getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 import { BASHO_NAMES } from "@/constants/ui/calendar";
@@ -26,7 +30,10 @@ import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
 import { countAlternatingRecords, countKachiKoshiDrought } from "@/engine/bout/narrative/helpers";
 import {
   ALTERNATING_RECORDS_MIN,
+  COLLAPSE_MIN_TRAILING_LOSSES,
+  COLLAPSE_REBOUND_MIN_WINS,
   DEMOTION_WATCH_BOTTOM_SLOTS,
+  DREAM_SHOWDOWN_MIN_DAY,
   KACHI_DROUGHT_MIN_BASHO,
   LOSING_SKID_MIN,
   PROVEN_GIANT_KILLER_MAX_AGE,
@@ -34,6 +41,7 @@ import {
   WEEK_TWO_EARLY_LOSSES_MIN,
   WEEK_TWO_WINS_MIN,
 } from "@/constants/engine/narrative";
+import { CONTENTION_WINDOW } from "@/constants/engine/physics";
 
 function beatHometown(p: PbpPipeline): void {
   const { bashoInfo, east, preBoutRng, push, west } = p;
@@ -1008,6 +1016,99 @@ function beatWeekTwoSurge(p: PbpPipeline): void {
   }
 }
 
+const OZEKI_BID_RANKS = new Set(["sekiwake", "komusubi"]);
+const TOP_DIVISION_STARS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+
+function beatOzekiBid(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west, world } = p;
+  // W Q — "possibly even earn promotion to ozeki": a sekiwake/komusubi riding
+  // consecutive strong bashos and still alive in the title race.
+  const basho = world.currentBasho;
+  for (const r of [east, west]) {
+    if (!OZEKI_BID_RANKS.has(r.rank ?? "")) continue;
+    if ((r.consecutiveStrongSekiwake ?? 0) < 1) continue;
+    const wins = r.currentBashoWins ?? 0;
+    const leader = basho ? getLeaderWins(basho, world, r.division) : wins;
+    if (leader - wins > CONTENTION_WINDOW && wins < 8) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.ozeki_bid", {
+        SHIKONA: r.shikona,
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["ozeki_bid", "yusho_race"]
+    );
+    break;
+  }
+}
+
+function beatCollapseShadow(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west, world } = p;
+  // W Q — "doubts that lingered from the September collapse": last basho closed
+  // on a losing skid; this basho is going strong enough to dispel it.
+  const basho = world.currentBasho;
+  if (!basho) return;
+  const bashoId = basho.id ?? `${basho.bashoName}-${world.year}`;
+  for (const r of [east, west]) {
+    const history = r.history ?? [];
+    const prevBashoId = [...history].reverse().find((h) => h.bashoId !== bashoId)?.bashoId;
+    if (!prevBashoId) continue;
+    const prevBouts = history.filter((h) => h.bashoId === prevBashoId);
+    let trailing = 0;
+    for (let i = prevBouts.length - 1; i >= 0 && !prevBouts[i].win; i--) trailing++;
+    if (trailing < COLLAPSE_MIN_TRAILING_LOSSES) continue;
+    if ((r.currentBashoWins ?? 0) < COLLAPSE_REBOUND_MIN_WINS) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.collapse_shadow", {
+        SHIKONA: r.shikona,
+        LOSSES: trailing.toString(),
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["collapse_shadow", "comeback"]
+    );
+    break;
+  }
+}
+
+function beatDreamShowdown(p: PbpPipeline): void {
+  const { day, east, preBoutRng, push, west } = p;
+  // W Q — "the ideal scenario: a pair of unbeatens facing off late".
+  if (day < DREAM_SHOWDOWN_MIN_DAY) return;
+  if ((east.currentBashoLosses ?? 0) > 0 || (west.currentBashoLosses ?? 0) > 0) return;
+  push(
+    BardEngine.resolve(preBoutRng, "pre_bout.dream_showdown", {
+      EAST: east.shikona,
+      WEST: west.shikona,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
+    }).text,
+    "pre_bout",
+    ["dream_showdown", "yusho_race"]
+  );
+}
+
+function beatStarsAlign(p: PbpPipeline): void {
+  const { day, preBoutRng, push, world } = p;
+  // W Q — "all the sport's big names apparently healthy": a day-1 note when no
+  // sanyaku-or-higher rikishi is kyujo or carrying an injury.
+  if (day !== 1 || !world?.rikishi) return;
+  for (const r of world.rikishi.values()) {
+    if (
+      r.division === "makuuchi" &&
+      TOP_DIVISION_STARS.has(r.rank ?? "") &&
+      (r.isKyujo || r.injured)
+    ) {
+      return;
+    }
+  }
+  push(
+    BardEngine.resolve(preBoutRng, "pre_bout.stars_align", {}).text,
+    "pre_bout",
+    ["stars_align", "tournament_context"]
+  );
+}
+
 function beatProvenGiantKiller(p: PbpPipeline): void {
   const { east, eastAge, preBoutRng, push, west, westAge } = p;
   for (const [r, age] of [
@@ -1062,5 +1163,9 @@ export function narrateStakes(p: PbpPipeline): void {
   beatDemotionWatch(p);
   beatAlternatingRecords(p);
   beatWeekTwoSurge(p);
+  beatOzekiBid(p);
+  beatCollapseShadow(p);
+  beatDreamShowdown(p);
+  beatStarsAlign(p);
   beatProvenGiantKiller(p);
 }

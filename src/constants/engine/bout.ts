@@ -118,6 +118,31 @@ export const KINJITE_FOUL_WEIGHTS: ReadonlyArray<readonly [string, number]> = [
 /** Base probability a suspected foul is confirmed by the panel. */
 export const FOUL_REVIEW_BASE_CONFIRM = 0.75;
 
+// ── Hair-down incident (magé comes undone) constants ─────────────────────────
+
+/**
+ * Per-contested-bout chance that a rikishi's topknot comes undone mid-fight.
+ * Only materializes when the afflicted rikishi is the loser AND finishes
+ * downed — hair touching the clay counts as a body part down (the
+ * "hair-down automatic loss" rule). Real incidence is ~1 per 2-3 basho.
+ */
+export const HAIR_DOWN_LOSS_CHANCE = 0.004;
+
+/**
+ * Kimarite where the loser exits upright/stepped-out — hair never reaches
+ * the clay, so a loose topknot is a non-event (hair tied back up between bouts).
+ */
+export const HAIR_DOWN_UPRIGHT_KIMARITE = new Set([
+  "fusensho",
+  "hansoku",
+  "yorikiri",
+  "oshidashi",
+  "okuridashi",
+  "tsukidashi",
+  "tsuridashi",
+  "waridashi",
+]);
+
 // ── Missed-call review (proactive shimpan catches) constants ────────────────
 
 /** Chance the panel reviews a hiwaza finish (hand/knee-down call). */

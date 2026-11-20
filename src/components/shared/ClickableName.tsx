@@ -123,8 +123,7 @@ export function StableName({ id, name, className, children }: Omit<ClickableName
  *
  * Links to the elder's dedicated profile (/oyakata/$id) when the elder exists
  * in the loaded world; renders plain text otherwise so generated mention text
- * never produces a dead link. `heyaId` is accepted for backwards-compatible
- * call sites but the profile route is now the canonical target.
+ * never produces a dead link.
  *
  * @param props - Component properties
  * @param props.id - The unique identifier for the oyakata
@@ -137,7 +136,7 @@ export function OyakataName({
   name,
   className,
   children,
-}: Omit<ClickableNameProps, "type"> & { heyaId?: string }) {
+}: Omit<ClickableNameProps, "type">) {
   return (
     <ClickableName type="oyakata" id={id} name={name} className={className}>
       {children}

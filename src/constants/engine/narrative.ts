@@ -251,3 +251,17 @@ export const WIN_STREAK_INTERVIEW_MIN = 6;
 
 /** W P — earliest day for the closing-days interview question. */
 export const CLOSING_DAYS_MIN = 12;
+
+// ─── W Q — Kyushu Japan-Times article beats ─────────────────────────────────
+
+/** W Q — "best start in years": earliest day, lookback depth, min history. */
+export const BEST_START_MIN_DAY = 9;
+export const BEST_START_LOOKBACK_BASHO = 6;
+export const BEST_START_MIN_HISTORY = 3;
+
+/** W Q — "collapsed down the home stretch": trailing losses closing last basho. */
+export const COLLAPSE_MIN_TRAILING_LOSSES = 4;
+export const COLLAPSE_REBOUND_MIN_WINS = 5;
+
+/** W Q — earliest day two unbeatens get the dream-showdown framing. */
+export const DREAM_SHOWDOWN_MIN_DAY = 12;

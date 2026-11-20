@@ -157,6 +157,11 @@
       "%WINNER% plays spoiler — %LOSER%'s title hopes take a hit.",
       "The spoiler strikes again: %WINNER% trips up %LOSER% in the run-in.",
       "%WINNER% may be out of the race, but he just dented %LOSER%'s campaign."
+    ],
+    "best_start": [
+      "%WINNER% is off to his best start in years — %WINS% wins already.",
+      "This is the best start %WINNER% has had in a long time — %WINS% wins by day %DAY%.",
+      "%WINS% wins and counting — %WINNER% hasn't opened a basho this well in years."
     ]
   },
   "rivalry": {
@@ -777,5 +782,15 @@
     "That's %COUNT% straight wins since returning — %WINNER% is making up for lost time.",
     "%WINNER% keeps rolling since re-entering — %COUNT% consecutive victories now.",
     "Since coming back, %WINNER% hasn't looked back — %COUNT% wins on the trot."
+  ],
+  "elite_scalp_streak": [
+    "Back-to-back wins over the very top of the banzuke — %WINNER% is on a serious run.",
+    "%WINNER% topples another elite — consecutive victories over the sport's biggest names.",
+    "Another giant falls — %WINNER% makes it consecutive wins over the top rank."
+  ],
+  "hair_down": [
+    "%LOSER%'s topknot had come undone — his hair touched the clay as he went down. That's a loss.",
+    "The mage came loose on %LOSER% mid-fall — hair on the dohyo counts as down. No argument.",
+    "Bad luck for %LOSER% — his topknot unraveled and the hair touched the clay. Automatic loss."
   ]
 }

@@ -138,7 +138,14 @@ export type PbpTag =
   | "followup"
   | "alternating_records"
   | "edge_letdown"
-  | "week_two_surge";
+  | "week_two_surge"
+  | "best_start"
+  | "elite_scalp_streak"
+  | "hair_down"
+  | "ozeki_bid"
+  | "collapse_shadow"
+  | "dream_showdown"
+  | "stars_align";
 
 export type PbpLine = {
   text: string;

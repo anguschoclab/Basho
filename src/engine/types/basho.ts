@@ -160,6 +160,12 @@ export interface BoutResult {
   upset: boolean;
   /** Whether this bout resulted in a kinboshi (maegashira defeating yokozuna or ozeki). */
   isKinboshi?: boolean;
+  /**
+   * Whether the loser's topknot came undone and his hair touched the clay
+   * as he went down — the "hair-down automatic loss" rule. Flagged on
+   * down-type finishes only.
+   */
+  hairDown?: boolean;
   /** Whether this bout had championship implications. */
   isTitleStakes?: boolean;
   /** Whether this bout was part of a yusho race. */

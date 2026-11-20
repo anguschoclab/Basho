@@ -13,6 +13,9 @@ import {
   WEIGHT_DIFF_THRESHOLD,
 } from "@/constants/engine/generation";
 import {
+  BEST_START_LOOKBACK_BASHO,
+  BEST_START_MIN_DAY,
+  BEST_START_MIN_HISTORY,
   EDGE_LETDOWN_MIN_FAILED,
   FOLLOWUP_MIN_LETDOWNS,
   H2H_HOODOO_MIN_LOSSES,
@@ -28,6 +31,7 @@ import {
   VALIANT_MIN_ESCAPES,
 } from "@/constants/engine/narrative";
 import { CONTENTION_WINDOW, LEAPING_HENKA_SPEED } from "@/constants/engine/physics";
+import { HAIR_DOWN_LOSS_CHANCE, HAIR_DOWN_UPRIGHT_KIMARITE } from "@/constants/engine/bout";
 import { getLeaderWins } from "@/engine/bout/boutContention";
 import { isPullStyleKimarite } from "@/engine/bout/ReplayMetadata";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
@@ -1463,6 +1467,76 @@ function beatEdgeLetdown(p: PbpPipeline): void {
   );
 }
 
+function beatBestStart(p: PbpPipeline): void {
+  const { day, postBoutRng, push, winnerRikishi, winnerWins } = p;
+  // W Q — "off to his best start in over three years": today's win total tops
+  // every final record of the last N basho.
+  if (day < BEST_START_MIN_DAY) return;
+  const history = winnerRikishi.careerHistory ?? [];
+  if (history.length < BEST_START_MIN_HISTORY) return;
+  const recent = history.slice(-BEST_START_LOOKBACK_BASHO);
+  const postWins = winnerWins + 1;
+  if (recent.some((s) => s.wins >= postWins)) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.storylines.best_start", {
+      WINNER: winnerRikishi.shikona,
+      WINS: postWins.toString(),
+      DAY: day.toString(),
+      BASHO_SPAN: recent.length.toString(),
+      winnerId: winnerRikishi.id,
+    }).text,
+    "post_bout",
+    ["best_start", "yusho_race"]
+  );
+}
+
+const ELITE_SCALP_RANKS = new Set(["yokozuna", "ozeki"]);
+
+function beatEliteScalpStreak(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, winnerRikishi, world } = p;
+  // W Q — "consecutive wins over yokozuna": today's elite victim follows an
+  // earlier elite scalp this same basho.
+  if (!ELITE_SCALP_RANKS.has(loserRikishi.rank ?? "")) return;
+  const basho = world?.currentBasho;
+  if (!basho || !world?.rikishi) return;
+  const bashoId = basho.id ?? `${basho.bashoName}-${world.year}`;
+  const priorEliteWins = (winnerRikishi.history ?? []).filter(
+    (h) =>
+      h.bashoId === bashoId &&
+      h.win &&
+      ELITE_SCALP_RANKS.has(world.rikishi.get(h.opponentId)?.rank ?? "")
+  ).length;
+  if (priorEliteWins < 1) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.elite_scalp_streak", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["elite_scalp_streak", "upset"]
+  );
+}
+
+function beatHairDown(p: PbpPipeline): void {
+  const { result, loserRikishi, postBoutRng, push } = p;
+  // Deferred registry — hair-down automatic loss: when a rikishi's topknot
+  // comes undone, hair touching the clay counts as a body part down. Only
+  // materializes on finishes where the loser is already downed.
+  if (!result || HAIR_DOWN_UPRIGHT_KIMARITE.has(result.kimarite ?? "")) return;
+  if (postBoutRng.next() >= HAIR_DOWN_LOSS_CHANCE) return;
+  result.hairDown = true;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.hair_down", {
+      LOSER: loserRikishi.shikona,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["hair_down", "upset"]
+  );
+}
+
 function beatRecordStakesAftermath(p: PbpPipeline): void {
   const {
     day,
@@ -1629,6 +1703,9 @@ export function narrateAftermath(p: PbpPipeline): void {
   beatPhaseTwo(p);
   beatSlapathon(p);
   beatLoserCredit(p);
+  beatBestStart(p);
+  beatEliteScalpStreak(p);
+  beatHairDown(p);
   beatFollowupDelivered(p);
   beatEdgeLetdown(p);
   beatPostBoutLeaderboard(p);
