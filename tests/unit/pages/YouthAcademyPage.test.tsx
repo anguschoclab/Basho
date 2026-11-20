@@ -57,8 +57,6 @@ vi.mock("@/components/academy/index", () => ({
       prospect.id
     ),
   AcademyStaffList: () => React.createElement("div", { "data-testid": "academy-staff-list" }),
-  AcademyInvestmentControl: () =>
-    React.createElement("div", { "data-testid": "academy-invest-control" }),
 }));
 
 const mockUseGame = vi.fn();

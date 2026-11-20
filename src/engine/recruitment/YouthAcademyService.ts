@@ -46,7 +46,7 @@ const HEYA_ROSTER_CAP = 30;
 export type { AcademyLevel, AcademyStaff, AcademyStaffRole, YouthProspect };
 
 /** Academy upgrade cost per level. */
-const UPGRADE_COST: Record<number, number> = {
+export const ACADEMY_UPGRADE_COSTS: Record<number, number> = {
   1: 50_000,
   2: 150_000,
   3: 400_000,
@@ -73,7 +73,7 @@ const MAX_PROSPECTS_PER_LEVEL: Record<number, number> = {
 const INVEST_COST_PER_POINT = 5_000;
 
 /** Staff hire cost. */
-const STAFF_HIRE_COST = 100_000;
+const ACADEMY_STAFF_HIRE_COST = 100_000;
 
 /** Staff name pools. */
 const STAFF_FIRST_NAMES = [
@@ -134,7 +134,7 @@ export function buildYouthAcademy(world: WorldState, heyaId: string): StateImpac
 
   if (getYouthAcademy(heya)) return builder.build();
 
-  const cost = UPGRADE_COST[1];
+  const cost = ACADEMY_UPGRADE_COSTS[1];
   const cash = heya.funds;
   if (cash < cost) return builder.build();
 
@@ -181,7 +181,7 @@ export function upgradeYouthAcademy(world: WorldState, heyaId: string): StateImp
   if (academy.level >= MAX_ACADEMY_LEVEL) return builder.build();
 
   const nextLevel = (academy.level + 1) as AcademyLevel;
-  const cost = UPGRADE_COST[nextLevel];
+  const cost = ACADEMY_UPGRADE_COSTS[nextLevel];
   const cash = heya.funds;
   if (cash < cost) return builder.build();
 
@@ -582,7 +582,7 @@ export function hireAcademyStaff(
   if (academy.staff.length >= maxStaff) return builder.build();
 
   const cash = heya.funds;
-  if (cash < STAFF_HIRE_COST) return builder.build();
+  if (cash < ACADEMY_STAFF_HIRE_COST) return builder.build();
 
   // A persistent hire sequence keeps ids (and the rng stream) unique even when
   // the same role is re-hired within one year.
@@ -613,7 +613,7 @@ export function hireAcademyStaff(
       staff: [...academy.staff, newStaff],
       staffHireSeq: hireSeq + 1,
     },
-    funds: cash - STAFF_HIRE_COST,
+    funds: cash - ACADEMY_STAFF_HIRE_COST,
   });
 
   builder.logManagementDecision(
@@ -649,7 +649,7 @@ export function getQualityBonus(academy: YouthAcademyState): number {
  */
 export function getUpgradeCost(academy: YouthAcademyState): number {
   if (academy.level >= MAX_ACADEMY_LEVEL) return 0;
-  return UPGRADE_COST[academy.level + 1] ?? 0;
+  return ACADEMY_UPGRADE_COSTS[academy.level + 1] ?? 0;
 }
 
 /**

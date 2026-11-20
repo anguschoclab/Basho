@@ -8,6 +8,7 @@ import {
   getMaxStaff,
   getUpgradeCost,
   MAX_ACADEMY_LEVEL,
+  ACADEMY_UPGRADE_COSTS,
 } from "@/engine/recruitment/YouthAcademyService";
 import type { AcademyStaff } from "@/engine/types/academy";
 import type { AvatarIdentity } from "@/engine/types/avatar";
@@ -45,14 +46,6 @@ export interface YouthAcademyProjection {
   upgradeCost: number;
 }
 
-const UPGRADE_COST: Record<number, number> = {
-  1: 50_000,
-  2: 150_000,
-  3: 400_000,
-  4: 1_000_000,
-  5: 2_500_000,
-};
-
 export function projectYouthAcademy(world: WorldState, heyaId: string): YouthAcademyProjection {
   const heya = world.heyas.get(heyaId);
   if (!heya) return { academy: null, hasAcademy: false, canUpgrade: false, upgradeCost: 0 };
@@ -63,7 +56,7 @@ export function projectYouthAcademy(world: WorldState, heyaId: string): YouthAca
       academy: null,
       hasAcademy: false,
       canUpgrade: false,
-      upgradeCost: UPGRADE_COST[1],
+      upgradeCost: ACADEMY_UPGRADE_COSTS[1],
     };
   }
 

@@ -17,6 +17,15 @@ import { formatYen } from "@/lib/engineUtils";
 
 export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | "East_Asia";
 
+/** Canonical exhibition-region list — the pick pool duplicated in projections. */
+export const EXHIBITION_REGIONS: ExhibitionRegion[] = [
+  "Mongolia",
+  "Georgia",
+  "Europe",
+  "Americas",
+  "East_Asia",
+];
+
 interface ExhibitionInvitation {
   id: string;
   heyaId: string;
@@ -47,7 +56,7 @@ function generateYearlyInvitations(world: WorldState, heyaId: string): StateImpa
 
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `exhibitions_${world.year}_${heyaId}`);
   const count = 1 + (rng.next() < 0.4 ? 1 : 0); // 1-2 invitations per year
-  const regions: ExhibitionRegion[] = ["Mongolia", "Georgia", "Europe", "Americas", "East_Asia"];
+  const regions: ExhibitionRegion[] = EXHIBITION_REGIONS;
   const invitations: ExhibitionInvitation[] = [];
 
   for (let i = 0; i < count; i++) {

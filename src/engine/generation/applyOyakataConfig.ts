@@ -17,7 +17,7 @@ import { SeededRNG } from "@/engine/core/rng";
 import { getHeya } from "@/engine/core/queries";
 import { warn } from "@/engine/utils/Logger";
 import { clamp } from "@/engine/utils/math";
-import { BACKSTORY_STARTING_FUNDS } from "@/constants/engine/economic";
+import { BACKSTORY_BONUS_CORE, BACKSTORY_POLITICAL_CAPITAL } from "@/constants/engine/backstories";
 
 // ---------------------------------------------------------------------------
 // Backstory data — defined here (NOT imported from the UI wizard layer).
@@ -48,12 +48,8 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "traditionalist",
     traitModifiers: { ambition: 10, tradition: 15, patience: -5 },
     bonuses: {
-      funds: BACKSTORY_STARTING_FUNDS.yokozuna_champion,
-      prestige: 4,
-      scouting: 1,
-      training: 1,
-      politics: 3,
-      politicalCapital: 60,
+      ...BACKSTORY_BONUS_CORE.yokozuna_champion,
+      politicalCapital: BACKSTORY_POLITICAL_CAPITAL.yokozuna_champion,
     },
     startingQuirks: ["Old-School Stickler", "Media Operator"],
   },
@@ -64,12 +60,8 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "strategist",
     traitModifiers: { ambition: 5, patience: 10 },
     bonuses: {
-      funds: BACKSTORY_STARTING_FUNDS.ozeki_legend,
-      prestige: 3,
-      scouting: 0,
-      training: 2,
-      politics: 1,
-      politicalCapital: 30,
+      ...BACKSTORY_BONUS_CORE.ozeki_legend,
+      politicalCapital: BACKSTORY_POLITICAL_CAPITAL.ozeki_legend,
     },
     startingQuirks: ["Numbers Guy"],
   },
@@ -80,12 +72,8 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "scientist",
     traitModifiers: { patience: 5, tradition: -10 },
     bonuses: {
-      funds: BACKSTORY_STARTING_FUNDS.sanyaku_veteran,
-      prestige: 1,
-      scouting: 1,
-      training: 2,
-      politics: 0,
-      politicalCapital: 10,
+      ...BACKSTORY_BONUS_CORE.sanyaku_veteran,
+      politicalCapital: BACKSTORY_POLITICAL_CAPITAL.sanyaku_veteran,
     },
     startingQuirks: ["Keiko Romantic"],
   },
@@ -96,12 +84,8 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "nurturer",
     traitModifiers: { compassion: 15, tradition: 10, ambition: -15 },
     bonuses: {
-      funds: BACKSTORY_STARTING_FUNDS.maegashira_lifer,
-      prestige: -1,
-      scouting: 0,
-      training: 4,
-      politics: -1,
-      politicalCapital: 0,
+      ...BACKSTORY_BONUS_CORE.maegashira_lifer,
+      politicalCapital: BACKSTORY_POLITICAL_CAPITAL.maegashira_lifer,
     },
     startingQuirks: ["Keiko Romantic", "Family First"],
   },
@@ -112,12 +96,8 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "gambler",
     traitModifiers: { risk: 20, ambition: 15, patience: -10 },
     bonuses: {
-      funds: BACKSTORY_STARTING_FUNDS.injury_comeback,
-      prestige: 2,
-      scouting: 1,
-      training: 1,
-      politics: 1,
-      politicalCapital: 20,
+      ...BACKSTORY_BONUS_CORE.injury_comeback,
+      politicalCapital: BACKSTORY_POLITICAL_CAPITAL.injury_comeback,
     },
     startingQuirks: ["Gambler's Instinct"],
   },
@@ -128,12 +108,8 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "scientist",
     traitModifiers: { tradition: -20, patience: 10 },
     bonuses: {
-      funds: BACKSTORY_STARTING_FUNDS.international_scout,
-      prestige: 0,
-      scouting: 5,
-      training: 1,
-      politics: -1,
-      politicalCapital: 0,
+      ...BACKSTORY_BONUS_CORE.international_scout,
+      politicalCapital: BACKSTORY_POLITICAL_CAPITAL.international_scout,
     },
     startingQuirks: ["Sleeper Scout"],
   },
@@ -144,12 +120,8 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "strategist",
     traitModifiers: { patience: 15, tradition: 5, ambition: -10 },
     bonuses: {
-      funds: BACKSTORY_STARTING_FUNDS.council_elder,
-      prestige: -1,
-      scouting: 0,
-      training: -1,
-      politics: 5,
-      politicalCapital: 100,
+      ...BACKSTORY_BONUS_CORE.council_elder,
+      politicalCapital: BACKSTORY_POLITICAL_CAPITAL.council_elder,
     },
     startingQuirks: ["Cold Pragmatist"],
   },

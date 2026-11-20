@@ -5,12 +5,13 @@ import type { WorldState } from "@/engine/types/world";
 import type { AcademyManagementProjection } from "@/components/stable/AcademyManagementPanel";
 import {
   WorldCircuitService,
+  EXHIBITION_REGIONS,
   type ExhibitionRegion,
 } from "@/engine/worldCircuit/WorldCircuitService";
 
 export type { ExhibitionRegion };
 
-const REGIONS: ExhibitionRegion[] = ["Mongolia", "Georgia", "Europe", "Americas", "East_Asia"];
+const REGIONS: ExhibitionRegion[] = EXHIBITION_REGIONS;
 
 export function projectAcademyManagement(
   world: WorldState,
