@@ -88,6 +88,7 @@ function serializeBashoState(basho: BashoState): SerializedBashoState {
     ...(basho.exhibitionName ? { exhibitionName: basho.exhibitionName } : {}),
     ...(basho.dohyoCondition ? { dohyoCondition: basho.dohyoCondition } : {}),
     ...(basho.maezumo ? { maezumo: basho.maezumo } : {}),
+    ...(basho.postedThroughDay !== undefined ? { postedThroughDay: basho.postedThroughDay } : {}),
   };
 }
 
@@ -113,6 +114,7 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
     isActive: basho.isActive ?? true,
     dohyoCondition: basho.dohyoCondition,
     ...(basho.maezumo ? { maezumo: basho.maezumo } : {}),
+    ...(basho.postedThroughDay !== undefined ? { postedThroughDay: basho.postedThroughDay } : {}),
   };
 }
 

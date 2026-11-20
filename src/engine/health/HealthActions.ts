@@ -3,6 +3,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { TREATMENT_COST_PER_WEEK } from "@/constants/engine/health";
 import { generateKyujoNarrative } from "@/engine/bout/boutNarrative";
+import { reconcileFutureScheduleForWithdrawals } from "@/engine/calendar/schedule";
 
 /** Withdraw a rikishi from competition (kyūjō) due to injury. */
 export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpact {
@@ -40,6 +41,9 @@ export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpa
     },
     { rikishiId, heyaId: r.heyaId }
   );
+  // §3 rolling torikumi — keep today's bout for a fusenshō, re-pair any
+  // already-posted future day (day > basho.day) without the withdrawn rikishi.
+  builder.merge(reconcileFutureScheduleForWithdrawals(world, rikishiId));
   return builder.build();
 }
 

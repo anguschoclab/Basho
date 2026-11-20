@@ -38,6 +38,7 @@ export interface UIBashoSummary {
     ginoSho?: Id[];
   };
   isActive: boolean;
+  postedThroughDay?: number;
 }
 
 export function projectBoutRow(m: MatchSchedule, world: WorldState): UIBoutRow {
@@ -88,5 +89,6 @@ export function projectBashoSummary(
       ginoSho: result?.ginoSho,
     },
     isActive: state.isActive,
+    ...(state.postedThroughDay !== undefined ? { postedThroughDay: state.postedThroughDay } : {}),
   };
 }

@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/page-shell/index";
 import { MatchDayViewer } from "@/components/basho/MatchDayViewer";
 import { CornerAdvicePanel } from "@/components/basho/CornerAdvicePanel";
+import { UpcomingTorikumiCard } from "@/components/basho/UpcomingTorikumiCard";
 import { BashoStandingsEvolution } from "@/components/basho/BashoStandingsEvolution";
 import { BASHO_CALENDAR, getDayName } from "@/presenters/uiDigest";
 import type { BashoName } from "@/engine/types/basho";
@@ -117,6 +118,11 @@ export default function BashoPage() {
           {/* Match viewer */}
           <div className="lg:col-span-3 lg:order-1 space-y-3">
             <CornerAdvicePanel advice={s.cornerAdvice} />
+            <UpcomingTorikumiCard
+              day={day}
+              postedThroughDay={bashoDigest.postedThroughDay}
+              upcomingMatches={bashoDigest.upcomingMatches ?? []}
+            />
             <MatchDayViewer
               matches={matches}
               world={world}

@@ -20,6 +20,7 @@ import {
   type MatchPairing,
 } from "@/engine/matchmaking/index";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   getDivisionExpectedSize,
@@ -126,27 +127,31 @@ export function scheduleDivisionDay(args: {
     return { scheduled: [], impact: builder.build() };
 
   let finalPairings: MatchPairing[] = [];
+  const bashoForDay: BashoState =
+    basho.day === day ? basho : { ...basho, day, currentDay: day };
 
   if (division === "makuuchi") {
     // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
     if (pool.length >= 2) {
-      finalPairings = buildSwissTorikumi(basho, pool, {
+      finalPairings = buildSwissTorikumi(bashoForDay, pool, {
         seed: `${args.seed}-swiss-makuuchi-day${day}`,
         division: "makuuchi",
+        day,
         rivalriesState: world.rivalriesState,
       });
     }
   } else if (["makushita", "sandanme", "jonidan", "jonokuchi"].includes(division)) {
     // ── NEW: 7-bout Division Swiss path ─────────────────────────────────
     if (pool.length >= 2) {
-      finalPairings = buildLowerDivisionSwiss(basho, pool, {
+      finalPairings = buildLowerDivisionSwiss(bashoForDay, pool, {
         seed: `${args.seed}-lower-swiss-${division}-day${day}`,
         division,
+        day,
       });
     }
   } else if (division === "juryo") {
     // ── Juryo with crossover from Makushita ─────────────────────────
-    const { scheduled, impact: crossoverImpact } = scheduleJuryoWithCrossover(world, basho, {
+    const { scheduled, impact: crossoverImpact } = scheduleJuryoWithCrossover(world, bashoForDay, {
       seed: args.seed,
       day,
       excludeIds: args.excludeIds,
@@ -603,7 +608,11 @@ export function scheduleAllDivisionsDay(args: {
   // §3 maezumo — shin-deshi preliminaries ride on the jonokuchi card days.
   if (divisions.includes("jonokuchi")) {
     const busy = new Set(out.flatMap((m) => [m.eastRikishiId, m.westRikishiId]));
-    out.push(...scheduleMaezumoDay(args.world, args.basho, args.day, busy));
+    const mzScheduled = scheduleMaezumoDay(args.world, args.basho, args.day, busy);
+    if (mzScheduled.length > 0) {
+      out.push(...mzScheduled);
+      builder.appendToWorldArray("basho.matches", mzScheduled);
+    }
   }
   return { scheduled: out, impact: builder.build() };
 }
@@ -690,6 +699,7 @@ export function scheduleJuryoWithCrossover(
   // performance publication).
   let finalPairings = buildLowerDivisionSwiss(basho, pool, {
     seed: `${options.seed}-juryo-crossover-day${day}`,
+    day,
   });
 
   // ── Political favor: matchmaking_avoid (day 1, one-shot) ──────────────
@@ -755,6 +765,131 @@ export function ensureDaySchedule(world: WorldState, day: number): StateImpact {
 
     builder.merge(impact);
   }
+
+  return builder.build();
+}
+
+/**
+ * §3 JSA rolling torikumi target day:
+ * - Pre-basho / Day 1: Days 1 and 2 are announced together (target = 2).
+ * - Days 2–13: pairings are announced rolling 1 day ahead (target = day + 1).
+ * - Day 14: Day 15 (Senshuraku) pairings are HELD until Day 14 bouts resolve (target = 14).
+ * - Day 15: Day 15 is posted once Day 14 concludes (target = 15).
+ */
+export function computeRollingTorikumiTargetDay(currentDay: number): number {
+  if (currentDay <= 1) return 2;
+  if (currentDay <= 13) return currentDay + 1;
+  if (currentDay === 14) return 14;
+  return 15;
+}
+
+/**
+ * Ensure the basho's torikumi is posted through the rolling target day
+ * (or an explicit `throughDay` override). Steps day-by-day so each newly
+ * posted day's pairings enter `facedSet` before the following lookahead day
+ * is paired.
+ */
+export function ensureRollingTorikumi(world: WorldState, throughDay?: number): StateImpact {
+  const builder = createImpactBuilder("ensureRollingTorikumi");
+  const basho = world.currentBasho;
+  if (!basho) return builder.build();
+
+  const currentDay = Math.max(1, basho.day ?? 1);
+  const targetDay = Math.min(15, throughDay ?? computeRollingTorikumiTargetDay(currentDay));
+  let runningWorld = world;
+  let maxPosted = basho.postedThroughDay ?? 0;
+
+  for (let d = currentDay; d <= targetDay; d++) {
+    const currentBasho = runningWorld.currentBasho;
+    if (!currentBasho) break;
+    const alreadyScheduled = currentBasho.matches.some((m) => m.day === d);
+    if (!alreadyScheduled && needsScheduleForDay("makuuchi", d)) {
+      const dayImpact = ensureDaySchedule(runningWorld, d);
+      builder.merge(dayImpact);
+      runningWorld = resolveImpacts(runningWorld, [dayImpact]);
+    }
+    if (d > maxPosted) maxPosted = d;
+  }
+
+  if (basho.postedThroughDay !== maxPosted && maxPosted > 0) {
+    builder.updateWorldField("currentBasho", {
+      ...basho,
+      postedThroughDay: maxPosted,
+    });
+  }
+
+  return builder.build();
+}
+
+/**
+ * §3 rolling torikumi withdrawal reconciliation:
+ * When a rikishi withdraws (kyūjō), his bout on the current day (`m.day <= basho.day`)
+ * stays on the card so his opponent receives a canonical fusenshō (walkover),
+ * while any already-posted future day (`m.day > basho.day`) containing him is
+ * re-paired without him so he does not produce a second fusenshō.
+ */
+export function reconcileFutureScheduleForWithdrawals(
+  world: WorldState,
+  withdrawnRikishiId: string
+): StateImpact {
+  const builder = createImpactBuilder("reconcileFutureScheduleForWithdrawals");
+  const basho = world.currentBasho;
+  if (!basho || !Array.isArray(basho.matches)) return builder.build();
+
+  const currentDay = basho.day ?? 1;
+  const affectedFutureDays = new Set<number>();
+  for (const m of basho.matches) {
+    if (
+      m.day > currentDay &&
+      !m.result &&
+      (m.eastRikishiId === withdrawnRikishiId || m.westRikishiId === withdrawnRikishiId)
+    ) {
+      affectedFutureDays.add(m.day);
+    }
+  }
+  if (affectedFutureDays.size === 0) return builder.build();
+
+  const sortedDays = [...affectedFutureDays].sort((a, b) => a - b);
+  let retainedMatches = basho.matches.filter(
+    (m) => !(affectedFutureDays.has(m.day) && !m.result)
+  );
+
+  const nextRikishi = new Map(world.rikishi);
+  const target = nextRikishi.get(withdrawnRikishiId);
+  if (target) {
+    nextRikishi.set(withdrawnRikishiId, { ...target, isKyujo: true });
+  }
+
+  let runningWorld: WorldState = {
+    ...world,
+    rikishi: nextRikishi,
+    currentBasho: { ...basho, matches: retainedMatches },
+  };
+
+  for (const d of sortedDays) {
+    const { scheduled, impact } = scheduleAllDivisionsDay({
+      world: runningWorld,
+      basho: runningWorld.currentBasho ?? basho,
+      day: d,
+      seed: world.seed,
+    });
+    for (const added of impact.collections?.rikishiToAdd ?? []) {
+      builder.addRikishi(added);
+    }
+    retainedMatches = [...retainedMatches, ...scheduled];
+    runningWorld = {
+      ...resolveImpacts(runningWorld, [impact]),
+      currentBasho: {
+        ...(runningWorld.currentBasho ?? basho),
+        matches: retainedMatches,
+      },
+    };
+  }
+
+  builder.updateWorldField("currentBasho", {
+    ...basho,
+    matches: retainedMatches,
+  });
 
   return builder.build();
 }

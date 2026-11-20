@@ -398,6 +398,7 @@ export function buildLowerDivisionSwiss(
     seed: string;
     division?: Division;
     rules?: Partial<MatchmakingRules>;
+    day?: number;
   }
 ): MatchPairing[] {
   const pool: Rikishi[] = [];
@@ -409,7 +410,7 @@ export function buildLowerDivisionSwiss(
   }
 
   const facedSet = buildFacedSet(basho);
-  const day = basho.day ?? 1;
+  const day = options.day ?? basho.day ?? 1;
 
   let raw: MatchPairing[];
   if (day <= 2) {

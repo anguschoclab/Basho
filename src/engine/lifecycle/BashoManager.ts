@@ -14,7 +14,7 @@
  */
 
 import { initializeBasho } from "@/engine/generation/WorldFactory";
-import { ensureDaySchedule } from "@/engine/calendar/schedule";
+import { ensureRollingTorikumi } from "@/engine/calendar/schedule";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoName } from "@/engine/types/basho";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -52,8 +52,8 @@ export function buildStartBashoImpact(world: WorldState, bashoName?: BashoName):
   // Initialize new basho state
   const basho = initializeBasho(world, name);
 
-  // Ensure initial schedule is available
-  const scheduleImpact = ensureDaySchedule(world, basho.day);
+  // §3 JSA rolling torikumi — Days 1 and 2 are announced together pre-basho.
+  const scheduleImpact = ensureRollingTorikumi({ ...world, currentBasho: basho });
 
   // Build impact with world field updates and queued event
   const builder = createImpactBuilder("buildStartBashoImpact")

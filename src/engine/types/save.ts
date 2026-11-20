@@ -82,6 +82,8 @@ export interface SerializedBashoState {
   dohyoCondition?: BashoState["dohyoCondition"];
   /** §3 maezumo preliminary roster — mid-basho saves keep enrolled shin-deshi. */
   maezumo?: BashoState["maezumo"];
+  /** §3 rolling torikumi — highest day whose schedule has been posted. */
+  postedThroughDay?: number;
 }
 
 /** Defines the structure for serialized world state. */

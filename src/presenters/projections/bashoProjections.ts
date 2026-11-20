@@ -25,21 +25,16 @@ import { isNakabiDay } from "@/engine/basho/NakabiService";
 import { getRikishiByDivision, getPlayerHeya } from "@/engine/core/queries";
 import { isSanyakuBout, KORE_YORI_SANYAKU_ANNOUNCEMENT } from "@/constants/engine/koreYoriSanyaku";
 
-/**
- * Project tournament live data for BashoPage.
- */
-export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
-  const basho = world.currentBasho;
-  if (!basho) return null;
-
-  const playerHeya = getPlayerHeya(world);
-  const playerRikishiIds = new Set<string>(playerHeya?.rikishiIds ?? []);
-
-  const day = basho.day;
+function projectDayMatches(
+  world: WorldState,
+  allMatches: NonNullable<WorldState["currentBasho"]>["matches"],
+  targetDay: number,
+  playerRikishiIds: ReadonlySet<string>
+): { matches: BoutMatchUI[]; completedBouts: number } {
   const matches: BoutMatchUI[] = [];
   let completedBouts = 0;
-  for (const match of basho.matches || []) {
-    if (match.day !== day) continue;
+  for (const match of allMatches || []) {
+    if (match.day !== targetDay) continue;
     const east = world.rikishi.get(match.eastRikishiId);
     const west = world.rikishi.get(match.westRikishiId);
     if (!east || !west) continue;
@@ -68,6 +63,33 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
     });
     if (match.result) completedBouts++;
   }
+  return { matches, completedBouts };
+}
+
+/**
+ * Project tournament live data for BashoPage.
+ */
+export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
+  const basho = world.currentBasho;
+  if (!basho) return null;
+
+  const playerHeya = getPlayerHeya(world);
+  const playerRikishiIds = new Set<string>(playerHeya?.rikishiIds ?? []);
+
+  const day = basho.day;
+  const { matches, completedBouts } = projectDayMatches(
+    world,
+    basho.matches || [],
+    day,
+    playerRikishiIds
+  );
+  const { matches: upcomingMatches } =
+    day < 15
+      ? projectDayMatches(world, basho.matches || [], day + 1, playerRikishiIds)
+      : { matches: [] as BoutMatchUI[] };
+  const postedThroughDay =
+    basho.postedThroughDay ??
+    (basho.matches || []).reduce((max, m) => (m.day > max ? m.day : max), day);
 
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
@@ -119,5 +141,7 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
       completedBouts < matches.length && isSanyakuBout(completedBouts, matches.length)
         ? KORE_YORI_SANYAKU_ANNOUNCEMENT
         : undefined,
+    postedThroughDay,
+    upcomingMatches,
   };
 }

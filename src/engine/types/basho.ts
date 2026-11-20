@@ -433,6 +433,8 @@ export interface BashoState {
 
   /** §3 maezumo preliminary state — absent when no shin-deshi enrolled. */
   maezumo?: MaezumoState;
+  /** §3 rolling torikumi — highest basho day (1-15) whose pairings have been posted. */
+  postedThroughDay?: number;
 
   /** True for exhibition/jungyo basho — results do not count toward records or banzuke. */
   isExhibition?: boolean;

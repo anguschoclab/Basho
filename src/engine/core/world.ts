@@ -25,7 +25,7 @@ import { getActiveRikishi, getHeyaRoster } from "@/engine/core/queries";
 // New Lifecycle Services
 import * as bashoManager from "@/engine/lifecycle/BashoManager";
 import * as competition from "@/engine/lifecycle/CompetitionService";
-import { ensureDaySchedule } from "@/engine/calendar/schedule";
+import { ensureDaySchedule, ensureRollingTorikumi } from "@/engine/calendar/schedule";
 import { resolveMorningOfDay } from "@/engine/basho/morningOfDay";
 import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
 
@@ -85,15 +85,21 @@ export function advanceBashoDay(world: WorldState): WorldState {
   if (recapImpact) currentWorld = resolveImpacts(currentWorld, [recapImpact]);
 
   // Update basho day immutably via impacts.
-  // boutTactics are per-day — clear them so stale entries can't leak into the
-  // next day's bouts (V5-B09).
+  // Preserve boutTactics queued for already-posted future bouts (day >= nextDay),
+  // while clearing stale tactics from resolved/past days (V5-B09 + §3 rolling torikumi).
+  const futureBoutIds = new Set(
+    basho.matches.filter((m) => m.day >= nextDay && !m.result).map((m) => m.boutId)
+  );
+  const preservedTactics = Object.fromEntries(
+    Object.entries(currentWorld.boutTactics ?? {}).filter(([id]) => futureBoutIds.has(id))
+  );
   const dayUpdateImpact = createImpactBuilder("advanceBashoDay")
     .updateWorldField("currentBasho", {
       ...basho,
       day: nextDay,
       currentDay: nextDay,
     })
-    .updateWorldField("boutTactics", {})
+    .updateWorldField("boutTactics", preservedTactics)
     .build();
   currentWorld = resolveImpacts(currentWorld, [dayUpdateImpact]);
 
@@ -105,6 +111,12 @@ export function advanceBashoDay(world: WorldState): WorldState {
     // kyujo_decisions for injured entrants on the freshly scheduled card.
     // Without this the interactive path never evaluates hurt rikishi.
     currentWorld = resolveImpacts(currentWorld, [resolveMorningOfDay(currentWorld)]);
+
+    // §3 JSA rolling torikumi — post lookahead pairings (D+1 on Days 1–13;
+    // holds Day 15 on Day 14 until Day 14 bouts conclude). Runs after
+    // resolveMorningOfDay so morning withdrawals give a fusenshō today and
+    // are excluded from tomorrow's posted card.
+    currentWorld = resolveImpacts(currentWorld, [ensureRollingTorikumi(currentWorld)]);
   }
 
   const eventImpact = createImpactBuilder("advanceDay")

@@ -58,6 +58,10 @@ export interface BashoUIDigest {
   isNakabiDay: boolean;
   seasonalFlavor?: string;
   sanyakuCallout?: string;
+  /** §3 rolling torikumi — highest day whose schedule has been posted. */
+  postedThroughDay?: number;
+  /** §3 rolling torikumi — next day's posted matches (empty on Day 14 while Day 15 is held). */
+  upcomingMatches?: BoutMatchUI[];
 }
 
 // ── Heya UI Types ─────────────────────────────────────────────────────────────
