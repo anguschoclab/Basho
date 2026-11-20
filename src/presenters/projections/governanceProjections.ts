@@ -182,19 +182,22 @@ function projectRikishiCouncil(world: WorldState, heya: Heya): RikishiCouncilPro
     council && council.delegates.length > 0
       ? council.delegates
       : electRikishiCouncilDelegates(world).delegates;
+  const heyasMap = world.heyas instanceof Map ? world.heyas : undefined;
   const delegates = rawDelegates.map((d) => ({
     ...d,
-    heyaName: world.heyas.get(d.heyaId)?.name,
+    heyaName: heyasMap?.get(d.heyaId)?.name,
     isPlayerHeya: d.heyaId === heya.id,
   }));
   const kaicho = delegates.find((d) => d.role === "kaicho") ?? delegates[0];
+  const playerHasSekitori =
+    heyasMap && world.rikishi instanceof Map ? getSekitoriInHeya(world, heya.id) > 0 : false;
   return {
     kaicho,
     delegates,
     activePolicies: council?.activePolicies ?? [],
     pendingMotions: council?.pendingMotions ?? [],
     recentHistory: (council?.history ?? []).slice(0, 4),
-    playerHasSekitori: getSekitoriInHeya(world, heya.id) > 0,
+    playerHasSekitori,
   };
 }
 

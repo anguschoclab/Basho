@@ -192,7 +192,7 @@ function recordPlayoffHighlight(
     opponent: loser.id,
     description: `Playoff win over ${loser.shikona}`,
   });
-  world.rikishi.set(updated.id, updated);
+  world.rikishi.set(updated.id, updated); // @world-builder — intentional highlight write on playoff path
 }
 
 /** Wraps a resolved playoff bout's pbp with tomoe/bracket framing lines. */

@@ -24,9 +24,10 @@ export function RikishiCouncilPanel({
   council,
 }: {
   heyaId: string;
-  council: RikishiCouncilProjection;
+  council?: RikishiCouncilProjection;
 }) {
   const sendCommand = useGameStore((s) => s.sendCommand);
+  if (!council) return null;
   const pendingTypes = new Set(council.pendingMotions.map((m) => m.type));
 
   const handlePropose = (motionType: RikishiCouncilMotionType) => {

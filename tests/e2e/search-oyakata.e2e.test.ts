@@ -282,8 +282,29 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
       ...movedPools.high_school,
       candidatesVisible: [cid],
     };
+    const toArr = (c: any): any[] =>
+      c instanceof Map ? [...c.values()] : Object.values(c ?? {});
+    const allOyakata = toArr(w.oyakata);
+    const uniqueName = (list: any[], self: any) =>
+      list.filter((x: any) => x.name === self.name).length === 1;
+    const targetNpcO = allOyakata.find(
+      (o: any) =>
+        o.heyaId !== w.playerHeyaId && o.name && !o.isEmeritus && uniqueName(allOyakata, o)
+    );
+    const prevScouting = w.playerKnowledge?.scouting ?? {};
+    const nextScouting = targetNpcO
+      ? Object.fromEntries(
+          Object.entries<any>(prevScouting).map(([k, v]) => [
+            k,
+            v?.publicInfo?.heyaId === targetNpcO.heyaId ? { ...v, timesObserved: 0 } : v,
+          ])
+        )
+      : prevScouting;
     const patched = {
       ...w,
+      ...(w.playerKnowledge
+        ? { playerKnowledge: { ...w.playerKnowledge, scouting: nextScouting } }
+        : {}),
       talentPool: {
         ...tp,
         candidates: {

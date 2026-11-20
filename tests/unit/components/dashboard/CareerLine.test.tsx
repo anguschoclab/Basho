@@ -122,10 +122,15 @@ describe("StableWidget CareerLine", () => {
         ["n3", 70],
         ["n4", 60],
         ["n5", 55],
+        ["n6", 54],
+        ["n7", 53],
+        ["n8", 52],
+        ["n9", 51],
+        ["n10", 50],
       ],
     });
     const { getByText } = renderWidget(world);
-    expect(getByText(/JSA Rank 6/)).toBeTruthy();
+    expect(getByText(/JSA Rank 11/)).toBeTruthy();
     expect(getByText(/Next:/)).toBeTruthy();
   });
 

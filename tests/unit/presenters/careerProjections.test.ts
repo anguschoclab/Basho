@@ -61,7 +61,12 @@ describe("projectManagerCareer", () => {
       makeMockHeya("n2", { politicalCapital: 80 }),
       makeMockHeya("n3", { politicalCapital: 70 }),
       makeMockHeya("n4", { politicalCapital: 60 }),
-      makeMockHeya("n5", { politicalCapital: 50 }),
+      makeMockHeya("n5", { politicalCapital: 55 }),
+      makeMockHeya("n6", { politicalCapital: 54 }),
+      makeMockHeya("n7", { politicalCapital: 53 }),
+      makeMockHeya("n8", { politicalCapital: 52 }),
+      makeMockHeya("n9", { politicalCapital: 51 }),
+      makeMockHeya("n10", { politicalCapital: 50 }),
     ]);
     const p2 = projectManagerCareer(world2, "me" as never);
     expect(p2.election.boardSeat).toBe(false);

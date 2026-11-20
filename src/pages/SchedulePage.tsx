@@ -53,7 +53,7 @@ export default function SchedulePage() {
     });
   }, [currentBasho, selectedDay, selectedDivision, world]);
 
-  const isValidFightDay = needsScheduleForDay(selectedDivision, selectedDay);
+  const isValidFightDay = needsScheduleForDay(selectedDivision, selectedDay) || matches.length > 0;
 
   if (!world || !currentBasho) {
     return (

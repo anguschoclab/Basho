@@ -108,6 +108,9 @@ export function electRikishiCouncilDelegates(world: WorldState): {
 } {
   const makuuchi: Rikishi[] = [];
   const juryo: Rikishi[] = [];
+  if (!world.activeRikishiIds || !(world.rikishi instanceof Map)) {
+    return { delegates: [] };
+  }
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
     if (!r || r.isRetired || r.isMaezumo || r.isBanzukeGai) continue;
