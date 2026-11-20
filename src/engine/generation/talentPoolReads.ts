@@ -16,6 +16,42 @@ import { getHeya, getRikishi } from "@/engine/core/queries";
 // READ OPERATORS
 // ============================================
 
+const ORIGIN_TO_EXHIBITION_REGION: Record<string, string> = {
+  Mongolia: "Mongolia",
+  Georgia: "Georgia",
+  Russia: "Europe",
+  Bulgaria: "Europe",
+  Estonia: "Europe",
+  Ukraine: "Europe",
+  Hungary: "Europe",
+  "Czech Republic": "Europe",
+  Brazil: "Americas",
+  USA: "Americas",
+  Hawaii: "Americas",
+  Canada: "Americas",
+  Argentina: "Americas",
+  Kazakhstan: "East_Asia",
+  China: "East_Asia",
+  "South Korea": "East_Asia",
+  Taiwan: "East_Asia",
+};
+
+/**
+ * Resolve a foreign candidate's effective regional presence score.
+ * Checks both the exact `originRegion` string (e.g. "Mongolia") and its
+ * canonical `ExhibitionRegion` bucket (e.g. "Russia" -> "Europe").
+ */
+export function resolveForeignRegionalPresence(
+  presence: Record<string, number> | undefined,
+  originRegion: string
+): number {
+  if (!presence) return 0;
+  const direct = presence[originRegion] ?? 0;
+  const mappedRegion = ORIGIN_TO_EXHIBITION_REGION[originRegion];
+  const mapped = mappedRegion ? (presence[mappedRegion] ?? 0) : 0;
+  return Math.max(direct, mapped);
+}
+
 /**
  * Lists candidates currently visible in a specific pool.
  */
@@ -33,10 +69,10 @@ export function listVisibleCandidates(
   const heya = isForeignGated ? getHeya(world, world.playerHeyaId ?? "") : undefined;
 
   if (isForeignGated && heya) {
-    const presence = heya.regionalPresence || {};
+    const presence = heya.regionalPresence;
     for (const id of pool.candidatesVisible) {
       const candidate = tp.candidates[id];
-      if (candidate && (presence[candidate.originRegion] || 0) >= 40) {
+      if (candidate && resolveForeignRegionalPresence(presence, candidate.originRegion) >= 40) {
         candidates.push(candidate);
       }
     }

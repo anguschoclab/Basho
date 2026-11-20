@@ -1,5 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
-import { createNewGame, dismissOnboardingTour, resolveCrisisIfPresent } from "./helpers";
+import {
+  createNewGame,
+  dismissOnboardingTour,
+  resolveCrisisIfPresent,
+  setWorldSeed,
+} from "./helpers";
 
 /**
  * E2E coverage for the WS-search expansion:
@@ -65,6 +70,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   test.setTimeout(300000);
   await page.goto("/");
   await expect(page.locator("h1").first()).toContainText(/Basho/i, { timeout: 60000 });
+  await setWorldSeed(page, "search-oyakata-e2e-v1");
   await createNewGame(page);
   await dismissOnboardingTour(page);
 
@@ -194,10 +200,12 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   for (let i = 0; i < 3; i++) {
     if (!(await resolveCrisisIfPresent(page))) break;
   }
-  await page.evaluate(() => {
+  const sentResolutions = await page.evaluate(() => {
     const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
     const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
     const send = store?.getState?.().sendCommand;
+    const beforeVer = store?.getState?.().worldVersion ?? 0;
+    let sent = 0;
     send?.({ type: "RESUME_SIM" });
     for (const d of w?.pendingDecisions ?? []) {
       if (d?.required && d?.options?.[0]?.id) {
@@ -206,10 +214,26 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
           decisionId: d.id,
           optionId: d.options[0].id,
         });
+        sent++;
       }
     }
+    return { beforeVer, sent };
   });
+  if (sentResolutions.sent > 0) {
+    await page.waitForFunction(
+      (prevVer: number) => {
+        const st = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.();
+        const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+        const reqLeft = (w?.pendingDecisions ?? []).filter((d: any) => d?.required).length;
+        return (st?.worldVersion ?? 0) > prevVer && !st?.pendingTick && reqLeft === 0;
+      },
+      sentResolutions.beforeVer,
+      { timeout: 30000 }
+    );
+  }
   await idle();
+  // Let any trailing worker sync / startTransition settle before grafting.
+  await page.waitForTimeout(500);
 
   // 3. Graft a searchable prospect into the live world. No canonical command
   //    sequence produces one in a fresh world: the emergency demographic dump
@@ -320,6 +344,9 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
     console.log("GRAFT-DIAG", JSON.stringify(diag));
     throw err;
   }
+  // Wait past autosaveWithSignal's 2000ms debounce so the grafted world flushes
+  // to persistence BEFORE Section 3/5 trigger full document reloads via page.goto.
+  await page.waitForTimeout(2500);
 
   // Pull real entity handles out of the live world (Maps on oyakata/staff,
   // Record on talentPool.candidates — normalize both).
@@ -489,6 +516,9 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   // ── 5. Prospects bucket → /jsa/talent deep link ──
   if (fx.candidateId && fx.candidateName && fx.candidatePool) {
     const graftedCid2 = fx.candidateId;
+    // Wait past autosaveWithSignal's 2000ms debounce so the grafted world is
+    // flushed to persistence before the full document reload below.
+    await page.waitForTimeout(2500);
     await page.goto("/dashboard");
     // The goto is a full reload — the world only returns once useRequireWorld
     // restores the autosave. The graft must survive the save/load round-trip.
@@ -513,6 +543,132 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
     expect(page.url()).toContain(`focus=${fx.candidateId}`);
     expect(page.url()).toContain(`pool=${fx.candidatePool}`);
   }
+
+  // ── 5b. Foreign-pool Prospects gating + search + deep link (O6) ──
+  // Verify foreign-pool candidates are hidden while regionalPresence < 40,
+  // become searchable once regionalPresence >= 40 (using country -> ExhibitionRegion
+  // mapping e.g. Russia -> Europe), survive autosave reload, and deep-link to
+  // /jsa/talent?pool=foreign&focus=...
+  await idle();
+  const foreignGraft = await page.evaluate((excludeId: string | null) => {
+    const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+    const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
+    const tp = w?.talentPool;
+    const excludeName = excludeId ? tp?.candidates?.[excludeId]?.name : null;
+    const cid = Object.keys(tp?.candidates ?? {}).find(
+      (id) => id !== excludeId && tp?.candidates?.[id]?.name && tp.candidates[id].name !== excludeName
+    );
+    if (!tp || !cid) return null;
+    const cand = tp.candidates[cid];
+    const movedPools = Object.fromEntries(
+      Object.entries<any>(tp.pools).map(([pt, p]: [string, any]) => [
+        pt,
+        {
+          ...p,
+          candidatesVisible: (p.candidatesVisible ?? []).filter((id: string) => id !== cid),
+          candidatesHidden: (p.candidatesHidden ?? []).filter((id: string) => id !== cid),
+        },
+      ])
+    );
+    movedPools.foreign = {
+      ...movedPools.foreign,
+      candidatesVisible: [...(movedPools.foreign?.candidatesVisible ?? []), cid],
+    };
+    const playerHeya = w.heyas instanceof Map ? w.heyas.get(w.playerHeyaId) : w.heyas?.[w.playerHeyaId];
+    const nextHeya = { ...playerHeya, regionalPresence: { Europe: 0 } };
+    const nextHeyas =
+      w.heyas instanceof Map
+        ? new Map(w.heyas).set(w.playerHeyaId, nextHeya)
+        : { ...w.heyas, [w.playerHeyaId]: nextHeya };
+    const patched = {
+      ...w,
+      heyas: nextHeyas,
+      talentPool: {
+        ...tp,
+        candidates: {
+          ...tp.candidates,
+          [cid]: {
+            ...cand,
+            originRegion: "Russia",
+            nationality: "Russia",
+            visibilityBand: "public",
+          },
+        },
+        pools: movedPools,
+      },
+    };
+    store?.getState?.().onWorldUpdated?.(patched);
+    const accepted = store?.getState?.().sendCommand?.({ type: "LOAD_WORLD", world: patched });
+    return { cid, name: cand.name as string, accepted };
+  }, fx.candidateId);
+  expect(foreignGraft, "foreign graft candidate exists").toBeTruthy();
+  expect((foreignGraft as { accepted?: boolean }).accepted).not.toBe(false);
+  const fCid = (foreignGraft as { cid: string }).cid;
+  const fName = (foreignGraft as { name: string }).name;
+
+  await page.waitForFunction(
+    (cid: string) => {
+      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      return (w?.talentPool?.pools?.foreign?.candidatesVisible ?? []).includes(cid);
+    },
+    fCid,
+    { timeout: 10000 }
+  );
+  // Flush autosave before page.goto("/dashboard") below.
+  await page.waitForTimeout(2500);
+
+  // Below threshold (< 40): foreign prospect must stay hidden from global search.
+  await page.goto("/dashboard");
+  await page.waitForFunction(
+    () => !!(window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__?.dayIndexGlobal,
+    { timeout: 15000 }
+  );
+  await searchFor(fName);
+  const hiddenOpt = await optionIdInGroup(page, "Prospects", fName);
+  expect(hiddenOpt, "foreign prospect hidden when regionalPresence < 40").toBeNull();
+
+  // Raise Europe regionalPresence >= 40, persist through reload, and verify search + deep-link.
+  await idle();
+  const unlocked = await page.evaluate(() => {
+    const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+    const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
+    const playerHeya = w.heyas instanceof Map ? w.heyas.get(w.playerHeyaId) : w.heyas?.[w.playerHeyaId];
+    const nextHeya = {
+      ...playerHeya,
+      regionalPresence: { ...(playerHeya?.regionalPresence ?? {}), Europe: 45 },
+    };
+    const nextHeyas =
+      w.heyas instanceof Map
+        ? new Map(w.heyas).set(w.playerHeyaId, nextHeya)
+        : { ...w.heyas, [w.playerHeyaId]: nextHeya };
+    const patched = { ...w, heyas: nextHeyas };
+    store?.getState?.().onWorldUpdated?.(patched);
+    return store?.getState?.().sendCommand?.({ type: "LOAD_WORLD", world: patched });
+  });
+  expect(unlocked).not.toBe(false);
+  await page.waitForFunction(
+    () => {
+      const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
+      const h = w?.heyas instanceof Map ? w.heyas.get(w.playerHeyaId) : w?.heyas?.[w?.playerHeyaId];
+      return (h?.regionalPresence?.Europe ?? 0) >= 40;
+    },
+    { timeout: 10000 }
+  );
+  // Wait past autosaveWithSignal's 2000ms debounce before full reload.
+  await page.waitForTimeout(2500);
+
+  await page.goto("/dashboard");
+  await page.waitForFunction(
+    () => !!(window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__?.dayIndexGlobal,
+    { timeout: 15000 }
+  );
+  await searchFor(fName);
+  await expect(dropdown.getByText("Prospects", { exact: true })).toBeVisible();
+  await clickGroupOption("Prospects", fName);
+  await page.waitForURL(/\/jsa\/talent/, { timeout: 10000 });
+  expect(page.url()).toContain(`focus=${fCid}`);
+  expect(page.url()).toContain("pool=foreign");
+  await expect(page.locator(`#candidate-${fCid}`)).toBeVisible({ timeout: 10000 });
 
   // ── 6. Search group-header typography (mono section labels) ──
   await page.goto("/dashboard");

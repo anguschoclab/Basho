@@ -15,6 +15,7 @@ import { clampInt } from "@/engine/utils/math";
 import { isForeign } from "@/engine/utils/identity";
 import { ensureTalentPoolState } from "@/engine/generation/TalentPoolStateService";
 import { getHeya } from "@/engine/core/queries";
+import { resolveForeignRegionalPresence } from "@/engine/generation/talentPoolReads";
 import { getHeyaStaffBonuses } from "@/engine/economy/staff";
 
 // ============================================
@@ -153,7 +154,7 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
   // Phase 5 Depth: Academy Advanced Discovery
   if (world.playerHeyaId && isForeign(candidate)) {
     const heya = getHeya(world, world.playerHeyaId);
-    const presence = heya?.regionalPresence?.[candidate.originRegion] || 0;
+    const presence = resolveForeignRegionalPresence(heya?.regionalPresence, candidate.originRegion);
     if (presence >= 80) {
       // Academy bonus: reveal more intel automatically (+30 effective scouting)
       level = Math.min(100, level + 30);
