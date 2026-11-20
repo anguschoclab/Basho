@@ -28,6 +28,7 @@ import type { Faction, IchimonName } from "@/engine/types/economy";
 import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 import { getBashoNumber } from "@/engine/calendar/calendar";
 import { rollDohyoCondition } from "@/engine/basho/dohyo";
+import { initMaezumoState } from "@/engine/basho/maezumoPrelims";
 import { createDefaultRecords } from "@/engine/types/records";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { RivalryService } from "@/engine/narrative/RivalryService";
@@ -207,6 +208,8 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
     rngFromSeed(world.seed, "dohyo", `${world.year}-${name}`),
     name
   );
+  // §3 maezumo — enroll every pending shin-deshi (absent when none).
+  const maezumo = initMaezumoState(world);
   return {
     id: rng.uuid("BS"),
     year: world.year,
@@ -219,6 +222,7 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
     isActive: true,
     kinboshiThisBasho: {},
     dohyoCondition,
+    ...(maezumo ? { maezumo } : {}),
   };
 }
 

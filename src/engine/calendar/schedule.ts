@@ -37,6 +37,7 @@ import { generateFullRikishi } from "@/engine/generation/CandidateBuilder";
 import { SeededRNG } from "@/engine/core/rng";
 import type { DramaContext, DramaLabel } from "@/engine/matchmaking/DramaMatchmaker";
 import { toKeyedMap } from "@/engine/utils/index";
+import { isEphemeralMaezumoEntrant, scheduleMaezumoDay } from "@/engine/basho/maezumoPrelims";
 
 // === DRAMA CONTEXT EXTRACTION ===
 
@@ -298,6 +299,7 @@ function mintMaezumoEntrant(world: WorldState, basho: BashoState, index: number)
   return {
     ...entrant,
     isMaezumo: true,
+    isEphemeralMaezumo: true,
     // Real maezumo entrants are unattached (no stable yet) — a fake "maezumo"
     // heyaId produces dangling refs across requests/events/NPC posture. The
     // field is a required string, so "" is the unattached convention (the
@@ -488,7 +490,9 @@ function resolveJonokuchiFill(
   const existing: Rikishi[] = [];
   let liveMaezumo = 0;
   for (const r of world.rikishi.values()) {
-    if (!r.isMaezumo || r.isRetired) continue;
+    // Only minted fillers balance a card — enrolled shin-deshi fight their
+    // own maezumo preliminary (maezumoPrelims.ts).
+    if (!isEphemeralMaezumoEntrant(r) || r.isRetired) continue;
     liveMaezumo++;
     if (!r.injured && !r.isKyujo && !taken.has(r.id)) existing.push(r);
   }
@@ -595,6 +599,11 @@ export function scheduleAllDivisionsDay(args: {
     });
     out.push(...scheduled);
     builder.merge(impact);
+  }
+  // §3 maezumo — shin-deshi preliminaries ride on the jonokuchi card days.
+  if (divisions.includes("jonokuchi")) {
+    const busy = new Set(out.flatMap((m) => [m.eastRikishiId, m.westRikishiId]));
+    out.push(...scheduleMaezumoDay(args.world, args.basho, args.day, busy));
   }
   return { scheduled: out, impact: builder.build() };
 }

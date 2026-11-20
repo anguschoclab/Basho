@@ -61,9 +61,10 @@ export function materializeCandidateToRikishiInternal(
       if (maezumoResult.rankNumber !== undefined) {
         rikishi.rankNumber = maezumoResult.rankNumber;
       }
-      if (maezumoResult.maezumoCompleted) {
-        rikishi.maezumoCompleted = true;
-      }
+      // §3 maezumo — the shin-deshi is unranked until he fights his
+      // preliminary next basho and graduates onto the jonokuchi banzuke.
+      rikishi.isMaezumo = true;
+      rikishi.maezumoCompleted = false;
     }
 
     mintFamilyBonds(world, builder, rikishi, candidate, heyaId, rng);

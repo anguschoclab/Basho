@@ -422,7 +422,7 @@ function normalizeStandingEntries(
   for (const id of eligibleIds) {
     if (standingIds.has(id)) continue;
     const r = getRikishi(world, id);
-    if (!r) continue;
+    if (!r || r.isMaezumo) continue;
     normalizedEntries.push([id, { wins: 0, losses: 0, absences: getTotalBashodays(r.division) }]);
   }
   return normalizedEntries;

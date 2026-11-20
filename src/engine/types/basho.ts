@@ -311,6 +311,23 @@ export interface MatchSchedule {
   crossDivisionCallupId?: Id;
   /** W L — hachiban-zumo marker: id of the rikishi fighting his 8th bout. */
   eighthBoutForRikishiId?: Id;
+  /**
+   * §3 maezumo — a preliminary bout between unranked shin-deshi. Never
+   * writes standings/career/records; tallied only for graduation order.
+   */
+  isMaezumoBout?: boolean;
+}
+
+/**
+ * §3 maezumo — the preliminary bouts unranked new recruits fight on days
+ * 3/5/7 before appearing at the foot of the next jonokuchi banzuke.
+ * Tallies are derived from `matches` flagged `isMaezumoBout`.
+ */
+export interface MaezumoState {
+  /** Enrolled shin-deshi for this basho (sorted, deterministic). */
+  entrantIds: Id[];
+  /** Entrants who were healthy but unpaired on a maezumo day (odd count). */
+  byes?: Record<Id, number>;
 }
 
 /**
@@ -413,6 +430,9 @@ export interface BashoState {
 
   /** W O — mid-basho kyujo re-entry (sai-shutsujo): rikishi ID -> basho day they returned. */
   reenteredOnDay?: Record<Id, number>;
+
+  /** §3 maezumo preliminary state — absent when no shin-deshi enrolled. */
+  maezumo?: MaezumoState;
 
   /** True for exhibition/jungyo basho — results do not count toward records or banzuke. */
   isExhibition?: boolean;

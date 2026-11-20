@@ -80,6 +80,8 @@ export interface SerializedBashoState {
   /** Venue clay condition (W J) — must round-trip so mid-basho saves keep
    *  the same bout modifiers. */
   dohyoCondition?: BashoState["dohyoCondition"];
+  /** §3 maezumo preliminary roster — mid-basho saves keep enrolled shin-deshi. */
+  maezumo?: BashoState["maezumo"];
 }
 
 /** Defines the structure for serialized world state. */

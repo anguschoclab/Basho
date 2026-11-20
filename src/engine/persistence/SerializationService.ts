@@ -87,6 +87,7 @@ function serializeBashoState(basho: BashoState): SerializedBashoState {
     ...(basho.isExhibition ? { isExhibition: true } : {}),
     ...(basho.exhibitionName ? { exhibitionName: basho.exhibitionName } : {}),
     ...(basho.dohyoCondition ? { dohyoCondition: basho.dohyoCondition } : {}),
+    ...(basho.maezumo ? { maezumo: basho.maezumo } : {}),
   };
 }
 
@@ -111,6 +112,7 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
     exhibitionName: basho.exhibitionName,
     isActive: basho.isActive ?? true,
     dohyoCondition: basho.dohyoCondition,
+    ...(basho.maezumo ? { maezumo: basho.maezumo } : {}),
   };
 }
 

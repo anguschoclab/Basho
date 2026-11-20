@@ -135,6 +135,12 @@ export interface Rikishi {
    * and career records; only ever appears via explicit cross-division callup.
    */
   isMaezumo?: boolean;
+  /**
+   * §3 maezumo — true only for minted filler entrants (never on the heya
+   * roster). Real shin-deshi carry `isMaezumo` without this flag until they
+   * graduate onto the jonokuchi banzuke.
+   */
+  isEphemeralMaezumo?: boolean;
   kyujoReason?: "voluntary" | "injury" | "personal";
   medicalCertificate?: {
     injury: string;

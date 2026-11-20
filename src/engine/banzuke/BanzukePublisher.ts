@@ -13,6 +13,7 @@ import { applyMovementEvents } from "@/engine/banzuke/publish/movements";
 import { recordPromotionHistory, updatePromotionTracking } from "@/engine/banzuke/publish/records";
 import { applyNewRanks } from "@/engine/banzuke/publish/newRanks";
 import { persistBanzukeSnapshot } from "@/engine/banzuke/publish/snapshot";
+import { graduateMaezumoRikishi } from "@/engine/basho/maezumoPrelims";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -64,7 +65,9 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const currentBanzukeList: BanzukeEntry[] = [];
   for (const rikishiId of world.activeRikishiIds) {
     const r = getRikishi(world, rikishiId);
-    if (!r) continue;
+    // Unranked maezumo entrants (shin-deshi + odd-card fillers) are not on
+    // the banzuke; shin-deshi graduate onto it below.
+    if (!r || r.isMaezumo) continue;
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,
@@ -76,13 +79,17 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
   const perfMap = new Map<string, (typeof performanceList)[number]>();
   for (const p of performanceList) perfMap.set(p.rikishiId, p);
-  const result = updateBanzuke(
+  const ranked = updateBanzuke(
     currentBanzukeList,
     perfMap,
     world,
     world.ozekiKadoban ?? {},
     world.heyas
   );
+  // §3 maezumo — this basho's shin-deshi debut at the foot of jonokuchi.
+  const graduates = graduateMaezumoRikishi(world, lastBasho, ranked.newBanzuke, builder);
+  const result =
+    graduates.length > 0 ? { ...ranked, newBanzuke: [...ranked.newBanzuke, ...graduates] } : ranked;
 
   const newBanzukeByRikishiId = new Map<string, (typeof result.newBanzuke)[number]>();
   for (const e of result.newBanzuke) newBanzukeByRikishiId.set(e.rikishiId, e);

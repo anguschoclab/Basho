@@ -37,6 +37,7 @@ import {
 } from "@/engine/generation/CandidateBuilder";
 import { applyPersonaAssignment } from "@/engine/generation/PersonaAssignment";
 import { MOCHIKYUKIN_INITIAL_POINTS } from "@/constants/engine/economic";
+import { enrollInMaezumo } from "@/engine/basho/maezumoPrelims";
 
 /** Maximum active roster size — mirrors the JSA roster limit (S7-38). */
 const HEYA_ROSTER_CAP = 30;
@@ -378,7 +379,8 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
   // Create a new rikishi from the prospect and add to roster
   const newRikishiId = prospectId;
   const { newRikishi } = buildPromotedRikishi(world, heya, prospect, newRikishiId, heyaId);
-  builder.addRikishi(newRikishi);
+  // §3 maezumo — academy graduates enter as unranked shin-deshi.
+  builder.addRikishi(enrollInMaezumo(newRikishi));
 
   // Add to heya roster
   const currentRoster = dedupeIdList(heya.rikishiIds ?? []) ?? [];

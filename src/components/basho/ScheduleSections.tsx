@@ -139,6 +139,11 @@ function MatchCard({
           <span className="text-xs font-mono text-muted-foreground">
             {result?.isDraw ? "draw" : "vs"}
           </span>
+          {match.isMaezumoBout && (
+            <span className="text-[10px] uppercase tracking-wide text-muted-foreground mt-1">
+              Maezumo
+            </span>
+          )}
         </div>
 
         <div className="text-left">

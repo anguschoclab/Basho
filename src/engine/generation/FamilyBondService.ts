@@ -90,7 +90,9 @@ function mintSibling(
   });
   const maezumo = assessMaezumo(sibling, world.seed ?? "default");
   if (maezumo.rankNumber !== undefined) sibling.rankNumber = maezumo.rankNumber;
-  if (maezumo.maezumoCompleted) sibling.maezumoCompleted = true;
+  // §3 maezumo — unranked until his preliminary next basho.
+  sibling.isMaezumo = true;
+  sibling.maezumoCompleted = false;
 
   const surname = rikishi.realName?.split(" ").pop() ?? seededPick(rng, JAPANESE_FAMILY_NAMES);
   sibling.realName = `${seededPick(rng, JAPANESE_GIVEN_NAMES)} ${surname}`;
