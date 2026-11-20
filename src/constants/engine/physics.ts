@@ -485,6 +485,13 @@ export const EDGE_INJURY_RISK_THRESHOLD = 0.15;
 export const EDGE_INJURY_SEVERITY_MODERATE = 0.3;
 
 /** Controversial toe position multiplier (close calls) */
+/** W P — edge-finishing body-type modifier (Takerufuji theory: thin lower
+ *  body → weak drive-through authority at the tawara). Derived from BMI when
+ *  `bodyType`/`bodyTypeBehavior` doesn't pin a value; percent, capped. */
+export const EDGE_FINISH_BMI_PIVOT = 38;
+export const EDGE_FINISH_BONUS_SCALE = 2;
+export const EDGE_FINISH_MAX_BONUS = 12;
+
 export const EDGE_CONTROVERSIAL_TOE_MULTIPLIER = 1.1;
 
 /** Controversial escape margin factor */

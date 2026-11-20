@@ -216,3 +216,38 @@ export const GIANT_HEIGHT_THRESHOLD = 190;
 
 /** W O — maximum age for the "proven giant-killer with untapped potential" beat. */
 export const PROVEN_GIANT_KILLER_MAX_AGE = 25;
+
+// ─── W P — Day-12 Kyushu transcript beats ───────────────────────────────────
+
+/** W P — push-family log exchanges per side that make a bout a "slapathon". */
+export const SLAPATHON_MIN_EXCHANGES = 3;
+
+/** W P — loser-side edge escapes (or yokozuna-grind duration) for a valiant-loser beat. */
+export const VALIANT_MIN_ESCAPES = 2;
+export const VALIANT_LONG_BOUT_SECONDS = 35;
+
+/** W P — prior tachiai-won-but-lost count for the "followup delivered" beat. */
+export const FOLLOWUP_MIN_LETDOWNS = 2;
+
+/** W P — trailing strictly-alternating KK/MK bashos for the alternating-records beat. */
+export const ALTERNATING_RECORDS_MIN = 3;
+
+/** W P — bottom-of-division slots (from the floor rankNumber) on demotion watch. */
+export const DEMOTION_WATCH_BOTTOM_SLOTS = 2;
+
+/** W P — consecutive wins since a mid-basho re-entry that earn the streak variant. */
+export const RETURN_STREAK_MIN = 3;
+
+/** W P — week-2 turnaround: early losses through day 7, then wins after it. */
+export const WEEK_ONE_END_DAY = 7;
+export const WEEK_TWO_EARLY_LOSSES_MIN = 3;
+export const WEEK_TWO_WINS_MIN = 4;
+
+/** W P — cumulative failed edge conversions for the edge-letdown beat. */
+export const EDGE_LETDOWN_MIN_FAILED = 3;
+
+/** W P — post-bout win streak (including this win) for the win_streak interview. */
+export const WIN_STREAK_INTERVIEW_MIN = 6;
+
+/** W P — earliest day for the closing-days interview question. */
+export const CLOSING_DAYS_MIN = 12;

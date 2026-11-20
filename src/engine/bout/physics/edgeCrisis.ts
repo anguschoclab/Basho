@@ -23,6 +23,9 @@ import {
   EDGE_INJURY_SEVERITY_MODERATE,
   EDGE_CONTROVERSIAL_TOE_MULTIPLIER,
   EDGE_CONTROVERSIAL_MARGIN_FACTOR,
+  EDGE_FINISH_BMI_PIVOT,
+  EDGE_FINISH_BONUS_SCALE,
+  EDGE_FINISH_MAX_BONUS,
 } from "@/constants/engine/physics";
 import { EDGE_THRESHOLD } from "@/engine/types/combat-spatial";
 import type {
@@ -200,6 +203,36 @@ function resolveForcedOut(
 }
 
 /**
+ * W P — body-type edge-finishing bonus (percent). The Takerufuji theory:
+ * skinny calves/ankles can't drive a man over the tawara even after a strong
+ * tachiai. Explicit profile field wins; a declared `bodyType` pins a fixed
+ * value; otherwise derive from BMI — heavy-for-height frames keep more
+ * drive-through authority, lanky frames bleed it.
+ */
+export function deriveEdgeFinishBonus(rikishi: Rikishi): number {
+  const explicit = rikishi.combatProfile?.bodyTypeBehavior?.edgeFinishBonus;
+  if (explicit !== undefined) return explicit;
+  switch (rikishi.bodyType) {
+    case "lanky":
+      return -EDGE_FINISH_MAX_BONUS * 0.75;
+    case "tower":
+      return -EDGE_FINISH_MAX_BONUS / 3;
+    case "compact":
+      return EDGE_FINISH_MAX_BONUS / 3;
+    case "barrel":
+      return EDGE_FINISH_MAX_BONUS * 0.75;
+    default:
+      break;
+  }
+  const height = rikishi.height ?? 0;
+  const weight = rikishi.weight ?? 0;
+  if (height <= 0 || weight <= 0) return 0;
+  const bmi = weight / (height / 100) ** 2;
+  const raw = (bmi - EDGE_FINISH_BMI_PIVOT) * EDGE_FINISH_BONUS_SCALE;
+  return Math.max(-EDGE_FINISH_MAX_BONUS, Math.min(EDGE_FINISH_MAX_BONUS, raw));
+}
+
+/**
  * Physics-driven escape evaluation (1.75D): angular authority projected along
  * escapeAngle vs opponent pressure, with seeded jitter as tie-breaker and
  * mono-ii detection for close calls (1.7).
@@ -218,7 +251,13 @@ function evaluateEscape(
     (defenderRikishi.combatProfile?.archetypeBehavior?.edgeEscapeBonus ?? 0) / 100;
   const angularEscapePower =
     Math.abs(defender.facingAngle) * ANGULAR_ESCAPE_POWER_SCALE * (1 + edgeEscapeBonus);
-  const totalPressure = crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ);
+  // W P: the NON-crisis (attacker) side's body type decides how much pressure
+  // actually converts into finishing force at the tawara — thin-legged frames
+  // bleed pressure and let the defender slip out.
+  const attackerRikishi = crisis.side === "east" ? west : east;
+  const edgeFinishBonus = deriveEdgeFinishBonus(attackerRikishi) / 100;
+  const totalPressure =
+    (crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ)) * (1 + edgeFinishBonus);
   const canEscape = angularEscapePower >= totalPressure;
 
   // Seeded jitter as tie-breaker when close

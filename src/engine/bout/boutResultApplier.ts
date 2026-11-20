@@ -107,6 +107,18 @@ function updateBoutMetrics(
     wMetrics.edgeCrisisSurvived += edgeEscapes;
     // Comeback win: winner was in edge crisis and survived
     if (edgeEscapes > 0) wMetrics.comebackWins++;
+    // W P — failed edge conversions: `data.side` marks the rikishi IN crisis
+    // (the defender); when that side escapes, the OTHER rikishi failed to
+    // finish at the tawara. Deliberately side-aware, unlike the legacy
+    // side-blind `edgeCrisisSurvived` above.
+    for (const e of result.log ?? []) {
+      if (e.phase !== "edge_crisis") continue;
+      const data = e.data as Record<string, unknown> | undefined;
+      if (data?.escaped !== true) continue;
+      const failedId = data?.side === result.winner ? loser.id : winner.id;
+      const fMetrics = ensureMetrics(failedId);
+      fMetrics.edgeFailedConversions = (fMetrics.edgeFailedConversions ?? 0) + 1;
+    }
     // Opponent tier for SOS calculation (4.3)
     const loserTier = loser.rankNumber ?? 99;
     wMetrics.opponentTiers.push(loserTier);

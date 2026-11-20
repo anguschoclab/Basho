@@ -171,6 +171,21 @@
       "Which bout stands out most in your career so far?",
       "Is there a moment that defines your career?",
       "What memory will you carry from this tournament?"
+    ],
+    "road_back": [
+      "You were once in sanyaku, dropped all the way down, and now you've secured a winning record back up here. How does it feel?",
+      "From sanyaku to the lower divisions and back to a kachi-koshi — what kept you going?",
+      "You've climbed back from the very bottom to clinch a winning record. What does that journey mean to you?"
+    ],
+    "closing_days": [
+      "Only a few days left — what kind of sumo do you intend to show?",
+      "With the tournament entering its final days, what will you focus on?",
+      "Just days remain in this basho. How do you want to finish?"
+    ],
+    "win_streak": [
+      "You've won several consecutive bouts in this stretch — how would you evaluate your performance?",
+      "You're riding a winning streak right now. What's clicking for you?",
+      "Consecutive wins keep piling up for you. What's behind the run?"
     ]
   },
   "stoic": [

@@ -12,6 +12,7 @@ import { SENSHURAKU_DAY } from "@/constants/engine/calendar";
 import { compareRanks } from "@/engine/banzuke/banzukeHelpers";
 import { toRankPosition } from "@/engine/types/banzuke";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
+import { recordCareerHighlight } from "@/engine/bout/CareerHighlights";
 
 /**
  * Resolve playoff bouts among tied yūshō candidates.
@@ -86,6 +87,7 @@ export function resolvePlayoffs(
       );
 
       decoratePlayoffNarrative(boutId, east, west, result);
+      recordPlayoffHighlight(world, basho, result.winner === "east" ? east : west, result.winner === "east" ? west : east);
       allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
       next.push(result.winnerRikishiId);
     }
@@ -148,6 +150,7 @@ function resolveTomoeSen(
     );
 
     decoratePlayoffNarrative(boutId, east, west, result);
+    recordPlayoffHighlight(world, basho, result.winner === "east" ? east : west, result.winner === "east" ? west : east);
     allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
 
     const winnerId = result.winnerRikishiId;
@@ -169,6 +172,27 @@ function resolveTomoeSen(
 
   // Kuji fallback: the JSA draws lots when a tomoe-sen cannot settle.
   return { winner: rng.pick(order), matches: allMatches };
+}
+
+/**
+ * W P — persist the playoff meeting on the winner's career highlights so
+ * future H2H beats can reference "playoff clashes" between the pair. The
+ * playoff path deliberately skips applyBoutResult side-effects, so the
+ * highlight write happens here directly on the world map.
+ */
+function recordPlayoffHighlight(
+  world: WorldState,
+  basho: BashoState,
+  winner: Rikishi,
+  loser: Rikishi
+): void {
+  const updated = recordCareerHighlight(winner, {
+    type: "playoff_win",
+    basho: `${basho.bashoName}-${world.year}`,
+    opponent: loser.id,
+    description: `Playoff win over ${loser.shikona}`,
+  });
+  world.rikishi.set(updated.id, updated);
 }
 
 /** Wraps a resolved playoff bout's pbp with tomoe/bracket framing lines. */

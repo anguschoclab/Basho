@@ -83,6 +83,16 @@ function makeRikishiWithEdgeEscapeBonus(id: string, edgeEscapeBonus: number): Ri
         beltTorqueBonus: 0,
         pushVelocityBonus: 0,
       },
+      // Pin the attacker's edge-finishing pressure to neutral so these tests
+      // isolate edgeEscapeBonus only (the BMI fallback would otherwise add
+      // attacker pressure and collapse the marginal escape windows).
+      bodyTypeBehavior: {
+        pushVelocityBonus: 0,
+        lateralMovementBonus: 0,
+        beltTorqueBonus: 0,
+        tachiaiSpeedBonus: 0,
+        edgeFinishBonus: 0,
+      },
     },
   });
 }
@@ -98,7 +108,7 @@ describe("edgeCrisis edgeEscapeBonus (2.1)", () => {
 
     const neutralRikishi = makeRikishiWithEdgeEscapeBonus("neutral", 0);
     const defensiveRikishi = makeRikishiWithEdgeEscapeBonus("defensive", 15);
-    const opponent = mockRikishi("opponent");
+    const opponent = makeRikishiWithEdgeEscapeBonus("opponent", 0);
 
     // Use SAME seed for each pair so only edgeEscapeBonus differs
     let neutralEscapes = 0;
@@ -136,7 +146,7 @@ describe("edgeCrisis edgeEscapeBonus (2.1)", () => {
 
     const neutralRikishi = makeRikishiWithEdgeEscapeBonus("neutral", 0);
     const tsuppariRikishi = makeRikishiWithEdgeEscapeBonus("tsuppari", -10);
-    const opponent = mockRikishi("opponent");
+    const opponent = makeRikishiWithEdgeEscapeBonus("opponent", 0);
 
     let neutralEscapes = 0;
     let tsuppariEscapes = 0;
@@ -177,7 +187,7 @@ describe("edgeCrisis edgeEscapeBonus (2.1)", () => {
     const push = makePush(crisisSide);
 
     const defensiveRikishi = makeRikishiWithEdgeEscapeBonus("defensive", 15);
-    const opponent = mockRikishi("opponent");
+    const opponent = makeRikishiWithEdgeEscapeBonus("opponent", 0);
 
     let defensiveCanEscape = 0;
     const NUM_SEEDS = 100;

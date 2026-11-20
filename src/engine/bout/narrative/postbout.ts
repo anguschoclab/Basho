@@ -13,6 +13,8 @@ import {
   WEIGHT_DIFF_THRESHOLD,
 } from "@/constants/engine/generation";
 import {
+  EDGE_LETDOWN_MIN_FAILED,
+  FOLLOWUP_MIN_LETDOWNS,
   H2H_HOODOO_MIN_LOSSES,
   KACHI_DROUGHT_MIN_BASHO,
   LOSING_SKID_MIN,
@@ -20,8 +22,13 @@ import {
   OLDEST_KACHI_KOSHI_MIN_AGE,
   PHASE_TWO_MIN,
   PULL_CHARM_MIN_ABSORB,
+  RETURN_STREAK_MIN,
+  SLAPATHON_MIN_EXCHANGES,
+  VALIANT_LONG_BOUT_SECONDS,
+  VALIANT_MIN_ESCAPES,
 } from "@/constants/engine/narrative";
-import { LEAPING_HENKA_SPEED } from "@/constants/engine/physics";
+import { CONTENTION_WINDOW, LEAPING_HENKA_SPEED } from "@/constants/engine/physics";
+import { getLeaderWins } from "@/engine/bout/boutContention";
 import { isPullStyleKimarite } from "@/engine/bout/ReplayMetadata";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import { isKachiKoshi, isMakeKoshi, kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
@@ -427,7 +434,53 @@ function beatPostBoutLeaderboard(p: PbpPipeline): void {
         ["yusho_race"]
       );
     }
+    // W P — "one step behind": the winner sits a single win back of a sole
+    // leader — the chase-pack framing the leaderboard beats never covered.
+    if (coLeaders === 1 && winnerWins + 1 === maxWins - 1) {
+      push(
+        BardEngine.resolve(postBoutRng, "post_bout.storylines.chase_pack", {
+          WINNER: winnerRikishi.shikona,
+          WINS: (winnerWins + 1).toString(),
+          DAY: day.toString(),
+          winnerId: winnerRikishi.id,
+        }).text,
+        "post_bout",
+        ["chase_pack", "yusho_race"]
+      );
+    }
   }
+}
+
+function beatSpoilerStrike(p: PbpPipeline): void {
+  const {
+    day,
+    loserRikishi,
+    loserWins,
+    postBoutRng,
+    push,
+    winnerRikishi,
+    winnerWins,
+    world,
+  } = p;
+  // W P — "played the role of spoiler": a non-contender dents a contender's
+  // title hopes late in the basho. Each side is measured against its own
+  // division's lead (cross-division callups stay honest).
+  const basho = world.currentBasho;
+  if (!basho || day < 8) return;
+  const loserLeader = getLeaderWins(basho, world, loserRikishi.division);
+  if (loserLeader - loserWins > CONTENTION_WINDOW) return;
+  const winnerLeader = getLeaderWins(basho, world, winnerRikishi.division);
+  if (winnerLeader - (winnerWins + 1) <= CONTENTION_WINDOW) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.storylines.spoiler_strike", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["spoiler", "yusho_race"]
+  );
 }
 
 function beatPostBoutStoryline(p: PbpPipeline): void {
@@ -1090,6 +1143,9 @@ function beatKinboshiCount(p: PbpPipeline): void {
   }
 }
 
+/** W P — kimarite whose replay is narrated as an overcommit/overlean finish. */
+const REPLAY_OVERLEAN_KIMARITE = new Set(["tsukiotoshi", "hatakikomi", "hikotoshi"]);
+
 function beatReplayHighlight(p: PbpPipeline): void {
   const { east, loserRikishi, push, result, seed, west, winnerRikishi } = p;
   // 17. Replay highlight — expanded sub-paths
@@ -1099,6 +1155,7 @@ function beatReplayHighlight(p: PbpPipeline): void {
     let replayPath: string;
     const hasEdgeCrisis = result.log.some((e) => e.phase === "edge_crisis");
     const hasHenka = result.log.some((e) => e.data?.event === "henka_success");
+    const gripTransitions = result.log.filter((e) => e.phase === "grip_transition").length;
     const isQuickFinish = result.log.length <= 3;
     const isDominant = (result.excitementScore ?? 50) < 60;
 
@@ -1106,6 +1163,15 @@ function beatReplayHighlight(p: PbpPipeline): void {
       replayPath = "post_bout.replay.henka";
     } else if (hasEdgeCrisis) {
       replayPath = "post_bout.replay.edge_drama";
+    } else if (result.kimarite === "kakenage") {
+      // W P — mechanic-keyed replays: the arm-lock squeeze
+      replayPath = "post_bout.replay.arm_lock";
+    } else if (REPLAY_OVERLEAN_KIMARITE.has(result.kimarite ?? "")) {
+      // W P — "feet got left behind as his upper body leaned forward"
+      replayPath = "post_bout.replay.overlean";
+    } else if (gripTransitions >= 2) {
+      // W P — "slip the right arm inside, then the left uwa-te"
+      replayPath = "post_bout.replay.grip_sequence";
     } else if (isQuickFinish) {
       replayPath = "post_bout.replay.quick_finish";
     } else if (isDominant) {
@@ -1290,6 +1356,113 @@ function beatPhaseTwo(p: PbpPipeline): void {
   );
 }
 
+function beatSlapathon(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  // W P — "it's a slapathon": both sides trading push-family offense, counted
+  // per attacker side like the pull-charm absorb count.
+  let eastPush = 0;
+  let westPush = 0;
+  for (const e of result.log ?? []) {
+    if (e.data?.family !== "push") continue;
+    if (e.data?.attackerSide === "east") eastPush++;
+    else if (e.data?.attackerSide === "west") westPush++;
+  }
+  if (eastPush < SLAPATHON_MIN_EXCHANGES || westPush < SLAPATHON_MIN_EXCHANGES) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.slapathon", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["slapathon"]
+  );
+}
+
+function beatLoserCredit(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  // W P — loser-credit beats: "refuses to go down… great effort by both men"
+  // and "did everything right except at the end".
+  const loserSide = result.winner === "east" ? "west" : "east";
+  const loserEscapes = (result.log ?? []).filter(
+    (e) => e.phase === "edge_crisis" && e.data?.side === loserSide && e.data?.escaped === true
+  ).length;
+  const winnerEscapes = (result.log ?? []).filter(
+    (e) => e.phase === "edge_crisis" && e.data?.side === result.winner && e.data?.escaped === true
+  ).length;
+  if (
+    loserEscapes >= VALIANT_MIN_ESCAPES ||
+    (winnerRikishi.rank === "yokozuna" && (result.duration ?? 0) >= VALIANT_LONG_BOUT_SECONDS)
+  ) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.valiant_loser", {
+        LOSER: loserRikishi.shikona,
+        WINNER: winnerRikishi.shikona,
+        loserId: loserRikishi.id,
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["valiant_loser", "comeback"]
+    );
+    return;
+  }
+  if (winnerEscapes >= 1) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.loser_near_miss", {
+        LOSER: loserRikishi.shikona,
+        WINNER: winnerRikishi.shikona,
+        loserId: loserRikishi.id,
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["loser_near_miss", "comeback"]
+    );
+  }
+}
+
+function beatFollowupDelivered(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi, world } = p;
+  // W P — "very good followup this time": a serial phase-two offender
+  // actually converts the tachiai win today.
+  if (!result.tachiaiWinner || result.tachiaiWinner !== result.winner) return;
+  const prior = world?.currentBasho?.boutMetrics?.[winnerRikishi.id]?.tachiaiWonButLost ?? 0;
+  if (prior < FOLLOWUP_MIN_LETDOWNS) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.followup_delivered", {
+      WINNER: winnerRikishi.shikona,
+      COUNT: prior.toString(),
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["followup"]
+  );
+}
+
+function beatEdgeLetdown(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, world } = p;
+  // W P — the Takerufuji reputation: the big hit is there but he can't finish
+  // at the edge. This bout's winner-side escapes + the loser's accumulated
+  // failed conversions make the pattern.
+  const thisBout = (result.log ?? []).filter(
+    (e) => e.phase === "edge_crisis" && e.data?.side === result.winner && e.data?.escaped === true
+  ).length;
+  if (thisBout === 0) return;
+  const prior = world?.currentBasho?.boutMetrics?.[loserRikishi.id]?.edgeFailedConversions ?? 0;
+  const total = prior + thisBout;
+  if (total < EDGE_LETDOWN_MIN_FAILED) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.edge_letdown", {
+      LOSER: loserRikishi.shikona,
+      COUNT: total.toString(),
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["edge_letdown"]
+  );
+}
+
 function beatRecordStakesAftermath(p: PbpPipeline): void {
   const {
     day,
@@ -1380,6 +1553,20 @@ function beatMidBashoReturnWin(p: PbpPipeline): void {
       "post_bout",
       ["comeback", "streak", "mid_basho_return"]
     );
+  } else if (
+    day >= reenteredDay + 2 &&
+    (winnerRikishi.currentWinStreak ?? 0) + 1 >= RETURN_STREAK_MIN
+  ) {
+    // W P — "three straight wins since returning to action".
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.mid_basho_return_streak", {
+        WINNER: winnerRikishi.shikona,
+        COUNT: ((winnerRikishi.currentWinStreak ?? 0) + 1).toString(),
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["comeback", "streak", "mid_basho_return"]
+    );
   }
 }
 
@@ -1440,7 +1627,12 @@ export function narrateAftermath(p: PbpPipeline): void {
   beatLimpAway(p);
   beatCompeteCredit(p);
   beatPhaseTwo(p);
+  beatSlapathon(p);
+  beatLoserCredit(p);
+  beatFollowupDelivered(p);
+  beatEdgeLetdown(p);
   beatPostBoutLeaderboard(p);
+  beatSpoilerStrike(p);
   beatPostBoutStoryline(p);
   beatRecordStakesAftermath(p);
   beatSkidSnapped(p);

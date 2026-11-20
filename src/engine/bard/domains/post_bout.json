@@ -147,6 +147,16 @@
       "%WINNER% shook off the freeze and found his legs when it mattered — a remarkable recovery.",
       "From frozen to fearless — %WINNER% overcomes the mid-basho slump to deliver today.",
       "The freeze is broken — %WINNER% moves freely again and the result speaks for itself."
+    ],
+    "chase_pack": [
+      "%WINNER% stays one step behind the leader at %WINS% wins.",
+      "%WINNER% keeps pace — still one back of the leader on day %DAY%.",
+      "One step behind: %WINNER% moves to %WINS% wins but remains chasing."
+    ],
+    "spoiler_strike": [
+      "%WINNER% plays spoiler — %LOSER%'s title hopes take a hit.",
+      "The spoiler strikes again: %WINNER% trips up %LOSER% in the run-in.",
+      "%WINNER% may be out of the race, but he just dented %LOSER%'s campaign."
     ]
   },
   "rivalry": {
@@ -566,6 +576,21 @@
       "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%.",
       "Rewind it one more time — %WINNER% makes the %KIMARITE% look effortless.",
       "From a different angle you can see exactly how %WINNER% finishes %LOSER%."
+    ],
+    "arm_lock": [
+      "%WINNER% clamped onto the upper arms and squeezed — that arm-lock pressure has to hurt after a while.",
+      "Look at %WINNER% work the arms — the kakenage is all about that grip and twist.",
+      "Freeze it here — %WINNER% locked both arms and simply wrung %LOSER% down."
+    ],
+    "overlean": [
+      "The feet got left behind as the upper body leaned forward — %LOSER% overcommitted and paid for it.",
+      "Good start, but the balance went — %LOSER%'s upper body outran his feet.",
+      "Watch the feet — %LOSER% leaned too far forward and %WINNER% made him pay."
+    ],
+    "grip_sequence": [
+      "Watch the sequence — slip the arm inside, then reach for the outside grip. Textbook work by %WINNER%.",
+      "First the inside arm, then the outer grip — %WINNER% built the position step by step.",
+      "Step by step: inside arm, then the uwate. %WINNER% assembled that grip beautifully."
     ]
   },
   "tactic_verdict": {
@@ -722,5 +747,35 @@
     "%RANK% %WINNER% shows his pride at the ranked position, overpowering %LOSER% when the pressure was on.",
     "That is why %WINNER% holds the rank of %RANK% — digging deep to turn back %LOSER% despite the circumstances.",
     "A statement of %RANK% pride from %WINNER%, reminding %LOSER% and the hall what the senior rank demands."
+  ],
+  "slapathon": [
+    "An old-fashioned slapathon — %WINNER% and %LOSER% trading thrusts from the first step.",
+    "It turned into a slapathon in the center of the dohyo — %WINNER% landed the last big one.",
+    "Thrust for thrust they went — a proper slapathon, and %WINNER% came out on top."
+  ],
+  "valiant_loser": [
+    "%LOSER% gave absolutely everything out there — the crowd shows its appreciation for the effort.",
+    "A valiant effort from %LOSER%, who refused to go quietly today.",
+    "The fans give both men a hand — %LOSER% left nothing in reserve."
+  ],
+  "loser_near_miss": [
+    "%LOSER% did everything right except at the end — %WINNER% escaped and stole it.",
+    "So close for %LOSER% — he had %WINNER% in real trouble but couldn't close it out.",
+    "%LOSER% controlled the action for most of it, but the finish escaped him."
+  ],
+  "followup_delivered": [
+    "%WINNER% won the tachiai AND the follow-up — no phase-two letdown today.",
+    "A clean phase two from %WINNER% — after %COUNT% letdowns this basho, the conversion finally held.",
+    "The big hit landed and this time %WINNER% finished the job — no repeat of the earlier collapses."
+  ],
+  "edge_letdown": [
+    "%LOSER% had him at the edge but couldn't finish — a familiar story for %LOSER% this basho.",
+    "Once again %LOSER% couldn't drive his man over the tawara — %COUNT% failed edge finishes now.",
+    "The big hit is there, but %LOSER% can't seal it at the edge — %COUNT% escapes allowed this tournament."
+  ],
+  "mid_basho_return_streak": [
+    "That's %COUNT% straight wins since returning — %WINNER% is making up for lost time.",
+    "%WINNER% keeps rolling since re-entering — %COUNT% consecutive victories now.",
+    "Since coming back, %WINNER% hasn't looked back — %COUNT% wins on the trot."
   ]
 }

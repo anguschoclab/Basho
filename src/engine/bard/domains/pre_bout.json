@@ -655,5 +655,25 @@
     "Good to see %SHIKONA% back in action after missing time earlier in the tournament — he returned on day %RETURN_DAY%.",
     "%SHIKONA% is back on the dohyo after re-entering the basho on day %RETURN_DAY%, trying to salvage his tournament.",
     "Having returned mid-basho on day %RETURN_DAY%, %SHIKONA% steps up again looking to find rhythm after his layoff."
+  ],
+  "demotion_watch": [
+    "%SHIKONA% is headed back down — at %LOSSES% losses from the bottom of the division, a return to the second division looms.",
+    "This looks like the end of the road for %SHIKONA% in the top division this time around.",
+    "With make-koshi confirmed and no ground left to give, %SHIKONA% appears bound for Juryo."
+  ],
+  "playoff_rematch": [
+    "These two have met in a playoff before — %EAST% and %WEST% know what a title-deciding bout feels like.",
+    "There is playoff history between %EAST% and %WEST% — they've settled a championship between themselves before.",
+    "%EAST% and %WEST% have fought for the yusho in a playoff — today they meet again."
+  ],
+  "alternating_records": [
+    "%SHIKONA% has been alternating kachi-koshi and make-koshi all year — nobody knows which version shows up today.",
+    "Up one basho, down the next — %SHIKONA%'s record has swung back and forth all season.",
+    "Winning record, losing record, winning record — %SHIKONA%'s year has been a pendulum."
+  ],
+  "week_two_surge": [
+    "%SHIKONA% stumbled out of the gate but has caught fire in week two — %WINS% wins since the nakabi.",
+    "A different man since the midway point — %SHIKONA% has stacked up %WINS% wins in the second week.",
+    "After a disastrous opening week, %SHIKONA% has won %WINS% in the second half of the basho."
   ]
 }

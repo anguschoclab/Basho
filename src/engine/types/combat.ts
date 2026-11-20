@@ -51,6 +51,8 @@ export interface CombatProfile {
     lateralMovementBonus: number;
     beltTorqueBonus: number;
     tachiaiSpeedBonus: number;
+    /** W P — drive-through authority at the tawara (percent; + holds, − lets escapes). */
+    edgeFinishBonus?: number;
   };
 }
 

@@ -17,6 +17,7 @@ import {
 import { NOTABLE_NARRATIVE_TAGS, NOTABLE_NARRATIVE_PHASES } from "@/engine/almanac/types";
 import type { PbpLine } from "@/engine/bout/narrative/pbpTypes";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /** Count trailing non-kachi-koshi tournaments in a rikishi's career history. */
 export function countKachiKoshiDrought(
@@ -39,6 +40,39 @@ export function countMakuuchiTournaments(history: { division?: string }[] | unde
     if (s.division === "makuuchi") count++;
   }
   return count;
+}
+
+/** W P — trailing strictly-alternating kachi-koshi/make-koshi bashos. */
+export function countAlternatingRecords(
+  history: { wins: number; losses: number }[] | undefined
+): number {
+  if (!history || history.length < 2) return 0;
+  let streak = 1;
+  for (let i = history.length - 1; i > 0; i--) {
+    const cur = history[i].wins > history[i].losses;
+    const prev = history[i - 1].wins > history[i - 1].losses;
+    if (cur === prev) break;
+    streak++;
+  }
+  return streak;
+}
+
+const SUB_JURYO_DIVISIONS = new Set(["makushita", "sandanme", "jonidan", "jonokuchi"]);
+
+/** W P — career history shows a sanyaku stint followed by a sub-juryo trough. */
+export function hasSanyakuToSubJuryoFall(
+  history: { division?: string; rank?: string }[] | undefined
+): boolean {
+  if (!history) return false;
+  let seenSanyaku = false;
+  for (const s of history) {
+    if (s.rank && isSanyakuRank(s.rank)) {
+      seenSanyaku = true;
+    } else if (seenSanyaku && s.division && SUB_JURYO_DIVISIONS.has(s.division)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 const FOCUS_BIAS_TO_STYLE: Record<string, string> = {

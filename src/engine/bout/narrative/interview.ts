@@ -4,7 +4,11 @@
  * topic selection, the per-question loop, and follow-up questions.
  */
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
-import { countMakuuchiTournaments } from "@/engine/bout/narrative/helpers";
+import {
+  countMakuuchiTournaments,
+  hasSanyakuToSubJuryoFall,
+} from "@/engine/bout/narrative/helpers";
+import { getLeaderWins } from "@/engine/bout/boutContention";
 import {
   CAREER_WIN_MILESTONES,
   FIRST_WIN_MENTION_MIN_DAY,
@@ -14,13 +18,16 @@ import {
   TRAIT_MODIFIER_CHANCE,
 } from "@/constants/engine/generation";
 import {
+  CLOSING_DAYS_MIN,
   DEBUT_KACHI_MAX_DAY,
   EARLIEST_KACHI_LOWER_MAX_DAY,
   EARLIEST_KACHI_SEKITORI_MAX_DAY,
   NARRATIVE_MEDIA_SAVVY_CHANCE,
   NARRATIVE_STRESS_TERSE_CHANCE,
   OLDEST_KACHI_KOSHI_MIN_AGE,
+  WIN_STREAK_INTERVIEW_MIN,
 } from "@/constants/engine/narrative";
+import { CONTENTION_WINDOW } from "@/constants/engine/physics";
 import { isKachiKoshi, isMakeKoshi, kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -74,6 +81,21 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
     (isSanyakuRank(loserRikishi.rank ?? "") ? 1 : 0);
   if (sanyakuStreak >= 2 && BardEngine.has("interview.questions.sanyaku_streak")) {
     questionType = "sanyaku_streak";
+  } else if (
+    // W P — "only N days left": the leader/chaser question late in the basho.
+    day >= CLOSING_DAYS_MIN &&
+    world.currentBasho &&
+    getLeaderWins(world.currentBasho, world, winnerRikishi.division) - (winnerWins + 1) <=
+      CONTENTION_WINDOW &&
+    BardEngine.has("interview.questions.closing_days")
+  ) {
+    questionType = "closing_days";
+  } else if (
+    // W P — "you've won N consecutive bouts — how do you evaluate?"
+    (winnerRikishi.currentWinStreak ?? 0) + 1 >= WIN_STREAK_INTERVIEW_MIN &&
+    BardEngine.has("interview.questions.win_streak")
+  ) {
+    questionType = "win_streak";
   } else if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
     const winnerAge = result.winner === "east" ? p.eastAge : p.westAge;
     const prevOldest = world?.records?.allTime?.oldestMakuuchiKachiKoshi?.[0];
@@ -88,6 +110,13 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
       BardEngine.has("interview.questions.oldest_kachi")
     ) {
       questionType = "oldest_kachi";
+    } else if (
+      // W P — "once in sanyaku, dropped all the way down, now back with a
+      // winning record": the road-back question outranks generic KK asks.
+      hasSanyakuToSubJuryoFall(winnerRikishi.careerHistory) &&
+      BardEngine.has("interview.questions.road_back")
+    ) {
+      questionType = "road_back";
     } else if (
       makuuchiTournaments <= 1 &&
       day <= DEBUT_KACHI_MAX_DAY &&

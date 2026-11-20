@@ -23,11 +23,16 @@ import { BASHO_NAMES } from "@/constants/ui/calendar";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import type { Division } from "@/engine/types/banzuke";
 import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
-import { countKachiKoshiDrought } from "@/engine/bout/narrative/helpers";
+import { countAlternatingRecords, countKachiKoshiDrought } from "@/engine/bout/narrative/helpers";
 import {
+  ALTERNATING_RECORDS_MIN,
+  DEMOTION_WATCH_BOTTOM_SLOTS,
   KACHI_DROUGHT_MIN_BASHO,
   LOSING_SKID_MIN,
   PROVEN_GIANT_KILLER_MAX_AGE,
+  WEEK_ONE_END_DAY,
+  WEEK_TWO_EARLY_LOSSES_MIN,
+  WEEK_TWO_WINS_MIN,
 } from "@/constants/engine/narrative";
 
 function beatHometown(p: PbpPipeline): void {
@@ -933,6 +938,76 @@ function beatLosingSkid(p: PbpPipeline): void {
   }
 }
 
+function beatDemotionWatch(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west, world } = p;
+  // W P — "he'll be back in Juryo in January": a bottom-ranked makuuchi
+  // maegashira with make-koshi already clinched is functionally headed down.
+  // Narrative heuristic only — no real banzuke projection.
+  for (const r of [east, west]) {
+    if (r.division !== "makuuchi" || r.rank !== "maegashira") continue;
+    if ((r.currentBashoLosses ?? 0) < kachiKoshiThreshold(r.rank)) continue;
+    let floor = 0;
+    for (const other of world.rikishi.values()) {
+      if (other.division !== "makuuchi" || other.rank !== "maegashira") continue;
+      if ((other.rankNumber ?? 0) > floor) floor = other.rankNumber ?? 0;
+    }
+    if (floor === 0 || (r.rankNumber ?? 0) < floor - DEMOTION_WATCH_BOTTOM_SLOTS + 1) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.demotion_watch", {
+        SHIKONA: r.shikona,
+        LOSSES: (r.currentBashoLosses ?? 0).toString(),
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["demotion_watch", "make_koshi"]
+    );
+    break;
+  }
+}
+
+function beatAlternatingRecords(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W P — "alternated between kachi-koshi and make-koshi throughout the year".
+  for (const r of [east, west]) {
+    if (countAlternatingRecords(r.careerHistory) < ALTERNATING_RECORDS_MIN) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.alternating_records", {
+        SHIKONA: r.shikona,
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["alternating_records", "kachi_koshi"]
+    );
+    break;
+  }
+}
+
+function beatWeekTwoSurge(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west, world } = p;
+  // W P — "started 0-3, has turned it on in the second week": within-basho
+  // turnaround derived from the per-bout MatchResultLog for this basho.
+  const basho = world.currentBasho;
+  if (!basho) return;
+  const bashoId = basho.id ?? `${basho.bashoName}-${world.year}`;
+  for (const r of [east, west]) {
+    const bouts = (r.history ?? []).filter((h) => h.bashoId === bashoId);
+    if (bouts.length === 0) continue;
+    const earlyLosses = bouts.filter((h) => h.day <= WEEK_ONE_END_DAY && !h.win).length;
+    const weekTwoWins = bouts.filter((h) => h.day > WEEK_ONE_END_DAY && h.win).length;
+    if (earlyLosses < WEEK_TWO_EARLY_LOSSES_MIN || weekTwoWins < WEEK_TWO_WINS_MIN) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.week_two_surge", {
+        SHIKONA: r.shikona,
+        WINS: weekTwoWins.toString(),
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["week_two_surge", "comeback"]
+    );
+    break;
+  }
+}
+
 function beatProvenGiantKiller(p: PbpPipeline): void {
   const { east, eastAge, preBoutRng, push, west, westAge } = p;
   for (const [r, age] of [
@@ -984,5 +1059,8 @@ export function narrateStakes(p: PbpPipeline): void {
   beatPostHenkaScrutiny(p);
   beatKachiDrought(p);
   beatLosingSkid(p);
+  beatDemotionWatch(p);
+  beatAlternatingRecords(p);
+  beatWeekTwoSurge(p);
   beatProvenGiantKiller(p);
 }

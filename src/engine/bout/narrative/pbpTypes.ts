@@ -128,7 +128,17 @@ export type PbpTag =
   | "thrust_to_belt"
   | "plan_b_grip"
   | "morozashi_escape"
-  | "rank_pride";
+  | "rank_pride"
+  | "chase_pack"
+  | "spoiler"
+  | "demotion_watch"
+  | "slapathon"
+  | "valiant_loser"
+  | "loser_near_miss"
+  | "followup"
+  | "alternating_records"
+  | "edge_letdown"
+  | "week_two_surge";
 
 export type PbpLine = {
   text: string;

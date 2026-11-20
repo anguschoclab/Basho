@@ -386,6 +386,9 @@ export interface BashoState {
       pullWins?: number;
       /** W O — last basho day on which this rikishi attempted or executed a henka. */
       lastHenkaDay?: number;
+      /** W P — edge crises where this rikishi pushed the opponent to the tawara
+       *  but the opponent escaped (attributed via log `data.side`). */
+      edgeFailedConversions?: number;
     }
   >;
 

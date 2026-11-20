@@ -293,6 +293,29 @@ function beatH2HRecentSurge(p: PbpPipeline): void {
   );
 }
 
+function beatPlayoffRematch(p: PbpPipeline): void {
+  const { east, push, seed, west } = p;
+  // W P — "playoff clashes in January and July": a title-deciding bout is
+  // already on the ledger between these two, recorded as a playoff_win
+  // career highlight at PlayoffResolver time.
+  const metPlayoff = (a: PbpPipeline["east"], b: PbpPipeline["east"]) =>
+    (a.careerHighlights ?? []).some(
+      (h) => h.type === "playoff_win" && h.opponent === b.id
+    );
+  if (!metPlayoff(east, west) && !metPlayoff(west, east)) return;
+  const playoffRng = rngFromSeed(seed, "pbp", "playoff-rematch");
+  push(
+    BardEngine.resolve(playoffRng, "pre_bout.playoff_rematch", {
+      EAST: east.shikona,
+      WEST: west.shikona,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
+    }).text,
+    "opening",
+    ["playoff", "rivalry"]
+  );
+}
+
 export function narratePrelude(p: PbpPipeline): void {
   beatOpeningVenue(p);
   beatDynasty(p);
@@ -300,5 +323,6 @@ export function narratePrelude(p: PbpPipeline): void {
   beatRivalryContext(p);
   beatGiantKillerH2H(p);
   beatH2HRecentSurge(p);
+  beatPlayoffRematch(p);
   beatStreakCallout(p);
 }
