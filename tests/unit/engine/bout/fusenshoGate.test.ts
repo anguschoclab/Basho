@@ -35,9 +35,9 @@ describe("absentRikishi — canonical absence gate", () => {
   });
 
   it("injured AND kyujo is absent (kyujo is what makes him absent)", () => {
-    expect(
-      absentRikishi(MockFactory.createRikishi("r1", { injured: true, isKyujo: true }))
-    ).toBe(true);
+    expect(absentRikishi(MockFactory.createRikishi("r1", { injured: true, isKyujo: true }))).toBe(
+      true
+    );
   });
 });
 

@@ -67,8 +67,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
   // ── Functions: utility helpers retained for future wiring ──
   "src/engine/generation/SponsorGenerator.ts:generateSponsor":
     "Sponsor generation function; used by world factory internally",
-  "src/engine/generation/SponsorGenerator.ts:generateSponsorId":
-    "Sponsor ID generation utility",
+  "src/engine/generation/SponsorGenerator.ts:generateSponsorId": "Sponsor ID generation utility",
   "src/engine/generation/SponsorGenerator.ts:generateSponsorNameV2":
     "Sponsor name generation utility",
   "src/engine/generation/SponsorGenerator.ts:rollSponsorCategory":
@@ -86,10 +85,8 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "ORPH-0547: idIntegrity audit API — consumed by simulationInvariants/saveLoadIntegrity tests; test refs don't count as runtime references",
   "src/engine/core/idIntegrity.ts:assertWorldIdIntegrity":
     "ORPH-0544: idIntegrity audit API — consumed by simulationInvariants/saveLoadIntegrity tests; test refs don't count as runtime references",
-  "src/engine/narrative/NarrativeProse.ts:hydrateDescriptor":
-    "Narrative prose hydration utility",
-  "src/engine/narrative/RivalryHeatService.ts:bumpTrigger":
-    "Rivalry heat bump trigger utility",
+  "src/engine/narrative/NarrativeProse.ts:hydrateDescriptor": "Narrative prose hydration utility",
+  "src/engine/narrative/RivalryHeatService.ts:bumpTrigger": "Rivalry heat bump trigger utility",
   "src/engine/bout/BoutAI.ts:chooseBaseTactic": "Bout AI tactic selection utility",
   "src/engine/bout/boutContention.ts:getLeaderWins": "Bout contention leader wins utility",
   "src/engine/core/ImpactBuilder.ts:updateHeyaImpact": "Impact builder heya update utility",
@@ -218,26 +215,42 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Shared singleton backing the live debug/info/warn/error wrappers (consumed by bootstrap, useFlowActions, BanzukePublisher); pinned by logger tests",
 
   // ── v15 baseline refresh (ORPH-0549..0570) ──
-  "src/engine/economy/koenkaiDemands.ts:KoenkaiDemandKind": "Type export; koenkai demand kind API contract",
-  "src/engine/economy/koenkaiDemands.ts:KoenkaiDemandDef": "Type export; koenkai demand def API contract",
-  "src/engine/economy/koenkaiDemands.ts:KOENKAI_DEMANDS": "Demand table pinned by koenkaiDemands tests",
-  "src/engine/economy/koenkaiDemands.ts:KOENKAI_DEMAND_PROBABILITY": "Internal constant consumed by tickMonthlyKoenkaiDemands; exported for unit testing",
-  "src/engine/economy/koenkaiDemands.ts:koenkaiDemandDecisionId": "Internal helper; pinned by koenkaiDemands tests",
-  "src/engine/economy/koenkaiDemands.ts:applyDemandOutcome": "Internal helper invoked by the resolveKoenkaiDemand path; exported for unit testing",
-  "src/engine/economy/staffPosts.ts:STAFF_POST_SLOTS": "Internal slot table consumed by openSlots; pinned by staffPosts tests",
-  "src/engine/economy/staffPosts.ts:SEVERANCE_MONTHS": "Internal constant consumed by severanceCost; pinned by staffPosts tests",
-  "src/engine/economy/staffPosts.ts:CANDIDATE_POOL_SIZE": "Internal constant consumed by refreshStaffCandidatePool; exported for unit testing",
-  "src/engine/economy/staffPosts.ts:filledSlots": "Internal helper invoked by openSlots; exported for unit testing",
+  "src/engine/economy/koenkaiDemands.ts:KoenkaiDemandKind":
+    "Type export; koenkai demand kind API contract",
+  "src/engine/economy/koenkaiDemands.ts:KoenkaiDemandDef":
+    "Type export; koenkai demand def API contract",
+  "src/engine/economy/koenkaiDemands.ts:KOENKAI_DEMANDS":
+    "Demand table pinned by koenkaiDemands tests",
+  "src/engine/economy/koenkaiDemands.ts:KOENKAI_DEMAND_PROBABILITY":
+    "Internal constant consumed by tickMonthlyKoenkaiDemands; exported for unit testing",
+  "src/engine/economy/koenkaiDemands.ts:koenkaiDemandDecisionId":
+    "Internal helper; pinned by koenkaiDemands tests",
+  "src/engine/economy/koenkaiDemands.ts:applyDemandOutcome":
+    "Internal helper invoked by the resolveKoenkaiDemand path; exported for unit testing",
+  "src/engine/economy/staffPosts.ts:STAFF_POST_SLOTS":
+    "Internal slot table consumed by openSlots; pinned by staffPosts tests",
+  "src/engine/economy/staffPosts.ts:SEVERANCE_MONTHS":
+    "Internal constant consumed by severanceCost; pinned by staffPosts tests",
+  "src/engine/economy/staffPosts.ts:CANDIDATE_POOL_SIZE":
+    "Internal constant consumed by refreshStaffCandidatePool; exported for unit testing",
+  "src/engine/economy/staffPosts.ts:filledSlots":
+    "Internal helper invoked by openSlots; exported for unit testing",
   "src/engine/economy/staffPosts.ts:severanceCost": "Internal helper; pinned by staffPosts tests",
   "src/engine/economy/staffPosts.ts:monthlyWageBill": "Internal helper; pinned by staffPosts tests",
   "src/engine/economy/staffPosts.ts:skillFromBands": "Internal helper; pinned by staffPosts tests",
-  "src/engine/health/physioPurchase.ts:PHYSIO_WEEKS_PER_SESSION": "Internal constant consumed by physio purchase flow; exported for unit testing",
-  "src/engine/npc/decision/decisionQueue.ts:PENDING_DECISION_SOFT_CAP": "Internal constant consumed by decisionQueue; exported for unit testing",
-  "src/engine/recruitment/scoutMissions.ts:ScoutTierDef": "Type export; scout mission tier API contract",
+  "src/engine/health/physioPurchase.ts:PHYSIO_WEEKS_PER_SESSION":
+    "Internal constant consumed by physio purchase flow; exported for unit testing",
+  "src/engine/npc/decision/decisionQueue.ts:PENDING_DECISION_SOFT_CAP":
+    "Internal constant consumed by decisionQueue; exported for unit testing",
+  "src/engine/recruitment/scoutMissions.ts:ScoutTierDef":
+    "Type export; scout mission tier API contract",
   "src/engine/recruitment/scoutMissions.ts:ScoutStats": "Type export; scout stats API contract",
-  "src/engine/training/weeklyTraining.ts:getRestFatigueFloor": "Internal helper invoked by weeklyTraining; pinned by dormitory tests",
-  "src/engine/welfare/harmony.ts:harmonyBandFor": "Internal helper invoked by harmony module; pinned by harmony tests",
-  "src/engine/rikishi/signatureKimarite.ts:signatureKimarite": "Unticked service consumed via presenters/engineAccess + RikishiCarePanel; not tick-phase-bound",
+  "src/engine/training/weeklyTraining.ts:getRestFatigueFloor":
+    "Internal helper invoked by weeklyTraining; pinned by dormitory tests",
+  "src/engine/welfare/harmony.ts:harmonyBandFor":
+    "Internal helper invoked by harmony module; pinned by harmony tests",
+  "src/engine/rikishi/signatureKimarite.ts:signatureKimarite":
+    "Unticked service consumed via presenters/engineAccess + RikishiCarePanel; not tick-phase-bound",
   "src/engine/recruitment/YouthAcademyService.ts:getQualityBonus":
     "Public helper exercised directly by youthAcademy.test.ts",
 
@@ -416,10 +429,8 @@ const GENUINE_ORPHANS: Record<string, string> = {
   //  collectionOperations.ts, jsonParser.ts all removed; each was dead API
   //  superseded by ExhibitionBashoService / queries+EntityCollection /
   //  inline Map helpers / nothing (LLM-era parser).)
-
   // ── Post-reorg baseline regen (audit-orphans ROOT/scope fixes surfaced
   // these) — zero live references, retained per dead-code policy ──
-
 };
 
 function loadAuditEntries(): AuditEntry[] {

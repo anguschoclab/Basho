@@ -49,8 +49,7 @@ export function projectHOFUIDigest(world: WorldState): { inductees: UIHofInducte
       for (let i = history.length - 1; i >= 0 && greatestFights.length < 5; i--) {
         const m = history[i];
         if (m.win) {
-          const opp =
-            world.rikishi.get(m.opponentId) ?? world.historicalRikishi?.get(m.opponentId);
+          const opp = world.rikishi.get(m.opponentId) ?? world.historicalRikishi?.get(m.opponentId);
           greatestFights.push({
             bashoName: m.bashoId ?? "",
             kimarite: m.kimarite,

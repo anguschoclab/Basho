@@ -33,7 +33,7 @@ export const selectPromotionCandidates = createSelector((world: WorldState) => {
   const result: Rikishi[] = [];
   if (!world.rikishi) return result;
   for (const r of world.rikishi.values()) {
-    if (!r.isRetired && (isLowerSanyakuRank(r.rank))) {
+    if (!r.isRetired && isLowerSanyakuRank(r.rank)) {
       result.push(r);
     }
   }

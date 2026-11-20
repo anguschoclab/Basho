@@ -394,10 +394,7 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
       ...overrides,
     });
 
-  function worldWithParent(
-    parentOverrides: Record<string, unknown>,
-    extraHeyaCount = 0
-  ) {
+  function worldWithParent(parentOverrides: Record<string, unknown>, extraHeyaCount = 0) {
     const heyas = new Map([["parent", makeMockHeya("parent", parentOverrides)]]);
     for (let i = 0; i < extraHeyaCount; i++) {
       heyas.set(`other-${i}`, makeMockHeya(`other-${i}`));
@@ -481,16 +478,11 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
     const retiree = accomplished({
       economics: { retirementFund: 200_000_000 } as any,
     });
-    expect(evaluateFoundingEligibility(sparse, retiree).effectiveChance).toBe(
-      FOUNDING_CHANCE
-    );
+    expect(evaluateFoundingEligibility(sparse, retiree).effectiveChance).toBe(FOUNDING_CHANCE);
 
     // headroom = 4 (< RAMP=8) → half chance
     const crowded = worldWithParent({ funds: 100_000_000 }, HEYA_SOFT_TARGET - 5);
     const e = evaluateFoundingEligibility(crowded, retiree);
-    expect(e.effectiveChance).toBeCloseTo(
-      FOUNDING_CHANCE * (4 / HEYA_FOUNDING_RAMP),
-      6
-    );
+    expect(e.effectiveChance).toBeCloseTo(FOUNDING_CHANCE * (4 / HEYA_FOUNDING_RAMP), 6);
   });
 });

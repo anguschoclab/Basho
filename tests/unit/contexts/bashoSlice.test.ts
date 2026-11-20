@@ -150,5 +150,4 @@ describe("bashoSlice - autosave errors", () => {
     const allResolved = newState.world!.currentBasho!.matches.every((m: any) => m.result !== null);
     expect(allResolved).toBe(true);
   });
-
 });

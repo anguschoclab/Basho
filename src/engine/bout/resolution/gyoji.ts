@@ -99,9 +99,14 @@ export function assignGyojiAndResolveVerdict(
       if (result.foulReview) {
         result.monoiiOutcome = result.foulReview.confirmed ? "reversed" : "upheld";
       } else {
-        result.monoiiOutcome = resolveMonoii(gyoji, panel, monoiiRoll(result.boutId, panel.chief.id), {
-          reversalBonus: result.monoiiKind === "missed_call" ? MISSED_CALL_REVERSAL_BONUS : 0,
-        });
+        result.monoiiOutcome = resolveMonoii(
+          gyoji,
+          panel,
+          monoiiRoll(result.boutId, panel.chief.id),
+          {
+            reversalBonus: result.monoiiKind === "missed_call" ? MISSED_CALL_REVERSAL_BONUS : 0,
+          }
+        );
       }
       return { gyoji, panel };
     }
@@ -169,13 +174,7 @@ export function applyGyojiOfficiation(
   east?: Rikishi,
   west?: Rikishi
 ) {
-  const { gyoji, panel } = assignGyojiAndResolveVerdict(
-    world,
-    result,
-    undefined,
-    east,
-    west
-  );
+  const { gyoji, panel } = assignGyojiAndResolveVerdict(world, result, undefined, east, west);
   if (east && west && result.monoiiOutcome === "reversed" && !result.foulReview) {
     const flipped = flipResultWinner(result, east, west);
     Object.assign(result, flipped);

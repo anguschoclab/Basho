@@ -103,9 +103,7 @@ function StockCard({ stock, market }: { stock: MyosekiStock; market: Market }) {
       <CardContent>
         <div className="space-y-1">
           <p className="text-sm font-medium">Asking Price:</p>
-          <p className="text-xl font-bold text-primary">
-            {formatYen((stock.askingPrice ?? 0))}
-          </p>
+          <p className="text-xl font-bold text-primary">{formatYen(stock.askingPrice ?? 0)}</p>
         </div>
       </CardContent>
       <CardFooter className="flex gap-2 p-0 px-6 pb-6">
@@ -216,7 +214,7 @@ export function OwnedSharesTab({
                     </Badge>
                     {stock.status === "leased" && (
                       <p className="text-xs text-muted-foreground">
-                        Annual Fee: {formatYen((stock.leaseFee ?? 0))}
+                        Annual Fee: {formatYen(stock.leaseFee ?? 0)}
                       </p>
                     )}
                   </div>

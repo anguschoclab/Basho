@@ -44,9 +44,7 @@ export function CompactRankBadge({
           // Sanyaku - prominent
           division === "sanyaku" && "bg-gold text-gold-foreground",
           division === "sanyaku" && rank === "ozeki" && "bg-silver text-silver-foreground",
-          division === "sanyaku" &&
-            (isLowerSanyakuRank(rank)) &&
-            "bg-bronze text-bronze-foreground",
+          division === "sanyaku" && isLowerSanyakuRank(rank) && "bg-bronze text-bronze-foreground",
           // Makuuchi - distinct
           division === "makuuchi" && "bg-primary/20 text-primary border border-primary/30",
           // Juryo - visible
@@ -74,9 +72,7 @@ export function RosterRankBadge({ division, rank, side, displayText, className }
           // Sanyaku - gold treatment
           division === "sanyaku" && "bg-gold text-gold-foreground shadow-xs",
           division === "sanyaku" && rank === "ozeki" && "bg-silver text-silver-foreground",
-          division === "sanyaku" &&
-            (isLowerSanyakuRank(rank)) &&
-            "bg-bronze text-bronze-foreground",
+          division === "sanyaku" && isLowerSanyakuRank(rank) && "bg-bronze text-bronze-foreground",
           // Makuuchi - primary color
           division === "makuuchi" && "bg-primary/15 text-primary border border-primary/25",
           // Juryo - west blue
@@ -121,7 +117,7 @@ export function PillRankBadge({
             division === "sanyaku" && rank === "yokozuna" && "bg-gold",
             division === "sanyaku" && rank === "ozeki" && "bg-silver",
             division === "sanyaku" &&
-              (isLowerSanyakuRank(rank)) &&
+              isLowerSanyakuRank(rank) &&
               "bg-bronze text-bronze-foreground",
             // Makuuchi
             division === "makuuchi" && "bg-primary text-primary-foreground",
@@ -167,9 +163,7 @@ export function FullRankBadge({ rank, side, division, displayText, className }: 
           division === "sanyaku" && "rank-shimmer text-gold-foreground",
           division === "sanyaku" && rank === "yokozuna" && "bg-gold",
           division === "sanyaku" && rank === "ozeki" && "bg-silver",
-          division === "sanyaku" &&
-            (isLowerSanyakuRank(rank)) &&
-            "bg-bronze text-bronze-foreground",
+          division === "sanyaku" && isLowerSanyakuRank(rank) && "bg-bronze text-bronze-foreground",
           // Makuuchi
           division === "makuuchi" && "bg-primary/20 text-primary border border-primary/40",
           // Juryo

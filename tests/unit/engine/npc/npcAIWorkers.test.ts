@@ -630,7 +630,14 @@ describe("spawnGlobalWorker", () => {
         ],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", dominantStyle: "oshi", expiresAtWeek: 10 },
+        {
+          id: "e1",
+          heyaId: "h1",
+          prestige: 60,
+          region: "Mongolia",
+          dominantStyle: "oshi",
+          expiresAtWeek: 10,
+        },
       ],
       world,
     };
@@ -661,7 +668,14 @@ describe("spawnGlobalWorker", () => {
         ],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", dominantStyle: "oshi", expiresAtWeek: 10 },
+        {
+          id: "e1",
+          heyaId: "h1",
+          prestige: 60,
+          region: "Mongolia",
+          dominantStyle: "oshi",
+          expiresAtWeek: 10,
+        },
       ],
       world,
     };
@@ -699,7 +713,14 @@ describe("spawnGlobalWorker", () => {
         ],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", dominantStyle: "oshi", expiresAtWeek: 10 },
+        {
+          id: "e1",
+          heyaId: "h1",
+          prestige: 60,
+          region: "Mongolia",
+          dominantStyle: "oshi",
+          expiresAtWeek: 10,
+        },
       ],
       world,
     };

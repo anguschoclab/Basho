@@ -116,9 +116,8 @@ describe("backfill intake vs. organic bid policies", () => {
   });
 
   it("organic monthly fill still respects shouldBid=false", async () => {
-    const { fillVacanciesForNPCWithBidding } = await import(
-      "@/engine/generation/TalentPoolNPCRecruitment"
-    );
+    const { fillVacanciesForNPCWithBidding } =
+      await import("@/engine/generation/TalentPoolNPCRecruitment");
     const world = buildStallWorld();
     // Direct organic call: every heya has a no-bid policy → zero bids → zero signings
     const impact = fillVacanciesForNPCWithBidding(world, {

@@ -26,8 +26,7 @@ describe("BUILD_FOREIGN_ACADEMY worker command", () => {
   });
 
   it("buildForeignAcademy is callable via WorldCircuitService", async () => {
-    const { WorldCircuitService } =
-      await import("@/engine/worldCircuit/WorldCircuitService");
+    const { WorldCircuitService } = await import("@/engine/worldCircuit/WorldCircuitService");
     expect(typeof WorldCircuitService.buildForeignAcademy).toBe("function");
   });
 });

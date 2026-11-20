@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  MentorshipService,
-  checkMentorMenteeBout,
-} from "@/engine/training/MentorshipService";
+import { MentorshipService, checkMentorMenteeBout } from "@/engine/training/MentorshipService";
 import { mockRikishi } from "@tests/unit/engine/utils";
 
 describe("MentorshipService.canMentor", () => {

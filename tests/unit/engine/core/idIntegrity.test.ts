@@ -99,14 +99,18 @@ describe("validateWorldIdIntegrity — entity map key consistency", () => {
   it("flags an entity whose id does not match its map key", () => {
     const world = makeCleanWorld();
     world.trainingState = new Map([["wrong-key", { heyaId: "h1" } as never]]);
-    expect(hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "trainingState", "wrong-key")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "trainingState", "wrong-key")
+    ).toBe(true);
   });
 
   it("flags a mis-keyed heya", () => {
     const world = makeCleanWorld();
     const stray = makeMockHeya("h-stray", { oyakataId: "o1" });
     world.heyas.set("not-h-stray", stray);
-    expect(hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "heyas", "not-h-stray")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "heyas", "not-h-stray")
+    ).toBe(true);
   });
 });
 
@@ -114,26 +118,34 @@ describe("validateWorldIdIntegrity — in-entity ID list duplicates", () => {
   it("flags duplicate heya.rikishiIds", () => {
     const world = makeCleanWorld();
     world.heyas.get("h1")!.rikishiIds = ["r1", "r1", "r2"];
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "heya.rikishiIds", "r1")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "heya.rikishiIds", "r1")
+    ).toBe(true);
   });
 
   it("flags duplicate heya.staffIds", () => {
     const world = makeCleanWorld();
     world.staff.set("s1", { id: "s1" } as Staff);
     world.heyas.get("h1")!.staffIds = ["s1", "s1"];
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "heya.staffIds", "s1")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "heya.staffIds", "s1")
+    ).toBe(true);
   });
 
   it("flags duplicate rikishi.tsukebitoIds", () => {
     const world = makeCleanWorld();
     world.rikishi.get("r1")!.tsukebitoIds = ["r2", "r2"];
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "rikishi.tsukebitoIds", "r2")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "rikishi.tsukebitoIds", "r2")
+    ).toBe(true);
   });
 
   it("flags duplicate rikishi.menteeIds", () => {
     const world = makeCleanWorld();
     world.rikishi.get("r1")!.menteeIds = ["r2", "r2"];
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "rikishi.menteeIds", "r2")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "rikishi.menteeIds", "r2")
+    ).toBe(true);
   });
 });
 
@@ -142,19 +154,30 @@ describe("validateWorldIdIntegrity — cross-collection membership", () => {
     const world = makeCleanWorld();
     const h2 = makeMockHeya("h2", { rikishiIds: ["r1"], oyakataId: "o1" });
     world.heyas.set("h2", h2);
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "heya.rikishiIds", "r1")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "heya.rikishiIds", "r1")
+    ).toBe(true);
   });
 
   it("flags an id present in both rikishi and historicalRikishi", () => {
     const world = makeCleanWorld();
     world.historicalRikishi.set("r1", makeRetired("r1"));
-    expect(hasViolation(validateWorldIdIntegrity(world), "cross_collection", "rikishi_vs_historical", "r1")).toBe(true);
+    expect(
+      hasViolation(
+        validateWorldIdIntegrity(world),
+        "cross_collection",
+        "rikishi_vs_historical",
+        "r1"
+      )
+    ).toBe(true);
   });
 
   it("flags a roster backref mismatch (rikishi.heyaId points elsewhere)", () => {
     const world = makeCleanWorld();
     world.rikishi.get("r2")!.heyaId = "h1-other";
-    expect(hasViolation(validateWorldIdIntegrity(world), "cross_collection", "heya.rikishiIds", "r2")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "cross_collection", "heya.rikishiIds", "r2")
+    ).toBe(true);
   });
 
   it("flags a retired (historical-only) rikishi still on an active roster", () => {
@@ -163,7 +186,9 @@ describe("validateWorldIdIntegrity — cross-collection membership", () => {
     // r3 exists only as a historical record yet is rostered
     world.historicalRikishi.set("r3", makeRetired("r3"));
     world.heyas.get("h1")!.rikishiIds = ["r1", "r2", "r3"];
-    expect(hasViolation(validateWorldIdIntegrity(world), "cross_collection", "heya.rikishiIds", "r3")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "cross_collection", "heya.rikishiIds", "r3")
+    ).toBe(true);
   });
 
   it("flags a retired rikishi still in activeRikishiIds", () => {
@@ -186,7 +211,9 @@ describe("validateWorldIdIntegrity — cross-collection membership", () => {
   it("flags an active rikishi missing from activeRikishiIds", () => {
     const world = makeCleanWorld();
     world.activeRikishiIds.delete("r2");
-    expect(hasViolation(validateWorldIdIntegrity(world), "cross_collection", "activeRikishiIds", "r2")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "cross_collection", "activeRikishiIds", "r2")
+    ).toBe(true);
   });
 });
 
@@ -194,66 +221,75 @@ describe("validateWorldIdIntegrity — dangling references", () => {
   it("flags a rostered id that resolves to nothing", () => {
     const world = makeCleanWorld();
     world.heyas.get("h1")!.rikishiIds = ["r1", "r2", "ghost"];
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "heya.rikishiIds", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "heya.rikishiIds", "ghost")
+    ).toBe(true);
   });
 
   it("flags a dangling heya.oyakataId", () => {
     const world = makeCleanWorld();
     world.heyas.get("h1")!.oyakataId = "ghost";
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "heya.oyakataId", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "heya.oyakataId", "ghost")
+    ).toBe(true);
   });
 
   it("flags a dangling rikishi.heyaId", () => {
     const world = makeCleanWorld();
     world.rikishi.get("r1")!.heyaId = "ghost";
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "rikishi.heyaId", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "rikishi.heyaId", "ghost")
+    ).toBe(true);
   });
 
   it("flags a dangling rikishi.mentorId", () => {
     const world = makeCleanWorld();
     world.rikishi.get("r1")!.mentorId = "ghost";
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "rikishi.mentorId", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "rikishi.mentorId", "ghost")
+    ).toBe(true);
   });
 
   it("flags a dangling activeRikishiIds entry", () => {
     const world = makeCleanWorld();
     world.activeRikishiIds.add("ghost");
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "activeRikishiIds", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "activeRikishiIds", "ghost")
+    ).toBe(true);
   });
 
   it("flags a dangling playerHeyaId", () => {
     const world = makeCleanWorld();
     world.playerHeyaId = "ghost";
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "world.playerHeyaId", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "world.playerHeyaId", "ghost")
+    ).toBe(true);
   });
 });
 
 describe("validateWorldIdIntegrity — pooled arrays", () => {
   it("flags duplicate ids in world.history", () => {
     const world = makeCleanWorld();
-    world.history = [
-      { id: "basho-1" },
-      { id: "basho-1" },
-    ] as never;
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "history", "basho-1")).toBe(true);
+    world.history = [{ id: "basho-1" }, { id: "basho-1" }] as never;
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "history", "basho-1")
+    ).toBe(true);
   });
 
   it("flags duplicate ids in events.log", () => {
     const world = makeCleanWorld();
-    world.events.log = [
-      { id: "ev1" },
-      { id: "ev1" },
-    ] as EngineEvent[];
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "events.log", "ev1")).toBe(true);
+    world.events.log = [{ id: "ev1" }, { id: "ev1" }] as EngineEvent[];
+    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "events.log", "ev1")).toBe(
+      true
+    );
   });
 
   it("flags duplicate ids in pendingDecisions", () => {
     const world = makeCleanWorld();
-    world.pendingDecisions = [
-      { id: "d1" },
-      { id: "d1" },
-    ] as never;
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "pendingDecisions", "d1")).toBe(true);
+    world.pendingDecisions = [{ id: "d1" }, { id: "d1" }] as never;
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "pendingDecisions", "d1")
+    ).toBe(true);
   });
 
   it("flags duplicate ids in gyojiPool and shimpanPool", () => {
@@ -268,19 +304,25 @@ describe("validateWorldIdIntegrity — pooled arrays", () => {
   it("flags a dangling awardLog winnerId", () => {
     const world = makeCleanWorld();
     world.awardLog = [{ winnerId: "ghost" }] as never;
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "awardLog", "ghost")).toBe(true);
+    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "awardLog", "ghost")).toBe(
+      true
+    );
   });
 
   it("flags a dangling encouragementLog participant", () => {
     const world = makeCleanWorld();
     world.encouragementLog = [{ from: "ghost", to: "r1", basho: "hatsu" }];
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "encouragementLog", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "encouragementLog", "ghost")
+    ).toBe(true);
   });
 
   it("flags a dangling lineage edge endpoint", () => {
     const world = makeCleanWorld();
     world.lineage = [{ mentorId: "ghost", menteeId: "r1", sinceYear: 1, sinceWeek: 1 }];
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "lineage", "ghost")).toBe(true);
+    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "lineage", "ghost")).toBe(
+      true
+    );
   });
 
   it("flags duplicate ids and dangling refs in pendingRikishiRequests", () => {
@@ -310,25 +352,38 @@ describe("validateWorldIdIntegrity — record-keyed maps", () => {
   it("flags a customKeshoConfigs key that is not a known rikishi", () => {
     const world = makeCleanWorld();
     world.customKeshoConfigs = { ghost: {} };
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "customKeshoConfigs", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "customKeshoConfigs", "ghost")
+    ).toBe(true);
   });
 
   it("flags a boutTactics key that is not a known rikishi", () => {
     const world = makeCleanWorld();
     world.boutTactics = { ghost: "defensive" };
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "boutTactics", "ghost")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "boutTactics", "ghost")
+    ).toBe(true);
   });
 
   it("flags an npcScoutingPriorities key that is not a known heya", () => {
     const world = makeCleanWorld();
     world.npcScoutingPriorities = { ghost: "active" };
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "npcScoutingPriorities", "ghost")).toBe(true);
+    expect(
+      hasViolation(
+        validateWorldIdIntegrity(world),
+        "dangling_ref",
+        "npcScoutingPriorities",
+        "ghost"
+      )
+    ).toBe(true);
   });
 
   it("flags a factions record whose id does not match its key", () => {
     const world = makeCleanWorld();
     world.factions = { kokonoe: { id: "takanohana" } } as unknown as WorldState["factions"];
-    expect(hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "factions", "kokonoe")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "factions", "kokonoe")
+    ).toBe(true);
   });
 
   it("flags a myosekiMarket stock whose id does not match its key", () => {
@@ -337,7 +392,9 @@ describe("validateWorldIdIntegrity — record-keyed maps", () => {
       stocks: { ms1: { id: "other" } as MyosekiStock },
       history: [],
     };
-    expect(hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "myosekiMarket.stocks", "ms1")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "myosekiMarket.stocks", "ms1")
+    ).toBe(true);
   });
 
   it("flags a playerKnowledge.scouting entry whose rikishiId does not match its key", () => {
@@ -345,7 +402,14 @@ describe("validateWorldIdIntegrity — record-keyed maps", () => {
     world.playerKnowledge = {
       scouting: { ghost: { rikishiId: "other-rikishi" } as ScoutedRikishi },
     };
-    expect(hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "playerKnowledge.scouting", "ghost")).toBe(true);
+    expect(
+      hasViolation(
+        validateWorldIdIntegrity(world),
+        "key_mismatch",
+        "playerKnowledge.scouting",
+        "ghost"
+      )
+    ).toBe(true);
   });
 });
 
@@ -382,7 +446,9 @@ describe("validateWorldIdIntegrity — nested structures", () => {
         foreign: makePool({ poolId: "f", poolType: "foreign" }),
       },
     };
-    expect(hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "talentPool.candidates", "c1")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "key_mismatch", "talentPool.candidates", "c1")
+    ).toBe(true);
   });
 
   it("flags two candidates sharing the same personId", () => {
@@ -400,7 +466,9 @@ describe("validateWorldIdIntegrity — nested structures", () => {
         foreign: makePool({ poolId: "f", poolType: "foreign" }),
       },
     };
-    expect(hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "talentPool.candidates", "p1")).toBe(true);
+    expect(
+      hasViolation(validateWorldIdIntegrity(world), "duplicate_id", "talentPool.candidates", "p1")
+    ).toBe(true);
   });
 
   it("flags duplicates and dangling refs in pool candidate lists plus visible∩hidden overlap", () => {
@@ -419,15 +487,21 @@ describe("validateWorldIdIntegrity — nested structures", () => {
       },
     };
     const violations = validateWorldIdIntegrity(world);
-    expect(hasViolation(violations, "duplicate_id", "talentPool.pools.candidatesVisible", "c1")).toBe(true);
-    expect(hasViolation(violations, "dangling_ref", "talentPool.pools.candidatesVisible", "ghost")).toBe(true);
+    expect(
+      hasViolation(violations, "duplicate_id", "talentPool.pools.candidatesVisible", "c1")
+    ).toBe(true);
+    expect(
+      hasViolation(violations, "dangling_ref", "talentPool.pools.candidatesVisible", "ghost")
+    ).toBe(true);
     expect(hasViolation(violations, "cross_collection", "talentPool.pools", "c1")).toBe(true);
   });
 
   it("flags a suitor heyaId that resolves to nothing", () => {
     const world = makeCleanWorld();
     const c = makeCandidate("c1", "p1");
-    c.competingSuitors = [{ heyaId: "ghost", interestBand: "high", offerType: "standard", deadlineWeek: 1 }];
+    c.competingSuitors = [
+      { heyaId: "ghost", interestBand: "high", offerType: "standard", deadlineWeek: 1 },
+    ];
     world.talentPool = {
       version: "1.0.0",
       lastYearlyRefreshYear: 2025,
@@ -438,7 +512,14 @@ describe("validateWorldIdIntegrity — nested structures", () => {
         foreign: makePool({ poolId: "f", poolType: "foreign" }),
       },
     };
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "talentPool.candidates", "ghost")).toBe(true);
+    expect(
+      hasViolation(
+        validateWorldIdIntegrity(world),
+        "dangling_ref",
+        "talentPool.candidates",
+        "ghost"
+      )
+    ).toBe(true);
   });
 
   it("flags sponsor/koenkai map key mismatches and dangling koenkai heyaId", () => {
@@ -477,13 +558,27 @@ describe("validateWorldIdIntegrity — nested structures", () => {
     const world = makeCleanWorld();
     world.sponsorPool = { sponsors: new Map(), koenkais: new Map() };
     world.heyas.get("h1")!.koenkaiId = "ghost-koenkai";
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "heya.koenkaiId", "ghost-koenkai")).toBe(true);
+    expect(
+      hasViolation(
+        validateWorldIdIntegrity(world),
+        "dangling_ref",
+        "heya.koenkaiId",
+        "ghost-koenkai"
+      )
+    ).toBe(true);
   });
 
   it("flags a dangling heya.brandIdentityId", () => {
     const world = makeCleanWorld();
     world.heyas.get("h1")!.brandIdentityId = "ghost-brand";
-    expect(hasViolation(validateWorldIdIntegrity(world), "dangling_ref", "heya.brandIdentityId", "ghost-brand")).toBe(true);
+    expect(
+      hasViolation(
+        validateWorldIdIntegrity(world),
+        "dangling_ref",
+        "heya.brandIdentityId",
+        "ghost-brand"
+      )
+    ).toBe(true);
   });
 
   it("flags a closed-heya mergedInto that resolves to nothing, but ignores closed rosters for exclusivity", () => {
@@ -503,7 +598,14 @@ describe("validateWorldIdIntegrity — nested structures", () => {
   it("flags duplicate almanacSnapshots for the same basho and dangling snapshot rikishiIds", () => {
     const world = makeCleanWorld();
     world.almanacSnapshots = [
-      { year: 2025, bashoNumber: 1, yushoWinner: { rikishiId: "ghost" }, promotions: [], demotions: [], retirements: [] },
+      {
+        year: 2025,
+        bashoNumber: 1,
+        yushoWinner: { rikishiId: "ghost" },
+        promotions: [],
+        demotions: [],
+        retirements: [],
+      },
       { year: 2025, bashoNumber: 1, promotions: [], demotions: [], retirements: [] },
     ] as never;
     const violations = validateWorldIdIntegrity(world);

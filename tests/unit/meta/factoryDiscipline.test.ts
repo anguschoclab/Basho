@@ -216,10 +216,7 @@ describe("factory discipline — no new local entity factories", () => {
     const violations: string[] = [];
 
     for (const file of testFiles) {
-      const rel = normalizePathSlashes(file).replace(
-        `${normalizePathSlashes(TESTS_DIR)}/`,
-        ""
-      );
+      const rel = normalizePathSlashes(file).replace(`${normalizePathSlashes(TESTS_DIR)}/`, "");
       if (ALLOWED_LOCAL_FACTORIES.has(rel)) continue;
       const content = readFileSync(file, "utf-8");
       if (LOCAL_FACTORY_RE.test(content)) {

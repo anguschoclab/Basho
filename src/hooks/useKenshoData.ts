@@ -16,6 +16,9 @@ export interface KenshoBoutEntry {
   avatar?: AvatarRenderData;
 }
 
+/**
+ * Hook returning the kensho banner/sponsor data for the current basho.
+ */
 export function useKenshoData() {
   const { state } = useGame();
   const world = state.world;

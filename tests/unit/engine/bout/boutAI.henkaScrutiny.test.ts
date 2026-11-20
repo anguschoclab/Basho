@@ -12,11 +12,19 @@ import type { BashoState, BoutLogEntry } from "@/engine/types/basho";
 
 /** Deterministic rng stub: roll 0.99 → HENKA for every style. */
 const henkaRng = () =>
-  ({ next: () => 0.99, int: (_a: number, b: number) => b, bool: () => true }) as unknown as SeededRNG;
+  ({
+    next: () => 0.99,
+    int: (_a: number, b: number) => b,
+    bool: () => true,
+  }) as unknown as SeededRNG;
 
 /** Deterministic rng stub: roll 0.15 → YOTSU_BELT for yotsu style. */
 const beltRng = () =>
-  ({ next: () => 0.15, int: (_a: number, b: number) => b, bool: () => false }) as unknown as SeededRNG;
+  ({
+    next: () => 0.15,
+    int: (_a: number, b: number) => b,
+    bool: () => false,
+  }) as unknown as SeededRNG;
 
 function ctx(overrides: Partial<BoutAIContext> = {}): BoutAIContext {
   return { rng: henkaRng(), ...overrides };
@@ -47,7 +55,10 @@ describe("chooseTactic — O2 post-henka scrutiny", () => {
       )
     ).toBe("OSHI_THRUST");
 
-    const weakCpu = mockRikishi("weak", { style: "yotsu", stats: { power: 30, speed: 60 } as never });
+    const weakCpu = mockRikishi("weak", {
+      style: "yotsu",
+      stats: { power: 30, speed: 60 } as never,
+    });
     expect(
       chooseTactic(
         weakCpu,
@@ -103,4 +114,3 @@ describe("resolveTachiaiV2 — repeat-henka defense bonus", () => {
     expect(repeatWins).toBeLessThan(10);
   });
 });
-

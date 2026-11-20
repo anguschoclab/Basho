@@ -108,7 +108,13 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
 
     const openings = getOpeningLines(result);
     const domLine = openings.find(
-      (t) => t.includes("dominated") || t.includes("struggled") || t.includes("commanding") || t.includes("one-way traffic") || t.includes("uphill psychological battle") || t.includes("historical dominance")
+      (t) =>
+        t.includes("dominated") ||
+        t.includes("struggled") ||
+        t.includes("commanding") ||
+        t.includes("one-way traffic") ||
+        t.includes("uphill psychological battle") ||
+        t.includes("historical dominance")
     );
     expect(domLine).toBeDefined();
     expect(domLine!.includes("Asanoyama") || domLine!.includes("Terunofuji")).toBe(true);

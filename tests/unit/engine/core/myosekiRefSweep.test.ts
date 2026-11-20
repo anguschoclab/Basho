@@ -45,8 +45,7 @@ describe("resolve-time myoseki ref sweep (V17-D02)", () => {
     // Simulates the phase06 race: succession removes the oyakata while a
     // later producer's absolute market write (computed pre-succession)
     // resurrects the dangling ownerId via merge last-wins.
-    const impact = createImpactBuilder("race")
-      .build();
+    const impact = createImpactBuilder("race").build();
     impact.deletedEntities = { oyakataIds: ["o-old"] };
     impact.worldFields = {
       myosekiMarket: {

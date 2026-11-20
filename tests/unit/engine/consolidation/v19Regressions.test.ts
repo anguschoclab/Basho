@@ -107,14 +107,25 @@ describe("S7-48 — getBashoInfo year-aware startDay", () => {
 // entries/basho/gyoji and the implied per-basho aggregation never happens.
 describe("S7-27 — recordGyojiBout aggregates per basho", () => {
   it("folds same-basho bouts into one careerHistory entry", () => {
-    const gyoji = { id: "g1", name: "Kimura", boutsOfficiated: 0, callsReversed: 0, careerHistory: [] };
+    const gyoji = {
+      id: "g1",
+      name: "Kimura",
+      boutsOfficiated: 0,
+      callsReversed: 0,
+      careerHistory: [],
+    };
     let g: Parameters<typeof recordGyojiBout>[0] = gyoji as never;
     for (let i = 0; i < 10; i++) {
       g = recordGyojiBout(g, "hatsu", 2024, i === 0);
     }
     const history = (g as { careerHistory: unknown[] }).careerHistory;
     expect(history).toHaveLength(1);
-    expect(history[0]).toMatchObject({ bashoName: "hatsu", year: 2024, boutsOfficiated: 10, reversals: 1 });
+    expect(history[0]).toMatchObject({
+      bashoName: "hatsu",
+      year: 2024,
+      boutsOfficiated: 10,
+      reversals: 1,
+    });
     expect((g as { boutsOfficiated: number }).boutsOfficiated).toBe(10);
     expect((g as { callsReversed: number }).callsReversed).toBe(1);
   });
@@ -276,8 +287,7 @@ describe("S5-5 — meta-era record ids unique per record", () => {
     // "waridashi" is push-family → dominance pushes tone to "explosive".
     const pushStats = { waridashi: 1500, yorikiri: 300 } as never;
     const beltStats = { yorikiri: 1500, shitatenage: 500 } as never;
-    const findEraId = (imp: unknown) =>
-      JSON.stringify(imp).match(/meta-era-[^"]+/)?.[0];
+    const findEraId = (imp: unknown) => JSON.stringify(imp).match(/meta-era-[^"]+/)?.[0];
 
     world.dayIndexGlobal = 300;
     world.globalKimariteStats = pushStats;
@@ -364,9 +374,8 @@ describe("S7-28 — evaluateCandidate uses real championship records", () => {
 // offense count and sanctions silently vanish in long sims.
 describe("S7-31 — gomenfuda record persists beyond log pruning", () => {
   it("hasSanctionWarning survives an emptied events log", async () => {
-    const { recordGomenfuda, hasSanctionWarning } = await import(
-      "@/engine/governance/services/GomenfudaService"
-    );
+    const { recordGomenfuda, hasSanctionWarning } =
+      await import("@/engine/governance/services/GomenfudaService");
     const { resolveImpacts } = await import("@/engine/core/ImpactResolver");
     let world = MockFactory.createWorld({ year: 2024 });
     const heya = MockFactory.createHeya("h1", {});
@@ -396,10 +405,22 @@ describe("S7-36 — sparring pair survives injury (paused)", () => {
     world.rikishi.set("a1", a);
     world.rikishi.set("b1", b);
     world.sparringPairs = new Map([
-      ["h1", {
-        heyaId: "h1",
-        pairs: { "a1-b1": { key: "a1-b1", aId: "a1", bId: "b1", chemistry: 50, weeksActive: 10, establishedWeek: 1 } },
-      }],
+      [
+        "h1",
+        {
+          heyaId: "h1",
+          pairs: {
+            "a1-b1": {
+              key: "a1-b1",
+              aId: "a1",
+              bId: "b1",
+              chemistry: 50,
+              weeksActive: 10,
+              establishedWeek: 1,
+            },
+          },
+        },
+      ],
     ]) as never;
     const impact = applyWeeklySparring(world);
     const next = resolveImpacts(world, [impact]);

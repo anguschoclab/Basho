@@ -31,9 +31,7 @@ const RULES: AchievementRule[] = [
     title: "First Sekitori",
     description: "Produce a rikishi ranked juryo or higher.",
     check: (w, h) =>
-      [...w.rikishi.values()].some(
-        (r) => r.heyaId === h && (isSekitoriDivision(r.division))
-      ),
+      [...w.rikishi.values()].some((r) => r.heyaId === h && isSekitoriDivision(r.division)),
   },
   {
     id: "sanyaku_stable",
@@ -58,9 +56,8 @@ const RULES: AchievementRule[] = [
     title: "Deep Roster",
     description: "Field five or more sekitori at once.",
     check: (w, h) =>
-      [...w.rikishi.values()].filter(
-        (r) => r.heyaId === h && (isSekitoriDivision(r.division))
-      ).length >= 5,
+      [...w.rikishi.values()].filter((r) => r.heyaId === h && isSekitoriDivision(r.division))
+        .length >= 5,
   },
   {
     id: "solvent",

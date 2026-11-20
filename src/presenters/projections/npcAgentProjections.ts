@@ -266,6 +266,9 @@ function surfaceEvent(e: LogEvent, world?: WorldState): SurfacedRow | null {
   }
 }
 
+/**
+ * Projects NPC agent activity for the AI-activity surface — decisions, agent, and rationale.
+ */
 export function projectNPCAgentActivity(world: WorldState): NPCAgentProjection {
   const log = world.events?.log ?? [];
   const npcDecisions: NPCDecisionDTO[] = [];

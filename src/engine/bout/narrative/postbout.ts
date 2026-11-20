@@ -456,16 +456,7 @@ function beatPostBoutLeaderboard(p: PbpPipeline): void {
 }
 
 function beatSpoilerStrike(p: PbpPipeline): void {
-  const {
-    day,
-    loserRikishi,
-    loserWins,
-    postBoutRng,
-    push,
-    winnerRikishi,
-    winnerWins,
-    world,
-  } = p;
+  const { day, loserRikishi, loserWins, postBoutRng, push, winnerRikishi, winnerWins, world } = p;
   // W P — "played the role of spoiler": a non-contender dents a contender's
   // title hopes late in the basho. Each side is measured against its own
   // division's lead (cross-division callups stay honest).
@@ -878,10 +869,7 @@ function beatFoulReviewArc(p: PbpPipeline): void {
   );
 }
 
-function emitMonoiiOutcomeLine(
-  p: PbpPipeline,
-  monoiiRng: ReturnType<typeof rngFromSeed>
-): void {
+function emitMonoiiOutcomeLine(p: PbpPipeline, monoiiRng: ReturnType<typeof rngFromSeed>): void {
   const { east, loserRikishi, push, result, west, winnerRikishi } = p;
   const outcome = result.monoiiOutcome ?? "upheld";
   if (outcome === "azukari" || outcome === "itamiwake") {
@@ -959,11 +947,7 @@ function beatMonoii(p: PbpPipeline): void {
         : west
       : winnerRikishi;
   const gunbaiLoser =
-    result.apparentWinner != null
-      ? result.apparentWinner === "east"
-        ? west
-        : east
-      : loserRikishi;
+    result.apparentWinner != null ? (result.apparentWinner === "east" ? west : east) : loserRikishi;
   push(
     BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gunbai_contested", {
       WINNER: gunbaiWinner.shikona,
@@ -1666,15 +1650,27 @@ function beatMorozashiEscape(p: PbpPipeline): void {
 }
 
 function beatRankPride(p: PbpPipeline): void {
-  const { day, loserRikishi, loserWins, postBoutRng, push, winnerLosses, winnerRikishi, winnerWins } =
-    p;
+  const {
+    day,
+    loserRikishi,
+    loserWins,
+    postBoutRng,
+    push,
+    winnerLosses,
+    winnerRikishi,
+    winnerWins,
+  } = p;
   const isYokozunaVsLower = winnerRikishi.rank === "yokozuna" && loserRikishi.rank !== "yokozuna";
   const isOzekiVsLower =
     winnerRikishi.rank === "ozeki" &&
     loserRikishi.rank !== "yokozuna" &&
     loserRikishi.rank !== "ozeki";
   if (!isYokozunaVsLower && !isOzekiVsLower) return;
-  if (!(loserWins > winnerWins || winnerRikishi.injured || (day >= 8 && winnerWins <= winnerLosses))) {
+  if (!(
+    loserWins > winnerWins ||
+    winnerRikishi.injured ||
+    (day >= 8 && winnerWins <= winnerLosses)
+  )) {
     return;
   }
   push(

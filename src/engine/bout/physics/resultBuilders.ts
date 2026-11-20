@@ -1,7 +1,12 @@
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult, BoutLogEntry } from "@/engine/types/basho";
 import type { Side } from "@/engine/types/banzuke";
-import type { KimariteId, DrawOutcomeType, CombatArchetype, TacticalFamily } from "@/engine/types/combat";
+import type {
+  KimariteId,
+  DrawOutcomeType,
+  CombatArchetype,
+  TacticalFamily,
+} from "@/engine/types/combat";
 import {
   DURATION_MIN_SECONDS,
   CLOCK_MULTIPLIER,
@@ -83,7 +88,8 @@ export function buildBoutResultV2(
     !isDraw &&
     boutLog.some(
       (e) =>
-        (e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.controversial === true) ||
+        (e.phase === "edge_crisis" &&
+          (e.data as Record<string, unknown>)?.controversial === true) ||
         (e.data as Record<string, unknown>)?.shinitai === true
     );
 

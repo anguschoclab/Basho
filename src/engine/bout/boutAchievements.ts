@@ -22,6 +22,9 @@ interface DetectKinboshiOptions {
   isPlayoff?: boolean;
 }
 
+/**
+ * True when a maegashira-or-lower winner defeats a yokozuna.
+ */
 export function detectKinboshi(
   result: BoutResult,
   winner: Rikishi,
@@ -59,8 +62,7 @@ export function detectKinboshi(
       result.kimarite !== "fusensho" &&
       result.kimarite !== "hansoku" &&
       ((winner.rank === "maegashira" && loser.rank === "ozeki") ||
-        ((isLowerSanyakuRank(winner.rank)) &&
-          loser.rank === "yokozuna"))
+        (isLowerSanyakuRank(winner.rank) && loser.rank === "yokozuna"))
     ) {
       // Ginboshi: informal fan/media "silver star" — not an official JSA
       // award. Real-world usage covers (a) maegashira over ozeki and

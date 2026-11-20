@@ -35,6 +35,9 @@ export interface UseBoutReplay3DReturn {
 /** Module-stable draw factory — the 3D renderer reads refs every frame. */
 const makeNoopDrawFrame = () => () => {};
 
+/**
+ * 3D bout-replay hook — thin wrapper over `useReplayClock`; the draw callback is a no-op because the Three.js scene consumes the replay refs each frame. Uses a detached canvas solely to satisfy tick-context validation.
+ */
 export function useBoutReplay3D(
   result: BoutResult,
   eastRikishi: UIRikishi,

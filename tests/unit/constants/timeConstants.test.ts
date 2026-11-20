@@ -39,9 +39,7 @@ describe("time constants", () => {
       expect(RIVALRY_DECAY_THRESHOLDS.SHORT_TERM).toBeLessThan(
         RIVALRY_DECAY_THRESHOLDS.MEDIUM_TERM
       );
-      expect(RIVALRY_DECAY_THRESHOLDS.MEDIUM_TERM).toBeLessThan(
-        RIVALRY_DECAY_THRESHOLDS.LONG_TERM
-      );
+      expect(RIVALRY_DECAY_THRESHOLDS.MEDIUM_TERM).toBeLessThan(RIVALRY_DECAY_THRESHOLDS.LONG_TERM);
     });
   });
 

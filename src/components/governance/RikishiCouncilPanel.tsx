@@ -51,8 +51,9 @@ export function RikishiCouncilPanel({
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Users className="h-4 w-4 text-primary" />
               <span>
-                Autonomous assembly of active <GlossaryTip termId="rikishi-kai">sekitori</GlossaryTip>{" "}
-                deliberating ring safety, jungyō welfare, and ceremonial standards.
+                Autonomous assembly of active{" "}
+                <GlossaryTip termId="rikishi-kai">sekitori</GlossaryTip> deliberating ring safety,
+                jungyō welfare, and ceremonial standards.
               </span>
             </div>
             {council.kaicho && (

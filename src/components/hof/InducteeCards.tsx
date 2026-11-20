@@ -169,7 +169,11 @@ export function InducteeFullCard({ inductee }: { inductee: UIHofInductee }) {
                       <span className="text-success">W</span>
                       <span className="text-muted-foreground">vs</span>
                       {f.opponentId ? (
-                        <RikishiName id={f.opponentId} name={f.opponentName} className="font-medium" />
+                        <RikishiName
+                          id={f.opponentId}
+                          name={f.opponentName}
+                          className="font-medium"
+                        />
                       ) : (
                         <span className="font-medium">{f.opponentName}</span>
                       )}

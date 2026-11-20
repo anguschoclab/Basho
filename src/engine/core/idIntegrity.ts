@@ -426,7 +426,12 @@ function auditPooledArrayRefs(ctx: AuditCtx): void {
     checkRef("lineage", e.menteeId, sets.lifetimeIds, "lineage menteeId");
   }
   for (const q of world.pendingRikishiRequests ?? []) {
-    checkRef("pendingRikishiRequests", q.rikishiId, sets.lifetimeIds, `request '${q.id}' rikishiId`);
+    checkRef(
+      "pendingRikishiRequests",
+      q.rikishiId,
+      sets.lifetimeIds,
+      `request '${q.id}' rikishiId`
+    );
     checkRef("pendingRikishiRequests", q.heyaId, sets.heyaIds, `request '${q.id}' heyaId`);
   }
   for (const e of world.pendingExhibitions ?? []) {

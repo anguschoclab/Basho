@@ -19,7 +19,10 @@ function worldWith(heyas: Heya[], oyakataTenure?: Record<string, unknown>): Worl
     const heyaId = heyas[0].id;
     const heya = world.heyas.get(heyaId)!;
     heya.oyakataId = "oya-1" as never;
-    world.oyakata.set("oya-1" as never, { id: "oya-1", name: "Boss", heyaId, tenure: oyakataTenure } as never);
+    world.oyakata.set(
+      "oya-1" as never,
+      { id: "oya-1", name: "Boss", heyaId, tenure: oyakataTenure } as never
+    );
   }
   return world;
 }
@@ -35,10 +38,12 @@ describe("projectManagerCareer", () => {
   });
 
   it("populated tenure → counters surfaced exactly", () => {
-    const world = worldWith(
-      [makeMockHeya("h1")],
-      { bashoServed: 12, championships: 2, sekitoriProduced: 4, boardSeatsWon: 1 }
-    );
+    const world = worldWith([makeMockHeya("h1")], {
+      bashoServed: 12,
+      championships: 2,
+      sekitoriProduced: 4,
+      boardSeatsWon: 1,
+    });
     const p = projectManagerCareer(world, "h1" as never);
     expect(p.tenure.bashoServed).toBe(12);
     expect(p.tenure.championships).toBe(2);
@@ -74,10 +79,12 @@ describe("projectManagerCareer", () => {
   });
 
   it("milestones: achieved flags at thresholds, in-progress fractions, deterministic order", () => {
-    const world = worldWith(
-      [makeMockHeya("h1", { prestigeBand: "elite" as never })],
-      { bashoServed: 20, championships: 3, sekitoriProduced: 5, boardSeatsWon: 1 }
-    );
+    const world = worldWith([makeMockHeya("h1", { prestigeBand: "elite" as never })], {
+      bashoServed: 20,
+      championships: 3,
+      sekitoriProduced: 5,
+      boardSeatsWon: 1,
+    });
     const p = projectManagerCareer(world, "h1" as never);
     const byId = Object.fromEntries(p.milestones.map((m) => [m.id, m]));
     expect(byId["first-sekitori"].achieved).toBe(true);
@@ -111,9 +118,7 @@ describe("projectManagerCareer", () => {
     const p = projectManagerCareer(world, "h1" as never);
     expect(p.successionRisk.insolvency).toBeCloseTo(2 / SUCCESSION_INSOLVENCY_EVENTS);
     expect(p.successionRisk.scandals).toBeCloseTo(1 / SUCCESSION_MAJOR_SCANDALS);
-    expect(p.successionRisk.underperformance).toBeCloseTo(
-      4 / SUCCESSION_UNDERPERFORMANCE_BASHO
-    );
+    expect(p.successionRisk.underperformance).toBeCloseTo(4 / SUCCESSION_UNDERPERFORMANCE_BASHO);
   });
 
   // T2-G1/tiebreak: on an exact score tie the projector must agree with
@@ -121,8 +126,7 @@ describe("projectManagerCareer", () => {
   // relies on Map insertion order — pinning the intended deterministic-id
   // outcome here is expected RED until runElections gains the same tiebreak.
   it("election standing matches runElections on an exact-score tie", () => {
-    const tied = (id: string) =>
-      makeMockHeya(id, { politicalCapital: 80, reputation: 40 });
+    const tied = (id: string) => makeMockHeya(id, { politicalCapital: 80, reputation: 40 });
     // Insert "z-heya" first so insertion order ≠ id order on the tie.
     const world = worldWith([tied("z-heya"), tied("a-heya")]);
     const p = projectManagerCareer(world, "a-heya" as never);
@@ -157,8 +161,6 @@ describe("projectManagerCareer", () => {
   it("milestones follow CAREER_MILESTONES declaration order", () => {
     const world = worldWith([makeMockHeya("h1")]);
     const p = projectManagerCareer(world, "h1" as never);
-    expect(p.milestones.map((m) => m.id)).toEqual(
-      CAREER_MILESTONES.map((d) => d.id)
-    );
+    expect(p.milestones.map((m) => m.id)).toEqual(CAREER_MILESTONES.map((d) => d.id));
   });
 });

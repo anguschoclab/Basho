@@ -174,7 +174,8 @@ export function resolveFoulVerdict(
     (panel.chief.accuracy + panel.panelists.reduce((s, p) => s + p.accuracy, 0)) /
     (1 + panel.panelists.length);
   const confirmChance = clamp(
-    FOUL_REVIEW_BASE_CONFIRM + (panelAvg - FOUL_REVIEW_ACCURACY_CENTER) * FOUL_REVIEW_ACCURACY_SCALE,
+    FOUL_REVIEW_BASE_CONFIRM +
+      (panelAvg - FOUL_REVIEW_ACCURACY_CENTER) * FOUL_REVIEW_ACCURACY_SCALE,
     FOUL_REVIEW_MIN_CONFIRM,
     FOUL_REVIEW_MAX_CONFIRM
   );

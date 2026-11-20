@@ -137,14 +137,33 @@ describe("matchmakingOverride consumer", () => {
     const world = MockFactory.createWorld({
       rikishi,
       heyas: new Map([
-        ["heya-req", MockFactory.createHeya("heya-req", { rikishiIds: [...Array(6)].map((_, i) => `req-${i}`) })],
-        ["heya-rivA", MockFactory.createHeya("heya-rivA", { rikishiIds: [...Array(6)].map((_, i) => `rivA-${i}`) })],
-        ["heya-rivB", MockFactory.createHeya("heya-rivB", { rikishiIds: [...Array(6)].map((_, i) => `rivB-${i}`) })],
+        [
+          "heya-req",
+          MockFactory.createHeya("heya-req", {
+            rikishiIds: [...Array(6)].map((_, i) => `req-${i}`),
+          }),
+        ],
+        [
+          "heya-rivA",
+          MockFactory.createHeya("heya-rivA", {
+            rikishiIds: [...Array(6)].map((_, i) => `rivA-${i}`),
+          }),
+        ],
+        [
+          "heya-rivB",
+          MockFactory.createHeya("heya-rivB", {
+            rikishiIds: [...Array(6)].map((_, i) => `rivB-${i}`),
+          }),
+        ],
       ]),
       currentBasho: MockFactory.createBasho({
         day: 1,
         matches: [],
-        standings: toKeyedMap([...rikishi.keys()], (id) => id, () => ({ wins: 0, losses: 0 }) as never),
+        standings: toKeyedMap(
+          [...rikishi.keys()],
+          (id) => id,
+          () => ({ wins: 0, losses: 0 }) as never
+        ),
       }),
       rivalriesState: {
         version: "1.0.0",
@@ -202,10 +221,7 @@ function buildJuryoRequesterWorld(): WorldState {
   // 4 juryo rikishi for the requester + 4 neutral juryo — no makuuchi at all.
   const rikishi = new Map<string, Rikishi>();
   const mk = (id: string, heyaId: string) => {
-    rikishi.set(
-      id,
-      MockFactory.createRikishi(id, { heyaId, division: "juryo", rank: "juryo" })
-    );
+    rikishi.set(id, MockFactory.createRikishi(id, { heyaId, division: "juryo", rank: "juryo" }));
   };
   for (let i = 0; i < 4; i++) mk(`req-${i}`, "heya-req");
   for (let i = 0; i < 4; i++) mk(`neu-${i}`, "heya-neu");
@@ -238,8 +254,14 @@ function buildJuryoRequesterWorld(): WorldState {
   return MockFactory.createWorld({
     rikishi,
     heyas: new Map([
-      ["heya-req", MockFactory.createHeya("heya-req", { rikishiIds: ["req-0", "req-1", "req-2", "req-3"] })],
-      ["heya-neu", MockFactory.createHeya("heya-neu", { rikishiIds: ["neu-0", "neu-1", "neu-2", "neu-3"] })],
+      [
+        "heya-req",
+        MockFactory.createHeya("heya-req", { rikishiIds: ["req-0", "req-1", "req-2", "req-3"] }),
+      ],
+      [
+        "heya-neu",
+        MockFactory.createHeya("heya-neu", { rikishiIds: ["neu-0", "neu-1", "neu-2", "neu-3"] }),
+      ],
       ["heya-riv", MockFactory.createHeya("heya-riv", { rikishiIds: [] })],
     ]),
     currentBasho: basho,

@@ -15,10 +15,7 @@ import { chooseTactic, type BoutAIContext } from "@/engine/bout/BoutAI";
 import { buildOpponentModel } from "@/engine/npc/OpponentModel";
 import { getOpponentModel } from "@/engine/npc/MemoryStore";
 import { rngFromSeed } from "@/engine/core/rng";
-import {
-  PHASE_TWO_MIN,
-  PHASE_TWO_FRAGILITY_RATIO,
-} from "@/constants/engine/narrative";
+import { PHASE_TWO_MIN, PHASE_TWO_FRAGILITY_RATIO } from "@/constants/engine/narrative";
 
 /**
  * Rank-pressure inference for NPC tactic selection.

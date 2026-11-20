@@ -19,7 +19,6 @@ the header would fix the blank prospect name but IS a behavior change — that
 belongs to Polish/another persona, not a mason commit. Any future tightening of
 `ComparableEntry` must keep `id` optional or break the recruiting compare path.
 
-
 ---
 
 ## Archived `.Jules/` entries (folded in v20 consolidation)

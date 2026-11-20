@@ -7,7 +7,12 @@
  */
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { advanceDaysFast } from "@/engine/tick/tickDaily";
-import { startBasho, advanceBashoDay, simulateBoutForToday, simulateBoutsForDay } from "@/engine/core/world";
+import {
+  startBasho,
+  advanceBashoDay,
+  simulateBoutForToday,
+  simulateBoutsForDay,
+} from "@/engine/core/world";
 import { BardEngine } from "@/engine/bard/BardEngine";
 
 const SEED = process.argv[2] ?? "dup-boutid-interactive-v1";
@@ -36,7 +41,9 @@ for (let bashoNum = 0; bashoNum < 3; bashoNum++) {
         const ms = b.matches.filter((m) => m.boutId === id);
         console.log(
           `DUP ${b.bashoName} y${b.year} day=${b.day}: ${id} x${n}` +
-            ms.map((m) => ` [res=${m.result ? "y" : "n"} callup=${m.crossDivisionCallupId ?? "-"}]`).join("")
+            ms
+              .map((m) => ` [res=${m.result ? "y" : "n"} callup=${m.crossDivisionCallupId ?? "-"}]`)
+              .join("")
         );
       }
     }

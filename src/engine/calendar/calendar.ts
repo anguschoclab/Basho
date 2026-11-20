@@ -148,8 +148,8 @@ export function getInterimWeeks(_from: BashoName, _to: BashoName): number {
  * If you want to override a specific basho, set startDay in BASHO_CALENDAR[basho].startDay.
  */
 export function getBashoInfo(name: BashoName, year?: number): BashoInfo {
-    const base = BASHO_CALENDAR[name];
-    const computedStartDay = base.startDay ?? getSecondSunday(year ?? DEFAULT_YEAR, base.month);
+  const base = BASHO_CALENDAR[name];
+  const computedStartDay = base.startDay ?? getSecondSunday(year ?? DEFAULT_YEAR, base.month);
   return {
     ...(base as Omit<BashoInfo, "startDay">),
     startDay: computedStartDay,

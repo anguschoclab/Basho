@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  applyGyojiOfficiation,
-  boutImportanceForBout,
-} from "@/engine/bout/resolution/gyoji";
+import { applyGyojiOfficiation, boutImportanceForBout } from "@/engine/bout/resolution/gyoji";
 import { generateGyoji, generateShimpan } from "@/engine/officials/GyojiService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
@@ -46,7 +43,9 @@ function rikishi(rank: "yokozuna" | "ozeki" | "sekiwake" | "maegashira") {
 
 describe("boutImportanceForBout", () => {
   it("grades yokozuna/ozeki bouts highest", () => {
-    expect(boutImportanceForBout(rikishi("yokozuna"), rikishi("maegashira"), 1)).toBeGreaterThanOrEqual(80);
+    expect(
+      boutImportanceForBout(rikishi("yokozuna"), rikishi("maegashira"), 1)
+    ).toBeGreaterThanOrEqual(80);
     expect(boutImportanceForBout(rikishi("ozeki"), rikishi("ozeki"), 1)).toBeGreaterThanOrEqual(80);
   });
 
@@ -58,8 +57,12 @@ describe("boutImportanceForBout", () => {
 
   it("bumps importance on senshuraku and the final weekend", () => {
     const base = boutImportanceForBout(rikishi("maegashira"), rikishi("maegashira"), 8);
-    expect(boutImportanceForBout(rikishi("maegashira"), rikishi("maegashira"), 15)).toBeGreaterThan(base);
-    expect(boutImportanceForBout(rikishi("maegashira"), rikishi("maegashira"), 14)).toBeGreaterThan(base);
+    expect(boutImportanceForBout(rikishi("maegashira"), rikishi("maegashira"), 15)).toBeGreaterThan(
+      base
+    );
+    expect(boutImportanceForBout(rikishi("maegashira"), rikishi("maegashira"), 14)).toBeGreaterThan(
+      base
+    );
   });
 
   it("does not depend on stakes flags — early-day yokozuna bout still grades high", () => {

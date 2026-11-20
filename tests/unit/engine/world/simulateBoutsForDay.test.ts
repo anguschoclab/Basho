@@ -41,7 +41,10 @@ function _makeTestWorld(
       ["west2", west2],
     ]),
     heyas: new Map([
-      ["test-heya", MockFactory.createHeya("test-heya", { rikishiIds: ["east1", "west1", "east2", "west2"] })],
+      [
+        "test-heya",
+        MockFactory.createHeya("test-heya", { rikishiIds: ["east1", "west1", "east2", "west2"] }),
+      ],
     ]),
     currentBasho: basho,
   });

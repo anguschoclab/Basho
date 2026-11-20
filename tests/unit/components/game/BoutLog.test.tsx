@@ -47,10 +47,7 @@ describe("BoutLog", () => {
   });
 
   it("renders Event fallback for missing phase and dash for missing description", () => {
-    const log = [
-      { clock: 1 },
-      { phase: undefined, description: "" },
-    ] as unknown as BoutLogEntry[];
+    const log = [{ clock: 1 }, { phase: undefined, description: "" }] as unknown as BoutLogEntry[];
     renderLog(log);
     expect(screen.getAllByText("Event")).toHaveLength(2);
     expect(screen.getAllByText("—")).toHaveLength(2);

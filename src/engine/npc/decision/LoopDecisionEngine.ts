@@ -186,7 +186,8 @@ function pushDegeikoInvites(
         {
           id: "accept",
           label: "Accept Visit",
-          impact: "Their rikishi gain technique and experience; your roster gains practice partners.",
+          impact:
+            "Their rikishi gain technique and experience; your roster gains practice partners.",
         },
         {
           id: "decline",
@@ -511,14 +512,25 @@ function applyDegeikoInviteOutcome(
     builder.logEvent(
       "DEGEIKO_SCHEDULED",
       "training",
-      { heya: guest?.name, heyaId: invite.fromHeyaId, targetHeyaId: hostHeyaId, targetHeya: hostHeyaName, rikishiIds: invite.rikishiIds },
+      {
+        heya: guest?.name,
+        heyaId: invite.fromHeyaId,
+        targetHeyaId: hostHeyaId,
+        targetHeya: hostHeyaName,
+        rikishiIds: invite.rikishiIds,
+      },
       { heyaId: invite.fromHeyaId, importance: "major" }
     );
   } else {
     builder.logEvent(
       "DEGEIKO_DECLINED",
       "training",
-      { heya: guest?.name, heyaId: invite.fromHeyaId, targetHeyaId: hostHeyaId, targetHeya: hostHeyaName },
+      {
+        heya: guest?.name,
+        heyaId: invite.fromHeyaId,
+        targetHeyaId: hostHeyaId,
+        targetHeya: hostHeyaName,
+      },
       { heyaId: invite.fromHeyaId, importance: "minor" }
     );
   }

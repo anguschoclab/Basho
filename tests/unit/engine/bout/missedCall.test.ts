@@ -120,16 +120,12 @@ describe("resolveMonoii — missed-call options", () => {
 
   it("reversalBonus widens the reversal band", () => {
     expect(resolveMonoii(gyoji, panel, rollAt(0.3))).toBe("rematch");
-    expect(
-      resolveMonoii(gyoji, panel, rollAt(0.3), { reversalBonus: 0.15 })
-    ).toBe("reversed");
+    expect(resolveMonoii(gyoji, panel, rollAt(0.3), { reversalBonus: 0.15 })).toBe("reversed");
   });
 
   it("suppressRematch removes the rematch band", () => {
     expect(resolveMonoii(gyoji, panel, rollAt(0.3))).toBe("rematch");
-    expect(
-      resolveMonoii(gyoji, panel, rollAt(0.3), { suppressRematch: true })
-    ).toBe("upheld");
+    expect(resolveMonoii(gyoji, panel, rollAt(0.3), { suppressRematch: true })).toBe("upheld");
   });
 
   it("both options compose — rematch reruns reverse but never re-rematch", () => {

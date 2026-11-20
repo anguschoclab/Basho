@@ -131,12 +131,7 @@ export function StableName({ id, name, className, children }: Omit<ClickableName
  * @param props.className - Optional CSS classes for styling
  * @param props.children - Optional children to render instead of the name
  */
-export function OyakataName({
-  id,
-  name,
-  className,
-  children,
-}: Omit<ClickableNameProps, "type">) {
+export function OyakataName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
   return (
     <ClickableName type="oyakata" id={id} name={name} className={className}>
       {children}

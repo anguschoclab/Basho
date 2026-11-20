@@ -99,6 +99,9 @@ export interface DramaContext {
   reason: string;
 }
 
+/**
+ * True when the rikishi's prior basho was in juryo — the makuuchi-debut storyline flag.
+ */
 export function isMakuuchiDebut(
   makuuchiBouts: number,
   division: Division,
@@ -586,6 +589,9 @@ function isSwapBlocked(
   return false;
 }
 
+/**
+ * Caps per-day drama-storyline injections at the basho budget.
+ */
 export function applyDramaBudget(
   pairings: MatchPairing[],
   rikishiMap: Map<string, Rikishi>,

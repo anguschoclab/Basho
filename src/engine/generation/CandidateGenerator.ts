@@ -281,8 +281,7 @@ function rollTsukedashi(
   if (!amateurStarTag) return undefined;
   if (poolType === "university")
     return rng.next() < TSUKEDASHI_UNIVERSITY_SHARE ? "makushita" : undefined;
-  if (poolType === "high_school")
-    return rng.next() < TSUKEDASHI_HS_SHARE ? "sandanme" : undefined;
+  if (poolType === "high_school") return rng.next() < TSUKEDASHI_HS_SHARE ? "sandanme" : undefined;
   return undefined;
 }
 

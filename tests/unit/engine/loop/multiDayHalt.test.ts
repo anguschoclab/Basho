@@ -139,7 +139,12 @@ describe("advanceOneDay halt behavior", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1", division: "makuuchi" });
     const west = mockRikishi("r-west", { heyaId: "heya-1", division: "makuuchi" });
     const matches: MatchSchedule[] = [
-      { boutId: "d1-b0", day: 1, eastRikishiId: "r-east", westRikishiId: "r-west" } as MatchSchedule,
+      {
+        boutId: "d1-b0",
+        day: 1,
+        eastRikishiId: "r-east",
+        westRikishiId: "r-west",
+      } as MatchSchedule,
     ];
     const world = makeMockWorld({
       year: 2030,
@@ -430,14 +435,10 @@ describe("advanceOneDay halt behavior", () => {
     expect(afterFirst.pendingCrisis?.id).toBe("d2");
     expect((afterFirst.pendingDecisions ?? []).map((d) => d.id)).toEqual(["d2", "d3"]);
 
-    const afterSecond = resolveImpacts(afterFirst, [
-      resolveLoopDecision(afterFirst, "d2", "opt"),
-    ]);
+    const afterSecond = resolveImpacts(afterFirst, [resolveLoopDecision(afterFirst, "d2", "opt")]);
     expect(afterSecond.pendingCrisis?.id).toBe("d3");
 
-    const afterThird = resolveImpacts(afterSecond, [
-      resolveLoopDecision(afterSecond, "d3", "opt"),
-    ]);
+    const afterThird = resolveImpacts(afterSecond, [resolveLoopDecision(afterSecond, "d3", "opt")]);
     // Queue drained — nothing required left, crisis clears for real.
     expect(afterThird.pendingCrisis).toBeUndefined();
     expect(afterThird.pendingDecisions).toEqual([]);

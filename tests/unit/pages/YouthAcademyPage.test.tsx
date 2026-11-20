@@ -20,28 +20,30 @@ vi.mock("@/components/recruitment/YouthAcademyPanel", () => ({
     ),
 }));
 
-const mockProjectYouthAcademy = vi.fn((): {
-  academy: {
-    level: number;
-    maxLevel: number;
-    prospectCount: number;
-    maxProspects: number;
-    totalGraduated: number;
-    budget: number;
-    staff: { id: string; role: string }[];
-    maxStaff: number;
-    lastIntakeYear: number;
-    prospects: { id: string }[];
-  } | null;
-  hasAcademy: boolean;
-  canUpgrade: boolean;
-  upgradeCost: number;
-} => ({
-  academy: null,
-  hasAcademy: false,
-  canUpgrade: false,
-  upgradeCost: 50000,
-}));
+const mockProjectYouthAcademy = vi.fn(
+  (): {
+    academy: {
+      level: number;
+      maxLevel: number;
+      prospectCount: number;
+      maxProspects: number;
+      totalGraduated: number;
+      budget: number;
+      staff: { id: string; role: string }[];
+      maxStaff: number;
+      lastIntakeYear: number;
+      prospects: { id: string }[];
+    } | null;
+    hasAcademy: boolean;
+    canUpgrade: boolean;
+    upgradeCost: number;
+  } => ({
+    academy: null,
+    hasAcademy: false,
+    canUpgrade: false,
+    upgradeCost: 50000,
+  })
+);
 
 vi.mock("@/presenters/projections/youthAcademyProjections", () => ({
   projectYouthAcademy: () => mockProjectYouthAcademy(),

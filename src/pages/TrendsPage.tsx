@@ -223,8 +223,7 @@ function LeagueLeaders({ world }: { world: WorldState }) {
     .map((h) => ({
       h,
       sekitori: allRikishi.filter(
-        (r) =>
-          r.heyaId === h.id && !r.isRetired && (isSekitoriDivision(r.division))
+        (r) => r.heyaId === h.id && !r.isRetired && isSekitoriDivision(r.division)
       ).length,
     }))
     .sort((a, b) => b.sekitori - a.sekitori)

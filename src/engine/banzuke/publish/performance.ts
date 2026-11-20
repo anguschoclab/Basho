@@ -390,10 +390,7 @@ function normalizeStandingEntries(
       const stats = stats_any as StandingStats;
       const r = getRikishi(world, id);
       const divisionDays = r ? getTotalBashodays(r.division) : 15;
-      const absences = Math.max(
-        0,
-        divisionDays - stats.wins - stats.losses - (stats.draws ?? 0)
-      );
+      const absences = Math.max(0, divisionDays - stats.wins - stats.losses - (stats.draws ?? 0));
       return [
         id,
         {
@@ -428,6 +425,9 @@ function normalizeStandingEntries(
   return normalizedEntries;
 }
 
+/**
+ * Builds the banzuke-performance records used by promotion logic from bout results.
+ */
 export function buildPerformanceList(
   world: WorldState,
   _lastBasho: BashoState,

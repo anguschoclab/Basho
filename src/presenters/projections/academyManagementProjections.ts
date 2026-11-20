@@ -13,6 +13,9 @@ export type { ExhibitionRegion };
 
 const REGIONS: ExhibitionRegion[] = EXHIBITION_REGIONS;
 
+/**
+ * Projects foreign-academy state for the management panel — invites, presence, and regional breakdown.
+ */
 export function projectAcademyManagement(
   world: WorldState,
   heyaId: string

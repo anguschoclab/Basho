@@ -43,7 +43,7 @@ describe("ElectronArchiveService", () => {
       junYusho: ["r2"],
       prizes: {
         yushoAmount: 1000000,
-        
+
         specialPrizes: 200000,
       },
     },

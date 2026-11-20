@@ -46,7 +46,9 @@ describe("foundStable", () => {
     const parent = makeMockHeya("heya-parent", { ichimon: "Takasago" as const });
     const world = makeMockWorld({
       heyas: new Map([["heya-parent", parent]]),
-      oyakata: new Map([["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-parent" } as any]]),
+      oyakata: new Map([
+        ["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-parent" } as any],
+      ]),
     });
 
     const rng = rngForWorld(world, "found", "t");
@@ -64,7 +66,9 @@ describe("foundStable", () => {
     delete (parent as { ichimon?: string }).ichimon;
     const world = makeMockWorld({
       heyas: new Map([["heya-parent", parent]]),
-      oyakata: new Map([["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-parent" } as any]]),
+      oyakata: new Map([
+        ["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-parent" } as any],
+      ]),
     });
 
     const rng = rngForWorld(world, "found", "t");

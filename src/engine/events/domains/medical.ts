@@ -1,6 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { EventImportance, NarrativeContext } from "@/engine/types/events";
-import {logBardEvent} from "@/engine/events/helpers";
+import { logBardEvent } from "@/engine/events/helpers";
 
 /**
  * Creates a medical report event for a rikishi.
@@ -14,19 +14,20 @@ export function medicalReportBase(
   ctx: NarrativeContext,
   importance: EventImportance
 ) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `medical-${ctx.rikishiId}-${ctx.status}`,
     ctx: ctx,
     titlePath: "events.medical.title",
     summaryPath: "events.medical.summary",
     event: {
-    type: "MEDICAL_REPORT",
-    category: "injury",
-    importance,
-    scope: "rikishi",
-    rikishiId: ctx.rikishiId,
-    heyaId: ctx.heyaId,
-    tags: ["medical", ctx.status as string]},
+      type: "MEDICAL_REPORT",
+      category: "injury",
+      importance,
+      scope: "rikishi",
+      rikishiId: ctx.rikishiId,
+      heyaId: ctx.heyaId,
+      tags: ["medical", ctx.status as string],
+    },
   });
 }
 
@@ -37,19 +38,20 @@ export function medicalReportBase(
  * @returns The logged engine event
  */
 export function lifecycleEvent(world: WorldState, ctx: NarrativeContext) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `lifecycle-${ctx.rikishiId}-${ctx.status}`,
     ctx: ctx,
     titlePath: "events.lifecycle.title",
     summaryPath: "events.lifecycle.summary",
     event: {
-    type: "LIFECYCLE_EVENT",
-    category: "career",
-    importance: ctx.status === "retirement" ? "major" : "notable",
-    scope: "rikishi",
-    rikishiId: ctx.rikishiId,
-    heyaId: ctx.heyaId,
-    tags: ["career", ctx.status as string]},
+      type: "LIFECYCLE_EVENT",
+      category: "career",
+      importance: ctx.status === "retirement" ? "major" : "notable",
+      scope: "rikishi",
+      rikishiId: ctx.rikishiId,
+      heyaId: ctx.heyaId,
+      tags: ["career", ctx.status as string],
+    },
   });
 }
 

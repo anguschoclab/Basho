@@ -15,10 +15,10 @@ import type { Oyakata } from "@/engine/types/oyakata";
 
 const TRAITS = { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 };
 
-function worldWithAgedHeya(opts: {
-  age: number;
-  elderStatus?: Oyakata["elderStatus"];
-}): { world: WorldState; oya: Oyakata } {
+function worldWithAgedHeya(opts: { age: number; elderStatus?: Oyakata["elderStatus"] }): {
+  world: WorldState;
+  oya: Oyakata;
+} {
   const world = MockFactory.createWorld({ week: 10, year: 5 });
   const oya = {
     id: "o-h1",

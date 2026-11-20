@@ -103,7 +103,7 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
         shouldBuyMyoseki = true;
         const selected = prioritized[0];
         reasoning.push(
-          `[Finance Agent] Targeting myoseki: ${selected.id} (${formatYen((selected.askingPrice || 0))})`
+          `[Finance Agent] Targeting myoseki: ${selected.id} (${formatYen(selected.askingPrice || 0)})`
         );
       } else {
         reasoning.push("[Finance Agent] No affordable myoseki available");
@@ -139,7 +139,9 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
     );
   } else {
     reserveTarget = monthlyBurn * 3; // 3 months runway target
-    reasoning.push(`[Finance Agent] Maintaining ${reserveTarget.toLocaleString("en-US")} reserve target`);
+    reasoning.push(
+      `[Finance Agent] Maintaining ${reserveTarget.toLocaleString("en-US")} reserve target`
+    );
   }
 
   // WS5 — crisis rescue menu (canon §14.8): a desperate stable chooses how to

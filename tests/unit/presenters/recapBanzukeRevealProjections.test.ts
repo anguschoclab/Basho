@@ -142,7 +142,11 @@ describe("buildBanzukeRevealEntries", () => {
     const idx = createEmptyHistoryIndex();
     // no prev snapshot → all "new"
     const world = makeMockWorld({
-      rikishi: toKeyedMap(mk(30), (a) => a.id, (a) => mockRikishi(a.id)),
+      rikishi: toKeyedMap(
+        mk(30),
+        (a) => a.id,
+        (a) => mockRikishi(a.id)
+      ),
       currentBanzuke: current,
       historyIndex: idx,
     });

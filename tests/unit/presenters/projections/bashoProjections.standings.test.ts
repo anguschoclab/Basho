@@ -57,8 +57,23 @@ describe("projectBashoUIDigest — standings", () => {
 
   it("breaks identical records by rank (higher rank first)", () => {
     const rikishi = new Map<string, Rikishi>([
-      ["y1", mockRikishi("y1", { heyaId: "h1", rank: "yokozuna", currentBashoRecord: { wins: 8, losses: 7 } })],
-      ["m1", mockRikishi("m1", { heyaId: "h1", rank: "maegashira", rankNumber: 1, currentBashoRecord: { wins: 8, losses: 7 } })],
+      [
+        "y1",
+        mockRikishi("y1", {
+          heyaId: "h1",
+          rank: "yokozuna",
+          currentBashoRecord: { wins: 8, losses: 7 },
+        }),
+      ],
+      [
+        "m1",
+        mockRikishi("m1", {
+          heyaId: "h1",
+          rank: "maegashira",
+          rankNumber: 1,
+          currentBashoRecord: { wins: 8, losses: 7 },
+        }),
+      ],
     ]);
     const world = makeMockWorld({
       rikishi,

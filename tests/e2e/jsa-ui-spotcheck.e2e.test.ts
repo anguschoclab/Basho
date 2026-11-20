@@ -145,11 +145,7 @@ test("JSA UI spot checks: raw roster count, juryo replay has no kensho, recap sh
         const e = get(m.eastRikishiId);
         const wst = get(m.westRikishiId);
         if (!e?.shikona || !wst?.shikona) continue;
-        const hit = new Function("e", "w", "m", `return (${clause});`)(
-          e,
-          wst,
-          m
-        ) as boolean;
+        const hit = new Function("e", "w", "m", `return (${clause});`)(e, wst, m) as boolean;
         if (hit) {
           return {
             east: e.shikona,
@@ -180,7 +176,9 @@ test("JSA UI spot checks: raw roster count, juryo replay has no kensho, recap sh
   await page.waitForTimeout(6000);
   await expect(dialog.getByText(/kensho/i)).toHaveCount(0);
   await page.keyboard.press("Escape");
-  await expect(dialog).not.toBeVisible({ timeout: 5_000 }).catch(() => {});
+  await expect(dialog)
+    .not.toBeVisible({ timeout: 5_000 })
+    .catch(() => {});
 
   // ── 2b. Positive control: a makuuchi bout carrying envelopes ─────────
   const makuuchiBout = await pickBout(
@@ -227,7 +225,7 @@ test("JSA UI spot checks: raw roster count, juryo replay has no kensho, recap sh
   expect(committeeEventCount, "committee feed events were logged").toBeGreaterThan(0);
 
   await expect(page.getByText("Committee Deliberations")).toBeVisible({ timeout: 15_000 });
-  await expect(
-    page.getByText(/committee \(\d+[–-]\d+\)/i).first()
-  ).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText(/committee \(\d+[–-]\d+\)/i).first()).toBeVisible({
+    timeout: 10_000,
+  });
 });

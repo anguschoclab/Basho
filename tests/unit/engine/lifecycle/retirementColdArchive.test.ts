@@ -9,8 +9,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 // Mock checkRetirement to force retirement for our test rikishi
 vi.mock("@/engine/lifecycle/retirementCheck", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@/engine/lifecycle/retirementCheck")>();
+  const actual = await importOriginal<typeof import("@/engine/lifecycle/retirementCheck")>();
   return {
     ...actual,
     checkRetirement: vi.fn((rikishi: Rikishi, year: number, seed: string) => {

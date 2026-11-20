@@ -32,9 +32,7 @@ describe("sibling matchmaking reject", () => {
 
   it("still rejects when repeat-opponent rules are disabled", () => {
     const { a, b, basho } = fixture({ siblingIds: ["r-b"] });
-    expect(
-      scorePairing({ basho, a, b, rules: { avoidRepeatOpponents: false } })
-    ).toBeNull();
+    expect(scorePairing({ basho, a, b, rules: { avoidRepeatOpponents: false } })).toBeNull();
   });
 
   it("allows non-sibling pairings", () => {

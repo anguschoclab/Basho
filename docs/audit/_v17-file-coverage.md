@@ -1660,7 +1660,7 @@ Delta-scope consolidation: [x] = read/modified this cycle (v17 diff or verified 
 - [ ] tests/unit/electron/mainSecurity.test.ts
 - [ ] tests/unit/electron/preload.test.ts
 - [ ] tests/unit/electron/storageKeyValidation.test.ts
-- [g] tests/unit/engine/__snapshots__/flatFileApi.characterization.test.ts.snap
+- [g] tests/unit/engine/**snapshots**/flatFileApi.characterization.test.ts.snap
 - [ ] tests/unit/engine/academy/YouthAcademyService.test.ts
 - [ ] tests/unit/engine/actions/injuredEncouragement.test.ts
 - [ ] tests/unit/engine/actions/oyakataIntervention.test.ts
@@ -1695,7 +1695,7 @@ Delta-scope consolidation: [x] = read/modified this cycle (v17 diff or verified 
 - [ ] tests/unit/engine/banzuke/BanzukePublisher.findOptimization.test.ts
 - [g] tests/unit/engine/banzuke/BanzukePublisher.snapshot.test.ts
 - [ ] tests/unit/engine/banzuke/BanzukePublisher.test.ts
-- [g] tests/unit/engine/banzuke/__snapshots__/banzukePublisher.characterization.test.ts.snap
+- [g] tests/unit/engine/banzuke/**snapshots**/banzukePublisher.characterization.test.ts.snap
 - [ ] tests/unit/engine/banzuke/banzukeMovementNarrative.test.ts
 - [ ] tests/unit/engine/banzuke/banzukePublisher.characterization.test.ts
 - [ ] tests/unit/engine/banzuke/banzukeTiebreak.test.ts
@@ -1741,9 +1741,9 @@ Delta-scope consolidation: [x] = read/modified this cycle (v17 diff or verified 
 - [ ] tests/unit/engine/basho/exhibitionBasho.test.ts
 - [ ] tests/unit/engine/basho/nakabi.test.ts
 - [ ] tests/unit/engine/bout/BanzukePublisher.test.ts
-- [g] tests/unit/engine/bout/__snapshots__/boutNarrative.golden.test.ts.snap
-- [g] tests/unit/engine/bout/__snapshots__/boutResult.snapshot.test.ts.snap
-- [g] tests/unit/engine/bout/__snapshots__/physicsTrio.characterization.test.ts.snap
+- [g] tests/unit/engine/bout/**snapshots**/boutNarrative.golden.test.ts.snap
+- [g] tests/unit/engine/bout/**snapshots**/boutResult.snapshot.test.ts.snap
+- [g] tests/unit/engine/bout/**snapshots**/physicsTrio.characterization.test.ts.snap
 - [ ] tests/unit/engine/bout/bashoMatchIndex.test.ts
 - [ ] tests/unit/engine/bout/boutAI.test.ts
 - [ ] tests/unit/engine/bout/boutAI.wiring.test.ts
@@ -1854,7 +1854,7 @@ Delta-scope consolidation: [x] = read/modified this cycle (v17 diff or verified 
 - [ ] tests/unit/engine/core/SimulationRunner.immutability.test.ts
 - [ ] tests/unit/engine/core/SimulationRunner.test.ts
 - [ ] tests/unit/engine/core/StateImpact.test.ts
-- [g] tests/unit/engine/core/__snapshots__/eventBus.characterization.test.ts.snap
+- [g] tests/unit/engine/core/**snapshots**/eventBus.characterization.test.ts.snap
 - [ ] tests/unit/engine/core/engineRestoration.test.ts
 - [ ] tests/unit/engine/core/eventBus.characterization.test.ts
 - [ ] tests/unit/engine/core/events.test.ts
@@ -2029,7 +2029,7 @@ Delta-scope consolidation: [x] = read/modified this cycle (v17 diff or verified 
 - [ ] tests/unit/engine/npc/personnelWorkerWithdrawal.test.ts
 - [ ] tests/unit/engine/npc/recruitmentBidIsolation.test.ts
 - [ ] tests/unit/engine/npcAI/LeaguePerception.test.ts
-- [g] tests/unit/engine/npcAI/__snapshots__/npcWeekly.characterization.test.ts.snap
+- [g] tests/unit/engine/npcAI/**snapshots**/npcWeekly.characterization.test.ts.snap
 - [ ] tests/unit/engine/npcAI/agentExecution.test.ts
 - [ ] tests/unit/engine/npcAI/archetypeAdaptation.test.ts
 - [ ] tests/unit/engine/npcAI/bashoTactics.test.ts
@@ -2111,7 +2111,7 @@ Delta-scope consolidation: [x] = read/modified this cycle (v17 diff or verified 
 - [ ] tests/unit/engine/scoutingStore.purity.test.ts
 - [ ] tests/unit/engine/scoutingStore.test.ts
 - [ ] tests/unit/engine/selectors.test.ts
-- [x] tests/unit/engine/services/__snapshots__/serviceObjects.characterization.test.ts.snap
+- [x] tests/unit/engine/services/**snapshots**/serviceObjects.characterization.test.ts.snap
 - [ ] tests/unit/engine/services/serviceObjects.characterization.test.ts
 - [ ] tests/unit/engine/shikona/helpers.test.ts
 - [ ] tests/unit/engine/shikona/shikona.test.ts
@@ -2183,8 +2183,8 @@ Delta-scope consolidation: [x] = read/modified this cycle (v17 diff or verified 
 - [ ] tests/unit/engine/systems/narrative/RivalryHeatService.test.ts
 - [ ] tests/unit/engine/systems/narrative/RivalryHeatService.tracking.test.ts
 - [ ] tests/unit/engine/systems/narrative/RivalryService.test.ts
-- [g] tests/unit/engine/systems/narrative/__snapshots__/postBashoPress.characterization.test.ts.snap
-- [g] tests/unit/engine/systems/narrative/__snapshots__/rivalryService.characterization.test.ts.snap
+- [g] tests/unit/engine/systems/narrative/**snapshots**/postBashoPress.characterization.test.ts.snap
+- [g] tests/unit/engine/systems/narrative/**snapshots**/rivalryService.characterization.test.ts.snap
 - [ ] tests/unit/engine/systems/narrative/postBashoPress.characterization.test.ts
 - [x] tests/unit/engine/systems/narrative/promotionBands.test.ts
 - [ ] tests/unit/engine/systems/narrative/rivalryService.characterization.test.ts

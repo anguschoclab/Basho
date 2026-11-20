@@ -78,6 +78,9 @@ export interface UseReplayClockReturn {
   reset: () => void;
 }
 
+/**
+ * Shared replay clock — owns replay state, progress, speed, narration indices, and RAF refs for both the 2D and 3D replay hooks. The draw callback is supplied by the caller (real canvas for 2D, no-op for 3D where Three.js reads the refs).
+ */
 export function useReplayClock({
   result,
   eastRikishi,

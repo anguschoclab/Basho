@@ -50,12 +50,7 @@ describe("RikishiCombatTab", () => {
   });
 
   it("renders rival entries with record and heat", () => {
-    render(
-      <RikishiCombatTab
-        rikishi={buildUiRikishi([makeRival()])}
-        rawRikishi={{} as Rikishi}
-      />
-    );
+    render(<RikishiCombatTab rikishi={buildUiRikishi([makeRival()])} rawRikishi={{} as Rikishi} />);
     expect(screen.getByText("Hoshoryu")).toBeTruthy();
     expect(screen.getByText(/Record: 5-3 \(8 bouts\)/)).toBeTruthy();
   });

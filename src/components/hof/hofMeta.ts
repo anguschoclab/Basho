@@ -45,6 +45,9 @@ const hofAccessor: Record<string, (ind: UIHofInductee) => string | number | unde
   yusho: (ind) => ind.stats?.yushoCount ?? 0,
 };
 
+/**
+ * Sorts Hall-of-Fame inductees by the requested career dimension.
+ */
 export function sortInductees(
   inductees: UIHofInductee[],
   sortKey: string,

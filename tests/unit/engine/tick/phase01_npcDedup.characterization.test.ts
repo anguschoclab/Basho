@@ -34,7 +34,11 @@ function buildDupRosterWorld(): WorldState {
   const mk = (id: string, rank: string, technique: number) =>
     world.rikishi.set(
       id,
-      MockFactory.createRikishi(id, { heyaId: "h-npc", rank: rank as never, stats: { technique } as never })
+      MockFactory.createRikishi(id, {
+        heyaId: "h-npc",
+        rank: rank as never,
+        stats: { technique } as never,
+      })
     );
   mk("r-men", "juryo", 80); // sekitori mentor
   mk("r-app1", "jonokuchi", 10);

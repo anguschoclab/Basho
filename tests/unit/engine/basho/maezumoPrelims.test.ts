@@ -160,7 +160,11 @@ describe("maezumo preliminary — graduation", () => {
       ],
     });
     const newBanzuke: BanzukeEntry[] = [
-      { rikishiId: "jk-1", division: "jonokuchi", position: { rank: "jonokuchi", rankNumber: 24, side: "east" } },
+      {
+        rikishiId: "jk-1",
+        division: "jonokuchi",
+        position: { rank: "jonokuchi", rankNumber: 24, side: "east" },
+      },
     ];
     const builder = createImpactBuilder("test");
     const grads = graduateMaezumoRikishi(world, basho, newBanzuke, builder);

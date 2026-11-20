@@ -66,13 +66,17 @@ describe("SEND_SCOUT (P4)", () => {
         costYen: 60_000,
       },
     ];
-    expect(sendScout(world, "h1", "scout1", "local").worldFields?.activeScoutMissions).toBeUndefined();
+    expect(
+      sendScout(world, "h1", "scout1", "local").worldFields?.activeScoutMissions
+    ).toBeUndefined();
   });
 
   it("rejects unaffordable missions and non-scout staff", () => {
     const { world } = mk();
     world.heyas.get("h1")!.funds = 10;
-    expect(sendScout(world, "h1", "scout1", "international").worldFields?.activeScoutMissions).toBeUndefined();
+    expect(
+      sendScout(world, "h1", "scout1", "international").worldFields?.activeScoutMissions
+    ).toBeUndefined();
     const { world: w2 } = mk();
     w2.staff.get("scout1")!.role = "administrator";
     expect(sendScout(w2, "h1", "scout1", "local").worldFields?.activeScoutMissions).toBeUndefined();
@@ -83,8 +87,24 @@ describe("tickScoutMissions (P4)", () => {
   it("returns due missions and logs a scouting report", () => {
     const { world } = mk();
     world.activeScoutMissions = [
-      { id: "m0", heyaId: "h1", scoutStaffId: "scout1", tier: "national", startedWeek: 2, returnsWeek: 4, costYen: 180_000 },
-      { id: "m1", heyaId: "h1", scoutStaffId: "scout1", tier: "local", startedWeek: 4, returnsWeek: 9, costYen: 60_000 },
+      {
+        id: "m0",
+        heyaId: "h1",
+        scoutStaffId: "scout1",
+        tier: "national",
+        startedWeek: 2,
+        returnsWeek: 4,
+        costYen: 180_000,
+      },
+      {
+        id: "m1",
+        heyaId: "h1",
+        scoutStaffId: "scout1",
+        tier: "local",
+        startedWeek: 4,
+        returnsWeek: 9,
+        costYen: 60_000,
+      },
     ];
     const impact = tickScoutMissions(world);
     const remaining = impact.worldFields?.activeScoutMissions!;

@@ -278,10 +278,14 @@ describe("applyBoutResult — signature-grip + sanyaku metrics", () => {
     const east = gripResultRikishi("east", "none");
     const west = gripResultRikishi("west", "none");
     const { world, match } = applyFixture(east, west);
-    const impact = applyBoutResult(world, match, makeBoutResult({
-      winnerRikishiId: "east",
-      loserRikishiId: "west",
-    }));
+    const impact = applyBoutResult(
+      world,
+      match,
+      makeBoutResult({
+        winnerRikishiId: "east",
+        loserRikishiId: "west",
+      })
+    );
     expect(metricsOf(impact, "east")?.preferredGripBouts ?? 0).toBe(0);
   });
 
@@ -289,19 +293,27 @@ describe("applyBoutResult — signature-grip + sanyaku metrics", () => {
     const east = gripResultRikishi("east", "none");
     const west = mockRikishi("west", { rank: "ozeki", division: "makuuchi" });
     const { world, match } = applyFixture(east, west);
-    const impact = applyBoutResult(world, match, makeBoutResult({
-      winnerRikishiId: "east",
-      loserRikishiId: "west",
-    }));
+    const impact = applyBoutResult(
+      world,
+      match,
+      makeBoutResult({
+        winnerRikishiId: "east",
+        loserRikishiId: "west",
+      })
+    );
     expect(metricsOf(impact, "east")?.sanyakuWinStreak).toBe(1);
     expect(metricsOf(impact, "west")?.sanyakuWinStreak).toBe(0);
 
     const westM = mockRikishi("west", { rank: "maegashira", division: "makuuchi" });
     const fx = applyFixture(east, westM);
-    const impact2 = applyBoutResult(fx.world, fx.match, makeBoutResult({
-      winnerRikishiId: "east",
-      loserRikishiId: "west",
-    }));
+    const impact2 = applyBoutResult(
+      fx.world,
+      fx.match,
+      makeBoutResult({
+        winnerRikishiId: "east",
+        loserRikishiId: "west",
+      })
+    );
     expect(metricsOf(impact2, "east")?.sanyakuWinStreak).toBe(0);
   });
 });
@@ -346,7 +358,9 @@ describe("pre_bout.signature_grip", () => {
       day: 9,
       boutMetrics: { "r-east": gripMetrics(4, 4, 5) },
     });
-    const world2 = makeBoutWorld(eastNone, west, { currentBasho: basho as BashoState }) as FullWorld;
+    const world2 = makeBoutWorld(eastNone, west, {
+      currentBasho: basho as BashoState,
+    }) as FullWorld;
     expect(tagged(narrate(eastNone, west, world2), "signature_grip")).toEqual([]);
   });
 });
@@ -422,9 +436,33 @@ describe("pre_bout.meeting_milestone", () => {
 
 describe("pre_bout.first_top_division", () => {
   const lowerMeetings = (opp: string) => [
-    { opponentId: opp, win: true, kimarite: "yorikiri", bashoId: "b1", day: 3, year: 2025, division: "juryo" as const },
-    { opponentId: opp, win: false, kimarite: "oshidashi", bashoId: "b2", day: 5, year: 2025, division: "juryo" as const },
-    { opponentId: opp, win: true, kimarite: "yorikiri", bashoId: "b3", day: 2, year: 2024, division: "makushita" as const },
+    {
+      opponentId: opp,
+      win: true,
+      kimarite: "yorikiri",
+      bashoId: "b1",
+      day: 3,
+      year: 2025,
+      division: "juryo" as const,
+    },
+    {
+      opponentId: opp,
+      win: false,
+      kimarite: "oshidashi",
+      bashoId: "b2",
+      day: 5,
+      year: 2025,
+      division: "juryo" as const,
+    },
+    {
+      opponentId: opp,
+      win: true,
+      kimarite: "yorikiri",
+      bashoId: "b3",
+      day: 2,
+      year: 2024,
+      division: "makushita" as const,
+    },
   ];
 
   it("fires when every prior meeting was below the top division", () => {
@@ -445,7 +483,15 @@ describe("pre_bout.first_top_division", () => {
       division: "makuuchi",
       history: [
         ...lowerMeetings("r-west"),
-        { opponentId: "r-west", win: true, kimarite: "yorikiri", bashoId: "b4", day: 9, year: 2025, division: "makuuchi" as const },
+        {
+          opponentId: "r-west",
+          win: true,
+          kimarite: "yorikiri",
+          bashoId: "b4",
+          day: 9,
+          year: 2025,
+          division: "makuuchi" as const,
+        },
       ],
     });
     const west = mockRikishi("r-west", { division: "makuuchi" });
@@ -477,7 +523,24 @@ describe("pre_bout sanyaku arcs", () => {
       currentBashoWins: 5,
       currentBashoLosses: 3,
       careerHistory: [
-        { bashoId: "b0", year: 2024, month: 5, bashoName: "natsu", rank: "sekiwake", division: "makuuchi", rankNumber: 1, side: "east", wins: 8, losses: 7, absences: 0, isYusho: false, isJunYusho: false, specialPrizes: { shukunsho: false, kantosho: false, ginosho: false }, weight: 150, momentum: 0 },
+        {
+          bashoId: "b0",
+          year: 2024,
+          month: 5,
+          bashoName: "natsu",
+          rank: "sekiwake",
+          division: "makuuchi",
+          rankNumber: 1,
+          side: "east",
+          wins: 8,
+          losses: 7,
+          absences: 0,
+          isYusho: false,
+          isJunYusho: false,
+          specialPrizes: { shukunsho: false, kantosho: false, ginosho: false },
+          weight: 150,
+          momentum: 0,
+        },
       ] as never,
     });
     const west = mockRikishi("r-west", { division: "makuuchi" });
@@ -493,7 +556,24 @@ describe("pre_bout sanyaku arcs", () => {
       currentBashoWins: 5,
       currentBashoLosses: 3,
       careerHistory: [
-        { bashoId: "b0", year: 2024, month: 5, bashoName: "natsu", rank: "maegashira", division: "makuuchi", rankNumber: 4, side: "east", wins: 8, losses: 7, absences: 0, isYusho: false, isJunYusho: false, specialPrizes: { shukunsho: false, kantosho: false, ginosho: false }, weight: 150, momentum: 0 },
+        {
+          bashoId: "b0",
+          year: 2024,
+          month: 5,
+          bashoName: "natsu",
+          rank: "maegashira",
+          division: "makuuchi",
+          rankNumber: 4,
+          side: "east",
+          wins: 8,
+          losses: 7,
+          absences: 0,
+          isYusho: false,
+          isJunYusho: false,
+          specialPrizes: { shukunsho: false, kantosho: false, ginosho: false },
+          weight: 150,
+          momentum: 0,
+        },
       ] as never,
     });
     const west = mockRikishi("r-west", { division: "makuuchi" });

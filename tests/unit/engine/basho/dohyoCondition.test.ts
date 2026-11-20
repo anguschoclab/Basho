@@ -32,7 +32,8 @@ describe("rollDohyoCondition", () => {
     const counts = (name: BashoName, n = 400) => {
       let slick = 0;
       for (let i = 0; i < n; i++) {
-        if (rollDohyoCondition(rngFromSeed("w", "dohyo", `${i}-${name}`), name) === "slick") slick++;
+        if (rollDohyoCondition(rngFromSeed("w", "dohyo", `${i}-${name}`), name) === "slick")
+          slick++;
       }
       return slick / n;
     };

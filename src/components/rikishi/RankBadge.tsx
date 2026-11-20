@@ -75,7 +75,7 @@ export function RankBadge({
   return <FullRankBadge {...shared} />;
 }
 
-// Simple inline rank display for tables/lists
+/** Simple inline rank display for tables/lists. */
 export function RankInline({
   rank,
   rankNumber,
@@ -93,7 +93,7 @@ export function RankInline({
           "font-black",
           rank === "yokozuna" && "text-gold",
           rank === "ozeki" && "text-silver",
-          (isLowerSanyakuRank(rank)) && "text-bronze",
+          isLowerSanyakuRank(rank) && "text-bronze",
           rank === "maegashira" && "text-primary",
           rank === "juryo" && "text-west",
           (rank === "makushita" ||

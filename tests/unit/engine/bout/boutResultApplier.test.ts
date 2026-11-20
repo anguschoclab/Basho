@@ -34,7 +34,7 @@ function makeWorldForBout(opts?: {
   westLosses?: number;
   east?: Partial<Rikishi>;
   west?: Partial<Rikishi>;
-    }): { world: Partial<WorldState>; match: MatchSchedule; result: BoutResult } {
+}): { world: Partial<WorldState>; match: MatchSchedule; result: BoutResult } {
   const world: Partial<WorldState> = {
     rikishi: new Map([
       [
@@ -146,7 +146,7 @@ function makeWorldForBout(opts?: {
   };
 
   return { world, match, result };
-    }
+}
 
 describe("boutResultApplier", () => {
   describe("Per-Bout Career Record Updates", () => {
@@ -277,7 +277,6 @@ describe("boutResultApplier", () => {
   });
 
   describe("currentBashoWins / currentBashoLosses / currentBashoRecord (Bug 2)", () => {
-
     it("Test 1.1: should increment currentBashoWins on winner", () => {
       const { world, match, result } = makeWorldForBout({ winnerWins: 3, loserLosses: 2 });
       const impact = applyBoutResult(world as WorldState, match, result);

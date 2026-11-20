@@ -41,6 +41,9 @@ function BreakdownRow({
   );
 }
 
+/**
+ * Economy page cards summarizing weekly/monthly income and expenses.
+ */
 export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps) {
   const incomeRows: Array<[string, number]> = weeklyFinances
     ? [

@@ -21,6 +21,9 @@ interface ArchetypeBadgeProps {
   className?: string;
 }
 
+/**
+ * Combat-archetype badge with a tooltip resolving `getCombatArchetypeDescription`. Two variants: `outline` (compact card badge) and `emphasis` (dialog badge).
+ */
 export function ArchetypeBadge({
   archetypeName,
   combatArchetype,

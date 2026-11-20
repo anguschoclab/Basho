@@ -1,7 +1,7 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
 import type { Id } from "@/engine/types/common";
-import {logBardEvent} from "@/engine/events/helpers";
+import { logBardEvent } from "@/engine/events/helpers";
 
 /**
  * Creates a financial alert event for a heya.
@@ -11,18 +11,19 @@ import {logBardEvent} from "@/engine/events/helpers";
  * @returns The logged engine event
  */
 export function financialAlert(world: WorldState, heyaId: Id, ctx: NarrativeContext) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `finance-${heyaId}-${ctx.incident}`,
     ctx: { heyaId, ...ctx },
     titlePath: "events.economy.title",
     summaryPath: "events.economy.summary",
     event: {
-    type: "FINANCIAL_ALERT",
-    category: "economy",
-    importance: ctx.incident === "insolvency" ? "headline" : "major",
-    scope: "heya",
-    heyaId,
-    tags: ["economy", ctx.incident as string]},
+      type: "FINANCIAL_ALERT",
+      category: "economy",
+      importance: ctx.incident === "insolvency" ? "headline" : "major",
+      scope: "heya",
+      heyaId,
+      tags: ["economy", ctx.incident as string],
+    },
   });
 }
 
@@ -33,20 +34,21 @@ export function financialAlert(world: WorldState, heyaId: Id, ctx: NarrativeCont
  * @returns The logged engine event
  */
 export function monthlyFinanceReport(world: WorldState, data: NarrativeContext) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `finance-tick-${data.heya}`,
     ctx: data,
     titlePath: "events.economy.title",
     summaryPath: "events.economy.market_shifts",
     summaryFirst: true,
     event: {
-    type: "MONTHLY_FINANCE_REPORT",
-    category: "economy",
-    phase: "monthly",
-    importance: "notable",
-    scope: "heya",
-    heyaId: data.heyaId,
-    tags: ["economy", "finance"]},
+      type: "MONTHLY_FINANCE_REPORT",
+      category: "economy",
+      phase: "monthly",
+      importance: "notable",
+      scope: "heya",
+      heyaId: data.heyaId,
+      tags: ["economy", "finance"],
+    },
   });
 }
 
@@ -64,17 +66,18 @@ export function financialAction(
   data: NarrativeContext,
   type: "loan" | "market"
 ) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `finance-${type}-${heyaId}`,
     ctx: { heyaId, ...data },
     titlePath: `events.economy.${type}_title`,
     summaryPath: `events.economy.${type}_summary`,
     event: {
-    type: "FINANCIAL_ALERT",
-    category: "economy",
-    importance: "notable",
-    scope: "heya",
-    heyaId,
-    tags: ["economy", type]},
+      type: "FINANCIAL_ALERT",
+      category: "economy",
+      importance: "notable",
+      scope: "heya",
+      heyaId,
+      tags: ["economy", type],
+    },
   });
 }

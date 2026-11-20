@@ -625,8 +625,6 @@ function generateDescription(
     heya_legacy: "bearing the proud tradition of the heya",
   };
 
-
-
   const tierDesc = tierDescriptions[tier];
   const originDesc = originDescriptions[origin];
   const symbolDesc = keshoMotifDescription(mainSymbol.value) || mainSymbol.value;

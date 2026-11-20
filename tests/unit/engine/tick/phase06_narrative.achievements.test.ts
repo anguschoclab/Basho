@@ -106,9 +106,7 @@ describe("deriveRecentAchievements — event window", () => {
   });
 
   it("data.rikishiId takes precedence over top-level rikishiId", () => {
-    const log = [
-      ev("RETIREMENT_ANNOUNCED", { rikishiId: "top-ret", dataRikishiId: "data-ret" }),
-    ];
+    const log = [ev("RETIREMENT_ANNOUNCED", { rikishiId: "top-ret", dataRikishiId: "data-ret" })];
     const { subjects } = deriveRecentAchievements(worldWithLog(log));
     expect(subjects.retirement).toBe("data-ret");
   });
@@ -118,10 +116,7 @@ describe("deriveRecentAchievements — roster-scoped paths", () => {
   function worldWithLastBasho(lastBasho: Partial<BashoResult>) {
     const world = makeMockWorld();
     world.playerHeyaId = "heya-player";
-    world.heyas.set(
-      "heya-player",
-      makeMockHeya("heya-player", { rikishiIds: ["r-mine"] })
-    );
+    world.heyas.set("heya-player", makeMockHeya("heya-player", { rikishiIds: ["r-mine"] }));
     world.rikishi.set("r-mine", mockRikishi("r-mine", { heyaId: "heya-player" }));
     world.rikishi.set("r-theirs", mockRikishi("r-theirs", { heyaId: "heya-other" }));
     world.history = [

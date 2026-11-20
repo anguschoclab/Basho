@@ -20,15 +20,25 @@ describe("east/west position invariance", () => {
     const flips = { toEast: 0, toWest: 0 };
     const basho = makeMockBasho();
     for (let i = 0; i < 40; i++) {
-      const a = mockRikishi(`alpha-${i}`, { power: 30 + ((i * 7) % 40), technique: 30 + ((i * 11) % 40) });
-      const b = mockRikishi(`beta-${i}`, { power: 30 + ((i * 13) % 40), technique: 30 + ((i * 17) % 40) });
+      const a = mockRikishi(`alpha-${i}`, {
+        power: 30 + ((i * 7) % 40),
+        technique: 30 + ((i * 11) % 40),
+      });
+      const b = mockRikishi(`beta-${i}`, {
+        power: 30 + ((i * 13) % 40),
+        technique: 30 + ((i * 17) % 40),
+      });
       const r1 = resolveBoutPhysics(
         { id: `sw-${i}`, day: 1, rikishiEastId: a.id, rikishiWestId: b.id },
-        a, b, basho
+        a,
+        b,
+        basho
       );
       const r2 = resolveBoutPhysics(
         { id: `sw-${i}`, day: 1, rikishiEastId: b.id, rikishiWestId: a.id },
-        b, a, basho
+        b,
+        a,
+        basho
       );
       const aWon1 = r1.result.winnerRikishiId === a.id;
       const aWon2 = r2.result.winnerRikishiId === a.id;

@@ -98,7 +98,9 @@ describe("D1 loan repayment characterization", () => {
     expect(heyaUpdates.funds).toBe(900);
     expect(heyaUpdates.activeLoans).toHaveLength(0);
     const events = builder.build().events ?? [];
-    expect(events.some((e) => e.type === "FINANCIAL_ALERT" && e.data?.incident === "loan_paid_off")).toBe(true);
+    expect(
+      events.some((e) => e.type === "FINANCIAL_ALERT" && e.data?.incident === "loan_paid_off")
+    ).toBe(true);
   });
 
   it("live impl: stale non-positive balance is dropped WITH paid_off event and credits funds", () => {
@@ -114,9 +116,10 @@ describe("D1 loan repayment characterization", () => {
     expect(heyaUpdates.funds).toBe(1050);
     expect(heyaUpdates.activeLoans).toHaveLength(0);
     const events = builder.build().events ?? [];
-    expect(events.some((e) => e.type === "FINANCIAL_ALERT" && e.data?.incident === "loan_paid_off")).toBe(true);
+    expect(
+      events.some((e) => e.type === "FINANCIAL_ALERT" && e.data?.incident === "loan_paid_off")
+    ).toBe(true);
   });
-
 });
 
 // --- D4: heat band — canonical is toRivalryHeatBand (descriptorBands) ---
@@ -124,9 +127,16 @@ describe("D1 loan repayment characterization", () => {
 describe("D4 rivalry heat band characterization", () => {
   it("canonical band edges", () => {
     const expected: Array<[number, string]> = [
-      [0, "dormant"], [19, "dormant"], [20, "simmering"], [39, "simmering"],
-      [40, "heated"], [64, "heated"], [65, "fierce"], [84, "fierce"],
-      [85, "legendary"], [100, "legendary"],
+      [0, "dormant"],
+      [19, "dormant"],
+      [20, "simmering"],
+      [39, "simmering"],
+      [40, "heated"],
+      [64, "heated"],
+      [65, "fierce"],
+      [84, "fierce"],
+      [85, "legendary"],
+      [100, "legendary"],
     ];
     for (const [heat, band] of expected) {
       expect(toRivalryHeatBand(heat)).toBe(band);
@@ -145,7 +155,12 @@ describe("D4 rivalry heat band characterization", () => {
 describe("D5 sponsor recruitment costs", () => {
   it("canonical map covers T0–T5 with expected values", () => {
     expect(SPONSOR_RECRUITMENT_COSTS).toEqual({
-      T0: 50_000, T1: 150_000, T2: 400_000, T3: 800_000, T4: 1_500_000, T5: 4_000_000,
+      T0: 50_000,
+      T1: 150_000,
+      T2: 400_000,
+      T3: 800_000,
+      T4: 1_500_000,
+      T5: 4_000_000,
     });
   });
 });
@@ -179,9 +194,19 @@ describe("D6 baseTenure zero-shape", () => {
 describe("D7 nationality flag map", () => {
   it("canonical flag for all thirteen nationalities plus fallback", () => {
     const expected: Record<string, string> = {
-      Japan: "🇯🇵", Mongolia: "🇲🇳", Estonia: "🇪🇪", Georgia: "🇬🇪",
-      Bulgaria: "🇧🇬", Brazil: "🇧🇷", USA: "🇺🇸", Russia: "🇷🇺",
-      Ukraine: "🇺🇦", China: "🇨🇳", Korea: "🇰🇷", Hungary: "🇭🇺", Czech: "🇨🇿",
+      Japan: "🇯🇵",
+      Mongolia: "🇲🇳",
+      Estonia: "🇪🇪",
+      Georgia: "🇬🇪",
+      Bulgaria: "🇧🇬",
+      Brazil: "🇧🇷",
+      USA: "🇺🇸",
+      Russia: "🇷🇺",
+      Ukraine: "🇺🇦",
+      China: "🇨🇳",
+      Korea: "🇰🇷",
+      Hungary: "🇭🇺",
+      Czech: "🇨🇿",
     };
     for (const [nat, flag] of Object.entries(expected)) {
       expect(getFlagForNationality(nat)).toBe(flag);
@@ -205,17 +230,22 @@ describe("D8 RANK_JA vs display registry", () => {
 describe("D11 kihaku label ladder", () => {
   it("canonical labels at band edges", () => {
     const expected: Array<[number, string]> = [
-      [0, "Broken Spirit"], [34, "Broken Spirit"], [35, "Faltering Will"],
-      [49, "Faltering Will"], [50, "Steady Resolve"], [64, "Steady Resolve"],
-      [65, "Fierce Determination"], [79, "Fierce Determination"],
-      [80, "Blazing Spirit"], [100, "Blazing Spirit"],
+      [0, "Broken Spirit"],
+      [34, "Broken Spirit"],
+      [35, "Faltering Will"],
+      [49, "Faltering Will"],
+      [50, "Steady Resolve"],
+      [64, "Steady Resolve"],
+      [65, "Fierce Determination"],
+      [79, "Fierce Determination"],
+      [80, "Blazing Spirit"],
+      [100, "Blazing Spirit"],
     ];
     for (const [score, label] of expected) {
       expect(kihakuLabel(score)).toBe(label);
     }
   });
 });
-
 
 // ============================================================================
 // W T — NPC ↔ player flow unification pins
@@ -245,8 +275,14 @@ function myosekiWorld(opts: { priced?: boolean; ownerId?: string; tier?: string 
     ["heya-buyer", buyer],
     ["heya-seller", seller],
   ]);
-  (world.oyakata as Map<string, unknown>).set("oya-buyer", { id: "oya-buyer", heyaId: "heya-buyer" });
-  (world.oyakata as Map<string, unknown>).set("oya-seller", { id: "oya-seller", heyaId: "heya-seller" });
+  (world.oyakata as Map<string, unknown>).set("oya-buyer", {
+    id: "oya-buyer",
+    heyaId: "heya-buyer",
+  });
+  (world.oyakata as Map<string, unknown>).set("oya-seller", {
+    id: "oya-seller",
+    heyaId: "heya-seller",
+  });
   return { world, stockId };
 }
 
@@ -257,13 +293,19 @@ describe("F1 myoseki purchase canonical contract", () => {
     expect(impact.entities?.heyaUpdates?.get("heya-buyer")?.funds).toBe(400_000_000);
     expect(impact.entities?.heyaUpdates?.get("heya-seller")?.funds).toBe(100_000_000);
     expect(impact.entities?.myosekiUpdates?.get(stockId)?.status).toBe("held");
-    expect(impact.events?.some((e) => e.type === "FINANCIAL_ALERT" && e.data?.incident === "myoseki_acquisition")).toBe(true);
+    expect(
+      impact.events?.some(
+        (e) => e.type === "FINANCIAL_ALERT" && e.data?.incident === "myoseki_acquisition"
+      )
+    ).toBe(true);
     expect(impact.arrayAppends?.some((a) => a.field === "myosekiMarket.history")).toBe(true);
   });
 
   it("buyMyoseki: self-purchase and insufficient funds are no-ops", () => {
     const { world, stockId } = myosekiWorld({ ownerId: "oya-buyer" });
-    expect(buyMyoseki(world, "oya-buyer", "heya-buyer", stockId).entities?.heyaUpdates?.size ?? 0).toBe(0);
+    expect(
+      buyMyoseki(world, "oya-buyer", "heya-buyer", stockId).entities?.heyaUpdates?.size ?? 0
+    ).toBe(0);
 
     const w2 = myosekiWorld();
     w2.world.heyas.get("heya-buyer")!.funds = 1;
@@ -333,7 +375,10 @@ describe("F3 pool initializer parity", () => {
     const world = MockFactory.createWorld({ year: 2026, week: 5 });
     (world as { talentPool?: unknown }).talentPool = undefined;
     const tp = ensureTalentPoolState(world);
-    const caps = (pt: TalentPoolType) => [tp.pools[pt].populationCap, tp.pools[pt].hiddenReserveCap];
+    const caps = (pt: TalentPoolType) => [
+      tp.pools[pt].populationCap,
+      tp.pools[pt].hiddenReserveCap,
+    ];
     expect(caps("high_school")).toEqual([450, 400]);
     expect(caps("university")).toEqual([300, 250]);
     expect(caps("foreign")).toEqual([200, 150]);
@@ -345,7 +390,10 @@ describe("F3 pool initializer parity", () => {
     const world = MockFactory.createWorld({ year: 2026, week: 5 });
     (world as { candidatePool?: unknown }).candidatePool = undefined;
     const cp = ensureCandidatePoolState(world);
-    const caps = (pt: TalentPoolType) => [cp.pools[pt].populationCap, cp.pools[pt].hiddenReserveCap];
+    const caps = (pt: TalentPoolType) => [
+      cp.pools[pt].populationCap,
+      cp.pools[pt].hiddenReserveCap,
+    ];
     expect(caps("high_school")).toEqual([50, 50]);
     expect(caps("university")).toEqual([40, 40]);
     expect(caps("foreign")).toEqual([30, 30]);
@@ -358,8 +406,16 @@ describe("F3 pool initializer parity", () => {
 
 describe("W U — canonical rank ordinal parity", () => {
   const RANKS: Rank[] = [
-    "jonokuchi", "jonidan", "sandanme", "makushita", "juryo",
-    "maegashira", "komusubi", "sekiwake", "ozeki", "yokozuna",
+    "jonokuchi",
+    "jonidan",
+    "sandanme",
+    "makushita",
+    "juryo",
+    "maegashira",
+    "komusubi",
+    "sekiwake",
+    "ozeki",
+    "yokozuna",
   ];
 
   it("RANK_ORDINAL indexes RANKS_ASCENDING (jonokuchi 0 → yokozuna 9)", () => {
@@ -372,18 +428,23 @@ describe("W U — canonical rank ordinal parity", () => {
   it("rankSeniority equals RANK_HIERARCHY tier − 1 (yokozuna 0)", () => {
     expect(rankSeniority("yokozuna")).toBe(0);
     expect(rankSeniority("jonokuchi")).toBe(9);
-    RANKS.forEach((r) =>
-      expect(rankSeniority(r)).toBe(RANK_HIERARCHY[r].tier - 1)
-    );
+    RANKS.forEach((r) => expect(rankSeniority(r)).toBe(RANK_HIERARCHY[r].tier - 1));
   });
 
   it("Swiss banzuke base equals rankSeniority × 100 (historical 0–900 map)", () => {
     // The retired SWISS_RANK_* map ran yokozuna 0 → jonokuchi 900 in steps
     // of 100 — pinned so the rankSeniority-derived base stays identical.
     const expected: Record<Rank, number> = {
-      yokozuna: 0, ozeki: 100, sekiwake: 200, komusubi: 300,
-      maegashira: 400, juryo: 500, makushita: 600, sandanme: 700,
-      jonidan: 800, jonokuchi: 900,
+      yokozuna: 0,
+      ozeki: 100,
+      sekiwake: 200,
+      komusubi: 300,
+      maegashira: 400,
+      juryo: 500,
+      makushita: 600,
+      sandanme: 700,
+      jonidan: 800,
+      jonokuchi: 900,
     };
     for (const r of RANKS) expect(rankSeniority(r) * 100).toBe(expected[r]);
   });
@@ -392,8 +453,16 @@ describe("W U — canonical rank ordinal parity", () => {
     // career.ts's 1–10 rank value map is the pure ordinal shifted by one.
     // Pinned pre-migration so the shared ordinal derivation can't drift.
     const legacy: Record<Rank, number> = {
-      jonokuchi: 1, jonidan: 2, sandanme: 3, makushita: 4, juryo: 5,
-      maegashira: 6, komusubi: 7, sekiwake: 8, ozeki: 9, yokozuna: 10,
+      jonokuchi: 1,
+      jonidan: 2,
+      sandanme: 3,
+      makushita: 4,
+      juryo: 5,
+      maegashira: 6,
+      komusubi: 7,
+      sekiwake: 8,
+      ozeki: 9,
+      yokozuna: 10,
     };
     for (const r of RANKS) expect(legacy[r]).toBe(RANK_ORDINAL[r] + 1);
   });
@@ -402,8 +471,16 @@ describe("W U — canonical rank ordinal parity", () => {
     // The retired RANK_ORDER map ran yokozuna 0 → jonokuchi 9 — pinned so the
     // rankSeniority migration in rosterSort stays identical.
     const legacy: Record<Rank, number> = {
-      yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4,
-      juryo: 5, makushita: 6, sandanme: 7, jonidan: 8, jonokuchi: 9,
+      yokozuna: 0,
+      ozeki: 1,
+      sekiwake: 2,
+      komusubi: 3,
+      maegashira: 4,
+      juryo: 5,
+      makushita: 6,
+      sandanme: 7,
+      jonidan: 8,
+      jonokuchi: 9,
     };
     for (const r of RANKS) expect(rankSeniority(r)).toBe(legacy[r]);
   });
@@ -412,10 +489,17 @@ describe("W U — canonical rank ordinal parity", () => {
 describe("W U — shared predicate truth tables", () => {
   it("isYokozunaOrOzekiRank: true only for yokozuna/ozeki", () => {
     for (const [rank, want] of [
-      ["yokozuna", true], ["ozeki", true], ["sekiwake", false],
-      ["komusubi", false], ["maegashira", false], ["juryo", false],
-      ["makushita", false], ["sandanme", false], ["jonidan", false],
-      ["jonokuchi", false], ["bogus", false],
+      ["yokozuna", true],
+      ["ozeki", true],
+      ["sekiwake", false],
+      ["komusubi", false],
+      ["maegashira", false],
+      ["juryo", false],
+      ["makushita", false],
+      ["sandanme", false],
+      ["jonidan", false],
+      ["jonokuchi", false],
+      ["bogus", false],
     ] as const) {
       expect(isYokozunaOrOzekiRank(rank)).toBe(want);
     }
@@ -423,9 +507,15 @@ describe("W U — shared predicate truth tables", () => {
 
   it("isSanyakuRank: komusubi/sekiwake/ozeki/yokozuna only", () => {
     for (const [rank, want] of [
-      ["yokozuna", true], ["ozeki", true], ["sekiwake", true],
-      ["komusubi", true], ["maegashira", false], ["juryo", false],
-      ["makushita", false], ["sandanme", false], ["jonidan", false],
+      ["yokozuna", true],
+      ["ozeki", true],
+      ["sekiwake", true],
+      ["komusubi", true],
+      ["maegashira", false],
+      ["juryo", false],
+      ["makushita", false],
+      ["sandanme", false],
+      ["jonidan", false],
       ["jonokuchi", false],
     ] as const) {
       expect(isSanyakuRank(rank)).toBe(want);
@@ -434,9 +524,15 @@ describe("W U — shared predicate truth tables", () => {
 
   it("isSekitoriRank: makuuchi+juryo ranks only", () => {
     for (const [rank, want] of [
-      ["yokozuna", true], ["ozeki", true], ["sekiwake", true],
-      ["komusubi", true], ["maegashira", true], ["juryo", true],
-      ["makushita", false], ["sandanme", false], ["jonidan", false],
+      ["yokozuna", true],
+      ["ozeki", true],
+      ["sekiwake", true],
+      ["komusubi", true],
+      ["maegashira", true],
+      ["juryo", true],
+      ["makushita", false],
+      ["sandanme", false],
+      ["jonidan", false],
       ["jonokuchi", false],
     ] as const) {
       expect(isSekitoriRank(rank)).toBe(want);
@@ -445,8 +541,12 @@ describe("W U — shared predicate truth tables", () => {
 
   it("isSekitoriDivision: makuuchi/juryo only", () => {
     for (const [div, want] of [
-      ["makuuchi", true], ["juryo", true], ["makushita", false],
-      ["sandanme", false], ["jonidan", false], ["jonokuchi", false],
+      ["makuuchi", true],
+      ["juryo", true],
+      ["makushita", false],
+      ["sandanme", false],
+      ["jonidan", false],
+      ["jonokuchi", false],
     ] as const) {
       expect(isSekitoriDivision(div as Division)).toBe(want);
     }
@@ -494,10 +594,25 @@ describe("W V — kesho motif registry", () => {
 
   it("legacy symbolMap/renderSymbol keys match the registry", () => {
     const legacy: Record<string, string> = {
-      dragon: "🐉", phoenix: "🔥", tiger: "🐅", mt_fuji: "🗻", waves: "🌊",
-      sakura: "🌸", pine: "🌲", bamboo: "🎋", crane: "🕊️", rising_sun: "☀️",
-      lightning: "⚡", waterfall: "💧", temple: "⛩️", treasure_ship: "⛵",
-      carp: "🐟", lotus: "🪷", thunder: "⛈️", wind: "💨", mountain: "⛰️",
+      dragon: "🐉",
+      phoenix: "🔥",
+      tiger: "🐅",
+      mt_fuji: "🗻",
+      waves: "🌊",
+      sakura: "🌸",
+      pine: "🌲",
+      bamboo: "🎋",
+      crane: "🕊️",
+      rising_sun: "☀️",
+      lightning: "⚡",
+      waterfall: "💧",
+      temple: "⛩️",
+      treasure_ship: "⛵",
+      carp: "🐟",
+      lotus: "🪷",
+      thunder: "⛈️",
+      wind: "💨",
+      mountain: "⛰️",
     };
     for (const [motif, emoji] of Object.entries(legacy)) {
       expect(keshoMotifEmoji(motif)).toBe(emoji);

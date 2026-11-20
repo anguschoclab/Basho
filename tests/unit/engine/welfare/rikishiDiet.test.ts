@@ -44,9 +44,7 @@ describe("per-rikishi diet (P3)", () => {
 
   it("pro-rates the weekly welfare delta by roster share on austerity", () => {
     const contrib = (r: { reasons: string[] }) =>
-      Number(
-        r.reasons.find((x) => x.startsWith("austerity_diet"))?.split("+")[1] ?? 0
-      );
+      Number(r.reasons.find((x) => x.startsWith("austerity_diet"))?.split("+")[1] ?? 0);
     const deltaOf = (diets: Record<string, string>) => {
       const world = mk(diets, "maintenance");
       const heya = world.heyas.get("h1")!;

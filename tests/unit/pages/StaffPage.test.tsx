@@ -25,8 +25,7 @@ vi.mock("@/components/layout/page-shell/index", () => ({
 }));
 
 vi.mock("@/components/ui/tooltip-wrap", () => ({
-  TooltipWrap: ({ children, ...rest }: any) =>
-    React.createElement("div", rest, children),
+  TooltipWrap: ({ children, ...rest }: any) => React.createElement("div", rest, children),
 }));
 
 vi.mock("@/components/ui/alert-dialog", () => ({

@@ -13,7 +13,12 @@ import {
   type BanzukeSnapshot,
 } from "@/engine/types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
-import { isSanyakuRank, isYokozunaOrOzekiRank, isLowerSanyakuRank, isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import {
+  isSanyakuRank,
+  isYokozunaOrOzekiRank,
+  isLowerSanyakuRank,
+  isSekitoriDivision,
+} from "@/constants/engine/rankDisplay";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 
@@ -336,12 +341,7 @@ function resolveOzekiStatuses(
     // so their first make-koshi is kadoban grace, not instant re-demotion.
     const prev = previousOzekiKadoban[e.rikishiId];
     const base = prev && prev.consecutiveMakeKoshi >= 2 ? undefined : prev;
-    const next = getOzekiStatus(
-      p?.wins ?? 0,
-      p?.losses ?? 0,
-      p?.absences ?? 0,
-      base
-    );
+    const next = getOzekiStatus(p?.wins ?? 0, p?.losses ?? 0, p?.absences ?? 0, base);
     if (next.consecutiveMakeKoshi >= 2) {
       // Tenure ends — write a clean entry instead of leaving demotion
       // residue for a future re-promotion to accumulate on.
@@ -596,11 +596,9 @@ function banzukeMovementEvents(
     const toIsSekitori = isSekitoriDivision(e.division);
     const isSekitoriPromotion = !fromIsSekitori && toIsSekitori;
     const fromIsSanyaku =
-      isYokozunaOrOzekiRank(o.position.rank) ||
-      isLowerSanyakuRank(o.position.rank);
+      isYokozunaOrOzekiRank(o.position.rank) || isLowerSanyakuRank(o.position.rank);
     const toIsSanyaku =
-      isYokozunaOrOzekiRank(e.position.rank) ||
-      isLowerSanyakuRank(e.position.rank);
+      isYokozunaOrOzekiRank(e.position.rank) || isLowerSanyakuRank(e.position.rank);
     const isSanyakuPromotion = !fromIsSanyaku && toIsSanyaku;
 
     events.push({
@@ -629,12 +627,11 @@ function banzukeMovementEvents(
       from: `kadoban:${oldState.isKadoban}`,
       to: `kadoban:${state.isKadoban}`,
       kind: "status",
-      description:
-        demotedOzeki.has(id)
-          ? "Ozeki demoted."
-          : state.isKadoban
-            ? "Kadoban status set."
-            : "Kadoban status cleared.",
+      description: demotedOzeki.has(id)
+        ? "Ozeki demoted."
+        : state.isKadoban
+          ? "Kadoban status set."
+          : "Kadoban status cleared.",
     });
   }
   return events;

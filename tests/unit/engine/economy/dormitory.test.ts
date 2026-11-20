@@ -6,10 +6,7 @@ import {
   repairFacility,
   repairCostFor,
 } from "@/engine/economy/facilityWear";
-import {
-  getRestFatigueFloor,
-  processRikishiWeekly,
-} from "@/engine/training/weeklyTraining";
+import { getRestFatigueFloor, processRikishiWeekly } from "@/engine/training/weeklyTraining";
 import { REST_FATIGUE_FLOOR_BASE } from "@/constants/engine/training";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
@@ -33,8 +30,7 @@ describe("dormitory facility (P3)", () => {
 
 function makeRecoveryWorld(dormLevel: number | null) {
   const heya = MockFactory.createHeya("heya_1", {
-    infrastructure:
-      dormLevel === null ? {} : { dormitory: { level: dormLevel, status: "active" } },
+    infrastructure: dormLevel === null ? {} : { dormitory: { level: dormLevel, status: "active" } },
   });
   const rikishi = MockFactory.createRikishi("r1", {
     heyaId: "heya_1" as Id,
@@ -76,16 +72,14 @@ describe("resting fatigue floor (dormitory/kitchen)", () => {
     const builder = createImpactBuilder("test");
     processRikishiWeekly(rikishi, world, new Map(), builder);
     const updates = builder.build().entities?.rikishiUpdates?.get("r1") as
-      | { fatigue?: number }
-      | undefined;
+      { fatigue?: number } | undefined;
     expect(updates?.fatigue).toBe(REST_FATIGUE_FLOOR_BASE);
 
     const { world: dormWorld, rikishi: dormRikishi } = makeRecoveryWorld(1);
     const dormBuilder = createImpactBuilder("test");
     processRikishiWeekly(dormRikishi, dormWorld, new Map(), dormBuilder);
     const dormUpdates = dormBuilder.build().entities?.rikishiUpdates?.get("r1") as
-      | { fatigue?: number }
-      | undefined;
+      { fatigue?: number } | undefined;
     expect(dormUpdates?.fatigue).toBeLessThan(REST_FATIGUE_FLOOR_BASE);
     // Shed amount (−5) is the binding limit once the floor drops below it.
     expect(dormUpdates?.fatigue).toBe(5);
@@ -115,8 +109,7 @@ describe("facility condition (deferred wear item)", () => {
   };
   const heyaUpdate = (impact: ReturnType<typeof tickFacilityCondition>) =>
     impact.entities?.heyaUpdates?.get("heya_c") as
-      | { funds?: number; infrastructure?: Record<string, { condition?: number }> }
-      | undefined;
+      { funds?: number; infrastructure?: Record<string, { condition?: number }> } | undefined;
 
   it("decays active facilities monthly, defaulting missing condition to 100", () => {
     const worn = heyaUpdate(tickFacilityCondition(mkInfraWorld(80)));

@@ -84,9 +84,7 @@ export function CareerAsRikishiCard({ oyakata }: { oyakata: Oyakata }) {
               <div className="flex items-center gap-2">
                 <Badge
                   variant={
-                    isYokozunaOrOzekiRank(oyakata.highestRank.toLowerCase())
-                      ? "default"
-                      : "outline"
+                    isYokozunaOrOzekiRank(oyakata.highestRank.toLowerCase()) ? "default" : "outline"
                   }
                   className="text-lg capitalize"
                 >

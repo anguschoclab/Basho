@@ -34,9 +34,7 @@ const mockGetHeyaStaff = getHeyaStaff as Mock;
 const mockGetHeyaStyleBias = getHeyaStyleBias as Mock;
 
 /** Wire the three controlled query mocks in one call. */
-function setupMocks(
-  opts: { oyakata?: Oyakata; staff?: Staff[]; styleBias?: Style } = {}
-): void {
+function setupMocks(opts: { oyakata?: Oyakata; staff?: Staff[]; styleBias?: Style } = {}): void {
   mockGetOyakataForHeya.mockReturnValue(opts.oyakata);
   mockGetHeyaStaff.mockReturnValue(opts.staff ?? []);
   mockGetHeyaStyleBias.mockReturnValue((opts.styleBias ?? "neutral") as Style);
@@ -126,7 +124,7 @@ describe("heyaUI - projectHeya", () => {
         yearsInCharge: 10,
       };
 
-      setupMocks({oyakata: mockOyakata});
+      setupMocks({ oyakata: mockOyakata });
 
       const result = projectHeya(heya, world);
 
@@ -172,7 +170,7 @@ describe("heyaUI - projectHeya", () => {
         },
       ];
 
-      setupMocks({staff: mockStaff});
+      setupMocks({ staff: mockStaff });
 
       const result = projectHeya(heya, world);
 
@@ -207,7 +205,7 @@ describe("heyaUI - projectHeya", () => {
         } as any,
       ];
 
-      setupMocks({staff: mockStaff});
+      setupMocks({ staff: mockStaff });
 
       const result = projectHeya(heya, world);
 
@@ -238,7 +236,7 @@ describe("heyaUI - projectHeya", () => {
         },
       ];
 
-      setupMocks({staff: mockStaff});
+      setupMocks({ staff: mockStaff });
 
       const result = projectHeya(heya, world);
 
@@ -383,7 +381,7 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      setupMocks({styleBias: "oshi" as Style});
+      setupMocks({ styleBias: "oshi" as Style });
 
       const result = projectHeya(heya, world);
 

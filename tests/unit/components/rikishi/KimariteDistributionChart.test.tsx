@@ -42,10 +42,7 @@ describe("KimariteDistributionChart", () => {
 
   it("renders the chart and recorded-wins caption at 5+ wins", () => {
     render(
-      <KimariteDistributionChart
-        rows={[tech("Yorikiri", 4), tech("Oshidashi", 1)]}
-        totalWins={5}
-      />
+      <KimariteDistributionChart rows={[tech("Yorikiri", 4), tech("Oshidashi", 1)]} totalWins={5} />
     );
     expect(screen.getByText(/5 recorded wins/i)).toBeTruthy();
   });

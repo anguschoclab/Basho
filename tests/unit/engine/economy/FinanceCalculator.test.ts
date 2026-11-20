@@ -373,21 +373,32 @@ describe("FinanceCalculator — itemized breakdown (income/outgoings)", () => {
           ["s2", { id: "s2", tier: "bronze" } as unknown as Sponsor],
         ]),
         koenkais: new Map([
-          ["koen-1", { id: "koen-1", members: [{ sponsorId: "s1" }, { sponsorId: "s2" }] } as unknown as Koenkai],
+          [
+            "koen-1",
+            {
+              id: "koen-1",
+              members: [{ sponsorId: "s1" }, { sponsorId: "s2" }],
+            } as unknown as Koenkai,
+          ],
         ]),
       } as unknown as SponsorPool,
     });
 
     const result = calculateHeyaWeeklyFinances(heya, world);
 
-    const expectedKoenkai =
-      (KOENKAI_INCOME_POWERFUL * KOENKAI_INCOME_SPLIT.heyaPortion) / 4;
+    const expectedKoenkai = (KOENKAI_INCOME_POWERFUL * KOENKAI_INCOME_SPLIT.heyaPortion) / 4;
     const expectedJsa =
-      ((JSA_PER_WRESTLER_SUBSIDY_MONTHLY["maegashira" as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY] ?? 0) +
-        (JSA_PER_WRESTLER_SUBSIDY_MONTHLY["komusubi" as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY] ?? 0)) / 4;
+      ((JSA_PER_WRESTLER_SUBSIDY_MONTHLY[
+        "maegashira" as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY
+      ] ?? 0) +
+        (JSA_PER_WRESTLER_SUBSIDY_MONTHLY[
+          "komusubi" as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY
+        ] ?? 0)) /
+      4;
     const expectedSponsor =
       ((SPONSOR_TIER_INCOME["gold" as keyof typeof SPONSOR_TIER_INCOME] ?? 0) +
-        (SPONSOR_TIER_INCOME["bronze" as keyof typeof SPONSOR_TIER_INCOME] ?? 0)) / 4;
+        (SPONSOR_TIER_INCOME["bronze" as keyof typeof SPONSOR_TIER_INCOME] ?? 0)) /
+      4;
 
     expect(result.income.koenkai).toBeCloseTo(expectedKoenkai);
     expect(result.income.jsaSubsidy).toBeCloseTo(expectedJsa);

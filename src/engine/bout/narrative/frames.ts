@@ -381,18 +381,15 @@ function handleGripTransitionFrame(s: FrameState, entry: BoutLogEntry, rng: Seed
       const from = side === "east" ? gripData.eastGripFrom : gripData.westGripFrom;
       const to = side === "east" ? gripData.eastGripTo : gripData.westGripTo;
       const oppTo = side === "east" ? gripData.westGripTo : gripData.eastGripTo;
-      const rightInside =
-        side === "east" ? gripData.eastRightInside : gripData.westRightInside;
-      const leftInside =
-        side === "east" ? gripData.eastLeftInside : gripData.westLeftInside;
+      const rightInside = side === "east" ? gripData.eastRightInside : gripData.westRightInside;
+      const leftInside = side === "east" ? gripData.eastLeftInside : gripData.westLeftInside;
 
       const gainedInside = to === "shitate" || to === "morozashi";
       const wasOutside = from === "uwate" || from === "outside";
       const pref = r.combatProfile?.preferredGrip;
       const matchedPreferred =
         gainedInside &&
-        ((pref === "migi" && rightInside === true) ||
-          (pref === "hidari" && leftInside === true));
+        ((pref === "migi" && rightInside === true) || (pref === "hidari" && leftInside === true));
       const planBInside =
         gainedInside &&
         !matchedPreferred &&

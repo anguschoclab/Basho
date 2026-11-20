@@ -18,6 +18,9 @@ import {
   UpgradeSection,
 } from "@/components/recruitment/YouthAcademyPanelSections";
 
+/**
+ * Youth-academy management panel — level, staff, prospects, upgrade, and invest controls.
+ */
 export function YouthAcademyPanel({
   projection,
   cash,
@@ -68,7 +71,9 @@ export function YouthAcademyPanel({
           </div>
           <div className="p-2 rounded bg-muted/20">
             <div className="text-muted-foreground">Budget</div>
-            <div className="text-sm font-medium tabular-nums">{a.budget.toLocaleString("en-US")}</div>
+            <div className="text-sm font-medium tabular-nums">
+              {a.budget.toLocaleString("en-US")}
+            </div>
           </div>
         </div>
 

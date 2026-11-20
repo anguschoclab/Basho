@@ -6,11 +6,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import {
-  getEventRoute,
-  getLinkLabel,
-  getCategoryMeta,
-} from "@/components/layout/eventLogHelpers";
+import { getEventRoute, getLinkLabel, getCategoryMeta } from "@/components/layout/eventLogHelpers";
 import type { EngineEvent } from "@/engine/types/events";
 
 function makeEvent(overrides: Partial<EngineEvent> = {}): EngineEvent {
@@ -38,9 +34,9 @@ describe("getEventRoute", () => {
 
   it("routes basho recap events to /recap, other basho events to /basho", () => {
     expect(getEventRoute(makeEvent({ category: "basho", type: "BASHO_STATUS" }))).toBe("/basho");
-    expect(
-      getEventRoute(makeEvent({ category: "basho", type: "NARRATIVE_WRAP" as never }))
-    ).toBe("/recap");
+    expect(getEventRoute(makeEvent({ category: "basho", type: "NARRATIVE_WRAP" as never }))).toBe(
+      "/recap"
+    );
   });
 
   it("routes rikishi-scoped training/injury/career/promotion to the rikishi profile", () => {

@@ -17,6 +17,9 @@ interface FactionStepProps {
   onPrev: () => void;
 }
 
+/**
+ * Wizard step — ichimon faction dossier selection.
+ */
 export function FactionStep({ ichimon, onIchimonChange, onNext, onPrev }: FactionStepProps) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">

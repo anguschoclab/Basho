@@ -187,9 +187,7 @@ describe("applyOfficiating — confirmed foul", () => {
     expect(result.foulReview?.apparentKimarite).toBe("yorikiri");
     expect(result.foulReview?.suspectRikishiId).toBe("r-east");
     expect(result.excitementScore ?? 0).toBeLessThanOrEqual(100);
-    expect(
-      result.log.some((e) => e.phase === "finish" && e.data?.event === "hansoku")
-    ).toBe(true);
+    expect(result.log.some((e) => e.phase === "finish" && e.data?.event === "hansoku")).toBe(true);
   });
 
   it("confirmed foul reports a scandal for the suspect's heya", () => {

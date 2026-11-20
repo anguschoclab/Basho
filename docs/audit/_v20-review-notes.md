@@ -5,25 +5,27 @@
 
 ## Phase A.1 Baseline log (clean main @ b62cc407 — "Bun updates")
 
-| Gate | Result |
-|------|--------|
-| `bun run type-check` | ✅ PASS — 0 errors |
-| `bun run lint:commit` | ✅ PASS — 0 errors/warnings output |
-| `bun run build` | ✅ PASS — ~60s (rolldown; chunk-size warnings only, incl. BashoPage 1.09MB / engine.worker 887KB) |
-| `bun run test` (fast) | ✅ 10,221 passed / 7 skipped — 1 induced failure (`staleDocs` flagged THIS FILE for missing staleness annotation — fixed) + 1 contention flake |
-| `bun run test:slow` | pending (needs build — done) |
-| `bun run test:perf` | pending |
-| `bun run test:e2e:smoke` | pending |
-| `determinism basho` + `year` | pending (slow suite covers `determinismDoubleRun`) |
-| `Math.random`/`Date.now` grep `src/engine` | ✅ ZERO call sites (3 comment-only mentions: FamilyBondService.ts:11, calendar.ts:5, RecruitmentController.ts:58) |
+| Gate                                       | Result                                                                                                                                         |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run type-check`                       | ✅ PASS — 0 errors                                                                                                                             |
+| `bun run lint:commit`                      | ✅ PASS — 0 errors/warnings output                                                                                                             |
+| `bun run build`                            | ✅ PASS — ~60s (rolldown; chunk-size warnings only, incl. BashoPage 1.09MB / engine.worker 887KB)                                              |
+| `bun run test` (fast)                      | ✅ 10,221 passed / 7 skipped — 1 induced failure (`staleDocs` flagged THIS FILE for missing staleness annotation — fixed) + 1 contention flake |
+| `bun run test:slow`                        | pending (needs build — done)                                                                                                                   |
+| `bun run test:perf`                        | pending                                                                                                                                        |
+| `bun run test:e2e:smoke`                   | pending                                                                                                                                        |
+| `determinism basho` + `year`               | pending (slow suite covers `determinismDoubleRun`)                                                                                             |
+| `Math.random`/`Date.now` grep `src/engine` | ✅ ZERO call sites (3 comment-only mentions: FamilyBondService.ts:11, calendar.ts:5, RecruitmentController.ts:58)                              |
 
 ### Baseline findings
+
 - **CLAUDE.md "2 pre-existing DynastyService snapshot failures" — DISPROVED for current main.** Zero DynastyService failures in the run; note is stale (fixed since or flake).
 - **Contention flake**: `tests/unit/pages/Dashboard.succession.test.tsx` `beforeAll` dynamic import timed out (10s) while `bun run build` ran concurrently; passes isolated 6/6 in 4.8s. Flake-risk file under load.
 - **staleDocs meta-gate**: any `docs/audit/*.md` mentioning regex/grep needs a staleness/superseded annotation — header added above.
 - **Fetch delta**: all 8 dependabot branches force-rebased overnight — PR heads changed SHA (verdicts unaffected — payload analysis used post-rebase refs).
 
 ### Fetch delta at session start
+
 All 8 dependabot branches force-updated overnight (rebased onto main).
 
 ## Phase A.4 — Delta deep-dive (220 src files changed 32bf8e74..main; 441 total)
@@ -54,20 +56,20 @@ bun.lock · docs/user-manual.md · docs/Basho_Constitution · .claude/CLAUDE.md 
 
 ## Phase D — RED/GREEN matrix (tests/unit/engine/consolidation/v20Regressions.test.ts)
 
-| Test | Registry | Pre-fix status |
-|------|----------|----------------|
-| isYushoContention division-scoped | E1 | RED ✓ |
-| isPlayoffScenario division-scoped | E1 | RED ✓ |
-| applyNewRanks shikona milestone | E4 | RED ✓ (never fires pre-fix) |
-| maezumo standings/career exclusion | E5 | RED ✓ |
-| maezumo records-board exclusion | E5 | RED ✓ |
-| eighthBout day-gate | E7 | RED ✓ (`sd-donor` flagged) |
-| NPC-fill pool zombie | E14 | RED ✓ |
-| roster sync keeps added rikishi | E13 | GREEN (guard — E13 DISPROVED: resolver unions rikishiToAdd) |
-| getHeyaRoster contract | #1202 char. | GREEN (characterization) |
-| incident dedup same-tick-only | #1203 char. | GREEN (characterization) |
-| oversleeping render integrity | #1205 | GREEN (pins token contract) |
-| oversleeping variant counts | #1205 | RED ✓ (3/3/3 → 5/6/7) |
+| Test                               | Registry    | Pre-fix status                                              |
+| ---------------------------------- | ----------- | ----------------------------------------------------------- |
+| isYushoContention division-scoped  | E1          | RED ✓                                                       |
+| isPlayoffScenario division-scoped  | E1          | RED ✓                                                       |
+| applyNewRanks shikona milestone    | E4          | RED ✓ (never fires pre-fix)                                 |
+| maezumo standings/career exclusion | E5          | RED ✓                                                       |
+| maezumo records-board exclusion    | E5          | RED ✓                                                       |
+| eighthBout day-gate                | E7          | RED ✓ (`sd-donor` flagged)                                  |
+| NPC-fill pool zombie               | E14         | RED ✓                                                       |
+| roster sync keeps added rikishi    | E13         | GREEN (guard — E13 DISPROVED: resolver unions rikishiToAdd) |
+| getHeyaRoster contract             | #1202 char. | GREEN (characterization)                                    |
+| incident dedup same-tick-only      | #1203 char. | GREEN (characterization)                                    |
+| oversleeping render integrity      | #1205       | GREEN (pins token contract)                                 |
+| oversleeping variant counts        | #1205       | RED ✓ (3/3/3 → 5/6/7)                                       |
 
 8 intended RED + 4 intended GREEN confirmed 2026-11 pre-Phase-E.
 

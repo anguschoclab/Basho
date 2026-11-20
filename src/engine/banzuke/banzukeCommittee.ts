@@ -20,11 +20,7 @@
 // structural limits bound real movement.
 // =======================================================
 
-import {
-  RANK_HIERARCHY,
-  type BanzukeEntry,
-  type BashoPerformance,
-} from "@/engine/types/banzuke";
+import { RANK_HIERARCHY, type BanzukeEntry, type BashoPerformance } from "@/engine/types/banzuke";
 import { conveneCommittee, type CommitteeDecision } from "@/engine/committee/committee";
 import { BANZUKE_COMMITTEE } from "@/constants/engine/committee";
 import {
@@ -56,14 +52,9 @@ export interface BanzukeDeliberation {
   readonly decision: CommitteeDecision;
 }
 
-const clampDelta = (v: number, lo: number, hi: number): number =>
-  Math.max(lo, Math.min(hi, v));
+const clampDelta = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
 
-function rankCaps(
-  rank: string,
-  demotedOzeki: boolean,
-  wins: number
-): [number, number] {
+function rankCaps(rank: string, demotedOzeki: boolean, wins: number): [number, number] {
   switch (rank) {
     case "yokozuna":
       return [RANK_MOVE_CAP_YOKOZUNA_MIN, RANK_MOVE_CAP_YOKOZUNA_MAX];

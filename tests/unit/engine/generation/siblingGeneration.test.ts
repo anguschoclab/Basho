@@ -34,8 +34,9 @@ function fixture(seed: string) {
   return { candidate, world, pools };
 }
 
-const addedRikishiIds = (impact: ReturnType<typeof materializeCandidateToRikishiInternal>["impact"]) =>
-  (impact.collections as { rikishiToAdd?: unknown[] } | undefined)?.rikishiToAdd ?? [];
+const addedRikishiIds = (
+  impact: ReturnType<typeof materializeCandidateToRikishiInternal>["impact"]
+) => (impact.collections as { rikishiToAdd?: unknown[] } | undefined)?.rikishiToAdd ?? [];
 
 describe("sibling generation", () => {
   it("finds at least one seed that mints a sibling pair", () => {
@@ -76,9 +77,7 @@ describe("sibling generation", () => {
       expect(sib.siblingIds).toContain(other.id);
       expect(other.siblingIds ?? []).toEqual(expect.arrayContaining([sib.id]));
       expect(sib.origin).toBe(other.origin);
-      expect(Math.abs(sib.birthYear - other.birthYear)).toBeLessThanOrEqual(
-        SIBLING_MAX_AGE_GAP
-      );
+      expect(Math.abs(sib.birthYear - other.birthYear)).toBeLessThanOrEqual(SIBLING_MAX_AGE_GAP);
       if (sib.realName && other.realName) {
         expect(sib.realName.split(" ").pop()).toBe(other.realName.split(" ").pop());
       }
@@ -86,8 +85,7 @@ describe("sibling generation", () => {
       const heyaUpdates = res.impact.entities?.heyaUpdates ?? new Map();
       const roster2 = heyaUpdates.get("heya-2")?.rikishiIds as string[] | undefined;
       const roster1 = heyaUpdates.get("heya-1")?.rikishiIds as string[] | undefined;
-      const siblingInOther =
-        (roster2?.includes(sib.id) || roster2?.includes(other.id)) ?? false;
+      const siblingInOther = (roster2?.includes(sib.id) || roster2?.includes(other.id)) ?? false;
       expect(roster1).toBeDefined();
       expect(siblingInOther).toBe(true);
       return;

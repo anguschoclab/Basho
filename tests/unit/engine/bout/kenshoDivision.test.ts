@@ -75,27 +75,12 @@ function runStakes(
     isTimeout: false,
   } as BoutResult;
   const bout = { day } as BoutContext;
-  applyStakesAndKensho(
-    world,
-    east,
-    west,
-    east,
-    result,
-    bout,
-    basho,
-    createImpactBuilder("test")
-  );
+  applyStakesAndKensho(world, east, west, east, result, bout, basho, createImpactBuilder("test"));
   return result;
 }
 
 describe("kensho division eligibility — makuuchi only (modern JSA)", () => {
-  const lowerDivisions = [
-    "juryo",
-    "makushita",
-    "sandanme",
-    "jonidan",
-    "jonokuchi",
-  ] as const;
+  const lowerDivisions = ["juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as const;
 
   for (const division of lowerDivisions) {
     it(`writes no banners/envelopes on a ${division} bout`, () => {

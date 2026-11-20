@@ -43,11 +43,7 @@ export function objectiveProgress(
   if (kind === "funds_growth") return world.heyas.get(heyaId)?.funds ?? 0;
   let sekitori = 0;
   for (const r of world.rikishi.values()) {
-    if (
-      r.heyaId === heyaId &&
-      !r.isRetired &&
-      (isSekitoriDivision(r.division))
-    ) {
+    if (r.heyaId === heyaId && !r.isRetired && isSekitoriDivision(r.division)) {
       sekitori++;
     }
   }

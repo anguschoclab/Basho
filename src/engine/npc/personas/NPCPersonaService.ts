@@ -70,8 +70,6 @@ export interface NPCPersona {
   mood: OyakataMood;
 }
 
-
-
 interface OyakataPersona {
   quirks: string[];
   managerFlags: NonNullable<Oyakata["managerFlags"]>;

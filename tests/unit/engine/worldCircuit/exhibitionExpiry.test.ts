@@ -37,12 +37,7 @@ describe("V18-S7-18 exhibition invitation expiry", () => {
 
   it("refuses to process an expired invitation — no presence gain, no events", () => {
     const world = worldAt(10, [invitation()]); // expiresAtWeek 9, week 10 → expired
-    const impact = WorldCircuitService.processExhibitionResult(
-      world,
-      "heya1",
-      "r1",
-      invitation()
-    );
+    const impact = WorldCircuitService.processExhibitionResult(world, "heya1", "r1", invitation());
     const updated = resolveImpacts(world, [impact]);
 
     expect(updated.heyas.get("heya1")?.regionalPresence?.["Mongolia"] ?? 0).toBe(0);
@@ -51,12 +46,7 @@ describe("V18-S7-18 exhibition invitation expiry", () => {
 
   it("processes a live invitation normally (control)", () => {
     const world = worldAt(5, [invitation()]); // expiresAtWeek 9, week 5 → live
-    const impact = WorldCircuitService.processExhibitionResult(
-      world,
-      "heya1",
-      "r1",
-      invitation()
-    );
+    const impact = WorldCircuitService.processExhibitionResult(world, "heya1", "r1", invitation());
     const updated = resolveImpacts(world, [impact]);
 
     expect(updated.heyas.get("heya1")?.regionalPresence?.["Mongolia"] ?? 0).toBeGreaterThan(0);
@@ -64,12 +54,7 @@ describe("V18-S7-18 exhibition invitation expiry", () => {
 
   it("invitation expiring this week is still processable at the boundary", () => {
     const world = worldAt(9, [invitation()]); // expiresAtWeek 9, week 9 → last valid week
-    const impact = WorldCircuitService.processExhibitionResult(
-      world,
-      "heya1",
-      "r1",
-      invitation()
-    );
+    const impact = WorldCircuitService.processExhibitionResult(world, "heya1", "r1", invitation());
     const updated = resolveImpacts(world, [impact]);
 
     expect(updated.heyas.get("heya1")?.regionalPresence?.["Mongolia"] ?? 0).toBeGreaterThan(0);

@@ -52,21 +52,24 @@ function worldWithCareer(opts: {
   me.oyakataId = "o-me" as never;
   me.consecutiveUnderperformanceBasho = opts.underperformanceBasho ?? 0;
   world.heyas.set("h-me" as never, me);
-  world.oyakata.set("o-me" as never, {
-    id: "o-me",
-    heyaId: "h-me",
-    tenure: {
-      startedYear: 2025,
-      bashoServed: 12,
-      championships: 0,
-      sekitoriProduced: 0,
-      insolvencyEvents: 0,
-      majorScandals: 0,
-      forcedMergers: 0,
-      boardSeatsWon: 0,
-      ...opts.tenure,
-    },
-  } as unknown as Oyakata);
+  world.oyakata.set(
+    "o-me" as never,
+    {
+      id: "o-me",
+      heyaId: "h-me",
+      tenure: {
+        startedYear: 2025,
+        bashoServed: 12,
+        championships: 0,
+        sekitoriProduced: 0,
+        insolvencyEvents: 0,
+        majorScandals: 0,
+        forcedMergers: 0,
+        boardSeatsWon: 0,
+        ...opts.tenure,
+      },
+    } as unknown as Oyakata
+  );
   for (const [id, cap] of opts.others ?? []) {
     world.heyas.set(id as never, makeMockHeya(id, { politicalCapital: cap, reputation: 0 }));
   }

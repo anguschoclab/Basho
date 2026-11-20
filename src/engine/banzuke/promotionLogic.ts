@@ -1,8 +1,4 @@
-import {
-  RANK_HIERARCHY,
-  type BashoPerformance,
-  type BanzukeEntry,
-} from "@/engine/types/banzuke";
+import { RANK_HIERARCHY, type BashoPerformance, type BanzukeEntry } from "@/engine/types/banzuke";
 import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
 import { OzekiKadobanState } from "@/engine/banzuke/ozekiLogic";
 import {

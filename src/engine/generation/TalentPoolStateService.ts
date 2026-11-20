@@ -83,6 +83,9 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
 // INTERNAL POOL REFRESH HELPERS
 // ============================================
 
+/**
+ * Regenerates stale talent-pool entries for every heya while preserving live ones.
+ */
 export function refreshAllPools(world: WorldState): StateImpact {
   const builder = createImpactBuilder("refreshAllPools");
   const tp = ensureTalentPoolState(world);

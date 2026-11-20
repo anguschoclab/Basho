@@ -109,7 +109,18 @@ describe("lower-division callup cascade", () => {
     expect(callupIds).toEqual(["jd-1", "jk-1", "sd-1"]);
     // Nobody double-booked.
     const paired = ids(scheduled);
-    for (const id of ["ms-1", "ms-2", "ms-3", "sd-1", "sd-2", "sd-3", "sd-4", "jd-1", "jd-2", "jk-1"]) {
+    for (const id of [
+      "ms-1",
+      "ms-2",
+      "ms-3",
+      "sd-1",
+      "sd-2",
+      "sd-3",
+      "sd-4",
+      "jd-1",
+      "jd-2",
+      "jk-1",
+    ]) {
       expect(paired.has(id)).toBe(true);
     }
   });
@@ -198,7 +209,13 @@ describe("jonokuchi — maezumo and 8th bout", () => {
     // Two maezumo already minted (cap) and busy → day 13 odd jonokuchi →
     // a rikishi who already completed 7 bouts fights again.
     const busy = (id: string) =>
-      mockRikishi(id, { division: "jonokuchi", rank: "jonokuchi", rankNumber: 998, isMaezumo: true, injured: true } as Partial<Rikishi>);
+      mockRikishi(id, {
+        division: "jonokuchi",
+        rank: "jonokuchi",
+        rankNumber: 998,
+        isMaezumo: true,
+        injured: true,
+      } as Partial<Rikishi>);
     const mz1 = busy("maezumo-1");
     const mz2 = busy("maezumo-2");
     const veteran = mkDivision("jonokuchi", "jk-vet", 5);
@@ -275,9 +292,7 @@ describe("juryo odd-day starvation (regression)", () => {
     const callupBouts = scheduled.filter((m) => m.crossDivisionCallupId);
     for (const m of callupBouts) {
       const id = m.crossDivisionCallupId!;
-      const count = scheduled.filter((x) =>
-        [x.eastRikishiId, x.westRikishiId].includes(id)
-      ).length;
+      const count = scheduled.filter((x) => [x.eastRikishiId, x.westRikishiId].includes(id)).length;
       expect(count).toBe(1);
     }
   });

@@ -264,14 +264,7 @@ export function runAlmanacNarrativeUpdate(world: WorldState): StateImpact {
       const result = pm.result;
       if (existingBoutIds.has(result.boutId)) continue;
 
-      const entry = buildNotableBoutEntry(
-        result,
-        rikishiId,
-        world,
-        bashoName,
-        year,
-        pm.match.day
-      );
+      const entry = buildNotableBoutEntry(result, rikishiId, world, bashoName, year, pm.match.day);
       if (entry) {
         newBouts.push(entry);
         existingBoutIds.add(result.boutId);

@@ -20,7 +20,6 @@ import {
 import { foreignSlotBidAggression, foreignSlotOccupied } from "@/engine/npc/ForeignSlotPolicy";
 import { DUAL_CITIZEN_BID_PREFERENCE } from "@/constants/engine/recruitment";
 
-
 /**
  * Re-issues the accumulated rikishiIds roster after a materialization. The
  * per-call write inside `materializeCandidateToRikishiInternal` reads the
@@ -143,7 +142,11 @@ export function fillVacanciesForNPC(
         builder.merge(materializeImpact.impact);
         if (materializeImpact.newRikishiId) {
           accumulateRosterAddition(
-            world, builder, rosterAdditions, heyaId, materializeImpact.newRikishiId
+            world,
+            builder,
+            rosterAdditions,
+            heyaId,
+            materializeImpact.newRikishiId
           );
         }
         currentCandidates = materializeImpact.nextCandidates;
@@ -373,7 +376,11 @@ function assignWinningBids(
       builder.merge(materializeImpact.impact);
       if (materializeImpact.newRikishiId) {
         accumulateRosterAddition(
-          world, builder, rosterAdditions, bid.heyaId, materializeImpact.newRikishiId
+          world,
+          builder,
+          rosterAdditions,
+          bid.heyaId,
+          materializeImpact.newRikishiId
         );
       }
       currentCandidates = materializeImpact.nextCandidates;

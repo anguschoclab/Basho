@@ -22,8 +22,7 @@ export type { BoutReplayProgress, ReplaySpeed };
 
 /** Module-stable draw factory — draws the replay frame each tick. */
 const makeCanvasDrawFrame =
-  (rt: ReplayRuntime) =>
-  (ctx: CanvasRenderingContext2D, W: number, H: number) =>
+  (rt: ReplayRuntime) => (ctx: CanvasRenderingContext2D, W: number, H: number) =>
     drawReplayFrame(rt, ctx, W, H);
 
 export interface UseBoutReplayReturn {
@@ -43,6 +42,9 @@ export interface UseBoutReplayReturn {
   reset: () => void;
 }
 
+/**
+ * 2D bout-replay hook — thin wrapper over `useReplayClock` that draws frames onto the real canvas via `drawReplayFrame`.
+ */
 export function useBoutReplay(
   result: BoutResult,
   eastRikishi: UIRikishi,

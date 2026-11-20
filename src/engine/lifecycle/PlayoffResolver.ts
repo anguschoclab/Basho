@@ -87,7 +87,12 @@ export function resolvePlayoffs(
       );
 
       decoratePlayoffNarrative(boutId, east, west, result);
-      recordPlayoffHighlight(world, basho, result.winner === "east" ? east : west, result.winner === "east" ? west : east);
+      recordPlayoffHighlight(
+        world,
+        basho,
+        result.winner === "east" ? east : west,
+        result.winner === "east" ? west : east
+      );
       allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
       next.push(result.winnerRikishiId);
     }
@@ -150,7 +155,12 @@ function resolveTomoeSen(
     );
 
     decoratePlayoffNarrative(boutId, east, west, result);
-    recordPlayoffHighlight(world, basho, result.winner === "east" ? east : west, result.winner === "east" ? west : east);
+    recordPlayoffHighlight(
+      world,
+      basho,
+      result.winner === "east" ? east : west,
+      result.winner === "east" ? west : east
+    );
     allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
 
     const winnerId = result.winnerRikishiId;
@@ -237,11 +247,7 @@ function decoratePlayoffNarrative(
     });
   }
   if (result.pbpLines && result.pbpLines.length > 0) {
-    result.pbpLines = [
-      ...playoffLines.slice(0, 1),
-      ...result.pbpLines,
-      ...playoffLines.slice(1),
-    ];
+    result.pbpLines = [...playoffLines.slice(0, 1), ...result.pbpLines, ...playoffLines.slice(1)];
   } else {
     result.pbpLines = playoffLines.length > 0 ? playoffLines : undefined;
   }

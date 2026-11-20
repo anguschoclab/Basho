@@ -45,15 +45,8 @@ export default function BashoPage() {
     return <NoActiveBashoEmpty />;
   }
 
-  const {
-    bashoName,
-    day,
-    matches,
-    standings,
-    completedBouts,
-    dayProgress,
-    seasonalFlavor,
-  } = bashoDigest;
+  const { bashoName, day, matches, standings, completedBouts, dayProgress, seasonalFlavor } =
+    bashoDigest;
   const bashoInfo = BASHO_CALENDAR[bashoName as keyof typeof BASHO_CALENDAR];
   const dayInfo = getDayName(day);
   const remainingBouts = matches.length - completedBouts;

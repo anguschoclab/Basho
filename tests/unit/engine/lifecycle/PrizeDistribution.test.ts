@@ -334,8 +334,16 @@ describe("PrizeDistribution (Bug 11 - sansho popularity)", () => {
     ]);
     // m1 and m2 tie at 11 wins — shared kantosho.
     const matches: MatchSchedule[] = [
-      ...makeMatchesForRikishi("m1", 11, Array.from({ length: 11 }, (_, i) => `a${i}`)),
-      ...makeMatchesForRikishi("m2", 11, Array.from({ length: 11 }, (_, i) => `b${i}`)),
+      ...makeMatchesForRikishi(
+        "m1",
+        11,
+        Array.from({ length: 11 }, (_, i) => `a${i}`)
+      ),
+      ...makeMatchesForRikishi(
+        "m2",
+        11,
+        Array.from({ length: 11 }, (_, i) => `b${i}`)
+      ),
     ];
     for (let i = 0; i < 11; i++) {
       rikishiMap.set(`a${i}`, makeRikishi(`a${i}`, { rank: "maegashira" }));

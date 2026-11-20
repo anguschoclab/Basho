@@ -28,8 +28,9 @@ await BardEngine.loadDomains();
 
 const YEARS = Number(process.argv.find((a) => a.startsWith("--years="))?.split("=")[1] ?? 15);
 const SEED = "baseline-25yr-a";
-const OUT = process.argv.find((a) => a.startsWith("--out="))?.split("=")[1]
-  ?? "scripts/sim/population-flow-results.txt";
+const OUT =
+  process.argv.find((a) => a.startsWith("--out="))?.split("=")[1] ??
+  "scripts/sim/population-flow-results.txt";
 
 function stateCounts(world: WorldState) {
   const tp = world.talentPool;
@@ -53,7 +54,10 @@ function stateCounts(world: WorldState) {
 }
 
 function heyaStats(world: WorldState) {
-  let headroom = 0, sanctioned = 0, rostered = 0, npcCount = 0;
+  let headroom = 0,
+    sanctioned = 0,
+    rostered = 0,
+    npcCount = 0;
   for (const heya of world.heyas.values()) {
     if (heya.id === world.playerHeyaId) continue;
     npcCount++;
@@ -99,7 +103,8 @@ for (let b = 0; b < YEARS * 6; b++) {
   const hs = heyaStats(world);
   const gap = computeReplacementGap(world);
   const npcCap = computePopulationTarget(world);
-  const alloc = gap > 0 ? Object.values(allocateVacancies(world, gap)).reduce((a, v) => a + v, 0) : 0;
+  const alloc =
+    gap > 0 ? Object.values(allocateVacancies(world, gap)).reduce((a, v) => a + v, 0) : 0;
 
   appendFileSync(
     OUT,

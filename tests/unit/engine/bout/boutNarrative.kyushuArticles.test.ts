@@ -36,7 +36,11 @@ function narrate(
 const tagged = (r: BoutResult, tag: string) =>
   (r.pbpLines ?? []).filter((l) => l.tags?.includes(tag as never)).map((l) => l.text);
 
-function snap(wins: number, losses: number, overrides: Partial<CareerSnapshot> = {}): CareerSnapshot {
+function snap(
+  wins: number,
+  losses: number,
+  overrides: Partial<CareerSnapshot> = {}
+): CareerSnapshot {
   return {
     id: `s-${wins}-${losses}-${overrides.rank ?? "maegashira"}`,
     bashoId: `prev-${wins}-${losses}`,
@@ -59,22 +63,12 @@ function snap(wins: number, losses: number, overrides: Partial<CareerSnapshot> =
   } as CareerSnapshot;
 }
 
-function log(
-  bashoId: string,
-  day: number,
-  win: boolean,
-  opponentId = "opp"
-): MatchResultLog {
+function log(bashoId: string, day: number, win: boolean, opponentId = "opp"): MatchResultLog {
   return { opponentId, win, kimarite: "yorikiri", bashoId, day, year: 2026, division: "makuuchi" };
 }
 
 /** World carrying the current basho (id matches log() bashoIds) + optional extras. */
-function worldWithBasho(
-  east: Rikishi,
-  west: Rikishi,
-  extras: Rikishi[] = [],
-  day = 11
-): FullWorld {
+function worldWithBasho(east: Rikishi, west: Rikishi, extras: Rikishi[] = [], day = 11): FullWorld {
   const basho = MockFactory.createBasho({
     id: "kyushu-2026",
     day,
@@ -210,16 +204,32 @@ describe("Kyushu article commentary", () => {
 
   // ── B5: "two yokozuna going into the final day unbeaten" ─────────────
   it("B5 dream_showdown: both sides unbeaten late in the basho", () => {
-    const east = mockRikishi("r-east", { rank: "yokozuna", currentBashoWins: 12, currentBashoLosses: 0 });
-    const west = mockRikishi("r-west", { rank: "yokozuna", currentBashoWins: 12, currentBashoLosses: 0 });
+    const east = mockRikishi("r-east", {
+      rank: "yokozuna",
+      currentBashoWins: 12,
+      currentBashoLosses: 0,
+    });
+    const west = mockRikishi("r-west", {
+      rank: "yokozuna",
+      currentBashoWins: 12,
+      currentBashoLosses: 0,
+    });
     const world = makeBoutWorld(east, west);
     const r = narrate(east, west, world, makeBoutResult(), 13);
     expect(tagged(r, "dream_showdown").length).toBeGreaterThan(0);
   });
 
   it("B5 dream_showdown stays silent once either has a loss", () => {
-    const east = mockRikishi("r-east", { rank: "yokozuna", currentBashoWins: 12, currentBashoLosses: 0 });
-    const west = mockRikishi("r-west", { rank: "yokozuna", currentBashoWins: 12, currentBashoLosses: 1 });
+    const east = mockRikishi("r-east", {
+      rank: "yokozuna",
+      currentBashoWins: 12,
+      currentBashoLosses: 0,
+    });
+    const west = mockRikishi("r-west", {
+      rank: "yokozuna",
+      currentBashoWins: 12,
+      currentBashoLosses: 1,
+    });
     const world = makeBoutWorld(east, west);
     const r = narrate(east, west, world, makeBoutResult(), 13);
     expect(tagged(r, "dream_showdown").length).toBe(0);
@@ -256,7 +266,12 @@ describe("hair-down incident (deferred registry)", () => {
     let hits = 0;
     for (let i = 0; i < 1200; i++) {
       const r = narrate(
-        east, west, world, makeBoutResult({ kimarite: "tsukiotoshi" }), 10, `hd-${i}`
+        east,
+        west,
+        world,
+        makeBoutResult({ kimarite: "tsukiotoshi" }),
+        10,
+        `hd-${i}`
       );
       const lines = tagged(r, "hair_down");
       if (lines.length) {
@@ -273,9 +288,7 @@ describe("hair-down incident (deferred registry)", () => {
     const world = makeBoutWorld(east, west);
     let hits = 0;
     for (let i = 0; i < 1200; i++) {
-      const r = narrate(
-        east, west, world, makeBoutResult({ kimarite: "yorikiri" }), 10, `hd-${i}`
-      );
+      const r = narrate(east, west, world, makeBoutResult({ kimarite: "yorikiri" }), 10, `hd-${i}`);
       hits += tagged(r, "hair_down").length;
       expect(r.hairDown ?? false).toBe(false);
     }

@@ -22,7 +22,10 @@ export interface RecoveryTickResult {
  * callers can't accidentally corrupt the live world object with a missed
  * defensive clone (S7-39).
  */
-export function tickRikishiRecovery(rikishi: Rikishi, recoveryMult: number = 1.0): RecoveryTickResult {
+export function tickRikishiRecovery(
+  rikishi: Rikishi,
+  recoveryMult: number = 1.0
+): RecoveryTickResult {
   const r: Rikishi = {
     ...rikishi,
     injuryStatus: rikishi.injuryStatus ? { ...rikishi.injuryStatus } : rikishi.injuryStatus,

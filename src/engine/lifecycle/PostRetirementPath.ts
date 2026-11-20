@@ -35,7 +35,7 @@ export function determinePostRetirementPath(rikishi: Rikishi, rng: SeededRNG): P
   const division = rikishi.division ?? "";
 
   // Elite champions → oyakata
-  if ((isYokozunaOrOzekiRank(rank)) && yusho >= OYAKATA_MIN_YUSHO) {
+  if (isYokozunaOrOzekiRank(rank) && yusho >= OYAKATA_MIN_YUSHO) {
     return "oyakata";
   }
 

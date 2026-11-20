@@ -824,14 +824,38 @@ export const PRACTICE_PARTNER_MAX = 2;
 
 /** Common family names for generated realName values */
 export const JAPANESE_FAMILY_NAMES: readonly string[] = [
-  "Sato", "Suzuki", "Takahashi", "Tanaka", "Watanabe",
-  "Yamamoto", "Nakamura", "Kobayashi", "Kato", "Yoshida",
-  "Yamada", "Sasaki", "Yamaguchi", "Saito", "Matsumoto",
+  "Sato",
+  "Suzuki",
+  "Takahashi",
+  "Tanaka",
+  "Watanabe",
+  "Yamamoto",
+  "Nakamura",
+  "Kobayashi",
+  "Kato",
+  "Yoshida",
+  "Yamada",
+  "Sasaki",
+  "Yamaguchi",
+  "Saito",
+  "Matsumoto",
 ];
 
 /** Common given names for generated realName values */
 export const JAPANESE_GIVEN_NAMES: readonly string[] = [
-  "Haruto", "Yuto", "Sota", "Kaito", "Ren",
-  "Daiki", "Shota", "Kosei", "Ryota", "Kazuki",
-  "Taiga", "Hayato", "Koki", "Sho", "Takumi",
+  "Haruto",
+  "Yuto",
+  "Sota",
+  "Kaito",
+  "Ren",
+  "Daiki",
+  "Shota",
+  "Kosei",
+  "Ryota",
+  "Kazuki",
+  "Taiga",
+  "Hayato",
+  "Koki",
+  "Sho",
+  "Takumi",
 ];

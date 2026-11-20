@@ -1,5 +1,6 @@
 # Bolt's Journal
 
 ## 2026-11-18 - Dead RNG params make per-entity seedrandom the dominant phase cost
+
 **Learning:** `seedrandom` construction (ARC4 key-scheduling, ~256-iteration init over the seed string) costs ~15µs — cheap once, brutal per entity per tick. `phase01_daily_welfare` built `rngFromSeed(desc-${day}-${id})` per rikishi per day only to feed `toRikishiDescriptor(_rng, ...)`, whose first param is explicitly ignored (all band math is pure). That dead construction was ~95% of the phase (~9ms of ~9.7ms at 420 rikishi). Other per-entity `rngFromSeed` calls in tick phases (npc_tactics, governance, rikishi_agency) actually consume their streams — those are legitimate; the tell is an `_rng`/unused first parameter on the callee.
 **Action:** Before optimizing a phase loop, grep its callees for ignored rng params (`_rng`, unused `SeededRNG` arg). Hoist one instance per phase run and leave a comment that per-entity seeding must be restored if the callee ever consumes the stream — otherwise determinism silently changes. Also: when a loop already holds a cloned entity, prefer scalar helpers (`computeNextCondition`) over clone-returning wrappers (`tickCondition`) — the discarded `{...entity}` spread is free to lose.

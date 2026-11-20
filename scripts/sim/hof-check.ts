@@ -22,15 +22,15 @@ console.log(
 
 // Pre-sim baseline: how many historical rikishi would qualify for iron_man
 // (summaries lack careerHistory/stats — the "stats" in r guard mirrors hallOfFame)
-const preHist = [...world.historicalRikishi.values()].filter(
-  (r): r is Rikishi => "stats" in r
-);
+const preHist = [...world.historicalRikishi.values()].filter((r): r is Rikishi => "stats" in r);
 const preEligible = preHist.filter(
   (r) =>
     (!r.careerHistory || r.careerHistory.length === 0) &&
     Math.floor(((r.careerWins || 0) + (r.careerLosses || 0)) / 10) >= 30
 );
-console.log(`pre-sim: historical(full)=${preHist.length} iron-man-eligible(wins/10>=30)=${preEligible.length}`);
+console.log(
+  `pre-sim: historical(full)=${preHist.length} iron-man-eligible(wins/10>=30)=${preEligible.length}`
+);
 console.log(
   `pre-sim: historical with careerHistory>0: ${preHist.filter((r) => (r.careerHistory?.length ?? 0) > 0).length}`
 );
@@ -49,9 +49,7 @@ const byCat: Record<string, number> = {};
 for (const i of inductees) byCat[i.category] = (byCat[i.category] ?? 0) + 1;
 console.log(`post-sim: inductees=${inductees.length} byCategory=${JSON.stringify(byCat)}`);
 
-const postHist = [...fw.historicalRikishi.values()].filter(
-  (r): r is Rikishi => "stats" in r
-);
+const postHist = [...fw.historicalRikishi.values()].filter((r): r is Rikishi => "stats" in r);
 const smallHistory = postHist.filter(
   (r) => (r.careerHistory?.length ?? 0) > 0 && (r.careerHistory?.length ?? 0) < 30
 );

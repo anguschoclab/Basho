@@ -4,7 +4,7 @@ Generated from `git diff 32bf8e74..main --name-only` (delta-only review —
 v19 covered its own changes; files unchanged since v19 not re-read).
 Legend: [x] = read/reviewed; [t] = exercised by tests only; [D] = deleted.
 
-## 
+##
 
 - [ ] bun.lock
 - [ ] package.json
@@ -517,7 +517,7 @@ Legend: [x] = read/reviewed; [t] = exercised by tests only; [D] = deleted.
 ## tests/unit/engine
 
 - [ ] tests/unit/engine/banzuke/BanzukePublisher.snapshot.test.ts
-- [ ] tests/unit/engine/banzuke/__snapshots__/banzukePublisher.characterization.test.ts.snap
+- [ ] tests/unit/engine/banzuke/**snapshots**/banzukePublisher.characterization.test.ts.snap
 - [ ] tests/unit/engine/banzuke/banzukeCommittee.test.ts
 - [ ] tests/unit/engine/banzuke/banzukePublisher.characterization.test.ts
 - [ ] tests/unit/engine/banzuke/divisions.test.ts
@@ -531,8 +531,8 @@ Legend: [x] = read/reviewed; [t] = exercised by tests only; [D] = deleted.
 - [ ] tests/unit/engine/basho/dohyoCondition.test.ts
 - [ ] tests/unit/engine/basho/hometownRegion.test.ts
 - [ ] tests/unit/engine/basho/morningOfDay.test.ts
-- [ ] tests/unit/engine/bout/__snapshots__/boutNarrative.golden.test.ts.snap
-- [ ] tests/unit/engine/bout/__snapshots__/boutResult.snapshot.test.ts.snap
+- [ ] tests/unit/engine/bout/**snapshots**/boutNarrative.golden.test.ts.snap
+- [ ] tests/unit/engine/bout/**snapshots**/boutResult.snapshot.test.ts.snap
 - [ ] tests/unit/engine/bout/boutAI.desperation.test.ts
 - [ ] tests/unit/engine/bout/boutAI.wiring.test.ts
 - [ ] tests/unit/engine/bout/boutAchievements.test.ts
@@ -617,7 +617,7 @@ Legend: [x] = read/reviewed; [t] = exercised by tests only; [D] = deleted.
 - [ ] tests/unit/engine/recruitment/v18TalentPool.test.ts
 - [ ] tests/unit/engine/rikishi/consecutiveBashoFought.test.ts
 - [ ] tests/unit/engine/schedule/kyujoFilter.test.ts
-- [ ] tests/unit/engine/services/__snapshots__/serviceObjects.characterization.test.ts.snap
+- [ ] tests/unit/engine/services/**snapshots**/serviceObjects.characterization.test.ts.snap
 - [ ] tests/unit/engine/simulation/TournamentSimulatorWalkover.test.ts
 - [ ] tests/unit/engine/simulation/tournamentSimulator.harmonization.test.ts
 - [ ] tests/unit/engine/simulation/v18TournamentSim.test.ts
@@ -678,4 +678,3 @@ Legend: [x] = read/reviewed; [t] = exercised by tests only; [D] = deleted.
 ## tests/unit/utils
 
 - [ ] tests/unit/utils/testFixtures.ts
-

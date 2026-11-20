@@ -10,7 +10,11 @@ import {
   upgradeKeshoMawashi,
 } from "@/engine/keshoMawashi/KeshoMawashiGenerator";
 import { makeMockWorldWithBrands, mockRikishi } from "@tests/unit/engine/utils";
-import { samplePromotionJuryo, samplePromotionMakuuchi, samplePromotionYokozuna } from "@tests/unit/engine/keshoMawashi/fixtures";
+import {
+  samplePromotionJuryo,
+  samplePromotionMakuuchi,
+  samplePromotionYokozuna,
+} from "@tests/unit/engine/keshoMawashi/fixtures";
 
 describe("KeshoMawashiGenerator", () => {
   describe("generateKeshoMawashi", () => {

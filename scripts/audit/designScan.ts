@@ -187,7 +187,7 @@ const RULES: Rule[] = [
   {
     id: "na-placeholder",
     severity: "P2",
-    bibleRef: "§11 writing style — never \"N/A\"; use — (em dash) for missing data",
+    bibleRef: '§11 writing style — never "N/A"; use — (em dash) for missing data',
     pattern: /\bN\/A\b/,
     scopes: ["pages", "components", "state", "hooks", "presenters"],
     skip: /^\s*(\/\/|\/\*|\*)|import |from |require\(/,

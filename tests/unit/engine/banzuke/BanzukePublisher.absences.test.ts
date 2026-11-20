@@ -239,11 +239,9 @@ describe("BanzukePublisher — full absence accounting", () => {
 
   it("generalizes consecutiveKyujo beyond yokozuna — a full-kyūjō maegashira accumulates", () => {
     const r1 = makeRikishi("r1", { consecutiveKyujo: 2 });
-    const world = makePostBashoWorld(
-      new Map([["r1", r1]]),
-      new Map(),
-      { currentBanzuke: makeBanzukeSnapshot(["r1"]) }
-    );
+    const world = makePostBashoWorld(new Map([["r1", r1]]), new Map(), {
+      currentBanzuke: makeBanzukeSnapshot(["r1"]),
+    });
 
     const impact = publishBanzukeUpdate(world);
     expect(impact.entities?.rikishiUpdates?.get("r1")?.consecutiveKyujo).toBe(3);
@@ -251,19 +249,15 @@ describe("BanzukePublisher — full absence accounting", () => {
 
   it("makes absence penalties reachable — full-kyūjō rikishi demote", () => {
     const r1 = makeRikishi("r1", { rank: "maegashira", rankNumber: 5 });
-    const world = makePostBashoWorld(
-      new Map([["r1", r1]]),
-      new Map(),
-      { currentBanzuke: makeBanzukeSnapshot(["r1"]) }
-    );
+    const world = makePostBashoWorld(new Map([["r1", r1]]), new Map(), {
+      currentBanzuke: makeBanzukeSnapshot(["r1"]),
+    });
 
     const impact = publishBanzukeUpdate(world);
     const u = impact.entities?.rikishiUpdates?.get("r1");
     // 0-0-15 → full-kyūjō penalty weight → large negative movement → demotion.
     const demoted =
-      u?.division !== "makuuchi" ||
-      u?.rank !== "maegashira" ||
-      (u?.rankNumber ?? 5) > 5;
+      u?.division !== "makuuchi" || u?.rank !== "maegashira" || (u?.rankNumber ?? 5) > 5;
     expect(demoted).toBe(true);
   });
 });

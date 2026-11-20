@@ -6,25 +6,25 @@ Plan built from an evidence-grounded audit of the v2 pixel-avatar system (`avata
 
 The avatar system's architecture is sound: seeded `AvatarIdentity` persisted as `avatarConfig` + transient `AvatarStage` derived from live state; dedicated `SeededRNG("avatar-id::"…)` so faces never perturb sim determinism; version-gated backfill in `deserializeWorld`; seed aliases keep faces stable across promotion → retirement → oyakata conversion. The gaps are (a) three surfaces that drop faces the data already supports, (b) dead parameters that promise variety the pixels never deliver, (c) elders losing all body mass on conversion.
 
-**Directive honored:** in the dead-code sweep, anything *unique* (sole source of a visual variety or the only identity-only render path) is **wired in and used**, not deleted. Only true no-op code is removed.
+**Directive honored:** in the dead-code sweep, anything _unique_ (sole source of a visual variety or the only identity-only render path) is **wired in and used**, not deleted. Only true no-op code is removed.
 
 ---
 
 ## Part 1 — Verified findings ledger
 
-| # | Finding | Evidence |
-| --- | --- | --- |
-| F1 | **Global search drops retired faces.** `entitySearchProjections.ts:240-248` calls `toHit` with no `avatar` for *both* `RetiredRikishiSummary` and full-`Rikishi` retired entries. Data exists (`ensureAvatarIdentities` backfills `historicalRikishi`; `buildRetiredRikishiSummary.ts:100` carries `avatarConfig`) — projection never resolves it. Active rikishi get faces (`:221-228`); retired get initials. | read |
-| F2 | **Retired profile page never renders a face.** `RetiredRikishiProfile.tsx:61` renders `<SumoAvatar size="lg" fallback={summary.shikona} />` — no `avatar`/`config` prop at all → always the initials fallback despite `summary.avatarConfig` being populated. | read |
-| F3 | **`browThickness` 1 and 2 are pixel-identical.** `pixelCompose.ts:187` — `t === 3 ? [7,8] : t === 2 ? [8] : [8]`. Two-thirds of the parameter's range is a no-op. Stored on every identity. | read |
-| F4 | **`intense` eye offset is dead.** `pixelCompose.ts:146` — `const y = intense ? 10 : 10;`. The squint that was apparently intended (move/shade the eye line) was abandoned; only 2 shadow pixels at `(8,y-1)`/`(16,y-1)` remain (`:177-181`). | read |
-| F5 | **Expression overrides clone identity mouths.** `confident` ≡ `smile` and `worried` ≡ `frown` pixel-for-pixel (`pixelCompose.ts:249-264` vs `:269-278`). Expression adds nothing the base mouth didn't already show. | read |
-| F6 | **`rikishiStageInput` tautology.** `avatarGenerator.ts:443` — `role: r.isRetired ? "rikishi" : "rikishi"`. Not unique; pure dead ternary. | read |
-| F7 | **Oyakata instantly lose all girth.** `fullness` only applies to `rikishi`/`prospect` (`avatarGenerator.ts:260-262`); `Oyakata` has no weight field and `retireeOyakataConversion.ts` doesn't carry `retiree.weight`. A 180kg retiree stays heavy while a `Rikishi` record (role stays `"rikishi"`) but shrinks to zero on elder conversion. Same for `RetiredRikishiSummary` — no weight carried (`buildRetiredRikishiSummary.ts`). | read |
-| F8 | **`SumoAvatar` `config`/`stage` props = dead API + footgun.** No call site passes `config=` (grep hits are unrelated props on other components). If used bare, `deriveAvatarStage({}, identity)` defaults `age ?? 30` (`avatarGenerator.ts:251`) → every person renders as a 30-year-old prime-stage face; an elder oyakata would show no wrinkles/gray. This is the *only* identity-only render path — worth keeping but must be made honest. | read + grep |
-| F9 | **Summaries lack `nationality`.** `RetiredRikishiSummary` has `origin` but no `nationality`; `HallOfFamePage.tsx:53` already works around it (`"nationality" in hist ? … : undefined`) → foreign inductees fall back to Japan tone *if* their stored config is ever rejected/missing. Low-probability path (stored config normally wins) but a real fidelity hole. | read |
-| F10 | **No version policy.** `stored.version === AVATAR_VERSION` is the only gate (`avatarGenerator.ts:302`). Bumping to v3 silently regenerates every face in every save — no feature-preserving migration path, and nothing documents that trade-off. | read |
-| F11 | Minor: `expression` prop on `SumoAvatar` spreads a new stage each render (`SumoAvatar.tsx:97-99`), busting the `paths` memo whenever used. Japan `skinTone` is effectively 2 tones (`range[0] === base`, `avatar.ts:119`). | read |
+| #   | Finding                                                                                                                                                                                                                                                                                                                                                                                                                                        | Evidence    |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| F1  | **Global search drops retired faces.** `entitySearchProjections.ts:240-248` calls `toHit` with no `avatar` for _both_ `RetiredRikishiSummary` and full-`Rikishi` retired entries. Data exists (`ensureAvatarIdentities` backfills `historicalRikishi`; `buildRetiredRikishiSummary.ts:100` carries `avatarConfig`) — projection never resolves it. Active rikishi get faces (`:221-228`); retired get initials.                                | read        |
+| F2  | **Retired profile page never renders a face.** `RetiredRikishiProfile.tsx:61` renders `<SumoAvatar size="lg" fallback={summary.shikona} />` — no `avatar`/`config` prop at all → always the initials fallback despite `summary.avatarConfig` being populated.                                                                                                                                                                                  | read        |
+| F3  | **`browThickness` 1 and 2 are pixel-identical.** `pixelCompose.ts:187` — `t === 3 ? [7,8] : t === 2 ? [8] : [8]`. Two-thirds of the parameter's range is a no-op. Stored on every identity.                                                                                                                                                                                                                                                    | read        |
+| F4  | **`intense` eye offset is dead.** `pixelCompose.ts:146` — `const y = intense ? 10 : 10;`. The squint that was apparently intended (move/shade the eye line) was abandoned; only 2 shadow pixels at `(8,y-1)`/`(16,y-1)` remain (`:177-181`).                                                                                                                                                                                                   | read        |
+| F5  | **Expression overrides clone identity mouths.** `confident` ≡ `smile` and `worried` ≡ `frown` pixel-for-pixel (`pixelCompose.ts:249-264` vs `:269-278`). Expression adds nothing the base mouth didn't already show.                                                                                                                                                                                                                           | read        |
+| F6  | **`rikishiStageInput` tautology.** `avatarGenerator.ts:443` — `role: r.isRetired ? "rikishi" : "rikishi"`. Not unique; pure dead ternary.                                                                                                                                                                                                                                                                                                      | read        |
+| F7  | **Oyakata instantly lose all girth.** `fullness` only applies to `rikishi`/`prospect` (`avatarGenerator.ts:260-262`); `Oyakata` has no weight field and `retireeOyakataConversion.ts` doesn't carry `retiree.weight`. A 180kg retiree stays heavy while a `Rikishi` record (role stays `"rikishi"`) but shrinks to zero on elder conversion. Same for `RetiredRikishiSummary` — no weight carried (`buildRetiredRikishiSummary.ts`).           | read        |
+| F8  | **`SumoAvatar` `config`/`stage` props = dead API + footgun.** No call site passes `config=` (grep hits are unrelated props on other components). If used bare, `deriveAvatarStage({}, identity)` defaults `age ?? 30` (`avatarGenerator.ts:251`) → every person renders as a 30-year-old prime-stage face; an elder oyakata would show no wrinkles/gray. This is the _only_ identity-only render path — worth keeping but must be made honest. | read + grep |
+| F9  | **Summaries lack `nationality`.** `RetiredRikishiSummary` has `origin` but no `nationality`; `HallOfFamePage.tsx:53` already works around it (`"nationality" in hist ? … : undefined`) → foreign inductees fall back to Japan tone _if_ their stored config is ever rejected/missing. Low-probability path (stored config normally wins) but a real fidelity hole.                                                                             | read        |
+| F10 | **No version policy.** `stored.version === AVATAR_VERSION` is the only gate (`avatarGenerator.ts:302`). Bumping to v3 silently regenerates every face in every save — no feature-preserving migration path, and nothing documents that trade-off.                                                                                                                                                                                              | read        |
+| F11 | Minor: `expression` prop on `SumoAvatar` spreads a new stage each render (`SumoAvatar.tsx:97-99`), busting the `paths` memo whenever used. Japan `skinTone` is effectively 2 tones (`range[0] === base`, `avatar.ts:119`).                                                                                                                                                                                                                     | read        |
 
 Precedent for the F1/F2 fix already exists: `HallOfFamePage.tsx:50-56` resolves avatars for historical entries via `resolveAvatar({ id, stored: hist.avatarConfig, role: "rikishi", age: world.year - hist.birthYear })`.
 
@@ -37,12 +37,15 @@ Precedent for the F1/F2 fix already exists: `HallOfFamePage.tsx:50-56` resolves 
 - **New helper** in `avatarGenerator.ts` next to the other stage-input fns:
 
   ```ts
-  export function retiredSummaryStageInput(s: RetiredRikishiSummary, currentYear: number): AvatarStageInput {
+  export function retiredSummaryStageInput(
+    s: RetiredRikishiSummary,
+    currentYear: number
+  ): AvatarStageInput {
     return {
       role: "rikishi",
-      age: currentYear - s.birthYear,   // keeps aging like HallOfFamePage
-      isRetired: true,                  // → suit + short/receding/bald, no topknot
-      weight: s.weight,                 // wired by B3 — may be undefined on old saves
+      age: currentYear - s.birthYear, // keeps aging like HallOfFamePage
+      isRetired: true, // → suit + short/receding/bald, no topknot
+      weight: s.weight, // wired by B3 — may be undefined on old saves
     };
   }
   ```
@@ -125,7 +128,7 @@ Every person or stable name rendered on the surfaces this work touches must rout
 ## Verification
 
 - `bun run typecheck`, `bun run lint`, targeted `vitest` → green; then **full** unit suite.
-- Meta-gates: no tautological assertions (the pixel-diff tests are the trap — assert *where* output differs, not just `not.toEqual`), no `Math.random`, correct tier.
+- Meta-gates: no tautological assertions (the pixel-diff tests are the trap — assert _where_ output differs, not just `not.toEqual`), no `Math.random`, correct tier.
 - Determinism: no world-RNG consumption added anywhere (`weight`/`nationality` stamps are data copies; `WorldFactory` weight seeding, if done, must use the existing seeded world rng stream at creation — flag for determinism double-run if P2 lands).
 - UI spot-check: global search on a retired name shows the face; retired profile page shows the face at `lg`; an elder oyakata shows gray + wrinkles; an injured rikishi shows bandage + worried; a sekitori shows oichomage.
 

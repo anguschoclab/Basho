@@ -9,28 +9,28 @@
 **Scope:** Exhaustive deep-dive review + consolidation. Zero backwards-compatibility constraints.
 **Commits landed:**
 
-| Commit | Payload |
-|--------|---------|
-| `1768b778` | Test-first stage: failing-first regression pins (T1–T6) |
-| `e289fcb2` | Approved PR payloads: #1175, #1176, #1177, #1179/#1180 |
+| Commit     | Payload                                                         |
+| ---------- | --------------------------------------------------------------- |
+| `1768b778` | Test-first stage: failing-first regression pins (T1–T6)         |
+| `e289fcb2` | Approved PR payloads: #1175, #1176, #1177, #1179/#1180          |
 | `91d7135b` | #1178 implemented for real — 7 replay paths × 5 seeded variants |
-| `a2693fdf` | Verified deep-dive fixes (F01–F19 pins), red-gate splits |
-| `3199a2a7` | Elder-stock reseat on oyakata removal (succession dangle fix) |
-| `8836a380` | Merge into `main` |
+| `a2693fdf` | Verified deep-dive fixes (F01–F19 pins), red-gate splits        |
+| `3199a2a7` | Elder-stock reseat on oyakata removal (succession dangle fix)   |
+| `8836a380` | Merge into `main`                                               |
 
 ---
 
 ## PR Verdicts (all evidence-verified, closed with comments)
 
-| PR | Verdict | Disposition |
-|----|---------|-------------|
-| #1174 debut year/years active | **APPROVED — already landed** | Equivalent implementation (Flag icon) verified in tree; no duplicate patch applied |
-| #1175 type-guard JSDoc + kinboshi | **APPROVED** | Payload applied `e289fcb2` |
-| #1176 advisor roster lookup | **APPROVED** | Payload applied; pinned by `leagueIntel` free/occupied-slot tests |
-| #1177 kinboshi count + budget | **APPROVED (partial)** | Kinboshi surface applied; stale budget entry excluded (`loc:179` vs actual 177 — functions split instead) |
-| #1178 post-bout replay variety | **DISPROVED as shipped** | PR head was an **empty commit**. Implemented for real: all 7 `replay.*` paths → 5 variants each (`91d7135b`) |
-| #1179 loading spinners | **APPROVED** | Payload applied `e289fcb2` |
-| #1180 EmptyState loader animation | **APPROVED** | Payload applied `e289fcb2` |
+| PR                                | Verdict                       | Disposition                                                                                                  |
+| --------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| #1174 debut year/years active     | **APPROVED — already landed** | Equivalent implementation (Flag icon) verified in tree; no duplicate patch applied                           |
+| #1175 type-guard JSDoc + kinboshi | **APPROVED**                  | Payload applied `e289fcb2`                                                                                   |
+| #1176 advisor roster lookup       | **APPROVED**                  | Payload applied; pinned by `leagueIntel` free/occupied-slot tests                                            |
+| #1177 kinboshi count + budget     | **APPROVED (partial)**        | Kinboshi surface applied; stale budget entry excluded (`loc:179` vs actual 177 — functions split instead)    |
+| #1178 post-bout replay variety    | **DISPROVED as shipped**      | PR head was an **empty commit**. Implemented for real: all 7 `replay.*` paths → 5 variants each (`91d7135b`) |
+| #1179 loading spinners            | **APPROVED**                  | Payload applied `e289fcb2`                                                                                   |
+| #1180 EmptyState loader animation | **APPROVED**                  | Payload applied `e289fcb2`                                                                                   |
 
 All PR comments were Jules boilerplate; zero human reviews. `.jules/` journals excluded per gitignore contract; snapshot/ratchet hunks excluded and regenerated independently.
 
@@ -40,18 +40,18 @@ All PR comments were Jules boilerplate; zero human reviews. `.jules/` journals e
 
 ## Verification Gate Matrix
 
-| Gate | Command | Result |
-|------|---------|--------|
-| Type check | `bun run type-check` | ✅ clean |
-| Lint | `bun run lint:commit` | ✅ 0 errors, 37 pre-existing Fast Refresh warnings (`src/app/routes.tsx`) |
-| Build | `bun run build` | ✅ 17.1s |
-| Fast suite | `bun run test` | ✅ 1018 files / 9,459 pass / 1 skip |
-| Perf suite | `bun run test:perf` | ✅ 5 files / 14 pass |
-| E2E smoke | `bun run test:e2e:smoke` | ✅ 4/4 (56s) |
-| Determinism basho | `bun scripts/sim/determinism-double-run.ts basho` | ✅ byte-identical (18,012,274 B) |
-| Determinism year | `bun scripts/sim/determinism-double-run.ts year` | ✅ byte-identical (24,787,510 B) |
-| Nondeterminism grep | `Math.random(` in `src/engine` | ✅ zero call sites |
-| Slow suite | `bun run test:slow` | ⚠️ 16/17 files — `simulationInvariants` ID-integrity fails **pre-existing on `main`** (verified via `main` worktree baseline: identical MH-dup + OY-dangle violations) |
+| Gate                | Command                                           | Result                                                                                                                                                                 |
+| ------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type check          | `bun run type-check`                              | ✅ clean                                                                                                                                                               |
+| Lint                | `bun run lint:commit`                             | ✅ 0 errors, 37 pre-existing Fast Refresh warnings (`src/app/routes.tsx`)                                                                                              |
+| Build               | `bun run build`                                   | ✅ 17.1s                                                                                                                                                               |
+| Fast suite          | `bun run test`                                    | ✅ 1018 files / 9,459 pass / 1 skip                                                                                                                                    |
+| Perf suite          | `bun run test:perf`                               | ✅ 5 files / 14 pass                                                                                                                                                   |
+| E2E smoke           | `bun run test:e2e:smoke`                          | ✅ 4/4 (56s)                                                                                                                                                           |
+| Determinism basho   | `bun scripts/sim/determinism-double-run.ts basho` | ✅ byte-identical (18,012,274 B)                                                                                                                                       |
+| Determinism year    | `bun scripts/sim/determinism-double-run.ts year`  | ✅ byte-identical (24,787,510 B)                                                                                                                                       |
+| Nondeterminism grep | `Math.random(` in `src/engine`                    | ✅ zero call sites                                                                                                                                                     |
+| Slow suite          | `bun run test:slow`                               | ⚠️ 16/17 files — `simulationInvariants` ID-integrity fails **pre-existing on `main`** (verified via `main` worktree baseline: identical MH-dup + OY-dangle violations) |
 
 ### Pre-existing slow failure (non-blocking, registered debt)
 
@@ -83,7 +83,7 @@ All PR comments were Jules boilerplate; zero human reviews. `.jules/` journals e
 
 ## Explicit architectural verdicts
 
-- **`KNOWN_OVERBUDGET` ratchet policy: VINDICATED** — both Jules PRs (#1176, #1177) tried to fix the red budget gate by *listing* the over-budget functions, which violates the ratchet contract (entries may only be removed). Both additions rejected; the functions were split instead.
+- **`KNOWN_OVERBUDGET` ratchet policy: VINDICATED** — both Jules PRs (#1176, #1177) tried to fix the red budget gate by _listing_ the over-budget functions, which violates the ratchet contract (entries may only be removed). Both additions rejected; the functions were split instead.
 - **`.jules/` gitignore contract: VIOLATED by Jules** — every substantive PR carried `.jules/<agent>.md` journal hunks despite `docs/agents/README.md` declaring them local agent memory. All hunks excluded from landing; `git ls-files .jules` verified empty post-merge. Flag for playbook hardening.
 - **Memoized `getHeyaRoster` weekly cache: REGISTERED DEBT (V17-D04)** — staleness window confirmed (clears at weekly gate + `LOAD_WORLD` only); mid-week signings read stale rosters. Pre-existing hazard shared by all consumers (welfare, mergers, perception), not introduced by #1176. Follow-up: `clearQueryCaches()` on roster-mutating commands.
 - **Dual foreign-slot semantics: REGISTERED DEBT (V17-D03)** — advisor roster-count vs canonical `getForeignCountsByHeya`/`foreignSlotOccupied` (includes signed-pending candidates). #1176 preserved the simpler semantic intentionally; unify in a future pass.

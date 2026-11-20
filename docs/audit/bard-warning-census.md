@@ -6,15 +6,15 @@
 `population-flow.ts` run (seed `baseline-25yr-a`, 90 basho), generated
 2026-11-06 before the succession-closure work landed.
 
-| Metric | Value |
-|---|---|
-| File size | 1,302,925,052 bytes (1.21 GiB) |
-| Total lines | 15,970,087 |
-| BardEngine "No options found" warnings | 15,969,185 (**99.994%**) |
-| Pipeline transition lines | 180 (2 per basho) |
-| Other | 1 `[Recruitment] Emergency` notice + 1 `done` |
-| Errors / exceptions / NaN | **0** (11,549 apparent matches were `-i NaN`
-hitting the "nance" substring inside `governance`/`dominance`) |
+| Metric                                                         | Value                                         |
+| -------------------------------------------------------------- | --------------------------------------------- |
+| File size                                                      | 1,302,925,052 bytes (1.21 GiB)                |
+| Total lines                                                    | 15,970,087                                    |
+| BardEngine "No options found" warnings                         | 15,969,185 (**99.994%**)                      |
+| Pipeline transition lines                                      | 180 (2 per basho)                             |
+| Other                                                          | 1 `[Recruitment] Emergency` notice + 1 `done` |
+| Errors / exceptions / NaN                                      | **0** (11,549 apparent matches were `-i NaN`  |
+| hitting the "nance" substring inside `governance`/`dominance`) |
 
 ## Root cause — NOT missing templates
 
@@ -50,33 +50,33 @@ frequencies. Kept as `scripts/sim/bard-warning-census.txt` (170 lines).
 
 ### Domain rollup
 
-| Domain | Warnings | Share |
-|---|---:|---:|
-| `combat.*` | 10,468,424 | 65.5% |
-| `pre_bout.*` | 2,151,821 | 13.5% |
-| `post_bout.*` | 1,925,267 | 12.1% |
-| `world.*` + `h2h.*` + `interview.*` | 1,251,263 | 7.8% |
-| `npc.*` / `media.*` / `institutional.*` / `strategy.*` / `events.*` / `oyakata.*` / `dynasty.*` | 172,410 | 1.1% |
+| Domain                                                                                          |   Warnings | Share |
+| ----------------------------------------------------------------------------------------------- | ---------: | ----: |
+| `combat.*`                                                                                      | 10,468,424 | 65.5% |
+| `pre_bout.*`                                                                                    |  2,151,821 | 13.5% |
+| `post_bout.*`                                                                                   |  1,925,267 | 12.1% |
+| `world.*` + `h2h.*` + `interview.*`                                                             |  1,251,263 |  7.8% |
+| `npc.*` / `media.*` / `institutional.*` / `strategy.*` / `events.*` / `oyakata.*` / `dynasty.*` |    172,410 |  1.1% |
 
 ### Top 15 paths (91% of volume)
 
-| Count | Path | Call site |
-|---:|---|---|
-| 4,130,409 | `combat.engagement.belt` (i1) | `bout/narrative/frames.ts` (`combat.engagement.${family}`) |
-| 1,402,143 | `combat.engagement.stamina` (i2) | `frames.ts` |
-| 591,454 | `combat.phases.tachiai` (i1) | `frames.ts` |
-| 580,898 | `pre_bout.career_phase_debut` | `context2.ts` (`pre_bout.career_phase_${phase}`) |
-| 446,349 | `combat.phases.fatigue.early` | `frames.ts` |
-| 436,981 | `post_bout.records.winner_improves` / `loser_falls` | `postbout.ts` |
-| 436,981 | `post_bout.reaction` | `postbout.ts` |
-| 436,981 | `h2h.first_meeting` | `bout/h2h.ts`, `prelude.ts` |
-| 436,981 | `combat.phases.ritual.shikiri` | `ceremony.ts` |
-| 436,981 | `combat.phases.finish` | `frames.ts` |
-| 436,930 | `pre_bout.opening_day` | `stakes.ts` |
-| 377,301 | `interview.neutral` | `interview.ts` |
-| 357,829 | `combat.phases.counter_tactic` | `frames.ts` |
-| 330,011 | `pre_bout.physical_comparison` | `context.ts` |
-| 239,458 | `world.venues.Tokyo.entrance` | `prelude.ts` |
+|     Count | Path                                                | Call site                                                  |
+| --------: | --------------------------------------------------- | ---------------------------------------------------------- |
+| 4,130,409 | `combat.engagement.belt` (i1)                       | `bout/narrative/frames.ts` (`combat.engagement.${family}`) |
+| 1,402,143 | `combat.engagement.stamina` (i2)                    | `frames.ts`                                                |
+|   591,454 | `combat.phases.tachiai` (i1)                        | `frames.ts`                                                |
+|   580,898 | `pre_bout.career_phase_debut`                       | `context2.ts` (`pre_bout.career_phase_${phase}`)           |
+|   446,349 | `combat.phases.fatigue.early`                       | `frames.ts`                                                |
+|   436,981 | `post_bout.records.winner_improves` / `loser_falls` | `postbout.ts`                                              |
+|   436,981 | `post_bout.reaction`                                | `postbout.ts`                                              |
+|   436,981 | `h2h.first_meeting`                                 | `bout/h2h.ts`, `prelude.ts`                                |
+|   436,981 | `combat.phases.ritual.shikiri`                      | `ceremony.ts`                                              |
+|   436,981 | `combat.phases.finish`                              | `frames.ts`                                                |
+|   436,930 | `pre_bout.opening_day`                              | `stakes.ts`                                                |
+|   377,301 | `interview.neutral`                                 | `interview.ts`                                             |
+|   357,829 | `combat.phases.counter_tactic`                      | `frames.ts`                                                |
+|   330,011 | `pre_bout.physical_comparison`                      | `context.ts`                                               |
+|   239,458 | `world.venues.Tokyo.entrance`                       | `prelude.ts`                                               |
 
 ### Per-bout resolve sequence (ordered beats)
 

@@ -418,11 +418,7 @@ function emitPostBashoPress(
 /**
  * Accumulate mochikyukin points for all sekitori rikishi.
  */
-function accumulateAllMochikyukin(
-  world: WorldState,
-  basho: BashoState,
-  yusho: Id
-): StateImpact {
+function accumulateAllMochikyukin(world: WorldState, basho: BashoState, yusho: Id): StateImpact {
   const mochikyukinImpact = createImpactBuilder("mochikyukinAccumulation");
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);

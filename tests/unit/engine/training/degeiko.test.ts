@@ -8,10 +8,7 @@
  * practicePartners links are written both ways.
  */
 import { describe, it, expect } from "vitest";
-import {
-  requestDegeiko,
-  applyWeeklyDegeiko,
-} from "@/engine/training/DegeikoService";
+import { requestDegeiko, applyWeeklyDegeiko } from "@/engine/training/DegeikoService";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
@@ -113,9 +110,7 @@ describe("applyWeeklyDegeiko", () => {
     expect(gainedStat).toBe(true);
     expect(after.fatigue).toBeGreaterThan(before.fatigue);
     // practice-partner link is mutual with at least one host rikishi
-    const linkedToHost = (after.practicePartners ?? []).some((id) =>
-      id.startsWith("host-")
-    );
+    const linkedToHost = (after.practicePartners ?? []).some((id) => id.startsWith("host-"));
     expect(linkedToHost).toBe(true);
     expect(
       (host.practicePartners ?? []).includes("guest-a") ||

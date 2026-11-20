@@ -10,10 +10,7 @@ import type { Id } from "@/engine/types/common";
 import type { Rank } from "@/engine/types/banzuke";
 
 export type RikishiCouncilMotionType =
-  | "dohyo_safety"
-  | "welfare_standards"
-  | "benefit_relief"
-  | "ceremonial_protocol";
+  "dohyo_safety" | "welfare_standards" | "benefit_relief" | "ceremonial_protocol";
 
 export interface RikishiCouncilDelegate {
   rikishiId: Id;

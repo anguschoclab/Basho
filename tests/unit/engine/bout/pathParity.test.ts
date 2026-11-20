@@ -10,8 +10,15 @@ import type { Rikishi } from "@/engine/types/rikishi";
  * (simulateBoutsForDay → resolveAndApplyBout) must produce identical
  * BoutResults for the same fixture — same winner, kimarite, and log.
  */
-function worldWithMatch(): { world: ReturnType<typeof MockFactory.createWorld>; match: MatchSchedule; east: Rikishi; west: Rikishi } {
-  const east = MockFactory.createRikishi("east", { stats: { ...MockFactory.createRikishi("tmp").stats, power: 60 } });
+function worldWithMatch(): {
+  world: ReturnType<typeof MockFactory.createWorld>;
+  match: MatchSchedule;
+  east: Rikishi;
+  west: Rikishi;
+} {
+  const east = MockFactory.createRikishi("east", {
+    stats: { ...MockFactory.createRikishi("tmp").stats, power: 60 },
+  });
   const west = MockFactory.createRikishi("west");
   const match: MatchSchedule = {
     boutId: "parity-bout",

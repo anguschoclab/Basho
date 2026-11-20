@@ -182,6 +182,9 @@ const STATUS_COLOR_MAP: Record<string, string> = {
   critical: "text-destructive",
 };
 
+/**
+ * Maps a heya's governance status to its display color token.
+ */
 export function getStatusColor(status: string): string {
   return STATUS_COLOR_MAP[status] || "text-muted-foreground";
 }

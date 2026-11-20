@@ -67,9 +67,7 @@ describe("S7-4a — player poach suitor survives the weekly candidate-pool tick"
 
     // First weekly tick: NPC interest populates the watchlist.
     const w1 = resolveImpacts(world, [phase01_week_candidate_pool(world)]);
-    expect(
-      w1.candidatePool?.candidates[CAND]?.competingSuitors.length
-    ).toBeGreaterThan(0);
+    expect(w1.candidatePool?.candidates[CAND]?.competingSuitors.length).toBeGreaterThan(0);
 
     // Player poaches: registers an "all_in" suitor with a week+4 deadline.
     const poach = poachCandidate(w1, CAND, PLAYER);

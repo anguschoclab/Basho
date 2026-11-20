@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  perceivedTalentSeed,
-  scoutingNoiseSpread,
-} from "@/engine/recruitment/perceivedTalent";
+import { perceivedTalentSeed, scoutingNoiseSpread } from "@/engine/recruitment/perceivedTalent";
 import { makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import { toKeyedMap } from "@/engine/utils/index";
 import {
@@ -15,7 +12,11 @@ const candidate = (id: string, talentSeed: number) =>
   ({ candidateId: id, talentSeed }) as unknown as TalentCandidate;
 
 function worldWith(heyaIds: string[]) {
-  const heyas = toKeyedMap(heyaIds, (id) => id, (id) => makeMockHeya(id, { rikishiIds: [] }));
+  const heyas = toKeyedMap(
+    heyaIds,
+    (id) => id,
+    (id) => makeMockHeya(id, { rikishiIds: [] })
+  );
   return makeMockWorld({ heyas, rikishi: new Map() });
 }
 

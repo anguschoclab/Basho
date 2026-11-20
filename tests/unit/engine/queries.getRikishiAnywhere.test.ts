@@ -11,7 +11,6 @@ import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { retiredSummary as makeSummary } from "../../helpers/retiredSummary";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-
 describe("getRikishiAnywhere with RetiredRikishiSummary", () => {
   it("returns Rikishi for active rikishi", () => {
     const rikishi = mockRikishi("r-active");

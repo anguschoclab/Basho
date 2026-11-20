@@ -11,7 +11,12 @@ import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";
 import { ChronicleService } from "@/engine/simulation/ChronicleService";
 import { SimTuningService, type TuningMetrics } from "@/engine/simulation/SimTuningService";
 import type { ChronicleReport } from "@/engine/types/records";
-import { RANK_HIERARCHY, type PromotionEvent, type DemotionEvent, type Rank } from "@/engine/types/banzuke";
+import {
+  RANK_HIERARCHY,
+  type PromotionEvent,
+  type DemotionEvent,
+  type Rank,
+} from "@/engine/types/banzuke";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 import { jsaYushoPrize, jsaSanshoPrize } from "@/constants/engine/jsaEra";

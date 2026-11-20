@@ -30,8 +30,7 @@ import type { CombatProfile } from "@/engine/types/combat";
 // (Defined inside the hoisted factory — see vitest vi.mock docs.) ────────────
 
 vi.mock("@/engine/bout/kimarite/kimariteStrategies", async (importOriginal) => {
-  const orig =
-    await importOriginal<typeof import("@/engine/bout/kimarite/kimariteStrategies")>();
+  const orig = await importOriginal<typeof import("@/engine/bout/kimarite/kimariteStrategies")>();
   const TESTWAZA = {
     id: "testwaza",
     name: "Test Waza",
@@ -54,8 +53,7 @@ vi.mock("@/engine/bout/kimarite/kimariteStrategies", async (importOriginal) => {
 });
 
 vi.mock("@/constants/engine/kimariteFrequencies", async (importOriginal) => {
-  const orig =
-    await importOriginal<typeof import("@/constants/engine/kimariteFrequencies")>();
+  const orig = await importOriginal<typeof import("@/constants/engine/kimariteFrequencies")>();
   return {
     ...orig,
     KIMARITE_FREQUENCY_TARGETS: { testwaza: 0.5 },
@@ -334,7 +332,6 @@ describe("skillTieBreak — skill decides ambiguous outcomes, not position", () 
     }
   });
 });
-
 
 // ── Fatigue → instability coupling (stalemate convergence) ──────────────────
 

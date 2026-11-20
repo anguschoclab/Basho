@@ -69,116 +69,122 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
     questionType = "giant_killer";
   } else {
     const makuuchiTournaments = countMakuuchiTournaments(winnerRikishi.careerHistory);
-  // Check for career milestone hit with this win
-  const hitMilestone = CAREER_WIN_MILESTONES.includes((winnerRikishi.careerWins ?? 0) + 1);
-  const loserLossesAfter = (loserRikishi.currentBashoLosses ?? 0) + 1;
-  const loserWinsAfter = loserRikishi.currentBashoWins ?? 0;
-  // W N — "you've now defeated two consecutive Yokozuna": back-to-back
-  // sanyaku scalps is the press's first question (metrics are pre-bout, so
-  // this win makes it prior+1).
-  const sanyakuStreak =
-    (world?.currentBasho?.boutMetrics?.[winnerRikishi.id]?.sanyakuWinStreak ?? 0) +
-    (isSanyakuRank(loserRikishi.rank ?? "") ? 1 : 0);
-  if (sanyakuStreak >= 2 && BardEngine.has("interview.questions.sanyaku_streak")) {
-    questionType = "sanyaku_streak";
-  } else if (
-    // W P — "only N days left": the leader/chaser question late in the basho.
-    day >= CLOSING_DAYS_MIN &&
-    world.currentBasho &&
-    getLeaderWins(world.currentBasho, world, winnerRikishi.division) - (winnerWins + 1) <=
-      CONTENTION_WINDOW &&
-    BardEngine.has("interview.questions.closing_days")
-  ) {
-    questionType = "closing_days";
-  } else if (
-    // W P — "you've won N consecutive bouts — how do you evaluate?"
-    (winnerRikishi.currentWinStreak ?? 0) + 1 >= WIN_STREAK_INTERVIEW_MIN &&
-    BardEngine.has("interview.questions.win_streak")
-  ) {
-    questionType = "win_streak";
-  } else if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
-    const winnerAge = result.winner === "east" ? p.eastAge : p.westAge;
-    const prevOldest = world?.records?.allTime?.oldestMakuuchiKachiKoshi?.[0];
-    const kkThreshold = kachiKoshiThreshold(winnerRikishi.rank);
-    const earliestMaxDay =
-      kkThreshold >= 8 ? EARLIEST_KACHI_SEKITORI_MAX_DAY : EARLIEST_KACHI_LOWER_MAX_DAY;
-    if (
-      winnerRikishi.division === "makuuchi" &&
-      winnerWins + 1 === kkThreshold &&
-      winnerAge >= OLDEST_KACHI_KOSHI_MIN_AGE &&
-      (!prevOldest || winnerAge > prevOldest.value) &&
-      BardEngine.has("interview.questions.oldest_kachi")
-    ) {
-      questionType = "oldest_kachi";
+    // Check for career milestone hit with this win
+    const hitMilestone = CAREER_WIN_MILESTONES.includes((winnerRikishi.careerWins ?? 0) + 1);
+    const loserLossesAfter = (loserRikishi.currentBashoLosses ?? 0) + 1;
+    const loserWinsAfter = loserRikishi.currentBashoWins ?? 0;
+    // W N — "you've now defeated two consecutive Yokozuna": back-to-back
+    // sanyaku scalps is the press's first question (metrics are pre-bout, so
+    // this win makes it prior+1).
+    const sanyakuStreak =
+      (world?.currentBasho?.boutMetrics?.[winnerRikishi.id]?.sanyakuWinStreak ?? 0) +
+      (isSanyakuRank(loserRikishi.rank ?? "") ? 1 : 0);
+    if (sanyakuStreak >= 2 && BardEngine.has("interview.questions.sanyaku_streak")) {
+      questionType = "sanyaku_streak";
     } else if (
-      // W P — "once in sanyaku, dropped all the way down, now back with a
-      // winning record": the road-back question outranks generic KK asks.
-      hasSanyakuToSubJuryoFall(winnerRikishi.careerHistory) &&
-      BardEngine.has("interview.questions.road_back")
+      // W P — "only N days left": the leader/chaser question late in the basho.
+      day >= CLOSING_DAYS_MIN &&
+      world.currentBasho &&
+      getLeaderWins(world.currentBasho, world, winnerRikishi.division) - (winnerWins + 1) <=
+        CONTENTION_WINDOW &&
+      BardEngine.has("interview.questions.closing_days")
     ) {
-      questionType = "road_back";
+      questionType = "closing_days";
+    } else if (
+      // W P — "you've won N consecutive bouts — how do you evaluate?"
+      (winnerRikishi.currentWinStreak ?? 0) + 1 >= WIN_STREAK_INTERVIEW_MIN &&
+      BardEngine.has("interview.questions.win_streak")
+    ) {
+      questionType = "win_streak";
+    } else if (
+      isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)
+    ) {
+      const winnerAge = result.winner === "east" ? p.eastAge : p.westAge;
+      const prevOldest = world?.records?.allTime?.oldestMakuuchiKachiKoshi?.[0];
+      const kkThreshold = kachiKoshiThreshold(winnerRikishi.rank);
+      const earliestMaxDay =
+        kkThreshold >= 8 ? EARLIEST_KACHI_SEKITORI_MAX_DAY : EARLIEST_KACHI_LOWER_MAX_DAY;
+      if (
+        winnerRikishi.division === "makuuchi" &&
+        winnerWins + 1 === kkThreshold &&
+        winnerAge >= OLDEST_KACHI_KOSHI_MIN_AGE &&
+        (!prevOldest || winnerAge > prevOldest.value) &&
+        BardEngine.has("interview.questions.oldest_kachi")
+      ) {
+        questionType = "oldest_kachi";
+      } else if (
+        // W P — "once in sanyaku, dropped all the way down, now back with a
+        // winning record": the road-back question outranks generic KK asks.
+        hasSanyakuToSubJuryoFall(winnerRikishi.careerHistory) &&
+        BardEngine.has("interview.questions.road_back")
+      ) {
+        questionType = "road_back";
+      } else if (
+        makuuchiTournaments <= 1 &&
+        day <= DEBUT_KACHI_MAX_DAY &&
+        BardEngine.has("interview.questions.debut_kachikoshi")
+      ) {
+        questionType = "debut_kachikoshi";
+      } else if (
+        winnerWins + 1 === kkThreshold &&
+        day <= earliestMaxDay &&
+        makuuchiTournaments >= 2
+      ) {
+        questionType = "earliest_kachi";
+      } else {
+        questionType = "kachi_koshi";
+      }
+    } else if (hitMilestone) {
+      questionType = "milestone";
+    } else if (isMakeKoshi(loserWinsAfter, loserLossesAfter, loserRikishi.rank)) {
+      questionType = "make_koshi";
+    } else if (winnerWins === 0 && day >= FIRST_WIN_MENTION_MIN_DAY) {
+      questionType = "first_win";
     } else if (
       makuuchiTournaments <= 1 &&
-      day <= DEBUT_KACHI_MAX_DAY &&
-      BardEngine.has("interview.questions.debut_kachikoshi")
+      winnerRikishi.rank !== "yokozuna" &&
+      winnerRikishi.rank !== "ozeki"
     ) {
-      questionType = "debut_kachikoshi";
-    } else if (
-      winnerWins + 1 === kkThreshold &&
-      day <= earliestMaxDay &&
-      makuuchiTournaments >= 2
-    ) {
-      questionType = "earliest_kachi";
-    } else {
-      questionType = "kachi_koshi";
+      questionType = "debut_win";
+    } else if (result.upset) {
+      questionType = "upset";
+    } else if (loserLossesAfter >= 8) {
+      // Loser confirmed make-koshi but didn't trigger the specific make_koshi type above
+      questionType = "general_loss";
     }
-  } else if (hitMilestone) {
-    questionType = "milestone";
-  } else if (isMakeKoshi(loserWinsAfter, loserLossesAfter, loserRikishi.rank)) {
-    questionType = "make_koshi";
-  } else if (winnerWins === 0 && day >= FIRST_WIN_MENTION_MIN_DAY) {
-    questionType = "first_win";
-  } else if (
-    makuuchiTournaments <= 1 &&
-    winnerRikishi.rank !== "yokozuna" &&
-    winnerRikishi.rank !== "ozeki"
-  ) {
-    questionType = "debut_win";
-  } else if (result.upset) {
-    questionType = "upset";
-  } else if (loserLossesAfter >= 8) {
-    // Loser confirmed make-koshi but didn't trigger the specific make_koshi type above
-    questionType = "general_loss";
-  }
 
-  // 7-7 pressure question: winner was at 7-7 before this bout
-  if (winnerWins === 7 && winnerLosses === 7 && BardEngine.has("interview.questions.seven_seven")) {
-    questionType = "seven_seven";
-  }
-  // Weight journey question: winner has active weight journey with significant progress
-  if (
-    winnerRikishi.weightJourney &&
-    winnerRikishi.weightJourney.progressKg >= 10 &&
-    !winnerRikishi.weightJourney.stalled &&
-    BardEngine.has("interview.questions.weight_journey")
-  ) {
-    questionType = "weight_journey";
-  }
-  // Career highlight question: winner has career highlights recorded
-  if (
-    winnerRikishi.careerHighlights &&
-    winnerRikishi.careerHighlights.length > 0 &&
-    BardEngine.has("interview.questions.career_highlight")
-  ) {
-    questionType = "career_highlight";
-  }
-  // Fighting name meaning question: winner has shikona conferred early
-  if (
-    winnerRikishi.shikonaConferredEarly &&
-    BardEngine.has("interview.questions.fighting_name_meaning")
-  ) {
-    questionType = "fighting_name_meaning";
-  }
+    // 7-7 pressure question: winner was at 7-7 before this bout
+    if (
+      winnerWins === 7 &&
+      winnerLosses === 7 &&
+      BardEngine.has("interview.questions.seven_seven")
+    ) {
+      questionType = "seven_seven";
+    }
+    // Weight journey question: winner has active weight journey with significant progress
+    if (
+      winnerRikishi.weightJourney &&
+      winnerRikishi.weightJourney.progressKg >= 10 &&
+      !winnerRikishi.weightJourney.stalled &&
+      BardEngine.has("interview.questions.weight_journey")
+    ) {
+      questionType = "weight_journey";
+    }
+    // Career highlight question: winner has career highlights recorded
+    if (
+      winnerRikishi.careerHighlights &&
+      winnerRikishi.careerHighlights.length > 0 &&
+      BardEngine.has("interview.questions.career_highlight")
+    ) {
+      questionType = "career_highlight";
+    }
+    // Fighting name meaning question: winner has shikona conferred early
+    if (
+      winnerRikishi.shikonaConferredEarly &&
+      BardEngine.has("interview.questions.fighting_name_meaning")
+    ) {
+      questionType = "fighting_name_meaning";
+    }
   }
 
   // Career phase question (6.1): use declinePhase for phase-specific question

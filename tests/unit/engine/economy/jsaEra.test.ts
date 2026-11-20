@@ -132,7 +132,11 @@ describe("payBashoTeate — teate + shoshi-kin + kachikoshi-kin (real JSA worked
       currentBashoLosses: 1,
       economics: econ(),
     });
-    return makeMockWorld({ year, rikishi: new Map([["r1", r]]), activeRikishiIds: new Set(["r1"]) });
+    return makeMockWorld({
+      year,
+      rikishi: new Map([["r1", r]]),
+      activeRikishiIds: new Set(["r1"]),
+    });
   };
 
   it("6-1 makushita earns ¥226,000 in 2026", () => {
@@ -157,7 +161,11 @@ describe("payBashoTeate — teate + shoshi-kin + kachikoshi-kin (real JSA worked
       currentBashoLosses: 1,
       economics: econ(),
     });
-    const world = makeMockWorld({ year: 2026, rikishi: new Map([["r1", r]]), activeRikishiIds: new Set(["r1"]) });
+    const world = makeMockWorld({
+      year: 2026,
+      rikishi: new Map([["r1", r]]),
+      activeRikishiIds: new Set(["r1"]),
+    });
     const resolved = resolveImpacts(world, [payBashoTeate(world)]);
     // 165_000 + 4 × 3_500 + 1 × 8_000 = 187_000
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(187_000);
@@ -171,7 +179,11 @@ describe("payBashoTeate — teate + shoshi-kin + kachikoshi-kin (real JSA worked
       currentBashoLosses: 4,
       economics: econ(),
     });
-    const world = makeMockWorld({ year: 2026, rikishi: new Map([["r1", r]]), activeRikishiIds: new Set(["r1"]) });
+    const world = makeMockWorld({
+      year: 2026,
+      rikishi: new Map([["r1", r]]),
+      activeRikishiIds: new Set(["r1"]),
+    });
     const resolved = resolveImpacts(world, [payBashoTeate(world)]);
     // 88_000 teate + 3 wins × 2_500, no kachikoshi-kin
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(95_500);
@@ -185,7 +197,11 @@ describe("payBashoTeate — teate + shoshi-kin + kachikoshi-kin (real JSA worked
       currentBashoLosses: 5,
       economics: econ(),
     });
-    const world = makeMockWorld({ year: 2027, rikishi: new Map([["r1", r]]), activeRikishiIds: new Set(["r1"]) });
+    const world = makeMockWorld({
+      year: 2027,
+      rikishi: new Map([["r1", r]]),
+      activeRikishiIds: new Set(["r1"]),
+    });
     const resolved = resolveImpacts(world, [payBashoTeate(world)]);
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(0);
   });
@@ -225,7 +241,11 @@ describe("paySanyakuBashoAllowance", () => {
       currentBashoLosses: 4,
       economics: econ(),
     });
-    const world = makeMockWorld({ year: 2026, rikishi: new Map([["r1", r]]), activeRikishiIds: new Set(["r1"]) });
+    const world = makeMockWorld({
+      year: 2026,
+      rikishi: new Map([["r1", r]]),
+      activeRikishiIds: new Set(["r1"]),
+    });
     const resolved = resolveImpacts(world, [paySanyakuBashoAllowance(world)]);
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(200_000);
   });
@@ -238,7 +258,11 @@ describe("paySanyakuBashoAllowance", () => {
       currentBashoLosses: 0,
       economics: econ(),
     });
-    const world = makeMockWorld({ year: 2026, rikishi: new Map([["r1", r]]), activeRikishiIds: new Set(["r1"]) });
+    const world = makeMockWorld({
+      year: 2026,
+      rikishi: new Map([["r1", r]]),
+      activeRikishiIds: new Set(["r1"]),
+    });
     const resolved = resolveImpacts(world, [paySanyakuBashoAllowance(world)]);
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(0);
   });

@@ -1,7 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { ClickableName, RikishiName, StableName, OyakataName } from "@/components/shared/ClickableName";
+import {
+  ClickableName,
+  RikishiName,
+  StableName,
+  OyakataName,
+} from "@/components/shared/ClickableName";
 import { GameContext, type GameContextValue } from "@/state/game/gameContextInstance";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
@@ -24,9 +29,7 @@ vi.mock("@tanstack/react-router", () => ({
     children?: React.ReactNode;
   }) => {
     // Resolve $param placeholders the way TanStack Router does
-    const resolved = params
-      ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m)
-      : to;
+    const resolved = params ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m) : to;
     const safeHref = resolved.startsWith("/") && !resolved.includes("://") ? resolved : "#";
     return (
       <a href={safeHref} className={className} onClick={onClick} data-testid="router-link">

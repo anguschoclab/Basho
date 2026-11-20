@@ -255,10 +255,7 @@ describe("filterEligibleSponsors", () => {
   });
 
   it("excludes inactive sponsors", () => {
-    const world = worldWithSponsors([
-      makeSponsor("s1", { active: false }),
-      makeSponsor("s2"),
-    ]);
+    const world = worldWithSponsors([makeSponsor("s1", { active: false }), makeSponsor("s2")]);
     const eligible = filterEligibleSponsors(world, "h1");
     expect(eligible.map((s) => s.sponsorId)).toEqual(["s2"]);
   });
@@ -424,7 +421,11 @@ describe("addSponsorRelationship", () => {
     const world = worldWithSponsors([makeSponsor("s1")], [koenkai], {
       heyas: new Map([["h1", heya]]),
     });
-    const leagueRel: SponsorRelationship = { ...rel("SR-9"), targetType: "league", targetId: "jsa" };
+    const leagueRel: SponsorRelationship = {
+      ...rel("SR-9"),
+      targetType: "league",
+      targetId: "jsa",
+    };
     const impact = addSponsorRelationship(world, "s1", leagueRel);
 
     expect(pool(impact)?.koenkais.get("kk1")?.members).toHaveLength(0);
@@ -444,12 +445,23 @@ describe("addSponsorRelationship", () => {
 
 describe("emitSponsorRecruitmentEvent", () => {
   it("emits an NPC_MANAGER_DECISION narrative event for the heya", () => {
-    const impact = emitSponsorRecruitmentEvent("h1", "traditionalist", "Sponsor s1", "T2", "reason");
+    const impact = emitSponsorRecruitmentEvent(
+      "h1",
+      "traditionalist",
+      "Sponsor s1",
+      "T2",
+      "reason"
+    );
     const ev = (impact.events ?? [])[0];
     expect(ev?.type).toBe("NPC_MANAGER_DECISION");
     expect(ev?.category).toBe("narrative");
     expect(ev?.heyaId).toBe("h1");
-    const data = ev?.data as { action?: string; sponsor?: string; tier?: string; reasoning?: string };
+    const data = ev?.data as {
+      action?: string;
+      sponsor?: string;
+      tier?: string;
+      reasoning?: string;
+    };
     expect(data.action).toBe("sponsor_recruited");
     expect(data.sponsor).toBe("Sponsor s1");
     expect(data.tier).toBe("T2");
@@ -484,7 +496,12 @@ describe("evaluateSponsorRecruitmentCommon", () => {
   }
 
   it("returns an empty impact when the sponsor pool is missing", () => {
-    const impact = evaluateSponsorRecruitmentCommon(makeMockWorld(), heyaWithFunds(50_000_000), oyakata, config);
+    const impact = evaluateSponsorRecruitmentCommon(
+      makeMockWorld(),
+      heyaWithFunds(50_000_000),
+      oyakata,
+      config
+    );
     expect(impact.worldFields?.sponsorPool).toBeUndefined();
     expect(impact.events ?? []).toHaveLength(0);
   });
@@ -499,23 +516,57 @@ describe("evaluateSponsorRecruitmentCommon", () => {
   it("does nothing when the heya already has enough sponsors", () => {
     const related = makeSponsor("s1", {
       relationships: [
-        { relId: "r1", sponsorId: "s1", targetType: "heya", targetId: "h1", role: "benefactor", strength: 3, startedAtTick: 1 },
-        { relId: "r2", sponsorId: "s1", targetType: "heya", targetId: "h1", role: "benefactor", strength: 2, startedAtTick: 1 },
+        {
+          relId: "r1",
+          sponsorId: "s1",
+          targetType: "heya",
+          targetId: "h1",
+          role: "benefactor",
+          strength: 3,
+          startedAtTick: 1,
+        },
+        {
+          relId: "r2",
+          sponsorId: "s1",
+          targetType: "heya",
+          targetId: "h1",
+          role: "benefactor",
+          strength: 2,
+          startedAtTick: 1,
+        },
       ],
     });
     const s2 = makeSponsor("s2", {
       relationships: [
-        { relId: "r3", sponsorId: "s2", targetType: "heya", targetId: "h1", role: "benefactor", strength: 1, startedAtTick: 1 },
+        {
+          relId: "r3",
+          sponsorId: "s2",
+          targetType: "heya",
+          targetId: "h1",
+          role: "benefactor",
+          strength: 1,
+          startedAtTick: 1,
+        },
       ],
     });
     const world = worldWithSponsors([related, s2]); // countSponsors = 2 >= threshold 2
-    const impact = evaluateSponsorRecruitmentCommon(world, heyaWithFunds(50_000_000), oyakata, config);
+    const impact = evaluateSponsorRecruitmentCommon(
+      world,
+      heyaWithFunds(50_000_000),
+      oyakata,
+      config
+    );
     expect(impact.worldFields?.sponsorPool).toBeUndefined();
   });
 
   it("does nothing when no sponsors are eligible", () => {
     const world = worldWithSponsors([makeSponsor("s1", { active: false })]);
-    const impact = evaluateSponsorRecruitmentCommon(world, heyaWithFunds(50_000_000), oyakata, config);
+    const impact = evaluateSponsorRecruitmentCommon(
+      world,
+      heyaWithFunds(50_000_000),
+      oyakata,
+      config
+    );
     expect(impact.worldFields?.sponsorPool).toBeUndefined();
     expect(impact.events ?? []).toHaveLength(0);
   });
@@ -523,7 +574,10 @@ describe("evaluateSponsorRecruitmentCommon", () => {
   it("recruits the highest-prestigeAffinity eligible sponsor and emits the event", () => {
     const heya = heyaWithFunds(50_000_000);
     const world = worldWithSponsors(
-      [makeSponsor("s-low", { prestigeAffinity: 10 }), makeSponsor("s-high", { prestigeAffinity: 90 })],
+      [
+        makeSponsor("s-low", { prestigeAffinity: 10 }),
+        makeSponsor("s-high", { prestigeAffinity: 90 }),
+      ],
       [],
       { heyas: new Map([["h1", heya]]) }
     );

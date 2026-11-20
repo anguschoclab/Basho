@@ -6,84 +6,84 @@ Severity: **P0** data loss/corruption or player-visible breakage · **P1** incor
 
 ## Fixed (landed `10bd84b2`, `061881a3` + follow-ups)
 
-| ID | Sev | Location | Defect |
-|---|---|---|---|
-| B01 | P0 | `tick/phases/phase01_basho_bouts.ts` | `PASSTHROUGH_FIELDS` dropped `governanceLog` + heya/staff entity writes → scandal rulings/scandalScore silently discarded |
-| B02 | P1 | `tick/phases/phase01_week_governance.ts:45` | `world.week === 52` vs monotonic counter → elections fired once ever |
-| B04 | P1 | `tick/phases/phase06_yearly_boundary.ts` | `age = world.year − birthYear` pre-increment → perpetually 1-year-stale ages |
-| B05 | P1 | `tick/phases/phase01_week_health.ts:74` | NPC injury recovery multiplied by player's `recoveryMultiplier` |
-| B08 | P1 | `history/hallOfFame.ts` | `getRikishi` missed retirees → mid-year retiree legends skipped by induction |
-| B09 | P2 | `bard/domains/pre_bout.json` | east record rendered `%WEST_LOSSES%` |
-| B11 | P2 | `narrative/glossary/terms.ts:33` | `maegashira` termJa = `幕下` (Makushita) → `前頭` |
-| B12 | P0 | `recruitment/overflow.ts:75` | stale-base `rikishiIds` → multi-release kept all but last; perpetual re-trigger |
-| B13 | P1 | `governance/ceremonies/dohyoIri.ts:38` | seed lacked rikishi id → all yokozuna same style per seed |
-| B16 | P0 | `economy/mergers.ts:241` | merger fallback didn't exclude `playerHeyaId` → NPC could absorb player's stable |
-| B17 | P1 | `economy/GlobalCupService.ts:222` | `wasPlayerChampion` compared rikishiId to heyaId → always false |
-| B18 | P2 | `EconomyPage.tsx:97` | bailout button `funds < 0` vs engine `-¥5M` → enabled-but-dead range |
-| B19 | P2 | `layout/EventLogSections.tsx:105` | `.replace` produced invalid class → category icons uncolored |
-| B31 | P2 | `dashboard/YushoRaceWidget.tsx:41` | `params:{id}` vs `/rikishi/$rikishiId` → broken nav |
-| B32 | P2 | `rikishi/RikishiGlobalCup.tsx:23` + `types/globalCup.ts` | "Tournaments" stat == "Championships"; added `participantIds` to history entry |
-| B33 | P2 | `dashboard/DashboardColumns.tsx:192` | literal quotes around "FATIGUE LEVELS" |
-| B34 | P2 | `basho/ScheduleSections.tsx:111,129` | `east?.name` unset → raw ids shown; now `shikona` |
-| F49 | P3 | `simulation/schedule.test.ts:98` | heya-block regression test inserted no rikishi → vacuous |
-| — | P0 | `.github/workflows/perf-gate.yml` | baseline push hit protected `main` (GH006) → dedicated `perf-baseline` branch |
-| — | P3 | `dohyoIri.test.ts`, `phase06.singlePass.test.ts` | pinned the buggy behavior → rewritten against fixed semantics |
-| — | P3 | `baseline-orphans.json` | regenerated baseline demoted 101 intentional + 81 genuine entries → reconciled |
+| ID  | Sev | Location                                                 | Defect                                                                                                                    |
+| --- | --- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| B01 | P0  | `tick/phases/phase01_basho_bouts.ts`                     | `PASSTHROUGH_FIELDS` dropped `governanceLog` + heya/staff entity writes → scandal rulings/scandalScore silently discarded |
+| B02 | P1  | `tick/phases/phase01_week_governance.ts:45`              | `world.week === 52` vs monotonic counter → elections fired once ever                                                      |
+| B04 | P1  | `tick/phases/phase06_yearly_boundary.ts`                 | `age = world.year − birthYear` pre-increment → perpetually 1-year-stale ages                                              |
+| B05 | P1  | `tick/phases/phase01_week_health.ts:74`                  | NPC injury recovery multiplied by player's `recoveryMultiplier`                                                           |
+| B08 | P1  | `history/hallOfFame.ts`                                  | `getRikishi` missed retirees → mid-year retiree legends skipped by induction                                              |
+| B09 | P2  | `bard/domains/pre_bout.json`                             | east record rendered `%WEST_LOSSES%`                                                                                      |
+| B11 | P2  | `narrative/glossary/terms.ts:33`                         | `maegashira` termJa = `幕下` (Makushita) → `前頭`                                                                         |
+| B12 | P0  | `recruitment/overflow.ts:75`                             | stale-base `rikishiIds` → multi-release kept all but last; perpetual re-trigger                                           |
+| B13 | P1  | `governance/ceremonies/dohyoIri.ts:38`                   | seed lacked rikishi id → all yokozuna same style per seed                                                                 |
+| B16 | P0  | `economy/mergers.ts:241`                                 | merger fallback didn't exclude `playerHeyaId` → NPC could absorb player's stable                                          |
+| B17 | P1  | `economy/GlobalCupService.ts:222`                        | `wasPlayerChampion` compared rikishiId to heyaId → always false                                                           |
+| B18 | P2  | `EconomyPage.tsx:97`                                     | bailout button `funds < 0` vs engine `-¥5M` → enabled-but-dead range                                                      |
+| B19 | P2  | `layout/EventLogSections.tsx:105`                        | `.replace` produced invalid class → category icons uncolored                                                              |
+| B31 | P2  | `dashboard/YushoRaceWidget.tsx:41`                       | `params:{id}` vs `/rikishi/$rikishiId` → broken nav                                                                       |
+| B32 | P2  | `rikishi/RikishiGlobalCup.tsx:23` + `types/globalCup.ts` | "Tournaments" stat == "Championships"; added `participantIds` to history entry                                            |
+| B33 | P2  | `dashboard/DashboardColumns.tsx:192`                     | literal quotes around "FATIGUE LEVELS"                                                                                    |
+| B34 | P2  | `basho/ScheduleSections.tsx:111,129`                     | `east?.name` unset → raw ids shown; now `shikona`                                                                         |
+| F49 | P3  | `simulation/schedule.test.ts:98`                         | heya-block regression test inserted no rikishi → vacuous                                                                  |
+| —   | P0  | `.github/workflows/perf-gate.yml`                        | baseline push hit protected `main` (GH006) → dedicated `perf-baseline` branch                                             |
+| —   | P3  | `dohyoIri.test.ts`, `phase06.singlePass.test.ts`         | pinned the buggy behavior → rewritten against fixed semantics                                                             |
+| —   | P3  | `baseline-orphans.json`                                  | regenerated baseline demoted 101 intentional + 81 genuine entries → reconciled                                            |
 
 ## Registered debt — P0/P1 engine
 
-| ID | Sev | Location | Defect |
-|---|---|---|---|
+| ID  | Sev | Location | Defect |
+| --- | --- | -------- | ------ |
 
 ## Registered debt — P2 UI
 
-| ID | Location | Defect |
-|---|---|---|
+| ID  | Location | Defect |
+| --- | -------- | ------ |
 
 ## Also fixed (post-verdict follow-up commit)
 
-| ID | Sev | Location | Defect |
-|---|---|---|---|
-| B12b | P0 | `generation/TalentPoolMaterialization.ts:51` + `TalentPoolNPCRecruitment.ts` | stale-base `rikishiIds` — callers now accumulate `rosterAdditions` and re-issue the composed roster; `resolveImpacts` roster reconciliation already masked the drop, but the queued write was dishonest |
-| B12c | P0 | `governance/services/governanceReview.ts` | gift written from pre-loan base (principal destroyed); benefactor charged once for N gifts (money created) — now composes on queued funds + per-benefactor cumulative charge |
-| B49 | P0 | `simulation/TournamentSimulator.ts:237` | shallow `{...r}` shared `divisionRecords` — now deep-clones the nested record before incrementing |
-| B13b | P1 | `governance/ceremonies/yokozunaAttendants.ts:40` | same seed-scope class as B13 — now `::${yokozuna.id}` |
-| B27-partial | P1 | `lifecycle/retirementCheck.ts:47` | probabilistic seed lacked time dimension → `retirement::id::year` — checks now vary per evaluation year |
-| B29 | P1 | `shikona/rankRules.ts:54` + `generateShikona.ts:49` | sekiwake/komusubi/maegashira unmapped → "rookie"; both ladders extended |
-| B30 | P1 | `welfare/harmony.ts:60` | read `heyaRivalryPairs` (heya-level) for rikishi fields → always 0; now reads `pairs` + `sameHeya` |
-| B48 | P1 | `bout/physics/resultBuilders.ts:89` | unguarded `combatProfile.archetype`/`.counterFamily` deref → `?.` |
-| B27 | P1 | `health/InjuryService.ts:225,278` | bout-injury seed per-week → per-day `dayIndexGlobal` (~4%/bout, not ~4%/week-cluster) |
-| B45 | P1 | `calendar/schedule.ts:243` | makushita call-up double-booked same day → `busyToday` filter |
-| B36 | P1 | `history/history.ts:91` | milestone exact-match → threshold-crossing with recorded-title dedupe |
-| — | P0 | `.github/workflows/autonomous-narrative.yml` | protected-branch push (GH006, same class as perf-gate) → `narrative-updates` branch; `git add` now covers `domains/` too |
-| B14 | P1 | `governance/services/MyosekiTradingService.ts` | sale proceeds destroyed — seller (`stock.ownerId`) now credited on purchase |
-| B15 | P1 | `recruitment/YouthAcademyService.ts:313` | `floor(pointsGained/10)` on weekly slice never fired → boundary-crossing on accumulated devPoints |
-| B25 | P0 | `lifecycle/retireeOyakataConversion.ts` | unconditional handover deposed sitting oyakata / stale oyakataId after founding → `chairVacant` + `!foundedHeya` guards |
-| B34 | P1 | `training/SparringService.ts:452` | `ceil(delta/len)` per stat → up to 4× cap → remainder-distributed within delta |
-| B03 | P2 | `tick/phases/phase_pre_basho_assessment.ts` | unreachable [7,14] window at ≤6-day entry → reachable gate, week-dedupe retained |
-| B37 | P2 | `ceremony/HoFInductionCeremony.tsx` | `StableName id=rikishiId` broken nav → `heyaId` prop resolved from world |
-| B41 | P2 | `scouting/CompareModePanel.tsx` | prospect pair = TalentCandidate (no `.id`) → fabricated 0-0 "B wins"; now resolves via `convertCandidateToRikishi`, deterministic seed, honest "unavailable" |
-| B43 | P2 | `history/LineageTree.tsx:102` | "2th/3th Generation Ancestor" → `Generation N Ancestor` |
-| B20 | P2 | `stable/facilityMeta.ts:77` | recovery formula `0.9+l/166` (≈2.5× inflated) → engine `0.8+(l/100)·0.4` |
-| B21 | P2 | `economy/FacilityROIChart.tsx` | fabricated `statGain=1+l/100` axis → real per-axis `RANGE/100` effect delta |
-| B22 | P2 | `economy/SponsorshipHub*.tsx` | 3 dead controls removed (Industry Breakdown, Details, ATTRACT NEW PATRONS) |
-| B38 | P2 | `governance/GovernancePoliticsTab.tsx` | "Spend 100" was a pure burn (spendPoliticalCapital only decrements) → removed; tests repinned |
-| B39 | P2 | `governance/GovernancePoliticsTab.tsx` | `rikishiCount: () => 0` sort → real ichimon roster sum |
-| B40 | P2 | `recap/RecapSections.tsx` + `RecapPage` | dead `showYokozunaDelib` branch (fabricated subject + verdict) removed |
-| B42 | P2 | `kesho/keshoEffects.tsx` + `keshoPatterns.tsx` + `keshoSymbols.tsx` | all 5 def ids unreferenced → consumers wired; missing `mountain` motif added |
-| B26 | P0 | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts` | shallow `economics` overwrite (multi-sansho + cross-impact) → per-rikishi `econCache` + progressively-resolved world for teate/mochikyukin |
-| B31 | P0 | `legacy/DynastyService.ts` | `triggerSuccession` now runs `retireRikishiFully`, `removeOyakata`, and transfers held myoseki `holderId` to the successor |
-| B32 | P1 | `lifecycle/BashoHistory.ts` | yokozuna deliberation read pre-index history → synthesized current-basho entry appended in-check |
-| B33 | P1 | `legacy/DynastyService.ts:89` | `isSummary` successor → yearly no-op; now picks first full candidate else generic trustee |
-| B35 | P2 | `lifecycle/retirementNarrative.ts` | 5-name order array → `RANK_HIERARCHY` tiers (unlisted ranks had indexOf −1, sorting above yokozuna) |
-| B44 | P1 | `matchmaking/DramaMatchmaker.ts:583` | both-id swap was identity → `scoreChange` always 0; now swaps easts only |
-| B46 | P1 | `kimarite/kimariteStrategies.ts:432,828` | `forwardMomentum < 0` unreachable (clamped ≥0 → winner-side `> 0`); `stamina < 0.5` → `< 50` (0-100 scale) |
-| B47 | P1 | `bout/narrative/postbout2.ts` | `gyoji_confused` rolled independently → gated on `monoiiOutcome !== "upheld"` |
-| B50 | P2 | `bout/ReplayMetadata.ts:103` | `clamp01(rawMargin)` saturated → `margin / TACHIAI_MARGIN_DECISIVE` |
-| B24 | P2 | `persistence/SerializationService.ts` + `types/save.ts` | `serializeBashoState` dropped `schedule`/`results`/`boutMetrics`/`isExhibition`/`exhibitionName` → all round-trip now |
-| B06 | P1 | `scripts/narrative/bard-orchestrator.ts` + `autonomous-narrative.yml` | `archive.domains.events` deref could crash on thin registry.json → normalized; `timeout-minutes: 30` added |
-| B07 | P1 | `package.json` + `electron/main.ts` | emitted `index.js` vs referenced `main.cjs`/`preload.cjs` → aligned to emitted names |
-| B23 | P2 | `stable/StablePageTabs.tsx` | MentorAssignmentPanel click bubbled into navigable Card → `stopPropagation` |
+| ID          | Sev | Location                                                                     | Defect                                                                                                                                                                                                  |
+| ----------- | --- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B12b        | P0  | `generation/TalentPoolMaterialization.ts:51` + `TalentPoolNPCRecruitment.ts` | stale-base `rikishiIds` — callers now accumulate `rosterAdditions` and re-issue the composed roster; `resolveImpacts` roster reconciliation already masked the drop, but the queued write was dishonest |
+| B12c        | P0  | `governance/services/governanceReview.ts`                                    | gift written from pre-loan base (principal destroyed); benefactor charged once for N gifts (money created) — now composes on queued funds + per-benefactor cumulative charge                            |
+| B49         | P0  | `simulation/TournamentSimulator.ts:237`                                      | shallow `{...r}` shared `divisionRecords` — now deep-clones the nested record before incrementing                                                                                                       |
+| B13b        | P1  | `governance/ceremonies/yokozunaAttendants.ts:40`                             | same seed-scope class as B13 — now `::${yokozuna.id}`                                                                                                                                                   |
+| B27-partial | P1  | `lifecycle/retirementCheck.ts:47`                                            | probabilistic seed lacked time dimension → `retirement::id::year` — checks now vary per evaluation year                                                                                                 |
+| B29         | P1  | `shikona/rankRules.ts:54` + `generateShikona.ts:49`                          | sekiwake/komusubi/maegashira unmapped → "rookie"; both ladders extended                                                                                                                                 |
+| B30         | P1  | `welfare/harmony.ts:60`                                                      | read `heyaRivalryPairs` (heya-level) for rikishi fields → always 0; now reads `pairs` + `sameHeya`                                                                                                      |
+| B48         | P1  | `bout/physics/resultBuilders.ts:89`                                          | unguarded `combatProfile.archetype`/`.counterFamily` deref → `?.`                                                                                                                                       |
+| B27         | P1  | `health/InjuryService.ts:225,278`                                            | bout-injury seed per-week → per-day `dayIndexGlobal` (~4%/bout, not ~4%/week-cluster)                                                                                                                   |
+| B45         | P1  | `calendar/schedule.ts:243`                                                   | makushita call-up double-booked same day → `busyToday` filter                                                                                                                                           |
+| B36         | P1  | `history/history.ts:91`                                                      | milestone exact-match → threshold-crossing with recorded-title dedupe                                                                                                                                   |
+| —           | P0  | `.github/workflows/autonomous-narrative.yml`                                 | protected-branch push (GH006, same class as perf-gate) → `narrative-updates` branch; `git add` now covers `domains/` too                                                                                |
+| B14         | P1  | `governance/services/MyosekiTradingService.ts`                               | sale proceeds destroyed — seller (`stock.ownerId`) now credited on purchase                                                                                                                             |
+| B15         | P1  | `recruitment/YouthAcademyService.ts:313`                                     | `floor(pointsGained/10)` on weekly slice never fired → boundary-crossing on accumulated devPoints                                                                                                       |
+| B25         | P0  | `lifecycle/retireeOyakataConversion.ts`                                      | unconditional handover deposed sitting oyakata / stale oyakataId after founding → `chairVacant` + `!foundedHeya` guards                                                                                 |
+| B34         | P1  | `training/SparringService.ts:452`                                            | `ceil(delta/len)` per stat → up to 4× cap → remainder-distributed within delta                                                                                                                          |
+| B03         | P2  | `tick/phases/phase_pre_basho_assessment.ts`                                  | unreachable [7,14] window at ≤6-day entry → reachable gate, week-dedupe retained                                                                                                                        |
+| B37         | P2  | `ceremony/HoFInductionCeremony.tsx`                                          | `StableName id=rikishiId` broken nav → `heyaId` prop resolved from world                                                                                                                                |
+| B41         | P2  | `scouting/CompareModePanel.tsx`                                              | prospect pair = TalentCandidate (no `.id`) → fabricated 0-0 "B wins"; now resolves via `convertCandidateToRikishi`, deterministic seed, honest "unavailable"                                            |
+| B43         | P2  | `history/LineageTree.tsx:102`                                                | "2th/3th Generation Ancestor" → `Generation N Ancestor`                                                                                                                                                 |
+| B20         | P2  | `stable/facilityMeta.ts:77`                                                  | recovery formula `0.9+l/166` (≈2.5× inflated) → engine `0.8+(l/100)·0.4`                                                                                                                                |
+| B21         | P2  | `economy/FacilityROIChart.tsx`                                               | fabricated `statGain=1+l/100` axis → real per-axis `RANGE/100` effect delta                                                                                                                             |
+| B22         | P2  | `economy/SponsorshipHub*.tsx`                                                | 3 dead controls removed (Industry Breakdown, Details, ATTRACT NEW PATRONS)                                                                                                                              |
+| B38         | P2  | `governance/GovernancePoliticsTab.tsx`                                       | "Spend 100" was a pure burn (spendPoliticalCapital only decrements) → removed; tests repinned                                                                                                           |
+| B39         | P2  | `governance/GovernancePoliticsTab.tsx`                                       | `rikishiCount: () => 0` sort → real ichimon roster sum                                                                                                                                                  |
+| B40         | P2  | `recap/RecapSections.tsx` + `RecapPage`                                      | dead `showYokozunaDelib` branch (fabricated subject + verdict) removed                                                                                                                                  |
+| B42         | P2  | `kesho/keshoEffects.tsx` + `keshoPatterns.tsx` + `keshoSymbols.tsx`          | all 5 def ids unreferenced → consumers wired; missing `mountain` motif added                                                                                                                            |
+| B26         | P0  | `lifecycle/PrizeDistribution.ts` + `concludeBasho.ts`                        | shallow `economics` overwrite (multi-sansho + cross-impact) → per-rikishi `econCache` + progressively-resolved world for teate/mochikyukin                                                              |
+| B31         | P0  | `legacy/DynastyService.ts`                                                   | `triggerSuccession` now runs `retireRikishiFully`, `removeOyakata`, and transfers held myoseki `holderId` to the successor                                                                              |
+| B32         | P1  | `lifecycle/BashoHistory.ts`                                                  | yokozuna deliberation read pre-index history → synthesized current-basho entry appended in-check                                                                                                        |
+| B33         | P1  | `legacy/DynastyService.ts:89`                                                | `isSummary` successor → yearly no-op; now picks first full candidate else generic trustee                                                                                                               |
+| B35         | P2  | `lifecycle/retirementNarrative.ts`                                           | 5-name order array → `RANK_HIERARCHY` tiers (unlisted ranks had indexOf −1, sorting above yokozuna)                                                                                                     |
+| B44         | P1  | `matchmaking/DramaMatchmaker.ts:583`                                         | both-id swap was identity → `scoreChange` always 0; now swaps easts only                                                                                                                                |
+| B46         | P1  | `kimarite/kimariteStrategies.ts:432,828`                                     | `forwardMomentum < 0` unreachable (clamped ≥0 → winner-side `> 0`); `stamina < 0.5` → `< 50` (0-100 scale)                                                                                              |
+| B47         | P1  | `bout/narrative/postbout2.ts`                                                | `gyoji_confused` rolled independently → gated on `monoiiOutcome !== "upheld"`                                                                                                                           |
+| B50         | P2  | `bout/ReplayMetadata.ts:103`                                                 | `clamp01(rawMargin)` saturated → `margin / TACHIAI_MARGIN_DECISIVE`                                                                                                                                     |
+| B24         | P2  | `persistence/SerializationService.ts` + `types/save.ts`                      | `serializeBashoState` dropped `schedule`/`results`/`boutMetrics`/`isExhibition`/`exhibitionName` → all round-trip now                                                                                   |
+| B06         | P1  | `scripts/narrative/bard-orchestrator.ts` + `autonomous-narrative.yml`        | `archive.domains.events` deref could crash on thin registry.json → normalized; `timeout-minutes: 30` added                                                                                              |
+| B07         | P1  | `package.json` + `electron/main.ts`                                          | emitted `index.js` vs referenced `main.cjs`/`preload.cjs` → aligned to emitted names                                                                                                                    |
+| B23         | P2  | `stable/StablePageTabs.tsx`                                                  | MentorAssignmentPanel click bubbled into navigable Card → `stopPropagation`                                                                                                                             |
 
 ## Registered debt — P3 test-quality / tooling
 

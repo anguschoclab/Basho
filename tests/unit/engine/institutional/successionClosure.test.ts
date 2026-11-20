@@ -212,7 +212,11 @@ describe("succession closure — dying stable folds instead of trustee", () => {
   });
 
   it("keeps a dying stable alive at HEYA_FLOOR (runaway-collapse guard)", () => {
-    const { world } = buildWorld({ dyingId: "h-floor", rosterSize: 0, fillerCount: HEYA_FLOOR - 1 });
+    const { world } = buildWorld({
+      dyingId: "h-floor",
+      rosterSize: 0,
+      fillerCount: HEYA_FLOOR - 1,
+    });
     expect(world.heyas.size).toBe(HEYA_FLOOR);
 
     const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);

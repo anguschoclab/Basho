@@ -38,6 +38,9 @@ import { assignYokozunaAttendants } from "@/engine/governance/ceremonies/yokozun
 import { rngForWorld } from "@/engine/core/rng";
 import { getRikishi } from "@/engine/core/queries";
 
+/**
+ * Weekly governance phase — JSA rulings, sanctions, elections, and NPC myoseki purchases.
+ */
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");
   const isElectionWeek =

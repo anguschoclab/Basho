@@ -10,6 +10,9 @@ import {
 import type { NPCWeeklyDecision } from "@/engine/npc/npcTypes";
 import { isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 
+/**
+ * Adjusts NPC training pressure for rikishi approaching promotion thresholds.
+ */
 export function applyPromotionAwareness(
   world: WorldState,
   heyaId: string,
@@ -101,6 +104,9 @@ export function applyPromotionAwareness(
   decision.individualDevelops = [...developSet];
 }
 
+/**
+ * Reduces injury risk for NPC rikishi carrying elevated risk flags.
+ */
 export function applyInjuryRiskReduction(
   world: WorldState,
   heyaId: string,

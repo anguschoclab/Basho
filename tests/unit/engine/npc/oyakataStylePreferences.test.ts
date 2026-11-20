@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { getOyakataStyleProfile, scoreRecruitForOyakata } from "@/engine/npc/personas/oyakataStylePreferences";
+import {
+  getOyakataStyleProfile,
+  scoreRecruitForOyakata,
+} from "@/engine/npc/personas/oyakataStylePreferences";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { CombatArchetype, Style } from "@/engine/types/combat";
 

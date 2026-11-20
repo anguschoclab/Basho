@@ -9,10 +9,7 @@ import type { BashoState } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { RivalriesState } from "@/constants/engine/rivalry";
 import { getRivalryBoutModifiers } from "@/engine/narrative/RivalryHeatService";
-import {
-  scorePairing,
-  type MatchPairing,
-} from "@/engine/matchmaking/MatchmakingPhases";
+import { scorePairing, type MatchPairing } from "@/engine/matchmaking/MatchmakingPhases";
 import {
   RIVALRY_TENSION_THRESHOLD,
   RIVALRY_HEAT_BONUS,

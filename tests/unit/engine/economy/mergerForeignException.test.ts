@@ -111,7 +111,8 @@ describe("merger — whole-roster transfer (no roster cap)", () => {
     world.heyas.set("heya-player", player);
 
     for (const id of sourceIds) world.rikishi.set(id, native(id, "heya-source"));
-    for (const id of ["t1", "t2", "t3", "t4", "t5"]) world.rikishi.set(id, native(id, "heya-target"));
+    for (const id of ["t1", "t2", "t3", "t4", "t5"])
+      world.rikishi.set(id, native(id, "heya-target"));
     world.rikishi.set("p1", native("p1", "heya-player"));
 
     const impact = executeMerger(world, "heya-source", "heya-target", "test merger");

@@ -19,6 +19,9 @@ interface LoadingPanelProps {
   className?: string;
 }
 
+/**
+ * Shared full-height loading state — spinner + EmptyState block centered at 60vh; replaces page content while data resolves.
+ */
 export function LoadingPanel({ title, description, className }: LoadingPanelProps) {
   return (
     <div className={cn("flex flex-col items-center justify-center min-h-[60vh]", className)}>

@@ -114,9 +114,7 @@ export function reviewSource(content: string, filePath: string): Violation[] {
       !rawLine.includes("@rng-fixed") &&
       /\b(rngFromSeed|rngForWorld|getSystemRNG)\s*\(/.test(rawLine)
     ) {
-      const callMatch = rawLine.match(
-        /\b(?:rngFromSeed|rngForWorld|getSystemRNG)\s*\(([^)\n]*)\)/
-      );
+      const callMatch = rawLine.match(/\b(?:rngFromSeed|rngForWorld|getSystemRNG)\s*\(([^)\n]*)\)/);
       const parts = (callMatch?.[1] ?? "").split(",");
       if (parts.length >= 3) {
         const labelArg = parts.slice(2).join(",").trim();
@@ -128,8 +126,7 @@ export function reviewSource(content: string, filePath: string): Violation[] {
         const yearOnlyLabel = hasYearInterp && !withoutYear.includes("${");
         // Fully static: seed+subsystem+label all literals — every call replays
         // the identical stream, so uuid() mints collide by construction.
-        const fullyStatic =
-          isLit(parts[0]) && isLit(parts[1]) && isLit(labelArg);
+        const fullyStatic = isLit(parts[0]) && isLit(parts[1]) && isLit(labelArg);
         if (yearOnlyLabel) {
           pushViolation(
             violations,

@@ -5,7 +5,6 @@ import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { retiredSummary as makeSummary } from "../../helpers/retiredSummary";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-
 function makeFullRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return mockRikishi(id, {
     isRetired: true,

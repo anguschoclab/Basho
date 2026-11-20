@@ -1,6 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { NarrativeContext } from "@/engine/types/events";
-import {logBardEvent} from "@/engine/events/helpers";
+import { logBardEvent } from "@/engine/events/helpers";
 
 /**
  * Creates a basho status update event (e.g., start, end, day update).
@@ -9,19 +9,22 @@ import {logBardEvent} from "@/engine/events/helpers";
  * @returns The logged engine event
  */
 export function bashoStatus(world: WorldState, ctx: NarrativeContext) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `basho-status-${ctx.status}-${ctx.day}`,
     ctx: ctx,
     titlePath: "events.basho.status_title",
     summaryPath: "events.basho.status_summary",
     event: {
-    type: "BASHO_STATUS",
-    category: "basho",
-    importance:
-      ctx.status === "started" || ctx.status === "ended" || ctx.day === 15 ? "headline" : "notable",
-    phase: "basho_day",
-    scope: "world",
-    tags: ["basho", ctx.status as string]},
+      type: "BASHO_STATUS",
+      category: "basho",
+      importance:
+        ctx.status === "started" || ctx.status === "ended" || ctx.day === 15
+          ? "headline"
+          : "notable",
+      phase: "basho_day",
+      scope: "world",
+      tags: ["basho", ctx.status as string],
+    },
   });
 }
 
@@ -36,21 +39,20 @@ export function boutResolved(world: WorldState, data: NarrativeContext) {
     ? `bout-resolved-draw-${data.eastRikishiId}-${data.westRikishiId}-${data.day}`
     : `bout-resolved-${data.winnerRikishiId}-${data.loserRikishiId}-${data.day}`;
 
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: rngKey,
     ctx: data,
-    extraData: {winnerId: data.winnerRikishiId,
-    loserId: data.loserRikishiId,
-  },
+    extraData: { winnerId: data.winnerRikishiId, loserId: data.loserRikishiId },
     titlePath: "events.basho.bout_title",
     summaryPath: "events.basho.bout_summary",
     event: {
-    type: "BOUT_RESOLVED",
-    category: "basho",
-    importance: data.upset || data.isKinboshi ? "headline" : "notable",
-    phase: "basho_day",
-    scope: "world",
-    tags: ["basho", "bout", "pbp"]},
+      type: "BOUT_RESOLVED",
+      category: "basho",
+      importance: data.upset || data.isKinboshi ? "headline" : "notable",
+      phase: "basho_day",
+      scope: "world",
+      tags: ["basho", "bout", "pbp"],
+    },
   });
 }
 
@@ -61,20 +63,21 @@ export function boutResolved(world: WorldState, data: NarrativeContext) {
  * @returns The logged engine event
  */
 export function awardConferred(world: WorldState, ctx: NarrativeContext) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `award-${ctx.rikishiId}-${ctx.status}`,
     ctx: ctx,
     titlePath: "events.awards.title",
     summaryPath: "events.awards.summary",
     event: {
-    type: "AWARD_CONFERRED",
-    category: "basho",
-    importance: "headline",
-    phase: "basho_wrap",
-    scope: "rikishi",
-    rikishiId: ctx.rikishiId,
-    heyaId: ctx.heyaId,
-    tags: ["basho", "award"]},
+      type: "AWARD_CONFERRED",
+      category: "basho",
+      importance: "headline",
+      phase: "basho_wrap",
+      scope: "rikishi",
+      rikishiId: ctx.rikishiId,
+      heyaId: ctx.heyaId,
+      tags: ["basho", "award"],
+    },
   });
 }
 
@@ -85,20 +88,22 @@ export function awardConferred(world: WorldState, ctx: NarrativeContext) {
  * @returns The logged engine event
  */
 export function rivalryHeatSpike(world: WorldState, data: NarrativeContext) {
-    return logBardEvent(world, {
+  return logBardEvent(world, {
     salt: `rivalry-heat-${data.winner}-${data.loser}`,
     ctx: data,
-    extraData: {winnerId: data.winnerId || data.winnerRikishiId,
-    loserId: data.loserId || data.loserRikishiId,
-  },
+    extraData: {
+      winnerId: data.winnerId || data.winnerRikishiId,
+      loserId: data.loserId || data.loserRikishiId,
+    },
     titlePath: "events.rivalry.title",
     summaryPath: "events.rivalry.press_rumors",
     summaryFirst: true,
     event: {
-    type: "RIVALRY_HEAT_SPIKE",
-    category: "rivalry",
-    importance: (data.heat as number) > 75 ? "major" : "notable",
-    scope: "world",
-    tags: ["rivalry", "hype"]},
+      type: "RIVALRY_HEAT_SPIKE",
+      category: "rivalry",
+      importance: (data.heat as number) > 75 ? "major" : "notable",
+      scope: "world",
+      tags: ["rivalry", "hype"],
+    },
   });
 }

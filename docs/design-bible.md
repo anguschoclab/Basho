@@ -563,15 +563,15 @@ set — no decorative `── X ──` brackets:
 The following labels are retired. They describe institutions, spy fiction,
 or control rooms — not a heya.
 
-| Banned                          | Canonical replacement          |
-| ------------------------------- | ------------------------------ |
-| `Control Center`                | `Dashboard`                    |
-| `Institution` (the heya)        | `Stable` / `Heya` / `Health`   |
-| `Intelligence` (advice panel)   | `Advisor`                      |
-| `Scout Intel`                   | `Scouting`                     |
-| `Institutional Interface`       | plain loading copy             |
-| `Institutional Grade`           | `Sumo Management`              |
-| `Your intelligence network`     | `Scouts from rival stables`    |
+| Banned                        | Canonical replacement        |
+| ----------------------------- | ---------------------------- |
+| `Control Center`              | `Dashboard`                  |
+| `Institution` (the heya)      | `Stable` / `Heya` / `Health` |
+| `Intelligence` (advice panel) | `Advisor`                    |
+| `Scout Intel`                 | `Scouting`                   |
+| `Institutional Interface`     | plain loading copy           |
+| `Institutional Grade`         | `Sumo Management`            |
+| `Your intelligence network`   | `Scouts from rival stables`  |
 
 (`Institutional` remains valid inside the JSA/federation domain —
 institutional debt, stipulations, feuds — where it describes the
@@ -614,7 +614,7 @@ rather than hardcoded Tailwind color classes like `text-yellow-400`.
 
 | File                                        | Purpose                                                                   |
 | ------------------------------------------- | ------------------------------------------------------------------------- |
-| `src/app/index.css`                           | All CSS variables, design tokens, global styles, component classes        |
+| `src/app/index.css`                         | All CSS variables, design tokens, global styles, component classes        |
 | `tailwind.config.ts`                        | Tailwind color tokens (references CSS vars), font families, border radius |
 | `src/components/layout/AppSidebar.tsx`      | Sidebar shell, navigation groups, logo, footer                            |
 | `src/components/layout/TopNavBar.tsx`       | Global header, phase info, Continue button                                |
@@ -658,15 +658,15 @@ rather than hardcoded Tailwind color classes like `text-yellow-400`.
 `tests/unit/audit/designBible.test.ts` gates the suite on zero
 violations. Enforced rules:
 
-| Rule                         | Severity | Catches                                                        |
-| ---------------------------- | -------- | -------------------------------------------------------------- |
-| `hardcoded-hsl`              | P0       | Numeric `hsl(44 …)` literals (only `hsl(var(--…))` is allowed) |
-| `raw-white-black`            | P0       | `text/bg/border/ring-from-to-via-white\|black` utilities       |
-| `rgba-shadow`                | P1       | `rgba(...)` in arbitrary Tailwind shadows and inline styles    |
-| `inline-oversized-tracking`  | P2       | `letterSpacing:` inline values above 0.15em                    |
-| `cosplay-copy`               | P2       | §11 Banned Terms incl. bare `Intelligence`/`Institution` labels — also scans `engine`/`presenters` |
-| `screaming-copy`             | P2       | SNAKE_CASE display copy (plain uppercase eyebrows are allowed) |
-| `na-placeholder`             | P2       | `N/A` display copy — use `—` (em dash) for missing data        |
+| Rule                        | Severity | Catches                                                                                            |
+| --------------------------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `hardcoded-hsl`             | P0       | Numeric `hsl(44 …)` literals (only `hsl(var(--…))` is allowed)                                     |
+| `raw-white-black`           | P0       | `text/bg/border/ring-from-to-via-white\|black` utilities                                           |
+| `rgba-shadow`               | P1       | `rgba(...)` in arbitrary Tailwind shadows and inline styles                                        |
+| `inline-oversized-tracking` | P2       | `letterSpacing:` inline values above 0.15em                                                        |
+| `cosplay-copy`              | P2       | §11 Banned Terms incl. bare `Intelligence`/`Institution` labels — also scans `engine`/`presenters` |
+| `screaming-copy`            | P2       | SNAKE_CASE display copy (plain uppercase eyebrows are allowed)                                     |
+| `na-placeholder`            | P2       | `N/A` display copy — use `—` (em dash) for missing data                                            |
 
 Exemptions are file-targeted via each rule's `exempt` field — the only
 sanctioned literal-color file is `src/constants/ui/drawingPalette.ts`

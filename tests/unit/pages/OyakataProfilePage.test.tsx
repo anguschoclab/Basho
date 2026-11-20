@@ -8,9 +8,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, within, fireEvent } from "@testing-library/react";
 import React from "react";
-import OyakataProfilePage, {
-  PlayerOyakataRedirect,
-} from "@/pages/OyakataProfilePage";
+import OyakataProfilePage, { PlayerOyakataRedirect } from "@/pages/OyakataProfilePage";
 import { useGame } from "@/state/game/useGame";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
@@ -36,9 +34,7 @@ vi.mock("@tanstack/react-router", () => ({
     params?: Record<string, string>;
     children: React.ReactNode;
   }) => {
-    const resolved = params
-      ? to.replace(/\$(\w+)/g, (m: string, k: string) => params[k] ?? m)
-      : to;
+    const resolved = params ? to.replace(/\$(\w+)/g, (m: string, k: string) => params[k] ?? m) : to;
     return React.createElement("a", { href: resolved, ...rest }, children);
   },
   Navigate: (props: { to: string; params?: Record<string, string>; replace?: boolean }) => {

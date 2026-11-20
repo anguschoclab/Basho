@@ -86,9 +86,7 @@ describe("onBoutResolvedInjury — inBoutInjury consumer", () => {
 
   it("an in-bout injury on an already-injured rikishi aggravates", () => {
     const east = MockFactory.createRikishi("r-east");
-    const west = { ...hurt(2), id: "r-west" } as ReturnType<
-      typeof MockFactory.createRikishi
-    >;
+    const west = { ...hurt(2), id: "r-west" } as ReturnType<typeof MockFactory.createRikishi>;
     const world = MockFactory.createWorld({
       rikishi: new Map([
         [east.id, east],

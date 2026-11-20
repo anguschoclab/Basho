@@ -94,65 +94,37 @@ describe("getYokozunaRunBand", () => {
 describe("getKadobanDramaBand", () => {
   it("demotion beats clearing when both thresholds are met (precedence)", () => {
     expect(
-      PromotionNarrative.getKadobanDramaBand(
-        { isKadoban: true, consecutiveMakeKoshi: 2 },
-        8,
-        8
-      )
+      PromotionNarrative.getKadobanDramaBand({ isKadoban: true, consecutiveMakeKoshi: 2 }, 8, 8)
     ).toBe("demoted");
   });
 
   it("kadoban with a confirmed losing record is 'demoted'", () => {
     expect(
-      PromotionNarrative.getKadobanDramaBand(
-        { isKadoban: true, consecutiveMakeKoshi: 2 },
-        0,
-        8
-      )
+      PromotionNarrative.getKadobanDramaBand({ isKadoban: true, consecutiveMakeKoshi: 2 }, 0, 8)
     ).toBe("demoted");
   });
 
   it("kadoban at the kachi-koshi threshold is 'cleared'", () => {
     expect(
-      PromotionNarrative.getKadobanDramaBand(
-        { isKadoban: true, consecutiveMakeKoshi: 2 },
-        8,
-        0
-      )
+      PromotionNarrative.getKadobanDramaBand({ isKadoban: true, consecutiveMakeKoshi: 2 }, 8, 0)
     ).toBe("cleared");
     expect(
-      PromotionNarrative.getKadobanDramaBand(
-        { isKadoban: true, consecutiveMakeKoshi: 1 },
-        8,
-        5
-      )
+      PromotionNarrative.getKadobanDramaBand({ isKadoban: true, consecutiveMakeKoshi: 1 }, 8, 5)
     ).toBe("cleared");
   });
 
   it("first kadoban basho still undecided is 'danger'", () => {
     expect(
-      PromotionNarrative.getKadobanDramaBand(
-        { isKadoban: true, consecutiveMakeKoshi: 1 },
-        7,
-        7
-      )
+      PromotionNarrative.getKadobanDramaBand({ isKadoban: true, consecutiveMakeKoshi: 1 }, 7, 7)
     ).toBe("danger");
   });
 
   it("ongoing kadoban campaigns and second make-koshi are 'fighting'", () => {
     expect(
-      PromotionNarrative.getKadobanDramaBand(
-        { isKadoban: true, consecutiveMakeKoshi: 2 },
-        7,
-        7
-      )
+      PromotionNarrative.getKadobanDramaBand({ isKadoban: true, consecutiveMakeKoshi: 2 }, 7, 7)
     ).toBe("fighting");
     expect(
-      PromotionNarrative.getKadobanDramaBand(
-        { isKadoban: false, consecutiveMakeKoshi: 2 },
-        5,
-        5
-      )
+      PromotionNarrative.getKadobanDramaBand({ isKadoban: false, consecutiveMakeKoshi: 2 }, 5, 5)
     ).toBe("fighting");
   });
 });
@@ -171,13 +143,7 @@ describe("promotion prose paths", () => {
 
   it("getYokozunaRunProse resolves ui.digest.promotion.yokozuna_run for every band", () => {
     const spy = vi.spyOn(BardEngine, "resolve");
-    const bands: YokozunaRunBand[] = [
-      "standard",
-      "unanimous",
-      "borderline",
-      "partial",
-      "testing",
-    ];
+    const bands: YokozunaRunBand[] = ["standard", "unanimous", "borderline", "partial", "testing"];
     for (const band of bands) {
       const rng = new SeededRNG(`yokozuna-${band}`);
       const text = getYokozunaRunProse(rng, band);

@@ -6,15 +6,15 @@ Base HEAD: `2bfc438f`. Convention: each finding gets severity · `file:line` · 
 
 ## Phase 0 baseline (measured 2026-11-02)
 
-| Gate | Result |
-|------|--------|
-| `bun run type-check` | ❌ RED — 1 error: `overrideConsumer.test.ts(175,39) TS2339 reasons` |
-| `bun run lint:strict` | 0 errors / 37 warnings (all react-refresh in `src/app/routes.tsx`, pre-existing) |
-| `bun run build` | ✅ ~29s |
-| `bun run test` (fast) | ✅ 1005 files / 9,302 pass / 1 skip |
-| Orphan audit | 239 unreferenced exports + 9 unticked services (~+1 vs v15's 247) |
-| Determinism greps | ✅ clean — `Math.random`/`Date.now` comment-only; `new Date` only in deterministic calendar math (`calendar.ts:250`), ISO parse (`formatters.ts:25`), save-metadata (`utils/Logger.ts:51`, `MigrationService.ts:55`) |
-| `as any` / `as unknown` | 0 / ~15 (unchanged from v15; the two `as any` grep hits are comments) |
+| Gate                    | Result                                                                                                                                                                                                               |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run type-check`    | ❌ RED — 1 error: `overrideConsumer.test.ts(175,39) TS2339 reasons`                                                                                                                                                  |
+| `bun run lint:strict`   | 0 errors / 37 warnings (all react-refresh in `src/app/routes.tsx`, pre-existing)                                                                                                                                     |
+| `bun run build`         | ✅ ~29s                                                                                                                                                                                                              |
+| `bun run test` (fast)   | ✅ 1005 files / 9,302 pass / 1 skip                                                                                                                                                                                  |
+| Orphan audit            | 239 unreferenced exports + 9 unticked services (~+1 vs v15's 247)                                                                                                                                                    |
+| Determinism greps       | ✅ clean — `Math.random`/`Date.now` comment-only; `new Date` only in deterministic calendar math (`calendar.ts:250`), ISO parse (`formatters.ts:25`), save-metadata (`utils/Logger.ts:51`, `MigrationService.ts:55`) |
+| `as any` / `as unknown` | 0 / ~15 (unchanged from v15; the two `as any` grep hits are comments)                                                                                                                                                |
 
 ## Phase 1 — exhaustive read log
 
@@ -39,19 +39,19 @@ Batches tracked in `_v16-file-coverage.md`. Findings below.
 
 ## Phase 2 — per-item verdicts
 
-| Item | Verdict | Evidence |
-|------|---------|----------|
-| PR #1171 mason | **DISPROVED-as-redundant** — correct fix, strict subset of #1173 | Deletes the same `reasons` line at overrideConsumer.test.ts:175 as #1173, without the contract doc |
-| PR #1172 bolt | **APPROVED — land npcAIWorkers.ts hunk only** | Equivalence: `Array.sort` stable → desc `[0]` = first-max on ties; strict `>` loop = first-max. Its test-file hunk is the union-removed line → drop |
-| PR #1173 scribe | **APPROVED — land doc + line removal** | `MatchPairing.reasons` at `MatchmakingPhases.ts:56`; stripped by projection at `schedule.ts:151-157`,`:272`. Doc wording literally true |
-| bard-milestone-flavor-* | **DISPOSED — content on main, delete** | New narrative lines present in post_bout.json (2 hits)/pre_bout.json (4 hits) via `6e95455a` (#1157); tip = bookkeeping commit |
-| bolt-fix-set-allocation-* | **DISPOSED — content on main, delete** | Manual `ozekiLeft` loop present at `planOutcomes.ts:225-232` via `a420161b` (#1169) |
-| bolt-optimize-npc-deduplication-* | **DISPOSED — content on main, delete** | seenIds dedup loops present at `phase01_week_npc_ai.ts:284-291`,`359-366` via `3d67ca30` (#1154) |
-| bolt-optimize-rival-heya-lookup-* | **DISPOSED — content on main, delete** | Single-pass max-heat loop present at `schedule.ts:340-351` via `2a07ef80` (#1158) |
-| scout/fix-faction-pressure-id-* | **DISPOSED — obsolete, delete** | Tip commit `6bd74dfb` is empty ("Close PR as obsolete"); v15 disproved the fix — `startsWith` on main is superior |
-| scribe-document-schedule-helpers-* | **DISPOSED — content on main, delete** | Contract docs + `day<1` guard present at `scheduleHelpers.ts:96-121` via `875c8cfc` (#1155) |
-| polish/stable-not-found (local) | **DISPOSED — landed as `8665cec2`, delete** | EmptyState + 'Stable not found' at `StablePage.tsx:52-69`; `repairInfrastructure` preserved at :31,:80 |
-| Comments review | **COMPLETE — all boilerplate** | 0 review comments / 0 non-empty reviews on #1171-#1173 and closed PRs #1153-#1158/#1169-#1170; only google-labs-jules auto-comments |
+| Item                               | Verdict                                                          | Evidence                                                                                                                                            |
+| ---------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PR #1171 mason                     | **DISPROVED-as-redundant** — correct fix, strict subset of #1173 | Deletes the same `reasons` line at overrideConsumer.test.ts:175 as #1173, without the contract doc                                                  |
+| PR #1172 bolt                      | **APPROVED — land npcAIWorkers.ts hunk only**                    | Equivalence: `Array.sort` stable → desc `[0]` = first-max on ties; strict `>` loop = first-max. Its test-file hunk is the union-removed line → drop |
+| PR #1173 scribe                    | **APPROVED — land doc + line removal**                           | `MatchPairing.reasons` at `MatchmakingPhases.ts:56`; stripped by projection at `schedule.ts:151-157`,`:272`. Doc wording literally true             |
+| bard-milestone-flavor-*            | **DISPOSED — content on main, delete**                           | New narrative lines present in post_bout.json (2 hits)/pre_bout.json (4 hits) via `6e95455a` (#1157); tip = bookkeeping commit                      |
+| bolt-fix-set-allocation-*          | **DISPOSED — content on main, delete**                           | Manual `ozekiLeft` loop present at `planOutcomes.ts:225-232` via `a420161b` (#1169)                                                                 |
+| bolt-optimize-npc-deduplication-*  | **DISPOSED — content on main, delete**                           | seenIds dedup loops present at `phase01_week_npc_ai.ts:284-291`,`359-366` via `3d67ca30` (#1154)                                                    |
+| bolt-optimize-rival-heya-lookup-*  | **DISPOSED — content on main, delete**                           | Single-pass max-heat loop present at `schedule.ts:340-351` via `2a07ef80` (#1158)                                                                   |
+| scout/fix-faction-pressure-id-*    | **DISPOSED — obsolete, delete**                                  | Tip commit `6bd74dfb` is empty ("Close PR as obsolete"); v15 disproved the fix — `startsWith` on main is superior                                   |
+| scribe-document-schedule-helpers-* | **DISPOSED — content on main, delete**                           | Contract docs + `day<1` guard present at `scheduleHelpers.ts:96-121` via `875c8cfc` (#1155)                                                         |
+| polish/stable-not-found (local)    | **DISPOSED — landed as `8665cec2`, delete**                      | EmptyState + 'Stable not found' at `StablePage.tsx:52-69`; `repairInfrastructure` preserved at :31,:80                                              |
+| Comments review                    | **COMPLETE — all boilerplate**                                   | 0 review comments / 0 non-empty reviews on #1171-#1173 and closed PRs #1153-#1158/#1169-#1170; only google-labs-jules auto-comments                 |
 
 ## Agent batch: tests/slow + perf + e2e (28/28 files) — verified findings
 
@@ -74,6 +74,7 @@ Batches tracked in `_v16-file-coverage.md`. Findings below.
 ## Agent batch: tests lifecycle+recruitment+training+generation+kesho+media+shikona+almanac (83 files)
 
 Dominant defect class: **vacuous/name-mismatched assertions** + fixture debt. Verified-class findings (spot-checked by reviewer where cited):
+
 - **V16-F15 (DEBT)** Vacuous tests: `PrizeDistribution.test.ts` (count≤3 tautology), `BashoManager.test.ts` (conditional asserts), `effortLimits.test.ts` (self-assignment assert), `shikona.test.ts` legacy-frequency test never compares frequencies, `tsukebitoPlayerControl.test.ts` silent early-returns, `BashoHistory.test.ts:45-76` toBeDefined-only.
 - **V16-F16 (DEBT)** Silent-skip fixtures should throw instead (agent items #6).
 - **V16-F17 (DEBT)** Fixture duplication: 3× tsukebito set/clear files, duplicated perceived-bidding files, hand-rolled `as any` Staff/Rikishi/world literals vs MockFactory (`scoutMissions.test.ts:11-30`, `maezumo.test.ts:5-24`, `weightJourney.test.ts:7-27`, `TrainingService.test.ts:14-33`), constants copy-pasted from source, ~36 `generateInitialWorld` calls.
@@ -155,7 +156,7 @@ Dominant defect class: **vacuous/name-mismatched assertions** + fixture debt. Ve
 - **V16-B07 (BUG)** Electron packaging: `package.json#main`="out/main/main.cjs" vs electron.vite `fileName:"index.js"` vs `main.ts:104` "../preload/preload.cjs" vs ELECTRON.md claims — mutually inconsistent; packaged app can't launch. ESM/CJS hazard under `"type":"module"`.
 - **V16-F56 (DEBT)** `audit-orphans.ts:207-214` hardcoded scanDirs omits `src/engine/calendar/` — its exports never orphan-audited (explains part of the drift); recommend readdirSync minus denylist.
 - **V16-F57 (DEBT)** `emitNarrativeModules.ts`+`analyzeNarrativeDeps.ts` stale codemods — hardcode beat ranges vs now-2280-line boutNarrative.ts; running them today would overwrite curated modules with garbage → delete/archive.
-- **V16-F58 (DEBT)** Root configs untyped+unlinted blind spot (tsconfig.node includes only vite.config+scripts; eslint ignores *.config.*) — exactly how B07 drifted; `components.json` stale (tailwind.config.ts + src/index.css paths); `eslint.config.js:158` dead `!@/engine/holiday` exception (file moved to calendar/).
+- **V16-F58 (DEBT)** Root configs untyped+unlinted blind spot (tsconfig.node includes only vite.config+scripts; eslint ignores _.config._) — exactly how B07 drifted; `components.json` stale (tailwind.config.ts + src/index.css paths); `eslint.config.js:158` dead `!@/engine/holiday` exception (file moved to calendar/).
 - **V16-F59 (NOTE)** `bench-pipelines.ts` S4 determinism log-only (can't fail); `verify-training-decay.ts` prints FAILURE never sets exitCode; `purity-lint.sh` asymmetric (checks .set not .delete); README.md:21 stale stack claim (React Query/Router DOM — actually TanStack+zustand); index.html Lovable leftovers; ~15 stale `Usage:` paths in script headers; perf-gate also: tee'd bench-output never uploaded, unconditional push after `|| echo`.
 - **Perf-gate fix — RECOMMENDED OPTION (a):** push baseline to dedicated unprotected `perf-baseline` branch; check step `git fetch origin perf-baseline && git show FETCH_HEAD:docs/audit/perf-baseline.json`. Only option preserving V13-B02 self-heal invariant with zero new machinery (~4-line change). (b) auto-PR rejected (human in loop + GITHUB_TOKEN PRs don't trigger checks); (c) artifact sync rejected (expiry + collapses to a/b).
 
@@ -243,7 +244,7 @@ Dominant defect class: **vacuous/name-mismatched assertions** + fixture debt. Ve
 - **FIXED (V16-B52)** `hooks/useRecruitingState.ts:62` — `foreignUsage >= 2` vs engine `FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1` → UI claimed a 2nd foreign recruit legal that engine rejects; `RecruitingTabSections.tsx:139` `/2` display same. Now uses the constant.
 - **FIXED (V16-B53)** `constants/ui/welfare.ts:54-75` — DIET_DISPLAY advertises ¥1k/3k/6k/10k per day; real `DIET_COSTS` = ¥350/1k/2k/3.5k (post-rebalance). Updated.
 - **FIXED (V16-B31 follow-up)** `YushoRaceWidget` — `/rikishi` is a real route (roster index) but silently drops the param; now `to: "/rikishi/$rikishiId"`.
-- **V16-F70 (DEBT — constants drift, ~15 families)** duplicated constant families: welfare.ts≈welfareTransitions.ts near-total dup; career milestones 3× ([100,200,300,500] vs [100,500,700,1000] vs dead MILESTONE_*); kimarite.ts≈physics.ts probability family; rivalry.ts≈narrative.ts decay/heat bands; media.ts≈mediaImpact.ts; economy vs economyExtended (STAFF_HIRE_COST 500k ×2); roster.ts≈npcStrategy RISK_*; "day 15" constant 8× incl. misspelled SENSURAKU_DAY (both dead); ELECTION_WEEK ×2; INTERIM 42 ×2; RETIREMENT_AGE 34 ×2; npcStrategy MAX_ROSTER_SIZE=15 vs roster 25/30 naming clash. Recommend consolidation pass.
+- **V16-F70 (DEBT — constants drift, ~15 families)** duplicated constant families: welfare.ts≈welfareTransitions.ts near-total dup; career milestones 3× ([100,200,300,500] vs [100,500,700,1000] vs dead MILESTONE__); kimarite.ts≈physics.ts probability family; rivalry.ts≈narrative.ts decay/heat bands; media.ts≈mediaImpact.ts; economy vs economyExtended (STAFF_HIRE_COST 500k ×2); roster.ts≈npcStrategy RISK__; "day 15" constant 8× incl. misspelled SENSURAKU_DAY (both dead); ELECTION_WEEK ×2; INTERIM 42 ×2; RETIREMENT_AGE 34 ×2; npcStrategy MAX_ROSTER_SIZE=15 vs roster 25/30 naming clash. Recommend consolidation pass.
 - **V16-F71 (DEBT — hook drift)** `useEconomyDerived:40` hardcodes -5M (LOAN_ISSUANCE_THRESHOLD now imported there too? — hook still hardcodes; EconomyPage fixed); `useDashboardDerived:128` threshold:3 = SANCTION_THRESHOLD; `useCrisisDetection:45` ad-hoc 75 vs canonical 65/85; `useBashoPageState:125` day>=15 vs BASHO_FINAL_DAY; `useKenshoData:43` envelopes 15/10/5 match NEITHER canonical table (3 divergent sources); `useRivalriesDerived` 55/80 bands vs canonical 20/40/65/85; `useSaveLoadState:199` i<=10 vs SAVE_SLOT_COUNT; `useTrainingState:29-43` local state never re-syncs → can overwrite worker world; `useMainMenuState:98` autosave re-fires on every context identity change; `useBanzukeDerived` DIVISION_KEYS dup + dead rank sort; `useFinancesData` bypasses engineAccess + unnecessary runwayBand cast; `use-toast` 16.7min remove delay; `useEventSounds` reads log directly, max 1 chirp per N events.
 - **V16-F72 (NOTE)** index.css:13 runtime Google Fonts @import (offline Electron risk); routes.tsx all-lazy vs CLAUDE.md eager claim (doc stale); useExhibitionBout fabricated mockBasho.
 

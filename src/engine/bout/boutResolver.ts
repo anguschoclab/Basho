@@ -34,10 +34,7 @@ import { resolveSideTactics } from "@/engine/bout/resolution/tactics";
 import { applyOfficiating } from "@/engine/bout/resolution/officiating";
 import { enrichResult, applyTacticAftermath } from "@/engine/bout/resolution/enrichment";
 import { applyStakesAndKensho } from "@/engine/bout/resolution/stakes";
-import {
-  assignGyojiAndResolveVerdict,
-  recordGyojiAftermath,
-} from "@/engine/bout/resolution/gyoji";
+import { assignGyojiAndResolveVerdict, recordGyojiAftermath } from "@/engine/bout/resolution/gyoji";
 import { applyMonoiiVerdict } from "@/engine/bout/resolution/monoiiVerdict";
 import { rollMissedCallReview } from "@/engine/bout/resolution/missedCall";
 import { generateBoutNarrative, type PbpTag } from "@/engine/bout/boutNarrative";
@@ -291,13 +288,7 @@ export function resolveBout(
   // 1.8. Gyoji assignment + mono-ii verdict — BEFORE enrichment so
   // achievements, standings, h2h, and kensho all see the final result.
   // Importance is graded on rank/day, not post-hoc stakes flags.
-  const { gyoji, panel } = assignGyojiAndResolveVerdict(
-    world,
-    officiatedResult,
-    bout,
-    east,
-    west
-  );
+  const { gyoji, panel } = assignGyojiAndResolveVerdict(world, officiatedResult, bout, east, west);
 
   // 1.9. Apply the verdict — a sashichigae flips the winner; a torinaoshi
   // re-runs the bout under a salted basho id and only the rematch counts.

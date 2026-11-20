@@ -2,8 +2,14 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-const facilitiesSource = readFileSync(join(__dirname, "../../../src/engine/economy/facilities.ts"), "utf-8");
-const maintenanceSource = readFileSync(join(__dirname, "../../../src/engine/tick/phases/monthly/facilities/maintenance.ts"), "utf-8");
+const facilitiesSource = readFileSync(
+  join(__dirname, "../../../src/engine/economy/facilities.ts"),
+  "utf-8"
+);
+const maintenanceSource = readFileSync(
+  join(__dirname, "../../../src/engine/tick/phases/monthly/facilities/maintenance.ts"),
+  "utf-8"
+);
 
 describe("engine/facilities.ts uses imported constants (not hardcoded)", () => {
   it("imports from constants/engine/facilities", () => {

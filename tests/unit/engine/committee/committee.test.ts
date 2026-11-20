@@ -41,12 +41,13 @@ describe("conveneCommittee — shared deliberation contract", () => {
   });
 
   it("discretion is bounded — the score never deviates past the cap", () => {
-    const cs = cases([{ baseScore: 0, merits: 50 }, { baseScore: 0, demerits: 50 }]);
+    const cs = cases([
+      { baseScore: 0, merits: 50 },
+      { baseScore: 0, demerits: 50 },
+    ]);
     const out = conveneCommittee(BANZUKE_COMMITTEE, cs, rngFromSeed("cap", "governance", "c3"));
     for (const d of out.values()) {
-      expect(Math.abs(d.score - d.baseScore)).toBeLessThanOrEqual(
-        BANZUKE_COMMITTEE.discretionCap
-      );
+      expect(Math.abs(d.score - d.baseScore)).toBeLessThanOrEqual(BANZUKE_COMMITTEE.discretionCap);
     }
   });
 
@@ -65,11 +66,7 @@ describe("conveneCommittee — shared deliberation contract", () => {
       cs,
       rngFromSeed("spec", "governance", "c5")
     );
-    const sansho = conveneCommittee(
-      SANSHO_COMMITTEE,
-      cs,
-      rngFromSeed("spec", "governance", "c5")
-    );
+    const sansho = conveneCommittee(SANSHO_COMMITTEE, cs, rngFromSeed("spec", "governance", "c5"));
     const b = banzuke.get("s0")!;
     const s = sansho.get("s0")!;
     expect(b.votesFor + b.votesAgainst).toBe(BANZUKE_COMMITTEE.size);

@@ -27,45 +27,25 @@ const rng = () => rngFromSeed("w1", "banzuke", "committee");
 
 describe("deliberateBanzukeMovement — real (W−L)/2 movement", () => {
   it("8-7 maegashira holds roughly in place (delta 0..1)", () => {
-    const d = deliberateBanzukeMovement(
-      entry("maegashira", 5),
-      perf(8, 7),
-      noOzeki,
-      rng()
-    );
+    const d = deliberateBanzukeMovement(entry("maegashira", 5), perf(8, 7), noOzeki, rng());
     expect(d.delta).toBeGreaterThanOrEqual(-1);
     expect(d.delta).toBeLessThanOrEqual(1);
   });
 
   it("10-5 mid-maegashira rises ~2-3 slots, not units-inflated", () => {
-    const d = deliberateBanzukeMovement(
-      entry("maegashira", 10),
-      perf(10, 5),
-      noOzeki,
-      rng()
-    );
+    const d = deliberateBanzukeMovement(entry("maegashira", 10), perf(10, 5), noOzeki, rng());
     expect(d.delta).toBeGreaterThanOrEqual(2);
     expect(d.delta).toBeLessThanOrEqual(4);
   });
 
   it("5-10 maegashira falls ~2-3 slots", () => {
-    const d = deliberateBanzukeMovement(
-      entry("maegashira", 8),
-      perf(5, 10),
-      noOzeki,
-      rng()
-    );
+    const d = deliberateBanzukeMovement(entry("maegashira", 8), perf(5, 10), noOzeki, rng());
     expect(d.delta).toBeLessThanOrEqual(-2);
     expect(d.delta).toBeGreaterThanOrEqual(-4);
   });
 
   it("kyujo counts ≈ losses with no absence multiplier (5-2+8ab ≈ 5-10)", () => {
-    const kyujo = deliberateBanzukeMovement(
-      entry("maegashira", 6),
-      perf(5, 2, 8),
-      noOzeki,
-      rng()
-    );
+    const kyujo = deliberateBanzukeMovement(entry("maegashira", 6), perf(5, 2, 8), noOzeki, rng());
     const losses = deliberateBanzukeMovement(
       entry("maegashira", 6),
       perf(5, 10, 0),
@@ -78,12 +58,7 @@ describe("deliberateBanzukeMovement — real (W−L)/2 movement", () => {
   });
 
   it("achievements nudge upward but stay within committee discretion", () => {
-    const base = deliberateBanzukeMovement(
-      entry("maegashira", 12),
-      perf(10, 5),
-      noOzeki,
-      rng()
-    );
+    const base = deliberateBanzukeMovement(entry("maegashira", 12), perf(10, 5), noOzeki, rng());
     const yusho = deliberateBanzukeMovement(
       entry("maegashira", 12),
       perf(10, 5, 0, { yusho: true }),
@@ -111,12 +86,7 @@ describe("deliberateBanzukeMovement — real (W−L)/2 movement", () => {
   });
 
   it("produces a deliberation record with votes and rationale", () => {
-    const d = deliberateBanzukeMovement(
-      entry("maegashira", 3),
-      perf(11, 4),
-      noOzeki,
-      rng()
-    );
+    const d = deliberateBanzukeMovement(entry("maegashira", 3), perf(11, 4), noOzeki, rng());
     expect(d.decision).toBeDefined();
     expect(d.decision.votesFor + d.decision.votesAgainst).toBeGreaterThan(0);
     expect(d.decision.rationale.length).toBeGreaterThan(0);
@@ -127,12 +97,7 @@ describe("deliberateBanzukeMovement — real (W−L)/2 movement", () => {
     // receive identical deltas when faction preference is disabled at the
     // committee boundary (politics is seeded member preference only,
     // bounded — never a fixed +300 key offset).
-    const d = deliberateBanzukeMovement(
-      entry("maegashira", 7),
-      perf(9, 6),
-      noOzeki,
-      rng()
-    );
+    const d = deliberateBanzukeMovement(entry("maegashira", 7), perf(9, 6), noOzeki, rng());
     expect(d.delta).toBeLessThanOrEqual(3);
   });
 });

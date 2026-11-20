@@ -8,17 +8,17 @@ plus full gate-matrix verification. Zero backwards-compatibility constraints.
 
 **Commits landed (this pass):**
 
-| Commit | Payload |
-|--------|---------|
-| `5cc09492` | Phase-B test-first: 21 failing-first regression pins (`v19Regressions`), all verified RED for the intended reason |
-| `e16cf493` | DEBT burn-down — seeds, ceilings, canonical fields, version gate (+ #1201 payload) |
-| `d552a0ae` | (owner) swept working tree: S10 dead-code + UI honesty + gate fixes + indexed-structure perf + Jules migration |
-| (tail) | Phase-D gate repairs: stop-condition fix, self-contained knip/circular/bundle gates, orphan-tracker registration, artifacts |
+| Commit     | Payload                                                                                                                     |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `5cc09492` | Phase-B test-first: 21 failing-first regression pins (`v19Regressions`), all verified RED for the intended reason           |
+| `e16cf493` | DEBT burn-down — seeds, ceilings, canonical fields, version gate (+ #1201 payload)                                          |
+| `d552a0ae` | (owner) swept working tree: S10 dead-code + UI honesty + gate fixes + indexed-structure perf + Jules migration              |
+| (tail)     | Phase-D gate repairs: stop-condition fix, self-contained knip/circular/bundle gates, orphan-tracker registration, artifacts |
 
 ## PR verdict
 
-| PR | Verdict | Disposition |
-|----|---------|-------------|
+| PR                                     | Verdict      | Disposition                                                                                                                             |
+| -------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
 | #1201 `allocateVacancies` optimization | **APPROVED** | Semantics-preserving rewrite verified by 14/14 parity pin + independent bench (~30%); payload applied to `main`; PR closed with comment |
 
 All 11 stale origin branches verified to carry **zero unintegrated payload**
@@ -27,15 +27,15 @@ superior third form). Branch cleanup executed at closeout.
 
 ## Gate matrix
 
-| Gate | Result |
-|------|--------|
-| `bun run type-check` | ✅ clean |
-| `bun run lint:commit` | ✅ 0 errors (2 warnings fixed via `cause` attachment) |
-| `bun run build` | ✅ ~18s |
-| `bun run test` (fast) | ✅ 1055 files / 9,712 tests / 1 skip |
-| `bun run test:perf` | ✅ 5 files / 14 tests — 56s (yokozunaPromotion 344s timeout → ~50s after V19-B1 fix) |
-| `bun run test:slow` | ✅ 18 files / 64 tests — incl. determinismDoubleRun basho+year |
-| `bun run test:e2e:smoke` | ✅ 4/4 (1.3m) |
+| Gate                     | Result                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| `bun run type-check`     | ✅ clean                                                                             |
+| `bun run lint:commit`    | ✅ 0 errors (2 warnings fixed via `cause` attachment)                                |
+| `bun run build`          | ✅ ~18s                                                                              |
+| `bun run test` (fast)    | ✅ 1055 files / 9,712 tests / 1 skip                                                 |
+| `bun run test:perf`      | ✅ 5 files / 14 tests — 56s (yokozunaPromotion 344s timeout → ~50s after V19-B1 fix) |
+| `bun run test:slow`      | ✅ 18 files / 64 tests — incl. determinismDoubleRun basho+year                       |
+| `bun run test:e2e:smoke` | ✅ 4/4 (1.3m)                                                                        |
 
 ## Findings approved / disproved (delta + DEBT)
 

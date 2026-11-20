@@ -122,8 +122,10 @@ export const SaveSlotService = {
     if (typeof world.seed !== "string" || world.seed.length === 0) return false;
     // Collections serialize as plain objects — an ARRAY passes typeof but
     // deserializes to an empty Map (V18-B07 hollow-world guard).
-    if (typeof world.rikishi !== "object" || world.rikishi === null || Array.isArray(world.rikishi)) return false;
-    if (typeof world.heyas !== "object" || world.heyas === null || Array.isArray(world.heyas)) return false;
+    if (typeof world.rikishi !== "object" || world.rikishi === null || Array.isArray(world.rikishi))
+      return false;
+    if (typeof world.heyas !== "object" || world.heyas === null || Array.isArray(world.heyas))
+      return false;
     return true;
   },
 

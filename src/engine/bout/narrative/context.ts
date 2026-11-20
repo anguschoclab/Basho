@@ -498,6 +498,9 @@ function beatStyleDescription(p: PbpPipeline): void {
   }
 }
 
+/**
+ * Narrates the win/loss-record stakes context line for a bout.
+ */
 export function narrateRecords(p: PbpPipeline): void {
   beatCurrentRecords(p);
   beatPrevBashoRecord(p);
@@ -725,7 +728,7 @@ function beatOzekiReturn(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // 3j2. Ozeki return detection (sekiwake/komusubi formerly ozeki, with 9+ wins)
   for (const r of [east, west]) {
-    if ((isLowerSanyakuRank(r.rank)) && r.careerHistory) {
+    if (isLowerSanyakuRank(r.rank) && r.careerHistory) {
       const wasOzeki = r.careerHistory.some((s) => s.rank === "ozeki");
       if (wasOzeki && (r.currentBashoWins ?? 0) >= 9) {
         const needed = Math.max(0, 10 - (r.currentBashoWins ?? 0));
@@ -774,14 +777,12 @@ function beatSpoiler(p: PbpPipeline): void {
     const isCurrentlyLower = spoiler.rank === "maegashira";
     if (!formerSanyaku || !isCurrentlyLower) continue;
     const contenderInContention =
-      (world.currentBasho &&
-        isYushoContention(contender, spoiler, world.currentBasho, world)) ||
+      (world.currentBasho && isYushoContention(contender, spoiler, world.currentBasho, world)) ||
       (contender.currentBashoWins ?? 0) >= 8;
     if (!contenderInContention) continue;
     const formerRank =
-      spoiler.careerHistory.find(
-        (s) => s.rank === "ozeki" || isLowerSanyakuRank(s.rank)
-      )?.rank ?? "sanyaku";
+      spoiler.careerHistory.find((s) => s.rank === "ozeki" || isLowerSanyakuRank(s.rank))?.rank ??
+      "sanyaku";
     push(
       BardEngine.resolve(preBoutRng, "pre_bout.spoiler", {
         SPOILER: spoiler.shikona,
@@ -864,6 +865,9 @@ function beatRankDebut(p: PbpPipeline): void {
   }
 }
 
+/**
+ * Narrates the style-matchup context line (oshi/yotsu clash descriptors).
+ */
 export function narrateStyle(p: PbpPipeline): void {
   beatBodyType(p);
   beatHeyaStyle(p);

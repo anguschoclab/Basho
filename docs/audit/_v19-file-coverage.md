@@ -88,7 +88,7 @@ suites only; [D] = deleted.
 - [D] tests/unit/engine/storage/historyCache.test.ts — orphaned module test
 - [x] tests/unit/engine/systems/generation/talentPoolService.test.ts — internal API repoint
 - [x] tests/unit/engine/{lifecycle,governance} retirement tests — repointed to processAllRetirements
-- [x] tests/unit/contexts/*bashoSlice*/gameReducer — dead-action blocks removed
+- [x] tests/unit/contexts/_bashoSlice_/gameReducer — dead-action blocks removed
 - [x] tests/unit/engine/persistence/MigrationService* — rewritten to version-gate
 
 ## Manifests/housekeeping

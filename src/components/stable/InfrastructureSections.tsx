@@ -263,8 +263,7 @@ export function FacilityCard({
             {formatYen(
               Math.round(facility.baseCost * (1 + level * CONSTRUCTION_COST_LEVEL_MULTIPLIER))
             )}{" "}
-            |
-            Maintenance: {formatYen(facility.maintenanceCost)}/mo
+            | Maintenance: {formatYen(facility.maintenanceCost)}/mo
           </p>
         </div>
       </CardContent>

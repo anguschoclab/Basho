@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-const source = readFileSync(join(__dirname, "../../../src/engine/governance/myosekiMarket.ts"), "utf-8");
+const source = readFileSync(
+  join(__dirname, "../../../src/engine/governance/myosekiMarket.ts"),
+  "utf-8"
+);
 
 describe("myosekiMarket.ts uses imported constants (not hardcoded)", () => {
   it("imports from constants/engine/economic", () => {

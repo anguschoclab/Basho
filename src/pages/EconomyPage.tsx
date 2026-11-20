@@ -49,7 +49,10 @@ export default function EconomyPage() {
   if (!world) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
-        <LoadingPanel title="Loading Finances" description="Calculating financial health and projections..." />
+        <LoadingPanel
+          title="Loading Finances"
+          description="Calculating financial health and projections..."
+        />
       </AppLayout>
     );
   }

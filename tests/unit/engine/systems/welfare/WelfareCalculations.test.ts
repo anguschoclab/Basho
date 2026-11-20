@@ -79,10 +79,7 @@ function setupHeya(
     ...worldOverrides,
   });
   // Staffed nutritionist keeps dietMult ~1.15 — diet expectations unchanged.
-  world.staff.set(
-    "chef-1",
-    MockFactory.createStaff("chef-1", { role: "nutritionist", heyaId })
-  );
+  world.staff.set("chef-1", MockFactory.createStaff("chef-1", { role: "nutritionist", heyaId }));
   world.heyas.set(heyaId, heya);
   return { world: world as WorldState, heya: heya as Heya };
 }

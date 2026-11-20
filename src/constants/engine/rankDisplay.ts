@@ -68,10 +68,16 @@ export const RANK_NAMES: Record<Rank, RankLabel> = Object.fromEntries(
   ])
 ) as Record<Rank, RankLabel>;
 
+/**
+ * Looks up the canonical display entry (label, JA, tier, flags) for a rank.
+ */
 export function getRankDisplayEntry(rank: string): RankDisplayEntry | undefined {
   return RANK_DISPLAY_REGISTRY[rank as Rank];
 }
 
+/**
+ * True for sanyaku ranks (yokozuna, ozeki, sekiwake, komusubi).
+ */
 export function isSanyakuRank(rank: string): boolean {
   return RANK_HIERARCHY[rank as Rank]?.isSanyaku ?? false;
 }
@@ -85,20 +91,32 @@ export function isLowerSanyakuRank(rank: string): boolean {
   return rank === "komusubi" || rank === "sekiwake";
 }
 
+/**
+ * True for sekitori ranks (makuuchi + juryo tiers).
+ */
 export function isSekitoriRank(rank: string): boolean {
   return RANK_HIERARCHY[rank as Rank]?.isSekitori ?? false;
 }
 
+/**
+ * Returns the ranks belonging to a division in seniority order.
+ */
 export function getRanksByDivision(division: Division): Rank[] {
   return (Object.keys(RANK_HIERARCHY) as Rank[]).filter(
     (rank) => RANK_HIERARCHY[rank].division === division
   );
 }
 
+/**
+ * Returns the division a rank belongs to.
+ */
 export function getDivisionOfRank(rank: string): Division | undefined {
   return RANK_HIERARCHY[rank as Rank]?.division;
 }
 
+/**
+ * True for sekitori divisions (makuuchi, juryo).
+ */
 export function isSekitoriDivision(division: Division | string | undefined): boolean {
   return division === "makuuchi" || division === "juryo";
 }

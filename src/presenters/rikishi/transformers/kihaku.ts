@@ -14,6 +14,9 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { RikishiKihakuDTO } from "@/presenters/rikishi/types";
 export type { RikishiKihakuDTO };
 
+/**
+ * Maps a kihaku score to its canonical label band.
+ */
 export function kihakuLabel(score: number): string {
   if (score >= 80) return "Blazing Spirit";
   if (score >= 65) return "Fierce Determination";
@@ -22,6 +25,9 @@ export function kihakuLabel(score: number): string {
   return "Broken Spirit";
 }
 
+/**
+ * Projects a rikishi's kihaku state into its UI DTO.
+ */
 export function toKihakuDTO(r: Rikishi): RikishiKihakuDTO {
   const score = r.kihakuIsenScore ?? 50;
   return {

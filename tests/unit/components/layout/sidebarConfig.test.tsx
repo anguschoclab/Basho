@@ -11,9 +11,9 @@ import { getMenuGroups } from "@/components/layout/sidebarConfig";
 
 function collectLabels(): string[] {
   const groups = getMenuGroups(true, false, undefined, false, false);
-  return groups.flatMap((g) => [g.label, ...g.items.map((i) => i.title)]).filter(
-    (l): l is string => l !== null
-  );
+  return groups
+    .flatMap((g) => [g.label, ...g.items.map((i) => i.title)])
+    .filter((l): l is string => l !== null);
 }
 
 describe("sidebarConfig thematic labels", () => {

@@ -70,6 +70,9 @@ export const RIKISHI_COUNCIL_MOTION_CATALOG: readonly CouncilMotionCatalogEntry[
   },
 ] as const;
 
+/**
+ * Looks up a council motion's catalog entry (cost, effect, eligibility) by motion id.
+ */
 export function getMotionCatalogEntry(type: RikishiCouncilMotionType): CouncilMotionCatalogEntry {
   return (
     RIKISHI_COUNCIL_MOTION_CATALOG.find((m) => m.type === type) ?? RIKISHI_COUNCIL_MOTION_CATALOG[0]
@@ -159,10 +162,7 @@ export function electRikishiCouncilDelegates(world: WorldState): {
   return { kaichoId: kaicho.id, delegates };
 }
 
-function buildDefaultMotion(
-  world: WorldState,
-  kaichoHeyaId: Id | undefined
-): RikishiCouncilMotion {
+function buildDefaultMotion(world: WorldState, kaichoHeyaId: Id | undefined): RikishiCouncilMotion {
   let injuredCount = 0;
   for (const id of world.activeRikishiIds) {
     if (getRikishi(world, id)?.injured) injuredCount++;
@@ -277,10 +277,7 @@ export function conveneRikishiCouncil(world: WorldState): StateImpact {
           const heya = world.heyas.get(hId);
           if (!heya) continue;
           builder.updateHeya(hId, {
-            politicalCapital: Math.min(
-              MAX_POLITICAL_CAPITAL,
-              (heya.politicalCapital ?? 50) + 2
-            ),
+            politicalCapital: Math.min(MAX_POLITICAL_CAPITAL, (heya.politicalCapital ?? 50) + 2),
           });
         }
       }
@@ -329,7 +326,7 @@ export function proposeCouncilMotion(
   let hasSekitori = false;
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
-    if (r && r.heyaId === heyaId && (isSekitoriDivision(r.division))) {
+    if (r && r.heyaId === heyaId && isSekitoriDivision(r.division)) {
       hasSekitori = true;
       break;
     }

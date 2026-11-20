@@ -84,10 +84,7 @@ test("Workstream UI: degeiko -> records boards -> venue chip -> schedule badges 
   });
 
   // Card ancestor of the title (CardTitle → CardHeader → Card).
-  const panel = page
-    .getByText("Degeiko — Cross-Stable Keiko")
-    .locator("..")
-    .locator("..");
+  const panel = page.getByText("Degeiko — Cross-Stable Keiko").locator("..").locator("..");
 
   // Pick a host stable from the Radix select. NPC acceptance is a seeded
   // roll keyed per (requester, host, week) — a decline is deterministic for
@@ -115,12 +112,14 @@ test("Workstream UI: degeiko -> records boards -> venue chip -> schedule badges 
     degeikoScheduled = await page
       .waitForFunction(
         () => {
-          const w = (window as unknown as {
-            __BASHO_WORLD__?: {
-              playerHeyaId?: string;
-              trainingState?: Map<string, { pendingDegeiko?: unknown }>;
-            };
-          }).__BASHO_WORLD__;
+          const w = (
+            window as unknown as {
+              __BASHO_WORLD__?: {
+                playerHeyaId?: string;
+                trainingState?: Map<string, { pendingDegeiko?: unknown }>;
+              };
+            }
+          ).__BASHO_WORLD__;
           return !!w?.trainingState?.get?.(w.playerHeyaId ?? "")?.pendingDegeiko;
         },
         undefined,
@@ -162,7 +161,7 @@ test("Workstream UI: degeiko -> records boards -> venue chip -> schedule badges 
     timeout: 10_000,
   });
 
-  world = await readWorldSnapshot(page) ?? world;
+  world = (await readWorldSnapshot(page)) ?? world;
   const rikishiById = world.rikishi ?? {};
 
   // ── Drive days; assert mono-ii chips when a flagged bout appears ───────
@@ -190,8 +189,13 @@ test("Workstream UI: degeiko -> records boards -> venue chip -> schedule badges 
     await page
       .waitForFunction(
         () => {
-          const w = (window as unknown as { __BASHO_WORLD__?: { currentBasho?: { day?: number; matches?: { day: number; result?: unknown }[] } } })
-            .__BASHO_WORLD__;
+          const w = (
+            window as unknown as {
+              __BASHO_WORLD__?: {
+                currentBasho?: { day?: number; matches?: { day: number; result?: unknown }[] };
+              };
+            }
+          ).__BASHO_WORLD__;
           const b = w?.currentBasho;
           if (!b?.matches) return false;
           const today = b.day ?? 0;

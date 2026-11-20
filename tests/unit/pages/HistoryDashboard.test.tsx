@@ -462,9 +462,7 @@ describe("HistoryDashboard — Stables tab", () => {
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
     for (let i = 0; i <= 39; i++)
-      expect(
-        screen.getAllByText(`R${String(i).padStart(2, "0")}`).length
-      ).toBeGreaterThan(0);
+      expect(screen.getAllByText(`R${String(i).padStart(2, "0")}`).length).toBeGreaterThan(0);
     for (let i = 40; i <= 44; i++)
       expect(screen.queryByText(`R${String(i).padStart(2, "0")}`)).toBeNull();
   });

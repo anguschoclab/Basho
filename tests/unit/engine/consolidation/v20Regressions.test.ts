@@ -101,16 +101,20 @@ describe("V20-E4 — applyNewRanks triggers promotion shikona changes", () => {
       applyNewRanks(
         world,
         MockFactory.createBasho(),
-        { newBanzuke: [
-          { rikishiId: "r-j2m", division: "makuuchi",
-            position: { rank: "maegashira", rankNumber: 10, side: "east" } },
-        ] } as never,
+        {
+          newBanzuke: [
+            {
+              rikishiId: "r-j2m",
+              division: "makuuchi",
+              position: { rank: "maegashira", rankNumber: 10, side: "east" },
+            },
+          ],
+        } as never,
         new Map(),
         builder
       );
       const upd = builder.build().entities?.rikishiUpdates?.get("r-j2m") as
-        | { milestones?: { type: string }[]; shikona?: string }
-        | undefined;
+        { milestones?: { type: string }[]; shikona?: string } | undefined;
       if (upd?.milestones?.some((m) => m.type === "shikona_change")) fired = true;
     }
     expect(fired).toBe(true);
@@ -129,7 +133,10 @@ describe("V20-E5 — maezumo exclusion", () => {
       isMaezumo: true,
       careerWins: 0,
     } as never);
-    const opp = MockFactory.createRikishi("jk-1", { division: "jonokuchi", careerWins: 0 } as never);
+    const opp = MockFactory.createRikishi("jk-1", {
+      division: "jonokuchi",
+      careerWins: 0,
+    } as never);
     world.rikishi.set(filler.id, filler);
     world.rikishi.set(opp.id, opp);
     world.activeRikishiIds = new Set([filler.id, opp.id]);
@@ -138,8 +145,14 @@ describe("V20-E5 — maezumo exclusion", () => {
     const impact = applyBoutResult(
       world,
       { boutId: "b1", day: 1, eastRikishiId: filler.id, westRikishiId: opp.id } as never,
-      { winner: "east", winnerRikishiId: filler.id, kimarite: "yorikiri",
-        log: [], pbp: [], narrative: [] } as never
+      {
+        winner: "east",
+        winnerRikishiId: filler.id,
+        kimarite: "yorikiri",
+        log: [],
+        pbp: [],
+        narrative: [],
+      } as never
     );
 
     const standings = (impact.metadata as Record<string, unknown> | undefined)?.[
@@ -179,7 +192,9 @@ describe("V20-E7 — eighth-bout flag is day-gated", () => {
     // Odd makushita roster → bottom man needs a fixed callup bout; the donor
     // comes from a lower division in cascade order.
     for (const [id, division] of [
-      ["mk-1", "makushita"], ["mk-2", "makushita"], ["mk-3", "makushita"],
+      ["mk-1", "makushita"],
+      ["mk-2", "makushita"],
+      ["mk-3", "makushita"],
       ["sd-donor", "sandanme"],
     ] as const) {
       const r = MockFactory.createRikishi(id, { division });
@@ -193,8 +208,13 @@ describe("V20-E7 — eighth-bout flag is day-gated", () => {
       day: 3,
       standings: new Map(ids.map((id) => [id, { wins: 0, losses: 0 }])),
       matches: [
-        { boutId: "m1", day: 1, eastRikishiId: "sd-donor", westRikishiId: "x",
-          result: { winner: "east", winnerRikishiId: "sd-donor", kimarite: "yorikiri" } },
+        {
+          boutId: "m1",
+          day: 1,
+          eastRikishiId: "sd-donor",
+          westRikishiId: "x",
+          result: { winner: "east", winnerRikishiId: "sd-donor", kimarite: "yorikiri" },
+        },
       ] as never,
     });
 
@@ -314,14 +334,13 @@ describe("V20-E14 — NPC-consumed candidates stay consumed", () => {
     // world with everything queued so far, so its whole-field talentPool
     // write cannot revert the fill's consumed candidates.
     const builder = createImpactBuilder("phase01_week_recruitment-repro");
-    builder.merge(fillVacanciesForNPCWithBidding(world, { [npcHeya.id]: 1 }, { systemBackfill: true }));
+    builder.merge(
+      fillVacanciesForNPCWithBidding(world, { [npcHeya.id]: 1 }, { systemBackfill: true })
+    );
     builder.merge(finalizeSignedCandidates(worldWithQueuedFields(world, builder)));
     const resolved = resolveImpacts(world, [builder.build()]);
 
-    const post = resolved.talentPool?.candidates as Record<
-      string,
-      { availabilityState?: string }
-    >;
+    const post = resolved.talentPool?.candidates as Record<string, { availabilityState?: string }>;
     // The NPC fill's sign must survive finalize's whole-field write —
     // c-open must not come back as a signable `available` candidate.
     expect(post?.["c-open"]?.availabilityState ?? "removed").not.toBe("available");
@@ -345,7 +364,9 @@ describe("PR#1202 — getHeyaRoster contract", () => {
     for (const r of [active1, active2, retired, other]) world.rikishi.set(r.id, r);
     world.activeRikishiIds = new Set([active1.id, active2.id, other.id]);
 
-    const ids = EntityCollection.getHeyaRoster(world, heya.id).map((r) => r.id).sort();
+    const ids = EntityCollection.getHeyaRoster(world, heya.id)
+      .map((r) => r.id)
+      .sort();
     expect(ids).toEqual(["a1", "a2"]);
 
     // Edges: unknown heya → empty; all-retired heya → empty.
@@ -353,7 +374,10 @@ describe("PR#1202 — getHeyaRoster contract", () => {
     const world2 = MockFactory.createWorld();
     const h2 = MockFactory.createHeya("h2");
     world2.heyas.set(h2.id, h2);
-    const onlyRetired = MockFactory.createRikishi("rr", { heyaId: h2.id, isRetired: true } as never);
+    const onlyRetired = MockFactory.createRikishi("rr", {
+      heyaId: h2.id,
+      isRetired: true,
+    } as never);
     world2.rikishi.set(onlyRetired.id, onlyRetired);
     expect(EntityCollection.getHeyaRoster(world2, h2.id)).toEqual([]);
   });
@@ -366,9 +390,7 @@ describe("PR#1202 — getHeyaRoster contract", () => {
 // suppress a new incident.
 describe("PR#1203 — oyakata incident dedup semantics", () => {
   it("dedupes within the same tick only", async () => {
-    const { consolidateOyakataMemoryPure } = await import(
-      "@/engine/tick/phases/npc_ai/memory"
-    );
+    const { consolidateOyakataMemoryPure } = await import("@/engine/tick/phases/npc_ai/memory");
     const world = MockFactory.createWorld({ week: 10 });
     const oyakata = MockFactory.createOyakata("oy1", { heyaId: "h1" });
     const mkEvent = (summary: string) => ({
@@ -400,10 +422,7 @@ describe("PR#1203 — oyakata incident dedup semantics", () => {
     const tick10 = memory2.observations.filter(
       (o: { type: string; tick: number }) => o.type === "incident" && o.tick === 10
     );
-    expect(tick10.map((o: { summary: string }) => o.summary).sort()).toEqual([
-      "dup",
-      "uniq",
-    ]);
+    expect(tick10.map((o: { summary: string }) => o.summary).sort()).toEqual(["dup", "uniq"]);
   });
 });
 

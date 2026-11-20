@@ -56,9 +56,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     return builder.build();
   }
   const standings =
-    rawStandings instanceof Map
-      ? rawStandings
-      : new Map(Object.entries(rawStandings));
+    rawStandings instanceof Map ? rawStandings : new Map(Object.entries(rawStandings));
 
   const standingEntries = Array.from(standings.entries());
 

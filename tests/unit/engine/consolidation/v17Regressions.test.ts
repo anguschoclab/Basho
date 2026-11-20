@@ -178,13 +178,17 @@ describe("V17-F06 Global Cup player champion flag", () => {
     });
     const builder = createImpactBuilder("test");
     // finalizeTournament is exposed on the service namespace.
-    (GlobalCupService as unknown as { finalizeTournament: (w: WorldState, b: unknown, id: string, name: string, ids: string[]) => void }).finalizeTournament(
-      world,
-      builder,
-      "winner-1",
-      "Winner",
-      ["winner-1"]
-    );
+    (
+      GlobalCupService as unknown as {
+        finalizeTournament: (
+          w: WorldState,
+          b: unknown,
+          id: string,
+          name: string,
+          ids: string[]
+        ) => void;
+      }
+    ).finalizeTournament(world, builder, "winner-1", "Winner", ["winner-1"]);
     const impact = builder.build();
     const blob = JSON.stringify(impact);
     expect(blob).toContain('"wasPlayerChampion":true');

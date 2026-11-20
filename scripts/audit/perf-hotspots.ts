@@ -60,8 +60,7 @@ const IGNORE_RE = /perf-hotspots:\s*ignore/;
 // Loop openers. `.find`/`.some`/`.filter`/`.map` appear both here and in
 // SEARCH_RE — inside an outer iteration they are flagged as the inner scan;
 // at top level they simply open a new iteration context.
-const LOOP_RE =
-  /\b(for|while|do)\b|\.(forEach|map|flatMap|filter|reduce|some|find|every)\s*\(/;
+const LOOP_RE = /\b(for|while|do)\b|\.(forEach|map|flatMap|filter|reduce|some|find|every)\s*\(/;
 
 // ─── File walk ───────────────────────────────────────────────────────────
 
@@ -213,7 +212,9 @@ findings.sort((a, b) =>
 const high = findings.filter((f) => f.severity === "high");
 const med = findings.filter((f) => f.severity === "medium");
 
-console.log(`perf-hotspots: ${findings.length} candidate(s) (${high.length} high, ${med.length} medium)\n`);
+console.log(
+  `perf-hotspots: ${findings.length} candidate(s) (${high.length} high, ${med.length} medium)\n`
+);
 for (const f of findings) {
   console.log(`${f.severity.padEnd(6)} ${f.file}:${f.line} [${f.kind}]`);
   console.log(`        in: ${f.outerContext}`);
@@ -221,7 +222,10 @@ for (const f of findings) {
 }
 
 if (jsonOut) {
-  writeFileSync(jsonOut, JSON.stringify({ generated: new Date().toISOString(), findings }, null, 2));
+  writeFileSync(
+    jsonOut,
+    JSON.stringify({ generated: new Date().toISOString(), findings }, null, 2)
+  );
   console.log(`\nwrote ${jsonOut}`);
 }
 

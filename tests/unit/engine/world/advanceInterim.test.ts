@@ -56,7 +56,9 @@ describe("getRikishiBashoStats", () => {
   });
 
   it("returns zeros if standings are missing", () => {
-    const world = MockFactory.createWorld({ currentBasho: { id: "test", standings: undefined } as any });
+    const world = MockFactory.createWorld({
+      currentBasho: { id: "test", standings: undefined } as any,
+    });
     expect(getRikishiBashoStats(world, "r1")).toEqual({ wins: 0, losses: 0, absences: 0 });
   });
 
@@ -64,8 +66,8 @@ describe("getRikishiBashoStats", () => {
     const world = MockFactory.createWorld({
       currentBasho: {
         id: "test",
-        standings: new Map([["r2", { wins: 1, losses: 1, absences: 0 }]])
-      } as any
+        standings: new Map([["r2", { wins: 1, losses: 1, absences: 0 }]]),
+      } as any,
     });
     expect(getRikishiBashoStats(world, "r1")).toEqual({ wins: 0, losses: 0, absences: 0 });
   });
@@ -74,8 +76,8 @@ describe("getRikishiBashoStats", () => {
     const world = MockFactory.createWorld({
       currentBasho: {
         id: "test",
-        standings: new Map([["r1", { wins: 10, losses: 5, absences: 0 }]])
-      } as any
+        standings: new Map([["r1", { wins: 10, losses: 5, absences: 0 }]]),
+      } as any,
     });
     expect(getRikishiBashoStats(world, "r1")).toEqual({ wins: 10, losses: 5, absences: 0 });
   });
@@ -84,8 +86,8 @@ describe("getRikishiBashoStats", () => {
     const world = MockFactory.createWorld({
       currentBasho: {
         id: "test",
-        standings: new Map([["r1", { wins: 10 }]]) // losses and absences missing
-      } as any
+        standings: new Map([["r1", { wins: 10 }]]), // losses and absences missing
+      } as any,
     });
     expect(getRikishiBashoStats(world, "r1")).toEqual({ wins: 10, losses: 0, absences: 0 });
   });

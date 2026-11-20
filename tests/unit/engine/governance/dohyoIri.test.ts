@@ -41,7 +41,11 @@ describe("Dohyo-iri ceremony style assignment", () => {
     // in a world to share a style. Styles should vary across rikishi ids.
     const styles = new Set<string>();
     for (let i = 0; i < 20; i++) {
-      const result = assignDohyoIriStyle(makeRikishi(`r${i}`, "ozeki"), "yokozuna", "one-world-seed");
+      const result = assignDohyoIriStyle(
+        makeRikishi(`r${i}`, "ozeki"),
+        "yokozuna",
+        "one-world-seed"
+      );
       styles.add(result.dohyoIriStyle!);
     }
     expect(styles.size).toBe(2);

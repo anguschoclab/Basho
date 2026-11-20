@@ -25,6 +25,9 @@ interface WizardNavProps {
   nextClassName?: string;
 }
 
+/**
+ * Wizard Back/Next navigation row — ghost Back button (omitted when `onPrev` is undefined) plus emphasis Next button with optional icon and disabled-tooltip.
+ */
 export function WizardNav({
   onPrev,
   onNext,
@@ -34,16 +37,12 @@ export function WizardNav({
   nextDisabledTooltip,
   nextClassName,
 }: WizardNavProps) {
-  const nextTooltipProps = nextDisabled && nextDisabledTooltip
-    ? { tooltip: nextDisabledTooltip, tooltipSide: "top" as const }
-    : {};
+  const nextTooltipProps =
+    nextDisabled && nextDisabledTooltip
+      ? { tooltip: nextDisabledTooltip, tooltipSide: "top" as const }
+      : {};
   return (
-    <div
-      className={cn(
-        "flex flex-wrap gap-3 pt-4",
-        onPrev ? "justify-between" : "justify-end"
-      )}
-    >
+    <div className={cn("flex flex-wrap gap-3 pt-4", onPrev ? "justify-between" : "justify-end")}>
       {onPrev && (
         <Button
           variant="ghost"

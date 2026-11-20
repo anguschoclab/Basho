@@ -8,7 +8,13 @@ import type { WorldState } from "@/engine/types/world";
 
 function baseWorld(): WorldState {
   const heya = MockFactory.createHeya("h1", { funds: 50_000_000 });
-  heya.welfareState = { welfareRisk: 20, complianceState: "compliant", weeksInState: 0, morale: 60, activeDiet: "maintenance" };
+  heya.welfareState = {
+    welfareRisk: 20,
+    complianceState: "compliant",
+    weeksInState: 0,
+    morale: 60,
+    activeDiet: "maintenance",
+  };
   const rikishi = Array.from({ length: 8 }, (_, i) =>
     MockFactory.createRikishi(`r${i}`, { heyaId: "h1", division: "makuuchi" })
   );

@@ -38,9 +38,7 @@ function worldWith(opts: {
 }): WorldState {
   const strong = makeMockHeya("strong", {
     reputation: opts.strongRep ?? 50,
-    infrastructure: opts.strongDorm
-      ? { dormitory: { level: 1, status: "active" } }
-      : {},
+    infrastructure: opts.strongDorm ? { dormitory: { level: 1, status: "active" } } : {},
   });
   const weak = makeMockHeya("weak", { reputation: opts.weakRep ?? 50 });
   const staff = new Map();
@@ -79,9 +77,7 @@ describe("resolveCandidateSuitor — P4 sign-chance resolution", () => {
     const c = inTalksCandidate(SUITORS);
     const a = resolveCandidateSuitor(worldWith({ week: 5 }), c);
     const b = resolveCandidateSuitor(worldWith({ week: 5 }), c);
-    expect(a.candidate.competingSuitors[0]?.heyaId).toBe(
-      b.candidate.competingSuitors[0]?.heyaId
-    );
+    expect(a.candidate.competingSuitors[0]?.heyaId).toBe(b.candidate.competingSuitors[0]?.heyaId);
   });
 
   it("prestige + scout negotiation + dormitory outweigh a louder rival over weeks", () => {
@@ -93,7 +89,13 @@ describe("resolveCandidateSuitor — P4 sign-chance resolution", () => {
     let strongWins = 0;
     const weeks = 24;
     for (let week = 0; week < weeks; week++) {
-      const world = worldWith({ week, strongRep: 95, weakRep: 20, strongDorm: true, scoutSkill: 10 });
+      const world = worldWith({
+        week,
+        strongRep: 95,
+        weakRep: 20,
+        strongDorm: true,
+        scoutSkill: 10,
+      });
       const result = resolveCandidateSuitor(world, inTalksCandidate(suitors));
       if (result.candidate.competingSuitors[0]?.heyaId === "strong") strongWins++;
     }
@@ -108,8 +110,14 @@ describe("resolveCandidateSuitor — P4 sign-chance resolution", () => {
     const weak = world.heyas.get("weak")!;
     strong.rikishiIds = ["fs"];
     weak.rikishiIds = ["fw"];
-    world.rikishi.set("fs", MockFactory.createRikishi("fs", { heyaId: "strong", nationality: "Mongolia" }) as never);
-    world.rikishi.set("fw", MockFactory.createRikishi("fw", { heyaId: "weak", nationality: "Mongolia" }) as never);
+    world.rikishi.set(
+      "fs",
+      MockFactory.createRikishi("fs", { heyaId: "strong", nationality: "Mongolia" }) as never
+    );
+    world.rikishi.set(
+      "fw",
+      MockFactory.createRikishi("fw", { heyaId: "weak", nationality: "Mongolia" }) as never
+    );
     const result = resolveCandidateSuitor(world, foreign);
     expect(result.signed).toBe(false);
     expect(result.candidate.availabilityState).toBe("available");

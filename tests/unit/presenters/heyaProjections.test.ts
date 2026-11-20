@@ -30,7 +30,9 @@ function makeFixtureWorld() {
       ["r2", r2],
     ]),
     heyas: new Map([["h1", makeMockHeya("h1", { rikishiIds: ["r1", "r2"], oyakataId: "o1" })]]),
-    oyakata: new Map([["o1", { id: "o1", quirks: ["strict"], traits: { patience: 3 } } as unknown as Oyakata]]),
+    oyakata: new Map([
+      ["o1", { id: "o1", quirks: ["strict"], traits: { patience: 3 } } as unknown as Oyakata],
+    ]),
     year: 2025,
   });
 }
@@ -259,7 +261,13 @@ describe("projectStableLeague", () => {
           {
             heyaId: "h1",
             careerHistory: [
-              snap({ bashoId: "kyushu-2024", bashoName: "kyushu", year: 2024, month: 11, wins: 11 }),
+              snap({
+                bashoId: "kyushu-2024",
+                bashoName: "kyushu",
+                year: 2024,
+                month: 11,
+                wins: 11,
+              }),
               snap({ bashoId: "hatsu-2025", wins: 6 }),
             ],
           },

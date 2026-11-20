@@ -61,7 +61,12 @@ export function requestDegeiko(
     if (existing.some((i) => i.fromHeyaId === heyaId)) return builder.build();
     builder.updateWorldField("pendingDegeikoInvites", [
       ...existing,
-      { id: `dg_${heyaId}_${world.week}`, fromHeyaId: heyaId, rikishiIds: [...rikishiIds], week: world.week },
+      {
+        id: `dg_${heyaId}_${world.week}`,
+        fromHeyaId: heyaId,
+        rikishiIds: [...rikishiIds],
+        week: world.week,
+      },
     ]);
     return builder.build();
   }
@@ -173,7 +178,9 @@ function applySession(
   rikishiIds: Id[],
   hosts: Rikishi[]
 ): void {
-  const partners = [...hosts].sort((a, b) => a.id.localeCompare(b.id)).slice(0, DEGEIKO_MAX_PARTNERS);
+  const partners = [...hosts]
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .slice(0, DEGEIKO_MAX_PARTNERS);
   const heya = getHeya(world, heyaId);
   const target = getHeya(world, targetHeyaId);
   // Accumulate host-side links per host id — sequential updateRikishi

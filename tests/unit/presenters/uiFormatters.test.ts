@@ -183,9 +183,7 @@ describe("formatMetaTrends", () => {
       "golf",
     ]);
     for (let i = 1; i < result[0].topDrift.length; i++) {
-      expect(result[0].topDrift[i].value).toBeLessThanOrEqual(
-        result[0].topDrift[i - 1].value
-      );
+      expect(result[0].topDrift[i].value).toBeLessThanOrEqual(result[0].topDrift[i - 1].value);
     }
   });
 

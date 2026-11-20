@@ -228,7 +228,14 @@ describe("PlayoffResolver — tomoe-sen (JSA 3-way playoff)", () => {
 
   it("champion must win at least 2 playoff bouts — no bye-champion (all seeds)", () => {
     for (const year of [2025, 2026, 2027]) {
-      for (const bashoName of ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"] as BashoName[]) {
+      for (const bashoName of [
+        "hatsu",
+        "haru",
+        "natsu",
+        "nagoya",
+        "aki",
+        "kyushu",
+      ] as BashoName[]) {
         const basho = makeBashoFor(year, bashoName);
         const world = makeWorld(["r1", "r2", "r3"], basho);
         const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3"]);

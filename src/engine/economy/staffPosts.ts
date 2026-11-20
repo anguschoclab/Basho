@@ -42,6 +42,9 @@ export function openSlots(world: WorldState, heya: Heya, role: StaffRole): numbe
   return Math.max(0, cap - filledSlots(world, heya, role));
 }
 
+/**
+ * Severance paid when releasing a staff member mid-contract — scales with remaining months and wage.
+ */
 export function severanceCost(staff: Staff): number {
   return (staff.wageYen ?? 0) * SEVERANCE_MONTHS;
 }

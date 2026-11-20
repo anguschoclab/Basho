@@ -16,11 +16,7 @@ import {
 import { NAKABI_DAY } from "@/engine/basho/NakabiService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
-import {
-  getLeaderWins,
-  isPlayoffScenario,
-  isYushoContention,
-} from "@/engine/bout/boutContention";
+import { getLeaderWins, isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 import { isSanyakuRank, getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 import { BASHO_NAMES } from "@/constants/ui/calendar";
@@ -57,8 +53,7 @@ function beatHometown(p: PbpPipeline): void {
       eastTier === "home" ? east : westTier === "home" ? west : eastTier ? east : west;
     const tier = hometownRikishi === east ? eastTier : westTier;
     if (tier) {
-      const templatePath =
-        tier === "home" ? "pre_bout.hometown" : "pre_bout.hometown_region";
+      const templatePath = tier === "home" ? "pre_bout.hometown" : "pre_bout.hometown_region";
       push(
         BardEngine.resolve(preBoutRng, templatePath, {
           SHIKONA: hometownRikishi.shikona,
@@ -692,11 +687,7 @@ function beatOneKimariteStreak(p: PbpPipeline): void {
 function beatBonds(p: PbpPipeline): void {
   const { east, preBoutRng, push, west } = p;
   // W H: school + keiko bonds. Siblings never pair (matchmaking rejects).
-  if (
-    east.schoolOrigin &&
-    east.schoolOrigin === west.schoolOrigin &&
-    east.heyaId !== west.heyaId
-  ) {
+  if (east.schoolOrigin && east.schoolOrigin === west.schoolOrigin && east.heyaId !== west.heyaId) {
     push(
       BardEngine.resolve(preBoutRng, "pre_bout.schoolmates", {
         SCHOOL: east.schoolOrigin,
@@ -709,10 +700,7 @@ function beatBonds(p: PbpPipeline): void {
       ["schoolmates"]
     );
   }
-  if (
-    east.practicePartners?.includes(west.id) ||
-    west.practicePartners?.includes(east.id)
-  ) {
+  if (east.practicePartners?.includes(west.id) || west.practicePartners?.includes(east.id)) {
     push(
       BardEngine.resolve(preBoutRng, "pre_bout.practice_partners", {
         EAST: east.shikona,
@@ -780,7 +768,10 @@ function beatDivisionSplit(p: PbpPipeline): void {
     if (currentBouts < 8 || current.wins / currentBouts > 0.4) continue;
     let bestDivision: Division | undefined;
     let bestRate = 0;
-    for (const [div, rec] of Object.entries(records) as [Division, { wins: number; losses: number }][]) {
+    for (const [div, rec] of Object.entries(records) as [
+      Division,
+      { wins: number; losses: number },
+    ][]) {
       if (div === r.division) continue;
       const bouts = rec.wins + rec.losses;
       const rate = bouts >= 10 ? rec.wins / bouts : 0;
@@ -835,7 +826,8 @@ function beatFirstTopDivisionMeeting(p: PbpPipeline): void {
   if (tagged.length !== pair.meetings || tagged.length === 0) return;
   if (tagged.some((h) => h.division === "makuuchi")) return;
   const counts = new Map<Division, number>();
-  for (const h of tagged) counts.set(h.division as Division, (counts.get(h.division as Division) ?? 0) + 1);
+  for (const h of tagged)
+    counts.set(h.division as Division, (counts.get(h.division as Division) ?? 0) + 1);
   const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
   push(
     BardEngine.resolve(preBoutRng, "pre_bout.first_top_division", {
@@ -1102,11 +1094,10 @@ function beatStarsAlign(p: PbpPipeline): void {
       return;
     }
   }
-  push(
-    BardEngine.resolve(preBoutRng, "pre_bout.stars_align", {}).text,
-    "pre_bout",
-    ["stars_align", "tournament_context"]
-  );
+  push(BardEngine.resolve(preBoutRng, "pre_bout.stars_align", {}).text, "pre_bout", [
+    "stars_align",
+    "tournament_context",
+  ]);
 }
 
 function beatProvenGiantKiller(p: PbpPipeline): void {

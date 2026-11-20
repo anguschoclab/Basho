@@ -56,7 +56,13 @@ function interviewQuestionLine(
   result: BoutResult
 ): string[] {
   for (let i = 0; i < 60; i++) {
-    const r = narrate(east, west, world, { ...result, pbpLines: [] } as BoutResult, `seed-d10-int-${i}`);
+    const r = narrate(
+      east,
+      west,
+      world,
+      { ...result, pbpLines: [] } as BoutResult,
+      `seed-d10-int-${i}`
+    );
     const q = interviewLines(r);
     if (q.length > 0) return q;
   }
@@ -382,8 +388,7 @@ function applyFixture(east: Rikishi, west: Rikishi) {
 function metricsOf(impact: ReturnType<typeof applyBoutResult>, id: string) {
   const basho = impact.worldFields?.currentBasho as BashoState | undefined;
   return basho?.boutMetrics?.[id] as
-    | { tachiaiWins?: number; tachiaiWonButLost?: number; pullWins?: number }
-    | undefined;
+    { tachiaiWins?: number; tachiaiWonButLost?: number; pullWins?: number } | undefined;
 }
 
 describe("applyBoutResult — tachiai + pull metrics", () => {

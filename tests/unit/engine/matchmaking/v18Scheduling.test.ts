@@ -86,9 +86,7 @@ describe("V18-S1 — juryo crossover schedules the makushita callup", () => {
       seed: "v18-s1",
     });
 
-    const scheduledIds = new Set(
-      scheduled.flatMap((m) => [m.eastRikishiId, m.westRikishiId])
-    );
+    const scheduledIds = new Set(scheduled.flatMap((m) => [m.eastRikishiId, m.westRikishiId]));
     // The callup is added to the pool at schedule.ts:264 but filtered out by
     // buildLowerDivisionSwiss's division check — this FAILS today.
     expect(scheduledIds.has(callupId)).toBe(true);
@@ -106,9 +104,7 @@ describe("V18-S1 — juryo crossover schedules the makushita callup", () => {
       seed: "v18-s1",
     });
 
-    const scheduledIds = new Set(
-      scheduled.flatMap((m) => [m.eastRikishiId, m.westRikishiId])
-    );
+    const scheduledIds = new Set(scheduled.flatMap((m) => [m.eastRikishiId, m.westRikishiId]));
     // With the callup dropped, 27 juryo produce 13 bouts and one healthy
     // rikishi goes unpaired — he will be charged a phantom absence at
     // performance publication. This FAILS today.
@@ -155,8 +151,7 @@ describe("V18-S2 — lower-division Swiss must not silently pair same-heya", () 
     // Current output: a pairing tagged only "forced" — indistinguishable
     // from a repeat-override and invisible once MatchSchedule strips
     // `reasons`. This FAILS today.
-    const flagged =
-      sameHeyaPair?.reasons.some((r) => /same.?heya|stable/i.test(r)) ?? false;
+    const flagged = sameHeyaPair?.reasons.some((r) => /same.?heya|stable/i.test(r)) ?? false;
     expect(sameHeyaPair === undefined || flagged).toBe(true);
   });
 });

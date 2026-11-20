@@ -73,7 +73,12 @@ function evaluateCandidate(world: WorldState, rikishi: Rikishi): YDCCandidate | 
   // scoreline — a 14-1 jun-yusho is not a title (S7-28). Build the
   // performance record from the BashoResult history.
   const winsLast = rikishi.currentBashoWins ?? 0;
-  const lastTwo = history as { yusho?: string; junYusho?: string[]; bashoName?: string; year?: number }[];
+  const lastTwo = history as {
+    yusho?: string;
+    junYusho?: string[];
+    bashoName?: string;
+    year?: number;
+  }[];
   const isYushoLast = lastTwo[lastTwo.length - 1]?.yusho === rikishi.id;
   const performances: BashoPerformance[] = lastTwo.map((rec, i) => ({
     rikishiId: rikishi.id,

@@ -133,10 +133,7 @@ describe("buildActionQueue", () => {
     const filler = Array.from({ length: 20 }, (_, i) => ({ type: "NOTE", id: `f${i}` }) as never);
     const world = makeWorld({
       events: {
-        log: [
-          { type: "PROMOTION_DELIBERATION", context: { rikishiId: "r1" } } as never,
-          ...filler,
-        ],
+        log: [{ type: "PROMOTION_DELIBERATION", context: { rikishiId: "r1" } } as never, ...filler],
         headlines: [],
       } as unknown as WorldState["events"],
     });
@@ -148,10 +145,7 @@ describe("buildActionQueue", () => {
     const filler = Array.from({ length: 19 }, (_, i) => ({ type: "NOTE", id: `f${i}` }) as never);
     const world = makeWorld({
       events: {
-        log: [
-          { type: "PROMOTION_DELIBERATION", context: { rikishiId: "r1" } } as never,
-          ...filler,
-        ],
+        log: [{ type: "PROMOTION_DELIBERATION", context: { rikishiId: "r1" } } as never, ...filler],
         headlines: [],
       } as unknown as WorldState["events"],
     });

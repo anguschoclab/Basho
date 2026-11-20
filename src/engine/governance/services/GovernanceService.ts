@@ -29,8 +29,7 @@ export function resolveCrisis(world: WorldState, crisisId: string, choiceId: str
       // (serialized / state-written) crises carry no generator — resolve
       // through the stored-crisis effect table like resolveNPCCrisis does,
       // or the player's choice is a silent no-op (V18-S7-2).
-      const effect =
-        option.impactGenerator ?? storedCrisisOptionEffect(crisis, choiceId);
+      const effect = option.impactGenerator ?? storedCrisisOptionEffect(crisis, choiceId);
       const impact = effect?.(world, playerHeyaId);
       if (impact) builder.merge(impact);
 

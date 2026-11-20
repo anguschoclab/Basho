@@ -22,8 +22,12 @@ vi.mock("@/presenters/rikishi/index", () => ({
 }));
 
 function makeFixtureWorld() {
-  const mk = (id: string, division: Rikishi["division"], rankNumber: number, side: Rikishi["side"]) =>
-    mockRikishi(id, { heyaId: "h1", division, rankNumber, side });
+  const mk = (
+    id: string,
+    division: Rikishi["division"],
+    rankNumber: number,
+    side: Rikishi["side"]
+  ) => mockRikishi(id, { heyaId: "h1", division, rankNumber, side });
   const rikishi = new Map<string, Rikishi>([
     ["m1", mk("m1", "makuuchi", 1, "east")],
     ["m2", mk("m2", "makuuchi", 1, "west")],

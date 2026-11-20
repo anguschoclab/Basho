@@ -20,9 +20,7 @@ vi.mock("@tanstack/react-router", () => ({
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     children?: React.ReactNode;
   }) => {
-    const resolved = params
-      ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m)
-      : to;
+    const resolved = params ? to.replace(/\$(\w+)/g, (m, k: string) => params[k] ?? m) : to;
     const safeHref = resolved.startsWith("/") && !resolved.includes("://") ? resolved : "#";
     return (
       <a href={safeHref} className={className} onClick={onClick} data-testid="router-link">

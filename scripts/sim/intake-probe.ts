@@ -10,7 +10,10 @@ import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { phase01_week_recruitment } from "@/engine/tick/phases/phase01_week_recruitment";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { refreshAllPools } from "@/engine/generation/TalentPoolStateService";
-import { computeReplacementGap, allocateVacancies } from "@/engine/generation/RecruitmentController";
+import {
+  computeReplacementGap,
+  allocateVacancies,
+} from "@/engine/generation/RecruitmentController";
 import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 
 let world = generateInitialWorld("intake-probe-seed");
@@ -40,7 +43,8 @@ for (const id of toRetire) {
   if (!r) continue;
   activeAfter.delete(id);
   const heya = heyas.get(r.heyaId);
-  if (heya) heyas.set(r.heyaId, { ...heya, rikishiIds: (heya.rikishiIds ?? []).filter((x) => x !== id) });
+  if (heya)
+    heyas.set(r.heyaId, { ...heya, rikishiIds: (heya.rikishiIds ?? []).filter((x) => x !== id) });
   rikishi.set(id, { ...r, isRetired: true });
 }
 world = { ...world, activeRikishiIds: activeAfter, heyas, rikishi };

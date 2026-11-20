@@ -7,36 +7,37 @@
 
 ## Baseline (measured at 2bfc438f)
 
-| Gate | Baseline result |
-|---|---|
-| `type-check` | **RED** — `overrideConsumer.test.ts:175` `TS2339: Property 'reasons' does not exist on type 'MatchSchedule'` |
-| `lint:strict` | 0 errors, 37 warnings (all `react-refresh/only-export-components` in `src/app/routes.tsx`) |
-| `build` | GREEN (Vite warnings for >500KB chunks) |
-| `bun run test` | 1005 files / 9302 pass / 1 skip |
-| Orphan audit | 239 unreferenced exports + 9 unticked services |
+| Gate           | Baseline result                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `type-check`   | **RED** — `overrideConsumer.test.ts:175` `TS2339: Property 'reasons' does not exist on type 'MatchSchedule'` |
+| `lint:strict`  | 0 errors, 37 warnings (all `react-refresh/only-export-components` in `src/app/routes.tsx`)                   |
+| `build`        | GREEN (Vite warnings for >500KB chunks)                                                                      |
+| `bun run test` | 1005 files / 9302 pass / 1 skip                                                                              |
+| Orphan audit   | 239 unreferenced exports + 9 unticked services                                                               |
 
 ## Branch & PR verdicts (all items)
 
-| Item | Verdict | Evidence | Disposition |
-|---|---|---|---|
-| PR #1171 (Mason: remove dead `reasons` check) | **APPROVED — landed via union** | `m.reasons` cannot exist on `MatchSchedule` (projection strips it at `schedule.ts:151-157`); strict subset of #1173 | Closed unmerged; line removed in `10bd84b2`; branch deleted |
-| PR #1172 (Bolt: optimize AI worker selection) | **APPROVED — landed via union** | `.map().filter().sort()[0]` ≡ single-pass strict-`>` first-max (stable-sort semantics proven); new characterization tests pin behavior | Closed unmerged; landed `10bd84b2`; branch deleted |
-| PR #1173 (Scribe: MatchSchedule contract doc) | **APPROVED — landed via union** | Doc literally accurate (`MatchPairing.reasons` at `MatchmakingPhases.ts:56`, stripped by projection) | Closed unmerged; landed `10bd84b2`; branch deleted |
-| PR #1153 (faction-pressure id) | **DISPROVED** | Redundant/inferior to existing `startsWith` behavior | Closed prior; branch `scout/fix-faction-pressure-id-*` deleted |
-| PR #1154 (NPC dedup optimization) | **APPROVED — already on main** | Content landed in v15 squash era | Branch `bolt-optimize-npc-deduplication-*` deleted |
-| PR #1155 (schedule helper docs) | **APPROVED — already on main** | Content landed in v15 | Branch `scribe-document-schedule-helpers-*` deleted |
-| PR #1157 (bard milestone flavor) | **APPROVED — already on main** | Content landed in v15 | Branch `bard-milestone-flavor-*` deleted |
-| PR #1158 (rival heya lookup) | **APPROVED — already on main** | Content landed in v15 | Branch `bolt-optimize-rival-heya-lookup-*` deleted |
-| PR #1169 (Set allocation) | **APPROVED — already on main** | Content landed in v15 | Branch `bolt-fix-set-allocation-*` deleted |
-| PR #1170 (`arrayAppends` guard) | **PARTIAL** | Guard-completeness fix valid; claimed production impact overstated (`isStateImpact` has zero prod callers — `pipelineRunner.ts` discriminates via `"metadata" in result`) | Guard pattern retained; production-impact claim disproven in notes |
-| Dependabot #1160–#1168 | **APPROVED — already merged** | Squash `c2df5189` on main | n/a |
-| Local `polish/stable-not-found` | **APPROVED — already on main** | `45e87aa4` content verified landed | Branch deleted |
+| Item                                          | Verdict                         | Evidence                                                                                                                                                                  | Disposition                                                        |
+| --------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| PR #1171 (Mason: remove dead `reasons` check) | **APPROVED — landed via union** | `m.reasons` cannot exist on `MatchSchedule` (projection strips it at `schedule.ts:151-157`); strict subset of #1173                                                       | Closed unmerged; line removed in `10bd84b2`; branch deleted        |
+| PR #1172 (Bolt: optimize AI worker selection) | **APPROVED — landed via union** | `.map().filter().sort()[0]` ≡ single-pass strict-`>` first-max (stable-sort semantics proven); new characterization tests pin behavior                                    | Closed unmerged; landed `10bd84b2`; branch deleted                 |
+| PR #1173 (Scribe: MatchSchedule contract doc) | **APPROVED — landed via union** | Doc literally accurate (`MatchPairing.reasons` at `MatchmakingPhases.ts:56`, stripped by projection)                                                                      | Closed unmerged; landed `10bd84b2`; branch deleted                 |
+| PR #1153 (faction-pressure id)                | **DISPROVED**                   | Redundant/inferior to existing `startsWith` behavior                                                                                                                      | Closed prior; branch `scout/fix-faction-pressure-id-*` deleted     |
+| PR #1154 (NPC dedup optimization)             | **APPROVED — already on main**  | Content landed in v15 squash era                                                                                                                                          | Branch `bolt-optimize-npc-deduplication-*` deleted                 |
+| PR #1155 (schedule helper docs)               | **APPROVED — already on main**  | Content landed in v15                                                                                                                                                     | Branch `scribe-document-schedule-helpers-*` deleted                |
+| PR #1157 (bard milestone flavor)              | **APPROVED — already on main**  | Content landed in v15                                                                                                                                                     | Branch `bard-milestone-flavor-*` deleted                           |
+| PR #1158 (rival heya lookup)                  | **APPROVED — already on main**  | Content landed in v15                                                                                                                                                     | Branch `bolt-optimize-rival-heya-lookup-*` deleted                 |
+| PR #1169 (Set allocation)                     | **APPROVED — already on main**  | Content landed in v15                                                                                                                                                     | Branch `bolt-fix-set-allocation-*` deleted                         |
+| PR #1170 (`arrayAppends` guard)               | **PARTIAL**                     | Guard-completeness fix valid; claimed production impact overstated (`isStateImpact` has zero prod callers — `pipelineRunner.ts` discriminates via `"metadata" in result`) | Guard pattern retained; production-impact claim disproven in notes |
+| Dependabot #1160–#1168                        | **APPROVED — already merged**   | Squash `c2df5189` on main                                                                                                                                                 | n/a                                                                |
+| Local `polish/stable-not-found`               | **APPROVED — already on main**  | `45e87aa4` content verified landed                                                                                                                                        | Branch deleted                                                     |
 
 ## Findings dispositions
 
 **50 verified BUGs** (V16-B01..B50) and ~30 DEBT/NOTE classes (V16-F/F-series) were confirmed by direct code reading (see `_v16-review-notes.md`).
 
 **FIXED in this pass (commits `10bd84b2`, `061881a3`, follow-ups):**
+
 - **B01** `phase01_basho_bouts` `PASSTHROUGH_FIELDS` dropped `governanceLog` + all heya/staff writes from bout resolution (scandal rulings silently lost) → added field + `reexportEntityDiffs` helper.
 - **B02** `phase01_week_governance` election check compared constant 52 against monotonic `world.week` → fires once ever; now week-of-year.
 - **B04** `phase06_yearly_boundary` `age = world.year - birthYear` used pre-increment year → 1-year-stale ages; now `+1`.
@@ -61,7 +62,7 @@
 
 ## Test-first compliance
 
-Strict ordering held: `71e30b44` (tests only) landed before `10bd84b2` (implementation). New tests: `v16Regressions.test.ts` (B02/B04/B16/B17/B18 spec-pins), spawnGlobalWorker characterization (max-power, first-max tie, filtering), `MatchSchedule` runtime-shape contract, dohyoIri per-rikishi determinism. Tests pinning *buggy* behavior were rewritten (dohyoIri same-style, phase06 old-year age).
+Strict ordering held: `71e30b44` (tests only) landed before `10bd84b2` (implementation). New tests: `v16Regressions.test.ts` (B02/B04/B16/B17/B18 spec-pins), spawnGlobalWorker characterization (max-power, first-max tie, filtering), `MatchSchedule` runtime-shape contract, dohyoIri per-rikishi determinism. Tests pinning _buggy_ behavior were rewritten (dohyoIri same-style, phase06 old-year age).
 
 ## Coverage honesty
 

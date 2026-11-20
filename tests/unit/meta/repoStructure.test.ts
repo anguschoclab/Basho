@@ -30,9 +30,7 @@ const ARCHIVE = join(ENGINE, "_archive");
 /** Import/export specifier literals found in a source file. */
 function specifiersOf(file: string): string[] {
   const content = readFileSync(file, "utf-8");
-  return [...content.matchAll(/(?:from|import)\s*(?:\(\s*)?["']([^"']+)["']/g)].map(
-    (m) => m[1]
-  );
+  return [...content.matchAll(/(?:from|import)\s*(?:\(\s*)?["']([^"']+)["']/g)].map((m) => m[1]);
 }
 
 describe("repo structure — harmonized layout contract", () => {
@@ -94,8 +92,7 @@ describe("repo structure — harmonized layout contract", () => {
     const liveImporters: string[] = [];
     for (const f of findFiles(SRC)) {
       if (f.replaceAll("\\", "/").includes("/_archive/")) continue;
-      if (specifiersOf(f).some((s) => s.includes("_archive")))
-        liveImporters.push(f);
+      if (specifiersOf(f).some((s) => s.includes("_archive"))) liveImporters.push(f);
     }
     expect(liveImporters, `Live files importing _archive/`).toEqual([]);
   });

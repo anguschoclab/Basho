@@ -268,16 +268,10 @@ export function announceJsaBulletins(world: WorldState): StateImpact {
     },
   ];
 
-  const fired = bulletins.filter(
-    (b) => b.when && !headlines.some((h) => h.tags?.includes(b.tag))
-  );
+  const fired = bulletins.filter((b) => b.when && !headlines.some((h) => h.tags?.includes(b.tag)));
   if (fired.length === 0) return builder.build();
 
-  const rng = rngForWorld(
-    world,
-    "media",
-    `jsa-bulletins::${year}::${month}::${headlines.length}`
-  );
+  const rng = rngForWorld(world, "media", `jsa-bulletins::${year}::${month}::${headlines.length}`);
   const newHeadlines = [...headlines];
   for (const b of fired) {
     newHeadlines.push({

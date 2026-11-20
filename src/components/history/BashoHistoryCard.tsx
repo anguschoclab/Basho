@@ -75,9 +75,7 @@ export function BashoHistoryCard({
   const yushoMillions = safeMillions(prizes?.yushoAmount);
 
   const lookupAll = (ids: string[] | null | undefined): Rikishi[] =>
-    (ids ?? [])
-      .map((rid) => getRikishi?.(rid) ?? null)
-      .filter((r): r is Rikishi => r !== null);
+    (ids ?? []).map((rid) => getRikishi?.(rid) ?? null).filter((r): r is Rikishi => r !== null);
   const shukun = lookupAll(basho.shukunsho);
   const kanto = lookupAll(basho.kantosho);
   const gino = lookupAll(basho.ginoSho);

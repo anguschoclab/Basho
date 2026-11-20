@@ -30,8 +30,10 @@ for (let step = 0; step < 140; step++) {
   const pairs = new Map<string, number>();
   for (const m of b.matches) {
     ids.set(m.boutId, (ids.get(m.boutId) ?? 0) + 1);
-    pairs.set(`${m.day}|${m.eastRikishiId}|${m.westRikishiId}`,
-      (pairs.get(`${m.day}|${m.eastRikishiId}|${m.westRikishiId}`) ?? 0) + 1);
+    pairs.set(
+      `${m.day}|${m.eastRikishiId}|${m.westRikishiId}`,
+      (pairs.get(`${m.day}|${m.eastRikishiId}|${m.westRikishiId}`) ?? 0) + 1
+    );
   }
   for (const [id, n] of ids) {
     if (n > 1) {
@@ -39,7 +41,12 @@ for (let step = 0; step < 140; step++) {
       const ms = b.matches.filter((m) => m.boutId === id);
       console.log(
         `DUP-ID ${b.bashoName} ${b.year}: ${id} x${n}` +
-          ms.map((m) => ` [div-ish flags: callup=${m.crossDivisionCallupId ?? "-"} 8th=${m.eighthBoutForRikishiId ?? "-"} result=${m.result ? "y" : "n"}]`).join("")
+          ms
+            .map(
+              (m) =>
+                ` [div-ish flags: callup=${m.crossDivisionCallupId ?? "-"} 8th=${m.eighthBoutForRikishiId ?? "-"} result=${m.result ? "y" : "n"}]`
+            )
+            .join("")
       );
     }
   }

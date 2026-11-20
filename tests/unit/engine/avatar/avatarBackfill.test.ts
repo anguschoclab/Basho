@@ -5,7 +5,10 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ensureAvatarIdentities, generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
+import {
+  ensureAvatarIdentities,
+  generateAvatarIdentity,
+} from "@/engine/generation/avatarGenerator";
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import type { WorldState } from "@/engine/types/world";
@@ -117,7 +120,10 @@ describe("ensureAvatarIdentities", () => {
     const world = generateInitialWorld("avatar-backfill-pros-nat");
     const heya = Array.from(world.heyas.values())[0];
     heya.youthAcademy = {
-      level: 1, budget: 0, totalGraduated: 0, lastIntakeYear: 0,
+      level: 1,
+      budget: 0,
+      totalGraduated: 0,
+      lastIntakeYear: 0,
       prospects: [
         { id: "pros-mn", shikona: "T", age: 16, region: "Mongolia" } as any,
         { id: "pros-ao", shikona: "K", age: 16, region: "Aomori" } as any,

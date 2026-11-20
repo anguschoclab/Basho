@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  buildYouthAcademy,
-  getYouthAcademy,
-} from "@/engine/recruitment/YouthAcademyService";
+import { buildYouthAcademy, getYouthAcademy } from "@/engine/recruitment/YouthAcademyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 

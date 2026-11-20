@@ -10,9 +10,7 @@ import { renderHook } from "@testing-library/react";
 import { useKimariteDistributionData } from "@/components/rikishi/useRikishiData";
 import type { UIRikishi } from "@/presenters/uiModels";
 
-function uiRikishi(
-  detailed?: { kimarite: string; percentage: number; wins: number }[]
-): UIRikishi {
+function uiRikishi(detailed?: { kimarite: string; percentage: number; wins: number }[]): UIRikishi {
   return { favoredKimariteDetailed: detailed } as unknown as UIRikishi;
 }
 

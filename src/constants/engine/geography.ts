@@ -9,14 +9,7 @@
  */
 
 export type HomeRegion =
-  | "kanto"
-  | "kansai"
-  | "chubu"
-  | "kyushu"
-  | "tohoku"
-  | "hokkaido"
-  | "chugoku"
-  | "shikoku";
+  "kanto" | "kansai" | "chubu" | "kyushu" | "tohoku" | "hokkaido" | "chugoku" | "shikoku";
 
 /** Prefecture name → its region. Okinawa groups with Kyushu. */
 export const PREFECTURE_REGION: Record<string, HomeRegion> = {

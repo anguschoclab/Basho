@@ -283,9 +283,7 @@ export function tickWeekCandidatePool(world: WorldState): StateImpact {
     // the talks continue with whoever is still deciding — previously ANY
     // expired deadline resolved the whole negotiation, so a low-interest
     // suitor with a short deadline slammed the window shut early.
-    const openSuitors = candidate.competingSuitors.filter(
-      (s) => currentWeek < s.deadlineWeek
-    );
+    const openSuitors = candidate.competingSuitors.filter((s) => currentWeek < s.deadlineWeek);
     if (openSuitors.length === candidate.competingSuitors.length) continue; // none expired
 
     if (openSuitors.length > 0) {

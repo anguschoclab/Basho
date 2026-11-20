@@ -78,10 +78,7 @@ vi.mock("@/engine/generation/TalentPoolService", () => ({
 
 import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
 import { runPrestigeDecay } from "@/engine/history/prestige";
-import {
-  runGovernanceReview,
-  runAIMetaDrift,
-} from "@/engine/governance/services/governanceReview";
+import { runGovernanceReview, runAIMetaDrift } from "@/engine/governance/services/governanceReview";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
 import { onBashoEnded } from "@/engine/history/records";
 import * as ImpactResolver from "@/engine/core/ImpactResolver";

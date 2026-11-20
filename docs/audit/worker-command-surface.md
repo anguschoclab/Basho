@@ -10,10 +10,10 @@
 
 ## Tick Commands (worker)
 
-| Command            | Handler                                   | Mutates currentWorld |
-| ------------------ | ----------------------------------------- | -------------------- |
-| TICK_DAY           | `tickOrchestrator`                        | Yes                  |
-| TICK_MULTIPLE_DAYS | loop of `tickOrchestrator` / `advanceDaysFastOrchestrator` (fast path for ≥7-day chunks) | Yes |
+| Command            | Handler                                                                                  | Mutates currentWorld |
+| ------------------ | ---------------------------------------------------------------------------------------- | -------------------- |
+| TICK_DAY           | `tickOrchestrator`                                                                       | Yes                  |
+| TICK_MULTIPLE_DAYS | loop of `tickOrchestrator` / `advanceDaysFastOrchestrator` (fast path for ≥7-day chunks) | Yes                  |
 
 ## Interactive basho commands — NOT worker commands
 
@@ -23,23 +23,23 @@
 
 Representative set — the full union is `EngineCommand` in `types.ts` (67 commands):
 
-| Command                 | Domain        |
-| ----------------------- | ------------- |
-| OFFER_CONTRACT          | recruitment   |
-| SCOUT_POOL / SCOUT_CANDIDATE / POACH_CANDIDATE / SEND_SCOUT / HIRE_STAFF_CANDIDATE | recruitment |
-| RESOLVE_CRISIS          | governance    |
-| RESOLVE_LOOP_DECISION   | npc decision  |
-| ISSUE_RULING            | governance    |
-| HANDLE_MEDIA_EVENT      | media         |
-| WITHDRAW_RIKISHI / RETIRE_RIKISHI / TRIGGER_SUCCESSION | lifecycle |
-| TREAT_INJURY / BUY_PHYSIO / SET_RIKISHI_DIET / SET_RIKISHI_EFFORT | health |
-| BUY_MYOSEKI / LEASE_MYOSEKI / LIST_MYOSEKI_FOR_SALE / RETURN_MYOSEKI_LEASE | economy |
-| RENEW_SPONSOR / RECRUIT_SPONSOR / REQUEST_BAILOUT / PREPAY_LOAN | economy |
-| HIRE_STAFF / FIRE_STAFF / HIRE_ACADEMY_STAFF | staff |
-| SET_TRAINING_STATE / ASSIGN_MENTOR / REMOVE_MENTOR / ADD_SPARRING_PAIR / REMOVE_SPARRING_PAIR | training |
-| REQUEST_POLITICAL_FAVOR / SPEND_POLITICAL_CAPITAL | governance |
-| INVEST_IN_FACILITY / BUILD_INFRASTRUCTURE / REPAIR_INFRASTRUCTURE / BUILD_FOREIGN_ACADEMY / BUILD_YOUTH_ACADEMY / UPGRADE_YOUTH_ACADEMY / INVEST_ACADEMY | facilities |
-| ACCEPT_EXHIBITION / DECLINE_EXHIBITION / FINISH_EXHIBITION / COMPLETE_TUTORIAL / APPLY_PRESS_CONFERENCE / SET_HEYA_DIET / SET_TSUKEBITO / REMOVE_TSUKEBITO / SET_KESHO_CONFIG / SET_SCOUTING_INVESTMENT / GO_ON_HOLIDAY / BOOKMARK_ENTITY / UNBOOKMARK_ENTITY / UPDATE_BOOKMARK_NOTE / ADVANCE_TUTORIAL_STEP / SET_TUTORIAL_FLAG / PROMOTE_INTAKE / MANAGE_ACADEMY / READY | misc |
+| Command                                                                                                                                                                                                                                                                                                                                                                    | Domain       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| OFFER_CONTRACT                                                                                                                                                                                                                                                                                                                                                             | recruitment  |
+| SCOUT_POOL / SCOUT_CANDIDATE / POACH_CANDIDATE / SEND_SCOUT / HIRE_STAFF_CANDIDATE                                                                                                                                                                                                                                                                                         | recruitment  |
+| RESOLVE_CRISIS                                                                                                                                                                                                                                                                                                                                                             | governance   |
+| RESOLVE_LOOP_DECISION                                                                                                                                                                                                                                                                                                                                                      | npc decision |
+| ISSUE_RULING                                                                                                                                                                                                                                                                                                                                                               | governance   |
+| HANDLE_MEDIA_EVENT                                                                                                                                                                                                                                                                                                                                                         | media        |
+| WITHDRAW_RIKISHI / RETIRE_RIKISHI / TRIGGER_SUCCESSION                                                                                                                                                                                                                                                                                                                     | lifecycle    |
+| TREAT_INJURY / BUY_PHYSIO / SET_RIKISHI_DIET / SET_RIKISHI_EFFORT                                                                                                                                                                                                                                                                                                          | health       |
+| BUY_MYOSEKI / LEASE_MYOSEKI / LIST_MYOSEKI_FOR_SALE / RETURN_MYOSEKI_LEASE                                                                                                                                                                                                                                                                                                 | economy      |
+| RENEW_SPONSOR / RECRUIT_SPONSOR / REQUEST_BAILOUT / PREPAY_LOAN                                                                                                                                                                                                                                                                                                            | economy      |
+| HIRE_STAFF / FIRE_STAFF / HIRE_ACADEMY_STAFF                                                                                                                                                                                                                                                                                                                               | staff        |
+| SET_TRAINING_STATE / ASSIGN_MENTOR / REMOVE_MENTOR / ADD_SPARRING_PAIR / REMOVE_SPARRING_PAIR                                                                                                                                                                                                                                                                              | training     |
+| REQUEST_POLITICAL_FAVOR / SPEND_POLITICAL_CAPITAL                                                                                                                                                                                                                                                                                                                          | governance   |
+| INVEST_IN_FACILITY / BUILD_INFRASTRUCTURE / REPAIR_INFRASTRUCTURE / BUILD_FOREIGN_ACADEMY / BUILD_YOUTH_ACADEMY / UPGRADE_YOUTH_ACADEMY / INVEST_ACADEMY                                                                                                                                                                                                                   | facilities   |
+| ACCEPT_EXHIBITION / DECLINE_EXHIBITION / FINISH_EXHIBITION / COMPLETE_TUTORIAL / APPLY_PRESS_CONFERENCE / SET_HEYA_DIET / SET_TSUKEBITO / REMOVE_TSUKEBITO / SET_KESHO_CONFIG / SET_SCOUTING_INVESTMENT / GO_ON_HOLIDAY / BOOKMARK_ENTITY / UNBOOKMARK_ENTITY / UPDATE_BOOKMARK_NOTE / ADVANCE_TUTORIAL_STEP / SET_TUTORIAL_FLAG / PROMOTE_INTAKE / MANAGE_ACADEMY / READY | misc         |
 
 ## Non-Mutating / Lifecycle Worker Commands
 

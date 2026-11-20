@@ -134,7 +134,10 @@ describe("EventLogPanel AI events", () => {
   });
 
   it("shows unread events with a marker and marks them read on click", () => {
-    const event = { ...makeEvent("ai_decision", "AI Management Decision", "Details here."), id: "unread-1" };
+    const event = {
+      ...makeEvent("ai_decision", "AI Management Decision", "Details here."),
+      id: "unread-1",
+    };
     render(
       <EventLogPanel
         eventLogData={{

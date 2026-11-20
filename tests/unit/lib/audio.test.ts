@@ -75,8 +75,7 @@ describe("playForEvent / isAudioEnabled", () => {
     vi.unstubAllGlobals();
   });
 
-  const evt = (importance: EngineEvent["importance"]) =>
-    ({ importance }) as unknown as EngineEvent;
+  const evt = (importance: EngineEvent["importance"]) => ({ importance }) as unknown as EngineEvent;
 
   it("is enabled by default and disabled when the flag is 'off'", () => {
     expect(isAudioEnabled()).toBe(true);

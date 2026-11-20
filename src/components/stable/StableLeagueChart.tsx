@@ -9,15 +9,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Trophy } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import type { StableLeagueResult, StableLeagueRow } from "@/presenters/projections/heyaProjections";
 
 interface LeagueTooltipEntry {

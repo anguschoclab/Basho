@@ -112,13 +112,17 @@ describe("V16-B17 GlobalCup wasPlayerChampion", () => {
     const builder = createImpactBuilder("test");
     // Buggy: winnerId === world.playerHeyaId (rikishiId vs heyaId) → always false.
     // Fixed: resolve the winner rikishi's heyaId.
-    (GlobalCupService as unknown as { finalizeTournament: (w: WorldState, b: unknown, id: string, name: string, ids: string[]) => void }).finalizeTournament(
-      world,
-      builder,
-      "champ",
-      "Champ",
-      ["champ"]
-    );
+    (
+      GlobalCupService as unknown as {
+        finalizeTournament: (
+          w: WorldState,
+          b: unknown,
+          id: string,
+          name: string,
+          ids: string[]
+        ) => void;
+      }
+    ).finalizeTournament(world, builder, "champ", "Champ", ["champ"]);
     expect(JSON.stringify(builder.build())).toContain('"wasPlayerChampion":true');
   });
 });

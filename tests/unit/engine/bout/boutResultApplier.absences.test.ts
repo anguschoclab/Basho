@@ -342,9 +342,10 @@ describe("Bug 15 + N5: Absences tracking", () => {
 
     const impact = publishBanzukeUpdate(world);
     const newWorld = resolveImpacts(world, [impact]);
-    const lastEntry = newWorld.rikishi
-      .get("r1")!
-      .careerHistory![newWorld.rikishi.get("r1")!.careerHistory!.length - 1];
+    const lastEntry =
+      newWorld.rikishi.get("r1")!.careerHistory![
+        newWorld.rikishi.get("r1")!.careerHistory!.length - 1
+      ];
     expect(lastEntry.wins).toBe(5);
     expect(lastEntry.losses).toBe(6);
     expect(lastEntry.absences).toBe(4);

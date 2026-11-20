@@ -31,7 +31,10 @@ export default function MyosekiMarketPage() {
         activeSubTab="myoseki"
         pageTitle="Elder Stock Market (Myoseki)"
       >
-        <LoadingPanel title="Loading Market Records" description="Fetching elder stock exchange..." />
+        <LoadingPanel
+          title="Loading Market Records"
+          description="Fetching elder stock exchange..."
+        />
       </AppLayout>
     );
   }

@@ -113,8 +113,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   const idle = (ms = 120000) =>
     page.waitForFunction(
       () =>
-        !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
-          .pendingTick,
+        !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.().pendingTick,
       { timeout: ms }
     );
   const poolSnap = () =>
@@ -125,8 +124,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
       const pools = w?.talentPool?.pools ?? {};
       return {
         populated: Object.values<any>(pools).some(
-          (p: any) =>
-            (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
+          (p: any) => (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
         ),
         uiDay: (w?.dayIndexGlobal ?? 0) as number,
         wkDay: (ww?.dayIndexGlobal ?? 0) as number,
@@ -180,8 +178,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
         const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
         const pools = w?.talentPool?.pools ?? {};
         return Object.values<any>(pools).some(
-          (p: any) =>
-            (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
+          (p: any) => (p?.candidatesHidden?.length ?? 0) + (p?.candidatesVisible?.length ?? 0) > 0
         );
       },
       { timeout: 60000 }
@@ -255,8 +252,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   //    its pendingTick wait via .catch, so idle is not guaranteed here.
   await page.waitForFunction(
     () =>
-      !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.()
-        .pendingTick,
+      !(window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__?.getState?.().pendingTick,
     { timeout: 90000 }
   );
   const grafted = await page.evaluate(() => {
@@ -282,8 +278,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
       ...movedPools.high_school,
       candidatesVisible: [cid],
     };
-    const toArr = (c: any): any[] =>
-      c instanceof Map ? [...c.values()] : Object.values(c ?? {});
+    const toArr = (c: any): any[] => (c instanceof Map ? [...c.values()] : Object.values(c ?? {}));
     const allOyakata = toArr(w.oyakata);
     const uniqueName = (list: any[], self: any) =>
       list.filter((x: any) => x.name === self.name).length === 1;
@@ -374,8 +369,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   const fx = await page.evaluate((): EntityFixtures => {
     const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
     if (!w) throw new Error("no live world");
-    const toArr = (c: any): any[] =>
-      c instanceof Map ? [...c.values()] : Object.values(c ?? {});
+    const toArr = (c: any): any[] => (c instanceof Map ? [...c.values()] : Object.values(c ?? {}));
     const playerHeyaId = w.playerHeyaId;
     const heya = w.heyas instanceof Map ? w.heyas.get(playerHeyaId) : w.heyas?.[playerHeyaId];
     const allOyakata = toArr(w.oyakata);
@@ -401,8 +395,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
         uniqueName(allOyakata, o)
     );
     const allStaff = toArr(w.staff);
-    const staff =
-      allStaff.find((s: any) => s.name && uniqueName(allStaff, s)) ?? null;
+    const staff = allStaff.find((s: any) => s.name && uniqueName(allStaff, s)) ?? null;
     const candidates = toArr(w.talentPool?.candidates);
     // Mirror the search gate exactly: only pools listVisibleCandidates can
     // return without regional-presence gating (foreign needs presence ≥40),
@@ -508,17 +501,17 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   await npcRow.click();
   await page.waitForURL(`**/oyakata/${fx.npcOyakataId}`, { timeout: 10000 });
   // Rival profile: public record visible, intel card shows gated copy.
-  await expect(
-    page.locator("h1").filter({ hasText: fx.npcOyakataName! }).first()
-  ).toBeVisible({ timeout: 10000 });
+  await expect(page.locator("h1").filter({ hasText: fx.npcOyakataName! }).first()).toBeVisible({
+    timeout: 10000,
+  });
   await expect(page.getByText("Limited intel").first()).toBeVisible();
   await expect(page.getByText("Succession")).toHaveCount(0);
 
   // ── 3. /oyakata directory + legacy /stable/oyakata redirect ──
   await page.goto("/oyakata");
-  await expect(
-    page.getByRole("heading", { name: /Elders of the Kyokai/i })
-  ).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("heading", { name: /Elders of the Kyokai/i })).toBeVisible({
+    timeout: 10000,
+  });
   await expect(page.getByText("All Oyakata")).toBeVisible();
   await expect(page.locator("main").getByText(fx.npcOyakataName!).first()).toBeVisible();
 
@@ -544,8 +537,7 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
     // The goto is a full reload — the world only returns once useRequireWorld
     // restores the autosave. The graft must survive the save/load round-trip.
     await page.waitForFunction(
-      () =>
-        !!(window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__?.dayIndexGlobal,
+      () => !!(window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__?.dayIndexGlobal,
       { timeout: 15000 }
     );
     const graftRestored = await page.evaluate((cid: string) => {
@@ -577,7 +569,8 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
     const tp = w?.talentPool;
     const excludeName = excludeId ? tp?.candidates?.[excludeId]?.name : null;
     const cid = Object.keys(tp?.candidates ?? {}).find(
-      (id) => id !== excludeId && tp?.candidates?.[id]?.name && tp.candidates[id].name !== excludeName
+      (id) =>
+        id !== excludeId && tp?.candidates?.[id]?.name && tp.candidates[id].name !== excludeName
     );
     if (!tp || !cid) return null;
     const cand = tp.candidates[cid];
@@ -595,7 +588,8 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
       ...movedPools.foreign,
       candidatesVisible: [...(movedPools.foreign?.candidatesVisible ?? []), cid],
     };
-    const playerHeya = w.heyas instanceof Map ? w.heyas.get(w.playerHeyaId) : w.heyas?.[w.playerHeyaId];
+    const playerHeya =
+      w.heyas instanceof Map ? w.heyas.get(w.playerHeyaId) : w.heyas?.[w.playerHeyaId];
     const nextHeya = { ...playerHeya, regionalPresence: { Europe: 0 } };
     const nextHeyas =
       w.heyas instanceof Map
@@ -653,7 +647,8 @@ test("Global search finds oyakata/staff/prospects; oyakata pages and redirect wo
   const unlocked = await page.evaluate(() => {
     const w = (window as unknown as { __BASHO_WORLD__?: any }).__BASHO_WORLD__;
     const store = (window as unknown as { __BASHO_STORE__?: any }).__BASHO_STORE__;
-    const playerHeya = w.heyas instanceof Map ? w.heyas.get(w.playerHeyaId) : w.heyas?.[w.playerHeyaId];
+    const playerHeya =
+      w.heyas instanceof Map ? w.heyas.get(w.playerHeyaId) : w.heyas?.[w.playerHeyaId];
     const nextHeya = {
       ...playerHeya,
       regionalPresence: { ...(playerHeya?.regionalPresence ?? {}), Europe: 45 },

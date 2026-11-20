@@ -8,12 +8,7 @@ import { logEventImpact } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { selectHolidayDigest } from "@/presenters/projections/holidayDigestProjections";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
-import {
-  makeMockWorld,
-  makeMockBasho,
-  mockRikishi,
-  makeMockHeya,
-} from "@tests/unit/engine/utils";
+import { makeMockWorld, makeMockBasho, mockRikishi, makeMockHeya } from "@tests/unit/engine/utils";
 
 describe("GO_ON_HOLIDAY worker command — runHoliday integration", () => {
   it("runHoliday advances the world state", () => {
@@ -147,7 +142,11 @@ function interimWorldWithPlayer(rikishi: import("@/engine/types/rikishi").Rikish
 function activeBashoWorldAtDay(day: number): WorldState {
   const ids = ["r-e1", "r-w1", "r-e2", "r-w2"];
   const rikishi = ids.map((id) =>
-    mockRikishi(id, { heyaId: "h-npc", division: "makuuchi", side: id.endsWith("1") ? "east" : "west" })
+    mockRikishi(id, {
+      heyaId: "h-npc",
+      division: "makuuchi",
+      side: id.endsWith("1") ? "east" : "west",
+    })
   );
   const matches: MatchSchedule[] = [];
   for (const d of [day, day + 1]) {
@@ -231,9 +230,7 @@ describe("V18-B02 — HolidayConfig.delegationPolicy must drive auto-resolution"
   it("aggressive policy resolves pre_basho_readiness with 'push', not balanced 'rest'", () => {
     // A fatigued rikishi in pre_basho makes pre_basho_readiness due every tick.
     const world = {
-      ...interimWorldWithPlayer([
-        mockRikishi("r-fat", { heyaId: "h-player", fatigue: 80 }),
-      ]),
+      ...interimWorldWithPlayer([mockRikishi("r-fat", { heyaId: "h-player", fatigue: 80 })]),
       cyclePhase: "pre_basho" as const,
       _interimDaysRemaining: 30,
     };

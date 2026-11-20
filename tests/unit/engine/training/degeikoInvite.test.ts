@@ -98,7 +98,10 @@ describe("requestDegeiko — NPC target keeps seeded acceptance", () => {
     const world = buildWorld("npc-target");
     const impact = requestDegeiko(world, "heya_npc_b", "heya_npc_a", ["r_guest1"]);
     // r_guest1 belongs to heya_npc_a not heya_npc_b — invalid; use a beta member.
-    const rb = MockFactory.createRikishi("r_b1", { heyaId: "heya_npc_b", stats: { experience: 10 } as Rikishi["stats"] });
+    const rb = MockFactory.createRikishi("r_b1", {
+      heyaId: "heya_npc_b",
+      stats: { experience: 10 } as Rikishi["stats"],
+    });
     world.rikishi.set("r_b1", rb);
     const impact2 = requestDegeiko(world, "heya_npc_b", "heya_npc_a", ["r_b1"]);
     const next = resolveImpacts(world, [impact, impact2]);
@@ -111,8 +114,14 @@ describe("evaluateNpcDegeiko — NPC initiation", () => {
   it("an NPC heya with developing rikishi requests degeiko at a stronger stable", () => {
     const world = buildWorld("npc-plan");
     // Beta (prestige 40) has two young rikishi → should target Alpha (80) or Player (60).
-    const r1 = MockFactory.createRikishi("r_b1", { heyaId: "heya_npc_b", stats: { experience: 10 } as Rikishi["stats"] });
-    const r2 = MockFactory.createRikishi("r_b2", { heyaId: "heya_npc_b", stats: { experience: 12 } as Rikishi["stats"] });
+    const r1 = MockFactory.createRikishi("r_b1", {
+      heyaId: "heya_npc_b",
+      stats: { experience: 10 } as Rikishi["stats"],
+    });
+    const r2 = MockFactory.createRikishi("r_b2", {
+      heyaId: "heya_npc_b",
+      stats: { experience: 12 } as Rikishi["stats"],
+    });
     world.rikishi.set("r_b1", r1);
     world.rikishi.set("r_b2", r2);
     world.trainingState = new Map([

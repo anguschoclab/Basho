@@ -235,11 +235,7 @@ const STORED_CRISIS_OPTION_EFFECTS: Record<
         // "Loan sharks at exorbitant interest rates" — the option copy promises
         // a debt, so record one: previously this granted free funds with no
         // repayable Loan entity (V18-S7-2).
-        const rng = rngForWorld(
-          _world,
-          "economy",
-          `crisis_loan_${targetHeyaId}_${_world.week}`
-        );
+        const rng = rngForWorld(_world, "economy", `crisis_loan_${targetHeyaId}_${_world.week}`);
         const loan = createLoanObject(
           _world,
           targetHeyaId,

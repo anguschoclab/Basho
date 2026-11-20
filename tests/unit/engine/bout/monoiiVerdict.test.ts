@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  applyMonoiiVerdict,
-  flipResultWinner,
-} from "@/engine/bout/resolution/monoiiVerdict";
+import { applyMonoiiVerdict, flipResultWinner } from "@/engine/bout/resolution/monoiiVerdict";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";

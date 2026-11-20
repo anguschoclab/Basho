@@ -93,11 +93,8 @@ export const SumoAvatar = memo(function SumoAvatar({
 
   const identity = avatar?.identity ?? config;
   const resolvedStage = useMemo(() => {
-    const base =
-      avatar?.stage ?? stage ?? (identity ? deriveAvatarStage({}, identity) : undefined);
-    return expression && base && base.expression !== expression
-      ? { ...base, expression }
-      : base;
+    const base = avatar?.stage ?? stage ?? (identity ? deriveAvatarStage({}, identity) : undefined);
+    return expression && base && base.expression !== expression ? { ...base, expression } : base;
   }, [avatar?.stage, stage, identity, expression]);
 
   const paths = useMemo(

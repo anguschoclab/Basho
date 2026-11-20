@@ -112,8 +112,16 @@ describe("getAdvice", () => {
       hasScoutingOffice: false,
       playerRikishi: mockRikishi("p1", {
         stats: {
-          power: 30, speed: 30, technique: 30, balance: 50, weight: 140,
-          stamina: 50, mental: 50, adaptability: 50, experience: 50, aggression: 50,
+          power: 30,
+          speed: 30,
+          technique: 30,
+          balance: 50,
+          weight: 140,
+          stamina: 50,
+          mental: 50,
+          adaptability: 50,
+          experience: 50,
+          aggression: 50,
         },
       }),
     });

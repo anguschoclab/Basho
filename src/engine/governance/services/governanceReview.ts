@@ -84,8 +84,7 @@ function reviewFinancialInsolvency(
         // review isn't clobbered) instead of recomputing off the stale
         // pre-impact base.
         const queuedBenefactorFunds =
-          builder.build().entities?.heyaUpdates?.get(benefactor.id)?.funds ??
-          benefactor.funds;
+          builder.build().entities?.heyaUpdates?.get(benefactor.id)?.funds ?? benefactor.funds;
         builder.updateHeya(benefactor.id, { funds: queuedBenefactorFunds - giftAmount });
         // Compose with any earlier funds write in this builder (e.g. the
         // bailout loan merged above) — read the queued value, not the stale

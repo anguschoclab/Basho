@@ -10,10 +10,23 @@ describe("ManagerCareerCard", () => {
     const heya = makeMockHeya("h1", { politicalCapital: 90, reputation: 80 });
     heya.oyakataId = "o1" as never;
     world.heyas.set("h1", heya);
-    world.oyakata.set("o1" as never, {
-      id: "o1", heyaId: "h1",
-      tenure: { startedYear: 2025, bashoServed: 30, championships: 4, sekitoriProduced: 6, insolvencyEvents: 0, majorScandals: 0, forcedMergers: 0, boardSeatsWon: 1 },
-    } as unknown as Oyakata);
+    world.oyakata.set(
+      "o1" as never,
+      {
+        id: "o1",
+        heyaId: "h1",
+        tenure: {
+          startedYear: 2025,
+          bashoServed: 30,
+          championships: 4,
+          sekitoriProduced: 6,
+          insolvencyEvents: 0,
+          majorScandals: 0,
+          forcedMergers: 0,
+          boardSeatsWon: 1,
+        },
+      } as unknown as Oyakata
+    );
     render(<ManagerCareerCard world={world} heyaId={"h1" as never} />);
     expect(screen.getByText("30")).toBeTruthy();
     expect(screen.getAllByText(/Chairman/i).length).toBeGreaterThan(0);

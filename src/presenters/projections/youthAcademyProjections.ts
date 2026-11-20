@@ -46,6 +46,9 @@ export interface YouthAcademyProjection {
   upgradeCost: number;
 }
 
+/**
+ * Projects a heya's youth-academy state for the panel — level, prospects, staff, and upgrade affordability.
+ */
 export function projectYouthAcademy(world: WorldState, heyaId: string): YouthAcademyProjection {
   const heya = world.heyas.get(heyaId);
   if (!heya) return { academy: null, hasAcademy: false, canUpgrade: false, upgradeCost: 0 };

@@ -11,23 +11,66 @@ describe("triggerSuccession — achievementsInReign population", () => {
     heya.dynasty = [];
     world.heyas.set("h1", heya);
     const oya = {
-      id: "oya-old", name: "Old", heyaId: "h1", yearsInCharge: 5,
-      tenure: { startedYear: 2025, bashoServed: 30, championships: 3, sekitoriProduced: 4, insolvencyEvents: 0, majorScandals: 0, forcedMergers: 0, boardSeatsWon: 2 },
+      id: "oya-old",
+      name: "Old",
+      heyaId: "h1",
+      yearsInCharge: 5,
+      tenure: {
+        startedYear: 2025,
+        bashoServed: 30,
+        championships: 3,
+        sekitoriProduced: 4,
+        insolvencyEvents: 0,
+        majorScandals: 0,
+        forcedMergers: 0,
+        boardSeatsWon: 2,
+      },
     } as unknown as Oyakata;
     world.oyakata.set("oya-old", oya);
     const successor = mockRikishi("r-succ", { heyaId: "h1", division: "makuuchi" });
     world.rikishi.set("r-succ", successor);
     // Reign window: 2025–2030. One cup win inside, one outside; one HoF inductee inside.
-    world.chronicle = { eraLabels: [], topChampions: [], greatestRivalries: [], globalCups: [
-      { year: 2028, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8,
-      participantIds: [], wasPlayerChampion: false },
-      { year: 2020, championId: "r-succ", championName: "X", championHeya: "h1", participantCount: 8,
-      participantIds: [], wasPlayerChampion: false },
-    ] };
+    world.chronicle = {
+      eraLabels: [],
+      topChampions: [],
+      greatestRivalries: [],
+      globalCups: [
+        {
+          year: 2028,
+          championId: "r-succ",
+          championName: "X",
+          championHeya: "h1",
+          participantCount: 8,
+          participantIds: [],
+          wasPlayerChampion: false,
+        },
+        {
+          year: 2020,
+          championId: "r-succ",
+          championName: "X",
+          championHeya: "h1",
+          participantCount: 8,
+          participantIds: [],
+          wasPlayerChampion: false,
+        },
+      ],
+    };
     (world as any)["hallOfFame"] = {
       inductees: [
-        { rikishiId: "r-succ", shikona: "GreatOne", category: "wrestler", inductionYear: 2027, stats: {} },
-        { rikishiId: "r-foreign", shikona: "Other", category: "wrestler", inductionYear: 2027, stats: {} },
+        {
+          rikishiId: "r-succ",
+          shikona: "GreatOne",
+          category: "wrestler",
+          inductionYear: 2027,
+          stats: {},
+        },
+        {
+          rikishiId: "r-foreign",
+          shikona: "Other",
+          category: "wrestler",
+          inductionYear: 2027,
+          stats: {},
+        },
       ],
     };
 

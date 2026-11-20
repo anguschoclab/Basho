@@ -266,6 +266,9 @@ export function scanRecentEvents(
   return out;
 }
 
+/**
+ * Query the world event log by category/type/heya/rikishi with a recency limit.
+ */
 export function queryEvents(
   world: WorldState,
   filters: {

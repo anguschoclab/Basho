@@ -28,10 +28,7 @@ const SCENARIO = "S3_year";
  * provenance, i.e. no environment block) must not fail the gate — the
  * caller should refresh it from a run on this machine instead.
  */
-export function environmentsMatch(
-  baseline: BenchmarkRun,
-  current: BenchmarkRun
-): boolean {
+export function environmentsMatch(baseline: BenchmarkRun, current: BenchmarkRun): boolean {
   const b = baseline.environment;
   const c = current.environment;
   if (!b || !c) return false;

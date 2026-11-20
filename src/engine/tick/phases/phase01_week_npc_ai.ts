@@ -93,6 +93,9 @@ function selectNPCHeyasForWeek(world: WorldState, npcHeyas: Heya[]): Heya[] {
   return sorted.filter((_, i) => i < skipStart || i >= skipEnd);
 }
 
+/**
+ * Weekly NPC heya AI phase — mentors, sparring pairs, training and roster decisions for non-player stables.
+ */
 export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_npc_ai");
 

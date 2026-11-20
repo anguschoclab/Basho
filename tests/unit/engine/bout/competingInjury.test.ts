@@ -7,10 +7,7 @@ import { MockFactory } from "@tests/helpers/utils/MockFactory";
  * severity × area stat debuff into the bout — a taped ankle costs
  * balance and speed, a bad shoulder costs power and technique.
  */
-function rikishi(
-  severity: "minor" | "moderate" | "serious",
-  location: string
-) {
+function rikishi(severity: "minor" | "moderate" | "serious", location: string) {
   return MockFactory.createRikishi("r-hurt", {
     injured: true,
     injuryStatus: {

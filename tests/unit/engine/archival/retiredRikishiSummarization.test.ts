@@ -66,7 +66,6 @@ function makeFullHistoricalRikishi(id: string, overrides: Partial<Rikishi> = {})
   });
 }
 
-
 describe("runRetiredRikishiSummarization", () => {
   it("converts full Rikishi in historicalRikishi to RetiredRikishiSummary", () => {
     const world = makeMockWorld();

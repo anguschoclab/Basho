@@ -20,8 +20,9 @@ export interface KihakuPerformerDTO {
   label: string;
 }
 
-
-
+/**
+ * Selects the top kihaku performers for the basho recap.
+ */
 export function selectTopKihakuPerformers(world: WorldState, limit = 5): KihakuPerformerDTO[] {
   const allRikishi = getAllRikishi(world);
   const heyaMap = world.heyas;

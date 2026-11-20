@@ -38,7 +38,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: jsaYushoPrize("makuuchi", 2026),
-              
+
               specialPrizes: jsaSanshoPrize(2026),
             },
           },
@@ -86,7 +86,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: jsaYushoPrize("makuuchi", 2026),
-              
+
               specialPrizes: jsaSanshoPrize(2026),
             },
           },
@@ -134,7 +134,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: jsaYushoPrize("makuuchi", 2026),
-              
+
               specialPrizes: jsaSanshoPrize(2026),
             },
           },
@@ -180,7 +180,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: jsaYushoPrize("makuuchi", 2026),
-              
+
               specialPrizes: jsaSanshoPrize(2026),
             },
           },
@@ -226,7 +226,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: jsaYushoPrize("makuuchi", 2026),
-              
+
               specialPrizes: jsaSanshoPrize(2026),
             },
           },
@@ -273,7 +273,7 @@ describe("RegistryService", () => {
             playoffMatches: [],
             prizes: {
               yushoAmount: jsaYushoPrize("makuuchi", 2026),
-              
+
               specialPrizes: jsaSanshoPrize(2026),
             },
           },

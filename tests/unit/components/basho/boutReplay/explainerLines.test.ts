@@ -43,7 +43,12 @@ describe("getNarrationPbp", () => {
   it("returns structured PbpLine[] with phase/tags/voice preserved (not flattened strings)", () => {
     const lines = [
       line({ text: "They face off.", phase: "opening", voice: "understated" }),
-      line({ text: "Yorikiri! Forced out!", phase: "finish", voice: "dramatic", tags: ["dominant"] }),
+      line({
+        text: "Yorikiri! Forced out!",
+        phase: "finish",
+        voice: "dramatic",
+        tags: ["dominant"],
+      }),
     ];
     const out = getNarrationPbp(resultWithLines(lines), east, west);
     expect(out).toHaveLength(2);

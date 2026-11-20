@@ -32,8 +32,7 @@ vi.mock("@/engine/core/world", () => ({
   endBasho: vi.fn((world: any) => ({ ...world, currentBasho: undefined })),
 }));
 
-vi.mock("@/engine/tick/tickOrchestrator", () => ({
-}));
+vi.mock("@/engine/tick/tickOrchestrator", () => ({}));
 
 /**
  * P4.17: BashoSlice immutability tests.

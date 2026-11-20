@@ -7,9 +7,7 @@ import { createNewGame, dismissOnboardingTour } from "./helpers";
  * render against a real running app (not just component mocks).
  */
 test.describe("Career surface (manual-check)", () => {
-  test("StableWidget career line + OyakataPage Manager Career card render", async ({
-    page,
-  }) => {
+  test("StableWidget career line + OyakataPage Manager Career card render", async ({ page }) => {
     await page.goto("/");
     await createNewGame(page);
     await dismissOnboardingTour(page);
@@ -24,8 +22,6 @@ test.describe("Career surface (manual-check)", () => {
     // milestone list (empty-tenure copy is acceptable on a fresh world).
     await page.goto("/stable/oyakata");
     await expect(page.getByText("Manager Career")).toBeVisible({ timeout: 15_000 });
-    await expect(
-      page.getByText(/Career just begun|Basho/i).first()
-    ).toBeVisible();
+    await expect(page.getByText(/Career just begun|Basho/i).first()).toBeVisible();
   });
 });

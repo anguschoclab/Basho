@@ -82,6 +82,9 @@ const SponsorRow = React.memo(
   }
 );
 
+/**
+ * Dashboard widget listing recruitable sponsors with tier, income, and recruitment action.
+ */
 export function SponsorRecruitmentWidget() {
   const { state, recruitSponsor: recruitSponsorAction } = useGame();
   const { toast } = useToast();

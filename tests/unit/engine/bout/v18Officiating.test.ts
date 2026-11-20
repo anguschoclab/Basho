@@ -113,15 +113,7 @@ describe("V18-O1 — mono-ii narrative outcome matches the recorded outcome", ()
       // announces the same outcome that was recorded.
       const builder = createImpactBuilder("test-monoii");
       applyGyojiOfficiation(world, result, basho, builder);
-      generateBoutNarrative(
-        result,
-        east,
-        west,
-        "hatsu" as BashoName,
-        5,
-        `${boutId}-pbp`,
-        world
-      );
+      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 5, `${boutId}-pbp`, world);
 
       const monoiiLines = (result.pbpLines ?? []).filter((l) => l.phase === "mono_ii");
       expect(monoiiLines.length).toBeGreaterThan(0);

@@ -4,15 +4,15 @@ Status: implemented 2026-10-08 · Results: `docs/audit/test-optimization-verdict
 
 ## Current state (measured, not estimated)
 
-| Suite      | Location                 | Files   | Tests  | Duration                    | Trigger                            |
-| ---------- | ------------------------ | ------- | ------ | --------------------------- | ---------------------------------- |
+| Suite      | Location                 | Files   | Tests  | Duration                       | Trigger                            |
+| ---------- | ------------------------ | ------- | ------ | ------------------------------ | ---------------------------------- |
 | Fast unit  | `src/tests/unit/**`      | 964     | ~8,917 | ~25–30s (vmThreads + parallel) | every change / PR CI               |
-| Slow gates | `src/tests/slow/**`      | 15      | ~75    | ~270s                       | adhoc / nightly (`slow-tests.yml`) |
-| Perf       | `src/tests/perf/**`      | 5       | —      | ~154s                       | adhoc / nightly                    |
-| E2E smoke  | `e2e/` `--project=smoke` | 2 specs | 3      | ~40s                        | PR gate                            |
-| E2E soak   | `e2e/` `--project=soak`  | 2 specs | 2      | ~8–10 min                   | nightly + manual                   |
+| Slow gates | `src/tests/slow/**`      | 15      | ~75    | ~270s                          | adhoc / nightly (`slow-tests.yml`) |
+| Perf       | `src/tests/perf/**`      | 5       | —      | ~154s                          | adhoc / nightly                    |
+| E2E smoke  | `e2e/` `--project=smoke` | 2 specs | 3      | ~40s                           | PR gate                            |
+| E2E soak   | `e2e/` `--project=soak`  | 2 specs | 2      | ~8–10 min                      | nightly + manual                   |
 
-*(Suite sizes re-measured 2026-10-24 in `docs/audit/test-timings.json`; see the curation section in `docs/audit/test-optimization-verdict.md`.)*
+_(Suite sizes re-measured 2026-10-24 in `docs/audit/test-timings.json`; see the curation section in `docs/audit/test-optimization-verdict.md`.)_
 
 Already landed (do not redo): `src/tests/slow/` split, `vitest.slow.config.ts`, `pool: "vmThreads"` on all vitest configs, Playwright smoke/soak projects, nightly `slow-tests.yml`, `noSubprocessInUnitTests` guardrail.
 

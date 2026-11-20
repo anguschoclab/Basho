@@ -82,10 +82,7 @@ describe("nextBashoRecordId — unique history record ids", () => {
   });
 
   it("returns a unique suffixed id when the canonical id is taken", () => {
-    const existing = [
-      { id: "hatsu-2026" },
-      { id: "haru-2026" },
-    ] as any[];
+    const existing = [{ id: "hatsu-2026" }, { id: "haru-2026" }] as any[];
     const id = nextBashoRecordId(existing, "hatsu", 2026);
     expect(id).not.toBe("hatsu-2026");
     expect(existing.some((e) => e.id === id)).toBe(false);

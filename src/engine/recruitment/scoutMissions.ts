@@ -71,6 +71,9 @@ const BAND_NUM: Record<string, number> = {
   monstrous: 10,
 };
 
+/**
+ * Derives a scout's effectiveness stats from the assigned staff member's skill.
+ */
 export function deriveScoutStats(staff: Staff | undefined): ScoutStats {
   if (!staff) return { network: 3, evaluation: 3, negotiation: 3 };
   const skill = staff.skill ?? BAND_NUM[staff.competenceBands?.primary ?? "serviceable"] ?? 5;

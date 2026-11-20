@@ -2,15 +2,15 @@
 
 ## Test artifacts added this cycle (test-first, T1–T6)
 
-| Artifact | Path | Pins |
-|----------|------|------|
-| V17 regression pins | `tests/unit/engine/consolidation/v17Regressions.test.ts` | F01–F13 engine fixes + F20 succession-stock pin |
-| Worker ownership guards | `tests/unit/engine/worker/npcOwnershipGuard.test.ts` | F03 |
-| `useTrainingState` resync | `tests/unit/hooks/useTrainingState.test.tsx` | F04 |
-| Replay variety | `tests/unit/engine/bout/postBoutReplayVariety.test.ts` | #1178 — ≥4 distinct outputs per `replay.*` path across seeded runs |
-| Kinboshi surface | `tests/unit/components/RikishiCareerTab.narrative.test.tsx` | #1177 |
-| Debut vitals | `tests/unit/components/RikishiProfileHeader.test.tsx` | #1174 equivalent-verification |
-| Narrative banding | `tests/unit/engine/systems/narrative/promotionBands.test.ts`, `tests/unit/engine/economy/runwayBands.test.ts` | v16 payload coverage |
+| Artifact                  | Path                                                                                                          | Pins                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| V17 regression pins       | `tests/unit/engine/consolidation/v17Regressions.test.ts`                                                      | F01–F13 engine fixes + F20 succession-stock pin                    |
+| Worker ownership guards   | `tests/unit/engine/worker/npcOwnershipGuard.test.ts`                                                          | F03                                                                |
+| `useTrainingState` resync | `tests/unit/hooks/useTrainingState.test.tsx`                                                                  | F04                                                                |
+| Replay variety            | `tests/unit/engine/bout/postBoutReplayVariety.test.ts`                                                        | #1178 — ≥4 distinct outputs per `replay.*` path across seeded runs |
+| Kinboshi surface          | `tests/unit/components/RikishiCareerTab.narrative.test.tsx`                                                   | #1177                                                              |
+| Debut vitals              | `tests/unit/components/RikishiProfileHeader.test.tsx`                                                         | #1174 equivalent-verification                                      |
+| Narrative banding         | `tests/unit/engine/systems/narrative/promotionBands.test.ts`, `tests/unit/engine/economy/runwayBands.test.ts` | v16 payload coverage                                               |
 
 ## Production files substantially changed
 

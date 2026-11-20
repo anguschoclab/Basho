@@ -50,7 +50,12 @@ function makeWorldWithMarket(market?: MyosekiMarket) {
  * sets up a funded "h-buyer" heya. For additional buyers, heya ids follow
  * the convention `h-${buyerId}`.
  */
-function callPurchase(world: ReturnType<typeof makeMockWorld>, stockId: string, buyerId: string, buyerFunds: number) {
+function callPurchase(
+  world: ReturnType<typeof makeMockWorld>,
+  stockId: string,
+  buyerId: string,
+  buyerFunds: number
+) {
   const heyaId = `h-${buyerId}`;
   if (!(world.heyas as Map<string, unknown>).has(heyaId)) {
     (world.heyas as Map<string, unknown>).set(heyaId, makeMockHeya(heyaId, { funds: buyerFunds }));
@@ -253,9 +258,7 @@ describe("V18 — buyMyoseki self-purchase", () => {
 describe("V18 — leaseMyoseki self-lease", () => {
   it("leasing your own stock must not enable a recurring self-drain", () => {
     const world = makeMockWorld({
-      heyas: new Map([
-        ["h-self", makeMockHeya("h-self", { funds: 10_000, oyakataId: "oya-1" })],
-      ]),
+      heyas: new Map([["h-self", makeMockHeya("h-self", { funds: 10_000, oyakataId: "oya-1" })]]),
       oyakata: new Map([["oya-1", { id: "oya-1", heyaId: "h-self" } as never]]),
       myosekiMarket: {
         stocks: {
@@ -301,17 +304,13 @@ describe("V18 — myoseki transaction id uniqueness", () => {
     const world = makeWorldWithMarket(market);
 
     // oya-1 buys from JSA → holds
-    const w1 = resolveImpacts(world, [
-      callPurchase(world, stockId, "oyakata-1", price),
-    ]);
+    const w1 = resolveImpacts(world, [callPurchase(world, stockId, "oyakata-1", price)]);
     const m1 = (w1 as any).myosekiMarket as MyosekiMarket;
     // oya-1 re-lists → available again
     const w2 = resolveImpacts(w1, [listMyosekiForSale(w1, m1, stockId, price)]);
     const m2 = (w2 as any).myosekiMarket as MyosekiMarket;
     // oya-2 buys the same stock → second "purchase-${id}" label → same MT id
-    const w3 = resolveImpacts(w2, [
-      callPurchase(w2 as never, stockId, "oyakata-2", price),
-    ]);
+    const w3 = resolveImpacts(w2, [callPurchase(w2 as never, stockId, "oyakata-2", price)]);
     const history = ((w3 as any).myosekiMarket as MyosekiMarket).history;
 
     expect(history.length).toBe(2);
@@ -328,9 +327,7 @@ describe("V18 — myoseki transaction id uniqueness", () => {
     const m1 = (w1 as any).myosekiMarket as MyosekiMarket;
     const w2 = resolveImpacts(w1, [returnLeasedMyoseki(w1, m1, stockId)]);
     const m2 = (w2 as any).myosekiMarket as MyosekiMarket;
-    const w3 = resolveImpacts(w2, [
-      listMyosekiForSale(w2, m2, stockId, 500_000_000),
-    ]);
+    const w3 = resolveImpacts(w2, [listMyosekiForSale(w2, m2, stockId, 500_000_000)]);
     const m3 = (w3 as any).myosekiMarket as MyosekiMarket;
     const w4 = resolveImpacts(w3, [leaseMyoseki(w3, "oyakata-b", stockId)]);
     const m4 = (w4 as any).myosekiMarket as MyosekiMarket;

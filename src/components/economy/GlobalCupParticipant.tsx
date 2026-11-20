@@ -17,6 +17,9 @@ interface GlobalCupParticipantProps {
   className?: string;
 }
 
+/**
+ * Card for a single Global Cup participant — record, seed, and bout controls.
+ */
 export function GlobalCupParticipantCard({
   participant,
   isChampion,

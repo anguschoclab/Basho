@@ -549,7 +549,7 @@ describe("generateH2HCommentary", () => {
       "History is heavily on Alpha's side today with a commanding 4-0 record.",
       "It has been one-way traffic in this rivalry, as Alpha boasts a massive 4-0 advantage.",
       "Beta faces an uphill psychological battle today, having won only 0 of their 4 encounters.",
-      "The historical dominance of Alpha is undeniable — they come in with a 4-0 edge over Beta."
+      "The historical dominance of Alpha is undeniable — they come in with a 4-0 edge over Beta.",
     ]).toContain(text);
   });
 
@@ -570,7 +570,7 @@ describe("generateH2HCommentary", () => {
       "History is heavily on Beta's side today with a commanding 4-0 record.",
       "It has been one-way traffic in this rivalry, as Beta boasts a massive 4-0 advantage.",
       "Alpha faces an uphill psychological battle today, having won only 0 of their 4 encounters.",
-      "The historical dominance of Beta is undeniable — they come in with a 4-0 edge over Alpha."
+      "The historical dominance of Beta is undeniable — they come in with a 4-0 edge over Alpha.",
     ]).toContain(text);
   });
 
@@ -591,7 +591,7 @@ describe("generateH2HCommentary", () => {
       "Neither man has been able to gain a decisive edge in this series.",
       "With 3 wins and 2 losses, there's virtually nothing separating these two.",
       "The lifetime series is perfectly poised at 3 to 2.",
-      "A fiercely contested matchup historically, sitting at a tight 3-2 split."
+      "A fiercely contested matchup historically, sitting at a tight 3-2 split.",
     ]).toContain(text);
   });
 
@@ -637,7 +637,7 @@ describe("generateH2HCommentary", () => {
       "Fans remember their last bout well—a crushing yorikiri victory for Alpha.",
       "Alpha had the upper hand in their previous encounter, finishing Beta with a clean yorikiri.",
       "The sting of a Day 14 yorikiri defeat still lingers for Beta.",
-      "Expect Beta to come out aggressively after falling to Alpha's yorikiri in their last meeting."
+      "Expect Beta to come out aggressively after falling to Alpha's yorikiri in their last meeting.",
     ]).toContain(text);
   });
 });

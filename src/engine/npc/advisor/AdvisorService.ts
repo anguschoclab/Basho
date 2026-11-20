@@ -237,9 +237,7 @@ function leagueRecommendations(world: WorldState, heyaId: Id): AIRecommendation[
 
   // A top recruit is visible and rival stables have roster vacancies.
   if (league.topRecruitAvailable) {
-    const rivalWithVacancy = [...world.heyas.values()].some(
-      (h) => h.id !== heyaId
-    );
+    const rivalWithVacancy = [...world.heyas.values()].some((h) => h.id !== heyaId);
     if (rivalWithVacancy) {
       recs.push(
         rec(

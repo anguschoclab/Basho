@@ -18,10 +18,7 @@ import type { AgentDecisions } from "@/engine/npc/npcTypes";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { getHeya, getRikishiAnywhere } from "@/engine/core/queries";
 import { buyMyoseki } from "@/engine/governance/myosekiMarket";
-import {
-  applyScandalPRSpend,
-  SCANDAL_PR_COST,
-} from "@/engine/governance/services/ScandalService";
+import { applyScandalPRSpend, SCANDAL_PR_COST } from "@/engine/governance/services/ScandalService";
 import { hireStaff } from "@/engine/economy/staff";
 import type { StaffRole } from "@/engine/types/staff";
 import { buildYouthAcademy, upgradeYouthAcademy } from "@/engine/recruitment/YouthAcademyService";
@@ -420,6 +417,9 @@ function persistCooldownsAndSurface(
   }
 }
 
+/**
+ * Executes an NPC agent's queued decisions through the shared domain services and collects the resulting StateImpacts.
+ */
 export function executeAgentDecisions(
   world: WorldState,
   heyaId: Id,

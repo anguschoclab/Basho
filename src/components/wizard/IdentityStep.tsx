@@ -24,6 +24,9 @@ interface IdentityStepProps {
   onNext: () => void;
 }
 
+/**
+ * Wizard step — oyakata name, career mode, and backstory selection.
+ */
 export function IdentityStep({
   oyakataName,
   background,

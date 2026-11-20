@@ -174,9 +174,7 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
         <div className="pt-2">
           <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
             <span className="text-primary flex items-center gap-1">Iron Man Streak</span>
-            <span className="text-primary font-black">
-              {rikishi.consecutiveBashoFought} basho
-            </span>
+            <span className="text-primary font-black">{rikishi.consecutiveBashoFought} basho</span>
           </div>
         </div>
       )}
@@ -202,30 +200,29 @@ function RankWatchIndicators({ rikishi }: { rikishi: UIRikishi }) {
           </div>
         </div>
       )}
-      {(isLowerSanyakuRank(rikishi.rank)) &&
-        (rikishi.sekiwakeThreeBashoWins ?? 0) > 0 && (
-          <div className="pt-2">
-            <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
-              <span className="text-silver flex items-center gap-1">
-                <span role="img" aria-label="Ozeki Run">
-                  ⭐
-                </span>{" "}
-                Ozeki Promotion Watch
-              </span>
-              <span className="opacity-70">
-                {rikishi.sekiwakeThreeBashoWins} / {SEKIWAKE_33_WIN_THRESHOLD} Wins (Last 3 Basho)
-              </span>
-            </div>
-            <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-silver transition-all duration-1000 ease-out"
-                style={{
-                  width: `${Math.min(100, Math.max(0, ((rikishi.sekiwakeThreeBashoWins ?? 0) / SEKIWAKE_33_WIN_THRESHOLD) * 100))}%`,
-                }}
-              />
-            </div>
+      {isLowerSanyakuRank(rikishi.rank) && (rikishi.sekiwakeThreeBashoWins ?? 0) > 0 && (
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+            <span className="text-silver flex items-center gap-1">
+              <span role="img" aria-label="Ozeki Run">
+                ⭐
+              </span>{" "}
+              Ozeki Promotion Watch
+            </span>
+            <span className="opacity-70">
+              {rikishi.sekiwakeThreeBashoWins} / {SEKIWAKE_33_WIN_THRESHOLD} Wins (Last 3 Basho)
+            </span>
           </div>
-        )}
+          <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-silver transition-all duration-1000 ease-out"
+              style={{
+                width: `${Math.min(100, Math.max(0, ((rikishi.sekiwakeThreeBashoWins ?? 0) / SEKIWAKE_33_WIN_THRESHOLD) * 100))}%`,
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

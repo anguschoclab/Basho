@@ -19,6 +19,9 @@ import {
 } from "@/constants/engine/economic";
 
 // @keep-export calculateRunwayMonths — live via same-file/dispatch call or public API contract
+/**
+ * Months of runway at the current burn rate — drives how aggressively the NPC pursues sponsors.
+ */
 export function calculateRunwayMonths(heya: Heya): number {
   const avgFacility =
     (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
@@ -28,6 +31,9 @@ export function calculateRunwayMonths(heya: Heya): number {
   return monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
 }
 
+/**
+ * Counts a heya's active sponsors.
+ */
 export function countSponsors(world: WorldState, heyaId: string): number {
   const pool = world.sponsorPool;
   if (!pool || !pool.sponsors) return 0;
@@ -46,6 +52,9 @@ export interface SponsorFilterOptions {
   includeTiers?: string[];
 }
 
+/**
+ * Filters the sponsor pool to NPC-eligible candidates sorted by canonical affinity order.
+ */
 export function filterEligibleSponsors(
   world: WorldState,
   heyaId: string,
@@ -69,6 +78,9 @@ export function filterEligibleSponsors(
 }
 
 // @keep-export createSponsorRelationship — live via same-file/dispatch call or public API contract
+/**
+ * Creates a sponsor relationship record between a sponsor and a heya.
+ */
 export function createSponsorRelationship(
   world: WorldState,
   sponsorId: string,
@@ -92,6 +104,9 @@ export function createSponsorRelationship(
 }
 
 // @keep-export addSponsorRelationship — live via same-file/dispatch call or public API contract
+/**
+ * Appends a relationship to the sponsor's relationship list inside the impact builder.
+ */
 export function addSponsorRelationship(
   world: WorldState,
   sponsorId: string,
@@ -138,6 +153,9 @@ export function addSponsorRelationship(
 }
 
 // @keep-export emitSponsorRecruitmentEvent — live via same-file/dispatch call or public API contract
+/**
+ * Emits the sponsor-recruitment event for a completed NPC signing, gated by player relevance.
+ */
 export function emitSponsorRecruitmentEvent(
   heyaId: string,
   oyakataArchetype: string,
@@ -171,6 +189,9 @@ export interface SponsorRecruitmentConfig {
   getReasoning?: (oyakata: Oyakata) => string;
 }
 
+/**
+ * Shared sponsor-recruitment evaluation — pool scan, eligibility filter, and pick for both weekly and strategy paths.
+ */
 export function evaluateSponsorRecruitmentCommon(
   world: WorldState,
   heya: Heya,

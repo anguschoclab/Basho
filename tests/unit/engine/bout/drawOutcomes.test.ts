@@ -205,7 +205,12 @@ describe("azukari / itamiwake / mizu-iri draw outcomes", () => {
       monoiiOutcome: "rematch",
     };
 
-    const boutCtx = { id: baseResult.boutId, day: 7, rikishiEastId: east.id, rikishiWestId: west.id };
+    const boutCtx = {
+      id: baseResult.boutId,
+      day: 7,
+      rikishiEastId: east.id,
+      rikishiWestId: west.id,
+    };
     const { result: drawRes } = applyMonoiiVerdict({
       bout: boutCtx,
       ctxFinal: boutCtx,

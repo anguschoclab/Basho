@@ -68,16 +68,12 @@ describe("player financial_insolvency — canonical pendingCrisis path (V18-S7-2
     const world = worldWithInsolventPlayer();
     const triggered = applyImpact(world, checkTriggeredDrama(world));
 
-    const stored =
-      triggered.pendingCrisis ?? triggered.heyas.get("player-heya")?.activeCrisis;
+    const stored = triggered.pendingCrisis ?? triggered.heyas.get("player-heya")?.activeCrisis;
     expect(stored, "trigger must produce a crisis object somewhere").toBeDefined();
     expect(stored!.type).toBe("financial_insolvency");
 
     // What CrisisModal dispatches: RESOLVE_CRISIS → governance.resolveCrisis.
-    const resolved = applyImpact(
-      triggered,
-      resolveCrisis(triggered, stored!.id, "emergency_loan")
-    );
+    const resolved = applyImpact(triggered, resolveCrisis(triggered, stored!.id, "emergency_loan"));
 
     const heya = resolved.heyas.get("player-heya")!;
     expect(

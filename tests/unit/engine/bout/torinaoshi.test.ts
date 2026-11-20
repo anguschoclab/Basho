@@ -129,9 +129,7 @@ describe("torinaoshi — rematch actually re-fights", () => {
     world.rikishi.set(east.id, east);
     world.rikishi.set(west.id, west);
 
-    const { result: final } = applyMonoiiVerdict(
-      params(monoiiResult(), east, west, world)
-    );
+    const { result: final } = applyMonoiiVerdict(params(monoiiResult(), east, west, world));
 
     const match = {
       boutId: "tori-1",
@@ -148,11 +146,7 @@ describe("torinaoshi — rematch actually re-fights", () => {
     // contributes nothing.
     expect(standings.get(final.winnerRikishiId)?.wins).toBe(1);
     expect(standings.get(final.loserRikishiId)?.losses).toBe(1);
-    expect(
-      (standings.get(east.id)?.wins ?? 0) + (standings.get(east.id)?.losses ?? 0)
-    ).toBe(1);
-    expect(
-      (standings.get(west.id)?.wins ?? 0) + (standings.get(west.id)?.losses ?? 0)
-    ).toBe(1);
+    expect((standings.get(east.id)?.wins ?? 0) + (standings.get(east.id)?.losses ?? 0)).toBe(1);
+    expect((standings.get(west.id)?.wins ?? 0) + (standings.get(west.id)?.losses ?? 0)).toBe(1);
   });
 });

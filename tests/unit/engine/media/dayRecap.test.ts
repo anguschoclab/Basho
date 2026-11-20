@@ -61,8 +61,14 @@ function dayWorld(day: number, matches: MatchSchedule[]): WorldState {
 describe("generateDayRecapHeadline", () => {
   it("emits 'day of upsets' when ≥2 san'yaku-ranked losers fall to upsets", () => {
     const world = dayWorld(5, [
-      match(5, makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })),
-      match(5, makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "ozeki1", upset: true })),
+      match(
+        5,
+        makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })
+      ),
+      match(
+        5,
+        makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "ozeki1", upset: true })
+      ),
       match(5, makeResult({ boutId: "b3", winnerRikishiId: "m3", loserRikishiId: "m2" })),
     ]);
 
@@ -77,7 +83,10 @@ describe("generateDayRecapHeadline", () => {
 
   it("suppresses the upset-day headline below the threshold", () => {
     const world = dayWorld(5, [
-      match(5, makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })),
+      match(
+        5,
+        makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })
+      ),
       match(5, makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "m3" })),
     ]);
 
@@ -95,7 +104,16 @@ describe("generateDayRecapHeadline", () => {
 
   it("emits a kinboshi headline on the first gold star of the basho", () => {
     const world = dayWorld(3, [
-      match(3, makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true, isKinboshi: true })),
+      match(
+        3,
+        makeResult({
+          boutId: "b1",
+          winnerRikishiId: "m1",
+          loserRikishiId: "yoko",
+          upset: true,
+          isKinboshi: true,
+        })
+      ),
       match(3, makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "m3" })),
     ]);
 
@@ -108,9 +126,27 @@ describe("generateDayRecapHeadline", () => {
   it("does not repeat the first-kinboshi headline on later days", () => {
     const world = dayWorld(6, [
       // day 4 already had the first kinboshi
-      match(4, makeResult({ boutId: "b0", winnerRikishiId: "m2", loserRikishiId: "yoko", upset: true, isKinboshi: true })),
+      match(
+        4,
+        makeResult({
+          boutId: "b0",
+          winnerRikishiId: "m2",
+          loserRikishiId: "yoko",
+          upset: true,
+          isKinboshi: true,
+        })
+      ),
       // day 6 has a second kinboshi — falls through to upset-day check (only 1 sanyaku upset)
-      match(6, makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true, isKinboshi: true })),
+      match(
+        6,
+        makeResult({
+          boutId: "b1",
+          winnerRikishiId: "m1",
+          loserRikishiId: "yoko",
+          upset: true,
+          isKinboshi: true,
+        })
+      ),
       match(6, makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "m3" })),
     ]);
 
@@ -142,8 +178,14 @@ describe("generateDayRecapHeadline", () => {
   it("is deterministic — same fixture yields the same headline", () => {
     const build = () =>
       dayWorld(5, [
-        match(5, makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })),
-        match(5, makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "ozeki1", upset: true })),
+        match(
+          5,
+          makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })
+        ),
+        match(
+          5,
+          makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "ozeki1", upset: true })
+        ),
       ]);
     const a = generateDayRecapHeadline(build())!.worldFields?.mediaState?.headlines.at(-1);
     const b = generateDayRecapHeadline(build())!.worldFields?.mediaState?.headlines.at(-1);
@@ -154,8 +196,14 @@ describe("generateDayRecapHeadline", () => {
 describe("advanceBashoDay integration", () => {
   it("appends a recap headline for the resolved day before incrementing", () => {
     const world = dayWorld(3, [
-      match(3, makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })),
-      match(3, makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "ozeki1", upset: true })),
+      match(
+        3,
+        makeResult({ boutId: "b1", winnerRikishiId: "m1", loserRikishiId: "yoko", upset: true })
+      ),
+      match(
+        3,
+        makeResult({ boutId: "b2", winnerRikishiId: "m2", loserRikishiId: "ozeki1", upset: true })
+      ),
     ]);
 
     const next = advanceBashoDay(world);

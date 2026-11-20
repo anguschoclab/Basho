@@ -54,9 +54,7 @@ export function materializeCandidateToRikishiInternal(
       const isMakushita = candidate.tsukedashi === "makushita";
       rikishi.division = isMakushita ? "makushita" : "sandanme";
       rikishi.rank = rikishi.division;
-      rikishi.rankNumber = isMakushita
-        ? MAKUSHITA_TSUKEDASHI_RANK
-        : SANDANME_TSUKEDASHI_RANK;
+      rikishi.rankNumber = isMakushita ? MAKUSHITA_TSUKEDASHI_RANK : SANDANME_TSUKEDASHI_RANK;
       rikishi.maezumoCompleted = true;
     } else {
       // Apply maezumo assessment to determine initial jonokuchi rankNumber
@@ -213,6 +211,9 @@ function processSignedCandidate(
   return { candidates: resolution.nextCandidates, pools: resolution.nextPools, consumed: true };
 }
 
+/**
+ * Converts signed candidates into roster rikishi at their destination heyas — shared by the plain and bidding NPC recruitment paths.
+ */
 export function finalizeSignedCandidates(world: WorldState): StateImpact {
   const builder = createImpactBuilder("finalizeSignedCandidates");
   const tp = world.talentPool;

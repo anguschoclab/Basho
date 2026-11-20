@@ -42,7 +42,9 @@ export function DegeikoPanel({ heyas, trainingState, playerHeyaId, heyaRikishi }
     [heyaRikishi]
   );
   const pending = trainingState?.get(playerHeyaId)?.pendingDegeiko;
-  const pendingTarget = pending ? heyas.find((h) => h.id === pending.targetHeyaId)?.name : undefined;
+  const pendingTarget = pending
+    ? heyas.find((h) => h.id === pending.targetHeyaId)?.name
+    : undefined;
 
   const toggle = (id: string) =>
     setSelected((prev) =>
@@ -55,7 +57,12 @@ export function DegeikoPanel({ heyas, trainingState, playerHeyaId, heyaRikishi }
 
   const submit = () => {
     if (!targetHeyaId || selected.length === 0) return;
-    sendCommand({ type: "REQUEST_DEGEIKO", heyaId: playerHeyaId, targetHeyaId, rikishiIds: selected });
+    sendCommand({
+      type: "REQUEST_DEGEIKO",
+      heyaId: playerHeyaId,
+      targetHeyaId,
+      rikishiIds: selected,
+    });
     setSelected([]);
     setTargetHeyaId("");
   };
@@ -70,9 +77,13 @@ export function DegeikoPanel({ heyas, trainingState, playerHeyaId, heyaRikishi }
       <CardContent className="space-y-3">
         {pending ? (
           <div className="text-xs text-muted-foreground">
-            <Badge variant="outline" className="mr-2">Scheduled</Badge>
+            <Badge variant="outline" className="mr-2">
+              Scheduled
+            </Badge>
             {pending.rikishiIds.length} rikishi training at{" "}
-            <span className="font-bold text-foreground">{pendingTarget ?? pending.targetHeyaId}</span>{" "}
+            <span className="font-bold text-foreground">
+              {pendingTarget ?? pending.targetHeyaId}
+            </span>{" "}
             this week.
           </div>
         ) : (

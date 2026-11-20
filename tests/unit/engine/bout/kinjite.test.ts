@@ -6,10 +6,7 @@ import {
   rollFoulSuspicion,
   type FoulSuspicion,
 } from "@/engine/bout/kinjite";
-import {
-  KINJITE_MAX_SUSPICION,
-  KINJITE_SUSPICION_BASE,
-} from "@/constants/engine/bout";
+import { KINJITE_MAX_SUSPICION, KINJITE_SUSPICION_BASE } from "@/constants/engine/bout";
 import { SeededRNG } from "@/engine/core/rng";
 import { mockRikishi, makeMockBasho } from "@tests/unit/engine/utils";
 import type { BoutResult, KinjiteFoul } from "@/engine/types/basho";
@@ -112,9 +109,7 @@ describe("Kinjite (hansoku/DQ) — calculateHansokuChance", () => {
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([["r-east", { wins: 7, losses: 7 }]]);
 
-    expect(calculateHansokuChance(winner, bout, basho)).toBeGreaterThan(
-      KINJITE_SUSPICION_BASE
-    );
+    expect(calculateHansokuChance(winner, bout, basho)).toBeGreaterThan(KINJITE_SUSPICION_BASE);
   });
 
   it("returns > 0 for high-aggression/low-technique on day 15 with 7-7", () => {
@@ -170,9 +165,7 @@ describe("Kinjite (hansoku/DQ) — calculateHansokuChance", () => {
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([["r-east", { wins: 7, losses: 7 }]]);
 
-    expect(calculateHansokuChance(winner, bout, basho)).toBeLessThanOrEqual(
-      KINJITE_MAX_SUSPICION
-    );
+    expect(calculateHansokuChance(winner, bout, basho)).toBeLessThanOrEqual(KINJITE_MAX_SUSPICION);
   });
 });
 
@@ -197,9 +190,7 @@ describe("Kinjite — rollFoulSuspicion", () => {
     const { bout, basho } = makeDesperateSetup();
     let balancedCount = 0;
     for (let i = 0; i < 2000; i++) {
-      if (
-        rollFoulSuspicion(bout, makeBoutResult("east"), east, west, basho, `seed-${i}`)
-      ) {
+      if (rollFoulSuspicion(bout, makeBoutResult("east"), east, west, basho, `seed-${i}`)) {
         balancedCount++;
       }
     }
@@ -249,7 +240,11 @@ describe("Kinjite — rollFoulSuspicion", () => {
     // Mirror: swap rikishi and flip the apparent winner. The west rikishi in the
     // mirrored bout is the aggressive one — same stats as r-east above.
     const mirroredEast = mockRikishi("r-west", { technique: 70, heyaId: "heya-west" });
-    const mirroredWest = mockRikishi("r-east", { aggression: 95, technique: 25, heyaId: "heya-east" });
+    const mirroredWest = mockRikishi("r-east", {
+      aggression: 95,
+      technique: 25,
+      heyaId: "heya-east",
+    });
     const mirroredBasho = makeMockBasho({ day: 15 });
     mirroredBasho.standings = new Map([
       ["r-west", { wins: 7, losses: 7 }],

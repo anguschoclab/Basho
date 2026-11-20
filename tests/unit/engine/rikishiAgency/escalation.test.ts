@@ -117,9 +117,7 @@ describe("V18 — same-heya escalations in one weekly batch", () => {
     const ids: string[] = [];
     for (let i = 0; ids.length < wanted && i < 400; i++) {
       const rid = `r-esc-${i}`;
-      if (
-        rngForWorld(world, "rikishiAgency", `${rid}:${week}`).next() < INCIDENT_PROBABILITY
-      ) {
+      if (rngForWorld(world, "rikishiAgency", `${rid}:${week}`).next() < INCIDENT_PROBABILITY) {
         ids.push(rid);
       }
     }

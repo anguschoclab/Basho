@@ -19,7 +19,12 @@ const MODS: ActiveModifiers = {
   financialPenalty: false,
   moraleBoost: false,
 };
-const PROFILE = { intensity: "balanced", focus: "power", styleBias: "neutral", recovery: "normal" } as never;
+const PROFILE = {
+  intensity: "balanced",
+  focus: "power",
+  styleBias: "neutral",
+  recovery: "normal",
+} as never;
 
 describe("per-rikishi effortLevel (P3)", () => {
   it("effort field is honored on the rikishi model", () => {

@@ -166,9 +166,7 @@ export function applyPlanConstraints(
         input.agentDecisions.rivalry.deescalateRivalry = false;
         const rivalHeya = typeof constraint.value === "string" ? constraint.value : undefined;
         if (rivalHeya) {
-          rivalTargetsSet ??= new Set(
-            input.agentDecisions.rivalry.targetRivalForMatchmaking
-          );
+          rivalTargetsSet ??= new Set(input.agentDecisions.rivalry.targetRivalForMatchmaking);
           if (!rivalTargetsSet.has(rivalHeya)) {
             rivalTargetsSet.add(rivalHeya);
             input.agentDecisions.rivalry.targetRivalForMatchmaking = [

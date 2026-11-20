@@ -114,9 +114,7 @@ export function scheduleDivisionDay(args: {
   const { world, basho, division, day, config } = args;
 
   const builder = createImpactBuilder("scheduleDivisionDay");
-  const roster = activeDivisionRoster(world, division).filter(
-    (r) => !args.excludeIds?.has(r.id)
-  );
+  const roster = activeDivisionRoster(world, division).filter((r) => !args.excludeIds?.has(r.id));
   const maxActiveRikishi = config?.maxActiveRikishi;
   if (!needsScheduleForDay(division, day)) return { scheduled: [], impact: builder.build() };
 
@@ -127,8 +125,7 @@ export function scheduleDivisionDay(args: {
     return { scheduled: [], impact: builder.build() };
 
   let finalPairings: MatchPairing[] = [];
-  const bashoForDay: BashoState =
-    basho.day === day ? basho : { ...basho, day, currentDay: day };
+  const bashoForDay: BashoState = basho.day === day ? basho : { ...basho, day, currentDay: day };
 
   if (division === "makuuchi") {
     // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
@@ -336,7 +333,11 @@ function completedBouts(basho: BashoState, rikishiId: string): number {
 }
 
 /** Pick the hachiban-zumo filler — a lower-division man finishing his 7th. */
-function pickEighthBoutMan(world: WorldState, basho: BashoState, skip: Set<string>): Rikishi | undefined {
+function pickEighthBoutMan(
+  world: WorldState,
+  basho: BashoState,
+  skip: Set<string>
+): Rikishi | undefined {
   const candidates: Rikishi[] = [];
   for (const div of ["makushita", "sandanme", "jonidan", "jonokuchi"] as const) {
     for (const r of activeDivisionRoster(world, div)) {
@@ -388,8 +389,7 @@ export function planDivisionCallups(args: {
     s.add(id);
     plan.excludeIds.set(d, s);
   };
-  const boutId = (e: string, w: string) =>
-    `b-${world.year}-${basho.bashoName}-d${day}-${e}-${w}`;
+  const boutId = (e: string, w: string) => `b-${world.year}-${basho.bashoName}-d${day}-${e}-${w}`;
 
   for (let i = 0; i < order.length; i++) {
     const D = order[i];
@@ -447,9 +447,7 @@ export function planDivisionCallups(args: {
     // Scan every division below D in cascade order — a donor division need
     // not be scheduling its own card today to supply its top man.
     let callup: Rikishi | undefined;
-    const lowerDivs = CALLUP_CASCADE_ORDER.slice(
-      CALLUP_CASCADE_ORDER.indexOf(D) + 1
-    ) as Division[];
+    const lowerDivs = CALLUP_CASCADE_ORDER.slice(CALLUP_CASCADE_ORDER.indexOf(D) + 1) as Division[];
     for (const lower of lowerDivs) {
       if (callup) break;
       const taken = excludedEverywhere();
@@ -639,7 +637,12 @@ export function scheduleAllDivisionsDay(args: {
 export function scheduleJuryoWithCrossover(
   world: WorldState,
   basho: BashoState,
-  options: { seed: string; day?: number; excludeIds?: ReadonlySet<string>; callupIds?: readonly string[] }
+  options: {
+    seed: string;
+    day?: number;
+    excludeIds?: ReadonlySet<string>;
+    callupIds?: readonly string[];
+  }
 ): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const builder = createImpactBuilder("scheduleJuryoWithCrossover");
   const division = "juryo";
@@ -652,9 +655,7 @@ export function scheduleJuryoWithCrossover(
 
   // excludeIds: the makuuchi-callup rikishi is withheld here — his vacated
   // slot then counts toward oddSlots and back-fills via makushita (W-B).
-  let pool = activeDivisionRoster(world, division).filter(
-    (r) => !options.excludeIds?.has(r.id)
-  );
+  let pool = activeDivisionRoster(world, division).filter((r) => !options.excludeIds?.has(r.id));
   const expectedSize = getDivisionExpectedSize(division);
   const actualSize = pool.length;
 
@@ -675,7 +676,9 @@ export function scheduleJuryoWithCrossover(
       // rikishi already scheduled for this day — makushita is scheduled
       // before juryo, so without this a call-up gets two bouts.
       const busyToday = new Set(
-        basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
+        basho.matches
+          .filter((m) => m.day === day)
+          .flatMap((m) => [m.eastRikishiId, m.westRikishiId])
       );
       const makushitaPool = activeDivisionRoster(world, "makushita")
         .filter((r) => !r.injured && !r.isKyujo && !busyToday.has(r.id))
@@ -850,9 +853,7 @@ export function reconcileFutureScheduleForWithdrawals(
   if (affectedFutureDays.size === 0) return builder.build();
 
   const sortedDays = [...affectedFutureDays].sort((a, b) => a - b);
-  let retainedMatches = basho.matches.filter(
-    (m) => !(affectedFutureDays.has(m.day) && !m.result)
-  );
+  let retainedMatches = basho.matches.filter((m) => !(affectedFutureDays.has(m.day) && !m.result));
 
   const nextRikishi = new Map(world.rikishi);
   const target = nextRikishi.get(withdrawnRikishiId);

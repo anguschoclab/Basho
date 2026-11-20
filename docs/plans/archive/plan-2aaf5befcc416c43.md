@@ -12,42 +12,44 @@ Megaplan comparing the game's rules vs real JSA rules, iteratively validated aga
 
 ## Part 1 — Already fixed & verified (Nov-16/17 commits; re-confirmed)
 
-| Item | Evidence |
-| --- | --- |
-| Sekitori salaries / yusho prizes era-keyed (Jan-2027 table) | `jsaEra.ts` |
-| Sansho ¥3M, S/K/M eligible, shareable `Id[]`, multi-award, withholdable, yusho winner excluded | `specialPrizes.ts`, `types/basho.ts` |
-| 3-way playoff = tomoe-sen w/ kuji; 4+ = bracket | `PlayoffResolver.ts` |
-| Jun-yusho label-only (no prize/mochikyukin) | `types/basho.ts` `prizes` |
-| Mochikyukin 0.5×net-wins; zensho 50; floors Y150/O100/M60/J40; ¥4k/pt | `economic.ts` |
-| Kensho split ¥10k/¥50k/¥10k; **payouts makuuchi-gated**; none on fusensho | `KENSHO_SPLIT`, `economics.ts:51`, `boutResolver.ts:208-212` |
-| Kinboshi excludes hansoku; ginboshi both senses | `1e11d6cc` |
-| Teate/shoshi-kin/kachikoshi-kin era tables; absence tail = losses | `payBashoTeate`, `jsaEra.ts` |
-| Fusenpai = same-day loss; double fusenpai | `b841c043` |
-| Ozeki: no 11-win shortcut; ~33/3-basho; kadoban; 10-win reclaim | `promotionLogic.ts`, `ozekiLogic.ts` |
-| Yokozuna: no demotion, YDC flow, retirement pressure | `YokozunaService.ts` |
-| Juryo→makuuchi callup + lower-division cascade (no-byes) | `schedule.ts` |
-| Siblings & same-heya banned (playoffs exempt — real) | `MatchmakingPhases.ts` |
-| Mono-ii / sashichigae / torinaoshi / kinjite-hansoku / 5-shimpan / matta | `bout/resolution/*`, `kinjite.ts` |
-| Ceremonies: dohyo-iri styles, danpatsu-shiki, kanreki, attendants, yumitori | `governance/ceremonies/*` |
-| 6 honbasho odd months, 15 days, 2nd-Sunday start, venues, jungyo | `calendar.ts`, `ExhibitionBashoService.ts` |
-| Kimarite real frequency shares | `kimariteTargets.ts` |
-| Myoseki 105 shares; oyakata retirement at 65 | `economic.ts`, DynastyService |
-| Article-9 hair-touch exception never modeled + bulletin | report #18 |
-| Kōshō seido correctly **absent** (abolished 2003) — zero hits |
-| Sekitori 15 / lower 7 bouts; KK threshold 8/4 | `RANK_HIERARCHY` |
-| Playoffs in all divisions | `resolveDivisionPlayoffs` |
+| Item                                                                                           | Evidence                                                     |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Sekitori salaries / yusho prizes era-keyed (Jan-2027 table)                                    | `jsaEra.ts`                                                  |
+| Sansho ¥3M, S/K/M eligible, shareable `Id[]`, multi-award, withholdable, yusho winner excluded | `specialPrizes.ts`, `types/basho.ts`                         |
+| 3-way playoff = tomoe-sen w/ kuji; 4+ = bracket                                                | `PlayoffResolver.ts`                                         |
+| Jun-yusho label-only (no prize/mochikyukin)                                                    | `types/basho.ts` `prizes`                                    |
+| Mochikyukin 0.5×net-wins; zensho 50; floors Y150/O100/M60/J40; ¥4k/pt                          | `economic.ts`                                                |
+| Kensho split ¥10k/¥50k/¥10k; **payouts makuuchi-gated**; none on fusensho                      | `KENSHO_SPLIT`, `economics.ts:51`, `boutResolver.ts:208-212` |
+| Kinboshi excludes hansoku; ginboshi both senses                                                | `1e11d6cc`                                                   |
+| Teate/shoshi-kin/kachikoshi-kin era tables; absence tail = losses                              | `payBashoTeate`, `jsaEra.ts`                                 |
+| Fusenpai = same-day loss; double fusenpai                                                      | `b841c043`                                                   |
+| Ozeki: no 11-win shortcut; ~33/3-basho; kadoban; 10-win reclaim                                | `promotionLogic.ts`, `ozekiLogic.ts`                         |
+| Yokozuna: no demotion, YDC flow, retirement pressure                                           | `YokozunaService.ts`                                         |
+| Juryo→makuuchi callup + lower-division cascade (no-byes)                                       | `schedule.ts`                                                |
+| Siblings & same-heya banned (playoffs exempt — real)                                           | `MatchmakingPhases.ts`                                       |
+| Mono-ii / sashichigae / torinaoshi / kinjite-hansoku / 5-shimpan / matta                       | `bout/resolution/*`, `kinjite.ts`                            |
+| Ceremonies: dohyo-iri styles, danpatsu-shiki, kanreki, attendants, yumitori                    | `governance/ceremonies/*`                                    |
+| 6 honbasho odd months, 15 days, 2nd-Sunday start, venues, jungyo                               | `calendar.ts`, `ExhibitionBashoService.ts`                   |
+| Kimarite real frequency shares                                                                 | `kimariteTargets.ts`                                         |
+| Myoseki 105 shares; oyakata retirement at 65                                                   | `economic.ts`, DynastyService                                |
+| Article-9 hair-touch exception never modeled + bulletin                                        | report #18                                                   |
+| Kōshō seido correctly **absent** (abolished 2003) — zero hits                                  |
+| Sekitori 15 / lower 7 bouts; KK threshold 8/4                                                  | `RANK_HIERARCHY`                                             |
+| Playoffs in all divisions                                                                      | `resolveDivisionPlayoffs`                                    |
 
 ---
 
 ## Part 2 — Fix list (validated, ordered)
 
 ### A1. Kensho metadata leaks onto non-makuuchi bouts
+
 - `economics.ts:51` already gates **payouts** to makuuchi — money correct. But `applyKensho` (`bout/resolution/stakes.ts`) runs `assignKenshoBanners`/`calculateKenshoEnvelopes` for **every** bout (`"low"` importance → `KENSHO_BASE_COUNT_LOW = 2`), writing `kenshoBanners`/`kenshoEnvelopes ≥ 1` onto juryo-and-below results.
 - **User-visible:** `ReplayChrome.tsx:77`, `replayFx.ts`, `replayLoop.ts`, `BoutResultDisplaySections.tsx`, `KenshoManagementWidget.tsx` render `kenshoEnvelopes > 0` on bouts that never pay.
 - **Fix:** gate `applyKensho` on `east.division === "makuuchi"`. `"low"` bucket becomes dead — simplify `determineBoutImportance` docs.
 
 ### A2. Foreign quota implements the pre-2010 loophole — five sub-fixes
-Real rule (post-2010): foreign status binds at *shindeshi kensa*; post-debut naturalization never frees the slot; pre-debut Japanese citizenship (`dual`) is the only exemption; merger absorption may exceed 1 but blocks new foreign recruitment until all foreign-slot rikishi retire; citizenship mandatory for foreign-born toshiyori.
+
+Real rule (post-2010): foreign status binds at _shindeshi kensa_; post-debut naturalization never frees the slot; pre-debut Japanese citizenship (`dual`) is the only exemption; merger absorption may exceed 1 but blocks new foreign recruitment until all foreign-slot rikishi retire; citizenship mandatory for foreign-born toshiyori.
 
 - **A2a** `countsAsForeign` (`citizenshipUtils.ts:41-43`) frees the slot on tenure/`naturalized`. → `isForeign(nationality) && citizenshipStatus !== "dual"`. `currentYear` param vestigial — simplify.
 - **A2b** `candidateConsumesForeignSlot` (`talentPoolReads.ts:116-123`) exempts `naturalized` candidates (veteran re-entries). → consume unless `dualCitizen`/`"dual"`/`"native"`.
@@ -58,56 +60,68 @@ Real rule (post-2010): foreign status binds at *shindeshi kensa*; post-debut nat
 - **Callers verified correct under fix:** `getForeignCountsByHeya`, `TalentPoolOffers` gates, `TalentPoolNPCRecruitment` (5), `CandidatePoolService`, `ForeignSlotPolicy`, `AdvisorService`, `FamilyBondService`, `TalentPoolMaterialization`, `overflow.ts` retention bias, `holiday.ts` narrative, all UI displays.
 
 ### A3. Playoffs on fictional "day 16+"; 2-way east by shuffle
+
 - `resolvePlayoffs`/`resolveTomoeSen` start `day = 16` → `d16/d17` boutIds (not user-visible, but wrong data). Real: kettei-sen same day on senshuraku (day 15). Real 2-way: higher-ranked rikishi east (game shuffles).
 - **Fix:** all playoff bouts `day = 15`; uniqueness via `-p{n}` index in boutId; 2-way sorts by rank → higher east; keep shuffle for 3+ (real draw-lots). Grep `day === 16` / `> BASHO_DAYS` consumers before landing.
 
 ### A4. `RING_RADIUS = 4.55` meters
-Real dohyo *diameter* is 4.55m; physics uses it as a radius → ring ~2× real. **Decision: relabel/document** as ring half-width units (halving retunes all physics for no gameplay gain). `types/combat-spatial.ts`, `constants/engine/rikishi.ts`.
+
+Real dohyo _diameter_ is 4.55m; physics uses it as a radius → ring ~2× real. **Decision: relabel/document** as ring half-width units (halving retunes all physics for no gameplay gain). `types/combat-spatial.ts`, `constants/engine/rikishi.ts`.
 
 ### A5. Nagoya venue stale
+
 "Aichi Prefectural Gymnasium" → **IG Arena** since July 2025. Era-key the string. `calendar.ts`.
 
 ### A6. Debut-age gate loose
+
 Pool evictions (HS 20 / uni 24 / foreign 28, `TalentPoolStateService:303`) allow 25–28yo debuts. Real: <23 standard, <25 qualified. → hard-gate signing at <23 (<25 for future `tsukedashi` flag); foreign pool maxAge → 24.
 
-### A7. Tsukedashi unmodeled *(optional P3)*
+### A7. Tsukedashi unmodeled _(optional P3)_
+
 Top-8 designated-amateur finishers ≤25y enter at Ms60/Sd80. Largest missing real system. `CandidateBuilder`, `TalentPoolMaterialization`, `MaezumoService`, banzuke placement.
 
-### A8. Merit myoseki minting exceeds 105 *(document now; optional fix later)*
+### A8. Merit myoseki minting exceeds 105 _(document now; optional fix later)_
+
 `retireeOyakataConversion` auto-grants shares to sanyaku+/200-win retirees age 28+ and mints beyond 105. Real: acquire existing share; jun-toshiyori (≤5y borrowed) / ichidai-toshiyori (dai-yokozuna) paths unmodeled.
 
 ### A9. Unmodeled real paths (catalog only)
+
 jun-toshiyori; ichidai-toshiyori; intai-kin (report #25); banzuke-gai (can't trigger — fixed-size jonokuchi); azukari/itamiwake/mizu-iri (torinaoshi covers realistic case); hair-down auto-loss (physics balance collapse approximates); rikishi-ken; torikumi posting cadence (real pairings announced ~1.5–2 days ahead on rolling basis); JSA board size (game 5 vs real ~10+auditors — cosmetic).
 
 ### A10. Remove roster cap — real JSA has none
+
 - **Hard caps to remove:** `ROSTER_CAPACITY_STANDARD=25`, `ROSTER_CAPACITY_MERGER=30`, `HEYA_ROSTER_HARD_CAP=30` (`constants/engine/roster.ts`); `HARD_CAP_ROSTER_SIZE=30` + `enforceHardCapRosterOverflow` (`recruitment/overflow.ts`, called `phase01_week_npc_ai.ts:229`); `playerHeyaRosterCap: 30` (`SimulationConfig.ts:20` — verify consumers; likely dead).
 - **Merger path:** `mergers.ts` fills target to 30 then disperses/force-retires. Real: the designated receiving stable absorbs the whole roster (Miyagino→Isegahama). → straight transfer to target; remove `room()`/`fillCount`/dispersal/force-retire machinery (and with it the foreign-veto — completes A2c).
 - **Succession:** `DynastyService.ts:618` parent-absorb gate `< ROSTER_CAPACITY_MERGER` → remove.
 - **UI:** `RecruitingTabSections.tsx:153` `Roster: X/30`, `RecruitSigningDialog.tsx:172` `rosterSize / TARGET_ROSTER_SIZE`, `heyaUI.ts:112` `rosterLimit: 30` → show count only.
-- **NPC appetite (keep, soft):** `MAX_ROSTER_SIZE=15` (npcStrategy), `ROSTER_VACANCY_TARGET=15` — NPC recruiting *targets*, not caps — plausible stable-size discretion, keep + document.
+- **NPC appetite (keep, soft):** `MAX_ROSTER_SIZE=15` (npcStrategy), `ROSTER_VACANCY_TARGET=15` — NPC recruiting _targets_, not caps — plausible stable-size discretion, keep + document.
 - **Population equilibrium (keep, not a cap):** `TARGET_ROSTER_SIZE=30` in `computePopulationTarget`/`WorldFactory`/`lifecycle.ts:44`/`phase01_week_recruitment.ts:81` is the demographic floor for NPC candidate supply — keep, but `allocateVacancies` per-heya `headroom = TARGET_ROSTER_SIZE − roster` hard cap → replace with appetite-based allocation (prestige/staff capacity).
 - **Keep (not caps):** `NON_FINANCIAL_MERGER_MAX_ROSTER=5` (merger eligibility), `SUCCESSION_CLOSURE_MAX_ROSTER=8` (closure trigger).
 - **Check during impl:** `crisisRegistry.ts:100`, `chainService.ts:93` roster-size thresholds; bard copy `events.json:149` "released…to bring the roster within limits" → dead.
 
 ### A11. Remove free agency / priorCareer re-entry — departed rikishi retire
+
 With A10 removing the cap, the overflow enforcer has no trigger; remove the whole re-entry machinery:
+
 - `reinjectManyToTalentPool`/`reinjectToTalentPool`/`buildReleasedCandidate` (`TalentPoolStateService.ts:120-196`) — only producer was `overflow.ts:107`.
 - `priorCareer` machinery: `types/talent.ts:95-105` (`PriorCareer` type + candidate field), `CandidateBuilder.ts:462-488` re-mint path, `TalentPoolStateService` age-out exemption (:129-130) + visibility (:262), `idIntegrity.ts:164` comment.
 - Verify no other producers of released-rikishi candidates (player release action? crisis events?) — none found; mergers' force-retire path also removed via A10 straight-transfer.
 
 ### A12. Unified JSA committee framework + real banzuke movement + decision commentary
+
 Real JSA runs multiple deliberative committees; the codebase has one real instance (YDC) plus three deterministic functions that should become committees. Build one framework + harmonize.
 
 **Framework:** `src/engine/governance/committee.ts` — `CommitteeMember` (oyakata, heya, ichimon), `Committee` def (id, seat count, convene schedule, eligibility), `deliberate(ctx) → DeliberationRecord[]` (deterministic; seeded RNG only for tie-breaks), `emitDecision()` → BardEngine template + `MediaEventService` headline (generalize the existing `emitYdcStatement` pattern). Constants in `src/constants/engine/committee.ts` — seat counts, convene weeks, discretion bounds, thresholds — single tweakable home.
 
 **Instances:**
-| Committee | Current code | Harmonization |
-| --- | --- | --- |
-| **Banzuke** (new) | `banzukeOps.ts:309-369` scores `computeMovementUnits` + fictional ichimon weights (Dewanoumi +300 / Nishonoseki +250 / other +100) → `assignBanzukeSlots` | Replace scoring with real rules: **base delta = round((W−L)/2)** (losses already include absence tail — the fusenpai/absence-tail fix makes this correct for free); **no** absence multiplier, **no** bonus units; committee applies *bounded discretion*: forced moves on catastrophic/exceptional records, hold-in-place on marginal MK when no worthy replacement, **sanyaku promotion requires open slot + qualifying record**, juryo↔makuuchi exchange by comparative records, jonokuchi-yusho jump as bounded discretion. Political weight re-channeled as seeded member preference within the discretion bound. Rule-bound paths stay rule functions the committee invokes: ozeki kadoban/reclaim/33-win (`ozekiLogic`, `bestTierAllowed` thresholds), yokozuna eligibility (`isYokozunaStrongCase`). Keep `assignBanzukeSlots`/slot template machinery — committee supplies deltas + tier eligibility. |
-| **Sansho** | `specialPrizes.ts` deterministic selection | Re-express as SanshoCommittee deliberation (same real rules: S/K/M eligible, KK required, shareable, withholdable) → emits award/no-award decisions. |
-| **YDC** | `YokozunaService.processYDCCouncil` | Wrap existing statement flow as YDC committee instance; keep `ydc_accountability.*` templates. |
-| **Board/election** | `phase01_week_governance` `isElectionWeek`, `ELECTION_BOARD_SIZE=5` | Adopt shared committee types for membership/records (light harmonization). |
-| Torikumi / others | scheduler, mono-ii panels | Catalog only — not deliberative in code. |
+
+| Committee          | Current code                                                                                                                                              | Harmonization                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Banzuke** (new)  | `banzukeOps.ts:309-369` scores `computeMovementUnits` + fictional ichimon weights (Dewanoumi +300 / Nishonoseki +250 / other +100) → `assignBanzukeSlots` | Replace scoring with real rules: **base delta = round((W−L)/2)** (losses already include absence tail — the fusenpai/absence-tail fix makes this correct for free); **no** absence multiplier, **no** bonus units; committee applies _bounded discretion_: forced moves on catastrophic/exceptional records, hold-in-place on marginal MK when no worthy replacement, **sanyaku promotion requires open slot + qualifying record**, juryo↔makuuchi exchange by comparative records, jonokuchi-yusho jump as bounded discretion. Political weight re-channeled as seeded member preference within the discretion bound. Rule-bound paths stay rule functions the committee invokes: ozeki kadoban/reclaim/33-win (`ozekiLogic`, `bestTierAllowed` thresholds), yokozuna eligibility (`isYokozunaStrongCase`). Keep `assignBanzukeSlots`/slot template machinery — committee supplies deltas + tier eligibility. |
+| **Sansho**         | `specialPrizes.ts` deterministic selection                                                                                                                | Re-express as SanshoCommittee deliberation (same real rules: S/K/M eligible, KK required, shareable, withholdable) → emits award/no-award decisions.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **YDC**            | `YokozunaService.processYDCCouncil`                                                                                                                       | Wrap existing statement flow as YDC committee instance; keep `ydc_accountability.*` templates.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Board/election** | `phase01_week_governance` `isElectionWeek`, `ELECTION_BOARD_SIZE=5`                                                                                       | Adopt shared committee types for membership/records (light harmonization).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Torikumi / others  | scheduler, mono-ii panels                                                                                                                                 | Catalog only — not deliberative in code.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 **Commentary:** new `committee` BardEngine domain (or extend `institutional.json`): banzuke committee announcements (promotions, "no worthy candidate for vacant slot", hold-in-place rationale), sansho committee award/no-award items, YDC statements (existing). Feed via `MediaEventService` + digest; persist `DeliberationRecord[]` on basho conclusion/`BashoHistory` (existing `deliberat*` fields in `types/basho.ts` are the model). Existing items (banzuke publish news in `publish/movements.ts`/`newRanks.ts`, YDC statements) keep flowing — committee adds the missing decision items.
 
@@ -131,6 +145,7 @@ Real JSA runs multiple deliberative committees; the codebase has one real instan
 **P0** — Extend `docs/audit/rules-divergence-report.md` with the Part-2 ledger + Part-1 verified table + Part-3 deviations. No code.
 
 **P1-T — Write/update ALL failing tests for A1–A6, A10, A11 first; confirm red:**
+
 1. `tests/unit/engine/bout/kenshoDivision.test.ts` (**new**): non-makuuchi bouts → `kenshoBanners` empty/`kenshoEnvelopes` 0; makuuchi → banners; makuuchi playoff → eligible; juryo playoff → none. Audit `boutNarrative.kensho.test.ts`.
 2. `tests/unit/engine/utils/citizenshipUtils.test.ts`: rewrite — `countsAsForeign` true for `naturalized` + tenure-aged; false only `dual`/native; `getHeyaForeignUsage`/`isAtForeignLimit` count naturalized; `getCitizenshipStatus`/`yearsUntilNaturalization` unchanged.
 3. `tests/unit/audit/foreign-limit-consistency.test.ts`: flip "naturalized does not consume" → consumes.
@@ -148,6 +163,7 @@ Real JSA runs multiple deliberative committees; the codebase has one real instan
 **P2** — Document Part-3 deviations in the report.
 
 **P3-T + P3** — **A12 committee framework** (largest item, its own test-first cycle):
+
 - Tests first: `tests/unit/engine/governance/committee.test.ts` — deterministic deliberation, seeded tie-breaks, `DeliberationRecord` shape, feed emission. `tests/unit/engine/banzuke/banzukeCommittee.test.ts` — (W−L)/2 base deltas, absence-as-loss, sanyaku open-slot rule, juryo↔makuuchi exchange, forced moves (0-15), no bonus units, hold-in-place discretion bounded, ozeki/YDC rule-bound paths unchanged, regression vs `banzukeOps` slot machinery. Sansho-committee tests reuse existing `specialPrizes` cases expressed as decisions.
 - Implement: `governance/committee.ts` + `constants/engine/committee.ts` → banzuke committee wired into `banzukeOps` → sansho/ydc/board harmonization → `committee` bard domain + `MediaEventService` feed + `DeliberationRecord` persistence in `BashoHistory`.
 - Optional P3 extras: A7 tsukedashi, A8(b) myoseki cap + jun-toshiyori, intai-kin.

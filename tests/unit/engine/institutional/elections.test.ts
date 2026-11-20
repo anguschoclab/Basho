@@ -8,8 +8,16 @@ import type { Oyakata } from "@/engine/types/oyakata";
 
 function worldWithHeyas(): { world: WorldState; playerOya: Oyakata } {
   const world = makeMockWorld({ year: 2030 });
-  const playerHeya = makeMockHeya("h-player", { politicalCapital: 95, reputation: 90, oyakataId: "oya-p" });
-  const npcHeya = makeMockHeya("h-npc", { politicalCapital: 10, reputation: 10, oyakataId: "oya-n" });
+  const playerHeya = makeMockHeya("h-player", {
+    politicalCapital: 95,
+    reputation: 90,
+    oyakataId: "oya-p",
+  });
+  const npcHeya = makeMockHeya("h-npc", {
+    politicalCapital: 10,
+    reputation: 10,
+    oyakataId: "oya-n",
+  });
   world.heyas.set(playerHeya.id, playerHeya);
   world.heyas.set(npcHeya.id, npcHeya);
   // 10-seat board (real JSA riji count): the weak candidate stays unelected
@@ -18,7 +26,21 @@ function worldWithHeyas(): { world: WorldState; playerOya: Oyakata } {
     const id = `n${i}`;
     world.heyas.set(id as never, makeMockHeya(id, { politicalCapital: 80, reputation: 80 }));
   }
-  const playerOya = { id: "oya-p", name: "P", heyaId: "h-player", tenure: { startedYear: 2029, bashoServed: 1, championships: 0, sekitoriProduced: 0, insolvencyEvents: 0, majorScandals: 0, forcedMergers: 0, boardSeatsWon: 0 } } as unknown as Oyakata;
+  const playerOya = {
+    id: "oya-p",
+    name: "P",
+    heyaId: "h-player",
+    tenure: {
+      startedYear: 2029,
+      bashoServed: 1,
+      championships: 0,
+      sekitoriProduced: 0,
+      insolvencyEvents: 0,
+      majorScandals: 0,
+      forcedMergers: 0,
+      boardSeatsWon: 0,
+    },
+  } as unknown as Oyakata;
   const npcOya = { id: "oya-n", name: "N", heyaId: "h-npc" } as unknown as Oyakata;
   world.oyakata.set(playerOya.id, playerOya);
   world.oyakata.set(npcOya.id, npcOya);

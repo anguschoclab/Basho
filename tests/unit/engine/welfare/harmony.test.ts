@@ -9,7 +9,13 @@ import {
 
 function worldWith(morale: number, welfareRisk: number, scandal: number) {
   const heya = MockFactory.createHeya("h1");
-  heya.welfareState = { welfareRisk, morale, complianceState: "compliant", weeksInState: 0, activeDiet: "maintenance" };
+  heya.welfareState = {
+    welfareRisk,
+    morale,
+    complianceState: "compliant",
+    weeksInState: 0,
+    activeDiet: "maintenance",
+  };
   heya.scandalScore = scandal;
   return MockFactory.createWorld({
     heyas: new Map([["h1", heya]]),

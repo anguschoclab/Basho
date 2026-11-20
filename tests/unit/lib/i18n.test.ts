@@ -98,10 +98,7 @@ describe("T3.2 ratchet — extracted strings stay extracted", () => {
   });
 
   it("IdentityStepSections routes game-mode labels through t()", () => {
-    const src = readFileSync(
-      join(SRC_DIR, "components/wizard/IdentityStepSections.tsx"),
-      "utf-8"
-    );
+    const src = readFileSync(join(SRC_DIR, "components/wizard/IdentityStepSections.tsx"), "utf-8");
     expect(src).toMatch(/from "@\/lib\/i18n"/);
     expect(src).toMatch(/t\(`mode\./);
   });

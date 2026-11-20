@@ -129,7 +129,11 @@ export const QUIRK_IDS = [
  * @param {number} count - The number of unique items to select.
  * @returns {T[]} Array of unique selected items.
  */
-export function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
+export function pickUnique<T>(
+  rng: { next: () => number },
+  items: readonly T[],
+  count: number
+): T[] {
   const pool = [...items];
   const out: T[] = [];
   while (pool.length && out.length < count) {

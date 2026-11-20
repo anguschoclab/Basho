@@ -5,7 +5,6 @@ import { makeMockWorld } from "@tests/unit/engine/utils";
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { retiredSummary as makeSummary } from "../../../helpers/retiredSummary";
 
-
 describe("updateHistoricalRikishi (ImpactBuilder + ImpactResolver)", () => {
   it("updateHistoricalRikishi writes to historicalRikishiUpdates, not rikishiUpdates", () => {
     const summary = makeSummary("r-1");

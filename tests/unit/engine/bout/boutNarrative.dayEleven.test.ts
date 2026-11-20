@@ -127,7 +127,9 @@ describe("O1 — H2H breakthroughs, giant-killer H2H & recent surge", () => {
     const result = narrate(east, west, world, makeBoutResult({ winner: "east" }));
     const rivalryTexts = tagged(result, "rivalry");
     expect(rivalryTexts.some((t) => /first|monkey|breakthrough|skid/i.test(t))).toBe(true);
-    expect(rivalryTexts.some((t) => /extends the dominance|owns this matchup/i.test(t))).toBe(false);
+    expect(rivalryTexts.some((t) => /extends the dominance|owns this matchup/i.test(t))).toBe(
+      false
+    );
   });
 
   it("fires chipped_away (not domination) when a 1-5 trailer wins", () => {
@@ -138,7 +140,9 @@ describe("O1 — H2H breakthroughs, giant-killer H2H & recent surge", () => {
     const result = narrate(east, west, world, makeBoutResult({ winner: "east" }));
     const rivalryTexts = tagged(result, "rivalry");
     expect(rivalryTexts.some((t) => /chips away|pull back|measure of pride/i.test(t))).toBe(true);
-    expect(rivalryTexts.some((t) => /extends the dominance|owns this matchup/i.test(t))).toBe(false);
+    expect(rivalryTexts.some((t) => /extends the dominance|owns this matchup/i.test(t))).toBe(
+      false
+    );
   });
 
   it("still fires domination when the 5-0 leader extends to 6-0", () => {
@@ -169,7 +173,14 @@ describe("O1 — H2H breakthroughs, giant-killer H2H & recent surge", () => {
       { opponentId: "r-west", win: true, kimarite: "oshidashi", bashoId: "b3", day: 3, year: 2025 },
       { opponentId: "r-west", win: true, kimarite: "yorikiri", bashoId: "b4", day: 4, year: 2025 },
       { opponentId: "r-west", win: false, kimarite: "yorikiri", bashoId: "b5", day: 5, year: 2026 },
-      { opponentId: "r-west", win: true, kimarite: "hatakikomi", bashoId: "b6", day: 6, year: 2026 },
+      {
+        opponentId: "r-west",
+        win: true,
+        kimarite: "hatakikomi",
+        bashoId: "b6",
+        day: 6,
+        year: 2026,
+      },
       { opponentId: "r-west", win: true, kimarite: "oshidashi", bashoId: "b7", day: 7, year: 2026 },
     ];
     const east = mockRikishi("r-east", { division: "makuuchi", history });
@@ -205,9 +216,15 @@ describe("O2 — post_henka_scrutiny & lastHenkaDay tracking", () => {
       },
     }) as BashoState;
     const worldYest = makeBoutWorld(east, west, { currentBasho: bashoYesterday }) as FullWorld;
-    expect(tagged(narrate(east, west, worldYest, makeBoutResult(), 11), "post_henka_scrutiny").length).toBeGreaterThan(0);
-    expect(tagged(narrate(east, west, worldYest, makeBoutResult(), 10), "post_henka_scrutiny")).toEqual([]);
-    expect(tagged(narrate(east, west, worldYest, makeBoutResult(), 12), "post_henka_scrutiny")).toEqual([]);
+    expect(
+      tagged(narrate(east, west, worldYest, makeBoutResult(), 11), "post_henka_scrutiny").length
+    ).toBeGreaterThan(0);
+    expect(
+      tagged(narrate(east, west, worldYest, makeBoutResult(), 10), "post_henka_scrutiny")
+    ).toEqual([]);
+    expect(
+      tagged(narrate(east, west, worldYest, makeBoutResult(), 12), "post_henka_scrutiny")
+    ).toEqual([]);
   });
 
   it("records lastHenkaDay in applyBoutResult on declared HENKA and spontaneous henka_success", () => {
@@ -254,7 +271,9 @@ describe("O2 — post_henka_scrutiny & lastHenkaDay tracking", () => {
         winnerRikishiId: "west",
         loserRikishiId: "east",
         tactics: { east: "STANDARD", west: "STANDARD" },
-        log: [{ phase: "tachiai", clock: 0, data: { event: "henka_success", attackerSide: "west" } }],
+        log: [
+          { phase: "tachiai", clock: 0, data: { event: "henka_success", attackerSide: "west" } },
+        ],
       })
     );
     const basho2 = impSpontaneous.worldFields?.currentBasho as BashoState;
@@ -276,7 +295,12 @@ describe("O3 — oldest_kachi_record & earliest_kachi day-11 fix", () => {
     const west = mockRikishi("r-west", { division: "makuuchi" });
     const world = makeBoutWorld(east, west) as FullWorld;
     world.records.allTime.oldestMakuuchiKachiKoshi = [
-      { rikishiId: "kyokutenho", shikona: "Kyokutenho", value: 40, achievedDate: { year: 2014, month: 11 } },
+      {
+        rikishiId: "kyokutenho",
+        shikona: "Kyokutenho",
+        value: 40,
+        achievedDate: { year: 2014, month: 11 },
+      },
     ];
     const result = narrate(east, west, world);
     const lines = tagged(result, "oldest_kachi_record");
@@ -308,7 +332,9 @@ describe("O3 — oldest_kachi_record & earliest_kachi day-11 fix", () => {
       currentBashoWins: 8,
       currentBashoLosses: 3,
     });
-    expect(tagged(narrate(east9, west, makeBoutWorld(east9, west) as FullWorld), "oldest_kachi_record")).toEqual([]);
+    expect(
+      tagged(narrate(east9, west, makeBoutWorld(east9, west) as FullWorld), "oldest_kachi_record")
+    ).toEqual([]);
 
     // Under age 38
     const east30 = mockRikishi("r-east", {
@@ -318,7 +344,9 @@ describe("O3 — oldest_kachi_record & earliest_kachi day-11 fix", () => {
       currentBashoWins: 7,
       currentBashoLosses: 3,
     });
-    expect(tagged(narrate(east30, west, makeBoutWorld(east30, west) as FullWorld), "oldest_kachi_record")).toEqual([]);
+    expect(
+      tagged(narrate(east30, west, makeBoutWorld(east30, west) as FullWorld), "oldest_kachi_record")
+    ).toEqual([]);
   });
 
   it("interview picks oldest_kachi over kachi_koshi for 42yo clinch, and earliest_kachi fires on day 11", () => {
@@ -347,7 +375,9 @@ describe("O3 — oldest_kachi_record & earliest_kachi day-11 fix", () => {
     const worldFast = makeBoutWorld(eastFast, west) as FullWorld;
     const qFast = interviewQuestionLine(eastFast, west, worldFast, makeBoutResult(), 11);
     expect(qFast.length).toBeGreaterThan(0);
-    expect(qFast[0].toLowerCase()).toMatch(/earliest|day 11|what's been going well|approach the rest/);
+    expect(qFast[0].toLowerCase()).toMatch(
+      /earliest|day 11|what's been going well|approach the rest/
+    );
   });
 });
 
@@ -358,12 +388,20 @@ describe("O4 — battle_for_kachi, kachi_drought, make_koshi_staved_off, kachi_d
     const east = mockRikishi("r-east", { currentBashoWins: 7, currentBashoLosses: 3 });
     const west = mockRikishi("r-west", { currentBashoWins: 7, currentBashoLosses: 3 });
     const r = narrate(east, west, makeBoutWorld(east, west) as FullWorld);
-    expect(tagged(r, "kachi_koshi").some((t) => /battle for kachi-koshi|winner gets kachi-koshi|one win away/i.test(t))).toBe(true);
+    expect(
+      tagged(r, "kachi_koshi").some((t) =>
+        /battle for kachi-koshi|winner gets kachi-koshi|one win away/i.test(t)
+      )
+    ).toBe(true);
 
     const e77 = mockRikishi("r-east", { currentBashoWins: 7, currentBashoLosses: 7 });
     const w77 = mockRikishi("r-west", { currentBashoWins: 7, currentBashoLosses: 7 });
     const r77 = narrate(e77, w77, makeBoutWorld(e77, w77) as FullWorld, makeBoutResult(), 15);
-    expect(tagged(r77, "kachi_koshi").some((t) => /battle for kachi-koshi|winner gets kachi-koshi/i.test(t))).toBe(false);
+    expect(
+      tagged(r77, "kachi_koshi").some((t) =>
+        /battle for kachi-koshi|winner gets kachi-koshi/i.test(t)
+      )
+    ).toBe(false);
   });
 
   it("fires kachi_drought pre-bout and kachi_drought_broken on clinch after 2+ non-KK basho", () => {
@@ -398,7 +436,11 @@ describe("O4 — battle_for_kachi, kachi_drought, make_koshi_staved_off, kachi_d
 
 describe("O5 — losing_skid, skid_snapped, giants, prefecture showdown, proven_giant_killer, sibling_kyujo", () => {
   it("fires losing_skid and skid_snapped when winner had 4+ losses and >=1 basho win", () => {
-    const east = mockRikishi("r-east", { currentBashoWins: 2, currentBashoLosses: 8, currentLossStreak: 6 });
+    const east = mockRikishi("r-east", {
+      currentBashoWins: 2,
+      currentBashoLosses: 8,
+      currentLossStreak: 6,
+    });
     const west = mockRikishi("r-west", { currentBashoWins: 4, currentBashoLosses: 6 });
     const r = narrate(east, west, makeBoutWorld(east, west) as FullWorld);
     expect(tagged(r, "losing_skid").length).toBe(1);
@@ -490,7 +532,9 @@ describe("O6 — mid-basho kyujo re-entry & fusensho_injury", () => {
     }) as BashoState;
     const w11 = makeBoutWorld(east11, west, { currentBasho: basho11 }) as FullWorld;
     const r11 = narrate(east11, west, w11, makeBoutResult(), 11);
-    expect(tagged(r11, "mid_basho_return").some((t) => /back-to-back|two wins in two days/i.test(t))).toBe(true);
+    expect(
+      tagged(r11, "mid_basho_return").some((t) => /back-to-back|two wins in two days/i.test(t))
+    ).toBe(true);
   });
 
   it("emits fusensho_injury naming the body area when absent opponent is kyujo due to injury", () => {
@@ -498,7 +542,12 @@ describe("O6 — mid-basho kyujo re-entry & fusensho_injury", () => {
     const west = mockRikishi("r-west", {
       isKyujo: true,
       kyujoReason: "injury",
-      injuryStatus: { type: "sprain", severity: "moderate", location: "shoulder", weeksRemaining: 3 },
+      injuryStatus: {
+        type: "sprain",
+        severity: "moderate",
+        location: "shoulder",
+        weeksRemaining: 3,
+      },
     });
     const basho = MockFactory.createBasho({ day: 11 }) as BashoState;
     const world = makeBoutWorld(east, west, { currentBasho: basho }) as FullWorld;

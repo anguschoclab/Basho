@@ -8,22 +8,22 @@ Global search today covers **rikishi (active + retired) and stables**. This chan
 
 ## Validation results (each claim audited against source)
 
-| # | Draft claim | Verdict | Evidence |
-|---|---|---|---|
-| 1 | Global search = rikishi+retired+heyas only | **Approved** | `entitySearchProjections.ts`, `GlobalEntitySearch.tsx`, tests |
-| 2 | `world.oyakata` searchable; `/oyakata/$id` was removed | **Approved** | `world.ts:205`, `ClickableName.tsx` comment, commit `d7a6f71e` |
-| 3 | `world.staff` populated for NPC + player | **Approved** | starts empty (`WorldFactory:105`); `execution.ts:307` NPC `hireStaff` → `staffToAdd`; player via `HIRE_STAFF` |
-| 4 | Recruit source = `world.talentPool` | **Corrected** | `listVisibleCandidates`/`getCandidateScoutingLevel`/`TalentPoolPage` all read `world.talentPool`. `world.candidatePool` is the **parallel NPC-watch pool** (`CandidatePoolService`, `/jsa/candidates`) — explicitly **out of scope** |
-| 5 | Tenure tracks yusho/sekitori/etc., not yokozuna | **Approved** | `tenure.ts`, `oyakata.ts:86-96` |
-| 6 | Bump counters in `applyNewRanks` | **Corrected + bug found** | See **Finding A** below |
-| 7 | `ManagerCareerCard` reusable for any heya | **Approved** | `projectManagerCareer(world, heyaId)` — pure, heya-scoped |
-| 8 | WS7 gating via `hasScoutingCoverage` | **Approved** | `rivalStablesProjections.ts:50` — module-private; must be exported |
-| 9 | `useOyakataSelection`/`MentorshipCard`/`OyakataDirectory` sole consumer = OyakataPage | **Approved** | grep: only `OyakataPage.tsx` imports them |
-| 10 | `OyakataName` links need reworking | **Corrected** | Props already include oyakata `id` (test uses `id="o3"`) → link `/oyakata/$id` directly; existing tests assert `/stable/h-ise` + "no dead route" — must be **rewritten** |
-| 11 | `/stable/staff` is player-only | **Approved** | `StaffPage` iterates `heya.staffIds` of `getPlayerHeya` — NPC staff hits → `/stable/$heyaId` |
-| 12 | Breadcrumb `/oyakata` segment needs a route | **Corrected** | `resolveEntityLabel` falls back to prettify, but `ROUTE_LABELS["/oyakata"]` crumb would link to a 404 → **add `/oyakata` index route** (directory page) |
-| 13 | `validateSearch` precedent | **Approved** | `/new-game` (`routes.tsx:126`, `useSearch({from:"/new-game"})`) |
-| 14 | New counters optional for save-compat | **Superseded** | user waived compat → required fields matching the other 7 counters; merges still defend old saves |
+| #   | Draft claim                                                                           | Verdict                   | Evidence                                                                                                                                                                                                                             |
+| --- | ------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Global search = rikishi+retired+heyas only                                            | **Approved**              | `entitySearchProjections.ts`, `GlobalEntitySearch.tsx`, tests                                                                                                                                                                        |
+| 2   | `world.oyakata` searchable; `/oyakata/$id` was removed                                | **Approved**              | `world.ts:205`, `ClickableName.tsx` comment, commit `d7a6f71e`                                                                                                                                                                       |
+| 3   | `world.staff` populated for NPC + player                                              | **Approved**              | starts empty (`WorldFactory:105`); `execution.ts:307` NPC `hireStaff` → `staffToAdd`; player via `HIRE_STAFF`                                                                                                                        |
+| 4   | Recruit source = `world.talentPool`                                                   | **Corrected**             | `listVisibleCandidates`/`getCandidateScoutingLevel`/`TalentPoolPage` all read `world.talentPool`. `world.candidatePool` is the **parallel NPC-watch pool** (`CandidatePoolService`, `/jsa/candidates`) — explicitly **out of scope** |
+| 5   | Tenure tracks yusho/sekitori/etc., not yokozuna                                       | **Approved**              | `tenure.ts`, `oyakata.ts:86-96`                                                                                                                                                                                                      |
+| 6   | Bump counters in `applyNewRanks`                                                      | **Corrected + bug found** | See **Finding A** below                                                                                                                                                                                                              |
+| 7   | `ManagerCareerCard` reusable for any heya                                             | **Approved**              | `projectManagerCareer(world, heyaId)` — pure, heya-scoped                                                                                                                                                                            |
+| 8   | WS7 gating via `hasScoutingCoverage`                                                  | **Approved**              | `rivalStablesProjections.ts:50` — module-private; must be exported                                                                                                                                                                   |
+| 9   | `useOyakataSelection`/`MentorshipCard`/`OyakataDirectory` sole consumer = OyakataPage | **Approved**              | grep: only `OyakataPage.tsx` imports them                                                                                                                                                                                            |
+| 10  | `OyakataName` links need reworking                                                    | **Corrected**             | Props already include oyakata `id` (test uses `id="o3"`) → link `/oyakata/$id` directly; existing tests assert `/stable/h-ise` + "no dead route" — must be **rewritten**                                                             |
+| 11  | `/stable/staff` is player-only                                                        | **Approved**              | `StaffPage` iterates `heya.staffIds` of `getPlayerHeya` — NPC staff hits → `/stable/$heyaId`                                                                                                                                         |
+| 12  | Breadcrumb `/oyakata` segment needs a route                                           | **Corrected**             | `resolveEntityLabel` falls back to prettify, but `ROUTE_LABELS["/oyakata"]` crumb would link to a 404 → **add `/oyakata` index route** (directory page)                                                                              |
+| 13  | `validateSearch` precedent                                                            | **Approved**              | `/new-game` (`routes.tsx:126`, `useSearch({from:"/new-game"})`)                                                                                                                                                                      |
+| 14  | New counters optional for save-compat                                                 | **Superseded**            | user waived compat → required fields matching the other 7 counters; merges still defend old saves                                                                                                                                    |
 
 ### Finding A — pre-existing counter-overwrite bug (must fix in this change)
 
@@ -34,6 +34,7 @@ Global search today covers **rikishi (active + retired) and stables**. This chan
 ### Finding B — `isSanyaku` covers Y/O/S/K
 
 `RANK_HIERARCHY` marks **all of yokozuna, ozeki, sekiwake, komusubi** `isSanyaku: true` (`banzuke.ts:117-158`). `isSanyakuPromotion` (computed `banzukeOps.ts:514` as `!fromIsSanyaku && toIsSanyaku`) therefore fires only on the **first cross into sanyaku** — ōzeki/yokozuna promotions from sekiwake/komusubi do **not** re-fire. New counters need explicit first-time checks:
+
 - `sanyakuProduced` ← existing `isSanyakuPromotion` flag
 - `ozekiProduced` ← `newEntry.position.rank === "ozeki"` && `rikishi.rank !== "ozeki"` && `!(rikishi.careerHistory ?? []).some(s => s.rank === "ozeki")` (precedent: `everReachedSanyaku`, `newRanks.ts:204-207`)
 - `yokozunaProduced` ← `newEntry.position.rank === "yokozuna"` && `rikishi.rank !== "yokozuna"` (yokozuna can't be demoted — first-time by construction; history check optional)
@@ -62,6 +63,7 @@ Global search today covers **rikishi (active + retired) and stables**. This chan
 ### Phase 0a — engine tests (failing: counters don't exist)
 
 `tests/unit/engine/institutional/tenure.test.ts` (extend) — via `applyNewRanks` + `createImpactBuilder`/`resolveImpacts` (existing test harness pattern):
+
 - first sanyaku cross (makuuchi→komusubi) bumps `sanyakuProduced` on sitting oyakata
 - first-time ōzeki bumps `ozekiProduced`; ōzeki reclaim (demote→restore) does **not** double-count
 - yokozuna promotion bumps `yokozunaProduced`
@@ -71,6 +73,7 @@ Global search today covers **rikishi (active + retired) and stables**. This chan
 ### Phase 0b — projection tests (failing: new buckets don't exist)
 
 `tests/unit/presenters/entitySearchProjections.test.ts` (extend; `MockFactory.createWorld/createOyakata/createStaff/createCandidate/createTalentPool`):
+
 - oyakata: match `name`, `shikona`, `formerShikona`; `isEmeritus`/`isCaretaker`/`elderStatus` flags; `archetypeLabel` present only when `heyaId === playerHeyaId` or `playerKnowledge.scouting` has `timesObserved > 0` for that heya (fixture: `{playerKnowledge: {scouting: {rX: {publicInfo: {heyaId: "h9"}, timesObserved: 2}}}}`)
 - staff: name match, `heyaName` resolution, `isPlayerOwned`
 - candidates: `public` band always returned; non-public returned only at `scoutingLevel >= 65`; hidden-reserve ids never returned (not in `candidatesVisible`); foreign pool respects `regionalPresence` gating
@@ -102,19 +105,19 @@ Global search today covers **rikishi (active + retired) and stables**. This chan
 ### Phase 3 — routes, page, redirect, links, deep-links
 
 9. `src/pages/OyakataProfilePage.tsx` (new) + `src/components/oyakata/OyakataProfileSections.tsx` (new):
-    - `useParams $oyakataId` → `world.oyakata.get`; missing → EmptyState + back
-    - `AppLayout` + `STABLE_TABS` + `activeSubTab="oyakata"`; `<title>{name} — Oyakata | Basho</title>`
-    - **Header**: avatar (public), name, stable `StableName`, age, `yearsInCharge` yrs, `tenure.startedYear` ("In charge since Y"); badges: elderStatus (Jun w/ expiry year, Ichidai), `isEmeritus`, `isCaretaker`, `highestRank`
-    - **Manager record grid** (public): bashoServed, Yūshō (championships), sekitori/san'yaku/ōzeki/yokozuna produced, boardSeatsWon, insolvency/scandal/forced-merger counts
-    - **`ManagerCareerCard`** reuse (`heyaId=o.heyaId`): election standing, bands, milestones
-    - **`CareerAsRikishiCard`** reuse + `View wrestling career` → `/rikishi/$formerRikishiId` when `getRikishiAnywhere` resolves
-    - **Elder & myoseki**: elderStatus/`elderExpiryYear`/`isEmeritus`; `world.myosekiMarket.stocks` scan for `holderId|ownerId === o.id` → share name/tier/status(+leaseFee); jun-toshiyori → "temporary status, no stock"
-    - **Stable snapshot**: roster size, sekitori count, san'yaku count (`getHeyaRoster`+`isSekitoriDivision`+`isSanyakuRank`), staff count (`heya.staffIds?.length ?? 0`), ichimon
-    - **Intel card (gated)** — `o.heyaId === playerHeyaId || hasScoutingCoverage`: archetype, mood, personality, quirks, temperament, `TraitsCard`, `stats`, grudges (resolve ids→`StableName`/`OyakataName`); else "Limited intel — scout this stable's rikishi to learn more" (mirrors `OyakataProfileDrawer`)
-    - **`MentorshipCard`** (gated same as intel): refactor `{sel}` → `{world, heyaId}`; pairs via new `mentorshipPairsFor(world, heya)` helper
-    - **Recent decisions** (public): `projectNPCAgentActivity(world).decisions.filter(d => d.heyaId === o.heyaId)`
-    - **Succession card (player-heya only)**: `successionReadiness`, `successorCandidateId`→`RikishiName`, `retirementYear`
-    - **`OyakataDirectory`** at bottom: refactor — own sort `useState` (keep `basho_sort_oyakata` key), `world` prop, click → `navigate /oyakata/$id`, current oyakata highlighted; all oyakata incl. emeritus
+   - `useParams $oyakataId` → `world.oyakata.get`; missing → EmptyState + back
+   - `AppLayout` + `STABLE_TABS` + `activeSubTab="oyakata"`; `<title>{name} — Oyakata | Basho</title>`
+   - **Header**: avatar (public), name, stable `StableName`, age, `yearsInCharge` yrs, `tenure.startedYear` ("In charge since Y"); badges: elderStatus (Jun w/ expiry year, Ichidai), `isEmeritus`, `isCaretaker`, `highestRank`
+   - **Manager record grid** (public): bashoServed, Yūshō (championships), sekitori/san'yaku/ōzeki/yokozuna produced, boardSeatsWon, insolvency/scandal/forced-merger counts
+   - **`ManagerCareerCard`** reuse (`heyaId=o.heyaId`): election standing, bands, milestones
+   - **`CareerAsRikishiCard`** reuse + `View wrestling career` → `/rikishi/$formerRikishiId` when `getRikishiAnywhere` resolves
+   - **Elder & myoseki**: elderStatus/`elderExpiryYear`/`isEmeritus`; `world.myosekiMarket.stocks` scan for `holderId|ownerId === o.id` → share name/tier/status(+leaseFee); jun-toshiyori → "temporary status, no stock"
+   - **Stable snapshot**: roster size, sekitori count, san'yaku count (`getHeyaRoster`+`isSekitoriDivision`+`isSanyakuRank`), staff count (`heya.staffIds?.length ?? 0`), ichimon
+   - **Intel card (gated)** — `o.heyaId === playerHeyaId || hasScoutingCoverage`: archetype, mood, personality, quirks, temperament, `TraitsCard`, `stats`, grudges (resolve ids→`StableName`/`OyakataName`); else "Limited intel — scout this stable's rikishi to learn more" (mirrors `OyakataProfileDrawer`)
+   - **`MentorshipCard`** (gated same as intel): refactor `{sel}` → `{world, heyaId}`; pairs via new `mentorshipPairsFor(world, heya)` helper
+   - **Recent decisions** (public): `projectNPCAgentActivity(world).decisions.filter(d => d.heyaId === o.heyaId)`
+   - **Succession card (player-heya only)**: `successionReadiness`, `successorCandidateId`→`RikishiName`, `retirementYear`
+   - **`OyakataDirectory`** at bottom: refactor — own sort `useState` (keep `basho_sort_oyakata` key), `world` prop, click → `navigate /oyakata/$id`, current oyakata highlighted; all oyakata incl. emeritus
 10. `src/pages/OyakataIndexPage.tsx` (new, thin): PageHeader "Elders" + `OyakataDirectory` — gives `/oyakata` a real landing and the directory a canonical home.
 11. `src/app/routes.tsx` — `lazy` imports: `OyakataProfilePage` (default), `OyakataIndexPage` (default), `PlayerOyakataRedirect` (named export from `OyakataProfilePage`, `.then(m=>({default:m.PlayerOyakataRedirect}))`); routes `/oyakata` (index), `/oyakata/$oyakataId`, `stableOyakataRoute` component→redirect; `jsaTalentNestedRoute` gains `validateSearch` `{pool?: TalentPoolType, focus?: string}` (`/new-game` precedent).
 12. `src/pages/OyakataPage.tsx` → `PlayerOyakataRedirect`: `world.playerHeyaId → heya.oyakataId` → `<Navigate to="/oyakata/$oyakataId" replace>`; EmptyState when absent.

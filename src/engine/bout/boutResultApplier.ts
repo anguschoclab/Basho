@@ -663,6 +663,9 @@ function applyDrawBoutResult(
   return builder.build();
 }
 
+/**
+ * Applies a resolved bout's outcomes to world state — records, standings, awards momentum — as a StateImpact.
+ */
 export function applyBoutResult(
   world: WorldState,
   match: MatchSchedule,

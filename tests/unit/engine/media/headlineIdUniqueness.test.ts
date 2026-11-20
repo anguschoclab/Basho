@@ -47,9 +47,7 @@ function worldWithPairing(year: number) {
 }
 
 function headlineIds(impact: ReturnType<typeof updateMediaFromBout>): string[] {
-  const media = impact.worldFields?.mediaState as
-    | { headlines?: { id: string }[] }
-    | undefined;
+  const media = impact.worldFields?.mediaState as { headlines?: { id: string }[] } | undefined;
   return (media?.headlines ?? []).map((h) => h.id);
 }
 
@@ -159,12 +157,8 @@ describe("governance headline id uniqueness (V18)", () => {
       mediaState: createDefaultMediaState(),
     });
 
-    const w1 = resolveImpacts(world, [
-      reportScandal(world, "h1", "minor", "same misconduct"),
-    ]);
-    const w2 = resolveImpacts(w1, [
-      reportScandal(w1, "h1", "minor", "same misconduct"),
-    ]);
+    const w1 = resolveImpacts(world, [reportScandal(world, "h1", "minor", "same misconduct")]);
+    const w2 = resolveImpacts(w1, [reportScandal(w1, "h1", "minor", "same misconduct")]);
 
     const headlines = w2.mediaState!.headlines;
     expect(headlines.length).toBe(2);

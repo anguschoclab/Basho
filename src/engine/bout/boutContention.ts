@@ -42,8 +42,7 @@ export function isYushoContention(
   if (!standings || standings.size === 0) return false;
 
   const inWindow = (r: Rikishi) =>
-    getLeaderWins(basho, world, r.division) - (standings.get(r.id)?.wins ?? 0) <=
-    CONTENTION_WINDOW;
+    getLeaderWins(basho, world, r.division) - (standings.get(r.id)?.wins ?? 0) <= CONTENTION_WINDOW;
   return inWindow(east) && inWindow(west);
 }
 

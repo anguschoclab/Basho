@@ -18,7 +18,13 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeWorld(): { world: WorldState; heya: Heya; rikishi: Rikishi[] } {
   const heya = MockFactory.createHeya("h1", { funds: 5_000_000 });
-  heya.welfareState = { welfareRisk: 20, complianceState: "compliant", weeksInState: 0, morale: 60, activeDiet: "maintenance" };
+  heya.welfareState = {
+    welfareRisk: 20,
+    complianceState: "compliant",
+    weeksInState: 0,
+    morale: 60,
+    activeDiet: "maintenance",
+  };
   const rikishi = Array.from({ length: 6 }, (_, i) =>
     MockFactory.createRikishi(`r${i}`, { heyaId: "h1", division: "makuuchi" })
   );
@@ -120,7 +126,9 @@ describe("resolveChainStage", () => {
     expect(active["chain-bullying-y0-w5"].stageIdx).toBe(1);
     expect(active["chain-bullying-y0-w5"].nextStageDueWeek).toBe(11);
     // morale +3 / welfareRisk −4 on heya
-    const heyaUp = impact.entities?.heyaUpdates?.get("h1") as { welfareState?: { morale: number; welfareRisk: number } };
+    const heyaUp = impact.entities?.heyaUpdates?.get("h1") as {
+      welfareState?: { morale: number; welfareRisk: number };
+    };
     expect(heyaUp?.welfareState?.morale).toBe(63);
     expect(heyaUp?.welfareState?.welfareRisk).toBe(16);
   });

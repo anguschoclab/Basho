@@ -186,9 +186,7 @@ export function retireRikishiFully(
   processRetireeOyakataConversion(worldWithQueuedFields(world, builder), rikishi, builder);
 
   // Register bloodline trait if the retiree was accomplished (yokozuna/ozeki/sekiwake)
-  builder.merge(
-    LegacyService.registerLegacyTrait(worldWithQueuedFields(world, builder), rikishi)
-  );
+  builder.merge(LegacyService.registerLegacyTrait(worldWithQueuedFields(world, builder), rikishi));
 }
 
 /**

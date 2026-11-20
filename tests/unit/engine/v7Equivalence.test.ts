@@ -189,10 +189,22 @@ describe("v7 equivalence — projectTsukebito (#964)", () => {
     const rikishi = new Map([
       [
         "sen",
-        mkR("sen", { heyaId: "hT", rank: "sekiwake", rankNumber: 2, shikona: "Senior", tsukebitoIds: ["jr1"] }),
+        mkR("sen", {
+          heyaId: "hT",
+          rank: "sekiwake",
+          rankNumber: 2,
+          shikona: "Senior",
+          tsukebitoIds: ["jr1"],
+        }),
       ],
-      ["jr1", mkR("jr1", { heyaId: "hT", rank: "makushita", rankNumber: 12, shikona: "JuniorOne" })],
-      ["jr2", mkR("jr2", { heyaId: "hT", rank: "makushita", rankNumber: 15, shikona: "JuniorTwo" })],
+      [
+        "jr1",
+        mkR("jr1", { heyaId: "hT", rank: "makushita", rankNumber: 12, shikona: "JuniorOne" }),
+      ],
+      [
+        "jr2",
+        mkR("jr2", { heyaId: "hT", rank: "makushita", rankNumber: 15, shikona: "JuniorTwo" }),
+      ],
     ]);
     const world = mkWorld({ heyas: new Map([["hT", heya]]), rikishi });
     expect(projectTsukebito(world, "hT")).toEqual({

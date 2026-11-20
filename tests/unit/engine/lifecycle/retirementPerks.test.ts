@@ -14,10 +14,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
 import { MYOSEKI_TOTAL_COUNT } from "@/constants/engine/economic";
-import {
-  INTAI_KIN_YOKOZUNA,
-  INTAI_KIN_LOWER,
-} from "@/constants/engine/economic";
+import { INTAI_KIN_YOKOZUNA, INTAI_KIN_LOWER } from "@/constants/engine/economic";
 
 const exhaustedMarket = () => ({
   stocks: Object.fromEntries(
@@ -123,7 +120,15 @@ describe("intai-kin retirement payment", () => {
       division: "makuuchi",
       birthYear: 1990,
       careerWins: 100,
-      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 } as never,
+      economics: {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      } as never,
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["yz2"] });
     const world = makeMockWorld({
@@ -147,7 +152,15 @@ describe("intai-kin retirement payment", () => {
       division: "jonidan",
       birthYear: 1990,
       careerWins: 30,
-      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 } as never,
+      economics: {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      } as never,
     });
     const heya = makeMockHeya("h1", { rikishiIds: ["ld"] });
     const world = makeMockWorld({

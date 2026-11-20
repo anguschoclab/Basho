@@ -191,9 +191,7 @@ export function isCandidateAgeEligible(
   world: WorldState,
   candidate: Pick<TalentCandidate, "birthYear" | "tsukedashi">
 ): boolean {
-  const maxAge = candidate.tsukedashi
-    ? TSUKEDASHI_MAX_AGE
-    : NEW_APPRENTICE_MAX_AGE;
+  const maxAge = candidate.tsukedashi ? TSUKEDASHI_MAX_AGE : NEW_APPRENTICE_MAX_AGE;
   return world.year - candidate.birthYear < maxAge;
 }
 
@@ -225,10 +223,7 @@ export function isCandidateSignable(
   heyaId: Id
 ): boolean {
   if (!isCandidateAgeEligible(world, candidate)) return false;
-  if (
-    candidate.availabilityState !== "available" &&
-    candidate.availabilityState !== "in_talks"
-  ) {
+  if (candidate.availabilityState !== "available" && candidate.availabilityState !== "in_talks") {
     return false;
   }
   return !isCandidateForeignBlocked(world, candidate, heyaId);

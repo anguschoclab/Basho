@@ -386,8 +386,7 @@ export function triggerSuccession(
   // retiring at the mandatory 65 may serve the JSA as a sanyo (consultant)
   // until 70 — he stays in the registry as an emeritus advisor.
   const sanyoEligible =
-    currentOyakata.age >= 65 &&
-    (currentOyakata.elderStatus ?? "toshiyori") !== "jun_toshiyori";
+    currentOyakata.age >= 65 && (currentOyakata.elderStatus ?? "toshiyori") !== "jun_toshiyori";
   if (sanyoEligible) {
     builder.updateOyakata(currentOyakata.id, {
       isEmeritus: true,
@@ -620,10 +619,7 @@ function triggerSuccessionWithGeneric(
   builder.updateHeya(heyaId, { oyakataId: dummyId });
   // Same sanyo rule as the heir path: a stockholding elder retiring at the
   // mandatory 65 may stay in the JSA as a consultant until 70.
-  if (
-    currentOyakata.age >= 65 &&
-    (currentOyakata.elderStatus ?? "toshiyori") !== "jun_toshiyori"
-  ) {
+  if (currentOyakata.age >= 65 && (currentOyakata.elderStatus ?? "toshiyori") !== "jun_toshiyori") {
     builder.updateOyakata(currentOyakata.id, {
       isEmeritus: true,
       elderStatus: "sanyo",

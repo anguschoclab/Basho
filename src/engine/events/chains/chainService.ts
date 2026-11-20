@@ -255,9 +255,7 @@ function applyEffects(
   // per resolution (fee debit, then option effects) and again per chain in
   // multi-due autonomous sweeps, so absolute snapshots computed off the
   // input world would clobber earlier writes (fee lost, pressure resets).
-  const queued = heyaId
-    ? builder.build().entities?.heyaUpdates?.get(heyaId)
-    : undefined;
+  const queued = heyaId ? builder.build().entities?.heyaUpdates?.get(heyaId) : undefined;
   const heya = baseHeya && queued ? ({ ...baseHeya, ...queued } as typeof baseHeya) : baseHeya;
   if (heya) {
     const update: Partial<typeof heya> = {};

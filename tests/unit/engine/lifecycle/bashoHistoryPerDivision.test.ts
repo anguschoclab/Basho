@@ -113,7 +113,12 @@ describe("recordBashoHistory — jun-yusho is a label only (JSA: no prize, no po
       division: "makuuchi",
       economics: makeEconomics(),
     });
-    const world = makeMockWorld({ rikishi: new Map([["w1", winner], ["r2", runner]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["w1", winner],
+        ["r2", runner],
+      ]),
+    });
     const impact = recordBashoHistory(
       world,
       makeMockBasho(),
@@ -145,6 +150,8 @@ describe("recordBashoHistory — jun-yusho is a label only (JSA: no prize, no po
   it("result.prizes records no jun-yusho amount", () => {
     const resolved = setup();
     const lastEntry = (resolved.history || [])[((resolved.history || []).length - 1) as number];
-    expect((lastEntry?.prizes as Record<string, unknown> | undefined)?.junYushoAmount).toBeUndefined();
+    expect(
+      (lastEntry?.prizes as Record<string, unknown> | undefined)?.junYushoAmount
+    ).toBeUndefined();
   });
 });

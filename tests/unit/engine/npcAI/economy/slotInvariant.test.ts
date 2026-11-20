@@ -249,7 +249,9 @@ describe("worldgen + merger — slot invariant beyond recruitment", () => {
     expect(foreignInTarget.length).toBe(2);
     expect(resolved.rikishi.get("r-foreign-s")!.heyaId).toBe("h-target");
     expect(resolved.rikishi.get("r-native-s")!.heyaId).toBe("h-target");
-    expect(resolved.heyas.has("h-free") && resolved.heyas.get("h-free")!.rikishiIds?.length === 0).toBe(true);
+    expect(
+      resolved.heyas.has("h-free") && resolved.heyas.get("h-free")!.rikishiIds?.length === 0
+    ).toBe(true);
 
     // Roster integrity: heya.rikishiIds must reflect every heyaId transfer —
     // a desynced rikishi is invisible to getHeyaRoster-based occupancy checks.
@@ -279,8 +281,7 @@ describe("offer path — slot semantics", () => {
   });
 
   it("suitor resolution never signs a slot-consuming foreigner to an occupied heya", async () => {
-    const { tickWeekCandidatePool } =
-      await import("@/engine/generation/CandidatePoolService");
+    const { tickWeekCandidatePool } = await import("@/engine/generation/CandidatePoolService");
     const world = worldWithOccupiedForeignSlot();
     const foreignCand = MockFactory.createCandidate("fc-suitors", {
       candidateId: "fc-suitors",

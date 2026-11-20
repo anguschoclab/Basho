@@ -422,8 +422,7 @@ export function ensureAvatarIdentities(world: {
     // Cosmetic weight backfill: the former wrestler's real build when his
     // record is still around, else a plausible seeded elder weight (110-175kg).
     if (o.weight == null) {
-      o.weight =
-        former?.weight ?? seedInt(o.formerRikishiId ?? o.id, "elder-weight", 110, 175);
+      o.weight = former?.weight ?? seedInt(o.formerRikishiId ?? o.id, "elder-weight", 110, 175);
     }
   }
 

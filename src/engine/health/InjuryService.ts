@@ -351,11 +351,7 @@ function applyAggravationRoll(
   const chance = (AGGRAVATION_CHANCE_BY_SEVERITY[severity] ?? 0.12) * multiplier;
   if (chance <= 0) return;
 
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "health",
-    `aggrav::${r.id}::${world.dayIndexGlobal}`
-  );
+  const rng = RNGRegistry.getSystemRNG(world, "health", `aggrav::${r.id}::${world.dayIndexGlobal}`);
   if (rng.next() >= chance) return;
 
   const extraWeeks = 1 + Math.floor(rng.next() * AGGRAVATION_EXTRA_WEEKS_MAX);
@@ -406,11 +402,7 @@ function applyInBoutInjury(
   const victim = inj.rikishiId === east?.id ? east : inj.rikishiId === west?.id ? west : null;
   if (!victim) return;
 
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "health",
-    `inbout::${victim.id}::${result.boutId}`
-  );
+  const rng = RNGRegistry.getSystemRNG(world, "health", `inbout::${victim.id}::${result.boutId}`);
 
   let appliedWeeks: number;
   if (victim.injured) {

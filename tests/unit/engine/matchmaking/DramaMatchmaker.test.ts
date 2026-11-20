@@ -204,7 +204,11 @@ describe("DramaMatchmaker", () => {
       );
 
       const rikishiMap = toIdMap(rikishi);
-      const standings = toKeyedMap(rikishi, (r) => r.id, () => ({ wins: 7, losses: 7 }));
+      const standings = toKeyedMap(
+        rikishi,
+        (r) => r.id,
+        () => ({ wins: 7, losses: 7 })
+      );
 
       const pairings: MatchPairing[] = [
         { eastId: "r0", westId: "r1", score: 1, reasons: [] },
@@ -307,7 +311,11 @@ describe("DramaMatchmaker", () => {
       );
 
       const rikishiMap = toIdMap(rikishi);
-      const standings = toKeyedMap(rikishi, (r) => r.id, () => ({ wins: 7, losses: 7 }));
+      const standings = toKeyedMap(
+        rikishi,
+        (r) => r.id,
+        () => ({ wins: 7, losses: 7 })
+      );
 
       const pairings: MatchPairing[] = [
         { eastId: "r0", westId: "r1", score: 1, reasons: [] },

@@ -50,9 +50,7 @@ export function processRetireeOyakataConversion(
   // Constitution 2.3 & 61: Oyakata candidate eligibility
   const age = world.year - retiree.birthYear;
   const isAccomplished =
-    isYokozunaOrOzekiRank(retiree.rank) ||
-    retiree.rank === "sekiwake" ||
-    retiree.careerWins >= 200;
+    isYokozunaOrOzekiRank(retiree.rank) || retiree.rank === "sekiwake" || retiree.careerWins >= 200;
 
   if (age < 28 || !isAccomplished) return;
 
@@ -207,25 +205,19 @@ function resolveElderShare(
         }
       : null);
 
-  const yushoCount = (retiree.careerHistory ?? []).reduce(
-    (a, h) => a + (h.isYusho ? 1 : 0),
-    0
-  );
+  const yushoCount = (retiree.careerHistory ?? []).reduce((a, h) => a + (h.isYusho ? 1 : 0), 0);
   const elderStatus: ElderStatus | null =
     availableStock != null
       ? "toshiyori"
       : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
         ? "ichidai_toshiyori"
-        : isYokozunaOrOzekiRank(retiree.rank) ||
-            isLowerSanyakuRank(retiree.rank)
+        : isYokozunaOrOzekiRank(retiree.rank) || isLowerSanyakuRank(retiree.rank)
           ? "jun_toshiyori"
           : null;
   const elderExpiryYear =
     elderStatus === "jun_toshiyori"
       ? world.year +
-        (retiree.rank === "yokozuna"
-          ? JUN_TOSHIYORI_YEARS_YOKOZUNA
-          : JUN_TOSHIYORI_YEARS_OTHER)
+        (retiree.rank === "yokozuna" ? JUN_TOSHIYORI_YEARS_YOKOZUNA : JUN_TOSHIYORI_YEARS_OTHER)
       : undefined;
   return { availableStock, elderStatus, elderExpiryYear };
 }

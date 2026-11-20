@@ -225,9 +225,7 @@ describe("governanceReview", () => {
       const newWorld = resolveImpacts(world, [impact]);
 
       // Control: the insolvent heya really did draw the faction gift.
-      expect(newWorld.heyas.get("z-insolvent")!.funds).toBe(
-        -1_000_000 + FACTION_BAILOUT_AMOUNT
-      );
+      expect(newWorld.heyas.get("z-insolvent")!.funds).toBe(-1_000_000 + FACTION_BAILOUT_AMOUNT);
       // Pin: absorbed funds + gift debit must compose on the benefactor.
       // Today the debit reads the pre-review 100M base and the 20M merger
       // credit is destroyed.

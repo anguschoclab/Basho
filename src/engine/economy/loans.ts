@@ -23,6 +23,11 @@ export interface LoanTerms {
 }
 
 // @keep-export determineLoanTerms — live via same-file/dispatch call or public API contract
+/**
+ * Picks loan type, rate, provider, and covenant strings for a heya in
+ * deficit — the canonical loan-terms resolver used by both the command
+ * path and NPC finance.
+ */
 export function determineLoanTerms(
   world: WorldState,
   heya: Heya,
@@ -79,6 +84,10 @@ export function determineLoanTerms(
 }
 
 // @keep-export createLoanObject — live via same-file/dispatch call or public API contract
+/**
+ * Instantiates a Loan object from resolved terms — id minted via the
+ * supplied rng so the same seed reproduces the same loan.
+ */
 export function createLoanObject(
   world: WorldState,
   _heyaId: Id,

@@ -197,7 +197,6 @@ function archiveBasho(world: WorldState, basho: BashoState, builder: ImpactBuild
           : opfsArchiveService;
 
       archiveService.archiveAwards(world.year, yearAwards);
-
     });
   });
 }

@@ -129,10 +129,7 @@ export function applyWeightJourneyTick(
   // rikishi gaining on paper while staying at entry weight forever.
   updates.stats = {
     ...(rikishi.stats || {}),
-    weight: Math.min(
-      journey.targetKg,
-      finiteOr(rikishi.stats?.weight, startWeight) + weeklyGain
-    ),
+    weight: Math.min(journey.targetKg, finiteOr(rikishi.stats?.weight, startWeight) + weeklyGain),
   } as Rikishi["stats"];
 
   // Breakthrough check

@@ -56,10 +56,10 @@ export default defineConfig({
         "src/presenters/**/*.ts",
         "src/components/**/*.{ts,tsx}",
         "src/state/**/*.{ts,tsx}",
-        
+
         "src/hooks/**/*.{ts,tsx}",
         "src/lib/**/*.ts",
-        
+
         "src/pages/**/*.tsx",
         "src/constants/**/*.ts",
       ],

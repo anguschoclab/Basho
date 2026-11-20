@@ -299,9 +299,7 @@ function beatPlayoffRematch(p: PbpPipeline): void {
   // already on the ledger between these two, recorded as a playoff_win
   // career highlight at PlayoffResolver time.
   const metPlayoff = (a: PbpPipeline["east"], b: PbpPipeline["east"]) =>
-    (a.careerHighlights ?? []).some(
-      (h) => h.type === "playoff_win" && h.opponent === b.id
-    );
+    (a.careerHighlights ?? []).some((h) => h.type === "playoff_win" && h.opponent === b.id);
   if (!metPlayoff(east, west) && !metPlayoff(west, east)) return;
   const playoffRng = rngFromSeed(seed, "pbp", "playoff-rematch");
   push(
@@ -316,6 +314,9 @@ function beatPlayoffRematch(p: PbpPipeline): void {
   );
 }
 
+/**
+ * Assembles the full pre-bout narrative prelude from ranked context candidates.
+ */
 export function narratePrelude(p: PbpPipeline): void {
   beatOpeningVenue(p);
   beatDynasty(p);

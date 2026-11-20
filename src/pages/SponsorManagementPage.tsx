@@ -20,7 +20,10 @@ export default function SponsorManagementPage() {
   if (!digest) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="sponsors" pageTitle="Sponsor Relations">
-        <LoadingPanel title="Loading Sponsors" description="Fetching sponsor contracts and satisfaction..." />
+        <LoadingPanel
+          title="Loading Sponsors"
+          description="Fetching sponsor contracts and satisfaction..."
+        />
       </AppLayout>
     );
   }

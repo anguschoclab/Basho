@@ -49,7 +49,9 @@ export default function SchedulePage() {
       const westRikishi = getRikishi(world, m.westRikishiId);
       // Either side — a cross-division bout (juryo call-up) belongs on both
       // divisions' schedules.
-      return eastRikishi?.division === selectedDivision || westRikishi?.division === selectedDivision;
+      return (
+        eastRikishi?.division === selectedDivision || westRikishi?.division === selectedDivision
+      );
     });
   }, [currentBasho, selectedDay, selectedDivision, world]);
 

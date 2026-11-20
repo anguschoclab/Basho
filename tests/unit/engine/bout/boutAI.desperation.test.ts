@@ -13,7 +13,11 @@ import type { SeededRNG } from "@/engine/core/rng";
 
 /** Deterministic rng stub: roll 0.99 → HENKA for every style. */
 const henkaRng = () =>
-  ({ next: () => 0.99, int: (_a: number, b: number) => b, bool: () => true }) as unknown as SeededRNG;
+  ({
+    next: () => 0.99,
+    int: (_a: number, b: number) => b,
+    bool: () => true,
+  }) as unknown as SeededRNG;
 
 function ctx(overrides: Partial<BoutAIContext> = {}): BoutAIContext {
   return { rng: henkaRng(), ...overrides };

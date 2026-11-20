@@ -83,9 +83,7 @@ describe("simulateEntireBasho — harmonized application pipeline", () => {
     const { world } = sekitoriWorld(6);
     const sim = simulateEntireBasho(world, "hatsu", "harm-injuries");
 
-    const shikona = new Set(
-      Array.from(sim.finalWorld.rikishi.values()).map((r) => r.shikona)
-    );
+    const shikona = new Set(Array.from(sim.finalWorld.rikishi.values()).map((r) => r.shikona));
     for (const name of sim.injuries) {
       expect(shikona.has(name)).toBe(true);
     }

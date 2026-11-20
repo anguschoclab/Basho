@@ -201,20 +201,37 @@ describe("resolveBout — per-side NPC tactics (WS1)", () => {
     const tryBasho = (bashoId: string) => {
       const east = makeRikishi("east", "heya-a", {
         stats: {
-          power: 95, speed: 50, technique: 50, weight: 180, stamina: 60,
-          mental: 60, adaptability: 60, balance: 55, aggression: 60, experience: 20,
+          power: 95,
+          speed: 50,
+          technique: 50,
+          weight: 180,
+          stamina: 60,
+          mental: 60,
+          adaptability: 60,
+          balance: 55,
+          aggression: 60,
+          experience: 20,
         },
       });
       const west = makeRikishi("west", "heya-b", {
         style: "yotsu",
         stats: {
-          power: 40, speed: 75, technique: 75, weight: 120, stamina: 60,
-          mental: 60, adaptability: 60, balance: 60, aggression: 40, experience: 20,
+          power: 40,
+          speed: 75,
+          technique: 75,
+          weight: 120,
+          stamina: 60,
+          mental: 60,
+          adaptability: 60,
+          balance: 60,
+          aggression: 40,
+          experience: 20,
         },
       });
       const day = 5;
       const basho = MockFactory.createBasho({
-        id: bashoId, day,
+        id: bashoId,
+        day,
         matches: [{ boutId: "npc-bout", day, eastRikishiId: "east", westRikishiId: "west" }],
         standings: new Map([
           ["east", { wins: 4, losses: 4 }],
@@ -222,7 +239,10 @@ describe("resolveBout — per-side NPC tactics (WS1)", () => {
         ]),
       });
       const world = MockFactory.createWorld({
-        rikishi: new Map([["east", east], ["west", west]]),
+        rikishi: new Map([
+          ["east", east],
+          ["west", west],
+        ]),
         heyas: new Map([
           ["heya-a", MockFactory.createHeya("heya-a", { rikishiIds: ["east"] })],
           ["heya-b", MockFactory.createHeya("heya-b", { rikishiIds: ["west"] })],
@@ -230,7 +250,12 @@ describe("resolveBout — per-side NPC tactics (WS1)", () => {
         currentBasho: basho,
         cyclePhase: "active_basho",
       });
-      const bout: BoutContext = { id: "npc-bout", day, rikishiEastId: "east", rikishiWestId: "west" };
+      const bout: BoutContext = {
+        id: "npc-bout",
+        day,
+        rikishiEastId: "east",
+        rikishiWestId: "west",
+      };
       return resolveBout(bout, east, west, basho, undefined, world);
     };
 

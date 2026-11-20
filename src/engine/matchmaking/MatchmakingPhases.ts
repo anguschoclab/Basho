@@ -272,8 +272,7 @@ export function scorePairing(args: {
     if (yokoSide && otherSide) {
       if (day <= SWISS_PHASE1_END_DAY && isJoiMaegashira(otherSide)) {
         const rn = otherSide.rankNumber ?? 99;
-        const favored =
-          day < YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY ? rn >= 3 : rn <= 2;
+        const favored = day < YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY ? rn >= 3 : rn <= 2;
         if (favored) {
           score *= YOKOZUNA_JOI_BACKLOAD_BONUS;
           reasons.push("yokozuna_joi_backload");

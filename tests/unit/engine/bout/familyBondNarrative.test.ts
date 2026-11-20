@@ -26,18 +26,12 @@ beforeEach(() => BardEngine.resetCache());
 
 describe("pre_bout.schoolmates", () => {
   it("fires when both share schoolOrigin across different heyas", () => {
-    const lines = narrate(
-      { schoolOrigin: "Saitama Sakae" },
-      { schoolOrigin: "Saitama Sakae" }
-    );
+    const lines = narrate({ schoolOrigin: "Saitama Sakae" }, { schoolOrigin: "Saitama Sakae" });
     expect(tagged(lines, "schoolmates").length).toBeGreaterThan(0);
   });
 
   it("is silent for different schools", () => {
-    const lines = narrate(
-      { schoolOrigin: "Saitama Sakae" },
-      { schoolOrigin: "Tottori Johoku" }
-    );
+    const lines = narrate({ schoolOrigin: "Saitama Sakae" }, { schoolOrigin: "Tottori Johoku" });
     expect(tagged(lines, "schoolmates")).toEqual([]);
   });
 

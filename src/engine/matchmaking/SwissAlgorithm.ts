@@ -22,7 +22,12 @@ import {
 } from "@/engine/matchmaking/MatchmakingPhases";
 import { applyDramaBudget } from "@/engine/matchmaking/DramaMatchmaker";
 import { pairKey, buildFacedSet, tryPair } from "@/engine/matchmaking/swissShared";
-import { isSanyakuRank, rankSeniority, isYokozunaOrOzekiRank, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
+import {
+  isSanyakuRank,
+  rankSeniority,
+  isYokozunaOrOzekiRank,
+  isLowerSanyakuRank,
+} from "@/constants/engine/rankDisplay";
 import {
   SWISS_RANK_DEFAULT,
   M1_TO_M4_THRESHOLD,
@@ -109,9 +114,7 @@ function phase1(
     if (paired.has(e.id)) continue;
     const isYokozuna = e.rank === "yokozuna";
     const joiOrder =
-      isYokozuna && day < YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY
-        ? [...upperJoi].reverse()
-        : upperJoi;
+      isYokozuna && day < YOKOZUNA_BACKLOAD_WEEK1_SPLIT_DAY ? [...upperJoi].reverse() : upperJoi;
 
     let matchedElite = false;
     for (const joi of joiOrder) {
@@ -240,7 +243,9 @@ function pairYokozunaBackloaded(
   const reservedIds = new Set<string>();
   if (day === YOKOZUNA_YOKOZUNA_CLASH_START_DAY && yokozunas.length >= 2) {
     const y0 = yokozunas[0];
-    const y1 = yokozunas.find((cand) => cand.id !== y0.id && !facedSet.has(pairKey(y0.id, cand.id)));
+    const y1 = yokozunas.find(
+      (cand) => cand.id !== y0.id && !facedSet.has(pairKey(y0.id, cand.id))
+    );
     if (y1) {
       reservedIds.add(y0.id);
       reservedIds.add(y1.id);
@@ -437,7 +442,7 @@ function phase3(
     const cinderella = leaders[0];
     const gatekeepers: Rikishi[] = [];
     for (const r of pool) {
-      if ((isYokozunaOrOzekiRank(r.rank)) && !paired.has(r.id)) gatekeepers.push(r);
+      if (isYokozunaOrOzekiRank(r.rank) && !paired.has(r.id)) gatekeepers.push(r);
     }
     const gatekeeper = gatekeepers.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
 
@@ -453,7 +458,7 @@ function phase3(
 
   let elites: Rikishi[] = [];
   for (const r of pool) {
-    if ((isYokozunaOrOzekiRank(r.rank)) && !paired.has(r.id)) elites.push(r);
+    if (isYokozunaOrOzekiRank(r.rank) && !paired.has(r.id)) elites.push(r);
   }
   elites.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 

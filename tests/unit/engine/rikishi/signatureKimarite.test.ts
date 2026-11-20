@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
-import {
-  tallyKimariteWins,
-  deriveSignatureKimarite,
-} from "@/engine/rikishi/signatureKimarite";
+import { tallyKimariteWins, deriveSignatureKimarite } from "@/engine/rikishi/signatureKimarite";
 
 const hist = (k: string, win = true) => ({
   opponentId: "x",

@@ -53,7 +53,9 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
       ...createDefaultRecords(),
       active: {
         ...createDefaultRecords().active,
-        careerWins: [{ rikishiId: "r45", shikona: "R45", value: 100, achievedDate: { year: 2040, month: 1 } }],
+        careerWins: [
+          { rikishiId: "r45", shikona: "R45", value: 100, achievedDate: { year: 2040, month: 1 } },
+        ],
       },
     };
 
@@ -66,9 +68,7 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
 
     // onRikishiRetired removes the retiree from active leaderboards
     const resolved = resolveImpacts(world, [impact]);
-    expect(
-      resolved.records?.active?.careerWins?.some((e) => e.rikishiId === "r45")
-    ).toBeFalsy();
+    expect(resolved.records?.active?.careerWins?.some((e) => e.rikishiId === "r45")).toBeFalsy();
   });
 
   it("force-retire rule never targets rikishi under age 28", () => {

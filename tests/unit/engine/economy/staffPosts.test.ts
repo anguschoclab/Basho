@@ -206,9 +206,7 @@ describe("V18 — staff id reuse after mid-list removal", () => {
   it("hiring after a mid-list removal must not overwrite a live staff entity", () => {
     const world0 = MockFactory.createWorld({
       seed: "v18-staff-ids",
-      heyas: new Map([
-        ["h1", MockFactory.createHeya("h1", { funds: 10_000_000, staffIds: [] })],
-      ]),
+      heyas: new Map([["h1", MockFactory.createHeya("h1", { funds: 10_000_000, staffIds: [] })]]),
     });
 
     // Two real hires: sequences 1 and 2 → ids id1, id2.

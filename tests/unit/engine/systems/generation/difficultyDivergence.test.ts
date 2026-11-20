@@ -7,7 +7,9 @@
 import { describe, it, expect } from "vitest";
 import { OYAKATA_BACKSTORIES } from "@/constants/ui/wizard";
 
-const ORDER = ["Easy", "Normal", "Hard", "Very Hard"] as const satisfies readonly ("Easy" | "Normal" | "Hard" | "Very Hard")[];
+const ORDER = ["Easy", "Normal", "Hard", "Very Hard"] as const satisfies readonly (
+  "Easy" | "Normal" | "Hard" | "Very Hard"
+)[];
 
 describe("backstory difficulty bands diverge (T3.4)", () => {
   it("declares all four difficulty tiers", () => {

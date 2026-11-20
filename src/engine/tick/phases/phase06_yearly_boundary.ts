@@ -12,7 +12,11 @@
 
 import type { WorldState } from "@/engine/types/world";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
-import { createImpactBuilder, type ImpactBuilder, worldWithQueuedFields } from "@/engine/core/ImpactBuilder";
+import {
+  createImpactBuilder,
+  type ImpactBuilder,
+  worldWithQueuedFields,
+} from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { processYearEndInduction, createEmptyHallOfFame } from "@/engine/history/hallOfFame";
 import { tickYear } from "@/engine/npc/ticks";
@@ -220,9 +224,7 @@ function ageRikishiAndUpdateRecords(builder: ImpactBuilder, world: WorldState): 
     // the records already queued on this builder so every qualifying
     // rikishi lands on the leaderboard, not just the last one merged (S1-6).
     if (r.careerWins > 100 || r.rank === "yokozuna") {
-      builder.merge(
-        HistoryService.updateAllTimeRecords(worldWithQueuedFields(world, builder), r)
-      );
+      builder.merge(HistoryService.updateAllTimeRecords(worldWithQueuedFields(world, builder), r));
     }
 
     // Kanreki ceremony — rare 60th-year dohyo-iri for yokozuna

@@ -12,6 +12,9 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { logEngineEvent, type LogEngineEventParams } from "@/engine/events/events";
 import { enrichEventContext } from "@/engine/events/domains/context";
 
+/**
+ * Builds the domain-scoped seeded RNG for an event emitter — salt + world year/week/seed under the `narrative`/`event` domain.
+ */
 export function createRngForEvent(world: WorldState, seedPrefix: string) {
   return rngFromSeed(
     `${seedPrefix}-${world.year}-${world.week}-${world.seed}`,

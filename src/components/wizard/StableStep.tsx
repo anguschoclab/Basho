@@ -21,6 +21,9 @@ interface StableStepProps {
   onFinish: () => void;
 }
 
+/**
+ * Wizard step — final heya selection before world generation.
+ */
 export function StableStep({
   stables,
   world,

@@ -107,9 +107,9 @@ describe("resolveMorningOfDay", () => {
     );
 
     const world2 = resolveImpacts(world, [resolveMorningOfDay(world)]);
-    expect(
-      (world2.pendingDecisions ?? []).filter((d) => d.type === "kyujo_decision")
-    ).toHaveLength(0);
+    expect((world2.pendingDecisions ?? []).filter((d) => d.type === "kyujo_decision")).toHaveLength(
+      0
+    );
   });
 });
 

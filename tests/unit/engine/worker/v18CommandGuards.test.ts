@@ -48,10 +48,7 @@ function makeRt(world: WorldState): WorkerRuntime {
   };
 }
 
-function twoHeyaWorld(
-  rikishi: Rikishi[] = [],
-  overrides: Partial<WorldState> = {}
-): WorldState {
+function twoHeyaWorld(rikishi: Rikishi[] = [], overrides: Partial<WorldState> = {}): WorldState {
   return MockFactory.createWorld({
     playerHeyaId: PLAYER,
     heyas: new Map([
@@ -184,9 +181,7 @@ describe("V18 worker ownership guards — tsukebito commands", () => {
       seniorId: "npc-senior",
       tsukebitoIds: ["npc-junior"],
     });
-    expect(rt.world!.rikishi.get("npc-senior")!.tsukebitoIds ?? []).not.toContain(
-      "npc-junior"
-    );
+    expect(rt.world!.rikishi.get("npc-senior")!.tsukebitoIds ?? []).not.toContain("npc-junior");
   });
 
   it("REMOVE_TSUKEBITO on an NPC senior must keep the attendant", () => {
@@ -259,10 +254,7 @@ describe("V18 worker ownership guards — recruitment commands", () => {
     const rt = makeRt(
       twoHeyaWorld([], {
         staff: new Map([
-          [
-            "npc-scout",
-            MockFactory.createStaff("npc-scout", { heyaId: NPC, role: "scout" }),
-          ],
+          ["npc-scout", MockFactory.createStaff("npc-scout", { heyaId: NPC, role: "scout" })],
         ]),
       })
     );

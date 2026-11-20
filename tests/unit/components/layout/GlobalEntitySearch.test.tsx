@@ -7,10 +7,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup, act, waitFor } from "@testing-library/react";
 import { GlobalEntitySearch } from "@/components/layout/GlobalEntitySearch";
-import {
-  onFocusGlobalSearch,
-  focusGlobalSearch,
-} from "@/components/shared/searchFocusSignal";
+import { onFocusGlobalSearch, focusGlobalSearch } from "@/components/shared/searchFocusSignal";
 import { useGame } from "@/state/game/useGame";
 import { searchEntities } from "@/presenters/projections/entitySearchProjections";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";

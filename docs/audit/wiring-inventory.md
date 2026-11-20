@@ -62,6 +62,7 @@ Note: `engine/almanac/index.ts` is the "clean barrel" previously validated — b
 The Oct-8 inventory was re-verified file-by-file. Findings:
 
 **Stale verdicts (listed as dead, actually live):**
+
 - `engine/npcAI/contextBuilder.ts` — imported by `tick/phases/phase01_week_npc_ai.ts:24` (canonical `AIContext` ctor; 7 test files).
 - `engine/systems/economy/infrastructureValidation.ts` — imported and used by `InfrastructureService.ts` (`validateConstruction`, `isUnexpectedFailureReason`).
 - `components/ui/sidebar/index.ts` — live shadcn barrel; imported by `AppLayout`, `AppSidebar`, `AppSidebarSections`, `TopNavBar`.
@@ -70,12 +71,14 @@ The Oct-8 inventory was re-verified file-by-file. Findings:
 - `engine/bout/kimarite/index.ts` — live; imported by `ReplayMetadata.ts`, `KimariteSelectionEngine.ts`.
 
 **Adopted instead of deleted (constants now used):**
+
 - `constants/ui/kesho.ts` — adopted; `keshoEffects.tsx`, `keshoBorders.tsx`, `KeshoMawashiDisplay.tsx` now import the `KESHO_*` constants (inlined magic numbers migrated; stale constants corrected to live values).
 - `constants/ui/presenters.ts` — slimmed to `RANK_SCORE_*` and adopted by `presenters/rikishi/transformers/career.ts`. `SPONSOR_*` relocated to `constants/engine/sponsors.ts` and wired into `SponsorContractService`; `BASHO_TOTAL_DAYS`/`PRESTIGE_TIER_*`/`HALL_OF_FAME_SLICE_COUNT`/`ROSTER_LIMIT`/`RANK_SCORE_DEFAULT_SIDE` dropped as stale or duplicated (`BASHO_DAYS`/`BASHO_FINAL_DAY` are canonical).
 - `constants/engine/koreYoriSanyaku.ts` — wired: `bashoProjections.ts` now emits `sanyakuCallout` (rendered on BashoPage via `SanyakuCallout`) when the next bout is one of the day's final three.
 - `components/ui/Sparkline.tsx` — **kept intentionally** (planned future charts); remains in knipGuard allowlist.
 
 **Deleted:**
+
 - `components/media/PressConference.tsx` (superseded by live `game/PressConference.tsx`)
 - `components/ui/colorMaps.ts` (+ its test) — dead variant of live maps
 - `contexts/domainHooks.ts` (+ its test) — zero-logic `useGame()` pass-throughs
@@ -84,6 +87,7 @@ The Oct-8 inventory was re-verified file-by-file. Findings:
 - Dead barrels (12): `components/{charts,game,layout,ui}/index.ts`, `constants/ui/index.ts`, `engine/{strategy,tick}/index.ts`, `engine/systems/{economy,governance,keshoMawashi,narrative,worldCircuit}/index.ts`
 
 **Related magic-number sweep:**
+
 - `tickDaily.ts` ×2, `bashoSlice.ts`, `recapProjections.ts` ×2 — `day > 15`/`day === 15` → `BASHO_FINAL_DAY`
 - `AdvisorService.ts` `MAX_ROSTER = 30` → `HEYA_ROSTER_HARD_CAP` in `constants/engine/roster.ts`
 - `WelfarePanelSections.tsx` `HEALTH_COLORS` (duplicate) → `HEALTH_COLOR` from `constants/ui/perception.ts`

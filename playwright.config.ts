@@ -16,7 +16,8 @@ export default defineConfig({
   projects: [
     {
       name: "smoke",
-      testMatch: /(golden-path|reload-restore|career-surface|workstream-features|search-oyakata)\.e2e\.test\.ts/,
+      testMatch:
+        /(golden-path|reload-restore|career-surface|workstream-features|search-oyakata)\.e2e\.test\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
     {

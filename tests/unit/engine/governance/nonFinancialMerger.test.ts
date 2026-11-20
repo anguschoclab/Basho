@@ -91,10 +91,7 @@ describe("non-financial merger — chronic underperformance + prestige collapse"
     world.heyas.set("heya-source", source);
     world.rikishi.set("r1", mockRikishi("r1", { heyaId: "heya-source" }));
     world.rikishi.set("r2", mockRikishi("r2", { heyaId: "heya-source" }));
-    world.oyakata.set(
-      "o-src",
-      MockFactory.createOyakata("o-src", { heyaId: "heya-source" })
-    );
+    world.oyakata.set("o-src", MockFactory.createOyakata("o-src", { heyaId: "heya-source" }));
     world.myosekiMarket = {
       stocks: {
         "ms-held": {

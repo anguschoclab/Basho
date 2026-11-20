@@ -24,11 +24,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Staff } from "@/engine/types/staff";
 import type { ScoutedRikishi } from "@/engine/recruitment/ScoutingService";
-import type {
-  TalentCandidate,
-  TalentPoolType,
-  TalentPoolWorldState,
-} from "@/engine/types/talent";
+import type { TalentCandidate, TalentPoolType, TalentPoolWorldState } from "@/engine/types/talent";
 
 function rikishiFixture(overrides: Partial<Rikishi> = {}): Rikishi {
   return MockFactory.createRikishi({
@@ -95,10 +91,7 @@ function staffFixture(id: string, overrides: Partial<Staff> = {}): Staff {
   });
 }
 
-function candidateFixture(
-  id: string,
-  overrides: Partial<TalentCandidate> = {}
-): TalentCandidate {
+function candidateFixture(id: string, overrides: Partial<TalentCandidate> = {}): TalentCandidate {
   return MockFactory.createCandidate(id, {
     name: `Candidate ${id}`,
     birthYear: 2008,
@@ -255,7 +248,10 @@ describe("searchEntities", () => {
   it("caps rikishi and heya results at the exported caps", () => {
     const rikishi = new Map<string, Rikishi>();
     for (let i = 0; i < RIKISHI_RESULT_CAP + 5; i++) {
-      rikishi.set(`r${i}`, rikishiFixture({ id: `r${i}`, shikona: `Taka${String(i).padStart(2, "0")}` }));
+      rikishi.set(
+        `r${i}`,
+        rikishiFixture({ id: `r${i}`, shikona: `Taka${String(i).padStart(2, "0")}` })
+      );
     }
     const heyas = new Map<string, Heya>();
     for (let i = 0; i < HEYA_RESULT_CAP + 3; i++) {
@@ -432,15 +428,9 @@ describe("searchEntities — oyakata bucket", () => {
 
   it("a name shared across entity kinds surfaces in every bucket (Kokonoe collision)", () => {
     const world = worldFixture({
-      heyas: new Map([
-        ["h9", heyaFixture({ id: "h9", name: "Kokonoe", rikishiIds: [] })],
-      ]),
-      rikishi: new Map([
-        ["r9", rikishiFixture({ id: "r9", shikona: "Kokonoe", heyaId: "h9" })],
-      ]),
-      oyakata: new Map([
-        ["o9", oyakataFixture("o9", { name: "Kokonoe", heyaId: "h9" })],
-      ]),
+      heyas: new Map([["h9", heyaFixture({ id: "h9", name: "Kokonoe", rikishiIds: [] })]]),
+      rikishi: new Map([["r9", rikishiFixture({ id: "r9", shikona: "Kokonoe", heyaId: "h9" })]]),
+      oyakata: new Map([["o9", oyakataFixture("o9", { name: "Kokonoe", heyaId: "h9" })]]),
     });
     const res = searchEntities(world, "kokonoe", "h1");
     expect(res.heyas.map((h) => h.id)).toEqual(["h9"]);
@@ -458,10 +448,7 @@ describe("searchEntities — staff bucket", () => {
       ]),
       staff: new Map([
         ["s1", staffFixture("s1", { name: "Tanaka Jiro", heyaId: "h1" })],
-        [
-          "s2",
-          staffFixture("s2", { name: "Tanaka Saburo", role: "scout", heyaId: "h2" }),
-        ],
+        ["s2", staffFixture("s2", { name: "Tanaka Saburo", role: "scout", heyaId: "h2" })],
       ]),
     });
     const res = searchEntities(world, "tanaka", "h1");
@@ -498,9 +485,7 @@ describe("searchEntities — candidates bucket", () => {
       ),
     });
     const res = searchEntities(world, "yama", "h1");
-    expect(res.candidates.map((c) => c.candidateId)).toEqual(
-      expect.arrayContaining(["c1", "c2"])
-    );
+    expect(res.candidates.map((c) => c.candidateId)).toEqual(expect.arrayContaining(["c1", "c2"]));
     const hs = res.candidates.find((c) => c.candidateId === "c1")!;
     expect(hs.pool).toBe("high_school");
     expect(hs.age).toBe(world.year - 2008);
@@ -520,9 +505,7 @@ describe("searchEntities — candidates bucket", () => {
       ),
     });
     const res = searchEntities(world, "rumored ace", "h1");
-    expect(res.candidates.map((c) => c.candidateId)).toEqual(
-      expect.arrayContaining(["c1", "c3"])
-    );
+    expect(res.candidates.map((c) => c.candidateId)).toEqual(expect.arrayContaining(["c1", "c3"]));
     expect(res.candidates.find((c) => c.candidateId === "c2")).toBeUndefined();
   });
 
@@ -544,7 +527,11 @@ describe("searchEntities — candidates bucket", () => {
       heyas: new Map([
         [
           "h1",
-          heyaFixture({ id: "h1", name: "Futagoyama", regionalPresence: { Mongolia: 50 } } as Partial<Heya>),
+          heyaFixture({
+            id: "h1",
+            name: "Futagoyama",
+            regionalPresence: { Mongolia: 50 },
+          } as Partial<Heya>),
         ],
       ]),
       talentPool: talentPoolFixture(

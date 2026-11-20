@@ -181,9 +181,7 @@ describe("projectHeya — fabricated fields must reflect real world state (V18-S
     });
     const world = MockFactory.createWorld({ heyas: new Map([["heya-1", heya]]) });
 
-    const expectedMonthlyBurn = Math.round(
-      calculateHeyaWeeklyFinances(heya, world).totalBurn * 4
-    );
+    const expectedMonthlyBurn = Math.round(calculateHeyaWeeklyFinances(heya, world).totalBurn * 4);
     expect(expectedMonthlyBurn, "fixture must carry real upkeep").toBeGreaterThan(0);
     expect(
       projectHeya(heya, world).monthlyExpense,
@@ -241,7 +239,10 @@ describe("selectCohortSummaries — retired cohort members (V18-S8-3)", () => {
     expect(next.historicalRikishi.has("r-retired")).toBe(true);
 
     const cohort = selectCohortSummaries(next).find((c) => c.cohortId === "2025-hatsu");
-    expect(cohort, "the 2025-hatsu cohort still has a surviving member — it must appear").toBeDefined();
+    expect(
+      cohort,
+      "the 2025-hatsu cohort still has a surviving member — it must appear"
+    ).toBeDefined();
     expect(
       cohort!.totalMembers,
       "two rikishi entered via 2025-hatsu (one now retired) — the retiree is " +

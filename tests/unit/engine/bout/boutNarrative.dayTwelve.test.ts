@@ -97,7 +97,9 @@ function standingsWorld(
     ["leader", { wins: 11, losses: 1 }],
     [east.id, { wins: east.currentBashoWins ?? 0, losses: east.currentBashoLosses ?? 0 }],
     [west.id, { wins: west.currentBashoWins ?? 0, losses: west.currentBashoLosses ?? 0 }],
-    ...extra.map(([id, w, l]) => [id, { wins: w, losses: l }] as [string, { wins: number; losses: number }]),
+    ...extra.map(
+      ([id, w, l]) => [id, { wins: w, losses: l }] as [string, { wins: number; losses: number }]
+    ),
   ];
   const basho = MockFactory.createBasho({
     id: "kyushu-2026",
@@ -161,7 +163,13 @@ describe("P2 — demotion_watch", () => {
       currentBashoLosses: 9,
     });
     const west = mockRikishi("r-west", { rankNumber: 5 });
-    const result = narrate(east, west, makeBoutWorld(east, west) as FullWorld, makeBoutResult(), 12);
+    const result = narrate(
+      east,
+      west,
+      makeBoutWorld(east, west) as FullWorld,
+      makeBoutResult(),
+      12
+    );
     expect(tagged(result, "demotion_watch").length).toBeGreaterThan(0);
   });
 
@@ -202,7 +210,13 @@ describe("P3 — playoff_rematch + playoff_win recording", () => {
       ],
     });
     const west = mockRikishi("r-west");
-    const result = narrate(east, west, makeBoutWorld(east, west) as FullWorld, makeBoutResult(), 12);
+    const result = narrate(
+      east,
+      west,
+      makeBoutWorld(east, west) as FullWorld,
+      makeBoutResult(),
+      12
+    );
     expect(tagged(result, "playoff").length).toBeGreaterThan(0);
   });
 
@@ -218,7 +232,13 @@ describe("P3 — playoff_rematch + playoff_win recording", () => {
       ],
     });
     const west = mockRikishi("r-west");
-    const result = narrate(east, west, makeBoutWorld(east, west) as FullWorld, makeBoutResult(), 12);
+    const result = narrate(
+      east,
+      west,
+      makeBoutWorld(east, west) as FullWorld,
+      makeBoutResult(),
+      12
+    );
     expect(tagged(result, "playoff")).toEqual([]);
   });
 
@@ -395,7 +415,13 @@ describe("P8 — alternating_records", () => {
       careerHistory: [snap(8, 7), snap(7, 8), snap(8, 7)],
     });
     const west = mockRikishi("r-west");
-    const result = narrate(east, west, makeBoutWorld(east, west) as FullWorld, makeBoutResult(), 12);
+    const result = narrate(
+      east,
+      west,
+      makeBoutWorld(east, west) as FullWorld,
+      makeBoutResult(),
+      12
+    );
     expect(tagged(result, "alternating_records").length).toBeGreaterThan(0);
   });
 
@@ -404,7 +430,13 @@ describe("P8 — alternating_records", () => {
       careerHistory: [snap(8, 7), snap(8, 7), snap(7, 8)],
     });
     const west = mockRikishi("r-west");
-    const result = narrate(east, west, makeBoutWorld(east, west) as FullWorld, makeBoutResult(), 12);
+    const result = narrate(
+      east,
+      west,
+      makeBoutWorld(east, west) as FullWorld,
+      makeBoutResult(),
+      12
+    );
     expect(tagged(result, "alternating_records")).toEqual([]);
   });
 });

@@ -25,7 +25,9 @@ const { BardEngine } = await import("@/engine/bard/BardEngine");
 await BardEngine.loadDomains();
 
 const world = generateInitialWorld(seed);
-console.log(`shimpan pool: ${world.shimpanPool?.length ?? 0}, gyoji pool: ${world.gyojiPool?.length ?? 0}`);
+console.log(
+  `shimpan pool: ${world.shimpanPool?.length ?? 0}, gyoji pool: ${world.gyojiPool?.length ?? 0}`
+);
 
 const rikishi = [...world.rikishi.values()].filter((r: Rikishi) => !r.injured);
 const basho = {

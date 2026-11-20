@@ -14,7 +14,9 @@ function careerWorld(settings?: WorldState["settings"]): WorldState {
     seed: "obj-test",
     year: 2030,
     playerHeyaId: "h-player",
-    heyas: new Map([["h-player", makeMockHeya("h-player", { funds: 10_000_000, politicalCapital: 50 })]]),
+    heyas: new Map([
+      ["h-player", makeMockHeya("h-player", { funds: 10_000_000, politicalCapital: 50 })],
+    ]),
     rikishi: new Map(),
     settings: settings ?? { careerMode: "career", archiveMode: "standard" },
   });

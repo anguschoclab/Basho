@@ -71,11 +71,7 @@ function monoiiRoll(key: string): { next: () => number } {
  * Records the apparent call so post-bout narrative can still say "the
  * gunbai went to X, but the judges reversed it."
  */
-export function flipResultWinner(
-  result: BoutResult,
-  east: Rikishi,
-  west: Rikishi
-): BoutResult {
+export function flipResultWinner(result: BoutResult, east: Rikishi, west: Rikishi): BoutResult {
   const winnerSide: Side = result.winner === "east" ? "west" : "east";
   const winner = winnerSide === "east" ? east : west;
   const loser = winnerSide === "east" ? west : east;
@@ -150,8 +146,21 @@ function buildDrawVerdictResult(
  */
 function runTorinaoshi(params: MonoiiVerdictParams): BoutResult {
   const {
-    bout, ctxFinal, result, east, west, eastBout, westBout, basho,
-    eastTactic, westTactic, world, builder, meta, gyoji, panel,
+    bout,
+    ctxFinal,
+    result,
+    east,
+    west,
+    eastBout,
+    westBout,
+    basho,
+    eastTactic,
+    westTactic,
+    world,
+    builder,
+    meta,
+    gyoji,
+    panel,
   } = params;
 
   if (!bout.isPlayoff && result.inBoutInjury != null) {

@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  toRankPosition,
-  type NumberedRank,
-  type UnnumberedRank,
-} from "@/engine/types/banzuke";
+import { toRankPosition, type NumberedRank, type UnnumberedRank } from "@/engine/types/banzuke";
 
 const NUMBERED_RANKS: NumberedRank[] = [
   "maegashira",
@@ -35,9 +31,9 @@ describe("toRankPosition", () => {
     });
 
     it.each([undefined, 0, -1])("throws for maegashira with rankNumber %s", (rankNumber) => {
-      expect(() =>
-        toRankPosition({ rank: "maegashira", side: "east", rankNumber })
-      ).toThrow(/requires rankNumber >= 1/);
+      expect(() => toRankPosition({ rank: "maegashira", side: "east", rankNumber })).toThrow(
+        /requires rankNumber >= 1/
+      );
     });
   });
 

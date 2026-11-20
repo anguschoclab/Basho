@@ -172,9 +172,7 @@ describe("generateBoutNarrative — foul review arc", () => {
     const r2 = makeConfirmedResult();
     generateBoutNarrative(r1, east, west, BASHO, 8, "seed-foul-det", world);
     generateBoutNarrative(r2, east, west, BASHO, 8, "seed-foul-det", world);
-    expect(getMonoiiLines(r1).map((l) => l.text)).toEqual(
-      getMonoiiLines(r2).map((l) => l.text)
-    );
+    expect(getMonoiiLines(r1).map((l) => l.text)).toEqual(getMonoiiLines(r2).map((l) => l.text));
   });
 
   it("generic mono-ii (no foulReview) still narrates the close-finish arc", () => {

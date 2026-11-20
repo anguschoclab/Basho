@@ -94,10 +94,13 @@ export function distributePrizes(
     for (const d of prizes.deliberations) {
       const [prize, rikishiId] = d.subjectId.split(":");
       const winner =
-        prizes.shukunsho.includes(rikishiId) && prize === "shukun" ? "Shukun-sho"
-        : prizes.kantosho.includes(rikishiId) && prize === "kanto" ? "Kanto-sho"
-        : prizes.ginoSho.includes(rikishiId) && prize === "gino" ? "Gino-sho"
-        : null;
+        prizes.shukunsho.includes(rikishiId) && prize === "shukun"
+          ? "Shukun-sho"
+          : prizes.kantosho.includes(rikishiId) && prize === "kanto"
+            ? "Kanto-sho"
+            : prizes.ginoSho.includes(rikishiId) && prize === "gino"
+              ? "Gino-sho"
+              : null;
       if (!winner) continue;
       const r = getRikishi(world, rikishiId);
       builder.logEvent(
@@ -130,8 +133,7 @@ export function distributePrizes(
 }
 
 // Era-keyed — the JSA's July-2026 revision raises it ¥2M → ¥3M from Hatsu 2027.
-const sanshoPrizeAmount = (world: WorldState) =>
-  jsaSanshoPrize(world.year ?? DEFAULT_START_YEAR);
+const sanshoPrizeAmount = (world: WorldState) => jsaSanshoPrize(world.year ?? DEFAULT_START_YEAR);
 
 /**
  * Awards one sansho: ceremony narrative line, achievement counters, popularity

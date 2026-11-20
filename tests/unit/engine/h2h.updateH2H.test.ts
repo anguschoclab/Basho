@@ -27,8 +27,8 @@ describe("updateH2H", () => {
         kimarite: "yorikiri",
         bashoId: "basho-1",
         day: 1,
-        year: 2025
-      }
+        year: 2025,
+      },
     });
 
     expect(impact.entities?.rikishiUpdates?.get(loser.id)?.h2h?.[winner.id]).toEqual({
@@ -40,8 +40,8 @@ describe("updateH2H", () => {
         kimarite: "yorikiri",
         bashoId: "basho-1",
         day: 1,
-        year: 2025
-      }
+        year: 2025,
+      },
     });
   });
 
@@ -49,14 +49,14 @@ describe("updateH2H", () => {
     const winner = MockFactory.createRikishi({
       id: "w1",
       h2h: {
-        l1: { wins: 2, losses: 0, streak: 2, lastMatch: null as any }
-      }
+        l1: { wins: 2, losses: 0, streak: 2, lastMatch: null as any },
+      },
     });
     const loser = MockFactory.createRikishi({
       id: "l1",
       h2h: {
-        w1: { wins: 0, losses: 2, streak: -2, lastMatch: null as any }
-      }
+        w1: { wins: 0, losses: 2, streak: -2, lastMatch: null as any },
+      },
     });
 
     const boutResult = {
@@ -77,14 +77,14 @@ describe("updateH2H", () => {
     const winner = MockFactory.createRikishi({
       id: "w1",
       h2h: {
-        l1: { wins: 1, losses: 2, streak: -2, lastMatch: null as any }
-      }
+        l1: { wins: 1, losses: 2, streak: -2, lastMatch: null as any },
+      },
     });
     const loser = MockFactory.createRikishi({
       id: "l1",
       h2h: {
-        w1: { wins: 2, losses: 1, streak: 2, lastMatch: null as any }
-      }
+        w1: { wins: 2, losses: 1, streak: 2, lastMatch: null as any },
+      },
     });
 
     const boutResult = {

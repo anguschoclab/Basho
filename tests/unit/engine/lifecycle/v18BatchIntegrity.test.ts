@@ -31,7 +31,12 @@ import type { Heya } from "@/engine/types/heya";
 const YEAR = 2050; // retirees are 50 → checkRetirement → deterministic "Mandatory Age Retirement"
 
 function recordEntry(rikishiId: string, value: number) {
-  return { rikishiId, shikona: `Rikishi ${rikishiId}`, value, achievedDate: { year: 2040, month: 1 } };
+  return {
+    rikishiId,
+    shikona: `Rikishi ${rikishiId}`,
+    value,
+    achievedDate: { year: 2040, month: 1 },
+  };
 }
 
 function emptyRecords(): WorldRecords {
@@ -145,10 +150,7 @@ describe("processAllRetirements — stale-base worldFields merges", () => {
     // Each ozeki retiree earns `bl_<id>` — registerLegacyTrait builds the
     // registry from stale world.bloodlineRegistry, so the second registration
     // drops the first trait.
-    expect(Object.keys(next.bloodlineRegistry?.traits ?? {}).sort()).toEqual([
-      "bl_r1",
-      "bl_r2",
-    ]);
+    expect(Object.keys(next.bloodlineRegistry?.traits ?? {}).sort()).toEqual(["bl_r1", "bl_r2"]);
   });
 
   it("keeps EVERY merit-stock transfer and its transaction (retireeOyakataConversion)", () => {

@@ -32,24 +32,16 @@ const runDoubleRun = (horizon: "basho" | "year") => {
 };
 
 describe("determinism double-run — production gate", () => {
-  it(
-    "two sequential same-seed autosims serialize byte-identically (basho)",
-    () => {
-      const { stdout, exitCode } = runDoubleRun("basho");
-      expect(exitCode, `determinism double-run diverged:\n${stdout}`).toBe(0);
-    },
-    600_000
-  );
+  it("two sequential same-seed autosims serialize byte-identically (basho)", () => {
+    const { stdout, exitCode } = runDoubleRun("basho");
+    expect(exitCode, `determinism double-run diverged:\n${stdout}`).toBe(0);
+  }, 600_000);
 
   // S9-8: the basho horizon alone never exercises year-boundary systems —
   // retirement waves, banzuke re-rolls, era drift, age progression. A year
   // run catches the divergence class that only fires across the boundary.
-  it(
-    "two sequential same-seed autosims serialize byte-identically (year)",
-    () => {
-      const { stdout, exitCode } = runDoubleRun("year");
-      expect(exitCode, `determinism double-run (year) diverged:\n${stdout}`).toBe(0);
-    },
-    600_000
-  );
+  it("two sequential same-seed autosims serialize byte-identically (year)", () => {
+    const { stdout, exitCode } = runDoubleRun("year");
+    expect(exitCode, `determinism double-run (year) diverged:\n${stdout}`).toBe(0);
+  }, 600_000);
 });
