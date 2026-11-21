@@ -39,7 +39,7 @@ export function buildFacedSet(basho: BashoState): Set<string> {
 
 /** Optional extras for tryPair — see the rivalry note below. */
 export interface TryPairOptions {
-  /** Rivalry state for heat modifiers — sekitori-only today. */
+  /** Rivalry state for heat modifiers — sekitori callers only. */
   rivalriesState?: RivalriesState;
   /** Basho day override forwarded to scorePairing. */
   day?: number;
@@ -49,9 +49,11 @@ export interface TryPairOptions {
  * Attempts to create a valid pairing between two rikishi.
  * Returns null on hard-rule violations (already paired, scorer rejection).
  *
- * DESIGN QUESTION (documented, do not "fix" silently): lower-division
- * callers pass no `rivalriesState`, so heat bonuses are a sekitori-only
- * mechanic today. Enabling them for lower divisions is a balance decision.
+ * DESIGN CHOICE (documented, do not change silently): makuuchi and the
+ * juryo-crossover path pass `rivalriesState`; makushita/sandanme/jonidan/
+ * jonokuchi scheduling deliberately passes none — heat bonuses are a
+ * sekitori-only mechanic even though lower-division bouts still accumulate
+ * heat for post-promotion continuity.
  */
 export function tryPair(
   basho: BashoState,

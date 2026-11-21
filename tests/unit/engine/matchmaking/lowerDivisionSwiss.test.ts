@@ -3,6 +3,7 @@ import { buildLowerDivisionSwiss } from "@/engine/matchmaking/index";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { BashoState } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { RivalriesState } from "@/constants/engine/rivalry";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -153,5 +154,76 @@ describe("buildLowerDivisionSwiss — drama labels", () => {
 
     expect(pairings).toHaveLength(1);
     expect(pairings[0].reasons.some((r) => r.startsWith("drama_"))).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Rivalry heat — opt-in via rivalriesState (juryo crossover passes it; the
+// true lower-division caller deliberately does not — see swissShared.tryPair)
+// ---------------------------------------------------------------------------
+
+describe("buildLowerDivisionSwiss — rivalry heat option", () => {
+  function hotPair(aId: string, bId: string, heat = 60): RivalriesState {
+    const key = aId < bId ? `${aId}|${bId}` : `${bId}|${aId}`;
+    const [a, b] = aId < bId ? [aId, bId] : [bId, aId];
+    return {
+      version: "1.0.0",
+      pairs: {
+        [key]: {
+          key,
+          aId: a,
+          bId: b,
+          heat,
+          meetings: 10,
+          lastMetWeek: 5,
+          aWins: 5,
+          bWins: 5,
+          closeness: 50,
+          spite: 30,
+          tone: "grudge",
+          triggers: {},
+          sameHeya: false,
+        },
+      },
+    };
+  }
+
+  it("flags a pairing as rivalry_heat when the pair's heat clears the threshold", () => {
+    const r1 = mk("mk-1", { rankNumber: 1 });
+    const r2 = mk("mk-2", { rankNumber: 2 });
+
+    const basho = MockFactory.createBasho({ day: 1 });
+    const pairings = buildLowerDivisionSwiss(basho, [r1, r2], {
+      ...OPTS,
+      rivalriesState: hotPair("mk-1", "mk-2"),
+    });
+
+    expect(pairings).toHaveLength(1);
+    expect(pairings[0].reasons).toContain("rivalry_heat");
+  });
+
+  it("does NOT apply the bonus without rivalriesState — the default lower-division call", () => {
+    const r1 = mk("mk-1", { rankNumber: 1 });
+    const r2 = mk("mk-2", { rankNumber: 2 });
+
+    const basho = MockFactory.createBasho({ day: 1 });
+    const pairings = buildLowerDivisionSwiss(basho, [r1, r2], OPTS);
+
+    expect(pairings).toHaveLength(1);
+    expect(pairings[0].reasons).not.toContain("rivalry_heat");
+  });
+
+  it("ignores pairs below the tension threshold even when rivalriesState is passed", () => {
+    const r1 = mk("mk-1", { rankNumber: 1 });
+    const r2 = mk("mk-2", { rankNumber: 2 });
+
+    const basho = MockFactory.createBasho({ day: 1 });
+    const pairings = buildLowerDivisionSwiss(basho, [r1, r2], {
+      ...OPTS,
+      rivalriesState: hotPair("mk-1", "mk-2", 20),
+    });
+
+    expect(pairings).toHaveLength(1);
+    expect(pairings[0].reasons).not.toContain("rivalry_heat");
   });
 });

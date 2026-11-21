@@ -700,9 +700,13 @@ export function scheduleJuryoWithCrossover(
   // makushita callups; passing division: "juryo" silently dropped every
   // callup, leaving a healthy juryo rikishi unpaired (phantom absence at
   // performance publication).
+  // `rivalriesState` is forwarded here (and by the makuuchi path) but NOT by
+  // the true lower-division call — juryo is sekitori, so heat-aware pairing
+  // applies; the lower-division absence stays a documented design choice.
   let finalPairings = buildLowerDivisionSwiss(basho, pool, {
     seed: `${options.seed}-juryo-crossover-day${day}`,
     day,
+    rivalriesState: world.rivalriesState,
   });
 
   // ── Political favor: matchmaking_avoid (day 1, one-shot) ──────────────

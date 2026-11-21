@@ -17,13 +17,14 @@
 import type { BashoState } from "@/engine/types/basho";
 import type { Division } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { RivalriesState } from "@/constants/engine/rivalry";
 import {
   scorePairing,
   type MatchPairing,
   type MatchmakingRules,
 } from "@/engine/matchmaking/MatchmakingPhases";
 import { toIdMap } from "@/engine/utils/index";
-import { buildFacedSet, tryPair } from "@/engine/matchmaking/swissShared";
+import { buildFacedSet, tryPair, type TryPairOptions } from "@/engine/matchmaking/swissShared";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
@@ -49,7 +50,12 @@ function banzukeOrdinal(r: Rikishi): number {
  * Simple proximity matching based on banzuke rank.
  * Sort by banzuke ordinal and pair i with i+1 (offset up to 3 to dodge heya conflicts).
  */
-function phase1(basho: BashoState, pool: Rikishi[], facedSet: Set<string>): MatchPairing[] {
+function phase1(
+  basho: BashoState,
+  pool: Rikishi[],
+  facedSet: Set<string>,
+  tryOpts?: TryPairOptions
+): MatchPairing[] {
   const paired = new Set<string>();
   const pairings: MatchPairing[] = [];
 
@@ -63,7 +69,7 @@ function phase1(basho: BashoState, pool: Rikishi[], facedSet: Set<string>): Matc
     for (let offset = 1; offset <= 3 && i + offset < sorted.length; offset++) {
       const b = sorted[i + offset];
       if (paired.has(b.id)) continue;
-      const p = tryPair(basho, a, b, facedSet, paired);
+      const p = tryPair(basho, a, b, facedSet, paired, tryOpts);
       if (p) {
         pairings.push({ ...p, reasons: [...p.reasons, "rank_proximity"] });
         paired.add(a.id);
@@ -109,7 +115,8 @@ function phase2(
   basho: BashoState,
   pool: Rikishi[],
   facedSet: Set<string>,
-  day: number
+  day: number,
+  tryOpts?: TryPairOptions
 ): MatchPairing[] {
   const standings = basho.standings;
   const paired = new Set<string>();
@@ -140,7 +147,7 @@ function phase2(
       for (let i = 0; i < threeThreePool.length - 1; i += 2) {
         const a = threeThreePool[i];
         const b = threeThreePool[i + 1];
-        const p = tryPair(basho, a, b, facedSet, paired);
+        const p = tryPair(basho, a, b, facedSet, paired, tryOpts);
         if (p) {
           pairings.push({ ...p, reasons: [...p.reasons, "kachi_koshi_priority"] });
           paired.add(a.id);
@@ -181,7 +188,7 @@ function phase2(
       for (let j = i + 1; j < bucket.length; j++) {
         const b = bucket[j];
         if (paired.has(b.id)) continue;
-        const p = tryPair(basho, a, b, facedSet, paired);
+        const p = tryPair(basho, a, b, facedSet, paired, tryOpts);
         if (p) {
           pairings.push(p);
           paired.add(a.id);
@@ -363,7 +370,9 @@ function applyLowerDivisionDramaLabels(
  *
  * @param basho - Current basho state
  * @param rikishi - Pool of rikishi to schedule
- * @param options - Configuration options
+ * @param options - Configuration options; `rivalriesState` enables the
+ *   sekitori heat bonus — passed by the juryo crossover caller only (the
+ *   true lower divisions deliberately receive none; see `tryPair`)
  * @returns Array of match pairings
  */
 export function buildLowerDivisionSwiss(
@@ -374,6 +383,7 @@ export function buildLowerDivisionSwiss(
     division?: Division;
     rules?: Partial<MatchmakingRules>;
     day?: number;
+    rivalriesState?: RivalriesState;
   }
 ): MatchPairing[] {
   const pool: Rikishi[] = [];
@@ -386,12 +396,13 @@ export function buildLowerDivisionSwiss(
 
   const facedSet = buildFacedSet(basho);
   const day = options.day ?? basho.day ?? 1;
+  const tryOpts: TryPairOptions = { rivalriesState: options.rivalriesState, day };
 
   let raw: MatchPairing[];
   if (day <= 2) {
-    raw = phase1(basho, pool, facedSet);
+    raw = phase1(basho, pool, facedSet, tryOpts);
   } else {
-    raw = phase2(basho, pool, facedSet, day);
+    raw = phase2(basho, pool, facedSet, day, tryOpts);
   }
 
   // Apply drama labels for lower division narrative context (3.3)
